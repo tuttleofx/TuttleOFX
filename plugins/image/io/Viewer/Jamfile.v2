@@ -1,29 +1,39 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Exr Plugin
+## Main BJam makefile for TuttleOFX Viewer Plugin
 ###############################################################################
 import os ;
-
+ 
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
-	: requirements
-		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-	: build-dir $(BUILD)/Exr
-	;
+    : requirements
+	<include>src
+    : build-dir $(BUILD)/Viewer
+    ;
 
-use-project /libexr : $(3RD_PARTY)/openexr ;
+
+###############################################################################
+# Dependencies
+###############################################################################
+if [ os.name ] = NT
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX
+	{	alias opengl : ; }
+else if [ os.name ] = MACOSX
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Exr : 
-	[ glob-tree *.cpp : tests ]
-	/tuttleplugin/<link>static
-	/libexr
-	;
-
+plugin Viewer : 
+    [ glob-tree *.cpp ]
+    /tuttleplugin/<link>static
+    opengl
+    ;
+ 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Exr : $(DIST) ;
+auto_install Viewer : $(DIST) ;
+ 

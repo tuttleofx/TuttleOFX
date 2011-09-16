@@ -23,9 +23,6 @@ project
 ###############################################################################
 plugin FFMpeg : 
 	[ glob-tree *.cpp ]
-	/boost//system
-	/boost//filesystem
-	/boost//regex
 	/tuttleplugin/<link>static
 	;
 

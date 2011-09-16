@@ -7,19 +7,19 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-    : build-dir $(DIST)/ColorSpaceKeyer/obj
-    ;
+	: requirements
+		<include>src
+	: build-dir $(BUILD)/ColorSpaceKeyer
+	;
 
  
 ###############################################################################
 # Product 
 ###############################################################################
 plugin ColorSpaceKeyer : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	;
  
 ###############################################################################
 # Automatic install
