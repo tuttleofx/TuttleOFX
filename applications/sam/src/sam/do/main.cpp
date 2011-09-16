@@ -52,8 +52,9 @@ int main( int argc, char** argv )
 			exit( -1 );
 		}
 		
-		bool                      enableColor         = false;
-		bool                      script              = false;
+		bool continueOnError = false;
+		bool enableColor = false;
+		bool script = false;
 		std::vector< std::string> cl_options;
 		std::vector< std::vector<std::string> > cl_commands;
 		
@@ -85,6 +86,7 @@ int main( int argc, char** argv )
 				;
 				bpo::options_description confOptions;
 				confOptions.add_options()
+					("continueOnError" , "continue on error" )
 					("range,r"      , bpo::value<std::string>(), "frame range to render" )
 					("verbose,V"    , "explain what is being done")
 					("quiet,Q"      , "don't print commands")
@@ -206,25 +208,23 @@ int main( int argc, char** argv )
 						const std::string rangeStr = samdo_vm["range"].as<std::string>();
 						std::vector< std::string > rangeVStr = boost::program_options::split_unix( rangeStr, " ," );
 						range.reserve( rangeVStr.size() );
+						TUTTLE_TCOUT( rangeVStr.size() );
 						BOOST_FOREACH( const std::string& rStr, rangeVStr )
 						{
 							range.push_back( tuttle::host::attribute::extractValueFromExpression<std::ssize_t>(rStr) );
 						}
 					}
-					/// @todo remove this and use the full time range of nodes to render
-					/// @{
-					if( range.size() < 1 )
-						range.push_back( 0 );
-					/// @}
-
-					if( range.size() < 2 )
+					if( range.size() == 1 )
+					{
 						range.push_back( range[0] );
-					
+					}
 					if( range.size() >= 3 )
 						step = range[2];
 					else
 						step = 1;
 				}
+				
+				continueOnError = samdo_vm.count("continueOnError");
 			}
 			catch( const boost::program_options::error& e )
 			{
@@ -592,8 +592,19 @@ int main( int argc, char** argv )
 
 		// Connect all nodes linearly
 		graph.connect( nodes );
+		graph.setContinueOnError( continueOnError );
 
 		// Execute the graph
+		if( range.size() == 0 )
+		{
+			graph.init();
+			OfxRangeD timeDomain;
+			// TUTTLE_TCOUT_VAR( nodes.back()->getName() );
+			nodes.back()->getTimeDomain( timeDomain );
+			range.push_back( timeDomain.min );
+			range.push_back( timeDomain.max );
+			// TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
+		}
 		graph.compute( *nodes.back(), range[0], range[1] );
 	}
 	catch( const tuttle::exception::Common& e )

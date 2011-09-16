@@ -1,10 +1,12 @@
 #include "Graph.hpp"
 #include "InputBufferNode.hpp"
 #include "graph/ProcessGraph.hpp"
+
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
+
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -15,6 +17,7 @@ namespace tuttle {
 namespace host {
 
 Graph::Graph()
+: _continueOnError(false)
 {}
 
 Graph::~Graph()
@@ -184,6 +187,33 @@ void Graph::connect( const Node& outNode, const Attribute& inAttr )
 {
 	_graph.connect( outNode.getName(), inAttr.getNode().getName(), inAttr.getName() );
 }
+namespace {
+template<class TGraph>
+inline void graphConnectClips( TGraph& graph )
+{
+	BOOST_FOREACH( typename TGraph::edge_descriptor ed, graph.getEdges() )
+	{
+		typename TGraph::Edge& edge           = graph.instance( ed );
+		typename TGraph::Vertex& vertexSource = graph.sourceInstance( ed );
+		typename TGraph::Vertex& vertexDest   = graph.targetInstance( ed );
+
+		// TUTTLE_TCOUT( "[connectClips] " << edge );
+		// TUTTLE_TCOUT( vertexSource << "->" << vertexDest );
+		
+		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
+		{
+			INode& sourceNode = vertexSource.getProcessNode();
+			INode& targetNode = vertexDest.getProcessNode();
+			targetNode.connect( sourceNode, targetNode.getAttribute( edge.getInAttrName() ) );
+		}
+	}
+}
+}
+
+void Graph::init()
+{
+	graphConnectClips<InternalGraphImpl>( _graph );
+}
 
 //void Graph::unconnectNode( const Node& node )
 //{}
@@ -194,7 +224,7 @@ memory::MemoryCache Graph::compute( const std::list<std::string>& nodes, const i
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph process( *this, nodes );
+	graph::ProcessGraph process( *this, nodes, _continueOnError );
 	return process.process( tBegin, tEnd );
 }
 

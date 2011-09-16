@@ -97,7 +97,7 @@ public:
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
-	virtual bool getTimeDomain( OfxRangeD& range ) const = 0;
+	virtual void getTimeDomain( OfxRangeD& range ) const = 0;
 
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.
