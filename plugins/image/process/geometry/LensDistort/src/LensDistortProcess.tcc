@@ -66,11 +66,11 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 			lensDistort<terry::sampler::bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationCatmul:
-		{
-			lensDistort<terry::sampler::catmul_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-			return;
-		}
+		//case eParamInterpolationCatmul:
+		//{
+		//	lensDistort<terry::sampler::catmul_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+		//	return;
+		//}
 		case eParamInterpolationMitchell:
 		{
 			lensDistort<terry::sampler::mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
