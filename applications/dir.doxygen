@@ -1,0 +1,16 @@
+
+/**
+ * @dir applications
+ * @brief All applications developped inside the Tuttle project.
+ *
+ * @dir applications/sam
+ * @brief A set of command line tools to manipulate images using OpenFX nodes.
+ *
+ * @dir applications/examples
+ * @brief Some examples of tuttle libraries usage.
+ *
+ * @dir applications/pyTuttle
+ * @brief A simple python console with completion to use the Tuttle python wrapping.
+ *
+ *
+ */
