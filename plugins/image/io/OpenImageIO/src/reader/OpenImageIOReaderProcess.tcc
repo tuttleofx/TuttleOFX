@@ -51,8 +51,10 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	using namespace boost;
 	using namespace OpenImageIO;
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filepath ) );
-	if( !in )
+	if( in.get() == NULL )
+	{
 		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
+	}
 	ImageSpec spec;
 	in->open( filepath, spec );
 
@@ -62,9 +64,21 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	    mpl::pair<gil::bits32, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT32> >,
 	    mpl::pair<gil::bits32f, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::FLOAT> >
 	    > MapBits;
-	typedef typename gil::channel_type<View>::type ChannelType;
 
-	in->read_image( mpl::at<MapBits, ChannelType>::type::value, &( ( *dst.begin() )[0] ) ); // get the adress of the first channel value from the first pixel
+	const stride_t xstride = gil::is_planar<View>::value ? sizeof(Channel) : dst.num_channels() * sizeof(Channel);
+	const stride_t ystride = dst.pixels().row_size(); // xstride * dst.width();
+//	const stride_t zstride = gil::is_planar<View>::value ? ystride * dst.height() : sizeof(Channel);
+	const stride_t zstride = ystride * dst.height();
+	
+	in->read_image(
+			mpl::at<MapBits, Channel>::type::value,
+			&( ( *dst.begin() )[0] ), // get the adress of the first channel value from the first pixel
+			xstride,
+			ystride,
+			zstride,
+			&progressCallback,
+			this
+		);
 	in->close();
 
 	return dst;

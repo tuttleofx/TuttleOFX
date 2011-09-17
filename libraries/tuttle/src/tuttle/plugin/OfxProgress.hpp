@@ -38,6 +38,8 @@ public:
 	void progressBegin( const int numSteps, const std::string& msg = "" );
 	void progressEnd();
 	bool progressForward( const int nSteps = 1 );
+	
+	bool progressUpdate( const double p );
 };
 
 }

@@ -18,7 +18,8 @@ using namespace boost::gil;
 
 OpenImageIOReaderPlugin::OpenImageIOReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
-{}
+{
+}
 
 OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams( const OfxTime time )
 {
@@ -80,6 +81,14 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	
 	const std::string filename( getAbsoluteFirstFilename() );
 
+	// if no filename
+	if( filename.size() == 0 )
+	{
+		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+		return;
+	}
 	// spec.nchannels;
 	//	switch( spec.format )
 	//	{
