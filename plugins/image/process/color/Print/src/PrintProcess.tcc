@@ -2,8 +2,6 @@
 #include "PrintPlugin.hpp"
 
 #include <boost/gil/extension/numeric/pixel_by_channel.hpp>
-
-
 #include <cstdio>
 
 namespace tuttle {
@@ -186,7 +184,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 					gray8_view_t gViewGray( view(gImgGray) );
 					rgb8_image_t gImg( src.dimensions() );
 					rgb8_view_t gView( view(gImg) );
-					if( ! _params._flip )
+                                        if( _params._flip ) // on Nuke, need to Flip, but not in sam-do
 					{
 						src = flipped_up_down_view( src );
 					}
