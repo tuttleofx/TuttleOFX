@@ -720,9 +720,16 @@ int main( int argc, char** argv )
 			OfxRangeD timeDomain;
 			// TUTTLE_TCOUT_VAR( nodes.back()->getName() );
 			nodes.back()->getTimeDomain( timeDomain );
+			
+			// special case for infinite time domain (eg. a still image)
+			if( timeDomain.min == std::numeric_limits<double>::min() )
+				timeDomain.min = 0;
+			if( timeDomain.max == std::numeric_limits<double>::max() )
+				timeDomain.max = 0;
+			
+			// TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
 			range.push_back( timeDomain.min );
 			range.push_back( timeDomain.max );
-			// TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
 		}
 		graph.compute( *nodes.back(), range[0], range[1] );
 	}
