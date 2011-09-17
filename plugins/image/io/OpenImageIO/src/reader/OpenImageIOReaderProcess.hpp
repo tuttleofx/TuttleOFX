@@ -38,7 +38,7 @@ public:
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{
 		This* this_ptr = reinterpret_cast<This*>(opaque_data);
-		return false;
+		return this_ptr->progressUpdate( portion_done );
 	}
 };
 
