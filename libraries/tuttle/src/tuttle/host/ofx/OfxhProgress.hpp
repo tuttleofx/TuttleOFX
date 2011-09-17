@@ -50,9 +50,9 @@ public:
 	/// finish yer progress
 	virtual void progressEnd() = 0;
 
-	/// set the progress to some level of completion, returns
-	/// false if you should abandon processing, true to continue
-	virtual bool progressUpdate( double t ) = 0;
+	/// set the progress to some level of completion,
+	/// returns true if you should abandon processing, false to continue
+	virtual bool progressUpdate( const double t ) = 0;
 };
 
 }

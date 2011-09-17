@@ -267,13 +267,13 @@ void ImageEffectNode::progressStart( const std::string& message )
 void ImageEffectNode::progressEnd()
 {}
 
-/// set the progress to some level of completion, returns
-/// false if you should abandon processing, true to continue
-bool ImageEffectNode::progressUpdate( double progress )
+/// set the progress to some level of completion,
+/// returns true if you should abandon processing, false to continue
+bool ImageEffectNode::progressUpdate( const double progress )
 {
 	//	TUTTLE_COUT( "\033[sprogress: " << std::setw(3) << int(progress * 100)  << "\033[r");
 	//	TUTTLE_COUT_VAR( progress );
-	return true;
+	return false;
 }
 
 /// get the current time on the timeline. This is not necessarily the same
