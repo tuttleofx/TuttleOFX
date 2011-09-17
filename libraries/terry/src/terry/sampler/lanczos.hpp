@@ -25,6 +25,11 @@ struct lanczos12_sampler{};
 template < typename F >
 void getLanczosWeight( const F& distance, F& weight, lanczos_sampler& sampler )
 {
+	if( distance == 0.0 )
+	{
+		weight = 1.0;
+		return;
+	}
 	weight = sampler.size * sin( distance * PI ) * sin( distance * PI / sampler.size ) / ( pow( PI * distance, 2 ) );
 }
 

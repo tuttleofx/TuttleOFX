@@ -110,7 +110,7 @@ struct parzen_sampler : bc_sampler
  * @param[out] weight return value to weight the pixel in filtering
 **/
 template < typename F >
-bool getWeight ( const size_t& index, const F& distance, F& weight, bc_sampler& sampler )
+bool getWeight ( const size_t& index, const double& distance, F& weight, bc_sampler& sampler )
 {
 	if( distance <= 1 )
 	{
