@@ -136,24 +136,24 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 		}
 	}
 
-	View srcViewA_inter = subimage_view( this->_srcViewA,
-						   procIntersect.x1 - srcRodA.x1,
-						   procIntersect.y1 - srcRodA.y1,
-						   procIntersectSize.x,
-						   procIntersectSize.y );
-	View srcViewB_inter = subimage_view( this->_srcViewB,
-						   procIntersect.x1 - srcRodB.x1,
-						   procIntersect.y1 - srcRodB.y1,
-						   procIntersectSize.x,
-						   procIntersectSize.y );
+	View srcViewA_inter = subimage_view(	this->_srcViewA,
+						procIntersect.x1 - srcRodA.x1,
+						procIntersect.y1 - srcRodA.y1,
+						procIntersectSize.x,
+						procIntersectSize.y );
+	View srcViewB_inter = subimage_view(	this->_srcViewB,
+						procIntersect.x1 - srcRodB.x1,
+						procIntersect.y1 - srcRodB.y1,
+						procIntersectSize.x,
+						procIntersectSize.y );
 
-	View dstView_inter = subimage_view( this->_dstView,
-	                              procIntersect.x1 - this->_dstPixelRod.x1,
-	                              procIntersect.y1 - this->_dstPixelRod.y1,
-	                              procIntersectSize.x,
-	                              procIntersectSize.y );
+	View dstView_inter = subimage_view(	this->_dstView,
+						procIntersect.x1 - this->_dstPixelRod.x1,
+						procIntersect.y1 - this->_dstPixelRod.y1,
+						procIntersectSize.x,
+						procIntersectSize.y );
 
-        merge_pixels( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
+	merge_pixels( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
 
 
 }

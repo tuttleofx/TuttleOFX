@@ -56,89 +56,89 @@ void printImageProperties( std::string path )
 		std::string imageType;
 		switch( image->type )
 		{
-			case UndefinedType				: imageType = "Undefined type of image"; break;
-			case BilevelType				: imageType = "Bilevel image"; break;
-			case GrayscaleType				: imageType = "Grayscale image"; break;
-			case GrayscaleMatteType			: imageType = "Grayscale image with opacity"; break;
-			case PaletteType				: imageType = "Indexed color image"; break;
-			case PaletteMatteType			: imageType = "Indexed color image with opacity"; break;
-			case TrueColorType				: imageType = "Truecolor image"; break;
-			case TrueColorMatteType			: imageType = "Truecolor image with opacity"; break;
-			case ColorSeparationType		: imageType = "Cyan/Yellow/Magenta/Black (CYMK) image"; break;
-			case ColorSeparationMatteType	: imageType = "Cyan/Yellow/Magenta/Black (CYMK) image with opacity"; break;
-			case OptimizeType				: imageType = "Optimize image"; break;
-			case 11							: imageType = "Indexed bilevel image with opacity"; break; // PaletteBilevelMatteType
+			case UndefinedType             : imageType = "Undefined type of image"; break;
+			case BilevelType               : imageType = "Bilevel image"; break;
+			case GrayscaleType             : imageType = "Grayscale image"; break;
+			case GrayscaleMatteType        : imageType = "Grayscale image with opacity"; break;
+			case PaletteType               : imageType = "Indexed color image"; break;
+			case PaletteMatteType          : imageType = "Indexed color image with opacity"; break;
+			case TrueColorType             : imageType = "Truecolor image"; break;
+			case TrueColorMatteType        : imageType = "Truecolor image with opacity"; break;
+			case ColorSeparationType       : imageType = "Cyan/Yellow/Magenta/Black (CYMK) image"; break;
+			case ColorSeparationMatteType  : imageType = "Cyan/Yellow/Magenta/Black (CYMK) image with opacity"; break;
+			case OptimizeType              : imageType = "Optimize image"; break;
+			case 11                        : imageType = "Indexed bilevel image with opacity"; break; // PaletteBilevelMatteType
 		}
 
 		std::string resolutionType;
 		switch( image->units )
 		{
-			case UndefinedResolution			: resolutionType = " [unknown units]"; break;
-			case PixelsPerInchResolution		: resolutionType = " [dpi]"; break;
-			case PixelsPerCentimeterResolution	: resolutionType = " [pixels/cm]"; break;
+			case UndefinedResolution            : resolutionType = " [unknown units]"; break;
+			case PixelsPerInchResolution        : resolutionType = " [dpi]"; break;
+			case PixelsPerCentimeterResolution  : resolutionType = " [pixels/cm]"; break;
 		}
 
 		std::string colorSpaceType;
 		switch( image->colorspace )
 		{
-			case UndefinedColorspace	: colorSpaceType = "unknown color space"; break;
-			case RGBColorspace			: colorSpaceType = "RGB"; break;
-			case GRAYColorspace			: colorSpaceType = "Gray"; break;
-			case TransparentColorspace	: colorSpaceType = "Transparent"; break;
-			case OHTAColorspace			: colorSpaceType = "OHTA"; break;
-			case XYZColorspace			: colorSpaceType = "XYZ"; break;
-			case YCbCrColorspace		: colorSpaceType = "Y Cb Cr"; break;
-			case YCCColorspace			: colorSpaceType = "YCC"; break;
-			case YIQColorspace			: colorSpaceType = "YIQ"; break;
-			case YPbPrColorspace		: colorSpaceType = "Y Pb Pr"; break;
-			case YUVColorspace			: colorSpaceType = "YUV"; break;
-			case CMYKColorspace			: colorSpaceType = "CMYK"; break;
-			case sRGBColorspace			: colorSpaceType = "sRGB"; break;
-			case LabColorspace			: colorSpaceType = "Lab"; break;
-			case 14 					: colorSpaceType = "HSB"; break; // HSBColorspace
-			case HSLColorspace			: colorSpaceType = "HSL"; break;
-			case HWBColorspace			: colorSpaceType = "HWB"; break;
-			case Rec601LumaColorspace	: colorSpaceType = "Rec601 Luma"; break;
-			case 18 					: colorSpaceType = "Rec601 Y Cb Cr"; break; // Rec601YCbCrColorspace
-			case Rec709LumaColorspace	: colorSpaceType = "Rec709 Luma"; break;
-			case 20						: colorSpaceType = "Rec709 Y Cb Cr"; break; //  Rec709YCbCrColorspace
-			case LogColorspace			: colorSpaceType = "Log"; break;
-			case 22						: colorSpaceType = "CMY"; break; // CMYColorspace
+			case UndefinedColorspace      : colorSpaceType = "unknown color space"; break;
+			case RGBColorspace            : colorSpaceType = "RGB"; break;
+			case GRAYColorspace           : colorSpaceType = "Gray"; break;
+			case TransparentColorspace    : colorSpaceType = "Transparent"; break;
+			case OHTAColorspace           : colorSpaceType = "OHTA"; break;
+			case XYZColorspace            : colorSpaceType = "XYZ"; break;
+			case YCbCrColorspace          : colorSpaceType = "Y Cb Cr"; break;
+			case YCCColorspace            : colorSpaceType = "YCC"; break;
+			case YIQColorspace            : colorSpaceType = "YIQ"; break;
+			case YPbPrColorspace          : colorSpaceType = "Y Pb Pr"; break;
+			case YUVColorspace            : colorSpaceType = "YUV"; break;
+			case CMYKColorspace           : colorSpaceType = "CMYK"; break;
+			case sRGBColorspace           : colorSpaceType = "sRGB"; break;
+			case LabColorspace            : colorSpaceType = "Lab"; break;
+			case 14                       : colorSpaceType = "HSB"; break; // HSBColorspace
+			case HSLColorspace            : colorSpaceType = "HSL"; break;
+			case HWBColorspace            : colorSpaceType = "HWB"; break;
+			case Rec601LumaColorspace     : colorSpaceType = "Rec601 Luma"; break;
+			case 18                       : colorSpaceType = "Rec601 Y Cb Cr"; break; // Rec601YCbCrColorspace
+			case Rec709LumaColorspace     : colorSpaceType = "Rec709 Luma"; break;
+			case 20                       : colorSpaceType = "Rec709 Y Cb Cr"; break; //  Rec709YCbCrColorspace
+			case LogColorspace            : colorSpaceType = "Log"; break;
+			case 22                       : colorSpaceType = "CMY"; break; // CMYColorspace
 		}
 
 		std::string interlaceType;
 		switch( image->interlace )
 		{
-			case UndefinedInterlace		: interlaceType = "undefined"; break;
-			case NoInterlace			: interlaceType = "no interlacing"; break;
-			case LineInterlace			: interlaceType = "line interlacing"; break;
-			case PlaneInterlace			: interlaceType = "plane interlacing"; break;
-			case PartitionInterlace		: interlaceType = "partition interlacing"; break;
-			case 5						: interlaceType = "GIF interlacing"; break; // GIFInterlace
-			case 6						: interlaceType = "Jpeg interlacing"; break; // JPEGInterlace
-			case 7						: interlaceType = "PNG interlacing"; break; // PNGInterlace
+			case UndefinedInterlace    : interlaceType = "undefined"; break;
+			case NoInterlace           : interlaceType = "no interlacing"; break;
+			case LineInterlace         : interlaceType = "line interlacing"; break;
+			case PlaneInterlace        : interlaceType = "plane interlacing"; break;
+			case PartitionInterlace    : interlaceType = "partition interlacing"; break;
+			case 5                     : interlaceType = "GIF interlacing"; break; // GIFInterlace
+			case 6                     : interlaceType = "Jpeg interlacing"; break; // JPEGInterlace
+			case 7                     : interlaceType = "PNG interlacing"; break; // PNGInterlace
 		}
 
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "width"				<< image->columns												);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "height"				<< image->rows													);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"			<< image->depth	<< " bits"										);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"	<< image->quality												);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "image type"			<< imageType													);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "width"                 << image->columns                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "height"                << image->rows                                                                            );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"             << image->depth  << " bits"                                                               );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"   << image->quality                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "image type"            << imageType                                                                              );
 		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"		<< image->x_resolution	<< resolutionType						);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"		<< image->y_resolution	<< resolutionType						);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"			<< interlaceType												);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"          << image->x_resolution  << resolutionType                                                 );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"          << image->y_resolution  << resolutionType                                                 );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"           << interlaceType                                                                          );
 		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		//TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "format"			<< image->format()												);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "channels"			<< colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" ) 	);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "color space"			<< colorSpaceType												);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "gamma"				<< image->gamma													);
+		//TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "format"                << image->format()                                                                        );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "channels"              << colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" )  );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "color space"           << colorSpaceType                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "gamma"                 << image->gamma                                                                           );
 
 		TUTTLE_COUT( "" );
 	}
 	catch( ... )
 	{
-		TUTTLE_COUT( "Caught exception" << "\n" );;
+		TUTTLE_COUT( "Caught exception" << "\n" );
 	}
 	
 }

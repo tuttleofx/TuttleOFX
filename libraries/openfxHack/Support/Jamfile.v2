@@ -20,6 +20,6 @@ project
 ###############################################################################
 lib Support :
 	[ glob-tree *.cpp ]
-	/boost//system
+	/boost//system/<link>shared
 	;
 

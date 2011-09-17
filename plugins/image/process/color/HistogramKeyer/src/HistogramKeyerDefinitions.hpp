@@ -81,6 +81,13 @@ const static std::string kButtonSelectionToCurveHSL = "SelectionToCurveHSL";
 const static std::string kButtonSelectionToCurveRGBLabel = "From selection";
 const static std::string kButtonSelectionToCurveHSLLabel = "From selection";
 
+//Append current selection to curve
+const static std::string kButtonAppendSelectionToCurveRGB = "AppendSelectionToCurveRGB";
+const static std::string kButtonAppendSelectionToCurveHSL = "AppendSelectionToCurveHSL";
+
+const static std::string kButtonAppendSelectionToCurveRGBLabel = "Append from selection";
+const static std::string kButtonAppendSelectionToCurveHSLLabel = "Append from selection";
+
 //Refresh overlay button
 const static std::string kButtonRefreshOverlay = "RefreshOverlay";
 const static std::string kButtonRefreshOverlayLabel = "Refresh overlay";

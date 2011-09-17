@@ -304,7 +304,7 @@ public:
 		return getData(time)._apiImageEffect._renderRoD;
 	}
 
-	bool getTimeDomain( OfxRangeD& range ) const { return false; }
+	void getTimeDomain( OfxRangeD& range ) const { range.min=0; range.max=0; }
 
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.

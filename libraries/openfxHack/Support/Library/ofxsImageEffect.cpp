@@ -39,15 +39,16 @@
 #include "ofxsSupportPrivate.h"
 #include "ofxsUtilities.h"
 
-#include <algorithm> // for find
-#include <iostream>
-#include <sstream>
-#include <string>
+#include <tuttle/common/utils/backtrace.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/diagnostic_information.hpp>
-#include <tuttle/common/utils/backtrace.hpp>
+
+#include <algorithm> // for find
+#include <iostream>
+#include <sstream>
+#include <string>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {

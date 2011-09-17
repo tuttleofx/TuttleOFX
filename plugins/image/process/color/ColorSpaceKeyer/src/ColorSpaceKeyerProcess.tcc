@@ -20,6 +20,7 @@ void ColorSpaceKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 	
+	//std::cout << "[Process] début render" << std::endl;
 	//Create geodesic form
 	SelectionAverage selectionAverage(_plugin._time);								//create selection
 	//update color geodesic form
@@ -29,11 +30,10 @@ void ColorSpaceKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 	_geodesicFormSpill._scale = _plugin._paramDoubleScaleGF->getValue();			//set good scale to geodesic form
 	_geodesicFormSpill._tolerance = _plugin._paramDoubleToleranceGF->getValue();	//set good scale to geodesic form
 	
+	//std::cout << "[Process] initialize geodesic form" << std::endl;
 	if(_plugin._paramChoiceAverageMode->getValue() ==0) //average mode is automatic
 	{
-		std::cout << "[Process] Compute average selection" << std::endl;
 		selectionAverage.computeAverageSelection(_plugin._clipColor,_plugin._renderScale); //compute average selection
-		std::cout << "[Process] Modify geodesic forms" << std::endl;
 		//subdivise geodesic forms
 		_geodesicFormColor.subdiviseFaces(selectionAverage._averageValue, _plugin._paramIntDiscretization->getValue()); //create geodesic form
 		_geodesicFormSpill.subdiviseFaces(selectionAverage._averageValue, _plugin._paramIntDiscretization->getValue()); //create geodesic form
@@ -49,10 +49,10 @@ void ColorSpaceKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 		_geodesicFormColor.subdiviseFaces(selectedAverage, _plugin._paramIntDiscretization->getValue()); //create geodesic form
 		_geodesicFormSpill.subdiviseFaces(selectedAverage, _plugin._paramIntDiscretization->getValue()); //create geodesic form
 	}
-	std::cout << "[Process] Extend geodesic forms" << std::endl;
+	//std::cout << "[Process] extend geodesic form" << std::endl;
 	//Extend geodesic forms
 	selectionAverage.extendGeodesicForm(_plugin._clipColor,_plugin._renderScale,_geodesicFormColor); //extends geodesic form color
-	selectionAverage.extendGeodesicForm(_plugin._clipColor,_plugin._renderScale,_geodesicFormSpill); //extends geodesic form spill (color clip)
+	_geodesicFormSpill.copyGeodesicForm(_geodesicFormColor);										 //extends geodesic form spill (color clip)
 	selectionAverage.extendGeodesicForm(_plugin._clipSpill,_plugin._renderScale,_geodesicFormSpill); //extends geodesic form spill (spill takes account of spill clip)
 }
 
@@ -76,13 +76,12 @@ void ColorSpaceKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							                  procWindowSize.x, procWindowSize.y );
 		
-	std::cout << "[Process-multi] create functor" << std::endl;
+	//std::cout << "[Process] create functor and process" << std::endl;
     //Create and initialize functor 
 	Compute_alpha_pixel funct(false,_geodesicFormColor, _geodesicFormSpill); //Output is alpha
-	std::cout << "[Process-multi] compute alpha mask" << std::endl;
 	//this function is chose because of functor reference and not copy
 	transform_pixels_progress(src,dst,funct,*this);
-	std::cout << "[Process-multi] fin render"<< std::endl;
+	//std::cout <<"[Process] fin render" << std::endl;
 }
 
 }

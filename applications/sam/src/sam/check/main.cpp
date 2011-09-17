@@ -8,13 +8,18 @@
 
 using namespace tuttle::common;
 using namespace tuttle::host;
-namespace fs = boost::filesystem;
-namespace po = boost::program_options;
+namespace bfs = boost::filesystem;
+namespace bpo = boost::program_options;
 
-static int _blackImage = 0;
-static int _nullFileSize = 0;
+namespace sam
+{
+	Color _color;
+}
+
+static int _blackImage     = 0;
+static int _nullFileSize   = 0;
 static int _corruptedImage = 0;
-static int _missingFiles = 0;
+static int _missingFiles   = 0;
 static std::streambuf * const _stdCout = std::cout.rdbuf(); // back up cout's streambuf
 static std::streambuf * const _stdCerr = std::cerr.rdbuf(); // back up cout's streambuf
 
@@ -37,12 +42,12 @@ enum EImageStatus
 /**
  * @brief Check the image status.
  */
-EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& graph, const fs::path& filename )
+EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& graph, const bfs::path& filename )
 {
-	if( fs::exists( filename ) == 0 )
+	if( bfs::exists( filename ) == 0 )
 		return eImageStatusNoFile;
 	
-	if( fs::file_size( filename ) == 0 )
+	if( bfs::file_size( filename ) == 0 )
 		return eImageStatusFileSizeError;
 
 	try
@@ -68,7 +73,7 @@ EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& grap
 	}
 }
 
-EImageStatus checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, const fs::path& filename )
+EImageStatus checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, const bfs::path& filename )
 {
 	EImageStatus s = checkImageStatus( read, stat, graph, filename );
 
@@ -117,6 +122,8 @@ void checkSequence( Graph::Node& read, Graph::Node& stat, Graph& graph, const Se
 
 int main( int argc, char** argv )
 {
+	using namespace sam;
+
 	std::cout.rdbuf(0); // remove cout's streambuf
 	std::cerr.rdbuf(0); // remove cerr's streambuf
 
@@ -124,42 +131,94 @@ int main( int argc, char** argv )
 	{
 		std::vector<std::string> inputs;
 		std::string readerId;
-		bool hasRange = false;
+		bool hasRange    = false;
+		bool script      = false;
+		bool enableColor = false;
 		std::vector<int> range;
 
-		po::options_description desc(
-			"Check image files.\n"
-			"\n"
-			"Usage:\n"
-			"\tsam-check -n tuttle.pngreader /path/to/my/dir/images.####.png -r 50 100\n"
-			"\n"
-			"Return code:\n"
-			"\t* the number of corrupted images\n"
-			"\t* 0 if no error\n"
-			"\t* -1 error in the application itself\n"
-		);
+		bpo::options_description desc;
+		bpo::options_description hidden;
 		
 		desc.add_options()
-		("help,h", "Display help")
-		("reader,n", po::value(&readerId)/*->required()*/, "Reader node identifier \"tuttle.XXXreader\".")
-		("input,i",  po::value(&inputs)/*->required()*/, "Input pathname (directory, file or sequence pattern).")
-		("range,r",  po::value(&range)->multitoken(), "Range (used only if input is a sequence pattern).")
-		("brief",    "brief summary of the tool")
+			("help,h",   "display help")
+			("reader,n", bpo::value(&readerId)/*->required()*/, "reader node identifier \"tuttle.XXXreader\".")
+			("input,i",  bpo::value(&inputs)/*->required()*/, "input pathname (directory, file or sequence pattern).")
+			("range,r",  bpo::value(&range)->multitoken(), "range (used only if input is a sequence pattern).")
+			("brief",    "brief summary of the tool")
+			("color",    "color the output")
+			("script",   "output is formated to using in script files")
 		;
 
-		po::positional_options_description pArgs;
-		pArgs.add("input", -1);
+		// describe hidden options
+		hidden.add_options()
+			("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+		;
 
-		po::variables_map vm;
-		po::store( po::command_line_parser(argc, argv)
-					.options(desc)
-					.positional(pArgs).run(), vm );
-		po::notify(vm);
+		bpo::options_description cmdline_options;
+		cmdline_options.add(desc).add(hidden);
+
+		bpo::positional_options_description pod;
+		pod.add("input", -1);
+
+		bpo::variables_map vm;
+
+		try
+		{
+			//parse the command line, and put the result in vm
+			bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+
+			// get environment options and parse them
+			if( const char* env_check_options = std::getenv("SAM_CHECK_OPTIONS") )
+			{
+				const std::vector<std::string> vecOptions = bpo::split_unix( env_check_options, " " );
+				bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+			}
+			bpo::notify(vm);
+		}
+		catch( const bpo::error& e)
+		{
+			TUTTLE_COUT("sam-check: command line error: " << e.what() );
+			exit( -2 );
+		}
+		catch(...)
+		{
+			TUTTLE_COUT("sam-check: unknown error in command line.");
+			exit( -2 );
+		}
+
+		if ( vm.count("script") )
+		{
+			// disable color, disable directory printing and set relative path by default
+			script = true;
+		}
+
+		if ( vm.count("color") && !script )
+		{
+			enableColor = true;
+		}
+		if ( vm.count("enable-color") && !script )
+		{
+			std::string str = vm["enable-color"].as<std::string>();
+
+			if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+			{
+				enableColor = true;
+			}
+			else
+			{
+				enableColor = false;
+			}
+		}
+
+		if( enableColor )
+		{
+			_color.enable();
+		}
 
 		if ( vm.count("brief") )
 		{
 			std::cout.rdbuf(_stdCout);
-			std::cout << "Check image files" << std::endl;
+			TUTTLE_COUT( _color._green << "check image files" << _color._std );
 			std::cout.rdbuf(0);
 			return 0;
 		}
@@ -167,13 +226,35 @@ int main( int argc, char** argv )
 		if( vm.count("help") || vm.count("input") == 0 )
 		{
 			std::cout.rdbuf(_stdCout); // restore cout's original streambuf
-			std::cout << desc << std::endl;
+			TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+			TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+			TUTTLE_COUT( _color._green << "\tsam-check - list directory contents" << _color._std << std::endl);
+			TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+			TUTTLE_COUT( _color._green << "\tsam-check [reader] [input] [options]" << _color._std << std::endl );
+			TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
+
+			TUTTLE_COUT( "Check if sequence have black images." );
+			TUTTLE_COUT( "This tools process the PSNR of an image, and if it's null, the image is considered black." );
+
+			TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
+			TUTTLE_COUT( desc );
 			std::cout.rdbuf(0); // remove cout's streambuf
 			return 0;
 		}
-
+		if( !vm.count("reader") )
+		{
+			TUTTLE_COUT( _color._red  << "sam-check : no reader specified." << _color._std );
+			TUTTLE_COUT( _color._red  << "            run sam-check -h for more information." << _color._std );
+			return 0;
+		}
+		if( !vm.count("input") )
+		{
+			TUTTLE_COUT( _color._red  << "sam-check : no input specified." << _color._std );
+			TUTTLE_COUT( _color._red  << "            run sam-check -h for more information." << _color._std );
+			return 0;
+		}
 		readerId = vm["reader"].as<std::string>();
-		inputs = vm["input"].as< std::vector<std::string> >();
+		inputs   = vm["input"].as< std::vector<std::string> >();
 		if( vm.count("range") )
 		{
 			range = vm["range"].as< std::vector<int> >();
@@ -187,11 +268,11 @@ int main( int argc, char** argv )
 		read.getParam("explicitConversion").setValue(3); // force reader to use float image buffer
 		graph.connect( read, stat );
 
-		BOOST_FOREACH( const fs::path path, inputs )
+		BOOST_FOREACH( const bfs::path path, inputs )
 		{
-			if( fs::exists( path ) )
+			if( bfs::exists( path ) )
 			{
-				if( fs::is_directory( path ) )
+				if( bfs::is_directory( path ) )
 				{
 					std::list<boost::shared_ptr<FileObject> > fObjects;
 					fObjects = fileObjectsInDir( path );
@@ -251,12 +332,12 @@ int main( int argc, char** argv )
 		return -1;
 	}
 	std::cout.rdbuf(_stdCerr); // restore cout's original streambuf
-	std::cout << "________________________________________" << std::endl;
-	std::cout << "Black images: " << _blackImage << std::endl;
-	std::cout << "Null file size: " << _nullFileSize << std::endl;
-	std::cout << "Corrupted images: " << _corruptedImage << std::endl;
-	std::cout << "Holes in sequence: " << _missingFiles << std::endl;
-	std::cout << "________________________________________" << std::endl;
+	TUTTLE_COUT( "________________________________________" );
+	TUTTLE_COUT( "Black images: "      << _blackImage       );
+	TUTTLE_COUT( "Null file size: "    << _nullFileSize     );
+	TUTTLE_COUT( "Corrupted images: "  << _corruptedImage   );
+	TUTTLE_COUT( "Holes in sequence: " << _missingFiles     );
+	TUTTLE_COUT( "________________________________________" );
 	std::cout.rdbuf(0); // remove cerr's streambuf
 
 	return _blackImage + _nullFileSize + _corruptedImage + _missingFiles;

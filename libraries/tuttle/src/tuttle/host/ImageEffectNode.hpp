@@ -113,7 +113,7 @@ public:
 
 	/// @group Implementation of INode virtual functions
 	/// @{
-	bool getTimeDomain( OfxRangeD& range ) const;
+	void getTimeDomain( OfxRangeD& range ) const;
 
 	void beginSequence( graph::ProcessVertexData& vData );
 

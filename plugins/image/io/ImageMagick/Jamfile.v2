@@ -6,24 +6,21 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-        <include>$(MAGICK_INCLUDE)
-        <linkflags>$(MAGICK_LIBS)
-    : build-dir $(BUILD)/ImageMagick
-    ;
+	: requirements
+		<include>src
+		<include>$(MAGICK_INCLUDE)
+		<linkflags>$(MAGICK_LIBS)
+	: build-dir $(BUILD)/ImageMagick
+	;
 
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin ImageMagick : 
-    [ glob-tree *.cpp : tests ]
-    /boost//system
-    /boost//filesystem
-    /boost//regex
-    /tuttleplugin/<link>static
-    ;
+	[ glob-tree *.cpp : tests ]
+	/tuttleplugin/<link>static
+	;
 
 ###############################################################################
 # Automatic install

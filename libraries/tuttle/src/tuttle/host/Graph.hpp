@@ -72,6 +72,11 @@ public:
 	void connect( const Node& outNode, const Attribute& inAttr );
 	//	void unconnectNode( const Node& node );
 
+	/**
+	 * @brief Temporary solution ! Prepare the user graph, so we can call getTimeDomain (and maybe others functions) on nodes.
+	 */
+	void init();
+	
 	memory::MemoryCache compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 	inline memory::MemoryCache compute( const std::list<std::string>& nodes, const int time ) { return compute( nodes, time, time ); }
 
@@ -120,6 +125,8 @@ public:
 	inline Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
 	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
+	inline void setContinueOnError( const bool v ) { _continueOnError = v; }
+	
 public:
 	#ifndef SWIG
 	friend std::ostream& operator<<( std::ostream& os, const Graph& g );
@@ -145,6 +152,7 @@ public:
 	#endif
 
 private:
+	bool _continueOnError;
 	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node

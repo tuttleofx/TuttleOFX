@@ -54,9 +54,7 @@ public:
 	
 public:
 	//Constructor of geodesic form
-	GeodesicForm();
-	//Copy constructor of geodesic form
-	GeodesicForm(const GeodesicForm& copy);		
+	GeodesicForm();		
 	
 	//Create a geodesic form centered in a point
 	void createGeodesicForm(const Ofx3DPointD& center);
@@ -78,6 +76,9 @@ public:
 	void updateBoundingBox();																//if points vector has changed : update bounding box
 	bool isIntoBoundingBox(const Ofx3DPointD& testPoint);									//is testPoint into bounding box
 	
+	//Recopy geodesic form (evitate to extends spill form)
+	void copyGeodesicForm(const GeodesicForm& copy);
+	
 private:
 	//subdivise one face of the geodesic form
 	void subdiviseOneFace(PyramidTriangle& f, const int divisor);							//sub-divise one face
@@ -85,7 +86,7 @@ private:
 	void createPointsOneFace(const PyramidTriangle& f, const int divisor);					//create all of needed point on one face
 	//compute intersection between a point and a triangle
 	bool getIntersection(const Ofx3DPointD& point, const Triangle& triangle);																					//intersection Moller
-	bool getIntersection2(const Ofx3DPointD& point, const PyramidTriangle& pyramidTriangle, Ofx3DPointD& intersectionPoint, const bool& inverse = false);		//intersection Dan Sunday
+	bool getIntersection2(const Ofx3DPointD& point, const PyramidTriangle& pyramidTriangle, Ofx3DPointD& intersectionPoint, double& s, double& t ,const bool& inverse = false);		//intersection Dan Sunday
 	//transform one point to sphere 
 	void currentPointToSphere(Ofx3DPointD& point, const double& radius);					//transform double pyramid to sphere	
 	//Extends one point

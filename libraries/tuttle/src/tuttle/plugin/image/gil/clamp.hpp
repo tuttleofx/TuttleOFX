@@ -51,7 +51,7 @@ struct pixel_clamp
 	void operator()( const SPixel& src, DPixel& dst ) const
 	{
 		using namespace boost::gil;
-		static_for_each(src,dst,channel_clamp<SChannel, DChannel>());
+		static_for_each(src,dst,channel_clamp<SChannel, DChannel>(_min,_max));
 	}
 };
 

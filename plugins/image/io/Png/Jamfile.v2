@@ -6,10 +6,10 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-    : build-dir $(BUILD)/Png
-    ;
+	: requirements
+		<include>src
+	: build-dir $(BUILD)/Png
+	;
 
 use-project /png    : $(3RD_PARTY)/libpng ;
 
@@ -17,13 +17,10 @@ use-project /png    : $(3RD_PARTY)/libpng ;
 # Product 
 ###############################################################################
 plugin Png : 
-    [ glob-tree *.cpp : tests ]
-    /boost//system
-    /boost//filesystem
-    /boost//regex
-    /tuttleplugin/<link>static
-    /png
-    ;
+	[ glob-tree *.cpp : tests ]
+	/tuttleplugin/<link>static
+	/png
+	;
 
 ###############################################################################
 # Automatic install
