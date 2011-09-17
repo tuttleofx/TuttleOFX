@@ -66,6 +66,10 @@ void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::str
 	using namespace boost;
 	using namespace OpenImageIO;
 	boost::scoped_ptr<ImageOutput> out( ImageOutput::create( filepath ) );
+	if( out.get() == NULL )
+	{
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
+	}
 	ImageSpec spec( src.width(), src.height(), gil::num_channels<View>::value, bitDepth );
 	out->open( filepath, spec );
 

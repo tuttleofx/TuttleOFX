@@ -17,9 +17,16 @@ namespace reader {
 template<class View>
 class OpenImageIOReaderProcess : public ImageGilProcessor<View>
 {
+public:
+	typedef typename image_from_view<View>::type Image;
+	typedef typename View::value_type Pixel;
+	typedef typename boost::gil::channel_type<View>::type Channel;
+	typedef typename View::point_t Point;
+	typedef typename View::coord_t Coord;
+
 protected:
 	OpenImageIOReaderPlugin&    _plugin;        ///< Rendering plugin
-
+	
 public:
 	OpenImageIOReaderProcess( OpenImageIOReaderPlugin& instance );
 
