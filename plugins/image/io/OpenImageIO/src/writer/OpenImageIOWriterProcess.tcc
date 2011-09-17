@@ -18,6 +18,7 @@ namespace plugin {
 namespace openImageIO {
 namespace writer {
 
+
 template<class View>
 OpenImageIOWriterProcess<View>::OpenImageIOWriterProcess( OpenImageIOWriterPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance )
@@ -81,7 +82,20 @@ void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::str
 	    > MapBits;
 	typedef typename gil::channel_type<View>::type ChannelType;
 
-	out->write_image( mpl::at<MapBits, ChannelType>::type::value, &( ( *src.begin() )[0] ) ); // get the adress of the first channel value from the first pixel
+	const stride_t xstride = gil::is_planar<View>::value ? sizeof(Channel) : src.num_channels() * sizeof(Channel);
+	const stride_t ystride = src.pixels().row_size(); // xstride * src.width();
+//	const stride_t zstride = gil::is_planar<View>::value ? ystride * src.height() : sizeof(Channel);
+	const stride_t zstride = ystride * src.height();
+	
+	out->write_image(
+			mpl::at<MapBits, ChannelType>::type::value,
+			&( ( *src.begin() )[0] ), // get the adress of the first channel value from the first pixel
+			xstride,
+			ystride,
+			zstride,
+			&progressCallback,
+			this
+		);
 	out->close();
 }
 

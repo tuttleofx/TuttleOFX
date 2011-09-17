@@ -16,8 +16,14 @@ namespace writer {
 template<class View>
 class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 {
+	typedef OpenImageIOWriterProcess<View> This;
+	
 public:
+	typedef typename image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
+	typedef typename boost::gil::channel_type<View>::type Channel;
+	typedef typename View::point_t Point;
+	typedef typename View::coord_t Coord;
 
 protected:
 	OpenImageIOWriterPlugin&    _plugin;        ///< Rendering plugin
@@ -28,6 +34,12 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	void writeImage( const View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth );
+	
+	static bool progressCallback( void *opaque_data, float portion_done )
+	{
+		This* this_ptr = reinterpret_cast<This*>(opaque_data);
+		return false;
+	}
 };
 
 }

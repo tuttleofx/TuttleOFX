@@ -17,6 +17,7 @@ namespace reader {
 template<class View>
 class OpenImageIOReaderProcess : public ImageGilProcessor<View>
 {
+	typedef OpenImageIOReaderProcess<View> This;
 public:
 	typedef typename image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
@@ -33,6 +34,12 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	View& readImage( View& dst, const std::string& filepath );
+	
+	static bool progressCallback( void *opaque_data, float portion_done )
+	{
+		This* this_ptr = reinterpret_cast<This*>(opaque_data);
+		return false;
+	}
 };
 
 }

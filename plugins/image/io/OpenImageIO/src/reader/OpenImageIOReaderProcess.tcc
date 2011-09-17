@@ -75,7 +75,9 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 			&( ( *dst.begin() )[0] ), // get the adress of the first channel value from the first pixel
 			xstride,
 			ystride,
-			zstride
+			zstride,
+			&progressCallback,
+			this
 		);
 	in->close();
 
