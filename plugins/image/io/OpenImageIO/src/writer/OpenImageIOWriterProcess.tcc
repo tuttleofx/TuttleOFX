@@ -61,7 +61,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
  *
  */
 template<class View>
-void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::string& filepath, const TypeDesc bitDepth )
+void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth )
 {
 	using namespace boost;
 	using namespace OpenImageIO;

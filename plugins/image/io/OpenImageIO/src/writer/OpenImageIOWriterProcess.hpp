@@ -27,7 +27,7 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	void writeImage( const View& src, const std::string& filepath, const TypeDesc bitDepth );
+	void writeImage( const View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth );
 };
 
 }
