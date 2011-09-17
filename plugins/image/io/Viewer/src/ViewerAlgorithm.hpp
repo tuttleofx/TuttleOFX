@@ -28,20 +28,40 @@ int w_out, h_out;
 
 int angle_cam = 60;
 
-void reshape(int w,int h)
+void reshape(int width,int height)
 {
-    glViewport(0,0,(GLsizei)w,(GLsizei)h);
+    int w, h;
+    int xPos, yPos;
+    if( width < height )
+    {
+        w = width;
+        h = 1.0f * w_out / h_out * width;
+        xPos = 0.0;
+        yPos = 0.5f * (height - h);
+    }
+    else
+    {
+        w = 1.0f * w_out / h_out * height;
+        h = height;
+        xPos = 0.5f * (width - w );
+        yPos = 0.0;
+    }
+
+    glViewport( xPos, yPos , (GLsizei)w, (GLsizei)h );
 }
 
-void loadNewUnsignedByteTexture( const unsigned char* data, size_t& width, size_t& height, size_t& channels )
+template< typename Pixel_t>
+void loadNewTexture( const Pixel_t& view  )
 {
-    if( channels < 3 || channels > 4 )
-        return;
-    if( channels == 3 )
-        glTexImage2D( GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 
-    if( channels == 4 )
-        glTexImage2D( GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+}
+
+template<>
+void loadNewTexture( const boost::gil::rgb8_view_t& src )
+{
+    unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -52,15 +72,12 @@ void loadNewUnsignedByteTexture( const unsigned char* data, size_t& width, size_
     glEnable(GL_TEXTURE_2D);
 }
 
-void loadNewShortTexture( const short* data, size_t& width, size_t& height, size_t& channels )
+template<>
+void loadNewTexture( const boost::gil::rgba8_view_t& src )
 {
-    if( channels < 3 || channels > 4 )
-        return;
-    if( channels == 3 )
-        glTexImage2D( GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_SHORT, data );
+    unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
 
-    if( channels == 4 )
-        glTexImage2D( GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_SHORT, data );
+    glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -71,15 +88,92 @@ void loadNewShortTexture( const short* data, size_t& width, size_t& height, size
     glEnable(GL_TEXTURE_2D);
 }
 
-void loadNewFloatTexture( const float* data, size_t& width, size_t& height, size_t& channels )
+template<>
+void loadNewTexture( const boost::gil::rgb16_view_t& src )
 {
-    if( channels < 3 || channels > 4 )
-        return;
-    if( channels == 3 )
-        glTexImage2D( GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_FLOAT, data );
+    short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
 
-    if( channels == 4 )
-        glTexImage2D( GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_FLOAT, data );
+    glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_SHORT, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::rgba16_view_t& src )
+{
+    short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_SHORT, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::rgb32_view_t& src )
+{
+    float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_FLOAT, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::rgba32_view_t& src )
+{
+    float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::rgb32f_view_t& src )
+{
+    unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_FLOAT, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::rgba32f_view_t& src )
+{
+    unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -148,6 +242,8 @@ void openGLWindow( const size_t& width, const size_t& height )
     glutInitDisplayMode ( GLUT_DOUBLE | GLUT_RGB | GLUT_RGBA | GLUT_MULTISAMPLE );
 
     glutInitWindowSize ( width, height );
+    w_out = width;
+    h_out = height;
     glutInitWindowPosition (0,0);
     windowID = glutCreateWindow("TuttleOFX Viewer");
 
