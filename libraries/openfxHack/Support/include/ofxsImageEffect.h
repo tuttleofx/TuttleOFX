@@ -991,7 +991,7 @@ public:
 	CameraParam* fetchCameraParam( const std::string& name );
 
 	/** @brief does the host want us to abort rendering? */
-	bool abort( void ) const;
+	bool abort() const;
 
 	/** @brief adds a new interact to the set of interacts open on this effect */
 	void addOverlayInteract( OverlayInteract* interact );
@@ -1086,16 +1086,16 @@ public:
 	/// finish yer progress
 	void progressEnd();
 
-	/// set the progress to some level of completion, returns
-	/// false if you should abandon processing, true to continue
-	bool progressUpdate( double t );
+	/// set the progress to some level of completion,
+	/// returns true if you should abandon processing, false to continue
+	bool progressUpdate( const double t );
 
 	/// get the current time on the timeline. This is not necessarily the same
 	/// time as being passed to an action (eg render)
 	double timeLineGetTime();
 
 	/// set the timeline to a specific time
-	void timeLineGotoTime( double t );
+	void timeLineGotoTime( const double t );
 
 	/// get the first and last times available on the effect's timeline
 	void timeLineGetBounds( double& t1, double& t2 );

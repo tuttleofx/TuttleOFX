@@ -99,9 +99,7 @@ if __name__ == '__main__':
 			namespace = defaultNamespace
 		print
 		print 'Setting up the declaration string (eg. "fr.PROJECT.COMPANY.'+className.lower()+'"):'
-		country = raw_input( 'country ? (default "fr"): ' )
-		if not country:
-			country = 'fr'
+		country = raw_input( 'country ? (eg. "fr"): ' )
 		id = [country]
 		projectName = raw_input( 'project ? (default "tuttle"): ' )
 		if not projectName:

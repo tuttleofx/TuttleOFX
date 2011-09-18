@@ -30,19 +30,26 @@ void OfxProgress::progressBegin( const int numSteps, const std::string& msg )
 bool OfxProgress::progressForward( const int nSteps )
 {
 	_mutex.lock();
-	
 	_counter += _stepSize * static_cast<double>( nSteps );
-
+	/// @todo why not unlock the mutex here?
 	if( _effect.abort() )
 	{
 		_mutex.unlock();
 		_effect.progressEnd();
-		//        BOOST_THROW_EXCEPTION(ExceptionAbort( ) );
 		return true;
 	}
-	_effect.progressUpdate( _counter );
+	const bool res = _effect.progressUpdate( _counter );
 	_mutex.unlock();
-	return false;
+	return res;
+}
+
+bool OfxProgress::progressUpdate( const double p )
+{
+	if( _effect.abort() )
+	{
+		return true;
+	}
+	return _effect.progressUpdate( p );
 }
 
 /**

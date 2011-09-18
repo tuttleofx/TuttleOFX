@@ -1259,7 +1259,7 @@ CameraParam* ImageEffect::fetchCameraParam( const std::string& name )
 }
 
 /** @brief does the host want us to abort rendering? */
-bool ImageEffect::abort( void ) const
+bool ImageEffect::abort() const
 {
 	return OFX::Private::gEffectSuite->abort( _effectHandle ) != 0;
 }
@@ -1416,17 +1416,17 @@ void ImageEffect::progressEnd()
 	}
 }
 
-/// set the progress to some level of completion, returns
-/// false if you should abandon processing, true to continue
-bool ImageEffect::progressUpdate( double t )
+/// set the progress to some level of completion,
+/// returns true if you should abandon processing, false to continue
+bool ImageEffect::progressUpdate( const double t )
 {
 	if( OFX::Private::gProgressSuite && _progressStartSuccess )
 	{
-		OfxStatus stat = OFX::Private::gProgressSuite->progressUpdate( (void*) _effectHandle, t );
+		const OfxStatus stat = OFX::Private::gProgressSuite->progressUpdate( (void*) _effectHandle, t );
 		if( stat == kOfxStatReplyNo )
-			return false;
+			return true;
 	}
-	return true;
+	return false;
 }
 
 /// get the current time on the timeline. This is not necessarily the same
@@ -1443,7 +1443,7 @@ double ImageEffect::timeLineGetTime()
 }
 
 /// set the timeline to a specific time
-void ImageEffect::timeLineGotoTime( double t )
+void ImageEffect::timeLineGotoTime( const double t )
 {
 	if( OFX::Private::gTimeLineSuite )
 	{

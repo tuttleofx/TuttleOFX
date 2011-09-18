@@ -17,6 +17,7 @@ OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 
 OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams( const OfxTime time )
 {
+	using namespace OpenImageIO;
 	OpenImageIOWriterProcessParams params;
 
 	params._filepath   = getAbsoluteFilenameAt( time );
