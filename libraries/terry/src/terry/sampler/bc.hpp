@@ -137,7 +137,7 @@ bool getWeight ( const size_t& index, const double& distance, F& weight, bc_samp
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
 	/*
 	 * pTL is the closest integer coordinate top left from p
@@ -149,14 +149,23 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	 */
 	point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
 
-	// if we are outside the image, we return false to process miror/black operations
-	if( 	pTL.x < -1 ||
-		pTL.y < -1 ||
-		pTL.x > src.width() - 1 ||
-		pTL.y > src.height() - 1 )
-	{
-		return false;
-	}
+        // if we are outside the image
+        if( pTL.x < 0 )
+        {
+            return false;
+        }
+        if( pTL.y < 0 )
+        {
+            return false;
+        }
+        if( pTL.x > src.width() - 1 )
+        {
+            return false;
+        }
+        if( pTL.y > src.height() - 1 )
+        {
+            return false;
+        }
 
 	// loc is the point in the source view
 	typedef typename SrcView::xy_locator xy_locator;

@@ -36,6 +36,8 @@ ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
 
 	_paramFilterSize	= fetchDoubleParam	( kParamFilterSize );
 
+        _paramOutOfImage        = fetchChoiceParam      ( kParamFilterOutOfImage );
+
 	updateVisibleTools();
 }
 
@@ -137,6 +139,8 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 
 	params._filter        = static_cast<EParamFilter>( _paramFilter->getValue() );
 
+        params._outOfImageProcess = static_cast<EParamFilterOutOfImage>( _paramOutOfImage->getValue() );
+
 	return params;
 }
 
@@ -153,7 +157,7 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 	const Point2   srcRodSize   ( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );
 	const OfxRectD srcRodInDstFrame = { 0, 0, srcRodSize.x, srcRodSize.y };
 
-	OfxPointD centerPoint = _paramCenterPoint->getValue();
+        //OfxPointD centerPoint = _paramCenterPoint->getValue();
 
 	//TUTTLE_COUT( centerPoint.x << " x " << centerPoint.y );
 
@@ -290,7 +294,7 @@ void ResizePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& 
 	OfxRectD srcRoi;
 	srcRoi.x1 = srcRod.x1 - 1;
 	srcRoi.y1 = srcRod.y1 - 1;
-	srcRoi.x2 = srcRod.x2 + 1;
+        srcwRoi.x2 = srcRod.x2 + 1;
 	srcRoi.y2 = srcRod.y2 + 1;
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );*/
 	/*

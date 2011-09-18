@@ -142,6 +142,20 @@ enum EParamFilter
 	eParamFilterGaussian
 };
 
+
+static const std::string kParamFilterOutOfImage      = "outOfImage";
+
+static const std::string kParamFilterOutBlack        = "black";
+static const std::string kParamFilterOutCopy         = "copy";
+static const std::string kParamFilterOutMirror       = "mirror";
+
+enum EParamFilterOutOfImage
+{
+    eParamFilterOutBlack = 0,
+    eParamFilterOutCopy,
+    eParamFilterOutMirror
+};
+
 }
 }
 }

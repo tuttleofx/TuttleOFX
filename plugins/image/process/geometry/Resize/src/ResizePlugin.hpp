@@ -20,6 +20,8 @@ struct ResizeProcessParams
 	double       _filterSize;
 	double       _paramB;
 	double       _paramC;
+
+        EParamFilterOutOfImage     _outOfImageProcess;
 };
 
 /**
@@ -71,6 +73,8 @@ public:
 
 	OFX::DoubleParam*	_paramB;
 	OFX::DoubleParam*	_paramC;
+
+        OFX::ChoiceParam*	_paramOutOfImage;
 };
 
 }

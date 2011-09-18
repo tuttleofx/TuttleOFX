@@ -35,7 +35,7 @@ void getLanczosWeight( const F& distance, F& weight, lanczos_sampler& sampler )
 
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
 
 	/*
@@ -89,35 +89,35 @@ bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, Ds
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos3_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos3_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 3;
-	return sample( s, src, p, result );
+        return sample( s, src, p, result, outOfImageProcess );
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos4_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos4_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 4;
-	return sample( s, src, p, result );
+        return sample( s, src, p, result, outOfImageProcess );
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos6_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos6_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 6;
-	return sample( s, src, p, result );
+        return sample( s, src, p, result, outOfImageProcess );
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos12_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos12_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 12;
-	return sample( s, src, p, result );
+        return sample( s, src, p, result, outOfImageProcess );
 }
 
 }

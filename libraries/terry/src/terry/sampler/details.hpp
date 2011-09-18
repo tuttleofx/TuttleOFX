@@ -259,7 +259,6 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	cast_pixel  ( mp, src_result );
 	color_convert( src_result, result );
 
-
 	return true;
 }
 

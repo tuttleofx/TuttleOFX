@@ -11,7 +11,7 @@ namespace sampler {
 struct gaussian_sampler{};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
 
 		/*

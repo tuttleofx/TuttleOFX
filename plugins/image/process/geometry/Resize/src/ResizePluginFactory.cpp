@@ -178,6 +178,16 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 	filterSize->setRange		( 1.0, 30.0 );
 	filterSize->setDisplayRange	( 1.0, 30.0 );
 	filterSize->setHint		( "Set the filter size." );
+
+
+        // filters parameters //
+        OFX::ChoiceParamDescriptor* outOfImage = desc.defineChoiceParam( kParamFilterOutOfImage );
+        outOfImage->setLabel            ( "Out of Image" );
+        outOfImage->appendOption        ( kParamFilterOutBlack );
+        outOfImage->appendOption        ( kParamFilterOutCopy );
+        outOfImage->appendOption        ( kParamFilterOutMirror );
+        outOfImage->setHint             ( "Select the filtering method out of the image." );
+        outOfImage->setDefault          ( eParamFilterOutBlack );
 }
 
 /**

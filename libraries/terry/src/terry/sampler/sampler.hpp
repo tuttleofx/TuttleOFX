@@ -34,7 +34,6 @@ void getMapOfFilters( std::map< size_t, std::string >& mapOfFilters )
 
 }
 
-
 /// \brief A sampler that sets the destination pixel without interpolation from the closest pixels from the source.
 // http://www.paulinternet.nl/?page=bicubic
 
