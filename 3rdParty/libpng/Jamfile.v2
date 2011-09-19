@@ -6,15 +6,15 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-        <include>.
+	: requirements
+		<include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
-    : usage-requirements
-        <include>.
-    : build-dir $(BUILD)/3rdParty/png
-    ;
+	: usage-requirements
+		<include>.
+	: build-dir $(BUILD)/3rdParty/png
+	;
 
 use-project /zlib 	: ../zlib ;
 
@@ -24,11 +24,11 @@ use-project /zlib 	: ../zlib ;
 alias headers : [ glob-tree *.h ] ;
 
 lib png : 
-        [ glob *.c ]
-        /zlib
-        ;
+	[ glob *.c ]
+	/zlib
+	;
 
-install dist_src	
+install dist_src
 	:
 		png
 	:

@@ -8,10 +8,10 @@ namespace tuttle {
 namespace plugin {
 namespace print {
 
-const static std::string kParamMode = "mode";
-const static std::string kParamModeImage = "image";
-const static std::string kParamModeRegion = "region";
-const static std::string kParamModePixel = "pixel";
+const static std::string kParamMode          = "mode";
+const static std::string kParamModeImage     = "image";
+const static std::string kParamModeRegion    = "region";
+const static std::string kParamModePixel     = "pixel";
 enum EParamMode
 {
 	eParamModeImage = 0,
@@ -19,21 +19,21 @@ enum EParamMode
 	eParamModePixel
 };
 
-const static std::string kParamPixel = "pixel";
-const static std::string kParamRegionMin = "regionMin";
-const static std::string kParamRegionMax = "regionMax";
+const static std::string kParamPixel         = "pixel";
+const static std::string kParamRegionMin     = "regionMin";
+const static std::string kParamRegionMax     = "regionMax";
 
-const static std::string kParamColumns = "columns";
+const static std::string kParamColumns       = "columns";
 
 
-const static std::string kParamColor = "color";
-const static std::string kParamColorMono = "mono";
-const static std::string kParamColorGray = "gray";
-const static std::string kParamColor8 = "8ansi";
-const static std::string kParamColor16 = "16ansi";
+const static std::string kParamColor         = "color";
+const static std::string kParamColorMono     = "mono";
+const static std::string kParamColorGray     = "gray";
+const static std::string kParamColor8        = "8ansi";
+const static std::string kParamColor16       = "16ansi";
 const static std::string kParamColorFullGray = "fullgray";
-const static std::string kParamColorFull8 = "full8ansi";
-const static std::string kParamColorFull16 = "full16ansi";
+const static std::string kParamColorFull8    = "full8ansi";
+const static std::string kParamColorFull16   = "full16ansi";
 
 enum EParamColor
 {
@@ -46,17 +46,18 @@ enum EParamColor
         eParamColorfull16,
 };
 
-const static std::string kParamOutput = "output";
+const static std::string kParamOutput        = "output";
 const static std::string kParamOutputNumeric = "numeric";
-const static std::string kParamOutputAscii = "ascii";
+const static std::string kParamOutputAscii   = "ascii";
+
 enum EParamOutput
 {
 	eParamOutputAscii = 0,
 	eParamOutputNumeric
 };
-const static std::string kParamFlip = "flip";
+const static std::string kParamFlip          = "flip";
 
-const static std::string kParamOutputOpenGL = "opengl";
+const static std::string kParamOutputOpenGL  = "opengl";
 
 }
 }

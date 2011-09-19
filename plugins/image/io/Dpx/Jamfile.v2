@@ -7,25 +7,22 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(BUILD)/Dpx
-    ;
+	: requirements
+		<include>src
+		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+	:
+		build-dir $(BUILD)/Dpx
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin      Dpx : 
-        [ glob-tree *.cpp : tests ]
-
-        /boost//system
-        /boost//filesystem
-        /boost//regex
-        /tuttleplugin/<link>static
-        :
-         <os>LINUX:<find-shared-library>dl
-        ;
+plugin Dpx :
+		[ glob-tree *.cpp : tests ]
+		/tuttleplugin/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
 
 ###############################################################################
 # Automatic install

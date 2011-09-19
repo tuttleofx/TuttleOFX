@@ -1,7 +1,3 @@
-
-#ifndef _TUTTLE_PLUGIN_LAYOUT_TCC_
-#define _TUTTLE_PLUGIN_LAYOUT_TCC_
-
 #include <boost/gil/rgb.hpp>
 #include <boost/gil/rgba.hpp>
 #include <boost/gil/pixel.hpp>
@@ -1914,6 +1910,4 @@ inline bool convertToYxyLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst
 	convertRgbaToYxya( src, dst );
 	return true;
 }
-
-#endif
 

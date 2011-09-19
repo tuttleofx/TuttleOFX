@@ -1429,8 +1429,8 @@ bool OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 
-	range.min = outArgs.getDoubleProperty( kOfxImageEffectActionGetTimeDomain, 0 );
-	range.max = outArgs.getDoubleProperty( kOfxImageEffectActionGetTimeDomain, 1 );
+	range.min = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
+	range.max = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
 
 	if( status == kOfxStatOK )
 		return true;

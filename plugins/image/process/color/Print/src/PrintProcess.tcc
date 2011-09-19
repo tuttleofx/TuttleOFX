@@ -2,8 +2,6 @@
 #include "PrintPlugin.hpp"
 
 #include <boost/gil/extension/numeric/pixel_by_channel.hpp>
-
-
 #include <cstdio>
 
 namespace tuttle {
@@ -185,12 +183,12 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 					gray8_image_t gImgGray( src.dimensions() );
 					gray8_view_t gViewGray( view(gImgGray) );
 					rgb8_image_t gImg( src.dimensions() );
-                    			rgb8_view_t gView( view(gImg) );
-					if( ! _params._flip )
+					rgb8_view_t gView( view(gImg) );
+                                        if( _params._flip ) // on Nuke, need to Flip, but not in sam-do
 					{
 						src = flipped_up_down_view( src );
 					}
-					
+
 					switch(_params._colorMode)
 					{
 						case eParamColorMono :		copy_and_convert_pixels( src, gViewGray );	break;
@@ -219,7 +217,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 							case eParamColorGray :		cacaImg = load_cacaimage_from_view( gViewGray );	break;
 							default :			cacaImg = load_cacaimage_from_view( gView );		break;
 						}
-						
+
 						/*
 						 *  - \c "mono": use light gray on a black background.
 						 *  - \c "gray": use white and two shades of gray on a black background.
@@ -270,11 +268,11 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						}
 
 						if( brightness != -1 )
-						caca_set_dither_brightness( cacaImg.dither, brightness );
+							caca_set_dither_brightness( cacaImg.dither, brightness );
 						if( contrast != -1 )
-						caca_set_dither_contrast( cacaImg.dither, contrast );
+							caca_set_dither_contrast( cacaImg.dither, contrast );
 						if( gamma != -1 )
-						caca_set_dither_gamma( cacaImg.dither, gamma );
+							caca_set_dither_gamma( cacaImg.dither, gamma );
 
 						caca_dither_bitmap( cv, 0, 0, cols, lines, cacaImg.dither, cacaImg.pixels );
 
@@ -284,13 +282,14 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						if( _params._openGlViewer == true )
 						{
 							// show result in a new window
-							caca_display_t *dp; caca_event_t ev;
+							caca_display_t *dp;
+							caca_event_t ev;
 							dp = caca_create_display (cv);
 
 							caca_set_display_title(dp, "Rendering image in ASCII Art");
 
 							caca_refresh_display(dp);
-							caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+							caca_get_event(dp, CACA_EVENT_KEY_PRESS | CACA_EVENT_QUIT |CACA_EVENT_MOUSE_RELEASE, &ev, -1);
 							caca_free_display(dp);
 
 							caca_free_canvas( cv );

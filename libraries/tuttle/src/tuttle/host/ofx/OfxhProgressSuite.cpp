@@ -68,9 +68,10 @@ OfxStatus ProgressUpdate( void* effectInstance, double progress )
 		if( !me )
 			return kOfxStatErrBadHandle;
 
-		bool v = me->progressUpdate( progress );
+		const bool v = me->progressUpdate( progress );
 
-		return v ? kOfxStatOK : kOfxStatReplyNo;
+		// if v abort the process
+		return v ? kOfxStatReplyNo : kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{

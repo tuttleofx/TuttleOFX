@@ -2,7 +2,7 @@
 #define PNG_WRITER_PROCESS_HPP
 
 #define png_infopp_NULL (png_infopp)NULL
-#define int_p_NULL (int*)NULL
+//#define int_p_NULL (int*)NULL
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>

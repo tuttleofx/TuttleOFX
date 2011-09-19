@@ -1,5 +1,6 @@
 Import( 'project', 'libs' )
 
+
 # to enable/disable python expressions in tuttle host
 project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = False
 
@@ -26,5 +27,5 @@ project.commonLibs.append( tuttle )
 
 
 
-SConscript( project.scanFiles( ['libraries/openfxHack', 'libraries/tuttle', 'plugins', 'applications'], accept=['SConscript'] ) )
+SConscript( project.scanFiles( ['doc', 'libraries/openfxHack', 'libraries/tuttle', 'plugins', 'applications'], accept=['SConscript'] ) )
 

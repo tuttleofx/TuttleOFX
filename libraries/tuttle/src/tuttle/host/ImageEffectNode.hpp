@@ -113,7 +113,7 @@ public:
 
 	/// @group Implementation of INode virtual functions
 	/// @{
-	bool getTimeDomain( OfxRangeD& range ) const;
+	void getTimeDomain( OfxRangeD& range ) const;
 
 	void beginSequence( graph::ProcessVertexData& vData );
 
@@ -260,9 +260,9 @@ public:
 	/// finish yer progress
 	void progressEnd();
 
-	/// set the progress to some level of completion, returns
-	/// false if you should abandon processing, true to continue
-	bool progressUpdate( double t );
+	/// set the progress to some level of completion,
+	/// returns true if you should abandon processing, false to continue
+	bool progressUpdate( const double t );
 
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////

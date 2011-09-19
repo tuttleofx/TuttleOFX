@@ -14,6 +14,8 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 
+
+
 namespace sam {
 namespace samdo {
 
@@ -36,11 +38,106 @@ struct NodeCommand
 }
 
 
+std::string getDefaultValues(const tuttle::host::ofx::property::OfxhProperty& prop)
+{
+	std::string s;
+	s += sam::samdo::_color._green;
+	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
+	{
+		int n = 0;
+		for( ; n < (int)( prop.getDimension() ) - 1; ++n )
+		{
+			s += prop.getStringValue( n );
+			s += " ";
+		}
+		if( prop.getDimension() > 0 )
+		{
+			s += prop.getStringValue( n );
+			s += " ";
+		}
+	}
+	s += sam::samdo::_color._std;
+	return s;
+}
+
+/// get defaults values of plugin properties
+std::string getChoiceValues(const tuttle::host::ofx::property::OfxhProperty& prop)
+{
+	std::string s;
+	s += sam::samdo::_color._red;
+	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
+	{
+		int n = 0;
+		for( ; n < (int)( prop.getDimension() ) - 1; ++n )
+		{
+			s += "\t\t\t\t\t- ";
+			s += prop.getStringValue( n );
+			s += "\n";
+		}
+		if( prop.getDimension() > 0 )
+		{
+			s += "\t\t\t\t\t- ";
+			s += prop.getStringValue( n );
+			s += "\n";
+		}
+	}
+	s += sam::samdo::_color._std;
+	return s;
+}
+
+/// get defaults values of plugin properties
+std::string getPropType(const tuttle::host::ofx::property::OfxhProperty& prop)
+{
+	std::string s;
+	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value and _defaultValue properties
+	{
+		int n = 0;
+		if( prop.getDimension() > 0 )
+		{
+			s += prop.getStringValue( n );
+		}
+	}
+	return s;
+}
+
+void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std::string context="" )
+{
+	std::string defaultValue;
+	std::string choiceValues;
+	tuttle::host::ofx::property::PropertyMap propMap = properties.getMap();
+	for( tuttle::host::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
+	{
+		const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
+
+		std::string label = itProperty->first;
+
+		if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
+		{
+			choiceValues = getChoiceValues( prop );
+		}
+		if( std::strcmp( label.c_str() , "OfxParamPropDefault" ) == 0 )
+		{
+			defaultValue = getDefaultValues( prop );
+		}
+		if( std::strcmp( label.c_str() , "OfxParamPropType" ) == 0 )
+		{
+			std::string type = getPropType( prop );
+			type.erase(0, 12);
+			if( std::strcmp( type.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
+			{
+				TUTTLE_COUT( "\t" << sam::samdo::_color._green << std::left << std::setw (25) << context + ":" << sam::samdo::_color._std << std::setw( 15 ) << type << sam::samdo::_color._red << defaultValue << sam::samdo::_color._std );
+				if( choiceValues.size() )
+					TUTTLE_COUT( choiceValues );
+			}
+		}
+	}
+}
+
 int main( int argc, char** argv )
 {
-	namespace ttl = tuttle::host;
 	using namespace sam::samdo;
-	
+	namespace ttl = tuttle::host;
+
 	try
 	{
 		if( argc <= 1 ) // no argument
@@ -52,8 +149,9 @@ int main( int argc, char** argv )
 			exit( -1 );
 		}
 		
-		bool                      enableColor         = false;
-		bool                      script              = false;
+		bool continueOnError = false;
+		bool enableColor = false;
+		bool script = false;
 		std::vector< std::string> cl_options;
 		std::vector< std::vector<std::string> > cl_commands;
 		
@@ -85,6 +183,7 @@ int main( int argc, char** argv )
 				;
 				bpo::options_description confOptions;
 				confOptions.add_options()
+					("continueOnError" , "continue on error" )
 					("range,r"      , bpo::value<std::string>(), "frame range to render" )
 					("verbose,V"    , "explain what is being done")
 					("quiet,Q"      , "don't print commands")
@@ -159,7 +258,7 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( _color._green << "\tsam-do --nodes" << _color._std );
 					TUTTLE_COUT( _color._green << "\tsam-do blur -h" << _color._std );
 					/// @todo version with read / write (without format specification)
-					TUTTLE_COUT( _color._green << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" << _color._std );
+					TUTTLE_COUT( _color._green << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // toFormat=\"512x512\" center=1 centerPoint=50,256 // jpegwriter foo.####.jpg // --range=10,20" << _color._std );
 					TUTTLE_COUT( _color._green << "\tsam-do dpxreader foo.dpx // sobel // print // -Q" << _color._std << std::endl );
 
 					TUTTLE_COUT( _color._blue  << "DISPLAY OPTIONS (replace the process)" << _color._std );
@@ -187,7 +286,7 @@ int main( int argc, char** argv )
 
 				if( samdo_vm.count("nodes") )
 				{
-					TUTTLE_COUT( "NODES" );
+					TUTTLE_COUT( _color._blue  << "NODES" << _color._std );
 					for( std::size_t i = 0; i < allNodes.size(); ++i )
 					{
 						const std::string plugName = allNodes.at(i)->getRawIdentifier();
@@ -206,25 +305,23 @@ int main( int argc, char** argv )
 						const std::string rangeStr = samdo_vm["range"].as<std::string>();
 						std::vector< std::string > rangeVStr = boost::program_options::split_unix( rangeStr, " ," );
 						range.reserve( rangeVStr.size() );
+						TUTTLE_TCOUT( rangeVStr.size() );
 						BOOST_FOREACH( const std::string& rStr, rangeVStr )
 						{
 							range.push_back( tuttle::host::attribute::extractValueFromExpression<std::ssize_t>(rStr) );
 						}
 					}
-					/// @todo remove this and use the full time range of nodes to render
-					/// @{
-					if( range.size() < 1 )
-						range.push_back( 0 );
-					/// @}
-
-					if( range.size() < 2 )
+					if( range.size() == 1 )
+					{
 						range.push_back( range[0] );
-					
+					}
 					if( range.size() >= 3 )
 						step = range[2];
 					else
 						step = 1;
 				}
+				
+				continueOnError = samdo_vm.count("continueOnError");
 			}
 			catch( const boost::program_options::error& e )
 			{
@@ -242,7 +339,7 @@ int main( int argc, char** argv )
 			// Analyse options for each node
 			{
 				// Declare the supported options.
-				bpo::options_description infoOptions( "\tDisplay options (replace the process)" );
+				bpo::options_description infoOptions;
 				infoOptions.add_options()
 					("help,h"       , "show node help")
 					("version,v"    , "display node version")
@@ -253,7 +350,7 @@ int main( int argc, char** argv )
 					("parameters,p" , "list parameters of the node")
 					("param,P"      , bpo::value<std::string>(), "display parameter informations")
 				;
-				bpo::options_description confOptions( "\tConfigure process" );
+				bpo::options_description confOptions;
 				confOptions.add_options()
 					("verbose,V"    , "explain what is being done")
 					("nb-cores"     , bpo::value<std::size_t>(), "set a fix number of CPUs")
@@ -355,19 +452,19 @@ int main( int argc, char** argv )
 						
 						if( node_vm.count("help") )
 						{
-							TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]" );
+							TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std );
 							TUTTLE_COUT( "" );
-							TUTTLE_COUT( "NODE" );
-							TUTTLE_COUT( "\tsam-do " << nodeFullName << " - OpenFX node." );
+							TUTTLE_COUT( _color._blue  << "NODE" << _color._std );
+							TUTTLE_COUT( _color._green << "\tsam-do " << nodeFullName << " - OpenFX node." << _color._std );
 							TUTTLE_COUT( "" );
-							TUTTLE_COUT( "DESCRIPTION" );
-							TUTTLE_COUT( "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) );
+							TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std );
+							TUTTLE_COUT( _color._green << "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) << _color._std );
 							// internal node help
 							if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect )
 							{
 								if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping, true ) )
 								{
-									TUTTLE_COUT( "\t" << currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxImageEffectPluginPropGrouping ).getValue() );
+									TUTTLE_COUT( "\t" << _color._green <<  currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxImageEffectPluginPropGrouping ).getValue() << _color._std );
 								}
 							}
 							TUTTLE_COUT( "" );
@@ -379,24 +476,46 @@ int main( int argc, char** argv )
 							{
 								TUTTLE_COUT( "\tNo description." );
 							}
-							TUTTLE_COUT("");
-							TUTTLE_COUT( "PARAMETERS" );
-							TUTTLE_COUT("");
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( _color._blue  << "PARAMETERS" << _color._std );
 							ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
 							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
 							{
 								if( param.getSecret() )
 									continue; // ignore secret parameters
-								TUTTLE_COUT(
-									"\t" <<
-									param.getScriptName() << ":\t" << param.getParamType() << " x" << param.getSize()
-									);
+								std::string ofxType = param.getParamType();
+								ofxType.erase(0, 12);
+								if( std::strcmp( ofxType.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
+									TUTTLE_COUT( "\t" << _color._green << std::left << std::setw(25) << ( param.getScriptName() + ":" ) << _color._std << std::setw(10) << ofxType << " x" << param.getSize() );
 							}
+
+							TUTTLE_COUT( std::endl << _color._blue  << "PARAMETERS DETAILS" << _color._std );
+							typedef std::map<std::string, tuttle::host::ofx::attribute::OfxhParamDescriptor*> ParamDescriptorMap;
+
+							// get contexts
+							ParamDescriptorMap::const_iterator it = currentNode.asImageEffectNode().getDescriptor( ).getParams().begin();
+							std::string strParamsContexts;
+							for( ; it != currentNode.asImageEffectNode().getDescriptor( ).getParams().end(); ++it )
+							{
+								strParamsContexts += (*it).first + ", ";
+							}
+							strParamsContexts.erase( strParamsContexts.size()-2, 2 );
+
+							//TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
+
+							// get propeties in each context
+							ParamDescriptorMap::const_iterator it2 = currentNode.asImageEffectNode().getDescriptor( ).getParams().begin();
+							for( ; it2 != currentNode.asImageEffectNode().getDescriptor().getParams().end(); it2++ )
+							{
+								printProperties( (*it2).second->getProperties(), (*it2).first );
+							}
+
 							TUTTLE_COUT( "" );
-							TUTTLE_COUT( "OPTIONS" );
-							TUTTLE_COUT( "" );
+							TUTTLE_COUT( _color._blue  << "DISPLAY OPTIONS (replace the process)" << _color._std );
 							TUTTLE_COUT( infoOptions );
+							TUTTLE_COUT( _color._blue  << "CONFIGURE PROCESS" << _color._std );
 							TUTTLE_COUT( confOptions );
+
 							TUTTLE_COUT("");
 							exit(0);
 						}
@@ -592,8 +711,26 @@ int main( int argc, char** argv )
 
 		// Connect all nodes linearly
 		graph.connect( nodes );
+		graph.setContinueOnError( continueOnError );
 
 		// Execute the graph
+		if( range.size() == 0 )
+		{
+			graph.init();
+			OfxRangeD timeDomain;
+			// TUTTLE_TCOUT_VAR( nodes.back()->getName() );
+			nodes.back()->getTimeDomain( timeDomain );
+			
+			// special case for infinite time domain (eg. a still image)
+			if( timeDomain.min == std::numeric_limits<double>::min() )
+				timeDomain.min = 0;
+			if( timeDomain.max == std::numeric_limits<double>::max() )
+				timeDomain.max = 0;
+			
+			// TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
+			range.push_back( timeDomain.min );
+			range.push_back( timeDomain.max );
+		}
 		graph.compute( *nodes.back(), range[0], range[1] );
 	}
 	catch( const tuttle::exception::Common& e )

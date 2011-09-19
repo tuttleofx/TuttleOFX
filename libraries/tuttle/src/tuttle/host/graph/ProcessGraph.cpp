@@ -10,8 +10,9 @@ namespace graph {
 
 const std::string ProcessGraph::_outputId( "TUTTLE_FAKE_OUTPUT" );
 
-ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNodes )
+ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNodes, const bool continueOnError )
 	: _instanceCount( graph.getInstanceCount() )
+	, _continueOnError( continueOnError )
 {
 	_graph.copyTransposed( graph.getGraph() );
 
@@ -198,181 +199,196 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 	// at each frame
 	for( int time = tBegin; time <= tEnd; ++time )
 	{
-		TUTTLE_TCOUT( "________________________________________ frame: " << time );
-		// use an internal copy for inside the process
-		InternalGraphImpl renderGraph = _graph;
-		TUTTLE_TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
-
-		TUTTLE_TCOUT( "---------------------------------------- connect clips" );
-		connectClips<InternalGraphImpl>( renderGraph );
-
-		TUTTLE_TCOUT( "---------------------------------------- deploy time" );
-		//fill renderGraph from _graph with each node deployed at all times
-		graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, time );
-		renderGraph.depthFirstSearchReverse( deployTimeVisitor );
-#ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraph );
-#endif
-
-		TUTTLE_TCOUT( "---------------------------------------- build renderGraphAtTime" );
-		// create a new graph with time information
-		InternalGraphAtTimeImpl renderGraphAtTime;
-		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraph.getVertices() )
+		try
 		{
-			Vertex& v = renderGraph.instance( vd );
-			//BOOST_FOREACH( const OfxTime t, v._data._times )
-            for( ProcessVertexData::TimesSet::iterator it = v._data._times.begin(), itEnd = v._data._times.end();
-                 it != itEnd;
-                 ++it )
+			TUTTLE_TCOUT( "________________________________________ frame: " << time );
+			// use an internal copy for inside the process
+			InternalGraphImpl renderGraph = _graph;
+			TUTTLE_TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
+
+			TUTTLE_TCOUT( "---------------------------------------- connect clips" );
+			connectClips<InternalGraphImpl>( renderGraph );
+
+			TUTTLE_TCOUT( "---------------------------------------- deploy time" );
+			//fill renderGraph from _graph with each node deployed at all times
+			graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, time );
+			renderGraph.depthFirstSearchReverse( deployTimeVisitor );
+	#ifndef TUTTLE_PRODUCTION
+			graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraph );
+	#endif
+
+			TUTTLE_TCOUT( "---------------------------------------- build renderGraphAtTime" );
+			// create a new graph with time information
+			InternalGraphAtTimeImpl renderGraphAtTime;
+			BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraph.getVertices() )
 			{
-                const OfxTime t = *it;
-				TUTTLE_TCOUT_VAR2( v, t );
-				renderGraphAtTime.addVertex( ProcessVertexAtTime(v, t) );
-			}
-		}
-		BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, renderGraph.getEdges() )
-		{
-			Edge& e = renderGraph.instance( ed );
-			Vertex& in = renderGraph.sourceInstance( ed );
-			Vertex& out = renderGraph.targetInstance( ed );
-			TUTTLE_TCOUT_X( 20, "." );
-			TUTTLE_TCOUT_VAR( e );
-			BOOST_FOREACH( const Edge::TimeMap::value_type& tm, e._timesNeeded )
-			{
-				BOOST_FOREACH( const OfxTime t2, tm.second )
+				Vertex& v = renderGraph.instance( vd );
+				//BOOST_FOREACH( const OfxTime t, v._data._times )
+				for( ProcessVertexData::TimesSet::iterator it = v._data._times.begin(), itEnd = v._data._times.end();
+					 it != itEnd;
+					 ++it )
 				{
-					TUTTLE_TCOUT_VAR2( in.getKey(), tm.first );
-					TUTTLE_TCOUT_VAR2( out.getKey(), t2 );
-					TUTTLE_TCOUT_VAR( e.getInAttrName() );
-					renderGraphAtTime.connect(
-						ProcessVertexAtTime::Key(in.getKey(), tm.first),
-						ProcessVertexAtTime::Key(out.getKey(), t2),
-						e.getInAttrName() );
+					const OfxTime t = *it;
+					TUTTLE_TCOUT_VAR2( v, t );
+					renderGraphAtTime.addVertex( ProcessVertexAtTime(v, t) );
 				}
 			}
+			BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, renderGraph.getEdges() )
+			{
+				Edge& e = renderGraph.instance( ed );
+				Vertex& in = renderGraph.sourceInstance( ed );
+				Vertex& out = renderGraph.targetInstance( ed );
+				TUTTLE_TCOUT_X( 20, "." );
+				TUTTLE_TCOUT_VAR( e );
+				BOOST_FOREACH( const Edge::TimeMap::value_type& tm, e._timesNeeded )
+				{
+					BOOST_FOREACH( const OfxTime t2, tm.second )
+					{
+						TUTTLE_TCOUT_VAR2( in.getKey(), tm.first );
+						TUTTLE_TCOUT_VAR2( out.getKey(), t2 );
+						TUTTLE_TCOUT_VAR( e.getInAttrName() );
+						renderGraphAtTime.connect(
+							ProcessVertexAtTime::Key(in.getKey(), tm.first),
+							ProcessVertexAtTime::Key(out.getKey(), t2),
+							e.getInAttrName() );
+					}
+				}
+			}
+			BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
+			{
+				ProcessVertexAtTime& v = renderGraphAtTime.instance(vd);
+				if( ! v.isFake() )
+				{
+					v.getProcessNode().setProcessData( &v._data );
+				}
+			}
+
+			ProcessVertexAtTime::Key outputKeyAtTime(_outputId, time);
+			InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( outputKeyAtTime );
+
+			TUTTLE_TCOUT( "---------------------------------------- set default options" );
+			BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
+			{
+				ProcessVertexAtTime& v = renderGraphAtTime.instance( vd );
+
+				v.getProcessDataAtTime()._inDegree  = renderGraphAtTime.getInDegree( vd );
+				v.getProcessDataAtTime()._outDegree = renderGraphAtTime.getOutDegree( vd );
+			}
+			// for each final nodes
+			BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )
+			{
+				ProcessVertexAtTime& v = renderGraphAtTime.targetInstance( ed );
+				v.getProcessDataAtTime()._finalNode = true;
+			}
+	#ifndef TUTTLE_PRODUCTION
+			graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
+	#endif
+
+			TUTTLE_TCOUT( "---------------------------------------- preprocess 1" );
+			graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
+			renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
+
+			TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
+			graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
+			renderGraphAtTime.depthFirstSearchReverse( preProcess2Visitor );
+
+			TUTTLE_TCOUT( "---------------------------------------- preprocess 3" );
+			graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
+			renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
+
+	//		TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
+	//		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
+	//		renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
+
+	#ifndef TUTTLE_PRODUCTION
+			graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
+	#endif
+
+			TUTTLE_TCOUT( "---------------------------------------- reconnect clips" );
+			connectClips<InternalGraphAtTimeImpl>( renderGraphAtTime );
+
+			TUTTLE_TCOUT( "---------------------------------------- optimize graph" );
+			graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( renderGraphAtTime );
+			renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
+	#ifndef TUTTLE_PRODUCTION
+			graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraphAtTime );
+	#endif
+
+			/*
+			InternalGraphImpl tmpGraph;
+			output = renderGraph.getVertexDescriptor( _outputId );
+			/// @todo tuttle: out_edges sort don't work...
+			TUTTLE_TCOUT( "---------------------------------------- sorting graph" );
+			BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
+			{
+				std::vector<InternalGraphImpl::Edge> edges( boost::out_degree(vd, renderGraph.getGraph()) );
+
+				BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+				{
+					edges.push_back( renderGraph.instance(ed) );
+				}
+
+				Vertex& v = renderGraph.instance(vd);
+				TUTTLE_TCOUT_X( 30, "-" );
+				std::size_t i = 0;
+				TUTTLE_TCOUT( "before sort edges of " << v.getName() );
+				BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+				{
+					Edge& e = renderGraph.instance(ed);
+					e._localId = i++;
+					e._name += " -- ";
+					e._name += boost::lexical_cast<std::string>(e._localId); // tmp
+					TUTTLE_TCOUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory  );
+				}
+				std::sort( edges.begin(), edges.end(), SortEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
+				TUTTLE_TCOUT( "after sort edges of " << v.getName() );
+				BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+				{
+					Edge& e = renderGraph.instance(ed);
+					TUTTLE_TCOUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory );
+				}
+				InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
+				boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, renderGraph.getGraph() );
+				for( ; oe_it != oe_itEnd; ++oe_it )
+				{
+					Edge& e = renderGraph.instance(*oe_it);
+					TUTTLE_TCOUT( e.getName() << " - " <<  renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
+				}
+			}
+	#ifndef TUTTLE_PRODUCTION
+			graph::exportDebugAsDOT( "graphprocess_d.dot", tmpGraph );
+	#endif
+			*/
+
+			TUTTLE_TCOUT( "---------------------------------------- process" );
+			graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache(), result );
+			renderGraphAtTime.depthFirstVisit( processVisitor, outputAtTime );
+
+			TUTTLE_TCOUT( "---------------------------------------- postprocess" );
+			graph::visitor::PostProcess<InternalGraphAtTimeImpl> postProcessVisitor( renderGraphAtTime );
+			renderGraphAtTime.depthFirstVisit( postProcessVisitor, outputAtTime );
+
+			// end of one frame
+			// do some clean: memory clean, as temporary solution...
+			TUTTLE_TCOUT( "---------------------------------------- clearUnused" );
+			Core::instance().getMemoryCache().clearUnused();
+			TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache().size() );
+			TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache() );
+			TUTTLE_TCOUT_VAR( result );
+
 		}
-		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
+		catch( ... )
 		{
-			ProcessVertexAtTime& v = renderGraphAtTime.instance(vd);
-			if( ! v.isFake() )
+			TUTTLE_COUT( "Error at time: " << time );
+			if( _continueOnError )
 			{
-				v.getProcessNode().setProcessData( &v._data );
+				TUTTLE_COUT( boost::current_exception_diagnostic_information() );
+			}
+			else
+			{
+				throw;
 			}
 		}
-
-		ProcessVertexAtTime::Key outputKeyAtTime(_outputId, time);
-		InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( outputKeyAtTime );
-
-		TUTTLE_TCOUT( "---------------------------------------- set default options" );
-		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
-		{
-			ProcessVertexAtTime& v = renderGraphAtTime.instance( vd );
-
-			v.getProcessDataAtTime()._inDegree  = renderGraphAtTime.getInDegree( vd );
-			v.getProcessDataAtTime()._outDegree = renderGraphAtTime.getOutDegree( vd );
-		}
-		// for each final nodes
-		BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )
-		{
-			ProcessVertexAtTime& v = renderGraphAtTime.targetInstance( ed );
-			v.getProcessDataAtTime()._finalNode = true;
-		}
-#ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
-#endif
-		
-		TUTTLE_TCOUT( "---------------------------------------- preprocess 1" );
-		graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
-		renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
-
-		TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
-		graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
-		renderGraphAtTime.depthFirstSearchReverse( preProcess2Visitor );
-
-		TUTTLE_TCOUT( "---------------------------------------- preprocess 3" );
-		graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
-		renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
-
-//		TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
-//		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
-//		renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
-
-#ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
-#endif
-
-		TUTTLE_TCOUT( "---------------------------------------- reconnect clips" );
-		connectClips<InternalGraphAtTimeImpl>( renderGraphAtTime );
-		
-		TUTTLE_TCOUT( "---------------------------------------- optimize graph" );
-		graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( renderGraphAtTime );
-		renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
-#ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraphAtTime );
-#endif
-		
-		/*
-		InternalGraphImpl tmpGraph;
-		output = renderGraph.getVertexDescriptor( _outputId );
-		/// @todo tuttle: out_edges sort don't work...
-		TUTTLE_TCOUT( "---------------------------------------- sorting graph" );
-		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
-		{
-			std::vector<InternalGraphImpl::Edge> edges( boost::out_degree(vd, renderGraph.getGraph()) );
-
-			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
-			{
-				edges.push_back( renderGraph.instance(ed) );
-			}
-
-			Vertex& v = renderGraph.instance(vd);
-			TUTTLE_TCOUT_X( 30, "-" );
-			std::size_t i = 0;
-			TUTTLE_TCOUT( "before sort edges of " << v.getName() );
-			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
-			{
-				Edge& e = renderGraph.instance(ed);
-				e._localId = i++;
-				e._name += " -- ";
-				e._name += boost::lexical_cast<std::string>(e._localId); // tmp
-				TUTTLE_TCOUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory  );
-			}
-			std::sort( edges.begin(), edges.end(), SortEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
-			TUTTLE_TCOUT( "after sort edges of " << v.getName() );
-			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
-			{
-				Edge& e = renderGraph.instance(ed);
-				TUTTLE_TCOUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory );
-			}
-			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
-			boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, renderGraph.getGraph() );
-			for( ; oe_it != oe_itEnd; ++oe_it )
-			{
-				Edge& e = renderGraph.instance(*oe_it);
-				TUTTLE_TCOUT( e.getName() << " - " <<  renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
-			}
-		}
-#ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_d.dot", tmpGraph );
-#endif
-		*/
-
-		TUTTLE_TCOUT( "---------------------------------------- process" );
-		graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache(), result );
-		renderGraphAtTime.depthFirstVisit( processVisitor, outputAtTime );
-
-		TUTTLE_TCOUT( "---------------------------------------- postprocess" );
-		graph::visitor::PostProcess<InternalGraphAtTimeImpl> postProcessVisitor( renderGraphAtTime );
-		renderGraphAtTime.depthFirstVisit( postProcessVisitor, outputAtTime );
-
-		// end of one frame
-		// do some clean: memory clean, as temporary solution...
-		TUTTLE_TCOUT( "---------------------------------------- clearUnused" );
-		Core::instance().getMemoryCache().clearUnused();
-		TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache().size() );
-		TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache() );
-		TUTTLE_TCOUT_VAR( result );
-
 	}
 
 	//--- END RENDER
