@@ -171,7 +171,12 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 	}
 	if( paramName == kColorAverageMode && hasCloudPointData())						  //Average mode : choice list
 	{
-		updateGeodesicForms(args);
+		if(_paramChoiceAverageMode->getValue() == 1)								 //selection mode is manual
+			_paramRGBAColorSelection->setEnabled(true);								 //active component
+		else
+			_paramRGBAColorSelection->setEnabled(false);							 //disable component
+		updateGeodesicForms(args);													 //update geodesic form
+		
 	}
 	if( paramName == kColorAverageSelection && hasCloudPointData())					  //selection average RGBA component
 	{
