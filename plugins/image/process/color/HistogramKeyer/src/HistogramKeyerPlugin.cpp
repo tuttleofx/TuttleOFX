@@ -537,7 +537,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 								{
 									currentPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,nbPointsInCurve); //get current point
 									double epsilon = 0.01;
-									if(fabs(currentPoint.first-xPosition)<epsilon)  /current point has the same X value than this we want to add
+									if(fabs(currentPoint.first-xPosition)<epsilon)  //current point has the same X value than this we want to add
 										pointFound = true;							//point has been found
 									else
 										++nbPointsInCurve;		//increments indice
