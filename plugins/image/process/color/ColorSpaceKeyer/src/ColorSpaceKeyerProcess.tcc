@@ -73,7 +73,7 @@ void ColorSpaceKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 							                  procWindowSize.x, procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							                  procWindowSize.x, procWindowSize.y );
-		
+	
 	std::cout << "[Process] create functor and process" << std::endl;
     //Create and initialize functor 
 	Compute_alpha_pixel funct(false,_geodesicFormColor, _geodesicFormSpill); //Output is alpha

@@ -370,7 +370,7 @@ void ColorSpaceKeyerPlugin::updateGeodesicForms(const OFX::InstanceChangedArgs& 
 	//extends geodesic forms
 	getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicFormColor);	//extends color geodesic form
 	getCloudPointData()._geodesicFormSpill.copyGeodesicForm(getCloudPointData()._geodesicFormColor);							//extends spill geodesic form (color clip)
-	getCloudPointData()._averageColor.extendGeodesicForm(_clipSpill,args.renderScale,getCloudPointData()._geodesicFormSpill);	//extends spill geodesic form (spill clip)
+	getCloudPointData()._averageColor.extendGeodesicForm(_clipSpill,args.renderScale,getCloudPointData()._geodesicFormSpill);	//extends spill geodesic form (spill clip)	
 	//scale geodesic form
 	getCloudPointData()._geodesicFormColor.scaleGeodesicForm(_paramDoubleScaleGF->getValue());
 	getCloudPointData()._geodesicFormSpill.scaleGeodesicForm(_paramDoubleScaleGF->getValue());
