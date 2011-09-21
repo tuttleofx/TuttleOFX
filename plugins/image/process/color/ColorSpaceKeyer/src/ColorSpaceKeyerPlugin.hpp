@@ -75,6 +75,12 @@ public:
 
     void render( const OFX::RenderArguments &args );	//treatment
 	
+	/** @brief client end sequence render function, this is one of the few that must be set */
+	void endSequenceRender( const OFX::EndSequenceRenderArguments& args )
+	{
+		// clear maps of process datas
+	}
+
 	//Overlay data functions
 	void addRefCloudPointData();						//add reference to cloud point data
 	void releaseCloudPointData();						//release reference to cloud point data

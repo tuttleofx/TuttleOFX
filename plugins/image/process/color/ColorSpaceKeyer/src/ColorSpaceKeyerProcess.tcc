@@ -18,9 +18,12 @@ template<class View>
 void ColorSpaceKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
+	std::cout << "[Process setup] begin" << std::endl;
+	
 	_params = _plugin.getProcessParams( args.renderScale );
 	
-	std::cout << "[Process] début render" << std::endl;
+//	std::cout << "[Process setup] forms" << std::endl;
+	
 	//Create geodesic form
 	SelectionAverage selectionAverage(_plugin._time);								//create selection
 	//update color geodesic form
@@ -47,11 +50,13 @@ void ColorSpaceKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 		_geodesicFormColor.subdiviseFaces(selectedAverage, _plugin._paramIntDiscretization->getValue()); //create geodesic form
 		_geodesicFormSpill.subdiviseFaces(selectedAverage, _plugin._paramIntDiscretization->getValue()); //create geodesic form
 	}
-	std::cout << "[Process] extend geodesic form" << std::endl;
+	std::cout << "[Process setup] extend geodesic form" << std::endl;
 	//Extend geodesic forms
 	selectionAverage.extendGeodesicForm(_plugin._clipColor,_plugin._renderScale,_geodesicFormColor); //extends geodesic form color
 	_geodesicFormSpill.copyGeodesicForm(_geodesicFormColor);										 //extends geodesic form spill (color clip)
 	selectionAverage.extendGeodesicForm(_plugin._clipSpill,_plugin._renderScale,_geodesicFormSpill); //extends geodesic form spill (spill takes account of spill clip)
+	
+	std::cout << "[Process setup] end" << std::endl;
 }
 
 /**
@@ -61,6 +66,7 @@ void ColorSpaceKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void ColorSpaceKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	std::cout << "[Process] multiThreadProcessImages begin" << std::endl;
 	using namespace boost::gil;
 	
 	// this->_renderArgs.time
@@ -79,7 +85,7 @@ void ColorSpaceKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 	Compute_alpha_pixel funct(false,_geodesicFormColor, _geodesicFormSpill); //Output is alpha
 	//this function is chose because of functor reference and not copy
 	transform_pixels_progress(src,dst,funct,*this);
-	std::cout <<"[Process] fin render" << std::endl;
+	std::cout << "[Process] multiThreadProcessImages end" << std::endl;
 }
 
 }

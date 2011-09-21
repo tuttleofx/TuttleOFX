@@ -35,6 +35,8 @@ void ColorSpaceKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( true );
+	desc.setHostFrameThreading( false );
+
 	// Don't declare the plugin as fully safe: It's not a safety problem, but we need to compute common data.
 	// So it's not interesting to compute the same thing on multiple threads.
 //	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
