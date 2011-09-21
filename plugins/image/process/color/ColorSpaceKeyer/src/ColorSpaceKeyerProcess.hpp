@@ -76,7 +76,7 @@ struct Compute_alpha_pixel
 				}
 			}
 		}
-		
+		alpha = 1-alpha;				//black is transparent and white is opaque
 		Pixel ret;						//declare returned pixel
 		if(_isOutputBW)					// output is gray scale image
 		{
@@ -108,10 +108,6 @@ public:
 protected:
     ColorSpaceKeyerPlugin&    _plugin;            ///< Rendering plugin
 	ColorSpaceKeyerProcessParams<Scalar> _params; ///< parameters
-	//Create geodesic form
-	GeodesicForm _geodesicFormColor;
-	GeodesicForm _geodesicFormSpill;
-	
 public:
     ColorSpaceKeyerProcess( ColorSpaceKeyerPlugin& effect );
 	void setup( const OFX::RenderArguments& args );
