@@ -298,7 +298,7 @@ bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
 		_penDown = false; // pen down
 		
 //		getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
-		getOverlayData()._isDataInvalid = false;
+		getOverlayData()._isDataInvalid = true;
 		_plugin->redrawOverlays();
 		
 		return true; // event captured
