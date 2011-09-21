@@ -60,7 +60,7 @@ public:
 	void displaySelectionZone();	//display the current selection zone (white square)
 	
 	/*Get overlay data*/
-	OverlayData& getData();
+	OverlayData& getOverlayData();
 };
 
 class RGBParamOverlayDescriptor : public OFX::ParamInteractDescriptor

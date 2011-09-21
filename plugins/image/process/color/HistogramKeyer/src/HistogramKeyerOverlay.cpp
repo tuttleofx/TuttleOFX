@@ -33,17 +33,22 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 	const OfxRectI pixelRegionOfDefinition = _plugin->_clipSrc->getPixelRod(args.time);
 			
 	// Global display option
-	if(_plugin->_paramGlobalDisplaySelection->getValue() == false)
+	if( _plugin->_paramGlobalDisplaySelection->getValue() == false )
 		return false;
-	
 
 	///@ HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all of the time
-	if( getData().isImageSizeModified(imgSize) ||
-		_isFirstTime )
+	if( _isFirstTime ||
+		getOverlayData().isImageSizeModified( imgSize ) ||
+		getOverlayData().isCurrentTimeModified( args.time )
+		)
 	{
-		getData().clearAll( imgSize );
-		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
+		if( ! _plugin->_isRendering )
+		{
+			getOverlayData().clearAll( imgSize );
+			getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
+		}
 	}
+	
 	// Draw component
 	bool displaySomething = false;
 	if(_plugin->_clipSrc->isConnected())
@@ -99,9 +104,9 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 		int y = args.penPosition.y * args.renderScale.y;
 		int x = args.penPosition.x * args.renderScale.x;
 		
-		if( y > getData()._imgBool.shape()[0] ||
+		if( y > getOverlayData()._imgBool.shape()[0] ||
 		    y < 0 ||
-		    x > getData()._imgBool.shape()[1] ||
+		    x > getOverlayData()._imgBool.shape()[1] ||
 		    x < 0 )
 		{
 			return false;
@@ -110,9 +115,9 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 		x-= pixelRegionOfDefinition.x1; //repere change (reformat)
 		
 		if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive mode
-			getData()._imgBool[y][x] = 0;	//current pixel is no more marked as selected
+			getOverlayData()._imgBool[y][x] = 0;	//current pixel is no more marked as selected
 		else
-			getData()._imgBool[y][x] = 255;	//current pixel is marked as selected
+			getOverlayData()._imgBool[y][x] = 255;	//current pixel is marked as selected
 		return true;	//event captured
 	}
 	return false; //event is not captured
@@ -162,7 +167,7 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	}
 	if(_plugin->_paramSelectionMode->getValue() == 1)	//Selection mode is unique
 	{
-		getData().clearSelection();//reset past selection
+		getOverlayData().clearSelection();//reset past selection
 	}
 	return true;
 }
@@ -232,8 +237,8 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 		
 		BOOST_ASSERT( endY >= 0 );
 		BOOST_ASSERT( endX >= 0 );
-		BOOST_ASSERT( getData()._imgBool.shape()[0] >= endY+step_y );
-		BOOST_ASSERT( getData()._imgBool.shape()[1] >= endX+step_x );
+		BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] >= endY+step_y );
+		BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] >= endX+step_x );
 		for(unsigned int val_y=0; val_y<step_y; ++val_y)
 		{
 			for(unsigned int val_x=0; val_x<step_x; ++val_x )
@@ -242,19 +247,14 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 				int _x = endX+val_x -(pixelRegionOfDefinition.x1);  //_x in img bool size (reformat)
 				
 				if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive
-					getData()._imgBool[_y][_x] = 0;	//remove all of the selected pixel
+					getOverlayData()._imgBool[_y][_x] = 0;	//remove all of the selected pixel
 				else
-					getData()._imgBool[_y][_x] = 255;	//mark all of the selected pixel
+					getOverlayData()._imgBool[_y][_x] = 255;	//mark all of the selected pixel
 			}
 		}
-		//if plugin is not rendering recompute full data else ask to rendering function to do it
-		if(!_plugin->_isRendering)
-		{
-			getData()._currentTime = args.time;
-			getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
-		}
-		else // HACK : recompute histogram of selection with render function
-		_plugin->_doesComputeFullData = true;	//signal to plugin to recompute data
+		// recompute full data
+		getOverlayData()._currentTime = args.time;
+		getOverlayData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
 	}
 	_penDown = false; //treatment is finished
 	return true;
@@ -287,7 +287,7 @@ bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
 	{
 		_keyDown = false;	//treatment ends
 		_penDown = false;	//pen down 
-		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
+		getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 		return true; //event captured
 	}
 	return false;			//event is not captured (wrong key)
@@ -302,8 +302,8 @@ void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI fullImgSize, c
 	GLuint Name;								//Texture name
 	glGenTextures(1,&Name);						//generate a texture number
 	glBindTexture(GL_TEXTURE_2D,Name);
-	BOOST_ASSERT( getData()._imgBool.shape()[0] == imgSize.y );
-	BOOST_ASSERT( getData()._imgBool.shape()[1] == imgSize.x );
+	BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] == imgSize.y );
+	BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] == imgSize.x );
 	glTexImage2D(
 		GL_TEXTURE_2D,		//Type : texture 2D
 		0,					//Mipmap : none
@@ -313,7 +313,7 @@ void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI fullImgSize, c
 		0,					//border size
 		GL_ALPHA,			//Format : RGBA
 		GL_UNSIGNED_BYTE, 	//color kind
-		getData()._imgBool.data()		// data buffer
+		getOverlayData()._imgBool.data()		// data buffer
 	); 	
 	glColor4f(1.0f,1.0f,1.0f,0.5f);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -354,7 +354,7 @@ void HistogramKeyerOverlay::displaySelectionZone()
  * Get overlay data from plugin
  * @return 
  */
-OverlayData& HistogramKeyerOverlay::getData()
+OverlayData& HistogramKeyerOverlay::getOverlayData()
 {
 	return _plugin->getOverlayData();
 }

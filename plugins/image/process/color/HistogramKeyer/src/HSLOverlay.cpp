@@ -37,16 +37,16 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 	//height of the window (image for test)
 	//width of the window (image for test)
 	OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
-    const double step = size.x / (double)(getData()._data._step -1);
+    const double step = size.x / (double)(getOverlayData()._data._step -1);
         
     double heightH, heightS,heightL;
     heightH = heightS = heightL = size.y;
     if(!(_plugin->_paramDisplayTypeSelection->getValue() == 1))
     {
 		//get max of the three channels
-        const Number maxH = *(std::max_element(getData()._data._bufferHue.begin(),getData()._data._bufferHue.end()));
-        const Number maxS = *(std::max_element(getData()._data._bufferSaturation.begin(),getData()._data._bufferSaturation.end()));
-        const Number maxL = *(std::max_element(getData()._data._bufferLightness.begin(),getData()._data._bufferLightness.end()));
+        const Number maxH = *(std::max_element(getOverlayData()._data._bufferHue.begin(),getOverlayData()._data._bufferHue.end()));
+        const Number maxS = *(std::max_element(getOverlayData()._data._bufferSaturation.begin(),getOverlayData()._data._bufferSaturation.end()));
+        const Number maxL = *(std::max_element(getOverlayData()._data._bufferLightness.begin(),getOverlayData()._data._bufferLightness.end()));
             
 		//Adapt maximal value (3 cases)
         if(maxH > maxS && maxH > maxL)				//H is the max
@@ -74,11 +74,11 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 			displayGrid(size.y, size.x); //display grid on screen
 			hasGridBeenDisplayed = true; //set grid has already been displayed to true
 		}
-		displayASpecificHistogram(getData()._data._bufferHue,getData()._selectionData._bufferHue,step,heightH,size.x,redHisto,selectionMultiplier);
+		displayASpecificHistogram(getOverlayData()._data._bufferHue,getOverlayData()._selectionData._bufferHue,step,heightH,size.x,redHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedHSL()==eSelectedChannelH)
 		{
-			displaySelectionPoints(getData()._selectionData._bufferHue,step,size.x,redHisto);				//selection points
-			displayAverageBar(getData()._averageData._averageHue,averageHisto,size.x,size.y,step);			//average bar
+			displaySelectionPoints(getOverlayData()._selectionData._bufferHue,step,size.x,redHisto);				//selection points
+			displayAverageBar(getOverlayData()._averageData._averageHue,averageHisto,size.x,size.y,step);			//average bar
 			displayHueIndicator(size,kPrecisionHueIndicator);												//indicator
 		}
 	}
@@ -90,11 +90,11 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 			hasGridBeenDisplayed = true; //set grid has already been displayed to true
 		}
 		
-		displayASpecificHistogram(getData()._data._bufferSaturation,getData()._selectionData._bufferSaturation,step,heightS,size.x,greenHisto,selectionMultiplier);
+		displayASpecificHistogram(getOverlayData()._data._bufferSaturation,getOverlayData()._selectionData._bufferSaturation,step,heightS,size.x,greenHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedHSL()==eSelectedChannelS)
 		{
-			displaySelectionPoints(getData()._selectionData._bufferSaturation,step,size.x,greenHisto);		//selection points
-			displayAverageBar(getData()._averageData._averageSaturation,averageHisto,size.x,size.y,step);	//average bar
+			displaySelectionPoints(getOverlayData()._selectionData._bufferSaturation,step,size.x,greenHisto);		//selection points
+			displayAverageBar(getOverlayData()._averageData._averageSaturation,averageHisto,size.x,size.y,step);	//average bar
 			displaySaturationIndicator(size);																//indicator
 		}
 	}
@@ -106,21 +106,21 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 			hasGridBeenDisplayed = true; //set grid has already been displayed to true
 		}
 				
-		displayASpecificHistogram(getData()._data._bufferLightness,getData()._selectionData._bufferLightness,step,heightL,size.x,blueHisto,selectionMultiplier);
+		displayASpecificHistogram(getOverlayData()._data._bufferLightness,getOverlayData()._selectionData._bufferLightness,step,heightL,size.x,blueHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedHSL()==eSelectedChannelL)
 		{
-			displaySelectionPoints(getData()._selectionData._bufferLightness,step,size.x,blueHisto);		//selection points
-			displayAverageBar(getData()._averageData._averageLightness,averageHisto,size.x,size.y,step);	//average bar
+			displaySelectionPoints(getOverlayData()._selectionData._bufferLightness,step,size.x,blueHisto);		//selection points
+			displayAverageBar(getOverlayData()._averageData._averageLightness,averageHisto,size.x,size.y,step);	//average bar
 			displayLightnessIndicator(size);																//indicator
 		}
 	}
 	//Display border (separate from histograms to eliminate blending)
 	if(_plugin->_paramOverlayHSelection->getValue())
-		displayASpecificHistogramBorder(getData()._data._bufferHue,step,heightH,size.x,redHisto);			//H
+		displayASpecificHistogramBorder(getOverlayData()._data._bufferHue,step,heightH,size.x,redHisto);			//H
 	if(_plugin->_paramOverlaySSelection->getValue())
-		displayASpecificHistogramBorder(getData()._data._bufferSaturation,step,heightS,size.x,greenHisto);	//S
+		displayASpecificHistogramBorder(getOverlayData()._data._bufferSaturation,step,heightS,size.x,greenHisto);	//S
 	if(_plugin->_paramOverlayLSelection->getValue())
-		displayASpecificHistogramBorder(getData()._data._bufferLightness,step,heightL,size.x,blueHisto);	//L
+		displayASpecificHistogramBorder(getOverlayData()._data._bufferLightness,step,heightL,size.x,blueHisto);	//L
 	return true;
 }
 
@@ -152,7 +152,7 @@ ESelectedChannelHSL HSLOverlay::getOnlyChannelSelectedHSL() const
  * Get overlay data from plugin
  * @return 
  */
-OverlayData& HSLOverlay::getData()
+OverlayData& HSLOverlay::getOverlayData()
 {
 	return _plugin->getOverlayData();
 }

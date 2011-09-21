@@ -50,7 +50,7 @@ public:
 	ESelectedChannelHSL getOnlyChannelSelectedHSL()const;
 	
 	/*get overlay data*/
-	OverlayData& getData();
+	OverlayData& getOverlayData();
 	
 	/*Display grid*/
 	void displayGrid(float height, float width);

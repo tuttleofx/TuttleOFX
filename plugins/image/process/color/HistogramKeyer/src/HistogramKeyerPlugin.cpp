@@ -52,7 +52,6 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	_paramRefreshOverlaySelection = fetchPushButtonParam( kButtonRefreshOverlay ); //refresh overlay (Advanced group)
 	_paramNbStepSelection = fetchIntParam( knbStepRange ); //nb step range (Advanced group)
 	_paramClampCurveValues = fetchBooleanParam(kBoolClampValues); //clamp curve values (Advanced group)
-		
 
 	_paramOutputSettingSelection = fetchChoiceParam( kOutputListParamLabel ); //output type (BW/alpha)
 	_paramReverseMaskSelection = fetchBooleanParam( kBoolReverseMask ); //reverse mask
@@ -64,7 +63,6 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	_isCleaned = false;
 	_isNbStepChanged = false;
 	_isHistogramRefresh = false;
-	_doesComputeFullData = false;
 
 	//Initialize scoped pointer
 	_overlayDataCount = 0;
@@ -725,6 +723,7 @@ void HistogramKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, co
 		{
 			this->getOverlayData().clearAll( this->_clipSrc->getPixelRodSize( args.time, args.renderScale ) );
 			this->getOverlayData().computeFullData( this->_clipSrc, args.time, args.renderScale );
+			this->redrawOverlays();
 		}
 	}
 }
@@ -748,18 +747,16 @@ bool HistogramKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Cl
 void HistogramKeyerPlugin::render( const OFX::RenderArguments &args )
 {
 	_isRendering = true;		//plugin is rendering
-	if(OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke")	/// @todo: HACK Nuke doesn't call changeClip function when time is changed
+	doGilRender<HistogramKeyerProcess > ( *this, args );
+	_isRendering = false;		//plugin is not rendering anymore
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )	/// @todo: HACK Nuke doesn't call changeClip function when time is changed
 	{
-		if(getOverlayData().isCurrentTimeModified(args.time) || _doesComputeFullData) //if time is changed
+		if( getOverlayData().isCurrentTimeModified(args.time) ) //if time is changed
 		{
-			getOverlayData()._currentTime = args.time;
-			getOverlayData().computeFullData(this->_clipSrc,args.time,args.renderScale);
-			_doesComputeFullData = false;
+			this->redrawOverlays();		//redraw scene
 		}
 	}
-	doGilRender<HistogramKeyerProcess > ( *this, args );
-	this->redrawOverlays();		//redraw scene
-	_isRendering = false;		//plugin is not rendering anymore
 }
 
 /// @brief Overlay data
