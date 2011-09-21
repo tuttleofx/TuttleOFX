@@ -36,7 +36,7 @@ public:
 	
 	bool _isFirstTime; //temporary
 	
-	/*temporary when Nuke doesn't work*/
+	/* temporary when Nuke doesn't support parametric parameter overlay */
 	HSLOverlay _hslParam;
 	RGBOverlay _rgbParam;
 
@@ -56,7 +56,7 @@ public:
 	bool keyUp( const OFX::KeyArgs& args );		//Ctrl key is releasing 
 	
 	/*Selection help (display)*/
-	void displaySelectedAreas( const OfxPointI fullImgSize, const OfxPointI imgSize, const OfxRectI pixelRoD);	//display the selected areas (texture)
+	void displaySelectedAreas( const OfxPointI& fullImgSize, const OfxPointI& imgSize, const OfxRectI& pixelRoD);	//display the selected areas (texture)
 	void displaySelectionZone();	//display the current selection zone (white square)
 	
 	/*Get overlay data*/

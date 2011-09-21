@@ -18,8 +18,6 @@ HSLOverlay::HSLOverlay(HistogramKeyerPlugin* plugin)
 	_plugin = plugin;
 	_plugin->addRefOverlayData();
 }
-//temporary
-HSLOverlay::HSLOverlay(){_plugin = NULL;};
 
 /*Destructor*/
 HSLOverlay::~HSLOverlay()

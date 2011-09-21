@@ -38,7 +38,6 @@ public:
 	/*Creator*/
 	//HSLOverlay(OfxInteractHandle handle, OFX::ImageEffect* effect); (when Nuke overlay works)
 	HSLOverlay(HistogramKeyerPlugin* plugin); //temporary
-	HSLOverlay(); //temporary
 	
 	/*Destructor*/
 	~HSLOverlay();

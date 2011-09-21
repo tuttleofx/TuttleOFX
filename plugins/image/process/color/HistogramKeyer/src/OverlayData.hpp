@@ -122,7 +122,7 @@ struct Pixel_compute_histograms
 				{    
 					double inter = round(val*(_data._step-1));
 					indice = inter;
-					if(v == 0)
+					if( v == 0 )
 						_data._bufferRed.at(indice) += 1;			//increments red buffer 
 					else if(v == 1)
 						_data._bufferGreen.at(indice) += 1;			//increments green buffer 
@@ -239,6 +239,8 @@ public:
 	std::size_t _vNbStep;					//nbStep for buffers
 	std::size_t _vNbStepCurveFromSelection; //nbStep for curve to selection buffers
 	bool _isComputing;
+	
+	bool _isDataInvalid;
 	
 private:
 	OfxPointI _size;						//source clip size

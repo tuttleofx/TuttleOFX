@@ -39,7 +39,6 @@ public:
 	/*Creator*/
 	//RGBOverlay(OfxInteractHandle handle, OFX::ImageEffect* effect); (when Nuke overlay works)
 	RGBOverlay(HistogramKeyerPlugin* plugin);	//temporary
-	RGBOverlay();								//temporary
 	
 	/*Destructor*/
 	~RGBOverlay();

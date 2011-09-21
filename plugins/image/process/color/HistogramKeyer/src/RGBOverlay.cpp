@@ -19,12 +19,6 @@ RGBOverlay::RGBOverlay(HistogramKeyerPlugin* plugin)
 	_plugin->addRefOverlayData();
 }
 
-//temporary
-RGBOverlay::RGBOverlay()
-{
-	_plugin = NULL;
-}
-
 /*Destructor*/
 RGBOverlay::~RGBOverlay()
 {

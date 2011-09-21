@@ -8,17 +8,17 @@ namespace histogramKeyer {
 
 HistogramKeyerOverlay::HistogramKeyerOverlay(OfxInteractHandle handle,OFX::ImageEffect* effect)
 : OFX::OverlayInteract(handle)
-, _infos(effect)
+, _infos( effect )
+, _plugin( static_cast<HistogramKeyerPlugin*>(_effect) )
+, _hslParam( _plugin )
+, _rgbParam( _plugin )
 {
-	_plugin = static_cast<HistogramKeyerPlugin*>(_effect);
-	_hslParam = HSLOverlay(_plugin);
-	_rgbParam = RGBOverlay(_plugin);
-	
 	_penDown = false;											//Mouse is not clicked down by default
 	_keyDown = false;											//Ctrl key is not pressed by default 	
 	_plugin->addRefOverlayData();								//add reference to Overlay data
 	
 	_isFirstTime = true; //temporary
+	getOverlayData()._isDataInvalid = true;
 }
 
 HistogramKeyerOverlay::~HistogramKeyerOverlay()
@@ -36,15 +36,16 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 	if( _plugin->_paramGlobalDisplaySelection->getValue() == false )
 		return false;
 
-	///@ HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all of the time
 	if( _isFirstTime ||
-		getOverlayData().isImageSizeModified( imgSize ) ||
+		getOverlayData()._isDataInvalid ||
+		getOverlayData().isImageSizeModified( imgSize ) || ///< HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all of the time
 		getOverlayData().isCurrentTimeModified( args.time )
 		)
 	{
+		getOverlayData().clearAll( imgSize );
 		if( ! _plugin->_isRendering )
 		{
-			getOverlayData().clearAll( imgSize );
+			getOverlayData()._isDataInvalid = false;
 			getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 		}
 	}
@@ -72,7 +73,7 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		_hslParam.draw(args);
 		glPopMatrix();
 		
-		if(_penDown && !_keyDown)//Display selection zone
+		if( _penDown && !_keyDown ) // Display selection zone
 		{
 			this->displaySelectionZone();
 		}
@@ -167,7 +168,7 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	}
 	if(_plugin->_paramSelectionMode->getValue() == 1)	//Selection mode is unique
 	{
-		getOverlayData().clearSelection();//reset past selection
+		getOverlayData().clearSelection(); //reset past selection
 	}
 	return true;
 }
@@ -184,23 +185,27 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 	const OfxRectI pixelRegionOfDefinition = _plugin->_clipSrc->getPixelRod(args.time,args.renderScale); //pixel region of definition
 
 	//clamp selection
-	_end.x = args.penPosition.x*args.renderScale.x;		//attach the end of the selection square to the current pixel X
-	_end.y = args.penPosition.y*args.renderScale.y;	//attach the end of the selection square to the current pixel Y
-	if(_end.x == _origin.x && _end.y == _origin.y)	//it's just one click!
+	_end.x = args.penPosition.x * args.renderScale.x;		//attach the end of the selection square to the current pixel X
+	_end.y = args.penPosition.y * args.renderScale.y;	//attach the end of the selection square to the current pixel Y
+	if( _end.x == _origin.x && _end.y == _origin.y )	//it's just one click!
 	{
 		_penDown = false;	//change penDown
 		return false;		//event is not capured
 	}
-	if(!(args.penPosition.x < fullSize.x && args.penPosition.x > 0 && args.penPosition.y < fullSize.y && args.penPosition.y > 0)) // if click is not on the image
+	
+	if( !(args.penPosition.x < fullSize.x &&
+		  args.penPosition.x > 0 &&
+		  args.penPosition.y < fullSize.y &&
+		  args.penPosition.y > 0) ) // if click is not on the image
 	{
-		if(args.penPosition.x < 0.0 || args.penPosition.x > fullSize.x) //problem with X axis
+		if( args.penPosition.x < 0.0 || args.penPosition.x > fullSize.x ) //problem with X axis
 		{
 			if(args.penPosition.x < 0.0)	//click is on the left of the image
 				_end.x = 0.0;				//clamp
 			else
 				_end.x = imgSize.x;			//click is on the right of the image
 		}
-		if(args.penPosition.y < 0.0 || args.penPosition.y > fullSize.y) //problem with Y axis
+		if( args.penPosition.y < 0.0 || args.penPosition.y > fullSize.y ) //problem with Y axis
 		{
 			if(args.penPosition.y < 0.0)	//click is on the bottom of the image
 				_end.y = 0.0;				//clamp
@@ -208,55 +213,58 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 				_end.y = imgSize.y;			//click is on the top of the image
 		}
 	}
-	if(_penDown && !_keyDown)	//if there is not Ctrl key pressed
+	
+	if( _penDown && !_keyDown )	//if there is not Ctrl key pressed
 	{
-		int startX,endX,startY,endY; 
-		if(_origin.x > _end.x)  //transform selection zone to be OK (X axis)
+		int startX, endX, startY, endY; 
+		if( _origin.x > _end.x ) //transform selection zone to be OK (X axis)
 		{
 			startX = _origin.x;
 			endX = _end.x;
 		}
 		else
 		{
-			endX =_origin.x;
+			endX = _origin.x;
 			startX = _end.x;
 		}
 		
-		if(_origin.y > _end.y)	//transform selection zone to be OK (Y axis)
+		if( _origin.y > _end.y ) //transform selection zone to be OK (Y axis)
 		{
 			startY = _origin.y;
 			endY = _end.y;
 		}
 		else
 		{ 
-			endY= _origin.y;
+			endY = _origin.y;
 			startY = _end.y;
 		}
-		int step_x = startX-endX;	//determinate width of the selected zone
-		int step_y = startY-endY;	//determinate height of the selected zone
+		const int step_x = startX - endX;	//determinate width of the selected zone
+		const int step_y = startY - endY;	//determinate height of the selected zone
 		
 		BOOST_ASSERT( endY >= 0 );
 		BOOST_ASSERT( endX >= 0 );
-		BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] >= endY+step_y );
-		BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] >= endX+step_x );
-		for(unsigned int val_y=0; val_y<step_y; ++val_y)
+		BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] >= endY + step_y );
+		BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] >= endX + step_x );
+		
+		for( unsigned int val_y = 0; val_y < step_y; ++val_y )
 		{
-			for(unsigned int val_x=0; val_x<step_x; ++val_x )
+			for( unsigned int val_x = 0; val_x < step_x; ++val_x )
 			{
-				int _y = endY+val_y -(pixelRegionOfDefinition.y1);	//_y in img bool size (reformat)
-				int _x = endX+val_x -(pixelRegionOfDefinition.x1);  //_x in img bool size (reformat)
+				const int _y = endY + val_y - pixelRegionOfDefinition.y1; //_y in img bool size (reformat)
+				const int _x = endX + val_x - pixelRegionOfDefinition.x1; //_x in img bool size (reformat)
 				
-				if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive
-					getOverlayData()._imgBool[_y][_x] = 0;	//remove all of the selected pixel
+				if( _plugin->_paramSelectionMode->getValue() == 2 )	//selection mode is subtractive
+					getOverlayData()._imgBool[_y][_x] = 0; //remove all of the selected pixel
 				else
-					getOverlayData()._imgBool[_y][_x] = 255;	//mark all of the selected pixel
+					getOverlayData()._imgBool[_y][_x] = 255; //mark all of the selected pixel
 			}
 		}
 		// recompute full data
-		getOverlayData()._currentTime = args.time;
-		getOverlayData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
+		//getOverlayData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
+		getOverlayData()._isDataInvalid = true;
+		_plugin->redrawOverlays();
 	}
-	_penDown = false; //treatment is finished
+	_penDown = false; // treatment is finished
 	return true;
 }
 
@@ -267,7 +275,8 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
  */
 bool HistogramKeyerOverlay::keyDown( const OFX::KeyArgs& args )
 {
-	if(args.keySymbol==kOfxKey_Control_L||args.keySymbol==kOfxKey_Control_R) //if the pressed key is Ctrl key (left or right)
+	if( args.keySymbol == kOfxKey_Control_L ||
+	    args.keySymbol == kOfxKey_Control_R ) //if the pressed key is Ctrl key (left or right)
 	{
 		_keyDown = true;	//treatment begins
 		return true;		//event captured 
@@ -282,21 +291,25 @@ bool HistogramKeyerOverlay::keyDown( const OFX::KeyArgs& args )
  */
 bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
 {
-	if( (args.keySymbol == kOfxKey_Control_L || args.keySymbol==kOfxKey_Control_R) &&
-		_keyDown ) //if the release key is Ctrl (and it has been pressed before)
+	if( ( args.keySymbol == kOfxKey_Control_L || args.keySymbol == kOfxKey_Control_R ) &&
+		_keyDown ) // if the release key is Ctrl (and it has been pressed before)
 	{
-		_keyDown = false;	//treatment ends
-		_penDown = false;	//pen down 
-		getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
-		return true; //event captured
+		_keyDown = false; // treatment ends
+		_penDown = false; // pen down
+		
+//		getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
+		getOverlayData()._isDataInvalid = false;
+		_plugin->redrawOverlays();
+		
+		return true; // event captured
 	}
-	return false;			//event is not captured (wrong key)
+	return false; // event is not captured (wrong key)
 }
 
 /**
  * Display the selected areas on the clip (color : gray)
  */
-void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI fullImgSize, const OfxPointI imgSize, const OfxRectI pixelRoD )
+void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI& fullImgSize, const OfxPointI& imgSize, const OfxRectI& pixelRoD )
 {
 	glEnable(GL_TEXTURE_2D);					//Activate texturing
 	GLuint Name;								//Texture name
