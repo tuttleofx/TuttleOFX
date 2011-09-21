@@ -38,11 +38,15 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 
 	if( _isFirstTime ||
 		getOverlayData()._isDataInvalid ||
-		getOverlayData().isImageSizeModified( imgSize ) || ///< HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all of the time
-		getOverlayData().isCurrentTimeModified( args.time )
+		getOverlayData().isCurrentTimeModified( args.time ) ||
+		getOverlayData().isImageSizeModified( imgSize ) ///< HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all of the time
 		)
 	{
-		getOverlayData().clearAll( imgSize );
+		if( getOverlayData().isImageSizeModified( imgSize ) )
+		{
+			getOverlayData().clearAll( imgSize );
+		}
+		
 		if( ! _plugin->_isRendering )
 		{
 			getOverlayData()._isDataInvalid = false;
@@ -92,14 +96,14 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
  * @return event capted (y or n)
  */
 bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
-{	
-	if(_penDown && !_keyDown)//the mouse is moving but there is not Ctrl key pressed
+{
+	if( _penDown && !_keyDown ) //the mouse is moving but there is not Ctrl key pressed
 	{
 		_squareEnd.x = args.penPosition.x;	//needed to draw the selection square
 		_squareEnd.y = args.penPosition.y;	//needed to draw the selection square
 		return true;					//event captured
 	}
-	if(_penDown && _keyDown)//the mouse is moving and there is Ctrl key pressed
+	if( _penDown && _keyDown )//the mouse is moving and there is Ctrl key pressed
 	{
 		const OfxRectI pixelRegionOfDefinition = _plugin->_clipSrc->getPixelRod(args.time,args.renderScale); //pixel region of definition
 		int y = args.penPosition.y * args.renderScale.y;
@@ -112,10 +116,10 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 		{
 			return false;
 		}
-		y-=pixelRegionOfDefinition.y1; //repere change (reformat)
-		x-= pixelRegionOfDefinition.x1; //repere change (reformat)
+		y -= pixelRegionOfDefinition.y1; //repere change (reformat)
+		x -= pixelRegionOfDefinition.x1; //repere change (reformat)
 		
-		if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive mode
+		if( _plugin->_paramSelectionMode->getValue() == 2 )	//selection mode is subtractive mode
 			getOverlayData()._imgBool[y][x] = 0;	//current pixel is no more marked as selected
 		else
 			getOverlayData()._imgBool[y][x] = 255;	//current pixel is marked as selected
@@ -137,7 +141,7 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	if(!_penDown && !_keyDown)	//mouse is already used and there is not Ctrl key pressed
 	{
 		_penDown = true;	
-		if(args.penPosition.y < fullsize.y && args.penPosition.y > 0)	//mouse Y is into the image
+		if( args.penPosition.y < fullsize.y && args.penPosition.y > 0 )	//mouse Y is into the image
 			_origin.y = args.penPosition.y*args.renderScale.y;
 		else
 		{
@@ -146,11 +150,11 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 			else
 				_origin.y = 0;					//click is on the bottom of the image
 		}
-		if(args.penPosition.x < fullsize.x && args.penPosition.x > 0) //mouse X is on the image
+		if( args.penPosition.x < fullsize.x && args.penPosition.x > 0 ) //mouse X is on the image
 			_origin.x = args.penPosition.x*args.renderScale.x;
 		else
 		{
-			if(args.penPosition.x > fullsize.x)	//clamp the selected X pixel to the image borders
+			if( args.penPosition.x > fullsize.x )	//clamp the selected X pixel to the image borders
 				_origin.x = imgSize.x;			//click is on the right of the image
 			else
 				_origin.x = 0;					//click is on the left of the image
@@ -163,10 +167,10 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	}
 	else	//there is Ctrl key pressed
 	{
-		if(!_penDown)
+		if( !_penDown )
 			_penDown = true;
 	}
-	if(_plugin->_paramSelectionMode->getValue() == 1)	//Selection mode is unique
+	if( _plugin->_paramSelectionMode->getValue() == 1 )	//Selection mode is unique
 	{
 		getOverlayData().clearSelection(); //reset past selection
 	}
@@ -246,17 +250,20 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 		BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] >= endY + step_y );
 		BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] >= endX + step_x );
 		
+		unsigned char fillValue;
+		if( _plugin->_paramSelectionMode->getValue() == 2 )	//selection mode is subtractive
+			fillValue = 0; //remove all of the selected pixel
+		else
+			fillValue = 255; //mark all of the selected pixel
+		
 		for( unsigned int val_y = 0; val_y < step_y; ++val_y )
 		{
 			for( unsigned int val_x = 0; val_x < step_x; ++val_x )
 			{
-				const int _y = endY + val_y - pixelRegionOfDefinition.y1; //_y in img bool size (reformat)
-				const int _x = endX + val_x - pixelRegionOfDefinition.x1; //_x in img bool size (reformat)
+				const int y = endY + val_y - pixelRegionOfDefinition.y1; // y in img bool size (reformat)
+				const int x = endX + val_x - pixelRegionOfDefinition.x1; // x in img bool size (reformat)
 				
-				if( _plugin->_paramSelectionMode->getValue() == 2 )	//selection mode is subtractive
-					getOverlayData()._imgBool[_y][_x] = 0; //remove all of the selected pixel
-				else
-					getOverlayData()._imgBool[_y][_x] = 255; //mark all of the selected pixel
+				getOverlayData()._imgBool[y][x] = fillValue;
 			}
 		}
 		// recompute full data
