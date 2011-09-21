@@ -52,6 +52,11 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 			getOverlayData()._isDataInvalid = false;
 			getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 		}
+		else
+		{
+			// draw a warning: display is not up-to-date.
+			// ...
+		}
 	}
 	
 	// Draw component
