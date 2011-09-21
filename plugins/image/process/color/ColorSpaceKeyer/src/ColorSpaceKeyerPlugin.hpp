@@ -16,8 +16,18 @@ template<typename Scalar>
 struct ColorSpaceKeyerProcessParams
 {
 	OFX::Clip* _clipColor;		//clip color
-	
 };
+
+//Structure used to evite to recompute geodesic form on each render 
+struct CSProcessParams
+{
+	OfxTime time;						//current time
+	bool recomputeGeodesicForm;			//does data need to recomputed
+	//Create geodesic form
+	GeodesicForm geodesicFormColor;	//color form
+	GeodesicForm geodesicFormSpill;	//spill form
+};
+
 
 /**
  * @brief ColorSpaceKeyer plugin
@@ -47,15 +57,20 @@ public:
 	
 	//Overlay data parameters
 	bool _updateVBO;									//VBO data has been changed so update VBO
-	bool _updateAverage;								//Color clip src has changed so update average
+	bool _updateAverage;								//Color clip source has changed so update average
 	bool _updateGeodesicForm;							//Average of Geodesic parameters has changed so update
 	bool _updateGeodesicFormAverage;					//Change Geodesic average parameters
 	bool _resetViewParameters;							//Push button - reset transform parameters has changed
 	bool _presetAverageSelection;						//Compute average selection in overlay
 	
+	//Render attributes
 	OfxPointD _renderScale;								//current render scale
 	OfxTime _time;										//current time
 	
+	//Process attributes
+	CSProcessParams _renderAttributes;					//contain current time and if data need to be recomputed
+	
+	//Scoped pointer attributes
 	boost::scoped_ptr<CloudPointData> _cloudPointData;	//scoped pointer points the overlay data (or NULL)
 	std::size_t _cloudPointDataCount;					//count (class calling scoped pointer)
 	
@@ -89,6 +104,7 @@ public:
 	const CloudPointData& getCloudPointData() const;	//const getter
 private:
 	void updateGeodesicForms(const OFX::InstanceChangedArgs& args);							//update color & spill geodesic forms
+	void updateProcessGeodesicForms(const OFX::RenderArguments &args);						//update color & spill geodesic forms (used in process)
 };
 
 }
