@@ -34,7 +34,7 @@ public:
 	OfxPointI _squareBegin;					//begin of square selection
 	OfxPointI _squareEnd;					//end of square selection			
 	
-	bool _isFirstTime; //temporary
+	bool _isFirstTime;						//temporary
 	
 	/* temporary when Nuke doesn't support parametric parameter overlay */
 	HSLOverlay _hslParam;
@@ -61,6 +61,8 @@ public:
 	
 	/*Get overlay data*/
 	OverlayData& getOverlayData();
+private:
+	void drawWarning(const Ofx3DPointD& centerPoint, const double ratio);		//draw a warning signal
 };
 
 class RGBParamOverlayDescriptor : public OFX::ParamInteractDescriptor

@@ -16,8 +16,7 @@ HistogramKeyerOverlay::HistogramKeyerOverlay(OfxInteractHandle handle,OFX::Image
 	_penDown = false;											//Mouse is not clicked down by default
 	_keyDown = false;											//Ctrl key is not pressed by default 	
 	_plugin->addRefOverlayData();								//add reference to Overlay data
-	
-	_isFirstTime = true; //temporary
+	_isFirstTime = true;										//temporary
 	getOverlayData()._isDataInvalid = true;
 }
 
@@ -52,10 +51,27 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 			getOverlayData()._isDataInvalid = false;
 			getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 		}
-		else
+		else	//Data is not updated : draw warning signal
 		{
-			// draw a warning: display is not up-to-date.
-			// ...
+			//initialize model-view and projection matrixes to identity
+			glMatrixMode( GL_PROJECTION );	//load standard mode
+			glLoadIdentity();				//projection to identity
+			glMatrixMode( GL_MODELVIEW );	//load standard mode
+			glLoadIdentity();				//model-view to identity 
+
+			//get current viewport size	
+			GLint viewport[4] = { 0, 0, 0, 0 };															//define result array
+			glGetIntegerv(GL_VIEWPORT,viewport);														//get current viewport size
+			const double ratio = (viewport[2]-viewport[0]) / (double)(viewport[3]-viewport[1]);			//compute ratio
+			//define new coordinates
+			glOrtho( 0.0, 1.0, 0.0, 1.0, -1.0, 1.0 );													//set coordinates to 0-1
+
+			//display warning sign on screen
+			Ofx3DPointD warningPoint;					//initialize warning drawing point
+			warningPoint.x = 0.15;						//x == viewport width/7;
+			warningPoint.y = 0.2;						//y == viewport height/5;
+			drawWarning(warningPoint, ratio);			//draw warning sign
+			
 		}
 	}
 	
@@ -374,6 +390,37 @@ void HistogramKeyerOverlay::displaySelectionZone()
 	glDisable(GL_BLEND);
 	glEnd();
 }
+
+
+/*
+ * Draw a warning sign on the openGL scene
+ */
+void HistogramKeyerOverlay::drawWarning(const Ofx3DPointD& centerPoint, const double ratio)
+{
+	float size = 5.0f;												//define size
+	glColor3f(1.0f,.7f,0);											//color orange
+	glLineWidth(size);												//change line width (bigger)
+	//draw triangle
+	glBegin(GL_LINE_STRIP);											//draw exterior triangle
+	glVertex2d((centerPoint.x - 0.025*ratio),centerPoint.y);		//first point of triangle
+	glVertex2d((centerPoint.x + 0.025*ratio),centerPoint.y);		//second point of triangle
+	glVertex2d(centerPoint.x,(centerPoint.y+0.085*ratio));			//third point of triangle
+	glVertex2d((centerPoint.x - 0.025*ratio),centerPoint.y);		//first point of triangle (boucle)
+	glEnd();														//end of drawing
+	//draw !
+	glBegin(GL_LINES);												//draw ! sign
+	glVertex2d(centerPoint.x, (centerPoint.y+0.07*ratio));			//first point
+	glVertex2d(centerPoint.x, (centerPoint.y+0.03*ratio));			//second point
+	glEnd();														//end of drawing
+	glBegin(GL_POINTS);												//draw ! point
+	glPointSize(size);												//change point size (bigger)
+	glVertex2d(centerPoint.x, (centerPoint.y + 0.02*ratio));		//point of !
+	glEnd();														//end of drawing
+	//reset basic parameters
+	glLineWidth(1.0f);												//reset line width (normal)
+	glPointSize(1.0f);												//reset point size (normal)
+}
+
 
 /**
  * Get overlay data from plugin
