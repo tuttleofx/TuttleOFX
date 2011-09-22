@@ -568,6 +568,16 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 						if(controlPointValue.second < prevControlPoint.second && controlPointValue.second < nextControlPoint.second)//current control point is not necessary
 							_paramColorHSLSelection->deleteControlPoint(i,currentP);												//delete current control point
 					}
+					
+					//correct point to 1 pass
+					for(unsigned int currentP =1; currentP <_paramColorHSLSelection->getNControlPoints(i,args.time) -1; ++currentP )
+					{
+						std::pair <double,double> prevControlPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,currentP-1);	//get previous control point
+						std::pair <double,double> nextControlPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,currentP+1);  //get next control point
+						if(prevControlPoint.second>=1.0 && nextControlPoint.second>=1.0)		//if current point is useless
+								_paramColorHSLSelection->deleteControlPoint(i,currentP);		//delete it
+						
+					}
 				}
 			}
 		}

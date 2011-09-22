@@ -71,7 +71,6 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 			warningPoint.x = 0.15;						//x == viewport width/7;
 			warningPoint.y = 0.2;						//y == viewport height/5;
 			drawWarning(warningPoint, ratio);			//draw warning sign
-			
 		}
 	}
 	
