@@ -158,7 +158,7 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	const OfxPointI fullsize = _plugin->_clipSrc->getPixelRodSize(args.time);					//full size
 	const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale);	//size with renderscale
 	
-	if(!_penDown && !_keyDown)	//mouse is already used and there is not Ctrl key pressed
+	if(!_penDown && !_keyDown && _plugin->_paramDisplaySelection->getValue())	//mouse is already used and there is not Ctrl key pressed
 	{
 		_penDown = true;	
 		if( args.penPosition.y < fullsize.y && args.penPosition.y > 0 )	//mouse Y is into the image
@@ -187,7 +187,7 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	}
 	else	//there is Ctrl key pressed
 	{
-		if( !_penDown )
+		if( !_penDown && _plugin->_paramDisplaySelection->getValue())
 			_penDown = true;
 	}
 	if( _plugin->_paramSelectionMode->getValue() == 1 )	//Selection mode is unique
