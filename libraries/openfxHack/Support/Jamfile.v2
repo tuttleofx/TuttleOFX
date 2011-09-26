@@ -20,6 +20,15 @@ project
 ###############################################################################
 lib Support :
 	[ glob-tree *.cpp ]
-	/boost//system/<link>shared
+        /boost//system/<link>static
 	;
+
+###############################################################################
+# Automatic install
+###############################################################################
+install		dist_src
+                : Support
+                : <variant>debug:<location>$(DIST)/lib
+                  <variant>release:<location>$(DIST)/lib
+                ;
 

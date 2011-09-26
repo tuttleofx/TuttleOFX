@@ -32,9 +32,9 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 plugin Jpeg2000 :
 	[ glob-tree *.cpp ]
-	/tuttleplugin/<link>static
+        /tuttleplugin/<link>static
 	opengl
-	/libopenjpeg
+        /libopenjpeg/<link>shared
 	;
 
 ###############################################################################

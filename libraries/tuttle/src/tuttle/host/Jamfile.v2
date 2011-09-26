@@ -12,7 +12,7 @@ lib tuttlehost :
 		/boost//serialization/<link>shared
 		/boost//python/<link>shared
 		
-		/ofxPluginSupport/<link>static
+                /ofxPluginSupport/<link>shared
 	:
 		<os>NT:<find-shared-library>shell32
 		<os>LINUX:<find-shared-library>dl

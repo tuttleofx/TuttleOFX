@@ -3,7 +3,6 @@
 ###############################################################################
 
 lib tuttleplugin :
-	[ glob-tree *.cpp ]
-	/ofxPluginSupport/<link>static
-	/tuttlecommon/<link>static
+        [ glob-tree *.cpp ]
+        /tuttlecommon/<link>static
 	;
