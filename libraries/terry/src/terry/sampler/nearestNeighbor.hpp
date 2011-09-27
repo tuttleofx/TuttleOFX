@@ -2,6 +2,7 @@
 #define _TERRY_SAMPLER_NEARESTNEIGHBOR_HPP_
 
 #include "details.hpp"
+#include <iostream>
 
 namespace terry {
 using namespace boost::gil;
@@ -19,9 +20,28 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
         {
             switch( outOfImageProcess )
             {
-                case 0 : return false; // black pixel
-                case 1 : center.x = 0;
-                case 2 : center.x = -center.x - 1;
+                case 0 :
+                {
+                    return false; // black pixel
+                }
+                case 1 :
+                {
+                    center.x = 0.0;
+                    break;
+                }
+                case 2 :
+                {
+                    if( ( - 1.0 * center.x / src.width() ) % 2 == 0 ) // even
+                    {
+                        //center.x = -center.x - 1;
+                        break;
+                    }
+                    else // odd
+                    {
+                        center.x = -center.x - 1;
+                        break;
+                    }
+                }
             }
         }
         if( center.x > src.width() - 1.0 )
@@ -29,8 +49,16 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
             switch( outOfImageProcess )
             {
                 case 0 : return false; // black pixel
-                case 1 : center.x = src.width() - 1.0;
-                case 2 : center.x = src.width() - 1.0 - center.x ;
+                case 1 :
+                {
+                    center.x = src.width() - 1.0;
+                    break;
+                }
+                case 2 :
+                {
+                    center.x = src.width() - 1.0 - center.x ;
+                    break;
+                }
             }
         }
         if( center.y < 0 )
@@ -38,8 +66,16 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
             switch( outOfImageProcess )
             {
                 case 0 : return false; // black pixel
-                case 1 : center.y = 0;
-                case 2 : center.y = -center.y - 1;
+                case 1 :
+                {
+                    center.y = 0;
+                    break;
+                }
+                case 2 :
+                {
+                    center.y = -center.y - 1;
+                    break;
+                }
             }
         }
 
@@ -48,8 +84,16 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
             switch( outOfImageProcess )
             {
                 case 0 : return false; // black pixel
-                case 1 : center.y = src.height() - 1.0;
-                case 2 : center.y = src.height() - 1.0 - center.y;
+                case 1 :
+                {
+                    center.y = src.height() - 1.0;
+                    break;
+                }
+                case 2 :
+                {
+                    center.y = src.height() - 1.0 - center.y;
+                    break;
+                }
             }
 	}
 
