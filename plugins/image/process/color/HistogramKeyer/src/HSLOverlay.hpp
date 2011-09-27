@@ -38,7 +38,6 @@ public:
 	/*Creator*/
 	//HSLOverlay(OfxInteractHandle handle, OFX::ImageEffect* effect); (when Nuke overlay works)
 	HSLOverlay(HistogramKeyerPlugin* plugin); //temporary
-	HSLOverlay(); //temporary
 	
 	/*Destructor*/
 	~HSLOverlay();
@@ -50,7 +49,7 @@ public:
 	ESelectedChannelHSL getOnlyChannelSelectedHSL()const;
 	
 	/*get overlay data*/
-	OverlayData& getData();
+	OverlayData& getOverlayData();
 	
 	/*Display grid*/
 	void displayGrid(float height, float width);

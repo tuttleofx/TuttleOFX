@@ -19,12 +19,6 @@ RGBOverlay::RGBOverlay(HistogramKeyerPlugin* plugin)
 	_plugin->addRefOverlayData();
 }
 
-//temporary
-RGBOverlay::RGBOverlay()
-{
-	_plugin = NULL;
-}
-
 /*Destructor*/
 RGBOverlay::~RGBOverlay()
 {
@@ -40,16 +34,16 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 	//height of the window (image for test)
 	//width of the window (image for test)
 	const OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
-	const double step = size.x / (double)(getData()._data._step -1);
+	const double step = size.x / (double)(getOverlayData()._data._step -1);
 	double heightR, heightG, heightB;
 	heightR = heightG = heightB = size.y;
 	
 	if(!(_plugin->_paramDisplayTypeSelection->getValue() == 1))
 	{
 		//get max of the three channels
-		Number maxR = *(std::max_element(getData()._data._bufferRed.begin(),getData()._data._bufferRed.end()));
-        Number maxG = *(std::max_element(getData()._data._bufferGreen.begin(),getData()._data._bufferGreen.end()));
-        Number maxB = *(std::max_element(getData()._data._bufferBlue.begin(),getData()._data._bufferBlue.end()));
+		Number maxR = *(std::max_element(getOverlayData()._data._bufferRed.begin(),getOverlayData()._data._bufferRed.end()));
+        Number maxG = *(std::max_element(getOverlayData()._data._bufferGreen.begin(),getOverlayData()._data._bufferGreen.end()));
+        Number maxB = *(std::max_element(getOverlayData()._data._bufferBlue.begin(),getOverlayData()._data._bufferBlue.end()));
 		
         if(maxR > maxG && maxR > maxB)				//R is the max
         {
@@ -78,11 +72,11 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 			_isGriddisplay = true;		//set display grid to true
 		}
 		
-		displayASpecificHistogram(getData()._data._bufferRed,getData()._selectionData._bufferRed,step,heightR,size.x,redHisto,selectionMultiplier);
+		displayASpecificHistogram(getOverlayData()._data._bufferRed,getOverlayData()._selectionData._bufferRed,step,heightR,size.x,redHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedRGB()==eSelectedChannelR)
 		{
-			displaySelectionPoints(getData()._selectionData._bufferRed,step,size.x,redHisto);					//selection points
-			displayAverageBar(getData()._averageData._averageRed,averageHisto,size.x,size.y,step);		//average bar
+			displaySelectionPoints(getOverlayData()._selectionData._bufferRed,step,size.x,redHisto);					//selection points
+			displayAverageBar(getOverlayData()._averageData._averageRed,averageHisto,size.x,size.y,step);		//average bar
 			displayRedIndicator(size);//indicator
 		}
 	}
@@ -94,11 +88,11 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 			_isGriddisplay = true;		//set display grid to true
 		}
 		
-		displayASpecificHistogram(getData()._data._bufferGreen,getData()._selectionData._bufferGreen,step,heightG,size.x,greenHisto,selectionMultiplier);
+		displayASpecificHistogram(getOverlayData()._data._bufferGreen,getOverlayData()._selectionData._bufferGreen,step,heightG,size.x,greenHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedRGB()==eSelectedChannelG)
 		{
-			displaySelectionPoints(getData()._selectionData._bufferGreen,step,size.x,greenHisto);				//selection points
-			displayAverageBar(getData()._averageData._averageGreen,averageHisto,size.x,size.y,step);	//average bar
+			displaySelectionPoints(getOverlayData()._selectionData._bufferGreen,step,size.x,greenHisto);				//selection points
+			displayAverageBar(getOverlayData()._averageData._averageGreen,averageHisto,size.x,size.y,step);	//average bar
 			displayGreenIndicator(size);																//indicator
 		}
 	}
@@ -110,21 +104,21 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 			_isGriddisplay = true;		//set display grid to true
 		}
 		
-		displayASpecificHistogram(getData()._data._bufferBlue,getData()._selectionData._bufferBlue,step,heightB,size.x,blueHisto,selectionMultiplier);
+		displayASpecificHistogram(getOverlayData()._data._bufferBlue,getOverlayData()._selectionData._bufferBlue,step,heightB,size.x,blueHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedRGB()==eSelectedChannelB)
 		{
-			displaySelectionPoints(getData()._selectionData._bufferBlue,step,size.x,blueHisto);			//selection points
-			displayAverageBar(getData()._averageData._averageBlue,averageHisto,size.x,size.y,step);				//average bar
+			displaySelectionPoints(getOverlayData()._selectionData._bufferBlue,step,size.x,blueHisto);			//selection points
+			displayAverageBar(getOverlayData()._averageData._averageBlue,averageHisto,size.x,size.y,step);				//average bar
 			displayBlueIndicator(size);																	//indicator
 		}
 	}
 	//Display border (separate from histograms to eliminate blending)
 	if(_plugin->_paramOverlayRSelection->getValue())
-		displayASpecificHistogramBorder(getData()._data._bufferRed,step,heightR,size.x,redHisto);		//R
+		displayASpecificHistogramBorder(getOverlayData()._data._bufferRed,step,heightR,size.x,redHisto);		//R
 	if(_plugin->_paramOverlayGSelection->getValue())
-		displayASpecificHistogramBorder(getData()._data._bufferGreen,step,heightG,size.x,greenHisto);	//G
+		displayASpecificHistogramBorder(getOverlayData()._data._bufferGreen,step,heightG,size.x,greenHisto);	//G
 	if(_plugin->_paramOverlayBSelection->getValue())
-		displayASpecificHistogramBorder(getData()._data._bufferBlue,step,heightB,size.x,blueHisto);		//B
+		displayASpecificHistogramBorder(getOverlayData()._data._bufferBlue,step,heightB,size.x,blueHisto);		//B
 	return true;
 }
 
@@ -156,7 +150,7 @@ ESelectedChannelRGB RGBOverlay::getOnlyChannelSelectedRGB() const
  * Get overlay data from plugin
  * @return 
  */
-OverlayData& RGBOverlay::getData()
+OverlayData& RGBOverlay::getOverlayData()
 {
 	return _plugin->getOverlayData();
 }

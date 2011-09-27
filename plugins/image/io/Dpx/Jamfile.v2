@@ -19,7 +19,7 @@ project
 ###############################################################################
 plugin Dpx :
 		[ glob-tree *.cpp : tests ]
-		/tuttleplugin/<link>static
+                /tuttleplugin/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 	;

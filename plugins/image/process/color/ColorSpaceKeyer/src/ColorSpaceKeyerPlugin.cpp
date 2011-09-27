@@ -29,7 +29,6 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 		_paramPushButtonAverageCompute = fetchPushButtonParam(kColorAverageComputing);	//average color computing - Push button
 		_paramBoolSeeSelection = fetchBooleanParam(kBoolColorSelectionDisplay);			//see selection on overlay - check box
 		_paramDoubleScaleGF = fetchDoubleParam(kDoubleScaleGeodesicForm);				//scale geodesic form - double parameter
-		_paramDoubleToleranceGF = fetchDoubleParam(kDoubleToleranceGeodesicForm);		//tolerance geodesic form - double parameter
 		_paramBoolSeeSpillSelection = fetchBooleanParam(kBoolSpillSelectionDisplay);	//see spill selection - check box
 		_paramBoolDisplaySpillGF = fetchBooleanParam(kBoolDisplaySpillGF);				//see spill geodesic form - check box
 		
@@ -165,6 +164,7 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 		{
 			updateGeodesicForms(args);
 		}
+		_renderAttributes.recomputeGeodesicForm = true;		//recompute process attributes
 	}
 	if( paramName == kPushButtonResetTransformationParameters && hasCloudPointData()) //Push button reset transformation has changed
 	{
@@ -172,7 +172,12 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 	}
 	if( paramName == kColorAverageMode && hasCloudPointData())						  //Average mode : choice list
 	{
-		updateGeodesicForms(args);
+		if(_paramChoiceAverageMode->getValue() == 1)								 //selection mode is manual
+			_paramRGBAColorSelection->setEnabled(true);								 //active component
+		else
+			_paramRGBAColorSelection->setEnabled(false);							 //disable component
+		updateGeodesicForms(args);													 //update geodesic form
+		
 	}
 	if( paramName == kColorAverageSelection && hasCloudPointData())					  //selection average RGBA component
 	{
@@ -196,10 +201,6 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 	}
 	if(paramName == kDoubleScaleGeodesicForm && hasCloudPointData())
 	{
-		updateGeodesicForms(args);
-	}
-	if(paramName == kDoubleToleranceGeodesicForm && hasCloudPointData())											//if tolerance of geodesic form has changed and there is overlay data
-	{		
 		updateGeodesicForms(args);
 	}
 }
@@ -232,6 +233,7 @@ void ColorSpaceKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, c
 	}
 	else if( clipName == kClipColorSelection)				// if color clip has changed
 	{
+		_renderAttributes.recomputeGeodesicForm = true;		//recompute process attributes
 		if( this->hasCloudPointData() )						//it is not batch mode
 		{
 			OFX::Clip* test = fetchClip(clipName);			//test if color clip is connected
@@ -250,6 +252,7 @@ void ColorSpaceKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, c
 	}
 	else if( clipName == kClipSpillSelection)				// if color clip has changed
 	{
+		_renderAttributes.recomputeGeodesicForm = true;		//recompute process attributes
 		if( this->hasCloudPointData() )						//it is not batch mode
 		{
 			OFX::Clip* test = fetchClip(clipName);			//test if color clip is connected
@@ -320,10 +323,8 @@ void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 			getCloudPointData()._averageColor.computeAverageSelection(_clipColor,args.renderScale); //update average value
 			//color geodesic form
 			getCloudPointData()._geodesicFormColor._scale = _paramDoubleScaleGF->getValue();				//set scale value
-			getCloudPointData()._geodesicFormColor._tolerance = _paramDoubleToleranceGF->getValue();		//set tolerance value
 			//spill geodesic form
 			getCloudPointData()._geodesicFormSpill._scale = _paramDoubleScaleGF->getValue();				//set scale value
-			getCloudPointData()._geodesicFormSpill._tolerance = _paramDoubleToleranceGF->getValue();		//set tolerance value
 			//update geodesic form if average mode is automatic
 			if(_paramChoiceAverageMode->getValue() == 0) //mode is automatic
 			{
@@ -339,18 +340,23 @@ void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 	//update  current parameters for process
 	_renderScale = args.renderScale; //change render scale (before rendering)
 	_time = args.time;				// change time
+	//update process attributes
+	if(_renderAttributes.recomputeGeodesicForm || _renderAttributes.time != args.time)
+		updateProcessGeodesicForms(args);
 	//call process functions
 	doGilRender<ColorSpaceKeyerProcess>( *this, args ); //launch process
 }
 
+/*
+ *Update geodesic forms for overlay (and call update function for process parameters) 
+ * @param args
+ */
 void ColorSpaceKeyerPlugin::updateGeodesicForms(const OFX::InstanceChangedArgs& args)
 {
-	//update geodesic forms scale and tolerance values
+	//update geodesic forms scale values
 	getCloudPointData()._geodesicFormColor._scale = _paramDoubleScaleGF->getValue();									//set scale value
-	getCloudPointData()._geodesicFormColor._tolerance = _paramDoubleToleranceGF->getValue();							//set tolerance value
 	//spill geodesic form
 	getCloudPointData()._geodesicFormSpill._scale = _paramDoubleScaleGF->getValue();									//set scale value
-	getCloudPointData()._geodesicFormSpill._tolerance = _paramDoubleToleranceGF->getValue();							//set tolerance value
 	//refresh selection average
 	getCloudPointData()._averageColor._time = args.time;									//set current time into average
 	getCloudPointData()._averageColor.computeAverageSelection(_clipColor,args.renderScale);	//update automatic average
@@ -374,9 +380,53 @@ void ColorSpaceKeyerPlugin::updateGeodesicForms(const OFX::InstanceChangedArgs& 
 	//extends geodesic forms
 	getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicFormColor);	//extends color geodesic form
 	getCloudPointData()._geodesicFormSpill.copyGeodesicForm(getCloudPointData()._geodesicFormColor);							//extends spill geodesic form (color clip)
-	getCloudPointData()._averageColor.extendGeodesicForm(_clipSpill,args.renderScale,getCloudPointData()._geodesicFormSpill);	//extends spill geodesic form (spill clip)
-	_updateVBO = true;			//update VBO in overlay
-	this->redrawOverlays();		//redraw scene
+	getCloudPointData()._averageColor.extendGeodesicForm(_clipSpill,args.renderScale,getCloudPointData()._geodesicFormSpill);	//extends spill geodesic form (spill clip)	
+	//scale geodesic form
+	getCloudPointData()._geodesicFormColor.scaleGeodesicForm(_paramDoubleScaleGF->getValue());
+	getCloudPointData()._geodesicFormSpill.scaleGeodesicForm(_paramDoubleScaleGF->getValue());
+	_updateVBO = true;									//update VBO in overlay
+	_renderAttributes.recomputeGeodesicForm = true;		//recompute process attributes
+	this->redrawOverlays();								//redraw scene
+}
+
+/*
+ *Update process parameters (goedesic forms, time and selection average) 
+ * @param args
+ */
+void ColorSpaceKeyerPlugin::updateProcessGeodesicForms(const OFX::RenderArguments &args)
+{
+	//update time
+	_renderAttributes.time = args.time;														//update time
+	//Create geodesic form
+	SelectionAverage selectionAverage = SelectionAverage(_time);							//create selection
+	//update color geodesic form
+	_renderAttributes.geodesicFormColor._scale = _paramDoubleScaleGF->getValue();			//set good scale to geodesic form
+	//update spill geodesic form
+	_renderAttributes.geodesicFormSpill._scale = _paramDoubleScaleGF->getValue();			//set good scale to geodesic forms
+
+	if(_paramChoiceAverageMode->getValue() ==0) //average mode is automatic
+	{
+		selectionAverage.computeAverageSelection(_clipColor,_renderScale); //compute average selection
+		//subdivise geodesic forms
+		_renderAttributes.geodesicFormColor.subdiviseFaces(selectionAverage._averageValue, _paramIntDiscretization->getValue()); //create geodesic form
+		_renderAttributes.geodesicFormSpill.subdiviseFaces(selectionAverage._averageValue, _paramIntDiscretization->getValue()); //create geodesic form
+	}
+	else //average mode is manual
+	{
+		Ofx3DPointD selectedAverage;//initialize average
+		OfxRGBAColourD colorSelected =  _paramRGBAColorSelection->getValue(); //get selected color
+		selectedAverage.x = colorSelected.r; //x == red
+		selectedAverage.y = colorSelected.g; //y == green
+		selectedAverage.z = colorSelected.b; //z == blue
+		//compute geodesic forms
+		_renderAttributes.geodesicFormColor.subdiviseFaces(selectedAverage, _paramIntDiscretization->getValue()); //create geodesic form
+		_renderAttributes.geodesicFormSpill.subdiviseFaces(selectedAverage, _paramIntDiscretization->getValue()); //create geodesic form
+	}
+	//Extend geodesic forms
+	selectionAverage.extendGeodesicForm(_clipColor,_renderScale,_renderAttributes.geodesicFormColor);	//extends geodesic form color
+	_renderAttributes.geodesicFormSpill.copyGeodesicForm(_renderAttributes.geodesicFormColor);							//extends geodesic form spill (color clip)
+	selectionAverage.extendGeodesicForm(_clipSpill,_renderScale,_renderAttributes.geodesicFormSpill);	//extends geodesic form spill (spill takes account of spill clip)
+	_renderAttributes.recomputeGeodesicForm = false;
 }
 
 

@@ -7,7 +7,7 @@ namespace plugin {
 namespace histogramKeyer {
 
 template<class View>
-HistogramKeyerProcess<View>::HistogramKeyerProcess( HistogramKeyerPlugin &effect )
+HistogramKeyerProcess<View>::HistogramKeyerProcess( HistogramKeyerPlugin& effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {

@@ -15,8 +15,7 @@ GeodesicForm::GeodesicForm() {
 	_faces.reserve(8);			//there are 8 big face in the Geodesic form (two pyramids)	
 	//initialize intersection attribute
 	_hasIntersection = false;	//there is not intersection
-	_idFaceIntersection = 9;	//there is not intersection face
-	_tolerance = 0;				//tolerance is null by default		
+	_idFaceIntersection = 9;	//there is not intersection face	
 }
 
 /*
@@ -236,8 +235,8 @@ void GeodesicForm::testOnePointFunction()
 	//initialize test point
 	Ofx3DPointD testPoint;
 	//set testPoint values
-	testPoint.x = 0.0648727; //x value
-	testPoint.y = 0.149031; //y value
+	testPoint.x = 0.0848727; //x value
+	testPoint.y = 0.849031; //y value
 	testPoint.z = 0.0420739; //z value
 
 	extendOnePoint(testPoint);	//extends test point
@@ -778,7 +777,7 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 {
 	
 	//compute vector (center-point to Move)
-	double vectorCenterPointToMove[3];							//initialize
+	double vectorCenterPointToMove[3];						//initialize
 	vectorCenterPointToMove[0] = pointToMove.x - _center.x;	//X value
 	vectorCenterPointToMove[1] = pointToMove.y - _center.y;	//Y value
 	vectorCenterPointToMove[2] = pointToMove.z - _center.z;	//Z value
@@ -797,7 +796,6 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 	double cosAngleIntersectionPointToMove = DOT(vectorCenterPointToMove,testPointCenterVector);
 	//compute new norm triangle.point3
 	double hypothenusCenterPointToMove = normTestPointCenterVector/cosAngleIntersectionPointToMove; //compute new norm
-	hypothenusCenterPointToMove *= _scale + _tolerance;						//multiply by scale value
 	if(normVectorCenterPointToMove > hypothenusCenterPointToMove) //compare current norm with existing norm
 	{
 		//nothing to do point to move is enough far of center
@@ -980,31 +978,73 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
 	while(i<8 && !intersectionFound)
 	{				
 		//parametric coordinates
-		double s,t;
-		if(getIntersection2(testPoint,_faces[i],_intersectionPoint,s,t, inverse))
+		double s,t;											//initialize parametric coordinates
+		if(getIntersection2(testPoint,_faces[i],_intersectionPoint,s,t, inverse)) //test intersection with current face (stock parametric coordinates)
 		{	
-			if(justIntersectionPoint)
-				return true;
-			unsigned int j=0;								//declare indice
-			while( j<_faces[i].triangles.size() && !intersectionFound)
+			if(justIntersectionPoint)						//if we just want to know if there is an intersection
+				return true;								//there is an intersection (no more computing)
+			
+			//compute pyramid side step
+			double pyramidStep = (double)1/(double)_nbDivisions;		//compute pyramid side step
+			//compute parametric coordinate axis X
+			double parametricCoordinateX = floor(s/pyramidStep);		//define parametric X axis value
+			//compute parametric coordinate axis Y
+			double parametricCoordinateY = floor(t/pyramidStep);		//define parametric Y axis value
+			
+			//define triangle indice
+			int indiceTr = 0;
+			if(parametricCoordinateX == 0 )								//if intersected triangle is on the first line
 			{
-				PyramidTriangle test;						//initialize pyramid triangle
-				test.point1 = _faces[i].triangles[j].point1;				//set point1
-				test.point2	= _faces[i].triangles[j].point2;				//set point2
-				test.point3 = _faces[i].triangles[j].point3;				//set point3
-				
-				//parametric coordinates test
-				double sT, tT;
-				if(getIntersection2(testPoint,test,_intersectionPoint,sT,tT))
+				indiceTr = 2*parametricCoordinateY;						//define intersected triangle indice on first line
+			}
+			else														//intersected triangle indice is not on first line
+			{
+				unsigned int indice = 0;								//define indice for previous triangle lines
+				while(indice > parametricCoordinateX)					// for each of previous lines
 				{
-					//there is an intersection point
-					intersectionFound = true;						//An intersection has been found
-					//set intersection triangle
-					_idFaceIntersection = i;						//Keep intersection face
-					_hasIntersection = true;						//An intersection has been found
-					_intersection = _faces[i].triangles[j];			//keep intersection triangle
+					indiceTr += (((int)_nbDivisions-indice)*2)-1;			//increments triangle indice
+					++indice;											//increments indice
 				}
-				++j;												//increments indice
+				indiceTr += 2*parametricCoordinateY;					//terminate intersected triangle
+			}
+			if(indiceTr >0)												//triangle index starts from 0 (but not 1)
+				indiceTr -=1;
+			//test intersection with computed intersection triangle
+			bool hasIntersected = false;								//intersection has not been done then
+			int indiceIntersected = 0;									//check intersection triangles (2 possibilities)
+			while(!hasIntersected && indiceIntersected < 3)
+			{
+				//define pyramid triangle with current point
+				PyramidTriangle pyTr;									//define triangle pyTr
+				pyTr.point1 = _faces[i].triangles[indiceTr].point1;		//charge point1
+				pyTr.point2 = _faces[i].triangles[indiceTr].point2;		//charge point2
+				pyTr.point3 = _faces[i].triangles[indiceTr].point3;		//charge point3
+				hasIntersected = getIntersection2(testPoint,pyTr,_intersectionPoint,s,t,inverse);	//test intersection with current triangle indice
+				++indiceTr;												//increments indice triangle
+				++indiceIntersected;									//increments check intersection triangle
+			}
+			if(!hasIntersected)											//intersection has not been found yet (test hard method)
+			{
+				unsigned int j=0;										//declare indice to ride through triangle vector of current face
+				while( j<_faces[i].triangles.size() && !intersectionFound)		//test for each triangle of current face
+				{
+					PyramidTriangle test;								//initialize pyramid triangle
+					test.point1 = _faces[i].triangles[j].point1;		//set point1
+					test.point2	= _faces[i].triangles[j].point2;		//set point2
+					test.point3 = _faces[i].triangles[j].point3;		//set point3
+					//parametric coordinates test
+					double sT, tT;										//define parametric coordinate
+					if(getIntersection2(testPoint,test,_intersectionPoint,sT,tT))
+					{
+						//there is an intersection point
+						intersectionFound = true;						//An intersection has been found
+						//set intersection triangle
+						_idFaceIntersection = i;						//Keep intersection face
+						_hasIntersection = true;						//An intersection has been found
+						_intersection = _faces[i].triangles[j];			//keep intersection triangle
+					}
+					++j;												//increments indice
+				}
 			}
 		}	
 		i+=4; //increments faces indice
@@ -1112,6 +1152,31 @@ void GeodesicForm::copyGeodesicForm(const GeodesicForm& copy)
 	//Copy bounding box parameters
 	_boundingBox.max = copy._boundingBox.max;	//copy max value
 	_boundingBox.min = copy._boundingBox.min;	//copy min value
+}
+
+/*
+ * Scale geodesic form (multiplier result after extends)
+ */
+void GeodesicForm::scaleGeodesicForm(const double scale)
+{
+	for(unsigned int i=0; i< _points.size(); ++i)
+	{
+		//compute vector
+		double vect[3];	//initialize vector
+		vect[0] = _points[i].x - _center.x;		//compute x value
+		vect[1] = _points[i].y - _center.y;		//compute y value
+		vect[2] = _points[i].z - _center.z;		//compute z value
+		
+		//scale vector
+		vect[0]*= scale;
+		vect[1]*= scale;
+		vect[2]*= scale;
+		
+		//set new values
+		_points[i].x = vect[0] + _center.x;		//set new X value
+		_points[i].y = vect[1] + _center.y;		//set new Y value
+		_points[i].z = vect[2] + _center.z;		//set new Z value
+	}
 }
 
 

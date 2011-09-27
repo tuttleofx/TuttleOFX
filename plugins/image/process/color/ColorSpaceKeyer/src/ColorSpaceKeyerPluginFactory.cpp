@@ -35,6 +35,8 @@ void ColorSpaceKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( true );
+	desc.setHostFrameThreading( false );
+
 	// Don't declare the plugin as fully safe: It's not a safety problem, but we need to compute common data.
 	// So it's not interesting to compute the same thing on multiple threads.
 //	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -194,18 +196,7 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	scaleGF->setRange(0,5.0);										//scale range
 	scaleGF->setDisplayRange(0,2);									//set display range
 	scaleGF->setHint("Scale geodesic form");						//help
-	scaleGF->setParent(groupProcess);								//add to process group
-	
-	//Double parameters tolerance (tolerance add to geodesic form)
-	OFX::DoubleParamDescriptor* toleranceGF = desc.defineDoubleParam(kDoubleToleranceGeodesicForm);
-	toleranceGF->setLabel(kDoubleToleranceGeodesicFormLabel);		//add label
-	toleranceGF->setDefault(0.0);									//default value
-	toleranceGF->setRange(0,1.0);									//tolerance range
-	toleranceGF->setDisplayRange(0,0.5);							//set display range
-	toleranceGF->setHint("Tolerance geodesic form");				//help
-	toleranceGF->setParent(groupProcess);							//add to process group
-	
-	
+	scaleGF->setParent(groupProcess);								//add to process group	
 }
 
 /**

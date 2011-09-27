@@ -72,7 +72,7 @@ struct Compute_alpha_pixel
 			}
         }
 		Pixel ret;
-		if(_params._boolReverseMask->getValue()) //revert mask
+		if(!_params._boolReverseMask->getValue()) //revert mask
 			alpha = 1-alpha;
 		
 		if(_isOutputBW) // output is gray scale image

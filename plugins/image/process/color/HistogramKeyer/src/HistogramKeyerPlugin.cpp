@@ -52,7 +52,6 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	_paramRefreshOverlaySelection = fetchPushButtonParam( kButtonRefreshOverlay ); //refresh overlay (Advanced group)
 	_paramNbStepSelection = fetchIntParam( knbStepRange ); //nb step range (Advanced group)
 	_paramClampCurveValues = fetchBooleanParam(kBoolClampValues); //clamp curve values (Advanced group)
-		
 
 	_paramOutputSettingSelection = fetchChoiceParam( kOutputListParamLabel ); //output type (BW/alpha)
 	_paramReverseMaskSelection = fetchBooleanParam( kBoolReverseMask ); //reverse mask
@@ -64,7 +63,6 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	_isCleaned = false;
 	_isNbStepChanged = false;
 	_isHistogramRefresh = false;
-	_doesComputeFullData = false;
 
 	//Initialize scoped pointer
 	_overlayDataCount = 0;
@@ -200,8 +198,9 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 	{
 		if( this->hasOverlayData( ) ) //if there is overlay value
 		{
-			getOverlayData( ).setNbStep( _paramNbStepSelection->getValue( ) ); //change nbStep value
-			getOverlayData( ).computeFullData( this->_clipSrc, args.time, args.renderScale ); //reset buffer and compute them
+			getOverlayData().setNbStep( _paramNbStepSelection->getValue( ) ); //change nbStep value
+			// getOverlayData( ).computeFullData( this->_clipSrc, args.time, args.renderScale ); //reset buffer and compute them
+			getOverlayData()._isDataInvalid = true;
 		}
 	}
 	/*Clear user selection*/
@@ -213,15 +212,15 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		}
 	}
 	/*Selection to curve */
-	else if(paramName == kButtonSelectionToCurveHSL || paramName == kButtonSelectionToCurveRGB)
+	else if( paramName == kButtonSelectionToCurveHSL || paramName == kButtonSelectionToCurveRGB )
 	{
-		//prepare buffer 
+		//prepare buffer
 		getOverlayData()._vNbStepCurveFromSelection = _paramSelectionFromCurve->getValue();				//change precision step (precision)
 		getOverlayData().computeCurveFromSelectionData( this->_clipSrc,args.time, args.renderScale);	//compute curves
 
 		//getOverlayData().resetCurvesFromSelectionData();	//reset curve from selection buffer data
 		//RGB
-		if(paramName == kButtonSelectionToCurveRGB)
+		if( paramName == kButtonSelectionToCurveRGB )
 		{			
 			//get nb points for each curve (RGB)
 			std::vector<std::size_t> nbControlPointsRGB( nbCurvesRGB ); //initialize vector
@@ -325,7 +324,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		}
 		
 		//HSL
-		if(paramName == kButtonSelectionToCurveHSL)
+		if( paramName == kButtonSelectionToCurveHSL )
 		{
 			//get nb points for each curve (RGB)
 			std::vector<std::size_t> nbControlPointsHSL( nbCurvesHSL ); //initialize vector
@@ -368,7 +367,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 					double step =  (double)(1/(double)(getOverlayData()._vNbStepCurveFromSelection-1));	//compute step for curve display
 					
 					//for each point
-					for(unsigned int x=0; x<getOverlayData()._vNbStepCurveFromSelection; ++x)
+					for( unsigned int x=0; x<getOverlayData()._vNbStepCurveFromSelection; ++x )
 					{
 						if(i == 0)	//working on Hue channel
 							yPosition = (double)((double)(getOverlayData()._curveFromSelection._bufferHue[x]));		//get current Y if Hue selection buffer
@@ -379,20 +378,20 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 						
 						yPosition/=maxChannel; //yPosition between 0 and 1
 						
-						if(x==0 || x == getOverlayData()._vNbStepCurveFromSelection-1)	//current point is last of first
+						if( x==0 || x == getOverlayData()._vNbStepCurveFromSelection-1 )	//current point is last of first
 							_paramColorHSLSelection->addControlPoint( i, args.time,xPosition, yPosition, false );	//place the current point
 						else //filter 
 						{
 							double value;
 							double nextValue;
 							double previousValue;
-							if(i == 0)//Hue channel
+							if( i == 0 )//Hue channel
 							{
 								value= (double)getOverlayData()._curveFromSelection._bufferHue[x];				//get actual value
 								nextValue = (double)getOverlayData()._curveFromSelection._bufferHue[x+1];		//get next value
 								previousValue = (double)getOverlayData()._curveFromSelection._bufferHue[x-1];	//get previous value
 							}
-							else if(i == 1)//Saturation channel
+							else if( i == 1 )//Saturation channel
 							{
 								value= (double)getOverlayData()._curveFromSelection._bufferSaturation[x];				//get actual value
 								nextValue = (double)getOverlayData()._curveFromSelection._bufferSaturation[x+1];		//get next value
@@ -433,7 +432,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		//prepare buffer (compute with curve precision)
 		getOverlayData()._vNbStepCurveFromSelection = _paramSelectionFromCurve->getValue();				//change precision step (precision)
 		getOverlayData().computeCurveFromSelectionData( this->_clipSrc,args.time, args.renderScale);	//compute curves
-		if(paramName == kButtonAppendSelectionToCurveHSL)												//Append to curve (HSL)
+		if( paramName == kButtonAppendSelectionToCurveHSL )												//Append to curve (HSL)
 		{
 			for(unsigned int i=0; i<nbCurvesHSL; ++i)
 			{
@@ -536,8 +535,9 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 								while(nbPointsInCurve< _paramColorHSLSelection->getNControlPoints(i,args.time) && !pointFound)
 								{
 									currentPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,nbPointsInCurve); //get current point
-									if(currentPoint.first == x) //current point has the same X value than this we want to add
-										pointFound = true;		//point has been found
+									double epsilon = 0.01;
+									if(fabs(currentPoint.first-xPosition)<epsilon)  //current point has the same X value than this we want to add
+										pointFound = true;							//point has been found
 									else
 										++nbPointsInCurve;		//increments indice
 								}
@@ -567,6 +567,16 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 						//if current control point is not necessary
 						if(controlPointValue.second < prevControlPoint.second && controlPointValue.second < nextControlPoint.second)//current control point is not necessary
 							_paramColorHSLSelection->deleteControlPoint(i,currentP);												//delete current control point
+					}
+					
+					//correct point to 1 pass
+					for(unsigned int currentP =1; currentP <_paramColorHSLSelection->getNControlPoints(i,args.time) -1; ++currentP )
+					{
+						std::pair <double,double> prevControlPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,currentP-1);	//get previous control point
+						std::pair <double,double> nextControlPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,currentP+1);  //get next control point
+						if(prevControlPoint.second>=1.0 && nextControlPoint.second>=1.0)		//if current point is useless
+								_paramColorHSLSelection->deleteControlPoint(i,currentP);		//delete it
+						
 					}
 				}
 			}
@@ -674,8 +684,9 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 								while(nbPointsInCurve< _paramColorRGBSelection->getNControlPoints(i,args.time) && !pointFound)
 								{
 									currentPoint = _paramColorRGBSelection->getNthControlPoints(i,args.time,nbPointsInCurve); //get current point
-									if(currentPoint.first == x) //current point has the same X value than this we want to add
-										pointFound = true;		//point has been found
+									double epsilon = 0.01;
+									if(fabs(currentPoint.first-xPosition)<epsilon) //current point has the same X value than this we want to add
+										pointFound = true;						   //point has been found
 									else
 										++nbPointsInCurve;		//increments indice
 								}
@@ -721,8 +732,8 @@ void HistogramKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, co
 	{
 		if( this->hasOverlayData( ) )
 		{
-			this->getOverlayData().clearAll( this->_clipSrc->getPixelRodSize( args.time, args.renderScale ) );
-			this->getOverlayData().computeFullData( this->_clipSrc, args.time, args.renderScale );
+			this->getOverlayData()._isDataInvalid = true;
+			this->redrawOverlays();
 		}
 	}
 }
@@ -746,18 +757,16 @@ bool HistogramKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Cl
 void HistogramKeyerPlugin::render( const OFX::RenderArguments &args )
 {
 	_isRendering = true;		//plugin is rendering
-	if(OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke")	/// @todo: HACK Nuke doesn't call changeClip function when time is changed
+	doGilRender<HistogramKeyerProcess>( *this, args );
+	_isRendering = false;		//plugin is not rendering anymore
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )	/// @todo: HACK Nuke doesn't call changeClip function when time is changed
 	{
-		if(getOverlayData().isCurrentTimeModified(args.time) || _doesComputeFullData) //if time is changed
+		if( getOverlayData().isCurrentTimeModified(args.time) ) //if time is changed
 		{
-			getOverlayData()._currentTime = args.time;
-			getOverlayData().computeFullData(this->_clipSrc,args.time,args.renderScale);
-			_doesComputeFullData = false;
+			this->redrawOverlays();		//redraw scene
 		}
 	}
-	doGilRender<HistogramKeyerProcess > ( *this, args );
-	this->redrawOverlays();		//redraw scene
-	_isRendering = false;		//plugin is not rendering anymore
 }
 
 /// @brief Overlay data

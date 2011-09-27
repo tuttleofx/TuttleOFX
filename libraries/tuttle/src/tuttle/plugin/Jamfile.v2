@@ -11,7 +11,7 @@ project		: requirements
 		;
 
 lib tuttleplugin :
-	[ glob-tree *.cpp ]
+        [ glob-tree *.cpp ]
 	/tuttlecommon # link static
 	;
 
