@@ -16,85 +16,121 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	point2<std::ptrdiff_t> center( iround( p ) );
 
 	// if we are outside the image
-        if( center.x < 0 )
-        {
-            switch( outOfImageProcess )
-            {
-                case 0 :
-                {
-                    return false; // black pixel
-                }
-                case 1 :
-                {
-                    center.x = 0.0;
-                    break;
-                }
-                case 2 :
-                {
-                    if( ( - 1.0 * center.x / src.width() ) % 2 == 0 ) // even
-                    {
-                        //center.x = -center.x - 1;
-                        break;
-                    }
-                    else // odd
-                    {
-                        center.x = -center.x - 1;
-                        break;
-                    }
-                }
-            }
-        }
-        if( center.x > src.width() - 1.0 )
-        {
-            switch( outOfImageProcess )
-            {
-                case 0 : return false; // black pixel
-                case 1 :
-                {
-                    center.x = src.width() - 1.0;
-                    break;
-                }
-                case 2 :
-                {
-                    center.x = src.width() - 1.0 - center.x ;
-                    break;
-                }
-            }
-        }
-        if( center.y < 0 )
-        {
-            switch( outOfImageProcess )
-            {
-                case 0 : return false; // black pixel
-                case 1 :
-                {
-                    center.y = 0;
-                    break;
-                }
-                case 2 :
-                {
-                    center.y = -center.y - 1;
-                    break;
-                }
-            }
-        }
+	if( center.x < 0 )
+	{
+		switch( outOfImageProcess )
+		{
+			case 0 :
+			{
+				return false; // black pixel
+			}
+			case 1 :
+			{
+				center.x = 0.0;
+				break;
+			}
+			case 2 :
+			{
+				int value = ( - 1.0 * center.x / src.width() );
+				int idx = center.x + value * src.width();
 
-        if( center.y > src.height() - 1.0 )
-        {
-            switch( outOfImageProcess )
-            {
-                case 0 : return false; // black pixel
-                case 1 :
-                {
-                    center.y = src.height() - 1.0;
-                    break;
-                }
-                case 2 :
-                {
-                    center.y = src.height() - 1.0 - center.y;
-                    break;
-                }
-            }
+				if( value % 2 == 0 ) // even - mirrored image
+				{
+					center.x = - idx - 1.0;
+					break;
+				}
+				else // odd - displaced image
+				{
+					center.x = src.width() - 1.0 + idx ;
+					break;
+				}
+			}
+		}
+	}
+	if( center.x > src.width() - 1.0 )
+	{
+		switch( outOfImageProcess )
+		{
+			case 0 : return false; // black pixel
+			case 1 :
+			{
+				center.x = src.width() - 1.0;
+				break;
+			}
+			case 2 :
+			{
+				int value =  center.x / src.width();
+				int idx = center.x - ( value + 1.0 ) * src.width();
+
+				if( value % 2 == 0 ) // even - mirrored image
+				{
+					center.x = src.width() - 1.0 + idx ;
+					break;
+				}
+				else // odd - displaced image
+				{
+					center.x = - idx - 1.0;
+					break;
+				}
+			}
+		}
+	}
+	if( center.y < 0 )
+	{
+		switch( outOfImageProcess )
+		{
+			case 0 : return false; // black pixel
+			case 1 :
+			{
+				center.y = 0;
+				break;
+			}
+			case 2 :
+			{
+				int value = ( - 1.0 * center.y / src.height() );
+				int idx = center.y + value * src.height();
+
+				if( value % 2 == 0 ) // even - mirrored image
+				{
+					center.y = - idx - 1.0;
+					break;
+				}
+				else // odd - displaced image
+				{
+					center.y = src.height() - 1.0 + idx ;
+					break;
+				}
+			}
+		}
+	}
+
+	if( center.y > src.height() - 1.0 )
+	{
+		switch( outOfImageProcess )
+		{
+			case 0 : return false; // black pixel
+			case 1 :
+			{
+				center.y = src.height() - 1.0;
+				break;
+			}
+			case 2 :
+			{
+				int value =  center.y / src.height();
+				int idx = center.y - ( value + 1.0 ) * src.height();
+
+				if( value % 2 == 0 ) // even - mirrored image
+				{
+					center.y = src.height() - 1.0 + idx ;
+					break;
+				}
+				else // odd - displaced image
+				{
+					center.y = - idx - 1.0;
+					break;
+				}
+			}
+		}
 	}
 
 	result = src( center.x, center.y );
