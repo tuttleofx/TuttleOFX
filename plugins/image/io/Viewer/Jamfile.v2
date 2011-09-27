@@ -7,11 +7,11 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-        <linkflags>-lGL
-        <linkflags>-lglut
-    : build-dir $(BUILD)/Viewer
+	: requirements
+		<include>src
+		<linkflags>-lGL
+		<linkflags>-lglut
+	: build-dir $(BUILD)/Viewer
     ;
 
 ##############################################################################
@@ -19,20 +19,20 @@ project
 ##############################################################################
 
 if [ os.name ] = NT
-        {	lib opengl32 ; 	alias opengl : opengl32 ; }
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
 else if [ os.name ] = LINUX
-        {	alias opengl : ; }
+	{	alias opengl : ; }
 else if [ os.name ] = MACOSX
-        {	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Viewer : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    opengl
-    ;
+		[ glob-tree *.cpp ]
+		/tuttleplugin/<link>static
+		opengl
+	;
  
 ###############################################################################
 # Automatic install

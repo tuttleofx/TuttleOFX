@@ -123,7 +123,7 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 	print '\nuncompress : ', folderExtracted, ' -> ', libname, '\n'
 	
 	if os.path.exists( libname + '/Jamfile.v2' ) :
-		move( libname + '/Jamfile.v2', folderExtracted )
+		movetree( libname , folderExtracted )
 	if os.path.exists(libname) :
 		rmtree( libname )
 	os.rename( folderExtracted, libname )

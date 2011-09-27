@@ -18,9 +18,11 @@ use-project /libexr : $(3RD_PARTY)/openexr ;
 # Product 
 ###############################################################################
 plugin Exr : 
-	[ glob-tree *.cpp : tests ]
-	/tuttleplugin/<link>static
-	/libexr
+		[ glob-tree *.cpp : tests ]
+		/tuttleplugin/<link>static
+		/libexr
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
 
 ###############################################################################

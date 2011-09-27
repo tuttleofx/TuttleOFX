@@ -5,6 +5,8 @@
 project openfxHackProject
 	: requirements
 		<include>include
+		 <link>static
 	: usage-requirements
 		<include>include
+
 	;

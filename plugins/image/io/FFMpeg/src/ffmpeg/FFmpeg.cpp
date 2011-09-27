@@ -19,6 +19,7 @@ const std::string FFmpeg::ffmpegError_toString( int error )
 {
 	switch( error )
 	{
+#if LIBAVCODEC_VERSION_MAJOR > 52
 		case AVERROR_BSF_NOT_FOUND:
 			return "Bitstream filter not found";
 		case AVERROR_DECODER_NOT_FOUND:
@@ -27,24 +28,25 @@ const std::string FFmpeg::ffmpegError_toString( int error )
 			return "Demuxer not found";
 		case AVERROR_ENCODER_NOT_FOUND:
 			return "Encoder not found";
-		case AVERROR_EOF:
-			return "End of file";
 		case AVERROR_EXIT:
 			return "Immediate exit was requested; the called function should not be restarted";
 		case AVERROR_FILTER_NOT_FOUND:
 			return "Filter not found";
-		case AVERROR_INVALIDDATA:
-			return "Invalid data found when processing input";
 		case AVERROR_MUXER_NOT_FOUND:
 			return "Muxer not found";
 		case AVERROR_OPTION_NOT_FOUND:
 			return "Option not found";
-		case AVERROR_PATCHWELCOME:
-			return "Not yet implemented in FFmpeg, patches welcome";
 		case AVERROR_PROTOCOL_NOT_FOUND:
 			return "Protocol not found";
 		case AVERROR_STREAM_NOT_FOUND:
 			return "Stream not found";
+#endif
+		case AVERROR_EOF:
+			return "End of file";
+		case AVERROR_INVALIDDATA:
+			return "Invalid data found when processing input";
+		case AVERROR_PATCHWELCOME:
+			return "Not yet implemented in FFmpeg, patches welcome";
 		default:
 			return "unknown error";
 	}
@@ -83,7 +85,9 @@ const std::string FFmpeg::codecID_toString( const CodecID codec_id )
 		CASE_RETURN_STRING( CODEC_ID_HUFFYUV );
 		CASE_RETURN_STRING( CODEC_ID_CYUV );
 		CASE_RETURN_STRING( CODEC_ID_H264 );
-		CASE_RETURN_STRING( CODEC_ID_INDEO3 );
+#if LIBAVCODEC_VERSION_MAJOR > 52
+		CASE_RETURN_STRING( X_INDEO3 );
+#endif
 		CASE_RETURN_STRING( CODEC_ID_VP3 );
 		CASE_RETURN_STRING( CODEC_ID_THEORA );
 		CASE_RETURN_STRING( CODEC_ID_ASV1 );
@@ -117,7 +121,9 @@ const std::string FFmpeg::codecID_toString( const CodecID codec_id )
 		CASE_RETURN_STRING( CODEC_ID_QDRAW );
 		CASE_RETURN_STRING( CODEC_ID_VIXL );
 		CASE_RETURN_STRING( CODEC_ID_QPEG );
-//		CASE_RETURN_STRING( CODEC_ID_XVID ); // removed from ffmpeg
+#if LIBAVCODEC_VERSION_MAJOR <= 52
+		CASE_RETURN_STRING( CODEC_ID_XVID ); // removed from ffmpeg
+#endif
 		CASE_RETURN_STRING( CODEC_ID_PNG );
 		CASE_RETURN_STRING( CODEC_ID_PPM );
 		CASE_RETURN_STRING( CODEC_ID_PBM );
@@ -298,6 +304,12 @@ const std::string FFmpeg::codecID_toString( const CodecID codec_id )
 		CASE_RETURN_STRING( CODEC_ID_TTF );
 		CASE_RETURN_STRING( CODEC_ID_PROBE );
 		CASE_RETURN_STRING( CODEC_ID_MPEG2TS );
+#if LIBAVCODEC_VERSION_MAJOR <= 52
+		CASE_RETURN_STRING( CODEC_ID_PICTOR );
+		CASE_RETURN_STRING( CODEC_ID_ANSI );
+		CASE_RETURN_STRING( CODEC_ID_SRT );
+		CASE_RETURN_STRING( CODEC_ID_INDEO3 );
+#endif
 #if LIBAVCODEC_VERSION_MAJOR >= 52
 	#if LIBAVCODEC_VERSION_MAJOR > 52 || LIBAVCODEC_VERSION_MINOR >= 32
 		CASE_RETURN_STRING( CODEC_ID_AURA );

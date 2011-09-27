@@ -17,9 +17,11 @@ use-project /png    : $(3RD_PARTY)/libpng ;
 # Product 
 ###############################################################################
 plugin Png : 
-	[ glob-tree *.cpp : tests ]
-	/tuttleplugin/<link>static
-	/png
+		[ glob-tree *.cpp : tests ]
+		/tuttleplugin/<link>static
+		/png
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
 
 ###############################################################################

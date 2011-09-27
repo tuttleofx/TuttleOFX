@@ -120,23 +120,7 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 
 void ResizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-	if( paramName == kParamFilter )
-	{
-		if( _paramFilter->getValue() == eParamFilterBC )
-		{
-			_paramB -> setIsSecret ( false );
-			_paramC -> setIsSecret ( false );
-		}
-		else
-		{
-			_paramB -> setIsSecret ( true );
-			_paramC -> setIsSecret ( true );
-		}
-	}
-	if( paramName == kParamOptions )
-	{
-		updateVisibleTools();
-	}
+	updateVisibleTools();
 	if( paramName == kParamSplit )
 	{
 		if( _paramSplit->getValue() == false )
@@ -226,21 +210,12 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 				case eParamSquare1k:		sizex = 1024; sizey = 1024; break;
 				case eParamSquare2k:		sizex = 2048; sizey = 2048; break;
 			}
-			if(_paramCenter->getValue() == false)
-			{ // not center resizing
-				rod.x1 = 0;
-				rod.y1 = 0;
-				rod.x2 = sizex;
-				rod.y2 = sizey;
-			}
-			else
-			{ // center resizing
-				OfxPointD centerPoint = _paramCenterPoint->getValue();
-				rod.x1 = centerPoint.x-sizex*0.5;
-				rod.y1 = centerPoint.y-sizey*0.5;
-				rod.x2 = centerPoint.x+sizex*0.5;
-				rod.y2 = centerPoint.y+sizey*0.5;
-			}
+
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = sizex;
+			rod.y2 = sizey;
+
 			modified = true;
 			return true;
 		}
@@ -265,21 +240,12 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 					sizey   = 1.0*srcRodSize.x*_paramSize->getValue()/srcRodSize.y;
 				}
 			}
-			if(_paramCenter->getValue() == false)
-			{ // not center resizing
-				rod.x1 = 0;
-				rod.y1 = 0;
-				rod.x2 = sizex;
-				rod.y2 = sizey;
-			}
-			else
-			{ // center resizing
-				OfxPointD centerPoint = _paramCenterPoint->getValue();
-				rod.x1 = centerPoint.x-sizex*0.5;
-				rod.y1 = centerPoint.y-sizey*0.5;
-				rod.x2 = centerPoint.x+sizex*0.5;
-				rod.y2 = centerPoint.y+sizey*0.5;
-			}
+
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = sizex;
+			rod.y2 = sizey;
+
 			modified = true;
 			return true;
 		}
@@ -310,21 +276,12 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 				scalex = scale;
 				scaley = scale;
 			}
-			if(_paramCenter->getValue() == false)
-			{ // not center resizing
+
 				rod.x1 = 0;
 				rod.y1 = 0;
 				rod.x2 = pMax.x * scalex;
 				rod.y2 = pMax.y * scaley;
-			}
-			else
-			{ // center resizing
-				OfxPointD centerPoint = _paramCenterPoint->getValue();
-				rod.x1 = centerPoint.x- ( srcRodSize.x * scalex * 0.5 );
-				rod.y1 = centerPoint.y- ( srcRodSize.y * scaley * 0.5 );
-				rod.x2 = centerPoint.x+ ( srcRodSize.x * scalex * 0.5 );
-				rod.y2 = centerPoint.y+ ( srcRodSize.y * scaley * 0.5 );
-			}
+
 			modified = true;
 			return true;
 		}
