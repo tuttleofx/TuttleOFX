@@ -8,16 +8,16 @@ namespace tuttle {
 namespace plugin {
 namespace sobel {
 
-const static std::string kParamSize = "size";
-const static std::string kParamGroupAdvanced = "advanced";
-const static std::string kParamUnidimensional = "unidimensional";
-const static std::string kParamReverseKernel = "reverseKernel";
-const static std::string kParamNormalizedKernel = "normalizedKernel";
-const static std::string kParamKernelEpsilon = "kernelEpsilon";
-const static std::string kParamPass = "pass";
-const static std::string kParamPassFull = "full";
-const static std::string kParamPass1 = "1";
-const static std::string kParamPass2 = "2";
+static const std::string kParamSize = "size";
+static const std::string kParamGroupAdvanced = "advanced";
+static const std::string kParamUnidimensional = "unidimensional";
+static const std::string kParamReverseKernel = "reverseKernel";
+static const std::string kParamNormalizedKernel = "normalizedKernel";
+static const std::string kParamKernelEpsilon = "kernelEpsilon";
+static const std::string kParamPass = "pass";
+static const std::string kParamPassFull = "full";
+static const std::string kParamPass1 = "1";
+static const std::string kParamPass2 = "2";
 
 enum EParamPass
 {
@@ -26,11 +26,11 @@ enum EParamPass
 	eParamPass2
 };
 
-const static std::string kParamBorder = "border";
-const static std::string kParamBorderMirror = "Mirror";
-const static std::string kParamBorderConstant = "Constant";
-const static std::string kParamBorderBlack = "Black";
-const static std::string kParamBorderPadded = "Padded";
+static const std::string kParamBorder = "border";
+static const std::string kParamBorderMirror = "Mirror";
+static const std::string kParamBorderConstant = "Constant";
+static const std::string kParamBorderBlack = "Black";
+static const std::string kParamBorderPadded = "Padded";
 
 enum EParamBorder
 {
@@ -40,14 +40,14 @@ enum EParamBorder
 	eParamBorderPadded
 };
 
-const static std::string kParamComputeGradientNorm = "computeGradientNorm";
-const static std::string kParamGradientNormManhattan = "gradientNormManhattan";
-const static std::string kParamComputeGradientDirection = "computeGradientDirection";
-const static std::string kParamGradientDirectionAbs = "gradientDirectionAbs";
+static const std::string kParamComputeGradientNorm = "computeGradientNorm";
+static const std::string kParamGradientNormManhattan = "gradientNormManhattan";
+static const std::string kParamComputeGradientDirection = "computeGradientDirection";
+static const std::string kParamGradientDirectionAbs = "gradientDirectionAbs";
 
-const static std::string kParamOutputComponent = "outputComponent";
-const static std::string kParamOutputComponentRGBA = "RGBA";
-const static std::string kParamOutputComponentRGB = "RGB";
+static const std::string kParamOutputComponent = "outputComponent";
+static const std::string kParamOutputComponentRGBA = "RGBA";
+static const std::string kParamOutputComponentRGB = "RGB";
 
 enum EParamOutputComponent
 {
@@ -55,7 +55,7 @@ enum EParamOutputComponent
 	eParamOutputComponentRGB,
 };
 
-const static std::string kParamInfos = "infos";
+static const std::string kParamInfos = "infos";
 
 
 }

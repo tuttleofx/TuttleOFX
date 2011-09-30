@@ -1,6 +1,6 @@
 #include "Jpeg2000WriterPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/clamp.hpp>
+#include <terry/clamp.hpp>
 
 #include <boost/assert.hpp>
 
@@ -39,6 +39,7 @@ template<class View>
 void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	using namespace terry;
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 
 	_writer.setCinemaMode( (OPJ_CINEMA_MODE)_params._cineProfil );

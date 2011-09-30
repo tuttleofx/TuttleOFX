@@ -1,4 +1,7 @@
 
+namespace tuttle {
+namespace plugin {
+namespace color {
 
 #ifdef TUTTLE_SSE
 
@@ -449,5 +452,9 @@ void convertToTempDCIP3	( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 	get_color( dst, green_t() )	=  0.00000000f * get_color( src, red_t() ) + 0.95369333f * get_color( src, green_t() ) - 0.00000001 * get_color( src, blue_t() );
 	get_color( dst, blue_t()  )	=  0.00000000f * get_color( src, red_t() ) + 0.00000000f * get_color( src, green_t() ) + 1.16999125 * get_color( src, blue_t() );
 	get_color( dst, alpha_t() )	=  get_color( src, alpha_t() );
+}
+
+}
+}
 }
 

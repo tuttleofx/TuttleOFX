@@ -31,8 +31,13 @@ ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
 
 	_paramFilter		= fetchChoiceParam	( kParamFilter );
 
-        _paramB                 = fetchDoubleParam	( kParamFilterB );
-        _paramC                 = fetchDoubleParam	( kParamFilterC );
+	_paramB			= fetchDoubleParam	( kParamFilterB );
+	_paramC			= fetchDoubleParam	( kParamFilterC );
+
+	_paramFilterSize	= fetchIntParam		( kParamFilterSize );
+	_paramFilterSigma	= fetchDoubleParam	( kParamFilterSigma );
+
+        _paramOutOfImage        = fetchChoiceParam      ( kParamFilterOutOfImage );
 
 	updateVisibleTools();
 }
@@ -104,6 +109,23 @@ void ResizePlugin::updateVisibleTools()
 		_paramB -> setIsSecret ( true );
 		_paramC -> setIsSecret ( true );
 	}
+	if( ( _paramFilter->getValue() == eParamFilterLanczos ) || ( _paramFilter->getValue() == eParamFilterGaussian ) )
+	{
+		_paramFilterSize -> setIsSecret ( false );
+	}
+	else
+	{
+		_paramFilterSize -> setIsSecret ( true );
+	}
+	if( _paramFilter->getValue() == eParamFilterGaussian )
+	{
+		_paramFilterSigma -> setIsSecret ( false );
+	}
+	else
+	{
+		_paramFilterSigma -> setIsSecret ( true );
+	}
+
 }
 
 
@@ -111,9 +133,24 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 {
 	ResizeProcessParams<Scalar> params;
 
-	OfxPointD size = _paramOutputFormat -> getValue();
-	params._size.x = size.x;
-	params._size.y = size.y;
+	OfxPointD size        = _paramOutputFormat -> getValue();
+	OfxPointD centerPoint = _paramCenterPoint -> getValue();
+
+	params._size.x        = size.x;
+	params._size.y        = size.y;
+
+	params._centerPoint.x = centerPoint.x;
+	params._centerPoint.y = centerPoint.y;
+
+	params._changeCenter  = _paramCenter->getValue();
+	params._paramB        = _paramB->getValue();
+	params._paramC        = _paramC->getValue();
+	params._filterSize    = _paramFilterSize->getValue();
+	params._filterSigma   = _paramFilterSigma->getValue();
+
+	params._filter        = static_cast<EParamFilter>( _paramFilter->getValue() );
+
+        params._outOfImageProcess = static_cast<EParamFilterOutOfImage>( _paramOutOfImage->getValue() );
 
 	return params;
 }
@@ -121,72 +158,26 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 void ResizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
 	updateVisibleTools();
-	if( paramName == kParamSplit )
-	{
-		if( _paramSplit->getValue() == false )
-		{
-			if(_paramOptions->getValue() == eParamBox )
-			{
-				_paramDirection		-> setIsSecret	( true );
-				_paramScale		-> setIsSecret	( true );
-				_paramScaleX		-> setIsSecret	( true );
-				_paramScaleY		-> setIsSecret	( true );
-				_paramOutputFormat	-> setIsSecret	( false );
-				_paramSize		-> setIsSecret	( true );
-			}
-			else
-			{
-				if(_paramOptions->getValue() == eParamScale )
-				{
-					_paramSize		-> setIsSecret	( true );
-					_paramOutputFormat	-> setIsSecret	( true );
-					_paramScaleX		-> setIsSecret	( false );
-					_paramScaleY		-> setIsSecret	( false );
-					_paramDirection		-> setIsSecret	( true );
-					_paramScale		-> setIsSecret	( true );
-				}
-			}
-		}
-		else
-		{
-			if(_paramOptions->getValue() == eParamBox )
-			{
-				_paramDirection		-> setIsSecret	( false );
-				_paramScale		-> setIsSecret	( true );
-				_paramScaleX		-> setIsSecret	( true );
-				_paramScaleY		-> setIsSecret	( true );
-				_paramOutputFormat	-> setIsSecret	( true );
-				_paramSize		-> setIsSecret	( false );
-			}
-			else
-			{
-				if(_paramOptions->getValue() == eParamScale )
-				{
-					_paramDirection		-> setIsSecret	( true );
-					_paramSize		-> setIsSecret	( true );
-					_paramOutputFormat	-> setIsSecret	( true );
-					_paramScaleX		-> setIsSecret	( true );
-					_paramScaleY		-> setIsSecret	( true );
-					_paramScale		-> setIsSecret	( false );
-				}
-			}
-		}
-	}
 }
 
 bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	using namespace bgil;
-	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-	const Point2 srcRodCorner( srcRod.x1, srcRod.y1 );
-	const Point2 srcRodSize( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );
+	using namespace boost::gil;
+	const OfxRectD srcRod           = _clipSrc->getCanonicalRod( args.time );
+	const Point2   srcRodCorner ( srcRod.x1, srcRod.y1 );
+	const Point2   srcRodSize   ( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );
 	const OfxRectD srcRodInDstFrame = { 0, 0, srcRodSize.x, srcRodSize.y };
+
+        //OfxPointD centerPoint = _paramCenterPoint->getValue();
+
+	//TUTTLE_COUT( centerPoint.x << " x " << centerPoint.y );
 
 	bool modified = false;
 
 	ResizeProcessParams<Scalar> params = getProcessParams();
 	unsigned int sizex = 0;
 	unsigned int sizey = 0;
+
 	switch(_paramOptions->getValue())
 	{
 		case eParamFormat :
@@ -277,20 +268,24 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 				scaley = scale;
 			}
 
-				rod.x1 = 0;
-				rod.y1 = 0;
-				rod.x2 = pMax.x * scalex;
-				rod.y2 = pMax.y * scaley;
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = pMax.x * scalex;
+			rod.y2 = pMax.y * scaley;
 
 			modified = true;
 			return true;
 		}
 	}
 
+	TUTTLE_COUT( rod.x1 << ", " << rod.y1 << " || " << rod.x2 << ", " << rod.y2 );
+
 	rod.x1 += srcRodCorner.x;
 	rod.y1 += srcRodCorner.y;
 	rod.x2 += srcRodCorner.x;
 	rod.y2 += srcRodCorner.y;
+
+	TUTTLE_COUT( rod.x1 << ", " << rod.y1 << " || " << rod.x2 << ", " << rod.y2 );
 	return modified;
 }
 
@@ -310,7 +305,7 @@ void ResizePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& 
 	OfxRectD srcRoi;
 	srcRoi.x1 = srcRod.x1 - 1;
 	srcRoi.y1 = srcRod.y1 - 1;
-	srcRoi.x2 = srcRod.x2 + 1;
+        srcwRoi.x2 = srcRod.x2 + 1;
 	srcRoi.y2 = srcRod.y2 + 1;
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );*/
 	/*

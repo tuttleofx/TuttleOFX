@@ -1,7 +1,7 @@
 #include "OpenImageIOWriterDefinitions.hpp"
 #include "OpenImageIOWriterPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <OpenImageIO/imageio.h>

@@ -28,8 +28,8 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
 	bool normalizedKernel = _paramNormalizedKernel->getValue();
 	double kernelEpsilon = _paramKernelEpsilon->getValue();
 
-	params._gilKernelX = buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
-	params._gilKernelY = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
+	params._gilKernelX = terry::buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
+	params._gilKernelY = terry::buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
 	
 	params._boundary_option = bgil::convolve_option_extend_mirror;
 	switch( params._border )

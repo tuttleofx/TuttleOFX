@@ -1,7 +1,7 @@
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderDefinitions.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 

@@ -20,7 +20,7 @@ public:
 	typedef typename View::value_type Pixel;
 	typedef typename View::point_t Point;
 	typedef typename View::coord_t Coord;
-	typedef typename image_from_view<View>::type Image;
+	typedef typename terry::image_from_view<View>::type Image;
 
 protected:
 	ConvolutionPlugin&    _plugin;        ///< Rendering plugin

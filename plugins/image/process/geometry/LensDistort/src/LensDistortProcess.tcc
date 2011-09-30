@@ -1,9 +1,10 @@
 #include "LensDistortPlugin.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/numeric/sampler.hpp>
-#include <tuttle/plugin/image/gil/resample.hpp>
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/image/resample.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
+
+#include <terry/sampler/sampler.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -52,74 +53,74 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 	{
 		case eParamInterpolationNearest:
 		{
-			lensDistort<ttl_nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 		case eParamInterpolationBilinear:
 		{
-			lensDistort<ttl_bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 		case eParamInterpolationBicubic:
 		{
-			lensDistort<ttl_bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationCatmul:
-		{
-			lensDistort<ttl_catmul_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-			return;
-		}
+		//case eParamInterpolationCatmul:
+		//{
+		//	lensDistort<terry::sampler::catmul_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+		//	return;
+		//}
 		case eParamInterpolationMitchell:
 		{
-			lensDistort<ttl_mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 		case eParamInterpolationParzen:
 		{
-			lensDistort<ttl_parzen_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::parzen_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 		case eParamInterpolationKeys:
 		{
-			lensDistort<ttl_keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 		case eParamInterpolationSimon:
 		{
-			lensDistort<ttl_simon_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::simon_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 		case eParamInterpolationRifman:
 		{
-			lensDistort<ttl_rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 
 
 //		case eParamInterpolationLanczos3:
 //		{
-//			lensDistort<ttl_lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			lensDistort<terry::sampler::lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 //			return;
 //		}
 //		case eParamInterpolationLanczos4:
 //		{
-//			lensDistort<ttl_lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			lensDistort<terry::sampler::lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 //			return;
 //		}
 //		case eParamInterpolationLanczos6:
 //		{
-//			lensDistort<ttl_lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			lensDistort<terry::sampler::lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 //			return;
 //		}
 //		case eParamInterpolationLanczos12:
 //		{
-//			lensDistort<ttl_lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			lensDistort<terry::sampler::lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 //			return;
 //		}
 //		case eParamInterpolationGaussian:
 //		{
-//			lensDistort<ttl_gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			lensDistort<terry::sampler::gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 //			return;
 //		}
 	}

@@ -1,10 +1,10 @@
 #include "FloodFillAlgorithm.hpp"
 #include "FloodFillPlugin.hpp"
 
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <terry/globals.hpp>
+#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
@@ -60,6 +60,7 @@ template<class View>
 void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	using namespace terry;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	
 	static const unsigned int border = 1;

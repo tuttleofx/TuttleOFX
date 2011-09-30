@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_INTERACT_FRAME_HPP_
 #define _TUTTLE_PLUGIN_INTERACT_FRAME_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <ofxsImageEffect.h>
 
 namespace tuttle {

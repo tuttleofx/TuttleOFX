@@ -1,5 +1,5 @@
-#ifndef _RECTOP_HPP
-#define _RECTOP_HPP
+#ifndef _TUTTLE_COMMON_MATH_RECTOP_HPP_
+#define _TUTTLE_COMMON_MATH_RECTOP_HPP_
 
 #include "minmax.hpp"
 
@@ -15,10 +15,10 @@ template<class P>
 inline OfxRectD pointsBoundingBox( const P& a, const P& b, const P& c, const P& d )
 {
 	OfxRectD res;
-	res.x1 = min( a.x, b.x, c.x, d.x );
-	res.y1 = min( a.y, b.y, c.y, d.y );
-	res.x2 = max( a.x, b.x, c.x, d.x );
-	res.y2 = max( a.y, b.y, c.y, d.y );
+	res.x1 = std::min( a.x, b.x, c.x, d.x );
+	res.y1 = std::min( a.y, b.y, c.y, d.y );
+	res.x2 = std::max( a.x, b.x, c.x, d.x );
+	res.y2 = std::max( a.y, b.y, c.y, d.y );
 	return res;
 }
 

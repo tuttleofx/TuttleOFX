@@ -1,13 +1,13 @@
-#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/color.hpp>
+
+#include <terry/globals.hpp>
+#include <terry/color.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace colorspace {
 
-namespace ttlc = tuttle::plugin::color;
 using namespace boost::gil;
 
 template<class View>
@@ -44,13 +44,13 @@ void ColorSpaceProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 					procWindowSize.x, procWindowSize.y );
 
-	ttlc::ColorSpaceAPI		csAPI;
+	terry::color::ColorSpaceAPI		csAPI;
 	csAPI.setGammaInProperties	( _params._sGammaIn );
 	csAPI.setCineonInProperties	( _params._sCineonIn );
 	csAPI.setGammaOutProperties	( _params._sGammaOut );
 	csAPI.setCineonOutProperties	( _params._sCineonOut );
 
-	colorspace_pixels_progress( &csAPI, _params._gradationIn, _params._layoutIn, _params._tempColorIn, _params._gradationOut, _params._layoutOut, _params._tempColorOut, src, dst, this );
+	terry::colorspace_pixels_progress( &csAPI, _params._gradationIn, _params._layoutIn, _params._tempColorIn, _params._gradationOut, _params._layoutOut, _params._tempColorOut, src, dst, this );
 
 }
 

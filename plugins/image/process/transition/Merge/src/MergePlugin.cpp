@@ -4,7 +4,7 @@
 
 #include "gil/toolbox/MergeFunctors.hpp"
 
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 
 #include <boost/gil/gil_all.hpp>
 

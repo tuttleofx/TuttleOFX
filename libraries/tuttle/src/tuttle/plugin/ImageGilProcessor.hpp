@@ -4,7 +4,7 @@
 #include "exceptions.hpp"
 #include "OfxProgress.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 
@@ -35,7 +35,7 @@ class ImageGilProcessor : public OFX::MultiThread::Processor
 {
 public:
 	typedef typename View::value_type Pixel;
-	typedef typename image_from_view<View>::type Image;
+	typedef typename terry::image_from_view<View>::type Image;
 
 private:
 	unsigned int _nbThreads;

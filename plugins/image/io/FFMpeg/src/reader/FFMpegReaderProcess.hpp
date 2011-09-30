@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_FFMPEG_READER_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_FFMPEG_READER_PROCESS_HPP_
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 

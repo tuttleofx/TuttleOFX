@@ -2,7 +2,7 @@
 #define _LENSDISTORTPROCESSPARAMS_HPP_
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 
 namespace tuttle {
 namespace plugin {

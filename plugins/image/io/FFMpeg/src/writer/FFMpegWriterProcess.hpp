@@ -3,9 +3,10 @@
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
 
-#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+#include <terry/globals.hpp>
 
 #include <boost/scoped_ptr.hpp>
 

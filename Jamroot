@@ -84,6 +84,7 @@ else if [ os.name ] = MACOSX
 
 
 path-constant	3RD_PARTY	: 3rdParty ;
+path-constant	LIBRARIES	: libraries ;
 path-constant	BOOST_LIBS	: 3rdParty/boost ;
 path-constant	BOOST_HACK	: 3rdParty/boostHack ;
 path-constant	DIST		: ./dist/$(HOSTNAME) ;

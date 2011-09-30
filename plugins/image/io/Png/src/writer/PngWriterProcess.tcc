@@ -1,8 +1,8 @@
 #include "PngWriterDefinitions.hpp"
 #include "PngWriterPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/clamp.hpp>
+#include <terry/globals.hpp>
+#include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/gil_all.hpp>
@@ -88,6 +88,7 @@ template<class Bits>
 void PngWriterProcess<View>::writeImage( View& src )
 {
 	using namespace boost::gil;
+	using namespace terry;
 
 	switch( _params._components )
 	{

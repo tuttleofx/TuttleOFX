@@ -8,11 +8,11 @@ namespace tuttle {
 namespace plugin {
 namespace thinning {
 
-const static std::string kParamBorder = "border";
-//const static std::string kParamBorderMirror = "Mirror";
-//const static std::string kParamBorderConstant = "Constant";
-const static std::string kParamBorderBlack = "Black";
-const static std::string kParamBorderPadded = "Padded";
+static const std::string kParamBorder = "border";
+//static const std::string kParamBorderMirror = "Mirror";
+//static const std::string kParamBorderConstant = "Constant";
+static const std::string kParamBorderBlack = "Black";
+static const std::string kParamBorderPadded = "Padded";
 
 enum EParamBorder
 {

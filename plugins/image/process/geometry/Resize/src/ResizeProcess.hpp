@@ -19,13 +19,9 @@ public:
 	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef float Scalar;
 
-	EParamFilter _filter;
 protected:
 	ResizePlugin&			_plugin;	///< Rendering plugin
 	ResizeProcessParams<Scalar>	_params;	///< parameters
-
-	double				_valB;
-	double				_valC;
 
 public:
 	ResizeProcess( ResizePlugin& effect );

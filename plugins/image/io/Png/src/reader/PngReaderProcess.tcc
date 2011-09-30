@@ -2,7 +2,7 @@
 #include "PngReaderProcess.hpp"
 #include "PngReaderPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/gil_all.hpp>

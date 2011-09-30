@@ -1,9 +1,9 @@
 #include "ThinningAlgorithm.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <terry/globals.hpp>
+#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 
 #include <boost/mpl/if.hpp>
 
@@ -34,6 +34,7 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 {
 	using namespace boost;
 	using namespace boost::gil;
+	using namespace terry;
     typedef typename View::point_t Point;
     typedef typename View::coord_t Coord;
 

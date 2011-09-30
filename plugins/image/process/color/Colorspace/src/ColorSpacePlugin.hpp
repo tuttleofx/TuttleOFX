@@ -28,8 +28,8 @@ struct ColorSpaceProcessParams
 	
 	ttlc::EParamLayout		_layoutIn;
 	ttlc::EParamLayout		_layoutOut;
-	ttlc::EParamTemp		_tempColorIn;
-	ttlc::EParamTemp		_tempColorOut;
+	ttlc::EColorTemperature		_tempColorIn;
+	ttlc::EColorTemperature		_tempColorOut;
 
 	ttlc::GradationLaw::gamma	_sGammaIn;
 	ttlc::GradationLaw::gamma	_sGammaOut;

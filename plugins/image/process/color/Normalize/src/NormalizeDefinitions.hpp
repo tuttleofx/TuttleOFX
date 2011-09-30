@@ -7,25 +7,25 @@ namespace tuttle {
 namespace plugin {
 namespace normalize {
 
-const static std::string kParamHelpButton = "Help";
+static const std::string kParamHelpButton = "Help";
 
-const static std::string kParamMode = "mode";
-const static std::string kParamModeAnalyse = "analyse";
-const static std::string kParamModeCustom = "custom";
+static const std::string kParamMode = "mode";
+static const std::string kParamModeAnalyse = "analyse";
+static const std::string kParamModeCustom = "custom";
 enum EParamMode
 {
 	eParamModeAnalyse = 0,
 	eParamModeCustom
 };
-const static std::string kParamAnalyseNow = "analyseNow";
+static const std::string kParamAnalyseNow = "analyseNow";
 
-const static std::string kParamAnalyseMode = "analyseMode";
-const static std::string kParamAnalysePerChannel = "perChannel";
-const static std::string kParamAnalyseLuminosity = "luminosity";
-const static std::string kParamAnalyseR = "r";
-const static std::string kParamAnalyseG = "g";
-const static std::string kParamAnalyseB = "b";
-const static std::string kParamAnalyseA = "a";
+static const std::string kParamAnalyseMode = "analyseMode";
+static const std::string kParamAnalysePerChannel = "perChannel";
+static const std::string kParamAnalyseLuminosity = "luminosity";
+static const std::string kParamAnalyseR = "r";
+static const std::string kParamAnalyseG = "g";
+static const std::string kParamAnalyseB = "b";
+static const std::string kParamAnalyseA = "a";
 enum EParamAnalyseMode
 {
 	eParamAnalyseModePerChannel = 0,
@@ -36,23 +36,23 @@ enum EParamAnalyseMode
 	eParamAnalyseModeA
 };
 
-const static std::string kParamSrcGroup = "srcGroup";
-const static std::string kParamSrcCustomColorMin = "srcColorMin";
-const static std::string kParamSrcCustomColorMax = "srcColorMax";
-const static std::string kParamSrcCustomValueMin = "srcValueMin";
-const static std::string kParamSrcCustomValueMax = "srcValueMax";
+static const std::string kParamSrcGroup = "srcGroup";
+static const std::string kParamSrcCustomColorMin = "srcColorMin";
+static const std::string kParamSrcCustomColorMax = "srcColorMax";
+static const std::string kParamSrcCustomValueMin = "srcValueMin";
+static const std::string kParamSrcCustomValueMax = "srcValueMax";
 
-const static std::string kParamDstGroup = "dstGroup";
-const static std::string kParamDstCustomColorMin = "dstColorMin";
-const static std::string kParamDstCustomColorMax = "dstColorMax";
-const static std::string kParamDstCustomValueMin = "dstValueMin";
-const static std::string kParamDstCustomValueMax = "dstValueMax";
+static const std::string kParamDstGroup = "dstGroup";
+static const std::string kParamDstCustomColorMin = "dstColorMin";
+static const std::string kParamDstCustomColorMax = "dstColorMax";
+static const std::string kParamDstCustomValueMin = "dstValueMin";
+static const std::string kParamDstCustomValueMax = "dstValueMax";
 
-const static std::string kParamProcessGroup = "processGroup";
-const static std::string kParamProcessR = "processR";
-const static std::string kParamProcessG = "processG";
-const static std::string kParamProcessB = "processB";
-const static std::string kParamProcessA = "processA";
+static const std::string kParamProcessGroup = "processGroup";
+static const std::string kParamProcessR = "processR";
+static const std::string kParamProcessG = "processG";
+static const std::string kParamProcessB = "processB";
+static const std::string kParamProcessA = "processA";
 
 
 }

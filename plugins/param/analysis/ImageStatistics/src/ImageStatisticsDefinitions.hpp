@@ -7,9 +7,9 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-const static std::string kParamCoordinateSystem           = "coordinateSystem";
-const static std::string kParamCoordinateSystemNormalized = "coordinateSystemNormalized";
-const static std::string kParamCoordinateSystemCanonical  = "coordinateSystemCanonical";
+static const std::string kParamCoordinateSystem           = "coordinateSystem";
+static const std::string kParamCoordinateSystemNormalized = "coordinateSystemNormalized";
+static const std::string kParamCoordinateSystemCanonical  = "coordinateSystemCanonical";
 
 enum EParamCoordinateSystem
 {
@@ -17,35 +17,35 @@ enum EParamCoordinateSystem
 	eParamCoordinateSystemCanonical
 };
 
-const static std::string kParamRectCenter  = "rectCenter";
-const static std::string kParamRectSize    = "rectSize";
-const static std::string kParamOutputGroup = "outputGroup";
+static const std::string kParamRectCenter  = "rectCenter";
+static const std::string kParamRectSize    = "rectSize";
+static const std::string kParamOutputGroup = "outputGroup";
 
-const static std::string kParamOutputGroupRGBA     = "outputGroupRGBA";
-const static std::string kParamOutputAverage       = "outputAverage";
-const static std::string kParamOutputChannelMin    = "outputChannelMin";
-const static std::string kParamOutputChannelMax    = "outputChannelMax";
-const static std::string kParamOutputLuminosityMin = "outputLuminosityMin";
-const static std::string kParamOutputLuminosityMax = "outputLuminosityMax";
-const static std::string kParamOutputKurtosis      = "outputKurtosis";
-const static std::string kParamOutputSkewness      = "outputSkewness";
+static const std::string kParamOutputGroupRGBA     = "outputGroupRGBA";
+static const std::string kParamOutputAverage       = "outputAverage";
+static const std::string kParamOutputChannelMin    = "outputChannelMin";
+static const std::string kParamOutputChannelMax    = "outputChannelMax";
+static const std::string kParamOutputLuminosityMin = "outputLuminosityMin";
+static const std::string kParamOutputLuminosityMax = "outputLuminosityMax";
+static const std::string kParamOutputKurtosis      = "outputKurtosis";
+static const std::string kParamOutputSkewness      = "outputSkewness";
 
-const static std::string kParamOutputGroupHSL         = "outputGroupHSL";
-const static std::string kParamOutputAverageHSL       = "outputAverageHSL";
-const static std::string kParamOutputChannelMinHSL    = "outputChannelMinHSL";
-const static std::string kParamOutputChannelMaxHSL    = "outputChannelMaxHSL";
-const static std::string kParamOutputLuminosityMinHSL = "outputLuminosityMinHSL";
-const static std::string kParamOutputLuminosityMaxHSL = "outputLuminosityMaxHSL";
-const static std::string kParamOutputKurtosisHSL      = "outputKurtosisHSL";
-const static std::string kParamOutputSkewnessHSL      = "outputSkewnessHSL";
+static const std::string kParamOutputGroupHSL         = "outputGroupHSL";
+static const std::string kParamOutputAverageHSL       = "outputAverageHSL";
+static const std::string kParamOutputChannelMinHSL    = "outputChannelMinHSL";
+static const std::string kParamOutputChannelMaxHSL    = "outputChannelMaxHSL";
+static const std::string kParamOutputLuminosityMinHSL = "outputLuminosityMinHSL";
+static const std::string kParamOutputLuminosityMaxHSL = "outputLuminosityMaxHSL";
+static const std::string kParamOutputKurtosisHSL      = "outputKurtosisHSL";
+static const std::string kParamOutputSkewnessHSL      = "outputSkewnessHSL";
 
-const static std::string kParamChooseOutput              = "chooseOutput";
-const static std::string kParamChooseOutputSource        = "source";
-const static std::string kParamChooseOutputAverage       = "average";
-const static std::string kParamChooseOutputChannelMin    = "min values";
-const static std::string kParamChooseOutputChannelMax    = "max values";
-const static std::string kParamChooseOutputLuminosityMin = "min luminosity";
-const static std::string kParamChooseOutputLuminosityMax = "max luminosity";
+static const std::string kParamChooseOutput              = "chooseOutput";
+static const std::string kParamChooseOutputSource        = "source";
+static const std::string kParamChooseOutputAverage       = "average";
+static const std::string kParamChooseOutputChannelMin    = "min values";
+static const std::string kParamChooseOutputChannelMax    = "max values";
+static const std::string kParamChooseOutputLuminosityMin = "min luminosity";
+static const std::string kParamChooseOutputLuminosityMax = "max luminosity";
 
 enum EParamChooseOutput
 {

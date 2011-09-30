@@ -3,10 +3,10 @@
 
 #include "lensDistortProcessParams.hpp"
 
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/IProgress.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 
 #include <ofxsCore.h>
 

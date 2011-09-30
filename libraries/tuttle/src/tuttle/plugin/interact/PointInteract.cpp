@@ -3,7 +3,7 @@
 #include "interact.hpp"
 #include "overlay.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 
