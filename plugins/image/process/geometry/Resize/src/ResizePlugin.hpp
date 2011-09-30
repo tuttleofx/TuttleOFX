@@ -16,10 +16,11 @@ struct ResizeProcessParams
 	bool                       _changeCenter;
 	boost::gil::point2<Scalar> _centerPoint;
 
-	EParamFilter _filter;
-	double       _filterSize;
-	double       _paramB;
-	double       _paramC;
+	EParamFilter               _filter;
+	double                     _filterSize;
+	double                     _filterSigma;
+	double                     _paramB;
+	double                     _paramC;
 
         EParamFilterOutOfImage     _outOfImageProcess;
 };
@@ -66,7 +67,8 @@ public:
 
 	OFX::ChoiceParam*	_paramFilter;
 
-	OFX::DoubleParam*	_paramFilterSize;
+	OFX::IntParam*		_paramFilterSize;
+	OFX::DoubleParam*	_paramFilterSigma;
 
 	OFX::BooleanParam*	_paramCenter;
 	OFX::Double2DParam*	_paramCenterPoint;

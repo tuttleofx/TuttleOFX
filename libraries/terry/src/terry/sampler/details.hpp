@@ -13,7 +13,7 @@ namespace terry {
 using namespace boost::gil;
 namespace sampler {
 namespace details {
-
+/*
 template< typename F>
 void proc( F& pixel)
 {
@@ -91,7 +91,7 @@ template< >
 void proc( rgba32s_pixel_t& pixel)
 {
 	TUTTLE_COUT("rgba32s");
-}
+}*/
 
 template <typename Weight>
 struct add_dst_mul_src_channel
@@ -116,6 +116,7 @@ struct add_dst_mul_src
 	}
 };
 
+
 /**
  * @brief Get pixels around a particular position.
  * @param[in] loc locator which points to a pixel
@@ -132,29 +133,166 @@ struct add_dst_mul_src
  *       ^..... loc is pointing to D point
  */
 template < typename xy_locator, typename SrcP >
-void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const ssize_t& windowWidth, const ssize_t& imageWidth, std::vector< SrcP >& src )
+void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const ssize_t& windowWidth, const ssize_t& imageWidth, const int& outOfImageProcess, std::vector< SrcP >& src )
 {
 	ssize_t middlePosition = floor( (src.size() - 1) * 0.5 );
 
 	if( p0.x < 0 )
 	{
-		src.at( middlePosition ) = SrcP(0);
+		switch( outOfImageProcess )
+		{
+			case 0 :
+			{
+				src.at( middlePosition ) = SrcP(0);
+				break;
+			}
+			case 1 :
+			{
+				src.at( middlePosition ) = loc.x()[ - p0.x ];
+				break;
+			}
+			case 2 :
+			{
+				src.at( middlePosition ) = SrcP(0);
+				break;
+			}
+		}
 	}
 	else
 	{
-		src.at( middlePosition ) = *loc;
+		if( p0.x > imageWidth - 1 )
+		{
+			switch( outOfImageProcess )
+			{
+				case 0 :
+				{
+					src.at( middlePosition ) = SrcP(0);
+					break;
+				}
+				case 1 :
+				{
+					src.at( middlePosition ) = loc.x()[ imageWidth - 1 - p0.x ];
+					break;
+				}
+				case 2 :
+				{
+					src.at( middlePosition ) = SrcP(0);
+					break;
+				}
+			}
+		}
+		else
+		{
+			src.at( middlePosition ) = *loc;
+		}
 	}
 
 	// from center to left
 	for( ssize_t i = middlePosition - 1; i > -1; i-- )
 	{
-		src.at( i ) = ( p0.x - (middlePosition - i) < 0 ) ?  SrcP(0) : loc.x( )[ - (middlePosition - i) ];
+		if( ( p0.x - (middlePosition - i) > -1 ) )
+		{
+			if( ( p0.x - (middlePosition - i) < imageWidth ) )
+			{
+				src.at( i ) = loc.x( )[ - (middlePosition - i) ];
+			}
+			else
+			{
+				switch( outOfImageProcess )
+				{
+					case 0 :
+					{
+						src.at( i ) = SrcP(0);
+						break;
+					}
+					case 1 :
+					{
+						src.at( i ) = loc.x( )[ imageWidth - 1 ];
+						break;
+					}
+					case 2 :
+					{
+						src.at( i ) = SrcP(0);
+						break;
+					}
+				};
+			}
+		}
+		else
+		{
+			switch( outOfImageProcess )
+			{
+				case 0 :
+				{
+					src.at( i ) = SrcP(0);
+					break;
+				}
+				case 1 :
+				{
+					src.at( i ) = src.at( i + 1 );
+					break;
+				}
+				case 2 :
+				{
+					src.at( i ) = SrcP(0);
+					break;
+				}
+			};
+		}
 	}
 
 	// from center to right
 	for( ssize_t i = middlePosition + 1; i < (ssize_t) src.size(); i++ )
 	{
-		src.at( i ) = ( p0.x - (middlePosition - i) < imageWidth ) ? loc.x( )[  - (middlePosition - i) ] : SrcP(0);
+		if( ( p0.x - (middlePosition - i) < imageWidth ) )
+		{
+			if( p0.x - (middlePosition - i) < 0 )
+			{
+				switch( outOfImageProcess )
+				{
+					case 0 :
+					{
+						src.at( i ) = SrcP(0);
+						break;
+					}
+					case 1 :
+					{
+						src.at( i ) = loc.x( )[ - p0.x ];
+						break;
+					}
+					case 2 :
+					{
+						src.at( i ) = SrcP(0);
+						break;
+					}
+				};
+			}
+			else
+			{
+				src.at( i ) = loc.x( )[  - (middlePosition - i) ];
+			}
+		}
+		else
+		{
+			switch( outOfImageProcess )
+			{
+				case 0 :
+				{
+					src.at( i ) = SrcP(0);
+					break;
+				}
+				case 1 :
+				{
+					src.at( i ) = loc.x()[ imageWidth - 1 - p0.x ];
+					break;
+				}
+				case 2 :
+				{
+					src.at( i ) = SrcP(0);
+					break;
+				}
+			};
+		}
 	}
 
 }
@@ -182,7 +320,7 @@ struct process1Dresampling
 //};
 
 template <typename DstP, typename SrcView, typename Sampler, typename F>
-bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
+bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize, const int& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<float, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
@@ -201,18 +339,64 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 
 	size_t middlePosition = floor((windowSize - 1) * 0.5);
 
-	//TUTTLE_COUT( pTL.y << " // " << src.height() );
-
 
 	// first process the middle point
 	// if it's mirrored, we need to copy the center point
-	if( (pTL.y < 0) || (pTL.y > (ssize_t) src.height( ) ) )
+	if( (pTL.y < 0) || (pTL.y > (ssize_t) ( src.height( ) - 1.0 ) ) )
 	{
-		xProcessed.at( middlePosition ) = SrcP(0);
+		if( pTL.y < 0 ) // under the image
+		{
+			switch( outOfImageProcess )
+			{
+				case 0 :
+				{
+					xProcessed.at( middlePosition ) = SrcP(0);
+					break;
+				}
+				case 1 :
+				{
+					loc.y( ) -= pTL.y;
+					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
+					process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					loc.y( ) += pTL.y;
+					break;
+				}
+				case 2 :
+				{
+					xProcessed.at( middlePosition ) = SrcP(1);
+					break;
+				}
+			}
+		}
+		else // upper the image
+		{
+			//TUTTLE_COUT( src.height() << " @@ " << (pTL.y - src.height() ) );
+			switch( outOfImageProcess )
+			{
+				case 0 :
+				{
+					xProcessed.at( middlePosition ) = SrcP(0);
+					break;
+				}
+				case 1 :
+				{
+					loc.y( ) -= pTL.y - src.height() + 1.0 ;
+					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
+					process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					loc.y( ) += pTL.y - src.height() + 1.0;
+					break;
+				}
+				case 2 :
+				{
+					xProcessed.at( middlePosition ) = SrcP(1);
+					break;
+				}
+			}
+		}
 	}
 	else
 	{
-		getPixelsPointers( loc, pTL, windowSize, src.width() , ptr );
+		getPixelsPointers( loc, pTL, windowSize, src.width() , outOfImageProcess, ptr );
 		process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
 	}
 
@@ -221,14 +405,39 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	{
 		if( (ssize_t) ( pTL.y - (middlePosition - i) ) < (ssize_t) src.height( ) )
 		{
-			loc.y( ) += (middlePosition - i);
-			getPixelsPointers( loc, pTL, windowSize, src.width(), ptr );
-			process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
-			loc.y( ) -= (middlePosition - i);
+			if( (ssize_t) ( pTL.y - (middlePosition - i) ) < 0 )
+			{
+				xProcessed.at( i ) = xProcessed.at( i + 1 );
+			}
+			else
+			{
+
+				loc.y( ) -= (middlePosition - i);
+				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
+				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
+				loc.y( ) += (middlePosition - i);
+			}
 		}
 		else
 		{
-			xProcessed.at(i) = SrcP(0);
+			switch( outOfImageProcess )
+			{
+				case 0 :
+				{
+					xProcessed.at( i ) = SrcP(0);
+					break;
+				}
+				case 1 :
+				{
+					xProcessed.at( i ) = xProcessed.at( i + 1 );
+					break;
+				}
+				case 2 :
+				{
+					xProcessed.at( i ) = SrcP(1);
+					break;
+				}
+			}
 		}
 	}
 
@@ -237,14 +446,38 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	{
 		if( (ssize_t) ( pTL.y + (i - middlePosition) ) < (ssize_t) src.height( ) )
 		{
-			loc.y( ) -= (middlePosition - i);
-			getPixelsPointers( loc, pTL, windowSize, src.width(), ptr );
-			process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
-			loc.y( ) += (middlePosition - i);
+			if( (ssize_t) ( pTL.y + (i - middlePosition) )  < 0 )
+			{
+				xProcessed.at( i ) = xProcessed.at( i - 1 );
+			}
+			else
+			{
+				loc.y( ) -= ( middlePosition - i );
+				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
+				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
+				loc.y( ) += ( middlePosition - i );
+			}
 		}
 		else
 		{
-			xProcessed.at(i) = SrcP(0);
+			switch( outOfImageProcess )
+			{
+				case 0 :
+				{
+					xProcessed.at( i ) = SrcP(0);
+					break;
+				}
+				case 1 :
+				{
+					xProcessed.at( i ) = xProcessed.at( i - 1 );
+					break;
+				}
+				case 2 :
+				{
+					xProcessed.at( i ) = SrcP(0);
+					break;
+				}
+			}
 		}
 	}
 
@@ -253,7 +486,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	process1Dresampling<SrcC, F, SrcC> () ( xProcessed, yWeights, mp );
 
 	// result is rgba8
-	proc( mp );
+	//proc( mp );
 	// Convert from floating point average value to the source type
 	DstP src_result;
 	cast_pixel  ( mp, src_result );

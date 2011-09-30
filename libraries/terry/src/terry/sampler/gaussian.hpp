@@ -7,78 +7,75 @@ namespace terry {
 using namespace boost::gil;
 namespace sampler {
 
+#ifndef M_PI
+/** @brief The constant pi */
+#define M_PI    3.14159265358979323846264338327950288
+#endif
 
-struct gaussian_sampler{};
+struct gaussian_sampler
+{
+	size_t size;
+	size_t sigma;
+	gaussian_sampler()
+	{
+		size  = 3.0;
+		sigma = 1.0;
+	}
+};
+
+template < typename F >
+void getGaussianWeight( const float& distance, F& weight, gaussian_sampler& sampler )
+{
+	if( sampler.sigma == 0.0 )
+	{
+		weight = 0.0;
+		return;
+	}
+	weight = 1.0 / ( sampler.sigma * std::sqrt( 2 * M_PI )) * std::exp( - distance * distance / ( 2 * sampler.sigma ) ) ;
+}
 
 template <typename DstP, typename SrcView, typename F>
 bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
 {
+	/*
+	 * pTL is the closest integer coordinate top left from p
+	 *
+	 *   pTL ---> x      x
+	 *              o <------ p
+	 *
+	 *            x      x
+	 */
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
 
-		/*
-		 * pTL is the closest integer coordinate top left from p
-		 *
-		 *   pTL ---> x      x
-		 *              o <------ p
-		 *
-		 *            x      x
-		 */
-		point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
+	// loc is the point in the source view
+	typedef typename SrcView::xy_locator xy_locator;
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
-		// if we are outside the image, we return false to process miror/black operations
-		if( 	pTL.x < -1 ||
-				pTL.y < -1 ||
-				pTL.x > src.width() - 1 ||
-				pTL.y > src.height() - 1 )
-		{
-				return false;
-		}
+	size_t windowSize  = sampler.size;
 
-		// loc is the point in the source view
-		typedef typename SrcView::xy_locator xy_locator;
-		xy_locator loc = src.xy_at( pTL.x, pTL.y );
-		point2<F> frac( p.x - pTL.x, p.y - pTL.y );
+	std::vector<double> xWeights, yWeights;
 
-		ssize_t windowSize  = 2;             // 4 pixels:    A B C D
+	xWeights.assign( windowSize , 0);
+	yWeights.assign( windowSize , 0);
 
-		std::vector<double> xWeights, yWeights;
+	size_t middlePosition = floor((windowSize - 1) * 0.5);
 
-		xWeights.assign( windowSize , 0);
-		yWeights.assign( windowSize , 0);
 
-		// get weight for each pixels
-/*
-		getWeight( pTL.x, 1+frac.x, 0, xWeights.at(0), sampler );
-		getWeight( pTL.x,   frac.x, 1, xWeights.at(1), sampler );
-		getWeight( pTL.x, 1-frac.x, 2, xWeights.at(2), sampler );
-		getWeight( pTL.x, 2-frac.x, 3, xWeights.at(3), sampler );
-		getWeight( pTL.y, 1+frac.y, 0, yWeights.at(0), sampler );
-		getWeight( pTL.y,   frac.y, 1, yWeights.at(1), sampler );
-		getWeight( pTL.y, 1-frac.y, 2, yWeights.at(2), sampler );
-		getWeight( pTL.y, 2-frac.y, 3, yWeights.at(3), sampler );
-*/
-		/*
-		for(int i=0; i<windowSize; i++)
-		{
-			//int coef = (i>1)? -1 : 1;
-			getWeight( pTL.x, std::abs( (i-1) - frac.x ), i, xWeights.at(i) );
-			getWeight( pTL.y, std::abs( (i-1) - frac..y ), i, yWeights.at(i) );
-		}*/
-/*
-		xWeights.at(0) = 1;
-		xWeights.at(1) = 0;
+	// get horizontal weight for each pixels
 
-		yWeights.at(0) = 1;
-		yWeights.at(1) = 0;
-*/
-		xWeights.at(0) = 1;
-		xWeights.at(1) = 0;
+	for( size_t i = 0; i < windowSize; i++ )
+	{
+		float distancex = - frac.x - middlePosition + i ;
+		getGaussianWeight( std::abs( distancex ), xWeights.at(i), sampler );
+		float distancey =  - frac.y - middlePosition + i ;
+		getGaussianWeight( std::abs( distancey ), yWeights.at(i), sampler );
+	}
 
-		yWeights.at(0) = 1;
-		yWeights.at(1) = 0;
-		// process current sample
-		bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );
+	// process current sample
+	bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, outOfImageProcess, loc, result );
 
-		return res;
+	return res;
 }
 
 

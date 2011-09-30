@@ -4,7 +4,10 @@
 #include "details.hpp"
 #include <cmath>
 
-double PI = std::atan(1.0f) * 4.0f;
+#ifndef M_PI
+/** @brief The constant pi */
+#define M_PI    3.14159265358979323846264338327950288
+#endif
 
 namespace terry {
 using namespace boost::gil;
@@ -23,14 +26,14 @@ struct lanczos6_sampler{};
 struct lanczos12_sampler{};
 
 template < typename F >
-void getLanczosWeight( const F& distance, F& weight, lanczos_sampler& sampler )
+void getLanczosWeight( const float& distance, F& weight, lanczos_sampler& sampler )
 {
 	if( distance == 0.0 )
 	{
 		weight = 1.0;
 		return;
 	}
-	weight = sampler.size * sin( distance * PI ) * sin( distance * PI / sampler.size ) / ( pow( PI * distance, 2 ) );
+	weight = sin( M_PI * distance ) * sin( ( M_PI / sampler.size ) * distance ) / ( ( M_PI * M_PI / sampler.size ) * distance *distance);
 }
 
 
@@ -48,21 +51,12 @@ bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, Ds
 	 */
 	point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
 
-	// if we are outside the image, we return false to process miror/black operations
-	/*if( 	pTL.x < -1 ||
-		pTL.y < -1 ||
-		pTL.x > src.width() - 1 ||
-		pTL.y > src.height() - 1 )
-	{
-		return false;
-	}*/
-
 	// loc is the point in the source view
 	typedef typename SrcView::xy_locator xy_locator;
 	xy_locator loc = src.xy_at( pTL.x, pTL.y );
 	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
-	ssize_t windowSize  = sampler.size;
+	size_t windowSize  = sampler.size;
 
 	std::vector<double> xWeights, yWeights;
 
@@ -71,19 +65,19 @@ bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, Ds
 
 	size_t middlePosition = floor((windowSize - 1) * 0.5);
 
-	//xWeights.at(middlePosition) = 1.0;
-	//yWeights.at(middlePosition) = 1.0;
 
 	// get horizontal weight for each pixels
 
-	for( ssize_t i = 0; i < windowSize; i++ )
+	for( size_t i = 0; i < windowSize; i++ )
 	{
-		getLanczosWeight( std::abs( (i-middlePosition) - frac.x ), xWeights.at(i), sampler );
-		getLanczosWeight( std::abs( (i-middlePosition) - frac.y ), yWeights.at(i), sampler );
+		float distancex = - frac.x - middlePosition + i ;
+		getLanczosWeight( std::abs( distancex ), xWeights.at(i), sampler );
+		float distancey =  - frac.y - middlePosition + i ;
+		getLanczosWeight( std::abs( distancey ), yWeights.at(i), sampler );
 	}
 
 	// process current sample
-	bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );
+	bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, outOfImageProcess, loc, result );
 
 	return res;
 }

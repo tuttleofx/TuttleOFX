@@ -34,7 +34,8 @@ ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
 	_paramB			= fetchDoubleParam	( kParamFilterB );
 	_paramC			= fetchDoubleParam	( kParamFilterC );
 
-	_paramFilterSize	= fetchDoubleParam	( kParamFilterSize );
+	_paramFilterSize	= fetchIntParam		( kParamFilterSize );
+	_paramFilterSigma	= fetchDoubleParam	( kParamFilterSigma );
 
         _paramOutOfImage        = fetchChoiceParam      ( kParamFilterOutOfImage );
 
@@ -108,7 +109,7 @@ void ResizePlugin::updateVisibleTools()
 		_paramB -> setIsSecret ( true );
 		_paramC -> setIsSecret ( true );
 	}
-	if( _paramFilter->getValue() == eParamFilterLanczos )
+	if( ( _paramFilter->getValue() == eParamFilterLanczos ) || ( _paramFilter->getValue() == eParamFilterGaussian ) )
 	{
 		_paramFilterSize -> setIsSecret ( false );
 	}
@@ -116,6 +117,15 @@ void ResizePlugin::updateVisibleTools()
 	{
 		_paramFilterSize -> setIsSecret ( true );
 	}
+	if( _paramFilter->getValue() == eParamFilterGaussian )
+	{
+		_paramFilterSigma -> setIsSecret ( false );
+	}
+	else
+	{
+		_paramFilterSigma -> setIsSecret ( true );
+	}
+
 }
 
 
@@ -136,6 +146,7 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 	params._paramB        = _paramB->getValue();
 	params._paramC        = _paramC->getValue();
 	params._filterSize    = _paramFilterSize->getValue();
+	params._filterSigma   = _paramFilterSigma->getValue();
 
 	params._filter        = static_cast<EParamFilter>( _paramFilter->getValue() );
 

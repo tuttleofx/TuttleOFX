@@ -121,6 +121,7 @@ static const std::string kParamFilterB         = "b";
 static const std::string kParamFilterC         = "c";
 
 static const std::string kParamFilterSize      = "size";
+static const std::string kParamFilterSigma     = "sigma";
 
 enum EParamFilter
 {

@@ -114,24 +114,25 @@ bool getWeight ( const size_t& index, const double& distance, F& weight, bc_samp
 {
 	if( distance <= 1 )
 	{
-		double P =   2.0 - 1.5 * sampler.valB - sampler.valC;
-		double Q = - 3.0 + 2.0 * sampler.valB + sampler.valC;
-		double S =   1.0 -       sampler.valB / 3.0;
+		double P =  12.0 -  9.0 * sampler.valB - 6.0 * sampler.valC;
+		double Q = -18.0 + 12.0 * sampler.valB + 6.0 * sampler.valC;
+		double S =   6.0 -  2.0 * sampler.valB;
 		// note: R is null
-		weight = ( P * distance + Q ) *  distance * distance + S;
+		weight = ( ( P * distance + Q ) *  distance * distance + S ) / 6.0;
 		return true;
 	}
 	else
 	{
 		if( distance < 2 )
 		{
-			double T = - 1.0 / 6.0 * sampler.valB -       sampler.valC;
-			double U =               sampler.valB + 5.0 * sampler.valC;
-			double V = - 2.0       * sampler.valB - 8.0 * sampler.valC;
-			double W =   4.0 / 3.0 * sampler.valB + 4.0 * sampler.valC;
-			weight = ( ( T * distance + U ) *  distance + V ) * distance + W;
+			double T = -        sampler.valB -  6.0 * sampler.valC;
+			double U =    6.0 * sampler.valB + 30.0 * sampler.valC;
+			double V = - 12.0 * sampler.valB - 48.0 * sampler.valC;
+			double W =    8.0 * sampler.valB + 24.0 * sampler.valC;
+			weight = ( ( ( T * distance + U ) *  distance + V ) * distance + W ) / 6.0;
 			return true;
 		}
+		weight = 0.0;
 		return false;
 	}
 }
@@ -149,24 +150,6 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	 */
 	point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
 
-        // if we are outside the image
-        if( pTL.x < 0 )
-        {
-            return false;
-        }
-        if( pTL.y < 0 )
-        {
-            return false;
-        }
-        if( pTL.x > src.width() - 1 )
-        {
-            return false;
-        }
-        if( pTL.y > src.height() - 1 )
-        {
-            return false;
-        }
-
 	// loc is the point in the source view
 	typedef typename SrcView::xy_locator xy_locator;
 	xy_locator loc = src.xy_at( pTL.x, pTL.y );
@@ -179,6 +162,8 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	xWeights.assign( windowSize , 0);
 	yWeights.assign( windowSize , 0);
 
+	//xWeights.at(1) = 1.0;
+
 	// get horizontal weight for each pixels
 	for( ssize_t i = 0; i < windowSize; i++ )
 	{
@@ -186,8 +171,9 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 		getWeight( i, std::abs( (i-1) - frac.y ), yWeights.at(i), sampler );
 	}
 
+	//TUTTLE_COUT ("point " << "weights = " << xWeights.at(0) << "; " << yWeights.at(0) );
 	//process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
-	return details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );
+	return details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, outOfImageProcess, loc, result );
 }
 
 }
