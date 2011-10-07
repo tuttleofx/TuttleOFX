@@ -15,7 +15,7 @@ project
 			<include>src
 			<include>$(LIBRARIES)/boostHack
 			<include>$(LIBRARIES)/terry/src
-		: build-dir $(DIST)/tuttle/obj
+		: build-dir $(BUILD)/tuttle
 		;
 
 ###############################################################################

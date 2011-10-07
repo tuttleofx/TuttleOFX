@@ -81,7 +81,9 @@ void JpegWriterProcess<View>::writeImage( View& src )
 	//	if( params._premult )
 	//	{
 	typedef pixel<Bits, rgb_layout_t> OutPixelType;
-	jpeg_write_view( _params._filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ), _params._quality );
+	//jpeg_write_view( _params._filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ), _params._quality );
+
+	jpeg_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ), _params._quality );
 	//	}
 	//	else
 	//	{

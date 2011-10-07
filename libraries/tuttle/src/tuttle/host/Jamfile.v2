@@ -5,14 +5,18 @@
 lib tuttlehost :
 		[ glob-tree *.cpp ]
 
-		/boost//system/<link>shared
-		/boost//filesystem/<link>shared
+		/tuttlecommon
+		#/ofxPluginSupport
+
+		#/boost//system/<link>shared
+		#/boost//filesystem/<link>shared
+		/boost//serialization/<link>shared
 		/boost//thread/<link>shared
 		/boost//date_time/<link>shared
-		/boost//serialization/<link>shared
+
 		/boost//python/<link>shared
-		
-                /ofxPluginSupport/<link>shared
+
+
 	:
 		<os>NT:<find-shared-library>shell32
 		<os>LINUX:<find-shared-library>dl

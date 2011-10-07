@@ -6,11 +6,13 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>include
 		<include>../../tuttle/src
+		<link>static
 	: usage-requirements
 		<include>include
+		<include>../../tuttle/src
 	: build-dir $(BUILD)/openFX/Support
 	;
 
@@ -26,9 +28,9 @@ lib Support :
 ###############################################################################
 # Automatic install
 ###############################################################################
-install		dist_src
-                : Support
-                : <variant>debug:<location>$(DIST)/lib
-                  <variant>release:<location>$(DIST)/lib
-                ;
+#install dist_src
+#		: Support
+#		: <variant>debug:<location>$(DIST)/lib
+#		  <variant>release:<location>$(DIST)/lib
+#		;
 

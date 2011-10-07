@@ -4,13 +4,17 @@ project : requirements
 			<link>static
 		: usage-requirements
 			<include>.
+			<include>BOOST_HACK
 		;
 
 lib tuttlecommon :
 			[ glob-tree *.cpp ]
-			/ofxPluginSupport # static link
-			/boost//filesystem/<link>static
+			/ofxPluginSupport
+			#/boost/<link>shared
+			/boost//thread/<link>shared
 			/boost//regex/<link>static
+			/boost//filesystem/<link>static
+
 		:
 			<os>LINUX:<find-shared-library>dl
 			<os>NT:<find-shared-library>Shell32
