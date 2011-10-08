@@ -1,6 +1,6 @@
 #include "ColorSpaceKeyerAlgorithm.hpp"
 
-#include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <tuttle/plugin/image/algorithm.hpp>
 
 namespace tuttle {
 namespace plugin {
