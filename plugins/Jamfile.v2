@@ -19,10 +19,10 @@ if ! [ type.registered PLUGIN ]
 ###############################################################################
 # Global project requirements
 ###############################################################################
-project
-	: requirements
-		<include>$(3RD_PARTY)/boostHack
-	;
+#project
+#	: requirements
+#	  /terry
+#	;
 
 ###############################################################################
 # Automatic Install for plugins

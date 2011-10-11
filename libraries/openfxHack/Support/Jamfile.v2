@@ -22,6 +22,7 @@ project
 ###############################################################################
 lib Support :
 	[ glob-tree *.cpp ]
+	/boostHack
 	/boost//system/<link>static
 	;
 

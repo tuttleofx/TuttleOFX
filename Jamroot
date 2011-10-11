@@ -85,8 +85,10 @@ else if [ os.name ] = MACOSX
 
 path-constant	3RD_PARTY	: 3rdParty ;
 path-constant	LIBRARIES	: libraries ;
-path-constant	BOOST_LIBS	: 3rdParty/boost ;
-path-constant	BOOST_HACK	: 3rdParty/boostHack ;
+path-constant	BOOST_LIBS	: $(3RD_PARTY)/boost ;
+path-constant	BOOST_HACK	: $(LIBRARIES)/boostHack ;
+path-constant	TERRY		: $(LIBRARIES)/terry ;
+
 path-constant	DIST		: ./dist/$(HOSTNAME) ;
 path-constant	BUILD		: ./.build ;
 
@@ -137,9 +139,11 @@ project
 	;
 
 ##############################################################################
-# 3rd party libraries
+# libraries
 ##############################################################################
 use-project		/boost		: $(BOOST_LIBS) ;
+use-project		/boostHack	: $(BOOST_HACK) ;
+use-project		/terry		: $(TERRY) ;
 
 ##############################################################################
 # Main targets

@@ -8,7 +8,6 @@ import os ;
 ###############################################################################
 project
 	: requirements
-		<include>$(BOOST_HACK)
 		<include>src
 	: build-dir $(BUILD)/Merge
 	;

@@ -78,18 +78,9 @@ void JpegWriterProcess<View>::writeImage( View& src )
 	using namespace boost::gil;
 	using namespace terry;
 
-	//	if( params._premult )
-	//	{
 	typedef pixel<Bits, rgb_layout_t> OutPixelType;
-	//jpeg_write_view( _params._filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ), _params._quality );
-
 	jpeg_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ), _params._quality );
-	//	}
-	//	else
-	//	{
-	//		typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-	//		jpeg_write_view( params._filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
-	//	}
+
 }
 
 }

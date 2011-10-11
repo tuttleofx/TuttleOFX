@@ -37,7 +37,7 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 	flip->setHint( "Vertically flip the image." );
 //	bool hostFlip = OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke";
 //	flip->setDefault( hostFlip );
-	flip->setDefault( false );
+	flip->setDefault( true );
 }
 
 }

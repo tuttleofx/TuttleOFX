@@ -4,10 +4,13 @@
 
 project		: requirements
 			<include>.
-			<include>BOOST_HACK
+			<include>$(TERRY)/src
+			<include>$(BOOST_HACK)
 			<link>static
 		: usage-requirements
 			<include>.
+			<include>$(TERRY)/src
+			<include>$(BOOST_HACK)
 		;
 
 lib tuttleplugin :

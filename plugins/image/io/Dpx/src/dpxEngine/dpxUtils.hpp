@@ -19,6 +19,7 @@ inline void endian_swap(unsigned int& x)
 }
 
 // __int64 for MSVC, "long long" for gcc
+/*
 inline void endian_swap(unsigned __int64& x)
 {
     x = (x>>56) |
@@ -29,7 +30,7 @@ inline void endian_swap(unsigned __int64& x)
 	((x>>24) & 0x0000000000FF0000) |
 	((x>>40) & 0x000000000000FF00) |
 	(x<<56);
-}
+}*/
 
 // Swap Endianness
 template <typename T>

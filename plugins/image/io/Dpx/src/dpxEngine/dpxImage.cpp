@@ -375,8 +375,8 @@ void DpxHeader::swapHeader()
 		_imageInfo.image_element[i].ref_low_quantity  = swapEndian<float>( _imageInfo.image_element[i].ref_low_quantity );
 		_imageInfo.image_element[i].ref_high_data     = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_high_data );
 		_imageInfo.image_element[i].ref_high_quantity = swapEndian<float>( _imageInfo.image_element[i].ref_high_quantity );
-		_imageInfo.image_element[i].packing           = swapEndian<short>( _imageInfo.image_element[i].packing );
-		_imageInfo.image_element[i].encoding          = swapEndian<short>( _imageInfo.image_element[i].encoding );
+		endian_swap( _imageInfo.image_element[i].packing );
+		endian_swap( _imageInfo.image_element[i].encoding );
 		_imageInfo.image_element[i].data_offset       = swapEndian<uint32_t>( _imageInfo.image_element[i].data_offset );
 		_imageInfo.image_element[i].eol_padding       = swapEndian<uint32_t>( _imageInfo.image_element[i].eol_padding );
 		_imageInfo.image_element[i].eo_image_padding  = swapEndian<uint32_t>( _imageInfo.image_element[i].eo_image_padding );
@@ -389,10 +389,10 @@ void DpxHeader::swapHeader()
 	_imageOrientation.y_center        =   swapEndian<uint32_t>( _imageOrientation.y_center );
 	_imageOrientation.x_orig_size     =   swapEndian<uint32_t>( _imageOrientation.x_orig_size );
 	_imageOrientation.y_orig_size     =   swapEndian<uint32_t>( _imageOrientation.y_orig_size );
-	_imageOrientation.border[0]       =   swapEndian<short>( _imageOrientation.border[0] );
-	_imageOrientation.border[1]       =   swapEndian<short>( _imageOrientation.border[1] );
-	_imageOrientation.border[2]       =   swapEndian<short>( _imageOrientation.border[2] );
-	_imageOrientation.border[3]       =   swapEndian<short>( _imageOrientation.border[3] );
+	endian_swap( _imageOrientation.border[0] );
+	endian_swap( _imageOrientation.border[1] );
+	endian_swap( _imageOrientation.border[2] );
+	endian_swap( _imageOrientation.border[3] );
 	_imageOrientation.pixel_aspect[0] =   swapEndian<uint32_t>( _imageOrientation.pixel_aspect[0] );
 	_imageOrientation.pixel_aspect[1] =   swapEndian<uint32_t>( _imageOrientation.pixel_aspect[1] );
 
@@ -564,7 +564,8 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 				uint16_t* pData16End   = pData16 + dataSize16;
 				do
 				{
-					*pData16++ = swapEndian<uint16_t>( *pSrcData16++ );
+					*pData16 = *pSrcData16++ ;
+					endian_swap( *pData16++ );
 				}
 				while( pData16 != pData16End );
 				break;
@@ -586,7 +587,8 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 				uint32_t* pData32End   = pData32 + dataSize32;
 				do
 				{
-					*pData32++ = swapEndian<uint32_t>( *pSrcData32++ );
+					*pData32 = *pSrcData32++;
+					endian_swap( *pData32++ );
 				}
 				while( pData32 != pData32End );
 				break;
