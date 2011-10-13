@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_HISTOGRAMKEYER_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
-#include <tuttle/plugin/image/gil/clamp.hpp>
+#include <terry/clamp.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -28,7 +28,7 @@ struct Compute_alpha_pixel
 
         rgb32f_pixel_t convert_to_rgb;
         color_convert( p, convert_to_rgb ); // first step : p to rgb_pixel
-		pixel_clamp<rgb32f_pixel_t>(0, 1)( convert_to_rgb, convert_to_rgb );
+		terry::pixel_clamp<rgb32f_pixel_t>(0, 1)( convert_to_rgb, convert_to_rgb );
         hsl32f_pixel_t hsl_pix;
         color_convert(convert_to_rgb,hsl_pix ); // second step : rgb_pixel to hsl_pixel
         

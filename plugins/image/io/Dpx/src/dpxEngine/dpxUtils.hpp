@@ -1,6 +1,8 @@
 #ifndef DPX_UTILS_HPP
 #define DPX_UTILS_HPP
 
+#include <stdint.h>
+
 namespace tuttle {
 namespace utils {
 
@@ -17,10 +19,8 @@ inline void endian_swap(unsigned int& x)
 	((x>>8) & 0x0000FF00) |
 	(x<<24);
 }
-
-// __int64 for MSVC, "long long" for gcc
 /*
-inline void endian_swap(unsigned __int64& x)
+inline void endian_swap( uint64_t& x)
 {
     x = (x>>56) |
 	((x<<40) & 0x00FF000000000000) |
