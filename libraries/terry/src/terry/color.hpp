@@ -15,16 +15,17 @@ namespace terry {
 template <
 		typename SrcView, // Models RandomAccess2DImageViewConcept
 		typename DstView> // Models MutableRandomAccess2DImageViewConcept
-void colorspace_pixels_progress( ttlc::ColorSpaceAPI*			colorSpaceAPI,
-				 const ttlc::EParamGradationLaw		eGradationLawIn,
-				 const ttlc::EParamLayout		eLayoutIn,
-				 const ttlc::EColorTemperature			eTempIn,
-				 const ttlc::EParamGradationLaw		eGradationLawOut,
-				 const ttlc::EParamLayout		eLayoutOut,
-				 const ttlc::EColorTemperature			eTempOut,
-				 const SrcView&				src_view,
-				 const DstView&				dst_view,
-				 tuttle::plugin::IProgress*		p )
+void colorspace_pixels_progress(
+		ColorSpaceAPI* colorSpaceAPI,
+		const EParamGradationLaw eGradationLawIn,
+		const EParamLayout eLayoutIn,
+		const EColorTemperature eTempIn,
+		const EParamGradationLaw eGradationLawOut,
+		const EParamLayout eLayoutOut,
+		const EColorTemperature eTempOut,
+		const SrcView& src_view,
+		const DstView& dst_view,
+		tuttle::plugin::IProgress* p )
 {
 	for( int y = 0; y < src_view.height(); ++y )
 	{
