@@ -11,7 +11,7 @@ namespace terry {
  * @ingroup ImageAlgorithms
  *
  * The provided implementation works for 2D image views only
- */
+ *
 template <
 		typename SrcView, // Models RandomAccess2DImageViewConcept
 		typename DstView> // Models MutableRandomAccess2DImageViewConcept
@@ -34,13 +34,14 @@ void colorspace_pixels_progress(
 
 		for( int x = 0; x < src_view.width(); ++x, ++src_it, ++dst_it )
 		{
-			//*dst_it = *src_it;
+			// *dst_it = *src_it;
 			colorSpaceAPI->colorspace_convert( eGradationLawIn, eLayoutIn, eTempIn, eGradationLawOut, eLayoutOut, eTempOut , *src_it , *dst_it  );
 		}
 		if( p->progressForward() )
 			return;
 	}
 }
+*/
 
 }
 
