@@ -38,6 +38,36 @@ struct image_from_view
 };
 // typedef typename view_type_from_pixel<OutPixelType, boost::gil::is_planar<View>::value >::type OutView;
 
+template<class View>
+struct layout_type
+{
+    typedef boost::gil::layout<
+	 typename boost::gil::color_space_type<View>::type,
+	 typename boost::gil::channel_mapping_type<View>::type
+	 > type;
+};
+
+/**
+ * @return the current type T if it's a floating point type,
+ *         else return F
+ */
+template<typename T, typename F = boost::gil::bits32f>
+struct floating_channel_type_t
+{
+	typedef typename boost::mpl::if_< boost::is_floating_point<T>,
+					  T,
+					  F >::type type;
+};
+
+template<class View>
+struct floating_pixel_from_view
+{
+	typedef typename boost::gil::channel_mapping_type<View>::type Channel;
+	typedef typename floating_channel_type_t<Channel>::type ChannelFloat;
+
+	typedef boost::gil::pixel<ChannelFloat, typename layout_type<View>::type > type;
+};
+
 
 template <class View>
 inline float max_value()

@@ -4,6 +4,7 @@
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
 
+#include <terry/sampler/details.hpp>
 #include <terry/sampler/sampler.hpp>
 
 namespace tuttle {
@@ -20,7 +21,7 @@ template <typename Sampler, // Models SamplerConcept
           typename DstView, // Models MutableRandomAccess2DImageViewConcept
           typename MapFn>
 // Models MappingFunctionConcept
-void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, const OfxRectI& procWindow, const int outOfImageProcess, tuttle::plugin::IProgress* p, Sampler sampler = Sampler() )
+void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, const OfxRectI& procWindow, const terry::sampler::EOutOfImage& outOfImageProcess, tuttle::plugin::IProgress* p, Sampler sampler = Sampler() )
 {
 	typedef typename DstView::point_t Point2;
 	typedef typename DstView::value_type Pixel;
@@ -32,8 +33,8 @@ void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view,
 		typename DstView::x_iterator xit = dst_view.row_begin( dst_p.y );
 		for( dst_p.x = procWindow.x1; dst_p.x < procWindow.x2; ++dst_p.x )
 		{
-                        if( ! ::terry::sampler::sample( sampler, src_view, ::boost::gil::transform( dst_to_src, dst_p ), xit[dst_p.x], outOfImageProcess ) )
-                        {
+			if( ! ::terry::sampler::sample( sampler, src_view, ::boost::gil::transform( dst_to_src, dst_p ), xit[dst_p.x], outOfImageProcess ) )
+			{
 				xit[dst_p.x] = black; // if it is outside of the source image
 			}
 		}

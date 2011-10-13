@@ -168,7 +168,7 @@ OfxhPluginCache::OfxhPluginCache()
 
 		_pluginPath.push_back( path );
 	}
-
+	
 	#if defined( WINDOWS )
 	_pluginPath.push_back( getStdOFXPluginPath() );
 	_pluginPath.push_back( "C:\\Program Files\\Common Files\\OFX\\Plugins" );

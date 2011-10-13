@@ -126,6 +126,15 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 	scaleRodY->setDisplayRange	( 0.1, 2.5 );
 	scaleRodY->setHint		( "Adjust height of the output RoD." );
 
+	OFX::BooleanParamDescriptor* center = desc.defineBooleanParam( kParamCenter );
+	center->setLabel		( "Center resizing" );
+	center->setDefault		( true );
+	center->setHint			( "Set the resize to the center point." );
+
+	OFX::Double2DParamDescriptor* centerPoint = desc.defineDouble2DParam( kParamCenterPoint );
+	centerPoint ->setDefault	( 100, 100 );
+	centerPoint ->setLabel		( "Center point at" );
+	centerPoint ->setHint		( "Position of the center point." );
 
 	// filters parameters //
 	OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
@@ -181,12 +190,13 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 	OFX::ChoiceParamDescriptor* outOfImage = desc.defineChoiceParam( kParamFilterOutOfImage );
 	outOfImage->setLabel            ( "Out of Image" );
 	outOfImage->appendOption        ( kParamFilterOutBlack );
+	outOfImage->appendOption        ( kParamFilterOutTransparency );
 	outOfImage->appendOption        ( kParamFilterOutCopy );
 #ifndef TUTTLE_PRODUCTION
 	outOfImage->appendOption        ( kParamFilterOutMirror );
 #endif
 	outOfImage->setHint             ( "Select the filtering method out of the image." );
-	outOfImage->setDefault          ( eParamFilterOutBlack );
+	outOfImage->setDefault          ( eParamFilterOutCopy );
 }
 
 /**

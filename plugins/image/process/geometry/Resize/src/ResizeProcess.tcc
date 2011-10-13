@@ -1,4 +1,5 @@
 #include <tuttle/plugin/image/resample.hpp>
+#include <terry/sampler/details.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -35,7 +36,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 
 	//TUTTLE_COUT("\E[1;31mResize Position = " << -( _params._centerPoint.x - dst_width * 0.5) << "x" << -( _params._centerPoint.y - dst_height * 0.5) << "\E[0;0m");
 
-	int outOfImageProcess = _params._outOfImageProcess;
+	terry::sampler::EOutOfImage outOfImageProcess = (terry::sampler::EOutOfImage) _params._outOfImageProcess;
 
 	matrix3x2<double> mat;
 

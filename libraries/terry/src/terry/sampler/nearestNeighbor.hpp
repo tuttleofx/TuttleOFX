@@ -2,6 +2,7 @@
 #define _TERRY_SAMPLER_NEARESTNEIGHBOR_HPP_
 
 #include "details.hpp"
+#include <terry/basic_colors.hpp>
 #include <iostream>
 
 namespace terry {
@@ -11,8 +12,9 @@ namespace sampler {
 struct nearest_neighbor_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
+bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
 {
+	typedef typename SrcView::value_type SrcP;
 	point2<std::ptrdiff_t> center( iround( p ) );
 
 	// if we are outside the image
@@ -20,16 +22,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case 0 :
+			case eOutOfImageBlack :
 			{
-				return false; // black pixel
+				result = get_black<DstP>();
+				return true;
 			}
-			case 1 :
+			case eOutOfImageTransparency :
+			{
+				result = SrcP(0);
+				return true;
+			}
+			case eOutOfImageCopy :
 			{
 				center.x = 0.0;
 				break;
 			}
-			case 2 :
+			case eOutOfImageMirrored :
 			{
 				int value = ( - 1.0 * center.x / src.width() );
 				int idx = center.x + value * src.width();
@@ -51,13 +59,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case 0 : return false; // black pixel
-			case 1 :
+			case eOutOfImageBlack :
+			{
+				result = get_black<DstP>();
+				return true;
+			}
+			case eOutOfImageTransparency :
+			{
+				result = SrcP(0);
+				return true;
+			}
+			case eOutOfImageCopy :
 			{
 				center.x = src.width() - 1.0;
 				break;
 			}
-			case 2 :
+			case eOutOfImageMirrored :
 			{
 				int value =  center.x / src.width();
 				int idx = center.x - ( value + 1.0 ) * src.width();
@@ -79,13 +96,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case 0 : return false; // black pixel
-			case 1 :
+			case eOutOfImageBlack :
+			{
+				result = get_black<DstP>();
+				return true;
+			}
+			case eOutOfImageTransparency :
+			{
+				result = SrcP(0);
+				return true;
+			}
+			case eOutOfImageCopy :
 			{
 				center.y = 0;
 				break;
 			}
-			case 2 :
+			case eOutOfImageMirrored :
 			{
 				int value = ( - 1.0 * center.y / src.height() );
 				int idx = center.y + value * src.height();
@@ -108,13 +134,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case 0 : return false; // black pixel
-			case 1 :
+			case eOutOfImageBlack :
+			{
+				result = get_black<DstP>();
+				return true;
+			}
+			case eOutOfImageTransparency :
+			{
+				result = SrcP(0);
+				return true;
+			}
+			case eOutOfImageCopy :
 			{
 				center.y = src.height() - 1.0;
 				break;
 			}
-			case 2 :
+			case eOutOfImageMirrored :
 			{
 				int value =  center.y / src.height();
 				int idx = center.y - ( value + 1.0 ) * src.height();

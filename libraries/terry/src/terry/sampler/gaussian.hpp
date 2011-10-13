@@ -12,6 +12,7 @@ namespace sampler {
 #define M_PI    3.14159265358979323846264338327950288
 #endif
 
+
 struct gaussian_sampler
 {
 	size_t size;
@@ -21,6 +22,16 @@ struct gaussian_sampler
 		size  = 3.0;
 		sigma = 1.0;
 	}
+	/*
+	void operator()( const float& distance, double& weight, gaussian_sampler& sampler )
+	{
+		if( sampler.sigma == 0.0 )
+		{
+			weight = 0.0;
+			return;
+		}
+		weight = 1.0 / ( sampler.sigma * std::sqrt( 2 * boost::math::constant::pi<double>() )) * std::exp( - distance * distance / ( 2 * sampler.sigma ) ) ;
+	}*/
 };
 
 template < typename F >
@@ -35,7 +46,7 @@ void getGaussianWeight( const float& distance, F& weight, gaussian_sampler& samp
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const int& outOfImageProcess )
+bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
 {
 	/*
 	 * pTL is the closest integer coordinate top left from p
@@ -67,6 +78,7 @@ bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, D
 	for( size_t i = 0; i < windowSize; i++ )
 	{
 		float distancex = - frac.x - middlePosition + i ;
+		// sampler( std::abs( distancex ), xWeights.at(i), sampler );
 		getGaussianWeight( std::abs( distancex ), xWeights.at(i), sampler );
 		float distancey =  - frac.y - middlePosition + i ;
 		getGaussianWeight( std::abs( distancey ), yWeights.at(i), sampler );

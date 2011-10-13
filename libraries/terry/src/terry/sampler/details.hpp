@@ -4,6 +4,8 @@
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 
 #include <terry/clamp.hpp>
+#include <terry/globals.hpp>
+#include <terry/basic_colors.hpp>
 
 #include <cmath>
 #include <vector>
@@ -12,6 +14,15 @@
 namespace terry {
 using namespace boost::gil;
 namespace sampler {
+
+enum EOutOfImage
+{
+	eOutOfImageBlack = 0,
+	eOutOfImageTransparency,
+	eOutOfImageCopy,
+	eOutOfImageMirrored
+};
+
 namespace details {
 /*
 template< typename F>
@@ -133,7 +144,7 @@ struct add_dst_mul_src
  *       ^..... loc is pointing to D point
  */
 template < typename xy_locator, typename SrcP >
-void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const ssize_t& windowWidth, const ssize_t& imageWidth, const int& outOfImageProcess, std::vector< SrcP >& src )
+void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const ssize_t& windowWidth, const ssize_t& imageWidth, const EOutOfImage& outOfImageProcess, std::vector< SrcP >& src )
 {
 	ssize_t middlePosition = floor( (src.size() - 1) * 0.5 );
 
@@ -141,17 +152,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 	{
 		switch( outOfImageProcess )
 		{
-			case 0 :
+			case eOutOfImageBlack :
+			{
+				src.at( middlePosition ) = get_black<SrcP>();
+				break;
+			}
+			case eOutOfImageTransparency :
 			{
 				src.at( middlePosition ) = SrcP(0);
 				break;
 			}
-			case 1 :
+			case eOutOfImageCopy :
 			{
 				src.at( middlePosition ) = loc.x()[ - p0.x ];
 				break;
 			}
-			case 2 :
+			case eOutOfImageMirrored :
 			{
 				src.at( middlePosition ) = SrcP(0);
 				break;
@@ -164,17 +180,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		{
 			switch( outOfImageProcess )
 			{
-				case 0 :
+				case eOutOfImageBlack :
+				{
+					src.at( middlePosition ) = get_black<SrcP>();
+					break;
+				}
+				case eOutOfImageTransparency :
 				{
 					src.at( middlePosition ) = SrcP(0);
 					break;
 				}
-				case 1 :
+				case eOutOfImageCopy :
 				{
 					src.at( middlePosition ) = loc.x()[ imageWidth - 1 - p0.x ];
 					break;
 				}
-				case 2 :
+				case eOutOfImageMirrored :
 				{
 					src.at( middlePosition ) = SrcP(0);
 					break;
@@ -200,17 +221,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 			{
 				switch( outOfImageProcess )
 				{
-					case 0 :
+					case eOutOfImageBlack :
+					{
+						src.at( i ) = get_black<SrcP>();
+						break;
+					}
+					case eOutOfImageTransparency :
 					{
 						src.at( i ) = SrcP(0);
 						break;
 					}
-					case 1 :
+					case eOutOfImageCopy :
 					{
 						src.at( i ) = loc.x( )[ imageWidth - 1 ];
 						break;
 					}
-					case 2 :
+					case eOutOfImageMirrored :
 					{
 						src.at( i ) = SrcP(0);
 						break;
@@ -222,17 +248,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		{
 			switch( outOfImageProcess )
 			{
-				case 0 :
+				case eOutOfImageBlack :
+				{
+					src.at( i ) = get_black<SrcP>();
+					break;
+				}
+				case eOutOfImageTransparency :
 				{
 					src.at( i ) = SrcP(0);
 					break;
 				}
-				case 1 :
+				case eOutOfImageCopy :
 				{
 					src.at( i ) = src.at( i + 1 );
 					break;
 				}
-				case 2 :
+				case eOutOfImageMirrored :
 				{
 					src.at( i ) = SrcP(0);
 					break;
@@ -250,17 +281,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 			{
 				switch( outOfImageProcess )
 				{
-					case 0 :
+					case eOutOfImageBlack :
+					{
+						src.at( i ) = get_black<SrcP>();
+						break;
+					}
+					case eOutOfImageTransparency :
 					{
 						src.at( i ) = SrcP(0);
 						break;
 					}
-					case 1 :
+					case eOutOfImageCopy :
 					{
 						src.at( i ) = loc.x( )[ - p0.x ];
 						break;
 					}
-					case 2 :
+					case eOutOfImageMirrored :
 					{
 						src.at( i ) = SrcP(0);
 						break;
@@ -276,17 +312,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		{
 			switch( outOfImageProcess )
 			{
-				case 0 :
+				case eOutOfImageBlack :
+				{
+					src.at( i ) = get_black<SrcP>();
+					break;
+				}
+				case eOutOfImageTransparency :
 				{
 					src.at( i ) = SrcP(0);
 					break;
 				}
-				case 1 :
+				case eOutOfImageCopy :
 				{
 					src.at( i ) = loc.x()[ imageWidth - 1 - p0.x ];
 					break;
 				}
-				case 2 :
+				case eOutOfImageMirrored :
 				{
 					src.at( i ) = SrcP(0);
 					break;
@@ -320,16 +361,15 @@ struct process1Dresampling
 //};
 
 template <typename DstP, typename SrcView, typename Sampler, typename F>
-bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize, const int& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
+bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize, const EOutOfImage& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
-	typedef pixel<float, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
+
+	typedef typename floating_pixel_from_view<SrcView>::type SrcC; //PixelFloat;
 
 	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
 
-
 	SrcC mp( 0 );
-
 
 	std::vector < SrcP > ptr;
 	std::vector < SrcC > xProcessed;
@@ -348,12 +388,17 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		{
 			switch( outOfImageProcess )
 			{
-				case 0 :
+				case eOutOfImageBlack :
+				{
+					xProcessed.at( middlePosition ) = get_black<DstP>();
+					break;
+				}
+				case eOutOfImageTransparency :
 				{
 					xProcessed.at( middlePosition ) = SrcP(0);
 					break;
 				}
-				case 1 :
+				case eOutOfImageCopy :
 				{
 					loc.y( ) -= pTL.y;
 					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
@@ -361,7 +406,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 					loc.y( ) += pTL.y;
 					break;
 				}
-				case 2 :
+				case eOutOfImageMirrored :
 				{
 					xProcessed.at( middlePosition ) = SrcP(1);
 					break;
@@ -373,12 +418,17 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 			//TUTTLE_COUT( src.height() << " @@ " << (pTL.y - src.height() ) );
 			switch( outOfImageProcess )
 			{
-				case 0 :
+				case eOutOfImageBlack :
+				{
+					xProcessed.at( middlePosition ) = get_black<DstP>();
+					break;
+				}
+				case eOutOfImageTransparency :
 				{
 					xProcessed.at( middlePosition ) = SrcP(0);
 					break;
 				}
-				case 1 :
+				case eOutOfImageCopy :
 				{
 					loc.y( ) -= pTL.y - src.height() + 1.0 ;
 					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
@@ -386,7 +436,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 					loc.y( ) += pTL.y - src.height() + 1.0;
 					break;
 				}
-				case 2 :
+				case eOutOfImageMirrored :
 				{
 					xProcessed.at( middlePosition ) = SrcP(1);
 					break;
@@ -422,17 +472,22 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		{
 			switch( outOfImageProcess )
 			{
-				case 0 :
+				case eOutOfImageBlack :
+				{
+					xProcessed.at( i ) = get_black<DstP>();
+					break;
+				}
+				case eOutOfImageTransparency :
 				{
 					xProcessed.at( i ) = SrcP(0);
 					break;
 				}
-				case 1 :
+				case eOutOfImageCopy :
 				{
 					xProcessed.at( i ) = xProcessed.at( i + 1 );
 					break;
 				}
-				case 2 :
+				case eOutOfImageMirrored :
 				{
 					xProcessed.at( i ) = SrcP(1);
 					break;
@@ -456,23 +511,29 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
 				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
 				loc.y( ) += ( middlePosition - i );
+				//xProcessed.at( i ) = SrcP(0);
 			}
 		}
 		else
 		{
 			switch( outOfImageProcess )
 			{
-				case 0 :
+				case eOutOfImageBlack :
+				{
+					xProcessed.at( i ) = get_black<DstP>();
+					break;
+				}
+				case eOutOfImageTransparency :
 				{
 					xProcessed.at( i ) = SrcP(0);
 					break;
 				}
-				case 1 :
+				case eOutOfImageCopy :
 				{
 					xProcessed.at( i ) = xProcessed.at( i - 1 );
 					break;
 				}
-				case 2 :
+				case eOutOfImageMirrored :
 				{
 					xProcessed.at( i ) = SrcP(0);
 					break;
@@ -489,8 +550,8 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	//proc( mp );
 	// Convert from floating point average value to the source type
 	DstP src_result;
-	cast_pixel  ( mp, src_result );
-	color_convert( src_result, result );
+	//cast_pixel  ( mp, src_result );
+	color_convert( mp, result );
 
 	return true;
 }

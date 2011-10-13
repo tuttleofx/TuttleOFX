@@ -59,7 +59,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	};
 	
 	typedef typename channel_mapping_type<DView>::type DChannel;
-	typedef typename floating_channel_type_t<DChannel>::type DChannelFloat;
+	typedef typename terry::floating_channel_type_t<DChannel>::type DChannelFloat;
 	typedef pixel<DChannelFloat, gray_layout_t> DPixelGray;
 
 	DView dst = subimage_view( this->_dstView,
