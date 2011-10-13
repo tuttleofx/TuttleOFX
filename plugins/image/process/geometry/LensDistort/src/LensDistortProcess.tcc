@@ -46,7 +46,7 @@ void LensDistortProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace bgil;
+	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
 	switch( _interpolation )
