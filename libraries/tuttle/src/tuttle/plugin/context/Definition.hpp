@@ -7,13 +7,16 @@ namespace tuttle {
 namespace plugin {
 
 static const std::string kTuttlePluginBitDepthAuto = "auto";
-static const std::string kTuttlePluginBitDepth8    = "8int";
-static const std::string kTuttlePluginBitDepth10   = "10int";
-static const std::string kTuttlePluginBitDepth12   = "12int";
-static const std::string kTuttlePluginBitDepth16   = "16int";
-static const std::string kTuttlePluginBitDepth32   = "32int";
-static const std::string kTuttlePluginBitDepth16f  = "16float";
-static const std::string kTuttlePluginBitDepth32f  = "32float";
+static const std::string kTuttlePluginBitDepth8    = "8i    8  bits integer";
+static const std::string kTuttlePluginBitDepth10   = "10i   10 bits integer";
+static const std::string kTuttlePluginBitDepth12   = "12i   12 bits integer";
+static const std::string kTuttlePluginBitDepth16   = "16i   16 bits integer";
+static const std::string kTuttlePluginBitDepth16f  = "16f   16 bits floating point";
+static const std::string kTuttlePluginBitDepth32   = "32i   32 bits integer";
+static const std::string kTuttlePluginBitDepth32f  = "32f   32 bits floating point";
+
+
+
 
 }
 }

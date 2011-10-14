@@ -8,7 +8,7 @@ import os ;
 ###############################################################################
 project
     : requirements	
-				<include>src
+		<include>src
     : build-dir $(BUILD)/HistogramKeyer
     ;
  

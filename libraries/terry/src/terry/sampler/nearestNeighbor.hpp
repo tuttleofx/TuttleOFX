@@ -12,7 +12,7 @@ namespace sampler {
 struct nearest_neighbor_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 	typedef typename SrcView::value_type SrcP;
 	point2<std::ptrdiff_t> center( iround( p ) );
@@ -22,22 +22,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case eOutOfImageBlack :
+			case eParamFilterOutBlack :
 			{
 				result = get_black<DstP>();
 				return true;
 			}
-			case eOutOfImageTransparency :
+			case eParamFilterOutTransparency :
 			{
 				result = SrcP(0);
 				return true;
 			}
-			case eOutOfImageCopy :
+			case eParamFilterOutCopy :
 			{
 				center.x = 0.0;
 				break;
 			}
-			case eOutOfImageMirrored :
+			case eParamFilterOutMirror :
 			{
 				int value = ( - 1.0 * center.x / src.width() );
 				int idx = center.x + value * src.width();
@@ -59,22 +59,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case eOutOfImageBlack :
+			case eParamFilterOutBlack :
 			{
 				result = get_black<DstP>();
 				return true;
 			}
-			case eOutOfImageTransparency :
+			case eParamFilterOutTransparency :
 			{
 				result = SrcP(0);
 				return true;
 			}
-			case eOutOfImageCopy :
+			case eParamFilterOutCopy :
 			{
 				center.x = src.width() - 1.0;
 				break;
 			}
-			case eOutOfImageMirrored :
+			case eParamFilterOutMirror :
 			{
 				int value =  center.x / src.width();
 				int idx = center.x - ( value + 1.0 ) * src.width();
@@ -96,22 +96,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case eOutOfImageBlack :
+			case eParamFilterOutBlack :
 			{
 				result = get_black<DstP>();
 				return true;
 			}
-			case eOutOfImageTransparency :
+			case eParamFilterOutTransparency :
 			{
 				result = SrcP(0);
 				return true;
 			}
-			case eOutOfImageCopy :
+			case eParamFilterOutCopy :
 			{
 				center.y = 0;
 				break;
 			}
-			case eOutOfImageMirrored :
+			case eParamFilterOutMirror :
 			{
 				int value = ( - 1.0 * center.y / src.height() );
 				int idx = center.y + value * src.height();
@@ -134,22 +134,22 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 	{
 		switch( outOfImageProcess )
 		{
-			case eOutOfImageBlack :
+			case eParamFilterOutBlack :
 			{
 				result = get_black<DstP>();
 				return true;
 			}
-			case eOutOfImageTransparency :
+			case eParamFilterOutTransparency :
 			{
 				result = SrcP(0);
 				return true;
 			}
-			case eOutOfImageCopy :
+			case eParamFilterOutCopy :
 			{
 				center.y = src.height() - 1.0;
 				break;
 			}
-			case eOutOfImageMirrored :
+			case eParamFilterOutMirror :
 			{
 				int value =  center.y / src.height();
 				int idx = center.y - ( value + 1.0 ) * src.height();

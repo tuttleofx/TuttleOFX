@@ -22,27 +22,35 @@ LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 {
 	_srcRefClip = fetchClip( kClipOptionalSourceRef );
 
-	_reverse              = fetchBooleanParam( kParamReverse );
-	_displaySource        = fetchBooleanParam( kParamDisplaySource );
-	_lensType             = fetchChoiceParam( kParamLensType );
-	_coef1                = fetchDoubleParam( kParamCoef1 );
-	_coef2                = fetchDoubleParam( kParamCoef2 );
-	_squeeze              = fetchDoubleParam( kParamSqueeze );
-	_asymmetric           = fetchDouble2DParam( kParamAsymmetric );
-	_center               = fetchDouble2DParam( kParamCenter );
-	_centerOverlay        = fetchBooleanParam( kParamCenterOverlay );
-	_centerType           = fetchChoiceParam( kParamCenterType );
-	_preScale             = fetchDoubleParam( kParamPreScale );
-	_postScale            = fetchDoubleParam( kParamPostScale );
-	_interpolation        = fetchChoiceParam( kParamInterpolation );
-	_resizeRod            = fetchChoiceParam( kParamResizeRod );
-	_resizeRodManualScale = fetchDoubleParam( kParamResizeRodManualScale );
-	_groupDisplayParams   = fetchGroupParam( kParamDisplayOptions );
-	_gridOverlay          = fetchBooleanParam( kParamGridOverlay );
-	_gridCenter           = fetchDouble2DParam( kParamGridCenter );
-	_gridCenterOverlay    = fetchBooleanParam( kParamGridCenterOverlay );
-	_gridScale            = fetchDouble2DParam( kParamGridScale );
-	_debugDisplayRoi      = fetchBooleanParam( kParamDebugDisplayRoi );
+	_reverse              = fetchBooleanParam       ( kParamReverse );
+	_displaySource        = fetchBooleanParam       ( kParamDisplaySource );
+	_lensType             = fetchChoiceParam        ( kParamLensType );
+	_coef1                = fetchDoubleParam        ( kParamCoef1 );
+	_coef2                = fetchDoubleParam        ( kParamCoef2 );
+	_squeeze              = fetchDoubleParam        ( kParamSqueeze );
+	_asymmetric           = fetchDouble2DParam      ( kParamAsymmetric );
+	_center               = fetchDouble2DParam      ( kParamCenter );
+	_centerOverlay        = fetchBooleanParam       ( kParamCenterOverlay );
+	_centerType           = fetchChoiceParam        ( kParamCenterType );
+	_preScale             = fetchDoubleParam        ( kParamPreScale );
+	_postScale            = fetchDoubleParam        ( kParamPostScale );
+	_resizeRod            = fetchChoiceParam        ( kParamResizeRod );
+	_resizeRodManualScale = fetchDoubleParam        ( kParamResizeRodManualScale );
+	_groupDisplayParams   = fetchGroupParam         ( kParamDisplayOptions );
+	_gridOverlay          = fetchBooleanParam       ( kParamGridOverlay );
+	_gridCenter           = fetchDouble2DParam      ( kParamGridCenter );
+	_gridCenterOverlay    = fetchBooleanParam       ( kParamGridCenterOverlay );
+	_gridScale            = fetchDouble2DParam      ( kParamGridScale );
+	_debugDisplayRoi      = fetchBooleanParam       ( kParamDebugDisplayRoi );
+
+	_paramFilter          = fetchChoiceParam        ( ::tuttle::plugin::kParamFilter );
+	_paramB               = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterB );
+	_paramC               = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterC );
+
+	_paramFilterSize      = fetchIntParam           ( ::tuttle::plugin::kParamFilterSize );
+	_paramFilterSigma     = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterSigma );
+
+	_paramOutOfImage        = fetchChoiceParam      ( kParamFilterOutOfImage );
 
 	initParamsProps();
 }
@@ -242,7 +250,7 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	OfxRectD dstRod = _clipDst->getCanonicalRod( args.time );
 
 	LensDistortProcessParams<Scalar> params;
-	EParamInterpolation interpolation = getInterpolation();
+	terry::sampler::EParamFilter interpolation = getInterpolation();
 	if( _srcRefClip->isConnected() )
 	{
 		OfxRectD srcRefRod = _srcRefClip->getCanonicalRod( args.time );
@@ -272,21 +280,32 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	double margin = 0.0;
 	switch( interpolation )
 	{
-		case eParamInterpolationNearest:
-		case eParamInterpolationBilinear:
+		case terry::sampler::eParamFilterNearest:
+		case terry::sampler::eParamFilterBilinear:
 		{
 			margin = 1.0; // one pixel margin
 			break;
 		}
-		case eParamInterpolationBicubic:
-		case eParamInterpolationCatmul:
-		case eParamInterpolationMitchell:
-		case eParamInterpolationParzen:
-		case eParamInterpolationKeys:
-		case eParamInterpolationSimon:
-		case eParamInterpolationRifman:
+		case terry::sampler::eParamFilterBicubic:
+		case terry::sampler::eParamFilterBC:
+		case terry::sampler::eParamFilterCatrom:
+		case terry::sampler::eParamFilterMitchell:
+		case terry::sampler::eParamFilterParzen:
+		case terry::sampler::eParamFilterKeys:
+		case terry::sampler::eParamFilterSimon:
+		case terry::sampler::eParamFilterRifman:
 		{
 			margin = 2.0; // two pixels margin
+			break;
+		}
+		case terry::sampler::eParamFilterLanczos:
+		case terry::sampler::eParamFilterLanczos3:
+		case terry::sampler::eParamFilterLanczos4:
+		case terry::sampler::eParamFilterLanczos6:
+		case terry::sampler::eParamFilterLanczos12:
+		case terry::sampler::eParamFilterGaussian:
+		{
+			margin = 6.0;
 			break;
 		}
 	}
@@ -367,6 +386,22 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 		params._postScale = 1.0 / swapPreScale;
 	}
 	return params;
+}
+
+LensDistortParams LensDistortPlugin::getProcessParams(  ) const
+{
+	LensDistortParams lensDistortParams;
+	lensDistortParams._filter            = (terry::sampler::EParamFilter)           _paramFilter     -> getValue();
+	lensDistortParams._lensType          = (tuttle::plugin::lens::EParamLensType)   _lensType        -> getValue();
+	lensDistortParams._centerType        = (tuttle::plugin::lens::EParamCenterType) _centerType      -> getValue();
+
+	lensDistortParams._filterSize        = (double) _paramFilterSize  -> getValue();
+	lensDistortParams._filterSigma       = (double) _paramFilterSigma -> getValue();
+	lensDistortParams._paramB            = (double) _paramB           -> getValue();
+	lensDistortParams._paramC            = (double) _paramC           -> getValue();
+	lensDistortParams._outOfImageProcess = (terry::sampler::EParamFilterOutOfImage) _paramOutOfImage  -> getValue();
+
+	return lensDistortParams;
 }
 
 }

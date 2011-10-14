@@ -2,6 +2,9 @@
 #include "LensDistortPlugin.hpp"
 #include "LensDistortOverlayInteract.hpp"
 
+#include <tuttle/plugin/context/SamplerDefinition.hpp>
+#include <tuttle/plugin/context/SamplerPluginFactory.hpp>
+
 #include <tuttle/plugin/exceptions.hpp>
 #include <terry/globals.hpp>
 
@@ -171,39 +174,9 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	postScale->setDisplayRange( 0.0, 2.5 );
 	postScale->setHint( "If the transformation of optics is high, you may need to change the scale of the result to be globally closer to the source image or preserve a good resolution." );
 
-	OFX::ChoiceParamDescriptor* interpolation = desc.defineChoiceParam( kParamInterpolation );
-	interpolation->setLabel( "Interpolation" );
-	interpolation->appendOption( kParamInterpolationNearest );
-	interpolation->appendOption( kParamInterpolationBilinear );
-//	#ifndef TUTTLE_PRODUCTION
-	interpolation->appendOption( kParamInterpolationBicubic );
-	interpolation->appendOption( kParamInterpolationCatmul );
-	interpolation->appendOption( kParamInterpolationMitchell );
-	interpolation->appendOption( kParamInterpolationParzen );
-	interpolation->appendOption( kParamInterpolationKeys );
-	interpolation->appendOption( kParamInterpolationSimon );
-	interpolation->appendOption( kParamInterpolationRifman );
-//	interpolation->appendOption( kParamInterpolationLanczos3 );
-//	interpolation->appendOption( kParamInterpolationLanczos4 );
-//	interpolation->appendOption( kParamInterpolationLanczos6 );
-//	interpolation->appendOption( kParamInterpolationLanczos12 );
-//	interpolation->appendOption( kParamInterpolationGaussian );
-//	#endif
-	interpolation->setDefault( 1 );
-	interpolation->setHint(
-			"Interpolation methods\n"
-			"\n"
-			/// @todo: documentation...
-			"Nearest: \n"
-			"Bilinear: \n"
-			"Bicubic: Cubic filter(0.0, 0.0)\n"
-			"Catmul: Cubic filter(0.0, 0.5)\n"
-			"Mitchell: Cubic filter(1/3, 1/3)\n"
-			"Parsen: Cubic filter(1.0, 0.0)\n"
-			"Keys: \n"
-			"Simon: \n"
-			"Rifman: \n"
-		);
+
+	addFilterParameters( desc );
+
 
 	OFX::ChoiceParamDescriptor* resizeRod = desc.defineChoiceParam( kParamResizeRod );
 	resizeRod->setLabel( "Resize RoD" );

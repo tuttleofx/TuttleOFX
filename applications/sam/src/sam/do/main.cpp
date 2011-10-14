@@ -388,7 +388,7 @@ int main( int argc, char** argv )
 								detectedPlugins.push_back( plugName );
 								break;
 							}
-							if( boost::algorithm::find_first(plugName, userNodeName ) )
+							if( boost::algorithm::find_first( plugName, userNodeName ) )
 							{
 								detectedPlugins.push_back( plugName );
 							}

@@ -2,12 +2,14 @@
 #include "ResizeProcess.hpp"
 #include "ResizeDefinitions.hpp"
 
+#include <terry/sampler/sampler.hpp>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace resize {
-
+using namespace ::terry::sampler;
 
 ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )

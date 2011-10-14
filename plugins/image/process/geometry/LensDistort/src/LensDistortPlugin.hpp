@@ -5,6 +5,7 @@
 #include "lensDistortProcessParams.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+#include <tuttle/plugin/context/SamplerDefinition.hpp>
 
 #include <boost/gil/utilities.hpp>
 #include <string>
@@ -12,6 +13,20 @@
 namespace tuttle {
 namespace plugin {
 namespace lens {
+
+struct LensDistortParams
+{
+	EParamLensType                             _lensType;
+	EParamCenterType                           _centerType;
+
+	terry::sampler::EParamFilter               _filter;
+	double                                     _filterSize;
+	double                                     _filterSigma;
+	double                                     _paramB;
+	double                                     _paramC;
+
+	terry::sampler::EParamFilterOutOfImage     _outOfImageProcess;
+};
 
 /**
  * @brief Main class of the lens distortion
@@ -28,21 +43,20 @@ public:
 	///@}
 
 	///@{
-	OFX::BooleanParam* _reverse; ///< reverse the effect
-	OFX::BooleanParam* _displaySource; ///< do nothing (so host displays input)
-	OFX::ChoiceParam* _lensType; ///< choice to select lens type
-	OFX::DoubleParam* _coef1; ///< distortion coeffiscient
-	OFX::DoubleParam* _coef2; ///< distortion coeffiscient for fish-eye lens
-	OFX::DoubleParam* _squeeze; ///< squeeze coefficient horizontally/vertically (not implemented yet)
+	OFX::BooleanParam*  _reverse; ///< reverse the effect
+	OFX::BooleanParam*  _displaySource; ///< do nothing (so host displays input)
+	OFX::ChoiceParam*   _lensType; ///< choice to select lens type
+	OFX::DoubleParam*   _coef1; ///< distortion coeffiscient
+	OFX::DoubleParam*   _coef2; ///< distortion coeffiscient for fish-eye lens
+	OFX::DoubleParam*   _squeeze; ///< squeeze coefficient horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _asymmetric; ///< lens distortion is asymmetric horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _center; ///< center coordonnates
 	OFX::BooleanParam*  _centerOverlay; ///< lens center overlay
-	OFX::ChoiceParam* _centerType; ///< centered the lens distortion on source RoD or image size (not implemented yet)
-	OFX::DoubleParam* _postScale; ///< scale after applying the lens distortion
-	OFX::DoubleParam* _preScale; ///< scale before applying the lens distortion
-	OFX::ChoiceParam* _interpolation; ///< interpolation method
-	OFX::ChoiceParam* _resizeRod; ///< Choice how to resize the RoD (default 'no' resize)
-	OFX::DoubleParam* _resizeRodManualScale; ///< scale the output RoD
+	OFX::ChoiceParam*   _centerType; ///< centered the lens distortion on source RoD or image size (not implemented yet)
+	OFX::DoubleParam*   _postScale; ///< scale after applying the lens distortion
+	OFX::DoubleParam*   _preScale; ///< scale before applying the lens distortion
+	OFX::ChoiceParam*   _resizeRod; ///< Choice how to resize the RoD (default 'no' resize)
+	OFX::DoubleParam*   _resizeRodManualScale; ///< scale the output RoD
 
 	OFX::GroupParam* _groupDisplayParams; ///< group of all overlay options (don't modify the output image)
 	OFX::BooleanParam*  _gridOverlay; ///< grid overlay
@@ -51,6 +65,18 @@ public:
 	OFX::Double2DParam* _gridScale; ///< grid scale
 
 	OFX::BooleanParam* _debugDisplayRoi; ///< debug display options
+
+
+	OFX::ChoiceParam*	_paramFilter;
+
+	OFX::IntParam*		_paramFilterSize;
+	OFX::DoubleParam*	_paramFilterSigma;
+
+	OFX::DoubleParam*	_paramB;
+	OFX::DoubleParam*	_paramC;
+
+	OFX::ChoiceParam*	_paramOutOfImage;
+
 	///@}
 
 	///@{
@@ -82,10 +108,12 @@ public:
 		return getProcessParams( inputRod, outputRod, noOptionalInputRod, pixelAspectRatio, reverse );
 	}
 
-	const EParamLensType      getLensType() const      { return static_cast<EParamLensType>( _lensType->getValue() ); }
-	const EParamInterpolation getInterpolation() const { return static_cast<EParamInterpolation>( _interpolation->getValue() ); }
-	const EParamCenterType    getCenterType() const    { return static_cast<EParamCenterType>( _centerType->getValue() ); }
-	const EParamResizeRod     getResizeRod() const     { return static_cast<EParamResizeRod>( _resizeRod->getValue() ); }
+	LensDistortParams                    getProcessParams(  ) const ;
+
+	const EParamLensType                 getLensType() const      { return static_cast<EParamLensType     >( _lensType->getValue()      ); }
+	const ::terry::sampler::EParamFilter getInterpolation() const { return static_cast<terry::sampler::EParamFilter>( _paramFilter->getValue() ); }
+	const EParamCenterType               getCenterType() const    { return static_cast<EParamCenterType   >( _centerType->getValue()    ); }
+	const EParamResizeRod                getResizeRod() const     { return static_cast<EParamResizeRod    >( _resizeRod->getValue()     ); }
 
 private:
 	void initParamsProps();

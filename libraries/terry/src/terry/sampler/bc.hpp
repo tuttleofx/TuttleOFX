@@ -138,7 +138,7 @@ bool getWeight ( const size_t& index, const double& distance, F& weight, bc_samp
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 	/*
 	 * pTL is the closest integer coordinate top left from p

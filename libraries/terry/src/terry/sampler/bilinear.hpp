@@ -36,7 +36,7 @@ bool getWeight ( const long int&  pTLXOrY, const F& distance, const size_t index
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( bilinear_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( bilinear_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 
 		/*

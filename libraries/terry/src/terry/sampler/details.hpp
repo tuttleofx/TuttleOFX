@@ -3,6 +3,8 @@
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 
+#include "sampler.hpp"
+
 #include <terry/clamp.hpp>
 #include <terry/globals.hpp>
 #include <terry/basic_colors.hpp>
@@ -14,14 +16,6 @@
 namespace terry {
 using namespace boost::gil;
 namespace sampler {
-
-enum EOutOfImage
-{
-	eOutOfImageBlack = 0,
-	eOutOfImageTransparency,
-	eOutOfImageCopy,
-	eOutOfImageMirrored
-};
 
 namespace details {
 /*
@@ -144,7 +138,7 @@ struct add_dst_mul_src
  *       ^..... loc is pointing to D point
  */
 template < typename xy_locator, typename SrcP >
-void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const ssize_t& windowWidth, const ssize_t& imageWidth, const EOutOfImage& outOfImageProcess, std::vector< SrcP >& src )
+void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const ssize_t& windowWidth, const ssize_t& imageWidth, const EParamFilterOutOfImage& outOfImageProcess, std::vector< SrcP >& src )
 {
 	ssize_t middlePosition = floor( (src.size() - 1) * 0.5 );
 
@@ -152,22 +146,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 	{
 		switch( outOfImageProcess )
 		{
-			case eOutOfImageBlack :
+			case eParamFilterOutBlack :
 			{
 				src.at( middlePosition ) = get_black<SrcP>();
 				break;
 			}
-			case eOutOfImageTransparency :
+			case eParamFilterOutTransparency :
 			{
 				src.at( middlePosition ) = SrcP(0);
 				break;
 			}
-			case eOutOfImageCopy :
+			case eParamFilterOutCopy :
 			{
 				src.at( middlePosition ) = loc.x()[ - p0.x ];
 				break;
 			}
-			case eOutOfImageMirrored :
+			case eParamFilterOutMirror :
 			{
 				src.at( middlePosition ) = SrcP(0);
 				break;
@@ -180,22 +174,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		{
 			switch( outOfImageProcess )
 			{
-				case eOutOfImageBlack :
+				case eParamFilterOutBlack :
 				{
 					src.at( middlePosition ) = get_black<SrcP>();
 					break;
 				}
-				case eOutOfImageTransparency :
+				case eParamFilterOutTransparency :
 				{
 					src.at( middlePosition ) = SrcP(0);
 					break;
 				}
-				case eOutOfImageCopy :
+				case eParamFilterOutCopy :
 				{
 					src.at( middlePosition ) = loc.x()[ imageWidth - 1 - p0.x ];
 					break;
 				}
-				case eOutOfImageMirrored :
+				case eParamFilterOutMirror :
 				{
 					src.at( middlePosition ) = SrcP(0);
 					break;
@@ -221,22 +215,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 			{
 				switch( outOfImageProcess )
 				{
-					case eOutOfImageBlack :
+					case eParamFilterOutBlack :
 					{
 						src.at( i ) = get_black<SrcP>();
 						break;
 					}
-					case eOutOfImageTransparency :
+					case eParamFilterOutTransparency :
 					{
 						src.at( i ) = SrcP(0);
 						break;
 					}
-					case eOutOfImageCopy :
+					case eParamFilterOutCopy :
 					{
 						src.at( i ) = loc.x( )[ imageWidth - 1 ];
 						break;
 					}
-					case eOutOfImageMirrored :
+					case eParamFilterOutMirror :
 					{
 						src.at( i ) = SrcP(0);
 						break;
@@ -248,22 +242,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		{
 			switch( outOfImageProcess )
 			{
-				case eOutOfImageBlack :
+				case eParamFilterOutBlack :
 				{
 					src.at( i ) = get_black<SrcP>();
 					break;
 				}
-				case eOutOfImageTransparency :
+				case eParamFilterOutTransparency :
 				{
 					src.at( i ) = SrcP(0);
 					break;
 				}
-				case eOutOfImageCopy :
+				case eParamFilterOutCopy :
 				{
 					src.at( i ) = src.at( i + 1 );
 					break;
 				}
-				case eOutOfImageMirrored :
+				case eParamFilterOutMirror :
 				{
 					src.at( i ) = SrcP(0);
 					break;
@@ -281,22 +275,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 			{
 				switch( outOfImageProcess )
 				{
-					case eOutOfImageBlack :
+					case eParamFilterOutBlack :
 					{
 						src.at( i ) = get_black<SrcP>();
 						break;
 					}
-					case eOutOfImageTransparency :
+					case eParamFilterOutTransparency :
 					{
 						src.at( i ) = SrcP(0);
 						break;
 					}
-					case eOutOfImageCopy :
+					case eParamFilterOutCopy :
 					{
 						src.at( i ) = loc.x( )[ - p0.x ];
 						break;
 					}
-					case eOutOfImageMirrored :
+					case eParamFilterOutMirror :
 					{
 						src.at( i ) = SrcP(0);
 						break;
@@ -312,22 +306,22 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		{
 			switch( outOfImageProcess )
 			{
-				case eOutOfImageBlack :
+				case eParamFilterOutBlack :
 				{
 					src.at( i ) = get_black<SrcP>();
 					break;
 				}
-				case eOutOfImageTransparency :
+				case eParamFilterOutTransparency :
 				{
 					src.at( i ) = SrcP(0);
 					break;
 				}
-				case eOutOfImageCopy :
+				case eParamFilterOutCopy :
 				{
 					src.at( i ) = loc.x()[ imageWidth - 1 - p0.x ];
 					break;
 				}
-				case eOutOfImageMirrored :
+				case eParamFilterOutMirror :
 				{
 					src.at( i ) = SrcP(0);
 					break;
@@ -361,7 +355,7 @@ struct process1Dresampling
 //};
 
 template <typename DstP, typename SrcView, typename Sampler, typename F>
-bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize, const EOutOfImage& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
+bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize, const EParamFilterOutOfImage& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 
@@ -388,17 +382,17 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		{
 			switch( outOfImageProcess )
 			{
-				case eOutOfImageBlack :
+				case eParamFilterOutBlack :
 				{
 					xProcessed.at( middlePosition ) = get_black<DstP>();
 					break;
 				}
-				case eOutOfImageTransparency :
+				case eParamFilterOutTransparency :
 				{
 					xProcessed.at( middlePosition ) = SrcP(0);
 					break;
 				}
-				case eOutOfImageCopy :
+				case eParamFilterOutCopy :
 				{
 					loc.y( ) -= pTL.y;
 					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
@@ -406,7 +400,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 					loc.y( ) += pTL.y;
 					break;
 				}
-				case eOutOfImageMirrored :
+				case eParamFilterOutMirror :
 				{
 					xProcessed.at( middlePosition ) = SrcP(1);
 					break;
@@ -418,17 +412,17 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 			//TUTTLE_COUT( src.height() << " @@ " << (pTL.y - src.height() ) );
 			switch( outOfImageProcess )
 			{
-				case eOutOfImageBlack :
+				case eParamFilterOutBlack :
 				{
 					xProcessed.at( middlePosition ) = get_black<DstP>();
 					break;
 				}
-				case eOutOfImageTransparency :
+				case eParamFilterOutTransparency :
 				{
 					xProcessed.at( middlePosition ) = SrcP(0);
 					break;
 				}
-				case eOutOfImageCopy :
+				case eParamFilterOutCopy :
 				{
 					loc.y( ) -= pTL.y - src.height() + 1.0 ;
 					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
@@ -436,7 +430,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 					loc.y( ) += pTL.y - src.height() + 1.0;
 					break;
 				}
-				case eOutOfImageMirrored :
+				case eParamFilterOutMirror :
 				{
 					xProcessed.at( middlePosition ) = SrcP(1);
 					break;
@@ -472,22 +466,22 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		{
 			switch( outOfImageProcess )
 			{
-				case eOutOfImageBlack :
+				case eParamFilterOutBlack :
 				{
 					xProcessed.at( i ) = get_black<DstP>();
 					break;
 				}
-				case eOutOfImageTransparency :
+				case eParamFilterOutTransparency :
 				{
 					xProcessed.at( i ) = SrcP(0);
 					break;
 				}
-				case eOutOfImageCopy :
+				case eParamFilterOutCopy :
 				{
 					xProcessed.at( i ) = xProcessed.at( i + 1 );
 					break;
 				}
-				case eOutOfImageMirrored :
+				case eParamFilterOutMirror :
 				{
 					xProcessed.at( i ) = SrcP(1);
 					break;
@@ -518,22 +512,22 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		{
 			switch( outOfImageProcess )
 			{
-				case eOutOfImageBlack :
+				case eParamFilterOutBlack :
 				{
 					xProcessed.at( i ) = get_black<DstP>();
 					break;
 				}
-				case eOutOfImageTransparency :
+				case eParamFilterOutTransparency :
 				{
 					xProcessed.at( i ) = SrcP(0);
 					break;
 				}
-				case eOutOfImageCopy :
+				case eParamFilterOutCopy :
 				{
 					xProcessed.at( i ) = xProcessed.at( i - 1 );
 					break;
 				}
-				case eOutOfImageMirrored :
+				case eParamFilterOutMirror :
 				{
 					xProcessed.at( i ) = SrcP(0);
 					break;

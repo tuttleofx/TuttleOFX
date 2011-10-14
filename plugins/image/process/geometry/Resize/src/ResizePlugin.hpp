@@ -4,6 +4,7 @@
 #include "ResizeDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+#include <tuttle/plugin/context/SamplerDefinition.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -12,17 +13,17 @@ namespace resize {
 template<typename Scalar>
 struct ResizeProcessParams
 {
-	boost::gil::point2<Scalar> _size;
-	bool                       _changeCenter;
-	boost::gil::point2<Scalar> _centerPoint;
+	boost::gil::point2<Scalar>                 _size;
+	bool                                       _changeCenter;
+	boost::gil::point2<Scalar>                 _centerPoint;
 
-	EParamFilter               _filter;
-	double                     _filterSize;
-	double                     _filterSigma;
-	double                     _paramB;
-	double                     _paramC;
+	terry::sampler::EParamFilter               _filter;
+	double                                     _filterSize;
+	double                                     _filterSigma;
+	double                                     _paramB;
+	double                                     _paramC;
 
-        EParamFilterOutOfImage     _outOfImageProcess;
+	terry::sampler::EParamFilterOutOfImage     _outOfImageProcess;
 };
 
 /**

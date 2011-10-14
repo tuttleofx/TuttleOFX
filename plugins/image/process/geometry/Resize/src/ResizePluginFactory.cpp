@@ -2,7 +2,10 @@
 #include "ResizePlugin.hpp"
 #include "ResizeDefinitions.hpp"
 
+#include <tuttle/plugin/context/SamplerPluginFactory.hpp>
+
 #include <limits>
+
 
 namespace tuttle {
 namespace plugin {
@@ -137,66 +140,8 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 	centerPoint ->setHint		( "Position of the center point." );
 
 	// filters parameters //
-	OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
-	filter->setLabel	( "Filter" );
-	filter->appendOption	( kParamFilterNearest );
-	filter->appendOption	( kParamFilterBilinear );
-	filter->appendOption	( kParamFilterBC );
-	filter->appendOption	( kParamFilterBicubic );
-	filter->appendOption	( kParamFilterCatrom ); // idem as the Keys resampling
-	filter->appendOption	( kParamFilterKeys );
-	filter->appendOption	( kParamFilterSimon );
-	filter->appendOption	( kParamFilterRifman );
-	filter->appendOption	( kParamFilterMitchell );
-	filter->appendOption	( kParamFilterParzen );
-	filter->appendOption	( kParamFilterLanczos );
-	filter->appendOption	( kParamFilterLanczos3 );
-	filter->appendOption	( kParamFilterLanczos4 );
-	filter->appendOption	( kParamFilterLanczos6 );
-	filter->appendOption	( kParamFilterLanczos12 );
-	filter->appendOption	( kParamFilterGaussian );
-	filter->setHint		( "Select the filtering method." );
-	filter->setDefault	( eParamFilterBilinear );
+	addFilterParameters( desc );
 
-	OFX::DoubleParamDescriptor* B = desc.defineDoubleParam( kParamFilterB );
-	B->setLabel			( "B value" );
-	B->setDefault			( 1.0 );
-	B->setRange			( 0.0, 1.0 );
-	B->setDisplayRange		( 0.0, 1.0 );
-	B->setHint			( "Adjust the B valuye of the cubic filter." );
-
-	OFX::DoubleParamDescriptor* C = desc.defineDoubleParam( kParamFilterC );
-	C->setLabel			( "C value" );
-	C->setDefault			( 0.0 );
-	C->setRange			( 0.0, 1.0 );
-	C->setDisplayRange		( 0.0, 1.0 );
-	C->setHint			( "Adjust the C valuye of the cubic filter." );
-
-	OFX::IntParamDescriptor* filterSize = desc.defineIntParam( kParamFilterSize );
-	filterSize->setLabel		( "Filter size" );
-	filterSize->setDefault		( 3.0 );
-	filterSize->setRange		( 1.0, 30.0 );
-	filterSize->setDisplayRange	( 1.0, 30.0 );
-	filterSize->setHint		( "Set the filter size." );
-
-	OFX::DoubleParamDescriptor* filterSigma = desc.defineDoubleParam( kParamFilterSigma );
-	filterSigma->setLabel		( "Sigma" );
-	filterSigma->setDefault		( 1.0 );
-	filterSigma->setRange		( 0.0001, 30.0 );
-	filterSigma->setDisplayRange	( 0.0001, 4.0 );
-	filterSigma->setHint		( "Set the gaussian sigma coefficient." );
-
-	// filters parameters //
-	OFX::ChoiceParamDescriptor* outOfImage = desc.defineChoiceParam( kParamFilterOutOfImage );
-	outOfImage->setLabel            ( "Out of Image" );
-	outOfImage->appendOption        ( kParamFilterOutBlack );
-	outOfImage->appendOption        ( kParamFilterOutTransparency );
-	outOfImage->appendOption        ( kParamFilterOutCopy );
-#ifndef TUTTLE_PRODUCTION
-	outOfImage->appendOption        ( kParamFilterOutMirror );
-#endif
-	outOfImage->setHint             ( "Select the filtering method out of the image." );
-	outOfImage->setDefault          ( eParamFilterOutCopy );
 }
 
 /**

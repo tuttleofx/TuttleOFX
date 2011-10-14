@@ -20,6 +20,7 @@ struct lanczos_sampler{
 		size = 3.0;
 	}
 };
+
 struct lanczos3_sampler{};
 struct lanczos4_sampler{};
 struct lanczos6_sampler{};
@@ -38,7 +39,7 @@ void getLanczosWeight( const float& distance, F& weight, lanczos_sampler& sample
 
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 
 	/*
@@ -83,7 +84,7 @@ bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, Ds
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos3_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( lanczos3_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 3;
@@ -91,7 +92,7 @@ bool sample( lanczos3_sampler sampler, const SrcView& src, const point2<F>& p, D
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos4_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( lanczos4_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 4;
@@ -99,7 +100,7 @@ bool sample( lanczos4_sampler sampler, const SrcView& src, const point2<F>& p, D
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos6_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( lanczos6_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 6;
@@ -107,7 +108,7 @@ bool sample( lanczos6_sampler sampler, const SrcView& src, const point2<F>& p, D
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos12_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EOutOfImage& outOfImageProcess )
+bool sample( lanczos12_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
 {
 	lanczos_sampler s;
 	s.size = 12;
