@@ -1,6 +1,10 @@
 #ifndef _TERRY_BASICCOLORS_HPP_
 #define	_TERRY_BASICCOLORS_HPP_
 
+#include <boost/gil/pixel.hpp>
+#include <boost/gil/typedefs.hpp>
+#include <boost/gil/color_convert.hpp>
+
 namespace terry {
 
 /**
@@ -49,7 +53,8 @@ static inline const Pixel get_black()
 {
 	using namespace boost::gil;
 	Pixel black;
-	color_convert( gray32f_pixel_t( 0.0 ), black );
+	/// @todo tuttle: to rewrite !!!
+	boost::gil::color_convert( gray32f_pixel_t( 0.0 ), black );
 	return black;
 }
 
@@ -64,7 +69,8 @@ static inline typename View::value_type get_white()
 {
 	using namespace boost::gil;
 	typename View::value_type white;
-	color_convert( gray32f_pixel_t( 1.0 ), white );
+	/// @todo tuttle: to rewrite !!!
+	boost::gil::color_convert( gray32f_pixel_t( 1.0 ), white );
 	return white;
 }
 
