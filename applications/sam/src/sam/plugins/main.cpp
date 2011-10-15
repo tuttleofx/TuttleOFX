@@ -262,12 +262,14 @@ int main( int argc, char** argv )
 		// get environnement options and parse them
 		if( const char* env_plugins_options = std::getenv("SAM_PLUGINS_OPTIONS") )
 		{
-			std::vector<std::string> envOptions;
-			std::string env( env_plugins_options );
-			envOptions.push_back( env );
-			bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_plugins_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 		}
-
+		if( const char* env_options = std::getenv("SAM_OPTIONS") )
+		{
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
 		bpo::notify(vm);
 	}
 	catch( const bpo::error& e)

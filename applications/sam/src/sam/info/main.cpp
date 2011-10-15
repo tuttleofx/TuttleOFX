@@ -233,6 +233,11 @@ int main( int argc, char** argv )
 			const std::vector<std::string> envOptions = bpo::split_unix( env_info_options, " " );
 			bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 		}
+		if( const char* env_info_options = std::getenv("SAM_OPTIONS") )
+		{
+			const std::vector<std::string> envOptions = bpo::split_unix( env_info_options, " " );
+			bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
 		bpo::notify(vm);
 	}
 	catch( const bpo::error& e)

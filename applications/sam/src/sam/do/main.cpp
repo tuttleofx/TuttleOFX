@@ -206,6 +206,11 @@ int main( int argc, char** argv )
 					const std::vector<std::string> vecOptions = bpo::split_unix( env_do_options, " " );
 					bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
 				}
+				if( const char* env_do_options = std::getenv("SAM_OPTIONS") )
+				{
+					const std::vector<std::string> vecOptions = bpo::split_unix( env_do_options, " " );
+					bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
+				}
 
 				bpo::notify( samdo_vm );
 

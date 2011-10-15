@@ -210,6 +210,11 @@ int sammvcp( int argc, char** argv )
 			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
 			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 		}
+		if( const char* env_options = std::getenv( "SAM_OPTIONS" ) )
+		{
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
 		bpo::notify( vm );
 	}
 	catch( const bpo::error& e)
