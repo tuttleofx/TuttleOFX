@@ -131,7 +131,7 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 
 	OFX::BooleanParamDescriptor* center = desc.defineBooleanParam( kParamCenter );
 	center->setLabel		( "Center resizing" );
-	center->setDefault		( true );
+	center->setDefault		( false );
 	center->setHint			( "Set the resize to the center point." );
 
 	OFX::Double2DParamDescriptor* centerPoint = desc.defineDouble2DParam( kParamCenterPoint );

@@ -49,85 +49,92 @@ void ResizePlugin::updateVisibleTools()
 	switch(_paramOptions->getValue())
 	{
 		case eParamFormat :
-			_paramFormat		-> setIsSecret	( false );
-			_paramSplit		-> setIsSecret	( true );
-			_paramDirection		-> setIsSecret	( true );
-			_paramScale		-> setIsSecret	( true );
-			_paramSize		-> setIsSecret	( true );
-			_paramScaleX		-> setIsSecret	( true );
-			_paramScaleY		-> setIsSecret	( true );
-			_paramOutputFormat	-> setIsSecret	( true );
+			_paramFormat		-> setIsSecretAndDisabled	( false );
+			_paramSplit		-> setIsSecretAndDisabled	( true );
+			_paramDirection		-> setIsSecretAndDisabled	( true );
+			_paramScale		-> setIsSecretAndDisabled	( true );
+			_paramSize		-> setIsSecretAndDisabled	( true );
+			_paramScaleX		-> setIsSecretAndDisabled	( true );
+			_paramScaleY		-> setIsSecretAndDisabled	( true );
+			_paramOutputFormat	-> setIsSecretAndDisabled	( true );
 			break;
 		case eParamBox :
-			_paramFormat		-> setIsSecret	( true );
-			_paramSplit		-> setIsSecret	( false );
-			_paramDirection		-> setIsSecret	( false );
-			_paramScale		-> setIsSecret	( true );
-			_paramScaleX		-> setIsSecret	( true );
-			_paramScaleY		-> setIsSecret	( true );
+			_paramFormat		-> setIsSecretAndDisabled	( true );
+			_paramSplit		-> setIsSecretAndDisabled	( false );
+			_paramDirection		-> setIsSecretAndDisabled	( false );
+			_paramScale		-> setIsSecretAndDisabled	( true );
+			_paramScaleX		-> setIsSecretAndDisabled	( true );
+			_paramScaleY		-> setIsSecretAndDisabled	( true );
 
 			if( _paramSplit->getValue() == false )
 			{
-				_paramOutputFormat	-> setIsSecret	( false );
-				_paramDirection		-> setIsSecret	( true );
-				_paramSize		-> setIsSecret	( true );
+				_paramOutputFormat	-> setIsSecretAndDisabled	( false );
+				_paramDirection		-> setIsSecretAndDisabled	( true );
+				_paramSize		-> setIsSecretAndDisabled	( true );
 			}
 			else
 			{
-				_paramOutputFormat	-> setIsSecret	( true );
-				_paramDirection		-> setIsSecret	( false );
-				_paramSize		-> setIsSecret	( false );
+				_paramOutputFormat	-> setIsSecretAndDisabled	( true );
+				_paramDirection		-> setIsSecretAndDisabled	( false );
+				_paramSize		-> setIsSecretAndDisabled	( false );
 			}
 			break;
 		case eParamScale :
-			_paramFormat		-> setIsSecret	( true );
-			_paramSplit		-> setIsSecret	( false );
-			_paramSize		-> setIsSecret	( true );
-			_paramOutputFormat	-> setIsSecret	( true );
+			_paramFormat		-> setIsSecretAndDisabled	( true );
+			_paramSplit		-> setIsSecretAndDisabled	( false );
+			_paramSize		-> setIsSecretAndDisabled	( true );
+			_paramOutputFormat	-> setIsSecretAndDisabled	( true );
 
 			if( _paramSplit->getValue() == false )
 			{
-				_paramScaleX		-> setIsSecret	( false );
-				_paramScaleY		-> setIsSecret	( false );
-				_paramDirection		-> setIsSecret	( true );
-				_paramScale		-> setIsSecret	( true );
+				_paramScaleX		-> setIsSecretAndDisabled	( false );
+				_paramScaleY		-> setIsSecretAndDisabled	( false );
+				_paramDirection		-> setIsSecretAndDisabled	( true );
+				_paramScale		-> setIsSecretAndDisabled	( true );
 			}
 			else
 			{
-				_paramScaleX		-> setIsSecret	( true );
-				_paramScaleY		-> setIsSecret	( true );
-				_paramDirection		-> setIsSecret	( true );
-				_paramScale		-> setIsSecret	( false );
+				_paramScaleX		-> setIsSecretAndDisabled	( true );
+				_paramScaleY		-> setIsSecretAndDisabled	( true );
+				_paramDirection		-> setIsSecretAndDisabled	( true );
+				_paramScale		-> setIsSecretAndDisabled	( false );
 			}
 			break;
 	}
 	if( _paramFilter->getValue() == eParamFilterBC )
 	{
-		_paramB -> setIsSecret ( false );
-		_paramC -> setIsSecret ( false );
+		_paramB -> setIsSecretAndDisabled ( false );
+		_paramC -> setIsSecretAndDisabled ( false );
 	}
 	else
 	{
-		_paramB -> setIsSecret ( true );
-		_paramC -> setIsSecret ( true );
+		_paramB -> setIsSecretAndDisabled ( true );
+		_paramC -> setIsSecretAndDisabled ( true );
 	}
 	if( ( _paramFilter->getValue() == eParamFilterLanczos ) || ( _paramFilter->getValue() == eParamFilterGaussian ) )
 	{
-		_paramFilterSize -> setIsSecret ( false );
+		_paramFilterSize -> setIsSecretAndDisabled ( false );
 	}
 	else
 	{
-		_paramFilterSize -> setIsSecret ( true );
+		_paramFilterSize -> setIsSecretAndDisabled ( true );
 	}
 	if( _paramFilter->getValue() == eParamFilterGaussian )
 	{
-		_paramFilterSigma -> setIsSecret ( false );
+		_paramFilterSigma -> setIsSecretAndDisabled ( false );
 	}
 	else
 	{
-		_paramFilterSigma -> setIsSecret ( true );
+		_paramFilterSigma -> setIsSecretAndDisabled ( true );
 	}
-
+	if( _paramCenter->getValue() )
+	{
+		_paramCenterPoint->setIsSecretAndDisabled( false );
+	}
+	else
+	{
+		_paramCenterPoint->setIsSecretAndDisabled( true );
+	}
 }
 
 
