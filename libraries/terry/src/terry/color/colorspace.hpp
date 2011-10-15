@@ -117,8 +117,8 @@ struct color_dependencies
 template<>
 struct color_dependencies<IsRootReference>
 {
-	typedef typename ::boost::mpl::vector<> from_root;
-	typedef typename ::boost::mpl::vector<> to_root;
+	typedef ::boost::mpl::vector<> from_root;
+	typedef ::boost::mpl::vector<> to_root;
 };
 
 
