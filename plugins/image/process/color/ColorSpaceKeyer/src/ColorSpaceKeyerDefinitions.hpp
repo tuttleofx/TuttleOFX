@@ -47,7 +47,6 @@ const static std::string kIntDiscretizationDisplayLabel = "Discretization step";
 //Number of divison (geodesic form)
 const static std::string kIntNumberOfDivisonGeodesicForm = "numberOfDivisonGeodesicForm";
 const static std::string kIntNumberOfDivisonGeodesicFormLabel = "Precision";
-//static std::size_t numberOfDivisionInt = 4;
 
 //Reset transformation button
 const static std::string kPushButtonResetTransformationParameters = "ResetTransformation";

@@ -128,7 +128,7 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	nbDivisionsGeodesicForm->setLabel(kIntNumberOfDivisonGeodesicFormLabel);	//label
 	nbDivisionsGeodesicForm->setRange(2,50);									//value range
 	nbDivisionsGeodesicForm->setDisplayRange(2,15);								//display range values
-	nbDivisionsGeodesicForm->setDefault(numberOfDivisionInt);					//default value
+	nbDivisionsGeodesicForm->setDefault(4);					//default value
 	nbDivisionsGeodesicForm->setHint("Change precision of treatment (can make process slower)"); //help
 	nbDivisionsGeodesicForm->setParent(groupSettings);							//add component to settings group
 	
