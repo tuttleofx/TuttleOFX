@@ -255,7 +255,7 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "" );
 						}
-						TUTTLE_COUT( path.string() << " :");
+						TUTTLE_COUT( path.string() << ":");
 					}
 
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( path, filters, researchMask, descriptionMask );
@@ -272,7 +272,7 @@ int main( int argc, char** argv )
 							{
 								bfs::path currentPath = (bfs::path)*dir;
 								if( !script )
-									TUTTLE_COUT( "\n" << currentPath.string() << " :" );
+									TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( currentPath, filters, researchMask, descriptionMask );
 								BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
@@ -310,7 +310,7 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "" );
 						}
-						TUTTLE_COUT( basepath.string() << " :");
+						TUTTLE_COUT( basepath.string() << ":");
 					}
 
 					Sequence s( basepath, descriptionMask );
