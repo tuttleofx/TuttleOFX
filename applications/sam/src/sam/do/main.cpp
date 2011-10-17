@@ -1,6 +1,7 @@
 #include "commandLine.hpp"
 #include "node_io.hpp"
 
+#include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
@@ -226,16 +227,8 @@ int main( int argc, char** argv )
 				}
 				if ( samdo_vm.count("enable-color") && !script )
 				{
-					std::string str = samdo_vm["enable-color"].as<std::string>();
-
-					if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
-					{
-						enableColor = true;
-					}
-					else
-					{
-						enableColor = false;
-					}
+					const std::string str = samdo_vm["enable-color"].as<std::string>();
+					enableColor = string_to_boolean( str );
 				}
 
 				if( enableColor )
