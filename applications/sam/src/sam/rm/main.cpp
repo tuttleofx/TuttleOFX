@@ -1,3 +1,4 @@
+#include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
@@ -21,8 +22,9 @@ namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 using namespace tuttle::common;
 
-bool         colorOutput    = false;
+bool         enableColor    = false;
 bool         verbose        = false;
+bool         selectRange    = false;
 std::ssize_t firstImage     = 0;
 std::ssize_t lastImage      = 0;
 
@@ -38,17 +40,27 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
 void removeSequence( const ttl::Sequence& s )
 {
-	const std::ssize_t first = std::max( s.getFirstTime(), firstImage );
-	const std::ssize_t last	 = std::min( s.getLastTime(), lastImage );
-	
-	//TUTTLE_COUT("remove from " << first << " to " << last);
+	std::ssize_t first;
+	std::ssize_t last;
+	if( selectRange )
+	{
+		first = std::max( s.getFirstTime(), firstImage );
+		last  = std::min( s.getLastTime(), lastImage );
+	}
+	else
+	{
+		first = s.getFirstTime();
+		last  = s.getLastTime();
+	}
+//	TUTTLE_TCOUT( "remove sequence." );
+//	TUTTLE_TCOUT("remove from " << first << " to " << last);
 
 	for( ttl::Sequence::Time t = first; t <= last; t += s.getStep() )
 	{
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( !bfs::exists( sFile ) )
 		{
-			TUTTLE_CERR("Could not remove: " << _color._red << sFile.string() << _color._std );
+			TUTTLE_CERR("Could not remove (file not exist): " << _color._red << sFile.string() << _color._std );
 		}
 		else
 		{
@@ -56,19 +68,32 @@ void removeSequence( const ttl::Sequence& s )
 			{
 				TUTTLE_COUT("remove: " << _color._folder << sFile.string() << _color._std );
 			}
-			bfs::remove( sFile );
+			try
+			{
+				bfs::remove( sFile );
+			}
+			catch(const boost::filesystem::filesystem_error& e)
+			{
+//			   if( e.code() == boost::system::errc::permission_denied )
+//				   "permission denied"
+				TUTTLE_CERR( "sam-rm: Error:\t\n" << e.what() );
+				/// @todo cin
+//				TUTTLE_COUT( "sam-rm: Continue ? (Yes/No/Yes for All/No for All)" );
+				
+			}
 		}
 	}
 }
 
 void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, std::vector<boost::filesystem::path> &notRemoved )
 {
+//	TUTTLE_TCOUT( "removeFileObject." );
 	BOOST_FOREACH( const std::list< boost::shared_ptr<ttl::FileObject> >::value_type & s, listing )
 	{
 		if( !(s->getMaskType () == ttl::eMaskTypeDirectory))
 		{
 			if(verbose)
-				TUTTLE_COUT( "remove " << *s );
+				TUTTLE_COUT( "remove: " << *s );
 			if( s->getMaskType () == ttl::eMaskTypeSequence )
 				removeSequence( (ttl::Sequence&) *s );
 			else
@@ -86,7 +111,7 @@ void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, 
 				if( bfs::is_empty( paths.at(i) ) )
 				{
 					if(verbose)
-						TUTTLE_COUT( "remove " << *s );
+						TUTTLE_COUT( "remove: " << *s );
 					bfs::remove( paths.at(i) );
 				}
 				else
@@ -108,7 +133,7 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 		{
 			if(verbose)
 			{
-				TUTTLE_COUT( "remove " << _color._folder << paths << _color._std );
+				TUTTLE_COUT( "remove: " << _color._folder << paths << _color._std );
 			}
 			bfs::remove(paths);
 		}
@@ -200,23 +225,15 @@ int main( int argc, char** argv )
 
 	if ( vm.count("color") )
 	{
-		colorOutput = true;
+		enableColor = true;
 	}
 	if ( vm.count("enable-color") )
 	{
-		std::string str = vm["enable-color"].as<std::string>();
-
-		if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
-		{
-			colorOutput = true;
-		}
-		else
-		{
-			colorOutput = false;
-		}
+		const std::string str = vm["enable-color"].as<std::string>();
+		enableColor = string_to_boolean( str );
 	}
 
-	if( colorOutput )
+	if( enableColor )
 	{
 		descriptionMask |= eMaskOptionsColor;
 		_color.enable();
@@ -226,11 +243,11 @@ int main( int argc, char** argv )
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-rm - remove directory contents" << _color._std << std::endl );
+		TUTTLE_COUT( _color._green << "\tsam-rm - remove file sequences" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-rm [options] [directories]" << _color._std << std::endl );
+		TUTTLE_COUT( _color._green << "\tsam-rm [options] [sequence_pattern]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
-		TUTTLE_COUT( "Remove sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
+		TUTTLE_COUT( "Remove sequence of files, and could remove trees (folder, files and sequences)." << std::endl );
 		TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
 		TUTTLE_COUT( mainOptions );
 		return 0;
@@ -238,7 +255,7 @@ int main( int argc, char** argv )
 
 	if ( vm.count("brief") )
 	{
-		TUTTLE_COUT( _color._green << "remove directory contents" << _color._std);
+		TUTTLE_COUT( _color._green << "remove file sequences" << _color._std);
 		return 0;
 	}
 
@@ -269,11 +286,13 @@ int main( int argc, char** argv )
 
 	if (vm.count("first-image"))
 	{
+		selectRange = true;
 		firstImage  = vm["first-image"].as< std::ssize_t >();
 	}
 
 	if (vm.count("last-image"))
 	{
+		selectRange = true;
 		lastImage  = vm["last-image"].as< std::ssize_t >();
 	}
 
@@ -320,19 +339,19 @@ int main( int argc, char** argv )
 		std::vector<boost::filesystem::path> pathsNoRemoved;
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-			//TUTTLE_COUT( "path: "<< path );
+//			TUTTLE_TCOUT( "path: "<< path );
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )
 				{
-					//TUTTLE_COUT( "is a directory" );
+					//TUTTLE_TCOUT( "is a directory" );
 					if(recursiveListing)
 					{
 						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
 						{
 							if( bfs::is_directory( *dir ) )
 							{
-								//TUTTLE_COUT( *dir );
+								//TUTTLE_TCOUT( *dir );
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
 								removeFileObject( listing, pathsNoRemoved );
 							}
@@ -343,7 +362,7 @@ int main( int argc, char** argv )
 				}
 				else
 				{
-					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
+					//TUTTLE_TCOUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
@@ -351,14 +370,14 @@ int main( int argc, char** argv )
 			}
 			else
 			{
-				//TUTTLE_COUT( "not exist ...." );
+//				TUTTLE_TCOUT( "not exist ...." );
 				try
 				{
 					Sequence s(path.branch_path(), descriptionMask );
 					s.initFromDetection( path.string(), Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{
-						//TUTTLE_COUT( s );
+//						TUTTLE_TCOUT( s );
 						removeSequence( s );
 					}
 				}
