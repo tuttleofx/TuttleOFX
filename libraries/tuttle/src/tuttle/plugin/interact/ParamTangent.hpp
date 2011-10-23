@@ -10,7 +10,6 @@
 #include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/plugin/numeric/coordinateSystem.hpp>
 
-
 #include <ofxsParam.h>
 
 namespace tuttle {

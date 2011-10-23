@@ -52,7 +52,8 @@ private:
 
 	bool _multiSelectionEnabled;
 	bool _creatingSelection;
-	SelectionManipulator _manipulator;
+	InteractObject* _manipulator;
+	IColor* _manipulatorColor;
 	bool _hasSelection;
 	SelectedObjectVector _selected;
 	OfxRectD _selectionRect;
@@ -67,6 +68,12 @@ public:
 		_isActive.push_back( isActive );
 		_colors.push_back( color );
 	}
+	void setManipulator( InteractObject* obj, IColor* color = new Color() )
+	{
+		_manipulator = obj;
+		_manipulatorColor = color;
+	}
+
 
 	bool draw( const OFX::DrawArgs& args );
 
@@ -83,8 +90,8 @@ private:
 	bool drawSelection( const OFX::DrawArgs& args );
 
 	void translate( const Point2& vec );
-	void rotate( const Point2& center, const Scalar angle );
-	void scale( const Point2& center, const Scalar factor );
+	void rotate( const Point2& center, const Point2& from, const Point2& vec );
+	void scale( const Point2& center, const Point2& factor );
 };
 
 }
