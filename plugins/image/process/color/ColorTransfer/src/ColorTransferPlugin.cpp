@@ -3,8 +3,8 @@
 #include "ColorTransferDefinitions.hpp"
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
 
 namespace tuttle {
 namespace plugin {

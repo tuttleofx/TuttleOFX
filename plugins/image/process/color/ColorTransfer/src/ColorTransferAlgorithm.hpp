@@ -1,13 +1,13 @@
 #ifndef _TUTTLE_PLUGIN_COLORTRANSFER_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_COLORTRANSFER_ALGORITHM_HPP_
 
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
 //#include <boost/gil/extension/color/hsl.hpp>
 //#include <boost/gil/extension/color/distribution.hpp>
-#include <boost/gil/extension/typedefs.hpp>
-#include <boost/gil/extension/channel.hpp>
+#include <terry/typedefs.hpp>
+#include <terry/channel.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
 
@@ -15,7 +15,7 @@ namespace tuttle {
 namespace plugin {
 namespace colorTransfer {
 
-using namespace boost::gil;
+using namespace terry;
 
 template <typename Channel, typename ChannelR>
 struct channel_sqrt_t : public std::unary_function<Channel, ChannelR>

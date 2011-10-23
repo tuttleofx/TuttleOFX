@@ -4,9 +4,9 @@
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
+#include <tuttle/plugin/image/algorithm.hpp>
+#include <terry/globals.hpp>
 
 #include <boost/units/pow.hpp>
 #include <boost/mpl/vector.hpp>
@@ -21,7 +21,7 @@ namespace tuttle {
 namespace plugin {
 namespace colorTransfer {
 
-using namespace boost::gil;
+using namespace terry;
 
 template<class View>
 struct ColorParams
@@ -202,7 +202,7 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void ColorTransferProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,

@@ -3,7 +3,7 @@
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <boost/numeric/ublas/vector.hpp>
