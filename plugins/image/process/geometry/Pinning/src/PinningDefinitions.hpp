@@ -19,41 +19,6 @@ enum EParamMethod
 	eParamMethodBilinear
 };
 
-
-static const std::string kParamInterpolation( "interpolation" );
-static const std::string kParamInterpolationNearest( "nearest neighbor" );
-static const std::string kParamInterpolationBilinear( "bilinear" );
-static const std::string kParamInterpolationBicubic( "bicubic" );
-static const std::string kParamInterpolationCatmul( "catmul" );
-static const std::string kParamInterpolationMitchell( "mitchell" );
-static const std::string kParamInterpolationParzen( "parzen" );
-static const std::string kParamInterpolationKeys( "keys" );
-static const std::string kParamInterpolationSimon( "simon" );
-static const std::string kParamInterpolationRifman( "rifman" );
-//static const std::string kParamInterpolationLanczos( "lanczos3" );
-//static const std::string kParamInterpolationLanczos( "lanczos4" );
-//static const std::string kParamInterpolationLanczos( "lanczos6" );
-//static const std::string kParamInterpolationLanczos( "lanczos12" );
-//static const std::string kParamInterpolationLanczos( "gaussian" );
-
-enum EParamInterpolation
-{
-	eParamInterpolationNearest = 0,
-	eParamInterpolationBilinear,
-	eParamInterpolationBicubic,
-	eParamInterpolationCatmul,
-	eParamInterpolationMitchell,
-	eParamInterpolationParzen,
-	eParamInterpolationKeys,
-	eParamInterpolationSimon,
-	eParamInterpolationRifman,
-//	eParamInterpolationLanczos3,
-//	eParamInterpolationLanczos4,
-//	eParamInterpolationLanczos6,
-//	eParamInterpolationLanczos12,
-//	eParamInterpolationGaussian,
-};
-
 static const std::string kParamSetToCornersIn = "setToCornersIn";
 static const std::string kParamSetToCornersOut = "setToCornersOut";
 static const std::string kParamOverlay = "overlay";

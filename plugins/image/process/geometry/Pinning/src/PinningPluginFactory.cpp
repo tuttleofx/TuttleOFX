@@ -3,11 +3,16 @@
 #include "PinningDefinitions.hpp"
 #include "PinningOverlayInteract.hpp"
 
+#include <tuttle/plugin/context/SamplerDefinition.hpp>
+#include <tuttle/plugin/context/SamplerPluginFactory.hpp>
+
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
+
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
@@ -70,13 +75,8 @@ void PinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	method->appendOption( kParamMethodBilinear );
 	method->setDefault( 1 );
 	method->setHint( "Interpolation method" );
-
-	OFX::ChoiceParamDescriptor* interpolation = desc.defineChoiceParam( kParamInterpolation );
-	interpolation->setLabel( "Interpolation" );
-	interpolation->appendOption( kParamInterpolationNearest );
-	interpolation->appendOption( kParamInterpolationBilinear );
-	interpolation->setDefault( 1 );
-	interpolation->setHint( "Interpolation method" );
+	
+	addFilterParameters( desc );
 
 	OFX::PushButtonParamDescriptor* setToCornersIn = desc.definePushButtonParam( kParamSetToCornersIn);
 	setToCornersIn->setLabel( "Set In" );
@@ -93,6 +93,7 @@ void PinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* inverse = desc.defineBooleanParam( kParamInverse );
 	inverse->setLabel( "Inverse" );
 	inverse->setDefault( false );
+
 /*
 	//TODO-vince///////////
 	//////////////////// Transform Centre Point ////////////////////

@@ -152,6 +152,7 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 	params._centerPoint.y = centerPoint.y;
 
 	params._changeCenter  = _paramCenter->getValue();
+	
 	params._paramB        = _paramB->getValue();
 	params._paramC        = _paramC->getValue();
 	params._filterSize    = _paramFilterSize->getValue();
@@ -159,7 +160,7 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 
 	params._filter        = static_cast<EParamFilter>( _paramFilter->getValue() );
 
-        params._outOfImageProcess = static_cast<EParamFilterOutOfImage>( _paramOutOfImage->getValue() );
+	params._outOfImageProcess = static_cast<EParamFilterOutOfImage>( _paramOutOfImage->getValue() );
 
 	return params;
 }

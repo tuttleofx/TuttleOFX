@@ -1,15 +1,10 @@
 #include "LensDistortPlugin.hpp"
 
+#include <terry/sampler/all.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/image/resample.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
-
 #include <tuttle/plugin/image/resample.hpp>
-#include <terry/sampler/bc.hpp>
-#include <terry/sampler/bilinear.hpp>
-#include <terry/sampler/gaussian.hpp>
-#include <terry/sampler/lanczos.hpp>
-#include <terry/sampler/nearestNeighbor.hpp>
 
 namespace tuttle {
 namespace plugin {

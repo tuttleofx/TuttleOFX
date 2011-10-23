@@ -77,7 +77,7 @@ public:
 	OFX::DoubleParam*	_paramB;
 	OFX::DoubleParam*	_paramC;
 
-        OFX::ChoiceParam*	_paramOutOfImage;
+	OFX::ChoiceParam*	_paramOutOfImage;
 };
 
 }

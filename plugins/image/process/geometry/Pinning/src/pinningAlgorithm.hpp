@@ -3,8 +3,7 @@
 
 #include "PinningPlugin.hpp"
 
-namespace boost {
-namespace gil {
+namespace terry {
 
 /**
  * @brief Perspective transformation functor.
@@ -63,7 +62,6 @@ inline boost::gil::point2<F> transform( const tuttle::plugin::pinning::Bilinear<
 	return res;
 }
 
-}
 }
 
 #endif

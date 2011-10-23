@@ -339,7 +339,7 @@ struct process1Dresampling
 	{
 		DstP mp( 0 );
 		for( size_t i = 0; i < src.size(); i++ )
-			detail::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i) , mp );
+			details::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i) , mp );
 		dst = mp;
 	}
 };

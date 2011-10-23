@@ -31,7 +31,7 @@ public:
 
 private:
 	template<class Sampler>
-	void resample( View& srcView, View& dstView, const OfxRectI& procWindow );
+	void resample( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler = Sampler() );
 };
 
 }

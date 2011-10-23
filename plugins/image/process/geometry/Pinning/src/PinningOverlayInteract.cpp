@@ -237,3 +237,5 @@ void PinningOverlayInteract::scalePts( std::vector< bounded_vector<double, 2> > 
 }
 }
 }
+
+

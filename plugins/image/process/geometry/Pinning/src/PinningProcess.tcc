@@ -1,6 +1,9 @@
 #include "pinningAlgorithm.hpp"
 
 #include <terry/globals.hpp>
+#include <terry/sampler/sampler.hpp>
+#include <terry/sampler/all.hpp>
+
 #include <tuttle/plugin/image/resample.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
@@ -30,83 +33,101 @@ void PinningProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	using namespace terry;
+	using namespace terry::sampler;
+	
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
 	switch( _params._interpolation )
 	{
-		case eParamInterpolationNearest:
+		case eParamFilterNearest:
 		{
-			resample<terry::sampler::nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample< ::terry::sampler::nearest_neighbor_sampler >( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationBilinear:
+		case eParamFilterBilinear:
 		{
-			resample<terry::sampler::bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample< ::terry::sampler::bilinear_sampler >( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationBicubic:
+		case eParamFilterBC:
 		{
-			resample<terry::sampler::bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			bc_sampler BCsampler;
+			BCsampler.valB = _params._paramB;
+			BCsampler.valC = _params._paramC;
+			resample( this->_srcView, this->_dstView, procWindowOutput, BCsampler );
 			return;
 		}
-		case eParamInterpolationCatmul:
+		case eParamFilterBicubic:
 		{
-			resample<terry::sampler::catmul_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample<bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationMitchell:
+		case eParamFilterCatrom:
 		{
-			resample<terry::sampler::mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample<catrom_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationParzen:
+		case eParamFilterMitchell:
 		{
-			resample<terry::sampler::parzen_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample<mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationKeys:
+		case eParamFilterParzen:
 		{
-			resample<terry::sampler::keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample<parzen_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationSimon:
+		case eParamFilterKeys:
 		{
-			resample<terry::sampler::simon_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample<keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationRifman:
+		case eParamFilterSimon:
 		{
-			resample<terry::sampler::rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			resample<simon_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-
-
-//		case eParamInterpolationLanczos3:
-//		{
-//			resample<terry::sampler::lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationLanczos4:
-//		{
-//			resample<terry::sampler::lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationLanczos6:
-//		{
-//			resample<terry::sampler::lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationLanczos12:
-//		{
-//			resample<terry::sampler::lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationGaussian:
-//		{
-//			resample<terry::sampler::gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
+		case eParamFilterRifman:
+		{
+			resample<rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos:
+		{
+			lanczos_sampler lanczosSampler;
+			lanczosSampler.size = _params._filterSize;
+			resample( this->_srcView, this->_dstView, procWindowOutput, lanczosSampler );
+			return;
+		}
+		case eParamFilterLanczos3:
+		{
+			resample<lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos4:
+		{
+			resample<lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos6:
+		{
+			resample<lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos12:
+		{
+			resample<lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterGaussian:
+		{
+			gaussian_sampler gaussianSampler;
+			gaussianSampler.size  = _params._filterSize;
+			gaussianSampler.sigma = _params._filterSigma;
+			resample<gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::user( "Interpolation method not recognize." ) );
@@ -114,17 +135,17 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 
 template<class View>
 template<class Sampler>
-void PinningProcess<View>::resample( View& srcView, View& dstView, const OfxRectI& procWindow )
+void PinningProcess<View>::resample( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler )
 {
 	using namespace boost::gil;
 	switch( _params._method )
 	{
 		case eParamMethodAffine:
 		case eParamMethodPerspective:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, this );
+			resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, _params._outOfImageProcess, this, sampler );
 			return;
 		case eParamMethodBilinear:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear, procWindow, this );
+			resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear, procWindow, _params._outOfImageProcess, this, sampler );
 			return;
 	}
 }

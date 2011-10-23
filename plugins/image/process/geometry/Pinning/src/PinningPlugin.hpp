@@ -1,12 +1,18 @@
 #ifndef _TUTTLE_PLUGIN_PINNING_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_PINNING_PLUGIN_HPP_
 
+#include "PinningDefinitions.hpp"
+
 #include <tuttle/plugin/global.hpp>
+
 #include <ofxsImageEffect.h>
-#include <boost/numeric/ublas/matrix.hpp>
+
+#include <terry/sampler/sampler.hpp>
+
 #include <boost/gil/gil_all.hpp>
 
-#include "PinningDefinitions.hpp"
+#include <boost/numeric/ublas/matrix.hpp>
+
 
 namespace tuttle {
 namespace plugin {
@@ -32,8 +38,15 @@ struct PinningProcessParams
 	Perspective<Scalar> _perspective;
 	Bilinear<Scalar> _bilinear;
 
-	EParamInterpolation _interpolation;
 	EParamMethod _method;
+	
+	terry::sampler::EParamFilter _interpolation;
+	double                                     _filterSize;
+	double                                     _filterSigma;
+	double                                     _paramB;
+	double                                     _paramC;
+
+	terry::sampler::EParamFilterOutOfImage     _outOfImageProcess;
 };
 
 /**
@@ -68,6 +81,17 @@ public:
 
 //	OFX::ChoiceParam*  _paramManipulatorMode;
 	OFX::BooleanParam*  _paramOverlay;
+
+
+	OFX::ChoiceParam*	_paramFilter;
+
+	OFX::IntParam*		_paramFilterSize;
+	OFX::DoubleParam*	_paramFilterSigma;
+
+	OFX::DoubleParam*	_paramB;
+	OFX::DoubleParam*	_paramC;
+
+	OFX::ChoiceParam*	_paramOutOfImage;
 
 /*
 	//TODO-vince //
