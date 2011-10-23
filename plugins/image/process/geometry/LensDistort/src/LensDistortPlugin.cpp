@@ -315,7 +315,7 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	srcRoi.y2 += margin;
 
 	//    srcRoi.x1 += 2; // if we remove 2 pixels to the needed RoI the plugin crash, because it tries to access to this pixels
-	//    srcRoi.y1 += 2; // so the calcul of the RoI has a precision of one pixel
+	//    srcRoi.y1 += 2; // so the calculation of the RoI has a precision of one pixel
 	//    srcRoi.x2 -= 2;
 	//    srcRoi.y2 -= 2;
 	OfxRectD srcRealRoi = rectanglesIntersection( srcRoi, srcRod );

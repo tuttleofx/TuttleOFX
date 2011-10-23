@@ -25,7 +25,7 @@ using namespace boost::gil;
 /// \ingroup PixelNumericOperations
 /// \brief p2 += p1
 template <typename PixelSrc, // models pixel concept
-          typename PixelDst> // models pixel concept
+          typename PixelDst = PixelSrc> // models pixel concept
 struct pixel_plus_assign_t {
 	GIL_FORCEINLINE
     PixelDst& operator()( const PixelSrc& p1,
@@ -40,7 +40,7 @@ struct pixel_plus_assign_t {
 /// \ingroup PixelNumericOperations
 /// \brief p2 -= p1
 template <typename PixelSrc, // models pixel concept
-          typename PixelDst> // models pixel concept
+          typename PixelDst = PixelSrc> // models pixel concept
 struct pixel_minus_assign_t {
 	GIL_FORCEINLINE
     PixelDst& operator()( const PixelSrc& p1,

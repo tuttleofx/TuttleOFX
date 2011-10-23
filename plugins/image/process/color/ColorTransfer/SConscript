@@ -1,0 +1,9 @@
+Import( 'project' )
+Import( 'libs' )
+
+project.createOfxPlugin( dirs = ['src'],
+                         libs = [
+                                 libs.tuttlePlugin,
+                                 libs.gl,
+                                 ] )
+
