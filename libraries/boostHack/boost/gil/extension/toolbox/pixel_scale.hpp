@@ -1,7 +1,7 @@
 #ifndef _BOOST_GIL_COLOR_SCALE_HPP_
 #define _BOOST_GIL_COLOR_SCALE_HPP_
 
-#include <boost/gil/extension/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
 
 namespace boost { namespace gil {
 
@@ -13,7 +13,7 @@ template<typename Pixel, typename CPixel = Pixel>
 struct pixel_scale_t
 {
 	typedef typename boost::gil::channel_type<Pixel>::type Channel;
-	typedef typename boost::gil::channel_base_type<Channel>::type ChannelBaseType;
+	typedef typename terry::channel_base_type<Channel>::type ChannelBaseType;
 
 	const CPixel _ratio;
 	CPixel _shift;

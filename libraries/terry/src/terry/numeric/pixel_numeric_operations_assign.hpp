@@ -1,5 +1,5 @@
-#ifndef GIL_PIXEL_NUMERIC_OPERATIONS_ASSIGN_HPP
-#define GIL_PIXEL_NUMERIC_OPERATIONS_ASSIGN_HPP
+#ifndef _TERRY_NUMERIC_PIXEL_NUMERIC_OPERATIONS_ASSIGN_HPP_
+#define _TERRY_NUMERIC_PIXEL_NUMERIC_OPERATIONS_ASSIGN_HPP_
 
 /*!
 /// \brief Structures for pixel-wise numeric operations
@@ -10,13 +10,17 @@
 ///     pixel_divides_scalar_assign_t (/=)
 */
 
-#include <functional>
+#include "channel_numeric_operations_assign.hpp"
+
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/pixel.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
-#include "channel_numeric_operations_assign.hpp"
 
-namespace boost { namespace gil {
+#include <functional>
+
+namespace terry {
+
+using namespace boost::gil;
 
 /// \ingroup PixelNumericOperations
 /// \brief p2 += p1
@@ -77,6 +81,6 @@ struct pixel_divides_scalar_assign_t
 };
 
 
-} }  // namespace boost::gil
+}
 
 #endif

@@ -4,7 +4,7 @@
 #include <ofxCore.h>
 #include <ofxPixels.h>
 
-#include <boost/gil/extension/typedefs.hpp>
+#include <terry/typedefs.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/rgba.hpp>
 

@@ -6,9 +6,7 @@
 #include "Layout.tcc"
 #include "TemperatureColor.tcc"
 
-#include <boost/gil/extension/numeric/sampler.hpp>
-#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
 
 #include <map>
 #include <vector>

@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_INVERT_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_INVERT_ALGORITHM_HPP_
 
-#include <boost/gil/extension/channel.hpp>
+#include <terry/channel.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -25,7 +25,7 @@ struct pixel_invert_colors_t
 		typedef typename gil::channel_type<Pixel>::type Channel;
 		Pixel res;
 		gil::static_for_each( src, res, channel_invert_t<Channel>() );
-		gil::assign_channel_if_exists_t< Pixel, gil::alpha_t >()( src, res );
+		terry::assign_channel_if_exists_t< Pixel, gil::alpha_t >()( src, res );
 		return res;
 	}
 };

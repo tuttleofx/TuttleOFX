@@ -3,8 +3,8 @@
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
+#include <terry/freetype/freegil.hpp>
 #include <boost/gil/typedefs.hpp>
-#include "boost_gil_extension_freetype/freegil.hpp"
 
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/scoped_ptr.hpp>

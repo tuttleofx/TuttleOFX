@@ -43,7 +43,7 @@ public:
 	template<class ProcPixelGray>
 	void computeYPass2( DView& dst, const Point& proc_tl, boost::mpl::true_ )
 	{
-		using namespace boost::gil;
+		using namespace terry;
 		correlate_cols_auto<ProcPixelGray>(
 			kth_channel_view<1>( this->_srcView ),
 			_params._yKernelGaussianDerivative,

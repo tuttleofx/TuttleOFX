@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_NUMERIC_ALGORITHM_HPP
-#define GIL_NUMERIC_ALGORITHM_HPP
+#ifndef _TERRY_NUMERIC_ALGORITHM_HPP_
+#define _TERRY_NUMERIC_ALGORITHM_HPP_
 
 /*!
 /// \file               
@@ -17,21 +17,26 @@
 /// \date   2005-2007 \n Last updated on February 6, 2007
 */
 
-#include <cassert>
-#include <iterator>
-#include <algorithm>
-#include <numeric>
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/pixel_iterator.hpp>
 #include <boost/gil/metafunctions.hpp>
 
-namespace boost { namespace gil {
+#include <boost/type_traits/remove_reference.hpp>
+
+#include <cassert>
+#include <iterator>
+#include <algorithm>
+#include <numeric>
+
+namespace terry {
+
+using namespace boost::gil;
 
 /// \brief Returns the reference proxy associated with a type that has a \p "reference" member typedef.
 ///
 /// The reference proxy is the reference type, but with stripped-out C++ reference. It models PixelConcept
 template <typename T>
-struct pixel_proxy : public remove_reference<typename T::reference> {};
+struct pixel_proxy : public ::boost::remove_reference<typename T::reference> {};
 
 /// \brief std::for_each for a pair of iterators
 template <typename Iterator1,typename Iterator2,typename BinaryFunction>
@@ -157,6 +162,6 @@ void view_multiplies_scalar(const SrcView& src,const Scalar& scalar,const DstVie
     }
 }
 
-} }  // namespace boost::gil
+}
 
 #endif

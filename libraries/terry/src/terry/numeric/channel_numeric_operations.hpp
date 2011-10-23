@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_CHANNEL_NUMERIC_OPERATIONS_HPP
-#define GIL_CHANNEL_NUMERIC_OPERATIONS_HPP
+#ifndef _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_HPP_
+#define _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_HPP_
 
 /*!
 /// \file               
@@ -23,12 +23,15 @@
 ///    channel_halves_t (/=2), channel_zeros_t (=0), channel_assigns_t (=)
 */
 
-#include <functional>
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/channel.hpp>
 #include <boost/math/special_functions/pow.hpp>
 
-namespace boost { namespace gil {
+#include <functional>
+
+namespace terry {
+
+using namespace boost::gil;
 
 /// \ingroup ChannelNumericOperations
 /// structure for adding one channel to another
@@ -174,6 +177,6 @@ struct channel_assigns_t : public std::binary_function<Channel1,Channel2,Channel
     }
 };
 
-} }  // namespace boost::gil
+}
 
 #endif

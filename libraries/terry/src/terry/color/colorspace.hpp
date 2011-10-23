@@ -10,7 +10,7 @@
 
 #include <terry/basic_colors.hpp>
 
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
 
 #include <boost/mpl/eval_if.hpp>
 #include <boost/mpl/size.hpp>
@@ -432,7 +432,7 @@ void color_transformation(
 				typename ::boost::gil::color_space_type<SrcPixel>::type
 			>::value
 		));
-	boost::gil::pixel_zeros( dst );
+	terry::pixel_zeros( dst );
 }
 
 

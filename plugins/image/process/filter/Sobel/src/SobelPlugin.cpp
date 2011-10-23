@@ -242,25 +242,25 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	params._gradientDirectionAbs = _paramGradientDirectionAbs->getValue();
 
 	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
-	params._boundary_option = gil::convolve_option_extend_mirror;
+	params._boundary_option = terry::convolve_option_extend_mirror;
 	switch( params._border )
 	{
 		case eParamBorderMirror:
-			params._boundary_option = gil::convolve_option_extend_mirror;
+			params._boundary_option = terry::convolve_option_extend_mirror;
 			break;
 		case eParamBorderConstant:
-			params._boundary_option = gil::convolve_option_extend_constant;
+			params._boundary_option = terry::convolve_option_extend_constant;
 			break;
 		case eParamBorderBlack:
-			params._boundary_option = gil::convolve_option_extend_zero;
+			params._boundary_option = terry::convolve_option_extend_zero;
 			break;
 		case eParamBorderPadded:
-			params._boundary_option = gil::convolve_option_extend_padded;
+			params._boundary_option = terry::convolve_option_extend_padded;
 			break;
 	}
 
-	bool normalizedKernel = _paramNormalizedKernel->getValue();
-	double kernelEpsilon = _paramKernelEpsilon->getValue();
+	const bool normalizedKernel = _paramNormalizedKernel->getValue();
+	const double kernelEpsilon = _paramKernelEpsilon->getValue();
 
 	params._xKernelGaussianDerivative = terry::buildGaussianDerivative1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
 	if( ! params._unidimensional )
@@ -280,14 +280,14 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 
 	if( _paramReverseKernel->getValue() )
 	{
-		params._xKernelGaussianDerivative = boost::gil::reverse_kernel( params._xKernelGaussianDerivative );
-		params._yKernelGaussianDerivative = boost::gil::reverse_kernel( params._yKernelGaussianDerivative );
+		params._xKernelGaussianDerivative = terry::reverse_kernel( params._xKernelGaussianDerivative );
+		params._yKernelGaussianDerivative = terry::reverse_kernel( params._yKernelGaussianDerivative );
 	}
 	return params;
 }
 
 template< typename Scalar >
-std::ostream& operator<<( std::ostream& os, boost::gil::kernel_1d<Scalar>& kernel )
+std::ostream& operator<<( std::ostream& os, terry::kernel_1d<Scalar>& kernel )
 {
 	using namespace boost;
 	os << "[";

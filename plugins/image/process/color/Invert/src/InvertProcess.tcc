@@ -6,8 +6,8 @@
 #include <terry/globals.hpp>
 #include <tuttle/plugin/image/algorithm.hpp>
 
-#include <boost/gil/extension/numeric/pixel_by_channel.hpp>
-#include <boost/gil/extension/toolbox/channel_view.hpp>
+#include <terry/numeric/pixel_by_channel.hpp>
+#include <terry/channel_view.hpp>
 #include <boost/gil/algorithm.hpp>
 #include <boost/gil/rgba.hpp>
 
@@ -36,6 +36,7 @@ template<class View>
 void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	using namespace terry;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,

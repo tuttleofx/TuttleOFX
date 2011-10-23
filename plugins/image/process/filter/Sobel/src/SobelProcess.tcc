@@ -7,10 +7,10 @@
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <boost/gil/extension/numeric/kernel.hpp>
-#include <boost/gil/extension/numeric/convolve.hpp>
-#include <boost/gil/extension/numeric/pixel_by_channel.hpp>
-#include <boost/gil/extension/typedefs.hpp>
+#include <terry/numeric/kernel.hpp>
+#include <terry/numeric/convolve.hpp>
+#include <terry/numeric/pixel_by_channel.hpp>
+#include <terry/typedefs.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/if.hpp>
@@ -29,7 +29,7 @@ SobelProcess<SView,DView>::SobelProcess( SobelPlugin &effect )
 : ImageGilFilterProcessor<SView,DView>( effect )
 , _plugin( effect )
 {
-	boost::gil::pixel_zeros_t<DPixel>()(_pixelZero);
+	terry::pixel_zeros_t<DPixel>()(_pixelZero);
 }
 
 template <class SView, class DView>
@@ -47,7 +47,7 @@ template<class SView, class DView>
 void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost;
-	using namespace boost::gil;
+	using namespace terry;
 
 //	TUTTLE_COUT( "Sobel X: " << _params._xKernelGaussianDerivative.size() << "x" << _params._xKernelGaussian.size() );
 //	TUTTLE_COUT( "Sobel Y: " << _params._yKernelGaussianDerivative.size() << "x" << _params._yKernelGaussian.size() );
@@ -210,7 +210,7 @@ template<class SView, class DView>
 void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mpl::true_ )
 {
 	using namespace boost;
-	using namespace boost::gil;
+	using namespace terry;
 	
 	if( ! _params._computeGradientDirection )
 	{

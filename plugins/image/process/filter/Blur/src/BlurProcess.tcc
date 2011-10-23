@@ -4,7 +4,7 @@
 
 #include <terry/gaussianKernel.hpp>
 
-#include <boost/gil/extension/numeric/convolve.hpp>
+#include <terry/numeric/convolve.hpp>
 
 //#include <boost/lambda/lambda.hpp>
 
@@ -42,7 +42,7 @@ void BlurProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,

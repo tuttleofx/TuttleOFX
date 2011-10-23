@@ -8,9 +8,9 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
+#include <terry/typedefs.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/packed_pixel.hpp>
-#include <boost/gil/extension/typedefs.hpp>
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/cstdint.hpp>

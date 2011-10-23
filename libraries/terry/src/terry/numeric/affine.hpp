@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_AFFINE_HPP
-#define GIL_AFFINE_HPP
+#ifndef _TERRY_NUMERIC_AFFINE_HPP_
+#define _TERRY_NUMERIC_AFFINE_HPP_
 
 #include <boost/gil/utilities.hpp>     // point2
 
@@ -20,7 +20,9 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
 
-namespace boost { namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -86,6 +88,6 @@ struct mapping_traits<matrix3x2<F> > {
 template <typename F, typename F2> GIL_FORCEINLINE
 point2<F> transform(const matrix3x2<F>& mat, const point2<F2>& src) { return src * mat; }
 
-} }  // namespace boost::gil
+}
 
 #endif

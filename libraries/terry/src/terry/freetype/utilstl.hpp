@@ -1,5 +1,5 @@
-#ifndef _stl_utils_hpp_
-#define _stl_utils_hpp_
+#ifndef _TERRY_FREETYPE_UTIL_STL_HPP_
+#define _TERRY_FREETYPE_UTIL_STL_HPP_
 
 // (C) Copyright Tom Brinkman 2007.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying

@@ -6,11 +6,12 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_SAMPLER_HPP
-#define GIL_SAMPLER_HPP
+#ifndef _TERRY_NUMERIC_SAMPLER_HPP_
+#define _TERRY_NUMERIC_SAMPLER_HPP_
+
+#include "pixel_numeric_operations.hpp"
 
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
-#include "pixel_numeric_operations.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /// \file               
@@ -22,7 +23,9 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
 
-namespace boost { namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 ///////////////////////////////////////////////////////////////////////////
 ////
@@ -142,6 +145,6 @@ bool sample(bilinear_sampler, const SrcView& src, const point2<F>& p, DstP& resu
     return true;
 }
 
-} }  // namespace boost::gil
+}
 
 #endif

@@ -12,10 +12,12 @@
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
+
+#include <terry/algorithm.hpp>
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/algorithm.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/gil/extension/color/hsl.hpp>
+
+#include <boost/scoped_ptr.hpp>
 
 #include <vector>
 

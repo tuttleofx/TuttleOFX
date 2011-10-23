@@ -4,7 +4,7 @@
 
 #include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <boost/gil/extension/typedefs.hpp>
+#include <terry/typedefs.hpp>
 
 #include <terry/globals.hpp>
 #include <terry/copy.hpp>

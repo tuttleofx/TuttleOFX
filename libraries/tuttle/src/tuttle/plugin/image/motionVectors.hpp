@@ -2,11 +2,11 @@
 #define _TUTTLE_PLUGIN_IMAGE_MOTIONVECTORS_HPP_
 
 #include <tuttle/plugin/IProgress.hpp>
-#include <boost/gil/extension/channel.hpp>
+#include <terry/channel.hpp>
 
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
-#include <boost/gil/extension/numeric/sampler.hpp>
+#include <terry/numeric/sampler.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_same.hpp>
@@ -38,7 +38,7 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 	BOOST_ASSERT( yVecView.height() == xVecView.height() );
 
 	typedef typename View::point_t Point2Integer;
-	typedef typename boost::gil::channel_base_type<typename boost::gil::channel_type<View>::type>::type VecChannel;
+	typedef typename terry::channel_base_type<typename boost::gil::channel_type<View>::type>::type VecChannel;
 	typedef typename boost::gil::point2<VecChannel> VecPoint2;
 
 	const double cosAngle = std::cos( angle );

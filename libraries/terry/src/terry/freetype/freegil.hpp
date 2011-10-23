@@ -1,11 +1,16 @@
-#ifndef _freegil_hpp_
-#define _freegil_hpp_
+#ifndef _TERRY_FREETYPE_FREEGIL_HPP_
+#define _TERRY_FREETYPE_FREEGIL_HPP_
 
 // (C) Copyright Tom Brinkman 2007.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
-#include <string>
+#include "utilgil.hpp"
+#include "utilstl.hpp"
+
+#include <boost/gil/image.hpp>
+#include <boost/gil/typedefs.hpp>
+
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
 #include <boost/function.hpp>
@@ -18,18 +23,17 @@
 #include <boost/mpl/lambda.hpp>
 #include <boost/spirit/include/classic_push_back_actor.hpp>
 #include <boost/spirit/include/classic_lists.hpp>
-#include <boost/gil/image.hpp>
-#include <boost/gil/typedefs.hpp>
+
+#include <string>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
-#include "utilgil.hpp"
-#include "utilstl.hpp"
 
-namespace boost {
-namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 struct make_metric
 {
@@ -240,7 +244,7 @@ struct find_last_fitted_glyph
 };
 
 }
-}
+
 
 #endif
 

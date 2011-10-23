@@ -1,11 +1,13 @@
-#ifndef GIL_PIXEL_BY_CHANNEL_HPP
-#define GIL_PIXEL_BY_CHANNEL_HPP
+#ifndef _TERRY_NUMERIC_PIXEL_BY_CHANNEL_HPP_
+#define _TERRY_NUMERIC_PIXEL_BY_CHANNEL_HPP_
 
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/pixel.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
 
-namespace boost { namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 /**
  * @brief Allows to use a per channel fonctor.
@@ -70,6 +72,7 @@ struct transform_pixel_by_channel_t
 };
 
 
-} }  // namespace boost::gil
+}
 
 #endif
+

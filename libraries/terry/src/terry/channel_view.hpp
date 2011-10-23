@@ -7,8 +7,8 @@
 
 /*************************************************************************************************/
 
-#ifndef BOOST_GIL_EXTENSION_TOOLBOX_CHANNEL_VIEW_HPP_INCLUDED
-#define BOOST_GIL_EXTENSION_TOOLBOX_CHANNEL_VIEW_HPP_INCLUDED
+#ifndef _TERRY_CHANNEL_VIEW_HPP_
+#define _TERRY_CHANNEL_VIEW_HPP_
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /// \file channel_view.hpp
@@ -19,17 +19,19 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#include <boost/gil/gil_all.hpp>
+#include <boost/gil/pixel.hpp>
+#include <boost/gil/utilities.hpp>
 
-namespace boost {
-namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 template < typename Channel
          , typename View
          >
 struct channel_type_to_index
 {
-    static const int value = gil::detail::type_to_index< typename color_space_type< View >::type // color (mpl::vector)
+    static const int value = boost::gil::detail::type_to_index< typename color_space_type< View >::type // color (mpl::vector)
                                                        , Channel                                 // channel type
                                                        >::type::value;                           //< index of the channel in the color (mpl::vector)
 };
@@ -73,7 +75,6 @@ typename channel_view_type< Channel
                            >::make( src );
 }
 
-} // namespace gil
-} // namespace boost
+}
 
-#endif // BOOST_GIL_EXTENSION_TOOLBOX_CHANNEL_VIEW_HPP_INCLUDED
+#endif

@@ -1,7 +1,6 @@
-#ifndef _GIL_EXTENSION_COLOR_BASE_ALGORITHM_HPP_
-#define	_GIL_EXTENSION_COLOR_BASE_ALGORITHM_HPP_
+#ifndef _TERRY_NUMERIC_COLOR_BASE_ALGORITHM_HPP_
+#define	_TERRY_NUMERIC_COLOR_BASE_ALGORITHM_HPP_
 
-#include <algorithm>
 #include <boost/type_traits.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/contains.hpp>
@@ -11,7 +10,11 @@
 #include <boost/gil/gil_concept.hpp>
 #include <boost/gil/utilities.hpp>
 
-namespace boost { namespace gil {
+#include <algorithm>
+
+namespace terry {
+
+using namespace boost::gil;
 
 namespace ext_detail {
 
@@ -241,7 +244,7 @@ GIL_FORCEINLINE
 Op static_for_each(const P1& p1,const P2& p2,const P3& p3,P4& p4,Op op) { return ext_detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,p3,p4,op); }
 ///\}
 
-} }  // namespace boost::gil
+}
 
 
 #endif

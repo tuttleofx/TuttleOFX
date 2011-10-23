@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_CONVOLVE_HPP
-#define GIL_CONVOLVE_HPP
+#ifndef _TERRY_NUMERIC_CONVOLVE_HPP_
+#define _TERRY_NUMERIC_CONVOLVE_HPP_
 
 /*!
 /// \file 
@@ -18,12 +18,9 @@
 /// \date   2005-2007 \n Last updated on February 6, 2007
 */
 
+#include "pixel_numeric_operations.hpp"
+#include "algorithm.hpp"
 
-#include <cstddef>
-#include <cassert>
-#include <algorithm>
-#include <vector>
-#include <functional>
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/image_view_factory.hpp>
 #include <boost/gil/algorithm.hpp>
@@ -31,10 +28,15 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/mpl/bool.hpp>
 
-#include "pixel_numeric_operations.hpp"
-#include "algorithm.hpp"
+#include <cstddef>
+#include <cassert>
+#include <algorithm>
+#include <vector>
+#include <functional>
 
-namespace boost { namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 /// \ingroup ImageAlgorithms
 /// Boundary options for 1D correlations/convolutions
@@ -113,11 +115,11 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	//  ................................................................
 	// < > : represents the temporary buffer
 	const point_t dst_br  = dst_tl + dst.dimensions();
-	const coord_t left_in   = std::min(numeric_cast<coord_t>(ker.left_size()), dst_tl.x);
-	const coord_t left_out  = std::max(numeric_cast<coord_t>(ker.left_size()) - dst_tl.x, (coord_t)0);
+	const coord_t left_in   = std::min(boost::numeric_cast<coord_t>(ker.left_size()), dst_tl.x);
+	const coord_t left_out  = std::max(boost::numeric_cast<coord_t>(ker.left_size()) - dst_tl.x, (coord_t)0);
 	const coord_t right_tmp = src.dimensions().x - dst_br.x;
-	const coord_t right_in  = std::min(numeric_cast<coord_t>(ker.right_size()), right_tmp);
-	const coord_t right_out = std::max(numeric_cast<coord_t>(ker.right_size()) - right_tmp, (coord_t)0);
+	const coord_t right_in  = std::min(boost::numeric_cast<coord_t>(ker.right_size()), right_tmp);
+	const coord_t right_out = std::max(boost::numeric_cast<coord_t>(ker.right_size()) - right_tmp, (coord_t)0);
 
 	const coord_t srcRoi_left = dst_tl.x - left_in;
 	const coord_t srcRoi_right = dst_br.x + right_in;
@@ -203,7 +205,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 				{
 					PixelAccum* it_buffer = &buffer.front();
 					typedef typename SrcView::reverse_iterator reverse_iterator;
-					const unsigned int nleft = numeric_cast<unsigned int>(left_out / srcRoi_width);
+					const unsigned int nleft = boost::numeric_cast<unsigned int>(left_out / srcRoi_width);
 					coord_t copy_size = buffer.size();
 					const coord_t left_rest = left_out % srcRoi_width;
 					bool reverse;
@@ -552,8 +554,8 @@ void correlate_rows_cols_imp( const SrcView& src,
 			// |_________________________________|
 			// tmp_buffer: is the temporary buffer used after the correlate_rows
 			//             (width of procWin and height of proc_src_roi)
-			Coord top_in = std::min( numeric_cast<Coord>( kernelY.left_size()), dst_tl.y );
-			Coord bottom_in = std::min( numeric_cast<Coord>( kernelY.right_size()), src.height()-(dst_tl.y+dst.height()) );
+			Coord top_in = std::min( boost::numeric_cast<Coord>( kernelY.left_size()), dst_tl.y );
+			Coord bottom_in = std::min( boost::numeric_cast<Coord>( kernelY.right_size()), src.height()-(dst_tl.y+dst.height()) );
 			Point image_tmp_size( dst.dimensions() );
 			image_tmp_size.y += top_in + bottom_in;
 			Point image_tmp_tl( dst_tl );
@@ -605,6 +607,6 @@ void correlate_rows_cols( const SrcView& src,
 	correlate_rows_cols_imp<false,PixelAccum,Alloc,SrcView,KernelX,KernelY,DstView>( src, kernelX, kernelY, dst, dst_tl, option );
 }
 
-} }  // namespace boost::gil
+}
 
 #endif

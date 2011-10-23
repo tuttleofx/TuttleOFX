@@ -1,5 +1,5 @@
-#ifndef _TERRY_COLOR_HPP_
-#define	_TERRY_COLOR_HPP_
+#ifndef _TERRY_FILTER_SOBEL_HPP_
+#define	_TERRY_FILTER_SOBEL_HPP_
 
 #include <terry/numeric/pixel_numeric_operations.hpp>
 #include <terry/color/colorspace.hpp>

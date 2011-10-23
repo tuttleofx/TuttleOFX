@@ -1,5 +1,5 @@
-#ifndef GIL_CHANNEL_NUMERIC_OPERATIONS_ASSIGN_HPP
-#define GIL_CHANNEL_NUMERIC_OPERATIONS_ASSIGN_HPP
+#ifndef _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_ASSIGN_HPP_
+#define _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_ASSIGN_HPP_
 
 /*!
 /// \brief Structures for channel-wise numeric operations
@@ -14,11 +14,12 @@
 ///    channel_divides_scalar_assign_t (/=s),
 */
 
-#include <functional>
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/channel.hpp>
 
-namespace boost { namespace gil {
+#include <functional>
+
+namespace terry {
 
 /// \ingroup ChannelNumericOperations
 /// \brief ch2 += ch1
@@ -133,6 +134,6 @@ struct channel_divides_scalar_assign_t : public std::binary_function<Scalar,Chan
     }
 };
 
-} }  // namespace boost::gil
+}
 
 #endif

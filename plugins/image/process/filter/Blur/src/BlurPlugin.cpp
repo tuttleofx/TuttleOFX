@@ -19,8 +19,6 @@ BlurPlugin::BlurPlugin( OfxImageEffectHandle handle )
 
 BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
-	namespace bgil = boost::gil;
-
 	BlurProcessParams<Scalar> params;
 	params._size   = ofxToGil( _paramSize->getValue() ) * ofxToGil( renderScale  );
 	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
@@ -31,20 +29,20 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
 	params._gilKernelX = terry::buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
 	params._gilKernelY = terry::buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
 	
-	params._boundary_option = bgil::convolve_option_extend_mirror;
+	params._boundary_option = terry::convolve_option_extend_mirror;
 	switch( params._border )
 	{
 		case eParamBorderMirror:
-			params._boundary_option = bgil::convolve_option_extend_mirror;
+			params._boundary_option = terry::convolve_option_extend_mirror;
 			break;
 		case eParamBorderConstant:
-			params._boundary_option = bgil::convolve_option_extend_constant;
+			params._boundary_option = terry::convolve_option_extend_constant;
 			break;
 		case eParamBorderBlack:
-			params._boundary_option = bgil::convolve_option_extend_zero;
+			params._boundary_option = terry::convolve_option_extend_zero;
 			break;
 		case eParamBorderPadded:
-			params._boundary_option = bgil::convolve_option_extend_padded;
+			params._boundary_option = terry::convolve_option_extend_padded;
 			break;
 	}
 	return params;

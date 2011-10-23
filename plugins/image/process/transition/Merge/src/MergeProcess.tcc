@@ -10,7 +10,7 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -67,7 +67,7 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 template<class View, class Functor>
 void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	OfxPointI procWindowSize = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1

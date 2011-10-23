@@ -1,8 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_THINNING_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_THINNING_ALGORITHM_HPP_
 
-#include <boost/gil/extension/channel.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <terry/channel.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -51,7 +51,7 @@ struct pixel_locator_thinning_t
 	, CB(_loc_ref.cache_location( 0, 1))
 	, RB(_loc_ref.cache_location( 1, 1))
 	{
-		using namespace boost::gil;
+		using namespace terry;
 		pixel_assigns_max( _sWhite );
 		pixel_assigns_min( _dBlack );
 		pixel_assigns_max( _dWhite );
@@ -59,7 +59,7 @@ struct pixel_locator_thinning_t
 
 	DPixel operator()( const SLocator& src ) const
 	{
-		using namespace boost::gil;
+		using namespace terry;
 
 		if( *src != _sWhite )
 		{

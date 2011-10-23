@@ -2,7 +2,7 @@
 #define	_TERRY_COPY_HPP_
 
 #include <boost/gil/color_base_algorithm.hpp>
-#include <boost/gil/extension/toolbox/channel_view.hpp>
+#include <terry/channel_view.hpp>
 
 namespace terry {
 

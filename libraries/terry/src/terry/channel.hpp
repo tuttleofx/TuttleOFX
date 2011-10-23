@@ -1,11 +1,10 @@
-#ifndef _GIL_EXTENSION_CHANNEL_HPP_
-#define _GIL_EXTENSION_CHANNEL_HPP_
+#ifndef _TERRY_CHANNEL_HPP_
+#define _TERRY_CHANNEL_HPP_
 
 #include <boost/gil/channel.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
 
-namespace boost {
-namespace gil {
+namespace terry {
 
 template <typename ChannelValue>
 struct channel_base_type
@@ -14,7 +13,7 @@ struct channel_base_type
 };
 
 template <typename ChannelValue, typename MinV, typename MaxV>
-struct channel_base_type<scoped_channel_value<ChannelValue, MinV, MaxV> >
+struct channel_base_type<boost::gil::scoped_channel_value<ChannelValue, MinV, MaxV> >
 {
 	typedef ChannelValue type;
 };
@@ -41,13 +40,12 @@ struct assign_channel_if_exists_t<Pixel, Channel, boost::mpl::true_>
 {
 	void operator()( const Pixel& src, Pixel& dst ) const
 	{
-		using namespace boost;
+		using namespace boost::gil;
 		get_color( dst, Channel() ) = get_color( src, Channel() );
 	}
 };
 
 
-}
 }
 
 #endif

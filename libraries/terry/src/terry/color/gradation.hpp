@@ -2,8 +2,8 @@
 #define _BOOST_GIL_COLOR_GRADATION_HPP_
 
 #include <boost/gil/algorithm.hpp>
-#include <boost/gil/extension/typedefs.hpp>
-#include <boost/gil/extension/channel.hpp>
+#include <terry/typedefs.hpp>
+#include <terry/channel.hpp>
 
 namespace terry {
 using namespace boost::gil;

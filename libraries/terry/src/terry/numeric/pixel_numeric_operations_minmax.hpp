@@ -4,11 +4,11 @@
 ///     pixel_min_assign_t,
 ///     pixel_max_assign_t,
 */
-#ifndef GIL_PIXEL_NUMERIC_OPERATIONS3_HPP
-#define GIL_PIXEL_NUMERIC_OPERATIONS3_HPP
+#ifndef _TERRY_NUMERIC_PIXEL_NUMERIC_OPERATIONS_MINMAX_HPP_
+#define _TERRY_NUMERIC_PIXEL_NUMERIC_OPERATIONS_MINMAX_HPP_
 
 #include "channel_numeric_operations_minmax.hpp"
-#include <boost/gil/extension/channel.hpp>
+#include <terry/channel.hpp>
 
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/pixel.hpp>
@@ -16,7 +16,7 @@
 
 #include <functional>
 
-namespace boost { namespace gil {
+namespace terry {
 
 /// \ingroup PixelNumericOperations
 /// \brief p2 = min( p1, p2 )
@@ -87,7 +87,7 @@ template<typename Pixel, typename CPixel = Pixel>
 struct pixel_scale_t
 {
 	typedef typename boost::gil::channel_type<Pixel>::type Channel;
-	typedef typename boost::gil::channel_base_type<Channel>::type ChannelBaseType;
+	typedef typename terry::channel_base_type<Channel>::type ChannelBaseType;
 
 	const CPixel _ratio;
 	CPixel _shift;
@@ -135,7 +135,6 @@ struct pixel_scale_t
 	}
 };
 
-}
 }
 
 #endif

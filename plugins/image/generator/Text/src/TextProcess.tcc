@@ -31,7 +31,7 @@ TextProcess<View>::TextProcess( TextPlugin& instance )
 template<class View>
 void TextProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	ImageGilFilterProcessor<View>::setup( args );
 
 	_params = _plugin.getProcessParams();
@@ -99,7 +99,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 //		Py_Finalize();
 	}
 
-	//Step 1. Create boost::gil image
+	//Step 1. Create terry image
 	//Step 2. Initialize freetype
 	//Step 3. Make Glyphs Array
 	//Step 4. Make Metrics Array
@@ -108,7 +108,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 7. Render Glyphs on GIL View
 	//Step 8. Save GIL Image
 
-	//Step 1. Create boost::gil image -----------
+	//Step 1. Create terry image -----------
 	if( !this->_clipSrc->isConnected() )
 	{
 		//		rgba32f_pixel_t backgroundColor( params._backgroundColor.r,
@@ -136,14 +136,14 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	std::transform( _text.begin(), _text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
 	//Step 4. Make Metrics Array --------------------
-	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _metrics ), boost::gil::make_metric() );
+	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _metrics ), terry::make_metric() );
 
 	//Step 5. Make Kerning Array ----------------
-	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _kerning ), boost::gil::make_kerning() );
+	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _kerning ), terry::make_kerning() );
 
 	//Step 6. Get Coordinates (x,y) ----------------
-	_textSize.x   = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), boost::gil::make_width() );
-	_textSize.y   = std::for_each( _metrics.begin(), _metrics.end(), boost::gil::make_height() );
+	_textSize.x   = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), terry::make_width() );
+	_textSize.y   = std::for_each( _metrics.begin(), _metrics.end(), terry::make_height() );
 	
 	if( _metrics.size() > 1 )
 		_textSize.x   += _params._letterSpacing * (_metrics.size() - 1);
@@ -206,7 +206,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,

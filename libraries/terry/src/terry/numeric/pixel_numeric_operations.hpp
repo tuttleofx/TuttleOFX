@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_PIXEL_NUMERIC_OPERATIONS_HPP
-#define GIL_PIXEL_NUMERIC_OPERATIONS_HPP
+#ifndef _TERRY_NUMERIC_PIXEL_NUMERIC_OPERATIONS_HPP_
+#define _TERRY_NUMERIC_PIXEL_NUMERIC_OPERATIONS_HPP_
 
 /*!
 /// \file               
@@ -22,13 +22,17 @@
 ///     pixel_assigns_t (=)
 */
 
-#include <functional>
+#include "channel_numeric_operations.hpp"
+
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/pixel.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
-#include "channel_numeric_operations.hpp"
 
-namespace boost { namespace gil {
+#include <functional>
+
+namespace terry {
+
+using namespace boost::gil;
 
 /// \ingroup PixelNumericOperations
 /// \brief construct for adding two pixels
@@ -290,6 +294,6 @@ void pixel_assigns_max(Pixel& p)
 }
 
 
-} }  // namespace boost::gil
+}
 
 #endif

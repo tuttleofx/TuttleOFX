@@ -1,12 +1,12 @@
 #ifndef _TUTTLE_PLUGIN_NORMALIZE_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_NORMALIZE_ALGORITHM_HPP_
 
-#include <boost/gil/extension/channel.hpp>
-#include <boost/gil/extension/toolbox/channel_view.hpp>
-#include <boost/gil/extension/numeric/color_base_algorithm.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/channel.hpp>
+#include <terry/channel_view.hpp>
+#include <terry/numeric/color_base_algorithm.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -23,7 +23,7 @@ namespace normalize {
 template<class View>
 void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, typename View::value_type& min, typename View::value_type& max, IProgress& p )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	
 	typedef typename View::value_type Pixel;
 

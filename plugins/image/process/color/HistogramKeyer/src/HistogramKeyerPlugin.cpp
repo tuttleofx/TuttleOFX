@@ -1,8 +1,9 @@
 #include "HistogramKeyerPlugin.hpp"
 #include "HistogramKeyerProcess.hpp"
 
+#include <terry/algorithm.hpp>
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/algorithm.hpp>
+
 #include <boost/smart_ptr/scoped_array.hpp>
 
 namespace tuttle {

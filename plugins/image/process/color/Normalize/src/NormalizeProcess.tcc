@@ -8,8 +8,8 @@
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/color_base_algorithm.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -25,7 +25,7 @@ NormalizeProcess<View>::NormalizeProcess( NormalizePlugin &effect )
 template<class View>
 void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	typedef rgba32f_pixel_t PixelParam;
 	typedef pixel<typename channel_type<View>::type, gray_layout_t> PixelGray;
 
@@ -85,7 +85,7 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,

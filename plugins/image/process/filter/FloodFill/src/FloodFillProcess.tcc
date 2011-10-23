@@ -7,9 +7,9 @@
 #include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_minmax.hpp>
-#include <boost/gil/extension/toolbox/channel_view.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/channel_view.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -26,7 +26,7 @@ FloodFillProcess<View>::FloodFillProcess( FloodFillPlugin &effect )
 template<class View>
 void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 	if( _params._relativeMinMax )

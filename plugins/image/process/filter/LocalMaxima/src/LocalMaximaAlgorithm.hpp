@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_LOCALMAXIMA_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_LOCALMAXIMA_ALGORITHM_HPP_
 
-#include <boost/gil/extension/channel.hpp>
+#include <terry/channel.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -30,7 +30,7 @@ struct pixel_locator_gradientLocalMaxima_t
 	typedef typename SView::locator SLocator;
 	typedef typename SView::value_type SPixel;
 	typedef typename boost::gil::channel_type<SPixel>::type SChannel;
-	typedef typename boost::gil::channel_base_type<SChannel>::type SType;
+	typedef typename terry::channel_base_type<SChannel>::type SType;
 	typedef typename SLocator::cached_location_t SCachedLocation;
 
 	typedef typename DView::locator DLocator;
@@ -67,13 +67,13 @@ struct pixel_locator_gradientLocalMaxima_t
 	, CB(_loc_ref.cache_location( 0, 1))
 	, RB(_loc_ref.cache_location( 1, 1))
 	{
-		using namespace boost::gil;
+		using namespace terry;
 		pixel_assigns_min( _black );
 	}
 
 	DPixel operator()( const SLocator& src ) const
 	{
-		using namespace boost::gil;
+		using namespace terry;
 		
 		SType g1;
 		SType g2;

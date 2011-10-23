@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_KERNEL_HPP
-#define GIL_KERNEL_HPP
+#ifndef _TERRY_NUMERIC_KERNEL_HPP_
+#define _TERRY_NUMERIC_KERNEL_HPP_
 
 /*!
 /// \file
@@ -17,17 +17,22 @@
 /// \date   2005-2007 \n Last updated on September 26, 2006
 */
 
+
+#include <boost/gil/gil_config.hpp>
+#include <boost/gil/utilities.hpp>
+
+#include <boost/array.hpp>
+#include <boost/mpl/bool.hpp>
+
 #include <cstddef>
 #include <cassert>
 #include <algorithm>
 #include <vector>
 #include <memory>
-#include <boost/array.hpp>
-#include <boost/gil/gil_config.hpp>
-#include <boost/gil/utilities.hpp>
-#include <boost/mpl/bool.hpp>
 
-namespace boost { namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 namespace detail {
 
@@ -71,15 +76,15 @@ public:
     kernel_1d(std::size_t size_in,std::size_t center_in) : parent_t(size_in,center_in) {}
     template <typename FwdIterator>
     kernel_1d(FwdIterator elements, std::size_t size_in, std::size_t center_in) : parent_t(size_in,center_in) {
-        detail::copy_n(elements,size_in,this->begin());
+        boost::gil::detail::copy_n(elements,size_in,this->begin());
     }
     kernel_1d(const kernel_1d& k_in)                     : parent_t(k_in) {}
 };
 
 /// \brief static-size kernel
 template <typename T,std::size_t Size>
-class kernel_1d_fixed : public detail::kernel_1d_adaptor<array<T,Size> > {
-    typedef detail::kernel_1d_adaptor<array<T,Size> > parent_t;
+class kernel_1d_fixed : public detail::kernel_1d_adaptor<boost::array<T,Size> > {
+    typedef detail::kernel_1d_adaptor<boost::array<T,Size> > parent_t;
 public:
 	typedef T value_type;
 	typedef boost::mpl::true_ is_fixed_size_t;
@@ -89,7 +94,7 @@ public:
     
     template <typename FwdIterator>
     explicit kernel_1d_fixed(FwdIterator elements, std::size_t center_in) : parent_t(center_in) {
-        detail::copy_n(elements,Size,this->begin());
+        boost::gil::detail::copy_n(elements,Size,this->begin());
     }
     kernel_1d_fixed(const kernel_1d_fixed& k_in)    : parent_t(k_in) {}
 };
@@ -104,6 +109,6 @@ inline Kernel reverse_kernel(const Kernel& kernel) {
 }
 
 
-} }  // namespace boost::gil
+}
 
 #endif

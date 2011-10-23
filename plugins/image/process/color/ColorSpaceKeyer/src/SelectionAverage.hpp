@@ -6,8 +6,8 @@
 
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 #include <boost/gil/channel_algorithm.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -28,6 +28,7 @@ struct ComputeAverage
 	CPixel operator()( const View& image )
 	{
 		using namespace boost::gil;
+		using namespace terry;
 		std::size_t nbPixels = 0; 
 		CPixel sum; //sum of each pixel
 		pixel_zeros_t<CPixel>( )( sum ); //set sum to 0

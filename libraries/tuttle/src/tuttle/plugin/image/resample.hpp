@@ -1,8 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_GIL_RESAMPLE_HPP_
 #define	_TUTTLE_PLUGIN_GIL_RESAMPLE_HPP_
 
-#include <boost/gil/extension/numeric/sampler.hpp>
-#include <boost/gil/extension/numeric/resample.hpp>
+#include <terry/numeric/sampler.hpp>
+#include <terry/numeric/resample.hpp>
 
 #include <terry/sampler/details.hpp>
 #include <terry/sampler/bc.hpp>
@@ -41,7 +41,7 @@ void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view,
 		for( dst_p.x = procWindow.x1; dst_p.x < procWindow.x2; ++dst_p.x )
 		{
 
-			if( ! ::terry::sampler::sample( sampler, src_view, ::boost::gil::transform( dst_to_src, dst_p ), xit[dst_p.x], outOfImageProcess ) )
+			if( ! ::terry::sampler::sample( sampler, src_view, ::terry::transform( dst_to_src, dst_p ), xit[dst_p.x], outOfImageProcess ) )
 			{
 				xit[dst_p.x] = black; // if it is outside of the source image
 			}

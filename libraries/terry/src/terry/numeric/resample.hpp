@@ -6,13 +6,15 @@
 
 /*************************************************************************************************/
 
-#ifndef GIL_RESAMPLE_HPP
-#define GIL_RESAMPLE_HPP
+#ifndef _TUTTLE_NUMERIC_RESAMPLE_HPP_
+#define _TUTTLE_NUMERIC_RESAMPLE_HPP_
+
+#include "affine.hpp"
+
+#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
-#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
-#include "affine.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /// \file               
@@ -24,7 +26,9 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
 
-namespace boost { namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 ///////////////////////////////////////////////////////////////////////////
 ////
@@ -136,6 +140,6 @@ void resize_view(const SrcMetaView& src, const DstMetaView& dst, const Sampler& 
     resample_subimage(src,dst,0,0,src.width(),src.height(),0,sampler);
 }
 
-} }  // namespace boost::gil
+}
 
 #endif

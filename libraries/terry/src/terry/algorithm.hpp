@@ -1,10 +1,9 @@
-#ifndef _GIL_EXTENSION_ALGORITHM_HPP_
-#define	_GIL_EXTENSION_ALGORITHM_HPP_
+#ifndef _TERRY_ALGORITHM_HPP_
+#define	_TERRY_ALGORITHM_HPP_
 
 #include <boost/gil/algorithm.hpp>
 
-namespace boost {
-namespace gil {
+namespace terry {
 
 template<typename T>
 struct rect_t
@@ -256,7 +255,6 @@ F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src
 }
 
 
-}
 }
 
 #endif

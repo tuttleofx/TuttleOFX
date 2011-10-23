@@ -1,7 +1,7 @@
 #ifndef _TERRY_SAMPLER_DETAILS_HPP_
 #define _TERRY_SAMPLER_DETAILS_HPP_
 
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
 
 #include "sampler.hpp"
 

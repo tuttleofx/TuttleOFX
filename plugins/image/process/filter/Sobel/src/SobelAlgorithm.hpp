@@ -1,10 +1,10 @@
 #ifndef _TUTTLE_PLUGIN_SOBEL_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_SOBEL_ALGORITHM_HPP_
 
-#include <boost/gil/extension/channel.hpp>
+#include <terry/channel.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/channel_numeric_operations_assign.hpp>
+#include <terry/numeric/channel_numeric_operations_assign.hpp>
 #include <boost/math/special_functions/pow.hpp>
 #include <boost/math/constants/constants.hpp>
 
@@ -36,7 +36,7 @@ struct channel_gradientDirectionAbs_t
 	{
 		channel_gradientDirection_t<Channel>()(x, y, res);
 		if( res < 0 )
-			res += boost::math::constants::pi<typename boost::gil::channel_base_type<Channel>::type>();
+			res += boost::math::constants::pi<typename terry::channel_base_type<Channel>::type>();
 	}
 };
 

@@ -6,8 +6,8 @@
 #include <tuttle/plugin/global.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/sampler.hpp>
-#include <boost/gil/extension/numeric/resample.hpp>
+#include <terry/numeric/sampler.hpp>
+#include <terry/numeric/resample.hpp>
 
 #include "CropProcess.hpp"
 #include "CropPlugin.hpp"

@@ -1,13 +1,15 @@
-#ifndef _gil_utils_HPP_
-#define _gil_utils_HPP_
+#ifndef _TERRY_FREETYPE_UTIL_HPP_
+#define _TERRY_FREETYPE_UTIL_HPP_
 
 // (C) Copyright Tom Brinkman 2007.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
 #include <boost/gil/image.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+
+namespace terry {
 
 enum
 {
@@ -266,6 +268,8 @@ struct draw_line
 	}
 
 };
+
+}
 
 #endif
 

@@ -10,7 +10,7 @@
 #include <terry/globals.hpp>
 #include <terry/basic_colors.hpp>
 
-#include <boost/gil/extension/channel.hpp>
+#include <terry/channel.hpp>
 
 #include <queue>
 
@@ -131,7 +131,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 	typedef typename SView::value_type SPixel;
 	typedef typename DView::value_type DPixel;
 	typedef typename boost::gil::channel_type<SPixel>::type SChannel;
-	typedef typename boost::gil::channel_base_type<SChannel>::type SType;
+	typedef typename terry::channel_base_type<SChannel>::type SType;
 	typedef typename SLocator::cached_location_t SCachedLocation;
 	typedef typename DLocator::cached_location_t DCachedLocation;
 

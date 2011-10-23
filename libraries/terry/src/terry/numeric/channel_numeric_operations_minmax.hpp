@@ -1,5 +1,5 @@
-#ifndef GIL_CHANNEL_NUMERIC_OPERATIONS_MINMAX_HPP
-#define GIL_CHANNEL_NUMERIC_OPERATIONS_MINMAX_HPP
+#ifndef _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_MINMAX_HPP_
+#define _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_MINMAX_HPP_
 
 /*!
 /// \brief Structures for channel-wise numeric operations
@@ -8,11 +8,14 @@
 ///    channel_max_assign_t,
 */
 
-#include <functional>
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/channel.hpp>
 
-namespace boost { namespace gil {
+#include <functional>
+
+namespace terry {
+
+using namespace boost::gil;
 
 /// \ingroup ChannelNumericOperations
 /// \brief ch2 = min( ch1, ch2 )
@@ -45,6 +48,6 @@ struct channel_assign_max_t : public std::binary_function<ChannelSrc, ChannelDst
 };
 
 
-} }  // namespace boost::gil
+}
 
 #endif
