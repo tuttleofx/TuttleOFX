@@ -33,8 +33,8 @@ static const std::string kParamFilterGaussian        = "gaussian";
 static const std::string kParamFilterB               = "b";
 static const std::string kParamFilterC               = "c";
 
-static const std::string kParamFilterSize            = "size";
-static const std::string kParamFilterSigma           = "sigma";
+static const std::string kParamFilterSize            = "filterSize";
+static const std::string kParamFilterSigma           = "filterSigma";
 
 static const std::string kParamFilterOutOfImage      = "outOfImage";
 static const std::string kParamFilterOutBlack        = "black";

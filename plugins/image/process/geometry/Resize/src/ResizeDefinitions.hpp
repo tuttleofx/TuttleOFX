@@ -10,37 +10,33 @@ namespace tuttle {
 namespace plugin {
 namespace resize {
 
-static const std::string kParamOptions        = "options";
-static const std::string kParamFormat         = "toFormat";
-static const std::string kParamBox            = "toBox";
-static const std::string kParamScale          = "toScale";
-enum EParamOptions
+static const std::string kParamMode        = "method";
+static const std::string kParamModeFormat = "format";
+static const std::string kParamModeSize = "size";
+static const std::string kParamModeScale = "scale";
+enum EParamMode
 {
-	eParamFormat = 0,
-	eParamBox,
-	eParamScale
+	eParamModeFormat = 0,
+	eParamModeSize,
+	eParamModeScale
 };
 
+static const std::string kParamFormat = "format";
 
-static const std::string kParamOutputFormat    = "outputFormat";
-static const std::string kParamOutputDimension = "outputDimension";
-
-static const std::string kParamDirection       = "direction";
-static const std::string kParamSizeX           = "width";
-static const std::string kParamSizeY           = "height";
-
-enum EParamSize
+static const std::string kParamSize = "size";
+static const std::string kParamSizeWidth = "width";
+static const std::string kParamSizeHeight = "height";
+static const std::string kParamSizeKeepRatio = "keepRatio";
+static const std::string kParamSizeOrientation = "orientation";
+static const std::string kParamSizeOrientationX = kParamSizeWidth;
+static const std::string kParamSizeOrientationY = kParamSizeHeight;
+enum EParamSizeOrientation
 {
-	eParamSizeX = 0,
-	eParamSizeY
+	eParamSizeOrientationX = 0,
+	eParamSizeOrientationY
 };
 
-static const std::string kParamScaleDim        = "scale";
-
-static const std::string kParamScaleX          = "scaleX";
-static const std::string kParamScaleY          = "scaleY";
-
-static const std::string kParamSplit           = "split";
+static const std::string kParamScale        = "scale";
 
 static const std::string kParamCenter          = "center";
 static const std::string kParamCenterPoint     = "centerPoint";

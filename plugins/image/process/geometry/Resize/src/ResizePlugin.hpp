@@ -13,7 +13,6 @@ namespace resize {
 template<typename Scalar>
 struct ResizeProcessParams
 {
-	boost::gil::point2<Scalar>                 _size;
 	bool                                       _changeCenter;
 	boost::gil::point2<Scalar>                 _centerPoint;
 
@@ -52,32 +51,27 @@ public:
 	void render                ( const OFX::RenderArguments &args );
 
 public:
-	OFX::ChoiceParam*	_paramOptions;
+	OFX::ChoiceParam*	_paramMode;
 
 	OFX::ChoiceParam*	_paramFormat;
 
-	OFX::BooleanParam*	_paramSplit;
-
-	OFX::ChoiceParam*	_paramDirection;
-	OFX::DoubleParam*	_paramScale;
-	OFX::DoubleParam*	_paramSize;
-
-	OFX::Double2DParam*	_paramOutputFormat;
-	OFX::DoubleParam*	_paramScaleX;
-	OFX::DoubleParam*	_paramScaleY;
+	OFX::Int2DParam*	_paramSize;
+	OFX::IntParam*	_paramSizeWidth;
+	OFX::IntParam*	_paramSizeHeight;
+	OFX::BooleanParam*	_paramSizeKeepRatio;
+	OFX::ChoiceParam*	_paramSizeOrientation;
+	
+	OFX::Double2DParam*	_paramScale;
 
 	OFX::ChoiceParam*	_paramFilter;
-
 	OFX::IntParam*		_paramFilterSize;
 	OFX::DoubleParam*	_paramFilterSigma;
+	OFX::DoubleParam*	_paramB;
+	OFX::DoubleParam*	_paramC;
+	OFX::ChoiceParam*	_paramOutOfImage;
 
 	OFX::BooleanParam*	_paramCenter;
 	OFX::Double2DParam*	_paramCenterPoint;
-
-	OFX::DoubleParam*	_paramB;
-	OFX::DoubleParam*	_paramC;
-
-	OFX::ChoiceParam*	_paramOutOfImage;
 };
 
 }
