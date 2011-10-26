@@ -1,16 +1,16 @@
-#ifndef _TUTTLE_PLUGIN_OPERATORS_ALGORITHM_HPP_
-#define _TUTTLE_PLUGIN_OPERATORS_ALGORITHM_HPP_
+#ifndef _TUTTLE_PLUGIN_MATHOPERATOR_ALGORITHM_HPP_
+#define _TUTTLE_PLUGIN_MATHOPERATOR_ALGORITHM_HPP_
 
 #include <terry/channel.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace operators {
+namespace mathOperator {
 
 namespace bgil = boost::gil;
 
 template< class View >
-void OperatorsProcess<View>::processImagePlus( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
+void MathOperatorProcess<View>::processImagePlus( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
@@ -42,7 +42,7 @@ void OperatorsProcess<View>::processImagePlus( OfxRectI& procWindowOutput, const
 }
 
 template< class View >
-void OperatorsProcess<View>::processImageMultiply( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
+void MathOperatorProcess<View>::processImageMultiply( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
@@ -74,7 +74,7 @@ void OperatorsProcess<View>::processImageMultiply( OfxRectI& procWindowOutput, c
 }
 
 template< class View >
-void OperatorsProcess<View>::processImagePow( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
+void MathOperatorProcess<View>::processImagePow( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
@@ -107,7 +107,7 @@ void OperatorsProcess<View>::processImagePow( OfxRectI& procWindowOutput, const 
 
 
 template< class View >
-void OperatorsProcess<View>::processImageSqrt( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
+void MathOperatorProcess<View>::processImageSqrt( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
@@ -139,7 +139,7 @@ void OperatorsProcess<View>::processImageSqrt( OfxRectI& procWindowOutput, const
 }
 
 template< class View >
-void OperatorsProcess<View>::processImageLn( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
+void MathOperatorProcess<View>::processImageLn( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
@@ -172,7 +172,7 @@ void OperatorsProcess<View>::processImageLn( OfxRectI& procWindowOutput, const O
 
 
 template< class View >
-void OperatorsProcess<View>::processImageLog( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
+void MathOperatorProcess<View>::processImageLog( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
