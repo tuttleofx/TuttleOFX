@@ -18,7 +18,7 @@ OfxRectD LensDistortPlugin::_srcRoi     = { 0, 0, 0, 0 };
 OfxRectD LensDistortPlugin::_srcRealRoi = { 0, 0, 0, 0 };
 
 LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
-	: ImageEffectGilPlugin( handle )
+	: SamplerPlugin( handle )
 {
 	_srcRefClip = fetchClip( kClipOptionalSourceRef );
 
@@ -74,33 +74,35 @@ void LensDistortPlugin::render( const OFX::RenderArguments& args )
 
 void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
+	SamplerPlugin::changedParam( args, paramName );
+
 	if( paramName == kParamLensType )
 	{
 		switch( _lensType->getValue() )
 		{
 			case 0: // normal
-				_coef2->setIsSecret( true );
-				_coef2->setEnabled( false );
-				_squeeze->setIsSecret( true );
-				_squeeze->setEnabled( false );
-				_asymmetric->setIsSecret( true );
-				_asymmetric->setEnabled( false );
+				_coef2      -> setIsSecret( true );
+				_coef2      -> setEnabled( false );
+				_squeeze    -> setIsSecret( true );
+				_squeeze    -> setEnabled( false );
+				_asymmetric -> setIsSecret( true );
+				_asymmetric -> setEnabled( false );
 				break;
 			case 1: // fish-eye
-				_coef2->setIsSecret( false );
-				_coef2->setEnabled( true );
-				_squeeze->setIsSecret( true );
-				_squeeze->setEnabled( false );
-				_asymmetric->setIsSecret( true );
-				_asymmetric->setEnabled( false );
+				_coef2      ->setIsSecret( false );
+				_coef2      -> setEnabled( true );
+				_squeeze    -> setIsSecret( true );
+				_squeeze    -> setEnabled( false );
+				_asymmetric -> setIsSecret( true );
+				_asymmetric -> setEnabled( false );
 				break;
 			case 2: // advanced
-				_coef2->setIsSecret( false );
-				_coef2->setEnabled( true );
-				_squeeze->setIsSecret( false );
-				_squeeze->setEnabled( true );
-				_asymmetric->setIsSecret( false );
-				_asymmetric->setEnabled( true );
+				_coef2      -> setIsSecret( false );
+				_coef2      -> setEnabled( true );
+				_squeeze    -> setIsSecret( false );
+				_squeeze    -> setEnabled( true );
+				_asymmetric -> setIsSecret( false );
+				_asymmetric -> setEnabled( true );
 				break;
 			default:
 				BOOST_THROW_EXCEPTION( exception::Bug()
@@ -112,13 +114,13 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 	{
 		if( _resizeRod->getValue() == eParamResizeRodManual )
 		{
-			_resizeRodManualScale->setIsSecret( false );
-			_resizeRodManualScale->setEnabled( true );
+			_resizeRodManualScale -> setIsSecret( false );
+			_resizeRodManualScale -> setEnabled( true );
 		}
 		else
 		{
 			//			_resizeRodManualScale->setIsSecret( true );
-			_resizeRodManualScale->setEnabled( false );
+			_resizeRodManualScale -> setEnabled( false );
 		}
 	}
 	else if( paramName == kParamGridOverlay || paramName == kParamGridCenter || paramName == kParamGridScale )
@@ -335,24 +337,29 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	const bool useOptionalInputRod  = ( optionalInputRod.x1 != optionalInputRod.x2 ) && ( optionalInputRod.y1 != optionalInputRod.y2 );
 	const OfxRectD& choosedInputRod = useOptionalInputRod ? optionalInputRod : inputRod;
 
-	typedef bgil::point2<Scalar> Point2;
+	typedef    bgil::point2<Scalar> Point2;
 	LensDistortProcessParams<Scalar> params;
 
-	params._coef1 = _coef1->getValue();
+	double preScale         = _preScale->getValue();
+	double postScale        = _postScale->getValue();
+
+	params._coef1           = _coef1->getValue();
+
 	if( params._coef1 >= 0 )
 		params._distort = true; // distort
 	else
 		params._distort = false; // undistort
-	params._coef1      = std::abs( params._coef1 );
-	params._coef2      = _coef2->getValue();
-	params._squeeze    = _squeeze->getValue();
-	params._asymmetric = ofxToGil( _asymmetric->getValue() );
-	double preScale = _preScale->getValue();
-	params._preScale.x = ( 1.0 / preScale );
-	params._preScale.y = 1.0 / preScale;
-	double postScale = _postScale->getValue();
-	params._postScale.x = ( 1.0 / postScale );
-	params._postScale.y = 1.0 / postScale;
+
+	params._coef1           = std::abs( params._coef1 );
+	params._coef2           = _coef2->getValue();
+	params._squeeze         = _squeeze->getValue();
+	params._asymmetric      = ofxToGil( _asymmetric->getValue() );
+
+	params._preScale.x      = ( 1.0 / preScale );
+	params._preScale.y      = 1.0 / preScale;
+
+	params._postScale.x     = ( 1.0 / postScale );
+	params._postScale.y     = 1.0 / postScale;
 	Point2 imgShift = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
 	params._imgSizeSrc      = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
 	params._imgCenterSrc    = Point2( params._imgSizeSrc.x * 0.5, params._imgSizeSrc.y * 0.5 );
@@ -380,8 +387,9 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	}
 	if( _reverse->getValue() != reverse )
 	{
-		params._distort = !params._distort;
 		Point2 swapPreScale = params._preScale;
+
+		params._distort   = !params._distort;
 		params._preScale  = 1.0 / params._postScale;
 		params._postScale = 1.0 / swapPreScale;
 	}
@@ -391,15 +399,10 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 LensDistortParams LensDistortPlugin::getProcessParams(  ) const
 {
 	LensDistortParams lensDistortParams;
-	lensDistortParams._filter            = (terry::sampler::EParamFilter)           _paramFilter     -> getValue();
+	SamplerPlugin::fillProcessParams( lensDistortParams._samplerProcessParams );
+
 	lensDistortParams._lensType          = (tuttle::plugin::lens::EParamLensType)   _lensType        -> getValue();
 	lensDistortParams._centerType        = (tuttle::plugin::lens::EParamCenterType) _centerType      -> getValue();
-
-	lensDistortParams._filterSize        = (double) _paramFilterSize  -> getValue();
-	lensDistortParams._filterSigma       = (double) _paramFilterSigma -> getValue();
-	lensDistortParams._paramB            = (double) _paramB           -> getValue();
-	lensDistortParams._paramC            = (double) _paramC           -> getValue();
-	lensDistortParams._outOfImageProcess = (terry::sampler::EParamFilterOutOfImage) _paramOutOfImage  -> getValue();
 
 	return lensDistortParams;
 }

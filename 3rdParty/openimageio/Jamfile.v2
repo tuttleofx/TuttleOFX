@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX OpenImageIO Plugin
+## Main BJam makefile for libopenimageio library
 ###############################################################################
 
 ###############################################################################
@@ -8,23 +8,27 @@
 project
 	: requirements
 		<include>.
-		<include>$(3RD_PARTY)/openimageio/dist/linux64/include
-		<linkflags>-L$(3RD_PARTY)/openimageio/dist/linux64/lib/
-		<linkflags>-lOpenImageIO
-	: build-dir $(BUILD)/OpenImageIO
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>./build/linux64/include
+	: build-dir $(BUILD)/3rdParty/openimageio
+    ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	openimageio		:
+
+			;
+
+install dist
+	:
+		openimageio
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
 	;
-
-###############################################################################
-# Product 
-###############################################################################
-plugin OpenImageIO :
-	[ glob-tree *.cpp : tests ]
-
-	/tuttleplugin/<link>static
-	;
-
-
-###############################################################################
-# Automatic install
-###############################################################################
-auto_install OpenImageIO : $(DIST) ;

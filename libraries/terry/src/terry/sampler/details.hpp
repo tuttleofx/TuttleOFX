@@ -18,85 +18,7 @@ using namespace boost::gil;
 namespace sampler {
 
 namespace details {
-/*
-template< typename F>
-void proc( F& pixel)
-{
-}
 
-template< >
-void proc( rgb8_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgb8");
-}
-
-template< >
-void proc( rgb16_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgb16");
-}
-
-template< >
-void proc( rgb32_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgb32");
-}
-
-template< >
-void proc( rgb8s_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgb8s");
-}
-
-template< >
-void proc( rgb16s_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgb16s");
-}
-
-template< >
-void proc( rgb32s_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgb32s");
-}
-
-// alpha
-
-template< >
-void proc( rgba8_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgba8");
-}
-
-template< >
-void proc( rgba16_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgba16");
-}
-
-template< >
-void proc( rgba32_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgba32");
-}
-
-template< >
-void proc( rgba8s_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgba8s");
-}
-
-template< >
-void proc( rgba16s_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgba16s");
-}
-
-template< >
-void proc( rgba32s_pixel_t& pixel)
-{
-	TUTTLE_COUT("rgba32s");
-}*/
 
 template <typename Weight>
 struct add_dst_mul_src_channel
@@ -451,11 +373,32 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		{
 			if( (ssize_t) ( pTL.y - (middlePosition - i) ) < 0 )
 			{
-				xProcessed.at( i ) = xProcessed.at( i + 1 );
+				switch( outOfImageProcess )
+				{
+					case eParamFilterOutBlack :
+					{
+						xProcessed.at( i ) = get_black<DstP>();
+						break;
+					}
+					case eParamFilterOutTransparency :
+					{
+						xProcessed.at( i ) = SrcP(0);
+						break;
+					}
+					case eParamFilterOutCopy :
+					{
+						xProcessed.at( i ) = xProcessed.at( i + 1 );
+						break;
+					}
+					case eParamFilterOutMirror :
+					{
+						xProcessed.at( i ) = xProcessed.at( i + 1 );
+						break;
+					}
+				}
 			}
 			else
 			{
-
 				loc.y( ) -= (middlePosition - i);
 				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
 				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
@@ -483,7 +426,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				}
 				case eParamFilterOutMirror :
 				{
-					xProcessed.at( i ) = SrcP(1);
+					xProcessed.at( i ) = xProcessed.at( i + 1 );
 					break;
 				}
 			}
@@ -505,7 +448,6 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
 				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
 				loc.y( ) += ( middlePosition - i );
-				//xProcessed.at( i ) = SrcP(0);
 			}
 		}
 		else
@@ -529,7 +471,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				}
 				case eParamFilterOutMirror :
 				{
-					xProcessed.at( i ) = SrcP(0);
+					xProcessed.at( i ) = xProcessed.at( i - 1 );
 					break;
 				}
 			}

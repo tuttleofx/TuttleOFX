@@ -5,7 +5,7 @@
 #include "lensDistortProcessParams.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <tuttle/plugin/context/SamplerDefinition.hpp>
+#include <tuttle/plugin/context/SamplerPlugin.hpp>
 
 #include <boost/gil/utilities.hpp>
 #include <string>
@@ -19,19 +19,13 @@ struct LensDistortParams
 	EParamLensType                             _lensType;
 	EParamCenterType                           _centerType;
 
-	terry::sampler::EParamFilter               _filter;
-	double                                     _filterSize;
-	double                                     _filterSigma;
-	double                                     _paramB;
-	double                                     _paramC;
-
-	terry::sampler::EParamFilterOutOfImage     _outOfImageProcess;
+	SamplerProcessParams                       _samplerProcessParams;
 };
 
 /**
  * @brief Main class of the lens distortion
  */
-class LensDistortPlugin : public ImageEffectGilPlugin
+class LensDistortPlugin : public SamplerPlugin
 {
 public:
 	typedef double Scalar;
