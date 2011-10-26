@@ -4,7 +4,7 @@
 #include "ResizeDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <tuttle/plugin/context/SamplerDefinition.hpp>
+#include <tuttle/plugin/context/SamplerPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -16,19 +16,13 @@ struct ResizeProcessParams
 	bool                                       _changeCenter;
 	boost::gil::point2<Scalar>                 _centerPoint;
 
-	terry::sampler::EParamFilter               _filter;
-	double                                     _filterSize;
-	double                                     _filterSigma;
-	double                                     _paramB;
-	double                                     _paramC;
-
-	terry::sampler::EParamFilterOutOfImage     _outOfImageProcess;
+	SamplerProcessParams                       _samplerProcessParams;
 };
 
 /**
  * @brief Resize plugin
  */
-class ResizePlugin : public ImageEffectGilPlugin
+class ResizePlugin : public SamplerPlugin
 {
 public:
 	typedef float Scalar;
@@ -51,27 +45,20 @@ public:
 	void render                ( const OFX::RenderArguments &args );
 
 public:
-	OFX::ChoiceParam*	_paramMode;
+	OFX::ChoiceParam*       _paramMode;
 
-	OFX::ChoiceParam*	_paramFormat;
+	OFX::ChoiceParam*       _paramFormat;
 
-	OFX::Int2DParam*	_paramSize;
-	OFX::IntParam*	_paramSizeWidth;
-	OFX::IntParam*	_paramSizeHeight;
-	OFX::BooleanParam*	_paramSizeKeepRatio;
-	OFX::ChoiceParam*	_paramSizeOrientation;
+	OFX::Int2DParam*        _paramSize;
+	OFX::IntParam*          _paramSizeWidth;
+	OFX::IntParam*          _paramSizeHeight;
+	OFX::BooleanParam*      _paramSizeKeepRatio;
+	OFX::ChoiceParam*       _paramSizeOrientation;
 	
-	OFX::Double2DParam*	_paramScale;
+	OFX::Double2DParam*     _paramScale;
 
-	OFX::ChoiceParam*	_paramFilter;
-	OFX::IntParam*		_paramFilterSize;
-	OFX::DoubleParam*	_paramFilterSigma;
-	OFX::DoubleParam*	_paramB;
-	OFX::DoubleParam*	_paramC;
-	OFX::ChoiceParam*	_paramOutOfImage;
-
-	OFX::BooleanParam*	_paramCenter;
-	OFX::Double2DParam*	_paramCenterPoint;
+	OFX::BooleanParam*      _paramCenter;
+	OFX::Double2DParam*     _paramCenterPoint;
 };
 
 }

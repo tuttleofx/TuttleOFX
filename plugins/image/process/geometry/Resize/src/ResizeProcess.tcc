@@ -41,10 +41,11 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 
 	//TUTTLE_COUT("\E[1;31mResize Position = " << -( _params._centerPoint.x - dst_width * 0.5) << "x" << -( _params._centerPoint.y - dst_height * 0.5) << "\E[0;0m");
 
-	const EParamFilterOutOfImage outOfImageProcess = static_cast<EParamFilterOutOfImage>(_params._outOfImageProcess);
+	const EParamFilterOutOfImage outOfImageProcess = static_cast<EParamFilterOutOfImage>(_params._samplerProcessParams._outOfImageProcess);
 
 	matrix3x2<double> mat;
 
+#ifndef TUTTLE_PRODUCTION
 	if( _params._changeCenter )
 	{
 		mat =	matrix3x2<double>::get_translate( -( _params._centerPoint.x - dst_width * 0.5) , -( _params._centerPoint.y - dst_height * 0.5) ) *
@@ -54,6 +55,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 			;
 	}
 	else
+#endif
 	{
 		mat =	matrix3x2<double>::get_translate( - dst_width * 0.5, - dst_height * 0.5 ) *
 			matrix3x2<double>::get_scale    ( (src_width + 1) / (dst_width + 1 ), (src_height + 1) / (dst_height + 1) ) *
@@ -61,16 +63,15 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 			;
 	}
 
-
-	switch( _params._filter )
+	switch( _params._samplerProcessParams._filter )
 	{
 		case eParamFilterNearest	: resample_pixels_progress< ::terry::sampler::nearest_neighbor_sampler >( this->_srcView, this->_dstView, mat, procWindow, outOfImageProcess, this	); break;
 		case eParamFilterBilinear	: resample_pixels_progress< ::terry::sampler::bilinear_sampler >( this->_srcView, this->_dstView, mat, procWindow, outOfImageProcess, this	); break;
 		case eParamFilterBC :
 		{
 			bc_sampler BCsampler;
-			BCsampler.valB = _params._paramB;
-			BCsampler.valC = _params._paramC;
+			BCsampler.valB = _params._samplerProcessParams._paramB;
+			BCsampler.valC = _params._samplerProcessParams._paramC;
 			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, outOfImageProcess, this, BCsampler );
 			break;
 		}
@@ -84,15 +85,15 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 		case eParamFilterGaussian :
 		{
 			gaussian_sampler gaussianSampler;
-			gaussianSampler.size  = _params._filterSize;
-			gaussianSampler.sigma = _params._filterSigma;
+			gaussianSampler.size  = _params._samplerProcessParams._filterSize;
+			gaussianSampler.sigma = _params._samplerProcessParams._filterSigma;
 			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, outOfImageProcess, this, gaussianSampler );
 			break;
 		}
 		case eParamFilterLanczos  :
 		{
 			lanczos_sampler lanczosSampler;
-			lanczosSampler.size = _params._filterSize;
+			lanczosSampler.size = _params._samplerProcessParams._filterSize;
 			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, outOfImageProcess, this, lanczosSampler );
 			break;
 		}

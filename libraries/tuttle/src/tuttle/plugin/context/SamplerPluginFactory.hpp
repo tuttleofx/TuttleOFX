@@ -37,16 +37,23 @@ void addFilterParameters( OFX::ImageEffectDescriptor& desc )
 	filter->setHint(
 			"Interpolation methods\n"
 			"\n"
-			/// @todo: documentation...
-			"Nearest: \n"
-			"Bilinear: \n"
-			"Bicubic: Cubic filter(0.0, 0.0)\n"
-			"Catmul: Cubic filter(0.0, 0.5)\n"
-			"Mitchell: Cubic filter(1/3, 1/3)\n"
-			"Parsen: Cubic filter(1.0, 0.0)\n"
-			"Keys: \n"
-			"Simon: \n"
-			"Rifman: \n"
+			"nearest: Nearest Neighbor sampler\n"
+			"bilinear: Bilinear sample\n"
+			"bc: 2nd order sampler with B-C parametrable\n"
+			"bicubic: Cubic filter(0.0, 0.0)\n"
+			"catmul-rom: Cubic filter(0.0, 0.5)\n"
+			"keys: Cubic filter(0.0, 0.5)\n"
+			"simon: Cubic filter(0.0, 0.75)\n"
+			"rifman: Cubic filter(0.0, 1.0)\n"
+			"mitchell: Cubic filter(1/3, 1/3)\n"
+			"parzen: Cubic filter(1.0, 0.0)\n"
+			"lanczos: Lanczos sampler with parametrable filter size\n"
+			"lanczos3: Lanczos sampler with filter size = 3\n"
+			"lanczos4: Lanczos sampler with filter size = 4\n"
+			"lanczos6: Lanczos sampler with filter size = 6\n"
+			"lanczos12: Lanczos sampler with filter size = 12 \n"
+			"gaussian: Gaussian sampler with parametrable filter size and sigma value\n"
+
 		);
 
 	OFX::DoubleParamDescriptor* B = desc.defineDoubleParam( kParamFilterB );
@@ -81,8 +88,8 @@ void addFilterParameters( OFX::ImageEffectDescriptor& desc )
 	outOfImage->setLabel            ( "Out of Image" );
 	outOfImage->appendOption        ( kParamFilterOutBlack );
 	outOfImage->appendOption        ( kParamFilterOutTransparency );
-#ifndef TUTTLE_PRODUCTION
 	outOfImage->appendOption        ( kParamFilterOutCopy );
+#ifndef TUTTLE_PRODUCTION
 	outOfImage->appendOption        ( kParamFilterOutMirror );
 #endif
 	outOfImage->setHint             ( "Select the filtering method out of the image." );

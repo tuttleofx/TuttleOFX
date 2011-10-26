@@ -47,7 +47,7 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 	using namespace terry::sampler;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
-	switch( _params._filter )
+	switch( _params._samplerProcessParams._filter )
 	{
 		case eParamFilterNearest:
 		{
@@ -62,8 +62,8 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		case eParamFilterBC:
 		{
 			bc_sampler BCsampler;
-			BCsampler.valB = _params._paramB;
-			BCsampler.valC = _params._paramC;
+			BCsampler.valB = _params._samplerProcessParams._paramB;
+			BCsampler.valC = _params._samplerProcessParams._paramC;
 			lensDistort( this->_srcView, this->_dstView, procWindowOutput, BCsampler );
 			return;
 		}
@@ -105,7 +105,7 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		case eParamFilterLanczos:
 		{
 			lanczos_sampler lanczosSampler;
-			lanczosSampler.size = _params._filterSize;
+			lanczosSampler.size = _params._samplerProcessParams._filterSize;
 			lensDistort( this->_srcView, this->_dstView, procWindowOutput, lanczosSampler );
 			return;
 		}
@@ -132,8 +132,8 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		case eParamFilterGaussian:
 		{
 			gaussian_sampler gaussianSampler;
-			gaussianSampler.size  = _params._filterSize;
-			gaussianSampler.sigma = _params._filterSigma;
+			gaussianSampler.size  = _params._samplerProcessParams._filterSize;
+			gaussianSampler.sigma = _params._samplerProcessParams._filterSigma;
 			lensDistort( this->_srcView, this->_dstView, procWindowOutput, gaussianSampler );
 			return;
 		}
@@ -146,7 +146,7 @@ template<class View>
 template<class Sampler>
 void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler )
 {
-	terry::sampler::EParamFilterOutOfImage outOfImageProcess = _params._outOfImageProcess;
+	terry::sampler::EParamFilterOutOfImage outOfImageProcess = _params._samplerProcessParams._outOfImageProcess;
 	switch( _params._lensType )
 	{
 		case eParamLensTypeStandard:

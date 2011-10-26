@@ -18,30 +18,31 @@ using namespace ::terry::sampler;
 using boost::numeric_cast;
 
 ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
-: ImageEffectGilPlugin( handle )
+: SamplerPlugin( handle )
 {
-	_paramMode = fetchChoiceParam( kParamMode );
+	_paramMode            = fetchChoiceParam   ( kParamMode );
 
-	_paramFormat = fetchChoiceParam( kParamFormat );
+	_paramFormat          = fetchChoiceParam   ( kParamFormat );
 
-	_paramScale = fetchDouble2DParam( kParamModeScale );
+	_paramScale           = fetchDouble2DParam ( kParamModeScale );
 	
-	_paramSize = fetchInt2DParam( kParamSize );
-	_paramSizeWidth = fetchIntParam( kParamSizeWidth );
-	_paramSizeHeight = fetchIntParam( kParamSizeHeight );
-	_paramSizeOrientation = fetchChoiceParam( kParamSizeOrientation );
-	_paramSizeKeepRatio = fetchBooleanParam( kParamSizeKeepRatio );
+	_paramSize            = fetchInt2DParam    ( kParamSize );
+	_paramSizeWidth       = fetchIntParam      ( kParamSizeWidth );
+	_paramSizeHeight      = fetchIntParam      ( kParamSizeHeight );
+	_paramSizeOrientation = fetchChoiceParam   ( kParamSizeOrientation );
+	_paramSizeKeepRatio   = fetchBooleanParam  ( kParamSizeKeepRatio );
 
-	_paramCenter = fetchBooleanParam( kParamCenter );
-	_paramCenterPoint = fetchDouble2DParam( kParamCenterPoint );
-
+#ifndef TUTTLE_PRODUCTION
+	_paramCenter          = fetchBooleanParam  ( kParamCenter );
+	_paramCenterPoint     = fetchDouble2DParam ( kParamCenterPoint );
+#endif
 	
-	_paramFilter = fetchChoiceParam( kParamFilter );
-	_paramB	= fetchDoubleParam( kParamFilterB );
-	_paramC = fetchDoubleParam( kParamFilterC );
-	_paramFilterSize = fetchIntParam( kParamFilterSize );
-	_paramFilterSigma = fetchDoubleParam( kParamFilterSigma );
-	_paramOutOfImage = fetchChoiceParam( kParamFilterOutOfImage );
+	_paramFilter          = fetchChoiceParam   ( kParamFilter );
+	_paramB	              = fetchDoubleParam   ( kParamFilterB );
+	_paramC               = fetchDoubleParam   ( kParamFilterC );
+	_paramFilterSize      = fetchIntParam      ( kParamFilterSize );
+	_paramFilterSigma     = fetchDoubleParam   ( kParamFilterSigma );
+	_paramOutOfImage      = fetchChoiceParam   ( kParamFilterOutOfImage );
 
 	updateVisibleTools();
 }
@@ -50,7 +51,9 @@ void ResizePlugin::updateVisibleTools()
 {
 	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
 	changedParam( args, kParamMode );
+#ifndef TUTTLE_PRODUCTION
 	changedParam( args, kParamCenter );
+#endif
 	changedParam( args, kParamFilter );
 	changedParam( args, kParamSizeKeepRatio );
 	changedParam( args, kParamSizeOrientation );
@@ -59,154 +62,127 @@ void ResizePlugin::updateVisibleTools()
 ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	ResizeProcessParams<Scalar> params;
+#ifndef TUTTLE_PRODUCTION
+	OfxPointD centerPoint                           = _paramCenterPoint->getValue();
 
-	OfxPointD centerPoint = _paramCenterPoint->getValue();
+	params._centerPoint.x                           = centerPoint.x;
+	params._centerPoint.y                           = centerPoint.y;
 
-	params._centerPoint.x = centerPoint.x;
-	params._centerPoint.y = centerPoint.y;
-
-	params._changeCenter = _paramCenter->getValue();
-	
-	params._paramB = _paramB->getValue();
-	params._paramC = _paramC->getValue();
-	params._filterSize = _paramFilterSize->getValue();
-	params._filterSigma = _paramFilterSigma->getValue();
-
-	params._filter = static_cast<EParamFilter>( _paramFilter->getValue() );
-
-	params._outOfImageProcess = static_cast<EParamFilterOutOfImage>( _paramOutOfImage->getValue() );
+	params._changeCenter                            = _paramCenter->getValue();
+#endif
+	SamplerPlugin::fillProcessParams( params._samplerProcessParams );
 
 	return params;
 }
 
 void ResizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
+	SamplerPlugin::changedParam( args, paramName );
+
 	if( paramName == kParamMode )
 	{
 		switch( _paramMode->getValue() )
 		{
 			case eParamModeFormat:
 			{
-				_paramScale->setIsSecretAndDisabled( true );
-				_paramSize->setIsSecretAndDisabled( true );
-				_paramSizeWidth->setIsSecretAndDisabled( true );
-				_paramSizeHeight->setIsSecretAndDisabled( true );
-				_paramSizeOrientation->setIsSecretAndDisabled( true );
-				_paramSizeKeepRatio->setIsSecretAndDisabled( true );
+				_paramScale           -> setIsSecretAndDisabled( true );
+				_paramSize            -> setIsSecretAndDisabled( true );
+				_paramSizeWidth       -> setIsSecretAndDisabled( true );
+				_paramSizeHeight      -> setIsSecretAndDisabled( true );
+				_paramSizeOrientation -> setIsSecretAndDisabled( true );
+				_paramSizeKeepRatio   -> setIsSecretAndDisabled( true );
 				
-				_paramFormat->setIsSecretAndDisabled( false );
+				_paramFormat          -> setIsSecretAndDisabled( false );
 				break;
 			}
 			case eParamModeSize:
 			{
-				_paramFormat->setIsSecretAndDisabled( true );
-				_paramScale->setIsSecretAndDisabled( true );
-				
-				_paramSizeKeepRatio->setIsSecretAndDisabled( false );
-				const bool keepRatio = _paramSizeKeepRatio->getValue();
+				const bool                  keepRatio   = _paramSizeKeepRatio->getValue();
 				const EParamSizeOrientation orientation = static_cast<EParamSizeOrientation>(_paramSizeOrientation->getValue());
-				_paramSizeWidth->setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationX );
-				_paramSizeHeight->setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationY );
-				_paramSizeOrientation->setIsSecretAndDisabled( ! keepRatio );
-				_paramSize->setIsSecretAndDisabled( keepRatio );
+
+				_paramFormat          -> setIsSecretAndDisabled( true );
+				_paramScale           -> setIsSecretAndDisabled( true );
+
+				_paramSizeKeepRatio   -> setIsSecretAndDisabled( false );
+
+				_paramSizeWidth       -> setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationX );
+				_paramSizeHeight      -> setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationY );
+				_paramSizeOrientation -> setIsSecretAndDisabled( ! keepRatio );
+				_paramSize            -> setIsSecretAndDisabled( keepRatio );
 				break;
 			}
 			case eParamModeScale:
 			{
-				_paramFormat-> setIsSecretAndDisabled( true );
-				_paramSize->setIsSecretAndDisabled( true );
-				_paramSizeWidth->setIsSecretAndDisabled( true );
-				_paramSizeHeight->setIsSecretAndDisabled( true );
-				_paramSizeOrientation->setIsSecretAndDisabled( true );
-				_paramSizeKeepRatio->setIsSecretAndDisabled( true );
+				_paramFormat          -> setIsSecretAndDisabled( true );
+				_paramSize            -> setIsSecretAndDisabled( true );
+				_paramSizeWidth       -> setIsSecretAndDisabled( true );
+				_paramSizeHeight      -> setIsSecretAndDisabled( true );
+				_paramSizeOrientation -> setIsSecretAndDisabled( true );
+				_paramSizeKeepRatio   -> setIsSecretAndDisabled( true );
 				
-				_paramScale->setIsSecretAndDisabled( false );
+				_paramScale           -> setIsSecretAndDisabled( false );
 				break;
 			}
 		}
 	}
 	else if( paramName == kParamFormat && args.reason == OFX::eChangeUserEdit )
 	{
-		_paramMode->setValue( eParamModeFormat );
-		std::size_t width = 0;
+		std::size_t width  = 0;
 		std::size_t height = 0;
 		getFormatResolution( static_cast<EParamFormat>(_paramFormat->getValue()), width, height );
-		_paramSize->setValue( numeric_cast<int>(width), numeric_cast<int>(height) );
-		_paramSizeWidth->setValue( numeric_cast<int>(width) );
-		_paramSizeHeight->setValue( numeric_cast<int>(height) );
+
+		_paramMode            -> setValue( eParamModeFormat );
+		_paramSize            -> setValue( numeric_cast<int>(width), numeric_cast<int>(height) );
+		_paramSizeWidth       -> setValue( numeric_cast<int>(width) );
+		_paramSizeHeight      -> setValue( numeric_cast<int>(height) );
 	}
 	else if( paramName == kParamSize && args.reason == OFX::eChangeUserEdit )
 	{
-		_paramMode->setValue( eParamModeSize );
 		const OfxPointI s = _paramSize->getValue();
-		_paramSizeWidth->setValue( s.x );
-		_paramSizeHeight->setValue( s.y );
+
+		_paramMode->setValue( eParamModeSize );
+		_paramSizeWidth       -> setValue( s.x );
+		_paramSizeHeight      -> setValue( s.y );
 	}
 	else if( paramName == kParamSizeKeepRatio && args.reason == OFX::eChangeUserEdit )
 	{
-		const bool keepRatio = _paramSizeKeepRatio->getValue();
+		const bool                  keepRatio   = _paramSizeKeepRatio->getValue();
 		const EParamSizeOrientation orientation = static_cast<EParamSizeOrientation>(_paramSizeOrientation->getValue());
-		_paramSizeWidth->setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationX );
-		_paramSizeHeight->setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationY );
-		_paramSizeOrientation->setIsSecretAndDisabled( ! keepRatio );
-		_paramSize->setIsSecretAndDisabled( keepRatio );
+
+		_paramSizeWidth       -> setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationX );
+		_paramSizeHeight      -> setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationY );
+		_paramSizeOrientation -> setIsSecretAndDisabled( ! keepRatio );
+		_paramSize            -> setIsSecretAndDisabled( keepRatio );
 	}
 	else if( paramName == kParamSizeOrientation && args.reason == OFX::eChangeUserEdit )
 	{
-		const bool keepRatio = _paramSizeKeepRatio->getValue();
+		const bool                  keepRatio   = _paramSizeKeepRatio->getValue();
 		const EParamSizeOrientation orientation = static_cast<EParamSizeOrientation>(_paramSizeOrientation->getValue());
-		_paramSizeWidth->setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationX );
-		_paramSizeHeight->setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationY );
+
+		_paramSizeWidth       -> setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationX );
+		_paramSizeHeight      -> setIsSecretAndDisabled( ! keepRatio || orientation != eParamSizeOrientationY );
 	}
 	else if( paramName == kParamSizeWidth && args.reason == OFX::eChangeUserEdit )
 	{
-		_paramMode->setValue( eParamModeSize );
-		_paramSizeKeepRatio->setValue( true );
-		_paramSizeOrientation->setValue( eParamSizeOrientationX );
+		_paramMode            -> setValue( eParamModeSize );
+		_paramSizeKeepRatio   -> setValue( true );
+		_paramSizeOrientation -> setValue( eParamSizeOrientationX );
 		
-		_paramSize->setValue( _paramSizeWidth->getValue(), _paramSize->getValue().y );
+		_paramSize            -> setValue( _paramSizeWidth->getValue(), _paramSize->getValue().y );
 	}
 	else if( paramName == kParamSizeHeight && args.reason == OFX::eChangeUserEdit )
 	{
-		_paramMode->setValue( eParamModeSize );
-		_paramSizeKeepRatio->setValue( true );
-		_paramSizeOrientation->setValue( eParamSizeOrientationY );
+		_paramMode            -> setValue( eParamModeSize );
+		_paramSizeKeepRatio   -> setValue( true );
+		_paramSizeOrientation -> setValue( eParamSizeOrientationY );
 		
-		_paramSize->setValue( _paramSize->getValue().x, _paramSizeHeight->getValue() );
+		_paramSize            -> setValue( _paramSize->getValue().x, _paramSizeHeight->getValue() );
 	}
 	else if( paramName == kParamScale && args.reason == OFX::eChangeUserEdit )
 	{
 		_paramMode->setValue( eParamModeScale );
 	}
-	else if( paramName == kParamFilter )
-	{
-		if( _paramFilter->getValue() == eParamFilterBC )
-		{
-			_paramB->setIsSecretAndDisabled( false );
-			_paramC->setIsSecretAndDisabled( false );
-		}
-		else
-		{
-			_paramB->setIsSecretAndDisabled( true );
-			_paramC->setIsSecretAndDisabled( true );
-		}
-		if( ( _paramFilter->getValue() == eParamFilterLanczos ) || ( _paramFilter->getValue() == eParamFilterGaussian ) )
-		{
-			_paramFilterSize->setIsSecretAndDisabled( false );
-		}
-		else
-		{
-			_paramFilterSize->setIsSecretAndDisabled( true );
-		}
-		if( _paramFilter->getValue() == eParamFilterGaussian )
-		{
-			_paramFilterSigma->setIsSecretAndDisabled( false );
-		}
-		else
-		{
-			_paramFilterSigma->setIsSecretAndDisabled( true );
-		}
-	}
+#ifndef TUTTLE_PRODUCTION
 	else if( paramName == kParamCenter )
 	{
 		if( _paramCenter->getValue() )
@@ -218,6 +194,7 @@ void ResizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
 			_paramCenterPoint->setIsSecretAndDisabled( true );
 		}
 	}
+#endif
 }
 
 bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
