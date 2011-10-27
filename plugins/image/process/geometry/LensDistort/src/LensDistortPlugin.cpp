@@ -50,6 +50,7 @@ void LensDistortPlugin::initParamsProps()
 {
 	static const OFX::InstanceChangedArgs args;
 
+	changedParam( args, kParamFilter );
 	changedParam( args, kParamLensType );
 	changedParam( args, kParamResizeRod );
 }

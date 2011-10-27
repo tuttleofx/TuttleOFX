@@ -69,6 +69,7 @@ PinningPlugin::PinningPlugin( OfxImageEffectHandle handle )
 	_paramBilMatrixRow3  = fetchDouble2DParam( kParamBilinearMatrixRow + "3" );
 
 	changedParam( OFX::InstanceChangedArgs(), kParamMethod );
+	changedParam( OFX::InstanceChangedArgs(), kParamFilter );
 }
 
 PinningProcessParams<PinningPlugin::Scalar> PinningPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
