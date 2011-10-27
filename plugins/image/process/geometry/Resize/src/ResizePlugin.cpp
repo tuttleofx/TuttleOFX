@@ -18,7 +18,7 @@ using namespace ::terry::sampler;
 using boost::numeric_cast;
 
 ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
-: SamplerPlugin( handle )
+	: SamplerPlugin( handle )
 {
 	_paramMode            = fetchChoiceParam   ( kParamMode );
 
@@ -36,13 +36,6 @@ ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
 	_paramCenter          = fetchBooleanParam  ( kParamCenter );
 	_paramCenterPoint     = fetchDouble2DParam ( kParamCenterPoint );
 #endif
-	
-	_paramFilter          = fetchChoiceParam   ( kParamFilter );
-	_paramB	              = fetchDoubleParam   ( kParamFilterB );
-	_paramC               = fetchDoubleParam   ( kParamFilterC );
-	_paramFilterSize      = fetchIntParam      ( kParamFilterSize );
-	_paramFilterSigma     = fetchDoubleParam   ( kParamFilterSigma );
-	_paramOutOfImage      = fetchChoiceParam   ( kParamFilterOutOfImage );
 
 	updateVisibleTools();
 }
