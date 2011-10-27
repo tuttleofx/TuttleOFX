@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::mathOperator::MathOperatorPluginFactory, "tuttle.mathOperator" );
+	mAppendPluginFactory( ids, tuttle::plugin::mathOperator::MathOperatorPluginFactory, "tuttle.mathoperator" );
 }
 
 }
