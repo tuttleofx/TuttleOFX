@@ -1,22 +1,22 @@
-#ifndef _TUTTLE_PLUGIN_OPERATORS_PLUGIN_HPP_
-#define _TUTTLE_PLUGIN_OPERATORS_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_MATHOPERATOR_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_MATHOPERATOR_PLUGIN_HPP_
 
-#include "OperatorsDefinitions.hpp"
+#include "MathOperatorDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace operators {
+namespace mathOperator {
 
 template<typename Scalar>
-struct OperatorsProcessParams
+struct MathOperatorProcessParams
 {
-	EOperatorsOperators op;	
-	double              iROperators;
-	double              iGOperators;
-	double              iBOperators;
-	double              iAOperators;
+	EMathOperatorMathOperator op;	
+	double              iRMathOperator;
+	double              iGMathOperator;
+	double              iBMathOperator;
+	double              iAMathOperator;
 	bool                bRProcess;
 	bool                bGProcess;
 	bool                bBProcess;
@@ -24,17 +24,17 @@ struct OperatorsProcessParams
 };
 
 /**
- * @brief Operators plugin
+ * @brief MathOperator plugin
  */
-class OperatorsPlugin : public ImageEffectGilPlugin
+class MathOperatorPlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef float Scalar;
 public:
-    OperatorsPlugin( OfxImageEffectHandle handle );
+    MathOperatorPlugin( OfxImageEffectHandle handle );
 
 public:
-	OperatorsProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+	MathOperatorProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
@@ -50,7 +50,7 @@ public:
 private:
 
 	OFX::ChoiceParam* _operator;
-	OFX::ChoiceParam* _operatorsType;
+	OFX::ChoiceParam* _mathOperatorType;
 
 	OFX::DoubleParam* _master;
 	OFX::DoubleParam* _red;
@@ -63,7 +63,7 @@ private:
 	OFX::BooleanParam* _blueSelect;
 	OFX::BooleanParam* _alphaSelect;
 
-	EOperatorsType getOperatorsType() const { return static_cast<EOperatorsType>( _operatorsType->getValue() ); }
+	EMathOperatorType getMathOperatorType() const { return static_cast<EMathOperatorType>( _mathOperatorType->getValue() ); }
 	
 	void updateInterface();
 	

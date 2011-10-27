@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Operators Plugin
+## Main BJam makefile for TuttleOFX MathOperator Plugin
 ###############################################################################
 import os ;
  
@@ -9,14 +9,14 @@ import os ;
 project
     : requirements
 		<include>src
-    : build-dir $(BUILD)/Operators
+    : build-dir $(BUILD)/MathOperator
     ;
 
  
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Operators : 
+plugin MathOperator : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
     ;
@@ -24,5 +24,5 @@ plugin Operators :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Operators : $(DIST) ;
+auto_install MathOperator : $(DIST) ;
  

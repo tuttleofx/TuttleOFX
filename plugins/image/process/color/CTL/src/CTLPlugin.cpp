@@ -32,6 +32,7 @@ CTLProcessParams<CTLPlugin::Scalar> CTLPlugin::getProcessParams( const OfxPointD
 	{
 		case eParamChooseInputCode:
 		{
+			params._module = "inputCode";
 			params._code = _paramCode->getValue();
 			break;
 		}

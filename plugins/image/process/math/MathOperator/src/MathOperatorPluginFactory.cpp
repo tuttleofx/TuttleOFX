@@ -1,13 +1,13 @@
-#include "OperatorsPluginFactory.hpp"
-#include "OperatorsPlugin.hpp"
-#include "OperatorsDefinitions.hpp"
+#include "MathOperatorPluginFactory.hpp"
+#include "MathOperatorPlugin.hpp"
+#include "MathOperatorDefinitions.hpp"
 #include "ofxsImageEffect.h"
 
 #include <limits>
 
 namespace tuttle {
 namespace plugin {
-namespace operators {
+namespace mathOperator {
 
 static const bool kSupportTiles = false;
 
@@ -16,10 +16,10 @@ static const bool kSupportTiles = false;
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void OperatorsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void MathOperatorPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleOperators", "Operators",
-		            "Operators" );
+	desc.setLabels( "TuttleMathOperator", "MathOperator",
+		            "MathOperator" );
 	desc.setPluginGrouping( "tuttle/image/process/math" );
 
 	desc.setDescription( "Plugin under early development." );
@@ -43,7 +43,7 @@ void OperatorsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void OperatorsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void MathOperatorPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                   OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -59,22 +59,22 @@ void OperatorsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip -> addSupportedComponent ( OFX::ePixelComponentAlpha );
 	dstClip -> setSupportsTiles      ( kSupportTiles );
 
-	OFX::ChoiceParamDescriptor* operatorsOp = desc.defineChoiceParam( kOperatorsOperator );
-	operatorsOp -> setLabel          ( "Operation" );
-	operatorsOp -> setHint           ( "Operator selection mode." );
-	operatorsOp -> appendOption      ( kOperatorsPlus );
-	operatorsOp -> appendOption      ( kOperatorsMultiply );
-	operatorsOp -> appendOption      ( kOperatorsPow );
-	operatorsOp -> appendOption      ( kOperatorsSqrt );
-	operatorsOp -> appendOption      ( kOperatorsLog );
-	operatorsOp -> appendOption      ( kOperatorsLn );
+	OFX::ChoiceParamDescriptor* mathOperatorOp = desc.defineChoiceParam( kMathOperatorOperator );
+	mathOperatorOp -> setLabel          ( "Operation" );
+	mathOperatorOp -> setHint           ( "Operator selection mode." );
+	mathOperatorOp -> appendOption      ( kMathOperatorPlus );
+	mathOperatorOp -> appendOption      ( kMathOperatorMultiply );
+	mathOperatorOp -> appendOption      ( kMathOperatorPow );
+	mathOperatorOp -> appendOption      ( kMathOperatorSqrt );
+	mathOperatorOp -> appendOption      ( kMathOperatorLog );
+	mathOperatorOp -> appendOption      ( kMathOperatorLn );
 
-	OFX::ChoiceParamDescriptor* operatorsType = desc.defineChoiceParam( kOperatorsType );
-	operatorsType -> setLabel        ( "Type" );
-	operatorsType -> setHint         ( "Operator selection mode." );
-	operatorsType -> appendOption    ( kOperatorsRgba );
-	operatorsType -> appendOption    ( kOperatorsRgb );
-	operatorsType -> appendOption    ( kOperatorsChannels );
+	OFX::ChoiceParamDescriptor* mathOperatorType = desc.defineChoiceParam( kMathOperatorType );
+	mathOperatorType -> setLabel        ( "Type" );
+	mathOperatorType -> setHint         ( "Operator selection mode." );
+	mathOperatorType -> appendOption    ( kMathOperatorRgba );
+	mathOperatorType -> appendOption    ( kMathOperatorRgb );
+	mathOperatorType -> appendOption    ( kMathOperatorChannels );
 
 	OFX::DoubleParamDescriptor* masterValue = desc.defineDoubleParam( kMasterValue );
 	masterValue -> setLabel          ( "Master" );
@@ -134,10 +134,10 @@ void OperatorsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* OperatorsPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* MathOperatorPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::EContext context )
 {
-	return new OperatorsPlugin( handle );
+	return new MathOperatorPlugin( handle );
 }
 
 }

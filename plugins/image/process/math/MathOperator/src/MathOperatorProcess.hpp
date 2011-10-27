@@ -1,29 +1,29 @@
-#ifndef _TUTTLE_PLUGIN_OPERATORS_PROCESS_HPP_
-#define _TUTTLE_PLUGIN_OPERATORS_PROCESS_HPP_
+#ifndef _TUTTLE_PLUGIN_MATHOPERATOR_PROCESS_HPP_
+#define _TUTTLE_PLUGIN_MATHOPERATOR_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace operators {
+namespace mathOperator {
 
 /**
- * @brief Operators process
+ * @brief MathOperator process
  *
  */
 template<class View>
-class OperatorsProcess : public ImageGilFilterProcessor<View>
+class MathOperatorProcess : public ImageGilFilterProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef float Scalar;
 protected:
-    OperatorsPlugin&    _plugin;            ///< Rendering plugin
-	OperatorsProcessParams<Scalar> _params; ///< parameters
+    MathOperatorPlugin&    _plugin;            ///< Rendering plugin
+	MathOperatorProcessParams<Scalar> _params; ///< parameters
 
 public:
-    OperatorsProcess( OperatorsPlugin& effect );
+    MathOperatorProcess( MathOperatorPlugin& effect );
 
 	void setup( const OFX::RenderArguments& args );
 
@@ -42,6 +42,6 @@ private:
 }
 }
 
-#include "OperatorsProcess.tcc"
+#include "MathOperatorProcess.tcc"
 
 #endif
