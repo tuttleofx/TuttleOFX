@@ -79,7 +79,7 @@ struct Pixel_copy
 template< typename Pixel>
 struct Pixel_copy_discretization
 {
-	typedef std::set< SPixel, tuutle::plugin::colorSpaceKeyer::pixel_is_lesser_t<SPixel,SPixel> > PixelSet;
+	typedef std::set< SPixel, tuttle::plugin::colorSpaceKeyer::pixel_is_lesser_t<SPixel,SPixel> > PixelSet;
 	typedef std::set<SPixel>::iterator PixelSetIterator;
 	
 	//Arguments
