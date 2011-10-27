@@ -5,6 +5,8 @@
 
 #include <tuttle/plugin/global.hpp>
 
+#include <tuttle/plugin/context/SamplerPlugin.hpp>
+
 #include <ofxsImageEffect.h>
 
 #include <terry/sampler/sampler.hpp>
@@ -35,24 +37,18 @@ struct Bilinear
 template<typename Scalar>
 struct PinningProcessParams
 {
-	Perspective<Scalar> _perspective;
-	Bilinear<Scalar> _bilinear;
+	Perspective<Scalar>     _perspective;
+	Bilinear<Scalar>        _bilinear;
 
-	EParamMethod _method;
+	EParamMethod            _method;
 	
-	terry::sampler::EParamFilter _interpolation;
-	double                                     _filterSize;
-	double                                     _filterSigma;
-	double                                     _paramB;
-	double                                     _paramC;
-
-	terry::sampler::EParamFilterOutOfImage     _outOfImageProcess;
+	SamplerProcessParams    _samplerProcessParams;
 };
 
 /**
  * @brief Pinning plugin
  */
-class PinningPlugin : public OFX::ImageEffect
+class PinningPlugin : public SamplerPlugin
 {
 public:
 	typedef double Scalar;
@@ -70,28 +66,16 @@ public:
 
 public:
 	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc; ///< Source image clip
-	OFX::Clip* _clipDst; ///< Destination image clip
+	OFX::Clip*            _clipSrc;              ///< Source image clip
+	OFX::Clip*            _clipDst;              ///< Destination image clip
 
-	OFX::ChoiceParam*  _paramMethod;
-	OFX::ChoiceParam*  _paramInterpolation;
+	OFX::ChoiceParam*     _paramMethod;
 	OFX::PushButtonParam* _paramSetToCornersIn;
 	OFX::PushButtonParam* _paramSetToCornersOut;
-	OFX::BooleanParam*  _paramInverse;
+	OFX::BooleanParam*    _paramInverse;
 
 //	OFX::ChoiceParam*  _paramManipulatorMode;
-	OFX::BooleanParam*  _paramOverlay;
-
-
-	OFX::ChoiceParam*	_paramFilter;
-
-	OFX::IntParam*		_paramFilterSize;
-	OFX::DoubleParam*	_paramFilterSigma;
-
-	OFX::DoubleParam*	_paramB;
-	OFX::DoubleParam*	_paramC;
-
-	OFX::ChoiceParam*	_paramOutOfImage;
+	OFX::BooleanParam*    _paramOverlay;
 
 /*
 	//TODO-vince //
@@ -102,32 +86,32 @@ public:
 	///////////////////
 */
 
-	OFX::GroupParam* _paramGroupIn;
-	OFX::Double2DParam* _paramPointIn0;
-	OFX::Double2DParam* _paramPointIn1;
-	OFX::Double2DParam* _paramPointIn2;
-	OFX::Double2DParam* _paramPointIn3;
-	OFX::BooleanParam*  _paramOverlayIn;
-	OFX::RGBParam*  _paramOverlayInColor;
+	OFX::GroupParam*      _paramGroupIn;
+	OFX::Double2DParam*   _paramPointIn0;
+	OFX::Double2DParam*   _paramPointIn1;
+	OFX::Double2DParam*   _paramPointIn2;
+	OFX::Double2DParam*   _paramPointIn3;
+	OFX::BooleanParam*    _paramOverlayIn;
+	OFX::RGBParam*        _paramOverlayInColor;
 
-	OFX::GroupParam* _paramGroupOut;
-	OFX::Double2DParam* _paramPointOut0;
-	OFX::Double2DParam* _paramPointOut1;
-	OFX::Double2DParam* _paramPointOut2;
-	OFX::Double2DParam* _paramPointOut3;
-	OFX::BooleanParam*  _paramOverlayOut;
-	OFX::RGBParam*  _paramOverlayOutColor;
+	OFX::GroupParam*      _paramGroupOut;
+	OFX::Double2DParam*   _paramPointOut0;
+	OFX::Double2DParam*   _paramPointOut1;
+	OFX::Double2DParam*   _paramPointOut2;
+	OFX::Double2DParam*   _paramPointOut3;
+	OFX::BooleanParam*    _paramOverlayOut;
+	OFX::RGBParam*        _paramOverlayOutColor;
 
-	OFX::GroupParam* _paramGroupPerspMatrix;
-	OFX::Double3DParam* _paramPerspMatrixRow0;
-	OFX::Double3DParam* _paramPerspMatrixRow1;
-	OFX::Double3DParam* _paramPerspMatrixRow2;
+	OFX::GroupParam*      _paramGroupPerspMatrix;
+	OFX::Double3DParam*   _paramPerspMatrixRow0;
+	OFX::Double3DParam*   _paramPerspMatrixRow1;
+	OFX::Double3DParam*   _paramPerspMatrixRow2;
 
-	OFX::GroupParam* _paramGroupBilMatrix;
-	OFX::Double2DParam* _paramBilMatrixRow0;
-	OFX::Double2DParam* _paramBilMatrixRow1;
-	OFX::Double2DParam* _paramBilMatrixRow2;
-	OFX::Double2DParam* _paramBilMatrixRow3;
+	OFX::GroupParam*      _paramGroupBilMatrix;
+	OFX::Double2DParam*   _paramBilMatrixRow0;
+	OFX::Double2DParam*   _paramBilMatrixRow1;
+	OFX::Double2DParam*   _paramBilMatrixRow2;
+	OFX::Double2DParam*   _paramBilMatrixRow3;
 };
 
 }

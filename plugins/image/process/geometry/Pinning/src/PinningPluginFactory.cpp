@@ -3,7 +3,6 @@
 #include "PinningDefinitions.hpp"
 #include "PinningOverlayInteract.hpp"
 
-#include <tuttle/plugin/context/SamplerDefinition.hpp>
 #include <tuttle/plugin/context/SamplerPluginFactory.hpp>
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>

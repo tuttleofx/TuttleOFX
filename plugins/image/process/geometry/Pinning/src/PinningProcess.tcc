@@ -38,7 +38,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 	
 	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
-	switch( _params._interpolation )
+	switch( _params._samplerProcessParams._filter )
 	{
 		case eParamFilterNearest:
 		{
@@ -53,8 +53,8 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 		case eParamFilterBC:
 		{
 			bc_sampler BCsampler;
-			BCsampler.valB = _params._paramB;
-			BCsampler.valC = _params._paramC;
+			BCsampler.valB = _params._samplerProcessParams._paramB;
+			BCsampler.valC = _params._samplerProcessParams._paramC;
 			resample( this->_srcView, this->_dstView, procWindowOutput, BCsampler );
 			return;
 		}
@@ -96,7 +96,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 		case eParamFilterLanczos:
 		{
 			lanczos_sampler lanczosSampler;
-			lanczosSampler.size = _params._filterSize;
+			lanczosSampler.size = _params._samplerProcessParams._filterSize;
 			resample( this->_srcView, this->_dstView, procWindowOutput, lanczosSampler );
 			return;
 		}
@@ -123,8 +123,8 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 		case eParamFilterGaussian:
 		{
 			gaussian_sampler gaussianSampler;
-			gaussianSampler.size  = _params._filterSize;
-			gaussianSampler.sigma = _params._filterSigma;
+			gaussianSampler.size  = _params._samplerProcessParams._filterSize;
+			gaussianSampler.sigma = _params._samplerProcessParams._filterSigma;
 			resample<gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
@@ -142,10 +142,10 @@ void PinningProcess<View>::resample( View& srcView, View& dstView, const OfxRect
 	{
 		case eParamMethodAffine:
 		case eParamMethodPerspective:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, _params._outOfImageProcess, this, sampler );
+			resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, _params._samplerProcessParams._outOfImageProcess, this, sampler );
 			return;
 		case eParamMethodBilinear:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear, procWindow, _params._outOfImageProcess, this, sampler );
+			resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear   , procWindow, _params._samplerProcessParams._outOfImageProcess, this, sampler );
 			return;
 	}
 }

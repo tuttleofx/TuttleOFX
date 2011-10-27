@@ -20,27 +20,17 @@ namespace plugin {
 namespace pinning {
 
 PinningPlugin::PinningPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: SamplerPlugin( handle )
 {
 	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_paramMethod        = fetchChoiceParam( kParamMethod );
-	_paramInterpolation = fetchChoiceParam( kParamFilter );
 //	_paramManipulatorMode = fetchChoiceParam( kParamManipulatorMode );
 	_paramSetToCornersIn = fetchPushButtonParam( kParamSetToCornersIn );
 	_paramSetToCornersOut = fetchPushButtonParam( kParamSetToCornersOut );
 	_paramOverlay       = fetchBooleanParam( kParamOverlay );
 	_paramInverse       = fetchBooleanParam( kParamInverse );
-
-	_paramFilter          = fetchChoiceParam        ( ::tuttle::plugin::kParamFilter );
-	_paramB               = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterB );
-	_paramC               = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterC );
-
-	_paramFilterSize      = fetchIntParam           ( ::tuttle::plugin::kParamFilterSize );
-	_paramFilterSigma     = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterSigma );
-
-	_paramOutOfImage        = fetchChoiceParam      ( kParamFilterOutOfImage );
 
 	/*
 	//TODO-vince //
@@ -110,14 +100,8 @@ PinningProcessParams<PinningPlugin::Scalar> PinningPlugin::getProcessParams( con
 	params._bilinear._height = height;
 
 	params._method        = static_cast<EParamMethod>( _paramMethod->getValue() );
-	params._interpolation = static_cast<terry::sampler::EParamFilter>( _paramInterpolation->getValue() );
 
-	params._paramB        = _paramB->getValue();
-	params._paramC        = _paramC->getValue();
-	params._filterSize    = _paramFilterSize->getValue();
-	params._filterSigma   = _paramFilterSigma->getValue();
-
-	params._outOfImageProcess = static_cast<terry::sampler::EParamFilterOutOfImage>( _paramOutOfImage->getValue() );
+	SamplerPlugin::fillProcessParams( params._samplerProcessParams );
 
 	return params;
 }
@@ -128,6 +112,8 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 
 	bounded_vector<double, 2> pOut[4];
 	bounded_vector<double, 2> pIn[4];
+
+	SamplerPlugin::changedParam( args, paramName );
 
 	if( _paramInverse->getValue() )
 	{
