@@ -13,8 +13,8 @@ namespace colorSpaceKeyer {
 ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
-		_clipColor = fetchClip(kClipColorSelection);
-		_clipSpill = fetchClip(kClipSpillSelection);
+		_clipColor = fetchClip( kClipColorSelection );
+		_clipSpill = fetchClip( kClipSpillSelection );
 
 		_paramBoolPointCloudDisplay = fetchBooleanParam( kPointCloudDisplay ); //Is CloudPointData displayed (boolean parameter)
 		_cloudPointDataCount = 0;
@@ -59,8 +59,8 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 
 ColorSpaceKeyerProcessParams<ColorSpaceKeyerPlugin::Scalar> ColorSpaceKeyerPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
-	ColorSpaceKeyerProcessParams<Scalar> params;	// create parameters container object
-	return params;									// pass parameters to process
+	ColorSpaceKeyerProcessParams<Scalar> params;                   // create parameters container object
+	return params;                                                 // pass parameters to process
 }
 
 /**

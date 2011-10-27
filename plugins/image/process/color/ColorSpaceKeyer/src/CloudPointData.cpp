@@ -3,8 +3,6 @@
 #include "CloudPointData.hpp"
 #include <tuttle/plugin/opengl/gl.h>
 
-#include <boost/gil/extension/io/png_io.hpp>
-
 
 namespace tuttle {
 namespace plugin {

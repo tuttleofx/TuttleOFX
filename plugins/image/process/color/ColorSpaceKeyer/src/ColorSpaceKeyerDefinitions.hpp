@@ -4,6 +4,7 @@
 #include <tuttle/plugin/global.hpp>
 #include "tuttle/plugin/ImageGilProcessor.hpp"
 
+#include <GL/glew.h>
 #include <tuttle/plugin/opengl/gl.h>
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/overlay.hpp>
