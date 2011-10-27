@@ -193,17 +193,15 @@ void CTLProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 			 y < procWindowOutput.y2;
 			 ++y )
 	{
-		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1, y-procWindowSrc.y1,
-												  procWindowSize.x, 1 );
-		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y-procWindowOutput.y1,
-												  procWindowSize.x, 1 );
+		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1,    y-procWindowSrc.y1,    procWindowSize.x, 1 );
+		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y-procWindowOutput.y1, procWindowSize.x, 1 );
 
 		copy_pixels( srcLineV, srcWorkLineV );
 
-		float* rOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[0] );
-		float* gOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[1] );
-		float* bOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[2] );
-		float* aOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[3] );
+		float* rOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[0] );
+		float* gOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[1] );
+		float* bOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[2] );
+		float* aOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[3] );
 		const float* r = reinterpret_cast<float*>( &srcWorkLineV(0,0)[0] );
 		const float* g = reinterpret_cast<float*>( &srcWorkLineV(0,0)[1] );
 		const float* b = reinterpret_cast<float*>( &srcWorkLineV(0,0)[2] );

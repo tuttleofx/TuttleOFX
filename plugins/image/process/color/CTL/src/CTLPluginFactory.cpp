@@ -81,7 +81,7 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::StringParamDescriptor* code = desc.defineStringParam( kParamCTLCode );
 	code->setLabel( "CTL code" );
-	code->setHint( "Your CTL code." );
+	code->setHint ( "Your CTL code." );
 	code->setStringType( OFX::eStringTypeMultiLine );
 	code->setDefault(
 		"void main(\n"
@@ -102,9 +102,13 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		"}\n"
 	);
 
+	OFX::PushButtonParamDescriptor* updateRender = desc.definePushButtonParam( kParamChooseInputCodeUpdate );
+	updateRender->setLabel( "Update" );
+	updateRender->setHint ( "Rendering the CTL code" );
+
 	OFX::StringParamDescriptor* file = desc.defineStringParam( kParamCTLFile );
 	file->setLabel( "CTL file" );
-	file->setHint( "CTL source code file." );
+	file->setHint ( "CTL source code file." );
 	file->setStringType( OFX::eStringTypeFilePath );
 	
 

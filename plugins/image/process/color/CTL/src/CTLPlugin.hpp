@@ -40,10 +40,10 @@ public:
     void render( const OFX::RenderArguments &args );
 	
 public:
-	OFX::ChoiceParam* _paramInput;
-	OFX::StringParam* _paramCode;
-	OFX::StringParam* _paramFile;
-	
+	OFX::ChoiceParam*        _paramInput;
+	OFX::StringParam*        _paramCode;
+	OFX::StringParam*        _paramFile;
+	OFX::PushButtonParam*    _paramUpdateRender;
 private:
 	OFX::InstanceChangedArgs _instanceChangedArgs;
 };
