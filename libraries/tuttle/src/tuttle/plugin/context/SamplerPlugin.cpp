@@ -7,7 +7,12 @@ namespace plugin {
 SamplerPlugin::SamplerPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-
+	_paramFilter          = fetchChoiceParam   ( kParamFilter );
+	_paramB	              = fetchDoubleParam   ( kParamFilterB );
+	_paramC               = fetchDoubleParam   ( kParamFilterC );
+	_paramFilterSize      = fetchIntParam      ( kParamFilterSize );
+	_paramFilterSigma     = fetchDoubleParam   ( kParamFilterSigma );
+	_paramOutOfImage      = fetchChoiceParam   ( kParamFilterOutOfImage );
 }
 
 SamplerPlugin::~SamplerPlugin()

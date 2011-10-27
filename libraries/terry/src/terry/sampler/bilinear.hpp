@@ -54,7 +54,7 @@ bool sample( bilinear_sampler sampler, const SrcView& src, const point2<F>& p, D
 		xy_locator loc = src.xy_at( pTL.x, pTL.y );
 		point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
-		ssize_t windowSize  = 2;
+		int windowSize  = 2;
 
 		std::vector<double> xWeights, yWeights;
 

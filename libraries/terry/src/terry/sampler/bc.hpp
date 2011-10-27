@@ -155,7 +155,7 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	xy_locator loc = src.xy_at( pTL.x, pTL.y );
 	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
-	ssize_t windowSize  = 4;             // 4 pixels:    A B C D
+	int windowSize  = 4;             // 4 pixels:    A B C D
 
 	std::vector<double> xWeights, yWeights;
 
@@ -165,7 +165,7 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	//xWeights.at(1) = 1.0;
 
 	// get horizontal weight for each pixels
-	for( ssize_t i = 0; i < windowSize; i++ )
+	for( int i = 0; i < windowSize; i++ )
 	{
 		getWeight( i, std::abs( (i-1) - frac.x ), xWeights.at(i), sampler );
 		getWeight( i, std::abs( (i-1) - frac.y ), yWeights.at(i), sampler );

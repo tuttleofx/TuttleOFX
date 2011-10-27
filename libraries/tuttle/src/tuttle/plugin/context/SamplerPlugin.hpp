@@ -32,6 +32,7 @@ public:
 
 	virtual void fillProcessParams( SamplerProcessParams& samplerprocessParam ) const;
 
+	::terry::sampler::EParamFilter getInterpolation() { return (terry::sampler::EParamFilter) _paramFilter -> getValue(); }
 public:
 	OFX::ChoiceParam*       _paramFilter;
 	OFX::IntParam*          _paramFilterSize;
