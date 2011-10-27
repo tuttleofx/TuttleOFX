@@ -43,15 +43,6 @@ LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 	_gridScale            = fetchDouble2DParam      ( kParamGridScale );
 	_debugDisplayRoi      = fetchBooleanParam       ( kParamDebugDisplayRoi );
 
-	_paramFilter          = fetchChoiceParam        ( ::tuttle::plugin::kParamFilter );
-	_paramB               = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterB );
-	_paramC               = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterC );
-
-	_paramFilterSize      = fetchIntParam           ( ::tuttle::plugin::kParamFilterSize );
-	_paramFilterSigma     = fetchDoubleParam        ( ::tuttle::plugin::kParamFilterSigma );
-
-	_paramOutOfImage        = fetchChoiceParam      ( kParamFilterOutOfImage );
-
 	initParamsProps();
 }
 
@@ -334,10 +325,10 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 
 LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProcessParams( const OfxRectD& inputRod, const OfxRectD& outputRod, const OfxRectD& optionalInputRod, const double pixelAspectRatio, const bool reverse ) const
 {
-	const bool useOptionalInputRod  = ( optionalInputRod.x1 != optionalInputRod.x2 ) && ( optionalInputRod.y1 != optionalInputRod.y2 );
-	const OfxRectD& choosedInputRod = useOptionalInputRod ? optionalInputRod : inputRod;
+	const bool      useOptionalInputRod  = ( optionalInputRod.x1 != optionalInputRod.x2 ) && ( optionalInputRod.y1 != optionalInputRod.y2 );
+	const OfxRectD& choosedInputRod      = useOptionalInputRod ? optionalInputRod : inputRod;
 
-	typedef    bgil::point2<Scalar> Point2;
+	typedef     bgil::point2<Scalar> Point2;
 	LensDistortProcessParams<Scalar> params;
 
 	double preScale         = _preScale->getValue();
@@ -360,12 +351,14 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 
 	params._postScale.x     = ( 1.0 / postScale );
 	params._postScale.y     = 1.0 / postScale;
-	Point2 imgShift = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
+
+	Point2  imgShift        = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
 	params._imgSizeSrc      = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
 	params._imgCenterSrc    = Point2( params._imgSizeSrc.x * 0.5, params._imgSizeSrc.y * 0.5 );
 	params._imgCenterDst    = params._imgCenterSrc + imgShift;
 	params._imgHalfDiagonal = std::sqrt( params._imgCenterSrc.x * params._imgCenterSrc.x * pixelAspectRatio * pixelAspectRatio + params._imgCenterSrc.y * params._imgCenterSrc.y );
 	params._pixelRatio      = pixelAspectRatio;
+
 	switch( getCenterType() )
 	{
 		case eParamCenterTypeSource:
