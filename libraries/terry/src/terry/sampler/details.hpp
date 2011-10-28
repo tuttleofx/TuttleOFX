@@ -60,11 +60,11 @@ struct add_dst_mul_src
  *       ^..... loc is pointing to D point
  */
 template < typename xy_locator, typename SrcP >
-void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int& windowWidth, const int& imageWidth, const EParamFilterOutOfImage& outOfImageProcess, std::vector< SrcP >& src )
+void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const ssize_t& windowWidth, const ssize_t& imageWidth, const EParamFilterOutOfImage& outOfImageProcess, std::vector< SrcP >& src )
 {
-	int middlePosition = floor( (src.size() - 1) * 0.5 );
+	ssize_t middlePosition = floor( (src.size() - 1) * 0.5 );
 
-	if( p0.x < 0 )
+	if( ( p0.x < 0 )  || ( p0.x > imageWidth - 1 ) )
 	{
 		switch( outOfImageProcess )
 		{
@@ -80,7 +80,7 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 			}
 			case eParamFilterOutCopy :
 			{
-				src.at( middlePosition ) = loc.x()[ - p0.x ];
+				src.at( middlePosition ) = loc.x()[ ( p0.x < 0 ) ? (- p0.x) : - 1 - p0.x + imageWidth  ];
 				break;
 			}
 			case eParamFilterOutMirror :
@@ -92,40 +92,11 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 	}
 	else
 	{
-		if( p0.x > imageWidth - 1 )
-		{
-			switch( outOfImageProcess )
-			{
-				case eParamFilterOutBlack :
-				{
-					src.at( middlePosition ) = get_black<SrcP>();
-					break;
-				}
-				case eParamFilterOutTransparency :
-				{
-					src.at( middlePosition ) = SrcP(0);
-					break;
-				}
-				case eParamFilterOutCopy :
-				{
-					src.at( middlePosition ) = loc.x()[ imageWidth - 1 - p0.x ];
-					break;
-				}
-				case eParamFilterOutMirror :
-				{
-					src.at( middlePosition ) = SrcP(0);
-					break;
-				}
-			}
-		}
-		else
-		{
-			src.at( middlePosition ) = *loc;
-		}
+		src.at( middlePosition ) = *loc;
 	}
 
 	// from center to left
-	for( int i = middlePosition - 1; i > -1; i-- )
+	for( ssize_t i = middlePosition - 1; i > -1; i-- )
 	{
 		if( ( p0.x - (middlePosition - i) > -1 ) )
 		{
@@ -189,7 +160,7 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 	}
 
 	// from center to right
-	for( int i = middlePosition + 1; i < (int) src.size(); i++ )
+	for( ssize_t i = middlePosition + 1; i < (ssize_t) src.size(); i++ )
 	{
 		if( ( p0.x - (middlePosition - i) < imageWidth ) )
 		{
@@ -209,7 +180,7 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 					}
 					case eParamFilterOutCopy :
 					{
-						src.at( i ) = loc.x( )[ - p0.x ];
+						src.at( i ) = src.at( i - 1 );
 						break;
 					}
 					case eParamFilterOutMirror :
@@ -240,7 +211,7 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 				}
 				case eParamFilterOutCopy :
 				{
-					src.at( i ) = loc.x()[ imageWidth - 1 - p0.x ];
+					src.at( i ) = src.at( i - 1 );
 					break;
 				}
 				case eParamFilterOutMirror :
@@ -298,62 +269,65 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 
 	// first process the middle point
 	// if it's mirrored, we need to copy the center point
-	if( (pTL.y < 0) )
+	if( (pTL.y < 0) || (pTL.y > (ssize_t) ( src.height( ) - 1.0 ) ) )
 	{
-		switch( outOfImageProcess )
+		if( pTL.y < 0 ) // under the image
 		{
-			case eParamFilterOutBlack :
+			switch( outOfImageProcess )
 			{
-				xProcessed.at( middlePosition ) = get_black<DstP>();
-			break;
-			}
-			case eParamFilterOutTransparency :
-			{
-				xProcessed.at( middlePosition ) = SrcP(0);
-				break;
-			}
-			case eParamFilterOutCopy :
-			{
-				loc.y( ) -= pTL.y;
-				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
-				loc.y( ) += pTL.y;
-				break;
-			}
-			case eParamFilterOutMirror :
-			{
-				xProcessed.at( middlePosition ) = SrcP(1);
-				break;
+				case eParamFilterOutBlack :
+				{
+					xProcessed.at( middlePosition ) = get_black<DstP>();
+					break;
+				}
+				case eParamFilterOutTransparency :
+				{
+					xProcessed.at( middlePosition ) = SrcP(0);
+					break;
+				}
+				case eParamFilterOutCopy :
+				{
+					loc.y( ) -= pTL.y;
+					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
+					process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					loc.y( ) += pTL.y;
+					break;
+				}
+				case eParamFilterOutMirror :
+				{
+					xProcessed.at( middlePosition ) = SrcP(1);
+					break;
+				}
 			}
 		}
-	}
-	else if( (pTL.y > (int) ( src.height( ) - 1.0 ) ) ) // upper the image
-	{
-		//TUTTLE_COUT( src.height() << " @@ " << (pTL.y - src.height() ) );
-		switch( outOfImageProcess )
+		else // upper the image
 		{
-			case eParamFilterOutBlack :
+			//TUTTLE_COUT( src.height() << " @@ " << (pTL.y - src.height() ) );
+			switch( outOfImageProcess )
 			{
-				xProcessed.at( middlePosition ) = get_black<DstP>();
-				break;
-			}
-			case eParamFilterOutTransparency :
-			{
-				xProcessed.at( middlePosition ) = SrcP(0);
-				break;
-			}
-			case eParamFilterOutCopy :
-			{
-				loc.y( ) -= pTL.y - src.height() + 1.0 ;
-				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
-				loc.y( ) += pTL.y - src.height() + 1.0;
-				break;
-			}
-			case eParamFilterOutMirror :
-			{
-				xProcessed.at( middlePosition ) = SrcP(1);
-				break;
+				case eParamFilterOutBlack :
+				{
+					xProcessed.at( middlePosition ) = get_black<DstP>();
+					break;
+				}
+				case eParamFilterOutTransparency :
+				{
+					xProcessed.at( middlePosition ) = SrcP(0);
+					break;
+				}
+				case eParamFilterOutCopy :
+				{
+					loc.y( ) -= pTL.y - src.height() + 1.0 ;
+					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
+					process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					loc.y( ) += pTL.y - src.height() + 1.0;
+					break;
+				}
+				case eParamFilterOutMirror :
+				{
+					xProcessed.at( middlePosition ) = SrcP(1);
+					break;
+				}
 			}
 		}
 	}
@@ -364,11 +338,11 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	}
 
 	// from center to bottom
-	for( int i = middlePosition - 1; i > -1; i-- )
+	for( ssize_t i = middlePosition - 1; i > -1; i-- )
 	{
-		if( (int) ( pTL.y - (middlePosition - i) ) < (int) src.height( ) )
+		if( (ssize_t) ( pTL.y - (middlePosition - i) ) < (ssize_t) src.height( ) )
 		{
-			if( (int) ( pTL.y - (middlePosition - i) ) < 0 )
+			if( (ssize_t) ( pTL.y - (middlePosition - i) ) < 0 )
 			{
 				switch( outOfImageProcess )
 				{
@@ -431,11 +405,11 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	}
 
 	// from center to top
-	for( int i = middlePosition + 1; i < (int)windowSize; i++ )
+	for( ssize_t i = middlePosition + 1; i < (ssize_t)windowSize; i++ )
 	{
-		if( (int) ( pTL.y + (i - middlePosition) ) < (int) src.height( ) )
+		if( (ssize_t) ( pTL.y + (i - middlePosition) ) < (ssize_t) src.height( ) )
 		{
-			if( (int) ( pTL.y + (i - middlePosition) )  < 0 )
+			if( (ssize_t) ( pTL.y + (i - middlePosition) )  < 0 )
 			{
 				xProcessed.at( i ) = xProcessed.at( i - 1 );
 			}
