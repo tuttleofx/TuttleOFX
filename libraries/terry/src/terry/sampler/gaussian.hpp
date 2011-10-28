@@ -16,7 +16,7 @@ namespace sampler {
 struct gaussian_sampler
 {
 	size_t size;
-	size_t sigma;
+	double sigma;
 	gaussian_sampler()
 	{
 		size  = 3.0;
