@@ -1,21 +1,15 @@
-#ifndef _TUTTLE_PLUGIN_GIL_RESAMPLE_HPP_
-#define	_TUTTLE_PLUGIN_GIL_RESAMPLE_HPP_
+#ifndef _TERRY_SAMPLER_RESAMPLE_HPP_
+#define	_TERRY_SAMPLER_RESAMPLE_HPP_
 
 #include <terry/numeric/sampler.hpp>
 #include <terry/numeric/resample.hpp>
 
-#include <terry/sampler/details.hpp>
-#include <terry/sampler/bc.hpp>
-#include <terry/sampler/bilinear.hpp>
-#include <terry/sampler/gaussian.hpp>
-#include <terry/sampler/lanczos.hpp>
-#include <terry/sampler/nearestNeighbor.hpp>
+#include <terry/sampler/all.hpp>
 #include <terry/sampler/sampler.hpp>
-#include <tuttle/plugin/context/SamplerDefinition.hpp>
 
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
+namespace sampler {
 
 /**
  * @brief Set each pixel in the destination view as the result of a sampling function over the transformed coordinates of the source view
@@ -23,12 +17,19 @@ namespace plugin {
  *
  * The provided implementation works for 2D image views only
  */
-template <typename Sampler, // Models SamplerConcept
-          typename SrcView, // Models RandomAccess2DImageViewConcept
-          typename DstView, // Models MutableRandomAccess2DImageViewConcept
-          typename MapFn>
+template<
+	typename Sampler, // Models SamplerConcept
+	typename SrcView, // Models RandomAccess2DImageViewConcept
+	typename DstView, // Models MutableRandomAccess2DImageViewConcept
+	typename MapFn,
+	typename Progress>
 // Models MappingFunctionConcept
-void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, const OfxRectI& procWindow, const ::terry::sampler::EParamFilterOutOfImage& outOfImageProcess, tuttle::plugin::IProgress* p, Sampler sampler = Sampler() )
+void resample_pixels_progress(
+	const SrcView& src_view, const DstView& dst_view,
+	const MapFn& dst_to_src, const OfxRectI& procWindow,
+	const EParamFilterOutOfImage& outOfImageProcess,
+	Progress& p,
+	Sampler sampler = Sampler() )
 {
 	typedef typename DstView::point_t Point2;
 	typedef typename DstView::value_type Pixel;
@@ -46,7 +47,7 @@ void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view,
 				xit[dst_p.x] = black; // if it is outside of the source image
 			}
 		}
-		if( p->progressForward() )
+		if( p.progressForward() )
 			return;
 	}
 }

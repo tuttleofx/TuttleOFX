@@ -2,19 +2,17 @@
 #define _TUTTLE_PLUGIN_COLORSPACEKEYER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
-#include "tuttle/plugin/ImageGilProcessor.hpp"
 
 #include <GL/glew.h>
 #include <tuttle/plugin/opengl/gl.h>
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/overlay.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
 
-#include <terry/algorithm.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/color/hsl.hpp>
 

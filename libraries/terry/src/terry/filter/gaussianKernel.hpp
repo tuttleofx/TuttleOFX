@@ -1,5 +1,5 @@
-#ifndef _TERRY_GAUSSIANKERNEL_HPP_
-#define _TERRY_GAUSSIANKERNEL_HPP_
+#ifndef _TERRY_FILTER_GAUSSIANKERNEL_HPP_
+#define _TERRY_FILTER_GAUSSIANKERNEL_HPP_
 
 #include <terry/globals.hpp>
 
@@ -16,6 +16,7 @@
 #include <algorithm>
 
 namespace terry {
+namespace filter {
 
 static const double kConvolutionEpsilon = 0.1; ///< arbitrary value...
 
@@ -168,6 +169,7 @@ terry::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, con
 	return terry::kernel_1d<Scalar>( &( kernel[0] ), kernel.size(), rightKernel.size() );
 }
 
+}
 }
 
 #endif

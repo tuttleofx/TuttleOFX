@@ -1,8 +1,6 @@
 #ifndef _TERRY_COLOR_COLORSPACE_BASE_HPP_
 #define	_TERRY_COLOR_COLORSPACE_BASE_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-
 #include <boost/mpl/vector.hpp>
 
 #include <boost/gil/gil_all.hpp>

@@ -4,7 +4,7 @@
 #include "overlay.hpp"
 
 #include <terry/globals.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 
 #include <tuttle/plugin/global.hpp>

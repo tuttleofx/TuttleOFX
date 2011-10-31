@@ -2,8 +2,7 @@
 
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
-#include <terry/gaussianKernel.hpp>
-
+#include <terry/filter/gaussianKernel.hpp>
 #include <terry/numeric/convolve.hpp>
 
 //#include <boost/lambda/lambda.hpp>

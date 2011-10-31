@@ -2,7 +2,7 @@
 #include "CropPlugin.hpp"
 #include "CropProcess.hpp"
 
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/math/special_functions/round.hpp>

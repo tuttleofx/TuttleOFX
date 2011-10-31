@@ -188,6 +188,7 @@ void BasicKeyerPlugin::changedParam( const OFX::InstanceChangedArgs& args, const
 				break;
 		}
 	}
+	/*
 	else if( boost::starts_with( paramName, kParamPoint ) )
 	{
 		try
@@ -207,6 +208,7 @@ void BasicKeyerPlugin::changedParam( const OFX::InstanceChangedArgs& args, const
 		catch( boost::bad_lexical_cast& )
 		{}
 	}
+	*/
 
 }
 

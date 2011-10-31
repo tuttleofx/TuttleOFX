@@ -1,7 +1,6 @@
-#ifndef _TUTTLE_PLUGIN_IMAGE_MOTIONVECTORS_HPP_
-#define _TUTTLE_PLUGIN_IMAGE_MOTIONVECTORS_HPP_
+#ifndef _TERRY_FILTER_MOTIONVECTORS_HPP_
+#define _TERRY_FILTER_MOTIONVECTORS_HPP_
 
-#include <tuttle/plugin/IProgress.hpp>
 #include <terry/channel.hpp>
 
 #include <boost/gil/utilities.hpp>
@@ -16,8 +15,6 @@
 namespace tuttle {
 namespace plugin {
 
-namespace bgil = boost::gil;
-
 /**
  * @brief change intensity and rotate vectors.
  * @param [in/out] xVecView image of x vectors
@@ -26,11 +23,11 @@ namespace bgil = boost::gil;
  * @param [in] intensity scale vectors values
  * @param [in] p inform progress
  */
-template< typename View>
+template< typename View, typename Progress >
 // Models RandomAccess2DImageViewConcept
 bool modifyVectors( const View& xVecView, const View& yVecView,
                     const double angle, const double intensity,
-                    tuttle::plugin::IProgress* p )
+                    Progress& p )
 {
 	BOOST_ASSERT( yVecView.width() != 0 );
 	BOOST_ASSERT( yVecView.height() != 0 );
@@ -56,8 +53,8 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 		     ++it_xVec, ++it_yVec )
 		{
 			VecPoint2 gradient;
-			gradient.x = bgil::get_color( *it_xVec, bgil::gray_color_t() );
-			gradient.y = bgil::get_color( *it_yVec, bgil::gray_color_t() );
+			gradient.x = boost::gil::get_color( *it_xVec, boost::gil::gray_color_t() );
+			gradient.y = boost::gil::get_color( *it_yVec, boost::gil::gray_color_t() );
 
 			// apply rotation on gradient vector
 			VecPoint2 motion;
@@ -66,43 +63,54 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 
 			motion *= intensity;
 
-			bgil::get_color( *it_xVec, bgil::gray_color_t() ) = motion.x;
-			bgil::get_color( *it_yVec, bgil::gray_color_t() ) = motion.y;
+			boost::gil::get_color( *it_xVec, boost::gil::gray_color_t() ) = motion.x;
+			boost::gil::get_color( *it_yVec, boost::gil::gray_color_t() ) = motion.y;
 		}
-		if( p->progressForward() )
+		if( p.progressForward() )
 			return true;
 	}
 	return false;
 }
 
-template<typename GView, typename View, typename Point, typename Scalar>
+template<
+	typename GView,
+	typename View,
+	typename Point,
+	typename Scalar,
+	typename Progress>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
                              const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::convolve_boundary_option boundary_option,
-                             tuttle::plugin::IProgress* p )
+                             Progress& p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
 	correlate_rows<GPixel>( color_converted_view<GPixel>( img ), kernel, xGradientView, topleft, boundary_option );
-	if( p->progressForward( xGradientView.height() ) )
+	if( p.progressForward( xGradientView.height() ) )
 		return true;
 	correlate_cols<GPixel>( color_converted_view<GPixel>( img ), kernel, yGradientView, topleft, boundary_option );
-	if( p->progressForward( yGradientView.height() ) )
+	if( p.progressForward( yGradientView.height() ) )
 		return true;
 	return false;
 }
 
-template<typename Alloc, typename GView, typename View, typename Point, typename Scalar>
+template<
+	typename Alloc,
+	typename GView,
+	typename View,
+	typename Point,
+	typename Scalar,
+	typename Progress>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
                              const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::kernel_1d<Scalar>& kernelSecondary, const boost::gil::convolve_boundary_option boundary_option,
-                             tuttle::plugin::IProgress* p )
+                             Progress& p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
 	correlate_rows_cols<GPixel,Alloc>( color_converted_view<GPixel>( img ), kernel, kernelSecondary, xGradientView, topleft, boundary_option );
-	if( p->progressForward( xGradientView.height() ) )
+	if( p.progressForward( xGradientView.height() ) )
 		return true;
 	correlate_rows_cols<GPixel,Alloc>( color_converted_view<GPixel>( img ), kernelSecondary, kernel, yGradientView, topleft, boundary_option );
-	if( p->progressForward( yGradientView.height() ) )
+	if( p.progressForward( yGradientView.height() ) )
 		return true;
 	return false;
 }
@@ -110,16 +118,18 @@ bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& i
 /**
  * @brief Moves the pixels based on the variation of the mask (the derivative: [-1 0 1] kernel)
  */
-template <typename Sampler, // Models SamplerConcept
-          typename SrcView, // Models RandomAccess2DImageViewConcept
-          typename VecView, // Models RandomAccess2DImageViewConcept
-          typename DstView>
+template<
+	typename Sampler, // Models SamplerConcept
+	typename SrcView, // Models RandomAccess2DImageViewConcept
+	typename VecView, // Models RandomAccess2DImageViewConcept
+	typename DstView,
+	typename Progress>
 // Models MutableRandomAccess2DImageViewConcept
 bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcRod,
                                     const VecView& xVecView, const VecView& yVecView, const OfxRectI& vecRod,
                                     const DstView& dstView, const OfxRectI& dstRod,
                                     const OfxRectI& procWindowRoW,
-                                    tuttle::plugin::IProgress* p,
+                                    Progress& p,
                                     Sampler sampler = Sampler() )
 {
 	BOOST_ASSERT( srcView.width() == srcRod.x2 - srcRod.x1 );
@@ -141,7 +151,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 	typedef typename DstView::value_type DstPixel;
 
 	DstPixel black;
-	color_convert( bgil::rgba32f_pixel_t( 0.0, 0.0, 0.0, 0.0 ), black );
+	color_convert( boost::gil::rgba32f_pixel_t( 0.0, 0.0, 0.0, 0.0 ), black );
 
 	// shift between the procWindow and the output clip RoD
 	// __________________________
@@ -191,12 +201,12 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 			}
 			else
 			{
-				motion.x = bgil::get_color( *xit_xVec, bgil::gray_color_t() );
-				motion.y = bgil::get_color( *xit_yVec, bgil::gray_color_t() );
+				motion.x = boost::gil::get_color( *xit_xVec, boost::gil::gray_color_t() );
+				motion.y = boost::gil::get_color( *xit_yVec, boost::gil::gray_color_t() );
 			}
 
 			// compute the pixel value according to the resample method
-			if( !bgil::sample( sampler, srcView, pos + motion, *xit_dst ) )
+			if( !boost::gil::sample( sampler, srcView, pos + motion, *xit_dst ) )
 			{
 				*xit_dst = black; // if it is outside of the source image
 			}
@@ -204,7 +214,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 
 		// notify the end of the line to inform the progress
 		// and allows the host to abort
-		if( p->progressForward() )
+		if( p.progressForward() )
 			return true;
 	}
 	return false;

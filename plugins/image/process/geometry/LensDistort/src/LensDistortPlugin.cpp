@@ -2,7 +2,7 @@
 #include "LensDistortProcess.hpp"
 #include "lensDistortAlgorithm.hpp" // to compute RoI
 
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 #include <tuttle/plugin/numeric/coordinateSystem.hpp>
 
 #include <ofxsImageEffect.h>

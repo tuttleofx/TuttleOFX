@@ -4,12 +4,11 @@
 #include "FloodFillDefinitions.hpp"
 
 #include <tuttle/plugin/numeric/rectOp.hpp>
-#include <tuttle/plugin/image/fill.hpp>
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <terry/globals.hpp>
+#include <terry/draw/fill.hpp>
 #include <terry/basic_colors.hpp>
-
 #include <terry/channel.hpp>
 
 #include <queue>
@@ -126,6 +125,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 				 const StrongTest& strongTest, const SoftTest& softTest )
 {
 	using namespace terry;
+	using namespace terry::draw;
 	typedef typename SView::xy_locator SLocator;
 	typedef typename DView::xy_locator DLocator;
 	typedef typename SView::value_type SPixel;

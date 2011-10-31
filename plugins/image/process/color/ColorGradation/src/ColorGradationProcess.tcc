@@ -2,9 +2,9 @@
 #include "ColorGradationProcess.hpp"
 #include "ColorGradationPlugin.hpp"
 
-#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <terry/typedefs.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
 
 #include <terry/globals.hpp>
 #include <terry/copy.hpp>
@@ -42,12 +42,12 @@ void ColorGradationProcess<View>::processSwitchAlpha( const bool processAlpha, c
 	using namespace boost::gil;
 	if( processAlpha )
 	{
-		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(IN(), OUT()), *this );
+		terry::algorithm::transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(IN(), OUT()), *this );
 	}
 	else
 	{
 		/// @todo do not apply process on alpha directly inside transform, with a "channel_for_each_if_channel"
-		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(IN(), OUT()), *this );
+		terry::algorithm::transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(IN(), OUT()), *this );
 
 		// temporary solution copy alpha channel
 		terry::copy_channel_if_exist<alpha_t>( src, dst );

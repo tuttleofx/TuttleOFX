@@ -4,8 +4,8 @@
 #include <tuttle/plugin/numeric/rectOp.hpp>
 
 #include <terry/globals.hpp>
-#include <tuttle/plugin/image/algorithm.hpp>
-#include <tuttle/plugin/exceptions.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
+#include <terry/draw/fill.hpp>
 
 #include <terry/numeric/pixel_numeric_operations.hpp>
 #include <terry/numeric/pixel_numeric_operations_minmax.hpp>
@@ -35,7 +35,7 @@ void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 		typedef kth_channel_view_type<0,View> LocalView;
 		typename LocalView::type localView( LocalView::make(this->_srcView) );
 		pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
-		transform_pixels_progress(
+		terry::algorithm::transform_pixels_progress(
 			localView,
 			minmax,
 			*this );
@@ -67,7 +67,7 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	OfxRectI srcRodCrop = rectangleReduce( this->_srcPixelRod, border );
 	OfxRectI procWindowRoWCrop = rectanglesIntersection( procWindowRoW, srcRodCrop );
 
-	fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
+	terry::draw::fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
 
 	if( _isConstantImage )
 		return;

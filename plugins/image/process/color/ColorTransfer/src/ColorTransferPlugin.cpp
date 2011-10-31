@@ -49,8 +49,6 @@ void ColorTransferPlugin::changedParam( const OFX::InstanceChangedArgs &args, co
 
 void ColorTransferPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	ColorTransferProcessParams<Scalar> params = getProcessParams();
-	
 	if( _clipSrcRef->isConnected() )
 	{
 		OfxRectD srcRod = args.regionOfInterest;

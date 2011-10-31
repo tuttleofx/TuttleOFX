@@ -8,7 +8,7 @@
 #include <tuttle/plugin/interact/ParamPoint.hpp>
 #include <tuttle/plugin/interact/ParamPointRelativePoint.hpp>
 #include <tuttle/plugin/interact/ParamPoint.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>

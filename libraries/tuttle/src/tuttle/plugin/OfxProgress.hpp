@@ -40,6 +40,8 @@ public:
 	bool progressForward( const int nSteps = 1 );
 	
 	bool progressUpdate( const double p );
+	
+	OfxProgress& getOfxProgress() { return *this; }
 };
 
 }

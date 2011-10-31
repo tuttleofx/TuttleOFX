@@ -4,7 +4,7 @@
 #include "InteractInfos.hpp"
 #include "InteractObject.hpp"
 #include "ParamPoint.hpp"
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 #include <ofxsParam.h>
 
 namespace tuttle {

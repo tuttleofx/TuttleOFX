@@ -1,9 +1,10 @@
-#ifndef _TERRY_ALGORITHM_HPP_
-#define	_TERRY_ALGORITHM_HPP_
+#ifndef _TERRY_ALGORITHM_TRANSFORM_PIXELS_HPP_
+#define	_TERRY_ALGORITHM_TRANSFORM_PIXELS_HPP_
 
 #include <boost/gil/algorithm.hpp>
 
 namespace terry {
+namespace algorithm {
 
 template<typename T>
 struct rect_t
@@ -255,6 +256,7 @@ F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src
 }
 
 
+}
 }
 
 #endif

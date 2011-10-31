@@ -2,7 +2,7 @@
 #include "ResizeProcess.hpp"
 #include "ResizeDefinitions.hpp"
 
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 
 #include <terry/sampler/sampler.hpp>
 

@@ -3,7 +3,7 @@
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/all.hpp>
 
 #include <ofxsImageEffect.h>
 

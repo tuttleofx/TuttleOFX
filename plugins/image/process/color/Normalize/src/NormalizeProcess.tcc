@@ -3,13 +3,14 @@
 #include "NormalizePlugin.hpp"
 #include "NormalizeProcess.hpp"
 
-#include <terry/globals.hpp>
-#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <boost/gil/color_base_algorithm.hpp>
+#include <terry/globals.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/numeric/pixel_numeric_operations.hpp>
 #include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <boost/gil/color_base_algorithm.hpp>
+
 
 namespace tuttle {
 namespace plugin {
@@ -100,7 +101,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	    _params._processB &&
 	    _params._processA )
 	{
-		transform_pixels_progress(
+		terry::algorithm::transform_pixels_progress(
 			src,
 			dst,
 			pixel_scale_t<Pixel,Pixel>(_ratio, _sMin, _dMin),
@@ -119,7 +120,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				transform_pixels_progress(
+				terry::algorithm::transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel,LocalPixel>(
@@ -144,7 +145,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				transform_pixels_progress(
+				terry::algorithm::transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel>(
@@ -169,7 +170,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				transform_pixels_progress(
+				terry::algorithm::transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel>(
@@ -194,7 +195,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				transform_pixels_progress(
+				terry::algorithm::transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel>(

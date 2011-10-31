@@ -1,16 +1,17 @@
 #include "SobelPlugin.hpp"
 #include "SobelAlgorithm.hpp"
 
-#include <terry/globals.hpp>
 
-#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
+#include <terry/globals.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/numeric/kernel.hpp>
 #include <terry/numeric/convolve.hpp>
 #include <terry/numeric/pixel_by_channel.hpp>
 #include <terry/typedefs.hpp>
+
 #include <boost/gil/utilities.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/if.hpp>
@@ -52,8 +53,8 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 //	TUTTLE_COUT( "Sobel X: " << _params._xKernelGaussianDerivative.size() << "x" << _params._xKernelGaussian.size() );
 //	TUTTLE_COUT( "Sobel Y: " << _params._yKernelGaussianDerivative.size() << "x" << _params._yKernelGaussian.size() );
 
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	OfxPointI procWindowSize  = {
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
@@ -66,7 +67,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	                          procWindowOutput.x1, procWindowOutput.y1,
 	                          procWindowSize.x, procWindowSize.y );
 
-	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
+	const Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
 	
 	if( _params._xKernelGaussianDerivative.size() == 0 || ( !_params._unidimensional && _params._xKernelGaussian.size() == 0 ) )
 	{
@@ -182,22 +183,22 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	}
 	else if( _params._gradientNormManhattan )
 	{
-		transform_pixels_progress(
+		terry::algorithm::transform_pixels_progress(
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
 			transform_pixel_by_channel_t<channel_normManhattan_t>(),
-			*this
+			this->getOfxProgress()
 			);
 	}
 	else
 	{
-		transform_pixels_progress(
+		terry::algorithm::transform_pixels_progress(
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
 			transform_pixel_by_channel_t<channel_norm_t>(),
-			*this
+			this->getOfxProgress()
 			);
 	}
 	if( progressForward( dst.height() ) )
@@ -222,22 +223,22 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 	{
 		if( _params._gradientDirectionAbs )
 		{
-			transform_pixels_progress(
+			terry::algorithm::transform_pixels_progress(
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction
 				transform_pixel_by_channel_t<channel_gradientDirectionAbs_t>(),
-				*this
+				this->getOfxProgress()
 				);
 		}
 		else
 		{
-			transform_pixels_progress(
+			terry::algorithm::transform_pixels_progress(
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction
 				transform_pixel_by_channel_t<channel_gradientDirection_t>(),
-				*this
+				this->getOfxProgress()
 				);
 		}
 	}

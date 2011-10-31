@@ -1,9 +1,9 @@
-#ifndef _TUTTLE_PLUGIN_IMAGE_GIL_FILL_HPP_
-#define _TUTTLE_PLUGIN_IMAGE_GIL_FILL_HPP_
+#ifndef _TERRY_DRAW_FILL_HPP_
+#define _TERRY_DRAW_FILL_HPP_
 
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
+namespace draw {
 
 
 /**

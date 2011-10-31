@@ -2,9 +2,10 @@
 #include "SobelProcess.hpp"
 #include "SobelDefinitions.hpp"
 
+#include <tuttle/plugin/ofxToGil/point.hpp>
+
 #include <terry/globals.hpp>
-#include <terry/gaussianKernel.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <terry/filter/gaussianKernel.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -262,9 +263,9 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	const bool normalizedKernel = _paramNormalizedKernel->getValue();
 	const double kernelEpsilon = _paramKernelEpsilon->getValue();
 
-	params._xKernelGaussianDerivative = terry::buildGaussianDerivative1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
+	params._xKernelGaussianDerivative = terry::filter::buildGaussianDerivative1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
 	if( ! params._unidimensional )
-		params._xKernelGaussian = terry::buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
+		params._xKernelGaussian = terry::filter::buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
 
 	if( params._size.x == params._size.y )
 	{
@@ -273,9 +274,9 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	}
 	else
 	{
-		params._yKernelGaussianDerivative = terry::buildGaussianDerivative1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
+		params._yKernelGaussianDerivative = terry::filter::buildGaussianDerivative1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
 		if( ! params._unidimensional )
-			params._yKernelGaussian = terry::buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
+			params._yKernelGaussian = terry::filter::buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
 	}
 
 	if( _paramReverseKernel->getValue() )

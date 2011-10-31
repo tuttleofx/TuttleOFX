@@ -20,8 +20,7 @@ static const bool kSupportTiles = false;
  */
 void ResizePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleResize", "Resize",
-			"Resize" );
+	desc.setLabels( "TuttleResize", "Resize", "Resize" );
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
 	// add the supported contexts, only filter at the moment

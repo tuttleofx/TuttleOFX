@@ -1,11 +1,9 @@
 #include "pinningAlgorithm.hpp"
 
-#include <terry/globals.hpp>
-#include <terry/sampler/sampler.hpp>
-#include <terry/sampler/all.hpp>
-
-#include <tuttle/plugin/image/resample.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+#include <terry/globals.hpp>
+#include <terry/sampler/resample.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -142,10 +140,10 @@ void PinningProcess<View>::resample( View& srcView, View& dstView, const OfxRect
 	{
 		case eParamMethodAffine:
 		case eParamMethodPerspective:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, _params._samplerProcessParams._outOfImageProcess, this, sampler );
+			terry::sampler::resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, _params._samplerProcessParams._outOfImageProcess, this->getOfxProgress(), sampler );
 			return;
 		case eParamMethodBilinear:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear   , procWindow, _params._samplerProcessParams._outOfImageProcess, this, sampler );
+			terry::sampler::resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear   , procWindow, _params._samplerProcessParams._outOfImageProcess, this->getOfxProgress(), sampler );
 			return;
 	}
 }
