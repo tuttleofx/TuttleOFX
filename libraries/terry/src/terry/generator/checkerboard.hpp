@@ -1,11 +1,12 @@
-#include <boost/gil/gil_all.hpp>
+#ifndef _TERRY_GENERATOR_CHECKERBOARD_HPP_
+#define _TERRY_GENERATOR_CHECKERBOARD_HPP_
+
+#include <boost/gil/utilities.hpp>
 
 #include <cmath>
-#include <iostream>
 
-namespace tuttle {
-namespace plugin {
-namespace checkerboard {
+namespace terry {
+namespace generator {
 
 // Models a Unary Function
 template <typename P>
@@ -52,5 +53,5 @@ struct CheckerboardFunctor
 
 }
 }
-}
 
+#endif

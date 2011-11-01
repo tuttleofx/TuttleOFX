@@ -1,10 +1,10 @@
-#include "InvertAlgorithm.hpp"
-
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
 #include <terry/globals.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
+#include <terry/color/invert.hpp>
 
 #include <terry/numeric/pixel_by_channel.hpp>
 #include <terry/channel_view.hpp>
@@ -56,7 +56,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 		terry::algorithm::transform_pixels_progress(
 			src,
 			dst,
-			transform_pixel_by_channel_t<channel_invert_t>(),
+			transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
 			*this
 			);
 	}
@@ -68,7 +68,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 		terry::algorithm::transform_pixels_progress(
 			src,
 			dst,
-			pixel_invert_colors_t(),
+			terry::color::pixel_invert_colors_t(),
 			*this
 			);
 	}
@@ -82,7 +82,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 				terry::algorithm::transform_pixels_progress(
 					channel_view<LocalChannel,View>(src),
 					channel_view<LocalChannel,View>(dst),
-					transform_pixel_by_channel_t<channel_invert_t>(),
+					transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
 					*this
 					);
 			}
@@ -98,7 +98,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 				terry::algorithm::transform_pixels_progress(
 					channel_view<LocalChannel,View>(src),
 					channel_view<LocalChannel,View>(dst),
-					transform_pixel_by_channel_t<channel_invert_t>(),
+					transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
 					*this
 					);
 			}
@@ -114,7 +114,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 				terry::algorithm::transform_pixels_progress(
 					channel_view<LocalChannel,View>(src),
 					channel_view<LocalChannel,View>(dst),
-					transform_pixel_by_channel_t<channel_invert_t>(),
+					transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
 					*this
 					);
 			}
@@ -130,7 +130,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 				terry::algorithm::transform_pixels_progress(
 					channel_view<LocalChannel,View>(src),
 					channel_view<LocalChannel,View>(dst),
-					transform_pixel_by_channel_t<channel_invert_t>(),
+					transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
 					*this
 					);
 			}

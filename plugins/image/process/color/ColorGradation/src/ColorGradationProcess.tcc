@@ -8,7 +8,7 @@
 
 #include <terry/globals.hpp>
 #include <terry/copy.hpp>
-#include <terry/color/gradation.hpp>
+#include <terry/colorspace/gradation.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/static_assert.hpp>
