@@ -1,11 +1,12 @@
 #include "SobelPlugin.hpp"
-#include "SobelAlgorithm.hpp"
 
 
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <terry/globals.hpp>
+#include <terry/color/gradient.hpp>
+#include <terry/color/norm.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/numeric/kernel.hpp>
 #include <terry/numeric/convolve.hpp>
@@ -187,7 +188,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
-			transform_pixel_by_channel_t<channel_normManhattan_t>(),
+			transform_pixel_by_channel_t<terry::color::channel_normManhattan_t>(),
 			this->getOfxProgress()
 			);
 	}
@@ -197,7 +198,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
-			transform_pixel_by_channel_t<channel_norm_t>(),
+			transform_pixel_by_channel_t<terry::color::channel_norm_t>(),
 			this->getOfxProgress()
 			);
 	}
@@ -227,7 +228,7 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction
-				transform_pixel_by_channel_t<channel_gradientDirectionAbs_t>(),
+				transform_pixel_by_channel_t<terry::color::channel_gradientDirectionAbs_t>(),
 				this->getOfxProgress()
 				);
 		}
@@ -237,7 +238,7 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction
-				transform_pixel_by_channel_t<channel_gradientDirection_t>(),
+				transform_pixel_by_channel_t<terry::color::channel_gradientDirection_t>(),
 				this->getOfxProgress()
 				);
 		}

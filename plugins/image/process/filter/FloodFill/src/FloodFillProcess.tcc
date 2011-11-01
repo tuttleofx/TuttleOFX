@@ -1,9 +1,12 @@
-#include "FloodFillAlgorithm.hpp"
 #include "FloodFillPlugin.hpp"
 
+#include <tuttle/plugin/ofxToGil/rect.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <terry/globals.hpp>
+#include <terry/filter/floodFill.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/draw/fill.hpp>
 
@@ -26,8 +29,9 @@ FloodFillProcess<View>::FloodFillProcess( FloodFillPlugin &effect )
 template<class View>
 void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	using namespace terry;
 	ImageGilFilterProcessor<View>::setup( args );
+	
+	using namespace terry;
 	_params = _plugin.getProcessParams( args.renderScale );
 	if( _params._relativeMinMax )
 	{
@@ -64,22 +68,24 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	
 	static const unsigned int border = 1;
-	OfxRectI srcRodCrop = rectangleReduce( this->_srcPixelRod, border );
-	OfxRectI procWindowRoWCrop = rectanglesIntersection( procWindowRoW, srcRodCrop );
+	const OfxRectI srcRodCrop = rectangleReduce( this->_srcPixelRod, border );
+	const OfxRectI procWindowRoWCrop = rectanglesIntersection( procWindowRoW, srcRodCrop );
 
 	terry::draw::fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
 
 	if( _isConstantImage )
 		return;
 
+	using namespace terry::filter::floodFill;
+	
 	switch( _params._method )
 	{
 		case eParamMethod4:
 		{
-			flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
-				this->_srcView, this->_srcPixelRod,
-				this->_dstView, this->_dstPixelRod,
-				procWindowRoWCrop,
+			flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View, OfxAllocator>(
+				this->_srcView, ofxToGil(this->_srcPixelRod),
+				this->_dstView, ofxToGil(this->_dstPixelRod),
+				ofxToGil(procWindowRoWCrop),
 				IsUpper<Scalar>(_upperThres),
 				IsUpper<Scalar>(_lowerThres)
 				);
@@ -87,10 +93,10 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		}
 		case eParamMethod8:
 		{
-			flood_fill<Connexity8, IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
-				this->_srcView, this->_srcPixelRod,
-				this->_dstView, this->_dstPixelRod,
-				procWindowRoWCrop,
+			flood_fill<Connexity8, IsUpper<Scalar>, IsUpper<Scalar>, View, View, OfxAllocator>(
+				this->_srcView, ofxToGil(this->_srcPixelRod),
+				this->_dstView, ofxToGil(this->_dstPixelRod),
+				ofxToGil(procWindowRoWCrop),
 				IsUpper<Scalar>(_upperThres),
 				IsUpper<Scalar>(_lowerThres)
 				);
@@ -99,9 +105,9 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		case eParamMethodBruteForce: // not in production
 		{
 //			flood_fill_bruteForce<IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
-//				this->_srcView, this->_srcPixelRod,
-//				this->_dstView, this->_dstPixelRod,
-//				procWindowRoWCrop,
+//				this->_srcView, ofxToGil(this->_srcPixelRod),
+//				this->_dstView, ofxToGil(this->_dstPixelRod),
+//				ofxToGil(procWindowRoWCrop),
 //				IsUpper<Scalar>(_upperThres),
 //				IsUpper<Scalar>(_lowerThres)
 //				);

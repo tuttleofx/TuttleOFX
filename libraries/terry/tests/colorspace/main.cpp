@@ -1,5 +1,5 @@
-#include <terry/color/colorspace.hpp>
-#include <terry/color/colorspace/all.hpp>
+#include <terry/colorspace/colorspace.hpp>
+#include <terry/colorspace/colorspace/all.hpp>
 
 #include <iostream>
 

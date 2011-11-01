@@ -1,10 +1,10 @@
 #include "LocalMaximaPlugin.hpp"
-#include "LocalMaximaAlgorithm.hpp"
 
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
 
 #include <terry/globals.hpp>
+#include <terry/filter/localMaxima.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/numeric/pixel_numeric_operations.hpp>
 
@@ -67,7 +67,7 @@ void LocalMaximaProcess<SView, DView>::multiThreadProcessImages( const OfxRectI&
 		this->_srcView, this->_srcPixelRod,
 		this->_dstView, this->_dstPixelRod,
 		procWindowRoWCrop,
-		pixel_locator_gradientLocalMaxima_t<SView,DView>(this->_srcView),
+		terry::filter::pixel_locator_gradientLocalMaxima_t<SView,DView>(this->_srcView),
 		this->getOfxProgress()
 		);
 }
