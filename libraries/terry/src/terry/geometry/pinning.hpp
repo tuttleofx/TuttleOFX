@@ -1,9 +1,25 @@
-#ifndef _TUTTLE_PLUGIN_PINNING_ALGORITHM_HPP_
-#define	_TUTTLE_PLUGIN_PINNING_ALGORITHM_HPP_
+#ifndef _TERRY_GEOMETRY_PINNING_HPP_
+#define	_TERRY_GEOMETRY_PINNING_HPP_
 
-#include "PinningPlugin.hpp"
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace terry {
+namespace geometry {
+
+template<typename Scalar>
+struct PinningPerspective
+{
+	double _width, _height;
+	boost::numeric::ublas::bounded_matrix<Scalar,3,3> _matrix;
+};
+
+template<typename Scalar>
+struct PinningBilinear
+{
+	double _width, _height;
+	boost::numeric::ublas::bounded_matrix<Scalar,2,4> _matrix;
+};
+
 
 /**
  * @brief Perspective transformation functor.
@@ -11,7 +27,7 @@ namespace terry {
  * @param[in] src: 2D source point
  */
 template <typename F, typename F2>
-inline boost::gil::point2<F> transform( const tuttle::plugin::pinning::Perspective<F>& t, const boost::gil::point2<F2>& src )
+inline boost::gil::point2<F> transform( const PinningPerspective<F>& t, const boost::gil::point2<F2>& src )
 {
 	using namespace boost::numeric::ublas;
         bounded_vector<F,3> pIn;
@@ -47,7 +63,7 @@ inline boost::gil::point2<F> transform( const tuttle::plugin::pinning::Perspecti
  * @f]
  */
 template <typename F, typename F2>
-inline boost::gil::point2<F> transform( const tuttle::plugin::pinning::Bilinear<F>& t, const boost::gil::point2<F2>& src )
+inline boost::gil::point2<F> transform( const PinningBilinear<F>& t, const boost::gil::point2<F2>& src )
 {
 	boost::gil::point2<F> res;
 
@@ -62,6 +78,7 @@ inline boost::gil::point2<F> transform( const tuttle::plugin::pinning::Bilinear<
 	return res;
 }
 
+}
 }
 
 #endif

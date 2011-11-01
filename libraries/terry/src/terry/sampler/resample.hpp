@@ -42,7 +42,7 @@ void resample_pixels_progress(
 		for( dst_p.x = procWindow.x1; dst_p.x < procWindow.x2; ++dst_p.x )
 		{
 
-			if( ! ::terry::sampler::sample( sampler, src_view, ::terry::transform( dst_to_src, dst_p ), xit[dst_p.x], outOfImageProcess ) )
+			if( ! sample( sampler, src_view, transform( dst_to_src, dst_p ), xit[dst_p.x], outOfImageProcess ) )
 			{
 				xit[dst_p.x] = black; // if it is outside of the source image
 			}

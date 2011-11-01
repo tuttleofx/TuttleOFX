@@ -1,4 +1,4 @@
-#include "pinningAlgorithm.hpp"
+#include <terry/geometry/pinning.hpp>
 
 #include <tuttle/plugin/exceptions.hpp>
 
