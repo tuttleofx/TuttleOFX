@@ -364,7 +364,7 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Gamma> :
 		else if( src > 0.0 )
 		{
 			// compute gamma value
-			fDst = std::pow( static_cast<TBase>(fSrc) , 1.0 / _out._gamma );
+			fDst = std::pow( static_cast<double>(fSrc) , 1.0 / _out._gamma );
 		}
 		else
 		{
