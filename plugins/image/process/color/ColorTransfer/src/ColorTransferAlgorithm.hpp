@@ -65,41 +65,6 @@ struct pixel_log10_t
 	}
 };
 
-template <typename Channel, typename ChannelR>
-struct channel_value_pow_t : public std::unary_function<Channel, ChannelR>
-{
-
-	Channel _value;
-
-	channel_value_pow_t( const Channel value )
-	: _value( value ) { }
-
-	GIL_FORCEINLINE
-	ChannelR operator( )( typename channel_traits<Channel>::const_reference ch ) const
-	{
-		return std::pow( _value, ChannelR( ch ) );
-	}
-};
-
-template <typename PixelRef, typename PixelR = PixelRef> // models pixel concept
-struct pixel_value_pow_t
-{
-
-	typedef typename channel_type<PixelR>::type ChannelR;
-	ChannelR _value;
-
-	pixel_value_pow_t( const ChannelR value )
-	: _value( value ) { }
-
-	GIL_FORCEINLINE
-	PixelR operator ( ) (const PixelRef & p ) const
-	{
-		PixelR result;
-		static_transform( p, result, channel_value_pow_t<typename channel_type<PixelRef>::type, typename channel_type<PixelR>::type > ( _value ) );
-		return result;
-	}
-};
-
 template <typename Channel>
 struct channel_clamp_lower_than_t : public std::unary_function<Channel, Channel>
 {

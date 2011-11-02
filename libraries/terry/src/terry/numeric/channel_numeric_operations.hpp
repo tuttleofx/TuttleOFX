@@ -23,6 +23,8 @@
 ///    channel_halves_t (/=2), channel_zeros_t (=0), channel_assigns_t (=)
 */
 
+#include <terry/globals.hpp>
+
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/channel.hpp>
 #include <boost/math/special_functions/pow.hpp>
@@ -148,7 +150,8 @@ struct channel_scalar_pow_t : public std::binary_function<Channel,Scalar,Channel
 	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel>::const_reference ch,
                         const Scalar& s) const {
-        return std::pow(ChannelR(s), ChannelR(ch));
+	typedef typename floating_channel_type_t<ChannelR>::type ChannelRFloat;
+        return std::pow(s, ChannelRFloat(ch));
     }
 };
 
