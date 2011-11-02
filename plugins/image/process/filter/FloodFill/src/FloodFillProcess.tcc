@@ -71,7 +71,7 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	const OfxRectI srcRodCrop = rectangleReduce( this->_srcPixelRod, border );
 	const OfxRectI procWindowRoWCrop = rectanglesIntersection( procWindowRoW, srcRodCrop );
 
-	terry::draw::fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
+	terry::draw::fill_pixels( this->_dstView, ofxToGil(procWindowOutput), get_black<Pixel>() );
 
 	if( _isConstantImage )
 		return;

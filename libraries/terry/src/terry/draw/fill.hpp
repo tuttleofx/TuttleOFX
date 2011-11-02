@@ -1,6 +1,8 @@
 #ifndef _TERRY_DRAW_FILL_HPP_
 #define _TERRY_DRAW_FILL_HPP_
 
+#include <terry/math/rect.hpp>
+
 #include <boost/gil/gil_config.hpp>
 
 namespace terry {
@@ -16,7 +18,7 @@ namespace draw {
  */
 template<class View>
 GIL_FORCEINLINE
-void fill_pixels( View& dstView, const OfxRectI& window,
+void fill_pixels( View& dstView, const Rect<int>& window,
 				  const typename View::value_type& pixelValue )
 {
 	typedef typename View::value_type Pixel;

@@ -1,7 +1,9 @@
 #include "CropPlugin.hpp"
 
 #include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
 
+#include <terry/math/rect.hpp>
 #include <terry/draw/fill.hpp>
 #include <terry/basic_colors.hpp>
 #include <terry/globals.hpp>
@@ -41,7 +43,7 @@ void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 
 	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 
-	terry::draw::fill_pixels( this->_dstView, procWindowOutput, _params._color );
+	terry::draw::fill_pixels( this->_dstView, ofxToGil(procWindowOutput), _params._color );
 
 	// proc region of source image to copy
 	const OfxRectI procCropRoW = rectanglesIntersection(
