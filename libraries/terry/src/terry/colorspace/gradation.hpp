@@ -5,6 +5,8 @@
 #include <terry/typedefs.hpp>
 #include <terry/channel.hpp>
 
+#include <cmath>
+
 namespace terry {
 using namespace boost::gil;
 
