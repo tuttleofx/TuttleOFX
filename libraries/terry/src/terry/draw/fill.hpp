@@ -1,6 +1,7 @@
 #ifndef _TERRY_DRAW_FILL_HPP_
 #define _TERRY_DRAW_FILL_HPP_
 
+#include <boost/gil/gil_config.hpp>
 
 namespace terry {
 namespace draw {
@@ -14,7 +15,7 @@ namespace draw {
  * @param[in] pixelValue Pixel value used to fill.
  */
 template<class View>
-TUTTLE_FORCEINLINE
+GIL_FORCEINLINE
 void fill_pixels( View& dstView, const OfxRectI& window,
 				  const typename View::value_type& pixelValue )
 {
@@ -33,7 +34,7 @@ void fill_pixels( View& dstView, const OfxRectI& window,
  * @param[in] pixelValue Pixel value used to fill.
  */
 template<class DIterator, class DPixel>
-TUTTLE_FORCEINLINE
+GIL_FORCEINLINE
 void fill_pixels_range( DIterator dstBegin, const DIterator& dstEnd, const DPixel& pixelValue )
 {
 	do

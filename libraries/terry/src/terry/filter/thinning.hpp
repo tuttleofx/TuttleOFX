@@ -87,6 +87,27 @@ struct pixel_locator_thinning_t
 
 
 }
+
+/*
+template<class SView, class DView>
+void thinning( const SView& srcView, DView& dstView )
+{
+	const Rect<int> srcRod( 0, 0, srcView.width(), srcView.height() );
+	algorithm::transform_pixels_locator(
+		srcView, this->_srcPixelRod,
+		view_tmp, procWindowRoWCrop1,
+		procWindowRoWCrop1,
+		terry::filter::thinning::pixel_locator_thinning_t<View,CView>(this->_srcView, terry::filter::thinning::lutthin1),
+		);
+	algorithm::transform_pixels_locator(
+		view_tmp, procWindowRoWCrop1, //srcRodCrop1,
+		this->_dstView, this->_dstPixelRod,
+		procWindowRoWCrop2,
+		terry::filter::thinning::pixel_locator_thinning_t<CView,View>(view_tmp, terry::filter::thinning::lutthin2),
+		);
+}
+*/
+
 }
 }
 

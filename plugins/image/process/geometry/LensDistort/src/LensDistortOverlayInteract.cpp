@@ -126,7 +126,7 @@ bool LensDistortOverlayInteract::draw( const OFX::DrawArgs& args )
 			srcRod = _plugin->_srcRefClip->getCanonicalRod( args.time );
 
 		const Point2 imgSize( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );
-		const OfxRectD outputRod = _plugin->_clipDst->getCanonicalRod( args.time );
+//		const OfxRectD outputRod = _plugin->_clipDst->getCanonicalRod( args.time );
 		//parameters
 		const Point2 gridCenter( ofxToGil( _plugin->_gridCenter->getValue() ) );
 		const Point2 gridScale( ofxToGil( _plugin->_gridScale->getValue() ) );

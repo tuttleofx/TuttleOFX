@@ -91,7 +91,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols_auto<DPixelGray,OfxAllocator<unsigned char> >(
+					correlate_rows_cols_auto<DPixelGray, OfxAllocator>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._xKernelGaussianDerivative,
 						_params._xKernelGaussian,
@@ -147,7 +147,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols_auto<DPixelGray,OfxAllocator<unsigned char> >(
+					correlate_rows_cols_auto<DPixelGray, OfxAllocator>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._yKernelGaussian,
 						_params._yKernelGaussianDerivative,

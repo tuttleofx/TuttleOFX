@@ -18,7 +18,7 @@ namespace floodFill {
  * @brief fill all pixels respecting the @p condition in a range of pixels (on the same line or with an 1d_traversable image).
  */
 template<class SIterator, class DIterator, class DPixel, class Test>
-TUTTLE_FORCEINLINE
+GIL_FORCEINLINE
 void fill_pixels_range_if( SIterator srcBegin, const SIterator& srcEnd,
                     DIterator dstBegin, const DPixel& value,
                     const Test& condition )
@@ -59,7 +59,7 @@ struct IsUpper
 	IsUpper( const T& threshold )
 	: _threshold(threshold)
 	{}
-	TUTTLE_FORCEINLINE
+	GIL_FORCEINLINE
 	bool operator()( const T& p ) const
 	{
 		return (p >= _threshold);
@@ -73,7 +73,7 @@ typedef enum
 	eDirectionBellow = 1
 } EDirection;
 
-TUTTLE_FORCEINLINE
+GIL_FORCEINLINE
 EDirection invertDirection( const EDirection d )
 {
 	return d == eDirectionAbove ? eDirectionBellow : eDirectionAbove;
@@ -575,6 +575,39 @@ void flood_fill_bruteForce( const SView& srcView, const Rect<int>& srcRod,
 }
 
 }
+
+/*
+template<class Connexity, class StrongTest, class SoftTest, class SView, class DView, template<class> class Allocator>
+void flood_fill( const SView& srcView, const Rect<int>& srcRod,
+                 DView& dstView, const Rect<int>& dstRod,
+				 const Rect<int>& procWindow,
+				 const StrongTest& strongTest, const SoftTest& softTest )
+
+
+	typedef kth_channel_view_type<0,View> LocalView;
+	typename LocalView::type localView( LocalView::make(this->_srcView) );
+	pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
+	terry::algorithm::transform_pixels_progress(
+		localView,
+		minmax,
+		*this );
+
+	_isConstantImage = minmax.max[0] == minmax.min[0];
+	_lowerThres = (_params._lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+	_upperThres = (_params._upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+
+
+terry::draw::fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
+
+flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View, OfxAllocator>(
+				this->_srcView, ofxToGil(this->_srcPixelRod),
+				this->_dstView, ofxToGil(this->_dstPixelRod),
+				ofxToGil(procWindowRoWCrop),
+				IsUpper<Scalar>(_upperThres),
+				IsUpper<Scalar>(_lowerThres)
+				); 
+*/
+
 }
 }
 

@@ -8,8 +8,8 @@ namespace histogramKeyer {
 
 HistogramKeyerOverlay::HistogramKeyerOverlay(OfxInteractHandle handle,OFX::ImageEffect* effect)
 : OFX::OverlayInteract(handle)
-, _infos( effect )
 , _plugin( static_cast<HistogramKeyerPlugin*>(_effect) )
+, _infos( effect )
 , _hslParam( _plugin )
 , _rgbParam( _plugin )
 {
@@ -129,9 +129,9 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 		int y = args.penPosition.y * args.renderScale.y;
 		int x = args.penPosition.x * args.renderScale.x;
 		
-		if( y > getOverlayData()._imgBool.shape()[0] ||
+		if( y > static_cast<int>(getOverlayData()._imgBool.shape()[0]) ||
 		    y < 0 ||
-		    x > getOverlayData()._imgBool.shape()[1] ||
+		    x > static_cast<int>(getOverlayData()._imgBool.shape()[1]) ||
 		    x < 0 )
 		{
 			return false;

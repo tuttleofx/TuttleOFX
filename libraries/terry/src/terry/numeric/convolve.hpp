@@ -20,6 +20,7 @@
 
 #include "pixel_numeric_operations.hpp"
 #include "algorithm.hpp"
+#include "kernel.hpp"
 
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/image_view_factory.hpp>
@@ -513,7 +514,7 @@ void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, c
 
 /// \ingroup ImageAlgorithms
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
-template <bool autoEnabled, typename PixelAccum, typename Alloc,typename SrcView,typename KernelX,typename KernelY,typename DstView >
+template <bool autoEnabled, typename PixelAccum, template<typename> class Alloc, typename SrcView, typename KernelX,typename KernelY,typename DstView >
 GIL_FORCEINLINE
 void correlate_rows_cols_imp( const SrcView& src,
                           const KernelX& kernelX,
@@ -528,7 +529,7 @@ void correlate_rows_cols_imp( const SrcView& src,
     typedef typename DstView::point_t Point;
     typedef typename DstView::coord_t Coord;
 	typedef typename view_type_from_pixel<PixelAccum, is_planar<DstView>::value >::type ViewAccum;
-	typedef image<PixelAccum, is_planar<DstView>::value, Alloc> ImageAccum;
+	typedef image<PixelAccum, is_planar<DstView>::value, Alloc<unsigned char> > ImageAccum;
 
 	if( kernelX.size() > 2 && kernelY.size() > 2 )
 	{
@@ -561,7 +562,7 @@ void correlate_rows_cols_imp( const SrcView& src,
 			Point image_tmp_tl( dst_tl );
 			image_tmp_tl.y -= top_in;
 			
-			ImageAccum image_tmp( image_tmp_size ); ///< @todo use an allocator
+			ImageAccum image_tmp( image_tmp_size );
 			ViewAccum view_tmp = view( image_tmp );
 			const Point dst_tmp_tl( 0, top_in );
 
@@ -581,7 +582,7 @@ void correlate_rows_cols_imp( const SrcView& src,
 
 /// \ingroup ImageAlgorithms
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
-template <typename PixelAccum, typename Alloc, typename SrcView, typename KernelX, typename KernelY, typename DstView>
+template <typename PixelAccum, template<typename> class Alloc, typename SrcView, typename KernelX, typename KernelY, typename DstView>
 GIL_FORCEINLINE
 void correlate_rows_cols_auto( const SrcView& src,
                           const KernelX& kernelX,

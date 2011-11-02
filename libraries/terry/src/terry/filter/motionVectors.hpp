@@ -12,8 +12,8 @@
 
 #include <cmath>
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
+namespace filter {
 
 /**
  * @brief change intensity and rotate vectors.

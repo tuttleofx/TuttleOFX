@@ -1,11 +1,15 @@
 #ifndef _TERRY_GLOBALS_HPP_
 #define _TERRY_GLOBALS_HPP_
 
-#include <tuttle/common/math/minmax.hpp>
+//#include <tuttle/common/math/minmax.hpp>
 
 //#include <ofxCore.h>
 
-#include <boost/gil/gil_all.hpp>
+#include <boost/gil/gil_config.hpp>
+#include <boost/gil/typedefs.hpp>
+#include <boost/gil/image.hpp>
+#include <boost/gil/image_view.hpp>
+#include <boost/gil/image_view_factory.hpp>
 #include <boost/type_traits.hpp>
 
 #include <ostream>
@@ -30,11 +34,11 @@ View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
 }
 */
 
-template <class View>
+template <class View, typename Alloc=std::allocator<unsigned char> >
 struct image_from_view
 {
 	typedef typename View::value_type value_type; // pixel_t
-	typedef typename boost::gil::image<value_type, boost::gil::is_planar<View>::value> type;
+	typedef typename boost::gil::image<value_type, boost::gil::is_planar<View>::value, Alloc> type;
 };
 // typedef typename view_type_from_pixel<OutPixelType, boost::gil::is_planar<View>::value >::type OutView;
 

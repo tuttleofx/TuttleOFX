@@ -1,5 +1,6 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <terry/globals.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
@@ -41,7 +42,7 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 //	                           View,
 //							   typename kth_channel_view_type<0,View>::type >::type CView;
 	typedef View CView;
-	typedef typename terry::image_from_view<CView>::type CImage;
+	typedef typename terry::image_from_view<CView, OfxAllocator<unsigned char> >::type CImage;
 
 	static const std::size_t border = 1;
 	const OfxRectI srcRodCrop1 = rectangleReduce( this->_srcPixelRod, border );
