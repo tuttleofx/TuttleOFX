@@ -6,26 +6,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 // System stuff
 #include <tuttle/common/system/system.hpp>
-
-#include "windows/windows.h"
+#include <tuttle/common/system/compatibility.hpp>
+#include <tuttle/common/system/windows/windows.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Assert needs to be everywhere
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/current_function.hpp>
-
-////////////////////////////////////////////////////////////////////////////////
-// compatibility problems...
-#include <cstddef>
-namespace std {
-#ifdef _MSC_VER
-	typedef SSIZE_T ssize_t;
-#else
-	typedef ::ssize_t ssize_t;
-#endif
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Define functions to display infos in the console

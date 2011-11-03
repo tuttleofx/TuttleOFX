@@ -1,7 +1,9 @@
 #ifndef _TERRY_GLOBALS_HPP_
 #define _TERRY_GLOBALS_HPP_
 
-//#include <tuttle/common/math/minmax.hpp>
+// HACK to use some header only utilities of tuttle
+#include "../../tuttle/src/tuttle/common/system/system.hpp"
+#include "../../tuttle/src/tuttle/common/system/compatibility.hpp"
 
 //#include <ofxCore.h>
 
