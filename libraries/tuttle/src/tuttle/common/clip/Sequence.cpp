@@ -772,7 +772,7 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	std::list<Time> times;
 	std::list<std::string> timesStr;
 	std::size_t iCurrent = 0;
-	std::size_t iBegin = 0;
+	//std::size_t iBegin = 0;
 	BOOST_FOREACH( const FileNumbers& sn, nums )
 	{
 		if( ! sn.rangeEquals( *previous, idChangeBegin, idChangeEnd ) )
@@ -787,7 +787,7 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 			times.clear();
 
 			// create a new sequence initilized with "sn" values
-			iBegin = iCurrent;
+			//iBegin = iCurrent;
 			s = seqCommon;
 			s._prefix += sn.getString( idChangeBegin );
 			for( std::size_t i = idChangeBegin+1; i < idChangeEnd; ++i )
