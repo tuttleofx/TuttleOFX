@@ -8,6 +8,7 @@
 #include <terry/math/rect.hpp>
 
 #include <queue>
+#include <list>
 
 
 namespace terry {
