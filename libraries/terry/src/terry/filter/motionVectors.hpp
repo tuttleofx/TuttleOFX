@@ -79,7 +79,7 @@ template<
 	typename Scalar,
 	typename Progress>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
-                             const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::convolve_boundary_option boundary_option,
+                             const terry::kernel_1d<Scalar>& kernel, const terry::convolve_boundary_option boundary_option,
                              Progress& p )
 {
 	typedef typename GView::value_type GPixel;
@@ -101,8 +101,9 @@ template<
 	typename Scalar,
 	typename Progress>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
-                             const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::kernel_1d<Scalar>& kernelSecondary, const boost::gil::convolve_boundary_option boundary_option,
-                             Progress& p )
+							 const terry::kernel_1d<Scalar>& kernel, const terry::kernel_1d<Scalar>& kernelSecondary,
+							 const terry::convolve_boundary_option boundary_option,
+							 Progress& p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
@@ -206,7 +207,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 			}
 
 			// compute the pixel value according to the resample method
-			if( !boost::gil::sample( sampler, srcView, pos + motion, *xit_dst ) )
+			if( !terry::sample( sampler, srcView, pos + motion, *xit_dst ) )
 			{
 				*xit_dst = black; // if it is outside of the source image
 			}
