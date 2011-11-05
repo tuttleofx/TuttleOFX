@@ -9,6 +9,12 @@ from sconsProject import SConsProject
 
 
 class Tuttle( SConsProject ):
+	'''
+	The project compilation object.
+	
+	This class extends the default SConsProject object with some specific
+	utilities for OpenFX.
+	'''
 
 	def getOfxPlatformName( self ) :
 		'''Get the standard openfx name of the current platform.
@@ -51,7 +57,11 @@ class Tuttle( SConsProject ):
 		return os.path.join( self.dir_output_bin, pluginFilename + '.ofx.bundle/Contents', self.getOfxPlatformName(), pluginFilename + '.ofx' )
 
 	def retrieveOfxPluginVersions( self, filename ):
-		'''Return plugins versions (major, minor)'''
+		'''
+		Return plugins versions (major, minor).
+		
+		This information is extracted from the version defined inside the plugin main file.
+		'''
 		versionMajor = -1
 		versionMinor = -1
 		f = open( filename, 'r' )
@@ -132,12 +142,12 @@ class Tuttle( SConsProject ):
 
 #______________________________________________________________________________#
 
+# Create the object shared in all SConscripts
 project = Tuttle()
 Export('project')
 Export({'libs':project.libs})
 
-#______________________________________________________________________________#
-
+# Load SConscript files
 project.begin()
 project.SConscript()
 project.end()
