@@ -27,7 +27,7 @@ void fill_pixels( View& dstView, const typename View::value_type& pixelValue )
  */
 template<class View>
 GIL_FORCEINLINE
-void fill_pixels( View& dstView, const Rect<int>& window,
+void fill_pixels( View& dstView, const Rect<std::ssize_t>& window,
 				  const typename View::value_type& pixelValue )
 {
 	typedef typename View::value_type Pixel;

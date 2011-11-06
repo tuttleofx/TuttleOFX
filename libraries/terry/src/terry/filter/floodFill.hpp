@@ -116,9 +116,9 @@ struct FloodElement
  * and check connections between these x ranges and possible x ranges in the above or bellow lines.
  */
 template<class Connexity, class StrongTest, class SoftTest, class SView, class DView, template<class> class Allocator>
-void flood_fill( const SView& srcView, const Rect<int>& srcRod,
-                 DView& dstView, const Rect<int>& dstRod,
-				 const Rect<int>& procWindow,
+void flood_fill( const SView& srcView, const Rect<std::ssize_t>& srcRod,
+                 DView& dstView, const Rect<std::ssize_t>& dstRod,
+                                 const Rect<std::ssize_t>& procWindow,
 				 const StrongTest& strongTest, const SoftTest& softTest )
 {
 	using namespace terry;
@@ -144,7 +144,7 @@ void flood_fill( const SView& srcView, const Rect<int>& srcRod,
 	yellow[1] = 1.0;
 #endif
 	
-	const Rect<int> rod = rectanglesIntersection( srcRod, dstRod );
+        const Rect<std::ssize_t> rod = rectanglesIntersection( srcRod, dstRod );
 
 	const std::size_t procWidth = (procWindow.x2 - procWindow.x1);
 	const std::size_t halfProcWidth = procWidth / 2;
@@ -485,9 +485,9 @@ void flood_fill( const SView& srcView, const Rect<int>& srcRod,
  * @remark not in production (only use for debugging)
  */
 template<class StrongTest, class SoftTest, class SView, class DView>
-void flood_fill_bruteForce( const SView& srcView, const Rect<int>& srcRod,
-				 DView& dstView, const Rect<int>& dstRod,
-				 const Rect<int>& procWindow,
+void flood_fill_bruteForce( const SView& srcView, const Rect<std::ssize_t>& srcRod,
+                                 DView& dstView, const Rect<std::ssize_t>& dstRod,
+                                 const Rect<std::ssize_t>& procWindow,
 				 const StrongTest& strongTest, const SoftTest& softTest )
 {
     typedef typename SView::value_type SPixel;
