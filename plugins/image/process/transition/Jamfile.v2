@@ -3,7 +3,7 @@
 ###############################################################################
 path-constant BUILD : $(BUILD)/transition ;
 
-for local l in [ glob * ]
+for local l in [ glob * : Merge ]
 {
    build-project $(l) ;
 }

@@ -127,28 +127,22 @@ public:
 //		return getDirectory() / getName();
 //	}
 	
-	inline boost::filesystem::path getDirectory         () const				                { return _directory; }
-	inline boost::filesystem::path getAbsoluteDirectory () const				                { return boost::filesystem::absolute(_directory); }
+	inline boost::filesystem::path getDirectory         () const                                    { return _directory; }
+	inline boost::filesystem::path getAbsoluteDirectory () const                                    { return boost::filesystem::absolute(_directory); }
 	inline void                    setDirectory         ( const boost::filesystem::path& p )	{ _directory = p; }
 	void                           setDirectoryFromPath ( const boost::filesystem::path& p );
-	
-<<<<<<< HEAD
-	EMaskOptions                   getMaskOptions	    () const				                { return _options; }
-	EMaskType                      getMaskType	        () const				                { return _type; }
-=======
-	void                           setMaskOptions	( const EMaskOptions& options )    { _options = options; }
-	void                           setMaskType	( const EMaskType& type )          { _type = type; }
 
-	EMaskOptions                    getMaskOptions	() const                           { return _options; }
-	EMaskType                       getMaskType	() const                           { return _type; }
->>>>>>> 6fa0f1abe0806f9834d74583cb6985782243fc01
+        void                           setMaskOptions       ( const EMaskOptions& options )             { _options = options; }
+        void                           setMaskType          ( const EMaskType& type )                   { _type = type; }	
+	EMaskOptions                   getMaskOptions       () const                                    { return _options; }
+	EMaskType                      getMaskType          () const                                    { return _type; }
 
 	virtual inline void clear()
 	{
 		_directory.clear();
 		_type    = eMaskTypeDefault;
 		_options = eMaskOptionsDefault;
-		initOutputColor ( _options & eMaskOptionsColor );
+		setColorActive ( _options & eMaskOptionsColor );
 	}
 
 private:
