@@ -2,6 +2,7 @@
 
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
 
 #include <terry/globals.hpp>
 #include <terry/filter/localMaxima.hpp>
@@ -64,9 +65,9 @@ void LocalMaximaProcess<SView, DView>::multiThreadProcessImages( const OfxRectI&
 	}
 
 	terry::algorithm::transform_pixels_locator_progress(
-		this->_srcView, this->_srcPixelRod,
-		this->_dstView, this->_dstPixelRod,
-		procWindowRoWCrop,
+		this->_srcView, ofxToGil(this->_srcPixelRod),
+		this->_dstView, ofxToGil(this->_dstPixelRod),
+		ofxToGil(procWindowRoWCrop),
 		terry::filter::pixel_locator_gradientLocalMaxima_t<SView,DView>(this->_srcView),
 		this->getOfxProgress()
 		);

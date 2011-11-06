@@ -1,6 +1,7 @@
 #ifndef _TERRY_SAMPLER_RESAMPLE_HPP_
 #define	_TERRY_SAMPLER_RESAMPLE_HPP_
 
+#include <terry/math/Rect.hpp>
 #include <terry/numeric/sampler.hpp>
 #include <terry/numeric/resample.hpp>
 
@@ -26,7 +27,7 @@ template<
 // Models MappingFunctionConcept
 void resample_pixels_progress(
 	const SrcView& src_view, const DstView& dst_view,
-	const MapFn& dst_to_src, const OfxRectI& procWindow,
+	const MapFn& dst_to_src, const terry::Rect<std::ssize_t>& procWindow,
 	const EParamFilterOutOfImage& outOfImageProcess,
 	Progress& p,
 	Sampler sampler = Sampler() )

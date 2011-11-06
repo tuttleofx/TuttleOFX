@@ -36,9 +36,16 @@ private:
 };
 
 template <typename T>
-T Rect<T>::* const Rect<T>::mem_array[Rect<T>::num_dimensions] = { &Rect<T>::x, &Rect<T>::y };
+T Rect<T>::* const Rect<T>::mem_array[Rect<T>::num_dimensions] = { &Rect<T>::x1, &Rect<T>::y1, &Rect<T>::x2, &Rect<T>::y2 };
 
-
+/**
+ * @brief Retrieve the bounding box of an image [0, 0, width, height].
+ */
+template<typename T, class View>
+Rect<T> getBounds( const View& v )
+{
+	return Rect<T>( 0, 0, v.width(), v.height() );
+}
 
 template<class Point, class Rect>
 inline bool pointInRect( const Point& p, const Rect& rec )

@@ -3,16 +3,13 @@
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE terry_filter_sobel_tests
+#define BOOST_TEST_MODULE terry_filter_tests
 #include <boost/test/unit_test.hpp>
-//#include <boost/test/execution_monitor.hpp>
-//#include <boost/test/exception_safety.hpp>
-
 using namespace boost::unit_test;
 
 BOOST_AUTO_TEST_SUITE( terry_filter_sobel_tests_suite01 )
 
-BOOST_AUTO_TEST_CASE( compilation )
+BOOST_AUTO_TEST_CASE( sobel )
 {
 	// empty input/output, the test only check the compilation
 	terry::rgb32f_view_t inView;

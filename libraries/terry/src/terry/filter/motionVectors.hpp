@@ -126,10 +126,10 @@ template<
 	typename DstView,
 	typename Progress>
 // Models MutableRandomAccess2DImageViewConcept
-bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcRod,
-                                    const VecView& xVecView, const VecView& yVecView, const OfxRectI& vecRod,
-                                    const DstView& dstView, const OfxRectI& dstRod,
-                                    const OfxRectI& procWindowRoW,
+bool motionvectors_resample_pixels( const SrcView& srcView, const Rect<std::ssize_t>& srcRod,
+                                    const VecView& xVecView, const VecView& yVecView, const Rect<std::ssize_t>& vecRod,
+                                    const DstView& dstView, const Rect<std::ssize_t>& dstRod,
+                                    const Rect<std::ssize_t>& procWindowRoW,
                                     Progress& p,
                                     Sampler sampler = Sampler() )
 {
@@ -167,12 +167,12 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 	// |________________________\|
 	// procWindow is necessarily contained in dst RoD
 	//
-	OfxRectI shiftProcWinDstRod; // only positive values
+	Rect<std::ssize_t> shiftProcWinDstRod; // only positive values
 	shiftProcWinDstRod.x1 = procWindowRoW.x1 - dstRod.x1;
 	shiftProcWinDstRod.y1 = procWindowRoW.y1 - dstRod.y1;
 	shiftProcWinDstRod.x2 = dstRod.x2 - procWindowRoW.x2;
 	shiftProcWinDstRod.y2 = dstRod.y2 - procWindowRoW.y2;
-	OfxRectI shiftProcWinVecRod;
+	Rect<std::ssize_t> shiftProcWinVecRod;
 	shiftProcWinVecRod.x1 = procWindowRoW.x1 - vecRod.x1;
 	shiftProcWinVecRod.y1 = procWindowRoW.y1 - vecRod.y1;
 	shiftProcWinVecRod.x2 = vecRod.x2 - procWindowRoW.x2;

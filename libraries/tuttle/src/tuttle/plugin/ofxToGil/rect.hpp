@@ -3,7 +3,8 @@
 
 #include <ofxCore.h>
 
-#include <terry/math/rect.hpp>
+#include <tuttle/common/system/compatibility.hpp>
+#include <terry/math/Rect.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -19,12 +20,12 @@ inline OfxRectD gilToOfx( const terry::Rect<double>& r )
 	return rect;
 }
 
-inline terry::Rect<int> ofxToGil( const OfxRectI& r )
+inline terry::Rect<std::ssize_t> ofxToGil( const OfxRectI& r )
 {
 	return terry::Rect<int>( r.x1, r.y1, r.x2, r.y2 );
 }
 
-inline OfxRectI gilToOfx( const terry::Rect<int>& r )
+inline OfxRectI gilToOfx( const terry::Rect<std::ssize_t>& r )
 {
 	const OfxRectI rect = { r.x1, r.y1, r.x2, r.y2 };
 	return rect;

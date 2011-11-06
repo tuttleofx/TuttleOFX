@@ -5,7 +5,7 @@
 #include <terry/draw/fill.hpp>
 #include <terry/basic_colors.hpp>
 #include <terry/channel.hpp>
-#include <terry/math/rect.hpp>
+#include <terry/math/Rect.hpp>
 
 #include <queue>
 #include <list>
@@ -600,7 +600,7 @@ void flood_fill( const SView& srcView, const Rect<int>& srcRod,
 
 terry::draw::fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
 
-flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View, OfxAllocator>(
+flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View, Allocator>(
 				this->_srcView, ofxToGil(this->_srcPixelRod),
 				this->_dstView, ofxToGil(this->_dstPixelRod),
 				ofxToGil(procWindowRoWCrop),

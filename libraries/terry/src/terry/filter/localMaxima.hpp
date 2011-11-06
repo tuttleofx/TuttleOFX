@@ -2,7 +2,7 @@
 #define _TERRY_FILTER_LOCALMAXIMA_HPP_
 
 #include <terry/channel.hpp>
-#include <terry/math/rect.hpp>
+#include <terry/math/Rect.hpp>
 
 namespace terry {
 namespace filter {

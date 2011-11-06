@@ -1,6 +1,9 @@
 #ifndef _TERRY_FILTER_THINNING_HPP_
 #define	_TERRY_FILTER_THINNING_HPP_
 
+#include <terry/math/Rect.hpp>
+#include <terry/algorithm/transform_pixels.hpp>
+
 #include <terry/channel.hpp>
 #include <terry/numeric/pixel_numeric_operations.hpp>
 
@@ -88,25 +91,34 @@ struct pixel_locator_thinning_t
 
 }
 
-/*
+
 template<class SView, class DView>
-void thinning( const SView& srcView, DView& dstView )
+void applyThinning( const SView& srcView, DView& tmpView, DView& dstView )
 {
-	const Rect<int> srcRod( 0, 0, srcView.width(), srcView.height() );
+	typedef typename DView::value_type DPixel;
+	DPixel pixelZero; terry::pixel_zeros_t<DPixel>()( pixelZero );
+	
+	// todo: only fill borders !!
+	fill_pixels( tmpView, pixelZero );
+	fill_pixels( dstView, pixelZero );
+
+	const Rect<std::ptrdiff_t> srcRod = getBounds<std::ptrdiff_t>(srcView);
+	const Rect<std::ptrdiff_t> proc1 = rectangleReduce( srcRod, 1 );
+	const Rect<std::ptrdiff_t> proc2 = rectangleReduce( proc1, 1 );
+
 	algorithm::transform_pixels_locator(
-		srcView, this->_srcPixelRod,
-		view_tmp, procWindowRoWCrop1,
-		procWindowRoWCrop1,
-		terry::filter::thinning::pixel_locator_thinning_t<View,CView>(this->_srcView, terry::filter::thinning::lutthin1),
+		srcView, srcRod,
+		tmpView, getBounds<std::ptrdiff_t>(tmpView),
+		proc1,
+		terry::filter::thinning::pixel_locator_thinning_t<SView,DView>(srcView, terry::filter::thinning::lutthin1)
 		);
 	algorithm::transform_pixels_locator(
-		view_tmp, procWindowRoWCrop1, //srcRodCrop1,
-		this->_dstView, this->_dstPixelRod,
-		procWindowRoWCrop2,
-		terry::filter::thinning::pixel_locator_thinning_t<CView,View>(view_tmp, terry::filter::thinning::lutthin2),
+		tmpView, getBounds<std::ptrdiff_t>(tmpView),
+		dstView, getBounds<std::ptrdiff_t>(dstView),
+		proc2,
+		terry::filter::thinning::pixel_locator_thinning_t<DView,DView>(tmpView, terry::filter::thinning::lutthin2)
 		);
 }
-*/
 
 }
 }

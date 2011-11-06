@@ -79,8 +79,8 @@ private:
 template < class VIEW_T >
 VIEW_T Image::getGilView()
 {
-	OfxRectI rod = this->getROD();
-	OfxRectI bounds = this->getBounds();
+	//const OfxRectI rod = this->getROD();
+	const OfxRectI bounds = this->getBounds();
 
 	TUTTLE_TCOUT_VAR( bounds );
 	TUTTLE_TCOUT_VAR( std::abs( bounds.x2 - bounds.x1 ) );

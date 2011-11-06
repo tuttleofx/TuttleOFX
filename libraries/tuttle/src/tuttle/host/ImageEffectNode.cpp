@@ -322,7 +322,7 @@ void ImageEffectNode::checkClipsConnections() const
 void ImageEffectNode::initComponents()
 {
 	attribute::ClipImage& outputClip    = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
-	bool inputClipsFound                = false;
+	//bool inputClipsFound                = false;
 	std::string mostChromaticComponents = kOfxImageComponentNone;
 
 	for( ClipImageMap::iterator it = _clips.begin();
@@ -332,7 +332,7 @@ void ImageEffectNode::initComponents()
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 		if( !clip.isOutput() && clip.isConnected() )
 		{
-			inputClipsFound = true;
+			//inputClipsFound = true;
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
 			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponentsString(), mostChromaticComponents );
 		}

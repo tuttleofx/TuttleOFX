@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_PINNING_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
+#include <terry/math/Rect.hpp>
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
@@ -31,7 +32,7 @@ public:
 
 private:
 	template<class Sampler>
-	void resample( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler = Sampler() );
+	void resample( View& srcView, View& dstView, const terry::Rect<std::ssize_t>& procWindow, const Sampler& sampler = Sampler() );
 };
 
 }

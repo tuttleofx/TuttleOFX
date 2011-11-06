@@ -2,6 +2,8 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
+
 #include <terry/sampler/resample.hpp>
 
 namespace tuttle {
@@ -146,34 +148,35 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 {
 	using namespace terry::sampler;
 	EParamFilterOutOfImage outOfImageProcess = _params._samplerProcessParams._outOfImageProcess;
+	terry::Rect<std::ssize_t> procWin = ofxToGil(procWindow);
 	switch( _params._lensType )
 	{
 		case eParamLensTypeStandard:
 		{
 			if( _p._distort )
 			{
-				resample_pixels_progress( srcView, dstView, static_cast<NormalLensDistortParams<double>&>( _p ), procWindow, outOfImageProcess, this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, static_cast<NormalLensDistortParams<double>&>( _p ), procWin, outOfImageProcess, this->getOfxProgress(), sampler );
 			}
 			else
 			{
-				resample_pixels_progress( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>( _p ), procWindow, outOfImageProcess,  this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			}
 			return;
 		}
 		case eParamLensTypeFisheye:
 		{
 			if( _p._distort )
-				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>( _p ), procWindow, outOfImageProcess,  this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			else
-				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>( _p ), procWindow, outOfImageProcess,  this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
 		case eParamLensTypeAdvanced:
 		{
 			if( _p._distort )
-				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>( _p ), procWindow, outOfImageProcess,  this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			else
-				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>( _p ), procWindow, outOfImageProcess,  this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
 	}

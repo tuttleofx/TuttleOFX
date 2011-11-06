@@ -3,7 +3,7 @@
 #include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/ofxToGil/rect.hpp>
 
-#include <terry/math/rect.hpp>
+#include <terry/math/Rect.hpp>
 #include <terry/draw/fill.hpp>
 #include <terry/basic_colors.hpp>
 #include <terry/globals.hpp>

@@ -5,7 +5,7 @@
 #include "../../tuttle/src/tuttle/common/system/system.hpp"
 #include "../../tuttle/src/tuttle/common/system/compatibility.hpp"
 
-//#include <ofxCore.h>
+#include <terry/math/Rect.hpp>
 
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/typedefs.hpp>
@@ -20,7 +20,7 @@ namespace terry {
 
 /*
 template<class View>
-View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
+View getFullView( View tileView, const Rect<std::ssize_t>& bounds, const Rect<std::ssize_t>& rod )
 {
 	using namespace boost::gil;
 	typedef typename View::value_type Pixel;

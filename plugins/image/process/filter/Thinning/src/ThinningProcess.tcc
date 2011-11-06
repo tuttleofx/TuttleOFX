@@ -1,5 +1,6 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <terry/globals.hpp>
@@ -66,15 +67,15 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	CView view_tmp = view( image_tmp );
 
 	terry::algorithm::transform_pixels_locator_progress(
-		this->_srcView, this->_srcPixelRod,
-		view_tmp, procWindowRoWCrop1,
-		procWindowRoWCrop1,
+		this->_srcView, ofxToGil(this->_srcPixelRod),
+		view_tmp, ofxToGil(procWindowRoWCrop1),
+		ofxToGil(procWindowRoWCrop1),
 		terry::filter::thinning::pixel_locator_thinning_t<View,CView>(this->_srcView, terry::filter::thinning::lutthin1),
 		this->getOfxProgress() );
 	terry::algorithm::transform_pixels_locator_progress(
-		view_tmp, procWindowRoWCrop1, //srcRodCrop1,
-		this->_dstView, this->_dstPixelRod,
-		procWindowRoWCrop2,
+		view_tmp, ofxToGil(procWindowRoWCrop1), //srcRodCrop1,
+		this->_dstView, ofxToGil(this->_dstPixelRod),
+		ofxToGil(procWindowRoWCrop2),
 		terry::filter::thinning::pixel_locator_thinning_t<CView,View>(view_tmp, terry::filter::thinning::lutthin2),
 		this->getOfxProgress() );
 }

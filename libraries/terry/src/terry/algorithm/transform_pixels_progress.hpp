@@ -189,8 +189,8 @@ F transform_pixels_progress( const View1& src1, const View2& src2, const View3& 
 /// \brief std::transform for image views
 template <typename View, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, F& fun, Progress& p )
+F transform_pixels_locator_progress( const View& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator dloc = dst.xy_at( renderWin.x1-dstRod.x1, renderWin.y1-dstRod.y1 );
@@ -213,8 +213,8 @@ F transform_pixels_locator_progress( const View& dst, const OfxRectI& dstRod,
 /// \brief std::transform for image views
 template <typename View, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, const F& fun, Progress& p )
+F transform_pixels_locator_progress( const View& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, const F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator dloc = dst.xy_at( renderWin.x1-dstRod.x1, renderWin.y1-dstRod.y1 );
@@ -239,9 +239,9 @@ F transform_pixels_locator_progress( const View& dst, const OfxRectI& dstRod,
 /// \brief std::transform for image views
 template <typename View, typename ViewDst, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View& src, const OfxRectI& srcRod,
-									 const ViewDst& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, F& fun, Progress& p )
+F transform_pixels_locator_progress( const View& src, const Rect<std::ssize_t>& srcRod,
+									 const ViewDst& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator sloc = src.xy_at( renderWin.x1-srcRod.x1, renderWin.y1-srcRod.y1 );
@@ -265,9 +265,9 @@ F transform_pixels_locator_progress( const View& src, const OfxRectI& srcRod,
 /// \brief std::transform for image views
 template <typename View, typename ViewDst, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View& src, const OfxRectI& srcRod,
-									 const ViewDst& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, const F& fun, Progress& p )
+F transform_pixels_locator_progress( const View& src, const Rect<std::ssize_t>& srcRod,
+									 const ViewDst& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, const F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator sloc = src.xy_at( renderWin.x1-srcRod.x1, renderWin.y1-srcRod.y1 );
@@ -293,10 +293,10 @@ F transform_pixels_locator_progress( const View& src, const OfxRectI& srcRod,
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename ViewDst, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
-									 const View2& src2, const OfxRectI& src2Rod,
-									 const ViewDst& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, F& fun, Progress& p )
+F transform_pixels_locator_progress( const View1& src1, const Rect<std::ssize_t>& src1Rod,
+									 const View2& src2, const Rect<std::ssize_t>& src2Rod,
+									 const ViewDst& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );
@@ -322,10 +322,10 @@ F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename ViewDst, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
-									 const View2& src2, const OfxRectI& src2Rod,
-									 const ViewDst& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, const F& fun, Progress& p )
+F transform_pixels_locator_progress( const View1& src1, const Rect<std::ssize_t>& src1Rod,
+									 const View2& src2, const Rect<std::ssize_t>& src2Rod,
+									 const ViewDst& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, const F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );
@@ -354,11 +354,11 @@ F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename View3, typename ViewDst, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
-									 const View2& src2, const OfxRectI& src2Rod,
-									 const View2& src3, const OfxRectI& src3Rod,
-									 const ViewDst& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, F& fun, Progress& p )
+F transform_pixels_locator_progress( const View1& src1, const Rect<std::ssize_t>& src1Rod,
+									 const View2& src2, const Rect<std::ssize_t>& src2Rod,
+									 const View2& src3, const Rect<std::ssize_t>& src3Rod,
+									 const ViewDst& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );
@@ -386,11 +386,11 @@ F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename View3, typename ViewDst, typename F, typename Progress>
 GIL_FORCEINLINE
-F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
-									 const View2& src2, const OfxRectI& src2Rod,
-									 const View2& src3, const OfxRectI& src3Rod,
-									 const ViewDst& dst, const OfxRectI& dstRod,
-									 const OfxRectI& renderWin, const F& fun, Progress& p )
+F transform_pixels_locator_progress( const View1& src1, const Rect<std::ssize_t>& src1Rod,
+									 const View2& src2, const Rect<std::ssize_t>& src2Rod,
+									 const View2& src3, const Rect<std::ssize_t>& src3Rod,
+									 const ViewDst& dst, const Rect<std::ssize_t>& dstRod,
+									 const Rect<std::ssize_t>& renderWin, const F& fun, Progress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );

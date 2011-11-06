@@ -1,5 +1,6 @@
 #include <terry/geometry/pinning.hpp>
 
+#include <tuttle/plugin/ofxToGil/rect.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <terry/globals.hpp>
@@ -34,7 +35,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 	using namespace terry;
 	using namespace terry::sampler;
 	
-	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const terry::Rect<std::ssize_t> procWindowOutput = ofxToGil( this->translateRoWToOutputClipCoordinates( procWindowRoW ) );
 
 	switch( _params._samplerProcessParams._filter )
 	{
@@ -133,7 +134,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 
 template<class View>
 template<class Sampler>
-void PinningProcess<View>::resample( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler )
+void PinningProcess<View>::resample( View& srcView, View& dstView, const terry::Rect<std::ssize_t>& procWindow, const Sampler& sampler )
 {
 	using namespace boost::gil;
 	switch( _params._method )

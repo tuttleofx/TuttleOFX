@@ -1,20 +1,13 @@
 #ifndef _TERRY_ALGORITHM_TRANSFORM_PIXELS_HPP_
 #define	_TERRY_ALGORITHM_TRANSFORM_PIXELS_HPP_
 
+#include <terry/math/Rect.hpp>
 #include <boost/gil/algorithm.hpp>
 
 namespace terry {
 namespace algorithm {
 
-template<typename T>
-struct rect_t
-{
-	rect_t( const T vx1, const T vy1, const T vx2, const T vy2 )
-	: x1( vx1 ), y1( vy1 ), x2( vx2 ), y2( vy2 )
-	{}
-
-	T x1,y1,x2,y2;
-};
+// 1 source/dest without region
 
 /// \ingroup ImageViewSTLAlgorithmsTransformPixels
 /// \brief std::transform for image views
@@ -30,24 +23,79 @@ F transform_pixels( const View& dst, F& fun )
 	return fun;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+/// \ingroup ImageViewSTLAlgorithmsTransformPixels
+/// \brief std::transform for image views
+template <typename View, typename F> GIL_FORCEINLINE
+F transform_pixels( const View& dst, const F& fun )
+{
+	for( std::ptrdiff_t y = 0; y < dst.height( ); ++y )
+	{
+		typename View::x_iterator dstIt = dst.row_begin( y );
+		for( std::ptrdiff_t x = 0; x < dst.width( ); ++x )
+			fun( dstIt[x] );
+	}
+	return fun;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 ///
 /// transform_pixels_locator
 ///
-//////////////////////////////////////////////////////////////////////////////////////
-
 /// \defgroup ImageViewSTLAlgorithmsTransformPixelLocator transform_pixels_locator
 /// \ingroup ImageViewSTLAlgorithms
-/// \brief for image views (passes locators, instead of pixel references, to the function object)
+/// \brief for image views (passes locators to the function object, instead of pixel references)
+////////////////////////////////////////////////////////////////////////////////
 
-// 1 source/dest
+// 1 source/dest without region
+
+/// \ingroup ImageViewSTLAlgorithmsTransformPixels
+/// \brief std::transform for image views
+template <typename View, typename F> GIL_FORCEINLINE
+F transform_pixels_locator( const View& dst, F& fun )
+{
+	typename View::xy_locator dloc = dst.xy_at( 0, 0 );
+	for( std::ptrdiff_t y = 0; y < dst.height(); ++y )
+	{
+		for( std::ptrdiff_t x = 0;
+		     x < dst.width();
+		     ++x, ++dloc.x() )
+		{
+			fun( dloc );
+		}
+		dloc.x() -= dst.width(); ++dloc.y();
+	}
+	return fun;
+}
+
+/// \ingroup ImageViewSTLAlgorithmsTransformPixels
+/// \brief std::transform for image views
+template <typename View, typename F> GIL_FORCEINLINE
+F transform_pixels_locator( const View& dst, const F& fun )
+{
+	typename View::xy_locator dloc = dst.xy_at( 0, 0 );
+	for( std::ptrdiff_t y = 0; y < dst.height(); ++y )
+	{
+		for( std::ptrdiff_t x = 0;
+		     x < dst.width();
+		     ++x, ++dloc.x() )
+		{
+			fun( dloc );
+		}
+		dloc.x() -= dst.width(); ++dloc.y();
+	}
+	return fun;
+}
+
+
+// 1 source/dest with regions
 
 /// \ingroup ImageViewSTLAlgorithmsTransformPixels
 /// \brief std::transform for image views
 template <typename View, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, F& fun )
+F transform_pixels_locator( const View& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator dloc = dst.xy_at( renderWin.x1-dstRod.x1, renderWin.y1-dstRod.y1 );
@@ -68,8 +116,8 @@ F transform_pixels_locator( const View& dst, const rect_t<std::ptrdiff_t>& dstRo
 /// \brief std::transform for image views
 template <typename View, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, const F& fun )
+F transform_pixels_locator( const View& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, const F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator dloc = dst.xy_at( renderWin.x1-dstRod.x1, renderWin.y1-dstRod.y1 );
@@ -85,6 +133,7 @@ F transform_pixels_locator( const View& dst, const rect_t<std::ptrdiff_t>& dstRo
 	}
 	return fun;
 }
+
 
 // 1 source, 1 dest
 
@@ -92,9 +141,9 @@ F transform_pixels_locator( const View& dst, const rect_t<std::ptrdiff_t>& dstRo
 /// \brief std::transform for image views
 template <typename View, typename ViewDst, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View& src, const rect_t<std::ptrdiff_t>& srcRod,
-							const ViewDst& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, F& fun )
+F transform_pixels_locator( const View& src, const Rect<std::ptrdiff_t>& srcRod,
+							const ViewDst& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator sloc = src.xy_at( renderWin.x1-srcRod.x1, renderWin.y1-srcRod.y1 );
@@ -116,9 +165,9 @@ F transform_pixels_locator( const View& src, const rect_t<std::ptrdiff_t>& srcRo
 /// \brief std::transform for image views
 template <typename View, typename ViewDst, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View& src, const rect_t<std::ptrdiff_t>& srcRod,
-							const ViewDst& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, const F& fun )
+F transform_pixels_locator( const View& src, const Rect<std::ptrdiff_t>& srcRod,
+							const ViewDst& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, const F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View::xy_locator sloc = src.xy_at( renderWin.x1-srcRod.x1, renderWin.y1-srcRod.y1 );
@@ -136,16 +185,17 @@ F transform_pixels_locator( const View& src, const rect_t<std::ptrdiff_t>& srcRo
 	return fun;
 }
 
+
 // 2 sources, 1 dest
 
 /// \ingroup ImageViewSTLAlgorithmsTransformPixels
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename ViewDst, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src1Rod,
-							const View2& src2, const rect_t<std::ptrdiff_t>& src2Rod,
-							const ViewDst& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, F& fun )
+F transform_pixels_locator( const View1& src1, const Rect<std::ptrdiff_t>& src1Rod,
+							const View2& src2, const Rect<std::ptrdiff_t>& src2Rod,
+							const ViewDst& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );
@@ -169,10 +219,10 @@ F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename ViewDst, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src1Rod,
-							const View2& src2, const rect_t<std::ptrdiff_t>& src2Rod,
-							const ViewDst& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, const F& fun )
+F transform_pixels_locator( const View1& src1, const Rect<std::ptrdiff_t>& src1Rod,
+							const View2& src2, const Rect<std::ptrdiff_t>& src2Rod,
+							const ViewDst& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, const F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );
@@ -199,11 +249,11 @@ F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename View3, typename ViewDst, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src1Rod,
-							const View2& src2, const rect_t<std::ptrdiff_t>& src2Rod,
-							const View2& src3, const rect_t<std::ptrdiff_t>& src3Rod,
-							const ViewDst& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, F& fun )
+F transform_pixels_locator( const View1& src1, const Rect<std::ptrdiff_t>& src1Rod,
+							const View2& src2, const Rect<std::ptrdiff_t>& src2Rod,
+							const View2& src3, const Rect<std::ptrdiff_t>& src3Rod,
+							const ViewDst& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );
@@ -229,11 +279,11 @@ F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src
 /// \brief std::transform for image views
 template <typename View1, typename View2, typename View3, typename ViewDst, typename F>
 GIL_FORCEINLINE
-F transform_pixels_locator( const View1& src1, const rect_t<std::ptrdiff_t>& src1Rod,
-							const View2& src2, const rect_t<std::ptrdiff_t>& src2Rod,
-							const View2& src3, const rect_t<std::ptrdiff_t>& src3Rod,
-							const ViewDst& dst, const rect_t<std::ptrdiff_t>& dstRod,
-							const rect_t<std::ptrdiff_t>& renderWin, const F& fun )
+F transform_pixels_locator( const View1& src1, const Rect<std::ptrdiff_t>& src1Rod,
+							const View2& src2, const Rect<std::ptrdiff_t>& src2Rod,
+							const View2& src3, const Rect<std::ptrdiff_t>& src3Rod,
+							const ViewDst& dst, const Rect<std::ptrdiff_t>& dstRod,
+							const Rect<std::ptrdiff_t>& renderWin, const F& fun )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
 	typename View1::xy_locator s1loc = src1.xy_at( renderWin.x1-src1Rod.x1, renderWin.y1-src1Rod.y1 );
