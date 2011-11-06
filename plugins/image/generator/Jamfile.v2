@@ -3,7 +3,7 @@
 ###############################################################################
 path-constant BUILD : $(BUILD)/generator ;
 
-for local l in [ glob * : Text ]
+for local l in [ glob * ]
 {
    build-project $(l) ;
 }

@@ -19,8 +19,10 @@ use-project /raw    : $(3RD_PARTY)/libraw ;
 ###############################################################################
 plugin  Raw : 
 		[ glob-tree *.cpp : tests ]
-		/tuttleplugin/<link>static
+                /tuttleplugin/<link>static
 		/raw
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
 
 ###############################################################################

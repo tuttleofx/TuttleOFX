@@ -1,6 +1,8 @@
 #ifndef _SAM_DO_NODE_IO_HPP_
 #define	_SAM_DO_NODE_IO_HPP_
 
+#include "global.hpp"
+
 #include <tuttle/host/Graph.hpp>
 
 #include <vector>
@@ -8,8 +10,6 @@
 
 namespace sam {
 namespace samdo {
-
-namespace ttl = tuttle::host;
 
 /**
  * @todo
@@ -21,8 +21,11 @@ void coutProperties( const ttl::Graph::Node& node )
 	{
 		TUTTLE_COUT(
 			"\t" <<
+			_color._green <<
 			clip.first << " " <<
-			(clip.second->getDimension() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(clip.second->getDimension())) : "")
+			_color._red <<
+			(clip.second->getDimension() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(clip.second->getDimension())) : "") <<
+			_color._std
 			);
 	}
 }
@@ -49,9 +52,12 @@ void coutParameters( const ttl::Graph::Node& node )
 			continue; // ignore secret parameters
 		TUTTLE_COUT(
 			"\t" <<
+			_color._green <<
 			param.getScriptName() << ":\t" <<
+			_color._red <<
 			param.getParamType() <<
-			(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "")
+			(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "") <<
+			_color._std
 			);
 		const std::string& hint = param.getHint();
 		if( hint.size() )

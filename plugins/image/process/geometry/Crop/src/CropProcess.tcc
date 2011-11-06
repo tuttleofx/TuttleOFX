@@ -1,23 +1,20 @@
-#include <tuttle/common/math/rectOp.hpp>
-#include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/fill.hpp>
-#include <tuttle/plugin/image/gil/basic_colors.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/global.hpp>
-
-#include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/sampler.hpp>
-#include <boost/gil/extension/numeric/resample.hpp>
-
-#include "CropProcess.hpp"
 #include "CropPlugin.hpp"
 
+#include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
+
+#include <terry/math/Rect.hpp>
+#include <terry/draw/fill.hpp>
+#include <terry/basic_colors.hpp>
+#include <terry/globals.hpp>
+#include <terry/numeric/sampler.hpp>
+#include <terry/numeric/resample.hpp>
+
+#include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace crop {
-
-using namespace boost::gil;
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin& instance )
@@ -46,7 +43,7 @@ void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 
 	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 
-	fill_pixels( this->_dstView, procWindowOutput, _params._color );
+	terry::draw::fill_pixels( this->_dstView, ofxToGil(procWindowOutput), _params._color );
 
 	// proc region of source image to copy
 	const OfxRectI procCropRoW = rectanglesIntersection(

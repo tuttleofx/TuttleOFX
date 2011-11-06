@@ -1,9 +1,10 @@
 #include "LensDistortPlugin.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/numeric/sampler.hpp>
-#include <tuttle/plugin/image/gil/resample.hpp>
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
+
+#include <terry/sampler/resample.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -20,10 +21,7 @@ void LensDistortProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 
-	// recovery parameters values
-	_lensType      = _plugin.getLensType();
-	_interpolation = _plugin.getInterpolation();
-	_centerType    = _plugin.getCenterType();
+	_params = _plugin.getProcessParams();;
 
 	OfxRectD srcRod = rectIntToDouble( this->_srcPixelRod );
 	OfxRectD dstRod = rectIntToDouble( this->_dstPixelRod );
@@ -45,83 +43,100 @@ void LensDistortProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace bgil;
+	using namespace boost::gil;
+	using namespace terry::sampler;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
-	switch( _interpolation )
+	switch( _params._samplerProcessParams._filter )
 	{
-		case eParamInterpolationNearest:
+		case eParamFilterNearest:
 		{
-			lensDistort<ttl_nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationBilinear:
+		case eParamFilterBilinear:
 		{
-			lensDistort<ttl_bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationBicubic:
+		case eParamFilterBC:
 		{
-			lensDistort<ttl_bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			bc_sampler BCsampler;
+			BCsampler.valB = _params._samplerProcessParams._paramB;
+			BCsampler.valC = _params._samplerProcessParams._paramC;
+			lensDistort( this->_srcView, this->_dstView, procWindowOutput, BCsampler );
 			return;
 		}
-		case eParamInterpolationCatmul:
+		case eParamFilterBicubic:
 		{
-			lensDistort<ttl_catmul_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationMitchell:
+		case eParamFilterCatrom:
 		{
-			lensDistort<ttl_mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::catrom_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationParzen:
+		case eParamFilterMitchell:
 		{
-			lensDistort<ttl_parzen_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationKeys:
+		case eParamFilterParzen:
 		{
-			lensDistort<ttl_keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::parzen_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationSimon:
+		case eParamFilterKeys:
 		{
-			lensDistort<ttl_simon_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationRifman:
+		case eParamFilterSimon:
 		{
-			lensDistort<ttl_rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<terry::sampler::simon_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-
-
-//		case eParamInterpolationLanczos3:
-//		{
-//			lensDistort<ttl_lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationLanczos4:
-//		{
-//			lensDistort<ttl_lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationLanczos6:
-//		{
-//			lensDistort<ttl_lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationLanczos12:
-//		{
-//			lensDistort<ttl_lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
-//		case eParamInterpolationGaussian:
-//		{
-//			lensDistort<ttl_gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-//			return;
-//		}
+		case eParamFilterRifman:
+		{
+			lensDistort<terry::sampler::rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos:
+		{
+			lanczos_sampler lanczosSampler;
+			lanczosSampler.size = _params._samplerProcessParams._filterSize;
+			lensDistort( this->_srcView, this->_dstView, procWindowOutput, lanczosSampler );
+			return;
+		}
+		case eParamFilterLanczos3:
+		{
+			lensDistort<terry::sampler::lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos4:
+		{
+			lensDistort<terry::sampler::lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos6:
+		{
+			lensDistort<terry::sampler::lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterLanczos12:
+		{
+			lensDistort<terry::sampler::lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamFilterGaussian:
+		{
+			gaussian_sampler gaussianSampler;
+			gaussianSampler.size  = _params._samplerProcessParams._filterSize;
+			gaussianSampler.sigma = _params._samplerProcessParams._filterSigma;
+			lensDistort( this->_srcView, this->_dstView, procWindowOutput, gaussianSampler );
+			return;
+		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::user( "Interpolation method not recognize." ) );
@@ -129,36 +144,39 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 
 template<class View>
 template<class Sampler>
-void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const OfxRectI& procWindow )
+void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler )
 {
-	switch( _lensType )
+	using namespace terry::sampler;
+	EParamFilterOutOfImage outOfImageProcess = _params._samplerProcessParams._outOfImageProcess;
+	terry::Rect<std::ssize_t> procWin = ofxToGil(procWindow);
+	switch( _params._lensType )
 	{
 		case eParamLensTypeStandard:
 		{
 			if( _p._distort )
 			{
-				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<NormalLensDistortParams<double>&>( _p ), procWindow, this );
+				resample_pixels_progress( srcView, dstView, static_cast<NormalLensDistortParams<double>&>( _p ), procWin, outOfImageProcess, this->getOfxProgress(), sampler );
 			}
 			else
 			{
-				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>( _p ), procWindow, this );
+				resample_pixels_progress( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			}
 			return;
 		}
 		case eParamLensTypeFisheye:
 		{
 			if( _p._distort )
-				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>( _p ), procWindow, this );
+				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			else
-				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>( _p ), procWindow, this );
+				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
 		case eParamLensTypeAdvanced:
 		{
 			if( _p._distort )
-				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>( _p ), procWindow, this );
+				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			else
-				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>( _p ), procWindow, this );
+				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
 	}

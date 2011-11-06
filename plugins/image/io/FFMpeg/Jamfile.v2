@@ -22,8 +22,10 @@ project
 # Product 
 ###############################################################################
 plugin FFMpeg : 
-	[ glob-tree *.cpp ]
-	/tuttleplugin/<link>static
+		[ glob-tree *.cpp ]
+		/tuttleplugin/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
 
 ###############################################################################

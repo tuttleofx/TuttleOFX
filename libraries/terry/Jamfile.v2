@@ -1,0 +1,11 @@
+###############################################################################
+## Main BJam makefile for Tuttle library
+###############################################################################
+
+project terry
+	: requirements
+		<include>src
+	: usage-requirements
+		<include>src
+	;
+

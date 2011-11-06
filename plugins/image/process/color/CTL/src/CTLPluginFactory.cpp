@@ -81,23 +81,34 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::StringParamDescriptor* code = desc.defineStringParam( kParamCTLCode );
 	code->setLabel( "CTL code" );
-	code->setHint( "Your CTL code." );
+	code->setHint ( "Your CTL code." );
 	code->setStringType( OFX::eStringTypeMultiLine );
 	code->setDefault(
-		"void main( float rIn, float gIn, float bIn, float aIn,\n"
-		"           output float rOut, output float gOut, output float bOut, output float aOut )\n"
+		"void main(\n"
+		"                input varying float rIn,\n"
+		"                input varying float gIn,\n"
+		"                input varying float bIn,\n"
+		"                input varying float aIn,\n"
+		"                output varying float rOut,\n"
+		"                output varying float gOut,\n"
+		"                output varying float bOut,\n"
+		"                output varying float aOut\n"
+		"        )\n"
 		"{\n"
-		"    rOut = rIn;\n"
-		"    gOut = gIn;\n"
-		"    bOut = bIn;\n"
-		"    aOut = aIn;\n"
+		"        rOut = rIn;\n"
+		"        gOut = gIn;\n"
+		"        bOut = bIn;\n"
+		"        aOut = aIn;\n"
 		"}\n"
-		"\n"
 	);
+
+	OFX::PushButtonParamDescriptor* updateRender = desc.definePushButtonParam( kParamChooseInputCodeUpdate );
+	updateRender->setLabel( "Update" );
+	updateRender->setHint ( "Rendering the CTL code" );
 
 	OFX::StringParamDescriptor* file = desc.defineStringParam( kParamCTLFile );
 	file->setLabel( "CTL file" );
-	file->setHint( "CTL source code file." );
+	file->setHint ( "CTL source code file." );
 	file->setStringType( OFX::eStringTypeFilePath );
 	
 

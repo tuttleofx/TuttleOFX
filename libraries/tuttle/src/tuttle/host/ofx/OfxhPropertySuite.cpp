@@ -122,7 +122,8 @@ OfxStatus propGet( OfxPropertySetHandle          properties,
 	{
 
 		#ifdef DEBUG_PROPERTIES
-		std::cout << "\n";
+		std::cout <<  "dpxreader /datas/tmp/master32secsh01.####.dpx  // jpegwriter /datas/tmp/test.####.jpg" << std::endl;
+
 		#endif
 		return e.getStatus();
 	}

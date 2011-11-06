@@ -1,8 +1,8 @@
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <boost/gil/extension/numeric/kernel.hpp>
-#include <boost/gil/extension/numeric/convolve.hpp>
+#include <terry/numeric/kernel.hpp>
+#include <terry/numeric/convolve.hpp>
 
 #include "ConvolutionPlugin.hpp"
 

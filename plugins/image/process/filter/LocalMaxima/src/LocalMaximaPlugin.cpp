@@ -79,8 +79,7 @@ bool LocalMaximaPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgu
 
 void LocalMaximaPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	LocalMaximaProcessParams<Scalar> params = getProcessParams();
-	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 
 	OfxRectD srcRoi;
 	srcRoi.x1 = srcRod.x1 - 1;

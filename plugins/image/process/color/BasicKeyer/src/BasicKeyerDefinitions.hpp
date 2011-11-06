@@ -9,21 +9,21 @@ namespace tuttle {
 namespace plugin {
 namespace basicKeyer {
 
-const static std::string kParamMode         = "mode";
-const static std::string kParamModePosition = "position";
-const static std::string kParamModeColor    = "color";
+static const std::string kParamMode         = "mode";
+static const std::string kParamModePosition = "position";
+static const std::string kParamModeColor    = "color";
 enum EParamMode
 {
 	eParamModePosition = 0,
 	eParamModeColor
 };
 
-const static std::string kParamNbPoints = "nbPoints";
-const static unsigned int kMaxNbPoints  = 50;
-const static std::string kParamPoint    = "point";
-const static std::string kParamColor    = "color";
-const static std::string kParamMargin   = "margin";
-const static std::string kParamSoftness = "softness";
+static const std::string kParamNbPoints = "nbPoints";
+static const unsigned int kMaxNbPoints  = 50;
+static const std::string kParamPoint    = "point";
+static const std::string kParamColor    = "color";
+static const std::string kParamMargin   = "margin";
+static const std::string kParamSoftness = "softness";
 
 inline std::string getPointParamName( const unsigned int i )
 {

@@ -1,16 +1,16 @@
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderDefinitions.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
+#include <terry/typedefs.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/packed_pixel.hpp>
-#include <boost/gil/extension/typedefs.hpp>
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/cstdint.hpp>

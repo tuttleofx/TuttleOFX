@@ -47,12 +47,12 @@ void multMatrixBtoMatrixA( Matrix4& A, const Matrix4& B)
  */
 void setToIdentity(Matrix4& matrix)
 {
-    Matrix4 Id={ 1.0, 0.0, 0.0, 0.0,
-                 0.0, 1.0, 0.0, 0.0,
-                 0.0, 0.0, 1.0, 0.0,
-                 0.0, 0.0, 0.0, 1.0};
-	//recopy matrix
-    matrix =Id;
+    Matrix4 Id = { { 1.0, 0.0, 0.0, 0.0,
+		     0.0, 1.0, 0.0, 0.0,
+		     0.0, 0.0, 1.0, 0.0,
+		     0.0, 0.0, 0.0, 1.0 } };
+    //recopy matrix
+    matrix = Id;
 }
 
 /*
@@ -66,44 +66,44 @@ void setToRotate( Matrix4& matrix, const double& angle, const Axis axis )
     const double y=axis[1];
     const double z=axis[2];
 
-    if ((x==1.0) && (y==0.0) && (z==0.0))			//current axis is X
+    if ((x==1.0) && (y==0.0) && (z==0.0))               //current axis is X
     {
-        Matrix4 R={1.0, 0.0, 0.0, 0.0,
-                   0.0, c,   s,   0.0,
-                   0.0, -s,  c,   0.0,
-                   0.0, 0.0, 0.0, 1.0};
+	Matrix4 R = { { 1.0, 0.0, 0.0, 0.0,
+			0.0, c,   s,   0.0,
+			0.0, -s,  c,   0.0,
+			0.0, 0.0, 0.0, 1.0 } };
         //recopy matrix
-        matrix=R;
+	matrix = R;
     }
     else
     {
-        if ((x==0.0) && (y==1.0) && (z==0.0))		//current axis is Y
+	if ((x==0.0) && (y==1.0) && (z==0.0))           //current axis is Y
         {
-            Matrix4 R={c,   0.0, -s,  0.0,
-                       0.0, 1.0, 0.0, 0.0,
-                       s,   0.0, c,   0.0,
-                       0.0, 0.0, 0.0, 1.0};
-			//recopy matrix
-            matrix=R;
+	    Matrix4 R = { { c,   0.0, -s,  0.0,
+			   0.0, 1.0, 0.0, 0.0,
+			   s,   0.0, c,   0.0,
+			   0.0, 0.0, 0.0, 1.0 } };
+	    //recopy matrix
+	    matrix = R;
         }
         else
         {
 
-            if ((x==0.0) && (y==0.0) && (z==1.0))	//current axis is Z
+	    if ((x==0.0) && (y==0.0) && (z==1.0))       //current axis is Z
             {
-                Matrix4 R={c,   s,   0.0, 0.0,
-						  -s,  c,	 0.0, 0.0,
-                           0.0, 0.0, 1.0, 0.0,
-                           0.0, 0.0, 0.0, 1.0};
+		Matrix4 R = { { c,   s,   0.0, 0.0,
+			       -s,   c,   0.0, 0.0,
+				0.0, 0.0, 1.0, 0.0,
+				0.0, 0.0, 0.0, 1.0 } };
                 //recopy matrix
-                matrix=R;
+		matrix = R;
             }
-            else									//Rotation on non standard axis
+	    else                                        //Rotation on non standard axis
             {
-               Matrix4 R={ (1.0-c)*(x*x-1.0) + 1.0, (1.0-c)*x*y + (z*s),     (1.0-c)*x*z - (y*s),      0.0,
-                           (1.0-c)*x*y - (z*s),     (1.0-c)*(y*y-1.0) + 1.0, (1.0-c)*y*z + (x*s),      0.0,
-                           (1.0-c)*x*z + (y*s),     (1.0-c)*y*z - (x*s),     (1.0-c)*(z*z-1.0) + 1.0,  0.0,
-                            0.0,                     0.0,                     0.0,                     1.0};
+	      Matrix4 R = { { (1.0-c)*(x*x-1.0) + 1.0, (1.0-c)*x*y + (z*s),     (1.0-c)*x*z - (y*s),      0.0,
+			      (1.0-c)*x*y - (z*s),     (1.0-c)*(y*y-1.0) + 1.0, (1.0-c)*y*z + (x*s),      0.0,
+			      (1.0-c)*x*z + (y*s),     (1.0-c)*y*z - (x*s),     (1.0-c)*(z*z-1.0) + 1.0,  0.0,
+			       0.0,                     0.0,                     0.0,                     1.0 } };
               //recopy matrix
               matrix=R;
             }
@@ -116,10 +116,10 @@ void setToRotate( Matrix4& matrix, const double& angle, const Axis axis )
  */
 void setToTranslate(Matrix4& matrix, const Vect4& t)
 {
-    Matrix4 T = {1.0,   0.0,   0.0,   0.0,
-                 0.0,   1.0,   0.0,   0.0,
-                 0.0,   0.0,   1.0,   0.0,
-                 t[0],  t[1],  t[2],  1.0};
+    Matrix4 T = { { 1.0,   0.0,   0.0,   0.0,
+		    0.0,   1.0,   0.0,   0.0,
+		    0.0,   0.0,   1.0,   0.0,
+		    t[0],  t[1],  t[2],  1.0 } };
     //recopy matrix
     matrix=T;
 }
@@ -130,9 +130,9 @@ void setToTranslate(Matrix4& matrix, const Vect4& t)
 Matrix4 constructRotationMatrix(const Ofx3DPointD& rotationCenter, const double& angleX, const double& angleY, const double& angleZ)
 {	
 	//define axes
-	Axis axisX = {1,0,0};							//define axe X
-	Axis axisY = {0,1,0};							//define axe Y
-	Axis axisZ = {0,0,1};							//define axe Z
+	Axis axisX = { { 1,0,0 } };							//define axe X
+	Axis axisY = { { 0,1,0 } };							//define axe Y
+	Axis axisZ = { { 0,0,1 } };							//define axe Z
 	
 	//Define and create rotation + translation matrix
 	Matrix4 rotationTranslationMatrix;				//initialize
@@ -149,13 +149,13 @@ Matrix4 constructRotationMatrix(const Ofx3DPointD& rotationCenter, const double&
 	//Define and construct translation matrix
 	Matrix4 translationMatrix;								//initialize translation matrix
 	//Construct translation vector
-	Vect4 translationVector = {rotationCenter.x, rotationCenter.y, rotationCenter.z, 1.0};
+	Vect4 translationVector = { { rotationCenter.x, rotationCenter.y, rotationCenter.z, 1.0 } };
 	setToTranslate(translationMatrix,translationVector);	//construct translation matrix
 	
 	//Define and construct inverse translation matrix
 	Matrix4 translationInverseMatrix;						//initialize inverse translation matrix
 	//Construct inverse translation vector
-	Vect4 inverseTranslationVector = {-rotationCenter.x, -rotationCenter.y, -rotationCenter.z, 1.0};
+	Vect4 inverseTranslationVector = { { -rotationCenter.x, -rotationCenter.y, -rotationCenter.z, 1.0 } };
 	setToTranslate(translationInverseMatrix,inverseTranslationVector);	//construct inverse translation matrix
 	
 	//Construct final reference center matrix (inverse order of application)

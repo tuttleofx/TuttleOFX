@@ -1,3 +1,4 @@
+#include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
@@ -107,7 +108,7 @@ int main( int argc, char** argv )
 		exit( -1 );
 	}
 
-	bool                     colorOutput = false;
+	bool                     enableColor = false;
 
 	try
 	{
@@ -157,23 +158,15 @@ int main( int argc, char** argv )
 
 		if ( sam_vm.count("color") )
 		{
-			colorOutput = true;
+			enableColor = true;
 		}
 		if ( sam_vm.count("enable-color") )
 		{
-			std::string str = sam_vm["enable-color"].as<std::string>();
-
-			if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
-			{
-				colorOutput = true;
-			}
-			else
-			{
-				colorOutput = false;
-			}
+			const std::string str = sam_vm["enable-color"].as<std::string>();
+			enableColor = string_to_boolean( str );
 		}
 
-		if( colorOutput )
+		if( enableColor )
 		{
 			_color.enable();
 		}

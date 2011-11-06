@@ -3,6 +3,8 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
+#include <terry/algorithm/transform_pixels.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
@@ -12,13 +14,13 @@ namespace histogramKeyer {
  * @param size : size of the current source clip (width*height) 
  */
 OverlayData::OverlayData( const OfxPointI& size, const int nbSteps, const int nbStepsCurvesFromSelection)
+: _currentTime( 0 )
+, _vNbStep( nbSteps )
+, _vNbStepCurveFromSelection( nbStepsCurvesFromSelection )
+, _isComputing( false )
+, _isDataInvalid( true )
+, _size( size )
 {
-	_size = size;
-	_vNbStep = nbSteps;
-	_vNbStepCurveFromSelection = nbStepsCurvesFromSelection;
-	
-	_isComputing = false;
-	_currentTime = 0;
 	clearAll( size );
 }
 
@@ -37,7 +39,7 @@ void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& 
 	
 	Pixel_compute_histograms funct( _imgBool, data, isSelection );			//functor declaration
 	
-	boost::gil::transform_pixels( srcView, funct );		//(USED functor reference)
+	terry::algorithm::transform_pixels( srcView, funct );		//(USED functor reference)
 	//boost::gil::for_each_pixel(srcView, funct);		(NOT USED)
 	
 	this->correctHistogramBufferData(data);				//correct Histogram data to make up for discretization (average)
@@ -144,7 +146,7 @@ int OverlayData::computeAnAverage( const HistogramVector& selection_v ) const
  * @param time	current time
  * @param renderScale	current renderScale
  */
-void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly)
+void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly )
 {
 	_isComputing = true;
 	resetHistogramData();
@@ -158,7 +160,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 	
 	//TUTTLE_TCOUT_INFOS;
 	//TUTTLE_TCOUT_VAR( "computeHistogramBufferData - fetchImage " << time );
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_currentTime, clipSrc->getCanonicalRod(_currentTime)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
 	//TUTTLE_TCOUT_INFOS;
 	
 	//TUTTLE_TCOUT_VAR( clipSrc->getPixelRod(time, renderScale) );
@@ -179,7 +181,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	}
-	OfxRectI srcPixelRod = clipSrc->getPixelRod( _currentTime, renderScale ); //get current RoD
+	OfxRectI srcPixelRod = clipSrc->getPixelRod( time, renderScale ); //get current RoD
 	if( (clipSrc->getPixelDepth() != OFX::eBitDepthFloat) ||
 		(!clipSrc->getPixelComponents()) )
 	{
@@ -217,17 +219,18 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 	
 	//TUTTLE_TCOUT_INFOS;
 	//Compute histogram buffer
-	this->computeHistogramBufferData( _data, srcView, _currentTime);
+	this->computeHistogramBufferData( _data, srcView, time);
 	
 	//TUTTLE_TCOUT_INFOS;
 	//Compute selection histogram buffer
-	this->computeHistogramBufferData( _selectionData, srcView, _currentTime, true );
+	this->computeHistogramBufferData( _selectionData, srcView, time, true );
 	
 	//TUTTLE_TCOUT_INFOS;
 	//Compute averages
 	this->computeAverages();
 	_isComputing = false;
 	
+	_currentTime = time;
 	//TUTTLE_TCOUT_INFOS;
 }
 
@@ -370,7 +373,7 @@ void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTi
 	}
 	//Compute histogram buffer
 	Pixel_compute_histograms funct( _imgBool,_curveFromSelection, true);			//functor declaration
-	boost::gil::transform_pixels( srcView, funct );		//(USED functor reference)
+	terry::algorithm::transform_pixels( srcView, funct );		//(USED functor reference)
 	
 	this->correctHistogramBufferData(_curveFromSelection);				//correct Histogram data to make up for discretization (average)
 }

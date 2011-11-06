@@ -20,6 +20,8 @@ project
 plugin Jpeg :
 		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
 ###############################################################################
 # Automatic install

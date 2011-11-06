@@ -4,11 +4,11 @@
 #include "../ColorGradientDefinitions.hpp"
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
 #include <boost/math/special_functions/pow.hpp>
 
 #include <cmath>
@@ -94,6 +94,7 @@ public:
 	result_type operator()( const point_t& p ) const
 	{
 		using namespace boost::gil;
+		using namespace terry;
 		computeDistances( p );
 		result_type outputColor;
 		pixel_zeros_t<result_type>() ( outputColor );

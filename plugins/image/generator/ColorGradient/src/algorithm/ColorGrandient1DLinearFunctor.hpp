@@ -4,10 +4,10 @@
 #include "../ColorGradientDefinitions.hpp"
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
 #include <boost/math/special_functions/pow.hpp>
 
 #include <cmath>
@@ -109,6 +109,7 @@ public:
 	result_type operator()( const point_t& pA ) const
 	{
 		using namespace boost::gil;
+		using namespace terry;
 		point_t pM = _droiteEquation.pointOrthogonalProjection( pA );
 		//		TUTTLE_COUT( "________________________________________" );
 		//		TUTTLE_COUT_VAR( _pB );

@@ -2,6 +2,7 @@
 #define _LENSDISTORTDEFINITIONS_HPP
 
 #include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/context/SamplerDefinition.hpp>
 
 #include <ofxCore.h>
 #include <string>
@@ -10,47 +11,32 @@ namespace tuttle {
 namespace plugin {
 namespace lens {
 
-const std::string kClipOptionalSourceRef( "SourceRef" );
+static const std::string kClipOptionalSourceRef( "SourceRef" );
 
-const std::string kParamReverse( "reverse" );
-const std::string kParamDisplaySource( "displaySource" );
-const std::string kParamLensType( "lensType" );
-const std::string kParamLensTypeStandard( "standard" );
-const std::string kParamLensTypeFishEye( "fish-eye" );
-const std::string kParamLensTypeAdvanced( "advanced" );
-const std::string kParamCoef1( "coef1" );
-const std::string kParamCoef2( "coef2" );
-const std::string kParamSqueeze( "squeeze" );
-const std::string kParamAsymmetric( "asymmetric" );
-const std::string kParamCenter( "center" );
-const std::string kParamCenterOverlay( "lensCenterOverlay" );
-const std::string kParamCenterType( "centerType" );
-const std::string kParamCenterTypeSource( "source" );
-const std::string kParamCenterTypeRoW( "RoW" );
-const std::string kParamPreScale( "preScale" );
-const std::string kParamPostScale( "postScale" );
-const std::string kParamInterpolation( "interpolation" );
-const std::string kParamInterpolationNearest( "nearest neighbor" );
-const std::string kParamInterpolationBilinear( "bilinear" );
-const std::string kParamInterpolationBicubic( "bicubic" );
-const std::string kParamInterpolationCatmul( "catmul" );
-const std::string kParamInterpolationMitchell( "mitchell" );
-const std::string kParamInterpolationParzen( "parzen" );
-const std::string kParamInterpolationKeys( "keys" );
-const std::string kParamInterpolationSimon( "simon" );
-const std::string kParamInterpolationRifman( "rifman" );
-//const std::string kParamInterpolationLanczos( "lanczos3" );
-//const std::string kParamInterpolationLanczos( "lanczos4" );
-//const std::string kParamInterpolationLanczos( "lanczos6" );
-//const std::string kParamInterpolationLanczos( "lanczos12" );
-//const std::string kParamInterpolationLanczos( "gaussian" );
+static const std::string kParamReverse                 ( "reverse" );
+static const std::string kParamDisplaySource           ( "displaySource" );
+static const std::string kParamLensType                ( "lensType" );
+static const std::string kParamLensTypeStandard        ( "standard" );
+static const std::string kParamLensTypeFishEye         ( "fish-eye" );
+static const std::string kParamLensTypeAdvanced        ( "advanced" );
+static const std::string kParamCoef1                   ( "coef1" );
+static const std::string kParamCoef2                   ( "coef2" );
+static const std::string kParamSqueeze                 ( "squeeze" );
+static const std::string kParamAsymmetric              ( "asymmetric" );
+static const std::string kParamCenter                  ( "center" );
+static const std::string kParamCenterOverlay           ( "lensCenterOverlay" );
+static const std::string kParamCenterType              ( "centerType" );
+static const std::string kParamCenterTypeSource        ( "source" );
+static const std::string kParamCenterTypeRoW           ( "RoW" );
+static const std::string kParamPreScale                ( "preScale" );
+static const std::string kParamPostScale               ( "postScale" );
 
-const std::string kParamResizeRod( "resizeRod" );
-const std::string kParamResizeRodNo( "no" );
-const std::string kParamResizeRodSourceRef( "sourceRef" );
-const std::string kParamResizeRodMin( "min" );
-const std::string kParamResizeRodMax( "max" );
-const std::string kParamResizeRodManual( "manual" );
+static const std::string kParamResizeRod               ( "resizeRod" );
+static const std::string kParamResizeRodNo             ( "no" );
+static const std::string kParamResizeRodSourceRef      ( "sourceRef" );
+static const std::string kParamResizeRodMin            ( "min" );
+static const std::string kParamResizeRodMax            ( "max" );
+static const std::string kParamResizeRodManual         ( "manual" );
 enum EParamResizeRod
 {
 	eParamResizeRodNo = 0,
@@ -60,15 +46,15 @@ enum EParamResizeRod
 	eParamResizeRodManual,
 };
 
-const std::string kParamResizeRodManualScale( "scaleRod" );
-const std::string kParamDisplayOptions( "displayOptions" );
-const std::string kParamGridOverlay( "gridOverlay" );
-const std::string kParamGridCenter( "gridCenter" );
-const std::string kParamGridCenterOverlay( "gridCenterOverlay" );
-const std::string kParamGridScale( "gridScale" );
-const std::string kParamDebugOptions( "debugOptions" );
-const std::string kParamDebugDisplayRoi( "debugDisplayRoi" );
-const std::string kParamHelp( "help" );
+static const std::string kParamResizeRodManualScale    ( "scaleRod" );
+static const std::string kParamDisplayOptions          ( "displayOptions" );
+static const std::string kParamGridOverlay             ( "gridOverlay" );
+static const std::string kParamGridCenter              ( "gridCenter" );
+static const std::string kParamGridCenterOverlay       ( "gridCenterOverlay" );
+static const std::string kParamGridScale               ( "gridScale" );
+static const std::string kParamDebugOptions            ( "debugOptions" );
+static const std::string kParamDebugDisplayRoi         ( "debugDisplayRoi" );
+static const std::string kParamHelp                    ( "help" );
 
 enum EParamLensType
 {
@@ -76,23 +62,7 @@ enum EParamLensType
 	eParamLensTypeFisheye,
 	eParamLensTypeAdvanced,
 };
-enum EParamInterpolation
-{
-	eParamInterpolationNearest = 0,
-	eParamInterpolationBilinear,
-	eParamInterpolationBicubic,
-	eParamInterpolationCatmul,
-	eParamInterpolationMitchell,
-	eParamInterpolationParzen,
-	eParamInterpolationKeys,
-	eParamInterpolationSimon,
-	eParamInterpolationRifman,
-//	eParamInterpolationLanczos3,
-//	eParamInterpolationLanczos4,
-//	eParamInterpolationLanczos6,
-//	eParamInterpolationLanczos12,
-//	eParamInterpolationGaussian,
-};
+
 enum EParamCenterType
 {
 	eParamCenterTypeSource = 0,

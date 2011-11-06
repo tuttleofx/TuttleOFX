@@ -3,10 +3,10 @@
 
 #include "lensDistortProcessParams.hpp"
 
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/IProgress.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 
 #include <ofxsCore.h>
 
@@ -17,8 +17,9 @@
 
 #include <cmath>
 
-namespace boost {
-namespace gil {
+namespace terry {
+
+using namespace boost::gil;
 
 template <typename F, typename F2>
 inline point2<F> transform( const ::tuttle::plugin::lens::NormalLensDistortParams<F>& params, const point2<F2>& src )
@@ -160,7 +161,6 @@ inline point2<F> transform( const ::tuttle::plugin::lens::AdvancedLensDistortPar
 }
 
 }
-}
 
 namespace tuttle {
 namespace plugin {
@@ -169,7 +169,7 @@ namespace lens {
 template<class Params>
 typename Params::Point2 transformValues( const Params& params, const typename Params::Point2& p )
 {
-	return boost::gil::transform( params, p );
+	return terry::transform( params, p );
 }
 
 /**
@@ -184,13 +184,13 @@ OfxRectD transformValues( const Params& params, const OfxRectD& rec )
 	// center in rec ?
 	if( params._lensCenterDst.x > rec.x1 && params._lensCenterDst.x < rec.x2 )
 	{
-		points.push_back( boost::gil::transform( params, Point2( params._lensCenterDst.x, rec.y1 ) ) );
-		points.push_back( boost::gil::transform( params, Point2( params._lensCenterDst.x, rec.y2 ) ) );
+		points.push_back( terry::transform( params, Point2( params._lensCenterDst.x, rec.y1 ) ) );
+		points.push_back( terry::transform( params, Point2( params._lensCenterDst.x, rec.y2 ) ) );
 	}
 	if( params._lensCenterDst.y > rec.y1 && params._lensCenterDst.y < rec.y2 )
 	{
-		points.push_back( boost::gil::transform( params, Point2( rec.x1, params._lensCenterDst.y ) ) );
-		points.push_back( boost::gil::transform( params, Point2( rec.x2, params._lensCenterDst.y ) ) );
+		points.push_back( terry::transform( params, Point2( rec.x1, params._lensCenterDst.y ) ) );
+		points.push_back( terry::transform( params, Point2( rec.x2, params._lensCenterDst.y ) ) );
 	}
 
 	// A B
@@ -199,10 +199,10 @@ OfxRectD transformValues( const Params& params, const OfxRectD& rec )
 	Point2 outB( rec.x2, rec.y1 );
 	Point2 outC( rec.x1, rec.y2 );
 	Point2 outD( rec.x2, rec.y2 );
-	points.push_back( boost::gil::transform( params, outA ) );
-	points.push_back( boost::gil::transform( params, outB ) );
-	points.push_back( boost::gil::transform( params, outC ) );
-	points.push_back( boost::gil::transform( params, outD ) );
+	points.push_back( terry::transform( params, outA ) );
+	points.push_back( terry::transform( params, outB ) );
+	points.push_back( terry::transform( params, outC ) );
+	points.push_back( terry::transform( params, outD ) );
 
 	return pointsBoundingBox( points );
 }
@@ -258,7 +258,7 @@ inline void transformValuesApply( const Params& params, std::vector<boost::gil::
 	     it != itEnd;
 	     ++it )
 	{
-		*it = boost::gil::transform( params, *it );
+		*it = terry::transform( params, *it );
 	}
 }
 

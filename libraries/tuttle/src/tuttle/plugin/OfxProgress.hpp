@@ -8,7 +8,7 @@
 #include "IProgress.hpp"
 #include "exceptions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -40,6 +40,8 @@ public:
 	bool progressForward( const int nSteps = 1 );
 	
 	bool progressUpdate( const double p );
+	
+	OfxProgress& getOfxProgress() { return *this; }
 };
 
 }

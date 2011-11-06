@@ -6,11 +6,13 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>include
 		<include>../../tuttle/src
+		<link>static
 	: usage-requirements
 		<include>include
+		<include>../../tuttle/src
 	: build-dir $(BUILD)/openFX/Support
 	;
 
@@ -20,6 +22,16 @@ project
 ###############################################################################
 lib Support :
 	[ glob-tree *.cpp ]
-	/boost//system/<link>shared
+	/boostHack
+	/boost//system/<link>static
 	;
+
+###############################################################################
+# Automatic install
+###############################################################################
+#install dist_src
+#		: Support
+#		: <variant>debug:<location>$(DIST)/lib
+#		  <variant>release:<location>$(DIST)/lib
+#		;
 

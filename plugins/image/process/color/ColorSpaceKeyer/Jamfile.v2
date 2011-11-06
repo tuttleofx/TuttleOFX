@@ -9,8 +9,9 @@ import os ;
 project
 	: requirements
 		<include>src
-                <linkflags>-lGL
-                <linkflags>-lglew
+		<linkflags>-lGL
+		<linkflags>-lGLU
+		<linkflags>-lGLEW
 	: build-dir $(BUILD)/ColorSpaceKeyer
 	;
 

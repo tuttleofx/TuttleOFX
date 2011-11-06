@@ -9,7 +9,6 @@ import os ;
 project
 	: requirements
 		<include>src
-		<threading>multi
 		<os>NT:<define>_WINDOWS
 	:
 		build-dir $(BUILD)/Jpeg2000
@@ -31,10 +30,12 @@ else if [ os.name ] = MACOSX
 # Product 
 ###############################################################################
 plugin Jpeg2000 :
-	[ glob-tree *.cpp ]
-	/tuttleplugin/<link>static
-	opengl
-	/libopenjpeg
+		[ glob-tree *.cpp ]
+		/tuttleplugin/<link>static
+		opengl
+		/libopenjpeg
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
 
 ###############################################################################

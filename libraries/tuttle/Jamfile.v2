@@ -9,10 +9,8 @@ import os ;
 project
 		: requirements
 			<include>src
-			<include>$(3RD_PARTY)/boostHack
 		: usage-requirements
 			<include>src
-			<include>$(3RD_PARTY)/boostHack
 		: build-dir $(BUILD)/tuttle
 		;
 
@@ -23,11 +21,20 @@ use-project	/tuttlehost	: src/tuttle/host ;
 use-project	/tuttleplugin	: src/tuttle/plugin ;
 use-project	/tuttlecommon	: src/tuttle/common ;
 
+
+
 ###############################################################################
 # Automatic install
 ###############################################################################
-install		dist_src
-		: /tuttlehost /tuttleplugin /tuttlecommon
-		: <variant>debug:<location>$(DIST)/lib
-		  <variant>release:<location>$(DIST)/lib
-		;
+install dist_tuttlecommon
+	:
+		/tuttlecommon
+		/tuttleplugin
+		/tuttlehost
+	:
+		<variant>debug:<location>$(DIST)/lib
+		<variant>release:<location>$(DIST)/lib
+		<install-dependencies>on
+		<install-type>LIB
+	;
+

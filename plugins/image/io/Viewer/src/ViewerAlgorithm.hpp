@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_VIEWER_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_VIEWER_ALGORITHM_HPP_
 
-#include <boost/gil/extension/channel.hpp>
+#include <terry/channel.hpp>
 
 #ifdef HAVE_OPENGL_GL_H
 #   include <OpenGL/gl.h>

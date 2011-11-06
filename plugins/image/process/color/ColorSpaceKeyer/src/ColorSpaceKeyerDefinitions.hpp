@@ -2,20 +2,21 @@
 #define _TUTTLE_PLUGIN_COLORSPACEKEYER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
-#include "tuttle/plugin/ImageGilProcessor.hpp"
 
+#include <GL/glew.h>
 #include <tuttle/plugin/opengl/gl.h>
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/overlay.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
+
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/algorithm.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/gil/extension/color/hsl.hpp>
+
+#include <boost/scoped_ptr.hpp>
 
 #include <vector>
 
@@ -42,12 +43,11 @@ const static std::string kBoolDiscretizationDisplayLabel = "Discretize point clo
 //Discretization display
 const static std::string kIntDiscretizationDisplay = "discretizationDisplay";
 const static std::string kIntDiscretizationDisplayLabel = "Discretization step";
-static std::size_t discretizationDisplayInt = 10;
+//static std::size_t discretizationDisplayInt = 10;
 
 //Number of divison (geodesic form)
 const static std::string kIntNumberOfDivisonGeodesicForm = "numberOfDivisonGeodesicForm";
 const static std::string kIntNumberOfDivisonGeodesicFormLabel = "Precision";
-static std::size_t numberOfDivisionInt = 4;
 
 //Reset transformation button
 const static std::string kPushButtonResetTransformationParameters = "ResetTransformation";
@@ -94,11 +94,6 @@ const static std::string kBoolSpillSelectionDisplayLabel = "Display spill select
 //Scale geodesic form
 const static std::string kDoubleScaleGeodesicForm = "scaleGF";
 const static std::string kDoubleScaleGeodesicFormLabel = "Scale geodesic form";
-
-//Tolerance geodesic form
-const static std::string kDoubleToleranceGeodesicForm = "toleranceGF";
-const static std::string kDoubleToleranceGeodesicFormLabel = "Tolerance geodesic form";
-
 
 //Rotation constants
 const static int KMaxDegres = 360;		//360° max for a rotation

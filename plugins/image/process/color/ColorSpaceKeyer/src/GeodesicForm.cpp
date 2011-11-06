@@ -11,12 +11,11 @@ namespace colorSpaceKeyer {
  */
 GeodesicForm::GeodesicForm() {
 	//reserve memory
-	_points.reserve(128);		//reserve necessay points
-	_faces.reserve(8);			//there are 8 big face in the Geodesic form (two pyramids)	
+	_points.reserve( 128 );                // reserve necessay points
+	_faces.reserve ( 8 );                  // there are 8 big face in the Geodesic form (two pyramids)
 	//initialize intersection attribute
-	_hasIntersection = false;	//there is not intersection
-	_idFaceIntersection = 9;	//there is not intersection face
-	_tolerance = 0;				//tolerance is null by default		
+	_hasIntersection = false;              // there is not intersection
+	_idFaceIntersection = 9;               // there is not intersection face
 }
 
 /*
@@ -24,37 +23,37 @@ GeodesicForm::GeodesicForm() {
  */
 void GeodesicForm::createGeodesicForm(const Ofx3DPointD& center)
 {
-	double kRadiusFromCenter = 0.01f;				// radius of GeodesicForm
-	//double kRadiusFromCenter = .5f;				// radius of GeodesicForm
-	double altitude = sqrt(3)/2*kRadiusFromCenter;  // altitude of an equilateral triangle is sqrt(3)/2*a
+	double kRadiusFromCenter = 0.01f;                        // radius of GeodesicForm
+	//double kRadiusFromCenter = .5f;                        // radius of GeodesicForm
+	double altitude          = sqrt(3)/2*kRadiusFromCenter;  // altitude of an equilateral triangle is sqrt(3)/2*a
 	
 	//compute top and bottom point of GeodesicForm only Y value
-	double topPointY = altitude;		//top
-	double bottomPointY = -altitude;	//bottom
+	double topPointY    = altitude;         // top
+	double bottomPointY = -altitude;        // bottom
 	//construct top and bottom points
 	Ofx3DPointD top,bottom;
 	//top
-	top.x = center.x;			//X axis
-	top.y = center.y+topPointY;	//Y axis
-	top.z = center.z;			//Z axis
+	top.x = center.x;                       // X axis
+	top.y = center.y+topPointY;             // Y axis
+	top.z = center.z;                       // Z axis
 	//bottom
-	bottom.x = center.x;				//X axis
-	bottom.y = center.y+bottomPointY;	//Y axis
-	bottom.z = center.z;				//Z axis
+	bottom.x = center.x;                    // X axis
+	bottom.y = center.y+bottomPointY;       // Y axis
+	bottom.z = center.z;                    // Z axis
 	
 	/*
 	// square base
-	//			z
-	//		   /|\  base2
-	//		  / | \
-	//		 /	|  \
-	//		/	|   \
-	//base1/	-----\--------- x
+	//          z
+	//         /|\  base2
+	//        / | \
+	//       /  |  \
+	//      /   |   \
+	//base1/    -----\--------- x
 	//     \ center /  base3
-	//		\	   /
-	//		 \	  /
-	//		  \  /
-	//		   \/base4
+	//      \      /
+	//       \    /
+	//        \  /
+	//         \/base4
 	//
 	*/
 	//define square base points
@@ -62,85 +61,85 @@ void GeodesicForm::createGeodesicForm(const Ofx3DPointD& center)
 	//compute square diagonal
 	double squareDiag = kRadiusFromCenter*sqrt(2); // sqrt(2)*a
 	//base1
-	base1.x = center.x - (squareDiag/2.0);	//X axis (use square diagonal to translate on x axis)
-	base1.y = center.y;						//Y axis
-	base1.z = center.z;						//Z axis
+	base1.x = center.x - (squareDiag/2.0);                          // X axis (use square diagonal to translate on x axis)
+	base1.y = center.y;                                             // Y axis
+	base1.z = center.z;                                             // Z axis
 	//base2
-	base2.x	= center.x;						//X axis
-	base2.y = center.y;						//Y axis
-	base2.z = center.z + (squareDiag/2.0);	//Z axis
+	base2.x	= center.x;                                             // X axis
+	base2.y = center.y;                                             // Y axis
+	base2.z = center.z + (squareDiag/2.0);                          // Z axis
 	//base3
-	base3.x = center.x + (squareDiag/2.0);	//X axis
-	base3.y = center.y;						//Y axis
-	base3.z = center.z;						//Z axis
+	base3.x = center.x + (squareDiag/2.0);                          // X axis
+	base3.y = center.y;                                             // Y axis
+	base3.z = center.z;                                             // Z axis
 	//base4
-	base4.x = center.x;						//X axis
-	base4.y = center.y;						//Y axis
-	base4.z = center.z - (squareDiag/2.0);	//Z axis
+	base4.x = center.x;                                             // X axis
+	base4.y = center.y;                                             // Y axis
+	base4.z = center.z - (squareDiag/2.0);                          // Z axis
 	
 	//Add points to GeodesicForm vector
-	_points.push_back(top);			//add top (first)
-	_points.push_back(bottom);		//add bottom
-	_points.push_back(base1);		//base 1
-	_points.push_back(base2);		//base 2
-	_points.push_back(base3);		//base 3
-	_points.push_back(base4);		//base 4
+	_points.push_back(top);                                         // add top (first)
+	_points.push_back(bottom);                                      // add bottom
+	_points.push_back(base1);                                       // base 1
+	_points.push_back(base2);                                       // base 2
+	_points.push_back(base3);                                       // base 3
+	_points.push_back(base4);                                       // base 4
 	
 	/*
 	//construct top and bottom triangles
-	//			   base1
-	//				/\
-	//			   /  \				z
-	//			  /	   \		    | 
-	//			 /______\			|
-	//		base2        base3		------x
+	//          base1
+	//          /\
+	//         /  \         z
+	//        /    \        |
+	//       /______\       |
+	//  base2        base3  ------x
 	*/
 	//Define main faces (PyramidTriangles) of GeodesicForm
-	PyramidTriangle Ptop1, Ptop2, Ptop3, Ptop4;				//top faces
-	PyramidTriangle Pbottom1, Pbottom2, Pbottom3, Pbottom4;	//bottom faces
+	PyramidTriangle Ptop1, Ptop2, Ptop3, Ptop4;               //top faces
+	PyramidTriangle Pbottom1, Pbottom2, Pbottom3, Pbottom4;   //bottom faces
 	//start with top faces
-	Ptop1.point1 = &(_points[0]); //top
-	Ptop1.point2 = &(_points[2]); //base1
-	Ptop1.point3 = &(_points[3]); //base2
+	Ptop1.point1 = &(_points[0]);    // top
+	Ptop1.point2 = &(_points[2]);    // base1
+	Ptop1.point3 = &(_points[3]);    // base2
 	//Ptop2
-	Ptop2.point1 = &(_points[0]); //top
-	Ptop2.point2 = &(_points[3]); //base2
-	Ptop2.point3 = &(_points[4]); //base3
+	Ptop2.point1 = &(_points[0]);    // top
+	Ptop2.point2 = &(_points[3]);    // base2
+	Ptop2.point3 = &(_points[4]);    // base3
 	//Ptop3
-	Ptop3.point1 = &(_points[0]); //top
-	Ptop3.point2 = &(_points[4]); //base3
-	Ptop3.point3 = &(_points[5]); //base4
+	Ptop3.point1 = &(_points[0]);    // top
+	Ptop3.point2 = &(_points[4]);    // base3
+	Ptop3.point3 = &(_points[5]);    // base4
 	//Ptop4
-	Ptop4.point1 = &(_points[0]); //top
-	Ptop4.point2 = &(_points[5]); //base4
-	Ptop4.point3 = &(_points[2]); //base1
+	Ptop4.point1 = &(_points[0]);    // top
+	Ptop4.point2 = &(_points[5]);    // base4
+	Ptop4.point3 = &(_points[2]);    // base1
 	
 	//Bottom
-	Pbottom1.point1 = &(_points[1]); //bottom
-	Pbottom1.point2 = &(_points[2]); //base1
-	Pbottom1.point3 = &(_points[3]); //base2
+	Pbottom1.point1 = &(_points[1]); // bottom
+	Pbottom1.point2 = &(_points[2]); // base1
+	Pbottom1.point3 = &(_points[3]); // base2
 	//Pbottom2
-	Pbottom2.point1 = &(_points[1]); //bottom
-	Pbottom2.point2 = &(_points[3]); //base2
-	Pbottom2.point3 = &(_points[4]); //base3
+	Pbottom2.point1 = &(_points[1]); // bottom
+	Pbottom2.point2 = &(_points[3]); // base2
+	Pbottom2.point3 = &(_points[4]); // base3
 	//Pbottom3
-	Pbottom3.point1 = &(_points[1]); //bottom
-	Pbottom3.point2 = &(_points[4]); //base3
-	Pbottom3.point3 = &(_points[5]); //base4
+	Pbottom3.point1 = &(_points[1]); // bottom
+	Pbottom3.point2 = &(_points[4]); // base3
+	Pbottom3.point3 = &(_points[5]); // base4
 	//Pbottom4
-	Pbottom4.point1 = &(_points[1]); //bottom
-	Pbottom4.point2 = &(_points[5]); //base4
-	Pbottom4.point3 = &(_points[2]); //base2
+	Pbottom4.point1 = &(_points[1]); // bottom
+	Pbottom4.point2 = &(_points[5]); // base4
+	Pbottom4.point3 = &(_points[2]); // base2
 	
 	//Add faces to the vector
-	_faces.push_back(Ptop1);	//add top1 to faces vector
-	_faces.push_back(Ptop2);	//add top2 to faces vector
-	_faces.push_back(Ptop3);	//add top3 to faces vector
-	_faces.push_back(Ptop4);	//add top4 to faces vector
-	_faces.push_back(Pbottom1);	//add bottom1 to faces vector
-	_faces.push_back(Pbottom2);	//add bottom2 to faces vector
-	_faces.push_back(Pbottom3);	//add bottom3 to faces vector
-	_faces.push_back(Pbottom4);	//add bottom4 to faces vector
+	_faces.push_back(Ptop1);         // add top1    to faces vector
+	_faces.push_back(Ptop2);         // add top2    to faces vector
+	_faces.push_back(Ptop3);         // add top3    to faces vector
+	_faces.push_back(Ptop4);         // add top4    to faces vector
+	_faces.push_back(Pbottom1);      // add bottom1 to faces vector
+	_faces.push_back(Pbottom2);      // add bottom2 to faces vector
+	_faces.push_back(Pbottom3);      // add bottom3 to faces vector
+	_faces.push_back(Pbottom4);      // add bottom4 to faces vector
 }
 
 /*
@@ -155,42 +154,42 @@ void GeodesicForm::draw(bool alpha)
 	for(unsigned int i=0; i< _faces.size(); ++i)
 	{	
 		//draw triangles of the face	
-		if(!_faces[i].triangles.empty())// if there are triangles (subdivision) in the current face
+		if(!_faces[i].triangles.empty())                                    // if there are triangles (subdivision) in the current face
 		{
 			glBegin(GL_TRIANGLES);
-			for(unsigned int j=0; j<_faces[i].triangles.size(); ++j) //for each triangle of the current face
+			for(unsigned int j=0; j<_faces[i].triangles.size(); ++j)    // for each triangle of the current face
 			{
 				if(alpha)
-					glColor4f(0.9,0.9,0.1,0.3);	//color yellow with alpha
+					glColor4f(0.9,0.9,0.1,0.3);                 // color yellow with alpha
 				else
-					glColor3f(0.9,0.5,0.1);		//color yellow without alpha
-				Ofx3DPointD tr1 = *(_faces[i].triangles[j].point1); //get point1 of current triangle
-				glVertex3d(tr1.x,tr1.y,tr1.z); //draw point
-				Ofx3DPointD tr2 = *(_faces[i].triangles[j].point2); //get point2 of current triangle
-				glVertex3d(tr2.x,tr2.y,tr2.z); //draw point
-				Ofx3DPointD tr3 = *(_faces[i].triangles[j].point3); //get point3 of current triangle
-				glVertex3d(tr3.x,tr3.y,tr3.z); //draw point
+					glColor3f(0.9,0.5,0.1);                     // color yellow without alpha
+				Ofx3DPointD tr1 = *(_faces[i].triangles[j].point1); // get point1 of current triangle
+				glVertex3d(tr1.x,tr1.y,tr1.z);                      // draw point
+				Ofx3DPointD tr2 = *(_faces[i].triangles[j].point2); // get point2 of current triangle
+				glVertex3d(tr2.x,tr2.y,tr2.z);                      // draw point
+				Ofx3DPointD tr3 = *(_faces[i].triangles[j].point3); // get point3 of current triangle
+				glVertex3d(tr3.x,tr3.y,tr3.z);                      // draw point
 			}
 			glEnd();
 			if(alpha)
-				glColor4f(0.1,0.1,0.1,0.3);	//color red with alpha
+				glColor4f(0.1,0.1,0.1,0.3);                         // color red with alpha
 			else
-				glColor3f(0.1,0.1,0.1);		//color red without alpha
+				glColor3f(0.1,0.1,0.1);                             // color red without alpha
 			glBegin(GL_LINES);
-			for(unsigned int j=0; j<_faces[i].triangles.size(); ++j) //for each triangle of the current face
+			for(unsigned int j=0; j<_faces[i].triangles.size(); ++j)    // for each triangle of the current face
 			{
 				//segment 1
-				Ofx3DPointD tr1 = *(_faces[i].triangles[j].point1); //get point1 of current triangle
-				glVertex3d(tr1.x,tr1.y,tr1.z); //draw point
-				Ofx3DPointD tr2 = *(_faces[i].triangles[j].point2); //get point2 of current triangle
-				glVertex3d(tr2.x,tr2.y,tr2.z); //draw point
+				Ofx3DPointD tr1 = *(_faces[i].triangles[j].point1); // get point1 of current triangle
+				glVertex3d(tr1.x,tr1.y,tr1.z);                      // draw point
+				Ofx3DPointD tr2 = *(_faces[i].triangles[j].point2); // get point2 of current triangle
+				glVertex3d(tr2.x,tr2.y,tr2.z);                      // draw point
 				//segment 2
-				glVertex3d(tr2.x,tr2.y,tr2.z); //draw point
-				Ofx3DPointD tr3 = *(_faces[i].triangles[j].point3); //get point3 of current triangle
-				glVertex3d(tr3.x,tr3.y,tr3.z); //draw point
+				glVertex3d(tr2.x,tr2.y,tr2.z);                      // draw point
+				Ofx3DPointD tr3 = *(_faces[i].triangles[j].point3); // get point3 of current triangle
+				glVertex3d(tr3.x,tr3.y,tr3.z);                      // draw point
 				//segment 3
-				glVertex3d(tr3.x,tr3.y,tr3.z); //draw point
-				glVertex3d(tr1.x,tr1.y,tr1.z); //draw point
+				glVertex3d(tr3.x,tr3.y,tr3.z);                      // draw point
+				glVertex3d(tr1.x,tr1.y,tr1.z);                      // draw point
 			}
 			glEnd();
 		}
@@ -202,14 +201,14 @@ void GeodesicForm::draw(bool alpha)
 	else
 		glColor3f(0.9,0.3,0.1); //color orange-red
 	//draw points
-	for(unsigned int i=0; i<_points.size(); ++i)				// for each points in point vector
-		glVertex3d(_points[i].x, _points[i].y, _points[i].z);	//draw current point
+	for(unsigned int i=0; i<_points.size(); ++i)                                // for each points in point vector
+		glVertex3d(_points[i].x, _points[i].y, _points[i].z);               // draw current point
 	glEnd();
 	
 	//draw intersection test
 	glBegin(GL_LINES);
 	glColor3f(1.0f,1.0f,1.0f); //color white
-	glVertex3d(0.0648727,0.149031,0.0420739); glVertex3d(_center.x,_center.y, _center.z); //intersection line
+	glVertex3d(0.0648727,0.149031,0.0420739); glVertex3d(_center.x,_center.y, _center.z); // intersection line
 	glEnd();
 	
 	//draw intersection triangle
@@ -218,15 +217,15 @@ void GeodesicForm::draw(bool alpha)
 		//draw intersection triangle
 		glBegin(GL_TRIANGLES);
 		glColor3f(1.0f,0,0); // color red
-		glVertex3d(_intersection.point1->x, _intersection.point1->y, _intersection.point1->z); //point 1
-		glVertex3d(_intersection.point2->x, _intersection.point2->y, _intersection.point2->z); //point 2
-		glVertex3d(_intersection.point3->x, _intersection.point3->y, _intersection.point3->z); //point 3
+		glVertex3d(_intersection.point1->x, _intersection.point1->y, _intersection.point1->z); // point 1
+		glVertex3d(_intersection.point2->x, _intersection.point2->y, _intersection.point2->z); // point 2
+		glVertex3d(_intersection.point3->x, _intersection.point3->y, _intersection.point3->z); // point 3
 		glEnd();
 		
 		//draw intersection point
 		glBegin(GL_POINTS);
 		glColor3f(0.0f,1.0f,1.0f); //color cyan
-		glVertex3d(_intersectionPoint.x, _intersectionPoint.y, _intersectionPoint.z); //intersection point
+		glVertex3d(_intersectionPoint.x, _intersectionPoint.y, _intersectionPoint.z); // intersection point
 		glEnd();
 	}
 }
@@ -236,25 +235,25 @@ void GeodesicForm::testOnePointFunction()
 	//initialize test point
 	Ofx3DPointD testPoint;
 	//set testPoint values
-	testPoint.x = 0.0648727; //x value
-	testPoint.y = 0.149031; //y value
-	testPoint.z = 0.0420739; //z value
+	testPoint.x = 0.0848727;    // x value
+	testPoint.y = 0.849031;     // y value
+	testPoint.z = 0.0420739;    // z value
 
-	extendOnePoint(testPoint);	//extends test point
+	extendOnePoint(testPoint);  // extends test point
 	
 	//compute vector
-	double testPointCenterVector[3];					//initialize
-	testPointCenterVector[0] = testPoint.x - _center.x;	//x value
-	testPointCenterVector[1] = testPoint.y - _center.y;	//y value
-	testPointCenterVector[2] = testPoint.z - _center.z;	//z value
+	double testPointCenterVector[3];                        // initialize
+	testPointCenterVector[0] = testPoint.x - _center.x;     // x value
+	testPointCenterVector[1] = testPoint.y - _center.y;     // y value
+	testPointCenterVector[2] = testPoint.z - _center.z;     // z value
 	//compute norm
-	double normTestPointCenter = 0;												//initialize
-	normTestPointCenter += testPointCenterVector[0]*testPointCenterVector[0];	//add x*x value
-	normTestPointCenter += testPointCenterVector[1]*testPointCenterVector[1];	//add y*y value
-	normTestPointCenter += testPointCenterVector[2]*testPointCenterVector[2];	//add z*z value
-	normTestPointCenter = sqrt(normTestPointCenter);	//compute norm
+	double normTestPointCenter = 0;                                                 // initialize
+	normTestPointCenter += testPointCenterVector[0]*testPointCenterVector[0];       // add x*x value
+	normTestPointCenter += testPointCenterVector[1]*testPointCenterVector[1];       // add y*y value
+	normTestPointCenter += testPointCenterVector[2]*testPointCenterVector[2];       // add z*z value
+	normTestPointCenter = sqrt(normTestPointCenter);                                // compute norm
 	
-	std::cout << "norm Intersection normal : " << normTestPointCenter << std::endl;	//display norm
+	std::cout << "norm Intersection normal : " << normTestPointCenter << std::endl; // display norm
 	
 	if(isPointIntoGeodesicForm(testPoint)) //test point inverse
 		std::cout << "le point a été absorbé" << std::endl;
@@ -267,34 +266,34 @@ void GeodesicForm::testOnePointFunction()
  */
 void GeodesicForm::subdiviseFaces(const Ofx3DPointD& center, const int divisor)
 {
-	_points.clear(); //reset points vector
-	_faces.clear();  //reset faces vector
+	_points.clear();                                // reset points vector
+	_faces.clear();                                 // reset faces vector
 
 	//reserve necessary memory for points
-	_points.reserve(divisor*divisor*8);		//reserve necessary points
+	_points.reserve(divisor*divisor*8);             // reserve necessary points
 	
 	//keep center and number of divisions
-	_center = center; //keep center
-	_nbDivisions = divisor; //keep number of divisions on each face	
+	_center = center;                               // keep center
+	_nbDivisions = divisor;                         // keep number of divisions on each face
 	
 	//reset bounding box
-	_boundingBox.max = _center;		//reset max value
-	_boundingBox.min = _center;		//reset min value
+	_boundingBox.max = _center;                     // reset max value
+	_boundingBox.min = _center;                     // reset min value
 	
 	//create face
-	createGeodesicForm(center);	//place geodesic form at center point
+	createGeodesicForm(center);                     // place geodesic form at center point
 	
-	for(unsigned int i=0; i<_faces.size(); ++i)	//for each face
+	for(unsigned int i=0; i<_faces.size(); ++i)     // for each face
 	{
-		createPointsOneFace(_faces[i],divisor);	//create points of this face
-		subdiviseOneFace(_faces[i],divisor);    //create triangles of the face
+		createPointsOneFace(_faces[i],divisor); // create points of this face
+		subdiviseOneFace(_faces[i],divisor);    // create triangles of the face
 	}
 	//transform geodesic form to sphere
-	double kRadiusFromCenter = 0.01;	//radius of GeodesicForm
-	_radius = kRadiusFromCenter;		//keep radius value
+	double kRadiusFromCenter = 0.01;                // radius of GeodesicForm
+	_radius = kRadiusFromCenter;                    // keep radius value
 	
 	for(unsigned int i=0; i<_points.size(); ++i)
-		currentPointToSphere(_points[i], kRadiusFromCenter); //translate current point
+		currentPointToSphere(_points[i], kRadiusFromCenter); // translate current point
 	
 	///@todo:remove 
 	//testOnePointFunction(); //test intersection and extends with only one point
@@ -778,7 +777,7 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 {
 	
 	//compute vector (center-point to Move)
-	double vectorCenterPointToMove[3];							//initialize
+	double vectorCenterPointToMove[3];						//initialize
 	vectorCenterPointToMove[0] = pointToMove.x - _center.x;	//X value
 	vectorCenterPointToMove[1] = pointToMove.y - _center.y;	//Y value
 	vectorCenterPointToMove[2] = pointToMove.z - _center.z;	//Z value
@@ -797,7 +796,6 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 	double cosAngleIntersectionPointToMove = DOT(vectorCenterPointToMove,testPointCenterVector);
 	//compute new norm triangle.point3
 	double hypothenusCenterPointToMove = normTestPointCenterVector/cosAngleIntersectionPointToMove; //compute new norm
-	hypothenusCenterPointToMove *= _scale + _tolerance;						//multiply by scale value
 	if(normVectorCenterPointToMove > hypothenusCenterPointToMove) //compare current norm with existing norm
 	{
 		//nothing to do point to move is enough far of center
@@ -980,31 +978,73 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
 	while(i<8 && !intersectionFound)
 	{				
 		//parametric coordinates
-		double s,t;
-		if(getIntersection2(testPoint,_faces[i],_intersectionPoint,s,t, inverse))
+		double s,t;											//initialize parametric coordinates
+		if(getIntersection2(testPoint,_faces[i],_intersectionPoint,s,t, inverse)) //test intersection with current face (stock parametric coordinates)
 		{	
-			if(justIntersectionPoint)
-				return true;
-			unsigned int j=0;								//declare indice
-			while( j<_faces[i].triangles.size() && !intersectionFound)
+			if(justIntersectionPoint)						//if we just want to know if there is an intersection
+				return true;								//there is an intersection (no more computing)
+			
+			//compute pyramid side step
+			double pyramidStep = (double)1/(double)_nbDivisions;		//compute pyramid side step
+			//compute parametric coordinate axis X
+			double parametricCoordinateX = floor(s/pyramidStep);		//define parametric X axis value
+			//compute parametric coordinate axis Y
+			double parametricCoordinateY = floor(t/pyramidStep);		//define parametric Y axis value
+			
+			//define triangle indice
+			int indiceTr = 0;
+			if(parametricCoordinateX == 0 )								//if intersected triangle is on the first line
 			{
-				PyramidTriangle test;						//initialize pyramid triangle
-				test.point1 = _faces[i].triangles[j].point1;				//set point1
-				test.point2	= _faces[i].triangles[j].point2;				//set point2
-				test.point3 = _faces[i].triangles[j].point3;				//set point3
-				
-				//parametric coordinates test
-				double sT, tT;
-				if(getIntersection2(testPoint,test,_intersectionPoint,sT,tT))
+				indiceTr = 2*parametricCoordinateY;						//define intersected triangle indice on first line
+			}
+			else														//intersected triangle indice is not on first line
+			{
+				unsigned int indice = 0;								//define indice for previous triangle lines
+				while(indice > parametricCoordinateX)					// for each of previous lines
 				{
-					//there is an intersection point
-					intersectionFound = true;						//An intersection has been found
-					//set intersection triangle
-					_idFaceIntersection = i;						//Keep intersection face
-					_hasIntersection = true;						//An intersection has been found
-					_intersection = _faces[i].triangles[j];			//keep intersection triangle
+					indiceTr += (((int)_nbDivisions-indice)*2)-1;			//increments triangle indice
+					++indice;											//increments indice
 				}
-				++j;												//increments indice
+				indiceTr += 2*parametricCoordinateY;					//terminate intersected triangle
+			}
+			if(indiceTr >0)												//triangle index starts from 0 (but not 1)
+				indiceTr -=1;
+			//test intersection with computed intersection triangle
+			bool hasIntersected = false;								//intersection has not been done then
+			int indiceIntersected = 0;									//check intersection triangles (2 possibilities)
+			while(!hasIntersected && indiceIntersected < 3)
+			{
+				//define pyramid triangle with current point
+				PyramidTriangle pyTr;									//define triangle pyTr
+				pyTr.point1 = _faces[i].triangles[indiceTr].point1;		//charge point1
+				pyTr.point2 = _faces[i].triangles[indiceTr].point2;		//charge point2
+				pyTr.point3 = _faces[i].triangles[indiceTr].point3;		//charge point3
+				hasIntersected = getIntersection2(testPoint,pyTr,_intersectionPoint,s,t,inverse);	//test intersection with current triangle indice
+				++indiceTr;												//increments indice triangle
+				++indiceIntersected;									//increments check intersection triangle
+			}
+			if(!hasIntersected)											//intersection has not been found yet (test hard method)
+			{
+				unsigned int j=0;										//declare indice to ride through triangle vector of current face
+				while( j<_faces[i].triangles.size() && !intersectionFound)		//test for each triangle of current face
+				{
+					PyramidTriangle test;								//initialize pyramid triangle
+					test.point1 = _faces[i].triangles[j].point1;		//set point1
+					test.point2	= _faces[i].triangles[j].point2;		//set point2
+					test.point3 = _faces[i].triangles[j].point3;		//set point3
+					//parametric coordinates test
+					double sT, tT;										//define parametric coordinate
+					if(getIntersection2(testPoint,test,_intersectionPoint,sT,tT))
+					{
+						//there is an intersection point
+						intersectionFound = true;						//An intersection has been found
+						//set intersection triangle
+						_idFaceIntersection = i;						//Keep intersection face
+						_hasIntersection = true;						//An intersection has been found
+						_intersection = _faces[i].triangles[j];			//keep intersection triangle
+					}
+					++j;												//increments indice
+				}
 			}
 		}	
 		i+=4; //increments faces indice
@@ -1112,6 +1152,31 @@ void GeodesicForm::copyGeodesicForm(const GeodesicForm& copy)
 	//Copy bounding box parameters
 	_boundingBox.max = copy._boundingBox.max;	//copy max value
 	_boundingBox.min = copy._boundingBox.min;	//copy min value
+}
+
+/*
+ * Scale geodesic form (multiplier result after extends)
+ */
+void GeodesicForm::scaleGeodesicForm(const double scale)
+{
+	for(unsigned int i=0; i< _points.size(); ++i)
+	{
+		//compute vector
+		double vect[3];	//initialize vector
+		vect[0] = _points[i].x - _center.x;		//compute x value
+		vect[1] = _points[i].y - _center.y;		//compute y value
+		vect[2] = _points[i].z - _center.z;		//compute z value
+		
+		//scale vector
+		vect[0]*= scale;
+		vect[1]*= scale;
+		vect[2]*= scale;
+		
+		//set new values
+		_points[i].x = vect[0] + _center.x;		//set new X value
+		_points[i].y = vect[1] + _center.y;		//set new Y value
+		_points[i].z = vect[2] + _center.z;		//set new Z value
+	}
 }
 
 

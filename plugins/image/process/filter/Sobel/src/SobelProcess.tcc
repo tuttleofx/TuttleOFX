@@ -1,15 +1,18 @@
 #include "SobelPlugin.hpp"
-#include "SobelAlgorithm.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
+
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <boost/gil/extension/numeric/kernel.hpp>
-#include <boost/gil/extension/numeric/convolve.hpp>
-#include <boost/gil/extension/numeric/pixel_by_channel.hpp>
-#include <boost/gil/extension/typedefs.hpp>
+#include <terry/globals.hpp>
+#include <terry/color/gradient.hpp>
+#include <terry/color/norm.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
+#include <terry/numeric/kernel.hpp>
+#include <terry/numeric/convolve.hpp>
+#include <terry/numeric/pixel_by_channel.hpp>
+#include <terry/typedefs.hpp>
+
 #include <boost/gil/utilities.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/if.hpp>
@@ -28,7 +31,7 @@ SobelProcess<SView,DView>::SobelProcess( SobelPlugin &effect )
 : ImageGilFilterProcessor<SView,DView>( effect )
 , _plugin( effect )
 {
-	boost::gil::pixel_zeros_t<DPixel>()(_pixelZero);
+	terry::pixel_zeros_t<DPixel>()(_pixelZero);
 }
 
 template <class SView, class DView>
@@ -46,26 +49,26 @@ template<class SView, class DView>
 void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost;
-	using namespace boost::gil;
+	using namespace terry;
 
 //	TUTTLE_COUT( "Sobel X: " << _params._xKernelGaussianDerivative.size() << "x" << _params._xKernelGaussian.size() );
 //	TUTTLE_COUT( "Sobel Y: " << _params._yKernelGaussianDerivative.size() << "x" << _params._yKernelGaussian.size() );
 
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	OfxPointI procWindowSize  = {
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
 	
 	typedef typename channel_mapping_type<DView>::type DChannel;
-	typedef typename floating_channel_type_t<DChannel>::type DChannelFloat;
+	typedef typename terry::floating_channel_type_t<DChannel>::type DChannelFloat;
 	typedef pixel<DChannelFloat, gray_layout_t> DPixelGray;
 
 	DView dst = subimage_view( this->_dstView,
 	                          procWindowOutput.x1, procWindowOutput.y1,
 	                          procWindowSize.x, procWindowSize.y );
 
-	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
+	const Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
 	
 	if( _params._xKernelGaussianDerivative.size() == 0 || ( !_params._unidimensional && _params._xKernelGaussian.size() == 0 ) )
 	{
@@ -88,7 +91,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols_auto<DPixelGray,OfxAllocator<unsigned char> >(
+					correlate_rows_cols_auto<DPixelGray, OfxAllocator>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._xKernelGaussianDerivative,
 						_params._xKernelGaussian,
@@ -144,7 +147,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols_auto<DPixelGray,OfxAllocator<unsigned char> >(
+					correlate_rows_cols_auto<DPixelGray, OfxAllocator>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._yKernelGaussian,
 						_params._yKernelGaussianDerivative,
@@ -181,22 +184,22 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	}
 	else if( _params._gradientNormManhattan )
 	{
-		transform_pixels_progress(
+		terry::algorithm::transform_pixels_progress(
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
-			transform_pixel_by_channel_t<channel_normManhattan_t>(),
-			*this
+			transform_pixel_by_channel_t<terry::color::channel_normManhattan_t>(),
+			this->getOfxProgress()
 			);
 	}
 	else
 	{
-		transform_pixels_progress(
+		terry::algorithm::transform_pixels_progress(
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
-			transform_pixel_by_channel_t<channel_norm_t>(),
-			*this
+			transform_pixel_by_channel_t<terry::color::channel_norm_t>(),
+			this->getOfxProgress()
 			);
 	}
 	if( progressForward( dst.height() ) )
@@ -209,7 +212,7 @@ template<class SView, class DView>
 void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mpl::true_ )
 {
 	using namespace boost;
-	using namespace boost::gil;
+	using namespace terry;
 	
 	if( ! _params._computeGradientDirection )
 	{
@@ -221,22 +224,22 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 	{
 		if( _params._gradientDirectionAbs )
 		{
-			transform_pixels_progress(
+			terry::algorithm::transform_pixels_progress(
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction
-				transform_pixel_by_channel_t<channel_gradientDirectionAbs_t>(),
-				*this
+				transform_pixel_by_channel_t<terry::color::channel_gradientDirectionAbs_t>(),
+				this->getOfxProgress()
 				);
 		}
 		else
 		{
-			transform_pixels_progress(
+			terry::algorithm::transform_pixels_progress(
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction
-				transform_pixel_by_channel_t<channel_gradientDirection_t>(),
-				*this
+				transform_pixel_by_channel_t<terry::color::channel_gradientDirection_t>(),
+				this->getOfxProgress()
 				);
 		}
 	}

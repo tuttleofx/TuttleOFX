@@ -8,10 +8,10 @@ namespace tuttle {
 namespace plugin {
 namespace print {
 
-const static std::string kParamMode          = "mode";
-const static std::string kParamModeImage     = "image";
-const static std::string kParamModeRegion    = "region";
-const static std::string kParamModePixel     = "pixel";
+static const std::string kParamMode = "mode";
+static const std::string kParamModeImage = "image";
+static const std::string kParamModeRegion = "region";
+static const std::string kParamModePixel = "pixel";
 enum EParamMode
 {
 	eParamModeImage = 0,
@@ -19,9 +19,9 @@ enum EParamMode
 	eParamModePixel
 };
 
-const static std::string kParamPixel         = "pixel";
-const static std::string kParamRegionMin     = "regionMin";
-const static std::string kParamRegionMax     = "regionMax";
+static const std::string kParamPixel = "pixel";
+static const std::string kParamRegionMin = "regionMin";
+static const std::string kParamRegionMax = "regionMax";
 
 const static std::string kParamColumns       = "columns";
 
@@ -55,7 +55,7 @@ enum EParamOutput
 	eParamOutputAscii = 0,
 	eParamOutputNumeric
 };
-const static std::string kParamFlip          = "flip";
+static const std::string kParamFlip = "flip";
 
 const static std::string kParamOutputOpenGL  = "opengl";
 

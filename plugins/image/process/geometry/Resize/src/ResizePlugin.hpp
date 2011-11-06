@@ -4,6 +4,7 @@
 #include "ResizeDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+#include <tuttle/plugin/context/SamplerPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -12,13 +13,16 @@ namespace resize {
 template<typename Scalar>
 struct ResizeProcessParams
 {
-	boost::gil::point2<Scalar> _size;
+	bool                                       _changeCenter;
+	boost::gil::point2<Scalar>                 _centerPoint;
+
+	SamplerProcessParams                       _samplerProcessParams;
 };
 
 /**
  * @brief Resize plugin
  */
-class ResizePlugin : public ImageEffectGilPlugin
+class ResizePlugin : public SamplerPlugin
 {
 public:
 	typedef float Scalar;
@@ -32,40 +36,29 @@ public:
 
 	void updateVisibleTools();
 
-	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void changedParam          ( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
-	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
+	bool getRegionOfDefinition ( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	void getRegionsOfInterest  ( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
+	bool isIdentity            ( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-	void render( const OFX::RenderArguments &args );
-	
-	const EParamFilter getFilter() const { return static_cast<EParamFilter>( _paramFilter->getValue() ); }
+	void render                ( const OFX::RenderArguments &args );
 
-	const double getParamB() const { return _paramB->getValue(); }
-	const double getParamC() const { return _paramC->getValue(); }
 public:
-	OFX::ChoiceParam*	_paramOptions;
+	OFX::ChoiceParam*       _paramMode;
 
-	OFX::ChoiceParam*	_paramFormat;
+	OFX::ChoiceParam*       _paramFormat;
 
-	OFX::BooleanParam*	_paramSplit;
+	OFX::Int2DParam*        _paramSize;
+	OFX::IntParam*          _paramSizeWidth;
+	OFX::IntParam*          _paramSizeHeight;
+	OFX::BooleanParam*      _paramSizeKeepRatio;
+	OFX::ChoiceParam*       _paramSizeOrientation;
+	
+	OFX::Double2DParam*     _paramScale;
 
-	OFX::ChoiceParam*	_paramDirection;
-	OFX::DoubleParam*	_paramScale;
-	OFX::DoubleParam*	_paramSize;
-
-	OFX::Double2DParam*	_paramOutputFormat;
-	OFX::DoubleParam*	_paramScaleX;
-	OFX::DoubleParam*	_paramScaleY;
-
-	OFX::ChoiceParam*	_paramFilter;
-
-	OFX::BooleanParam*	_paramCenter;
-	OFX::Double2DParam*	_paramCenterPoint;
-
-        OFX::DoubleParam*	_paramB;
-        OFX::DoubleParam*	_paramC;
+	OFX::BooleanParam*      _paramCenter;
+	OFX::Double2DParam*     _paramCenterPoint;
 };
 
 }

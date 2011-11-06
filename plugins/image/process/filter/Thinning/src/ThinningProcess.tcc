@@ -1,9 +1,11 @@
-#include "ThinningAlgorithm.hpp"
-
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+
+#include <terry/globals.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
+#include <terry/filter/thinning.hpp>
 
 #include <boost/mpl/if.hpp>
 
@@ -41,13 +43,13 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 //	                           View,
 //							   typename kth_channel_view_type<0,View>::type >::type CView;
 	typedef View CView;
-	typedef typename image_from_view<CView>::type CImage;
+	typedef typename terry::image_from_view<CView, OfxAllocator<unsigned char> >::type CImage;
 
 	static const std::size_t border = 1;
-	OfxRectI srcRodCrop1 = rectangleReduce( this->_srcPixelRod, border );
-	OfxRectI srcRodCrop2 = rectangleReduce( srcRodCrop1, border );
-	OfxRectI procWindowRoWCrop1 = rectanglesIntersection( rectangleGrow( procWindowRoW, border ), srcRodCrop1 );
-	OfxRectI procWindowRoWCrop2 = rectanglesIntersection( procWindowRoW, srcRodCrop2 );
+	const OfxRectI srcRodCrop1 = rectangleReduce( this->_srcPixelRod, border );
+	const OfxRectI srcRodCrop2 = rectangleReduce( srcRodCrop1, border );
+	const OfxRectI procWindowRoWCrop1 = rectanglesIntersection( rectangleGrow( procWindowRoW, border ), srcRodCrop1 );
+	const OfxRectI procWindowRoWCrop2 = rectanglesIntersection( procWindowRoW, srcRodCrop2 );
 	
 //	TUTTLE_COUT_X( 20, "-");
 //	TUTTLE_COUT_VAR( this->_srcPixelRod );
@@ -64,16 +66,18 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	CImage image_tmp( tmpSize.x, tmpSize.y );
 	CView view_tmp = view( image_tmp );
 
-	transform_pixels_locator_progress( this->_srcView, this->_srcPixelRod,
-									   view_tmp, procWindowRoWCrop1,
-									   procWindowRoWCrop1, pixel_locator_thinning_t<View,CView>(this->_srcView, lutthin1), *this );
-	transform_pixels_locator_progress( view_tmp, procWindowRoWCrop1, //srcRodCrop1,
-									   this->_dstView, this->_dstPixelRod,
-									   procWindowRoWCrop2, pixel_locator_thinning_t<CView,View>(view_tmp, lutthin2), *this );
-
-//	transform_pixels_locator_progress( this->_srcView, this->_srcPixelRod,
-//									   this->_dstView, this->_dstPixelRod,
-//									   procWindowRoWCrop2, pixel_locator_thinning_t<View>(this->_dstView, lutthin2), *this );
+	terry::algorithm::transform_pixels_locator_progress(
+		this->_srcView, ofxToGil(this->_srcPixelRod),
+		view_tmp, ofxToGil(procWindowRoWCrop1),
+		ofxToGil(procWindowRoWCrop1),
+		terry::filter::thinning::pixel_locator_thinning_t<View,CView>(this->_srcView, terry::filter::thinning::lutthin1),
+		this->getOfxProgress() );
+	terry::algorithm::transform_pixels_locator_progress(
+		view_tmp, ofxToGil(procWindowRoWCrop1), //srcRodCrop1,
+		this->_dstView, ofxToGil(this->_dstPixelRod),
+		ofxToGil(procWindowRoWCrop2),
+		terry::filter::thinning::pixel_locator_thinning_t<CView,View>(view_tmp, terry::filter::thinning::lutthin2),
+		this->getOfxProgress() );
 }
 
 }

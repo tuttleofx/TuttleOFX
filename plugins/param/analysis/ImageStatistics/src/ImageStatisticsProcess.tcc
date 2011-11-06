@@ -1,13 +1,13 @@
 #include "ImageStatisticsPlugin.hpp"
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
-#include <boost/gil/extension/typedefs.hpp>
+#include <terry/typedefs.hpp>
 
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
 #include <boost/gil/extension/color/hsl.hpp>
 
 #include <boost/units/pow.hpp>
@@ -15,7 +15,7 @@
 #include <boost/mpl/erase.hpp>
 #include <boost/mpl/find.hpp>
 
-
+/*
 namespace boost {
 namespace gil {
 
@@ -84,12 +84,13 @@ GIL_DEFINE_ALL_TYPEDEFS( 64f, hsl )
 
 }
 }
+*/
 
 namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-using namespace boost::gil;
+using namespace terry;
 
 template<typename T>
 T standard_deviation( const T v_sum, const T v_sum_p2, const std::size_t nb )
@@ -169,7 +170,7 @@ struct OutputParams
 {
 	OutputParams()
 	{
-		using namespace boost::gil;
+		using namespace terry;
 		pixel_zeros_t<Pixel>( )( _average );
 		pixel_zeros_t<Pixel>( )( _channelMin );
 		pixel_zeros_t<Pixel>( )( _channelMax );

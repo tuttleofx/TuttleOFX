@@ -2,11 +2,12 @@
 #define LENSDISTORTPROCESS_HPP
 
 #include "lensDistortAlgorithm.hpp"
+#include <terry/sampler/sampler.hpp>
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -28,11 +29,10 @@ class LensDistortProcess : public ImageGilFilterProcessor<View>
 typedef double Scalar;     // calculations are in double
 
 protected:
-	LensDistortPlugin& _plugin;
+	LensDistortPlugin&               _plugin;
 	LensDistortProcessParams<Scalar> _p;
-	EParamLensType _lensType;
-	EParamCenterType _centerType;
-	EParamInterpolation _interpolation;
+
+	LensDistortParams                _params;
 
 public:
 	LensDistortProcess( LensDistortPlugin& instance );
@@ -43,7 +43,7 @@ public:
 
 private:
 	template<class Sampler>
-	void lensDistort( View& srcView, View& dstView, const OfxRectI& procWindow );
+	void lensDistort( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler=Sampler() );
 };
 
 }

@@ -116,16 +116,16 @@ ColorSpaceProcessParams ColorSpacePlugin::getProcessParams( ) const
 	params._layoutIn	= static_cast<EParamLayout>( _paramInLayout->getValue( ) );
 	params._layoutOut	= static_cast<EParamLayout>( _paramOutLayout->getValue( ) );
 
-	params._tempColorIn	= static_cast<EParamTemp>( _paramInColorTemp->getValue( ) );
-	params._tempColorOut	= static_cast<EParamTemp>( _paramOutColorTemp->getValue( ) );
+	params._tempColorIn	= static_cast<EColorTemperature>( _paramInColorTemp->getValue( ) );
+	params._tempColorOut	= static_cast<EColorTemperature>( _paramOutColorTemp->getValue( ) );
 
 	return params;
 }
 
 bool ColorSpacePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-	ColorSpaceProcessParams params = getProcessParams();
 	/*
+	ColorSpaceProcessParams params = getProcessParams();
 	if(
 		params._BlackPointIn	== params._BlackPointOut &&
 		params._GammaSensitoIn	== params._GammaSensitoOut &&

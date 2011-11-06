@@ -7,8 +7,8 @@
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <boost/gil/channel_algorithm.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
 
 #include<vector>
 #include<set>
@@ -79,7 +79,7 @@ struct Pixel_copy
 template< typename Pixel>
 struct Pixel_copy_discretization
 {
-	typedef std::set< SPixel, pixel_is_lesser_t<SPixel,SPixel> > PixelSet;
+	typedef std::set< SPixel, tuttle::plugin::colorSpaceKeyer::pixel_is_lesser_t<SPixel,SPixel> > PixelSet;
 	typedef std::set<SPixel>::iterator PixelSetIterator;
 	
 	//Arguments

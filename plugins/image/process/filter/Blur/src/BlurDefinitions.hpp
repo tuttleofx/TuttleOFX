@@ -7,12 +7,12 @@ namespace tuttle {
 namespace plugin {
 namespace blur {
 
-const static std::string kParamSize           = "size";
-const static std::string kParamBorder         = "border";
-const static std::string kParamBorderMirror   = "Mirror";
-const static std::string kParamBorderConstant = "Constant";
-const static std::string kParamBorderBlack    = "Black";
-const static std::string kParamBorderPadded   = "Padded";
+static const std::string kParamSize           = "size";
+static const std::string kParamBorder         = "border";
+static const std::string kParamBorderMirror   = "Mirror";
+static const std::string kParamBorderConstant = "Constant";
+static const std::string kParamBorderBlack    = "Black";
+static const std::string kParamBorderPadded   = "Padded";
 
 enum EParamBorder
 {
@@ -22,9 +22,9 @@ enum EParamBorder
 	eParamBorderPadded
 };
 
-const static std::string kParamGroupAdvanced = "advanced";
-const static std::string kParamNormalizedKernel = "normalizedKernel";
-const static std::string kParamKernelEpsilon = "kernelEpsilon";
+static const std::string kParamGroupAdvanced = "advanced";
+static const std::string kParamNormalizedKernel = "normalizedKernel";
+static const std::string kParamKernelEpsilon = "kernelEpsilon";
 
 }
 }

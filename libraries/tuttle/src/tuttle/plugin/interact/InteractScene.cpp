@@ -1,11 +1,13 @@
 #include "InteractScene.hpp"
 #include "overlay.hpp"
-#include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/common/utils/global.hpp>
+
+#include <tuttle/plugin/ofxToGil/point.hpp>
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace interact {
+
 
 InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos )
 	: _params( params )
@@ -13,7 +15,8 @@ InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos 
 	, _mouseDown( false )
 	, _multiSelectionEnabled( true )
 	, _creatingSelection( false )
-	, _manipulator( infos )
+	, _manipulator( NULL )
+	, _manipulatorColor( NULL )
 {
 }
 
@@ -28,6 +31,7 @@ bool InteractScene::draw( const OFX::DrawArgs& args )
 
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
 	ColorVector::iterator itColor = _colors.begin();
+
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 	     it != itEnd;
 	     ++it, ++itActive, ++itColor )
@@ -50,7 +54,9 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	if( _creatingSelection )
 	{
 		// create selection
+#ifndef TUTTLE_PRODUCTION
 		TUTTLE_COUT("create a selection");
+#endif
 		_selectionRect.x2 = args.penPosition.x;
 		_selectionRect.y2 = args.penPosition.y;
 		_hasSelection = false;
@@ -91,16 +97,16 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		}
 		case eMotionRotate:
 		{
-			TUTTLE_COUT_INFOS;
-			// todo
-			//rotate( center, angle );
+			if( _manipulator )
+			{
+				rotate( _manipulator->getPosition(), penPosition, penPosition - _beginPenPosition );
+			}
 			break;
 		}
 		case eMotionScale:
 		{
-			TUTTLE_COUT_INFOS;
-			// todo
-			//scale( angle, factor );
+			if( _manipulator )
+				scale( _manipulator->getPosition(), penPosition - _beginPenPosition );
 			break;
 		}
 		case eMotionNone:
@@ -129,14 +135,14 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 	bool result = false;
 	SelectedObject oneSelectedObj;
 
-//	if( _hasSelection  )
-//	{
-//		_motionType = _manipulator.intersect( args );
-//		if( _motionType._mode != eMotionNone )
-//		{
-//			result = true;
-//		}
-//	}
+	if( _hasSelection && _manipulator )
+	{
+		_motionType = _manipulator->intersect( args );
+		if( _motionType._mode != eMotionNone )
+		{
+			result = true;
+		}
+	}
 	if( !result )
 	{
 		IsActiveFunctorVector::iterator itActive = _isActive.begin();
@@ -270,7 +276,6 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 	return result;
 }
 
-
 bool InteractScene::drawSelection( const OFX::DrawArgs& args )
 {
 	bool result = false;
@@ -281,9 +286,14 @@ bool InteractScene::drawSelection( const OFX::DrawArgs& args )
 		glColor4d( 1.0, 1.0, 1.0, 1.0 );
 		result = true;
 	}
-	else if( _hasSelection /*&& _manipulator*/ )
+	else if( _hasSelection && _manipulator )
 	{
-		result |= _manipulator.draw( args );
+		if( _manipulatorColor )
+		{
+			OfxRGBAColourD color = _manipulatorColor->getColor( args.time );
+			glColor4d( color.r, color.g, color.b, color.a );
+		}
+		result |= _manipulator->draw( args );
 	}
 	return result;
 }
@@ -291,36 +301,21 @@ bool InteractScene::drawSelection( const OFX::DrawArgs& args )
 void InteractScene::translate( const Point2& vec )
 {
 	//TUTTLE_COUT_VAR2( vec.x, vec.y );
+	Point2 newVec = vec;
 	switch( _motionType._axis )
 	{
 		case eAxisXY:
 		{
-			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPosition( it->second + vec );
-			}
 			break;
 		}
 		case eAxisX:
 		{
-			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPositionX( it->second.x + vec.x );
-			}
+			newVec.y = 0;
 			break;
 		}
 		case eAxisY:
 		{
-			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPositionY( it->second.y + vec.y );
-			}
+			newVec.x = 0;
 			break;
 		}
 		case eAxisNone:
@@ -328,58 +323,53 @@ void InteractScene::translate( const Point2& vec )
 			break;
 		}
 	}
+	for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+		 it != itEnd;
+		 ++it )
+	{
+		it->first->translate( it->second, newVec );
+	}
 }
 
-void InteractScene::rotate( const Point2& center, const Scalar angle )
+void InteractScene::rotate( const Point2& center, const Point2& from, const Point2& vec )
 {
 	for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
 		 it != itEnd;
 		 ++it )
 	{
-//		Point2 nPt = rotate( it->second, center, angle );
-		Point2 nPt = it->second;
-		it->first->setPosition( nPt );
+		it->first->rotate( it->second, center, from, vec );
 	}
 }
 
-void InteractScene::scale( const Point2& center, const Scalar factor )
+void InteractScene::scale( const Point2& center, const Point2& factor )
 {
+	Point2 newFactor = factor;
 	switch( _motionType._axis )
 	{
 		case eAxisXY:
 		{
-			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPosition( it->second );
-			}
 			break;
 		}
 		case eAxisX:
 		{
-			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPositionX( it->second.x );
-			}
+			newFactor.y = 0;
 			break;
 		}
 		case eAxisY:
 		{
-			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPositionY( it->second.y );
-			}
+			newFactor.x = 0;
 			break;
 		}
 		case eAxisNone:
 		{
 			break;
 		}
+	}
+	for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+		 it != itEnd;
+		 ++it )
+	{
+		it->first->scale( it->second, center, factor );
 	}
 }
 

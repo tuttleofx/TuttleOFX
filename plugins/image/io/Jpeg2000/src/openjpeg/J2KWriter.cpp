@@ -2,7 +2,7 @@
 #include "J2KCommon.hpp"
 
 #include <tuttle/plugin/exceptions.hpp>
-#include <boost/gil/extension/typedefs.hpp>
+#include <terry/typedefs.hpp>
 
 #include <iostream>
 #include <cstring>

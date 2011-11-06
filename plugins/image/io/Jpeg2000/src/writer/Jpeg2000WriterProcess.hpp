@@ -1,25 +1,21 @@
 #ifndef _TUTTLE_PLUGIN_JPEG2000_WRITER_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_JPEG2000_WRITER_PROCESS_HPP_
 
+#include <openjpeg/J2KWriter.hpp>
+
 #include "Jpeg2000WriterPlugin.hpp"
 #include "Jpeg2000WriterProcess.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+#include <terry/globals.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/scoped_ptr.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include <openjpeg/J2KWriter.hpp>
 
 
 namespace tuttle {

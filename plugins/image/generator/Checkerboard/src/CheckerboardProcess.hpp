@@ -1,9 +1,9 @@
 #ifndef _TUTTLE_PLUGIN_CHECKERBOARD_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_CHECKERBOARD_PROCESS_HPP_
 
-#include "CheckerboardAlgorithm.hpp"
+#include <terry/globals.hpp>
+#include <terry/generator/checkerboard.hpp>
 
-#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
@@ -31,7 +31,7 @@ class CheckerboardProcess : public ImageGilProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
-	typedef CheckerboardFunctor<Pixel> CheckerboardFunctorT;
+	typedef terry::generator::CheckerboardFunctor<Pixel> CheckerboardFunctorT;
 	typedef typename CheckerboardFunctorT::point_t Point;
 	typedef boost::gil::virtual_2d_locator<CheckerboardFunctorT, false> Locator;
 	typedef boost::gil::image_view<Locator> CheckerboardVirtualView;

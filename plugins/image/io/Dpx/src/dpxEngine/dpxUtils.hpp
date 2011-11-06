@@ -1,8 +1,36 @@
 #ifndef DPX_UTILS_HPP
 #define DPX_UTILS_HPP
 
+#include <stdint.h>
+
 namespace tuttle {
 namespace utils {
+
+inline void endian_swap(unsigned short& x)
+{
+    x = (x>>8) |
+	(x<<8);
+}
+
+inline void endian_swap(unsigned int& x)
+{
+    x = (x>>24) |
+	((x<<8) & 0x00FF0000) |
+	((x>>8) & 0x0000FF00) |
+	(x<<24);
+}
+/*
+inline void endian_swap( uint64_t& x)
+{
+    x = (x>>56) |
+	((x<<40) & 0x00FF000000000000) |
+	((x<<24) & 0x0000FF0000000000) |
+	((x<<8)  & 0x000000FF00000000) |
+	((x>>8)  & 0x00000000FF000000) |
+	((x>>24) & 0x0000000000FF0000) |
+	((x>>40) & 0x000000000000FF00) |
+	(x<<56);
+}*/
 
 // Swap Endianness
 template <typename T>
@@ -16,6 +44,7 @@ T swapEndian( T _var )
 		case 2:
 			swapped[0] = *( (unsigned char*)addr + 1 );
 			swapped[1] = *( (unsigned char*)addr  );
+			//endian_swap(unsigned short& x);
 			break;
 		case 4:
 			swapped[0] = *( (unsigned char*)addr + 3 );

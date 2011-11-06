@@ -8,9 +8,11 @@ namespace tuttle {
 namespace plugin {
 namespace ctl {
 
-const static std::string kParamChooseInput( "input" );
-const static std::string kParamChooseInputCode( "code" );
-const static std::string kParamChooseInputFile( "file" );
+static const std::string kParamChooseInput           ( "input" );
+static const std::string kParamChooseInputCode       ( "code" );
+static const std::string kParamChooseInputFile       ( "file" );
+
+static const std::string kParamChooseInputCodeUpdate ( "update" );
 
 enum EParamChooseInput
 {
@@ -18,8 +20,8 @@ enum EParamChooseInput
 	eParamChooseInputFile,
 };
 
-const static std::string kParamCTLCode( "code" );
-const static std::string kParamCTLFile( "file" );
+static const std::string kParamCTLCode               ( "code" );
+static const std::string kParamCTLFile               ( "file" );
 
 }
 }

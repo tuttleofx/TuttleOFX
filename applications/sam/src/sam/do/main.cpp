@@ -1,7 +1,6 @@
 #include "commandLine.hpp"
 #include "node_io.hpp"
-
-#include <sam/common/color.hpp>
+#include "global.hpp"
 
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
@@ -14,28 +13,6 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 
-
-
-namespace sam {
-namespace samdo {
-
-Color _color;
-
-struct NodeCommand
-{
-	NodeCommand( const std::vector<std::string>& commandLine )
-	: _name( commandLine[0] )
-	{
-		BOOST_ASSERT( commandLine.size() );
-	}
-
-	std::string _name;
-	std::vector< std::pair<std::string, std::string> > _params;
-	std::vector< std::pair<std::string, std::string> > _flags;
-};
-
-}
-}
 
 
 std::string getDefaultValues(const tuttle::host::ofx::property::OfxhProperty& prop)
@@ -206,6 +183,11 @@ int main( int argc, char** argv )
 					const std::vector<std::string> vecOptions = bpo::split_unix( env_do_options, " " );
 					bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
 				}
+				if( const char* env_do_options = std::getenv("SAM_OPTIONS") )
+				{
+					const std::vector<std::string> vecOptions = bpo::split_unix( env_do_options, " " );
+					bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
+				}
 
 				bpo::notify( samdo_vm );
 
@@ -221,16 +203,8 @@ int main( int argc, char** argv )
 				}
 				if ( samdo_vm.count("enable-color") && !script )
 				{
-					std::string str = samdo_vm["enable-color"].as<std::string>();
-
-					if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
-					{
-						enableColor = true;
-					}
-					else
-					{
-						enableColor = false;
-					}
+					const std::string str = samdo_vm["enable-color"].as<std::string>();
+					enableColor = string_to_boolean( str );
 				}
 
 				if( enableColor )
@@ -388,7 +362,7 @@ int main( int argc, char** argv )
 								detectedPlugins.push_back( plugName );
 								break;
 							}
-							if( boost::algorithm::find_first(plugName, userNodeName ) )
+							if( boost::algorithm::find_first( plugName, userNodeName ) )
 							{
 								detectedPlugins.push_back( plugName );
 							}
@@ -530,12 +504,12 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
-							TUTTLE_COUT( "ATTRIBUTES" );
+							TUTTLE_COUT( _color._blue << "ATTRIBUTES" << _color._std );
 							TUTTLE_COUT("");
-							TUTTLE_COUT( "\tCLIPS" );
+							TUTTLE_COUT( _color._blue << "\tCLIPS" << _color._std );
 							coutClips( currentNode );
 							TUTTLE_COUT("");
-							TUTTLE_COUT( "\tPARAMETERS" );
+							TUTTLE_COUT( _color._blue << "\tPARAMETERS" << _color._std );
 							coutParameters( currentNode );
 							TUTTLE_COUT("");
 							exit(0);
@@ -544,7 +518,7 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
-							TUTTLE_COUT( "PROPERTIES" );
+							TUTTLE_COUT( _color._blue << "PROPERTIES" << _color._std );
 							coutProperties( currentNode );
 							TUTTLE_COUT("");
 							exit(0);
@@ -553,7 +527,7 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
-							TUTTLE_COUT( "CLIPS" );
+							TUTTLE_COUT( _color._blue << "CLIPS" << _color._std );
 							coutClips( currentNode );
 							TUTTLE_COUT("");
 							exit(0);
@@ -563,7 +537,7 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
 							const std::string clipName = node_vm["clip"].as<std::string>();
-							TUTTLE_COUT( "CLIP: " << clipName );
+							TUTTLE_COUT( _color._blue << "CLIP: " << _color._green << clipName << _color._std );
 							ttl::attribute::ClipImage& clip = currentNode.getClip( clipName );
 							TUTTLE_COUT(
 								clip.getBitDepthString()
@@ -579,7 +553,7 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
-							TUTTLE_COUT( "PARAMETERS" );
+							TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
 							TUTTLE_COUT("");
 							coutParameters( currentNode );
 							exit(0);
@@ -588,13 +562,14 @@ int main( int argc, char** argv )
 						{
 							const std::string paramName = node_vm["param"].as<std::string>();
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
-							TUTTLE_COUT( "PARAM: " << paramName );
+							TUTTLE_COUT( _color._blue << "PARAM: " << _color._green << paramName << _color._std );
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
 							TUTTLE_COUT("");
 							TUTTLE_COUT(
-								"\t" <<
+								"\t" << _color._red << 
 								(param.getSecret() ? "SECRET -- " : "") <<
-								param.getScriptName() << ": " << param.getParamType() << " x" << param.getSize()
+								param.getScriptName() << ": " << param.getParamType() << " x" << param.getSize() <<
+								_color._std
 								);
 							TUTTLE_COUT("");
 							const std::string& hint = param.getHint();

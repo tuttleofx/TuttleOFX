@@ -4,10 +4,14 @@
 import os
 
 
-os.chdir("./python26")
-os.execlp( "./configure")
-os.chdir("..")
-
-os.chdir("./libcaca")
+os.chdir ( "./freetype" )
 os.execlp( "./configure" )
-os.chdir("..")
+os.chdir ( ".." )
+
+os.chdir ( "./libcaca" )
+os.execlp( "./configure" )
+os.chdir ( ".." )
+
+os.chdir ( "./openjpeg" )
+os.execlp( "./configure" )
+os.chdir ( ".." )

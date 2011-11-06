@@ -18,7 +18,7 @@ void BasicKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 
 	_params = _plugin.getProcessParams<View>();
 
-	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
+//	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
 	//	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	//	int yshift = boost::numeric_cast<int>(( dims.x - dims.y ) * 0.5);
 }

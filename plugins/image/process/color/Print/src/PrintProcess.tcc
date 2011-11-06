@@ -1,7 +1,9 @@
 #include "PrintAlgorithm.hpp"
 #include "PrintPlugin.hpp"
 
-#include <boost/gil/extension/numeric/pixel_by_channel.hpp>
+#include <terry/channel.hpp>
+#include <terry/numeric/pixel_by_channel.hpp>
+
 #include <cstdio>
 
 namespace tuttle {
@@ -19,7 +21,7 @@ template<class SView>
 CacaImage load_cacaimage_from_view( const SView sView )
 {
 	typedef typename boost::gil::channel_mapping_type<SView>::type Channel;
-	typedef typename boost::gil::channel_base_type<Channel>::type ChannelBaseType;
+	typedef typename terry::channel_base_type<Channel>::type ChannelBaseType;
 
 	CacaImage im;
 	unsigned int bpp, rmask, gmask, bmask, amask;
@@ -48,7 +50,7 @@ template<>
 CacaImage load_cacaimage_from_view<boost::gil::gray8_view_t>( const boost::gil::gray8_view_t sView )
 {
 	typedef boost::gil::channel_mapping_type<boost::gil::gray8_view_t>::type Channel;
-	typedef boost::gil::channel_base_type<Channel>::type ChannelBaseType;
+	typedef terry::channel_base_type<Channel>::type ChannelBaseType;
 
 	CacaImage im;
 	unsigned int bpp, rmask, gmask, bmask, amask;

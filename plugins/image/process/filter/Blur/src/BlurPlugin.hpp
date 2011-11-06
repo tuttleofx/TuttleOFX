@@ -5,8 +5,8 @@
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/kernel.hpp>
-#include <boost/gil/extension/numeric/convolve.hpp>
+#include <terry/numeric/kernel.hpp>
+#include <terry/numeric/convolve.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -15,10 +15,10 @@ namespace blur {
 template<typename Scalar>
 struct BlurProcessParams
 {
-	typedef typename boost::gil::kernel_1d<Scalar> Kernel;
-	boost::gil::point2<double> _size;
+	typedef typename terry::kernel_1d<Scalar> Kernel;
+	terry::point2<double> _size;
 	EParamBorder _border;
-	boost::gil::convolve_boundary_option _boundary_option;
+	terry::convolve_boundary_option _boundary_option;
 
 	Kernel _gilKernelX;
 	Kernel _gilKernelY;

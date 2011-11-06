@@ -1,6 +1,8 @@
 #ifndef _SAM_DO_COMMANDLINE_HPP_
 #define	_SAM_DO_COMMANDLINE_HPP_
 
+#include "global.hpp"
+
 #include <iterator>
 #include <vector>
 #include <string>

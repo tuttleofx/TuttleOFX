@@ -14,6 +14,8 @@
 #include <boost/assert.hpp>
 #include <boost/progress.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <iostream>
 #include <map>
@@ -36,33 +38,65 @@ namespace {
 /// All regex to recognize a pattern
 /// @{
 
-// common used pattern with # or @
-static const boost::regex regexPatternStandard(
-    "(.*?)"             // anything but without priority
-    "\\[?"              // if pattern is myimage[####].jpg, don't capture []
-    "(#+|@+)"           // we capture all # or @
-    "\\]?"              // possible end of []
-    "(.*?)"             // anything
-    );
-// C style pattern
-static const boost::regex regexPatternCStyle(
-    "(.*?)"             // anything but without priority
-    "\\[?"              // if pattern is myimage[%04d].jpg, don't capture []
-    "%([0-9]*)d"        // we capture the padding value (eg. myimage%04d.jpg)
-    "\\]?"              // possible end of []
-    "(.*?)"             // anything
-    );
-// image name
-static const boost::regex regexPatternFrame(
-    "(.*?"              // anything but without priority
-    "[_\\.]?)"          // if multiple numbers, the number surround with . _ get priority (eg. seq1shot04myimage.0123.jpg -> 0123)
-    "\\[?"              // if pattern is myimage[0001].jpg, don't capture []
-    "([\\-\\+]?[0-9]+)" // one frame number, can be positive or negative values ( -0012 or +0012 or 0012)
-    "\\]?"              // possible end of []
-    "([_\\.]?"          // if multiple numbers, the number surround with . _ get priority (eg. seq1shot04myimage.0123.jpg -> 0123)
-    ".*\\.?"            //
-    ".*?)"              // anything
-    );
+class RegexPatterns{
+public:
+	// common used pattern with # or @
+	const boost::regex& getStandard(){
+		boost::mutex::scoped_lock scoped_lock(m);
+
+		if(regexPatternStandard.get()==NULL)
+			regexPatternStandard.reset(new boost::regex(
+					"(.*?)"             // anything but without priority
+					"\\[?"              // if pattern is myimage[####].jpg, don't capture []
+					"(#+|@+)"           // we capture all # or @
+					"\\]?"              // possible end of []
+					"(.*?)"             // anything
+				)
+			);
+		return *regexPatternStandard.get();
+	}
+	// C style pattern
+	const boost::regex& getCStyle(){
+		boost::mutex::scoped_lock scoped_lock(m);
+
+		if(regexPatternCStyle.get()==NULL)
+			regexPatternCStyle.reset(new boost::regex(
+					"(.*?)"             // anything but without priority
+					"\\[?"              // if pattern is myimage[%04d].jpg, don't capture []
+					"%([0-9]*)d"        // we capture the padding value (eg. myimage%04d.jpg)
+					"\\]?"              // possible end of []
+					"(.*?)"             // anything
+				)
+			);
+		return *regexPatternCStyle.get();
+	}
+	// image name
+	const boost::regex& getFrame(){
+		boost::mutex::scoped_lock scoped_lock(m);
+
+		if(regexPatternFrame.get()==NULL)
+			regexPatternFrame.reset(new boost::regex(
+					"(.*?"              // anything but without priority
+					"[_\\.]?)"          // if multiple numbers, the number surround with . _ get priority (eg. seq1shot04myimage.0123.jpg -> 0123)
+					"\\[?"              // if pattern is myimage[0001].jpg, don't capture []
+					"([\\-\\+]?[0-9]+)" // one frame number, can be positive or negative values ( -0012 or +0012 or 0012)
+					"\\]?"              // possible end of []
+					"([_\\.]?"          // if multiple numbers, the number surround with . _ get priority (eg. seq1shot04myimage.0123.jpg -> 0123)
+					".*\\.?"            //
+					".*?)"              // anything
+				)
+			);
+		return *regexPatternFrame.get();
+	}
+private:
+	std::auto_ptr<boost::regex> regexPatternStandard;
+	std::auto_ptr<boost::regex> regexPatternCStyle;
+	std::auto_ptr<boost::regex> regexPatternFrame;
+	boost::mutex m;
+};
+
+RegexPatterns regexPattern;
+
 
 /// @}
 
@@ -473,18 +507,24 @@ bool Sequence::isIn( const std::string& filename, Time& time, std::string& timeS
 
 Sequence::EPattern Sequence::checkPattern( const std::string& pattern )
 {
-	if( regex_match( pattern.c_str(), regexPatternStandard ) )
+	TUTTLE_COUT ( pattern.c_str() << "   " << regexPattern.getStandard().str()  );
+
+	if( regex_match( pattern.c_str(), regexPattern.getStandard( ) ) )
 	{
+		TUTTLE_COUT("check Standard");
 		return ePatternStandard;
 	}
-	else if( regex_match( pattern.c_str(), regexPatternCStyle ) )
+	else if( regex_match( pattern.c_str(), regexPattern.getCStyle() ) )
 	{
+		TUTTLE_COUT("check CStyle");
 		return ePatternCStyle;
 	}
-	else if( regex_match( pattern.c_str(), regexPatternFrame ) )
+	else if( regex_match( pattern.c_str(), regexPattern.getFrame() ) )
 	{
+		TUTTLE_COUT("check frame");
 		return ePatternFrame;
 	}
+
 	return ePatternNone;
 }
 
@@ -502,22 +542,19 @@ bool Sequence::retrieveInfosFromPattern( const std::string& filePattern, const E
 {
 	boost::cmatch matches;
 
-	if( ( accept & ePatternStandard ) &&
-	    regex_match( filePattern.c_str(), matches, regexPatternStandard ) )
+	if( ( accept & ePatternStandard ) && regex_match( filePattern.c_str(), matches, regexPattern.getStandard() ) )
 	{
 		std::string paddingStr( matches[2].first, matches[2].second );
 		padding       = paddingStr.size();
 		strictPadding = ( paddingStr[0] == '#' );
 	}
-	else if( ( accept & ePatternCStyle ) &&
-	         regex_match( filePattern.c_str(), matches, regexPatternCStyle ) )
+	else if( ( accept & ePatternCStyle ) && regex_match( filePattern.c_str(), matches, regexPattern.getCStyle() ) )
 	{
 		std::string paddingStr( matches[2].first, matches[2].second );
 		padding       = paddingStr.size() == 0 ? 0 : boost::lexical_cast<std::size_t>( paddingStr ); // if no padding value: %d -> padding = 0
 		strictPadding = false;
 	}
-	else if( ( accept & ePatternFrame ) &&
-	         regex_match( filePattern.c_str(), matches, regexPatternFrame ) )
+	else if( ( accept & ePatternFrame ) && regex_match( filePattern.c_str(), matches, regexPattern.getFrame() ) )
 	{
 		std::string frame( matches[2].first, matches[2].second );
 		//		Time t = boost::lexical_cast<Time>( frame );
@@ -735,7 +772,6 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	std::list<std::string> timesStr;
 	std::size_t            iCurrent = 0;
 	//std::size_t            iBegin = 0; // unused ...
-
 	BOOST_FOREACH( const FileNumbers& sn, nums )
 	{
 		if( ! sn.rangeEquals( *previous, idChangeBegin, idChangeEnd ) )

@@ -1,3 +1,4 @@
+#include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
@@ -30,7 +31,7 @@ namespace ttl = tuttle::common;
 
 sam::Color _color;
 
-bool        colorOutput   = false;
+bool        enableColor   = false;
 
 void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage,
 					const ttl::Sequence& d, int offset = 0 )
@@ -72,7 +73,7 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 		{
 			bfs::path dFile = d.getAbsoluteFilenameAt( t + offset );
 			//TUTTLE_TCOUT( "do " << sFile << " -> " << dFile );
-#ifndef SAM_SAM_MOVEFILESS // copy file(s)
+#ifndef SAM_MOVEFILES // copy file(s)
 			if( bfs::exists( dFile ) )
 			{
 				TUTTLE_CERR( _color._error << "Could not copy: " << dFile.string( ) << _color._std );
@@ -210,6 +211,11 @@ int sammvcp( int argc, char** argv )
 			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
 			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 		}
+		if( const char* env_options = std::getenv( "SAM_OPTIONS" ) )
+		{
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
 		bpo::notify( vm );
 	}
 	catch( const bpo::error& e)
@@ -225,23 +231,15 @@ int sammvcp( int argc, char** argv )
 
 	if ( vm.count("color") )
 	{
-		colorOutput = true;
+		enableColor = true;
 	}
 	if ( vm.count("enable-color") )
 	{
-		std::string str = vm["enable-color"].as<std::string>();
-
-		if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
-		{
-			colorOutput = true;
-		}
-		else
-		{
-			colorOutput = false;
-		}
+		const std::string str = vm["enable-color"].as<std::string>();
+		enableColor = string_to_boolean(str);
 	}
 
-	if( colorOutput )
+	if( enableColor )
 	{
 		using namespace tuttle::common;
 		_color.enable();

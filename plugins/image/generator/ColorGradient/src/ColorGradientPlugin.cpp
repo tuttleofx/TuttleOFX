@@ -144,6 +144,7 @@ void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs& args, co
 			( *it_color )->setIsSecret( true );
 		}
 	}
+	/*
 	else if( boost::starts_with( paramName, kPoint ) )
 	{
 		try
@@ -163,6 +164,7 @@ void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs& args, co
 		catch( boost::bad_lexical_cast& )
 		{}
 	}
+	*/
 
 }
 

@@ -11,7 +11,15 @@ namespace tuttle {
 namespace plugin {
 namespace ctl {
 
+/**
+ * @brief HACK: workaround CTL limitation to load a module which source code
+ * comes from a string and not a file.
+ */
+void loadModule( Ctl::Interpreter& interpreter, const std::string &moduleName, const std::string& code );
+void loadModuleRecursive( Ctl::Interpreter& interpreter,const std::string &moduleName, const std::string& code );
+
 namespace {
+
 CTLPlugin* ctlPlugin;
 
 void ctlMessageOutput( const std::string& message )
@@ -144,12 +152,14 @@ void CTLProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		case eParamChooseInputCode:
 		{
-			TUTTLE_COUT_ERROR( "NotImplemented. Can't load text value." );
+//			TUTTLE_COUT_ERROR( "NotImplemented. Can't load text value." );
+//			TUTTLE_COUT( "CTL -- Load code: " << _params._code );
+			loadModule( _interpreter, _params._module, _params._code );
 		}
 		case eParamChooseInputFile:
 		{
 			_interpreter.setModulePaths( _params._paths );
-			TUTTLE_COUT( "CTL -- Load module: " << _params._module );
+//			TUTTLE_COUT( "CTL -- Load module: " << _params._module );
 			_interpreter.loadModule( _params._module );
 		}
 	}
@@ -183,17 +193,15 @@ void CTLProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 			 y < procWindowOutput.y2;
 			 ++y )
 	{
-		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1, y-procWindowSrc.y1,
-												  procWindowSize.x, 1 );
-		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y-procWindowOutput.y1,
-												  procWindowSize.x, 1 );
+		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1,    y-procWindowSrc.y1,    procWindowSize.x, 1 );
+		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y-procWindowOutput.y1, procWindowSize.x, 1 );
 
 		copy_pixels( srcLineV, srcWorkLineV );
 
-		float* rOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[0] );
-		float* gOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[1] );
-		float* bOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[2] );
-		float* aOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[3] );
+		float* rOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[0] );
+		float* gOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[1] );
+		float* bOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[2] );
+		float* aOut    = reinterpret_cast<float*>( &dstWorkLineV(0,0)[3] );
 		const float* r = reinterpret_cast<float*>( &srcWorkLineV(0,0)[0] );
 		const float* g = reinterpret_cast<float*>( &srcWorkLineV(0,0)[1] );
 		const float* b = reinterpret_cast<float*>( &srcWorkLineV(0,0)[2] );

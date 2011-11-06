@@ -6,8 +6,8 @@
 #include "InteractObject.hpp"
 #include "PointInteract.hpp"
 #include "overlay.hpp"
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <terry/globals.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 #include <ofxsParam.h>
 
 namespace tuttle {

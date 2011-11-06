@@ -1,4 +1,3 @@
-#include "Move2DAlgorithm.hpp"
 
 namespace tuttle {
 namespace plugin {

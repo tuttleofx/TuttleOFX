@@ -1,8 +1,8 @@
 #include "DiffPlugin.hpp"
 
-#include <tuttle/common/math/rectOp.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/basic_colors.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
+#include <terry/globals.hpp>
+#include <terry/basic_colors.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -184,6 +184,7 @@ template<class SView>
 boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >
 DiffProcess<View>::mse( const SView& v1, const SView& v2, const SView& dst )
 {
+	using namespace terry;
 	typedef boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> > Pixel32F;
 	typedef typename boost::gil::channel_type<Pixel32F>::type Value32F;
 	Pixel32F veqm = get_black<Pixel32F>();

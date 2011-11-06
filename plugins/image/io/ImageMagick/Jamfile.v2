@@ -18,8 +18,10 @@ project
 # Product 
 ###############################################################################
 plugin ImageMagick : 
-	[ glob-tree *.cpp : tests ]
-	/tuttleplugin/<link>static
+		[ glob-tree *.cpp : tests ]
+		/tuttleplugin/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
 
 ###############################################################################

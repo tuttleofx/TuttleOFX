@@ -9,7 +9,7 @@ namespace plugin {
 namespace dpx {
 namespace reader {
 
-const static std::string kParamDisplayHeader = "displayHeader";
+static const std::string kParamDisplayHeader = "displayHeader";
 
 }
 }

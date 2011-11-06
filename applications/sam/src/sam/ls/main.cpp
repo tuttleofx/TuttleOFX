@@ -1,3 +1,4 @@
+#include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
@@ -95,6 +96,11 @@ int main( int argc, char** argv )
 			const std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
 			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 		}
+		if( const char* env_ls_options = std::getenv("SAM_OPTIONS") )
+		{
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
 		bpo::notify(vm);
 	}
 	catch( const bpo::error& e)
@@ -121,16 +127,8 @@ int main( int argc, char** argv )
 	}
 	if ( vm.count("enable-color") && !script )
 	{
-		std::string str = vm["enable-color"].as<std::string>();
-
-		if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
-		{
-			enableColor = true;
-		}
-		else
-		{
-			enableColor = false;
-		}
+		const std::string str = vm["enable-color"].as<std::string>();
+		enableColor = string_to_boolean( str );
 	}
 
 	if( enableColor )
@@ -257,7 +255,7 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "" );
 						}
-						TUTTLE_COUT( path.string() << " :");
+						TUTTLE_COUT( path.string() << ":");
 					}
 
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( path, filters, researchMask, descriptionMask );
@@ -274,7 +272,7 @@ int main( int argc, char** argv )
 							{
 								bfs::path currentPath = (bfs::path)*dir;
 								if( !script )
-									TUTTLE_COUT( "\n" << currentPath.string() << " :" );
+									TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( currentPath, filters, researchMask, descriptionMask );
 								BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
@@ -312,7 +310,7 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "" );
 						}
-						TUTTLE_COUT( basepath.string() << " :");
+						TUTTLE_COUT( basepath.string() << ":");
 					}
 
 					Sequence s( basepath, descriptionMask );

@@ -5,7 +5,6 @@
 
 #include <ofxPixels.h>
 
-#include <boost/gil/extension/algorithm.hpp>
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {

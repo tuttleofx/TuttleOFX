@@ -6,9 +6,10 @@
 #include <tuttle/plugin/NoProgress.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
 
+#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+
 #include <boost/gil/extension/color/convert.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {

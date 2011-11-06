@@ -1,0 +1,34 @@
+###############################################################################
+## Main BJam makefile for libopenimageio library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements
+		<include>.
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>./build/linux64/include
+	: build-dir $(BUILD)/3rdParty/openimageio
+    ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	openimageio		:
+
+			;
+
+install dist
+	:
+		openimageio
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

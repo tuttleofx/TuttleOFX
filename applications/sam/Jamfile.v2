@@ -18,14 +18,14 @@ project
 # sam
 ###############################################################################
 exe sam :
-        [ glob src/sam/sam/*.cpp ]
+		[ glob src/sam/sam/*.cpp ]
 
-        /boost//program_options
-        
-        /tuttlecommon/<link>static
-    :
-        <os>LINUX:<find-shared-library>dl
-    ;
+		/boost//program_options
+
+		/tuttlecommon/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
 
 ###############################################################################
 # ls

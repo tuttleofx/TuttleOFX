@@ -2,8 +2,8 @@
 #include "EXRWriterPlugin.hpp"
 #include "../half/gilHalf.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/clamp.hpp>
+#include <terry/globals.hpp>
+#include <terry/clamp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
@@ -149,7 +149,9 @@ template<class View>
 template<class WPixel>
 void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType )
 {
-	size_t bitsTypeSize = 0;
+	using namespace terry;
+	
+	std::size_t bitsTypeSize = 0;
 
 	typedef image<WPixel, true> image_t;
 	typedef typename image_t::view_t view_t;

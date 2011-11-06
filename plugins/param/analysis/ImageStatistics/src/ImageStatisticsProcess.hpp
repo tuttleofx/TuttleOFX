@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_IMAGESTATISTICS_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_IMAGESTATISTICS_PROCESS_HPP_
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
@@ -20,7 +20,7 @@ class ImageStatisticsProcess : public ImageGilFilterProcessor<View>
 public:
 	typedef boost::gil::point2<double> Point2;
 	typedef typename View::value_type Pixel;
-	typedef typename image_from_view<View>::type Image;
+	typedef typename terry::image_from_view<View>::type Image;
 
 private:
 	ImageStatisticsPlugin&    _plugin;        ///< Rendering plugin

@@ -1,0 +1,10 @@
+###############################################################################
+## Main BJam makefile for BoostHack library
+###############################################################################
+
+project boostHack
+	: requirements
+		<include>.
+	: usage-requirements
+		<include>.
+	;

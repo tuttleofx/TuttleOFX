@@ -1,7 +1,7 @@
 #include "DPXWriterDefinitions.hpp"
 #include "DPXWriterPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/clamp.hpp>
+#include <terry/clamp.hpp>
 
 #include <boost/exception/errinfo_file_name.hpp>
 #include <boost/assert.hpp>
@@ -168,6 +168,7 @@ template<class View>
 template<class WImage>
 void DPXWriterProcess<View>::writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType eCompType, const int packing )
 {
+	using namespace terry;
 	WImage img( src.width(), src.height() );
 
 	typename WImage::view_t vw( view( img ) );

@@ -21,7 +21,7 @@ project.StaticLibrary(
 		libraries = [
 				libs.tuttleCommon,
 				libs.openfxPluginSupportHack,
-				libs.boost_gil,
+				libs.terry,
 			],
 		shared = True
 	)

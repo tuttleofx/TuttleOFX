@@ -1,10 +1,10 @@
 #ifndef _TUTTLE_PLUGIN_INTERACTINFOS_HPP_
 #define _TUTTLE_PLUGIN_INTERACTINFOS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/plugin/coordinateSystem.hpp>
+#include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
+#include <tuttle/plugin/numeric/coordinateSystem.hpp>
+#include <terry/globals.hpp>
 
 #include <ofxsCore.h>
 #include <ofxsParam.h>

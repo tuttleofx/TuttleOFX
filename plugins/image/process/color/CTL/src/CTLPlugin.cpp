@@ -16,11 +16,12 @@ namespace ctl {
 CTLPlugin::CTLPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
-	_paramInput = fetchChoiceParam( kParamChooseInput );
-	_paramCode = fetchStringParam( kParamCTLCode );
-	_paramFile = fetchStringParam( kParamCTLFile );
+	_paramInput        = fetchChoiceParam     ( kParamChooseInput );
+	_paramCode         = fetchStringParam     ( kParamCTLCode );
+	_paramFile         = fetchStringParam     ( kParamCTLFile );
+	_paramUpdateRender = fetchPushButtonParam ( kParamChooseInputCodeUpdate );
 
-	changedParam( _instanceChangedArgs, kParamChooseInput );
+	changedParam ( _instanceChangedArgs, kParamChooseInput );
 }
 
 CTLProcessParams<CTLPlugin::Scalar> CTLPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -32,6 +33,7 @@ CTLProcessParams<CTLPlugin::Scalar> CTLPlugin::getProcessParams( const OfxPointD
 	{
 		case eParamChooseInputCode:
 		{
+			params._module = "inputCode";
 			params._code = _paramCode->getValue();
 			break;
 		}
@@ -58,14 +60,16 @@ void CTLPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::s
 		{
 			case eParamChooseInputCode:
 			{
-				_paramCode->setIsSecretAndDisabled( false );
-				_paramFile->setIsSecretAndDisabled( true );
+				_paramCode         -> setIsSecretAndDisabled( false );
+				_paramUpdateRender -> setIsSecretAndDisabled( false );
+				_paramFile         -> setIsSecretAndDisabled( true );
 				break;
 			}
 			case eParamChooseInputFile:
 			{
-				_paramCode->setIsSecretAndDisabled( true );
-				_paramFile->setIsSecretAndDisabled( false );
+				_paramCode         -> setIsSecretAndDisabled( true );
+				_paramUpdateRender -> setIsSecretAndDisabled( true );
+				_paramFile         -> setIsSecretAndDisabled( false );
 				break;
 			}
 		}
@@ -87,7 +91,7 @@ void CTLPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::s
 //
 //	switch( params._border )
 //	{
-//		case eParamBorderPadded:
+//		case eParamB orderPadded:
 //			rod.x1 = srcRod.x1 + 1;
 //			rod.y1 = srcRod.y1 + 1;
 //			rod.x2 = srcRod.x2 - 1;

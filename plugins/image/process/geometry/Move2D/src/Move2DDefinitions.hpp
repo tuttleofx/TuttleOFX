@@ -8,7 +8,7 @@ namespace tuttle {
 namespace plugin {
 namespace move2D {
 
-const static std::string kParamTranslation = "Translation";
+static const std::string kParamTranslation = "Translation";
 
 }
 }

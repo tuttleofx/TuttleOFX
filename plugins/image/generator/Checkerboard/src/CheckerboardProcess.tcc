@@ -1,9 +1,6 @@
 #include "CheckerboardProcess.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/exceptions.hpp>
+#include <tuttle/plugin/ofxToGil/point.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
 

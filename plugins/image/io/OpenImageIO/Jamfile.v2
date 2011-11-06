@@ -6,27 +6,23 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>.
-    : build-dir $(BUILD)/OpenImageIO
-    ;
-
-#use-project /openImageIO   : $(3RD_PARTY)/libopenImageIO ;
+	: requirements
+		<include>.
+		<include>$(3RD_PARTY)/openimageio/dist/linux64/include
+		<linkflags>-L$(3RD_PARTY)/openimageio/dist/linux64/lib/
+		<linkflags>-lOpenImageIO
+	: build-dir $(BUILD)/OpenImageIO
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
-#plugin OpenImageIO : 
-#   [ glob-tree *.cpp : tests ]
-#   /boost//system
-#   /boost//filesystem
-#   /boost//regex
-#   /tuttleplugin/<link>static
-#   /openImageIO/<link>static
-#   ;
-#explicit OpenImageIO ;
+plugin OpenImageIO :
+	[ glob-tree *.cpp : tests ]
 
-alias OpenImageIO ;
+	/tuttleplugin/<link>static
+	;
+
 
 ###############################################################################
 # Automatic install

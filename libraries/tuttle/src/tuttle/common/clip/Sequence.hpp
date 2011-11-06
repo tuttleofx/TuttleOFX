@@ -278,7 +278,6 @@ public:
 	
 	Sequence() : FileObject( )
 	{
-		TUTTLE_COUT("create ");
 		_prefix.clear();
 		_suffix.clear();
 		_padding    = 0;

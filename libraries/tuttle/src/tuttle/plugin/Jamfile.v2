@@ -2,8 +2,19 @@
 ## Main BJam makefile for Tuttle library
 ###############################################################################
 
+project		: requirements
+			<include>.
+			<include>$(TERRY)/src
+			<include>$(BOOST_HACK)
+			<link>static
+		: usage-requirements
+			<include>.
+			<include>$(TERRY)/src
+			<include>$(BOOST_HACK)
+		;
+
 lib tuttleplugin :
 	[ glob-tree *.cpp ]
-	/ofxPluginSupport/<link>static
-	/tuttlecommon/<link>static
+	/tuttlecommon # link static
 	;
+

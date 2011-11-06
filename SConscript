@@ -5,6 +5,9 @@ Import( 'project', 'libs' )
 project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = False
 
 
+
+# define global flags for the whole project
+# depending on the platform and compilation mode
 tuttleFlags = {
 		'LIBPATH': [project.inOutputLib()],
 		'CCFLAGS': project.CC['warning3'],
@@ -27,5 +30,15 @@ project.commonLibs.append( tuttle )
 
 
 
-SConscript( project.scanFiles( ['doc', 'libraries/openfxHack', 'libraries/tuttle', 'plugins', 'applications'], accept=['SConscript'] ) )
+# load all SConscript files (in the correct order)
+SConscript(
+	project.scanFiles( [
+			'libraries/boostHack',
+			'libraries/openfxHack',
+			'libraries/terry',
+			'libraries/tuttle',
+			'plugins',
+			'applications'
+		], accept=['SConscript'] ) )
+
 

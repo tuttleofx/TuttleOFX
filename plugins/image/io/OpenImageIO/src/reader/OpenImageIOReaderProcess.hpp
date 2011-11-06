@@ -3,6 +3,8 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
+#include <terry/globals.hpp>
+
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
@@ -19,7 +21,7 @@ class OpenImageIOReaderProcess : public ImageGilProcessor<View>
 {
 	typedef OpenImageIOReaderProcess<View> This;
 public:
-	typedef typename image_from_view<View>::type Image;
+	typedef typename terry::image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef typename View::point_t Point;

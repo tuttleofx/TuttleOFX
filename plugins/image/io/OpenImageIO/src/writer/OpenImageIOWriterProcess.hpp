@@ -4,6 +4,8 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
+#include <terry/globals.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace openImageIO {
@@ -19,7 +21,7 @@ class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 	typedef OpenImageIOWriterProcess<View> This;
 	
 public:
-	typedef typename image_from_view<View>::type Image;
+	typedef typename terry::image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef typename View::point_t Point;
