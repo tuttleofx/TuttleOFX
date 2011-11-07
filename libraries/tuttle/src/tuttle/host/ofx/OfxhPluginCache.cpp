@@ -267,6 +267,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				}
 				catch(... )
 				{
+					TUTTLE_COUT( tuttle::common::kColorError << "warning: can't load " << binpath << tuttle::common::kColorStd );
 					TUTTLE_COUT_CURRENT_EXCEPTION;
 				}
 			}

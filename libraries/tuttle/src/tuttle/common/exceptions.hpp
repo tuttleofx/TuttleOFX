@@ -14,6 +14,8 @@
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/get_error_info.hpp>
 
+#include <tuttle/common/utils/color.hpp>
+
 #include <ofxCorePlugin.h>
 #include <ofxImageEffect.h>
 
@@ -22,14 +24,14 @@
 #include <stdexcept>
 
 #define TUTTLE_COUT_EXCEPTION( e )  \
-    TUTTLE_CERR( "Exception:" << \
+    TUTTLE_CERR( tuttle::common::kColorError << "Exception:" << \
     ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << ::boost::diagnostic_information( e ) )
+    ::std::endl << "\t" << ::boost::diagnostic_information( e ) << tuttle::common::kColorStd )
 
 #define TUTTLE_COUT_CURRENT_EXCEPTION  \
-    TUTTLE_CERR( "Exception:" << \
+    TUTTLE_CERR( tuttle::common::kColorError << "Exception:" << \
     ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << ::boost::current_exception_diagnostic_information() )
+    ::std::endl << "\t" << ::boost::current_exception_diagnostic_information() << tuttle::common::kColorStd )
 
 #ifndef SWIG
 namespace OFX {
