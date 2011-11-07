@@ -79,7 +79,7 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
-
+	
 	if ext == 'tar.bz2' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
@@ -104,9 +104,10 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 		os.mkdir(os.path.join( os.getcwd() ,libname))
 	
 	print ('\nuncompress : %s -> %s\n' % ( folderExtracted, libname ) )
-	
+		
 	if os.path.exists( libname + '/Jamfile.v2' ) :
-		movetree( libname , folderExtracted )
+		print ( 'move %s => %s' % ( libname, folderExtracted ) ) 
+		movetree( libname+'/*' , folderExtracted+'/' )
 	if os.path.exists(libname) :
 		rmtree( libname )
 	os.rename( folderExtracted, libname )
@@ -140,6 +141,7 @@ def getAndUncompress( libraries ):
 			if os.path.isdir(filename[:-len(ext)-1]) :
 				print ('Already uncompressed : %s' % dirname )
 			else:
+				#print ('%s | %s | %s | %s | %s' % ( filename, ext, inNewDirectory, libname, folderExtracted ) )
 				uncompress( filename, ext, inNewDirectory, libname, folderExtracted )
 		except Exception as e:
 			print ( 'uncompress error (%s)' % str(e) )
