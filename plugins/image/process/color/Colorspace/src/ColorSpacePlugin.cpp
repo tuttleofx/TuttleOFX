@@ -124,8 +124,8 @@ ColorSpaceProcessParams ColorSpacePlugin::getProcessParams( ) const
 
 bool ColorSpacePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-	ColorSpaceProcessParams params = getProcessParams();
 	/*
+	ColorSpaceProcessParams params = getProcessParams();
 	if(
 		params._BlackPointIn	== params._BlackPointOut &&
 		params._GammaSensitoIn	== params._GammaSensitoOut &&

@@ -9,6 +9,7 @@
 
 #include <ofxsImageEffect.h>
 
+#include <terry/geometry/pinning.hpp>
 #include <terry/sampler/sampler.hpp>
 
 #include <boost/gil/gil_all.hpp>
@@ -21,24 +22,10 @@ namespace plugin {
 namespace pinning {
 
 template<typename Scalar>
-struct Perspective
-{
-	double _width, _height;
-	boost::numeric::ublas::bounded_matrix<Scalar,3,3> _matrix;
-};
-
-template<typename Scalar>
-struct Bilinear
-{
-	double _width, _height;
-	boost::numeric::ublas::bounded_matrix<Scalar,2,4> _matrix;
-};
-
-template<typename Scalar>
 struct PinningProcessParams
 {
-	Perspective<Scalar>     _perspective;
-	Bilinear<Scalar>        _bilinear;
+	terry::geometry::PinningPerspective<Scalar>     _perspective;
+	terry::geometry::PinningBilinear<Scalar>        _bilinear;
 
 	EParamMethod            _method;
 	

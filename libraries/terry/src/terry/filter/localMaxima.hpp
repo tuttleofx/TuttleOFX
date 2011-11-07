@@ -1,11 +1,11 @@
-#ifndef _TUTTLE_PLUGIN_LOCALMAXIMA_ALGORITHM_HPP_
-#define _TUTTLE_PLUGIN_LOCALMAXIMA_ALGORITHM_HPP_
+#ifndef _TERRY_FILTER_LOCALMAXIMA_HPP_
+#define _TERRY_FILTER_LOCALMAXIMA_HPP_
 
 #include <terry/channel.hpp>
+#include <terry/math/Rect.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace localmaxima {
+namespace terry {
+namespace filter {
 
 
 /**
@@ -160,7 +160,6 @@ struct pixel_locator_gradientLocalMaxima_t
 
 
 
-}
 }
 }
 

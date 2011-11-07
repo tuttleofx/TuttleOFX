@@ -8,7 +8,7 @@ namespace tuttle {
 namespace plugin {
 namespace move2D {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**
@@ -17,8 +17,11 @@ static const bool kSupportTiles = false;
  */
 void Move2DPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleMove2D", "Move2D",
-		            "Move2D" );
+	desc.setLabels(
+		"TuttleMove2D",
+		"Move2D",
+		"Move2D"
+		);
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
 	// add the supported contexts, only filter at the moment

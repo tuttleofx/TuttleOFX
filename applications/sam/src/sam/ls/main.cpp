@@ -236,7 +236,10 @@ int main( int argc, char** argv )
 		std::size_t index = 0;
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-			//TUTTLE_COUT( "path: "<< path );
+			if( path == bfs::path(".") )
+			{
+				path = bfs::path("./");
+			}
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )

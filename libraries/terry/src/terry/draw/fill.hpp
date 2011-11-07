@@ -1,9 +1,21 @@
-#ifndef _TUTTLE_PLUGIN_IMAGE_GIL_FILL_HPP_
-#define _TUTTLE_PLUGIN_IMAGE_GIL_FILL_HPP_
+#ifndef _TERRY_DRAW_FILL_HPP_
+#define _TERRY_DRAW_FILL_HPP_
 
+#include <terry/math/Rect.hpp>
 
-namespace tuttle {
-namespace plugin {
+#include <boost/gil/gil_config.hpp>
+#include <boost/gil/algorithm.hpp>
+
+namespace terry {
+namespace draw {
+
+template<class View>
+GIL_FORCEINLINE
+void fill_pixels( View& dstView, const typename View::value_type& pixelValue )
+{
+        typedef typename View::value_type Pixel;
+        boost::gil::fill_pixels( dstView, pixelValue );
+}
 
 
 /**
@@ -14,8 +26,8 @@ namespace plugin {
  * @param[in] pixelValue Pixel value used to fill.
  */
 template<class View>
-TUTTLE_FORCEINLINE
-void fill_pixels( View& dstView, const OfxRectI& window,
+GIL_FORCEINLINE
+void fill_pixels( View& dstView, const Rect<std::ssize_t>& window,
 				  const typename View::value_type& pixelValue )
 {
 	typedef typename View::value_type Pixel;
@@ -33,7 +45,7 @@ void fill_pixels( View& dstView, const OfxRectI& window,
  * @param[in] pixelValue Pixel value used to fill.
  */
 template<class DIterator, class DPixel>
-TUTTLE_FORCEINLINE
+GIL_FORCEINLINE
 void fill_pixels_range( DIterator dstBegin, const DIterator& dstEnd, const DPixel& pixelValue )
 {
 	do

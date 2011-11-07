@@ -5,6 +5,8 @@
 #include <terry/typedefs.hpp>
 #include <terry/channel.hpp>
 
+#include <cmath>
+
 namespace terry {
 using namespace boost::gil;
 
@@ -320,7 +322,7 @@ struct channel_color_gradation_t<Channel, gradation::Gamma, gradation::Linear> :
 		{
 			// compute gamma value
 			// fDst = DstChannel( std::pow( 10.0, _value * std::log10( fSrc ) ) );
-			fDst = std::pow( static_cast<TBase>(fSrc), _in._gamma );
+			fDst = std::pow( static_cast<double>(fSrc), _in._gamma );
 		}
 		else
 		{
@@ -364,7 +366,7 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Gamma> :
 		else if( src > 0.0 )
 		{
 			// compute gamma value
-			fDst = std::pow( static_cast<TBase>(fSrc) , 1.0 / _out._gamma );
+			fDst = std::pow( static_cast<double>(fSrc) , 1.0 / _out._gamma );
 		}
 		else
 		{

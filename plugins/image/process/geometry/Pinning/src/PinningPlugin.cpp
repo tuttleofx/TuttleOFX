@@ -199,8 +199,11 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 		// recompute the matrix
 		changedParam( args, kParamPointIn );
 	}
-	else if( boost::starts_with( paramName, kParamPointIn ) ||
-	         boost::starts_with( paramName, kParamPointOut ) )
+	else if(
+		boost::starts_with( paramName, kParamPointIn ) ||
+	    boost::starts_with( paramName, kParamPointOut ) ||
+		paramName == kParamInverse
+		)
 	{
 		switch( static_cast < EParamMethod >( _paramMethod->getValue() ) )
 		{

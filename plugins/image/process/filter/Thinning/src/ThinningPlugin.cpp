@@ -24,7 +24,7 @@ ThinningProcessParams<ThinningPlugin::Scalar> ThinningPlugin::getProcessParams( 
 bool ThinningPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	ThinningProcessParams<Scalar> params = getProcessParams();
-	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 
 	switch( params._border )
 	{
@@ -39,10 +39,9 @@ bool ThinningPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 
 void ThinningPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	ThinningProcessParams<Scalar> params = getProcessParams();
-	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 	
-	OfxRectD srcRoi = rectangleGrow( srcRod, 2 );
+	const OfxRectD srcRoi = rectangleGrow( srcRod, 2 );
 
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 }

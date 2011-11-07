@@ -2,7 +2,7 @@
 #define	_TERRY_COLOR_HPP_
 
 #include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/color/colorspace.hpp>
+#include <terry/colorspace/colorspace.hpp>
 
 namespace terry {
 

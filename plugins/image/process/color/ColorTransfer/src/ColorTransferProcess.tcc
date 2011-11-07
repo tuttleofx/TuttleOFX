@@ -5,7 +5,8 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
-#include <tuttle/plugin/image/algorithm.hpp>
+
+#include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/globals.hpp>
 
 #include <boost/units/pow.hpp>
@@ -213,7 +214,7 @@ void ColorTransferProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 							  procWindowSize.x, procWindowSize.y );
 
 	// fill dst: modify src using analyse of srcRef and dstRef differences
-	transform_pixels_progress( src, dst, ColorParams<View>( _srcRefAverage, _dstRefAverage, _deviationRatio ), *this );
+	terry::algorithm::transform_pixels_progress( src, dst, ColorParams<View>( _srcRefAverage, _dstRefAverage, _deviationRatio ), *this );
 }
 
 }

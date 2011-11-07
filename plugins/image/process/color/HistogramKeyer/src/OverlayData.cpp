@@ -3,6 +3,8 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
+#include <terry/algorithm/transform_pixels.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
@@ -12,12 +14,12 @@ namespace histogramKeyer {
  * @param size : size of the current source clip (width*height) 
  */
 OverlayData::OverlayData( const OfxPointI& size, const int nbSteps, const int nbStepsCurvesFromSelection)
-: _size( size )
+: _currentTime( 0 )
 , _vNbStep( nbSteps )
 , _vNbStepCurveFromSelection( nbStepsCurvesFromSelection )
 , _isComputing( false )
-, _currentTime( 0 )
 , _isDataInvalid( true )
+, _size( size )
 {
 	clearAll( size );
 }
@@ -37,7 +39,7 @@ void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& 
 	
 	Pixel_compute_histograms funct( _imgBool, data, isSelection );			//functor declaration
 	
-	terry::transform_pixels( srcView, funct );		//(USED functor reference)
+	terry::algorithm::transform_pixels( srcView, funct );		//(USED functor reference)
 	//boost::gil::for_each_pixel(srcView, funct);		(NOT USED)
 	
 	this->correctHistogramBufferData(data);				//correct Histogram data to make up for discretization (average)
@@ -371,7 +373,7 @@ void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTi
 	}
 	//Compute histogram buffer
 	Pixel_compute_histograms funct( _imgBool,_curveFromSelection, true);			//functor declaration
-	terry::transform_pixels( srcView, funct );		//(USED functor reference)
+	terry::algorithm::transform_pixels( srcView, funct );		//(USED functor reference)
 	
 	this->correctHistogramBufferData(_curveFromSelection);				//correct Histogram data to make up for discretization (average)
 }

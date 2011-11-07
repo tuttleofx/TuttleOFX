@@ -1,11 +1,14 @@
-#ifndef _TUTTLE_PLUGIN_THINNING_ALGORITHM_HPP_
-#define _TUTTLE_PLUGIN_THINNING_ALGORITHM_HPP_
+#ifndef _TERRY_FILTER_THINNING_HPP_
+#define	_TERRY_FILTER_THINNING_HPP_
+
+#include <terry/math/Rect.hpp>
+#include <terry/algorithm/transform_pixels.hpp>
 
 #include <terry/channel.hpp>
 #include <terry/numeric/pixel_numeric_operations.hpp>
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
+namespace filter {
 namespace thinning {
 
 static const bool lutthin1[512] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, false, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, true, true, false, false, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, true, false, false, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, true, false, false, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true };
@@ -87,7 +90,38 @@ struct pixel_locator_thinning_t
 
 
 }
+
+
+template<class SView, class DView>
+void applyThinning( const SView& srcView, DView& tmpView, DView& dstView )
+{
+	typedef typename DView::value_type DPixel;
+	DPixel pixelZero; terry::pixel_zeros_t<DPixel>()( pixelZero );
+	
+	// todo: only fill borders !!
+	fill_pixels( tmpView, pixelZero );
+	fill_pixels( dstView, pixelZero );
+
+	const Rect<std::ptrdiff_t> srcRod = getBounds<std::ptrdiff_t>(srcView);
+	const Rect<std::ptrdiff_t> proc1 = rectangleReduce( srcRod, 1 );
+	const Rect<std::ptrdiff_t> proc2 = rectangleReduce( proc1, 1 );
+
+	algorithm::transform_pixels_locator(
+		srcView, srcRod,
+		tmpView, getBounds<std::ptrdiff_t>(tmpView),
+		proc1,
+		terry::filter::thinning::pixel_locator_thinning_t<SView,DView>(srcView, terry::filter::thinning::lutthin1)
+		);
+	algorithm::transform_pixels_locator(
+		tmpView, getBounds<std::ptrdiff_t>(tmpView),
+		dstView, getBounds<std::ptrdiff_t>(dstView),
+		proc2,
+		terry::filter::thinning::pixel_locator_thinning_t<DView,DView>(tmpView, terry::filter::thinning::lutthin2)
+		);
+}
+
 }
 }
 
 #endif
+

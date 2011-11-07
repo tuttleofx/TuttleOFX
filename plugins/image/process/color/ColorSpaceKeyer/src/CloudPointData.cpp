@@ -1,7 +1,10 @@
 #include <GL/glew.h> // need to be included before gl.h
 
 #include "CloudPointData.hpp"
+
 #include <tuttle/plugin/opengl/gl.h>
+
+#include <terry/algorithm/transform_pixels.hpp>
 
 
 namespace tuttle {
@@ -112,7 +115,7 @@ int CloudPointData::generateAllPointsVBOData(SView srcView)
 	//copy full image into buffer
 	Pixel_copy funct( _imgCopy );						//functor declaration	
 	//treatment
-	terry::transform_pixels( srcView, funct );		//transform pixel did with functor reference
+	terry::algorithm::transform_pixels( srcView, funct );		//transform pixel did with functor reference
 	return size;
 }
 
@@ -126,7 +129,7 @@ int CloudPointData::generateDiscretizedVBOData(SView srcView, const int& discret
 
 	//Create and use functor to get discretize data  (functor with template)
 	Pixel_copy_discretization<SPixel> funct(_imgCopy,discretizationStep);	//functor declaration	
-	terry::transform_pixels( srcView, funct);							//with functor reference
+	terry::algorithm::transform_pixels( srcView, funct);							//with functor reference
 	funct.convertSetDataToVectorData();										//copy functor data to _imgCopy data
 	size = _imgCopy.size();													//change size
 	return size;
@@ -199,7 +202,7 @@ int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
 	//copy full image into buffer
 	Pixel_copy funct(_selectionCopy, isSelection);		//functor declaration creation	
 	//treatment
-	terry::transform_pixels( srcView, funct );		//transform pixel did with functor reference
+	terry::algorithm::transform_pixels( srcView, funct );		//transform pixel did with functor reference
 	size = _selectionCopy.size();						//get current size of VBO
 
 	return size;					//return size of VBO buffers (same color and vertex)
@@ -271,7 +274,7 @@ int CloudPointData::generateAllPointsSpillVBOData(SView srcView)
 	//copy full image into buffer
 	Pixel_copy funct(_spillCopy, isSelection);		//functor declaration creation	
 	//treatment
-	terry::transform_pixels( srcView, funct );	//transform pixel did with functor reference
+	terry::algorithm::transform_pixels( srcView, funct );	//transform pixel did with functor reference
 	
 	size = _spillCopy.size();						//get current size of VBO
 	return size;									//return size of VBO buffers (same color and vertex)

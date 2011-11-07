@@ -3,6 +3,7 @@
 #include "Move2DDefinitions.hpp"
 
 #include <boost/gil/gil_all.hpp>
+#include <boost/gil/utilities.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -33,7 +34,7 @@ void Move2DPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
 
 bool Move2DPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	Move2DProcessParams<Scalar> params = getProcessParams();
+	const Move2DProcessParams<Scalar> params = getProcessParams();
 	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 
 //	switch( params._border )
@@ -50,28 +51,36 @@ bool Move2DPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 //	return false;
 }
 
-//void Move2DPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-//{
-//	Move2DProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	OfxRectD srcRoi;
-//	srcRoi.x1 = srcRod.x1 - 1;
-//	srcRoi.y1 = srcRod.y1 - 1;
-//	srcRoi.x2 = srcRod.x2 + 1;
-//	srcRoi.y2 = srcRod.y2 + 1;
-//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-//}
+void Move2DPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+{
+	const Move2DProcessParams<Scalar> params = getProcessParams();
+	OfxRectD srcRoi;
+
+//	switch( params._border )
+//	{
+//		case eParamBorderPadded:
+			srcRoi.x1 = args.regionOfInterest.x1 - params._translation.x;
+			srcRoi.y1 = args.regionOfInterest.y1 - params._translation.y;
+			srcRoi.x2 = args.regionOfInterest.x2 - params._translation.x;
+			srcRoi.y2 = args.regionOfInterest.y2 - params._translation.y;
+//		default:
+//			break;
+//	}
+
+	rois.setRegionOfInterest( *this->_clipSrc, srcRoi );
+}
 
 bool Move2DPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-//	Move2DProcessParams<Scalar> params = getProcessParams();
-//	if( params._in == params._out )
-//	{
-//		identityClip = _clipSrc;
-//		identityTime = args.time;
-//		return true;
-//	}
+	const Move2DProcessParams<Scalar> params = getProcessParams();
+	
+	static const boost::gil::point2<Scalar> zero(0, 0);
+	if( params._translation == zero )
+	{
+		identityClip = this->_clipSrc;
+		identityTime = args.time;
+		return true;
+	}
 	return false;
 }
 

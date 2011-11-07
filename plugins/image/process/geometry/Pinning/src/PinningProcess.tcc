@@ -1,11 +1,10 @@
-#include "pinningAlgorithm.hpp"
+#include <terry/geometry/pinning.hpp>
+
+#include <tuttle/plugin/ofxToGil/rect.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <terry/globals.hpp>
-#include <terry/sampler/sampler.hpp>
-#include <terry/sampler/all.hpp>
-
-#include <tuttle/plugin/image/resample.hpp>
-#include <tuttle/plugin/exceptions.hpp>
+#include <terry/sampler/resample.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -36,7 +35,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 	using namespace terry;
 	using namespace terry::sampler;
 	
-	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const terry::Rect<std::ssize_t> procWindowOutput = ofxToGil( this->translateRoWToOutputClipCoordinates( procWindowRoW ) );
 
 	switch( _params._samplerProcessParams._filter )
 	{
@@ -135,17 +134,17 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 
 template<class View>
 template<class Sampler>
-void PinningProcess<View>::resample( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler )
+void PinningProcess<View>::resample( View& srcView, View& dstView, const terry::Rect<std::ssize_t>& procWindow, const Sampler& sampler )
 {
 	using namespace boost::gil;
 	switch( _params._method )
 	{
 		case eParamMethodAffine:
 		case eParamMethodPerspective:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, _params._samplerProcessParams._outOfImageProcess, this, sampler );
+			terry::sampler::resample_pixels_progress<Sampler>( srcView, dstView, _params._perspective, procWindow, _params._samplerProcessParams._outOfImageProcess, this->getOfxProgress(), sampler );
 			return;
 		case eParamMethodBilinear:
-			resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear   , procWindow, _params._samplerProcessParams._outOfImageProcess, this, sampler );
+			terry::sampler::resample_pixels_progress<Sampler>( srcView, dstView, _params._bilinear   , procWindow, _params._samplerProcessParams._outOfImageProcess, this->getOfxProgress(), sampler );
 			return;
 	}
 }

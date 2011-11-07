@@ -88,6 +88,7 @@ void PinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* overlay = desc.defineBooleanParam( kParamOverlay );
 	overlay->setLabel( "Overlay" );
 	overlay->setDefault( true );
+	overlay->setEvaluateOnChange( false );
 
 	OFX::BooleanParamDescriptor* inverse = desc.defineBooleanParam( kParamInverse );
 	inverse->setLabel( "Inverse" );
@@ -115,12 +116,14 @@ void PinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	overlayCentre->setLabel( "Overlay" );
 	overlayCentre->setDefault( true );
 	overlayCentre->setParent( groupCentre );
+	overlayCentre->setEvaluateOnChange( false );
 
 	OFX::RGBParamDescriptor* ouverlayCentreColor = desc.defineRGBParam( kParamOverlayCentreColor );
 	ouverlayCentreColor->setLabel( "Color" );
 	ouverlayCentreColor->setHint( "Centre point overlay color" );
 	ouverlayCentreColor->setDefault( 0.0, 1.0, 0.0 );
 	ouverlayCentreColor->setParent( groupCentre );
+	ouverlayCentreColor->setEvaluateOnChange( false );
 */
 	//////////////////// IN Points ////////////////////
 	OFX::GroupParamDescriptor* groupIn = desc.defineGroupParam( kParamGroupIn );
@@ -155,12 +158,14 @@ void PinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	overlayIn->setLabel( "Overlay" );
 	overlayIn->setDefault( true );
 	overlayIn->setParent( groupIn );
+	overlayIn->setEvaluateOnChange( false );
 
 	OFX::RGBParamDescriptor* ouverlayInColor = desc.defineRGBParam( kParamOverlayInColor );
 	ouverlayInColor->setLabel( "Color" );
 	ouverlayInColor->setHint( "Input point overlay color" );
 	ouverlayInColor->setDefault( 1.0, 0.0, 0.0 );
 	ouverlayInColor->setParent( groupIn );
+	ouverlayInColor->setEvaluateOnChange( false );
 
 	//////////////////// OUT Points ////////////////////
 	OFX::GroupParamDescriptor* groupOut = desc.defineGroupParam( kParamGroupOut );
@@ -195,12 +200,14 @@ void PinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	overlayOut->setLabel( "Overlay" );
 	overlayOut->setDefault( true );
 	overlayOut->setParent( groupOut );
+	overlayOut->setEvaluateOnChange( false );
 
-	OFX::RGBParamDescriptor* ouverlayOutColor = desc.defineRGBParam( kParamOverlayOutColor );
-	ouverlayOutColor->setLabel( "Color" );
-	ouverlayOutColor->setHint( "Output point overlay color" );
-	ouverlayOutColor->setDefault( 0.0, 0.0, 1.0 );
-	ouverlayOutColor->setParent( groupOut );
+	OFX::RGBParamDescriptor* overlayOutColor = desc.defineRGBParam( kParamOverlayOutColor );
+	overlayOutColor->setLabel( "Color" );
+	overlayOutColor->setHint( "Output point overlay color" );
+	overlayOutColor->setDefault( 0.0, 0.0, 1.0 );
+	overlayOutColor->setParent( groupOut );
+	overlayOutColor->setEvaluateOnChange( false );
 
 	//////////////////// Persp Matrix ////////////////////
 	OFX::GroupParamDescriptor* groupPerspMatrix = desc.defineGroupParam( kParamGroupPerspMatrix );
@@ -246,7 +253,6 @@ void PinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	bilMatrixRow3->setLabel( "row 3" );
 	bilMatrixRow3->setDefault( 0.0, 0.0 );
 	bilMatrixRow3->setParent( groupBilMatrix );
-
 }
 
 /**

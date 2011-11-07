@@ -45,14 +45,14 @@ Plugin creation
 Tested compilers
 
 	* Linux
-		+ GCC 4.1.2 on OpenSUSE 11.2
-		+ GCC 4.4.1 on OpenSUSE 11.2
-		+ GCC 4.6.1 on Ubuntu 11.10
+		+ GCC 4.1.2 on OpenSUSE 11.2 64bits
+		+ GCC 4.4.1 on OpenSUSE 11.2 64bits
+		+ GCC 4.6.1 on Ubuntu 11.10 32bits
 	* MacOS
-		+ GCC 4.2.1
+		+ GCC 4.2.1 64bits
 	* Windows
-		+ Visual C++ 8.0 SP1 on Windows XP.
-		+ GCC-MINGW 3.4.5, 4.3.0 on Windows XP.
+		+ Visual C++ 2010 on Windows XP 32bits
+		+ GCC-MINGW 3.4.5, 4.3.0 on Windows XP 32bits
 
 
 More information 

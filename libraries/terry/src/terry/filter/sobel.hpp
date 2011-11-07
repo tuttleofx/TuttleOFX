@@ -1,48 +1,53 @@
 #ifndef _TERRY_FILTER_SOBEL_HPP_
 #define	_TERRY_FILTER_SOBEL_HPP_
 
+#include "gaussianKernel.hpp"
+
+#include <terry/numeric/convolve.hpp>
 #include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/color/colorspace.hpp>
 
 namespace terry {
+namespace filter {
 
 /**
- * @brief Set each pixel in the destination view as the result of a color transformation over the source view
- * @ingroup ImageAlgorithms
- *
- * The provided implementation works for 2D image views only
- *
-template <
-		typename SrcView, // Models RandomAccess2DImageViewConcept
-		typename DstView> // Models MutableRandomAccess2DImageViewConcept
-void colorspace_pixels_progress(
-		ColorSpaceAPI* colorSpaceAPI,
-		const EParamGradationLaw eGradationLawIn,
-		const EParamLayout eLayoutIn,
-		const EColorTemperature eTempIn,
-		const EParamGradationLaw eGradationLawOut,
-		const EParamLayout eLayoutOut,
-		const EColorTemperature eTempOut,
-		const SrcView& src_view,
-		const DstView& dst_view,
-		tuttle::plugin::IProgress* p )
+ * @brief Sobel filtering.
+ */
+template<class SView, class DView, template<typename> class Alloc>
+void sobel( const SView& srcView, DView& dstViewX, DView& dstViewY, const point2<double>& size, const convolve_boundary_option boundary_option )
 {
-	for( int y = 0; y < src_view.height(); ++y )
-	{
-		typename SrcView::x_iterator src_it = src_view.row_begin( y );
-		typename DstView::x_iterator dst_it = dst_view.row_begin( y );
+	typedef typename SView::point_t Point;
+	typedef typename channel_mapping_type<DView>::type DChannel;
+	typedef typename floating_channel_type_t<DChannel>::type DChannelFloat;
+	typedef pixel<DChannelFloat, gray_layout_t> DPixelGray;
 
-		for( int x = 0; x < src_view.width(); ++x, ++src_it, ++dst_it )
-		{
-			// *dst_it = *src_it;
-			colorSpaceAPI->colorspace_convert( eGradationLawIn, eLayoutIn, eTempIn, eGradationLawOut, eLayoutOut, eTempOut , *src_it , *dst_it  );
-		}
-		if( p->progressForward() )
-			return;
-	}
+	const bool normalizedKernel = false;
+	const double kernelEpsilon = 0.001;
+	const Point proc_tl( 0, 0 );
+
+	typedef float Scalar;
+	kernel_1d<Scalar> xKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( size.x, normalizedKernel, kernelEpsilon );
+	kernel_1d<Scalar> xKernelGaussian = buildGaussian1DKernel<Scalar>( size.x, normalizedKernel, kernelEpsilon );
+	kernel_1d<Scalar> yKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( size.y, normalizedKernel, kernelEpsilon );
+	kernel_1d<Scalar> yKernelGaussian = buildGaussian1DKernel<Scalar>( size.y, normalizedKernel, kernelEpsilon );
+	
+	correlate_rows_cols_auto<DPixelGray, Alloc>(
+		color_converted_view<DPixelGray>( srcView ),
+		xKernelGaussianDerivative,
+		xKernelGaussian,
+		dstViewX,
+		proc_tl,
+		boundary_option );
+	
+	correlate_rows_cols_auto<DPixelGray, Alloc>(
+		color_converted_view<DPixelGray>( srcView ),
+		yKernelGaussian,
+		yKernelGaussianDerivative,
+		dstViewY,
+		proc_tl,
+		boundary_option );
 }
-*/
 
+}
 }
 
 #endif

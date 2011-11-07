@@ -32,24 +32,24 @@ class FileNumbers;
   */
 enum EMaskType
 {
-	eMaskTypeUndefined	= 0,                    // 0
-	eMaskTypeDirectory	= 1,                    // 1<<0
-	eMaskTypeFile		= eMaskTypeDirectory*2, // 1<<1
-	eMaskTypeSequence	= eMaskTypeFile*2,      // 1<<2
+	eMaskTypeUndefined  = 0,			           // 0
+	eMaskTypeDirectory  = 1,			           // 1<<0
+	eMaskTypeFile       = eMaskTypeDirectory * 2,  // 1<<1
+	eMaskTypeSequence   = eMaskTypeFile      * 2,  // 1<<2
 	
 	eMaskTypeDefault    = eMaskTypeSequence
 };
 
 enum EMaskOptions
 {
-	eMaskOptionsNone            = 0,                           // 0
-	eMaskOptionsProperties      = 1,                           // show type of FileObject
-	eMaskOptionsPath            = eMaskOptionsProperties*2,    // show path of FileObject
-	eMaskOptionsAbsolutePath    = eMaskOptionsPath*2,          // show absolute path of FileObject
-	eMaskOptionsDotFile         = eMaskOptionsAbsolutePath*2,  // show files which start with a dot (hidden files)
-	eMaskOptionsColor           = eMaskOptionsDotFile*2,       // output with color
+	eMaskOptionsNone         = 0,			                  // 0
+	eMaskOptionsProperties   = 1,			                  // show type of FileObject
+	eMaskOptionsPath         = eMaskOptionsProperties   * 2,  // show path of FileObject
+	eMaskOptionsAbsolutePath = eMaskOptionsPath         * 2,  // show absolute path of FileObject
+	eMaskOptionsDotFile      = eMaskOptionsAbsolutePath * 2,  // show files which start with a dot (hidden files)
+	eMaskOptionsColor        = eMaskOptionsDotFile      * 2,  // output with color
 	
-	eMaskOptionsDefault         = ( eMaskOptionsPath | eMaskOptionsColor )
+	eMaskOptionsDefault      = ( eMaskOptionsPath | eMaskOptionsColor )
 };
 
 inline EMaskType operator~(const EMaskType& a)
@@ -127,23 +127,24 @@ public:
 //		return getDirectory() / getName();
 //	}
 	
-	inline boost::filesystem::path getDirectory() const                              { return _directory; }
-	inline boost::filesystem::path getAbsoluteDirectory() const                     { return boost::filesystem::absolute(_directory); }
-	inline void                   setDirectory( const boost::filesystem::path& p )   { _directory = p; }
-	void                           setDirectoryFromPath( const boost::filesystem::path& p );
-	
-	void                           setMaskOptions	( const EMaskOptions& options )    { _options = options; }
-	void                           setMaskType	( const EMaskType& type )          { _type = type; }
+	inline boost::filesystem::path getDirectory         () const                                    { return _directory; }
+	inline boost::filesystem::path getAbsoluteDirectory () const                                    { return boost::filesystem::absolute(_directory); }
+	inline void                    setDirectory         ( const boost::filesystem::path& p )	{ _directory = p; }
+	void                           setDirectoryFromPath ( const boost::filesystem::path& p );
 
-	EMaskOptions                    getMaskOptions	() const                           { return _options; }
-	EMaskType                       getMaskType	() const                           { return _type; }
+        void                           setMaskOptions       ( const EMaskOptions& options )             { _options = options; }
+        void                           setMaskType          ( const EMaskType& type )                   { _type = type; }	
+	EMaskOptions                   getMaskOptions       () const                                    { return _options; }
+	EMaskType                      getMaskType          () const                                    { return _type; }
 
 	virtual inline void clear()
 	{
 		_directory.clear();
 		_type    = eMaskTypeDefault;
 		_options = eMaskOptionsDefault;
+		setColorActive ( _options & eMaskOptionsColor );
 	}
+
 private:
 	void init( const boost::filesystem::path& directory, const EMaskType& type, const EMaskOptions& options )
 	{

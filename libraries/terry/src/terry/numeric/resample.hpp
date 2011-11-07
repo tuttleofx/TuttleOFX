@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef _TUTTLE_NUMERIC_RESAMPLE_HPP_
-#define _TUTTLE_NUMERIC_RESAMPLE_HPP_
+#ifndef _TERRY_NUMERIC_RESAMPLE_HPP_
+#define _TERRY_NUMERIC_RESAMPLE_HPP_
 
 #include "affine.hpp"
 

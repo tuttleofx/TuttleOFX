@@ -1,5 +1,6 @@
 #include "HistogramKeyerAlgorithm.hpp"
-#include <tuttle/plugin/image/algorithm.hpp>
+
+#include <terry/algorithm/transform_pixels_progress.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -43,7 +44,7 @@ void HistogramKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& proc
     funct._params = _params;
 	funct._isOutputBW = (_params._paramOutputSetting->getValue() == 1); // is output black and white (or alpha channel)
 	//this function is chose because of functor reference and not copy
-    transform_pixels_progress(src,dst,funct,*this);
+    terry::algorithm::transform_pixels_progress(src,dst,funct,*this);
 }
 
 }

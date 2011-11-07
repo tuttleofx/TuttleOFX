@@ -1,6 +1,6 @@
 #include "ColorSpaceKeyerAlgorithm.hpp"
 
-#include <tuttle/plugin/image/algorithm.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -42,7 +42,7 @@ void ColorSpaceKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& pro
     //Create and initialize functor 
 	Compute_alpha_pixel funct(false,_plugin._renderAttributes.geodesicFormColor, _plugin._renderAttributes.geodesicFormSpill); //Output is alpha
 	//this function is chose because of functor reference and not copy
-	transform_pixels_progress(src,dst,funct,*this);
+	terry::algorithm::transform_pixels_progress(src,dst,funct,*this);
 }
 
 }

@@ -1,29 +1,25 @@
-#ifndef _TUTTLE_PLUGIN_FLOODFILL_ALGORITHM_HPP_
-#define _TUTTLE_PLUGIN_FLOODFILL_ALGORITHM_HPP_
-
-#include "FloodFillDefinitions.hpp"
-
-#include <tuttle/plugin/numeric/rectOp.hpp>
-#include <tuttle/plugin/image/fill.hpp>
-#include <tuttle/plugin/memory/OfxAllocator.hpp>
+#ifndef _TERRY_FILTER_FLOODFILL_HPP_
+#define _TERRY_FILTER_FLOODFILL_HPP_
 
 #include <terry/globals.hpp>
+#include <terry/draw/fill.hpp>
 #include <terry/basic_colors.hpp>
-
 #include <terry/channel.hpp>
+#include <terry/math/Rect.hpp>
 
 #include <queue>
+#include <list>
 
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
+namespace filter {
 namespace floodFill {
 
 /**
  * @brief fill all pixels respecting the @p condition in a range of pixels (on the same line or with an 1d_traversable image).
  */
 template<class SIterator, class DIterator, class DPixel, class Test>
-TUTTLE_FORCEINLINE
+GIL_FORCEINLINE
 void fill_pixels_range_if( SIterator srcBegin, const SIterator& srcEnd,
                     DIterator dstBegin, const DPixel& value,
                     const Test& condition )
@@ -32,7 +28,7 @@ void fill_pixels_range_if( SIterator srcBegin, const SIterator& srcEnd,
 	{
 		if( condition( (*srcBegin)[0] ) )
 		{
-#ifdef DEBUG_FLOODFILL
+#ifdef TERRY_DEBUG_FLOODFILL
 			if( (*dstBegin)[0] != value[0] )
 			{
 				*dstBegin = value;
@@ -64,7 +60,7 @@ struct IsUpper
 	IsUpper( const T& threshold )
 	: _threshold(threshold)
 	{}
-	TUTTLE_FORCEINLINE
+	GIL_FORCEINLINE
 	bool operator()( const T& p ) const
 	{
 		return (p >= _threshold);
@@ -78,7 +74,7 @@ typedef enum
 	eDirectionBellow = 1
 } EDirection;
 
-TUTTLE_FORCEINLINE
+GIL_FORCEINLINE
 EDirection invertDirection( const EDirection d )
 {
 	return d == eDirectionAbove ? eDirectionBellow : eDirectionAbove;
@@ -119,13 +115,14 @@ struct FloodElement
  * @remark Implementation is based on standard filling algorithms. So we use ranges by line (x axis),
  * and check connections between these x ranges and possible x ranges in the above or bellow lines.
  */
-template<class Connexity, class StrongTest, class SoftTest, class SView, class DView>
-void flood_fill( const SView& srcView, const OfxRectI& srcRod,
-                 DView& dstView, const OfxRectI& dstRod,
-				 const OfxRectI& procWindow,
+template<class Connexity, class StrongTest, class SoftTest, class SView, class DView, template<class> class Allocator>
+void flood_fill( const SView& srcView, const Rect<std::ssize_t>& srcRod,
+                 DView& dstView, const Rect<std::ssize_t>& dstRod,
+                                 const Rect<std::ssize_t>& procWindow,
 				 const StrongTest& strongTest, const SoftTest& softTest )
 {
 	using namespace terry;
+	using namespace terry::draw;
 	typedef typename SView::xy_locator SLocator;
 	typedef typename DView::xy_locator DLocator;
 	typedef typename SView::value_type SPixel;
@@ -139,7 +136,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 
 	static const DPixel white = get_white<DPixel>();
 	
-#ifdef DEBUG_FLOODFILL
+#ifdef TERRY_DEBUG_FLOODFILL
 	DPixel red = get_black<DPixel>();
 	red[0] = 1.0;
 	DPixel yellow = get_black<DPixel>();
@@ -147,7 +144,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 	yellow[1] = 1.0;
 #endif
 	
-	const OfxRectI rod = rectanglesIntersection( srcRod, dstRod );
+        const Rect<std::ssize_t> rod = rectanglesIntersection( srcRod, dstRod );
 
 	const std::size_t procWidth = (procWindow.x2 - procWindow.x1);
 	const std::size_t halfProcWidth = procWidth / 2;
@@ -155,7 +152,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 	const SLocator sloc_ref( srcView.xy_at(0,0) );
 	const SLocator dloc_ref( dstView.xy_at(0,0) );
 
-	std::vector<FloodElem, OfxAllocator<FloodElem> > propagation;
+	std::vector<FloodElem, Allocator<FloodElem> > propagation;
 	propagation.reserve( halfProcWidth );
 
 	SLocator src_loc = srcView.xy_at( procWindow.x1 - srcRod.x1, procWindow.y1 - srcRod.y1 );
@@ -405,7 +402,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 								modified = true;
 							}
 						}
-#ifdef DEBUG_FLOODFILL
+#ifdef TERRY_DEBUG_FLOODFILL
 						// use one color for each case to debug
 						if( (*dstEnd)[0] != white[0] )
 						{
@@ -488,30 +485,28 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
  * @remark not in production (only use for debugging)
  */
 template<class StrongTest, class SoftTest, class SView, class DView>
-void flood_fill_bruteForce( const SView& srcView, const OfxRectI& srcRod,
-				 DView& dstView, const OfxRectI& dstRod,
-				 const OfxRectI& procWindow,
+void flood_fill_bruteForce( const SView& srcView, const Rect<std::ssize_t>& srcRod,
+                                 DView& dstView, const Rect<std::ssize_t>& dstRod,
+                                 const Rect<std::ssize_t>& procWindow,
 				 const StrongTest& strongTest, const SoftTest& softTest )
 {
-	namespace bgil = boost::gil;
     typedef typename SView::value_type SPixel;
-    typedef typename bgil::channel_type<SView>::type SChannel;
+    typedef typename boost::gil::channel_type<SView>::type SChannel;
 	typedef typename SView::iterator SIterator;
     typedef typename DView::value_type DPixel;
-    typedef typename bgil::channel_type<DView>::type DChannel;
+    typedef typename boost::gil::channel_type<DView>::type DChannel;
 	typedef typename DView::iterator DIterator;
 
-	typedef bgil::point2<std::ptrdiff_t> Point2;
+	typedef boost::gil::point2<std::ptrdiff_t> Point2;
 
 	static const std::size_t gradMax = 0;
 	static const std::size_t lower = 0;
 	static const std::size_t upper = 1;
 	static const std::size_t flooding = 2;
 
-	OfxRectI procWindowOutput = translateRegion( procWindow, dstRod );
-	OfxPointI procWindowSize = { procWindow.x2 - procWindow.x1,
-	                             procWindow.y2 - procWindow.y1 };
-	OfxRectI rectLimit = rectangleReduce(procWindow, 1);
+	Rect<int> procWindowOutput = translateRegion( procWindow, dstRod );
+	boost::gil::point2<int> procWindowSize( procWindow.x2 - procWindow.x1, procWindow.y2 - procWindow.y1 );
+	Rect<int> rectLimit = rectangleReduce(procWindow, 1);
 
 	const Point2 nextLine( -procWindowSize.x, 1 );
 	typename DView::xy_locator dst_loc = dstView.xy_at( procWindowOutput.x1, procWindowOutput.y1 );
@@ -527,10 +522,10 @@ void flood_fill_bruteForce( const SView& srcView, const OfxRectI& srcRod,
 		{
 			if( softTest( (*src_loc)[gradMax] ) )
 			{
-				(*dst_loc)[lower] = bgil::channel_traits<DChannel>::max_value();
+				(*dst_loc)[lower] = boost::gil::channel_traits<DChannel>::max_value();
 				if( strongTest( (*src_loc)[gradMax] ) )
 				{
-					(*dst_loc)[upper] = bgil::channel_traits<DChannel>::max_value();
+					(*dst_loc)[upper] = boost::gil::channel_traits<DChannel>::max_value();
 					std::queue<Point2> fifo; ///< @todo tuttle: use host allocator
 					fifo.push( Point2( x, y ) );
 					while( !fifo.empty() )
@@ -544,9 +539,9 @@ void flood_fill_bruteForce( const SView& srcView, const OfxRectI& srcRod,
 								DIterator pix = dstView.at( p.x+dx - dstRod.x1, p.y+dy - dstRod.y1 );
 								SIterator spix = srcView.at( p.x+dx - srcRod.x1, p.y+dy - srcRod.y1 );
 								if( softTest( (*spix)[gradMax] ) &&
-									(*pix)[flooding] != bgil::channel_traits<DChannel>::max_value() )
+									(*pix)[flooding] != boost::gil::channel_traits<DChannel>::max_value() )
 								{
-									(*pix)[flooding] = bgil::channel_traits<DChannel>::max_value();
+									(*pix)[flooding] = boost::gil::channel_traits<DChannel>::max_value();
 									if( ! strongTest( (*spix)[gradMax] ) )
 									{
 										Point2 np( p.x+dx, p.y+dy );
@@ -563,7 +558,7 @@ void flood_fill_bruteForce( const SView& srcView, const OfxRectI& srcRod,
 			}
 //			else
 //			{
-//				(*dst_loc)[upper] = bgil::channel_traits<DChannel>::max_value();
+//				(*dst_loc)[upper] = boost::gil::channel_traits<DChannel>::max_value();
 //			}
 		}
 		dst_loc += nextLine;
@@ -574,13 +569,46 @@ void flood_fill_bruteForce( const SView& srcView, const OfxRectI& srcRod,
 //	{
 	DView tmp_dst = subimage_view( dstView, procWindowOutput.x1, procWindowOutput.y1,
 											  procWindowSize.x, procWindowSize.y );
-	bgil::copy_pixels( bgil::kth_channel_view<flooding>(tmp_dst), bgil::kth_channel_view<lower>(tmp_dst) );
-	bgil::copy_pixels( bgil::kth_channel_view<flooding>(tmp_dst), bgil::kth_channel_view<upper>(tmp_dst) );
-	bgil::copy_pixels( bgil::kth_channel_view<flooding>(tmp_dst), bgil::kth_channel_view<3>(tmp_dst) );
+	boost::gil::copy_pixels( boost::gil::kth_channel_view<flooding>(tmp_dst), boost::gil::kth_channel_view<lower>(tmp_dst) );
+	boost::gil::copy_pixels( boost::gil::kth_channel_view<flooding>(tmp_dst), boost::gil::kth_channel_view<upper>(tmp_dst) );
+	boost::gil::copy_pixels( boost::gil::kth_channel_view<flooding>(tmp_dst), boost::gil::kth_channel_view<3>(tmp_dst) );
 //	}
 }
 
 }
+
+/*
+template<class Connexity, class StrongTest, class SoftTest, class SView, class DView, template<class> class Allocator>
+void flood_fill( const SView& srcView, const Rect<int>& srcRod,
+                 DView& dstView, const Rect<int>& dstRod,
+				 const Rect<int>& procWindow,
+				 const StrongTest& strongTest, const SoftTest& softTest )
+
+
+	typedef kth_channel_view_type<0,View> LocalView;
+	typename LocalView::type localView( LocalView::make(this->_srcView) );
+	pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
+	terry::algorithm::transform_pixels_progress(
+		localView,
+		minmax,
+		*this );
+
+	_isConstantImage = minmax.max[0] == minmax.min[0];
+	_lowerThres = (_params._lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+	_upperThres = (_params._upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+
+
+terry::draw::fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
+
+flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View, Allocator>(
+				this->_srcView, ofxToGil(this->_srcPixelRod),
+				this->_dstView, ofxToGil(this->_dstPixelRod),
+				ofxToGil(procWindowRoWCrop),
+				IsUpper<Scalar>(_upperThres),
+				IsUpper<Scalar>(_lowerThres)
+				); 
+*/
+
 }
 }
 

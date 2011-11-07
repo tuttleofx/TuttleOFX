@@ -1,12 +1,12 @@
-#ifndef _TUTTLE_OFXTOGIL_HPP_
-#define	_TUTTLE_OFXTOGIL_HPP_
+#ifndef _TUTTLE_OFXTOGIL_POINT_HPP_
+#define	_TUTTLE_OFXTOGIL_POINT_HPP_
 
 #include <ofxCore.h>
-#include <ofxPixels.h>
 
-#include <terry/typedefs.hpp>
 #include <boost/gil/utilities.hpp>
-#include <boost/gil/rgba.hpp>
+
+namespace tuttle {
+namespace plugin {
 
 inline boost::gil::point2<double> ofxToGil( const OfxPointD& p )
 {
@@ -32,9 +32,7 @@ inline OfxPointI gilToOfx( const boost::gil::point2<int>& p )
 	return r;
 }
 
-inline boost::gil::rgba64f_pixel_t ofxToGil( const OfxRGBAColourD& c )
-{
-	return boost::gil::rgba64f_pixel_t( c.r, c.g, c.b, c.a );
+}
 }
 
 

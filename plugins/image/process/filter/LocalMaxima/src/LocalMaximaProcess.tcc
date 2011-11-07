@@ -1,12 +1,14 @@
 #include "LocalMaximaPlugin.hpp"
-#include "LocalMaximaAlgorithm.hpp"
 
-#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
 
 #include <terry/globals.hpp>
+#include <terry/filter/localMaxima.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/numeric/pixel_numeric_operations.hpp>
+
 #include <boost/gil/image_view_factory.hpp>
 #include <boost/gil/algorithm.hpp>
 
@@ -40,14 +42,17 @@ void LocalMaximaProcess<SView, DView>::multiThreadProcessImages( const OfxRectI&
 	namespace bm = boost::math;
 	typedef terry::point2<std::ptrdiff_t> Point2;
 	
-	OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
-	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-	                             procWindowRoW.y2 - procWindowRoW.y1 };
+	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+	
 	static const unsigned int border = 1;
-	OfxRectI srcRodCrop = rectangleReduce( this->_srcPixelRod, border );
-	OfxRectI procWindowRoWCrop = rectanglesIntersection( procWindowRoW, srcRodCrop );
+	const OfxRectI srcRodCrop = rectangleReduce( this->_srcPixelRod, border );
+	const OfxRectI procWindowRoWCrop = rectanglesIntersection( procWindowRoW, srcRodCrop );
 
-	OfxRectI procWindowOutputCrop = translateRegion( procWindowRoWCrop, this->_dstPixelRod );
+//	const OfxRectI procWindowOutputCrop = translateRegion( procWindowRoWCrop, this->_dstPixelRod );
 
 	if( _params._border == eParamBorderBlack )
 	{
@@ -59,11 +64,13 @@ void LocalMaximaProcess<SView, DView>::multiThreadProcessImages( const OfxRectI&
 		boost::gil::fill_pixels( dst, pixelZero );
 	}
 
-	transform_pixels_locator_progress( this->_srcView, this->_srcPixelRod,
-	                                   this->_dstView, this->_dstPixelRod,
-									   procWindowRoWCrop,
-									   pixel_locator_gradientLocalMaxima_t<SView,DView>(this->_srcView),
-									   *this );
+	terry::algorithm::transform_pixels_locator_progress(
+		this->_srcView, ofxToGil(this->_srcPixelRod),
+		this->_dstView, ofxToGil(this->_dstPixelRod),
+		ofxToGil(procWindowRoWCrop),
+		terry::filter::pixel_locator_gradientLocalMaxima_t<SView,DView>(this->_srcView),
+		this->getOfxProgress()
+		);
 }
 
 }

@@ -1,11 +1,17 @@
 #ifndef _TERRY_GLOBALS_HPP_
 #define _TERRY_GLOBALS_HPP_
 
-#include <tuttle/common/math/minmax.hpp>
+// HACK to use some header only utilities of tuttle
+#include "../../tuttle/src/tuttle/common/system/system.hpp"
+#include "../../tuttle/src/tuttle/common/system/compatibility.hpp"
 
-//#include <ofxCore.h>
+#include <terry/math/Rect.hpp>
 
-#include <boost/gil/gil_all.hpp>
+#include <boost/gil/gil_config.hpp>
+#include <boost/gil/typedefs.hpp>
+#include <boost/gil/image.hpp>
+#include <boost/gil/image_view.hpp>
+#include <boost/gil/image_view_factory.hpp>
 #include <boost/type_traits.hpp>
 
 #include <ostream>
@@ -14,7 +20,7 @@ namespace terry {
 
 /*
 template<class View>
-View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
+View getFullView( View tileView, const Rect<std::ssize_t>& bounds, const Rect<std::ssize_t>& rod )
 {
 	using namespace boost::gil;
 	typedef typename View::value_type Pixel;
@@ -30,11 +36,11 @@ View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
 }
 */
 
-template <class View>
+template <class View, typename Alloc=std::allocator<unsigned char> >
 struct image_from_view
 {
 	typedef typename View::value_type value_type; // pixel_t
-	typedef typename boost::gil::image<value_type, boost::gil::is_planar<View>::value> type;
+	typedef typename boost::gil::image<value_type, boost::gil::is_planar<View>::value, Alloc> type;
 };
 // typedef typename view_type_from_pixel<OutPixelType, boost::gil::is_planar<View>::value >::type OutView;
 
