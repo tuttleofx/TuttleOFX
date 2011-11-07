@@ -13,7 +13,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 
-
+#include <iostream>
 
 std::string getDefaultValues(const tuttle::host::ofx::property::OfxhProperty& prop)
 {
@@ -254,6 +254,10 @@ int main( int argc, char** argv )
 					exit( 0 );
 				}
 
+				std::ofstream file("logTuttle.log");
+				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
+				std::cerr.rdbuf ( file.rdbuf() ); // redirect output into the file
+
 				// plugins loading
 				ttl::Core::instance().preload();
 				allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
@@ -294,7 +298,7 @@ int main( int argc, char** argv )
 					else
 						step = 1;
 				}
-				
+				std::cerr.rdbuf (strm_buffer); // restore old output buffer
 				continueOnError = samdo_vm.count("continueOnError");
 			}
 			catch( const boost::program_options::error& e )
