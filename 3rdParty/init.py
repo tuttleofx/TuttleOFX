@@ -23,7 +23,8 @@ download_dir = "archive"
 
 def movetree(src, dst, symlinks=False):
 	names = os.listdir(src)
-	os.makedirs(dst)
+	if not os.path.exists(dst) :
+		os.makedirs(dst)
 	errors = []
 	for name in names:
 		srcname = os.path.join(src, name)
@@ -107,7 +108,7 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 		
 	if os.path.exists( libname + '/Jamfile.v2' ) :
 		print ( 'move %s => %s' % ( libname, folderExtracted ) ) 
-		movetree( libname+'/*' , folderExtracted+'/' )
+		movetree( libname , folderExtracted )
 	if os.path.exists(libname) :
 		rmtree( libname )
 	os.rename( folderExtracted, libname )
