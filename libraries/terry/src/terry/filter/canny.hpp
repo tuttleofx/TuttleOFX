@@ -34,22 +34,13 @@ void canny(
 
 	const Point proc_tl( 0, 0 );
 
-	sobel<SView, DView, Alloc>( srcView, sobelViewY, sobelViewY, sobelSize, sobelBoundaryOption );
+	sobel<SView, DView, Alloc>( srcView, sobelViewX, sobelViewY, sobelSize, sobelBoundaryOption );
 
-	DPixel pixelZero; terry::pixel_zeros_t<DPixel>()( pixelZero );
-	fill_pixels( cannyView, pixelZero );
+	applyLocalMaxima( srcView, cannyView );
 
-	terry::algorithm::transform_pixels_locator(
-		srcView, getBounds(srcView),
-		cannyView, getBounds(cannyView),
-		getBounds(cannyView),
-		pixel_locator_gradientLocalMaxima_t<SView,DView>(srcView)
-		);
-
-
-//	localMaxima
 //	floodFill
-//	thinning
+
+//	applyThinning( inView, tmpView, outView );
 
 }
 
