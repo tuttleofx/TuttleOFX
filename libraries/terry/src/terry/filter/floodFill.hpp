@@ -581,31 +581,32 @@ void flood_fill_bruteForce( const SView& srcView, const Rect<std::ssize_t>& srcR
 template<class Connexity, class StrongTest, class SoftTest, class SView, class DView, template<class> class Allocator>
 void applyFloodFill(
 	const SView& srcView, const Rect<int>& srcRod,
-	DView& dstView, const Rect<int>& dstRod,
+	      DView& dstView, const Rect<int>& dstRod,
 	const Rect<int>& procWindow,
-	const StrongTest& strongTest, const SoftTest& softTest )
+	const double lower, const double upper )
 {
 	typedef kth_channel_view_type<0,View> LocalView;
-	typename LocalView::type localView( LocalView::make(this->_srcView) );
+	typename LocalView::type localView( LocalView::make(srcView) );
 	pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
-	terry::algorithm::transform_pixels_progress(
+	terry::algorithm::transform_pixels(
 		localView,
-		minmax,
-		*this );
+		minmax );
 
-	_isConstantImage = minmax.max[0] == minmax.min[0];
-	_lowerThres = (_params._lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
-	_upperThres = (_params._upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+	const bool isConstantImage = minmax.max[0] == minmax.min[0];
+	const double lowerThres = (_params._lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+	const double upperThres = (_params._upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
 
-
-	terry::draw::fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
+	terry::draw::fill_pixels( dstView, get_black<Pixel>() );
+	
+	if( ! isConstantImage )
+		return;
 
 	flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View, Allocator>(
-				this->_srcView, ofxToGil(this->_srcPixelRod),
-				this->_dstView, ofxToGil(this->_dstPixelRod),
-				ofxToGil(procWindowRoWCrop),
-				IsUpper<Scalar>(_upperThres),
-				IsUpper<Scalar>(_lowerThres)
+				srcView, getBounds<std::ptrdiff_t>(srcView),
+				dstView, getBounds<std::ptrdiff_t>(dstView),
+				getBounds<std::ptrdiff_t>(dstView),
+				IsUpper<Scalar>(upperThres),
+				IsUpper<Scalar>(lowerThres)
 				);
 }
 */
