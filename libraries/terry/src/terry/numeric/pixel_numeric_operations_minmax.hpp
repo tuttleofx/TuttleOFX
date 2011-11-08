@@ -8,6 +8,8 @@
 #define _TERRY_NUMERIC_PIXEL_NUMERIC_OPERATIONS_MINMAX_HPP_
 
 #include "channel_numeric_operations_minmax.hpp"
+#include "pixel_numeric_operations.hpp"
+
 #include <terry/channel.hpp>
 
 #include <boost/gil/gil_config.hpp>

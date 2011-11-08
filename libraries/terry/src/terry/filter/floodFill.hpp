@@ -7,6 +7,9 @@
 #include <terry/channel.hpp>
 #include <terry/math/Rect.hpp>
 
+#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/algorithm/transform_pixels.hpp>
+
 #include <queue>
 #include <list>
 
@@ -577,15 +580,20 @@ void flood_fill_bruteForce( const SView& srcView, const Rect<std::ssize_t>& srcR
 
 }
 
-/*
-template<class Connexity, class StrongTest, class SoftTest, class SView, class DView, template<class> class Allocator>
+
+template<class SView, class DView, template<class> class Allocator>
 void applyFloodFill(
-	const SView& srcView, const Rect<int>& srcRod,
-	      DView& dstView, const Rect<int>& dstRod,
-	const Rect<int>& procWindow,
+	const SView& srcView,
+	      DView& dstView,
 	const double lowerThres, const double upperThres )
 {
-	typedef kth_channel_view_type<0,View> LocalView;
+	using namespace boost::gil;
+
+	typedef double Scalar;
+	typedef typename SView::value_type SPixel;
+	typedef typename DView::value_type DPixel;
+
+	typedef kth_channel_view_type<0,SView> LocalView;
 	typename LocalView::type localView( LocalView::make(srcView) );
 	pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
 
@@ -597,20 +605,20 @@ void applyFloodFill(
 	const double lowerThresR = (lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
 	const double upperThresR = (upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
 
-	terry::draw::fill_pixels( dstView, get_black<Pixel>() );
+	terry::draw::fill_pixels( dstView, get_black<DPixel>() );
 	
 	if( ! isConstantImage )
 		return;
 
-	flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View, Allocator>(
+	floodFill::flood_fill<floodFill::Connexity4, floodFill::IsUpper<Scalar>, floodFill::IsUpper<Scalar>, SView, DView, Allocator>(
 				srcView, getBounds<std::ptrdiff_t>(srcView),
 				dstView, getBounds<std::ptrdiff_t>(dstView),
 				getBounds<std::ptrdiff_t>(dstView),
-				IsUpper<Scalar>(upperThresR),
-				IsUpper<Scalar>(lowerThresR)
+				floodFill::IsUpper<Scalar>(upperThresR),
+				floodFill::IsUpper<Scalar>(lowerThresR)
 				);
 }
-*/
+
 
 }
 }
