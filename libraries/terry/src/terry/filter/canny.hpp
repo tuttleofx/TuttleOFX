@@ -21,7 +21,8 @@ void canny(
 	const SView& srcView,
 	DView& sobelViewX, DView& sobelViewY, DView& cannyView,
 	const point2<double>& sobelSize,
-	const convolve_boundary_option sobelBoundaryOption
+	const convolve_boundary_option sobelBoundaryOption,
+	const double cannyThresLow, const double cannyThresUpper
 	)
 {
 	typedef typename DView::value_type DPixel;
@@ -36,12 +37,12 @@ void canny(
 
 	sobel<SView, DView, Alloc>( srcView, sobelViewX, sobelViewY, sobelSize, sobelBoundaryOption );
 
+	/// @todo: how to manipulate intermediate buffers
 	applyLocalMaxima( srcView, cannyView );
 
-//	floodFill
+	applyFloodFill( srcView, cannyView, cannyThresLow, cannyThresUpper );
 
-//	applyThinning( inView, tmpView, outView );
-
+	applyThinning( srcView, cannyView, cannyView );
 }
 
 
