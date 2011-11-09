@@ -1,0 +1,48 @@
+###############################################################################
+## Main BJam makefile for libjpeg library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements	
+		<include>.
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>.
+	: build-dir $(BUILD)/3rdParty/jpeg
+    ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	jpeg		:
+			  [ glob *.c
+			    :
+			    jdapimin.c
+			    jmemdos.c
+			    jmemmac.c
+			    example.c
+			    djpeg.c
+			    ckconfig.c
+			    jpegtran.c
+			    ansi2knr.c
+			    cjpeg.c
+			    jmemansi.c
+			    jmemname.c
+			    wrjpgcom.c
+			  ]
+			;
+
+install dist
+	:
+		jpeg
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

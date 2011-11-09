@@ -12,6 +12,10 @@ os.chdir ( "./libcaca" )
 os.execlp( "./configure" )
 os.chdir ( ".." )
 
+os.chdir ( "./jpeg" )
+os.execlp( "./configure" )
+os.chdir ( ".." )
+
 os.chdir ( "./openjpeg" )
 os.execlp( "./configure" )
 os.chdir ( ".." )

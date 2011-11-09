@@ -8,11 +8,10 @@
 project
 	: requirements
 		<include>src
-		<os>LINUX:<include>/usr/include
-		<os>LINUX:<linkflags>-ljpeg
 	: build-dir $(BUILD)/Jpeg
 	;
 
+use-project /jpeg    : $(3RD_PARTY)/jpeg ;
 
 ###############################################################################
 # Product 
@@ -20,6 +19,7 @@ project
 plugin Jpeg :
 		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
+		/jpeg
 	:
 		<os>LINUX:<find-shared-library>dl
 	;
