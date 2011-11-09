@@ -3,6 +3,8 @@
 
 #include <terry/channel.hpp>
 #include <terry/math/Rect.hpp>
+#include <terry/algorithm/transform_pixels.hpp>
+#include <terry/numeric/pixel_numeric_operations.hpp>
 
 namespace terry {
 namespace filter {
@@ -157,6 +159,25 @@ struct pixel_locator_gradientLocalMaxima_t
 		return dst;
 	}
 };
+
+
+template<class SView, class DView>
+void applyLocalMaxima( const SView& srcView, DView& dstView )
+{
+	typedef typename DView::value_type DPixel;
+	DPixel pixelZero; terry::pixel_zeros_t<DPixel>()( pixelZero );
+	
+	// todo: only fill borders !!
+	fill_pixels( dstView, pixelZero );
+
+	terry::algorithm::transform_pixels_locator(
+		srcView, getBounds<std::ptrdiff_t>(srcView),
+		dstView, getBounds<std::ptrdiff_t>(dstView),
+		getBounds<std::ptrdiff_t>(dstView),
+		terry::filter::pixel_locator_gradientLocalMaxima_t<SView,DView>(srcView)
+		);
+}
+
 
 
 

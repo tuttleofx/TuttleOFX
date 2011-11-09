@@ -21,7 +21,8 @@ void canny(
 	const SView& srcView,
 	DView& sobelViewX, DView& sobelViewY, DView& cannyView,
 	const point2<double>& sobelSize,
-	const convolve_boundary_option sobelBoundaryOption
+	const convolve_boundary_option sobelBoundaryOption,
+	const double cannyThresLow, const double cannyThresUpper
 	)
 {
 	typedef typename DView::value_type DPixel;
@@ -34,23 +35,14 @@ void canny(
 
 	const Point proc_tl( 0, 0 );
 
-	sobel<SView, DView, Alloc>( srcView, sobelViewY, sobelViewY, sobelSize, sobelBoundaryOption );
+	sobel<SView, DView, Alloc>( srcView, sobelViewX, sobelViewY, sobelSize, sobelBoundaryOption );
 
-	DPixel pixelZero; terry::pixel_zeros_t<DPixel>()( pixelZero );
-	fill_pixels( cannyView, pixelZero );
+	/// @todo: how to manipulate intermediate buffers
+	applyLocalMaxima( srcView, cannyView );
 
-	terry::algorithm::transform_pixels_locator(
-		srcView, getBounds(srcView),
-		cannyView, getBounds(cannyView),
-		getBounds(cannyView),
-		pixel_locator_gradientLocalMaxima_t<SView,DView>(srcView)
-		);
+	applyFloodFill( srcView, cannyView, cannyThresLow, cannyThresUpper );
 
-
-//	localMaxima
-//	floodFill
-//	thinning
-
+	applyThinning( srcView, cannyView, cannyView );
 }
 
 
