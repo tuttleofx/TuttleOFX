@@ -20,7 +20,7 @@ struct ConvolutionProcessParams
 {
 //	boost::numeric::ublas::matrix<double> _convMatrix;
 	typedef float Scalar;
-	typedef typename terry::kernel_1d<Scalar> Kernel;
+	typedef terry::kernel_1d<Scalar> Kernel;
 	
 	boost::gil::point2<unsigned int> _size;
 	

@@ -146,8 +146,8 @@ void ConvolutionPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 		// separable convolution
 		for( unsigned int x = 0; x < kParamSizeMax; ++x )
 		{
-			_paramCoef[0][x]->setIsSecretAndDisabled( x >= v.x );
-			_paramCoef[1][x]->setIsSecretAndDisabled( x >= v.y );
+			_paramCoef[0][x]->setIsSecretAndDisabled( static_cast<int>(x) >= v.x );
+			_paramCoef[1][x]->setIsSecretAndDisabled( static_cast<int>(x) >= v.y );
 		}
 		// disable other matrix values
 		for( unsigned int y = 2; y < kParamSizeMax; ++y )
