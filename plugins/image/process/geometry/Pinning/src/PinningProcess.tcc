@@ -4,7 +4,8 @@
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <terry/globals.hpp>
-#include <terry/sampler/resample.hpp>
+#include <terry/sampler/all.hpp>
+#include <terry/sampler/resample_progress.hpp>
 
 namespace tuttle {
 namespace plugin {

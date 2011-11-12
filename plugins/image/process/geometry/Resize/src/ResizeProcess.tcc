@@ -1,5 +1,6 @@
 #include <tuttle/plugin/ofxToGil/rect.hpp>
-#include <terry/sampler/resample.hpp>
+#include <terry/sampler/resample_progress.hpp>
+#include <terry/geometry/affine.hpp>
 
 namespace tuttle {
 namespace plugin {

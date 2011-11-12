@@ -4,7 +4,7 @@
 #include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/ofxToGil/rect.hpp>
 
-#include <terry/sampler/resample.hpp>
+#include <terry/sampler/resample_progress.hpp>
 
 namespace tuttle {
 namespace plugin {
