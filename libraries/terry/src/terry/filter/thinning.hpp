@@ -100,7 +100,6 @@ void applyThinning( const SView& srcView, DView& tmpView, DView& dstView )
 	
 	// todo: only fill borders !!
 	fill_pixels( tmpView, pixelZero );
-	fill_pixels( dstView, pixelZero );
 
 	const Rect<std::ptrdiff_t> srcRod = getBounds<std::ptrdiff_t>(srcView);
 	const Rect<std::ptrdiff_t> proc1 = rectangleReduce( srcRod, 1 );
@@ -112,6 +111,10 @@ void applyThinning( const SView& srcView, DView& tmpView, DView& dstView )
 		proc1,
 		terry::filter::thinning::pixel_locator_thinning_t<SView,DView>(srcView, terry::filter::thinning::lutthin1)
 		);
+
+	// todo: only fill borders !!
+	fill_pixels( dstView, pixelZero );
+	
 	algorithm::transform_pixels_locator(
 		tmpView, getBounds<std::ptrdiff_t>(tmpView),
 		dstView, getBounds<std::ptrdiff_t>(dstView),

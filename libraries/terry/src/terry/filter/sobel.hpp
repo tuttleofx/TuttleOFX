@@ -12,8 +12,8 @@ namespace filter {
 /**
  * @brief Sobel filtering.
  */
-template<class SView, class DView, template<typename> class Alloc>
-void sobel( const SView& srcView, DView& dstViewX, DView& dstViewY, const point2<double>& size, const convolve_boundary_option boundary_option )
+template<template<typename> class Alloc, class SView, class DView>
+void sobel( const SView& srcView, const DView& dstViewX, const DView& dstViewY, const point2<double>& size, const convolve_boundary_option boundary_option )
 {
 	typedef typename SView::point_t Point;
 	typedef typename channel_mapping_type<DView>::type DChannel;
