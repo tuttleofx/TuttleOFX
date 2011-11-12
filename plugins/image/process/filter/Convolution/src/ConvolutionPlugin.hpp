@@ -5,8 +5,7 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-#include <terry/numeric/kernel.hpp>
-#include <terry/numeric/convolve.hpp>
+#include <terry/filter/convolve.hpp>
 
 //#include <boost/numeric/ublas/matrix.hpp>
 

@@ -1,9 +1,9 @@
 #include "BlurPlugin.hpp"
 
-#include <tuttle/plugin/memory/OfxAllocator.hpp>
-
 #include <terry/filter/gaussianKernel.hpp>
-#include <terry/numeric/convolve.hpp>
+#include <terry/filter/convolve.hpp>
+
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 //#include <boost/lambda/lambda.hpp>
 

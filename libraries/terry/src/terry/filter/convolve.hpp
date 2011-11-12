@@ -6,8 +6,8 @@
 
 /*************************************************************************************************/
 
-#ifndef _TERRY_NUMERIC_CONVOLVE_HPP_
-#define _TERRY_NUMERIC_CONVOLVE_HPP_
+#ifndef _TERRY_FILTER_CONVOLVE_HPP_
+#define _TERRY_FILTER_CONVOLVE_HPP_
 
 /*!
 /// \file 
@@ -18,9 +18,10 @@
 /// \date   2005-2007 \n Last updated on February 6, 2007
 */
 
-#include "pixel_numeric_operations.hpp"
-#include "algorithm.hpp"
-#include "kernel.hpp"
+#include "correlate.hpp"
+#include "detail/kernel.hpp"
+
+#include <terry/numeric/scalar.hpp>
 
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/image_view_factory.hpp>
@@ -611,3 +612,4 @@ void correlate_rows_cols( const SrcView& src,
 }
 
 #endif
+

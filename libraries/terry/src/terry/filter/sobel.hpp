@@ -3,7 +3,7 @@
 
 #include "gaussianKernel.hpp"
 
-#include <terry/numeric/convolve.hpp>
+#include <terry/filter/convolve.hpp>
 #include <terry/numeric/pixel_numeric_operations.hpp>
 
 namespace terry {

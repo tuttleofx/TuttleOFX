@@ -1,12 +1,11 @@
-#include <terry/globals.hpp>
-#include <tuttle/plugin/exceptions.hpp>
+#include "ConvolutionPlugin.hpp"
 
+#include <terry/globals.hpp>
+#include <terry/filter/convolve.hpp>
+
+#include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
-#include <terry/numeric/kernel.hpp>
-#include <terry/numeric/convolve.hpp>
-
-#include "ConvolutionPlugin.hpp"
 
 namespace tuttle {
 namespace plugin {

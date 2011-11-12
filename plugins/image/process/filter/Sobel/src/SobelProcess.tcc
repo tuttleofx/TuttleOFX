@@ -8,8 +8,7 @@
 #include <terry/color/gradient.hpp>
 #include <terry/color/norm.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
-#include <terry/numeric/kernel.hpp>
-#include <terry/numeric/convolve.hpp>
+#include <terry/filter/convolve.hpp>
 #include <terry/numeric/pixel_by_channel.hpp>
 #include <terry/typedefs.hpp>
 

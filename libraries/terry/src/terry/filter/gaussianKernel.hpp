@@ -1,9 +1,9 @@
 #ifndef _TERRY_FILTER_GAUSSIANKERNEL_HPP_
 #define _TERRY_FILTER_GAUSSIANKERNEL_HPP_
 
-#include <terry/globals.hpp>
+#include "convolve.hpp"
 
-#include <terry/numeric/convolve.hpp>
+#include <terry/globals.hpp>
 
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/pow.hpp>

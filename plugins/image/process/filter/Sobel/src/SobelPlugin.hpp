@@ -5,9 +5,9 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
+#include <terry/filter/convolve.hpp>
+
 #include <boost/gil/gil_all.hpp>
-#include <terry/numeric/kernel.hpp>
-#include <terry/numeric/convolve.hpp>
 
 namespace tuttle {
 namespace plugin {
