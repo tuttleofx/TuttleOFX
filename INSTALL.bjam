@@ -4,14 +4,13 @@
 # IN PROGRESS #
 ###############
 
-
-# We call $TUTTLE the TuttleOFX root directory.
-export TUTTLE=`pwd`
+# We call $TUTTLEOFX the TuttleOFX root directory.
+export TUTTLEOFX=`pwd`
 
 
 ### Fetching external libraries ###
 
-cd $TUTTLE/3rdParty
+cd $TUTTLEOFX/3rdParty
 # now download the libraries
 python init.py
 
@@ -19,29 +18,27 @@ python init.py
 
 # BJam is Boost library's build tool. TuttleOFX uses it also as a project builder.
 # In order to build bjam and boost libraries:
-# Open a terminal and go to the TuttleOFX/3rd_party/boost folder. Then type:
+cd $TUTTLEOFX/3rdParty/boost
 # * under linux platform:
-bootstrap
-./bjam
-			
+./bootstrap.sh
+
 # * under windows platform:
-# bootstrap
-# .\bjam
-			
+# .\bootstrap.bat
+
 ## Setting up environment variables
 # In order to use bjam, two environment variables have to be set:
-#		PATH				- to locate bjam executable
-#		BOOST_BUILD_PATH	- to locate boost.build scripts
-export PATH=$TUTTLE/3rdParty/boost:$PATH
-export BOOST_BUILD_PATH=$TUTTLE/3rdParty/boost/tools/build/v2
+#  - PATH				: to locate bjam executable
+export PATH=$TUTTLEOFX/3rdParty/boost:$PATH
+#  - BOOST_BUILD_PATH	: to locate boost.build scripts
+export BOOST_BUILD_PATH=$TUTTLEOFX/3rdParty/boost/tools/build/v2
 
 ## Building TuttleOFX
 # In order to build TuttleOFX library (tuttle) and command line tool (sam), you can:
-cd $TUTTLE
-bjam /tuttle /sam
+cd $TUTTLEOFX
+b2 /tuttle /sam
 # OR
-cd $TUTTLE/...subproject...
-bjam
+cd $TUTTLEOFX/...subproject...
+b2
 
 
 ## Usefull bjam command line options and properties ###
