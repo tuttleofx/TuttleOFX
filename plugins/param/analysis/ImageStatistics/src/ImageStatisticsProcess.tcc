@@ -5,9 +5,13 @@
 #include <tuttle/plugin/param/gilColor.hpp>
 #include <terry/typedefs.hpp>
 
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
-#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/operations_assign.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/assign_minmax.hpp>
+#include <terry/numeric/minmax.hpp>
+#include <terry/numeric/init.hpp>
+#include <terry/numeric/pow.hpp>
 #include <boost/gil/extension/color/hsl.hpp>
 
 #include <boost/units/pow.hpp>
@@ -90,8 +94,6 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-using namespace terry;
-
 template<typename T>
 T standard_deviation( const T v_sum, const T v_sum_p2, const std::size_t nb )
 {
@@ -170,7 +172,7 @@ struct OutputParams
 {
 	OutputParams()
 	{
-		using namespace terry;
+		using namespace terry::numeric;
 		pixel_zeros_t<Pixel>( )( _average );
 		pixel_zeros_t<Pixel>( )( _channelMin );
 		pixel_zeros_t<Pixel>( )( _channelMax );
@@ -194,14 +196,15 @@ struct ComputeOutputParams
 {
 
 	typedef typename View::value_type Pixel;
-	typedef typename color_space_type<View>::type Colorspace;
-	typedef pixel<typename channel_type<View>::type, layout<gray_t> > PixelGray; // grayscale pixel type (using the input channel_type)
-	typedef pixel<CType, layout<Colorspace> > CPixel; // the pixel type use for computation (using input colorspace)
+	typedef typename boost::gil::color_space_type<View>::type Colorspace;
+	typedef boost::gil::pixel<typename boost::gil::channel_type<View>::type, boost::gil::layout<boost::gil::gray_t> > PixelGray; // grayscale pixel type (using the input channel_type)
+	typedef boost::gil::pixel<CType, boost::gil::layout<Colorspace> > CPixel; // the pixel type use for computation (using input colorspace)
 
 	typedef OutputParams<CPixel> Output;
 
 	Output operator()( const View& image, ImageStatisticsPlugin& plugin )
 	{
+		using namespace terry::numeric;
 		OutputParams<CPixel> output;
 
 		const std::size_t nbPixels = image.width() * image.height();

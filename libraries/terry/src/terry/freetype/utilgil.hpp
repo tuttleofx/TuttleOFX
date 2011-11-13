@@ -6,8 +6,9 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
 #include <boost/gil/image.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/operations_assign.hpp>
 
 namespace terry {
 
@@ -91,17 +92,17 @@ void copy_and_convert_alpha_blended_pixels( const GlyphView& glyphView, const ty
 		     ++x, ++it_glyph, ++it_img )
 		{
 			Pixel pColor = glyphColor;
-			pixel_multiplies_scalar_assign_t<float, Pixel>()
+			numeric::pixel_multiplies_scalar_assign_t<float, Pixel>()
 			(
 			    get_color( *it_glyph, gray_color_t() ),
 			    pColor
 			);
-			pixel_multiplies_scalar_assign_t<float, Pixel>()
+			numeric::pixel_multiplies_scalar_assign_t<float, Pixel>()
 			(
 			    channel_invert( get_color( *it_glyph, gray_color_t() ) ),
 			    *it_img
 			);
-			pixel_plus_assign_t<Pixel, Pixel>()
+			numeric::pixel_plus_assign_t<Pixel, Pixel>()
 			(
 			    pColor,
 			    *it_img

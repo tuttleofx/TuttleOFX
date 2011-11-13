@@ -29,28 +29,31 @@ ConvolutionPlugin::ConvolutionPlugin( OfxImageEffectHandle handle )
 
 ConvolutionProcessParams ConvolutionPlugin::getProcessParams() const
 {
+	using namespace terry::filter;
+	
 	ConvolutionProcessParams params;
 
-	OfxPointI size = _paramSize->getValue();
+	const OfxPointI size = _paramSize->getValue();
 
 	params._size.x = boost::numeric_cast<unsigned int>( size.x );
 	params._size.y = boost::numeric_cast<unsigned int>( size.y );
 	
-	params._boundary_option = terry::convolve_option_extend_mirror;
+	params._boundary_option = convolve_option_extend_mirror;
 	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
+	
 	switch( params._border )
 	{
 		case eParamBorderMirror:
-			params._boundary_option = terry::convolve_option_extend_mirror;
+			params._boundary_option = convolve_option_extend_mirror;
 			break;
 		case eParamBorderConstant:
-			params._boundary_option = terry::convolve_option_extend_constant;
+			params._boundary_option = convolve_option_extend_constant;
 			break;
 		case eParamBorderBlack:
-			params._boundary_option = terry::convolve_option_extend_zero;
+			params._boundary_option = convolve_option_extend_zero;
 			break;
 		case eParamBorderPadded:
-			params._boundary_option = terry::convolve_option_extend_padded;
+			params._boundary_option = convolve_option_extend_padded;
 			break;
 	}
 	params._convX.resize( params._size.x );

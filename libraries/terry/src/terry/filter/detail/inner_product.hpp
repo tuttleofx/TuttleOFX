@@ -17,11 +17,11 @@
 /// \date   2005-2007 \n Last updated on February 6, 2007
 */
 
+#include <terry/pixel_proxy.hpp>
+
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/pixel_iterator.hpp>
 #include <boost/gil/metafunctions.hpp>
-
-#include <boost/type_traits/remove_reference.hpp>
 
 #include <cassert>
 #include <iterator>
@@ -31,12 +31,7 @@
 namespace terry {
 
 using namespace boost::gil;
-
-/// \brief Returns the reference proxy associated with a type that has a \p "reference" member typedef.
-///
-/// The reference proxy is the reference type, but with stripped-out C++ reference. It models PixelConcept
-template <typename T>
-struct pixel_proxy : public ::boost::remove_reference<typename T::reference> {};
+namespace filter {
 
 namespace detail {
 template <std::size_t Size>
@@ -87,6 +82,10 @@ _Tp inner_product_k( _InputIterator1 __first1,
                                                            __binary_op1, __binary_op2);
 }
 
+
+}
 }
 
+
 #endif
+

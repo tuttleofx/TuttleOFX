@@ -6,8 +6,7 @@
 #include <terry/basic_colors.hpp>
 #include <terry/channel.hpp>
 #include <terry/math/Rect.hpp>
-
-#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/minmax.hpp>
 #include <terry/algorithm/transform_pixels.hpp>
 
 #include <queue>
@@ -588,6 +587,7 @@ void applyFloodFill(
 	const double lowerThres, const double upperThres )
 {
 	using namespace boost::gil;
+	using namespace terry::numeric;
 
 	typedef double Scalar;
 	typedef typename SView::value_type SPixel;

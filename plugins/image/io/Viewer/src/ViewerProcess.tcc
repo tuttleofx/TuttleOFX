@@ -1,6 +1,6 @@
 #include "ViewerAlgorithm.hpp"
 
-#include <terry/numeric/pixel_by_channel.hpp>
+#include <terry/algorithm/pixel_by_channel.hpp>
 
 
 namespace tuttle {

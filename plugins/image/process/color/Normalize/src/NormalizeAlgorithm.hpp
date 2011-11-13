@@ -3,10 +3,10 @@
 
 #include <terry/channel.hpp>
 #include <terry/channel_view.hpp>
-#include <terry/numeric/color_base_algorithm.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
-#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/algorithm/static_channel_recursion.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/minmax.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
 
 namespace tuttle {
@@ -25,6 +25,8 @@ template<class View>
 void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, typename View::value_type& min, typename View::value_type& max, IProgress& p )
 {
 	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
 	
 	typedef typename View::value_type Pixel;
 
@@ -34,7 +36,7 @@ void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, t
 		{
 			pixel_minmax_by_channel_t<Pixel> minmax( src(0,0) );
 			// compute the maximum value
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				src,
 				minmax,
 				p );
@@ -48,7 +50,7 @@ void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, t
 			typedef typename color_converted_view_type<View, PixelGray>::type LocalView;
 			LocalView localView(src);
 			pixel_minmax_by_channel_t<typename LocalView::value_type> minmax( localView(0,0) );
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				localView,
 				minmax,
 				p );
@@ -61,7 +63,7 @@ void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, t
 			typedef channel_view_type<red_t,View> LocalView;
 			typename LocalView::type localView( LocalView::make(src) );
 			pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				localView,
 				minmax,
 				p );
@@ -74,7 +76,7 @@ void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, t
 			typedef channel_view_type<green_t,View> LocalView;
 			typename LocalView::type localView( LocalView::make(src) );
 			pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				localView,
 				minmax,
 				p );
@@ -87,7 +89,7 @@ void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, t
 			typedef channel_view_type<blue_t,View> LocalView;
 			typename LocalView::type localView( LocalView::make(src) );
 			pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				localView,
 				minmax,
 				p );
@@ -100,7 +102,7 @@ void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, t
 			typedef channel_view_type<alpha_t,View> LocalView;
 			typename LocalView::type localView( LocalView::make(src) );
 			pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				localView,
 				minmax,
 				p );

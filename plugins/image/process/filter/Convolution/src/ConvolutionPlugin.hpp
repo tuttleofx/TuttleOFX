@@ -19,12 +19,12 @@ struct ConvolutionProcessParams
 {
 //	boost::numeric::ublas::matrix<double> _convMatrix;
 	typedef float Scalar;
-	typedef terry::kernel_1d<Scalar> Kernel;
+	typedef terry::filter::kernel_1d<Scalar> Kernel;
 	
 	boost::gil::point2<unsigned int> _size;
 	
 	EParamBorder _border;
-	terry::convolve_boundary_option _boundary_option;
+	terry::filter::convolve_boundary_option _boundary_option;
 	
 	Kernel _convX;
 	Kernel _convY;

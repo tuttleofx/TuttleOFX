@@ -6,8 +6,8 @@
 #include <tuttle/plugin/NoProgress.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
 
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
 
 #include <boost/gil/extension/color/convert.hpp>
 #include <boost/gil/gil_all.hpp>

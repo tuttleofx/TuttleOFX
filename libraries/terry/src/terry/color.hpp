@@ -1,7 +1,7 @@
 #ifndef _TERRY_COLOR_HPP_
 #define	_TERRY_COLOR_HPP_
 
-#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/operations.hpp>
 #include <terry/colorspace/colorspace.hpp>
 
 namespace terry {

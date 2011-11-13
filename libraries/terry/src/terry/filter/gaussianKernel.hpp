@@ -46,12 +46,12 @@ Scalar gaussianValueAt( const Scalar x, const Scalar amplitude, const Scalar ysc
  * * fill kernel values
  */
 template<typename Scalar>
-terry::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bool normalize = true, const double epsilon = kConvolutionEpsilon )
+terry::filter::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bool normalize = true, const double epsilon = kConvolutionEpsilon )
 {
 	using namespace boost;
 	if( size == 0 )
 	{
-		return terry::kernel_1d<Scalar>();
+		return terry::filter::kernel_1d<Scalar>();
 	}
 	const double rEpsilon = size > 1 ? epsilon / static_cast<double>(size) : epsilon;
 	std::vector<Scalar> rightKernel;
@@ -92,7 +92,7 @@ terry::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bool no
 	//	std::cout << "[";
 	//	std::for_each(kernel.begin(), kernel.end(), std::cout << lambda::_1 << ',');
 	//	std::cout << "]" << std::endl;
-	return terry::kernel_1d<Scalar>( &( kernel[0] ), kernel.size(), rightKernel.size() );
+	return terry::filter::kernel_1d<Scalar>( &( kernel[0] ), kernel.size(), rightKernel.size() );
 }
 
 /**
@@ -117,12 +117,12 @@ Scalar gaussianDerivativeValueAt( const Scalar x, const Scalar amplitude, const 
  * * fill kernel values
  */
 template<typename Scalar>
-terry::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, const bool normalize = true, const double epsilon = kConvolutionEpsilon )
+terry::filter::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, const bool normalize = true, const double epsilon = kConvolutionEpsilon )
 {
 	using namespace boost;
 	if( size == 0 )
 	{
-		return terry::kernel_1d<Scalar>();
+		return terry::filter::kernel_1d<Scalar>();
 	}
 	const double rEpsilon = size > 1 ? epsilon / static_cast<double>(size) : epsilon;
 	std::vector<Scalar> rightKernel;
@@ -140,7 +140,7 @@ terry::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, con
 	while( std::abs(v) > rEpsilon );
 
 	if( rightKernel.size() == 0 || sum == 0 )
-		return terry::kernel_1d<Scalar>();
+		return terry::filter::kernel_1d<Scalar>();
 
 	std::vector<Scalar> kernel( rightKernel.size() * 2 + 1 );
 	Scalar kernelCenter = gaussianDerivativeValueAt<Scalar>( 0, size );
@@ -166,7 +166,7 @@ terry::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, con
 	//	std::cout << "[";
 	//	std::for_each(kernel.begin(), kernel.end(), std::cout << lambda::_1 << ',');
 	//	std::cout << "]" << std::endl;
-	return terry::kernel_1d<Scalar>( &( kernel[0] ), kernel.size(), rightKernel.size() );
+	return terry::filter::kernel_1d<Scalar>( &( kernel[0] ), kernel.size(), rightKernel.size() );
 }
 
 }

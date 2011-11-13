@@ -31,6 +31,7 @@
 #include <memory>
 
 namespace terry {
+namespace filter {
 
 using namespace boost::gil;
 
@@ -109,6 +110,7 @@ inline Kernel reverse_kernel(const Kernel& kernel) {
 }
 
 
+}
 }
 
 #endif

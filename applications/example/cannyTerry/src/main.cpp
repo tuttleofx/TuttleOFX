@@ -41,7 +41,7 @@ int main( int argc, char** argv )
 			view(tmpImgRgb), view(tmpImgGray),
 			view(imgCanny),
 			point2<double>(1, 1),
-			terry::convolve_option_extend_zero,
+			terry::filter::convolve_option_extend_zero,
 			0.025, 0.1
 			);
 		std::cout << "full canny time: " << t.elapsed() << std::endl;

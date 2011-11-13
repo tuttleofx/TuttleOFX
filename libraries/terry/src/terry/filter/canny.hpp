@@ -7,10 +7,11 @@
 #include "thinning.hpp"
 
 #include <terry/algorithm/transform_pixels.hpp>
+#include <terry/algorithm/pixel_by_channel.hpp>
 #include <terry/color/norm.hpp>
 #include <terry/draw/fill.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_by_channel.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/algorithm/pixel_by_channel.hpp>
 
 #include <boost/gil/algorithm.hpp>
 
@@ -58,7 +59,7 @@ void canny(
 		kth_channel_view<0>(tmpSobelView), // srcX
 		kth_channel_view<1>(tmpSobelView), // srcY
 		kth_channel_view<2>(tmpSobelView), // dst: gradient direction
-		transform_pixel_by_channel_t<terry::color::channel_norm_t>()
+		algorithm::transform_pixel_by_channel_t<terry::color::channel_norm_t>()
 		);
 	//std::cout << "norm time: " << t.elapsed() << std::endl;
 	

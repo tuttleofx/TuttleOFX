@@ -4,11 +4,14 @@
 #include "../ColorGradientDefinitions.hpp"
 
 #include <tuttle/plugin/global.hpp>
+
 #include <terry/globals.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/operations_assign.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/init.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
 #include <boost/math/special_functions/pow.hpp>
 
 #include <cmath>
@@ -95,6 +98,7 @@ public:
 	{
 		using namespace boost::gil;
 		using namespace terry;
+		using namespace terry::numeric;
 		computeDistances( p );
 		result_type outputColor;
 		pixel_zeros_t<result_type>() ( outputColor );

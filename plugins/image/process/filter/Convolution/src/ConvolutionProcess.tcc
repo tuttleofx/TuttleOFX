@@ -32,6 +32,7 @@ template<class View>
 void ConvolutionProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	using namespace terry::filter;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,
@@ -49,11 +50,11 @@ void ConvolutionProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		{
 		*/
 			if( _params._size.x == 0 )
-				terry::correlate_cols_auto<Pixel>( this->_srcView, _params._convY, dst, proc_tl, _params._boundary_option );
+				correlate_cols_auto<Pixel>( this->_srcView, _params._convY, dst, proc_tl, _params._boundary_option );
 			else if( _params._size.y == 0 )
-				terry::correlate_rows_auto<Pixel>( this->_srcView, _params._convX, dst, proc_tl, _params._boundary_option );
+				correlate_rows_auto<Pixel>( this->_srcView, _params._convX, dst, proc_tl, _params._boundary_option );
 			else
-				terry::correlate_rows_cols_auto<Pixel, OfxAllocator>( this->_srcView, _params._convX, _params._convY, dst, proc_tl, _params._boundary_option );
+				correlate_rows_cols_auto<Pixel, OfxAllocator>( this->_srcView, _params._convX, _params._convY, dst, proc_tl, _params._boundary_option );
 		/*
 			break;
 		}

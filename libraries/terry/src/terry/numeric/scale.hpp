@@ -1,13 +1,20 @@
-#ifndef _BOOST_GIL_COLOR_SCALE_HPP_
-#define _BOOST_GIL_COLOR_SCALE_HPP_
+#ifndef _TERRY_NUMERIC_SCALE_HPP_
+#define _TERRY_NUMERIC_SCALE_HPP_
 
-#include <terry/numeric/minmax.hpp>
+#include "assign.hpp"
 
-namespace boost { namespace gil {
+#include <terry/channel.hpp>
+
+#include <boost/gil/gil_config.hpp>
+#include <boost/gil/pixel.hpp>
+#include <boost/gil/color_base_algorithm.hpp>
+
+
+namespace terry {
+namespace numeric {
 
 /**
- * @brief Scale pixel values.
- * Usefull to normalize an image.
+ * @brief Rescale pixel values. Usefull to normalize an image.
  */
 template<typename Pixel, typename CPixel = Pixel>
 struct pixel_scale_t
@@ -43,6 +50,7 @@ struct pixel_scale_t
 		BOOST_STATIC_ASSERT( boost::is_floating_point<ChannelBaseType>::value );
 	}
 
+	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& src ) const
 	{
 		Pixel res;

@@ -7,7 +7,7 @@
 #include <terry/globals.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/operations.hpp>
 #include <boost/math/special_functions/pow.hpp>
 
 #include <cmath>
@@ -110,6 +110,7 @@ public:
 	{
 		using namespace boost::gil;
 		using namespace terry;
+		using namespace terry::numeric;
 		point_t pM = _droiteEquation.pointOrthogonalProjection( pA );
 		//		TUTTLE_COUT( "________________________________________" );
 		//		TUTTLE_COUT_VAR( _pB );

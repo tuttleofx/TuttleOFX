@@ -10,8 +10,8 @@
 #include <terry/algorithm/transform_pixels_progress.hpp>
 #include <terry/draw/fill.hpp>
 
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/minmax.hpp>
 #include <terry/channel_view.hpp>
 
 namespace tuttle {
@@ -32,7 +32,10 @@ void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 	
 	using namespace terry;
+	using namespace terry::numeric;
+
 	_params = _plugin.getProcessParams( args.renderScale );
+	
 	if( _params._relativeMinMax )
 	{
 //		typedef channel_view_type<red_t,View> LocalView;

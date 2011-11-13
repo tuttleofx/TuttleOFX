@@ -15,10 +15,10 @@ namespace blur {
 template<typename Scalar>
 struct BlurProcessParams
 {
-	typedef typename terry::kernel_1d<Scalar> Kernel;
+	typedef typename terry::filter::kernel_1d<Scalar> Kernel;
 	terry::point2<double> _size;
 	EParamBorder _border;
-	terry::convolve_boundary_option _boundary_option;
+	terry::filter::convolve_boundary_option _boundary_option;
 
 	Kernel _gilKernelX;
 	Kernel _gilKernelY;

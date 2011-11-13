@@ -42,8 +42,10 @@ template<class View>
 void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace terry;
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	OfxPointI procWindowSize  = {
+	using namespace terry::filter;
+	
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
@@ -51,7 +53,7 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 	                          procWindowSize.x, procWindowSize.y );
 
-	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
+	const Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
 
 	if( _params._size.x == 0 )
 	{
