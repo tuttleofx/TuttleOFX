@@ -254,9 +254,26 @@ int main( int argc, char** argv )
 					exit( 0 );
 				}
 
-				std::ofstream file("logTuttle.log");
+				boost::filesystem::path home;
+				if( const char* env_tuttle_cache = std::getenv("TUTTLE_HOME") )
+				{
+					home = env_tuttle_cache;
+				}
+				else if( const char* env_tuttle_cache = std::getenv("HOME") ) // LINUX and MacOS HOME
+				{
+					home = env_tuttle_cache;
+					home /= ".tuttle";
+				}
+				else if( const char* env_tuttle_cache = std::getenv("WINDIR") ) // WINDOWS HOME
+				{
+					home = env_tuttle_cache;
+					home /= ".tuttle";
+				}
+
+				const std::string logFilename( (home / "logTuttle.log").string() );
+				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
-				std::cerr.rdbuf ( file.rdbuf() ); // redirect output into the file
+				std::cerr.rdbuf ( logFile.rdbuf() ); // redirect output into the file
 
 				// plugins loading
 				ttl::Core::instance().preload();
@@ -298,7 +315,7 @@ int main( int argc, char** argv )
 					else
 						step = 1;
 				}
-				std::cerr.rdbuf (strm_buffer); // restore old output buffer
+				std::cerr.rdbuf( strm_buffer ); // restore old output buffer
 				continueOnError = samdo_vm.count("continueOnError");
 			}
 			catch( const boost::program_options::error& e )
