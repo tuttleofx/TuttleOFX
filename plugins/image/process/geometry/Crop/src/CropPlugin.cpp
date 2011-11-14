@@ -41,12 +41,10 @@ CropPlugin::CropPlugin( OfxImageEffectHandle handle )
 OfxRectI CropPlugin::getCropRegionValue() const
 {
 	OfxRectI cropRegion;
-
 	cropRegion.x1 = _paramXMin->getValue();
 	cropRegion.y1 = _paramYMin->getValue();
 	cropRegion.x2 = _paramXMax->getValue();
 	cropRegion.y2 = _paramYMax->getValue();
-	
 	return cropRegion;
 }
 
@@ -352,7 +350,7 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 
 bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	CropProcessParams<rgba32f_pixel_t> params = getProcessParams<rgba32f_pixel_t>( args.time, args.renderScale );
+	CropProcessParams<rgba32f_pixel_t> params = getProcessParams<rgba32f_pixel_t>( args.time );
 
 	switch( _paramMode->getValue() )
 	{
