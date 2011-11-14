@@ -70,6 +70,18 @@ if windows :
     f.close()
     os.chmod( fileExecWindows, stat.S_IXUSR + stat.S_IRUSR + stat.S_IWUSR )
 
+
+if macos :
+  if os.path.exists(fileExec)==False :
+    f = open(fileExec, "w")
+    f.write("./3rdParty/boost/bjam --user-config=user-config.jam ")
+    f.write("--toolset=darwin --disable-icu ")
+    if is_64bits :
+      f.write("architecture=x86 ")
+    f.write("-j%s $* " % detectCPUs())
+    f.close()
+    os.chmod(fileExec,stat.S_IXUSR+stat.S_IRUSR+stat.S_IWUSR)
+
 print ( "linux\t\t%s" % (linux) )
 print ( "windows\t\t%s" % (windows) )
 print ( "unix\t\t%s" % (unix) )
