@@ -14,6 +14,13 @@ cd $TUTTLEOFX/3rdParty
 # now download the libraries
 python init.py
 
+# create the command builder bjam.sh or bjam.bat
+python makeBjamCommand.py
+
+# configure 3rdParty libraries: freetype, libcaca, jpeg and openjpeg libraries
+python configure.py
+
+
 ## Building the building tool : bjam
 
 # BJam is Boost library's build tool. TuttleOFX uses it also as a project builder.
@@ -32,21 +39,25 @@ export PATH=$TUTTLEOFX/3rdParty/boost:$PATH
 #  - BOOST_BUILD_PATH	: to locate boost.build scripts
 export BOOST_BUILD_PATH=$TUTTLEOFX/3rdParty/boost/tools/build/v2
 
+cd $TUTTLEOFX
+cp tools/bjamf/project-config.linux.jam project-config.jam
+
 ## Building TuttleOFX
 # In order to build TuttleOFX library (tuttle) and command line tool (sam), you can:
-cd $TUTTLEOFX
-b2 /tuttle /sam
+./bjam.sh /sam-tools /plugins
 # OR
-cd $TUTTLEOFX/...subproject...
-b2
+# cd $TUTTLEOFX/...subproject...
+# b2
 
 
 ## Usefull bjam command line options and properties ###
 
-# --help 					Display help message
-# --clean 					Remove targets instead of building
-# -a 						Build all targets, even if they are current
-# --toolset=toolset			Indicates the toolset to build with [gcc|mingw|msvc|...]
-# variant=debug|release		Select the build variant
-# link=static|shared		Whether to build static or shared libraries
+# ./bjam.sh --help         Display help message with properties for TuttleOFX projet
+
+# --help                   Display help message
+# --clean                  Remove targets instead of building
+# -a                       Build all targets, even if they are current
+# --toolset=toolset        Indicates the toolset to build with [gcc|mingw|msvc|...]
+# variant=debug|release	   Select the build variant
+# link=static|shared       Whether to build static or shared libraries
 
