@@ -1,133 +1,19 @@
-#ifndef _TUTTLE_PLUGIN_COLORTRANSFER_ALGORITHM_HPP_
-#define _TUTTLE_PLUGIN_COLORTRANSFER_ALGORITHM_HPP_
+#ifndef _TERRY_COLOR_COLORTRANSFER_HPP_
+#define _TERRY_COLOR_COLORTRANSFER_HPP_
 
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
-#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
-//#include <boost/gil/extension/color/hsl.hpp>
-//#include <boost/gil/extension/color/distribution.hpp>
+#include <terry/numeric/matrix.hpp>
+#include <terry/numeric/pow.hpp>
+#include <terry/numeric/log.hpp>
+#include <terry/numeric/clamp.hpp>
 #include <terry/typedefs.hpp>
 #include <terry/channel.hpp>
 
-#include <boost/numeric/ublas/matrix.hpp>
+//#include <boost/gil/extension/color/hsl.hpp>
+//#include <boost/gil/extension/color/distribution.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorTransfer {
-
-using namespace terry;
-
-template <typename Channel, typename ChannelR>
-struct channel_sqrt_t : public std::unary_function<Channel, ChannelR>
-{
-
-	GIL_FORCEINLINE
-	ChannelR operator( )( typename channel_traits<Channel>::const_reference ch ) const
-	{
-		return std::sqrt( ChannelR( ch ) );
-	}
-};
-
-template <typename PixelRef, typename PixelR = PixelRef> // models pixel concept
-struct pixel_sqrt_t
-{
-
-	GIL_FORCEINLINE
-	PixelR operator ( ) (const PixelRef & p ) const
-	{
-		PixelR result;
-		static_transform( p, result, channel_sqrt_t<typename channel_type<PixelRef>::type, typename channel_type<PixelR>::type > ( ) );
-		return result;
-	}
-};
-
-template <typename Channel, typename ChannelR>
-struct channel_log10_t : public std::unary_function<Channel, ChannelR>
-{
-
-	GIL_FORCEINLINE
-	ChannelR operator( )( typename channel_traits<Channel>::const_reference ch ) const
-	{
-		return std::log10( ChannelR( ch ) );
-	}
-};
-
-template <typename PixelRef, typename PixelR = PixelRef> // models pixel concept
-struct pixel_log10_t
-{
-
-	GIL_FORCEINLINE
-	PixelR operator ( ) (const PixelRef & p ) const
-	{
-		PixelR result;
-		static_transform( p, result, channel_log10_t<typename channel_type<PixelRef>::type, typename channel_type<PixelR>::type > ( ) );
-		return result;
-	}
-};
-
-template <typename Channel>
-struct channel_clamp_lower_than_t : public std::unary_function<Channel, Channel>
-{
-	Channel _threshold;
-	Channel _replace;
-
-	channel_clamp_lower_than_t( const Channel threshold, const Channel replace )
-	: _threshold( threshold )
-	, _replace( replace )
-	{ }
-
-	GIL_FORCEINLINE
-	Channel operator( )( typename channel_traits<Channel>::const_reference ch ) const
-	{
-		if( ch < _threshold )
-			return _replace;
-		return Channel( ch );
-	}
-};
-
-template <typename Pixel> // models pixel concept
-struct pixel_clamp_lower_than_t
-{
-	typedef typename channel_type<Pixel>::type Channel;
-	Channel _threshold;
-	Channel _replace;
-
-	pixel_clamp_lower_than_t( const Channel threshold, const Channel replace )
-	: _threshold( threshold )
-	, _replace( replace )
-	{}
-
-	GIL_FORCEINLINE
-	Pixel operator()( const Pixel & p ) const
-	{
-		Pixel result;
-		static_transform( p, result, channel_clamp_lower_than_t<typename channel_type<Pixel>::type>( _threshold, _replace ) );
-		return result;
-	}
-};
-
-template <typename PixelRef, typename Matrix, typename PixelR = PixelRef> // models pixel concept
-struct pixel_matrix33_multiply_t
-{
-	typedef typename channel_type<PixelR>::type ChannelR;
-	const Matrix _matrix;
-
-	pixel_matrix33_multiply_t( const Matrix& m )
-	: _matrix(m)
-	{}
-
-	GIL_FORCEINLINE
-	PixelR operator ( ) ( const PixelRef & p ) const
-	{
-		PixelR result;
-		pixel_assigns_t<PixelRef, PixelR>()( p, result );
-		//color_convert( p, result );
-		result[0] = _matrix( 0, 0 ) * p[0] + _matrix( 0, 1 ) * p[1] + _matrix( 0, 2 ) * p[2];
-		result[1] = _matrix( 1, 0 ) * p[0] + _matrix( 1, 1 ) * p[1] + _matrix( 1, 2 ) * p[2];
-		result[2] = _matrix( 2, 0 ) * p[0] + _matrix( 2, 1 ) * p[1] + _matrix( 2, 2 ) * p[2];
-		return result;
-	}
-};
+namespace terry {
+namespace color {
+namespace transfer {
 
 namespace detail {
 template<typename T>
@@ -232,6 +118,7 @@ struct pixel_rgb_to_lab_t
 	GIL_FORCEINLINE
 	PixelR operator()( const PixelRef & rgb ) const
 	{
+		using namespace terry::numeric;
 		static const T thresold = 1.0e-5;
 		static const ChannelR channelThresold = ChannelR(thresold); //channel_convert<ChannelR, T>( thresold );
 		// RGB to LMS
@@ -266,6 +153,8 @@ struct pixel_lab_to_rgb_t
 	GIL_FORCEINLINE
 	PixelR operator()( const PixelRef & lab ) const
 	{
+		using namespace terry::numeric;
+
 		// LAB (lambda alpha beta) to LMS
 		PixelR lms_log = pixel_matrix33_multiply_t<PixelRef, Matrix, PixelR>( _matrices._LAB_2_LMS )( lab );
 		// 10^v
@@ -278,6 +167,7 @@ struct pixel_lab_to_rgb_t
 
 template <typename PixelRef, typename PixelR>
 const typename pixel_lab_to_rgb_t<PixelRef, PixelR>::MatrixContants pixel_lab_to_rgb_t<PixelRef, PixelR>::_matrices; // init static variable.
+
 
 }
 }

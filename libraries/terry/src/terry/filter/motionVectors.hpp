@@ -79,7 +79,7 @@ template<
 	typename Scalar,
 	typename Progress>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
-                             const terry::kernel_1d<Scalar>& kernel, const terry::convolve_boundary_option boundary_option,
+                             const terry::filter::kernel_1d<Scalar>& kernel, const convolve_boundary_option boundary_option,
                              Progress& p )
 {
 	typedef typename GView::value_type GPixel;
@@ -101,8 +101,8 @@ template<
 	typename Scalar,
 	typename Progress>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
-							 const terry::kernel_1d<Scalar>& kernel, const terry::kernel_1d<Scalar>& kernelSecondary,
-							 const terry::convolve_boundary_option boundary_option,
+							 const terry::filter::kernel_1d<Scalar>& kernel, const terry::filter::kernel_1d<Scalar>& kernelSecondary,
+							 const convolve_boundary_option boundary_option,
 							 Progress& p )
 {
 	typedef typename GView::value_type GPixel;

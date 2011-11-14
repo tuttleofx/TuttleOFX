@@ -6,7 +6,7 @@
 #include "Layout.tcc"
 #include "TemperatureColor.tcc"
 
-#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/operations.hpp>
 
 #include <map>
 #include <vector>

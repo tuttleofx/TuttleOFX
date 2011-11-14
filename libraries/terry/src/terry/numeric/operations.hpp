@@ -1,39 +1,17 @@
-/*
-    Copyright 2005-2007 Adobe Systems Incorporated
-    Distributed under the MIT License (see accompanying file LICENSE_1_0_0.txt
-    or a copy at http://opensource.adobe.com/licenses.html)
-*/
-
-/*************************************************************************************************/
-
-#ifndef _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_HPP_
-#define _TERRY_NUMERIC_CHANNEL_NUMERIC_OPERATIONS_HPP_
-
-/*!
-/// \file               
-/// \brief Structures for channel-wise numeric operations
-/// \author Hailin Jin and Lubomir Bourdev \n
-///         Adobe Systems Incorporated
-/// \date   2005-2007 \n Last updated on September 30, 2006
-/// Currently defined structures:
-///    channel_plus_t (+), channel_minus_t (-),
-///    channel_multiplies_t (*), channel_divides_t (/),
-///    channel_plus_scalar_t (+s), channel_minus_scalar_t (-s),
-///    channel_multiplies_scalar_t (*s), channel_divides_scalar_t (/s),
-///    channel_halves_t (/=2), channel_zeros_t (=0), channel_assigns_t (=)
-*/
+#ifndef _TERRY_NUMERIC_OPERATIONS_HPP_
+#define _TERRY_NUMERIC_OPERATIONS_HPP_
 
 #include <terry/globals.hpp>
 
-#include <boost/gil/gil_config.hpp>
 #include <boost/gil/channel.hpp>
-#include <boost/math/special_functions/pow.hpp>
+#include <boost/gil/pixel.hpp>
 
 #include <functional>
 
 namespace terry {
-
 using namespace boost::gil;
+
+namespace numeric {
 
 /// \ingroup ChannelNumericOperations
 /// structure for adding one channel to another
@@ -44,6 +22,24 @@ struct channel_plus_t : public std::binary_function<Channel1,Channel2,ChannelR> 
     ChannelR operator()(typename channel_traits<Channel1>::const_reference ch1,
                         typename channel_traits<Channel2>::const_reference ch2) const {
         return ChannelR(ch1)+ChannelR(ch2);
+    }
+};
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for adding two pixels
+template <typename PixelRef1, // models pixel concept
+          typename PixelRef2, // models pixel concept
+          typename PixelR>    // models pixel value concept
+struct pixel_plus_t {
+	GIL_FORCEINLINE
+    PixelR operator() (const PixelRef1& p1,
+                       const PixelRef2& p2) const {
+        PixelR result;
+        static_transform(p1,p2,result,
+                           channel_plus_t<typename channel_type<PixelRef1>::type,
+                                          typename channel_type<PixelRef2>::type,
+                                          typename channel_type<PixelR>::type>());
+        return result;
     }
 };
 
@@ -59,6 +55,26 @@ struct channel_minus_t : public std::binary_function<Channel1,Channel2,ChannelR>
     }
 };
 
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for subtracting two pixels
+template <typename PixelRef1, // models pixel concept
+          typename PixelRef2, // models pixel concept
+          typename PixelR>    // models pixel value concept
+struct pixel_minus_t {
+	GIL_FORCEINLINE
+    PixelR operator() (const PixelRef1& p1,
+                       const PixelRef2& p2) const {
+        PixelR result;
+        static_transform(p1,p2,result,
+                           channel_minus_t<typename channel_type<PixelRef1>::type,
+                                           typename channel_type<PixelRef2>::type,
+                                           typename channel_type<PixelR>::type>());
+        return result;
+    }
+};
+
+
 /// \ingroup ChannelNumericOperations
 /// structure for multiplying one channel to another
 /// this is a generic implementation; user should specialize it for better performance
@@ -71,6 +87,26 @@ struct channel_multiplies_t : public std::binary_function<Channel1,Channel2,Chan
     }
 };
 
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for adding two pixels
+template <typename PixelRef1, // models pixel concept
+          typename PixelRef2, // models pixel concept
+          typename PixelR>    // models pixel value concept
+struct pixel_multiplies_t {
+	GIL_FORCEINLINE
+    PixelR operator() (const PixelRef1& p1,
+                       const PixelRef2& p2) const {
+        PixelR result;
+        static_transform(p1,p2,result,
+                           channel_multiplies_t<typename channel_type<PixelRef1>::type,
+                                          typename channel_type<PixelRef2>::type,
+                                          typename channel_type<PixelR>::type>());
+        return result;
+    }
+};
+
+
 /// \ingroup ChannelNumericOperations
 /// structure for dividing channels
 /// this is a generic implementation; user should specialize it for better performance
@@ -80,6 +116,25 @@ struct channel_divides_t : public std::binary_function<Channel1,Channel2,Channel
     ChannelR operator()(typename channel_traits<Channel1>::const_reference ch1,
                         typename channel_traits<Channel2>::const_reference ch2) const {
         return ChannelR(ch1)/ChannelR(ch2);
+    }
+};
+
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for subtracting two pixels
+template <typename PixelRef1, // models pixel concept
+          typename PixelRef2, // models pixel concept
+          typename PixelR>    // models pixel value concept
+struct pixel_divides_t {
+	GIL_FORCEINLINE
+    PixelR operator() (const PixelRef1& p1,
+                       const PixelRef2& p2) const {
+        PixelR result;
+        static_transform(p1,p2,result,
+                           channel_divides_t<typename channel_type<PixelRef1>::type,
+                                           typename channel_type<PixelRef2>::type,
+                                           typename channel_type<PixelR>::type>());
+        return result;
     }
 };
 
@@ -119,6 +174,26 @@ struct channel_multiplies_scalar_t : public std::binary_function<Channel,Scalar,
     }
 };
 
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for multiplying scalar to a pixel
+template <typename PixelRef, // models pixel concept
+          typename Scalar,   // models a scalar type
+          typename PixelR=PixelRef>   // models pixel value concept
+struct pixel_multiplies_scalar_t {
+	GIL_FORCEINLINE
+    PixelR operator () (const PixelRef& p,
+                        const Scalar& s) const {
+        PixelR result;
+        static_transform(p,result,
+                           std::bind2nd(channel_multiplies_scalar_t<typename channel_type<PixelRef>::type,
+                                                                    Scalar,
+                                                                    typename channel_type<PixelR>::type>(),s));
+        return result;
+    }
+};
+
+
 /// \ingroup ChannelNumericOperations
 /// structure for dividing a channel by a scalar
 /// this is a generic implementation; user should specialize it for better performance
@@ -131,29 +206,24 @@ struct channel_divides_scalar_t : public std::binary_function<Channel,Scalar,Cha
     }
 };
 
-/// \ingroup ChannelNumericOperations
-/// structure to compute pow on a channel
-/// this is a generic implementation; user should specialize it for better performance
-template <typename Channel, int n,typename ChannelR>
-struct channel_pow_t : public std::unary_function<Channel,ChannelR> {
+/// \ingroup PixelNumericOperations
+/// \brief construct for dividing a pixel by a scalar
+template <typename PixelRef, // models pixel concept
+          typename Scalar,   // models a scalar type
+          typename PixelR=PixelRef>   // models pixel value concept
+struct pixel_divides_scalar_t {
 	GIL_FORCEINLINE
-    ChannelR operator()(typename channel_traits<Channel>::const_reference ch) const {
-        return boost::math::pow<n>(ChannelR(ch));
+    PixelR operator () (const PixelRef& p,
+                        const Scalar& s) const {
+        PixelR result;
+        static_transform(p,result,
+                           std::bind2nd(channel_divides_scalar_t<typename channel_type<PixelRef>::type,
+                                                                 Scalar,
+                                                                 typename channel_type<PixelR>::type>(),s));
+        return result;
     }
 };
 
-/// \ingroup ChannelNumericOperations
-/// structure to compute pow of a scalar by the pixel value
-/// this is a generic implementation; user should specialize it for better performance
-template <typename Channel,typename Scalar,typename ChannelR>
-struct channel_scalar_pow_t : public std::binary_function<Channel,Scalar,ChannelR> {
-	GIL_FORCEINLINE
-    ChannelR operator()(typename channel_traits<Channel>::const_reference ch,
-                        const Scalar& s) const {
-	typedef typename floating_channel_type_t<ChannelR>::type ChannelRFloat;
-        return std::pow(s, ChannelRFloat(ch));
-    }
-};
 
 /// \ingroup ChannelNumericOperations
 /// structure for halving a channel
@@ -167,43 +237,27 @@ struct channel_halves_t : public std::unary_function<Channel,Channel> {
     }
 };
 
-/// \ingroup ChannelNumericOperations
-/// structure for setting a channel to zero
-/// this is a generic implementation; user should specialize it for better performance
-template <typename Channel>
-struct channel_zeros_t : public std::unary_function<Channel,Channel> {
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for dividing a pixel by 2
+template <typename PixelRef> // models pixel concept
+struct pixel_halves_t {
 	GIL_FORCEINLINE
-    typename channel_traits<Channel>::reference
-    operator()(typename channel_traits<Channel>::reference ch) const {
-        return ch=Channel(0);
+    PixelRef& operator () (PixelRef& p) const {
+        static_for_each(p,channel_halves_t<typename channel_type<PixelRef>::type>());
+        return p;
     }
 };
 
-/// \ingroup ChannelNumericOperations
-/// structure for setting a channel to one
-/// this is a generic implementation; user should specialize it for better performance
-template <typename Channel>
-struct channel_ones_t : public std::unary_function<Channel,Channel> {
-	GIL_FORCEINLINE
-    typename channel_traits<Channel>::reference
-    operator()(typename channel_traits<Channel>::reference ch) const {
-        return ch=Channel(1);
-    }
-};
+template <typename Pixel>
+GIL_FORCEINLINE
+void pixel_halves(Pixel& p)
+{
+    pixel_halves_t<Pixel>()(p);
+}
 
-/// \ingroup ChannelNumericOperations
-/// structure for assigning one channel to another
-/// this is a generic implementation; user should specialize it for better performance
-template <typename Channel1,typename Channel2>
-struct channel_assigns_t : public std::binary_function<Channel1,Channel2,Channel2> {
-	GIL_FORCEINLINE
-    typename channel_traits<Channel2>::reference
-    operator()(typename channel_traits<Channel1>::const_reference ch1,
-               typename channel_traits<Channel2>::reference ch2) const {
-        return ch2=Channel2(ch1);
-    }
-};
 
+}
 }
 
 #endif

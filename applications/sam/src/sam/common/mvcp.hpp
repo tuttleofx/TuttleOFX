@@ -178,26 +178,23 @@ int sammvcp( int argc, char** argv )
 		( "input-last"  , bpo::value<std::ssize_t>( ), "specify the last input image, in order to select a sub-range of the input sequence" )
 		( "output-first", bpo::value<std::ssize_t>( ), "specify the first output image, in order to retime the sequence. It's another way to create an offset of your sequence." )
 		( "output-last" , bpo::value<std::ssize_t>( ), "specify the last output image, in order to retime the sequence" )
-		("color"        , "display with colors")
-		("brief"        , "brief summary of the tool")
+		( "color"        , "display with colors" )
+		( "brief"        , "brief summary of the tool" )
 		;
 
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options( )
-		( "input-dir", bpo::value< std::vector<std::string> >( ), "input directories" )
-		("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+		( "input", bpo::value< std::vector<std::string> >( ), "input sequences, files, directories" )
+		( "enable-color", bpo::value<std::string>(), "enable/disable color")
 		;
 
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add( "input-dir", -1 );
+	pod.add( "input", -1 );
 
 	bpo::options_description cmdline_options;
 	cmdline_options.add( mainOptions ).add( hidden );
-
-	bpo::positional_options_description pd;
-	pd.add( "", -1 );
 
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
@@ -292,9 +289,9 @@ int sammvcp( int argc, char** argv )
 	}
 
 	// defines paths
-	if( vm.count( "input-dir" ) )
+	if( vm.count( "input" ) )
 	{
-		paths = vm["input-dir"].as< std::vector<std::string> >( );
+		paths = vm["input"].as< std::vector<std::string> >();
 	}
 
 	if( paths.size( ) < 2 )

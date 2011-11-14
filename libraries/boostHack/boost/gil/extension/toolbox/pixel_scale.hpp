@@ -1,7 +1,7 @@
 #ifndef _BOOST_GIL_COLOR_SCALE_HPP_
 #define _BOOST_GIL_COLOR_SCALE_HPP_
 
-#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/minmax.hpp>
 
 namespace boost { namespace gil {
 

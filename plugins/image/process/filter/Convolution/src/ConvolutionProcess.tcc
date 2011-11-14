@@ -1,10 +1,11 @@
-#include <terry/globals.hpp>
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <terry/numeric/kernel.hpp>
-#include <terry/numeric/convolve.hpp>
-
 #include "ConvolutionPlugin.hpp"
+
+#include <terry/globals.hpp>
+#include <terry/filter/convolve.hpp>
+
+#include <tuttle/plugin/exceptions.hpp>
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+
 
 namespace tuttle {
 namespace plugin {
@@ -19,11 +20,8 @@ ConvolutionProcess<View>::ConvolutionProcess( ConvolutionPlugin& instance )
 template <class View>
 void ConvolutionProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	TUTTLE_COUT_INFOS;
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams();
-
-	TUTTLE_COUT_VAR( _params._size );
 }
 
 /**
@@ -34,6 +32,7 @@ template<class View>
 void ConvolutionProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	using namespace terry::filter;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,
@@ -49,12 +48,14 @@ void ConvolutionProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 	{
 		case eConv1D:
 		{
+		*/
 			if( _params._size.x == 0 )
-				correlate_cols<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, _params._boundary_option );
+				correlate_cols_auto<Pixel>( this->_srcView, _params._convY, dst, proc_tl, _params._boundary_option );
 			else if( _params._size.y == 0 )
-				correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, _params._boundary_option );
+				correlate_rows_auto<Pixel>( this->_srcView, _params._convX, dst, proc_tl, _params._boundary_option );
 			else
-				correlate_rows_cols<Pixel>( this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, _params._boundary_option );
+				correlate_rows_cols_auto<Pixel, OfxAllocator>( this->_srcView, _params._convX, _params._convY, dst, proc_tl, _params._boundary_option );
+		/*
 			break;
 		}
 		case eConv2D:

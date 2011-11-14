@@ -9,8 +9,9 @@
 #include <tuttle/common/utils/global.hpp>
 
 #include <terry/basic_colors.hpp>
+#include <terry/numeric/init.hpp>
 
-#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/operations.hpp>
 
 #include <boost/mpl/eval_if.hpp>
 #include <boost/mpl/size.hpp>
@@ -426,13 +427,15 @@ void color_transformation(
 		const FullColorParams<SrcColor>& srcParams, const SrcPixel& src,
 		const FullColorParams<DstColor>& dstParams, DstPixel& dst )
 {
+	using namespace terry;
+	using namespace terry::numeric;
 	BOOST_STATIC_ASSERT((
 			boost::is_same<
 				typename SrcColor::colorspace,
 				typename ::boost::gil::color_space_type<SrcPixel>::type
 			>::value
 		));
-	terry::pixel_zeros( dst );
+	pixel_zeros( dst );
 }
 
 

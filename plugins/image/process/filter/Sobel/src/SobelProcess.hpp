@@ -44,6 +44,7 @@ public:
 	void computeYPass2( DView& dst, const Point& proc_tl, boost::mpl::true_ )
 	{
 		using namespace terry;
+		using namespace terry::filter;
 		correlate_cols_auto<ProcPixelGray>(
 			kth_channel_view<1>( this->_srcView ),
 			_params._yKernelGaussianDerivative,

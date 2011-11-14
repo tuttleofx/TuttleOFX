@@ -1,4 +1,3 @@
-#include "ColorTransferAlgorithm.hpp"
 #include "ColorTransferProcess.hpp"
 #include "ColorTransferPlugin.hpp"
 
@@ -6,7 +5,14 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
 
+#include <terry/color/transfer.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/init.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/sqrt.hpp>
+#include <terry/numeric/operations_assign.hpp>
 #include <terry/globals.hpp>
 
 #include <boost/units/pow.hpp>
@@ -23,6 +29,9 @@ namespace plugin {
 namespace colorTransfer {
 
 using namespace terry;
+using namespace terry::color;
+using namespace terry::color::transfer;
+using namespace terry::numeric;
 
 template<class View>
 struct ColorParams

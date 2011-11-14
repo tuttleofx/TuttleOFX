@@ -209,7 +209,7 @@ int main( int argc, char** argv )
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
 				std::cout << std::left <<  "\t" << std::setw(10) << c.filename().string().substr(4) << std::flush ;
-				system( (c.string()+" --brief").c_str() );
+				const int res = system( (c.string()+" --brief").c_str() );
 				std::cout << std::flush;
 			}
 			TUTTLE_COUT( "" );
@@ -239,8 +239,9 @@ int main( int argc, char** argv )
 		std::vector<std::string> sam_cmd;
 		for( int i = cl_options.size() + 2; i < argc; ++i )
 		{
+			static const std::string quote("\"");
 			const std::string s( argv[i] );
-			sam_cmd.push_back( s );
+			sam_cmd.push_back( quote + s + quote );
 		}
 		
 		bfs::path toolFullPath = retrieveToolFullPath( sam_tool, searchPaths );

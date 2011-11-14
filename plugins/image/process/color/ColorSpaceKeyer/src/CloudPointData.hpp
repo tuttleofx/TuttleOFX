@@ -7,8 +7,8 @@
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <boost/gil/channel_algorithm.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
 
 #include<vector>
 #include<set>

@@ -6,8 +6,7 @@
 #include <terry/basic_colors.hpp>
 #include <terry/channel.hpp>
 #include <terry/math/Rect.hpp>
-
-#include <terry/numeric/pixel_numeric_operations_minmax.hpp>
+#include <terry/numeric/minmax.hpp>
 #include <terry/algorithm/transform_pixels.hpp>
 
 #include <queue>
@@ -138,7 +137,7 @@ void flood_fill( const SView& srcView, const Rect<std::ssize_t>& srcRod,
 	typedef FloodElement<SView, DView> FloodElem;
 
 	static const DPixel white = get_white<DPixel>();
-	
+
 #ifdef TERRY_DEBUG_FLOODFILL
 	DPixel red = get_black<DPixel>();
 	red[0] = 1.0;
@@ -147,7 +146,7 @@ void flood_fill( const SView& srcView, const Rect<std::ssize_t>& srcRod,
 	yellow[1] = 1.0;
 #endif
 	
-        const Rect<std::ssize_t> rod = rectanglesIntersection( srcRod, dstRod );
+	const Rect<std::ssize_t> rod = rectanglesIntersection( srcRod, dstRod );
 
 	const std::size_t procWidth = (procWindow.x2 - procWindow.x1);
 	const std::size_t halfProcWidth = procWidth / 2;
@@ -177,7 +176,7 @@ void flood_fill( const SView& srcView, const Rect<std::ssize_t>& srcRod,
 	boost::gil::point2<std::ptrdiff_t> endToBegin( -(procWindow.x2-procWindow.x1),1);
 	boost::gil::point2<std::ptrdiff_t> nextLine(0,1);
 	boost::gil::point2<std::ptrdiff_t> previousLine( 0,-1);
-
+		
 	for( std::ssize_t y = procWindow.y1;
 	     y < procWindow.y2;
 	     ++y )
@@ -581,13 +580,14 @@ void flood_fill_bruteForce( const SView& srcView, const Rect<std::ssize_t>& srcR
 }
 
 
-template<class SView, class DView, template<class> class Allocator>
+template<template<class> class Allocator, class SView, class DView>
 void applyFloodFill(
 	const SView& srcView,
 	      DView& dstView,
 	const double lowerThres, const double upperThres )
 {
 	using namespace boost::gil;
+	using namespace terry::numeric;
 
 	typedef double Scalar;
 	typedef typename SView::value_type SPixel;
@@ -600,20 +600,20 @@ void applyFloodFill(
 	terry::algorithm::transform_pixels(
 		localView,
 		minmax );
-
+	
 	const bool isConstantImage = ( minmax.max[0] == minmax.min[0] );
 	const double lowerThresR = (lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
 	const double upperThresR = (upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
 
 	terry::draw::fill_pixels( dstView, get_black<DPixel>() );
 	
-	if( ! isConstantImage )
+	if( isConstantImage )
 		return;
-
+	
 	floodFill::flood_fill<floodFill::Connexity4, floodFill::IsUpper<Scalar>, floodFill::IsUpper<Scalar>, SView, DView, Allocator>(
 				srcView, getBounds<std::ptrdiff_t>(srcView),
 				dstView, getBounds<std::ptrdiff_t>(dstView),
-				getBounds<std::ptrdiff_t>(dstView),
+				rectangleReduce( getBounds<std::ptrdiff_t>(dstView), 1 ),
 				floodFill::IsUpper<Scalar>(upperThresR),
 				floodFill::IsUpper<Scalar>(lowerThresR)
 				);

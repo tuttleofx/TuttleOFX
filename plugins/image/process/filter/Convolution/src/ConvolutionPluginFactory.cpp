@@ -14,9 +14,36 @@ namespace convolution {
  */
 void ConvolutionPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleConvolution", "Convolution",
-	                "Convolution" );
+	desc.setLabels(
+		"TuttleConvolution",
+		"Convolution",
+		"Convolution" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
+	
+	desc.setDescription(
+"A convolution is defined as the integral of the product of the two functions"
+"after one is reversed and shifted."
+"\n"
+"\n"
+"In mathematics and, in particular, functional analysis, convolution is a"
+"mathematical operation on two functions f and g, producing a third function"
+"that is typically viewed as a modified version of one of the original functions. "
+"Convolution is similar to cross-correlation. It has applications that include"
+"probability, statistics, computer vision, image and signal processing,"
+"electrical engineering, and differential equations."
+"\n"
+"The convolution can be defined for functions on groups other than Euclidean"
+"space. In particular, the circular convolution can be defined for periodic"
+"functions (that is, functions on the circle), and the discrete convolution"
+"can be defined for functions on the set of integers. These generalizations of"
+"the convolution have applications in the field of numerical analysis and"
+"numerical linear algebra, and in the design and implementation of finite"
+"impulse response filters in signal processing."
+"\n"
+"\n"
+"http://en.wikipedia.org/wiki/Convolution"
+);
+
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
@@ -41,7 +68,6 @@ void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
                                                   OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -60,6 +86,13 @@ void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	//	size->setIncrement( 2, 2 );
 	size->setRange( 3, 3, kParamSizeMax, kParamSizeMax );
 
+	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
+	border->setLabel( "Border" );
+	border->appendOption( kParamBorderMirror );
+	border->appendOption( kParamBorderConstant );
+	border->appendOption( kParamBorderBlack );
+	border->appendOption( kParamBorderPadded );
+	
 	for( unsigned int y = 0; y < kParamSizeMax; ++y )
 	{
 		for( unsigned int x = 0; x < kParamSizeMax; ++x )
@@ -71,9 +104,6 @@ void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 			coef->setDefault( 0.0 );
 		}
 	}
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
-	helpButton->setLabel( "Help" );
 }
 
 /**

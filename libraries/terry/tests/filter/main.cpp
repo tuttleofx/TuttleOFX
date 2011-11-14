@@ -16,7 +16,11 @@ BOOST_AUTO_TEST_CASE( sobel )
 	terry::gray32f_view_t outViewX;
 	terry::gray32f_view_t outViewY;
 
-	terry::filter::sobel<terry::rgb32f_view_t, terry::gray32f_view_t, std::allocator>( inView, outViewX, outViewY, terry::point2<double>(5,5), terry::convolve_option_extend_zero );
+	terry::filter::sobel<std::allocator>(
+			inView, outViewX, outViewY,
+			terry::point2<double>(5,5),
+			terry::filter::convolve_option_extend_zero
+		);
 }
 
 

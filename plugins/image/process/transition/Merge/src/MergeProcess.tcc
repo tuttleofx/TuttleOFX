@@ -2,15 +2,19 @@
 #include "MergePlugin.hpp"
 #include "MergeDefinitions.hpp"
 #include "MergeProcess.hpp"
-#include <boost/gil/extension/color/hsl.hpp>
+
 #include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/init.hpp>
+
+#include <boost/gil/extension/color/hsl.hpp>
 #include <boost/gil/gil_all.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -68,17 +72,18 @@ template<class View, class Functor>
 void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace terry;
-	OfxPointI procWindowSize = {
+	using namespace terry::numeric;
+	const OfxPointI procWindowSize = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
 
-	OfxRectI srcRodA = translateRegion( _srcPixelRodA, _params._offsetA );
-	OfxRectI srcRodB = translateRegion( _srcPixelRodB, _params._offsetB );
+	const OfxRectI srcRodA = translateRegion( _srcPixelRodA, _params._offsetA );
+	const OfxRectI srcRodB = translateRegion( _srcPixelRodB, _params._offsetB );
 	
-	OfxRectI intersect = rectanglesIntersection( srcRodA, srcRodB );
-	OfxRectI procIntersect = rectanglesIntersection( procWindowRoW, intersect );
-	OfxPointI procIntersectSize = {
+	const OfxRectI intersect = rectanglesIntersection( srcRodA, srcRodB );
+	const OfxRectI procIntersect = rectanglesIntersection( procWindowRoW, intersect );
+	const OfxPointI procIntersectSize = {
 		procIntersect.x2 - procIntersect.x1,
 		procIntersect.y2 - procIntersect.y1
 	};

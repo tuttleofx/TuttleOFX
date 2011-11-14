@@ -7,8 +7,11 @@
 
 #include <terry/globals.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
-#include <terry/numeric/pixel_numeric_operations_assign.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/init.hpp>
+#include <terry/numeric/scale.hpp>
+
 #include <boost/gil/color_base_algorithm.hpp>
 
 
@@ -27,6 +30,7 @@ template<class View>
 void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace terry;
+	using namespace terry::numeric;
 	typedef rgba32f_pixel_t PixelParam;
 	typedef pixel<typename channel_type<View>::type, gray_layout_t> PixelGray;
 
@@ -87,6 +91,8 @@ template<class View>
 void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
 	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
@@ -101,7 +107,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	    _params._processB &&
 	    _params._processA )
 	{
-		terry::algorithm::transform_pixels_progress(
+		transform_pixels_progress(
 			src,
 			dst,
 			pixel_scale_t<Pixel,Pixel>(_ratio, _sMin, _dMin),
@@ -120,7 +126,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				terry::algorithm::transform_pixels_progress(
+				transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel,LocalPixel>(
@@ -145,7 +151,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				terry::algorithm::transform_pixels_progress(
+				transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel>(
@@ -170,7 +176,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				terry::algorithm::transform_pixels_progress(
+				transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel>(
@@ -195,7 +201,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename LocalView::type localSrcView( LocalView::make(src) );
 				typename LocalView::type localDstView( LocalView::make(dst) );
 
-				terry::algorithm::transform_pixels_progress(
+				transform_pixels_progress(
 					localSrcView,
 					localDstView,
 					pixel_scale_t<LocalPixel>(

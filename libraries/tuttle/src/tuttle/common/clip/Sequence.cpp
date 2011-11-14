@@ -608,6 +608,7 @@ bool Sequence::initFromPattern( const boost::filesystem::path& dir, const std::s
 	if( !retrieveInfosFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not regognize as a pattern, maybe a still file
 
+	_directory = dir;
 	_firstTime	= firstTime;
 	_lastTime	 = lastTime;
 	_step		= step;

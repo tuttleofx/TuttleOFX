@@ -5,9 +5,9 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
+#include <terry/filter/convolve.hpp>
+
 #include <boost/gil/gil_all.hpp>
-#include <terry/numeric/kernel.hpp>
-#include <terry/numeric/convolve.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -27,12 +27,12 @@ struct SobelProcessParams
 	bool _gradientDirectionAbs;
 
 	EParamBorder _border;
-	terry::convolve_boundary_option _boundary_option;
+	terry::filter::convolve_boundary_option _boundary_option;
 
-	terry::kernel_1d<Scalar> _xKernelGaussianDerivative;
-	terry::kernel_1d<Scalar> _xKernelGaussian;
-	terry::kernel_1d<Scalar> _yKernelGaussianDerivative;
-	terry::kernel_1d<Scalar> _yKernelGaussian;
+	terry::filter::kernel_1d<Scalar> _xKernelGaussianDerivative;
+	terry::filter::kernel_1d<Scalar> _xKernelGaussian;
+	terry::filter::kernel_1d<Scalar> _yKernelGaussianDerivative;
+	terry::filter::kernel_1d<Scalar> _yKernelGaussian;
 };
 
 /**

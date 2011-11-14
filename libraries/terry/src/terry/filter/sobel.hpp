@@ -3,8 +3,8 @@
 
 #include "gaussianKernel.hpp"
 
-#include <terry/numeric/convolve.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/filter/convolve.hpp>
+#include <terry/numeric/operations.hpp>
 
 namespace terry {
 namespace filter {
@@ -12,8 +12,8 @@ namespace filter {
 /**
  * @brief Sobel filtering.
  */
-template<class SView, class DView, template<typename> class Alloc>
-void sobel( const SView& srcView, DView& dstViewX, DView& dstViewY, const point2<double>& size, const convolve_boundary_option boundary_option )
+template<template<typename> class Alloc, class SView, class DView>
+void sobel( const SView& srcView, const DView& dstViewX, const DView& dstViewY, const point2<double>& size, const convolve_boundary_option boundary_option )
 {
 	typedef typename SView::point_t Point;
 	typedef typename channel_mapping_type<DView>::type DChannel;

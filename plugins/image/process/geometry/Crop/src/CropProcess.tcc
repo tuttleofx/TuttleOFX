@@ -7,8 +7,6 @@
 #include <terry/draw/fill.hpp>
 #include <terry/basic_colors.hpp>
 #include <terry/globals.hpp>
-#include <terry/numeric/sampler.hpp>
-#include <terry/numeric/resample.hpp>
 
 #include <boost/gil/gil_all.hpp>
 

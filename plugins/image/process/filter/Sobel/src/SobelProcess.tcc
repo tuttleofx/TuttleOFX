@@ -8,9 +8,8 @@
 #include <terry/color/gradient.hpp>
 #include <terry/color/norm.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
-#include <terry/numeric/kernel.hpp>
-#include <terry/numeric/convolve.hpp>
-#include <terry/numeric/pixel_by_channel.hpp>
+#include <terry/filter/convolve.hpp>
+#include <terry/algorithm/pixel_by_channel.hpp>
 #include <terry/typedefs.hpp>
 
 #include <boost/gil/utilities.hpp>
@@ -31,7 +30,8 @@ SobelProcess<SView,DView>::SobelProcess( SobelPlugin &effect )
 : ImageGilFilterProcessor<SView,DView>( effect )
 , _plugin( effect )
 {
-	terry::pixel_zeros_t<DPixel>()(_pixelZero);
+	using namespace terry::numeric;
+	pixel_zeros_t<DPixel>()(_pixelZero);
 }
 
 template <class SView, class DView>
@@ -50,6 +50,9 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 {
 	using namespace boost;
 	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::filter;
+	using namespace terry::algorithm;
 
 //	TUTTLE_COUT( "Sobel X: " << _params._xKernelGaussianDerivative.size() << "x" << _params._xKernelGaussian.size() );
 //	TUTTLE_COUT( "Sobel Y: " << _params._yKernelGaussianDerivative.size() << "x" << _params._yKernelGaussian.size() );
@@ -184,7 +187,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	}
 	else if( _params._gradientNormManhattan )
 	{
-		terry::algorithm::transform_pixels_progress(
+		transform_pixels_progress(
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
@@ -194,7 +197,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	}
 	else
 	{
-		terry::algorithm::transform_pixels_progress(
+		transform_pixels_progress(
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
@@ -213,6 +216,7 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 {
 	using namespace boost;
 	using namespace terry;
+	using namespace terry::algorithm;
 	
 	if( ! _params._computeGradientDirection )
 	{
@@ -224,7 +228,7 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 	{
 		if( _params._gradientDirectionAbs )
 		{
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction
@@ -234,7 +238,7 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 		}
 		else
 		{
-			terry::algorithm::transform_pixels_progress(
+			transform_pixels_progress(
 				kth_channel_view<0>(dst), // srcX
 				kth_channel_view<1>(dst), // srcY
 				kth_channel_view<3>(dst), // dst: gradient direction

@@ -7,7 +7,7 @@
 #include <terry/globals.hpp>
 #include <terry/filter/localMaxima.hpp>
 #include <terry/algorithm/transform_pixels_progress.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/operations.hpp>
 
 #include <boost/gil/image_view_factory.hpp>
 #include <boost/gil/algorithm.hpp>
@@ -39,8 +39,13 @@ void LocalMaximaProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 template<class SView, class DView>
 void LocalMaximaProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	using namespace terry;
+	using namespace terry::algorithm;
+	using namespace terry::numeric;
+	
 	namespace bm = boost::math;
-	typedef terry::point2<std::ptrdiff_t> Point2;
+	
+	typedef point2<std::ptrdiff_t> Point2;
 	
 	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 	const OfxPointI procWindowSize = {
@@ -60,11 +65,11 @@ void LocalMaximaProcess<SView, DView>::multiThreadProcessImages( const OfxRectI&
 												  procWindowSize.x, procWindowSize.y );
 
 		// fill borders
-		DPixel pixelZero; terry::pixel_zeros_t<DPixel>()( pixelZero );
+		DPixel pixelZero; pixel_zeros_t<DPixel>()( pixelZero );
 		boost::gil::fill_pixels( dst, pixelZero );
 	}
 
-	terry::algorithm::transform_pixels_locator_progress(
+	transform_pixels_locator_progress(
 		this->_srcView, ofxToGil(this->_srcPixelRod),
 		this->_dstView, ofxToGil(this->_dstPixelRod),
 		ofxToGil(procWindowRoWCrop),

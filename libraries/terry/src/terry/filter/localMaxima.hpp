@@ -4,7 +4,12 @@
 #include <terry/channel.hpp>
 #include <terry/math/Rect.hpp>
 #include <terry/algorithm/transform_pixels.hpp>
-#include <terry/numeric/pixel_numeric_operations.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/init.hpp>
+#include <terry/numeric/assign_minmax.hpp>
+
+#include <boost/assert.hpp>
+
 
 namespace terry {
 namespace filter {
@@ -69,7 +74,7 @@ struct pixel_locator_gradientLocalMaxima_t
 	, CB(_loc_ref.cache_location( 0, 1))
 	, RB(_loc_ref.cache_location( 1, 1))
 	{
-		using namespace terry;
+		using namespace terry::numeric;
 		pixel_assigns_min( _black );
 	}
 
@@ -164,8 +169,10 @@ struct pixel_locator_gradientLocalMaxima_t
 template<class SView, class DView>
 void applyLocalMaxima( const SView& srcView, DView& dstView )
 {
+	using namespace terry::numeric;
+	
 	typedef typename DView::value_type DPixel;
-	DPixel pixelZero; terry::pixel_zeros_t<DPixel>()( pixelZero );
+	DPixel pixelZero; pixel_zeros_t<DPixel>()( pixelZero );
 	
 	// todo: only fill borders !!
 	fill_pixels( dstView, pixelZero );
