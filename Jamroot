@@ -5,7 +5,7 @@
 ##                                                                           #
 ## Build:                                                                    #
 ##                                                                           #
-## call bjam with:                                                           #
+## call bjam.sh with:                                                        #
 ##      /tuttle         build tuttle library                                 #
 ##      /sam-tools      build sam commands line tool                         #
 ##                          - sam-ls                                         #
@@ -30,8 +30,11 @@
 ##      /tests                                                               #
 ##                                                                           #
 ##                                                                           #
-##      default build is in release, to build in debug type:                 #
-##      ./bjam variant=debug [target]                                        #
+##      to build static plugins and or application, add:                     #
+##      ./bjam.sh link=static [target]                                       #
+##                                                                           #
+##      default build is in debug, to build in release type:                 #
+##      ./bjam.sh variant=release [target]                                   #
 ##                                                                           #
 ##############################################################################
 
@@ -80,7 +83,7 @@ else if [ os.name ] = LINUX
 else if [ os.name ] = MACOSX
 	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
 
-
+#print socket.gethostname()
 
 
 path-constant	3RD_PARTY	: 3rdParty ;
