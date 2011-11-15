@@ -79,9 +79,9 @@ local HOSTNAME ;
 if [ os.name ] = NT	
 	{	HOSTNAME = "Windows" ; }
 else if [ os.name ] = LINUX 
-	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
+	{	HOSTNAME = "Linux" ; } #[ modules.peek : HOSTNAME ] ; }
 else if [ os.name ] = MACOSX
-	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
+	{	HOSTNAME = "MacOS" ; } #[ modules.peek : HOSTNAME ] ; }
 
 #print socket.gethostname()
 
