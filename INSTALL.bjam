@@ -40,7 +40,7 @@ export PATH=$TUTTLEOFX/3rdParty/boost:$PATH
 export BOOST_BUILD_PATH=$TUTTLEOFX/3rdParty/boost/tools/build/v2
 
 cd $TUTTLEOFX
-cp tools/bjamf/project-config.linux.jam project-config.jam
+cp tools/bjamf/user-config.linux.jam user-config.jam
 
 ## Building TuttleOFX
 # In order to build TuttleOFX library (tuttle) and command line tool (sam), you can:
