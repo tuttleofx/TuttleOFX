@@ -8,21 +8,50 @@
 project
 	: requirements
 		<include>.
+		<include>src/include
+		<include>$(BOOST_LIBS)
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
-		<include>./build/linux64/include
+		<include>.
+		<include>src/include
 	: build-dir $(BUILD)/3rdParty/openimageio
     ;
 
 ###############################################################################
 # libraw library
 ###############################################################################
-alias	headers		: [ glob-tree *.h ] ;
+alias	headers		:
+			 [ glob-tree *.h ]
+			;
 
-lib	openimageio		:
-
+lib	openimageio	:
+			 [ glob
+			       src/bmp.imageio/*.cpp
+#			       src/cineon.imageio/*.cpp
+			       src/dds.imageio/*.cpp
+			       src/dpx.imageio/*.cpp
+			       src/field3D.imageio/*.cpp
+			       src/fits.imageio/*.cpp
+			       src/hdr.imageio/*.cpp
+			       src/ico.imageio/*.cpp
+			       src/iff.imageio/*.cpp
+			       src/jpeg.imageio/*.cpp
+			       src/jpeg2000.imageio/*.cpp
+			       src/openexr.imageio/*.cpp
+			       src/png.imageio/*.cpp
+			       src/pnm.imageio/*.cpp
+			       src/ptex.imageio/*.cpp
+			       src/sgi.imageio/*.cpp
+			       src/socket.imageio/*.cpp
+			       src/softimage.imageio/*.cpp
+			       src/targa.imageio/*.cpp
+			       src/tiff.imageio/*.cpp
+			       src/zfile.imageio/*.cpp
+			 ]
+			../openexr
+			../jasper
 			;
 
 install dist

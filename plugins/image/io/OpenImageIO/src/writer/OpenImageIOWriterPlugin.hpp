@@ -5,7 +5,7 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
-#include <OpenImageIO/typedesc.h>
+#include <typedesc.h>
 
 namespace tuttle {
 namespace plugin {
@@ -14,8 +14,8 @@ namespace writer {
 
 struct OpenImageIOWriterProcessParams
 {
-	std::string _filepath;        ///< filepath
-	EParamComponents _components; ///< Force RGB
+	std::string _filepath;                     ///< filepath
+	EParamComponents _components;              ///< Force RGB
 	OpenImageIO::TypeDesc _bitDepth;           ///< Output bit depth
 };
 
@@ -32,7 +32,7 @@ public:
 	void                      render( const OFX::RenderArguments& args );
 
 public:
-	OFX::ChoiceParam* _components;     ///< Choose components RGBA/RGB
+	OFX::ChoiceParam* _components;             ///< Choose components RGBA/RGB
 };
 
 }

@@ -8,11 +8,10 @@
 project
 	: requirements
 		<include>.
-		<include>$(3RD_PARTY)/openimageio/dist/linux64/include
-		<linkflags>-L$(3RD_PARTY)/openimageio/dist/linux64/lib/
-		<linkflags>-lOpenImageIO
 	: build-dir $(BUILD)/OpenImageIO
 	;
+
+use-project /openimageio : $(3RD_PARTY)/openimageio ;
 
 ###############################################################################
 # Product 
@@ -21,6 +20,7 @@ plugin OpenImageIO :
 	[ glob-tree *.cpp : tests ]
 
 	/tuttleplugin/<link>static
+	/openimageio/<link>static
 	;
 
 

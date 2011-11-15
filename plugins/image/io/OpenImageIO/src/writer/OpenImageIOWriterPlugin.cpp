@@ -2,7 +2,7 @@
 #include "OpenImageIOWriterPlugin.hpp"
 #include "OpenImageIOWriterProcess.hpp"
 
-#include <OpenImageIO/imageio.h>
+#include <imageio.h>
 
 namespace tuttle {
 namespace plugin {

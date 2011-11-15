@@ -4,7 +4,7 @@
 #include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <OpenImageIO/imageio.h>
+#include <imageio.h>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>

@@ -2,7 +2,7 @@
 #include "OpenImageIOReaderProcess.hpp"
 #include "OpenImageIOReaderDefinitions.hpp"
 
-#include <OpenImageIO/imageio.h>
+#include <imageio.h>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>

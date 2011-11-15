@@ -2,10 +2,7 @@
 #include "OpenImageIOWriterDefinitions.hpp"
 #include "OpenImageIOWriterPlugin.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -33,10 +30,10 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-	desc.setHostFrameThreading( false );
-	desc.setSupportsMultiResolution( false );
-	desc.setSupportsMultipleClipDepths( true );
-	desc.setSupportsTiles( kSupportTiles );
+	desc.setHostFrameThreading         ( false );
+	desc.setSupportsMultiResolution    ( false );
+	desc.setSupportsMultipleClipDepths ( true );
+	desc.setSupportsTiles              ( kSupportTiles );
 }
 
 /**
@@ -99,6 +96,8 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	forceNewRender->setEvaluateOnChange( true );
 	forceNewRender->setDefault( 0 );
+
+	describeWriterParamsInContext( desc, context );
 }
 
 /**
