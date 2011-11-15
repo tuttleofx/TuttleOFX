@@ -66,10 +66,14 @@ CropProcessParams<Pixel> CropPlugin::getProcessParams( const OfxTime time, const
 
 	params._mode = static_cast<EParamMode>(_paramMode->getValue());
 
-	OfxRGBAColourD color = _paramFillColor->getValue();
+	const OfxRGBAColourD color = _paramFillColor->getValue();
 	color_convert( ofxToGil( color ), params._color );
 
 	params._cropRegion = computeCropRegion( time );
+	params._cropRegion.x1 *= renderScale.x;
+	params._cropRegion.x2 *= renderScale.x;
+	params._cropRegion.y1 *= renderScale.y;
+	params._cropRegion.y2 *= renderScale.y;
 
 	return params;
 }
