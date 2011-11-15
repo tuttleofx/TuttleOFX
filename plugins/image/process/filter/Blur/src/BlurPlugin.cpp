@@ -97,7 +97,7 @@ void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& ar
 
 bool BlurPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-	BlurProcessParams<Scalar> params = getProcessParams();
+	BlurProcessParams<Scalar> params = getProcessParams( args.renderScale );
 	if( params._size.x != 0 || params._size.y != 0 )
 		return false;
 

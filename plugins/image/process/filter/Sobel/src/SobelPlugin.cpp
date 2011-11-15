@@ -402,7 +402,7 @@ void SobelPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& a
 
 bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-	SobelProcessParams<Scalar> params = getProcessParams();
+	SobelProcessParams<Scalar> params = getProcessParams(args.renderScale);
 	if( ( params._xKernelGaussianDerivative.size() == 0 || ( !params._unidimensional && params._xKernelGaussian.size() == 0 ) ) &&
 	    ( params._yKernelGaussianDerivative.size() == 0 || ( !params._unidimensional && params._yKernelGaussian.size() == 0 ) ) )
 	{

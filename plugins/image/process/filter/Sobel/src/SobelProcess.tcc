@@ -38,6 +38,7 @@ template <class SView, class DView>
 void SobelProcess<SView,DView>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<SView,DView>::setup( args );
+	
 	_params = _plugin.getProcessParams( args.renderScale );
 }
 
