@@ -13,11 +13,13 @@ export TUTTLEOFX=`pwd`
 ################################################################################
 
 ## A1) install libraries on your system using standard packages
-## You need to install all libraries by yourself, see README for the full list.
+## You need to install all libraries, see website for the full list:
+#
+## http://sites.google.com/site/tuttleofx/development/build/libraries
+#
 ## When all libraries are installed, create a configuration file.
-## copy a configuration file, depending on your operating system:
-cp $TUTTLEOFX/tools/sconf/linux.sconf host.sconf
-## or on other platforms:
+## Use the precreated configuration file, depending on your operating system:
+cp $TUTTLEOFX/tools/sconf/ubuntu.sconf host.sconf
 #cp $TUTTLEOFX/tools/sconf/macos.sconf host.sconf
 #cp $TUTTLEOFX/tools/sconf/windows.sconf host.sconf
 
