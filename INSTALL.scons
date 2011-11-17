@@ -1,61 +1,85 @@
 ### TuttleOFX compilation with scons tool ###
 
-# We call $TUTTLE the TuttleOFX root directory.
-export TUTTLE=`pwd`
+## We call $TUTTLEOFX the TuttleOFX root directory.
+export TUTTLEOFX=`pwd`
 
 
 ################################################################################
-### A - Fetching external libraries
-
-# You have the choice between:
-# A1) install libraries on your system using standard packages.
-# -- OR --
-# A2) download all external libraries, with a dedicated script
+### A - External libraries
+## You have the choice between:
+## A1) install libraries on your system using standard packages.
+## -- OR --
+## A2) download all external libraries, with a dedicated script
+################################################################################
 
 ## A1) install libraries on your system using standard packages
-# You need to install all libraries by yourself, see README for the full list.
-# When all libraries are installed, create a configuration file.
-# copy a configuration file, depending on your operating system:
-cp $TUTTLE/tools/sconf/linux.sconf .
-# or
-#cp $TUTTLE/tools/sconf/macos.sconf .
-#cp $TUTTLE/tools/sconf/windows.sconf .
+## You need to install all libraries by yourself, see README for the full list.
+## When all libraries are installed, create a configuration file.
+## copy a configuration file, depending on your operating system:
+cp $TUTTLEOFX/tools/sconf/linux.sconf host.sconf
+## or on other platforms:
+#cp $TUTTLEOFX/tools/sconf/macos.sconf host.sconf
+#cp $TUTTLEOFX/tools/sconf/windows.sconf host.sconf
 
+## -- OR -- ##
 
 ## A2) download all external libraries
-cd $TUTTLE/3rdParty
-# download libraries
-python init.py
+#cd $TUTTLEOFX/3rdParty
+## download libraries
+#python init.py
 
-# now you need to compile all these libraries by yourself,
-# because all these libraries can have their own build system,
-# their own dependencies, their own flags you may want to choose, etc.
+## now you need to compile all these libraries by yourself,
+## because all these libraries have their own build system,
+## their own dependencies, their own flags you may want to choose, etc.
 
-# copy the configuration file to use local libraries
-cp $TUTTLE/tools/sconf/local.sconf .
+## copy the configuration file to use local libraries
+#cp $TUTTLEOFX/tools/sconf/local.sconf host.sconf
 
 
 ################################################################################
 ### B - Building
+################################################################################
 
-# you can customize options in user.sconf
-# you can use the example:
-cp $TUTTLE/tools/sconf/user.sconf .
-
-# build
 scons
 
-# install
-scons INSTALLPATH=/custom/path/to/tuttlePackage install=True
-# install is an option and not a target, so you can choose
+
+################################################################################
+### C - Use it !
+################################################################################
+
+export OFX_PLUGIN_PATH=$TUTTLEOFX/dist/`hostname`/gcc-`gcc -dumpversion`
+
+export PATH=$OFX_PLUGIN_PATH/bin:$PATH
+
+## If you use custom installation of libraries, you need to make them available
+#export LD_LIBRARY_PATH=/path/to/custom/install/libraries:$LD_LIBRARY_PATH
+
+################################################################################
+### D - Finished ! Launch applications !
+################################################################################
+
+# you can try
+sam ls
+sam do -h
+
+# or try plugins in external OpenFX Host applications
+
+
+
+################################################################################
+### Installation
+################################################################################
+# install is an option and not a target, so you can specify
 # the targets you want to install
+scons INSTALLPATH=/custom/path/to/tuttlePackage install=True
 
 
 ################################################################################
 ### Some build options for particular purposes
+################################################################################
 
-# see scons documentation
-http://www.scons.org/documentation.php
+## see scons documentation
+## http://www.scons.org/documentation.php
 
 ## some scons features commonly used
 #
@@ -73,7 +97,7 @@ scons sam-ls -c
 
 # you can compile only one directory by compiling from within this directory
 # notice the flag -u to search a SConstruct in upper directories
-cd $TUTTLE/plugins/image/filter
+cd $TUTTLEOFX/plugins/image/filter
 scons -u
 # other solution, from the root directory
 scons plugins/image/filter
