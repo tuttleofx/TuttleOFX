@@ -5,7 +5,7 @@
 
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
-#include <terry/numeric/sampler.hpp>
+#include <terry/sampler/sampler.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_same.hpp>
