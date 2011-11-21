@@ -33,7 +33,7 @@ public:
 	TextPlugin( OfxImageEffectHandle handle );
 
 public:
-	TextProcessParams getProcessParams() const;
+	TextProcessParams getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
 	void render( const OFX::RenderArguments& args );
 

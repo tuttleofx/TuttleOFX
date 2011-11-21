@@ -24,18 +24,18 @@ TextPlugin::TextPlugin( OfxImageEffectHandle handle )
 	_paramVerticalFlip  = fetchBooleanParam( kParamVerticalFlip );
 }
 
-TextProcessParams TextPlugin::getProcessParams() const
+TextProcessParams TextPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	TextProcessParams params;
 
 	params._text          = _paramText->getValue();
 	params._isExpression  = _paramIsExpression->getValue();
 	params._font          = _paramFont->getValue();
-	params._fontY         = _paramSize->getValue();
+	params._fontY         = _paramSize->getValue() * renderScale.y;
 	params._fontX         = params._fontY * _paramRatio->getValue();
 	params._fontColor     = _paramColor->getValue();
-	params._position      = ofxToGil( _paramPosition->getValue() );
-	params._letterSpacing = _paramLetterSpacing->getValue();
+	params._position      = ofxToGil( _paramPosition->getValue() * renderScale );
+	params._letterSpacing = _paramLetterSpacing->getValue() * renderScale.x;
 	params._vAlign        = static_cast<EParamVAlign>( _paramVAlign->getValue() );
 	params._hAlign        = static_cast<EParamHAlign>( _paramHAlign->getValue() );
 	params._verticalFlip  = _paramVerticalFlip->getValue();

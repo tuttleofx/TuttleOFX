@@ -4,6 +4,8 @@
 
 #include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+#include <tuttle/plugin/exceptions.hpp>
+#include <tuttle/common/ofx/core.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/ptr_container/ptr_inserter.hpp>
@@ -34,7 +36,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	using namespace terry;
 	ImageGilFilterProcessor<View>::setup( args );
 
-	_params = _plugin.getProcessParams();
+	_params = _plugin.getProcessParams( args.renderScale );
 
 	if( !boost::filesystem::exists( _params._font ) )
 	{
@@ -238,10 +240,24 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	// if outside dstRod
 	// ...
 	// else
+	const OfxRectI textRod = { _textCorner.x, _textCorner.y, _textCorner.x + _textSize.x, _textCorner.y + _textSize.y };
+	const OfxRectI textRoi = rectanglesIntersection( textRod, procWindowRoW );
+	const OfxRectI textLocalRoi = translateRegion( textRoi, - _textCorner );
+	
+	TUTTLE_COUT_VAR( _textCorner );
+	TUTTLE_COUT_VAR( - _textCorner );
+	
+	TUTTLE_COUT_VAR( textRod );
+	TUTTLE_COUT_VAR( procWindowRoW );
+	TUTTLE_COUT_VAR( textRoi );
+	TUTTLE_COUT_VAR( textLocalRoi );
+	
 	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y );
+	
 	std::for_each( _glyphs.begin(), _glyphs.end(), _kerning.begin(),
-	               render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor, _params._letterSpacing )
+	               render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor, _params._letterSpacing, Rect<std::ptrdiff_t>(textLocalRoi) )
 	               );
+	
 	TUTTLE_TCOUT_INFOS;
 }
 

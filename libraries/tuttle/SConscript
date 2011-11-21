@@ -2,15 +2,19 @@ Import( 'project', 'libs' )
 
 import os.path
 
+commonLibs = [
+	libs.openfxHack,
+	libs.boost,
+	libs.dl,
+]
+if project.env['mode'] != 'production':
+	commonLibs.append( libs.system_debug_info )
+
 project.StaticLibrary(
 		'tuttleCommon',
 		sources   = project.scanFiles( ['src/tuttle/common'] ),
 		includes  = ['src'],
-		libraries = [
-				libs.openfxHack,
-				libs.boost,
-				libs.dl,
-			],
+		libraries = commonLibs,
 		shared = True
 	)
 

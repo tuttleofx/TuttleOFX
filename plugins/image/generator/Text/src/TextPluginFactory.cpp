@@ -16,7 +16,8 @@ namespace text {
  */
 void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleText", "Text",
+	desc.setLabels( "TuttleText",
+					"Text",
 	                "Text" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
@@ -32,7 +33,6 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setSupportsMultiResolution( false );
 }
 
 /**

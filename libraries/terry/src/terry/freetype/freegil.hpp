@@ -8,6 +8,9 @@
 #include "utilgil.hpp"
 #include "utilstl.hpp"
 
+#include <terry/math/Rect.hpp>
+#include <terry/geometry/subimage.hpp>
+
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
 
@@ -180,20 +183,35 @@ class render_glyph
 public:
 	typedef render_glyph<view_t> This;
 	typedef typename view_t::value_type Pixel;
+	typedef Rect<std::ptrdiff_t> rect_t;
+	typedef point2<std::ptrdiff_t> point_t;
 
 private:
-	const view_t& _view;
+	const view_t& _outView;
 	const Pixel _color;
 	const double _letterSpacing;
+	const rect_t _roi;
 	int _x;
+
 
 	//	render_glyph( const This& );
 
 public:
-	render_glyph( const view_t& view, const Pixel& color, const double letterSpacing ) : _view( view )
+	render_glyph( const view_t& outView, const Pixel& color, const double letterSpacing )
+		: _outView( outView )
 		, _color( color )
 		, _letterSpacing( letterSpacing )
-		, _x( 0 ) {}
+		, _roi( 0, 0, outView.width(), outView.height() )
+		, _x( 0 )
+		{}
+
+	render_glyph( const view_t& outView, const Pixel& color, const double letterSpacing, const Rect<std::ptrdiff_t> roi )
+		: _outView( outView )
+		, _color( color )
+		, _letterSpacing( letterSpacing )
+		, _roi( roi )
+		, _x( 0 )
+		{}
 
 	template <typename glyph_t>
 	void operator()( const glyph_t& glyph, int kerning = 0 )
@@ -202,24 +220,49 @@ public:
 
 		FT_GlyphSlot slot = glyph.face->glyph;
 
-		int load_flags = FT_LOAD_DEFAULT;
-		int index      = FT_Get_Char_Index( glyph.face, glyph.ch );
+		const int load_flags = FT_LOAD_DEFAULT;
+		const int index      = FT_Get_Char_Index( glyph.face, glyph.ch );
 		FT_Load_Glyph( glyph.face, index, load_flags );
 		FT_Render_Glyph( slot, FT_RENDER_MODE_NORMAL );
 
-		int y        = _view.height() - ( glyph.face->glyph->metrics.horiBearingY >> 6 );
-		int width    = glyph.face->glyph->metrics.width >> 6;
-		int height   = glyph.face->glyph->metrics.height >> 6;
-		int xadvance = glyph.face->glyph->advance.x >> 6;
+		const int y        = _outView.height() - ( glyph.face->glyph->metrics.horiBearingY >> 6 );
+		const int width    = glyph.face->glyph->metrics.width >> 6;
+		const int height   = glyph.face->glyph->metrics.height >> 6;
+		const int xadvance = glyph.face->glyph->advance.x >> 6;
 
 		BOOST_ASSERT( width == slot->bitmap.width );
 		BOOST_ASSERT( height == slot->bitmap.rows );
 
-		typedef gray8_pixel_t pixel_t;
-		gray8c_view_t glyphview = interleaved_view( width, height, (pixel_t*) slot->bitmap.buffer, sizeof( unsigned char ) * slot->bitmap.width );
+		const rect_t glyphRod( _x, y, _x + width, y + height );
+		const rect_t glyphRoi = rectanglesIntersection( glyphRod, _roi );
+		const point_t glyphRegionSize = glyphRoi.size();
+		
+		TUTTLE_COUT( "iiiiiiiiii" );
+		TUTTLE_COUT_VAR( glyphRod );
+		TUTTLE_COUT_VAR( _roi );
+		TUTTLE_COUT_VAR( glyphRoi );
+		TUTTLE_COUT_VAR2( _x, y );
+		TUTTLE_COUT_VAR2( width, height );
+		
+		if( glyphRegionSize.x != 0 &&
+		    glyphRegionSize.y != 0 )
+		{
+			const rect_t glyphLocalRoi = translateRegion( glyphRoi, -_x, -y );
+			TUTTLE_COUT_VAR( glyphLocalRoi );
+			
+			gray8c_view_t glyphView = interleaved_view( width, height, reinterpret_cast<gray8_pixel_t*>( slot->bitmap.buffer ), sizeof(unsigned char) * slot->bitmap.width );
+			
+			gray8c_view_t glyphViewRoi = subimage_view( glyphView, glyphLocalRoi );
+			
+			//view_t outView = subimage_view( _outView, _x, y, width, height );
+			view_t outViewRoi = subimage_view( _outView, glyphRoi );
+			
+			BOOST_ASSERT( glyphViewRoi.width() == outViewRoi.width() );
+			BOOST_ASSERT( glyphViewRoi.height() == outViewRoi.height() );
 
-		copy_and_convert_alpha_blended_pixels( color_converted_view<gray32f_pixel_t>( glyphview ), _color, subimage_view( _view, _x, y, width, height ) );
-
+			copy_and_convert_alpha_blended_pixels( color_converted_view<gray32f_pixel_t>( glyphViewRoi ), _color, outViewRoi );
+		}
+		
 		_x += xadvance;
 		_x += _letterSpacing;
 	}

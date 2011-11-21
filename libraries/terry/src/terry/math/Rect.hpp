@@ -1,10 +1,15 @@
 #ifndef _TERRY_MATH_RECT_HPP_
 #define _TERRY_MATH_RECT_HPP_
 
+#include <boost/gil/utilities.hpp>
+
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 namespace terry {
+
+using namespace boost::gil;
 
 template <typename T>
 class Rect {
@@ -21,12 +26,22 @@ public:
 		: x1(r.x1), y1(r.y1)
 		, x2(r.x2), y2(r.y2)
 	{}
+	template<class OtherRect>
+    Rect(const OtherRect& r)
+		: x1(r.x1), y1(r.y1)
+		, x2(r.x2), y2(r.y2)
+	{}
     ~Rect() {}
 
     Rect& operator=(const Rect& r) { x1=r.x1; y1=r.y1; x2=r.x2; y2=r.y2; return *this; }
 
     const T& operator[](const std::size_t i)          const   { return this->*mem_array[i]; }
           T& operator[](const std::size_t i)                  { return this->*mem_array[i]; }
+
+    point2<T> cornerMin() const { return point2<T>(x1, y1); }
+    point2<T> cornerMax() const { return point2<T>(x2, y2); }
+    
+    point2<T> size() const { return point2<T>(x2-x1, y2-y1); }
 
     T x1,y1,x2,y2;
 	
@@ -37,6 +52,17 @@ private:
 
 template <typename T>
 T Rect<T>::* const Rect<T>::mem_array[Rect<T>::num_dimensions] = { &Rect<T>::x1, &Rect<T>::y1, &Rect<T>::x2, &Rect<T>::y2 };
+
+
+template <typename T>
+std::ostream& operator<<( std::ostream& os, const Rect<T>& rect )
+{
+	os << "{ "
+	   << rect.x1 << ", " <<  rect.y1 << ", "
+	   << rect.x2 << ", " <<  rect.y2
+	   << " }";
+	return os;
+}
 
 /**
  * @brief Retrieve the bounding box of an image [0, 0, width, height].
@@ -95,6 +121,17 @@ inline Rect translateRegion( const Rect& windowRoW, const Point& move )
 	windowOutput.y1 += move.y;
 	windowOutput.x2 += move.x;
 	windowOutput.y2 += move.y;
+	return windowOutput;
+}
+
+template<class Rect>
+inline Rect translateRegion( const Rect& windowRoW, const std::ptrdiff_t x, const std::ptrdiff_t y )
+{
+	Rect windowOutput = windowRoW;
+	windowOutput.x1 += x;
+	windowOutput.y1 += y;
+	windowOutput.x2 += x;
+	windowOutput.y2 += y;
 	return windowOutput;
 }
 
