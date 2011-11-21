@@ -36,12 +36,12 @@ MergeProcessParams<MergePlugin::Scalar> MergePlugin::getProcessParams( const Ofx
 	params._rod = static_cast<EParamRod>( _paramRod->getValue() );
 
 	OfxPointI offsetA = _paramOffsetA->getValue();
-	params._offsetA.x = offsetA.x / renderScale.x;
-	params._offsetA.y = offsetA.y / renderScale.y;
+	params._offsetA.x = offsetA.x * renderScale.x;
+	params._offsetA.y = offsetA.y * renderScale.y;
 
 	OfxPointI offsetB = _paramOffsetB->getValue();
-	params._offsetB.x = offsetB.x / renderScale.x;
-	params._offsetB.y = offsetB.y / renderScale.y;
+	params._offsetB.x = offsetB.x * renderScale.x;
+	params._offsetB.y = offsetB.y * renderScale.y;
 
 	return params;
 }
@@ -52,7 +52,7 @@ MergeProcessParams<MergePlugin::Scalar> MergePlugin::getProcessParams( const Ofx
 
 bool MergePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	MergeProcessParams<Scalar> params = getProcessParams( args.renderScale );
+	MergeProcessParams<Scalar> params = getProcessParams();
 
 	OfxRectD srcRodA = translateRegion( _clipSrcA->getCanonicalRod( args.time ), params._offsetA );
 	OfxRectD srcRodB = translateRegion( _clipSrcB->getCanonicalRod( args.time ), params._offsetB );

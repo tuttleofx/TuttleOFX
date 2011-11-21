@@ -38,9 +38,9 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcA->getRowBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcA->getPixelRod( args.time ) );
+	this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcA->getPixelRod( args.time, args.renderScale ) );
 	//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRodA = _plugin._clipSrcA->getPixelRod( args.time );
+	_srcPixelRodA = _plugin._clipSrcA->getPixelRod( args.time, args.renderScale );
 
 	// clip B
 	_srcB.reset( _plugin._clipSrcB->fetchImage( args.time ) );
@@ -48,9 +48,9 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcB->getRowBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewB = this->getView( _srcB.get(), _plugin._clipSrcB->getPixelRod( args.time ) );
+	this->_srcViewB = this->getView( _srcB.get(), _plugin._clipSrcB->getPixelRod( args.time, args.renderScale ) );
 	//	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRodB = _plugin._clipSrcB->getPixelRod( args.time );
+	_srcPixelRodB = _plugin._clipSrcB->getPixelRod( args.time, args.renderScale );
 
 	// Make sure bit depths are the same
 	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
@@ -104,11 +104,38 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 			///  * add color choice
 			///  * fill A and B
 			///  * fill only the good regions
-			Pixel pixelZero; pixel_zeros_t<Pixel>()( pixelZero );
-			const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
-			View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-													  procWindowSize.x, procWindowSize.y );
-			fill_pixels( dst, pixelZero );
+			{
+				// fill color
+				Pixel pixelZero; pixel_zeros_t<Pixel>()( pixelZero );
+				const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+				View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+														  procWindowSize.x, procWindowSize.y );
+				fill_pixels( dst, pixelZero );
+			}
+			{
+				// fill with A
+				const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodA );
+				const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+
+				View src = subimage_view( this->_srcViewA, procWindowSrc.x1, procWindowSrc.y1,
+														   procWindowSize.x, procWindowSize.y );
+				View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+														  procWindowSize.x, procWindowSize.y );
+				/// @todo tuttle: fill only the good regions
+				copy_pixels( src, dst );
+			}
+			{
+				// fill with B
+				const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodB );
+				const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+
+				View src = subimage_view( this->_srcViewB, procWindowSrc.x1, procWindowSrc.y1,
+														   procWindowSize.x, procWindowSize.y );
+				View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+														  procWindowSize.x, procWindowSize.y );
+				/// @todo tuttle: fill only the good regions
+				copy_pixels( src, dst );
+			}
 			break;
 		}
 		case eParamRodA:
