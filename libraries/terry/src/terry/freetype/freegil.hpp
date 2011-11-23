@@ -234,21 +234,31 @@ public:
 		BOOST_ASSERT( height == slot->bitmap.rows );
 
 		const rect_t glyphRod( _x, y, _x + width, y + height );
+		
+		BOOST_ASSERT( glyphRod.x1 >= 0 );
+		BOOST_ASSERT( glyphRod.y1 >= 0 );
+		BOOST_ASSERT( glyphRod.x2 >= 0 );
+		BOOST_ASSERT( glyphRod.y2 >= 0 );
+		
 		const rect_t glyphRoi = rectanglesIntersection( glyphRod, _roi );
 		const point_t glyphRegionSize = glyphRoi.size();
 		
-		TUTTLE_COUT( "iiiiiiiiii" );
-		TUTTLE_COUT_VAR( glyphRod );
-		TUTTLE_COUT_VAR( _roi );
-		TUTTLE_COUT_VAR( glyphRoi );
-		TUTTLE_COUT_VAR2( _x, y );
-		TUTTLE_COUT_VAR2( width, height );
+		//TUTTLE_TCOUT_VAR( glyphRod );
+		//TUTTLE_TCOUT_VAR( _roi );
+		//TUTTLE_TCOUT_VAR( glyphRoi );
+		//TUTTLE_TCOUT_VAR2( _x, y );
+		//TUTTLE_TCOUT_VAR2( width, height );
 		
 		if( glyphRegionSize.x != 0 &&
 		    glyphRegionSize.y != 0 )
 		{
-			const rect_t glyphLocalRoi = translateRegion( glyphRoi, -_x, -y );
-			TUTTLE_COUT_VAR( glyphLocalRoi );
+			const rect_t glyphLocalRoi = translateRegion( glyphRoi, - glyphRod.x1, - glyphRod.y1 );
+			//TUTTLE_TCOUT_VAR( glyphLocalRoi );
+			
+			BOOST_ASSERT( glyphLocalRoi.x1 >= 0 );
+			BOOST_ASSERT( glyphLocalRoi.y1 >= 0 );
+			BOOST_ASSERT( glyphLocalRoi.x2 <= width );
+			BOOST_ASSERT( glyphLocalRoi.y2 <= height );
 			
 			gray8c_view_t glyphView = interleaved_view( width, height, reinterpret_cast<gray8_pixel_t*>( slot->bitmap.buffer ), sizeof(unsigned char) * slot->bitmap.width );
 			

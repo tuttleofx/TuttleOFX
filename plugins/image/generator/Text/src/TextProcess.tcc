@@ -23,11 +23,9 @@ TextProcess<View>::TextProcess( TextPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance )
 	, _plugin( instance )
 {
-//	TUTTLE_TCOUT_INFOS;
 //	Py_Initialize();
-//	TUTTLE_TCOUT_INFOS;
+	
 	this->setNoMultiThreading();
-//	TUTTLE_TCOUT_INFOS;
 }
 
 template<class View>
@@ -52,16 +50,12 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		try
 		{
-			TUTTLE_TCOUT_INFOS;
 			Py_Initialize();
 			
-			TUTTLE_TCOUT_INFOS;
 			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("__main__")))));
 //			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("toto")))));
 			//boost::python::object main_module = boost::python::import( "__main__" );
-			TUTTLE_TCOUT_INFOS;
 			boost::python::object main_namespace = main_module.attr( "__dict__" );
-			TUTTLE_TCOUT_INFOS;
 			
 			std::ostringstream context;
 			context << "time = " << args.time << std::endl;
@@ -90,7 +84,6 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 //			object result = eval("5/0");
 			// execution will never get here:
 //			int five_divided_by_zero = extract<int>(result);
-			TUTTLE_TCOUT_INFOS;
 		}
 		catch( boost::python::error_already_set const & )
 		{
@@ -235,7 +228,6 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			return;
 	}
 
-	TUTTLE_TCOUT_INFOS;
 	//Step 7. Render Glyphs ------------------------
 	// if outside dstRod
 	// ...
@@ -244,21 +236,20 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	const OfxRectI textRoi = rectanglesIntersection( textRod, procWindowRoW );
 	const OfxRectI textLocalRoi = translateRegion( textRoi, - _textCorner );
 	
-	TUTTLE_COUT_VAR( _textCorner );
-	TUTTLE_COUT_VAR( - _textCorner );
+	//TUTTLE_TCOUT_VAR( _textSize );
+	//TUTTLE_TCOUT_VAR( - _textCorner );
 	
-	TUTTLE_COUT_VAR( textRod );
-	TUTTLE_COUT_VAR( procWindowRoW );
-	TUTTLE_COUT_VAR( textRoi );
-	TUTTLE_COUT_VAR( textLocalRoi );
+	//TUTTLE_TCOUT_VAR( textRod );
+	//TUTTLE_TCOUT_VAR( procWindowRoW );
+	//TUTTLE_TCOUT_VAR( textRoi );
+	//TUTTLE_TCOUT_VAR( textLocalRoi );
+	//TUTTLE_TCOUT_VAR2( _dstViewForGlyphs.width(), _dstViewForGlyphs.height() );
 	
 	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y );
 	
 	std::for_each( _glyphs.begin(), _glyphs.end(), _kerning.begin(),
 	               render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor, _params._letterSpacing, Rect<std::ptrdiff_t>(textLocalRoi) )
 	               );
-	
-	TUTTLE_TCOUT_INFOS;
 }
 
 }
