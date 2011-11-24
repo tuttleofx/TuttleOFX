@@ -7,7 +7,7 @@ namespace tuttle {
 namespace plugin {
 namespace text {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 mDeclarePluginFactory( TextPluginFactory, {}, {}
                        );
