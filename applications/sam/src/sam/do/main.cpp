@@ -282,6 +282,7 @@ int main( int argc, char** argv )
 				if( samdo_vm.count("nodes") )
 				{
 					TUTTLE_COUT( _color._blue  << "NODES" << _color._std );
+					std::vector< std::string > pluginNames;
 					for( std::size_t i = 0; i < allNodes.size(); ++i )
 					{
 						const std::string plugName = allNodes.at(i)->getRawIdentifier();
@@ -289,7 +290,12 @@ int main( int argc, char** argv )
 						std::vector< std::string > termsPlugin;
 						boost::algorithm::split( termsPlugin, plugName, boost::algorithm::is_any_of("."));
 
-						TUTTLE_COUT( "\t" << termsPlugin.back() );
+						pluginNames.push_back( termsPlugin.back() );
+					}
+					std::sort( pluginNames.begin(), pluginNames.end() );
+					for( std::size_t i = 0; i < pluginNames.size(); ++i )
+					{
+						TUTTLE_COUT( "\t" << pluginNames.at( i ) );
 					}
 					exit( 0 );
 				}
@@ -652,31 +658,31 @@ int main( int argc, char** argv )
 					}
 					catch( const boost::program_options::error& e )
 					{
-						TUTTLE_CERR( "sam-do - " << nodeFullName );
+						TUTTLE_CERR( _color._red << "sam-do - " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
-						TUTTLE_CERR( "Error: " << e.what() );
+						TUTTLE_CERR( "Error: " << e.what() << _color._std );
 #else
-						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() << _color._std );
 #endif
 						exit( -2 );
 					}
 					catch( const tuttle::exception::Common& e )
 					{
-						TUTTLE_CERR( "sam-do - " << nodeFullName );
+						TUTTLE_CERR( _color._red << "sam-do - " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
-						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) << _color._std );
 #else
 						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
-						TUTTLE_CERR( "Backtrace: " << boost::trace(e) );
+						TUTTLE_CERR( "Backtrace: " << boost::trace(e) << _color._std );
 #endif
 						exit( -2 );
 					}
 					catch( ... )
 					{
-						TUTTLE_CERR( "sam-do - " << nodeFullName );
+						TUTTLE_CERR( _color._red << "sam-do - " << nodeFullName );
 						TUTTLE_CERR( "Unknown error." );
 						TUTTLE_CERR( "\n" );
-						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() << _color._std );
 						exit( -2 );
 					}
 				}
@@ -731,25 +737,25 @@ int main( int argc, char** argv )
 	}
 	catch( const tuttle::exception::Common& e )
 	{
-		TUTTLE_CERR( "sam-do" );
+		TUTTLE_CERR( _color._red << "sam-do" );
 #ifdef TUTTLE_PRODUCTION
-		TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+		TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) << _color._std );
 #else
 		TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
-		TUTTLE_CERR( "Backtrace: " << boost::trace(e) );
+		TUTTLE_CERR( "Backtrace: " << boost::trace(e) << _color._std );
 #endif
 		exit( -2 );
 	}
 	catch( const boost::program_options::error& e )
 	{
-		TUTTLE_CERR( "sam-do");
-		TUTTLE_CERR( "Error: " << e.what() );
+		TUTTLE_CERR( _color._red << "sam-do - error" );
+		TUTTLE_CERR( "Error: " << e.what() << _color._std );
 		exit( -2 );
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( "sam-do");
-		TUTTLE_CERR( boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR( _color._red << "sam-do - error" );
+		TUTTLE_CERR( boost::current_exception_diagnostic_information() << _color._std );
 		exit( -2 );
 	}
 	return 0;
