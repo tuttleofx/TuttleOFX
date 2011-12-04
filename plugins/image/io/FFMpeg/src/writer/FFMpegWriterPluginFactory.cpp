@@ -112,6 +112,27 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	bitrate->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitrate->setDefault( 400000 );
 
+        OFX::ChoiceParamDescriptor* colorSpace = desc.defineChoiceParam( kParamColorSpace );
+        colorSpace->setLabel( "Color Space" );
+        colorSpace->appendOption( kParamColorSpaceBt709       );
+        colorSpace->appendOption( kParamColorSpaceUnspecified );
+        colorSpace->appendOption( kParamColorSpaceFcc         );
+        colorSpace->appendOption( kParamColorSpaceBt470bg     );
+        colorSpace->appendOption( kParamColorSpaceSmpte170m   );
+        colorSpace->appendOption( kParamColorSpaceSmpte240m   );
+        colorSpace->appendOption( kParamColorSpaceNb          );
+
+        OFX::ChoiceParamDescriptor* colorPrimaries = desc.defineChoiceParam( kParamColorPrimaries );
+        colorPrimaries->setLabel( "Color Primaries" );
+        colorPrimaries->appendOption( kParamColorPrimariesBt709       );
+        colorPrimaries->appendOption( kParamColorPrimariesUnspecified );
+        colorPrimaries->appendOption( kParamColorPrimariesBt470m      );
+        colorPrimaries->appendOption( kParamColorPrimariesBt470bg     );
+        colorPrimaries->appendOption( kParamColorPrimariesSmpte170m   );
+        colorPrimaries->appendOption( kParamColorPrimariesSmpte240m   );
+        colorPrimaries->appendOption( kParamColorPrimariesFilm        );
+        colorPrimaries->appendOption( kParamColorPrimariesNb          );
+
         OFX::ChoiceParamDescriptor* motionEstimation = desc.defineChoiceParam( kParamMotionEstimation );
         motionEstimation->setLabel( "Motion Estimation" );
         motionEstimation->appendOption( kParamMEZero  );
