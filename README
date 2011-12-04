@@ -1,11 +1,13 @@
 
 TuttleOFX version 0
 
+	TuttleOFX project is an image processing framework based on OpenFX plugin format.
 
-	Tuttle OFX is a library to connect and batch operations with OpenFx plugins.
-	It comes with a set of plugins that allows you to batch process on movies
-	and file sequences. The python binding is a solution to easily create your
-	processing graph.
+	The project is composed of 4 main parts:
+		* Tuttle Host Library, an OpenFX host that allows you to manipulate a graph of OpenFX nodes.
+		* Tuttle Plugin Library, a library to facilitate the creation of OpenFX plugins.
+		* Tuttle plugins, a set of OpenFX plugins for image processing and image/video IO.
+		* Sam, a set of command line tools.
 
 
 	Project under early development.

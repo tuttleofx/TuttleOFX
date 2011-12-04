@@ -38,7 +38,8 @@ SConscript(
 			'libraries/terry',
 			'libraries/tuttle',
 			'plugins',
-			'applications'
+			'applications',
+			'doc',
 		], accept=['SConscript'] ) )
 
 
