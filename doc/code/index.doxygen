@@ -1,12 +1,13 @@
 /** @mainpage TuttleOFX
  *
  * See the website for a full presentation and the general documentation.
+ *
  * http://sites.google.com/site/tuttleofx
- * 
+ *
  * This generated documentation is useful for developers who want to:
- *  * write an application using Tuttle Host Library
- *  * write plugins using Tuttle Plugin Library
- *  * participate to the project developpement
- * 
+ *  - write an application using Tuttle Host Library
+ *  - write plugins using Tuttle Plugin Library
+ *  - participate to the project developpement
+ *
  */
 
