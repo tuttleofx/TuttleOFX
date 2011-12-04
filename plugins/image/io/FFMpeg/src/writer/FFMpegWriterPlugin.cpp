@@ -17,21 +17,21 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_paramFormat            = fetchChoiceParam( kParamFormat );
-	_paramFormatLong        = fetchChoiceParam( kParamFormatLong );
-	_paramCodec             = fetchChoiceParam( kParamCodec );
-	_paramCodecLong         = fetchChoiceParam( kParamCodecLong );
-	_paramBitRate           = fetchIntParam( kParamBitrate );
+        _paramFormat            = fetchChoiceParam( kParamFormat           );
+        _paramCodec             = fetchChoiceParam( kParamCodec            );
+        _paramBitRate           = fetchIntParam   ( kParamBitrate          );
+        _paramMotionEstimation  = fetchChoiceParam( kParamMotionEstimation );
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 {
 	FFMpegProcessParams params;
 
-	params._filepath = _paramFilepath->getValue();
-	params._format   = _paramFormat->getValue();
-	params._codec    = _paramCodec->getValue();
-	params._bitrate  = _paramBitRate->getValue();
+        params._filepath          = _paramFilepath          ->getValue();
+        params._format            = _paramFormat            ->getValue();
+        params._codec             = _paramCodec             ->getValue();
+        params._bitrate           = _paramBitRate           ->getValue();
+        params._motionEstimation  = _paramMotionEstimation  ->getValue();
 
 	return params;
 }
@@ -39,23 +39,6 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	WriterPlugin::changedParam( args, paramName );
-
-	if( paramName == kParamFormatLong && args.reason == OFX::eChangeUserEdit  )
-	{
-		_paramFormat->setValue( _paramFormatLong->getValue() );
-	}
-	else if( paramName == kParamFormat && args.reason == OFX::eChangeUserEdit )
-	{
-		_paramFormatLong->setValue( _paramFormat->getValue() );
-	}
-	else if( paramName == kParamCodecLong && args.reason == OFX::eChangeUserEdit )
-	{
-		_paramCodec->setValue( _paramCodecLong->getValue() );
-	}
-	else if( paramName == kParamCodec && args.reason == OFX::eChangeUserEdit )
-	{
-		_paramCodecLong->setValue( _paramCodec->getValue() );
-	}
 }
 
 void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
@@ -75,11 +58,12 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 
 	FFMpegProcessParams params = getProcessParams();
 
-	_writer.filename( params._filepath );
-	_writer.setFormat( params._format );
-	_writer.setCodec( params._codec );
-	_writer.fps( _clipSrc->getFrameRate() );
-	_writer.aspectRatio( _clipSrc->getPixelAspectRatio() );
+        _writer.filename            ( params._filepath );
+        _writer.setFormat           ( params._format );
+        _writer.setCodec            ( params._codec );
+        _writer.setMotionEstimation ( params._motionEstimation );
+        _writer.fps                 ( _clipSrc->getFrameRate() );
+        _writer.aspectRatio         ( _clipSrc->getPixelAspectRatio() );
 }
 
 /**
