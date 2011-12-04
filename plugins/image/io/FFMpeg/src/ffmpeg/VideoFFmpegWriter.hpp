@@ -139,6 +139,11 @@ public:
 		_codec = codec;
 	}
 
+        void setMotionEstimation( const int me )
+        {
+                _motionEstimation = me;
+        }
+
 	void configureFromRead( const VideoFFmpegReader& reader )
 	{
 		width( reader.width() );
@@ -162,19 +167,21 @@ private:
 
 	WriterError _error;
 	std::string _filename;
-	int _width;
-	int _height;
-	double _aspectRatio;
+        int         _width;
+        int         _height;
+        double      _aspectRatio;
 	PixelFormat _out_pixelFormat;
 	// knobs variables
-	float _fps;
+        float       _fps;
 	std::string _format;
 	std::string _codec;
-	int _bitRate;
-	int _bitRateTolerance;
-	int _gopSize;
-	int _bFrames;
-	int _mbDecision;
+        int         _bitRate;
+        int         _bitRateTolerance;
+        int         _gopSize;
+        int         _bFrames;
+        int         _mbDecision;
+
+        int         _motionEstimation;
 };
 
 #endif

@@ -20,6 +20,7 @@ struct FFMpegProcessParams
 	int _format;                ///< Format
 	int _codec;                 ///< Codec
 	int _bitrate;               ///< Bit rate
+        int _motionEstimation;      ///< Motion Estimation
 };
 
 /**
@@ -43,12 +44,11 @@ public:
 
 public:
 	OFX::ChoiceParam*   _paramFormat;
-	OFX::ChoiceParam*   _paramFormatLong;
 	OFX::ChoiceParam*   _paramCodec;
-	OFX::ChoiceParam*   _paramCodecLong;
 	OFX::IntParam*      _paramBitRate;
+        OFX::ChoiceParam*   _paramMotionEstimation;
 	
-	VideoFFmpegWriter _writer;
+        VideoFFmpegWriter   _writer;
 };
 
 }

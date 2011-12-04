@@ -73,40 +73,36 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( 0 );
 
-	OFX::ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kParamFormatLong );
-	formatLong->setLabel( "Format" );
-	for( std::vector<std::string>::const_iterator it = writer.getFormatsLong().begin(), itEnd = writer.getFormatsLong().end();
-	     it != itEnd;
-	     ++it )
-	{
-		formatLong->appendOption( *it );
-	}
+
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-	format->setIsSecret( true );
-	for( std::vector<std::string>::const_iterator it = writer.getFormatsShort().begin(), itEnd = writer.getFormatsShort().end();
-	     it != itEnd;
-	     ++it )
+        std::vector<std::string>::const_iterator itLong;
+        for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
+             itLong = writer.getFormatsLong().begin(),
+             itEnd = writer.getFormatsShort().end();
+             itShort != itEnd;
+             ++itShort,
+             ++itLong )
 	{
-		format->appendOption( *it );
+            std::string name = *itShort;
+            name.resize ( 20,' ');
+            name += *itLong ;
+            format->appendOption( name );
 	}
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( 25 );
 
-	OFX::ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kParamCodecLong );
-	codecLong->setLabel( "Codec" );
-	for( std::vector<std::string>::const_iterator it = writer.getCodecsLong().begin(), itEnd = writer.getCodecsLong().end();
-	     it != itEnd;
-	     ++it )
-	{
-		codecLong->appendOption( *it );
-	}
 	OFX::ChoiceParamDescriptor* codec = desc.defineChoiceParam( kParamCodec );
-	codec->setIsSecret( true );
-	for( std::vector<std::string>::const_iterator it = writer.getCodecsShort().begin(), itEnd = writer.getCodecsShort().end();
-	     it != itEnd;
-	     ++it )
+        for( std::vector<std::string>::const_iterator itShort = writer.getCodecsShort().begin(),
+             itLong  = writer.getCodecsLong().begin(),
+             itEnd = writer.getCodecsShort().end();
+             itShort != itEnd;
+             ++itShort,
+             ++itLong )
 	{
-		codec->appendOption( *it );
+            std::string name = *itShort;
+            name.resize ( 20,' ');
+            name += *itLong ;
+            codec->appendOption( name );
 	}
 	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	codec->setDefault( 18 );
@@ -116,7 +112,42 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	bitrate->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitrate->setDefault( 400000 );
 
-	describeWriterParamsInContext( desc, context );
+        OFX::ChoiceParamDescriptor* colorSpace = desc.defineChoiceParam( kParamColorSpace );
+        colorSpace->setLabel( "Color Space" );
+        colorSpace->appendOption( kParamColorSpaceBt709       );
+        colorSpace->appendOption( kParamColorSpaceUnspecified );
+        colorSpace->appendOption( kParamColorSpaceFcc         );
+        colorSpace->appendOption( kParamColorSpaceBt470bg     );
+        colorSpace->appendOption( kParamColorSpaceSmpte170m   );
+        colorSpace->appendOption( kParamColorSpaceSmpte240m   );
+        colorSpace->appendOption( kParamColorSpaceNb          );
+
+        OFX::ChoiceParamDescriptor* colorPrimaries = desc.defineChoiceParam( kParamColorPrimaries );
+        colorPrimaries->setLabel( "Color Primaries" );
+        colorPrimaries->appendOption( kParamColorPrimariesBt709       );
+        colorPrimaries->appendOption( kParamColorPrimariesUnspecified );
+        colorPrimaries->appendOption( kParamColorPrimariesBt470m      );
+        colorPrimaries->appendOption( kParamColorPrimariesBt470bg     );
+        colorPrimaries->appendOption( kParamColorPrimariesSmpte170m   );
+        colorPrimaries->appendOption( kParamColorPrimariesSmpte240m   );
+        colorPrimaries->appendOption( kParamColorPrimariesFilm        );
+        colorPrimaries->appendOption( kParamColorPrimariesNb          );
+
+        OFX::ChoiceParamDescriptor* motionEstimation = desc.defineChoiceParam( kParamMotionEstimation );
+        motionEstimation->setLabel( "Motion Estimation" );
+        motionEstimation->appendOption( kParamMEZero  );
+        motionEstimation->appendOption( kParamMEFull  );
+        motionEstimation->appendOption( kParamMELog   );
+        motionEstimation->appendOption( kParamMEPhods );
+        motionEstimation->appendOption( kParamMEEpzs  );
+        motionEstimation->appendOption( kParamMEXl    );
+        motionEstimation->appendOption( kParamMEHex   );
+        motionEstimation->appendOption( kParamMEUmh   );
+        motionEstimation->appendOption( kParamMEIter  );
+        motionEstimation->appendOption( kParamMETesa  );
+        motionEstimation->setDefault ( eParamMEEpzs );
+
+        describeWriterParamsInContext( desc, context );
 }
 
 /**
