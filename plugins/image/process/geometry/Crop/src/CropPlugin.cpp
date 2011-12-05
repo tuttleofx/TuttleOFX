@@ -56,10 +56,10 @@ OfxRectI CropPlugin::computeCropRegion( const OfxTime time, const bool fromRatio
 	{
 		return cropRegion;
 	}
-	const OfxRectI sRod = _clipSrc->getPixelRod( time );
+        const OfxRectI  sRod     = _clipSrc->getPixelRod    ( time );
 	const OfxPointI sRodSize = _clipSrc->getPixelRodSize( time );
 
-	const EParamAxis axis = static_cast<EParamAxis>( _paramAxis->getValue() );
+        const EParamAxis      axis      = static_cast<EParamAxis>     ( _paramAxis->getValue() );
 	const EParamSymmetric symmetric = static_cast<EParamSymmetric>( _paramSymmetric->getValue() );
 	switch( axis )
 	{
@@ -151,6 +151,18 @@ OfxRectI CropPlugin::computeCropRegion( const OfxTime time, const bool fromRatio
 		}
 	}
 
+        if( cropRegion.x1 > cropRegion.x2 )
+        {
+            double tmpX = cropRegion.x1;
+            cropRegion.x2 = cropRegion.x1;
+            cropRegion.x1 = tmpX;
+        }
+        if( cropRegion.y1 > cropRegion.y2 )
+        {
+            double tmpY = cropRegion.y1;
+            cropRegion.y2 = cropRegion.y1;
+            cropRegion.y1 = tmpY;
+        }
 	return cropRegion;
 }
 
