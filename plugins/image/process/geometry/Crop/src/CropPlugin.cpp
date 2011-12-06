@@ -151,18 +151,14 @@ OfxRectI CropPlugin::computeCropRegion( const OfxTime time, const bool fromRatio
 		}
 	}
 
-        if( cropRegion.x1 > cropRegion.x2 )
-        {
-            double tmpX = cropRegion.x1;
-            cropRegion.x2 = cropRegion.x1;
-            cropRegion.x1 = tmpX;
-        }
-        if( cropRegion.y1 > cropRegion.y2 )
-        {
-            double tmpY = cropRegion.y1;
-            cropRegion.y2 = cropRegion.y1;
-            cropRegion.y1 = tmpY;
-        }
+	if( cropRegion.x1 > cropRegion.x2 )
+	{
+		std::swap( cropRegion.x1, cropRegion.x2 );
+	}
+	if( cropRegion.y1 > cropRegion.y2 )
+	{
+		std::swap( cropRegion.y1, cropRegion.y2 );
+	}
 	return cropRegion;
 }
 
