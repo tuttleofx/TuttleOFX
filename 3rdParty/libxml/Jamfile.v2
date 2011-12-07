@@ -34,7 +34,11 @@ lib	libxml		:
 	trio.c trionan.c triostr.c ]
 			;
 
-install	dist_src	: libxml
-			: <variant>debug:<location>$(DIST)/3rdParty/libxml/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/libxml/bin/release
-			;
+install	dist_src
+	:
+		libxml
+	:
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
+	;

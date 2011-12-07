@@ -32,5 +32,7 @@ install dist_src
 	:
 		png
 	:
-		<location>$(DIST)/lib
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
 	;

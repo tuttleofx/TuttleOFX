@@ -7,10 +7,10 @@ lib tuttlehost :
 
 		/tuttlecommon
 
-		/boost//serialization/<link>shared
-		/boost//thread/<link>shared
-		/boost//date_time/<link>shared
-		/boost//program_options/<link>shared
+		/boost//serialization/<link>static
+		/boost//date_time/<link>static
+		/boost//program_options/<link>static
+		/boost//serialization/<link>static
 
 		/boost//python/<link>shared
 

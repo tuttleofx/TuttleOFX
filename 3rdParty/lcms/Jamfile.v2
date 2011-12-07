@@ -25,7 +25,11 @@ lib	lcms	:
 			  [ glob src/*.c ]
 			;
 
-install	dist_src	: lcms
-			: <variant>debug:<location>$(DIST)/3rdParty/lcms/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/lcms/bin/release
-			;
+install	dist_src
+	:
+		lcms
+	:
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
+	;

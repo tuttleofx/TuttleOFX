@@ -77,11 +77,11 @@ else if [ os.name ] = MACOSX
 local HOSTNAME ;
 
 if [ os.name ] = NT	
-	{	HOSTNAME = "Windows" ; }
+	{	HOSTNAME = "windows" ; }
 else if [ os.name ] = LINUX 
-	{	HOSTNAME = "Linux" ; } #[ modules.peek : HOSTNAME ] ; }
+	{	HOSTNAME = "linux" ; } #[ modules.peek : HOSTNAME ] ; }
 else if [ os.name ] = MACOSX
-	{	HOSTNAME = "MacOS" ; } #[ modules.peek : HOSTNAME ] ; }
+	{	HOSTNAME = "macos" ; } #[ modules.peek : HOSTNAME ] ; }
 
 #print socket.gethostname()
 
@@ -93,6 +93,9 @@ path-constant	BOOST_HACK	: $(LIBRARIES)/boostHack ;
 path-constant	TERRY		: $(LIBRARIES)/terry ;
 
 path-constant	DIST		: ./dist/$(HOSTNAME) ;
+path-constant   DIST_RELEASE	: $(DIST)/release ;
+path-constant   DIST_DEBUG	: $(DIST)/debug ;
+path-constant   DIST_PRODUCTION	: $(DIST)/production ;
 path-constant	BUILD		: ./.build ;
 
 
@@ -107,6 +110,7 @@ project
 		
 		#<variant>release:<warnings-as-errors>on
 		<variant>release:<define>TUTTLE_PRODUCTION
+		#<variant>release:<define>TUTTLE_NO_COUT
 		<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
 		# or
 		#<variant>release:<toolset>gcc,<optimization>full
@@ -126,8 +130,6 @@ project
 		#
 		# removes deprecated header used by boost
 		<toolset>gcc:<cxxflags>-Wno-deprecated
-		<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
-		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
 	
 		# default build
 		#<variant>release

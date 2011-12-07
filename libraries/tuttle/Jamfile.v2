@@ -32,8 +32,8 @@ install dist_tuttlecommon
 		/tuttleplugin
 		/tuttlehost
 	:
-		<variant>debug:<location>$(DIST)/lib
-		<variant>release:<location>$(DIST)/lib
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
 		<install-dependencies>on
 		<install-type>LIB
 	;

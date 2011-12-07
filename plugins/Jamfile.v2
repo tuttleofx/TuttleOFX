@@ -30,16 +30,24 @@ if ! [ type.registered PLUGIN ]
 rule auto_install ( target : path )
 {
 	install install_plugin_$(target) : $(target) :
-		<target-os>windows:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Win32
-		<target-os>windows,<address-model>64:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Win64
-		<target-os>linux,<address-model>32:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Linux-x86
-		<target-os>linux,<address-model>64:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Linux-x86-64
-		<target-os>darwin:<location>$(path)/plugin/$(target).ofx.bundle/Contents/MacOS
+		<target-os>windows,<address-model>32,<variant>release:<location>$(path)/release/plugin/$(target).ofx.bundle/Contents/Win32
+		<target-os>windows,<address-model>32,<variant>debug:<location>$(path)/debug/plugin/$(target).ofx.bundle/Contents/Win32
+		<target-os>windows,<address-model>64,<variant>release:<location>$(path)/release/plugin/$(target).ofx.bundle/Contents/Win64
+		<target-os>windows,<address-model>64,<variant>debug:<location>$(path)/debug/plugin/$(target).ofx.bundle/Contents/Win64
+
+		<target-os>linux,<address-model>32,<variant>release:<location>$(path)/release/plugin/$(target).ofx.bundle/Contents/Linux-x86
+		<target-os>linux,<address-model>32,<variant>debug:<location>$(path)/debug/plugin/$(target).ofx.bundle/Contents/Linux-x86
+		<target-os>linux,<address-model>64,<variant>release:<location>$(path)/release/plugin/$(target).ofx.bundle/Contents/Linux-x86-64
+		<target-os>linux,<address-model>64,<variant>debug:<location>$(path)/debug/plugin/$(target).ofx.bundle/Contents/Linux-x86-64
+
+		<target-os>darwin,<variant>release:<location>$(path)/release/plugin/$(target).ofx.bundle/Contents/MacOS
+		<target-os>darwin,<variant>debug:<location>$(path)/debug/plugin/$(target).ofx.bundle/Contents/MacOS
 		<install-dependencies>on
 		<install-type>PLUGIN
 	;
 	install install_plugin_resources_$(target) : [ glob Resources/* ../Resources/* ] : #Resources/tuttle.$(target).png  Resources/tuttle.$(target).svg :
-		<location>$(path)/plugin/$(target).ofx.bundle/Contents/Resources
+		<variant>release:<location>$(path)/release/plugin/$(target).ofx.bundle/Contents/Resources
+		<variant>debug:<location>$(path)/debug/plugin/$(target).ofx.bundle/Contents/Resources
 	;
 }
 
@@ -51,7 +59,7 @@ use-project	/tuttlelib	: ../libraries/tuttle ;
 ###############################################################################
 # Build all plugins
 ###############################################################################
-for local l in [ glob * : _* private ]
+for local l in [ glob * : _* private Resources ]
 {
 	build-project $(l) ;
 }

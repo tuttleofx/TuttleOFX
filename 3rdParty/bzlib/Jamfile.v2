@@ -26,6 +26,7 @@ lib	bzlib		:
 			;
 
 install	dist_src	: bzlib
-			: <variant>debug:<location>$(DIST)/3rdParty/bzlib/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/bzlib/bin/release
+			: <variant>debug:<location>$(DIST_DEBUG)/lib
+			  <variant>release:<location>$(DIST_RELEASE)/lib
+			  <install-type>LIB
 			;

@@ -70,7 +70,11 @@ lib	libgvc		:
 			/zlib
 			;
 
-install	dist_src	: libgvc
-			: <variant>debug:<location>$(DIST)/3rdParty/libgvc/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/libgvc/bin/release
-			;
+install	dist_src
+	:
+		libgvc
+	:
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
+	;

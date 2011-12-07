@@ -9,10 +9,10 @@ exe halfExpLogTable
 	:
 		IlmCtlSimd/halfExpLogTable.cpp
 		../ilmbase//Iex/<link>static
-        	../ilmbase//Half/<link>static
-        	../ilmbase//IlmThread/<link>static
-        	../ilmbase//Imath/<link>static
-        	../zlib//zlib/<link>static
+		../ilmbase//Half/<link>static
+		../ilmbase//IlmThread/<link>static
+		../ilmbase//Imath/<link>static
+		../zlib//zlib/<link>static
 	;
 
 # as we want to execute them easily, we want them to be copied into this directory
@@ -46,7 +46,7 @@ project
 		<include>IlmCtlMath
 		<include>IlmCtlSimd
 	: build-dir $(BUILD)/3rdParty/ctl
-    ;
+	;
 
 ###############################################################################
 # libctl library
@@ -59,13 +59,14 @@ lib	ctl		:
 			:
 				<implicit-dependency>halfExpLogTable.h
 				<implicit-dependency>halfExpLog.h
-        		<os>NT:<link>static
+			<os>NT:<link>static
 			;
 			
 install dist
 	:
 		ctl
 	:
-		<location>$(DIST)/lib
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
 		<install-type>LIB
 	;

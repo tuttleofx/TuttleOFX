@@ -27,7 +27,11 @@ lib	libtool	:
 			  [ glob libltdl/*.c ]
 			;
 
-install	dist_src	: libtool
-			: <variant>debug:<location>$(DIST)/3rdParty/libtool/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/libtool/bin/release
-			;
+install	dist_src
+	:
+		libtool
+	:
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
+	;

@@ -8,7 +8,7 @@ project : requirements
 lib tuttlecommon :
 			[ glob-tree *.cpp ]
 			/ofxPluginSupport
-			/boost//thread/<link>shared
+			/boost//thread/<link>static
 			/boost//regex/<link>static
 			/boost//filesystem/<link>static
 		:

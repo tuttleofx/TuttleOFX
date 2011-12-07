@@ -20,7 +20,7 @@ project
 exe sam :
 		[ glob src/sam/sam/*.cpp ]
 
-		/boost//program_options
+		/boost//program_options/<link>static
 
 		/tuttlecommon/<link>static
 	:
@@ -33,7 +33,7 @@ exe sam :
 exe sam-ls :
 		[ glob src/sam/ls/*.cpp ]
 
-		/boost//program_options
+		/boost//program_options/<link>static
 		
 		/tuttlecommon/<link>static
 	:
@@ -46,7 +46,7 @@ exe sam-ls :
 exe sam-cp :
 		[ glob src/sam/cp/*.cpp ]
 		
-		/boost//program_options
+		/boost//program_options/<link>static
 		
 		/tuttlecommon/<link>static
 	:
@@ -59,7 +59,7 @@ exe sam-cp :
 exe sam-mv :
 		[ glob src/sam/mv/*.cpp ]
 		
-		/boost//program_options
+		/boost//program_options/<link>static
 		
 		/tuttlecommon/<link>static
 	:
@@ -72,7 +72,7 @@ exe sam-mv :
 exe sam-rm :
 		[ glob src/sam/rm/*.cpp ]
 
-		/boost//program_options
+		/boost//program_options/<link>static
 		
 		/tuttlecommon/<link>static
 	:
@@ -86,14 +86,14 @@ exe sam-rm :
 exe sam-do :
 		[ glob src/sam/do/*.cpp ]
 		
-		/boost//program_options
-		/boost//python
-		/python
+		/boost//program_options/<link>static
+		/boost//python/<link>shared
 		
 		/tuttlecommon/<link>static
-		/tuttlehost
+		/tuttlehost/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<library>/python
 	;
 
 ###############################################################################
@@ -102,7 +102,7 @@ exe sam-do :
 exe sam-info :
 		[ glob src/sam/info/*.cpp ]
 		
-		/boost//program_options
+		/boost//program_options/<link>static
 		
 		/tuttlecommon/<link>static
 	:
@@ -117,14 +117,14 @@ exe sam-info :
 exe sam-plugins :
 		[ glob src/sam/plugins/*.cpp ]
 		
-		/boost//program_options
-		/boost//python
-		/python
+		/boost//program_options/<link>static
+		/boost//python/<link>shared
 		
 		/tuttlecommon/<link>static
-		/tuttlehost
+		/tuttlehost/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<library>/python
 	;
 
 ###############################################################################
@@ -133,14 +133,14 @@ exe sam-plugins :
 exe sam-check :
 		[ glob src/sam/check/*.cpp ]
 
-		/boost//program_options
-		/boost//python
-		/python
+		/boost//program_options/<link>static
+		/boost//python/<link>shared
 		
 		/tuttlecommon/<link>static
-		/tuttlehost
+		/tuttlehost/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<library>/python
 	;
 	
 	
@@ -150,7 +150,7 @@ exe sam-check :
 alias sam-install : sam-install-libs sam-install-bins ;
 
 install sam-install-bins
-	:   
+	:
 		sam
 		sam-cp
 		sam-mv
@@ -161,24 +161,16 @@ install sam-install-bins
 		sam-check
 		sam-plugins
 	:
-		<variant>debug:<location>$(DIST)/bin
-	  	<variant>release:<location>$(DIST)/bin
+		<variant>debug:<location>$(DIST_DEBUG)/bin
+		<variant>release:<location>$(DIST_RELEASE)/bin
 	;
 
 install sam-install-libs
 	:
-		/boost//system
-		/boost//filesystem
-		/boost//serialization
-		/boost//program_options
 		/boost//python
-		/boost//regex			# from tuttlecommon
-		/boost//thread			# from tuttlehost
-		/boost//date_time		# from tuttlehost
-		
-		/tuttlehost
 	:
-		<location>$(DIST)/lib
-	  	<install-dependencies>on
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-dependencies>on
 		<install-type>LIB
 	;
