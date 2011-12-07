@@ -20,7 +20,9 @@ project
 # z library
 ###############################################################################
 lib zlib : 
-	[ glob *.c :  example.c minigzip.c ]
+	 [ glob *.c :  example.c minigzip.c ]
+	:
+	 <link>static
 	;
 
 install dist

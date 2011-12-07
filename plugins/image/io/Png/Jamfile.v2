@@ -19,7 +19,7 @@ use-project /png    : $(3RD_PARTY)/libpng ;
 plugin Png : 
 		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
-		/png
+		/png/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 	;

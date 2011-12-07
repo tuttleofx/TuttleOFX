@@ -6,19 +6,20 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>.
 		<include>libopenjpeg
-		<cxxflags>-std=c99
-		<cflags>-std=c99
+		<toolset>gcc:<cxxflags>-std=c99
+		<toolset>gcc:<cflags>-std=c99
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+		<os>NT:<define>PACKAGE_VERSION="t"
 	: usage-requirements
 		<include>.
 		<include>libopenjpeg
 	: build-dir $(BUILD)/3rdParty/openjpeg
-    ;
+	;
 
 ###############################################################################
 # libraw library

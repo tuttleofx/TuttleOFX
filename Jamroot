@@ -107,6 +107,8 @@ project
 	requirements
 		# multithreading on
 		<threading>multi
+
+		<define>BOOST_ALL_NO_LIB
 		
 		#<variant>release:<warnings-as-errors>on
 		<variant>release:<define>TUTTLE_PRODUCTION

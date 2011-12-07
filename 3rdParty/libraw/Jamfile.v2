@@ -22,7 +22,7 @@ project
 alias	headers		: [ glob-tree *.h ] ;
 
 lib	raw		: 
-			  [ glob src/*.cpp internal/*.cpp ]
+			  [ glob src/*.cpp internal/*.cpp dcraw/*.c ]
 			;
 
 install dist

@@ -45,9 +45,9 @@ struct matrices_rgb_to_lab_t
 		// [L]   [ 1/sqrt(3)  1/sqrt(3)  1/sqrt(3) ] [L]
 		// [A] = [ 1/sqrt(6)  1/sqrt(6) -2/sqrt(6) ] [M]
 		// [B]   [ 1/sqrt(2) -1/sqrt(2)     0.0    ] [S]
-		static const T invSqrt2 = 1.0 / std::sqrt(2);
-		static const T invSqrt3 = 1.0 / std::sqrt(3);
-		static const T invSqrt6 = 1.0 / std::sqrt(6);
+		static const T invSqrt2 = 1.0 / std::sqrt( (double) 2.0 );
+		static const T invSqrt3 = 1.0 / std::sqrt( (double) 3.0 );
+		static const T invSqrt6 = 1.0 / std::sqrt( (double) 6.0 );
 		_LMS_2_LAB(0, 0) =  invSqrt3;
 		_LMS_2_LAB(0, 1) =  invSqrt3;
 		_LMS_2_LAB(0, 2) =  invSqrt3;
@@ -78,9 +78,9 @@ struct matrices_lab_to_rgb_t
 		// [L]   [ sqrt(3)/3   sqrt(6)/6   sqrt(2)/2 ] [L]
 		// [M] = [ sqrt(3)/3   sqrt(6)/6  -sqrt(2)/2 ] [A]
 		// [S]   [ sqrt(3)/3 -2*sqrt(6)/6       0    ] [B]
-		static const T sqrt2_2 = 1.0 / std::sqrt(2);
-		static const T sqrt3_3 = 1.0 / std::sqrt(3);
-		static const T sqrt6_6 = 1.0 / std::sqrt(6);
+		static const T sqrt2_2 = 1.0 / std::sqrt( (double) 2.0 );
+		static const T sqrt3_3 = 1.0 / std::sqrt( (double) 3.0 );
+		static const T sqrt6_6 = 1.0 / std::sqrt( (double) 6.0 );
 		_LAB_2_LMS(0, 0) =  sqrt3_3;
 		_LAB_2_LMS(0, 1) =  sqrt6_6;
 		_LAB_2_LMS(0, 2) =  sqrt2_2;

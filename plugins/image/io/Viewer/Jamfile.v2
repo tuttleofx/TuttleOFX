@@ -9,8 +9,10 @@ import os ;
 project
 	: requirements
 		<include>src
-		<linkflags>-lGL
-		<linkflags>-lglut
+		<toolset>gcc:<linkflags>-lGL
+		<toolset>gcc:<linkflags>-lglut
+		<toolset>msvc:<linkflags>/GL
+		<toolset>msvc:<linkflags>/glut
 	: build-dir $(BUILD)/Viewer
     ;
 
@@ -32,6 +34,8 @@ plugin Viewer :
 		[ glob-tree *.cpp ]
 		/tuttleplugin/<link>static
 		opengl
+	:
+		<os>LINUX:<find-shared-library>dl
 	;
  
 ###############################################################################

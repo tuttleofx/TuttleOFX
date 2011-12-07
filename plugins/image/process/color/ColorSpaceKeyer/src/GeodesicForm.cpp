@@ -25,7 +25,7 @@ void GeodesicForm::createGeodesicForm(const Ofx3DPointD& center)
 {
 	double kRadiusFromCenter = 0.01f;                        // radius of GeodesicForm
 	//double kRadiusFromCenter = .5f;                        // radius of GeodesicForm
-	double altitude          = sqrt(3)/2*kRadiusFromCenter;  // altitude of an equilateral triangle is sqrt(3)/2*a
+	double altitude          = sqrt( (double) 3.0 )/2*kRadiusFromCenter;  // altitude of an equilateral triangle is sqrt(3)/2*a
 	
 	//compute top and bottom point of GeodesicForm only Y value
 	double topPointY    = altitude;         // top
@@ -59,7 +59,7 @@ void GeodesicForm::createGeodesicForm(const Ofx3DPointD& center)
 	//define square base points
 	Ofx3DPointD base1, base2, base3, base4;
 	//compute square diagonal
-	double squareDiag = kRadiusFromCenter*sqrt(2); // sqrt(2)*a
+	double squareDiag = kRadiusFromCenter*sqrt( (double) 2.0 ); // sqrt(2)*a
 	//base1
 	base1.x = center.x - (squareDiag/2.0);                          // X axis (use square diagonal to translate on x axis)
 	base1.y = center.y;                                             // Y axis

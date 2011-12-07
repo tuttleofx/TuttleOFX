@@ -56,42 +56,42 @@ void ColorSpaceKeyerOverlay::prepareOpenGLScene(const OFX::DrawArgs& args)
 	GLdouble proj_matrix[16];
 	glGetDoublev(GL_PROJECTION_MATRIX, proj_matrix);
 	//initialize model-view and projection matrixes to identity
-	glMatrixMode( GL_PROJECTION );	//load standard mode
-	glLoadIdentity();				//projection to identity
-	glMatrixMode( GL_MODELVIEW );	//load standard mode
-	glLoadIdentity();				//model-view to identity 
+	glMatrixMode( GL_PROJECTION );                                                          // load standard mode
+	glLoadIdentity();                                                                       // projection to identity
+	glMatrixMode( GL_MODELVIEW );                                                           // load standard mode
+	glLoadIdentity();                                                                       // model-view to identity
 	
 	//get current viewport size	
-	GLint viewport[4] = { 0, 0, 0, 0 };															//define result array
-	glGetIntegerv(GL_VIEWPORT,viewport);														//get current viewport size
-	const double ratio = (viewport[2]-viewport[0]) / (double)(viewport[3]-viewport[1]);			//compute ratio
+	GLint viewport[4] = { 0, 0, 0, 0 };                                                     // define result array
+	glGetIntegerv(GL_VIEWPORT,viewport);                                                    // get current viewport size
+	const double ratio = (viewport[2]-viewport[0]) / (double)(viewport[3]-viewport[1]);     // compute ratio
 	//define new coordinates
-	glOrtho( 0.0, 1.0, 0.0, 1.0, -1.0, 1.0 );													//set coordinates to 0-1
+	glOrtho( 0.0, 1.0, 0.0, 1.0, -1.0, 1.0 );                                               // set coordinates to 0-1
 	
-	if(args.time != getData()._time || args.time != getData()._averageColor._time)				//if current overlay has not been updated
+	if(args.time != getData()._time || args.time != getData()._averageColor._time)          // if current overlay has not been updated
 	{
 		//display warning sign on screen
-		Ofx3DPointD warningPoint;					//initialize warning drawing point
-		warningPoint.x = 0.15;						//x == viewport width/7;
-		warningPoint.y = 0.2;						//y == viewport height/5;
-		drawWarning(warningPoint, ratio);			//draw warning sign
+		Ofx3DPointD warningPoint;                                                       // initialize warning drawing point
+		warningPoint.x = 0.15;                                                          // x == viewport width/7;
+		warningPoint.y = 0.2;                                                           // y == viewport height/5;
+		drawWarning(warningPoint, ratio);                                               // draw warning sign
 	}
 	
 	//define openGL scene frustrum
-	glMatrixMode( GL_PROJECTION );					//load standard mode
-	glLoadMatrixd( proj_matrix );					//reload previous projection matrix
+	glMatrixMode( GL_PROJECTION );                                                          // load standard mode
+	glLoadMatrixd( proj_matrix );                                                           // reload previous projection matrix
 			
-	const GLdouble left = -0.5;						//frustrum left
-	const GLdouble right = 1.5;						//frustrum right
-	const GLdouble bottom = -0.5;					//frustrum bottom
-	const GLdouble top = 1.5;						//frustrum top
-	const GLdouble near = 10.;						//frustrum near
-	const GLdouble far = -10.;						//frustrum far
-	glOrtho( left, right, bottom, top, near, far);	//define new frustrum for overlay data
+	const GLdouble left   = - 0.5;                                                          //frustrum left
+	const GLdouble right  =   1.5;                                                          //frustrum right
+	const GLdouble bottom = - 0.5;                                                          //frustrum bottom
+	const GLdouble top    =   1.5;                                                          //frustrum top
+	const GLdouble near   =  10.0;                                                          //frustrum near
+	const GLdouble far    = -10.0;                                                          //frustrum far
+	glOrtho( left, right, bottom, top, near, far);                                          //define new frustrum for overlay data
 	
-	glMatrixMode( GL_MODELVIEW );					//load standard mode
+	glMatrixMode( GL_MODELVIEW );                                                           //load standard mode
 	//initialize double* modelViewMatrix
-	double modelViewMatrix[16];						//initialize
+	double modelViewMatrix[16];                                                             //initialize
 	for(unsigned int i=0; i<16; ++i)
 		modelViewMatrix[i] = _modelViewMatrix[i];	//recopy Matrix4 into double*
 	glLoadMatrixd(modelViewMatrix);//load modelView matrix (first time is equal to identity)
