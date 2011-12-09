@@ -231,8 +231,8 @@ struct process1Dresampling
 	void operator( )( const std::vector<SrcP>& src, const std::vector<F>& weight, DstP& dst ) const
 	{
 		DstP mp( 0 );
-		for( size_t i = 0; i < src.size(); i++ )
-			details::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i) , mp );
+		for( std::size_t i = 0; i < src.size(); i++ )
+			details::add_dst_mul_src<SrcP, F, DstP > ( )( src.at(i), weight.at(i) , mp );
 		dst = mp;
 	}
 };
@@ -248,7 +248,7 @@ struct process1Dresampling
 //};
 
 template <typename DstP, typename SrcView, typename Sampler, typename F>
-bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize, const EParamFilterOutOfImage& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
+bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const std::size_t windowSize, const EParamFilterOutOfImage& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 
@@ -264,7 +264,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	ptr.assign       ( windowSize, SrcP(0) );
 	xProcessed.assign( windowSize, SrcC(0) );
 
-	size_t middlePosition = floor((windowSize - 1) * 0.5);
+	std::size_t middlePosition = floor((windowSize - 1) * 0.5);
 
 
 	// first process the middle point
@@ -289,7 +289,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				{
 					loc.y( ) -= pTL.y;
 					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-					process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
 					loc.y( ) += pTL.y;
 					break;
 				}
@@ -319,7 +319,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				{
 					loc.y( ) -= pTL.y - src.height() + 1.0 ;
 					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-					process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
 					loc.y( ) += pTL.y - src.height() + 1.0;
 					break;
 				}
@@ -334,7 +334,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	else
 	{
 		getPixelsPointers( loc, pTL, windowSize, src.width() , outOfImageProcess, ptr );
-		process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+		process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
 	}
 
 	// from center to bottom
@@ -372,7 +372,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 			{
 				loc.y( ) -= (middlePosition - i);
 				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
+				process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
 				loc.y( ) += (middlePosition - i);
 			}
 		}
@@ -417,7 +417,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 			{
 				loc.y( ) -= ( middlePosition - i );
 				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-				process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
+				process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
 				loc.y( ) += ( middlePosition - i );
 			}
 		}
@@ -451,7 +451,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 
 
 	// vertical process
-	process1Dresampling<SrcC, F, SrcC> () ( xProcessed, yWeights, mp );
+	process1Dresampling<SrcC, double, SrcC> () ( xProcessed, yWeights, mp );
 
 	// result is rgba8
 	//proc( mp );

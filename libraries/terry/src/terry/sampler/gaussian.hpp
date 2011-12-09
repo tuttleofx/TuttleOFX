@@ -46,7 +46,7 @@ void getGaussianWeight( const float& distance, F& weight, gaussian_sampler& samp
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
+bool sample( gaussian_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
 {
 	/*
 	 * pTL is the closest integer coordinate top left from p

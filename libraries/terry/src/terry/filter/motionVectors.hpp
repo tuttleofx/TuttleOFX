@@ -2,10 +2,11 @@
 #define _TERRY_FILTER_MOTIONVECTORS_HPP_
 
 #include <terry/channel.hpp>
+#include <terry/filter/convolve.hpp>
+#include <terry/sampler/sampler.hpp>
 
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
-#include <terry/sampler/sampler.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_same.hpp>
@@ -130,6 +131,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const Rect<std::ssiz
                                     const VecView& xVecView, const VecView& yVecView, const Rect<std::ssize_t>& vecRod,
                                     const DstView& dstView, const Rect<std::ssize_t>& dstRod,
                                     const Rect<std::ssize_t>& procWindowRoW,
+                                    const sampler::EParamFilterOutOfImage outOfImageProcess,
                                     Progress& p,
                                     Sampler sampler = Sampler() )
 {
@@ -207,7 +209,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const Rect<std::ssiz
 			}
 
 			// compute the pixel value according to the resample method
-			if( !terry::sample( sampler, srcView, pos + motion, *xit_dst ) )
+			if( !terry::sampler::sample( sampler, srcView, pos + motion, *xit_dst, outOfImageProcess ) )
 			{
 				*xit_dst = black; // if it is outside of the source image
 			}

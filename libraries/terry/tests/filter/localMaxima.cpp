@@ -6,7 +6,7 @@
 #include <boost/test/unit_test.hpp>
 using namespace boost::unit_test;
 
-BOOST_AUTO_TEST_SUITE( terry_filter_localMaxima_tests_suite01 )
+BOOST_AUTO_TEST_SUITE( terry_filter_localMaxima )
 
 BOOST_AUTO_TEST_CASE( localMaxima )
 {
