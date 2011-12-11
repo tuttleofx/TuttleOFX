@@ -141,6 +141,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 	// Initialize variables
 	OfxPointD renderScale = { 1.0, 1.0 };
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
+	bool returnBuffers = true;
 
 	//--- BEGIN RENDER
 	ProcessVertexData defaultOptions;
@@ -361,7 +362,14 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 			*/
 
 			TUTTLE_TCOUT( "---------------------------------------- process" );
-			graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache(), result );
+			// do the process
+			graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache() );
+			if( returnBuffers )
+			{
+				// accumulate output nodes buffers into the @p result MemoryCache
+				processVisitor.setOutputMemoryCache( result );
+			}
+			
 			renderGraphAtTime.depthFirstVisit( processVisitor, outputAtTime );
 
 			TUTTLE_TCOUT( "---------------------------------------- postprocess" );

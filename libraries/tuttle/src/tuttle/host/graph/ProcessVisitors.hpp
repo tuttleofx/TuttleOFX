@@ -336,11 +336,26 @@ public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
 
+	Process( TGraph& graph, memory::IMemoryCache& cache )
+		: _graph( graph )
+		, _cache( cache )
+		, _result( NULL )
+	{
+	}
+	
 	Process( TGraph& graph, memory::IMemoryCache& cache, memory::IMemoryCache& result )
 		: _graph( graph )
 		, _cache( cache )
-		, _result( result )
+		, _result( &result )
 	{
+	}
+	
+	/**
+	 * Set a MemoryCache object to accumulate output nodes buffers.
+	 */
+	void setOutputMemoryCache( memory::IMemoryCache& result )
+	{
+		_result = &result;
 	}
 
 	template<class VertexDescriptor, class Graph>
@@ -365,7 +380,7 @@ public:
 //		TUTTLE_COUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
 		std::cout << "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" << std::endl;
 		
-		if( vertex.getProcessDataAtTime()._finalNode )
+		if( _result && vertex.getProcessDataAtTime()._finalNode )
 		{
 			memory::CACHE_ELEMENT img = _cache.get( vertex._name + "." kOfxOutputAttributeName, vertex._data._time );
 			if( ! img.get() )
@@ -375,14 +390,14 @@ public:
 					<< exception::nodeName( vertex._name )
 					<< exception::time( vertex._data._time ) );
 			}
-			_result.put( vertex._name, vertex._data._time, img );
+			_result->put( vertex._name, vertex._data._time, img );
 		}
 	}
 
 private:
 	TGraph& _graph;
 	memory::IMemoryCache& _cache;
-	memory::IMemoryCache& _result;
+	memory::IMemoryCache* _result;
 	boost::posix_time::time_duration _cumulativeTime;
 };
 
