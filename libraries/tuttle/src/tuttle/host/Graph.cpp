@@ -17,7 +17,6 @@ namespace tuttle {
 namespace host {
 
 Graph::Graph()
-: _continueOnError(false)
 {}
 
 Graph::~Graph()
@@ -218,14 +217,14 @@ void Graph::init()
 //void Graph::unconnectNode( const Node& node )
 //{}
 
-memory::MemoryCache Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
+memory::MemoryCache Graph::compute( const std::list<std::string>& nodes, const ComputeOptions& options )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph process( *this, nodes, _continueOnError );
-	return process.process( tBegin, tEnd );
+	graph::ProcessGraph process( *this, nodes );
+	return process.process( options );
 }
 
 std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )

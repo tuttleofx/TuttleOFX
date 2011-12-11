@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		TUTTLE_TCOUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
-		g.compute( outputs, 1, 1 );
+		g.compute( outputs, ComputeOptions(1) );
 
 		TUTTLE_TCOUT( "__________________________________________________5" );
 	}
