@@ -18,7 +18,7 @@ typedef ProcessVertexData This;
 public:
 	ProcessVertexData( const INode::ENodeType apiType = INode::eNodeTypeUnknown )
 		: _apiType( apiType )
-		, _step( 0 )
+		, _step( 1 )
 		, _interactive( 0 )
 		, _outDegree( 0 )
 		, _inDegree( 0 )
