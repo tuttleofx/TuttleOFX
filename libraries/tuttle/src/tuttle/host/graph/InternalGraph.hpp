@@ -109,7 +109,7 @@ public:
 		if( this == &g )
 			return *this;
 		clear();
-		boost::copy_graph( g._graph, _graph );
+		boost::copy_graph( g.getGraph(), _graph );
 		rebuildVertexDescriptorMap();
 		return *this;
 	}
@@ -117,8 +117,8 @@ public:
 	template<typename V, typename E, typename OEL, typename VL, typename EL>
 	This& operator=( const InternalGraph<V, E, OEL, VL, EL>& g )
 	{
-		detail::Copier< typename InternalGraph<V, E, OEL, VL, EL>::GraphContainer, GraphContainer > c(g.getGraph(), _graph);
-		boost::copy_graph( g.getGraph(), _graph, boost::vertex_copy(c).edge_copy(c) );
+		detail::Copier< typename InternalGraph<V, E, OEL, VL, EL>::GraphContainer, GraphContainer > copier(g.getGraph(), _graph);
+		boost::copy_graph( g.getGraph(), _graph, boost::vertex_copy(copier).edge_copy(copier) );
 		rebuildVertexDescriptorMap();
 		return *this;
 	}
@@ -402,9 +402,9 @@ public:
 	template<typename V, typename E, typename OEL, typename VL, typename EL>
 	void copyTransposed( const InternalGraph<V, E, OEL, VL, EL>& g )
 	{
-		detail::Copier< typename InternalGraph<V, E, OEL, VL, EL>::GraphContainer, GraphContainer > c(g.getGraph(), _graph);
+		detail::Copier< typename InternalGraph<V, E, OEL, VL, EL>::GraphContainer, GraphContainer > copier(g.getGraph(), _graph);
 		// make a transposed copy of g in _graph
-		boost::transpose_graph( g.getGraph(), _graph, boost::vertex_copy(c).edge_copy(c) );
+		boost::transpose_graph( g.getGraph(), _graph, boost::vertex_copy(copier).edge_copy(copier) );
 		rebuildVertexDescriptorMap();
 	}
 
