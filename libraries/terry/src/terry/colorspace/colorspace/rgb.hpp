@@ -38,7 +38,7 @@ struct RGB
 	
 	typedef rgb_colorspace_t colorspace;
 	typedef rgb_layout_t layout;
-	typedef ::boost::gil::pixel<colorspace,layout> pixel;
+//	typedef ::boost::gil::pixel<colorspace,layout> pixel;
 };
 
 template<class PixelSrc, class PixelDst>

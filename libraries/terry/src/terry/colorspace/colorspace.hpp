@@ -362,7 +362,10 @@ struct FullColorTransformations
 	typedef typename dependencies::color_steps_from_root color_steps_from_root;
 	typedef typename dependencies::color_steps_to_root color_steps_to_root;
 	
-	typedef typename ::boost::mpl::if_<from_root,
+	typedef typename ::boost::mpl::if_c<direction_is_from_root,
+			from_root,
+			to_root> colors;
+	typedef typename ::boost::mpl::if_c<direction_is_from_root,
 			color_steps_from_root,
 			color_steps_to_root> color_transformations;
 	
