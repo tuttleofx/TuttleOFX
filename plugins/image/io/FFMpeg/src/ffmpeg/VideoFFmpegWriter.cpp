@@ -11,24 +11,24 @@
 
 
 VideoFFmpegWriter::VideoFFmpegWriter()
-	: _avformatOptions( 0 )
-	, _sws_context( NULL )
-	, _stream( 0 )
-	, _error( IGNORE_FINISH )
-	, _filename( "" )
-	, _width( 0 )
-	, _height( 0 )
-	, _aspectRatio( 1 )
-	, _out_pixelFormat( PIX_FMT_YUV420P )
-	, _fps( 25.0f )
-	, _format( "default" )
-	, _codec( "default" )
-	, _bitRate( 400000 )
-	, _bitRateTolerance( 4000 * 10000 )
-	, _gopSize( 12 )
-	, _bFrames( 0 )
-	, _mbDecision( FF_MB_DECISION_SIMPLE )
-        , _motionEstimation( ME_EPZS )
+	: _avformatOptions   ( 0 )
+	, _sws_context       ( NULL )
+	, _stream            ( 0 )
+	, _error             ( IGNORE_FINISH )
+	, _filename          ( "" )
+	, _width             ( 0 )
+	, _height            ( 0 )
+	, _aspectRatio       ( 1 )
+	, _out_pixelFormat   ( PIX_FMT_YUV420P )
+	, _fps               ( 25.0f )
+	, _format            ( "default" )
+	, _codec             ( "default" )
+	, _bitRate           ( 400000 )
+	, _bitRateTolerance  ( 4000 * 10000 )
+	, _gopSize           ( 12 )
+	, _bFrames           ( 0 )
+	, _mbDecision        ( FF_MB_DECISION_SIMPLE )
+	, _motionEstimation  ( ME_EPZS )
 {
 	av_log_set_level( AV_LOG_WARNING );
 	av_register_all();
@@ -121,14 +121,17 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		_stream->codec->height             = height();
 		_stream->codec->time_base          = av_d2q( 1.0 / _fps, 100 );
 		_stream->codec->gop_size           = _gopSize;
-                /**
-                 * Motion estimation algorithm used for video coding.
-                 * 1 (zero), 2 (full), 3 (log), 4 (phods), 5 (epzs), 6 (x1), 7 (hex),
-                 * 8 (umh), 9 (iter), 10 (tesa) [7, 8, 10 are x264 specific, 9 is snow specific]
-                 */
-                _stream->codec->me_method          = _motionEstimation;
-                _stream->codec->sample_rate        = 48000; ///< samples per second
-                _stream->codec->channels           = 0;     ///< number of audio channels
+		/**
+		 * Motion estimation algorithm used for video coding.
+		 * 1 (zero), 2 (full), 3 (log), 4 (phods), 5 (epzs), 6 (x1), 7 (hex),
+		 * 8 (umh), 9 (iter), 10 (tesa) [7, 8, 10 are x264 specific, 9 is snow specific]
+		 */
+		_stream->codec->me_method          = _motionEstimation;
+		_stream->codec->colorspace         = _colorspace;
+		_stream->codec->color_primaries    = _colorPrimaries;
+		_stream->codec->color_trc          = _colorTransferCharacteristic;
+		_stream->codec->sample_rate        = 48000; ///< samples per second
+		_stream->codec->channels           = 0;     ///< number of audio channels
 		if( _bFrames )
 		{
 			_stream->codec->max_b_frames     = _bFrames;

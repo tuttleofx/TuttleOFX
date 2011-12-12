@@ -139,49 +139,67 @@ public:
 		_codec = codec;
 	}
 
-        void setMotionEstimation( const int me )
-        {
-                _motionEstimation = me;
-        }
+	void setMotionEstimation( const int me )
+	{
+		_motionEstimation = me;
+	}
+
+	void setColorspace( const AVColorSpace colorspace )
+	{
+		_colorspace = colorspace;
+	}
+
+	void setColorPrimaries( const AVColorPrimaries colorPrimaries )
+	{
+		_colorPrimaries = colorPrimaries;
+	}
+
+	void setColorTransferCharateristic( const AVColorTransferCharacteristic colorTransferCharacteristic )
+	{
+		_colorTransferCharacteristic = colorTransferCharacteristic;
+	}
 
 	void configureFromRead( const VideoFFmpegReader& reader )
 	{
-		width( reader.width() );
-		height( reader.height() );
-		aspectRatio( reader.aspectRatio() );
-		fps( reader.fps() );
-		setBitRate( reader.bitRate() );
-		setFormat( reader.formatName() );
-		setCodec( reader.codecName() );
+		width       ( reader.width() );
+		height      ( reader.height() );
+		aspectRatio ( reader.aspectRatio() );
+		fps         ( reader.fps() );
+		setBitRate  ( reader.bitRate() );
+		setFormat   ( reader.formatName() );
+		setCodec    ( reader.codecName() );
 	}
 
 private:
-//	AVCodecContext* _avctxOptions[AVMEDIA_TYPE_NB];
-	AVFormatContext* _avformatOptions;
-	struct SwsContext* _sws_context;  ///< contexte de transformation swscale
-	AVStream* _stream;
-	std::vector<std::string> _formatsLongNames;
-	std::vector<std::string> _formatsShortNames;
-	std::vector<std::string> _codecsLongNames;
-	std::vector<std::string> _codecsShortNames;
+//	AVCodecContext*                _avctxOptions[AVMEDIA_TYPE_NB];
+	AVFormatContext*               _avformatOptions;
+	struct SwsContext*             _sws_context;         ///< contexte de transformation swscale
+	AVStream*                      _stream;
+	std::vector<std::string>       _formatsLongNames;
+	std::vector<std::string>       _formatsShortNames;
+	std::vector<std::string>       _codecsLongNames;
+	std::vector<std::string>       _codecsShortNames;
 
-	WriterError _error;
-	std::string _filename;
-        int         _width;
-        int         _height;
-        double      _aspectRatio;
-	PixelFormat _out_pixelFormat;
+	WriterError                    _error;
+	std::string                    _filename;
+	int                            _width;
+	int                            _height;
+	double                         _aspectRatio;
+	PixelFormat                    _out_pixelFormat;
 	// knobs variables
-        float       _fps;
-	std::string _format;
-	std::string _codec;
-        int         _bitRate;
-        int         _bitRateTolerance;
-        int         _gopSize;
-        int         _bFrames;
-        int         _mbDecision;
+	float                          _fps;
+	std::string                    _format;
+	std::string                    _codec;
+	int                            _bitRate;
+	int                            _bitRateTolerance;
+	int                            _gopSize;
+	int                            _bFrames;
+	int                            _mbDecision;
 
-        int         _motionEstimation;
+	int                            _motionEstimation;
+	AVColorSpace                   _colorspace;
+	AVColorPrimaries               _colorPrimaries;
+	AVColorTransferCharacteristic  _colorTransferCharacteristic;
 };
 
 #endif

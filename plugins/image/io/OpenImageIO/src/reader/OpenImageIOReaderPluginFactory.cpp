@@ -23,6 +23,13 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	                "OpenImageIO file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
+	desc.setDescription(
+		"OpenImageIO Reader"
+		"\n\n"
+		"supported formats:\n"
+		"TIFF\nJPEG/JFIF\nOpenEXR\nPNG\nHDR/RGBE\nTarga\nJPEG-2000\nDPX\nCineon\nFITS\nBMP\nICO\nRMan Zfile\nSoftimagePIC\nDDS\nSGI\nPNM\nPPM\nPGM\nPBM\nField3d\nWebP"
+		"\n" );
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
 	desc.addSupportedContext( OFX::eContextGenerator );

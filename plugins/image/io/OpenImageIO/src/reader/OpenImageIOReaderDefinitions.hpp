@@ -9,9 +9,6 @@ namespace plugin {
 namespace openImageIO {
 namespace reader {
 
-static const std::string kOpenImageIOReaderHelpButton = "Help";
-static const std::string kOpenImageIOReaderHelpString = "<b>OPENIMAGEIO File reader</b> plugin is used to read openImageIO files.  <br />";
-
 }
 }
 }

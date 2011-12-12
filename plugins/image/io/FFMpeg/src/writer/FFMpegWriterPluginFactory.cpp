@@ -75,79 +75,92 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 
 
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-        std::vector<std::string>::const_iterator itLong;
-        for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
-             itLong = writer.getFormatsLong().begin(),
-             itEnd = writer.getFormatsShort().end();
-             itShort != itEnd;
-             ++itShort,
-             ++itLong )
+	std::vector<std::string>::const_iterator itLong;
+	for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
+		itLong = writer.getFormatsLong().begin(),
+		itEnd = writer.getFormatsShort().end();
+		itShort != itEnd;
+		++itShort,
+		++itLong )
 	{
-            std::string name = *itShort;
-            name.resize ( 20,' ');
-            name += *itLong ;
-            format->appendOption( name );
+		std::string name = *itShort;
+		name.resize ( 20,' ');
+		name += *itLong ;
+		format->appendOption( name );
 	}
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( 25 );
 
 	OFX::ChoiceParamDescriptor* codec = desc.defineChoiceParam( kParamCodec );
-        for( std::vector<std::string>::const_iterator itShort = writer.getCodecsShort().begin(),
-             itLong  = writer.getCodecsLong().begin(),
-             itEnd = writer.getCodecsShort().end();
-             itShort != itEnd;
-             ++itShort,
-             ++itLong )
+	for( std::vector<std::string>::const_iterator itShort = writer.getCodecsShort().begin(),
+		itLong  = writer.getCodecsLong().begin(),
+		itEnd = writer.getCodecsShort().end();
+		itShort != itEnd;
+		++itShort,
+		++itLong )
 	{
-            std::string name = *itShort;
-            name.resize ( 20,' ');
-            name += *itLong ;
-            codec->appendOption( name );
+		std::string name = *itShort;
+		name.resize ( 20,' ');
+		name += *itLong ;
+		codec->appendOption( name );
 	}
 	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	codec->setDefault( 18 );
+	codec->setDefault( CODEC_ID_HUFFYUV );
 
 	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kParamBitrate );
 	bitrate->setLabel( "Bitrate" );
 	bitrate->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitrate->setDefault( 400000 );
 
-        OFX::ChoiceParamDescriptor* colorSpace = desc.defineChoiceParam( kParamColorSpace );
-        colorSpace->setLabel( "Color Space" );
-        colorSpace->appendOption( kParamColorSpaceBt709       );
-        colorSpace->appendOption( kParamColorSpaceUnspecified );
-        colorSpace->appendOption( kParamColorSpaceFcc         );
-        colorSpace->appendOption( kParamColorSpaceBt470bg     );
-        colorSpace->appendOption( kParamColorSpaceSmpte170m   );
-        colorSpace->appendOption( kParamColorSpaceSmpte240m   );
-        colorSpace->appendOption( kParamColorSpaceNb          );
+	OFX::ChoiceParamDescriptor* colorSpace = desc.defineChoiceParam( kParamColorSpace );
+	colorSpace->setLabel( "Color Space" );
+	colorSpace->appendOption( kParamColorSpaceRgb         );
+	colorSpace->appendOption( kParamColorSpaceBt709       );
+	colorSpace->appendOption( kParamColorSpaceUnspecified );
+	colorSpace->appendOption( kParamColorSpaceFcc         );
+	colorSpace->appendOption( kParamColorSpaceBt470bg     );
+	colorSpace->appendOption( kParamColorSpaceSmpte170m   );
+	colorSpace->appendOption( kParamColorSpaceSmpte240m   );
+	colorSpace->appendOption( kParamColorSpaceNb          );
+	colorSpace->setDefault( AVCOL_SPC_UNSPECIFIED );
 
-        OFX::ChoiceParamDescriptor* colorPrimaries = desc.defineChoiceParam( kParamColorPrimaries );
-        colorPrimaries->setLabel( "Color Primaries" );
-        colorPrimaries->appendOption( kParamColorPrimariesBt709       );
-        colorPrimaries->appendOption( kParamColorPrimariesUnspecified );
-        colorPrimaries->appendOption( kParamColorPrimariesBt470m      );
-        colorPrimaries->appendOption( kParamColorPrimariesBt470bg     );
-        colorPrimaries->appendOption( kParamColorPrimariesSmpte170m   );
-        colorPrimaries->appendOption( kParamColorPrimariesSmpte240m   );
-        colorPrimaries->appendOption( kParamColorPrimariesFilm        );
-        colorPrimaries->appendOption( kParamColorPrimariesNb          );
+	OFX::ChoiceParamDescriptor* colorPrimaries = desc.defineChoiceParam( kParamColorPrimaries );
+	colorPrimaries->setLabel( "Color Primaries" );
+	colorPrimaries->appendOption( kParamColorPrimariesBt709       );
+	colorPrimaries->appendOption( kParamColorPrimariesUnspecified );
+	colorPrimaries->appendOption( kParamColorPrimariesBt470m      );
+	colorPrimaries->appendOption( kParamColorPrimariesBt470bg     );
+	colorPrimaries->appendOption( kParamColorPrimariesSmpte170m   );
+	colorPrimaries->appendOption( kParamColorPrimariesSmpte240m   );
+	colorPrimaries->appendOption( kParamColorPrimariesFilm        );
+	colorPrimaries->appendOption( kParamColorPrimariesNb          );
+	colorPrimaries->setDefault( AVCOL_PRI_UNSPECIFIED - 1 );
 
-        OFX::ChoiceParamDescriptor* motionEstimation = desc.defineChoiceParam( kParamMotionEstimation );
-        motionEstimation->setLabel( "Motion Estimation" );
-        motionEstimation->appendOption( kParamMEZero  );
-        motionEstimation->appendOption( kParamMEFull  );
-        motionEstimation->appendOption( kParamMELog   );
-        motionEstimation->appendOption( kParamMEPhods );
-        motionEstimation->appendOption( kParamMEEpzs  );
-        motionEstimation->appendOption( kParamMEXl    );
-        motionEstimation->appendOption( kParamMEHex   );
-        motionEstimation->appendOption( kParamMEUmh   );
-        motionEstimation->appendOption( kParamMEIter  );
-        motionEstimation->appendOption( kParamMETesa  );
-        motionEstimation->setDefault ( eParamMEEpzs );
+	OFX::ChoiceParamDescriptor* colorTRC = desc.defineChoiceParam( kParamColorTRC );
+	colorTRC->setLabel( "Color Transfer Characteristic" );
+	colorTRC->appendOption( kParamColorTRCBt709       );
+	colorTRC->appendOption( kParamColorTRCUnspecified );
+	colorTRC->appendOption( kParamColorTRCGamma22     );
+	colorTRC->appendOption( kParamColorTRCGamma28     );
+	colorTRC->appendOption( kParamColorTRCNb          );
+	colorTRC->setDefault( AVCOL_TRC_UNSPECIFIED - 1 );
 
-        describeWriterParamsInContext( desc, context );
+
+	OFX::ChoiceParamDescriptor* motionEstimation = desc.defineChoiceParam( kParamMotionEstimation );
+	motionEstimation->setLabel( "Motion Estimation" );
+	motionEstimation->appendOption( kParamMEZero  );
+	motionEstimation->appendOption( kParamMEFull  );
+	motionEstimation->appendOption( kParamMELog   );
+	motionEstimation->appendOption( kParamMEPhods );
+	motionEstimation->appendOption( kParamMEEpzs  );
+	motionEstimation->appendOption( kParamMEXl    );
+	motionEstimation->appendOption( kParamMEHex   );
+	motionEstimation->appendOption( kParamMEUmh   );
+	motionEstimation->appendOption( kParamMEIter  );
+	motionEstimation->appendOption( kParamMETesa  );
+	motionEstimation->setDefault ( ME_EPZS - 1 );
+
+	describeWriterParamsInContext( desc, context );
 }
 
 /**

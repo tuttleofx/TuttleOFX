@@ -19,6 +19,13 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	                "OpenImageIO file writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
+	desc.setDescription(
+		"OpenImageIO Writer"
+		"\n\n"
+		"supported formats:\n"
+		"TIFF\nJPEG/JFIF\nOpenEXR\nPNG\nHDR/RGBE\nTarga\nJPEG-2000\nDPX\nCineon\nFITS\nBMP\nICO\nRMan Zfile\nSoftimagePIC\nDDS\nSGI\nPNM\nPPM\nPGM\nPBM\nField3d\nWebP"
+		"\n" );
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -78,6 +85,18 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 	bitDepth->appendOption( kTuttlePluginBitDepth32f );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( 1 );
+
+	OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam( kParamOutputCompression );
+	compression->setLabel( "Compression" );
+	compression->appendOption( kParamOutputCompressionNone );
+	compression->appendOption( kParamOutputCompressionZip );
+	compression->appendOption( kParamOutputCompressionZips );
+	compression->appendOption( kParamOutputCompressionRle );
+	compression->appendOption( kParamOutputCompressionPiz );
+	compression->appendOption( kParamOutputCompressionPxr24 );
+	compression->appendOption( kParamOutputCompressionB44 );
+	compression->appendOption( kParamOutputCompressionB44a );
+	bitDepth->setDefault( eParamCompressionNone );
 
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
 	render->setLabels( "Render", "Render", "Render step" );

@@ -31,16 +31,7 @@ OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams( const 
 
 void OpenImageIOReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kOpenImageIOReaderHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kOpenImageIOReaderHelpString );
-	}
-	else
-	{
-		ReaderPlugin::changedParam( args, paramName );
-	}
+	ReaderPlugin::changedParam( args, paramName );
 }
 
 bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
