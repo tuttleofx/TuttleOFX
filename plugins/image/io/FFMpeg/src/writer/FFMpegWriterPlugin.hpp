@@ -16,11 +16,14 @@ namespace writer {
 
 struct FFMpegProcessParams
 {
-	std::string _filepath;      ///< Ffmpeg filepath
-	int _format;                ///< Format
-	int _codec;                 ///< Codec
-	int _bitrate;               ///< Bit rate
-        int _motionEstimation;      ///< Motion Estimation
+	std::string                    _filepath;                        ///< Ffmpeg filepath
+	int                            _format;                          ///< Format
+	int                            _codec;                           ///< Codec
+	int                            _bitrate;                         ///< Bit rate
+	int                            _motionEstimation;                ///< Motion Estimation
+	AVColorSpace                   _colorspace;                      ///< Colorspace
+	AVColorPrimaries               _colorPrimaries;                  ///< Color Primaries
+	AVColorTransferCharacteristic  _colorTransferCharacteristic;     ///< Color Transfer Characteristic
 };
 
 /**
@@ -46,9 +49,12 @@ public:
 	OFX::ChoiceParam*   _paramFormat;
 	OFX::ChoiceParam*   _paramCodec;
 	OFX::IntParam*      _paramBitRate;
-        OFX::ChoiceParam*   _paramMotionEstimation;
+	OFX::ChoiceParam*   _paramMotionEstimation;
+	OFX::ChoiceParam*   _paramColorspace;
+	OFX::ChoiceParam*   _paramColorPrimaries;
+	OFX::ChoiceParam*   _paramColorTransferCharacteristic;
 	
-        VideoFFmpegWriter   _writer;
+	VideoFFmpegWriter   _writer;
 };
 
 }

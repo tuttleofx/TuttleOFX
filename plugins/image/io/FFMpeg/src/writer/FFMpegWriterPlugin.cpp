@@ -17,21 +17,27 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-        _paramFormat            = fetchChoiceParam( kParamFormat           );
-        _paramCodec             = fetchChoiceParam( kParamCodec            );
-        _paramBitRate           = fetchIntParam   ( kParamBitrate          );
-        _paramMotionEstimation  = fetchChoiceParam( kParamMotionEstimation );
+	_paramFormat                      = fetchChoiceParam( kParamFormat           );
+	_paramCodec                       = fetchChoiceParam( kParamCodec            );
+	_paramBitRate                     = fetchIntParam   ( kParamBitrate          );
+	_paramMotionEstimation            = fetchChoiceParam( kParamMotionEstimation );
+	_paramColorspace                  = fetchChoiceParam( kParamColorSpace       );
+	_paramColorPrimaries              = fetchChoiceParam( kParamColorPrimaries   );
+	_paramColorTransferCharacteristic = fetchChoiceParam( kParamColorTRC         );
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 {
 	FFMpegProcessParams params;
 
-        params._filepath          = _paramFilepath          ->getValue();
-        params._format            = _paramFormat            ->getValue();
-        params._codec             = _paramCodec             ->getValue();
-        params._bitrate           = _paramBitRate           ->getValue();
-        params._motionEstimation  = _paramMotionEstimation  ->getValue();
+	params._filepath                       = _paramFilepath          ->getValue();
+	params._format                         = _paramFormat            ->getValue();
+	params._codec                          = _paramCodec             ->getValue();
+	params._bitrate                        = _paramBitRate           ->getValue();
+	params._motionEstimation               = _paramMotionEstimation  ->getValue();
+	params._colorspace                     = (AVColorSpace)                  _paramColorspace                  ->getValue();
+	params._colorPrimaries                 = (AVColorPrimaries)              _paramColorPrimaries              ->getValue();
+	params._colorTransferCharacteristic    = (AVColorTransferCharacteristic) _paramColorTransferCharacteristic ->getValue();
 
 	return params;
 }
@@ -58,12 +64,16 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 
 	FFMpegProcessParams params = getProcessParams();
 
-        _writer.filename            ( params._filepath );
-        _writer.setFormat           ( params._format );
-        _writer.setCodec            ( params._codec );
-        _writer.setMotionEstimation ( params._motionEstimation );
-        _writer.fps                 ( _clipSrc->getFrameRate() );
-        _writer.aspectRatio         ( _clipSrc->getPixelAspectRatio() );
+	_writer.filename            ( params._filepath );
+	_writer.setFormat           ( params._format );
+	_writer.setCodec            ( params._codec );
+	_writer.setBitRate          ( params._bitrate );
+	_writer.setColorspace       ( params._colorspace );
+	_writer.setColorPrimaries   ( params._colorPrimaries );
+	_writer.setColorPrimaries   ( params._colorPrimaries );
+	_writer.setMotionEstimation ( params._motionEstimation );
+	_writer.fps                 ( _clipSrc->getFrameRate() );
+	_writer.aspectRatio         ( _clipSrc->getPixelAspectRatio() );
 }
 
 /**
