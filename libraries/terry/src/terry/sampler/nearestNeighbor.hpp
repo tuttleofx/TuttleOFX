@@ -12,7 +12,7 @@ namespace sampler {
 struct nearest_neighbor_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
+bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
 {
 	typedef typename SrcView::value_type SrcP;
 	point2<std::ptrdiff_t> center( iround( p ) );

@@ -46,10 +46,10 @@ public:
 	typedef Graph::InstanceCountMap InstanceCountMap;
 
 public:
-	ProcessGraph( Graph& graph, const std::list<std::string>& nodes, const bool continueOnError ); ///@ todo: const Graph, no ?
+	ProcessGraph( Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
 	~ProcessGraph();
 
-	memory::MemoryCache process( const int tBegin, const int tEnd );
+	memory::MemoryCache process( const ComputeOptions& options );
 
 private:
 	void relink();
@@ -57,7 +57,6 @@ private:
 	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount;
-	bool _continueOnError;
 
 	static const std::string _outputId;
 };

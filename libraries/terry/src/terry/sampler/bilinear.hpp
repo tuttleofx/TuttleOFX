@@ -15,9 +15,9 @@ struct bilinear_sampler{};
  *
  * @param[in] distance between the pixels and the current pixel
  * @param[out] weight return value to weight the pixel in filtering
-**/
-template < typename F >
-bool getWeight ( const long int&  pTLXOrY, const F& distance, const size_t index, F& weight )
+ */
+template< typename F >
+bool getWeight( const long int&  pTLXOrY, const F& distance, const size_t index, F& weight )
 {
 	if( distance < 1 )
 	{
@@ -36,7 +36,7 @@ bool getWeight ( const long int&  pTLXOrY, const F& distance, const size_t index
 }
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( bilinear_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage& outOfImageProcess )
+bool sample( bilinear_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
 {
 
 		/*
@@ -64,8 +64,8 @@ bool sample( bilinear_sampler sampler, const SrcView& src, const point2<F>& p, D
 		// get weight for each pixels
 		for(int i=0; i<windowSize; i++)
 		{
-			getWeight( pTL.x, std::abs( i - frac.x ), i, xWeights.at(i) );
-			getWeight( pTL.y, std::abs( i - frac.y ), i, yWeights.at(i) );
+			getWeight( pTL.x, std::abs( (double)(i - frac.x) ), i, xWeights.at(i) );
+			getWeight( pTL.y, std::abs( (double)(i - frac.y) ), i, yWeights.at(i) );
 		}
 
 		// process current sample

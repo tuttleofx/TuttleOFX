@@ -713,7 +713,6 @@ int main( int argc, char** argv )
 
 		// Connect all nodes linearly
 		graph.connect( nodes );
-		graph.setContinueOnError( continueOnError );
 
 		// Execute the graph
 		if( range.size() == 0 )
@@ -733,7 +732,12 @@ int main( int argc, char** argv )
 			range.push_back( timeDomain.min );
 			range.push_back( timeDomain.max );
 		}
-		graph.compute( *nodes.back(), range[0], range[1] );
+		
+		ttl::ComputeOptions options( range[0], range[1], step );
+		options._continueOnError = continueOnError;
+		options._returnBuffers = false;
+		
+		graph.compute( *nodes.back(), options );
 	}
 	catch( const tuttle::exception::Common& e )
 	{

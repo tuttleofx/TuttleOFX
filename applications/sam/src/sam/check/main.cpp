@@ -55,7 +55,7 @@ EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& grap
 	{
 		// Setup parameters
 		read.getParam( "filename" ).setValue( filename.string() );
-		graph.compute( stat, 0 );
+		graph.compute( stat );
 		std::cout.rdbuf(_stdCout); // restore cout's original streambuf
 		for( unsigned int i = 0; i<4; ++i )
 		{

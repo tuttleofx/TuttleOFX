@@ -75,7 +75,7 @@ int main( int argc, char** argv )
 		outputs.push_back( merge1.getName() );
 		outputs.push_back( invert1.getName() );
 		
-		memory::MemoryCache values = g.compute( outputs, 0, 0 );
+		memory::MemoryCache values = g.compute( outputs );
 		TUTTLE_COUT( "__________________________________________________5" );
 		TUTTLE_COUT_VAR( invert1.getName() );
 		memory::CACHE_ELEMENT img = values.get( invert1.getName(), 0 );

@@ -205,8 +205,8 @@ int main( int argc, char** argv )
 		outputs.push_back( bitdepth2.getName() );
 
 		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
-//		memory::MemoryCache res0 = g.compute( bitdepth2, 0 );
-		memory::MemoryCache res0 = g.compute( outputs, 0 );
+//		memory::MemoryCache res0 = g.compute( bitdepth2 );
+		memory::MemoryCache res0 = g.compute( outputs );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
 		TUTTLE_COUT( "Process took: " << t2 - t1 );

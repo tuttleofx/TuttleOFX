@@ -32,8 +32,6 @@ enum EParamFilterOutOfImage
 	eParamFilterOutMirror
 };
 
-
-
 }
 }
 

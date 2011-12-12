@@ -23,6 +23,65 @@
 namespace tuttle {
 namespace host {
 
+struct TimeRange
+{
+	TimeRange( const int frame )
+		: _begin( frame )
+		, _end( frame )
+		, _step( 1 )
+	{}
+	TimeRange( const int begin, const int end, const int step = 1 )
+		: _begin( begin )
+		, _end( end )
+		, _step( step )
+	{}
+	
+	int _begin;
+	int _end;
+	int _step;
+};
+
+enum EVerboseLevel
+{
+	eVerboseLevelNone,
+	eVerboseLevelError,
+	eVerboseLevelWarning,
+	eVerboseLevelDebug
+};
+
+struct ComputeOptions
+{
+	ComputeOptions()
+	{
+		setDefault();
+	}
+	explicit
+	ComputeOptions( const int frame )
+	{
+		setDefault();
+		_timeRanges.push_back( TimeRange( frame, frame ) );
+	}
+	explicit
+	ComputeOptions( const int begin, const int end, const int step = 1 )
+	{
+		setDefault();
+		_timeRanges.push_back( TimeRange( begin, end, step ) );
+	}
+	
+	void setDefault()
+	{
+		_continueOnError = false;
+		_returnBuffers = false;
+		_verboseLevel = eVerboseLevelError;
+	}
+	
+	std::list<TimeRange> _timeRanges;
+	bool _continueOnError;
+	bool _returnBuffers;
+	EVerboseLevel _verboseLevel;
+};
+
+
 class Graph
 {
 public:
@@ -77,10 +136,9 @@ public:
 	 */
 	void init();
 	
-	memory::MemoryCache compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
-	inline memory::MemoryCache compute( const std::list<std::string>& nodes, const int time ) { return compute( nodes, time, time ); }
+	memory::MemoryCache compute( const std::list<std::string>& nodes, const ComputeOptions& options = ComputeOptions() );
 
-	inline memory::MemoryCache compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
+	inline memory::MemoryCache compute( const std::list<Node*>& nodes, const ComputeOptions& options = ComputeOptions() )
 	{
 		std::list<std::string> nodesStr;
 		//nodesStr.reserve(nodes.size());
@@ -88,31 +146,19 @@ public:
 		{
 			nodesStr.push_back( n->getName() );
 		}
-		return compute( nodesStr, tBegin, tEnd );
+		return compute( nodesStr, options );
 	}
 
-	inline memory::MemoryCache compute( const std::list<Node*>& nodes, const int time ) { return compute( nodes, time, time ); }
-
-	inline memory::MemoryCache compute( const std::string& node, const int tBegin, const int tEnd )
+	inline memory::MemoryCache compute( const std::string& node, const ComputeOptions& options = ComputeOptions() )
 	{
 		std::list<std::string> outputs;
 		outputs.push_back( node );
-		return compute( outputs, tBegin, tEnd );
+		return compute( outputs, options );
 	}
 
-	inline memory::MemoryCache compute( const Node& node, const int tBegin, const int tEnd )
+	inline memory::MemoryCache compute( const Node& node, const ComputeOptions& options = ComputeOptions() )
 	{
-		return compute( node.getName(), tBegin, tEnd );
-	}
-
-	inline memory::MemoryCache compute( const std::string& node, const int time )
-	{
-		return compute( node, time, time );
-	}
-
-	inline memory::MemoryCache compute( const Node& node, const int time )
-	{
-		return compute( node.getName(), time );
+		return compute( node.getName(), options );
 	}
 
 	inline const InternalGraphImpl& getGraph() const { return _graph; }
@@ -125,8 +171,6 @@ public:
 	inline Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
 	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
-	inline void setContinueOnError( const bool v ) { _continueOnError = v; }
-	
 public:
 	#ifndef SWIG
 	friend std::ostream& operator<<( std::ostream& os, const Graph& g );
@@ -152,7 +196,6 @@ public:
 	#endif
 
 private:
-	bool _continueOnError;
 	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
