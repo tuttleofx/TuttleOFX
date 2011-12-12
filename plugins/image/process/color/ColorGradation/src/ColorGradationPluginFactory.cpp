@@ -78,7 +78,36 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 
 	//	in->appendOption( kParamGradation_rec709 );
 	//	in->appendOption( kParamGradation_rec601 );
-	in->setDefault( 0 );
+	in->setDefault( eParamGradation_linear );
+
+	OFX::DoubleParamDescriptor* inGammaValue = desc.defineDoubleParam( kColorSpaceInGammaValue );
+	inGammaValue->setLabel			( "Gamma" );
+	inGammaValue->setDefault		( 1.0 );
+	inGammaValue->setRange			( 0.0, std::numeric_limits<double>::max() );
+	inGammaValue->setDisplayRange		( 0.0, 5.0 );
+	inGammaValue->setHint			( "Adjust the Gamma." );
+
+	OFX::DoubleParamDescriptor* inBlackPoint = desc.defineDoubleParam( kColorSpaceInBlackPoint );
+	inBlackPoint->setLabel			( "Black Point" );
+	inBlackPoint->setDefault		( 0.0 );
+	inBlackPoint->setRange			( 0.0, 1.0 );
+	inBlackPoint->setDisplayRange		( 0.0, 1.0 );
+	inBlackPoint->setHint			( "Adjust the Black Point." );
+
+	OFX::DoubleParamDescriptor* inWhitePoint = desc.defineDoubleParam( kColorSpaceInWhitePoint );
+	inWhitePoint->setLabel			( "White Point" );
+	inWhitePoint->setDefault		( 1.0 );
+	inWhitePoint->setRange			( 0.0, 1.0 );
+	inWhitePoint->setDisplayRange		( 0.0, 1.0 );
+	inWhitePoint->setHint			( "Adjust the White Point." );
+
+	OFX::DoubleParamDescriptor* inGammaSensito = desc.defineDoubleParam( kColorSpaceInGammaSensito );
+	inGammaSensito->setLabel		( "Gamma Sensito" );
+	inGammaSensito->setDefault		( 1.0 );
+	inGammaSensito->setRange		( 0.0, std::numeric_limits<double>::max() );
+	inGammaSensito->setDisplayRange		( 0.0, 5.0 );
+	inGammaSensito->setHint			( "Adjust the Gamma Sensito." );
+
 
 	OFX::ChoiceParamDescriptor* out = desc.defineChoiceParam( kParamOut );
 	out->setLabel( "Out" );
@@ -95,7 +124,36 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 
 	//	out->appendOption( kParamGradation_rec709 );
 	//	out->appendOption( kParamGradation_rec601 );
-	out->setDefault( 0 );
+	out->setDefault( eParamGradation_linear );
+
+	OFX::DoubleParamDescriptor* outGammaValue = desc.defineDoubleParam( kColorSpaceOutGammaValue );
+	outGammaValue->setLabel			( "Gamma" );
+	outGammaValue->setDefault		( 1.0 );
+	outGammaValue->setRange			( 0.0, std::numeric_limits<double>::max() );
+	outGammaValue->setDisplayRange		( 0.0, 5.0 );
+	outGammaValue->setHint			( "Adjust the Gamma." );
+
+	OFX::DoubleParamDescriptor* outBlackPoint = desc.defineDoubleParam( kColorSpaceOutBlackPoint );
+	outBlackPoint->setLabel			( "Black Point" );
+	outBlackPoint->setDefault		( 0.0 );
+	outBlackPoint->setRange			( 0.0, 1.0 );
+	outBlackPoint->setDisplayRange		( 0.0, 1.0 );
+	outBlackPoint->setHint			( "Adjust the Black Point." );
+
+	OFX::DoubleParamDescriptor* outWhitePoint = desc.defineDoubleParam( kColorSpaceOutWhitePoint );
+	outWhitePoint->setLabel			( "White Point" );
+	outWhitePoint->setDefault		( 1.0 );
+	outWhitePoint->setRange			( 0.0, 1.0 );
+	outWhitePoint->setDisplayRange		( 0.0, 1.0 );
+	outWhitePoint->setHint			( "Adjust the White Point." );
+
+	OFX::DoubleParamDescriptor* outGammaSensito = desc.defineDoubleParam( kColorSpaceOutGammaSensito );
+	outGammaSensito->setLabel		( "Gamma Sensito" );
+	outGammaSensito->setDefault		( 1.0 );
+	outGammaSensito->setRange		( 0.0, std::numeric_limits<double>::max() );
+	outGammaSensito->setDisplayRange	( 0.0, 5.0 );
+	outGammaSensito->setHint		( "Adjust the Gamma Sensito." );
+
 
 	OFX::BooleanParamDescriptor* alpha = desc.defineBooleanParam( kParamProcessAlpha );
 	alpha->setLabel( "Process alpha" );
