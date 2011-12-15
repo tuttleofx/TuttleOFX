@@ -11,7 +11,6 @@ project
 		<include>src
 		<include>$(3RD_PARTY)/ilmbase/Iex
 		<include>$(3RD_PARTY)/ilmbase/Half
-		<include>$(3RD_PARTY)/ctl
 	: build-dir $(BUILD)/CTL
 	;
 
@@ -23,8 +22,8 @@ use-project	/ctl	: $(3RD_PARTY)/ctl ;
 plugin CTL : 
 	[ glob-tree *.cpp ]
 	/tuttleplugin/<link>static
-	/boost/filesystem
-	/ctl
+	/boost/filesystem/<link>static
+	/ctl/<link>static
 	;
  
 ###############################################################################

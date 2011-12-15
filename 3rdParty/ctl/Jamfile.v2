@@ -42,6 +42,7 @@ project
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
+		<include>.
 		<include>IlmCtl
 		<include>IlmCtlMath
 		<include>IlmCtlSimd
