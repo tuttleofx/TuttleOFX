@@ -210,6 +210,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		{
 			try
 			{
+				TUTTLE_COUT( "process at time " << time );
 				TUTTLE_TCOUT( "________________________________________ frame: " << time );
 				// use an internal copy for inside the process
 				InternalGraphImpl renderGraph = _graph;
@@ -391,6 +392,8 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache().size() );
 				TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache() );
 				TUTTLE_TCOUT_VAR( result );
+
+				TUTTLE_COUT( " " );
 
 			}
 			catch( ... )
