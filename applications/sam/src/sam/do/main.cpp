@@ -171,6 +171,8 @@ int main( int argc, char** argv )
 				bpo::options_description hidden;
 				hidden.add_options()
 					("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+					// params for auto-completion
+					("nodes-list", "show list of all available nodes")
 				;
 
 				bpo::options_description all_options;
@@ -279,9 +281,10 @@ int main( int argc, char** argv )
 				ttl::Core::instance().preload();
 				allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 
-				if( samdo_vm.count("nodes") )
+				if( samdo_vm.count("nodes") || samdo_vm.count("nodes-list") )
 				{
-					TUTTLE_COUT( _color._blue  << "NODES" << _color._std );
+					if( samdo_vm.count("nodes") )
+						TUTTLE_COUT( _color._blue  << "NODES" << _color._std );
 					std::vector< std::string > pluginNames;
 					for( std::size_t i = 0; i < allNodes.size(); ++i )
 					{
@@ -293,9 +296,13 @@ int main( int argc, char** argv )
 						pluginNames.push_back( termsPlugin.back() );
 					}
 					std::sort( pluginNames.begin(), pluginNames.end() );
+
 					for( std::size_t i = 0; i < pluginNames.size(); ++i )
 					{
-						TUTTLE_COUT( "\t" << pluginNames.at( i ) );
+						if( samdo_vm.count("nodes") )
+							TUTTLE_COUT( "\t" << pluginNames.at( i ) );
+						else
+							TUTTLE_COUT( pluginNames.at( i ) );
 					}
 					exit( 0 );
 				}
@@ -360,6 +367,8 @@ int main( int argc, char** argv )
 				bpo::options_description hiddenOptions;
 				hiddenOptions.add_options()
 					("param-values", bpo::value< std::vector<std::string> >(), "node parameters")
+					// for auto completion
+					("parameters-list" , "list parameters of the node")
 				;
 
 				// define default options
@@ -582,6 +591,11 @@ int main( int argc, char** argv )
 							TUTTLE_COUT("");
 							TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
 							TUTTLE_COUT("");
+							coutParametersWithDetails( currentNode );
+							exit(0);
+						}
+						if( node_vm.count("parameters-list") )
+						{
 							coutParameters( currentNode );
 							exit(0);
 						}
@@ -723,16 +737,16 @@ int main( int argc, char** argv )
 			nodes.back()->getTimeDomain( timeDomain );
 			
 			// special case for infinite time domain (eg. a still image)
-			if( timeDomain.min == std::numeric_limits<double>::min() )
+			if( timeDomain.min == std::numeric_limits<int>::min() )
 				timeDomain.min = 0;
-			if( timeDomain.max == std::numeric_limits<double>::max() )
+			if( timeDomain.max == std::numeric_limits<int>::max() )
 				timeDomain.max = 0;
-			
+
 			// TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
 			range.push_back( timeDomain.min );
 			range.push_back( timeDomain.max );
 		}
-		
+		TUTTLE_COUT_DEBUG( "compute from " << range[0] << " to " << range[1] );
 		ttl::ComputeOptions options( range[0], range[1], step );
 		options._continueOnError = continueOnError;
 		options._returnBuffers = false;
