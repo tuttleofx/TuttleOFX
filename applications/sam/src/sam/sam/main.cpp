@@ -230,7 +230,7 @@ int main( int argc, char** argv )
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
-				TUTTLE_COUT( c.filename().string() );
+				TUTTLE_COUT( c.filename().string().substr(4) );
 			}
 			exit( 0 );
 		}
