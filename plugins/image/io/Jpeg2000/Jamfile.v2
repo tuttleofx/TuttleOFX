@@ -33,7 +33,7 @@ plugin Jpeg2000 :
 		[ glob-tree *.cpp ]
 		/tuttleplugin/<link>static
 		opengl
-		/libopenjpeg
+		/libopenjpeg/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 	;

@@ -9,6 +9,8 @@ import os ;
 project
 	: requirements
 		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+		<include>$(3RD_PARTY)/ilmbase/Iex
+		<include>$(3RD_PARTY)/ilmbase/Half
 	: build-dir $(BUILD)/Exr
 	;
 
@@ -20,7 +22,7 @@ use-project /libexr : $(3RD_PARTY)/openexr ;
 plugin Exr : 
 		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
-		/libexr
+		/libexr/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 	;
