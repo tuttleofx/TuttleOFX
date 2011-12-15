@@ -43,7 +43,7 @@ void coutClips( const ttl::Graph::Node& node )
 //	}
 }
 
-void coutParameters( const ttl::Graph::Node& node )
+void coutParametersWithDetails( const ttl::Graph::Node& node )
 {
 	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
 	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
@@ -65,6 +65,17 @@ void coutParameters( const ttl::Graph::Node& node )
 			TUTTLE_COUT( hint );
 		}
 		TUTTLE_COUT("");
+	}
+}
+
+void coutParameters( const ttl::Graph::Node& node )
+{
+	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+	{
+		if( param.getSecret() )
+			continue; // ignore secret parameters
+		TUTTLE_COUT( param.getScriptName() );
 	}
 }
 
