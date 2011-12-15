@@ -546,7 +546,7 @@ int main( int argc, char** argv )
 							coutClips( currentNode );
 							TUTTLE_COUT("");
 							TUTTLE_COUT( _color._blue << "\tPARAMETERS" << _color._std );
-							coutParameters( currentNode );
+							coutParametersWithDetails( currentNode );
 							TUTTLE_COUT("");
 							exit(0);
 						}
