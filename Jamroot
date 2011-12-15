@@ -123,6 +123,7 @@ project
 
 		<os>NT:<define>_WINDOWS
 		<os>LINUX:<cxxflags>-fPIC
+		<os>LINUX:<cflags>-fPIC
 
 		# icu library off
 		#<define>BOOST_HAS_ICU=0
@@ -165,7 +166,7 @@ use-project		/tuttletests	: libraries/tuttle/tests ;
 # SAM COMMAND LINE TOOL & TESTS
 #
 use-project	/sam-tools		: applications/sam/ ;
-alias           /sam                    : /sam-tools ;
+alias		/sam			: /sam-tools ;
 
 #use-project	/pyTuttle		: applications/pyTuttle ;
 #use-project	/samtests		: applications/sam-ls/tests ;
