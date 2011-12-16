@@ -397,6 +397,7 @@ template<typename T>
 T greatestCommonDivisor( T a, T b )
 {
 	T r;
+	if( b == 0 ) return 0;
 	while( (r = a % b) != 0 )
 	{
 		a = b;
