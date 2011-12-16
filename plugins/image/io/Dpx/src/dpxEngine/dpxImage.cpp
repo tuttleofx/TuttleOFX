@@ -208,7 +208,8 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 	if( !_dataSize )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::dev( "DPX: Empty data size." )
+			<< exception::user( "DPX: Unable to read file" )
+			<< exception::dev( "DPX: Empty data size" )
 			<< exception::filename( filename.string() ) );
 	}
 	// read and throws away characters until 'offset' characters have been read
@@ -220,6 +221,7 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 	if( !f.read( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "DPX: Unable to read file" )
 			<< exception::dev( "DPX: Unable to read data." )
 			<< exception::filename( filename.string() ) );
 	}
@@ -244,7 +246,7 @@ void DpxImage::readHeader( const path& filename )
 	if( !f )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::dev( "DPX: Unable to open file." )
+			<< exception::user( "DPX: Unable to open file" )
 			<< exception::filename( filename.string() ) );
 	}
 
@@ -296,7 +298,7 @@ void DpxImage::readHeader( ifstream& f )
 	if( !f.read( (char*)hdrBuffer.get(), hdrSize ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to read dpx header." ) );
+			<< exception::user( "Unable to read dpx header" ) );
 	}
 	// Read dynamic data
 	std::size_t bufpos = 0;
@@ -324,16 +326,16 @@ void DpxImage::readHeader( ifstream& f )
 	if( _header._imageInfo.orientation > 1 )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to read dpx." )
-			<< exception::dev( "Bad orientation value." ) );
+			<< exception::user( "Unable to read dpx" )
+			<< exception::dev( "Bad orientation value" ) );
 	}
 
 	uint8_t bitSize = _header._imageInfo.image_element[0].bit_size;
 	if( bitSize != 8 && bitSize != 10 && bitSize != 12 && bitSize != 16 )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to read dpx." )
-			<< exception::dev() + "Bad bit size value (" + bitSize + ")." );
+			<< exception::user( "Unable to read dpx" )
+			<< exception::dev() + "Bad bit size value (" + bitSize + ")" );
 	}
 
 	uint16_t packing = _header._imageInfo.image_element[0].packing;
@@ -344,8 +346,8 @@ void DpxImage::readHeader( ifstream& f )
 	if( packing != 0 && packing != 1 && packing != 5 )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to read dpx." )
-			<< exception::dev() + "Bad packing value (" + packing + ")." );
+			<< exception::user( "Unable to read dpx" )
+			<< exception::dev() + "Bad packing value (" + packing + ")" );
 	}
 }
 
@@ -457,7 +459,7 @@ void DpxImage::write( const path& filename )
 	if( !f )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "DPX: Unable to open file." )
+			<< exception::user( "DPX: Unable to open file" )
 			<< exception::filename(filename.string()) );
 	}
 	_header.setDataOffset( 2048 );
@@ -469,8 +471,8 @@ void DpxImage::write( const path& filename )
 		if( !f.write( reinterpret_cast<char*>( &zeros[0] ), zeros.size() ) )
 		{
 			BOOST_THROW_EXCEPTION( exception::File()
-				<< exception::user( "DPX: Unable to write." )
-				<< exception::dev( "Error writting padding." ) );
+				<< exception::user( "DPX: Unable to write" )
+				<< exception::dev( "Error writting padding" ) );
 		}
 	}
 
@@ -478,7 +480,7 @@ void DpxImage::write( const path& filename )
 	if( !f.write( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "DPX: Unable to open read data." )
+			<< exception::user( "DPX: Unable to open read data" )
 			<< exception::filename(filename.string()) );
 	}
 	f.close();
@@ -496,27 +498,27 @@ void DpxImage::writeHeader( ofstream& f )
 	if( !f.write( reinterpret_cast<char*>( &header._fileInfo ), sizeof( FileInformation ) ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::user( "DpxImage: Unable to write data (FileInformation)." ) );
+			<< exception::user( "DpxImage: Unable to write data (FileInformation)" ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._imageInfo ), sizeof( ImageInformation ) ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::user( "DpxImage: Unable to write data (ImageInformation)." ) );
+			<< exception::user( "DpxImage: Unable to write data (ImageInformation)" ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._imageOrientation ), sizeof( ImageOrientation ) ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::user( "DpxImage: Unable to write data (ImageOrientation)." ) );
+			<< exception::user( "DpxImage: Unable to write data (ImageOrientation)" ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._motionPicture ), sizeof( MotionPictureFilm ) ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::user( "DpxImage: Unable to write data (MotionPictureFilm)." ) );
+			<< exception::user( "DpxImage: Unable to write data (MotionPictureFilm)" ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._television ), sizeof( TelevisionHeader ) ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::user( "DpxImage: Unable to write data (TelevisionHeader)." ) );
+			<< exception::user( "DpxImage: Unable to write data (TelevisionHeader)" ) );
 	}
 }
 
