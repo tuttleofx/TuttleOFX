@@ -76,14 +76,17 @@ View& JpegReaderProcess<View>::readImage( View& dst )
 	}
 	catch( boost::exception& e )
 	{
-		e << exception::filename( _params._filepath );
-		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::dev( "Jpeg: Unable to open file." )
+			<< exception::filename( _params._filepath ) );
+		//e << exception::filename( _params._filepath );
+		//TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}
 	catch(... )
 	{
 		//		BOOST_THROW_EXCEPTION( exception::Unknown()
-		//			<< exception::user( "Unable to write image")
+		//			<< exception::user( "Unable to read image")
 		//			<< exception::filename(filepath) );
 		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}

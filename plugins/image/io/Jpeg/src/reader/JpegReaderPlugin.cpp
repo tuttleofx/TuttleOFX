@@ -34,11 +34,20 @@ void JpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const
 
 bool JpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	point2<ptrdiff_t> jpegDims = jpeg_read_dimensions( getAbsoluteFilenameAt( args.time ) );
-	rod.x1 = 0;
-	rod.x2 = jpegDims.x * this->_clipDst->getPixelAspectRatio();
-	rod.y1 = 0;
-	rod.y2 = jpegDims.y;
+	try
+	{
+		point2<ptrdiff_t> jpegDims = jpeg_read_dimensions( getAbsoluteFilenameAt( args.time ) );
+		rod.x1 = 0;
+		rod.x2 = jpegDims.x * this->_clipDst->getPixelAspectRatio();
+		rod.y1 = 0;
+		rod.y2 = jpegDims.y;
+	}
+	catch( ... )
+	{
+			BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Jpeg: Unable to open file." )
+			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
+	}
 	return true;
 }
 
