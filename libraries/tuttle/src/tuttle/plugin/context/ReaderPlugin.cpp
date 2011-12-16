@@ -12,7 +12,7 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 	_paramFilepath     = fetchStringParam( kParamReaderFilename );
 	_isSequence        = _filePattern.initFromDetection( _paramFilepath->getValue() );
 	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
-	_paramFlip = fetchBooleanParam( kParamReaderFlip );
+	_paramFlip         = fetchBooleanParam( kParamReaderFlip );
 }
 
 ReaderPlugin::~ReaderPlugin()
@@ -31,6 +31,9 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 	const std::string filename( getAbsoluteFirstFilename() );
 	if( !bfs::exists( filename ) )
 	{
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to open file." )
+			<< exception::filename( filename ) );
 		BOOST_THROW_EXCEPTION( exception::FileNotExist( filename ) );
 	}
 	// If pattern detected (frame varying on time)
@@ -71,7 +74,11 @@ void ReaderPlugin::render( const OFX::RenderArguments& args )
 	const std::string filename( getAbsoluteFilenameAt( args.time ) );
 	if( ! boost::filesystem::exists( filename ) )
 	{
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to open file." )
+			<< exception::filename( filename ) );
 		BOOST_THROW_EXCEPTION( exception::FileNotExist( filename ) );
+
 	}
 	
 }

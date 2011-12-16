@@ -1,5 +1,6 @@
 #include "ProcessGraph.hpp"
 #include "ProcessVisitors.hpp"
+#include <tuttle/common/utils/color.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 
 #include <boost/foreach.hpp>
@@ -293,7 +294,6 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		#ifndef TUTTLE_PRODUCTION
 				graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
 		#endif
-
 				TUTTLE_TCOUT( "---------------------------------------- preprocess 1" );
 				graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
 				renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
@@ -398,15 +398,17 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			}
 			catch( ... )
 			{
-				TUTTLE_COUT( "Error at time: " << time );
-				if( options._continueOnError )
-				{
+				TUTTLE_COUT( tuttle::common::kColorError << "Error at time " << time << tuttle::common::kColorStd );
+				//if( options._continueOnError )
+				//{
+#ifndef TUTTLE_PRODUCTION
 					TUTTLE_COUT( boost::current_exception_diagnostic_information() );
-				}
+#endif
+				/*}
 				else
 				{
 					throw;
-				}
+				}*/
 			}
 		}
 		

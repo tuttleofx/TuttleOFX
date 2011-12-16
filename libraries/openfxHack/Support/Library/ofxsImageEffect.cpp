@@ -40,6 +40,7 @@
 #include "ofxsUtilities.h"
 
 #include <tuttle/common/utils/backtrace.hpp>
+#include <tuttle/common/exceptions.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
@@ -2520,10 +2521,13 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 	catch( boost::exception& e )
 	{
+		/*
+		[tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
+		[OFX::tag_ofxStatus*] = kOfxStatErrValue
+		[boost::errinfo_file_name_*] = /datas/tmp/master32secsh01.0014.dpx
+		*/
 		typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
-
-		std::cerr << "__________" << std::endl;
-		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
+		std::cerr << tuttle::common::kColorError;
 		if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
 		{
 			stat = *status;
@@ -2532,14 +2536,33 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		{
 			stat = kOfxStatFailed;
 		}
+
+		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >( e ) )
+		{
+			std::cerr << *messageException ;
+		}
+		if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >( e ) )
+		{
+			std::cerr << " " << *filenameException;
+		}
+		std::cerr << std::endl;
+		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::dev >( e ) )
+		{
+			std::cerr << *messageException << std::endl;
+		}
+
+#ifndef TUTTLE_PRODUCTION
+		std::cerr << "__________" << std::endl;
+		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
+
 		std::cerr << boost::diagnostic_information(e);
 //		std::cerr << "* inArgs: " << inArgs << std::endl;
-#ifndef TUTTLE_PRODUCTION
 		std::cerr << "----------" << std::endl;
 		std::cerr << "* Backtrace" << std::endl;
 		std::cerr << boost::trace(e);
-#endif
 		std::cerr << "__________" << std::endl;
+#endif
+		std::cerr << tuttle::common::kColorStd;
 	}
 	
 	// catch suite exceptions
