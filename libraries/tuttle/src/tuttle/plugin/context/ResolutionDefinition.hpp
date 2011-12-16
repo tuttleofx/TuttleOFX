@@ -47,22 +47,22 @@ inline void getFormatResolution( const EParamFormat format, std::size_t& width, 
 {
 	switch( format )
 	{
-		case eParamFormatPCVideo:		width =  640; height =  480; break;
-		case eParamFormatNTSC:		width =  720; height =  486; break;
-		case eParamFormatPAL:			width =  720; height =  576; break;
-		case eParamFormatHD:			width = 1920; height = 1080; break;
-		case eParamFormatNTSC169:		width =  720; height =  486; break;
-		case eParamFormatPAL169:		width =  720; height =  576; break;
-		case eParamFormat1kSuper35:		width = 1024; height =  778; break;
-		case eParamFormat1kCinemascope:	width =  914; height =  778; break;
-		case eParamFormat2kSuper35:		width = 2048; height = 1556; break;
-		case eParamFormat2kCinemascope:	width = 1828; height = 1556; break;
-		case eParamFormat4kSuper35:		width = 4096; height = 3112; break;
-		case eParamFormat4kCinemascope:	width = 3656; height = 3112; break;
-		case eParamFormatSquare256:		width =  256; height =  256; break;
-		case eParamFormatSquare512:		width =  512; height =  512; break;
-		case eParamFormatSquare1k:		width = 1024; height = 1024; break;
-		case eParamFormatSquare2k:		width = 2048; height = 2048; break;
+		case eParamFormatPCVideo:       width =  640; height =  480; break;
+		case eParamFormatNTSC:          width =  720; height =  486; break;
+		case eParamFormatPAL:           width =  720; height =  576; break;
+		case eParamFormatHD:            width = 1920; height = 1080; break;
+		case eParamFormatNTSC169:       width =  720; height =  486; break;
+		case eParamFormatPAL169:        width =  720; height =  576; break;
+		case eParamFormat1kSuper35:     width = 1024; height =  778; break;
+		case eParamFormat1kCinemascope: width =  914; height =  778; break;
+		case eParamFormat2kSuper35:     width = 2048; height = 1556; break;
+		case eParamFormat2kCinemascope: width = 1828; height = 1556; break;
+		case eParamFormat4kSuper35:     width = 4096; height = 3112; break;
+		case eParamFormat4kCinemascope: width = 3656; height = 3112; break;
+		case eParamFormatSquare256:     width =  256; height =  256; break;
+		case eParamFormatSquare512:     width =  512; height =  512; break;
+		case eParamFormatSquare1k:      width = 1024; height = 1024; break;
+		case eParamFormatSquare2k:      width = 2048; height = 2048; break;
 	}
 }
 
