@@ -165,14 +165,23 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
-	const Header& h             = in.header();
-	const Imath::V2i dataWindow = h.dataWindow().size();
+	try
+	{
+		InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
+		const Header& h             = in.header();
+		const Imath::V2i dataWindow = h.dataWindow().size();
 
-	rod.x1 = 0;
-	rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
-	rod.y1 = 0;
-	rod.y2 = dataWindow.y + 1;
+		rod.x1 = 0;
+		rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
+		rod.y1 = 0;
+		rod.y2 = dataWindow.y + 1;
+	}
+	catch( ... )
+	{
+			BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "EXR: Unable to open file." )
+			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
+	}
 	return true;
 }
 
