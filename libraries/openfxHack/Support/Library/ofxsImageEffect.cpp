@@ -2539,17 +2539,18 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >( e ) )
 		{
-			std::cerr << *messageException ;
+			std::cerr << *messageException << std::endl;
 		}
 		if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >( e ) )
 		{
-			std::cerr << " " << *filenameException;
+			std::cerr << "\"" << *filenameException << "\"" << std::endl;
 		}
-		std::cerr << std::endl;
+		/*
 		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::dev >( e ) )
 		{
 			std::cerr << *messageException << std::endl;
 		}
+		*/
 
 #ifndef TUTTLE_PRODUCTION
 		std::cerr << "__________" << std::endl;
