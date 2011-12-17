@@ -1,7 +1,7 @@
 #ifndef _TERRY_COLOR_COLORSPACE_LMS_HPP_
 #define	_TERRY_COLOR_COLORSPACE_LMS_HPP_
 
-#include <boost/gil/cmyk.hpp>
+#include "xyz.hpp"
 
 namespace terry {
 namespace color {
@@ -49,18 +49,17 @@ struct LMS
 	
 	typedef lms_colorspace_t colorspace;
 	typedef lms_layout_t layout;
-	typedef ::boost::gil::pixel<colorspace,layout> pixel;
 };
 
-template<class PixelSrc, class PixelDst>
-void color_transform( const LMSParams& srcParams, const PixelSrc& src, const XYZParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const LMSParams& params, const pixel<SChannelType,LMS::layout>& src, pixel<DChannelType,XYZ::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	dst = terry::get_black< pixel<DChannelType,XYZ::layout> >();
 }
-template<class PixelSrc, class PixelDst>
-void color_transform( const XYZParams& srcParams, const PixelSrc& src, const LMSParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const LMSParams& params, const pixel<SChannelType,XYZ::layout>& src, pixel<DChannelType,LMS::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	dst = terry::get_black< pixel<DChannelType,LMS::layout> >();
 }
 
 

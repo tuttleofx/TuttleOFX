@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE( basics )
 	::terry::rgb32f_pixel_t a = terry::get_black<terry::rgb32f_pixel_t>();
 	::terry::hsl32f_pixel_t b;
 	
-	terry::color::color_transformation( rgb_full_params, a, hsl_full_params, b );
+//	terry::color::color_transformation( rgb_full_params, a, hsl_full_params, b );
 	
 	BOOST_CHECK_EQUAL(
 		terry::color::nbCommonColorspace( hsl_full_params, cmyk_full_params ),

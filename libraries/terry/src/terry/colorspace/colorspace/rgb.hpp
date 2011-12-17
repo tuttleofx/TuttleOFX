@@ -38,18 +38,17 @@ struct RGB
 	
 	typedef rgb_colorspace_t colorspace;
 	typedef rgb_layout_t layout;
-//	typedef ::boost::gil::pixel<colorspace,layout> pixel;
 };
 
-template<class PixelSrc, class PixelDst>
-void color_transform( const RGBParams& srcParams, const PixelSrc& src, const XYZParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const RGBParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,XYZ::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	dst = terry::get_black< pixel<DChannelType,XYZ::layout> >();
 }
-template<class PixelSrc, class PixelDst>
-void color_transform( const XYZParams& srcParams, const PixelSrc& src, const RGBParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const RGBParams& params, const pixel<SChannelType,XYZ::layout>& src, pixel<DChannelType,RGB::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	dst = terry::get_black< pixel<DChannelType,RGB::layout> >();
 }
 
 }

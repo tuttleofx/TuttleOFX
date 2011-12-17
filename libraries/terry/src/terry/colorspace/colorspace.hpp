@@ -1,6 +1,8 @@
 #ifndef _TERRY_COLOR_COLORSPACE_HPP_
 #define	_TERRY_COLOR_COLORSPACE_HPP_
 
+#include "colorspace/xyz.hpp"
+
 //#include "layout.hpp"
 //#include "gradation.hpp"
 //#include "primaries.hpp"
@@ -75,20 +77,6 @@ struct print_type
 };
 }
 
-
-/**
- * @brief Fake class to finish hierachy.
- */
-struct None {};
-/**
- * @brief Fake class to finish hierachy.
- */
-struct IsRootReference
-{
-	typedef None reference;
-	typedef None params;
-};
-
 /**
 ll lib	 * @brief Allows to retrieve an mpl::vector of all color types hierachy.
  * @example for HSL: from_root=[XYZ,RGB,HSL], to_root=[HSL,RGB,XYZ]
@@ -123,16 +111,6 @@ struct color_dependencies<IsRootReference>
 };
 
 
-
-
-/**
- * @brief Base class of all color parameters class.
- */
-struct IColorParams
-{
-	virtual bool operator==( const IColorParams& other ) const = 0;
-	bool operator!=( const IColorParams& other ) const { return ! this->operator==( other ); };
-};
 ///**
 // * @brief Base class of all color basic operations.
 // */
@@ -196,26 +174,28 @@ inline IColorTransformation* new_clone( const IColorTransformation& a )
 	return a.clone();
 }
 
-template<class ColorSrc, class ColorDst>
-struct ColorTransformation
+template<class ColorSrc, class ColorDst, bool direction_is_from_root>
+struct ColorTransformation : public IColorTransformation
 {
-	typedef ColorTransformation<ColorSrc, ColorDst> This;
+	typedef ColorTransformation<ColorSrc, ColorDst, direction_is_from_root> This;
 
 	typedef typename ColorSrc::Params SrcParams;
-	typedef typename ColorDst::Params DstParams;
 
-	SrcParams& _srcParams;
-	DstParams& _dstParams;
+	typedef boost::mpl::if_c< direction_is_from_root,
+		typename ColorDst::Params,
+		typename ColorSrc::Params
+		> Params;
 	
-	ColorTransformation( const SrcParams& src, const DstParams& dst )
-	: _srcParams( src )
-	, _dstParams( dst )
+	Params& _params;
+	
+	ColorTransformation( const Params& params )
+	: _params( params )
 	{}
 	
 	template<class PixelSrc, class PixelDst>
 	void operator()( const PixelSrc& src, PixelDst& dst ) const
 	{
-		color_transform( _srcParams, src, _dstParams, dst );
+		color_transform( _params, src, dst );
 	}
 	
 	virtual IColorTransformation* clone() const
@@ -332,13 +312,20 @@ struct FullColorParams : public IFullColorParams
  * @brief Mpl functor to convert a list of color types pair into a list of color transforms.
  * @example [HSL>RGB, RGB>XYZ] to [ColorTranform<HSL,RGB>, ColorTransform<RGB,XYZ>]
  */
-template< typename ColorPair >
+template< typename ColorPair, bool direction_is_from_root >
 struct colorsteps_to_colortransforms_mplfunc
 {
 	typedef ColorTransformation<
 			typename ::boost::mpl::at_c<ColorPair,0>::type, // source color
-			typename ::boost::mpl::at_c<ColorPair,1>::type  // dst color
+			typename ::boost::mpl::at_c<ColorPair,1>::type,  // dst color
+			direction_is_from_root
 		> type;
+};
+
+template< typename Color, typename ChannelType >
+struct colors_to_pixels_mplfunc
+{
+	typedef pixel<ChannelType, typename Color::layout> type;
 };
 
 /**
@@ -350,28 +337,33 @@ struct colorsteps_to_colortransforms_mplfunc
  * * from_root: [XYZ>RGB, RGB>HSL]
  * * to_root: [HSL>RGB, RGB>XYZ]
  */
-template<class Color, bool direction_is_from_root>
+template<class Color, typename ChannelType, bool direction_is_from_root>
 struct FullColorTransformations
 {
-	typedef FullColorTransformations<Color, direction_is_from_root> This;
+	typedef FullColorTransformations<Color, ChannelType, direction_is_from_root> This;
 	
 	typedef color_dependencies<Color> dependencies;
-	typedef typename dependencies::from_root from_root;
-	typedef typename dependencies::to_root to_root;
 	typedef typename dependencies::size size;
-	typedef typename dependencies::color_steps_from_root color_steps_from_root;
-	typedef typename dependencies::color_steps_to_root color_steps_to_root;
 	
 	typedef typename ::boost::mpl::if_c<direction_is_from_root,
-			from_root,
-			to_root> colors;
-	typedef typename ::boost::mpl::if_c<direction_is_from_root,
-			color_steps_from_root,
-			color_steps_to_root> color_transformations;
+			typename dependencies::color_steps_from_root,
+			typename dependencies::color_steps_to_root> colorSteps;
 	
-	typedef typename ::boost::mpl::transform<color_transformations, colorsteps_to_colortransforms_mplfunc< ::boost::mpl::_1 > >::type all_transform_nodes;
-	typedef typename ::boost::fusion::result_of::as_vector<all_transform_nodes>::type all_transform_nodes_v;
-	all_transform_nodes_v _transformNodes;
+	typedef typename ::boost::mpl::transform<colorSteps, colorsteps_to_colortransforms_mplfunc< ::boost::mpl::_1, direction_is_from_root > >::type ColorTransformVecT;
+	typedef typename ::boost::fusion::result_of::as_vector<ColorTransformVecT>::type ColorTransformVec;
+	
+	ColorTransformVec _colorTranformVec;
+
+	
+	typedef typename ::boost::mpl::if_c<direction_is_from_root,
+			typename dependencies::from_root,
+			typename dependencies::to_root> colors;
+	
+	typedef typename ::boost::mpl::transform<colors, colors_to_pixels_mplfunc< ::boost::mpl::_1, ChannelType > >::type PixelVecT;
+	typedef typename ::boost::fusion::result_of::as_vector<PixelVecT>::type PixelVec;
+	
+	PixelVec _pixelVec;
+	
 	
 	/**
 	 * @brief Create a dynamic view on the current ::boost::mpl::vector values.
@@ -382,9 +374,9 @@ struct FullColorTransformations
 		std::vector<IColorTransformation*> vec;
 		vec.reserve( getNbReferences() );
 		
-//		std::cout << "at_c 0: " << &fusion::at_c<0>(_transformNodes) << std::endl;
-//		std::cout << "at_c 0 xyzValue: " << fusion::at_c<0>(_transformNodes)._xyzValue << std::endl;
-		::boost::fusion::for_each( _transformNodes, append_abstractptr_from_fusionvector_to_stdvector<IColorTransformation>( vec ) );
+//		std::cout << "at_c 0: " << &fusion::at_c<0>(_colorTranformVec) << std::endl;
+//		std::cout << "at_c 0 xyzValue: " << fusion::at_c<0>(_colorTranformVec)._xyzValue << std::endl;
+		::boost::fusion::for_each( _colorTranformVec, append_abstractptr_from_fusionvector_to_stdvector<IColorTransformation>( vec ) );
 		return vec;
 	}
 	const std::vector<IColorTransformation*> getTransformationVectorView() const { return const_cast<This&>(*this).getTransformationVectorView(); }
@@ -424,23 +416,47 @@ std::size_t nbCommonColorspace( const IFullColorParams& a, const IFullColorParam
 //}
 
 
+//	template<typename SChannelType, typename DChannelType>
+//	void apply( const pixel<SChannelType,Color::layout>& src, pixel<SChannelType,XYZ::layout>& dst ) const
+//	{
+//	}
+//	template<typename SChannelType, typename DChannelType>
+//	void apply( const pixel<SChannelType,XYZ::layout>& , pixel<SChannelType,Color::layout>&  ) const
+//	{
+//	}
 
-template<class SrcColor, class DstColor, class SrcPixel, class DstPixel>
+
+struct ApplyColorTransformations
+{
+	template<typename CT>
+	void operator()( CT& colorTransformation ) const
+	{
+		
+	}
+};
+
+
+template<typename Color, typename SChannelType, typename DChannelType>
 void color_transformation(
-		const FullColorParams<SrcColor>& srcParams, const SrcPixel& src,
-		const FullColorParams<DstColor>& dstParams, DstPixel& dst )
+		const FullColorParams<Color>& params,
+		const pixel<SChannelType, typename Color::layout>& src,
+		pixel<DChannelType,XYZ::layout>& dst )
 {
 	using namespace terry;
 	using namespace terry::numeric;
-	BOOST_STATIC_ASSERT((
-			boost::is_same<
-				typename SrcColor::colorspace,
-				typename ::boost::gil::color_space_type<SrcPixel>::type
-			>::value
-		));
-	pixel_zeros( dst );
+	
+	FullColorTransformations<Color, SChannelType, /*to_root*/false> transformations;
+	
+	::boost::fusion::for_each( transformations._colorTranformVec, ApplyColorTransformations() );
 }
 
+
+/*
+FullColorParams<cmyk> cmykParams;
+cmykParams.get<rgb>().colorTemperature = d65;
+
+color_transformation( cmykParams, pixCmyk, adobe_sRgb, pixRgb );
+*/
 
 }
 }

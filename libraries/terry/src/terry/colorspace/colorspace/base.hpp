@@ -57,6 +57,29 @@ using ::boost::gil::image;
 
 namespace color {
 
+/**
+ * @brief Base class of all color parameters class.
+ */
+struct IColorParams
+{
+	virtual bool operator==( const IColorParams& other ) const = 0;
+	bool operator!=( const IColorParams& other ) const { return ! this->operator==( other ); };
+};
+
+
+/**
+ * @brief Fake class to finish hierachy.
+ */
+struct None {};
+/**
+ * @brief Fake class to finish hierachy.
+ */
+struct IsRootReference
+{
+	typedef None reference;
+	typedef None params;
+};
+
 
 }
 }

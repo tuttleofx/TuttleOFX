@@ -55,7 +55,6 @@ struct XYZ
 	
 	typedef xyz_colorspace_t colorspace;
 	typedef xyz_layout_t layout;
-	typedef ::boost::gil::pixel<colorspace,layout> pixel;
 };
 
 

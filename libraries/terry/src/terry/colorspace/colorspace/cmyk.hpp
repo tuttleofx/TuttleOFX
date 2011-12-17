@@ -53,18 +53,17 @@ struct CMYK
 	
 	typedef cmyk_colorspace_t colorspace;
 	typedef cmyk_layout_t layout;
-	typedef ::boost::gil::pixel<colorspace,layout> pixel;
 };
 
-template<class PixelSrc, class PixelDst>
-void color_transform( const CMYKParams& srcParams, const PixelSrc& src, const RGBParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const CMYKParams& params, const pixel<SChannelType,CMYK::layout>& src, pixel<DChannelType,RGB::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	dst = terry::get_black< pixel<DChannelType,RGB::layout> >();
 }
-template<class PixelSrc, class PixelDst>
-void color_transform( const RGBParams& srcParams, const PixelSrc& src, const CMYKParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const CMYKParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,CMYK::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	dst = terry::get_black< pixel<DChannelType,CMYK::layout> >();
 }
 
 

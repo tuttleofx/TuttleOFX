@@ -50,18 +50,81 @@ struct HSL
 	
 	typedef hsl_colorspace_t colorspace;
 	typedef hsl_layout_t layout;
-	typedef ::boost::gil::pixel<colorspace,layout> pixel;
 };
 
-template<class PixelSrc, class PixelDst>
-void color_transform( const HSLParams& srcParams, const PixelSrc& src, const RGBParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const HSLParams& params, const pixel<SChannelType,HSL::layout>& src, pixel<DChannelType,RGB::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	pixel_zeros( dst );
 }
-template<class PixelSrc, class PixelDst>
-void color_transform( const RGBParams& srcParams, const PixelSrc& src, const HSLParams& dstParams, PixelDst& dst )
+template<typename SChannelType, typename DChannelType>
+void color_transform( const HSLParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,HSL::layout>& dst )
 {
-	dst = terry::get_black<PixelDst>();
+	typedef typename floating_channel_type_t<DChannelType>::type ChannelFloat;
+	
+	// only ChannelFloat for hsl is supported
+	ChannelFloat temp_red   = channel_convert<ChannelFloat>( get_color( src, red_t()   ));
+	ChannelFloat temp_green = channel_convert<ChannelFloat>( get_color( src, green_t() ));
+	ChannelFloat temp_blue  = channel_convert<ChannelFloat>( get_color( src, blue_t()  ));
+
+	ChannelFloat hue, saturation, lightness;
+
+	ChannelFloat min_color = std::min( temp_red, std::min( temp_green, temp_blue ));
+	ChannelFloat max_color = std::max( temp_red, std::max( temp_green, temp_blue ));
+
+	ChannelFloat diff = max_color - min_color;
+
+	if( diff == 0.0 )
+	{
+		// rgb color is gray
+		get_color( dst, hsl_colorspace::hue_t() ) = 0;
+		get_color( dst, hsl_colorspace::saturation_t() ) = 0;
+		// doesn't matter which rgb channel we use, they all have the same value.
+		get_color( dst, hsl_colorspace::lightness_t() )	= channel_convert<DChannelType>( temp_red );
+		return;
+	}
+	
+	// lightness calculation
+	lightness = ( min_color + max_color ) * 0.5f;
+
+	// saturation calculation
+	if( lightness < 0.5f )
+	{
+		saturation = diff / ( min_color + max_color );
+	}
+	else
+	{
+		saturation = ( max_color - min_color ) / ( 2.f - diff );
+	}
+
+	// hue calculation
+	if( max_color == temp_red )
+	{
+		// max_color is red
+		hue = (double)( temp_green - temp_blue ) / diff;
+
+	}
+	else if( max_color == temp_green )
+	{
+		// max_color is green
+		// 2.0 + (b - r) / (maxColor - minColor);
+		hue = 2.f + (double)( temp_blue - temp_red ) / diff;
+	}
+	else
+	{
+		// max_color is blue
+		hue = 4.f + (double)( temp_red - temp_green ) / diff;
+	}
+
+	if( hue < 0.f )
+	{
+		hue += 6.f;
+	}
+	hue /= 6.f;
+
+	get_color( dst, hsl_colorspace::hue_t()        ) = channel_convert<DChannelType>( hue );
+	get_color( dst, hsl_colorspace::saturation_t() ) = channel_convert<DChannelType>( saturation );
+	get_color( dst, hsl_colorspace::lightness_t()  ) = channel_convert<DChannelType>( lightness );
 }
 
 BOOST_MPL_ASSERT( ( ::boost::mpl::equal<
