@@ -3,6 +3,8 @@
 
 //#define TUTTLE_NO_COUT
 
+#include "color.hpp"
+
 ////////////////////////////////////////////////////////////////////////////////
 // System stuff
 #include <tuttle/common/system/system.hpp>
@@ -54,7 +56,7 @@
  #define TUTTLE_CERR(... )  ::std::cerr << __VA_ARGS__ << ::std::endl
 
  #define TUTTLE_COUT_X( N, ... ) \
-    for( unsigned int i = 0; i < N; ++i ) { ::std::cout << __VA_ARGS__; } \
+    for( std::size_t i = 0; i < N; ++i ) { ::std::cout << __VA_ARGS__; } \
     ::std::cout << ::std::endl
 
 #else
@@ -83,19 +85,19 @@
           ::std::endl << "\t" << __VA_ARGS__ )
 
  #define TUTTLE_COUT_WARNING(... )  \
-    TUTTLE_CERR( "Warning:" << \
+    TUTTLE_CERR( "TuttleOFX - Warning:" << \
     ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__  )
+    ::std::endl << "\t" << __VA_ARGS__ )
 
  #define TUTTLE_COUT_ERROR(... )  \
-    TUTTLE_CERR( "Error:" << \
+    TUTTLE_CERR( tuttle::common::kColorError << "TuttleOFX - Error:" << \
     ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__  )
+    ::std::endl << "\t" << __VA_ARGS__ << tuttle::common::kColorStd )
 
  #define TUTTLE_COUT_FATALERROR(... )  \
-    TUTTLE_CERR( "Fatal error:" << \
+    TUTTLE_CERR( tuttle::common::kColorError << "TuttleOFX - Fatal error:" << \
     ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__  )
+    ::std::endl << "\t" << __VA_ARGS__ << tuttle::common::kColorStd )
 
 #endif
 
