@@ -398,17 +398,17 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			}
 			catch( ... )
 			{
-				TUTTLE_COUT( tuttle::common::kColorError << "Error at time " << time << tuttle::common::kColorStd );
-				//if( options._continueOnError )
-				//{
+				if( options._continueOnError )
+				{
+					TUTTLE_COUT_ERROR( "Can't compute frame " << time << "." );
 #ifndef TUTTLE_PRODUCTION
 					TUTTLE_COUT( boost::current_exception_diagnostic_information() );
 #endif
-				/*}
+				}
 				else
 				{
 					throw;
-				}*/
+				}
 			}
 		}
 		
