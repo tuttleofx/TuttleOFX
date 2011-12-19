@@ -3,6 +3,7 @@
 #include "RawReaderPlugin.hpp"
 
 #include <terry/globals.hpp>
+#include <terry/point/ostream.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/gil_all.hpp>
@@ -139,10 +140,10 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//		}
 
 		// The metadata are accessible through data fields of the class
-		TUTTLE_COUT( "Image size: " << _rawProcessor.imgdata.sizes.width << ", " << _rawProcessor.imgdata.sizes.height );
+		TUTTLE_TCOUT( "Image size: " << _rawProcessor.imgdata.sizes.width << ", " << _rawProcessor.imgdata.sizes.height );
 
 		//		TUTTLE_COUT_VAR2( image->width, image->height );
-		TUTTLE_COUT_VAR2( _rawProcessor.imgdata.sizes.width, _rawProcessor.imgdata.sizes.height );
+		TUTTLE_TCOUT_VAR2( _rawProcessor.imgdata.sizes.width, _rawProcessor.imgdata.sizes.height );
 
 		//		// And let us print its dump; the data are accessible through data fields of the class
 		//		for( int i = 0;
@@ -162,9 +163,9 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		                                      _size.width /*image->width*/ * sizeof( RawPixel ) /*image->data_size*/ );
 		
 		View dst = this->_dstView;
-		TUTTLE_COUT_VAR( sizeof( RawPixel ) );
-		TUTTLE_COUT_VAR( imageView.dimensions() );
-		TUTTLE_COUT_VAR( dst.dimensions() );
+		TUTTLE_TCOUT_VAR( sizeof( RawPixel ) );
+		TUTTLE_TCOUT_VAR( imageView.dimensions() );
+		TUTTLE_TCOUT_VAR( dst.dimensions() );
 		if( _params._flip )
 		{
 			dst = flipped_up_down_view( this->_dstView );

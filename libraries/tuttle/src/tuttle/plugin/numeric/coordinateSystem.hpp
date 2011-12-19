@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_COORDONATESYSTEM_HPP_
 #define _TUTTLE_PLUGIN_COORDONATESYSTEM_HPP_
 
+#include <terry/point/operations.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/static_assert.hpp>
 

@@ -113,7 +113,7 @@ public:
 
 	inline Point2 pixelToLensCenterNormalized( const Point2& p ) const
 	{
-		return pixelToNormalized( p - this->_lensCenterDst );
+		return this->pixelToNormalized( p - this->_lensCenterDst );
 	}
 
 	template<typename F2>
@@ -126,7 +126,7 @@ public:
 
 	inline Point2 lensCenterNormalizedToPixel( const Point2& pn ) const
 	{
-		return normalizedToPixel( pn ) + this->_lensCenterSrc;
+		return this->normalizedToPixel( pn ) + this->_lensCenterSrc;
 	}
 
 };

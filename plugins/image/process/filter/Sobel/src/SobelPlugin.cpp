@@ -5,6 +5,7 @@
 #include <tuttle/plugin/ofxToGil/point.hpp>
 
 #include <terry/globals.hpp>
+#include <terry/point/operations.hpp>
 #include <terry/filter/gaussianKernel.hpp>
 
 #include <boost/gil/gil_all.hpp>

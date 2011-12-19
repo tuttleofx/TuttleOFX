@@ -7,6 +7,7 @@
 #include <tuttle/plugin/IProgress.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <terry/globals.hpp>
+#include <terry/point/operations.hpp>
 
 #include <ofxsCore.h>
 

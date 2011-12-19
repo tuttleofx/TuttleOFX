@@ -5,6 +5,7 @@
 #include <tuttle/plugin/ofxToGil/point.hpp>
 
 #include <terry/sampler/sampler.hpp>
+#include <terry/point/operations.hpp>
 
 #include <boost/gil/gil_all.hpp>
 

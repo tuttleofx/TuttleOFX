@@ -72,18 +72,18 @@ struct Compute_alpha_pixel
 			}
         }
 		Pixel ret;
-		if(!_params._boolReverseMask->getValue()) //revert mask
+		if( ! _params._boolReverseMask->getValue() ) //revert mask
 			alpha = 1-alpha;
 		
-		if(_isOutputBW) // output is gray scale image
+		if( _isOutputBW ) // output is gray scale image
 		{
 			gray32f_pixel_t inter; // need a gray_pixel
 			inter[0] = alpha;
-			color_convert(inter,ret); // convert gray_pixel to rgba_pixel
+			color_convert( inter, ret ); // convert gray_pixel to rgba_pixel
 		}
 		else // output is alpha channel
 		{
-			for(unsigned int i=0; i<boost::gil::num_channels<Pixel>::type::value -1; ++i)
+			for( std::size_t i = 0; i < boost::gil::num_channels<Pixel>::type::value -1; ++i )
 				ret[i] = p[i];
 			ret[3] = alpha; //fill alpha channel up
 		}

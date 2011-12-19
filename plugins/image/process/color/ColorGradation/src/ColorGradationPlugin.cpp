@@ -98,17 +98,23 @@ void ColorGradationPlugin::changedParam( const OFX::InstanceChangedArgs& args, c
 
 bool ColorGradationPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
+	/*
 	ColorGradationProcessParams<Scalar> params = getProcessParams();
-	/*if( params._in == params._out )
+	if( params._in == params._out )
 	{
-		if( ( params._in == 2 ) && ( params._GammaValueIn != params._GammaValueOut ) )
+		if( ( params._in == 2 ) &&
+		    ( params._GammaValueIn != params._GammaValueOut ) )
 			return false;
-		if( ( params._in == 3 ) && ( params._BlackPointIn != params._BlackPointOut ) && ( params._WhitePointIn != params._WhitePointOut ) &&( params._GammaSensitoIn != params._GammaSensitoOut ) )
+		if( ( params._in == 3 ) &&
+		    ( params._BlackPointIn != params._BlackPointOut ) &&
+		    ( params._WhitePointIn != params._WhitePointOut ) &&
+		    ( params._GammaSensitoIn != params._GammaSensitoOut ) )
 			return false;
 		identityClip = _clipSrc;
 		identityTime = args.time;
 		return true;
-	}*/
+	}
+	*/
 	return false; // by default, we are not an identity operation
 }
 

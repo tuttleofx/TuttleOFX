@@ -2,6 +2,8 @@
 #include "BlurProcess.hpp"
 #include "BlurDefinitions.hpp"
 
+#include <terry/point/operations.hpp>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {

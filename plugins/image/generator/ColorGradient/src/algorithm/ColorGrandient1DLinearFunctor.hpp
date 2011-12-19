@@ -4,10 +4,12 @@
 #include "../ColorGradientDefinitions.hpp"
 
 #include <tuttle/plugin/global.hpp>
+
 #include <terry/globals.hpp>
+#include <terry/point/operations.hpp>
+#include <terry/numeric/operations.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <terry/numeric/operations.hpp>
 #include <boost/math/special_functions/pow.hpp>
 
 #include <cmath>

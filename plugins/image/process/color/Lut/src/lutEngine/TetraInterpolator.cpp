@@ -6,51 +6,44 @@
 
 namespace tuttle {
 
+template<class T>
+T clamp( const T v, const T min, const T max )
+{
+    return std::max(min, std::min( v, max) );
+}
+
 Color TetraInterpolator::interpolate( const AbstractLut* lut, const double x, const double y, const double z ) const
 {
-	Color p000, p001, p010, p011, p100, p101, p110, p111;
-	unsigned int x0, y0, z0, x1, y1, z1;
-	double dx, dy, dz;
-	Color c0, c1, c2, c3;
-	size_t dimSize = lut->dimSize();
+	const std::size_t dimSize = lut->dimSize();
 
-	x0 = (unsigned int)std::floor( x * ( dimSize - 1 ) );
-	y0 = (unsigned int)std::floor( y * ( dimSize - 1 ) );
-	z0 = (unsigned int)std::floor( z * ( dimSize - 1 ) );
+	const double xc = clamp( x, 0.0, 1.0 );
+	const double yc = clamp( y, 0.0, 1.0 );
+	const double zc = clamp( z, 0.0, 1.0 );
+	const unsigned int x0 = (unsigned int)std::floor( xc * ( dimSize - 1 ) );
+	const unsigned int y0 = (unsigned int)std::floor( yc * ( dimSize - 1 ) );
+	const unsigned int z0 = (unsigned int)std::floor( zc * ( dimSize - 1 ) );
 
 	// par defaut le pas de la grille est de 1
-	x1 = x0 + 1;
-	y1 = y0 + 1;
-	z1 = z0 + 1;
+	const unsigned int x1 = x0 + 1;
+	const unsigned int y1 = y0 + 1;
+	const unsigned int z1 = z0 + 1;
 
-	if( x1 >= dimSize )
-		x1 = dimSize - 1;
-	else if( x1 < 0 )
-		x1 = 0;
-	if( y1 >= dimSize )
-		y1 = dimSize - 1;
-	else if( y1 < 0 )
-		y1 = 0;
-	if( z1 >= dimSize )
-		z1 = dimSize - 1;
-	else if( z1 < 0 )
-		z1 = 0;
+	const Color p000 = lut->getIndexedColor( x0, y0, z0 );
+	const Color p001 = lut->getIndexedColor( x0, y0, z1 );
+	const Color p010 = lut->getIndexedColor( x0, y1, z0 );
+	const Color p011 = lut->getIndexedColor( x0, y1, z1 );
+	const Color p100 = lut->getIndexedColor( x1, y0, z0 );
+	const Color p101 = lut->getIndexedColor( x1, y0, z1 );
+	const Color p110 = lut->getIndexedColor( x1, y1, z0 );
+	const Color p111 = lut->getIndexedColor( x1, y1, z1 );
 
-	p000 = lut->getIndexedColor( x0, y0, z0 );
-	p001 = lut->getIndexedColor( x0, y0, z1 );
-	p010 = lut->getIndexedColor( x0, y1, z0 );
-	p011 = lut->getIndexedColor( x0, y1, z1 );
-	p100 = lut->getIndexedColor( x1, y0, z0 );
-	p101 = lut->getIndexedColor( x1, y0, z1 );
-	p110 = lut->getIndexedColor( x1, y1, z0 );
-	p111 = lut->getIndexedColor( x1, y1, z1 );
+	const double dx = x * ( dimSize - 1.0 ) - (double)x0;
+	const double dy = y * ( dimSize - 1.0 ) - (double)y0;
+	const double dz = z * ( dimSize - 1.0 ) - (double)z0;
 
-	dx = x * ( dimSize - 1.0 ) - (double)x0;
-	dy = y * ( dimSize - 1.0 ) - (double)y0;
-	dz = z * ( dimSize - 1.0 ) - (double)z0;
+	const Color c0 = p000;
 
-	c0 = p000;
-
+	Color c1, c2, c3;
 	if( dx >= dy && dy >= dz )     // T1
 	{
 		c1 = ( p100 - p000 ); c2 = ( p110 - p100 ); c3 = ( p111 - p110 );
