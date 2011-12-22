@@ -15,50 +15,66 @@
 
 #include <iostream>
 
-std::string getDefaultValues(const tuttle::host::ofx::property::OfxhProperty& prop)
+
+/// get Default or choice values
+std::vector<std::string> getDefaultOrChoiceValues( const tuttle::host::ofx::property::OfxhProperty& prop )
 {
-	std::string s;
-	s += sam::samdo::_color._green;
+	std::vector<std::string> s;
 	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
 	{
 		int n = 0;
 		for( ; n < (int)( prop.getDimension() ) - 1; ++n )
 		{
-			s += prop.getStringValue( n );
-			s += " ";
+			s.push_back( prop.getStringValue( n ) );
 		}
 		if( prop.getDimension() > 0 )
 		{
-			s += prop.getStringValue( n );
-			s += " ";
+			s .push_back( prop.getStringValue( n ) );
 		}
+	}
+	return s;
+}
+
+std::string getPrintableDefaultValues( const tuttle::host::ofx::property::OfxhProperty& prop )
+{
+	std::string s;
+	std::vector<std::string> values = getDefaultOrChoiceValues( prop );
+
+	s += sam::samdo::_color._green;
+	for( size_t i=0; i < values.size(); i++ )
+	{
+		s += values.at( i );
+		s += " ";
 	}
 	s += sam::samdo::_color._std;
 	return s;
 }
 
 /// get defaults values of plugin properties
-std::string getChoiceValues(const tuttle::host::ofx::property::OfxhProperty& prop)
+std::string getPrintableChoiceValues( const tuttle::host::ofx::property::OfxhProperty& prop )
 {
 	std::string s;
+	std::vector<std::string> values = getDefaultOrChoiceValues( prop );
 	s += sam::samdo::_color._red;
-	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
+	for( size_t i=0; i < values.size(); i++ )
 	{
-		int n = 0;
-		for( ; n < (int)( prop.getDimension() ) - 1; ++n )
-		{
-			s += "\t\t\t\t\t- ";
-			s += prop.getStringValue( n );
-			s += "\n";
-		}
-		if( prop.getDimension() > 0 )
-		{
-			s += "\t\t\t\t\t- ";
-			s += prop.getStringValue( n );
-			s += "\n";
-		}
+		s += "\t\t\t\t\t- ";
+		s += values.at( i );
+		s += "\n";
 	}
 	s += sam::samdo::_color._std;
+	return s;
+}
+
+/// get default value of plugin properties
+std::string getDefaultChoiceValue( const tuttle::host::ofx::property::OfxhProperty& prop )
+{
+	std::string s;
+	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
+	{
+		int indexForDefaultValue =  std::atoi( getPrintableDefaultValues( prop ).c_str() );
+		s += prop.getStringValue( indexForDefaultValue );
+	}
 	return s;
 }
 
@@ -77,6 +93,25 @@ std::string getPropType(const tuttle::host::ofx::property::OfxhProperty& prop)
 	return s;
 }
 
+std::vector<std::string> getChoiceValuesForParameter( const tuttle::host::ofx::property::OfxhSet properties, std::string context="" )
+{
+	std::vector<std::string> choiceValues;
+	std::string defaultValue;
+	tuttle::host::ofx::property::PropertyMap propMap = properties.getMap();
+	for( tuttle::host::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
+	{
+		const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
+		std::string label = itProperty->first;
+
+		if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
+		{
+			choiceValues = getDefaultOrChoiceValues( prop );
+			return choiceValues;
+		}
+	}
+	return choiceValues;
+}
+
 void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std::string context="" )
 {
 	std::string defaultValue;
@@ -90,11 +125,15 @@ void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std
 
 		if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
 		{
-			choiceValues = getChoiceValues( prop );
+			choiceValues = getPrintableChoiceValues( prop );
+			defaultValue = getDefaultChoiceValue( prop );
 		}
 		if( std::strcmp( label.c_str() , "OfxParamPropDefault" ) == 0 )
 		{
-			defaultValue = getDefaultValues( prop );
+			if( ! choiceValues.size() )
+			{
+				defaultValue = getPrintableDefaultValues( prop );
+			}
 		}
 		if( std::strcmp( label.c_str() , "OfxParamPropType" ) == 0 )
 		{
@@ -271,7 +310,10 @@ int main( int argc, char** argv )
 					home = env_tuttle_cache;
 					home /= ".tuttle";
 				}
-
+				if( ! boost::filesystem::exists( home ) )
+				{
+					boost::filesystem::create_directory( home );
+				}
 				const std::string logFilename( (home / "logTuttle.log").string() );
 				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
@@ -368,7 +410,10 @@ int main( int argc, char** argv )
 				hiddenOptions.add_options()
 					("param-values", bpo::value< std::vector<std::string> >(), "node parameters")
 					// for auto completion
-					("parameters-list" , "list parameters of the node")
+					("parameters-list"  , "list parameters of the node")
+					("parameter-type"   , bpo::value< std::string >(), "parameter type")
+					("parameter-values" , bpo::value< std::string >(), "possible parameter values")
+					("parameter-default", bpo::value< std::string >(), "parameter default value")
 				;
 
 				// define default options
@@ -621,6 +666,28 @@ int main( int argc, char** argv )
 							TUTTLE_COUT("");
 							exit(0);
 						}
+
+						if( node_vm.count("parameter-type") )
+						{
+							const std::string paramName = node_vm["parameter-type"].as<std::string>();
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							TUTTLE_COUT( param.getParamType() );
+							exit(0);
+						}
+
+						if( node_vm.count("parameter-values") )
+						{
+							const std::string paramName = node_vm["parameter-values"].as<std::string>();
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							std::vector<std::string> values = getChoiceValuesForParameter( param.getProperties() );
+							for( size_t i=0; i < values.size(); i++ )
+							{
+								TUTTLE_COUT( values.at( i ) );
+							}
+							exit(0);
+						}
+					//("parameter-values", bpo::value< std::string >(), "possible parameter values")
+					//("parameter-default", bpo::value< std::string >(), "parameter default value")
 
 						// Analyse parameters
 						static const boost::regex re_param( "(?:([a-zA-Z_][a-zA-Z0-9_]*)=)?(.*)" );
