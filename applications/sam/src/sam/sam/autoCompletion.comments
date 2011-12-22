@@ -1,0 +1,14 @@
+The auto-completion need to be enabled.
+to enabling auto-completion, add in ~/.bashrc these lignes:
+
+# auto completion
+if [ -f /etc/bash_completion ]; then
+. /etc/bash_completion
+fi
+
+after, you need to run the script sam.sh (which can be called after these previous lignes)
+then after type sam, do <TAB><TAB> and it answer:
+cp do ls mv plugins etc.
+
+just start to complete and continue with <TAB><TAB>
+Enjoy the command ligne !
