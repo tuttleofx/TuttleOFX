@@ -85,8 +85,13 @@ void Core::preload()
 		home = env_tuttle_cache;
 		home /= ".tuttle";
 	}
-
+	if( ! boost::filesystem::exists( home ) )
+	{
+		boost::filesystem::create_directory( home );
+	}
 	const std::string cacheFile( (home / "tuttlePluginCacheSerialize.xml").string() );
+
+	TUTTLE_COUT_DEBUG ("plugin cache file = " << cacheFile );
 
 	try
 	{
