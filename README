@@ -49,7 +49,8 @@ Tested compilers
 	* Linux
 		+ GCC 4.1.2 on OpenSUSE 11.2 64bits
 		+ GCC 4.4.1 on OpenSUSE 11.2 64bits
-		+ GCC 4.6.1 on Ubuntu 11.10 32bits
+		+ GCC 4.6.1 on Ubuntu 11.10 32/64bits
+		+ Clan 2.9 on Ubuntu 11.10 32/64bits
 	* MacOS
 		+ GCC 4.2.1 64bits
 	* Windows

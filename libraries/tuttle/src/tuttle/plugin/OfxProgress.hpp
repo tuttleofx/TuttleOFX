@@ -9,6 +9,7 @@
 #include "exceptions.hpp"
 
 #include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/IProgress.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>

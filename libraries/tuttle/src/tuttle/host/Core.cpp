@@ -92,8 +92,9 @@ void Core::preload()
 		boost::filesystem::create_directories( home );
 	}
 	const std::string cacheFile( (home / "tuttlePluginCacheSerialize.xml").string() );
+	//TUTTLE_TCOUT_VAR( cacheFile );
 
-	TUTTLE_COUT_DEBUG ("plugin cache file = " << cacheFile );
+	TUTTLE_COUT_DEBUG("plugin cache file = " << cacheFile );
 
 	try
 	{

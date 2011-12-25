@@ -127,7 +127,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			}
 		}
 	}
-	if( progressForward( dst.height() ) )
+	if( this->progressForward( dst.height() ) )
 		return;
 
 	if( _params._yKernelGaussianDerivative.size() == 0 || ( !_params._unidimensional && _params._yKernelGaussian.size() == 0 ) )
@@ -179,7 +179,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			}
 		}
 	}
-	if( progressForward( dst.height() ) )
+	if( this->progressForward( dst.height() ) )
 		return;
 
 	if( ! _params._computeGradientNorm )
@@ -206,7 +206,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			this->getOfxProgress()
 			);
 	}
-	if( progressForward( dst.height() ) )
+	if( this->progressForward( dst.height() ) )
 		return;
 
 	computeGradientDirection( dst, boost::mpl::bool_<(boost::gil::num_channels<DView>::value >= 4)>() );
@@ -222,7 +222,7 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 	if( ! _params._computeGradientDirection )
 	{
 		fill_pixels( kth_channel_view<3>(dst), _pixelZero );
-		if( progressForward( dst.height() ) )
+		if( this->progressForward( dst.height() ) )
 			return;
 	}
 	else

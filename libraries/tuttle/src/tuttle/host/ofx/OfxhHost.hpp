@@ -78,12 +78,14 @@ public:
 	/// get the C API handle that is passed across the API to represent this host
 	OfxHost* getHandle();
 
+	/// is my magic number valid?
+	bool verifyMagic() { return true; }
+
+	#ifndef SWIG
+
 	/// override this to handle do post-construction initialisation on a Param::Descriptor
 	virtual void initDescriptor( attribute::OfxhParamDescriptor& ) const {}
 
-	/// is my magic number valid?
-	bool verifyMagic() { return true; }
-	#ifndef SWIG
 	/// vmessage
 	virtual OfxStatus vmessage( const char* type,
 	                            const char* id,
