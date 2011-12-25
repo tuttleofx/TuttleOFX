@@ -71,27 +71,7 @@ void Core::preload()
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	boost::filesystem::path home;
-	if( const char* env_tuttle_cache = std::getenv("TUTTLE_HOME") )
-	{
-		home = env_tuttle_cache;
-	}
-	else if( const char* env_tuttle_cache = std::getenv("HOME") ) // LINUX HOME
-	{
-		home = env_tuttle_cache;
-		home /= ".tuttle";
-	}
-	else if( const char* env_tuttle_cache = std::getenv("WINDIR") ) // WINDOWS HOME
-	{
-		home = env_tuttle_cache;
-		home /= ".tuttle";
-	}
-	if( ! home.empty() &&
-	    ! boost::filesystem::exists( home ) )
-	{
-		boost::filesystem::create_directories( home );
-	}
-	const std::string cacheFile( (home / "tuttlePluginCacheSerialize.xml").string() );
+	const std::string cacheFile( (getPreferences().getTuttleHomePath() / "tuttlePluginCacheSerialize.xml").string() );
 	//TUTTLE_TCOUT_VAR( cacheFile );
 
 	TUTTLE_COUT_DEBUG("plugin cache file = " << cacheFile );

@@ -40,7 +40,8 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	std::string testfile( "test_imageEffectPlugin_serialization.xml" );
+	const std::string testfile = ( Core::instance().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization.xml" ).string();
+	TUTTLE_TCOUT_VAR( testfile );
 	BOOST_REQUIRE( testfile.size() );
 
 	{
@@ -60,7 +61,8 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 		ifsb.close();
 	}
 
-	std::string testfile2( "test_imageEffectPlugin_serialization2.xml" );
+	const std::string testfile2 = ( Core::instance().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization2.xml" ).string();
+	TUTTLE_TCOUT_VAR( testfile2 );
 	BOOST_REQUIRE( testfile2.size() );
 
 	{

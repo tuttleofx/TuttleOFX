@@ -295,26 +295,7 @@ int main( int argc, char** argv )
 					exit( 0 );
 				}
 
-				boost::filesystem::path home;
-				if( const char* env_tuttle_cache = std::getenv("TUTTLE_HOME") )
-				{
-					home = env_tuttle_cache;
-				}
-				else if( const char* env_tuttle_cache = std::getenv("HOME") ) // LINUX and MacOS HOME
-				{
-					home = env_tuttle_cache;
-					home /= ".tuttle";
-				}
-				else if( const char* env_tuttle_cache = std::getenv("WINDIR") ) // WINDOWS HOME
-				{
-					home = env_tuttle_cache;
-					home /= ".tuttle";
-				}
-				if( ! boost::filesystem::exists( home ) )
-				{
-					boost::filesystem::create_directory( home );
-				}
-				const std::string logFilename( (home / "logTuttle.log").string() );
+				const std::string logFilename = (ttl::Core::instance().getPreferences().getTuttleHomePath() / "sam-do.log").string();
 				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
 				std::cerr.rdbuf ( logFile.rdbuf() ); // redirect output into the file

@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_HOST_CORE_HPP_
 #define _TUTTLE_HOST_CORE_HPP_
 
+#include "Preferences.hpp"
+
 #include <tuttle/host/memory/IMemoryCache.hpp>
 #include <tuttle/host/HostDescriptor.hpp>
 #include <tuttle/host/ofx/OfxhPluginCache.hpp>
@@ -39,12 +41,16 @@ private:
 	ofx::OfxhPluginCache _pluginCache;
 	memory::IMemoryPool& _memoryPool;
 	memory::IMemoryCache& _memoryCache;
+	
+	Preferences _preferences;
 
 public:
 	      ofx::OfxhPluginCache& getPluginCache()       { return _pluginCache; }
 	const ofx::OfxhPluginCache& getPluginCache() const { return _pluginCache; }
 	const Host&                 getHost() const        { return _host; }
 	#endif
+	      Preferences& getPreferences()       { return _preferences; }
+	const Preferences& getPreferences() const { return _preferences; }
 
 public:
 	const ofx::imageEffect::OfxhImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
