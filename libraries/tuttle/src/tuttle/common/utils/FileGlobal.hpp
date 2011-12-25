@@ -2,6 +2,7 @@
 #define _FileGlobal_HPP
 
 #include <tuttle/common/patterns/Singleton.hpp>
+#include <tuttle/common/system/system.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -26,7 +27,7 @@ public:
 	/// @brief File creation
 	void openFile( std::string fileName )
 	{
-		#ifndef WINDOWS
+		#ifndef __WINDOWS__
 		_flux.open( fileName.c_str() );
 		#else
 		_flux.open( fileName.c_str(), std::ios::binary );

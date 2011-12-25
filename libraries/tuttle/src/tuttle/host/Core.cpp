@@ -1,10 +1,10 @@
 #include "Core.hpp"
 
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
-
 #include <tuttle/host/memory/MemoryPool.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 
+#include <tuttle/common/system/system.hpp>
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -21,6 +21,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 
 #include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/convenience.hpp>
 
 #ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	#include <boost/python.hpp>
@@ -62,7 +63,7 @@ Core::~Core()
 
 void Core::preload()
 {
-#ifndef WINDOWS
+#ifndef __WINDOWS__
 	//	typedef boost::archive::binary_oarchive OArchive;
 	//	typedef boost::archive::binary_iarchive IArchive;
 	//	typedef boost::archive::text_oarchive OArchive;
@@ -85,9 +86,10 @@ void Core::preload()
 		home = env_tuttle_cache;
 		home /= ".tuttle";
 	}
-	if( ! boost::filesystem::exists( home ) )
+	if( ! home.empty() &&
+	    ! boost::filesystem::exists( home ) )
 	{
-		boost::filesystem::create_directory( home );
+		boost::filesystem::create_directories( home );
 	}
 	const std::string cacheFile( (home / "tuttlePluginCacheSerialize.xml").string() );
 
@@ -110,7 +112,7 @@ void Core::preload()
 	}
 #endif
 	_pluginCache.scanPluginFiles();
-#ifndef WINDOWS
+#ifndef __WINDOWS__
 	if( _pluginCache.isDirty() )
 	{
 		// generate unique name for writing
