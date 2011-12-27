@@ -46,7 +46,7 @@ template <typename Sampler, // Models SamplerConcept
           typename SrcView, // Models RandomAccess2DImageViewConcept
           typename DstView, // Models MutableRandomAccess2DImageViewConcept
           typename MapFn>   // Models MappingFunctionConcept
-void resample_pixels( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, Sampler sampler=Sampler() )
+void resample_pixels( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, Sampler sampler=Sampler(), const sampler::EParamFilterOutOfImage outOfImageProcess = sampler::eParamFilterOutBlack )
 {
     typename DstView::point_t dst_dims = dst_view.dimensions();
     typename DstView::point_t dst_p;
@@ -57,7 +57,7 @@ void resample_pixels( const SrcView& src_view, const DstView& dst_view, const Ma
         typename DstView::x_iterator xit = dst_view.row_begin(dst_p.y);
         for( dst_p.x=0; dst_p.x<dst_dims.x; ++dst_p.x )
         {
-            sample(sampler, src_view, transform(dst_to_src, dst_p), xit[dst_p.x]);
+            sample(sampler, src_view, transform(dst_to_src, dst_p), xit[dst_p.x], outOfImageProcess);
         }
     }
 }
