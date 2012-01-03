@@ -141,7 +141,7 @@ void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std
 			type.erase(0, 12);
 			if( std::strcmp( type.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
 			{
-				TUTTLE_COUT( "\t" << sam::samdo::_color._green << std::left << std::setw (25) << context + ":" << sam::samdo::_color._std << std::setw( 15 ) << type << sam::samdo::_color._red << defaultValue << sam::samdo::_color._std );
+				TUTTLE_COUT( "\t" << sam::samdo::_color._green << std::left << std::setw (25) << context + ":" << sam::samdo::_color._std << std::setw( 15 ) << type << sam::samdo::_color._yellow << defaultValue << sam::samdo::_color._std );
 				if( choiceValues.size() )
 					TUTTLE_COUT( choiceValues );
 			}

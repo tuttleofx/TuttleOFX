@@ -17,19 +17,19 @@ using namespace boost::gil;
 CropPlugin::CropPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-	_paramMode = fetchChoiceParam( kParamMode );
-	_paramFillColor = fetchRGBAParam( kParamFillColor );
-	_paramAxis = fetchChoiceParam( kParamAxis );
-	_paramSymmetric = fetchChoiceParam( kParamSymmetric );
+	_paramMode       = fetchChoiceParam ( kParamMode );
+	_paramFillColor  = fetchRGBAParam   ( kParamFillColor );
+	_paramAxis       = fetchChoiceParam ( kParamAxis );
+	_paramSymmetric  = fetchChoiceParam ( kParamSymmetric );
 	_paramFixedRatio = fetchBooleanParam( kParamFixedRatio );
-	_paramRatio = fetchDoubleParam( kParamRatio );
-	_paramPreset = fetchChoiceParam( kParamPreset );
-	_paramOverlay = fetchBooleanParam( kParamOverlay );
-	_paramCropRegion = fetchGroupParam( kParamGroupCropRegion );
-	_paramXMin = fetchIntParam( kParamXMin );
-	_paramYMin = fetchIntParam( kParamYMin );
-	_paramXMax = fetchIntParam( kParamXMax );
-	_paramYMax = fetchIntParam( kParamYMax );
+	_paramRatio      = fetchDoubleParam ( kParamRatio );
+	_paramPreset     = fetchChoiceParam ( kParamPreset );
+	_paramOverlay    = fetchBooleanParam( kParamOverlay );
+	_paramCropRegion = fetchGroupParam  ( kParamGroupCropRegion );
+	_paramXMin       = fetchIntParam    ( kParamXMin );
+	_paramYMin       = fetchIntParam    ( kParamYMin );
+	_paramXMax       = fetchIntParam    ( kParamXMax );
+	_paramYMax       = fetchIntParam    ( kParamYMax );
 
 //	changedParam( _changedArgs, kParamMode );
 	changedParam( _changedArgs, kParamAxis );

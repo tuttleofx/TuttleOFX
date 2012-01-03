@@ -61,9 +61,7 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		}
 		case eParamFilterBC:
 		{
-			bc_sampler BCsampler;
-			BCsampler.valB = _params._samplerProcessParams._paramB;
-			BCsampler.valC = _params._samplerProcessParams._paramC;
+			bc_sampler BCsampler ( _params._samplerProcessParams._paramB, _params._samplerProcessParams._paramC );
 			lensDistort( this->_srcView, this->_dstView, procWindowOutput, BCsampler );
 			return;
 		}
@@ -104,8 +102,7 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		}
 		case eParamFilterLanczos:
 		{
-			lanczos_sampler lanczosSampler;
-			lanczosSampler.size = _params._samplerProcessParams._filterSize;
+			lanczos_sampler lanczosSampler ( _params._samplerProcessParams._filterSize );
 			lensDistort( this->_srcView, this->_dstView, procWindowOutput, lanczosSampler );
 			return;
 		}
@@ -131,9 +128,7 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		}
 		case eParamFilterGaussian:
 		{
-			gaussian_sampler gaussianSampler;
-			gaussianSampler.size  = _params._samplerProcessParams._filterSize;
-			gaussianSampler.sigma = _params._samplerProcessParams._filterSigma;
+			gaussian_sampler gaussianSampler ( _params._samplerProcessParams._filterSize, _params._samplerProcessParams._filterSigma );
 			lensDistort( this->_srcView, this->_dstView, procWindowOutput, gaussianSampler );
 			return;
 		}

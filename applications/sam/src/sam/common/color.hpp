@@ -11,6 +11,7 @@ struct Color
 {
 	std::string _blue;
 	std::string _green;
+	std::string _yellow;
 	std::string _red;
 	
 	std::string _folder;
@@ -26,9 +27,10 @@ struct Color
 	void enable()
 	{
 		using namespace tuttle::common;
-		_blue   = kColorFolder;
-		_green  = kColorFile;
-		_red    = kColorError;
+		_blue   = kColorBlue;
+		_green  = kColorGreen;
+		_red    = kColorRed;
+		_yellow = kColorYellow;
 		
 		_folder = kColorFolder;
 		_file   = kColorFile;

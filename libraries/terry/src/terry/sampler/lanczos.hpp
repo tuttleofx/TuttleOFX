@@ -3,117 +3,65 @@
 
 #include "details.hpp"
 #include <cmath>
-
-#ifndef M_PI
-/** @brief The constant pi */
-#define M_PI    3.14159265358979323846264338327950288
-#endif
+#include <boost/math/constants/constants.hpp>
 
 namespace terry {
 using namespace boost::gil;
 namespace sampler {
 
 struct lanczos_sampler{
-	size_t size;
-	lanczos_sampler()
+	const size_t _windowSize;
+
+	lanczos_sampler() :
+		_windowSize ( 3.0 )
 	{
-		size = 3.0;
+	}
+
+	lanczos_sampler( size_t windowSize ) :
+		_windowSize ( windowSize )
+	{
+	}
+
+	template<typename Weight>
+	void operator()( const RESAMPLING_CORE_TYPE& distance, Weight& weight )
+	{
+		if( distance == 0.0 )
+		{
+			weight = 1.0;
+			return;
+		}
+		weight = sin( boost::math::constants::pi<RESAMPLING_CORE_TYPE>() * distance ) * sin( ( boost::math::constants::pi<RESAMPLING_CORE_TYPE>() / _windowSize ) * distance ) / ( ( boost::math::constants::pi<RESAMPLING_CORE_TYPE>() * boost::math::constants::pi<RESAMPLING_CORE_TYPE>() / _windowSize ) * distance * distance );
 	}
 };
 
-struct lanczos3_sampler{};
-struct lanczos4_sampler{};
-struct lanczos6_sampler{};
-struct lanczos12_sampler{};
-
-template < typename F >
-void getLanczosWeight( const float& distance, F& weight, lanczos_sampler& sampler )
+struct lanczos3_sampler : public lanczos_sampler
 {
-	if( distance == 0.0 )
+	lanczos3_sampler() {}
+};
+
+struct lanczos4_sampler : public lanczos_sampler
+{
+	lanczos4_sampler() :
+		lanczos_sampler( 4.0 )
 	{
-		weight = 1.0;
-		return;
 	}
-	weight = sin( M_PI * distance ) * sin( ( M_PI / sampler.size ) * distance ) / ( ( M_PI * M_PI / sampler.size ) * distance *distance);
-}
+};
 
-
-template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
+struct lanczos6_sampler : public lanczos_sampler
 {
-
-	/*
-	 * pTL is the closest integer coordinate top left from p
-	 *
-	 *   pTL ---> x      x
-	 *              o <------ p
-	 *
-	 *            x      x
-	 */
-	point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
-
-	// loc is the point in the source view
-	typedef typename SrcView::xy_locator xy_locator;
-	xy_locator loc = src.xy_at( pTL.x, pTL.y );
-	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
-
-	size_t windowSize  = sampler.size;
-
-	std::vector<double> xWeights, yWeights;
-
-	xWeights.assign( windowSize , 0);
-	yWeights.assign( windowSize , 0);
-
-	size_t middlePosition = floor((windowSize - 1) * 0.5);
-
-
-	// get horizontal weight for each pixels
-
-	for( size_t i = 0; i < windowSize; i++ )
+	lanczos6_sampler() :
+		lanczos_sampler( 6.0 )
 	{
-		float distancex = - frac.x - middlePosition + i ;
-		getLanczosWeight( std::abs( distancex ), xWeights.at(i), sampler );
-		float distancey =  - frac.y - middlePosition + i ;
-		getLanczosWeight( std::abs( distancey ), yWeights.at(i), sampler );
 	}
+};
 
-	// process current sample
-	bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, outOfImageProcess, loc, result );
-
-	return res;
-}
-
-template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos3_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
+struct lanczos12_sampler : public lanczos_sampler
 {
-	lanczos_sampler s;
-	s.size = 3;
-        return sample( s, src, p, result, outOfImageProcess );
-}
-
-template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos4_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
-{
-	lanczos_sampler s;
-	s.size = 4;
-        return sample( s, src, p, result, outOfImageProcess );
-}
-
-template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos6_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
-{
-	lanczos_sampler s;
-	s.size = 6;
-        return sample( s, src, p, result, outOfImageProcess );
-}
-
-template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos12_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
-{
-	lanczos_sampler s;
-	s.size = 12;
-        return sample( s, src, p, result, outOfImageProcess );
-}
+	lanczos12_sampler() :
+		lanczos_sampler( 12.0 )
+	{
+	}
+};
 
 }
 }

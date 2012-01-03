@@ -17,9 +17,9 @@ namespace terry {
  */
 template <typename Sampler, typename SrcMetaView, typename DstMetaView> 
 void resample_subimage( const SrcMetaView& src, const DstMetaView& dst,
-                         double src_min_x, double src_min_y,
-                         double src_max_x, double src_max_y,
-                         double angle, const Sampler& sampler=Sampler() )
+			double src_min_x, double src_min_y,
+			double src_max_x, double src_max_y,
+			double angle, const Sampler& sampler=Sampler() )
 {
     const double src_width  = std::max<double>( src_max_x - src_min_x - 1, 1 );
     const double src_height = std::max<double>( src_max_y - src_min_y - 1, 1 );
@@ -27,10 +27,10 @@ void resample_subimage( const SrcMetaView& src, const DstMetaView& dst,
     const double dst_height = std::max<double>( dst.height()-1, 1 );
 
     const matrix3x2<double> mat = 
-        matrix3x2<double>::get_translate( -dst_width/2.0, -dst_height/2.0 ) * 
-        matrix3x2<double>::get_scale( src_width / dst_width, src_height / dst_height ) *
-        matrix3x2<double>::get_rotate( -angle ) *
-        matrix3x2<double>::get_translate( src_min_x + src_width/2.0, src_min_y + src_height/2.0 );
+	  matrix3x2<double>::get_translate( -dst_width/2.0, -dst_height/2.0 ) *
+	  matrix3x2<double>::get_scale( src_width / dst_width, src_height / dst_height ) *
+	  matrix3x2<double>::get_rotate( -angle ) *
+	  matrix3x2<double>::get_translate( src_min_x + src_width/2.0, src_min_y + src_height/2.0 );
 
     resample_pixels( src, dst, mat, sampler );
 }

@@ -4,6 +4,7 @@
 #include <terry/math/Rect.hpp>
 
 #include <terry/sampler/all.hpp>
+#include <terry/sampler/details.hpp>
 #include <terry/sampler/sampler.hpp>
 
 
