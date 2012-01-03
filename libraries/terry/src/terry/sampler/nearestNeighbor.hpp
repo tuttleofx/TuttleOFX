@@ -9,8 +9,32 @@ namespace terry {
 using namespace boost::gil;
 namespace sampler {
 
-struct nearest_neighbor_sampler {};
+struct nearest_neighbor_sampler
+{
+	const size_t _windowSize;
 
+	nearest_neighbor_sampler() :
+		_windowSize ( 2.0 )
+	{}
+
+	/**
+	 * @brief Get weight for a specific distance, for nearest neighbor resampler.
+	 *
+	 * @param[in] distance between the pixels and the current pixel
+	 * @param[out] weight return value to weight the pixel in filtering
+	 */
+	template<typename Weight>
+	void operator()( const RESAMPLING_CORE_TYPE& distance, Weight& weight )
+	{
+		if( distance > 0.5 || distance <= -0.5 )
+			weight = 0.0;
+		else
+			weight = 1.0;
+	}
+};
+
+
+/*
 template <typename DstP, typename SrcView, typename F>
 bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
 {
@@ -170,7 +194,7 @@ bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, D
 
 	result = src( center.x, center.y );
 	return true;
-}
+}*/
 
 }
 }

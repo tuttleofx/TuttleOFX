@@ -52,9 +52,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 		}
 		case eParamFilterBC:
 		{
-			bc_sampler BCsampler;
-			BCsampler.valB = _params._samplerProcessParams._paramB;
-			BCsampler.valC = _params._samplerProcessParams._paramC;
+			bc_sampler BCsampler ( _params._samplerProcessParams._paramB, _params._samplerProcessParams._paramC );
 			resample( this->_srcView, this->_dstView, procWindowOutput, BCsampler );
 			return;
 		}
@@ -95,8 +93,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 		}
 		case eParamFilterLanczos:
 		{
-			lanczos_sampler lanczosSampler;
-			lanczosSampler.size = _params._samplerProcessParams._filterSize;
+			lanczos_sampler lanczosSampler ( _params._samplerProcessParams._filterSize );
 			resample( this->_srcView, this->_dstView, procWindowOutput, lanczosSampler );
 			return;
 		}
@@ -122,9 +119,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 		}
 		case eParamFilterGaussian:
 		{
-			gaussian_sampler gaussianSampler;
-			gaussianSampler.size  = _params._samplerProcessParams._filterSize;
-			gaussianSampler.sigma = _params._samplerProcessParams._filterSigma;
+			gaussian_sampler gaussianSampler ( _params._samplerProcessParams._filterSize, _params._samplerProcessParams._filterSigma );
 			resample<gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}

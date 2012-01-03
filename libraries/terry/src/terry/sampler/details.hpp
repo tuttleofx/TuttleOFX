@@ -9,6 +9,8 @@
 #include <terry/globals.hpp>
 #include <terry/basic_colors.hpp>
 
+#include <terry/typedefs.hpp>
+
 #include <cmath>
 #include <vector>
 
@@ -19,7 +21,6 @@ namespace sampler {
 
 namespace details {
 
-
 template <typename Weight>
 struct add_dst_mul_src_channel
 {
@@ -28,9 +29,9 @@ struct add_dst_mul_src_channel
 	add_dst_mul_src_channel( const Weight w ) : _w( w ) { }
 
 	template <typename SrcChannel, typename DstChannel>
-	void operator( )( const SrcChannel& src, DstChannel & dst ) const
+	void operator( )( const SrcChannel& src, DstChannel& dst ) const
 	{
-		dst += DstChannel( src * _w );
+		dst += DstChannel( channel_convert<DstChannel>(src) * _w );
 	}
 };
 
@@ -39,7 +40,7 @@ struct add_dst_mul_src
 {
 	void operator( )( const SrcP& src, const Weight weight, DstP & dst ) const
 	{
-		static_for_each( src, dst, add_dst_mul_src_channel<Weight > ( weight ) );
+		static_for_each( src, dst, add_dst_mul_src_channel<Weight>( weight ) );
 	}
 };
 
@@ -225,14 +226,14 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 
 }
 
-template <typename SrcP, typename F, typename DstP>
+template <typename SrcP, typename Weight, typename DstP>
 struct process1Dresampling
 {
-	void operator( )( const std::vector<SrcP>& src, const std::vector<F>& weight, DstP& dst ) const
+	void operator( )( const std::vector<SrcP>& src, const std::vector<Weight>& weight, DstP& dst ) const
 	{
 		DstP mp( 0 );
 		for( std::size_t i = 0; i < src.size(); i++ )
-			details::add_dst_mul_src<SrcP, F, DstP > ( )( src.at(i), weight.at(i) , mp );
+			details::add_dst_mul_src< SrcP, Weight, DstP > ( )( src.at(i), weight.at(i) , mp );
 		dst = mp;
 	}
 };
@@ -247,31 +248,63 @@ struct process1Dresampling
 //	}
 //};
 
-template <typename DstP, typename SrcView, typename Sampler, typename F>
-bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const std::size_t windowSize, const EParamFilterOutOfImage& outOfImageProcess, typename SrcView::xy_locator& loc, DstP& result )
+}
+
+template <typename Sampler, typename DstP, typename SrcView, typename F>
+bool sample( Sampler& sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
 {
-	typedef typename SrcView::value_type SrcP;
-
+	typedef typename SrcView::value_type                     SrcP;
 	typedef typename floating_pixel_from_view<SrcView>::type SrcC; //PixelFloat;
+	typedef typename boost::gil::bits64f                     Weight;
+	typedef typename SrcView::xy_locator                     xy_locator;
 
-	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
+	// xWeights and yWeights are weights for in relation of the distance to each point
+	std::vector<Weight> xWeights, yWeights;
 
-	SrcC mp( 0 );
+	SrcC                mp( 0 );
+	std::vector<SrcP>   ptr;
+	std::vector<SrcC>   xProcessed;
 
-	std::vector < SrcP > ptr;
-	std::vector < SrcC > xProcessed;
+	/*
+	 * pTL is the closest integer coordinate top left from p
+	 *
+	 *   pTL ---> x      x
+	 *              o <------ p
+	 *
+	 *            x      x
+	 */
+	point2<std::ptrdiff_t> pTL( ifloor( p ) );
 
-	ptr.assign       ( windowSize, SrcP(0) );
-	xProcessed.assign( windowSize, SrcC(0) );
+	// loc is the point in the source view
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	// frac is the distance between the point pTL and the current point
+	point2<RESAMPLING_CORE_TYPE> frac( p.x - pTL.x, p.y - pTL.y );
 
-	std::size_t middlePosition = floor((windowSize - 1) * 0.5);
+	// assign Weights vector to the window size of the sampler
+	xWeights.assign   ( sampler._windowSize , 0 );
+	yWeights.assign   ( sampler._windowSize , 0 );
+
+	ptr.assign        ( sampler._windowSize, SrcP(0) );
+	xProcessed.assign ( sampler._windowSize, SrcC(0) );
+
+	// compute the middle position on the filter
+	std::size_t middlePosition = floor( ( sampler._windowSize - 1.0 ) * 0.5 );
+
+	// get weights for each pixels
+	for( size_t i = 0; i < sampler._windowSize; i++ )
+	{
+		RESAMPLING_CORE_TYPE distancex = - frac.x - middlePosition + i ;
+		sampler( distancex, xWeights.at(i) );
+		RESAMPLING_CORE_TYPE distancey = - frac.y - middlePosition + i ;
+		sampler( distancey, yWeights.at(i) );
+	}
 
 
 	// first process the middle point
 	// if it's mirrored, we need to copy the center point
-	if( (pTL.y < 0) || (pTL.y > (int) ( src.height( ) - 1.0 ) ) )
+	if( (pTL.y < 0.0) || (pTL.y > (int) ( src.height( ) - 1.0 ) ) )
 	{
-		if( pTL.y < 0 ) // under the image
+		if( pTL.y < 0.0 ) // under the image
 		{
 			switch( outOfImageProcess )
 			{
@@ -288,8 +321,8 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				case eParamFilterOutCopy :
 				{
 					loc.y( ) -= pTL.y;
-					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-					process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					details::getPixelsPointers( loc, pTL, sampler._windowSize, src.width(), outOfImageProcess, ptr );
+					details::process1Dresampling<SrcP, Weight, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
 					loc.y( ) += pTL.y;
 					break;
 				}
@@ -318,8 +351,8 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 				case eParamFilterOutCopy :
 				{
 					loc.y( ) -= pTL.y - src.height() + 1.0 ;
-					getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-					process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+					details::getPixelsPointers( loc, pTL, sampler._windowSize, src.width(), outOfImageProcess, ptr );
+					details::process1Dresampling<SrcP, Weight, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
 					loc.y( ) += pTL.y - src.height() + 1.0;
 					break;
 				}
@@ -333,8 +366,8 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	}
 	else
 	{
-		getPixelsPointers( loc, pTL, windowSize, src.width() , outOfImageProcess, ptr );
-		process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
+		details::getPixelsPointers( loc, pTL, sampler._windowSize, src.width() , outOfImageProcess, ptr );
+		details::process1Dresampling<SrcP, Weight, SrcC> () ( ptr, xWeights, xProcessed.at( middlePosition ) );
 	}
 
 	// from center to bottom
@@ -371,8 +404,8 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 			else
 			{
 				loc.y( ) -= (middlePosition - i);
-				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-				process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
+				details::getPixelsPointers( loc, pTL, sampler._windowSize, src.width(), outOfImageProcess, ptr );
+				details::process1Dresampling<SrcP, Weight, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
 				loc.y( ) += (middlePosition - i);
 			}
 		}
@@ -405,7 +438,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	}
 
 	// from center to top
-	for( int i = middlePosition + 1; i < (int)windowSize; i++ )
+	for( int i = middlePosition + 1; i < (int)sampler._windowSize; i++ )
 	{
 		if( (int) ( pTL.y + (i - middlePosition) ) < (int) src.height( ) )
 		{
@@ -416,8 +449,8 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 			else
 			{
 				loc.y( ) -= ( middlePosition - i );
-				getPixelsPointers( loc, pTL, windowSize, src.width(), outOfImageProcess, ptr );
-				process1Dresampling<SrcP, double, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
+				details::getPixelsPointers( loc, pTL, sampler._windowSize, src.width(), outOfImageProcess, ptr );
+				details::process1Dresampling<SrcP, Weight, SrcC> () ( ptr, xWeights, xProcessed.at( i ) );
 				loc.y( ) += ( middlePosition - i );
 			}
 		}
@@ -449,22 +482,15 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		}
 	}
 
-
 	// vertical process
-	process1Dresampling<SrcC, double, SrcC> () ( xProcessed, yWeights, mp );
+	details::process1Dresampling<SrcC, Weight, SrcC> () ( xProcessed, yWeights, mp );
 
-	// result is rgba8
-	//proc( mp );
-	// Convert from floating point average value to the source type
-	DstP src_result;
-	//cast_pixel  ( mp, src_result );
+	// Convert from floating point average value to the destination type
 	color_convert( mp, result );
 
 	return true;
 }
 
-
-}
 }
 }
 
