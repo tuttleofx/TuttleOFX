@@ -36,7 +36,6 @@ static const std::string kColorFolder   ( "" );
 static const std::string kColorFile     ( "" );
 static const std::string kColorSequence ( "" );
 static const std::string kColorError    ( "" );
-static const std::string kColorYellow   ( "" );
 #endif
 
 }
