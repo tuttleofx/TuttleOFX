@@ -222,7 +222,7 @@ memory::MemoryCache Graph::compute( const std::list<std::string>& nodes, const C
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
-	
+
 	graph::ProcessGraph process( *this, nodes );
 	return process.process( options );
 }

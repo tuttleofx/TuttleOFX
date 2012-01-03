@@ -13,6 +13,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 namespace tuttle {
@@ -381,7 +382,7 @@ public:
 #ifndef TUTTLE_PRODUCTION
 		std::cout << "\t-> " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" << std::endl;
 #else
-		std::cout << " " << quotes(vertex._name);
+		//std::cout << " " << quotes(vertex._name) << std::flush;
 #endif
 		
 		if( _result && vertex.getProcessDataAtTime()._finalNode )

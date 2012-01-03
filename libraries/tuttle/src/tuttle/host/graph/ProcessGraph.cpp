@@ -211,7 +211,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		{
 			try
 			{
-				TUTTLE_COUT( "process at time " << time );
+				TUTTLE_COUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
 				TUTTLE_TCOUT( "________________________________________ frame: " << time );
 				// use an internal copy for inside the process
 				InternalGraphImpl renderGraph = _graph;

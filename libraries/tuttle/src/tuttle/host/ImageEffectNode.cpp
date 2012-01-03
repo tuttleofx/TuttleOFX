@@ -261,18 +261,22 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 
 /// Start doing progress.
 void ImageEffectNode::progressStart( const std::string& message )
-{}
+{
+	//TUTTLE_COUT( message );
+	std::cout << std::left << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::flush;
+}
 
 /// finish yer progress
 void ImageEffectNode::progressEnd()
-{}
+{
+	std::cout << std::endl;
+}
 
 /// set the progress to some level of completion,
 /// returns true if you should abandon processing, false to continue
 bool ImageEffectNode::progressUpdate( const double progress )
 {
-	//	TUTTLE_COUT( "\033[sprogress: " << std::setw(3) << int(progress * 100)  << "\033[r");
-	//	TUTTLE_COUT_VAR( progress );
+	std::cout << "\r" << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::right << std::setw(3) << int(progress * 100) << "%" << std::left << std::flush;
 	return false;
 }
 
