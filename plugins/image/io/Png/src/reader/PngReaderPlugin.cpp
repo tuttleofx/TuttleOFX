@@ -38,6 +38,13 @@ void PngReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	const std::string filename( getAbsoluteFilenameAt( args.time ) );
+	if( ! boost::filesystem::exists( filename ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+                        << exception::filename( filename )
+                        );
+	}
+
 	try
 	{
 		point2<ptrdiff_t> pngDims = png_read_dimensions( filename );
@@ -47,10 +54,12 @@ bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		rod.y2 = pngDims.y;
 		TUTTLE_TCOUT_VAR( rod );
 	}
-	catch( boost::exception& e )
+	catch( std::exception& e )
 	{
-		e << exception::filename( filename );
-		throw;
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::dev( e.what() )
+			<< exception::filename( filename )
+			);
 	}
 	return true;
 }
