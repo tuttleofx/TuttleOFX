@@ -54,7 +54,7 @@ import feature ;
 constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
 
 # can be found with command: MagickCore-config --libs
-constant	MAGICK_LIBS     : " -L/usr/lib64 -lICE -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lX11 -lXt -lbz2 -lz -lm -lgomp -lpthread -lltdl" ;
+constant	MAGICK_LIBS     : " -L/usr/lib64 -L/usr/lib64 -lfreetype -lz" ;
 
 
 ##############################################################################
