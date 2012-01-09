@@ -1,11 +1,12 @@
 Import( 'project', 'libs' )
 
-project.UnitTest(
-	target = project.getDirs([-3,-1]),
-	dirs = ['.'],
-	libraries = [
-		libs.tuttleHost,
-		libs.boost_unittestframework,
-		]
-	)
+if project.env['mode'] != 'production':
+	project.UnitTest(
+		target = project.getDirs([-3,-1]),
+		dirs = ['.'],
+		libraries = [
+			libs.tuttleHost,
+			libs.boost_unittestframework,
+			]
+		)
 

@@ -101,7 +101,7 @@ class Tuttle( SConsProject ):
 		pluginFilename = pluginName + '-' + str(versions[0]) + '.' + str(versions[1]) # eg. 'Foo-1.0'
 		if self.env['mode'] == 'production' and versions[0] <= 0:
 			print '''Don't create "''' + pluginFilename + '" in "production" mode.'
-			return
+			return None
 		allSources = []
 		if sources:
 			allSources = sources
@@ -138,6 +138,7 @@ class Tuttle( SConsProject ):
 				variant = [mode]
 				)
 			envLocal.Alias( 'visualProject',   visual_project )
+		return pluginInstall
 
 
 #______________________________________________________________________________#
