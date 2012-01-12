@@ -56,14 +56,16 @@ struct CMYK
 };
 
 template<typename SChannelType, typename DChannelType>
-void color_transform( const CMYKParams& params, const pixel<SChannelType,CMYK::layout>& src, pixel<DChannelType,RGB::layout>& dst )
+void color_transformation_step( const CMYKParams& params, const pixel<SChannelType,CMYK::layout>& src, pixel<DChannelType,RGB::layout>& dst )
 {
-	dst = terry::get_black< pixel<DChannelType,RGB::layout> >();
+	std::cout << "color_transformation_step CMYK to RGB" << std::endl;
+	numeric::pixel_zeros( dst );
 }
 template<typename SChannelType, typename DChannelType>
-void color_transform( const CMYKParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,CMYK::layout>& dst )
+void color_transformation_step( const CMYKParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,CMYK::layout>& dst )
 {
-	dst = terry::get_black< pixel<DChannelType,CMYK::layout> >();
+	std::cout << "color_transformation_step RGB to CMYK" << std::endl;
+	numeric::pixel_zeros( dst );
 }
 
 

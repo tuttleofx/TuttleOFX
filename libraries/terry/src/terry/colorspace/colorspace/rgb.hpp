@@ -41,15 +41,29 @@ struct RGB
 };
 
 template<typename SChannelType, typename DChannelType>
-void color_transform( const RGBParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,XYZ::layout>& dst )
+void color_transformation_step( const RGBParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,XYZ::layout>& dst )
 {
-	dst = terry::get_black< pixel<DChannelType,XYZ::layout> >();
+	std::cout << "color_transformation_step RGB to XYZ" << std::endl;
+	numeric::pixel_zeros( dst );
 }
 template<typename SChannelType, typename DChannelType>
-void color_transform( const RGBParams& params, const pixel<SChannelType,XYZ::layout>& src, pixel<DChannelType,RGB::layout>& dst )
+void color_transformation_step( const RGBParams& params, const pixel<SChannelType,XYZ::layout>& src, pixel<DChannelType,RGB::layout>& dst )
 {
-	dst = terry::get_black< pixel<DChannelType,RGB::layout> >();
+	std::cout << "color_transformation_step XYZ to RGB" << std::endl;
+	numeric::pixel_zeros( dst );
 }
+
+
+//BOOST_MPL_ASSERT( ( ::boost::mpl::equal<
+//					::boost::mpl::vector<XYZ, RGB>,
+//					color_dependencies<RGB>::from_root
+//					> ) );
+//
+//BOOST_MPL_ASSERT( ( ::boost::mpl::equal<
+//					::boost::mpl::vector<RGB, XYZ>,
+//					color_dependencies<RGB>::to_root
+//					> ) );
+
 
 }
 }

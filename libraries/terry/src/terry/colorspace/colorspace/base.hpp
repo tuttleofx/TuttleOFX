@@ -7,6 +7,9 @@
 #include <boost/gil/pixel.hpp>
 #include <boost/gil/typedefs.hpp>
 
+#include <terry/numeric/init.hpp>
+
+
 #define TERRY_DEFINE_GIL_INTERNALS_4(CS) \
 	\
 	template <typename IC> \

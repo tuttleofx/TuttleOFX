@@ -52,14 +52,16 @@ struct LMS
 };
 
 template<typename SChannelType, typename DChannelType>
-void color_transform( const LMSParams& params, const pixel<SChannelType,LMS::layout>& src, pixel<DChannelType,XYZ::layout>& dst )
+void color_transformation_step( const LMSParams& params, const pixel<SChannelType,LMS::layout>& src, pixel<DChannelType,XYZ::layout>& dst )
 {
-	dst = terry::get_black< pixel<DChannelType,XYZ::layout> >();
+	std::cout << "color_transformation_step LMS to XYZ" << std::endl;
+	numeric::pixel_zeros( dst );
 }
 template<typename SChannelType, typename DChannelType>
-void color_transform( const LMSParams& params, const pixel<SChannelType,XYZ::layout>& src, pixel<DChannelType,LMS::layout>& dst )
+void color_transformation_step( const LMSParams& params, const pixel<SChannelType,XYZ::layout>& src, pixel<DChannelType,LMS::layout>& dst )
 {
-	dst = terry::get_black< pixel<DChannelType,LMS::layout> >();
+	std::cout << "color_transformation_step XYZ to LMS" << std::endl;
+	numeric::pixel_zeros( dst );
 }
 
 
