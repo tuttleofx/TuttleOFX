@@ -53,13 +53,15 @@ struct HSL
 };
 
 template<typename SChannelType, typename DChannelType>
-void color_transform( const HSLParams& params, const pixel<SChannelType,HSL::layout>& src, pixel<DChannelType,RGB::layout>& dst )
+void color_transformation_step( const HSLParams& params, const pixel<SChannelType,HSL::layout>& src, pixel<DChannelType,RGB::layout>& dst )
 {
-	pixel_zeros( dst );
+	std::cout << "color_transformation_step HSL to RGB" << std::endl;
+	numeric::pixel_zeros( dst );
 }
 template<typename SChannelType, typename DChannelType>
-void color_transform( const HSLParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,HSL::layout>& dst )
+void color_transformation_step( const HSLParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,HSL::layout>& dst )
 {
+	std::cout << "color_transformation_step RGB to HSL" << std::endl;
 	typedef typename floating_channel_type_t<DChannelType>::type ChannelFloat;
 	
 	// only ChannelFloat for hsl is supported
