@@ -15,27 +15,30 @@ namespace reader {
  */
 void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleDpxReader", "DpxReader",
-	                "Dpx file reader" );
-	desc.setPluginGrouping( "tuttle/image/io" );
+    desc.setLabels( "TuttleDpxReader", "DpxReader",
+                    "Dpx file reader" );
+    desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "Digital Picture Exchange (DPX), ANSI/SMPTE standard (268M-2003)" );
+    desc.setDescription( "Digital Picture Exchange (DPX), ANSI/SMPTE standard (268M-2003)" );
 
-	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextReader );
-	desc.addSupportedContext( OFX::eContextGeneral );
+    // add the supported contexts
+    desc.addSupportedContext( OFX::eContextReader );
+    desc.addSupportedContext( OFX::eContextGeneral );
 
-	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+    // add supported pixel depths
+    desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+    desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+    desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// plugin flags
-	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-	desc.setHostFrameThreading( false );
-	desc.setSupportsMultiResolution( false );
-	desc.setSupportsMultipleClipDepths( true );
-	desc.setSupportsTiles( kSupportTiles );
+    // add supported extensions
+    desc.addSupportedExtension( "dpx" );
+
+    // plugin flags
+    desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+    desc.setHostFrameThreading( false );
+    desc.setSupportsMultiResolution( false );
+    desc.setSupportsMultipleClipDepths( true );
+    desc.setSupportsTiles( kSupportTiles );
 }
 
 /**
@@ -46,17 +49,17 @@ void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                 OFX::EContext               context )
 {
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	// Dpx only supports RGB(A)
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->setSupportsTiles( kSupportTiles );
+    OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+    // Dpx only supports RGB(A)
+    dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+    dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
+    dstClip->setSupportsTiles( kSupportTiles );
 
-	describeReaderParamsInContext( desc, context );
+    describeReaderParamsInContext( desc, context );
 
-	OFX::PushButtonParamDescriptor* displayHeader = desc.definePushButtonParam( kParamDisplayHeader );
-	displayHeader->setLabel( "See Header" );
-	displayHeader->setHint( "See the file header without formating (debug purpose only)." );
+    OFX::PushButtonParamDescriptor* displayHeader = desc.definePushButtonParam( kParamDisplayHeader );
+    displayHeader->setLabel( "See Header" );
+    displayHeader->setHint( "See the file header without formating (debug purpose only)." );
 }
 
 /**
@@ -68,7 +71,7 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 OFX::ImageEffect* DPXReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                           OFX::EContext        context )
 {
-	return new DPXReaderPlugin( handle );
+    return new DPXReaderPlugin( handle );
 }
 
 }

@@ -16,32 +16,37 @@ namespace reader {
  */
 void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels(
-		"TuttleJpeg2000Reader",
-		"Jpeg2000Reader",
-		"Jpeg2000 image reader" );
-	desc.setPluginGrouping( "tuttle/image/io" );
+    desc.setLabels(
+        "TuttleJpeg2000Reader",
+        "Jpeg2000Reader",
+        "Jpeg2000 image reader" );
+    desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription(
-		"Jpeg2000 io.\n"
-	    "Plugin is used to read jpeg 2000 files."
-		);
+    desc.setDescription(
+        "Jpeg2000 io.\n"
+        "Plugin is used to read jpeg 2000 files."
+        );
 
-	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextReader );
-	desc.addSupportedContext( OFX::eContextGeneral );
+    // add the supported contexts
+    desc.addSupportedContext( OFX::eContextReader );
+    desc.addSupportedContext( OFX::eContextGeneral );
 
-	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+    // add supported pixel depths
+    desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+    desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+    desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// plugin flags
-	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-	desc.setHostFrameThreading( false );
-	desc.setSupportsMultiResolution( false );
-	desc.setSupportsMultipleClipDepths( true );
-	desc.setSupportsTiles( kSupportTiles );
+    // add supported extensions
+    desc.addSupportedExtension( "j2k" );
+    desc.addSupportedExtension( "jp2" );
+    desc.addSupportedExtension( "j2c" );
+
+    // plugin flags
+    desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+    desc.setHostFrameThreading( false );
+    desc.setSupportsMultiResolution( false );
+    desc.setSupportsMultipleClipDepths( true );
+    desc.setSupportsTiles( kSupportTiles );
 }
 
 /**
@@ -52,13 +57,13 @@ void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
                                                    OFX::EContext context )
 {
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+    OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+    dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 //	srcClip->addSupportedComponent( OFX::ePixelComponentRGB ); /// @todo: support RGB
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+    dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+    dstClip->setSupportsTiles( kSupportTiles );
 
-	describeReaderParamsInContext( desc, context );
+    describeReaderParamsInContext( desc, context );
 }
 
 /**
@@ -70,7 +75,7 @@ void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 OFX::ImageEffect* Jpeg2000ReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::EContext context )
 {
-	return new Jpeg2000ReaderPlugin(handle);
+    return new Jpeg2000ReaderPlugin(handle);
 }
 
 }
