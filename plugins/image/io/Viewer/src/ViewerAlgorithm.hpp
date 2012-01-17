@@ -9,11 +9,15 @@
 #else
 #   include <GL/gl.h>
 #   include <GL/glut.h>
+#   include <GL/freeglut.h>
 #endif
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+
+#define SPACEBAR 32
 
 namespace tuttle {
 namespace plugin {
@@ -48,6 +52,7 @@ void reshape(int width,int height)
     }
 
     glViewport( xPos, yPos , (GLsizei)w, (GLsizei)h );
+    glutReshapeWindow(width, height);
 }
 
 template< typename Pixel_t>
@@ -214,10 +219,12 @@ void idle()
 
 void keyboard(unsigned char k, int x, int y)
 {
-    TUTTLE_COUT(k);
     switch (k)
     {
-    case '\r':
+        case '\r':
+            glutDestroyWindow(windowID);
+            return;
+        case SPACEBAR:
             glutDestroyWindow(windowID);
             return;
     }
@@ -226,13 +233,12 @@ void keyboard(unsigned char k, int x, int y)
 
 void specialKeyboard( int k, int x, int y)
 {
-    /*
     switch (k)
     {
         case GLUT_KEY_RIGHT:
             glutDestroyWindow(windowID);
             return;
-    }*/
+    }
     glutPostRedisplay ();
 }
 
@@ -240,14 +246,16 @@ void openGLWindow( const size_t& width, const size_t& height )
 {
     glutInit( &argc, argv );
     glutInitDisplayMode ( GLUT_DOUBLE | GLUT_RGB | GLUT_RGBA | GLUT_MULTISAMPLE );
-
     glutInitWindowSize ( width, height );
+    glutInitWindowPosition (0,0);
+    glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION );
+
+    windowID = glutCreateWindow("TuttleOFX Viewer");
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f );
+    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+
     w_out = width;
     h_out = height;
-    glutInitWindowPosition (0,0);
-    windowID = glutCreateWindow("TuttleOFX Viewer");
-
-
 
     glutDisplayFunc (display);
 
