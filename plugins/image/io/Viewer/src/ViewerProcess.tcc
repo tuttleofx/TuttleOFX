@@ -22,7 +22,6 @@ void ViewerProcess<View>::setup( const OFX::RenderArguments& args )
 {
     ImageGilFilterProcessor<View>::setup( args );
     _params = _plugin.getProcessParams( args.renderScale );
-
 }
 
 /**
@@ -39,12 +38,9 @@ void ViewerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
         View dst = this->_dstView;
 
         copy_pixels( src, dst );
-
         openGLWindow( src.width(), src.height() );
-
         loadNewTexture( src );
 
-        // boucles
         glutIdleFunc(idle);
         glutMainLoop();
 }
