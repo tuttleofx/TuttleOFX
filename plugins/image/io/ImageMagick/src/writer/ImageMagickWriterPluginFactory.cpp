@@ -86,6 +86,7 @@ void ImageMagickWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     desc.addSupportedExtension( "jp2" );
     desc.addSupportedExtension( "jpc" );
     desc.addSupportedExtension( "jpg" );
+    desc.addSupportedExtension( "jpeg" );
     desc.addSupportedExtension( "man" );
     desc.addSupportedExtension( "mat" );
     desc.addSupportedExtension( "miff" );
