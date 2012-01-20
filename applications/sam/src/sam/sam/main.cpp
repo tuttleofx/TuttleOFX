@@ -209,7 +209,7 @@ int main( int argc, char** argv )
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
 				std::cout << std::left <<  "\t" << std::setw(10) << c.filename().string().substr(4) << std::flush ;
-				const int res = system( (c.string()+" --brief").c_str() );
+				system( (c.string()+" --brief").c_str() );
 				std::cout << std::flush;
 			}
 			TUTTLE_COUT( "" );
