@@ -12,6 +12,8 @@
 #include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <Detector.hpp>
+
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -38,14 +40,15 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 
-	EMaskType                 researchMask        = eMaskTypeSequence;  // by default show sequences
-	EMaskOptions              descriptionMask     = eMaskOptionsNone;   // by default show nothing
-	bool                      recursiveListing    = false;
-	bool                      script              = false;
-	bool                      enableColor         = false;
-	std::string               availableExtensions;
-	std::vector<std::string>  paths;
-	std::vector<std::string>  filters;
+	sequenceParser::EMaskType                 researchMask        = sequenceParser::eMaskTypeSequence;  // by default show sequences
+	sequenceParser::EMaskOptions              descriptionMask     = sequenceParser::eMaskOptionsNone;   // by default show nothing
+	bool                                      recursiveListing    = false;
+	bool                                      script              = false;
+	bool                                      enableColor         = false;
+	std::string                               availableExtensions;
+	std::vector<std::string>                  paths;
+	std::vector<std::string>                  filters;
+	sequenceParser::Detector                  detector;
 
 	// Declare the supported options.
 	bpo::options_description mainOptions;
@@ -118,7 +121,7 @@ int main( int argc, char** argv )
 	{
 		// disable color, disable directory printing and set relative path by default
 		script = true;
-		descriptionMask |= eMaskOptionsAbsolutePath;
+		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 
 	if ( vm.count("color") && !script )
@@ -133,7 +136,7 @@ int main( int argc, char** argv )
 
 	if( enableColor )
 	{
-		descriptionMask |= eMaskOptionsColor;
+		descriptionMask |= sequenceParser::eMaskOptionsColor;
 		_color.enable();
 	}
 
@@ -169,45 +172,45 @@ int main( int argc, char** argv )
 
 	if (vm.count("directories"))
 	{
-		researchMask |= eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
 	
 	if (vm.count("files"))
 	{
-		researchMask |= eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeFile;
 	}
 	
 	if (vm.count("mask"))
 	{
-		researchMask &= ~eMaskTypeSequence;
+		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 	
 	if (vm.count("full-display"))
 	{
-		researchMask |= eMaskTypeDirectory;
-		researchMask |= eMaskTypeFile;
-		researchMask |= eMaskTypeSequence;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
 	if (vm.count("all"))
 	{
 		// add .* files
-		descriptionMask |= eMaskOptionsDotFile;
+		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 	
 	if (vm.count("long-listing"))
 	{
-		descriptionMask |= eMaskOptionsProperties;
+		descriptionMask |= sequenceParser::eMaskOptionsProperties;
 	}
 	
 	if (vm.count("relative-path") )
 	{
-		descriptionMask |= eMaskOptionsPath;
+		descriptionMask |= sequenceParser::eMaskOptionsPath;
 	}
 
 	if(vm.count("absolute-path"))
 	{
-		descriptionMask |= eMaskOptionsAbsolutePath;
+		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -231,6 +234,7 @@ int main( int argc, char** argv )
 // 	TUTTLE_COUT("research mask = " << researchMask);
 // 	TUTTLE_COUT("options  mask = " << descriptionMask);
 
+	std::list<boost::shared_ptr<sequenceParser::FileObject> > listing;
 	try
 	{
 		std::size_t index = 0;
@@ -240,95 +244,29 @@ int main( int argc, char** argv )
 			{
 				path = bfs::path("./");
 			}
-			if( bfs::exists( path ) )
+			if( ( paths.size() > 1 || recursiveListing ) && !script )
 			{
-				if( bfs::is_directory( path ) )
+				if( index > 0 )
 				{
-
-					if( ( paths.size() > 1 || recursiveListing ) && !script )
-					{
-						if( index > 0 )
-						{
-							TUTTLE_COUT( "" );
-						}
-						TUTTLE_COUT( path.string() << ":");
-					}
-
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( path, filters, researchMask, descriptionMask );
-					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
-					{
-					    TUTTLE_COUT( *s );
-					}
-					
-					if(recursiveListing)
-					{
-						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
-						{
-							if( bfs::is_directory( *dir ) )
-							{
-								bfs::path currentPath = (bfs::path)*dir;
-								if( !script )
-									TUTTLE_COUT( "\n" << currentPath.string() << ":" );
-
-								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( currentPath, filters, researchMask, descriptionMask );
-								BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
-								{
-									TUTTLE_COUT( *s );
-								}
-							}
-						}
-					}
-
+					TUTTLE_COUT( "" );
 				}
-				else
-				{
-					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
-					filters.push_back( path.leaf().string() );
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
-					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
-					{
-						TUTTLE_COUT( *s );
-					}
-				}
+				TUTTLE_COUT( path.string() << ":");
 			}
-			else
+
+			detector.printFileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
+
+			if(recursiveListing)
 			{
-				//TUTTLE_COUT( "not exist ...." );
-				try
+				for ( bfs::recursive_directory_iterator end, dir( path ); dir != end; ++dir )
 				{
-					bfs::path basepath = path.branch_path();
-					if( basepath == "" )
-						basepath = "./";
-
-					if( ( paths.size() > 1 || recursiveListing ) && !script )
+					if( bfs::is_directory( *dir ) )
 					{
-						if( index > 0 )
-						{
-							TUTTLE_COUT( "" );
-						}
-						TUTTLE_COUT( basepath.string() << ":");
-					}
+						bfs::path currentPath = (bfs::path)*dir;
+						if( !script )
+							TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
-					Sequence s( basepath, descriptionMask );
-					//TUTTLE_COUT ( basepath << "    @@@    " << path.string() );
-					s.initFromDetection( path.string(), Sequence::ePatternDefault );
-					s.setMaskOptions( descriptionMask );
-					s.setMaskType   ( researchMask );
-					s.setDirectory  ( basepath );
-
-					if( s.getNbFiles() )
-					{
-						TUTTLE_COUT( s );
+						detector.printFileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask );
 					}
-					else
-					{
-						File f = File( basepath, path.leaf().string(), descriptionMask);
-						TUTTLE_COUT( f );
-					}
-				}
-				catch(... )
-				{
-					TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
 				}
 			}
 			++index;
