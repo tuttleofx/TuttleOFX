@@ -2,6 +2,7 @@ Import( 'project', 'libs' )
 
 libraries = [
 		libs.tuttleCommon,
+		libs.sequenceParser,
 		libs.boost_filesystem,
 		libs.boost_program_options,
 		libs.boost_regex,

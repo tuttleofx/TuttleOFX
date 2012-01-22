@@ -36,6 +36,7 @@ SConscript(
 			'libraries/boostHack',
 			'libraries/openfxHack',
 			'libraries/terry',
+			'libraries/sequenceParser',
 			'libraries/tuttle',
 			'plugins',
 			'applications',
