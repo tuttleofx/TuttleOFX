@@ -15,14 +15,16 @@ EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
 	_componentsType = fetchChoiceParam( kParamComponentsType );
+        _storageType    = fetchChoiceParam( kParamStorageType );
 }
 
 EXRWriterProcessParams EXRWriterPlugin::getProcessParams( const OfxTime time )
 {
 	EXRWriterProcessParams params;
 
-	params._bitDepth       = ( EParamBitDepth ) this->_paramBitDepth->getValue();
-	params._componentsType = (ECompType)_componentsType->getValue();
+        params._bitDepth       = ( EParamBitDepth )   this->_paramBitDepth->getValue();
+        params._componentsType = ( EParamComponents ) _componentsType->getValue();
+        params._storageType    = ( EParamStorage )    _storageType->getValue();
 	params._filepath       = getAbsoluteFilenameAt( time );
 	params._flip           = _paramFlip->getValue();
 
