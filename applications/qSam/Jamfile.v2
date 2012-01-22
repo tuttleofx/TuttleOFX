@@ -1,10 +1,13 @@
 import os ;
 
+using qt : /usr/lib64/qt4 ;
+
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
         : requirements
+                <include>src/application/GUI/python
                 <include>src/application
                 <include>src/common
         :
@@ -12,9 +15,35 @@ project
         ;
 
 
-exe pyTuttle :
-    src/application/main.cpp
-    [ glob src/application/GUI/python/*.cpp ]
+exe qSam :
+        src/application/main.cpp
+        [ glob src/common/python/*.cpp ]
+        [ glob src/application/GUI/python/* ]
 
-    /boost//python
+        /boost//python
+        /python
+        /qt//QtGui
+        /qt//QtCore
 ;
+
+alias qSam-install : qSam-install-libs qSam-install-bins ;
+
+install qSam-install-bins
+        :
+                qSam
+        :
+                <variant>debug:<location>$(DIST_DEBUG)/bin
+                <variant>release:<location>$(DIST_RELEASE)/bin
+        ;
+
+install qSam-install-libs
+        :
+                /boost//python
+                /qt//QtGui
+                /qt//QtCore
+        :
+                <variant>debug:<location>$(DIST_DEBUG)/lib
+                <variant>release:<location>$(DIST_RELEASE)/lib
+                <install-dependencies>on
+                <install-type>LIB
+        ;
