@@ -192,6 +192,11 @@ alias           /tests          : /plugins
                                   /samtests
                                 ;
 
+#
+# SAM INTERFACE IN QT4
+#
+use-project /qsam               : applications/qSam/ ;
+
 # all targets have to be marked as explicit
 explicit        /tuttle
                 /tuttletests

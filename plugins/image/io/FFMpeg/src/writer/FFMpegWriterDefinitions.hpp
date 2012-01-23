@@ -14,6 +14,7 @@ static const std::string kParamCodec                     = "codec";
 static const std::string kParamBitrate                   = "bitrate";
 
 static const std::string kParamColorSpace                = "colorSpace";
+
 static const std::string kParamColorSpaceRgb             = "rgb                 RGB";
 static const std::string kParamColorSpaceBt709           = "bt709               BT709     also ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / SMPTE RP177 Annex B";
 static const std::string kParamColorSpaceUnspecified     = "unspecified         Unspecified";
@@ -62,6 +63,54 @@ static const std::string kParamMEIter                    = "iter                
 static const std::string kParamMETesa                    = "tesa                transformed exhaustive search algorithm";
 
 // enum => Motion_Est_ID in avcodec.h
+
+static const std::string kParamAVDiscard                 = "avDiscard";
+
+static const std::string kParamAVDNothing                = "nothing             discard nothing";
+static const std::string kParamAVDPackets                = "packets             discard useless packets like 0 size packets in avi";
+static const std::string kParamAVDNonRef                 = "nonRef              discard all non reference";
+static const std::string kParamAVDBidir                  = "bidir               discard all bidirectional frames";
+static const std::string kParamAVDFrames                 = "frames              discard all frames except keyframes";
+static const std::string kParamAVDAll                    = "all                 discard all";
+
+// enum => AVDiscard in avcodec.h
+
+static const std::string kParamAVColorRange              = "avColorRange";
+
+static const std::string kParamAVCRUnspecified           = "unspecified";
+static const std::string kParamAVCRMpeg                  = "MPEG                the normal 219*2^(n-8) \"MPEG\" YUV ranges";
+static const std::string kParamAVCRJpeg                  = "JPEG                the normal     2^n-1   \"JPEG\" YUV ranges";
+static const std::string kParamAVCRNb                    = "nb                  Not part of ABI";
+
+// enum => AVColorRange in avcodec.h
+
+static const std::string kParamAVChromaLocation          = "avChromaLocation";
+
+static const std::string kParamAVCLUnspecified           = "unspecified";
+static const std::string kParamAVCLLeft                  = "left               mpeg2/4, h264 default";
+static const std::string kParamAVCLCenter                = "center             mpeg1, jpeg, h263";
+static const std::string kParamAVCLTopLeft               = "topLeft            DV";
+static const std::string kParamAVCLTop                   = "top";
+static const std::string kParamAVCLBottomLeft            = "bottomLeft";
+static const std::string kParamAVCLBottom                = "bottom";
+static const std::string kParamAVCLNb                    = "nb                  Not part of ABI";
+
+// enum => AVChromaLocation in avcodec.h
+
+static const std::string kParamAVAudioServiceType        = "avAudioServiceType";
+
+static const std::string kParamAVASTMain                 = "main";
+static const std::string kParamAVASTEffects              = "effects";
+static const std::string kParamAVASTVisuallyImpaired     = "visuallyImpaired";
+static const std::string kParamAVASTHearingImpaired      = "hearingImpaired";
+static const std::string kParamAVASTDialogue             = "dialogue";
+static const std::string kParamAVASTCommentary           = "commentary";
+static const std::string kParamAVASTEmergency            = "emergency";
+static const std::string kParamAVASTVoiceOver            = "voiceOver";
+static const std::string kParamAVASTKaraoke              = "karaoke";
+static const std::string kParamAVASTNb                   = "nb                  Not part of ABI";
+
+// enum => AVChromaLocation in avcodec.h
 
 
 }

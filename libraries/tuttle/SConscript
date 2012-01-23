@@ -58,33 +58,34 @@ project.StaticLibrary(
 		shared = True
 	)
 
-pythonOutputDir = os.path.join(project.inOutputDir(),'python')
+pythonOutputDir = project.inOutputDir('python/pyTuttle')
 
-envSwig = project.createEnv( [libs.python, libs.tuttleHost, libs.pthread] )
-envSwig.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall']) # ,'-shadow','-docstring'] )
-envSwig.AppendUnique( SWIGPATH = envSwig['CPPPATH'] )
-envSwig.AppendUnique( SWIGOUTDIR = pythonOutputDir )
-envSwig.Replace( SHLIBPREFIX = '_' )
+pyTuttleEnv = project.createEnv( [
+	libs.python,
+	libs.tuttleHost,
+	libs.pthread,
+	], name='pyTuttle' )
+
+pyTuttleEnv.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] ) # ,'-shadow','-docstring'] )
+
+pyTuttleEnv.AppendUnique( SWIGPATH = pyTuttleEnv['CPPPATH'] )
+pyTuttleEnv.AppendUnique( SWIGOUTDIR = pythonOutputDir )
+pyTuttleEnv.Replace( SHLIBPREFIX = '_' )
 if project.macos:
-	envSwig.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
+	pyTuttleEnv.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
 
-tuttlePython = project.SharedLibrary(
-		target='tuttle',
-		sources=['src/tuttle/host/tuttle.i'],
-		env=envSwig,
-		install=False,
+pyTuttle = project.SharedLibrary(
+		target = 'tuttle',
+		sources = ['src/tuttle/host/tuttle.i'],
+		env = pyTuttleEnv,
+		installDir = pythonOutputDir,
 	)
 
-initFile = envSwig.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
+initFile = pyTuttleEnv.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
                             [ Mkdir('${TARGET.dir}'),
                               Touch('$TARGET'),
                             ])
-envSwig.Requires( tuttlePython, initFile )
+pyTuttleEnv.Requires( pyTuttle, initFile )
 
-tuttlePythonInstall = envSwig.Install( pythonOutputDir, tuttlePython )
-
-
-envSwig.Alias( 'python', tuttlePythonInstall )
-
-
-
+pyTuttleEnv.Alias( 'pyTuttle', pyTuttle )
+pyTuttleEnv.Alias( 'python', pyTuttle )

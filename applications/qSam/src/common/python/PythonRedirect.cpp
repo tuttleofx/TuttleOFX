@@ -41,12 +41,6 @@ bool PythonRedirect::init()
 		"import sys\n"
 		"import os\n"
 		"\n"
-		"pwd = os.getcwd()\n"
-		"try:\n"
-		"    import tuttle\n"
-		"except Exception, e:\n"
-		"    print str(e)\n"
-		"\n"
 		"import " << packageName() << "\n"
 		"\n"
 		// redirection des messages de python

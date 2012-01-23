@@ -156,8 +156,8 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 	typedef image<WPixel, true> image_t;
 	typedef typename image_t::view_t view_t;
 	image_t img( src.width(), src.height() );
-	view_t dvw( view( img ) );
-	View flippedView = flipped_up_down_view( src );
+        view_t  dvw( view( img ) );
+        View    flippedView = flipped_up_down_view( src );
 	copy_and_convert_pixels( clamp_view( flippedView ), dvw );
 	Imf::Header header( src.width(), src.height() );
 	switch( pixType )
