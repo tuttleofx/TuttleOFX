@@ -34,7 +34,7 @@ exe sam-ls :
 		[ glob src/sam/ls/*.cpp ]
 
 		/boost//program_options/<link>static
-		
+		$(SEQUENCE_PARSER)//sequence/<link>static
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
