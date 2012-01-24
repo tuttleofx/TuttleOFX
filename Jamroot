@@ -21,6 +21,7 @@
 ##      /sam-tools//sam-toolname (example: /sam-tools//sam-do )              #
 ##      ( warning: it not run the sam-install command. )                     #
 ##                                                                           #
+##      /qsam           build a little GUI in Qt4                            #
 ##      /plugins                                                             #
 ##                                                                           #
 ##      /tuttletests                                                         #
@@ -202,7 +203,7 @@ explicit        /tuttle
                 /tuttletests
 
                 /sam-tools
-
+		/qsam
 #               /samtests
                 /plugins
                 /pyTuttle
