@@ -1,6 +1,5 @@
 %include <tuttle/common/exceptions.i>
 %include <std_string.i>
-%include <exception.i>
 
 %{
 #include <tuttle/host/exceptions.hpp>

@@ -62,20 +62,19 @@ pythonOutputDir = project.inOutputDir('python/pyTuttle')
 
 pyTuttleEnv = project.createEnv( [
 	libs.python,
-	libs.tuttleHost,
 	libs.pthread,
+	libs.tuttleHost,
 	], name='pyTuttle' )
 
 pyTuttleEnv.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] ) # ,'-shadow','-docstring'] )
-
 pyTuttleEnv.AppendUnique( SWIGPATH = pyTuttleEnv['CPPPATH'] )
 pyTuttleEnv.AppendUnique( SWIGOUTDIR = pythonOutputDir )
-pyTuttleEnv.Replace( SHLIBPREFIX = '_' )
+pyTuttleEnv.Replace( SHLIBPREFIX = '' )
 if project.macos:
 	pyTuttleEnv.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
 
 pyTuttle = project.SharedLibrary(
-		target = 'tuttle',
+		target = '_tuttle',
 		sources = ['src/tuttle/host/tuttle.i'],
 		env = pyTuttleEnv,
 		installDir = pythonOutputDir,
