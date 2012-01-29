@@ -9,7 +9,7 @@ import os ;
 project
     : requirements
 	  	<include>src
-    : build-dir $(BUILD)/Checkerboard
+    : build-dir $(BUILD)/Constant
     ;
 
 
