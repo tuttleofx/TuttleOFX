@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_CHECKERBOARD_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/context/GeneratorDefinition.hpp>
 
 namespace tuttle {
 namespace plugin {

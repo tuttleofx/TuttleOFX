@@ -6,8 +6,6 @@ namespace tuttle {
 namespace plugin {
 namespace checkerboard {
 
-static const bool kSupportTiles = false;
-
 mDeclarePluginFactory( CheckerboardPluginFactory, {}, {}
                        );
 

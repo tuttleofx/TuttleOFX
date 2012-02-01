@@ -2,6 +2,7 @@
 #include "CheckerboardPlugin.hpp"
 #include "CheckerboardDefinitions.hpp"
 
+#include <tuttle/plugin/context/GeneratorPluginFactory.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
@@ -18,7 +19,7 @@ namespace checkerboard {
 void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleCheckerboard", "Checkerboard",
-	                "Checkerboard" );
+			"Checkerboard" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	desc.setDescription(
@@ -31,7 +32,7 @@ void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 "\n"
 "http://en.wikipedia.org/wiki/Square_tiling"
 );
-	
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -43,6 +44,9 @@ void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 
@@ -52,21 +56,9 @@ void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void CheckerboardPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                   OFX::EContext               context )
+						   OFX::EContext               context )
 {
-	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
-
-	// Create the mandated output clip
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+	describeGeneratorParamsInContext( desc, context );
 
 	OFX::Int2DParamDescriptor* boxes = desc.defineInt2DParam( kCheckerboardBoxes );
 	boxes->setDefault( 10, 10 );
@@ -89,7 +81,7 @@ void CheckerboardPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
  * @return  plugin instance
  */
 OFX::ImageEffect* CheckerboardPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                             OFX::EContext        context )
+							     OFX::EContext        context )
 {
 	return new CheckerboardPlugin( handle );
 }

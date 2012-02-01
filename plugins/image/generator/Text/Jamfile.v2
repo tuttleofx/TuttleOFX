@@ -7,26 +7,27 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
+	: requirements
 		<include>src
 		
-    : build-dir $(BUILD)/Text
-    ;
+	: build-dir $(BUILD)/Text
+	;
 
 use-project /freetype : $(3RD_PARTY)/freetype ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Text : 
-    	[ glob src/*.cpp ]
-    	/tuttleplugin/<link>static
-    	/boost//system
-    	/boost//filesystem
-    	/boost//python
-    	/python
-    	/freetype
-    ;
+plugin Text :
+	 [ glob src/*.cpp ]
+	 /tuttleplugin/<link>static
+	 /boost//system/<link>static
+	 /boost//filesystem/<link>static
+	 /boost//python/<link>shared
+	 /freetype/<link>static
+	:
+	 <os>LINUX:<library>/python
+	;
 
 ###############################################################################
 # Automatic install
