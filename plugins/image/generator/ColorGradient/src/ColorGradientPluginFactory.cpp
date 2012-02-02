@@ -2,14 +2,13 @@
 #include "ColorGradientPlugin.hpp"
 #include "ColorGradientDefinitions.hpp"
 
+#include <tuttle/plugin/context/GeneratorPluginFactory.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
 
 namespace tuttle {
 namespace plugin {
 namespace colorGradient {
-
-static const bool kSupportTiles = true;
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -18,7 +17,7 @@ static const bool kSupportTiles = true;
 void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleColorGradient", "ColorGradient",
-	                "Create a color gradient" );
+			"Create a color gradient" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
@@ -32,6 +31,9 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 
@@ -41,20 +43,9 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                    OFX::EContext               context )
+						    OFX::EContext               context )
 {
-	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
-
-	// Create the mandated output clip
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+	describeGeneratorParamsInContext( desc, context );
 
 	OFX::ChoiceParamDescriptor* gradientType = desc.defineChoiceParam( kGradientType );
 	gradientType->appendOption( kGradientType1DLinear );
@@ -86,7 +77,7 @@ void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor& 
  * @return  plugin instance
  */
 OFX::ImageEffect* ColorGradientPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                              OFX::EContext        context )
+							      OFX::EContext        context )
 {
 	return new ColorGradientPlugin( handle );
 }

@@ -9,7 +9,7 @@ namespace plugin {
 namespace checkerboard {
 
 CheckerboardPlugin::CheckerboardPlugin( OfxImageEffectHandle handle )
-	: ImageEffectGilPlugin( handle )
+	: GeneratorPlugin( handle )
 {
 	_boxes   = fetchInt2DParam( kCheckerboardBoxes );
 	_color1  = fetchRGBAParam( kCheckerboardColor1 );
@@ -25,9 +25,17 @@ void CheckerboardPlugin::render( const OFX::RenderArguments& args )
 	doGilRender<CheckerboardProcess>( *this, args );
 }
 
-//void CheckerboardPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-//{
-//}
+void CheckerboardPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	GeneratorPlugin::getClipPreferences( clipPreferences );
+
+	if( getExplicitConversion() == eParamGeneratorExplicitConversionAuto )
+	{
+		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthFloat );
+	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+}
 
 }
 }

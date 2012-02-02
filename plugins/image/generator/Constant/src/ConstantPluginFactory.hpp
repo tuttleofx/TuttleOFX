@@ -6,8 +6,6 @@ namespace tuttle {
 namespace plugin {
 namespace constant {
 
-static const bool kSupportTiles = false;
-
 mDeclarePluginFactory( ConstantPluginFactory, {}, {}
                        );
 

@@ -240,6 +240,7 @@ int main( int argc, char** argv )
 
                 if( samdo_vm.count("help") )
                 {
+                    TUTTLE_COUT( std::left );
                     TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 
                     TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -252,16 +253,58 @@ int main( int argc, char** argv )
                     TUTTLE_COUT( _color._green << "\tA command line to execute a list of OpenFX nodes." << _color._std );
                     TUTTLE_COUT( _color._green << "\tUse the sperarator // to pipe images between nodes." << _color._std << std::endl );
 
+#define SAM_DO_HELP_MARGING 35
+#define SAM_DO_EXAMPLE_TITLE_COUT(x) TUTTLE_COUT( std::endl << _color._yellow << "  " << x << _color._std );
+#define SAM_DO_EXAMPLE_LINE_COUT(x,y) TUTTLE_COUT( _color._green << "    " << std::setw(SAM_DO_HELP_MARGING) << x << y << _color._std );
 
-                    TUTTLE_COUT( _color._blue  << "EXAMPLES" << _color._std );
-                    //TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
-                    TUTTLE_COUT( _color._green << "\tsam-do --nodes" << _color._std );
-                    TUTTLE_COUT( _color._green << "\tsam-do blur -h" << _color._std );
-                    /// @todo version with read / write (without format specification)
-                    TUTTLE_COUT( _color._green << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // toFormat=\"512x512\" center=1 centerPoint=50,256 // jpegwriter foo.####.jpg // --range=10,20" << _color._std );
-                    TUTTLE_COUT( _color._green << "\tsam-do dpxreader foo.dpx // sobel // print // -Q" << _color._std << std::endl );
+                    TUTTLE_COUT( _color._blue  << "EXAMPLES" << _color._std << std::left );
+                    SAM_DO_EXAMPLE_TITLE_COUT( "Plugins options" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Plugin list: ", "sam-do --nodes" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Plugin help: ", "sam-do blur -h" );
 
-                    TUTTLE_COUT( _color._blue  << "DISPLAY OPTIONS (replace the process)" << _color._std );
+                    SAM_DO_EXAMPLE_TITLE_COUT( "Generators and viewers" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Viewer: "                   , "sam-do reader in.@.dpx // viewer" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Print: "                    , "sam-do reader in.@.dpx // print color=full16ansi" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Constant generator: "       , "sam-do constant                // viewer" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "White constant generator: " , "sam-do constant color=1,1,1,1  // viewer" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "HD constant generator: "    , "sam-do constant size=1920,1080 // viewer" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Checkerboard generator: "   , "sam-do checkerboard            // viewer" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Checkerboard generator: "   , "sam-do checkerboard width=500  // viewer" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Checkerboard generator: "   , "sam-do checkerboard width=1920 ratio=2.35 // viewer" );
+/*
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Colorgradient generator: "  , "sam-do colorgradient point0=1190,424 color0=0.246,0.44,0.254,1 \\" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( " "                          , "                     point1=458,726  color1=0.396,0.193,0.444,1 format=HD // viewer" );
+*/
+
+                    SAM_DO_EXAMPLE_TITLE_COUT( "Image sequence conversion and creation");
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Convert Image: "   , "sam-do reader in.dpx // writer out.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Convert Sequence: ", "sam-do reader in.####.dpx // writer out.####.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Select a range: "  , "sam-do reader in.####.dpx // writer out.####.jpg // --range=10,100" );
+
+                    SAM_DO_EXAMPLE_TITLE_COUT( "Geometry processing during conversion" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Crop: "        , "sam-do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Fill: "        , "sam-do reader in.####.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50 // writer out.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Resize: "      , "sam-do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Upscaling: "   , "sam-do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Downscaling: " , "sam-do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg" );
+
+                    SAM_DO_EXAMPLE_TITLE_COUT( "Color processing during conversion" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Lut :"  , "sam-do reader in.####.dpx // lut lutFile.3dl // writer out.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "CTL: "  , "sam-do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Gamma: ", "sam-do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg" );
+
+                    SAM_DO_EXAMPLE_TITLE_COUT( "Image Sequence Numbering" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Frames with or without padding: ", "image.@.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Frames 1 to 100 padding 4: "     , "image.####.jpg -or- image.@.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Frames 1 to 100 padding 5: "     , "image.#####.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Printf style padding 4: "        , "image.%04d.jpg" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "All Frames in Directory: "       , "/path/to/directory"  );
+
+                    SAM_DO_EXAMPLE_TITLE_COUT( "Processing options" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Multiple CPUs: "             , "sam-do reader in.@.dpx // writer out.@.exr // --nb-cores 4" );
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Continues whatever happens: ", "sam-do reader in.@.dpx // writer out.@.exr // --continueOnError" );
+
+                    TUTTLE_COUT( std::endl << _color._blue  << "DISPLAY OPTIONS (replace the process)" << _color._std );
                     TUTTLE_COUT( infoOptions );
                     TUTTLE_COUT( _color._blue  << "CONFIGURE PROCESS" << _color._std );
                     TUTTLE_COUT( confOptions );
@@ -791,7 +834,7 @@ int main( int argc, char** argv )
     }
     catch( const tuttle::exception::Common& e )
     {
-        TUTTLE_CERR( _color._red << "sam-do" );
+        TUTTLE_CERR( _color._red << "sam-do - error" );
 #ifdef TUTTLE_PRODUCTION
         TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) << _color._std );
 #else
