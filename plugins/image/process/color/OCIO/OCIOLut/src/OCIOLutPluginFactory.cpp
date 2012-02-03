@@ -59,6 +59,14 @@ void OCIOLutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
 	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 
+	OFX::ChoiceParamDescriptor* interpolationType = desc.defineChoiceParam( kInterpolationType );
+	filename->setLabels( kInterpolationTypeLabel, kInterpolationTypeLabel, kInterpolationTypeLabel );
+	interpolationType->appendOption( kInterpolationNearest );
+	interpolationType->appendOption( kInterpolationLinear );
+	interpolationType->appendOption( kInterpolationTetrahedral );
+	interpolationType->setDefault(1);
+
+
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelp );
 	helpButton->setLabel( "Help" );
 }

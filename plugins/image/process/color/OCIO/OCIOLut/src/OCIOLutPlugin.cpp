@@ -1,6 +1,6 @@
 #include "OCIOLutPlugin.hpp"
 #include "OCIOLutProcess.hpp"
-#include "OCIOLutDefinitions.hpp"
+
 
 #include <tuttle/common/utils/color.hpp>
 
@@ -24,6 +24,7 @@ static const std::string kLutHelpString =
 OCIOLutPlugin::OCIOLutPlugin(OfxImageEffectHandle handle) :
 	ImageEffectGilPlugin(handle) {
 	_sFilename = fetchStringParam(kInputFilename);
+	_interpolationType = fetchChoiceParam(kInterpolationType);
 	_fileTransform = OCIO::FileTransform::Create();
 }
 
@@ -37,6 +38,9 @@ void OCIOLutPlugin::render(const OFX::RenderArguments& args) {
 	std::string inputspace;
 	std::string outputspace;
 
+	EInterpolationType interpolationType =
+			static_cast<EInterpolationType> (_interpolationType->getValue());
+
 	std::string str;
 	_sFilename->getValue(str);
 	if (!bfs::exists(str)) {
@@ -45,7 +49,7 @@ void OCIOLutPlugin::render(const OFX::RenderArguments& args) {
 	}
 	//Init the OCIO file transform
 	_fileTransform->setSrc(str.c_str());
-	_fileTransform->setInterpolation(OCIO::INTERP_LINEAR);
+	_fileTransform->setInterpolation(getOCIOInterpolationType(interpolationType));
 
 	//Add the file transform to the group, required by the transform process
 	_groupTransform = OCIO::GroupTransform::Create();
@@ -85,8 +89,11 @@ void OCIOLutPlugin::changedParam(const OFX::InstanceChangedArgs& args,
 		_sFilename->getValue(str);
 		if (bfs::exists(str)) {
 			_fileTransform->setSrc(str.c_str());
-			_fileTransform->setInterpolation(OCIO::INTERP_LINEAR);
 		}
+	} else if (paramName == kInterpolationType) {
+		EInterpolationType interpolationType =
+					static_cast<EInterpolationType> (_interpolationType->getValue());
+		_fileTransform->setInterpolation(getOCIOInterpolationType(interpolationType));
 	}
 }
 
