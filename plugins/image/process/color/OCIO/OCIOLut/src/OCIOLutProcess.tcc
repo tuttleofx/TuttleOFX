@@ -4,9 +4,6 @@
 
 #include "OCIOLutProcess.hpp"
 #include "OCIOLutDefinitions.hpp"
-//#include "lutEngine/LutReader.hpp"
-//#include "lutEngine/Lut.hpp"
-//#include "lutEngine/TetraInterpolator.hpp"
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -31,7 +28,6 @@ using namespace boost::filesystem;
 template<class View>
 OCIOLutProcess<View>::OCIOLutProcess(OCIOLutPlugin& instance) :
 	ImageGilFilterProcessor<View> (instance), _plugin(instance) {
-	//_lut3D = &_plugin._lut3D;
 }
 
 /**
@@ -57,22 +53,20 @@ void OCIOLutProcess<View>::applyLut(View& dst, View& src,
 	const char * inputcolorspace = "RawInput";
 	const char * outputcolorspace = "ProcessedOutput";
 
-	int imgwidth = procWindow.x2 - procWindow.x1;//dst.width();
-	int imgheight = procWindow.y2 - procWindow.y1;//dst.height();
-	int components = dst.num_channels();
+	int imgwidth = procWindow.x2 - procWindow.x1;
+	int imgheight = procWindow.y2 - procWindow.y1;
+	int lutableComponents = 3;
 	float maxValue =
 			channel_traits<typename channel_type<View>::type>::max_value();
 
-
 	std::vector<float> img;
 
-	img.resize(imgwidth * imgheight * components);
-	memset(&img[0], 0, imgwidth * imgheight * components * sizeof(float));
+	img.resize(imgwidth * imgheight * lutableComponents);
+	//only rgb channels are lutable
+	memset(&img[0], 0, imgwidth * imgheight * lutableComponents * sizeof(float));
 
-	
 	int index = 0;
 
-	
 	for (int y = procWindow.y1; y < procWindow.y2; ++y) {
 		vIterator sit = src.row_begin(y);
 		for (int x = procWindow.x1; x < procWindow.x2; ++x) {
@@ -82,12 +76,8 @@ void OCIOLutProcess<View>::applyLut(View& dst, View& src,
 			++index;
 			img[index] = (*sit)[2] / maxValue;
 			++index;
-			if (dst.num_channels() > 3) {
-				img[index] = (*sit)[3] / 65535.0f;
-				++index;
-			}
-			++sit;
 
+			++sit;
 		}
 		if (this->progressForward())
 			return;
@@ -105,21 +95,27 @@ void OCIOLutProcess<View>::applyLut(View& dst, View& src,
 
 		// Wrap the image in a light-weight ImageDescription
 		OCIO::PackedImageDesc imageDesc(&img[0], imgwidth, imgheight,
-				components);
+				lutableComponents);
 
 		// Apply the color transformation (in place)
 		// Need normalized values
 		processor->apply(imageDesc);
 	} catch (OCIO::Exception & exception) {
-		TUTTLE_COUT( tuttle::common::kColorError  << "OCIO Error: " << exception.what() << tuttle::common::kColorStd );
+		TUTTLE_COUT(
+				tuttle::common::kColorError << "OCIO Error: "
+						<< exception.what() << tuttle::common::kColorStd);
 	} catch (...) {
-		TUTTLE_COUT( tuttle::common::kColorError << "Unknown OCIO error encountered." << tuttle::common::kColorStd );
+		TUTTLE_COUT(
+				tuttle::common::kColorError
+						<< "Unknown OCIO error encountered."
+						<< tuttle::common::kColorStd);
 	}
 
 	index = 0;
 
 	for (int y = procWindow.y1; y < procWindow.y2; ++y) {
 		vIterator dit = dst.row_begin(y);
+		vIterator sit = src.row_begin(y);
 		for (int x = procWindow.x1; x < procWindow.x2; ++x) {
 			(*dit)[0] = static_cast<Pixel> (img[index] * maxValue);
 			++index;
@@ -129,10 +125,13 @@ void OCIOLutProcess<View>::applyLut(View& dst, View& src,
 			++index;
 
 			if (dst.num_channels() > 3) {
-				(*dit)[3] = static_cast<Pixel> (img[index] * maxValue);
-				++index;
+				if (src.num_channels() > 3)
+					(*dit)[3] = (*sit)[3];
+				else
+					(*dit)[3] = maxValue;
 			}
 			++dit;
+			++sit;
 
 		}
 		if (this->progressForward())

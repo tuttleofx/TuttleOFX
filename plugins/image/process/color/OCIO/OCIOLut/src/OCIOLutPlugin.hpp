@@ -1,9 +1,6 @@
 #ifndef _TUTTLE_PLUGIN_OCIOLutPlugin_HPP_
 #define _TUTTLE_PLUGIN_OCIOLutPlugin_HPP_
 
-//#include "lutEngine/LutReader.hpp"
-//#include "lutEngine/Lut.hpp"
-
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <OpenColorIO/OpenColorIO.h>
 
@@ -28,9 +25,6 @@ public:
 
 public:
 	OFX::StringParam* _sFilename; ///< Filename
-
-	//	LutReader _lutReader;               ///< Reader
-	//	Lut3D _lut3D;
 	OCIO_NAMESPACE::FileTransformRcPtr _fileTransform;
 	OCIO_NAMESPACE::GroupTransformRcPtr _groupTransform;
 	OCIO_NAMESPACE::ConfigRcPtr _config;

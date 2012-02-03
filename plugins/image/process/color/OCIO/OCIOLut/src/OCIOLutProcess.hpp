@@ -2,8 +2,6 @@
 #define _TUTTLE_PLUGIN_OCIOLutProcess_HPP_
 
 #include "OCIOLutPlugin.hpp"
-//#include "lutEngine/LutReader.hpp"
-//#include "lutEngine/Lut.hpp"
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
@@ -26,7 +24,6 @@ template<class View>
 class OCIOLutProcess : public ImageGilFilterProcessor<View>
 {
 private:
-	//Lut3D* _lut3D;               ///< Lut3D
 	OCIOLutPlugin&  _plugin;        ///< Rendering plugin
 
 public:
@@ -34,7 +31,7 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	// Lut3D Transform
+	// Lut Transform
 	void applyLut( View& dst, View& src, const OfxRectI& procWindow );
 };
 
