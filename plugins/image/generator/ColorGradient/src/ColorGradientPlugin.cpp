@@ -14,7 +14,7 @@ namespace colorGradient {
 using namespace boost::gil;
 
 ColorGradientPlugin::ColorGradientPlugin( OfxImageEffectHandle handle )
-	: ImageEffectGilPlugin( handle )
+	: GeneratorPlugin( handle )
 {
 	_gradientType = fetchChoiceParam( kGradientType );
 	_nbPoints     = fetchIntParam( kNbPoints );
@@ -59,7 +59,7 @@ template<template<typename> class Functor>
 void ColorGradientPlugin::renderFunctor( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-	
+
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
 	OFX::EPixelComponent components = _clipDst->getPixelComponents( );
@@ -126,8 +126,21 @@ void ColorGradientPlugin::render( const OFX::RenderArguments& args )
 	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
+void ColorGradientPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	GeneratorPlugin::getClipPreferences( clipPreferences );
+
+	if( getExplicitConversion() == eParamGeneratorExplicitConversionAuto )
+	{
+		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthFloat );
+	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+}
+
 void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
+	GeneratorPlugin::changedParam( args, paramName );
 	if( paramName == kNbPoints )
 	{
 		unsigned int nbPoints                  = boost::numeric_cast<unsigned int>( _nbPoints->getValue() );

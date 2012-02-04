@@ -11,7 +11,8 @@
 namespace tuttle {
 namespace plugin {
 
-void addFilterParameters( OFX::ImageEffectDescriptor& desc )
+void describeSamplerParamsInContext( OFX::ImageEffectDescriptor& desc,
+                                     OFX::EContext               context )
 {
     OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
     filter->setLabel		( kParamFilterLabel );

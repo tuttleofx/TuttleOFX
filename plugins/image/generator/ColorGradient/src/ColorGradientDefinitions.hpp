@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_COLORGRADIENT_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/context/GeneratorDefinition.hpp>
 
 #include <boost/lexical_cast.hpp>
 
@@ -14,9 +15,9 @@ static const std::string kPoint        = "point";
 static const std::string kColor        = "color";
 
 static const std::string kGradientType         = "type";
-static const std::string kGradientType1DLinear = "1D linear";
-static const std::string kGradientType1DRadial = "1D radial";
-static const std::string kGradientType2D       = "2D";
+static const std::string kGradientType1DLinear = "1dLinear";
+static const std::string kGradientType1DRadial = "1dRadial";
+static const std::string kGradientType2D       = "2d";
 
 enum EGradientType
 {
