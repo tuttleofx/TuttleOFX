@@ -169,6 +169,7 @@ allLibs = [
 		('openjpeg',    'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'                   , 'openjpeg_v1_4_sources_r697' , False),
 		('ffmpeg',      'http://ffmpeg.org/releases/ffmpeg-0.8.2.tar.bz2'                                       , 'ffmpeg-0.8.2'               , False),
 		('openimageio', 'https://github.com/OpenImageIO/oiio/tarball/RB-0.10/OpenImageIO-oiio-754a61b.tar.gz'   , 'OpenImageIO-oiio-ad1950d'   , False),
+		('opencolorio', 'http://github.com/imageworks/OpenColorIO/tarball/master/imageworks-OpenColorIO-v1.0.4-0-gc0a9a92.tar.gz'   , 'imageworks-OpenColorIO-c0a9a92'   , False),
 	]
 
 
