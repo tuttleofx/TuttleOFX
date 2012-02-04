@@ -13,22 +13,25 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
+#include <OpenColorIO/OpenColorIO.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <OpenColorIO/OpenColorIO.h>
-namespace OCIO = OCIO_NAMESPACE;
+
 
 namespace tuttle {
 namespace plugin {
 namespace ocio {
 namespace lut {
 
+namespace OCIO = OCIO_NAMESPACE;
 using namespace boost::filesystem;
 
 template<class View>
-OCIOLutProcess<View>::OCIOLutProcess(OCIOLutPlugin& instance) :
-	ImageGilFilterProcessor<View> (instance), _plugin(instance) {
-}
+OCIOLutProcess<View>::OCIOLutProcess( OCIOLutPlugin& instance )
+: ImageGilFilterProcessor<View>( instance )
+, _plugin( instance )
+{ }
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
@@ -36,105 +39,113 @@ OCIOLutProcess<View>::OCIOLutProcess(OCIOLutPlugin& instance) :
  */
 template<class View>
 void OCIOLutProcess<View>::multiThreadProcessImages(
-		const OfxRectI& procWindowRoW) {
+													 const OfxRectI& procWindowRoW )
+{
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates(
-			procWindowRoW);
+																		 procWindowRoW );
 
-	applyLut(this->_dstView, this->_srcView, procWindowOutput);
+	applyLut( this->_dstView, this->_srcView, procWindowOutput );
 }
 
 template<class View>
-void OCIOLutProcess<View>::applyLut(View& dst, View& src,
-		const OfxRectI& procWindow) {
+void OCIOLutProcess<View>::applyLut(
+		View& dst,
+		View& src,
+		const OfxRectI& procWindow )
+{
 	using namespace boost::gil;
 	typedef typename View::x_iterator vIterator;
 	typedef typename channel_type<View>::type Pixel;
 
-	const char * inputcolorspace = "RawInput";
-	const char * outputcolorspace = "ProcessedOutput";
+	static const char * inputcolorspace = "RawInput";
+	static const char * outputcolorspace = "ProcessedOutput";
 
 	int imgwidth = procWindow.x2 - procWindow.x1;
 	int imgheight = procWindow.y2 - procWindow.y1;
 	int lutableComponents = 3;
 	float maxValue =
-			channel_traits<typename channel_type<View>::type>::max_value();
+		channel_traits<typename channel_type<View>::type>::max_value( );
 
-	std::vector<float> img;
-
-	img.resize(imgwidth * imgheight * lutableComponents);
-	//only rgb channels are lutable
-	memset(&img[0], 0, imgwidth * imgheight * lutableComponents * sizeof(float));
+	// only rgb channels are lutable
+	std::vector<float> img( imgwidth * imgheight * lutableComponents, 0 );
 
 	int index = 0;
-
-	for (int y = procWindow.y1; y < procWindow.y2; ++y) {
-		vIterator sit = src.row_begin(y);
-		for (int x = procWindow.x1; x < procWindow.x2; ++x) {
-			img[index] = (*sit)[0] / maxValue;
+	for( int y = procWindow.y1; y < procWindow.y2; ++y )
+	{
+		vIterator sit = src.row_begin( y );
+		for( int x = procWindow.x1; x < procWindow.x2; ++x )
+		{
+			img[index] = ( *sit )[0] / maxValue;
 			++index;
-			img[index] = (*sit)[1] / maxValue;
+			img[index] = ( *sit )[1] / maxValue;
 			++index;
-			img[index] = (*sit)[2] / maxValue;
+			img[index] = ( *sit )[2] / maxValue;
 			++index;
 
 			++sit;
 		}
-		if (this->progressForward())
+		if( this->progressForward( ) )
 			return;
 	}
 
 	//////
 
-	try {
+	try
+	{
 		// Load the current config.
 		OCIO::ConstConfigRcPtr config = _plugin._config;
 
 		// Get the processor
-		OCIO::ConstProcessorRcPtr processor = config->getProcessor(
-				inputcolorspace, outputcolorspace);
+		OCIO::ConstProcessorRcPtr processor = config->getProcessor( inputcolorspace, outputcolorspace );
 
 		// Wrap the image in a light-weight ImageDescription
-		OCIO::PackedImageDesc imageDesc(&img[0], imgwidth, imgheight,
-				lutableComponents);
+		OCIO::PackedImageDesc imageDesc( &img[0], imgwidth, imgheight, lutableComponents );
 
 		// Apply the color transformation (in place)
 		// Need normalized values
-		processor->apply(imageDesc);
-	} catch (OCIO::Exception & exception) {
+		processor->apply( imageDesc );
+	}
+	catch( OCIO::Exception & exception )
+	{
 		TUTTLE_COUT(
-				tuttle::common::kColorError << "OCIO Error: "
-						<< exception.what() << tuttle::common::kColorStd);
-	} catch (...) {
+					 tuttle::common::kColorError << "OCIO Error: "
+					 << exception.what( ) << tuttle::common::kColorStd );
+	}
+	catch( ... )
+	{
 		TUTTLE_COUT(
-				tuttle::common::kColorError
-						<< "Unknown OCIO error encountered."
-						<< tuttle::common::kColorStd);
+					 tuttle::common::kColorError
+					 << "Unknown OCIO error encountered."
+					 << tuttle::common::kColorStd );
 	}
 
 	index = 0;
 
-	for (int y = procWindow.y1; y < procWindow.y2; ++y) {
-		vIterator dit = dst.row_begin(y);
-		vIterator sit = src.row_begin(y);
-		for (int x = procWindow.x1; x < procWindow.x2; ++x) {
-			(*dit)[0] = static_cast<Pixel> (img[index] * maxValue);
+	for( int y = procWindow.y1; y < procWindow.y2; ++y )
+	{
+		vIterator dit = dst.row_begin( y );
+		vIterator sit = src.row_begin( y );
+		for( int x = procWindow.x1; x < procWindow.x2; ++x )
+		{
+			( *dit )[0] = static_cast<Pixel> ( img[index] * maxValue );
 			++index;
-			(*dit)[1] = static_cast<Pixel> (img[index] * maxValue);
+			( *dit )[1] = static_cast<Pixel> ( img[index] * maxValue );
 			++index;
-			(*dit)[2] = static_cast<Pixel> (img[index] * maxValue);
+			( *dit )[2] = static_cast<Pixel> ( img[index] * maxValue );
 			++index;
 
-			if (dst.num_channels() > 3) {
-				if (src.num_channels() > 3)
-					(*dit)[3] = (*sit)[3];
+			if( dst.num_channels( ) > 3 )
+			{
+				if( src.num_channels( ) > 3 )
+					( *dit )[3] = ( *sit )[3];
 				else
-					(*dit)[3] = maxValue;
+					(*dit )[3] = maxValue;
 			}
 			++dit;
 			++sit;
 
 		}
-		if (this->progressForward())
+		if( this->progressForward( ) )
 			return;
 	}
 
