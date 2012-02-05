@@ -19,81 +19,150 @@ namespace lut {
 
 using namespace boost::gil;
 static const std::string kLutHelpString =
-		"<b>Image Luter</b> is used to lut components of an image.  <br />";
+	"<b>Image Luter</b> is used to lut components of an image.  <br />";
 
-OCIOLutPlugin::OCIOLutPlugin(OfxImageEffectHandle handle) :
-	ImageEffectGilPlugin(handle) {
-	_sFilename = fetchStringParam(kInputFilename);
-	_interpolationType = fetchChoiceParam(kInterpolationType);
-	_fileTransform = OCIO::FileTransform::Create();
+OCIOLutPlugin::OCIOLutPlugin( OfxImageEffectHandle handle ) :
+ImageEffectGilPlugin( handle )
+{
+	_sFilename = fetchStringParam( kInputFilename );
+	_interpolationType = fetchChoiceParam( kInterpolationType );
+	_fileTransform = OCIO::FileTransform::Create( );
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void OCIOLutPlugin::render(const OFX::RenderArguments& args) {
+void OCIOLutPlugin::render( const OFX::RenderArguments& args )
+{
 
 	bool verbose = true;
 	std::string inputspace;
 	std::string outputspace;
 
 	EInterpolationType interpolationType =
-			static_cast<EInterpolationType> (_interpolationType->getValue());
+		static_cast<EInterpolationType> ( _interpolationType->getValue( ) );
 
 	std::string str;
-	_sFilename->getValue(str);
-	if (!bfs::exists(str)) {
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
-				<< exception::filename(str) );
+	_sFilename->getValue( str );
+	if( !bfs::exists( str ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::FileNotExist( )
+							 << exception::filename( str ) );
 	}
 	//Init the OCIO file transform
-	_fileTransform->setSrc(str.c_str());
-	_fileTransform->setInterpolation(getOCIOInterpolationType(interpolationType));
+	_fileTransform->setSrc( str.c_str( ) );
+	_fileTransform->setInterpolation( getOCIOInterpolationType( interpolationType ) );
 
 	//Add the file transform to the group, required by the transform process
-	_groupTransform = OCIO::GroupTransform::Create();
-	_groupTransform->push_back(_fileTransform);
+	_groupTransform = OCIO::GroupTransform::Create( );
+	_groupTransform->push_back( _fileTransform );
 
 	// Create the OCIO processor for the specified transform.
-	_config = OCIO::Config::Create();
+	_config = OCIO::Config::Create( );
 
-	OCIO::ColorSpaceRcPtr inputColorSpace = OCIO::ColorSpace::Create();
+	OCIO::ColorSpaceRcPtr inputColorSpace = OCIO::ColorSpace::Create( );
 	inputspace = "RawInput";
-	inputColorSpace->setName(inputspace.c_str());
-	_config->addColorSpace(inputColorSpace);
+	inputColorSpace->setName( inputspace.c_str( ) );
+	_config->addColorSpace( inputColorSpace );
 
-	OCIO::ColorSpaceRcPtr outputColorSpace = OCIO::ColorSpace::Create();
+	OCIO::ColorSpaceRcPtr outputColorSpace = OCIO::ColorSpace::Create( );
 	outputspace = "ProcessedOutput";
-	outputColorSpace->setName(outputspace.c_str());
+	outputColorSpace->setName( outputspace.c_str( ) );
 
-	outputColorSpace->setTransform(_groupTransform,
-			OCIO::COLORSPACE_DIR_FROM_REFERENCE);
+	outputColorSpace->setTransform( _groupTransform,
+								 OCIO::COLORSPACE_DIR_FROM_REFERENCE );
 
-	if (verbose) {
-		TUTTLE_COUT( tuttle::common::kColorMagenta << "[OpenColorIO DEBUG]: Specified Transform:" << *_groupTransform <<"\n"<< tuttle::common::kColorStd );
+	if( verbose )
+	{
+		TUTTLE_COUT( tuttle::common::kColorMagenta << "[OpenColorIO DEBUG]: Specified Transform:" << *_groupTransform << "\n" << tuttle::common::kColorStd );
 	}
 
-	_config->addColorSpace(outputColorSpace);
+	_config->addColorSpace( outputColorSpace );
+	
+	{
+		using namespace boost::gil;
+		// instantiate the render code based on the pixel depth of the dst clip
+		OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
+		OFX::EPixelComponent components = _clipDst->getPixelComponents( );
 
-	doGilRender<OCIOLutProcess> (*this, args);
+		// do the rendering
+		switch( components )
+		{
+			case OFX::ePixelComponentRGBA:
+			{
+				switch( bitDepth )
+				{
+					case OFX::eBitDepthFloat:
+					{
+						doGilRender<OCIOLutProcess, false, rgba_layout_t, bits32f>( *this, args );
+						return;
+					}
+					case OFX::eBitDepthUByte:
+					case OFX::eBitDepthUShort:
+					case OFX::eBitDepthCustom:
+					case OFX::eBitDepthNone:
+					{
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+							<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+					}
+				}
+				break;
+			}
+			case OFX::ePixelComponentRGB:
+			{
+				switch( bitDepth )
+				{
+					case OFX::eBitDepthFloat:
+					{
+						doGilRender<OCIOLutProcess, false, rgb_layout_t, bits32f>( *this, args );
+						return;
+					}
+					case OFX::eBitDepthUByte:
+					case OFX::eBitDepthUShort:
+					case OFX::eBitDepthCustom:
+					case OFX::eBitDepthNone:
+					{
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+							<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+					}
+				}
+				break;
+			}
+			case OFX::ePixelComponentAlpha:
+			case OFX::ePixelComponentCustom:
+			case OFX::ePixelComponentNone:
+			{
+				BOOST_THROW_EXCEPTION( exception::Unsupported()
+					<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+			}
+		}
+		BOOST_THROW_EXCEPTION( exception::Unknown() );
+	}
 }
 
-void OCIOLutPlugin::changedParam(const OFX::InstanceChangedArgs& args,
-		const std::string& paramName) {
-	if (paramName == kHelp) {
-		sendMessage(OFX::Message::eMessageMessage, "", // No XML resources
-				kLutHelpString);
-	} else if (paramName == kInputFilename) {
+void OCIOLutPlugin::changedParam( const OFX::InstanceChangedArgs& args,
+								  const std::string& paramName )
+{
+	if( paramName == kHelp )
+	{
+		sendMessage( OFX::Message::eMessageMessage, "", // No XML resources
+					 kLutHelpString );
+	}
+	else if( paramName == kInputFilename )
+	{
 		std::string str;
-		_sFilename->getValue(str);
-		if (bfs::exists(str)) {
-			_fileTransform->setSrc(str.c_str());
+		_sFilename->getValue( str );
+		if( bfs::exists( str ) )
+		{
+			_fileTransform->setSrc( str.c_str( ) );
 		}
-	} else if (paramName == kInterpolationType) {
+	}
+	else if( paramName == kInterpolationType )
+	{
 		EInterpolationType interpolationType =
-					static_cast<EInterpolationType> (_interpolationType->getValue());
-		_fileTransform->setInterpolation(getOCIOInterpolationType(interpolationType));
+			static_cast<EInterpolationType> ( _interpolationType->getValue( ) );
+		_fileTransform->setInterpolation( getOCIOInterpolationType( interpolationType ) );
 	}
 }
 

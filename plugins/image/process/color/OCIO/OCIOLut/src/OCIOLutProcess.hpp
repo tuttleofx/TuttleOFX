@@ -32,7 +32,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	// Lut Transform
-	void applyLut( View& dst, View& src, const OfxRectI& procWindow );
+	void applyLut( View& dst, View& src );
 };
 
 }

@@ -16,7 +16,6 @@
 #include <OpenColorIO/OpenColorIO.h>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 
 namespace tuttle {
@@ -25,7 +24,6 @@ namespace ocio {
 namespace lut {
 
 namespace OCIO = OCIO_NAMESPACE;
-using namespace boost::filesystem;
 
 template<class View>
 OCIOLutProcess<View>::OCIOLutProcess( OCIOLutPlugin& instance )
@@ -41,17 +39,24 @@ template<class View>
 void OCIOLutProcess<View>::multiThreadProcessImages(
 													 const OfxRectI& procWindowRoW )
 {
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates(
-																		 procWindowRoW );
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
 
-	applyLut( this->_dstView, this->_srcView, procWindowOutput );
+	View src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
+	                          procWindowSize.x, procWindowSize.y );
+	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+	                          procWindowSize.x, procWindowSize.y );
+	
+	applyLut( dst, src );
 }
 
 template<class View>
 void OCIOLutProcess<View>::applyLut(
 		View& dst,
-		View& src,
-		const OfxRectI& procWindow )
+		View& src )
 {
 	using namespace boost::gil;
 	typedef typename View::x_iterator vIterator;
@@ -60,35 +65,7 @@ void OCIOLutProcess<View>::applyLut(
 	static const char * inputcolorspace = "RawInput";
 	static const char * outputcolorspace = "ProcessedOutput";
 
-	int imgwidth = procWindow.x2 - procWindow.x1;
-	int imgheight = procWindow.y2 - procWindow.y1;
-	int lutableComponents = 3;
-	float maxValue =
-		channel_traits<typename channel_type<View>::type>::max_value( );
-
-	// only rgb channels are lutable
-	std::vector<float> img( imgwidth * imgheight * lutableComponents, 0 );
-
-	int index = 0;
-	for( int y = procWindow.y1; y < procWindow.y2; ++y )
-	{
-		vIterator sit = src.row_begin( y );
-		for( int x = procWindow.x1; x < procWindow.x2; ++x )
-		{
-			img[index] = ( *sit )[0] / maxValue;
-			++index;
-			img[index] = ( *sit )[1] / maxValue;
-			++index;
-			img[index] = ( *sit )[2] / maxValue;
-			++index;
-
-			++sit;
-		}
-		if( this->progressForward( ) )
-			return;
-	}
-
-	//////
+	copy_pixels( src, dst );
 
 	try
 	{
@@ -98,12 +75,19 @@ void OCIOLutProcess<View>::applyLut(
 		// Get the processor
 		OCIO::ConstProcessorRcPtr processor = config->getProcessor( inputcolorspace, outputcolorspace );
 
-		// Wrap the image in a light-weight ImageDescription
-		OCIO::PackedImageDesc imageDesc( &img[0], imgwidth, imgheight, lutableComponents );
+		if( is_planar<View>::value )
+		{
+			BOOST_THROW_EXCEPTION( exception::NotImplemented() );
+		}
+		else
+		{
+			// Wrap the image in a light-weight ImageDescription
+			OCIO::PackedImageDesc imageDesc( (float*)&( dst(0,0)[0] ), dst.width(), dst.height(), num_channels<View>::type::value, OCIO::AutoStride, dst.pixels().pixel_size(), dst.pixels().row_size() );
 
-		// Apply the color transformation (in place)
-		// Need normalized values
-		processor->apply( imageDesc );
+			// Apply the color transformation (in place)
+			// Need normalized values
+			processor->apply( imageDesc );
+		}
 	}
 	catch( OCIO::Exception & exception )
 	{
@@ -118,37 +102,6 @@ void OCIOLutProcess<View>::applyLut(
 					 << "Unknown OCIO error encountered."
 					 << tuttle::common::kColorStd );
 	}
-
-	index = 0;
-
-	for( int y = procWindow.y1; y < procWindow.y2; ++y )
-	{
-		vIterator dit = dst.row_begin( y );
-		vIterator sit = src.row_begin( y );
-		for( int x = procWindow.x1; x < procWindow.x2; ++x )
-		{
-			( *dit )[0] = static_cast<Pixel> ( img[index] * maxValue );
-			++index;
-			( *dit )[1] = static_cast<Pixel> ( img[index] * maxValue );
-			++index;
-			( *dit )[2] = static_cast<Pixel> ( img[index] * maxValue );
-			++index;
-
-			if( dst.num_channels( ) > 3 )
-			{
-				if( src.num_channels( ) > 3 )
-					( *dit )[3] = ( *sit )[3];
-				else
-					(*dit )[3] = maxValue;
-			}
-			++dit;
-			++sit;
-
-		}
-		if( this->progressForward( ) )
-			return;
-	}
-
 }
 
 }
