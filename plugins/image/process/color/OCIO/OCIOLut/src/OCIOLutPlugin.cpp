@@ -35,7 +35,7 @@ ImageEffectGilPlugin( handle )
  */
 void OCIOLutPlugin::render( const OFX::RenderArguments& args )
 {
-
+	/// @todo: move all this computation things to getProcessParams() called from Process::setup() fonction (which is called before multi-threading).
 	bool verbose = true;
 	std::string inputspace;
 	std::string outputspace;

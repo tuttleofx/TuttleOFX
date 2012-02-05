@@ -81,6 +81,8 @@ void OCIOLutProcess<View>::applyLut(
 		}
 		else
 		{
+			/// @todo foreach line... to get progress information
+			
 			// Wrap the image in a light-weight ImageDescription
 			OCIO::PackedImageDesc imageDesc( (float*)&( dst(0,0)[0] ), dst.width(), dst.height(), num_channels<View>::type::value, OCIO::AutoStride, dst.pixels().pixel_size(), dst.pixels().row_size() );
 
