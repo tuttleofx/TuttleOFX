@@ -7,19 +7,19 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	  	<include>src
-    : build-dir $(BUILD)/Checkerboard
-    ;
+	: requirements
+		<include>src
+	: build-dir $(BUILD)/Checkerboard
+	;
 
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Checkerboard : 
-    [ glob src/*.cpp ]
-    /tuttleplugin/<link>static
-    ;
+	 [ glob src/*.cpp ]
+	 /tuttleplugin/<link>static
+	;
 
 ###############################################################################
 # Automatic install

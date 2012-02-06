@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-        mAppendPluginFactory( ids, tuttle::plugin::constant::ConstantPluginFactory, "tuttle.constant" );
+	mAppendPluginFactory( ids, tuttle::plugin::constant::ConstantPluginFactory, "tuttle.constant" );
 }
 
 }

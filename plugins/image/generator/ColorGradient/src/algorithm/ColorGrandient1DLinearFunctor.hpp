@@ -129,9 +129,9 @@ public:
 		//		TUTTLE_COUT_VAR2( distB, distC );
 		// distB * _colors[0] + distC * _colors[1];
 		return pixel_plus_t<result_type, result_type, result_type>() (
-		           pixel_multiplies_scalar_t<result_type, double, result_type>() ( _colors[0], distB ),
-		           pixel_multiplies_scalar_t<result_type, double, result_type>() ( _colors[1], distC )
-		           );
+			   pixel_multiplies_scalar_t<result_type, double, result_type>() ( _colors[0], distB ),
+			   pixel_multiplies_scalar_t<result_type, double, result_type>() ( _colors[1], distC )
+			   );
 	}
 
 };

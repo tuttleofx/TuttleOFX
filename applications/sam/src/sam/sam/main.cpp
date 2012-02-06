@@ -22,7 +22,7 @@ Color _color;
 bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<bfs::path>& searchPaths )
 {
 	const std::string toolFilename( std::string("sam-") + toolName );
-	
+
 	BOOST_FOREACH( const bfs::path& p, searchPaths )
 	{
 		const bfs::path toolFullPath = p / toolFilename;
@@ -47,10 +47,10 @@ std::vector<bfs::path> retrieveSearchPaths( const bfs::path& samDirectory )
 		const std::vector<std::string> paths = bpo::split_unix( env, ":;" );
 		searchPaths.insert( searchPaths.end(), paths.begin(), paths.end() );
 	}
-	
+
 	searchPaths.push_back( samDirectory / "sam" );
 	searchPaths.push_back( samDirectory );
-	
+
 	return searchPaths;
 }
 
@@ -59,7 +59,7 @@ std::vector<bfs::path> retrieveAllSamCommands( const bfs::path& dir )
 	std::vector<bfs::path> res;
 	if( ! bfs::is_directory(dir) )
 		return res;
-	
+
 	bfs::directory_iterator dir_iter(dir), dir_end;
 	for(;dir_iter != dir_end; ++dir_iter)
 	{
@@ -101,18 +101,12 @@ std::vector<bfs::path> retrieveAllSamCommands( const std::vector<bfs::path>& dir
 int main( int argc, char** argv )
 {
 	using namespace sam;
-	if( argc <= 1 ) // no argument
-	{
-		TUTTLE_COUT( "sam: missing operands." );
-		TUTTLE_COUT( "run 'sam --help' for more informations." << std::endl);
-		exit( -1 );
-	}
 
 	bool                     enableColor = false;
 
 	try
 	{
-	
+
 		std::vector<std::string> cl_options;
 		for( int i = 1; i < argc; ++i )
 		{
@@ -123,7 +117,7 @@ int main( int argc, char** argv )
 			}
 			cl_options.push_back( s );
 		}
-		
+
 		// Declare the supported options.
 		bpo::options_description infoOptions;
 		infoOptions.add_options()
@@ -172,15 +166,32 @@ int main( int argc, char** argv )
 		}
 
 
-		if( sam_vm.count("help") )
+		bfs::path fullsam( argv[0] );
+		if( fullsam.is_relative() )
+		{
+			fullsam = bfs::current_path() / fullsam;
+		}
+		bfs::path samDirectory( fullsam.parent_path() );
+		const std::vector<bfs::path> searchPaths = retrieveSearchPaths( samDirectory );
+
+		if( sam_vm.count("help") || (argc == 1) )
 		{
 			TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 			TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
 			TUTTLE_COUT( _color._green <<"\tsam - A set of command line tools." << _color._std << std::endl );
 			TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
 			TUTTLE_COUT( _color._green << "\tsam COMMAND [options]..." << _color._std << std::endl );
+			TUTTLE_COUT( _color._blue << "COMMANDS" << _color._std );
+			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
+			BOOST_FOREACH( const bfs::path& c, cmds )
+			{
+				std::cout << std::left <<  "\t" << std::setw(10) << c.filename().string().substr(4) << std::flush ;
+				system( (c.string()+" --brief").c_str() );
+				std::cout << std::flush;
+			}
+			TUTTLE_COUT( "" );
 			TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std );
-			TUTTLE_COUT( "Sam is the TuttleOFX command line tool to manage image processing" << std::endl );
+			TUTTLE_COUT( "Sam is the TuttleOFX command line tool to manage image processing." << std::endl );
 			TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std );
 			TUTTLE_COUT( infoOptions );
 			exit( 0 );
@@ -190,21 +201,12 @@ int main( int argc, char** argv )
 			TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR );
 			exit( 0 );
 		}
-		
-		bfs::path fullsam( argv[0] );
-		if( fullsam.is_relative() )
-		{
-			fullsam = bfs::current_path() / fullsam;
-		}
-		bfs::path samDirectory( fullsam.parent_path() );
-
-		const std::vector<bfs::path> searchPaths = retrieveSearchPaths( samDirectory );
 
 		if( sam_vm.count("commands") )
 		{
 			TUTTLE_COUT( "" );
 			TUTTLE_COUT( _color._blue << "COMMANDS" << _color._std );
-			
+
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
@@ -234,7 +236,7 @@ int main( int argc, char** argv )
 			}
 			exit( 0 );
 		}
-		
+
 		const std::string sam_tool( argv[cl_options.size() + 1] );
 		std::vector<std::string> sam_cmd;
 		for( int i = cl_options.size() + 2; i < argc; ++i )
@@ -243,11 +245,11 @@ int main( int argc, char** argv )
 			const std::string s( argv[i] );
 			sam_cmd.push_back( quote + s + quote );
 		}
-		
+
 		bfs::path toolFullPath = retrieveToolFullPath( sam_tool, searchPaths );
-		
+
 		const std::string fullcmd( toolFullPath.string() + " " + boost::algorithm::join( sam_cmd, " " ) );
-		
+
 //		TUTTLE_TCOUT_VAR( fullcmd );
 		return system( fullcmd.c_str() );
 	}

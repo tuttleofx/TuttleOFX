@@ -7,18 +7,18 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	  	<include>src
-    : build-dir $(BUILD)/ColorGradient
-    ;
+	: requirements
+		<include>src
+	: build-dir $(BUILD)/ColorGradient
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin ColorGradient :
-    [ glob src/*.cpp ]
-    /tuttleplugin/<link>static
-    ;
+	 [ glob src/*.cpp ]
+	 /tuttleplugin/<link>static
+	;
 
 ###############################################################################
 # Automatic install

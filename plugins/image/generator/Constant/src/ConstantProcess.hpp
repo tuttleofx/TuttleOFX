@@ -22,29 +22,29 @@ template<class View>
 struct ConstantParams
 {
 	typedef typename View::value_type Pixel;
-        Pixel _color;
+	Pixel _color;
 };
 
 template<class View>
 class ConstantProcess : public ImageGilProcessor<View>
 {
 public:
-        typedef typename View::value_type Pixel;
-        typedef terry::generator::ConstantFunctor<Pixel> ConstantFunctorT;
-        typedef typename ConstantFunctorT::point_t Point;
-        typedef boost::gil::virtual_2d_locator<ConstantFunctorT, false> Locator;
-        typedef boost::gil::image_view<Locator> ConstantVirtualView;
+	typedef typename View::value_type Pixel;
+	typedef terry::generator::ConstantFunctor<Pixel> ConstantFunctorT;
+	typedef typename ConstantFunctorT::point_t Point;
+	typedef boost::gil::virtual_2d_locator<ConstantFunctorT, false> Locator;
+	typedef boost::gil::image_view<Locator> ConstantVirtualView;
 
 protected:
-        ConstantPlugin&    _plugin;        ///< Rendering plugin
-        ConstantVirtualView _srcView;       ///< Source view
+	ConstantPlugin&     _plugin;        ///< Rendering plugin
+	ConstantVirtualView _srcView;       ///< Source view
 
 public:
-        ConstantProcess( ConstantPlugin& instance );
+	ConstantProcess( ConstantPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
 
-        ConstantParams<View> getParams();
+	ConstantParams<View> getParams();
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };

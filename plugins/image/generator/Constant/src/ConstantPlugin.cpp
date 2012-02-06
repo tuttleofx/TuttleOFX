@@ -9,9 +9,9 @@ namespace plugin {
 namespace constant {
 
 ConstantPlugin::ConstantPlugin( OfxImageEffectHandle handle )
-	: ImageEffectGilPlugin( handle )
+	: GeneratorPlugin( handle )
 {
-        _color = fetchRGBAParam( kConstantColor );
+	_color = fetchRGBAParam( kConstantColor );
 }
 
 /**
@@ -20,12 +20,20 @@ ConstantPlugin::ConstantPlugin( OfxImageEffectHandle handle )
  */
 void ConstantPlugin::render( const OFX::RenderArguments& args )
 {
-        doGilRender<ConstantProcess>( *this, args );
+	doGilRender<ConstantProcess>( *this, args );
 }
 
-//void ConstantPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-//{
-//}
+void ConstantPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	GeneratorPlugin::getClipPreferences( clipPreferences );
+
+	if( getExplicitConversion() == eParamGeneratorExplicitConversionAuto )
+	{
+		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthFloat );
+	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+}
 
 }
 }

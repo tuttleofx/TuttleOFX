@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_COLORGRADIENT_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_COLORGRADIENT_PLUGIN_HPP_
 
+#include <tuttle/plugin/context/GeneratorPlugin.hpp>
 #include "ColorGradientDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
@@ -23,7 +24,7 @@ struct ColorGradientProcessParams
 /**
  * @brief ColorGradient plugin
  */
-class ColorGradientPlugin : public ImageEffectGilPlugin
+class ColorGradientPlugin : public GeneratorPlugin
 {
 public:
 	typedef boost::gil::point2<double> Point2;
@@ -38,6 +39,7 @@ private:
 public:
 	void render( const OFX::RenderArguments& args );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
 	template<class View>
 	ColorGradientProcessParams<View> getProcessParams() const;
