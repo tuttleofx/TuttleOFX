@@ -164,6 +164,7 @@ int main( int argc, char** argv )
         ttl::Graph graph;
         std::list<ttl::Graph::Node*> nodes;
         std::vector<std::ssize_t> range;
+        std::vector<double> renderscale;
         std::size_t step;
 
         // Analyze each part of the command line
@@ -186,6 +187,7 @@ int main( int argc, char** argv )
                 confOptions.add_options()
                     ("continueOnError" , "continue on error" )
                     ("range,r"      , bpo::value<std::string>(), "frame range to render" )
+                    ("renderscale"  , bpo::value<std::string>(), "renderscale" )
                     ("verbose,V"    , "explain what is being done")
                     ("quiet,Q"      , "don't print commands")
                     ("nb-cores"     , bpo::value<std::size_t>(), "set a fix number of CPUs")
@@ -379,6 +381,23 @@ int main( int argc, char** argv )
                         step = range[2];
                     else
                         step = 1;
+                }
+                {
+                    if( samdo_vm.count("renderscale") )
+                    {
+                        const std::string renderscaleStr = samdo_vm["renderscale"].as<std::string>();
+                        std::vector< std::string > renderscaleVStr = boost::program_options::split_unix( renderscaleStr, " ," );
+                        renderscale.reserve( renderscaleVStr.size() );
+                        TUTTLE_TCOUT( renderscaleVStr.size() );
+                        BOOST_FOREACH( const std::string& rStr, renderscaleVStr )
+                        {
+                            renderscale.push_back( tuttle::host::attribute::extractValueFromExpression<double>(rStr) );
+                        }
+                    }
+                    if( renderscale.size() == 1 )
+                    {
+                        renderscale.push_back( renderscale[0] );
+                    }
                 }
                 std::cerr.rdbuf( strm_buffer ); // restore old output buffer
                 continueOnError = samdo_vm.count("continueOnError");
@@ -808,25 +827,16 @@ int main( int argc, char** argv )
         graph.connect( nodes );
 
         // Execute the graph
-        if( range.size() == 0 )
-        {
-            graph.init();
-            OfxRangeD timeDomain;
-            // TUTTLE_TCOUT_VAR( nodes.back()->getName() );
-            nodes.back()->getTimeDomain( timeDomain );
-
-            // special case for infinite time domain (eg. a still image)
-            if( timeDomain.min == std::numeric_limits<int>::min() )
-                timeDomain.min = 0;
-            if( timeDomain.max == std::numeric_limits<int>::max() )
-                timeDomain.max = 0;
-
-            // TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
-            range.push_back( timeDomain.min );
-            range.push_back( timeDomain.max );
-        }
-        TUTTLE_COUT_DEBUG( "compute from " << range[0] << " to " << range[1] );
-        ttl::ComputeOptions options( range[0], range[1], step );
+        ttl::ComputeOptions options;
+		if( range.size() >= 2 )
+		{
+			options._timeRanges.push_back( ttl::TimeRange( range[0], range[1], step ) );
+		}
+		if( renderscale.size() == 2 )
+		{
+			options._renderScale.x = renderscale[0];
+			options._renderScale.y = renderscale[1];
+		}
         options._continueOnError = continueOnError;
         options._returnBuffers = false;
 
