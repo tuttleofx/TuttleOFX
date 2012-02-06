@@ -8,7 +8,10 @@ namespace plugin {
 namespace ocio{
 namespace lut {
 
+/// @toto: remove help param and use description
 static const std::string kHelp      = "help";
+
+/// @todo prefix with kParam
 static const std::string kInputFilename      = "filename";
 static const std::string kInputFilenameLabel = "OpenColorIO compatible Lut input filename";
 static const std::string kInterpolationType   = "interpolation";

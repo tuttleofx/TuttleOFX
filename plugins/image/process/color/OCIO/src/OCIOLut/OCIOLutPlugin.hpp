@@ -14,27 +14,36 @@ namespace lut {
  * @brief
  *
  */
-class OCIOLutPlugin: public ImageEffectGilPlugin {
+class OCIOLutPlugin : public ImageEffectGilPlugin
+{
 
 public:
-	OCIOLutPlugin(OfxImageEffectHandle handle);
+	OCIOLutPlugin( OfxImageEffectHandle handle );
 
 public:
-	void render(const OFX::RenderArguments& args);
-	void changedParam(const OFX::InstanceChangedArgs& args,
-			const std::string& paramName);
+	void render( const OFX::RenderArguments& args );
+	void changedParam( const OFX::InstanceChangedArgs& args,
+					 const std::string& paramName );
 
 public:
+	/// @todo prefix with _paramXXX
 	OFX::StringParam* _sFilename;
 	OFX::ChoiceParam* _interpolationType;
+
+	/// @todo move this into the ProcessParams or Process class.
 	OCIO_NAMESPACE::FileTransformRcPtr _fileTransform;
 	OCIO_NAMESPACE::GroupTransformRcPtr _groupTransform;
 	OCIO_NAMESPACE::ConfigRcPtr _config;
 
-	EInterpolationType getInterpolationType() const { return static_cast<EInterpolationType>( _interpolationType->getValue() ); }
+	EInterpolationType getInterpolationType( ) const
+	{
+		return static_cast<EInterpolationType> ( _interpolationType->getValue( ) );
+	}
 
-	OCIO_NAMESPACE::Interpolation getOCIOInterpolationType(EInterpolationType tuttleInterpolationType) const{
-		switch (tuttleInterpolationType) {
+	OCIO_NAMESPACE::Interpolation getOCIOInterpolationType( EInterpolationType tuttleInterpolationType ) const
+	{
+		switch( tuttleInterpolationType )
+		{
 			case eInterpolationTypeNearest:
 				return OCIO_NAMESPACE::INTERP_NEAREST;
 			case eInterpolationTypeTetrahedral:
