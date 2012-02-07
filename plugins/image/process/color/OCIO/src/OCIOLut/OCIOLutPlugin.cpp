@@ -73,7 +73,7 @@ void OCIOLutPlugin::render(const OFX::RenderArguments& args) {
 		}
 		break;
 	}
-	case OFX::ePixelComponentAlpha:
+	case OFX::ePixelComponentAlpha: //@todo support Alpha (mfe)
 	case OFX::ePixelComponentCustom:
 	case OFX::ePixelComponentNone: {
 		BOOST_THROW_EXCEPTION( exception::Unsupported()
@@ -87,7 +87,6 @@ OCIOLutProcessParams OCIOLutPlugin::getProcessParams(
 		const OfxPointD& renderScale) const {
 	using namespace boost::filesystem;
 	OCIOLutProcessParams params;
-	bool verbose = true;
 	EInterpolationType
 			interpolationType =
 					static_cast<EInterpolationType> (_paramInterpolationType->getValue());
@@ -99,7 +98,7 @@ OCIOLutProcessParams OCIOLutPlugin::getProcessParams(
 				<< exception::filename( str ) );
 	}
 	//Init the OCIO file transform
-	params._fileTransform = OCIO::FileTransform::Create(); //FIXME keep this ?
+	params._fileTransform = OCIO::FileTransform::Create();
 	params._fileTransform->setSrc(str.c_str());
 	params._fileTransform->setInterpolation(
 			getOCIOInterpolationType(interpolationType));
@@ -112,18 +111,17 @@ OCIOLutProcessParams OCIOLutPlugin::getProcessParams(
 	params._config = OCIO::Config::Create();
 
 	OCIO::ColorSpaceRcPtr inputColorSpace = OCIO::ColorSpace::Create();
-	inputColorSpace->setName(inputspace.c_str());
+	inputColorSpace->setName(kOCIOInputspace.c_str());
 	params._config->addColorSpace(inputColorSpace);
 
 	OCIO::ColorSpaceRcPtr outputColorSpace = OCIO::ColorSpace::Create();
-	outputColorSpace->setName(outputspace.c_str());
+	outputColorSpace->setName(kOCIOOutputspace.c_str());
 
 	outputColorSpace->setTransform(params._groupTransform,
 			OCIO::COLORSPACE_DIR_FROM_REFERENCE);
 
-	if (verbose) {
-		TUTTLE_COUT( tuttle::common::kColorMagenta << "Specified Transform:" << *(params._groupTransform) << "\n" << tuttle::common::kColorStd );
-	}
+
+	TUTTLE_COUT_DEBUG( tuttle::common::kColorMagenta << "Specified Transform:" << *(params._groupTransform) << tuttle::common::kColorStd <<std::endl);
 
 	params._config->addColorSpace(outputColorSpace);
 
