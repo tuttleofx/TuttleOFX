@@ -18,7 +18,7 @@ namespace lut {
  */
 void OCIOLutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleOcioLut", "OCIOLut", "Color transformation through LUT file" );
+	desc.setLabels( "TuttleOcioLut", "OCIOLut", "Color transformation through LUT file using OpenColorIO Transform" );
 	desc.setPluginGrouping( "tuttle/image/process/color/ocio" );
 
 	// add the supported contexts
@@ -52,21 +52,19 @@ void OCIOLutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamInputFilename );
 	filename->setDefault( "" );
-	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
+	filename->setLabels( kParamInputFilenameLabel, kParamInputFilenameLabel, kParamInputFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 
-	OFX::ChoiceParamDescriptor* interpolationType = desc.defineChoiceParam( kInterpolationType );
-	filename->setLabels( kInterpolationTypeLabel, kInterpolationTypeLabel, kInterpolationTypeLabel );
-	interpolationType->appendOption( kInterpolationNearest );
-	interpolationType->appendOption( kInterpolationLinear );
-	interpolationType->appendOption( kInterpolationTetrahedral );
-	interpolationType->setDefault(1);
+	OFX::ChoiceParamDescriptor* interpolationType = desc.defineChoiceParam( kParamInterpolationType );
+	filename->setLabels( kParamInterpolationTypeLabel, kParamInterpolationTypeLabel, kParamInterpolationTypeLabel );
+	interpolationType->appendOption( kParamInterpolationNearest );
+	interpolationType->appendOption( kParamInterpolationLinear );
+	interpolationType->appendOption( kParamInterpolationTetrahedral );
+	interpolationType->setDefault(eInterpolationTypeLinear);
 
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelp );
-	helpButton->setLabel( "Help" );
 }
 
 /**

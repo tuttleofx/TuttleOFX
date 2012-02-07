@@ -31,6 +31,36 @@ OCIOLutProcess<View>::OCIOLutProcess( OCIOLutPlugin& instance )
 , _plugin( instance )
 { }
 
+
+OCIOLutPlugin* ocioLutPlugin;
+
+template<class View>
+void OCIOLutProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	ocioLutPlugin = &_plugin;
+	ImageGilFilterProcessor<View>::setup( args );
+	_params = _plugin.getProcessParams( args.renderScale );
+
+//	switch( _params._inputType )
+//	{
+//		case eParamChooseInputCode:
+//		{
+////			TUTTLE_COUT_ERROR( "NotImplemented. Can't load text value." );
+////			TUTTLE_COUT( "CTL -- Load code: " << _params._code );
+//			loadModule( _interpreter, _params._module, _params._code );
+//		}
+//		case eParamChooseInputFile:
+//		{
+//			_interpreter.setModulePaths( _params._paths );
+////			TUTTLE_COUT( "CTL -- Load module: " << _params._module );
+//			_interpreter.loadModule( _params._module );
+//		}
+//	}
+	//TODO
+	//Ctl::setMessageOutputFunction( ctlMessageOutput );
+}
+
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
@@ -62,18 +92,16 @@ void OCIOLutProcess<View>::applyLut(
 	typedef typename View::x_iterator vIterator;
 	typedef typename channel_type<View>::type Pixel;
 
-	static const char * inputcolorspace = "RawInput";
-	static const char * outputcolorspace = "ProcessedOutput";
 
 	copy_pixels( src, dst );
 
 	try
 	{
 		// Load the current config.
-		OCIO::ConstConfigRcPtr config = _plugin._config;
+		OCIO::ConstConfigRcPtr config = _params._config;
 
 		// Get the processor
-		OCIO::ConstProcessorRcPtr processor = config->getProcessor( inputcolorspace, outputcolorspace );
+		OCIO::ConstProcessorRcPtr processor = config->getProcessor( inputspace.c_str(), outputspace.c_str());
 
 		if( is_planar<View>::value )
 		{

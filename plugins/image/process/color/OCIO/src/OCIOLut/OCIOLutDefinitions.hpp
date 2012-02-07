@@ -9,17 +9,19 @@ namespace ocio{
 namespace lut {
 
 /// @toto: remove help param and use description
-static const std::string kHelp      = "help";
 
 /// @todo prefix with kParam
-static const std::string kInputFilename      = "filename";
-static const std::string kInputFilenameLabel = "OpenColorIO compatible Lut input filename";
-static const std::string kInterpolationType   = "interpolation";
-static const std::string kInterpolationTypeLabel   = "InterpolationType : ";
+static const std::string kParamInputFilename      = "filename";
+static const std::string kParamInputFilenameLabel = "Lut input filename (csp, 3dl, cube, hdl... see OpenColorIO docs to see all formats)";
+static const std::string kParamInterpolationType   = "interpolation";
+static const std::string kParamInterpolationTypeLabel   = "InterpolationType";
 
-static const std::string kInterpolationNearest   = "Nearest";
-static const std::string kInterpolationLinear = "Linear";
-static const std::string kInterpolationTetrahedral = "Tetrahedral";
+static const std::string kParamInterpolationNearest   = "nearest";
+static const std::string kParamInterpolationLinear = "linear";
+static const std::string kParamInterpolationTetrahedral = "tetrahedral";
+
+static const std::string inputspace = "RawInput";
+static const std::string outputspace = "ProcessedOutput";
 
 enum EInterpolationType
 {

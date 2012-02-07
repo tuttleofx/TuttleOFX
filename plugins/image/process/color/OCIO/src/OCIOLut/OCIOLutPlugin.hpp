@@ -10,8 +10,15 @@ namespace plugin {
 namespace ocio {
 namespace lut {
 
+struct OCIOLutProcessParams
+{
+	OCIO_NAMESPACE::FileTransformRcPtr _fileTransform;
+	OCIO_NAMESPACE::GroupTransformRcPtr _groupTransform;
+	OCIO_NAMESPACE::ConfigRcPtr _config;
+};
+
 /**
- * @brief
+ * @brief OCIO LUT plugin
  *
  */
 class OCIOLutPlugin : public ImageEffectGilPlugin
@@ -26,18 +33,14 @@ public:
 					 const std::string& paramName );
 
 public:
-	/// @todo prefix with _paramXXX
-	OFX::StringParam* _sFilename;
-	OFX::ChoiceParam* _interpolationType;
+	OFX::StringParam* _paramFilename;
+	OFX::ChoiceParam* _paramInterpolationType;
 
-	/// @todo move this into the ProcessParams or Process class.
-	OCIO_NAMESPACE::FileTransformRcPtr _fileTransform;
-	OCIO_NAMESPACE::GroupTransformRcPtr _groupTransform;
-	OCIO_NAMESPACE::ConfigRcPtr _config;
+	OCIOLutProcessParams getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
 	EInterpolationType getInterpolationType( ) const
 	{
-		return static_cast<EInterpolationType> ( _interpolationType->getValue( ) );
+		return static_cast<EInterpolationType> ( _paramInterpolationType->getValue( ) );
 	}
 
 	OCIO_NAMESPACE::Interpolation getOCIOInterpolationType( EInterpolationType tuttleInterpolationType ) const

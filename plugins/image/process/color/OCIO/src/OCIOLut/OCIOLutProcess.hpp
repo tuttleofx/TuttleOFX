@@ -25,9 +25,11 @@ class OCIOLutProcess : public ImageGilFilterProcessor<View>
 {
 private:
 	OCIOLutPlugin&  _plugin;        ///< Rendering plugin
+	OCIOLutProcessParams _params; ///< parameters
 
 public:
 	OCIOLutProcess<View>( OCIOLutPlugin & instance );
+	void setup( const OFX::RenderArguments& args );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
