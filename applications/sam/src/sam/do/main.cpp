@@ -17,8 +17,18 @@
 
 #include <iostream>
 
-#define READER_DUMMY_NAME     "reader"
-#define READER_DUMMY_FULLNAME "dummy.reader"
+std::string getDefaultValues( const tuttle::host::ofx::property::OfxhProperty& prop )
+{
+    std::string s;
+    std::vector<std::string> values = sam::samdo::getDefaultOrChoiceValues( prop );
+
+    for( size_t i=0; i < values.size(); i++ )
+    {
+        s += values.at( i );
+        s += " ";
+    }
+    return s;
+}
 
 std::string getPrintableDefaultValues( const tuttle::host::ofx::property::OfxhProperty& prop )
 {
@@ -26,29 +36,15 @@ std::string getPrintableDefaultValues( const tuttle::host::ofx::property::OfxhPr
     std::vector<std::string> values = sam::samdo::getDefaultOrChoiceValues( prop );
 
     s += sam::samdo::_color._green;
-    for( size_t i=0; i < values.size(); i++ )
-    {
-        s += values.at( i );
-        s += " ";
-    }
+    s += getDefaultValues( prop );
     s += sam::samdo::_color._std;
     return s;
 }
 
 /// get defaults values of plugin properties
-std::string getPrintableChoiceValues( const tuttle::host::ofx::property::OfxhProperty& prop )
+std::vector<std::string> getChoiceValues( const tuttle::host::ofx::property::OfxhProperty& prop )
 {
-    std::string s;
-    std::vector<std::string> values = sam::samdo::getDefaultOrChoiceValues( prop );
-    s += sam::samdo::_color._red;
-    for( size_t i=0; i < values.size(); i++ )
-    {
-        s += "\t\t\t\t\t- ";
-        s += values.at( i );
-        s += "\n";
-    }
-    s += sam::samdo::_color._std;
-    return s;
+    return sam::samdo::getDefaultOrChoiceValues( prop );
 }
 
 /// get default value of plugin properties
@@ -100,7 +96,8 @@ std::vector<std::string> getChoiceValuesForParameter( const tuttle::host::ofx::p
 void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std::string context="" )
 {
     std::string defaultValue;
-    std::string choiceValues;
+    std::vector<std::string> choiceValues;
+
     tuttle::host::ofx::property::PropertyMap propMap = properties.getMap();
     for( tuttle::host::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
     {
@@ -110,15 +107,11 @@ void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std
 
         if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
         {
-            choiceValues = getPrintableChoiceValues( prop );
-            defaultValue = getDefaultChoiceValue( prop );
+            choiceValues = getChoiceValues( prop );
         }
         if( std::strcmp( label.c_str() , "OfxParamPropDefault" ) == 0 )
         {
-            if( ! choiceValues.size() )
-            {
-                defaultValue = getPrintableDefaultValues( prop );
-            }
+            defaultValue = getDefaultValues( prop );
         }
         if( std::strcmp( label.c_str() , "OfxParamPropType" ) == 0 )
         {
@@ -126,9 +119,17 @@ void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std
             type.erase(0, 12);
             if( std::strcmp( type.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
             {
-                TUTTLE_COUT( "\t" << sam::samdo::_color._green << std::left << std::setw (25) << context + ":" << sam::samdo::_color._std << std::setw( 15 ) << type << sam::samdo::_color._yellow << defaultValue << sam::samdo::_color._std );
+                std::string stringDefaultValue = defaultValue;
+                if( choiceValues.size() ) // if it's a choice, we take the nth argument
+                {
+                        int indexOfDefaultValue = std::atoi( defaultValue.c_str() );
+                        stringDefaultValue = choiceValues.at( indexOfDefaultValue ) ;
+                }
+
+                TUTTLE_COUT( "\t" << sam::samdo::_color._green << std::left << std::setw (25) << context + ":" << sam::samdo::_color._std << std::setw( 15 ) << type << sam::samdo::_color._yellow << stringDefaultValue << sam::samdo::_color._std );
                 if( choiceValues.size() )
-                    TUTTLE_COUT( choiceValues );
+                    for( size_t i=0; i < choiceValues.size(); i++ )
+                        TUTTLE_COUT( "\t\t\t\t\t" << sam::samdo::_color._red << "- " << choiceValues.at( i ) << sam::samdo::_color._std );
             }
         }
     }
@@ -277,6 +278,7 @@ int main( int argc, char** argv )
                     SAM_DO_EXAMPLE_LINE_COUT ( "Colorgradient generator: "  , "sam-do colorgradient point0=1190,424 color0=0.246,0.44,0.254,1 \\" );
                     SAM_DO_EXAMPLE_LINE_COUT ( " "                          , "                     point1=458,726  color1=0.396,0.193,0.444,1 format=HD // viewer" );
 */
+                    SAM_DO_EXAMPLE_LINE_COUT ( "Text writing: "             , "sam-do constant // text text=\"hello\" size=80 // viewer" );
 
                     SAM_DO_EXAMPLE_TITLE_COUT( "Image sequence conversion and creation");
                     SAM_DO_EXAMPLE_LINE_COUT ( "Convert Image: "   , "sam-do reader in.dpx // writer out.jpg" );
