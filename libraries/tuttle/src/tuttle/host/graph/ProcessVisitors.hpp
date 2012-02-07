@@ -118,7 +118,6 @@ public:
 				edge._timesNeeded[t] = mapInputsTimes[edge.getInAttrName()];
 			}
 		}
-
 	}
 
 private:
