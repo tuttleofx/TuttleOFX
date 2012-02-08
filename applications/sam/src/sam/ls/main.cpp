@@ -35,6 +35,16 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 	return os;
 }
 
+template<class T>
+void coutVec( const boost::ptr_vector<T>& v )
+{
+	BOOST_FOREACH( const T& f, v )
+	{
+		std::cout << f << std::endl;
+	}
+}
+
+
 int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
@@ -253,7 +263,7 @@ int main( int argc, char** argv )
 				TUTTLE_COUT( path.string() << ":");
 			}
 
-			detector.printFileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
+			coutVec( detector.fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask ) );
 
 			if(recursiveListing)
 			{
@@ -265,7 +275,7 @@ int main( int argc, char** argv )
 						if( !script )
 							TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
-						detector.printFileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask );
+						coutVec( detector.fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
 					}
 				}
 			}

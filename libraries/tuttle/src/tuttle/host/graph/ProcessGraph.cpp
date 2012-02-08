@@ -139,15 +139,14 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 #endif
 
 	// Initialize variables
-	OfxPointD renderScale = { 1.0, 1.0 };
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
 	ProcessVertexData defaultOptions;
-	defaultOptions._interactive = false;
+	defaultOptions._interactive = options._interactive;
 	// imageEffect specific...
 //	defaultOptions._field       = kOfxImageFieldBoth;
-	defaultOptions._renderScale = renderScale;
+	defaultOptions._renderScale = options._renderScale;
 //	defaultOptions._renderRoI   = renderWindow;
 
 	///@todo tuttle: exception if there is non-optional clips unconnected.
@@ -175,17 +174,33 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			v.getProcessNode().setProcessData( &v._data );
 		}
 	}
-
-	///@todo tuttle: compute the time domain for each node
-//	graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
-//	renderGraph.depthFirstSearch( timeDomainVisitor );
 	
 	memory::MemoryCache result;
 	std::list<TimeRange> timeRanges = options._timeRanges;
 	
 	if( timeRanges.empty() )
 	{
-		timeRanges.push_back( TimeRange( 0, 0 ) );
+		connectClips<InternalGraphImpl>( _graph );
+		
+		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( _graph.getVertexDescriptor(_outputId), _graph.getGraph() ) )
+		{
+			ProcessVertex& v = _graph.targetInstance( ed );
+			// compute the time domain for each output node
+			OfxRangeD timeDomain;
+			v.getProcessNode().getTimeDomain( timeDomain );
+
+			// special case for infinite time domain (eg. a still image)
+			if( timeDomain.min == std::numeric_limits<int>::min() )
+				timeDomain.min = 0;
+			if( timeDomain.max == std::numeric_limits<int>::max() )
+				timeDomain.max = 0;
+			
+			timeRanges.push_back( TimeRange( timeDomain ) );
+			TUTTLE_TCOUT( "Compute full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
+		}
+		
+//		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
+//		renderGraph.depthFirstSearch( timeDomainVisitor );
 	}
 	
 	TUTTLE_TCOUT( "process render..." );
@@ -275,7 +290,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				}
 
 				ProcessVertexAtTime::Key outputKeyAtTime(_outputId, time);
-				InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( outputKeyAtTime );
+				InternalGraphAtTimeImpl::vertex_descriptor outputAtTime = renderGraphAtTime.getVertexDescriptor( outputKeyAtTime );
 
 				TUTTLE_TCOUT( "---------------------------------------- set default options" );
 				BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )

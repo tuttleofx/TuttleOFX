@@ -12,6 +12,7 @@
 #include <tuttle/common/utils/global.hpp>
 
 #include <boost/ptr_container/ptr_map.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/exception/all.hpp>
 
 #include <stdexcept>
@@ -33,6 +34,11 @@ struct TimeRange
 	TimeRange( const int begin, const int end, const int step = 1 )
 		: _begin( begin )
 		, _end( end )
+		, _step( step )
+	{}
+	TimeRange( const OfxRangeD& range, const int step = 1 )
+		: _begin( boost::lexical_cast<int>(range.min) )
+		, _end( boost::lexical_cast<int>(range.max) )
 		, _step( step )
 	{}
 	
@@ -70,15 +76,21 @@ struct ComputeOptions
 	
 	void setDefault()
 	{
+		_renderScale.x = 1.0;
+		_renderScale.y = 1.0;
 		_continueOnError = false;
 		_returnBuffers = false;
 		_verboseLevel = eVerboseLevelError;
+		_interactive = false;
 	}
 	
 	std::list<TimeRange> _timeRanges;
+	
+	OfxPointD _renderScale;
 	bool _continueOnError;
 	bool _returnBuffers;
 	EVerboseLevel _verboseLevel;
+	bool _interactive;
 };
 
 

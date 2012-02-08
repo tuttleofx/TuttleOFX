@@ -4,7 +4,6 @@
 namespace tuttle {
 namespace plugin {
 
-namespace bfs = boost::filesystem;
 using boost::numeric_cast;
 
 GeneratorPlugin::GeneratorPlugin( OfxImageEffectHandle handle )
