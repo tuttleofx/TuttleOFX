@@ -34,6 +34,7 @@ static const std::string kParamFilterB               = "b";
 static const std::string kParamFilterC               = "c";
 
 static const std::string kParamFilterSize            = "filterSize";
+static const std::string kParamFilterSharpen         = "filterSharpen";
 static const std::string kParamFilterSigma           = "filterSigma";
 
 static const std::string kParamFilterOutOfImage      = "outOfImage";
