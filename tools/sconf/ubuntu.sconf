@@ -1,4 +1,4 @@
-# use system libraries
+# system libraries
 
 incdir_qt4 = '/usr/include/qt4'
 incdir_ilmbase = '/usr/include/OpenEXR'
@@ -7,8 +7,23 @@ incdir_imagemagick = '/usr/include/ImageMagick'
 lib_python = 'python2.7'
 incdir_python = join('/usr/include',lib_python)
 
-extern = '/path/to/extern/libraries'
+
+# manually compiled libraries
+
+extern = '#3rdParty'
+# or custom path
+#extern = '/path/to/extern/libraries'
 
 # no default package for openimageio
 dir_openimageio = join( extern, 'oiio/dist/linux')
 incdir_openimageio = join(dir_openimageio, 'include/OpenImageIO')
+
+dir_ctl = join(extern, 'ctl')
+modules_ctl = ['IlmCtlSimd', 'IlmCtl', 'IlmCtlMath']
+incdir_ctl = [join(dir_ctl,inc) for inc in modules_ctl]
+libdir_ctl = [join(dir_ctl,inc,'.libs') for inc in modules_ctl]
+
+dir_opencolorio = join(extern, 'opencolorio')
+incdir_opencolorio = [join(dir_opencolorio, 'export'),
+                      join(dir_opencolorio, 'build/export')]
+libdir_opencolorio = join(dir_opencolorio, 'build/src/core')
