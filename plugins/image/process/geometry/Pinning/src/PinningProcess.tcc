@@ -35,7 +35,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 {
 	using namespace terry;
 	using namespace terry::sampler;
-	
+
 	const terry::Rect<std::ssize_t> procWindowOutput = ofxToGil( this->translateRoWToOutputClipCoordinates( procWindowRoW ) );
 
 	switch( _params._samplerProcessParams._filter )
@@ -93,7 +93,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 		}
 		case eParamFilterLanczos:
 		{
-			lanczos_sampler lanczosSampler ( _params._samplerProcessParams._filterSize );
+			lanczos_sampler lanczosSampler ( _params._samplerProcessParams._filterSize, _params._samplerProcessParams._filterSharpen );
 			resample( this->_srcView, this->_dstView, procWindowOutput, lanczosSampler );
 			return;
 		}
