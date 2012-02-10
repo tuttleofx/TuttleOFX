@@ -19,3 +19,4 @@ os.chdir ( ".." )
 os.chdir ( "./openjpeg" )
 os.system( "./configure" )
 os.chdir ( ".." )
+

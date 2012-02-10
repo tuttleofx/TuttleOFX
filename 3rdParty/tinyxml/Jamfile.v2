@@ -1,0 +1,36 @@
+###############################################################################
+## Main BJam makefile for tinyxml library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements
+		<include>.
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>.
+		<define>TIXML_USE_STL
+	: build-dir $(BUILD)/3rdParty/tinyxml
+	;
+
+###############################################################################
+# tinyxml library
+###############################################################################
+lib tinyxml : 
+	 [ glob *.cpp ]
+	:
+	 <link>static
+	;
+
+install dist
+	:
+		tinyxml
+	:
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
+	;

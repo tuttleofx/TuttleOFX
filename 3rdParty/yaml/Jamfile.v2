@@ -1,0 +1,36 @@
+###############################################################################
+## Main BJam makefile for yaml library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements
+		<include>include
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>include
+	: build-dir $(BUILD)/3rdParty/yaml
+	;
+
+###############################################################################
+# yaml library
+###############################################################################
+lib yaml : 
+	 [ glob src/*.cpp
+	   glob src/contrib/*.cpp ]
+	:
+	 <link>static
+	;
+
+install dist
+	:
+		yaml
+	:
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
+	;

@@ -9,16 +9,15 @@ import os ;
 project
     : requirements	
         <include>src
-        <include>$(3RD_PARTY)/opencolorio/include/
+        <include>$(3RD_PARTY)/opencolorio_install/include/
     : build-dir $(BUILD)/OCIOLut
     ;
 
+use-project	/opencolorio	: $(3RD_PARTY)/opencolorio ;
 
 ###############################################################################
 # Dependencies
 ###############################################################################
-lib opencolorio : : <file>$(3RD_PARTY)/opencolorio/lib/libOpenColorIO.so.1 <os>LINUX ;
-#TODO MACOSX and NT  
 
 ###############################################################################
 # Product 
@@ -29,7 +28,7 @@ plugin OCIOLut :
 	/boost/filesystem/<link>static
 	/boost/system/<link>static
 	/tuttleplugin/<link>static
-	opencolorio 
+	/opencolorio/<link>static
     ;
 
 ###############################################################################

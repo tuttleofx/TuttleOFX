@@ -8,6 +8,7 @@ import urllib
 import subprocess
 import tarfile
 import zipfile
+
 from shutil import move, copystat, Error, rmtree
 
 osname		= os.name.lower()
@@ -104,14 +105,16 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 	if not os.path.exists( os.path.join( os.getcwd(), libname)):
 		os.mkdir(os.path.join( os.getcwd() ,libname))
 	
-	print ('\nuncompress : %s -> %s\n' % ( folderExtracted, libname ) )
+	print ('\nuncompress : %s -> %s\n ' % ( folderExtracted, libname ) )
 		
 	if os.path.exists( libname + '/Jamfile.v2' ) :
 		print ( 'move %s => %s' % ( libname, folderExtracted ) ) 
 		movetree( libname , folderExtracted )
-	if os.path.exists(libname) :
-		rmtree( libname )
-	os.rename( folderExtracted, libname )
+		
+	if folderExtracted != libname :	
+		if os.path.exists(libname) :
+			rmtree( libname )
+		os.rename( folderExtracted, libname )
 
 	print ('end of uncompress\n')
 
@@ -192,6 +195,24 @@ def insertInFile( filename, linesIndexes, textToAppend ):
 	os.remove(filename)
 	os.rename('tmp.txt', filename)
 
+def commentInFile( filename, atLine ): 
+	file = open( filename , 'r' )
+	fileTmp = open( 'tmp.txt' , 'w' )
+	lines = file.readlines()
+
+	nlist = list( lines )
+
+	commentedLine = nlist[atLine]
+	commentedLine = "//" + commentedLine
+	nlist[atLine]=commentedLine
+	fileTmp.writelines( nlist )
+
+	file.close()
+	fileTmp.close()
+	os.remove(filename)
+	os.rename('tmp.txt', filename)
+	
+
 def makeModificationIfNecessaryInFile( filename, headerToInsert, atLine ):
 	print ( '%s' % filename )
 	modification = 0
@@ -229,6 +250,18 @@ filename = "ctl/IlmCtlSimd/CtlSimdReg.h"
 headerToInsert = "#include <cstring>"
 atLine = 55
 makeModificationIfNecessaryInFile(filename, headerToInsert, atLine );
+
+#OpenColorIO third parties extraction
+
+download_dir = "opencolorio/ext"
+
+uncompress("tinyxml_2_6_1.tar.gz", "tar.gz", False, "tinyxml", "tinyxml")
+uncompress("yaml-cpp-r482.tar.gz", "tar.gz", False, "yaml", "yaml-cpp-r482")
+
+#patch yaml
+filename = "yaml/src/emitter.cpp" 
+atLine = 663
+commentInFile(filename, atLine );
 
 print ( 'End of initialisation.' )
 
