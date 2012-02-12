@@ -18,8 +18,8 @@ project
 plugin Lut :
 	[ glob src/*.cpp ]
 	[ glob src/lutEngine/*.cpp ]
-	/boost/filesystem
-	/boost/system
+	/boost/filesystem/<link>static
+	/boost/system/<link>static
 	/tuttleplugin/<link>static
     ;
 

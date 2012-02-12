@@ -28,8 +28,8 @@ else if [ os.name ] = MACOSX
 plugin Average : 
 	[ glob src/*.cpp ]
         /tuttleplugin/<link>static
-        /boost//system
-        /boost//regex
+	/boost//system/<link>static
+	/boost//regex/<link>static
         opengl
 	;
 
