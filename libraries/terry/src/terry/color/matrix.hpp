@@ -448,7 +448,7 @@ Matrix5x5 hueRotateMatrix( const typename Matrix5x5::value_type rotate )
 	
 	Matrix5x5 matrix = boost::numeric::ublas::identity_matrix<T>( 5 );
 
-	/* rotate the grey vector into positive Z */
+	// rotate the grey vector into positive Z
 	const T xmag = std::sqrt(2.0);
 	const T xrs = 1.0/xmag;
 	const T xrc = 1.0/xmag;
@@ -465,28 +465,29 @@ Matrix5x5 hueRotateMatrix( const typename Matrix5x5::value_type rotate )
 	T ly;
 	T lz;
 
-	/* shear the space to make the luminance plane horizontal */
+	// shear the space to make the luminance plane horizontal
 	xformpnt( matrix, s_redLum, s_greenLum, s_blueLum, &lx, &ly, &lz );
 
+	BOOST_ASSERT( lz != 0 );
 	const T zsx = lx/lz;
 	const T zsy = ly/lz;
 	matrix = prec_prod( matrix,
 		zShearMatrix<Matrix5x5>( zsx, zsy )
 		);
 
-	/* rotate the hue */
-	const T zrs = sin(rotate*M_PI/180.0);
-	const T zrc = cos(rotate*M_PI/180.0);
+	// rotate the hue
+	const T zrs = std::sin(rotate*M_PI/180.0);
+	const T zrc = std::cos(rotate*M_PI/180.0);
 	matrix = prec_prod( matrix,
 		zRotateMatrix<Matrix5x5>( zrs, zrc )
 		);
 
-	/* unshear the space to put the luminance plane back */
+	// unshear the space to put the luminance plane back
 	matrix = prec_prod( matrix,
 		zShearMatrix<Matrix5x5>( -zsx, -zsy )
 		);
 
-	/* rotate the grey vector back into place */
+	// rotate the grey vector back into place
 	matrix = prec_prod( matrix,
 		yRotateMatrix<Matrix5x5>( -yrs, yrc )
 		);
