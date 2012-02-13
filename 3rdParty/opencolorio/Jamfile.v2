@@ -18,6 +18,8 @@ project
 		<include>src/include
 	: build-dir $(BUILD)/3rdParty/opencolorio
     ;
+use-project	/yaml	: $(3RD_PARTY)/yaml ;
+use-project	/tinyxml	: $(3RD_PARTY)/tinyxml ;
 
 ###############################################################################
 # libraw library
@@ -29,12 +31,13 @@ alias	headers		:
 
 lib	opencolorio	:
 			 [ glob
-			       src/core/*.cpp		    
+			       src/core/*.cpp
+			       src/core/pystring/*.cpp		    
+			       src/core/md5/*.cpp		    
 			 ]
-			 ../yaml
-			 ../tinyxml
-			 :
-			  <link>static
+			 /yaml/<link>static
+			 /tinyxml/<link>static
+			 # /python/<link>static
 			;
 
 install dist

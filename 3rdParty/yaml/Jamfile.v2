@@ -22,8 +22,6 @@ project
 lib yaml : 
 	 [ glob src/*.cpp
 	   glob src/contrib/*.cpp ]
-	:
-	 <link>static
 	;
 
 install dist

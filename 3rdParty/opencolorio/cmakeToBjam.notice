@@ -7,7 +7,7 @@ What to DO or Check when upgrading OCIO version :
      - change OCIO url 
      - check "OpenColorIO third parties extraction" part (uncompress TinyXML and Yaml, patch of yaml/emmitter.cpp).
      - run init.py opencolorio
-- in opencolorio/export/OpenColorIO, replace OpenColorABI.h by the new version
+- in opencolorio/export/OpenColorIO, replace OpenColorABI.h by the new version (TODO do it automatically)
 
 
 Files to commit :
