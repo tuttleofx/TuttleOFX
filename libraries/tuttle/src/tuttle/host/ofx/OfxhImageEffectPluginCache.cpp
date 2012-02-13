@@ -4,6 +4,8 @@
 ///@todo tuttle: remove this!
 #include <tuttle/host/Core.hpp>
 
+#include <boost/algorithm/string/case_conv.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -21,8 +23,11 @@ OfxhImageEffectPluginCache::~OfxhImageEffectPluginCache() {}
  */
 OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::string& id, int vermaj, int vermin )
 {
+	std::string idLower = id;
+	boost::to_lower( idLower );
+	
 	if( vermaj == -1 &&  vermin == -1 )
-		return _pluginsByID[id];
+		return _pluginsByID[idLower];
 
 	// return the highest version one, which fits the pattern provided
 	OfxhImageEffectPlugin* sofar = 0;
