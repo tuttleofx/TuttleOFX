@@ -14,6 +14,7 @@ struct SamplerProcessParams
 	terry::sampler::EParamFilter               _filter;
 	double                                     _filterSize;
 	double                                     _filterSigma;
+	double                                     _filterSharpen;
 	double                                     _paramB;
 	double                                     _paramC;
 
@@ -37,6 +38,7 @@ public:
 	OFX::ChoiceParam*       _paramFilter;
 	OFX::IntParam*          _paramFilterSize;
 	OFX::DoubleParam*       _paramFilterSigma;
+	OFX::DoubleParam*       _paramFilterSharpen;
 	OFX::DoubleParam*       _paramB;
 	OFX::DoubleParam*       _paramC;
 	OFX::ChoiceParam*       _paramOutOfImage;

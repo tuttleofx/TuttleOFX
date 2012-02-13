@@ -88,6 +88,15 @@ void describeSamplerParamsInContext( OFX::ImageEffectDescriptor& desc,
     filterSigma->setDisplayRange	( 0.0001, 4.0 );
     filterSigma->setHint		( "Set the gaussian sigma coefficient." );
 
+
+
+    OFX::DoubleParamDescriptor* filterSharpen = desc.defineDoubleParam( kParamFilterSharpen );
+    filterSharpen->setLabel		( "Sharpen" );
+    filterSharpen->setDefault		( 1.0 );
+    filterSharpen->setRange		( 0.0001, 30.0 );
+    filterSharpen->setDisplayRange	( 0.0001, 4.0 );
+    filterSharpen->setHint		( "Set the lanczos detail coefficient." );
+
     OFX::ChoiceParamDescriptor* outOfImage = desc.defineChoiceParam( kParamFilterOutOfImage );
     outOfImage->setLabel            ( "Out of Image" );
     outOfImage->appendOption        ( kParamFilterOutBlack );

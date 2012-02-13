@@ -36,11 +36,11 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 }
 
 template<class T>
-void coutVec( const std::vector< boost::shared_ptr<T> >& v )
+void coutVec( const boost::ptr_vector<T>& v )
 {
-	BOOST_FOREACH( const boost::shared_ptr<T>& f, v )
+	BOOST_FOREACH( const T& f, v )
 	{
-		std::cout << *f << std::endl;
+		std::cout << f << std::endl;
 	}
 }
 

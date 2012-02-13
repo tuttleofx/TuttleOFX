@@ -134,7 +134,9 @@ project
 
         <os>NT:<define>_WINDOWS
         <os>LINUX:<cxxflags>-fPIC
+	<os>LINUX:<cxxflags>-ftemplate-depth=256
         <os>LINUX:<cflags>-fPIC
+	<os>LINUX:<cflags>-ftemplate-depth=256
 
         # icu library off
         #<define>BOOST_HAS_ICU=0

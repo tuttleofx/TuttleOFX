@@ -196,7 +196,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				timeDomain.max = 0;
 			
 			timeRanges.push_back( TimeRange( timeDomain ) );
-			TUTTLE_COUT_DEBUG( "Compute full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
+			TUTTLE_TCOUT( "Compute full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
 		}
 		
 //		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
