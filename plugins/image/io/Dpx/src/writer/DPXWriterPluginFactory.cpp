@@ -16,7 +16,7 @@ namespace writer {
 void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleDpxWriter", "DpxWriter",
-                    "Dpx file writer" );
+		    "Dpx file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
     desc.setDescription( "Digital Picture Exchange (DPX), ANSI/SMPTE standard (268M-2003)" );
@@ -47,7 +47,7 @@ void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext               context )
+						OFX::EContext               context )
 {
     OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -83,7 +83,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     bitDepth->appendOption( kTuttlePluginBitDepth12 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( 3 );
+    bitDepth->setDefault( eParamBitDepth10 );
 
     OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
     compressed->setLabel( "Remove unused bits (bit streaming)" );
@@ -100,7 +100,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* DPXWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext        context )
+							  OFX::EContext        context )
 {
     return new DPXWriterPlugin( handle );
 }
