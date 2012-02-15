@@ -10,7 +10,7 @@ namespace ofx {
 namespace {
 
 OfxStatus ProgressStart( void*       effectInstance,
-                         const char* label )
+			 const char* label )
 {
 	try
 	{
