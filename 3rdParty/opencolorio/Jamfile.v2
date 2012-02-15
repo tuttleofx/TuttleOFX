@@ -14,8 +14,7 @@ project
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
-		<include>.
-		<include>src/include
+		<include>export
 	: build-dir $(BUILD)/3rdParty/opencolorio
     ;
 use-project	/yaml	: $(3RD_PARTY)/yaml ;
