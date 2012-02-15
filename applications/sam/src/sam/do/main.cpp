@@ -275,7 +275,7 @@ int main( int argc, char** argv )
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Checkerboard generator: "   , "sam do checkerboard width=1920 ratio=2.35 // viewer" );
 /*
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Colorgradient generator: "  , "sam do colorgradient point0=1190,424 color0=0.246,0.44,0.254,1 \\" );
-		    SAM_DO_EXAMPLE_LINE_COUT ( " "                          , "                     point1=458,726  color1=0.396,0.193,0.444,1 format=HD // viewer" );
+		    SAM_DO_EXAMPLE_LINE_COUT ( " "		                 , "                     point1=458,726  color1=0.396,0.193,0.444,1 format=HD // viewer" );
 */
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Text writing: "             , "sam do constant // text text=\"hello\" size=80 // viewer" );
 
@@ -283,6 +283,7 @@ int main( int argc, char** argv )
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Convert Image: "   , "sam do reader in.dpx // writer out.jpg" );
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Convert Sequence: ", "sam do reader in.####.dpx // writer out.####.jpg" );
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Select a range: "  , "sam do reader in.####.dpx // writer out.####.jpg // --range=10,100" );
+		    SAM_DO_EXAMPLE_LINE_COUT ( "","r and w are shortcuts for reader and writer" );
 
 		    SAM_DO_EXAMPLE_TITLE_COUT( "Geometry processing during conversion" );
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Crop: "        , "sam do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg" );
@@ -340,22 +341,19 @@ int main( int argc, char** argv )
 			TUTTLE_COUT( _color._blue  << "NODES" << _color._std );
 		    std::vector< std::string > pluginNames;
 		    addDummyNodeInList( pluginNames );
-					const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+			const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 		    BOOST_FOREACH( const ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, allNodes )
 		    {
-			const std::string plugName = node->getRawIdentifier();
-
-			std::vector< std::string > termsPlugin;
-			boost::algorithm::split( termsPlugin, plugName, boost::algorithm::is_any_of("."));
-
-			pluginNames.push_back( termsPlugin.back() );
+			std::string plugName = node->getRawIdentifier();
+			boost::algorithm::replace_first(plugName, "tuttle.", "" );
+			pluginNames.push_back( plugName );
 		    }
 		    std::sort( pluginNames.begin(), pluginNames.end() );
 
-					const std::string indent = samdo_vm.count("nodes") ? "\t" : "";
+		    const std::string indent = samdo_vm.count("nodes") ? "\t" : "";
 		    BOOST_FOREACH( const std::string& pluginName, pluginNames )
 		    {
-						TUTTLE_COUT( indent << pluginName );
+			TUTTLE_COUT( indent << pluginName );
 		    }
 		    exit( 0 );
 		}
