@@ -29,11 +29,9 @@ void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	const std::string filename( getAbsoluteFirstFilename() );
+
 	if( !bfs::exists( filename ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to open file." )
-			<< exception::filename( filename ) );
 		BOOST_THROW_EXCEPTION( exception::FileNotExist( filename ) );
 	}
 	// If pattern detected (frame varying on time)
@@ -71,16 +69,6 @@ bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 void ReaderPlugin::render( const OFX::RenderArguments& args )
 {
-	const std::string filename( getAbsoluteFilenameAt( args.time ) );
-	if( ! boost::filesystem::exists( filename ) )
-	{
-		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to open file." )
-			<< exception::filename( filename ) );
-		BOOST_THROW_EXCEPTION( exception::FileNotExist( filename ) );
-
-	}
-	
 }
 
 }
