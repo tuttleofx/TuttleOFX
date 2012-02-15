@@ -65,7 +65,7 @@ local rule check-required-env ( var ) {
 constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
 
 # can be found with command: MagickCore-config --libs
-constant	MAGICK_LIBS     : " -L/usr/lib64 -L/usr/lib64 -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lICE -lX11 -lXt -lbz2 -lz -lm -lgomp -lpthread -lltdl" ;
+constant	MAGICK_LIBS     : " -L/usr/lib64 -L/usr/lib64 -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lICE -lX11 -lXt -lbz2 -lz -lm -lgomp -lpthread" ;
 
 
 ##############################################################################

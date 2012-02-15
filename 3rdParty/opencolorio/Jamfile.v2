@@ -1,0 +1,49 @@
+###############################################################################
+## Main BJam makefile for libopencolorio library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements
+		<include>export
+		<include>src/core
+
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>export
+	: build-dir $(BUILD)/3rdParty/opencolorio
+    ;
+use-project	/yaml	: $(3RD_PARTY)/yaml ;
+use-project	/tinyxml	: $(3RD_PARTY)/tinyxml ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		:
+			 [ glob-tree *.h ]
+			;
+
+
+lib	opencolorio	:
+			 [ glob
+			       src/core/*.cpp
+			       src/core/pystring/*.cpp		    
+			       src/core/md5/*.cpp		    
+			 ]
+			 /yaml/<link>static
+			 /tinyxml/<link>static
+			 # /python/<link>static
+			;
+
+install dist
+	:
+		opencolorio
+	:
+		<variant>debug:<location>$(DIST_DEBUG)/lib
+		<variant>release:<location>$(DIST_RELEASE)/lib
+		<install-type>LIB
+	;
