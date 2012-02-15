@@ -43,10 +43,13 @@ import os ;
 import path ;
 import feature ;
 
+# versions of gcc with specific template-depth
+gcc-no-overflow = 4.5.0   4.5.1   4.5.2   4.5.3   4.6.0   4.6.1   4.6.2 ;
+
 local rule check-required-env ( var ) {
-        if ! $($(var)) {
-                EXIT Missing variable $(var) ;
-        }
+	if ! $($(var)) {
+		EXIT Missing variable $(var) ;
+	}
 }
 
 ##############################################################################
@@ -75,7 +78,6 @@ else if [ os.name ] = LINUX
     {   alias opengl : ; }
 else if [ os.name ] = MACOSX
     {   alias opengl : : : : <linkflags>"-framework OpenGL" ; }
-
 
 
 ##############################################################################
@@ -109,54 +111,54 @@ path-constant   DIST_DEBUG      : $(DIST)/debug ;
 path-constant   DIST_PRODUCTION : $(DIST)/production ;
 path-constant   BUILD           : ./.build ;
 
-
 ##############################################################################
 # Global project requirements
 ##############################################################################
 project
     :
     requirements
-        # multithreading on
-        <threading>multi
+	# multithreading on
+	<threading>multi
 
-        <define>BOOST_ALL_NO_LIB
+	<define>BOOST_ALL_NO_LIB
 
-        #<variant>release:<warnings-as-errors>on
-        <variant>release:<define>TUTTLE_PRODUCTION
-        #<variant>release:<define>TUTTLE_NO_COUT
-        <variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
-        # or
-        #<variant>release:<toolset>gcc,<optimization>full
+	#<variant>release:<warnings-as-errors>on
+	<variant>release:<define>TUTTLE_PRODUCTION
+	#<variant>release:<define>TUTTLE_NO_COUT
+	<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
+	# or
+	#<variant>release:<toolset>gcc,<optimization>full
 
-        <define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
-        <os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
-        <os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
+	<define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
 
-        <os>NT:<define>_WINDOWS
-        <os>LINUX:<cxxflags>-fPIC
-	<os>LINUX:<cxxflags>-ftemplate-depth=256
-        <os>LINUX:<cflags>-fPIC
-	<os>LINUX:<cflags>-ftemplate-depth=256
+	<os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
+	<os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
+	<os>LINUX:<cxxflags>-fPIC
+	<os>LINUX:<cflags>-fPIC
 
-        # icu library off
-        #<define>BOOST_HAS_ICU=0
+	<os>NT:<define>_WINDOWS
 
-        #
-        # GCC specific flags
-        #
-        # removes deprecated header used by boost
-        <toolset>gcc:<cxxflags>-Wno-deprecated
+	# icu library off
+	#<define>BOOST_HAS_ICU=0
 
-        # default build
-        #<variant>release
+	#
+	# GCC specific flags
+	#
+	# removes deprecated header used by boost
+	<toolset>gcc:<cxxflags>-Wno-deprecated
 
-        #
-        # MSVC specific flags
-        #
-        <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
-        <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+	<toolset-gcc:version>$(gcc-no-overflow):<cxxflags>"-ftemplate-depth=256"
 
-        <os>LINUX:<define>__LINUX__
+	# default build
+	#<variant>release
+
+	#
+	# MSVC specific flags
+	#
+	<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+	<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+
+	<os>LINUX:<define>__LINUX__
     ;
 
 ##############################################################################
@@ -191,9 +193,9 @@ alias       /sam                : /sam-tools ;
 use-project     /plugins        : plugins ;
 
 alias           /tests          : /plugins
-                                  /tuttletests
-                                  /samtests
-                                ;
+				  /tuttletests
+				  /samtests
+				;
 
 #
 # SAM INTERFACE IN QT4
@@ -202,12 +204,12 @@ use-project /qsam               : applications/qSam/ ;
 
 # all targets have to be marked as explicit
 explicit        /tuttle
-                /tuttletests
+		/tuttletests
 
-                /sam-tools
+		/sam-tools
 		/qsam
 #               /samtests
-                /plugins
-                /pyTuttle
-                /tests
-                ;
+		/plugins
+		/pyTuttle
+		/tests
+		;
