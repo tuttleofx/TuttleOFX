@@ -7,6 +7,7 @@
 #include <imageio.h>
 
 #include <boost/gil/gil_all.hpp>
+#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/mpl/map.hpp>
@@ -41,7 +42,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	try
 	{
 		/// @todo tuttle: use params._components
-		writeImage( this->_srcView, params._filepath, params._bitDepth );
+		writeImage( this->_srcView, params._filepath, params._bitDepth, params._flip );
 	}
 	catch( exception::Common& e )
 	{
@@ -62,7 +63,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
  *
  */
 template<class View>
-void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth )
+void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth, const bool flip )
 {
 	using namespace boost;
 	using namespace OpenImageIO;
@@ -73,6 +74,11 @@ void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::str
 	}
 	ImageSpec spec( src.width(), src.height(), gil::num_channels<View>::value, bitDepth );
 	out->open( filepath, spec );
+
+	if( flip )
+	{
+		src = flipped_up_down_view( src );
+	}
 
 	typedef mpl::map<
 	    mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT8> >,
@@ -86,7 +92,7 @@ void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::str
 	const stride_t ystride = src.pixels().row_size(); // xstride * src.width();
 //	const stride_t zstride = gil::is_planar<View>::value ? ystride * src.height() : sizeof(Channel);
 	const stride_t zstride = ystride * src.height();
-	
+
 	out->write_image(
 			mpl::at<MapBits, ChannelType>::type::value,
 			&( ( *src.begin() )[0] ), // get the adress of the first channel value from the first pixel
