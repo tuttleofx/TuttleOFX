@@ -2153,7 +2153,12 @@ bool getTimeDomainAction( OfxImageEffectHandle handle, OFX::PropertySet& outArgs
     ImageEffect* effectInstance = retrieveImageEffectPointer( handle );
 
     // we can only be a general context effect, so check that this is true
-    OFX::Log::error( effectInstance->getContext() != eContextGeneral || effectInstance->getContext() != OFX::eContextReader, "Calling kOfxImageEffectActionGetTimeDomain on an effect that is not a general context effect." );
+    OFX::Log::error(
+		effectInstance->getContext() != eContextGeneral ||
+		effectInstance->getContext() != eContextReader ||
+		effectInstance->getContext() != eContextGenerator
+		,
+		"Calling kOfxImageEffectActionGetTimeDomain on an effect that is not a 'general', 'reader' or 'generator' context node." );
 
     OfxRangeD timeDomain;
 
