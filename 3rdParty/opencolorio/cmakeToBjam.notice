@@ -1,0 +1,18 @@
+Tuttle is linked with a known version of OCIO.
+See init.py.
+It simplifies the bjamisation.
+
+What to DO or Check when upgrading OCIO version :
+- in init.py :
+     - change OCIO url 
+     - check "OpenColorIO third parties extraction" part (uncompress TinyXML and Yaml, patch of yaml/emmitter.cpp).
+     - run init.py opencolorio
+- in opencolorio/export/OpenColorIO, replace OpenColorABI.h by the new version (TODO do it automatically)
+
+
+Files to commit :
+opencolorio/export/opencolorio/OpenColorABI.h
+opencolorio/Jamfile.v2
+opencolorio/cmakeToBjam.notice
+yaml/Jamfile.v2
+tinyxml/Jamfile.v2
