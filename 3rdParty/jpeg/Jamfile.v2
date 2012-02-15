@@ -6,7 +6,7 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
@@ -24,7 +24,6 @@ alias	headers		: [ glob-tree *.h ] ;
 lib	jpeg		:
 			  [ glob *.c
 			    :
-			    jdapimin.c
 			    jmemdos.c
 			    jmemmac.c
 			    example.c
