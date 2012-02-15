@@ -31,18 +31,19 @@ void ViewerProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void ViewerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-        using namespace boost::gil;
-        //const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	using namespace boost::gil;
+	//const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 
-        View src = this->_srcView;
-        View dst = this->_dstView;
+	View src = this->_srcView;
+	View dst = this->_dstView;
 
-        copy_pixels( src, dst );
-        openGLWindow( src.width(), src.height() );
-        loadNewTexture( src );
+	copy_pixels( src, dst );
 
-        glutIdleFunc(idle);
-        glutMainLoop();
+	openGLWindow( src.width(), src.height() );
+	loadNewTexture( src );
+
+	glutIdleFunc(idle);
+	glutMainLoop();
 }
 
 }
