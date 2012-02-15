@@ -59,12 +59,13 @@ void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 
 bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-//	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
 	FileInfo fileInfo = retrieveFileInfo( args.time );
 	if ( fileInfo._failed )
 	{
-		TUTTLE_COUT_ERROR( "Jpeg2000ReaderPlugin::getRegionOfDefinition: file info failed." );
-		return false;
+		//TUTTLE_COUT_DEBUG("Input not found => Rod is unvailable");
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "Jpeg2000: Unable to open file" )
+			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}
 
 	rod.x1 = 0;
@@ -83,7 +84,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 //	TUTTLE_COUT_VAR( getAbsoluteFilenameAt(getFirstTime()) );
 
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	
+
 	FileInfo fileInfo = retrieveFileInfo( getFirstTime() );
 	if ( fileInfo._failed )
 	{
@@ -236,9 +237,9 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	catch( boost::exception & e )
 	{
 		_fileInfos._failed = true;
-		e << exception::filename(filename)
-		  << exception::time( time );
-		throw;
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "Jpeg2000: Unable to open file" )
+			<< exception::filename( filename ) );
 	}
 	_fileInfos._failed = false;
 	// No choice if we want to get
@@ -250,9 +251,9 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	catch( boost::exception & e )
 	{
 		_fileInfos._failed = true;
-		e << exception::filename( filename )
-		  << exception::time( time );
-		throw;
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Jpeg2000: Unable to decode file" )
+			<< exception::filename( filename ) );
 	}
 
 	if( !_reader.componentsConform() )
