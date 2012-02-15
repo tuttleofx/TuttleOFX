@@ -5,10 +5,13 @@
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/pixel.hpp>
+#include <boost/gil/locator.hpp>
 #include <boost/gil/typedefs.hpp>
 
 #include <terry/numeric/init.hpp>
 
+namespace terry {
+using namespace ::boost::gil;
 
 #define TERRY_DEFINE_GIL_INTERNALS_4(CS) \
 	\
@@ -46,17 +49,7 @@
 	TERRY_DEFINE_ALL_TYPEDEFS(32s,CS) \
 	TERRY_DEFINE_ALL_TYPEDEFS(32f,CS)
 
-namespace terry {
-using namespace ::boost::gil;
 
-using ::boost::gil::pixel;
-using ::boost::gil::planar_pixel_reference;
-using ::boost::gil::planar_pixel_iterator;
-using ::boost::gil::memory_based_step_iterator;
-using ::boost::gil::point2;
-using ::boost::gil::memory_based_2d_locator;
-using ::boost::gil::image_view;
-using ::boost::gil::image;
 
 namespace color {
 

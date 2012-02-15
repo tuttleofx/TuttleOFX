@@ -16,14 +16,15 @@ ColorTransformPlugin::ColorTransformPlugin( OfxImageEffectHandle handle )
 {
 	_paramHueShift = fetchDoubleParam( kParamHueShift );
 	_paramSaturation = fetchDoubleParam( kParamSaturation );
-	_paramBrightnessRGB = fetchDoubleParam( kParamBrightnessRGB );
-	_paramBrightness = fetchRGBAParam( kParamBrightness );
-	_paramPivotRGB = fetchDoubleParam( kParamPivotRGB );
-	_paramPivot = fetchRGBAParam( kParamPivot );
+	
 	_paramContrastRGB = fetchDoubleParam( kParamContrastRGB );
 	_paramContrast = fetchRGBAParam( kParamContrast );
+	_paramBrightnessRGB = fetchDoubleParam( kParamBrightnessRGB );
+	_paramBrightness = fetchRGBAParam( kParamBrightness );
 	_paramOffsetRGB = fetchDoubleParam( kParamOffsetRGB );
 	_paramOffset = fetchRGBAParam( kParamOffset );
+	_paramPivotRGB = fetchDoubleParam( kParamPivotRGB );
+	_paramPivot = fetchRGBAParam( kParamPivot );
 }
 
 ColorTransformParams ColorTransformPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -32,14 +33,15 @@ ColorTransformParams ColorTransformPlugin::getProcessParams( const OfxPointD& re
 	
 	params._hueShift = _paramHueShift->getValue();
 	params._saturation = _paramSaturation->getValue();
-	params._brightnessRGB = _paramBrightnessRGB->getValue();
-	params._brightness = _paramBrightness->getValue();
-	params._pivotRGB = _paramPivotRGB->getValue();
-	params._pivot = _paramPivot->getValue();
+	
 	params._contrastRGB = _paramContrastRGB->getValue();
 	params._contrast = _paramContrast->getValue();
+	params._brightnessRGB = _paramBrightnessRGB->getValue();
+	params._brightness = _paramBrightness->getValue();
 	params._offsetRGB = _paramOffsetRGB->getValue();
 	params._offset = _paramOffset->getValue();
+	params._pivotRGB = _paramPivotRGB->getValue();
+	params._pivot = _paramPivot->getValue();
 	
 	return params;
 }

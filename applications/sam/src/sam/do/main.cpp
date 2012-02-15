@@ -1,5 +1,6 @@
 #include "commandLine.hpp"
 #include "node_io.hpp"
+#include "node.hpp"
 #include "global.hpp"
 #include "nodeDummy.hpp"
 
@@ -158,8 +159,6 @@ int main( int argc, char** argv )
         std::vector< std::vector<std::string> > cl_commands;
 
         decomposeCommandLine( argc, argv, cl_options, cl_commands );
-
-        std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes;
 
         // create the graph
         ttl::Graph graph;
@@ -334,7 +333,6 @@ int main( int argc, char** argv )
 
                 // plugins loading
                 ttl::Core::instance().preload();
-                allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 
                 if( samdo_vm.count("nodes") || samdo_vm.count("nodes-list") )
                 {
@@ -342,9 +340,10 @@ int main( int argc, char** argv )
                         TUTTLE_COUT( _color._blue  << "NODES" << _color._std );
                     std::vector< std::string > pluginNames;
                     addDummyNodeInList( pluginNames );
-                    for( std::size_t i = 0; i < allNodes.size(); ++i )
+					const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+                    BOOST_FOREACH( const ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, allNodes )
                     {
-                        const std::string plugName = allNodes.at(i)->getRawIdentifier();
+                        const std::string plugName = node->getRawIdentifier();
 
                         std::vector< std::string > termsPlugin;
                         boost::algorithm::split( termsPlugin, plugName, boost::algorithm::is_any_of("."));
@@ -353,12 +352,10 @@ int main( int argc, char** argv )
                     }
                     std::sort( pluginNames.begin(), pluginNames.end() );
 
-                    for( std::size_t i = 0; i < pluginNames.size(); ++i )
+					const std::string indent = samdo_vm.count("nodes") ? "\t" : "";
+                    BOOST_FOREACH( const std::string& pluginName, pluginNames )
                     {
-                        if( samdo_vm.count("nodes") )
-                            TUTTLE_COUT( "\t" << pluginNames.at( i ) );
-                        else
-                            TUTTLE_COUT( pluginNames.at( i ) );
+						TUTTLE_COUT( indent << pluginName );
                     }
                     exit( 0 );
                 }
@@ -454,54 +451,19 @@ int main( int argc, char** argv )
                 bpo::options_description all_options;
                 all_options.add(infoOptions).add(confOptions).add(hiddenOptions);
 
+				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
                 BOOST_FOREACH( const std::vector<std::string>& command, cl_commands )
                 {
                     std::string userNodeName = command[0];
-                    std::string nodeFullName = command[0];
-//					boost::algorithm::to_lower( userNodeName );
+					boost::algorithm::to_lower( userNodeName );
+                    std::string nodeFullName = userNodeName;
                     std::vector<std::string> nodeArgs;
                     std::copy( command.begin()+1, command.end(), std::back_inserter(nodeArgs) );
 
                     try
                     {
-                        std::vector< std::string > detectedPlugins;
                         foundAssociateDummyNode( userNodeName, allNodes, nodeArgs );
-
-                        for( std::size_t i = 0; i < allNodes.size(); ++i )
-                        {
-                            const std::string plugName = allNodes.at(i)->getRawIdentifier();
-                            if( plugName == userNodeName )
-                            {
-                                detectedPlugins.clear();
-                                detectedPlugins.push_back( plugName );
-                                break;
-                            }
-                            if( boost::algorithm::find_first( plugName, userNodeName ) )
-                            {
-                                detectedPlugins.push_back( plugName );
-                            }
-                        }
-                        if( detectedPlugins.size() != 1 )
-                        {
-                            if( detectedPlugins.size() < 1 )
-                            {
-                                BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-                                    << tuttle::exception::user() + "Unrecognized node name \"" + userNodeName + "\"." );
-                            }
-                            else
-                            {
-                                tuttle::exception::user userMsg;
-                                userMsg + "Ambiguous node name \"" + userNodeName + "\".\n";
-                                userMsg + "Possible nodes:\n";
-                                BOOST_FOREACH( const std::string& p, detectedPlugins )
-                                {
-                                    userMsg + " - \"" + p + "\"\n";
-                                }
-                                BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-                                    << userMsg );
-                            }
-                        }
-                        nodeFullName = detectedPlugins.at(0);
+                        nodeFullName = retrieveNodeFullname( userNodeName );
 
                         // parse the command line, and put the result in node_vm
                         bpo::variables_map node_vm;
