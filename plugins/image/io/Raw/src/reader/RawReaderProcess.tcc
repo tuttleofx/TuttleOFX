@@ -80,7 +80,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//		_out.half_size  = 1;
 		//		_out.four_color_rgb = 1;
 		_out.gamm[0] = _out.gamm[1] =  _out.no_auto_bright    = 1;
-		switch( _params._filtering )
+		/*switch( _params._filtering )
 		{
 			case eFilteringAuto:
 				_out.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
@@ -88,7 +88,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			case eFilteringNone:
 				_out.filtering_mode = LIBRAW_FILTERING_NONE; // output RGBG ?
 				break;
-		}
+		}*/
 
 		if( const int ret = _rawProcessor.open_file( _params._filepath.c_str() ) )
 		{

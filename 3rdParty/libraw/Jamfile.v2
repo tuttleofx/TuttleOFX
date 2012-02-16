@@ -6,7 +6,7 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
@@ -21,8 +21,9 @@ project
 ###############################################################################
 alias	headers		: [ glob-tree *.h ] ;
 
-lib	raw		: 
+lib	raw		:
 			  [ glob src/*.cpp internal/*.cpp dcraw/*.c ]
+			  ../jasper/<link>static
 			;
 
 install dist
