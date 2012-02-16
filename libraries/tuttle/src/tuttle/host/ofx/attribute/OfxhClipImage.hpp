@@ -267,15 +267,6 @@ public:
 		return getProperties().getStringProperty( kOfxImageClipPropFieldExtraction );
 	}
 
-	/** Connected -
-	 *
-	 *  Says whether the clip is actually connected at the moment.
-	 */
-	virtual const bool isConnected() const = 0;
-	//	{
-	//		return getProperties().getDoubleProperty( kOfxImageClipPropConnected );
-	//	}
-
 	/** Unmapped Frame Rate -
 	 *
 	 *  The unmaped frame range over which an output clip has images.

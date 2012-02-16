@@ -24,6 +24,15 @@ public:
 	/// is the clip optional
 	bool isOptional() const;
 
+	const bool isConnected() const;
+
+	/**
+	 * @brief Connected
+	 * Says whether the clip is currently connected.
+	 */
+	void setConnected( const bool isConnected = true );
+
+	
 	virtual bool verifyMagic()
 	{
 		return true;
