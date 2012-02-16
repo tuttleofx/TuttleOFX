@@ -1769,20 +1769,20 @@ void loadAction( void )
 /** @brief Library side unload action, this fetches all the suite pointers */
 void unloadAction( const char* id )
 {
-    gLoadCount--;
+    --gLoadCount;
 
     if( gLoadCount == 0 )
     {
         // force these to null
-        gEffectSuite   = 0;
-        gPropSuite     = 0;
-        gParamSuite    = 0;
-        gMemorySuite   = 0;
-        gThreadSuite   = 0;
-        gMessageSuite  = 0;
-        gInteractSuite = 0;
-        gParametricParameterSuite = 0;
-        gCameraParameterSuite = 0;
+        gEffectSuite   = NULL;
+        gPropSuite     = NULL;
+        gParamSuite    = NULL;
+        gMemorySuite   = NULL;
+        gThreadSuite   = NULL;
+        gMessageSuite  = NULL;
+        gInteractSuite = NULL;
+        gParametricParameterSuite = NULL;
+        gCameraParameterSuite = NULL;
     }
 
     {
@@ -1799,7 +1799,7 @@ void unloadAction( const char* id )
         OFX::OfxPlugInfoMap::iterator it  = OFX::plugInfoMap.find( id );
         OfxPlugin* plug                   = it->second._plug;
         OFX::OfxPluginArray::iterator it2 = std::find( ofxPlugs.begin(), ofxPlugs.end(), plug );
-        ( *it2 ) = 0;
+        ( *it2 ) = NULL;
         delete plug;
     }
 }
@@ -2154,8 +2154,8 @@ bool getTimeDomainAction( OfxImageEffectHandle handle, OFX::PropertySet& outArgs
 
     // we can only be a general context effect, so check that this is true
     OFX::Log::error(
-		effectInstance->getContext() != eContextGeneral ||
-		effectInstance->getContext() != eContextReader ||
+		effectInstance->getContext() != eContextGeneral &&
+		effectInstance->getContext() != eContextReader &&
 		effectInstance->getContext() != eContextGenerator
 		,
 		"Calling kOfxImageEffectActionGetTimeDomain on an effect that is not a 'general', 'reader' or 'generator' context node." );
