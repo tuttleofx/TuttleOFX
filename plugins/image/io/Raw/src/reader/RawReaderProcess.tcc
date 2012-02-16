@@ -22,7 +22,7 @@ static int progressCallback( void* data, LibRaw_progress p, int iteration, int e
 {
 	typedef RawReaderProcess<View> PluginProcess;
 	PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
-	TUTTLE_COUT( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
+	TUTTLE_COUT_DEBUG( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
 	if( process->progressForward( iteration ) )
 		return 1; // cancel processing immediately
 	return 0; // can continue
@@ -80,7 +80,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//		_out.half_size  = 1;
 		//		_out.four_color_rgb = 1;
 		_out.gamm[0] = _out.gamm[1] =  _out.no_auto_bright    = 1;
-		switch( _params._filtering )
+		/*switch( _params._filtering )
 		{
 			case eFilteringAuto:
 				_out.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
@@ -88,7 +88,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			case eFilteringNone:
 				_out.filtering_mode = LIBRAW_FILTERING_NONE; // output RGBG ?
 				break;
-		}
+		}*/
 
 		if( const int ret = _rawProcessor.open_file( _params._filepath.c_str() ) )
 		{
@@ -159,9 +159,9 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		typedef boost::gil::rgba16c_view_t RawView;
 		typedef RawView::value_type RawPixel;
 		RawView imageView = interleaved_view( _size.width, _size.height, //image->width, image->height,
-		                                      (const RawPixel*)( _rawProcessor.imgdata.image /*image->data*/ ),
-		                                      _size.width /*image->width*/ * sizeof( RawPixel ) /*image->data_size*/ );
-		
+						      (const RawPixel*)( _rawProcessor.imgdata.image /*image->data*/ ),
+						      _size.width /*image->width*/ * sizeof( RawPixel ) /*image->data_size*/ );
+
 		View dst = this->_dstView;
 		TUTTLE_TCOUT_VAR( sizeof( RawPixel ) );
 		TUTTLE_TCOUT_VAR( imageView.dimensions() );

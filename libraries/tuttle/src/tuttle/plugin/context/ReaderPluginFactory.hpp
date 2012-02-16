@@ -12,7 +12,7 @@ namespace tuttle {
 namespace plugin {
 
 void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
-                                    OFX::EContext               context )
+				    OFX::EContext               context )
 {
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
 	filename->setLabel( "Filename" );
@@ -45,7 +45,7 @@ void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 	flip->setHint( "Vertically flip the image." );
 	//bool hostFlip = OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke";
 	//flip->setDefault( hostFlip );
-	flip->setDefault( true );
+	flip->setDefault( false );
 }
 
 }

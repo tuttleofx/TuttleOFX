@@ -16,11 +16,13 @@ namespace reader {
 void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttlePngReader", "PngReader",
-                    "Png file reader" );
+		    "Png file reader" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
     desc.setDescription( "PNG File reader\n"
-                         "Plugin is used to read png files." );
+			 "Plugin is used to read png files.\n\n"
+			 "supported extensions:\n"
+			 "png" );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextReader );
@@ -48,7 +50,7 @@ void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext               context )
+						OFX::EContext               context )
 {
     // Create the mandated output clip
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -67,7 +69,7 @@ void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* PngReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext        context )
+							  OFX::EContext        context )
 {
     return new PngReaderPlugin( handle );
 }

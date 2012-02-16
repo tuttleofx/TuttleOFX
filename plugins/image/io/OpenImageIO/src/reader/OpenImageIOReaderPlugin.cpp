@@ -26,6 +26,7 @@ OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams( const 
 	OpenImageIOReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
+	params._flip     = _paramFlip->getValue();
 	return params;
 }
 
@@ -40,17 +41,17 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 
 	if( !bfs::exists( filename ) )
 	{
-		rod.x1 = 0;
-		rod.x2 = 0;
-		rod.y1 = 0;
-		rod.y2 = 0;
-		return true;
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "OpenImageIO: Unable to open file" )
+			<< exception::filename( filename ) );
 	}
 
 	boost::scoped_ptr<OpenImageIO::ImageInput> in( OpenImageIO::ImageInput::create( filename ) );
 	if( !in )
 	{
-		BOOST_THROW_EXCEPTION( exception::Value() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "OpenImageIO: Unable to open file" )
+			<< exception::filename( filename ) );
 	}
 	OpenImageIO::ImageSpec spec;
 	in->open( filename, spec );
@@ -67,7 +68,7 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	
+
 	const std::string filename( getAbsoluteFirstFilename() );
 
 	// if no filename
@@ -78,13 +79,6 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 		return;
 	}
-	// spec.nchannels;
-	//	switch( spec.format )
-	//	{
-	//		case TypeDesc::UINT8:
-	//		case TypeDesc::UNKNOWN:
-	//	}
-
 
 	boost::scoped_ptr<OpenImageIO::ImageInput> in( OpenImageIO::ImageInput::create( filename ) );
 	if( !in.get() )

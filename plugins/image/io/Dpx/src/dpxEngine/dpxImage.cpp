@@ -197,7 +197,7 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 
 	if( !f )
 	{
-		BOOST_THROW_EXCEPTION( exception::File()
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 			<< exception::user( "Unable to open file." )
 			<< exception::filename( filename.string() ) );
 	}
@@ -245,7 +245,7 @@ void DpxImage::readHeader( const path& filename )
 
 	if( !f )
 	{
-		BOOST_THROW_EXCEPTION( exception::File()
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 			<< exception::user( "DPX: Unable to open file" )
 			<< exception::filename( filename.string() ) );
 	}
@@ -262,8 +262,8 @@ void DpxImage::readHeader( ifstream& f )
 	f.seekg( 0, std::ios::beg );
 	if( !f.read( reinterpret_cast<char*>( &_header ), 36 ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to read dpx header..." ) );
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "Unable to read dpx header" ) );
 	}
 
 	// ...file information

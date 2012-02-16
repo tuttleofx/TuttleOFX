@@ -28,14 +28,14 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 	params._filepath  = getAbsoluteFilenameAt( time );
 	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
 	params._flip      = _paramFlip->getValue();
-
+	TUTTLE_COUT( time << "  " << getAbsoluteFilenameAt( time ) );
 	return params;
 }
 
-void RawReaderPlugin::updateInfos()
+void RawReaderPlugin::updateInfos( const OfxTime time )
 {
-	TUTTLE_COUT( "updateInfos begin" );
-	RawReaderProcessParams params = getProcessParams( this->timeLineGetBounds().min );
+
+	RawReaderProcessParams params = getProcessParams( time );
 
 	LibRaw rawProcessor;
 	libraw_iparams_t& p1          = rawProcessor.imgdata.idata;
@@ -47,13 +47,17 @@ void RawReaderPlugin::updateInfos()
 
 	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
-		TUTTLE_COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
-		return;
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "RAW: Unable to open file" )
+			<< exception::dev( libraw_strerror( ret ) )
+			<< exception::filename( params._filepath ) );
 	}
 	if( const int ret = rawProcessor.adjust_sizes_info_only() )
 	{
-		TUTTLE_COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
-		return;
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "RAW: Cannot decode infos for file" )
+			<< exception::dev( libraw_strerror( ret ) )
+			<< exception::filename( params._filepath ) );
 	}
 
 	std::ostringstream ss;
@@ -124,7 +128,7 @@ void RawReaderPlugin::updateInfos()
 	for( int i = 0; i < 4; ++i )
 		ss << color.cam_xyz[i][0] << "\t" << color.cam_xyz[i][1] << "\t" << color.cam_xyz[i][2] << "\n"; // %6.4f
 
-	std::cout << ss;
+	TUTTLE_COUT_DEBUG( ss );
 }
 
 void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -141,9 +145,9 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	updateInfos();
+	updateInfos( args.time );
 
-	RawReaderProcessParams params = getProcessParams( this->timeLineGetBounds().min );
+	RawReaderProcessParams params = getProcessParams( args.time );
 
 	LibRaw rawProcessor;
 	libraw_image_sizes_t& sizes = rawProcessor.imgdata.sizes;
@@ -152,18 +156,20 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
-		TUTTLE_COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
-		return false;
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "RAW: Unable to open file" )
+			<< exception::filename( params._filepath ) );
 	}
 	if( const int ret = rawProcessor.adjust_sizes_info_only() )
 	{
-		TUTTLE_COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
-		return false;
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "RAW: Cannot decode infos" )
+			<< exception::filename( params._filepath ) );
 	}
 
 	//	point2<ptrdiff_t> dims( sizes.raw_width, sizes.raw_height );
 	point2<ptrdiff_t> dims( sizes.width, sizes.height );
-	TUTTLE_COUT_VAR( dims );
+	//TUTTLE_COUT_VAR( dims );
 	rod.x1 = 0;
 	rod.x2 = dims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;

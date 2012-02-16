@@ -16,15 +16,15 @@ namespace writer {
 void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleOpenImageIOWriter", "OpenImageIOWriter",
-                    "OpenImageIO file writer" );
+		    "OpenImageIO file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
     desc.setDescription(
-        "OpenImageIO Writer"
-        "\n\n"
-        "supported formats:\n"
-        "TIFF\nJPEG/JFIF\nOpenEXR\nPNG\nHDR/RGBE\nTarga\nJPEG-2000\nDPX\nCineon\nFITS\nBMP\nICO\nRMan Zfile\nSoftimagePIC\nDDS\nSGI\nPNM\nPPM\nPGM\nPBM\nField3d\nWebP"
-        "\n" );
+	"OpenImageIO Writer"
+	"\n\n"
+	"supported formats:\n"
+	"TIFF\nJPEG/JFIF\nOpenEXR\nPNG\nHDR/RGBE\nTarga\nJPEG-2000\nDPX\nCineon\nFITS\nBMP\nICO\nRMan Zfile\nSoftimagePIC\nDDS\nSGI\nPNM\nPPM\nPGM\nPBM\nField3d\nWebP"
+	"\n" );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextWriter );
@@ -36,54 +36,54 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // add supported extensions
-        // tiff
+	// tiff
     desc.addSupportedExtension( "tif" );
     desc.addSupportedExtension( "tiff" );
-        // jpeg
+	// jpeg
     desc.addSupportedExtension( "jpeg" );
     desc.addSupportedExtension( "jpg" );
     desc.addSupportedExtension( "jpe" );
     desc.addSupportedExtension( "jfif" );
     desc.addSupportedExtension( "jfi" );
-        // exr
+	// exr
     desc.addSupportedExtension( "exr" );
-        // hrd
+	// hrd
     desc.addSupportedExtension( "hdr" );
     desc.addSupportedExtension( "rgbe" );
-        // png
+	// png
     desc.addSupportedExtension( "png" );
-        // targa
+	// targa
     desc.addSupportedExtension( "tga" );
     desc.addSupportedExtension( "tpic" );
-        // jpeg-2000
+	// jpeg-2000
     desc.addSupportedExtension( "j2k" );
     desc.addSupportedExtension( "jp2" );
     desc.addSupportedExtension( "j2c" );
-        // dpx
+	// dpx
     desc.addSupportedExtension( "dpx" );
-        // cineon
+	// cineon
     desc.addSupportedExtension( "cin" );
-        // fits
+	// fits
     desc.addSupportedExtension( "fits" );
-        // bmp
+	// bmp
     desc.addSupportedExtension( "bmp" );
-        // ico
+	// ico
     desc.addSupportedExtension( "ico" );
-        // SoftimagePIC
+	// SoftimagePIC
     desc.addSupportedExtension( "pic" );
-        // DDS
+	// DDS
     desc.addSupportedExtension( "dds" );
-        // sgi
+	// sgi
     desc.addSupportedExtension( "sgi" );
-        // pnm
+	// pnm
     desc.addSupportedExtension( "pnm" );
-        // ppm
+	// ppm
     desc.addSupportedExtension( "ppm" );
-        // pgm
+	// pgm
     desc.addSupportedExtension( "pgm" );
-        // pbm
+	// pbm
     desc.addSupportedExtension( "pbm" );
-        // webP
+	// webP
     desc.addSupportedExtension( "webp" );
 
     // plugin flags
@@ -100,10 +100,9 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                        OFX::EContext               context )
+							OFX::EContext               context )
 {
     OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
     srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -149,24 +148,6 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     compression->appendOption( kParamOutputCompressionB44a );
     bitDepth->setDefault( eParamCompressionNone );
 
-    OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
-    render->setLabels( "Render", "Render", "Render step" );
-    render->setHint( "Force render (writing)" );
-
-    OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
-    renderAlways->setLabel( "Render always" );
-    renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    renderAlways->setDefault( false );
-
-    OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
-    forceNewRender->setLabel( "Force new render" );
-    forceNewRender->setIsSecret( true );
-    forceNewRender->setIsPersistant( false );
-    forceNewRender->setAnimates( false );
-    forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    forceNewRender->setEvaluateOnChange( true );
-    forceNewRender->setDefault( 0 );
-
     describeWriterParamsInContext( desc, context );
 }
 
@@ -177,7 +158,7 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* OpenImageIOWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                                  OFX::EContext        context )
+								  OFX::EContext        context )
 {
     return new OpenImageIOWriterPlugin( handle );
 }

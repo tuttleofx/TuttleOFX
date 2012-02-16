@@ -13,9 +13,9 @@ namespace {
 /// static functions for the suite
 template<class T>
 OfxStatus propSet( OfxPropertySetHandle properties,
-                   const char*          property,
-                   int                  index,
-                   typename T::APIType  value )
+		   const char*          property,
+		   int                  index,
+		   typename T::APIType  value )
 {
 	#ifdef DEBUG_PROPERTIES
 	std::cout << "propSet - " << properties << " " << property << "[" << index << "] = " << value << " \n";
@@ -59,9 +59,9 @@ OfxStatus propSet( OfxPropertySetHandle properties,
 
 template<class T>
 OfxStatus propSetN( OfxPropertySetHandle properties,
-                    const char*          property,
-                    int                  count,
-                    typename T::APIType* values )
+		    const char*          property,
+		    int                  count,
+		    typename T::APIType* values )
 {
 	#ifdef DEBUG_PROPERTIES
 	std::cout << "propSetN - " << properties << " " << property << " \n";
@@ -98,9 +98,9 @@ OfxStatus propSetN( OfxPropertySetHandle properties,
 
 template<class T>
 OfxStatus propGet( OfxPropertySetHandle          properties,
-                   const char*                   property,
-                   int                           index,
-                   typename T::APITypeConstless* value )
+		   const char*                   property,
+		   int                           index,
+		   typename T::APITypeConstless* value )
 {
 	#ifdef DEBUG_PROPERTIES
 	std::cout << "propGet - " << properties << " " << property << " = ...";
@@ -160,9 +160,9 @@ inline const char* * castToConst( char** s )
 
 template<class T>
 OfxStatus propGetN( OfxPropertySetHandle          properties,
-                    const char*                   property,
-                    int                           count,
-                    typename T::APITypeConstless* values )
+		    const char*                   property,
+		    int                           count,
+		    typename T::APITypeConstless* values )
 {
 	try
 	{

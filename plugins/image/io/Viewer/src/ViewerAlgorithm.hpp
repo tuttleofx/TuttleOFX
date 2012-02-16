@@ -38,17 +38,17 @@ void reshape(int width,int height)
     int xPos, yPos;
     if( width < height )
     {
-        w = width;
-        h = 1.0f * w_out / h_out * width;
-        xPos = 0.0;
-        yPos = 0.5f * (height - h);
+	w = width;
+	h = 1.0f * w_out / h_out * width;
+	xPos = 0.0;
+	yPos = 0.5f * (height - h);
     }
     else
     {
-        w = 1.0f * w_out / h_out * height;
-        h = height;
-        xPos = 0.5f * (width - w );
-        yPos = 0.0;
+	w = 1.0f * w_out / h_out * height;
+	h = height;
+	xPos = 0.5f * (width - w );
+	yPos = 0.0;
     }
 
     glViewport( xPos, yPos , (GLsizei)w, (GLsizei)h );
@@ -196,17 +196,18 @@ void display()
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
     glBegin (GL_QUADS);
-    glTexCoord2f( 0, 0 );
-    glVertex2f  ( -1, -1 );
 
-    glTexCoord2f( 0, 1 );
+    glTexCoord2f( 0, 0 );
     glVertex2f  ( -1, 1 );
 
+    glTexCoord2f( 0, 1 );
+    glVertex2f  ( -1, -1 );
+
     glTexCoord2f( 1, 1 );
-    glVertex2f  ( 1, 1 );
+    glVertex2f  ( 1, -1 );
 
     glTexCoord2f( 1, 0 );
-    glVertex2f  ( 1, -1 );
+    glVertex2f  ( 1, 1 );
 
     glEnd();
 }
@@ -221,12 +222,12 @@ void keyboard(unsigned char k, int x, int y)
 {
     switch (k)
     {
-        case '\r':
-            glutDestroyWindow(windowID);
-            return;
-        case SPACEBAR:
-            glutDestroyWindow(windowID);
-            return;
+	case '\r':
+	    glutDestroyWindow(windowID);
+	    return;
+	case SPACEBAR:
+	    glutDestroyWindow(windowID);
+	    return;
     }
     glutPostRedisplay ();
 }
@@ -235,9 +236,9 @@ void specialKeyboard( int k, int x, int y)
 {
     switch (k)
     {
-        case GLUT_KEY_RIGHT:
-            glutDestroyWindow(windowID);
-            return;
+	case GLUT_KEY_RIGHT:
+	    glutDestroyWindow(windowID);
+	    return;
     }
     glutPostRedisplay ();
 }

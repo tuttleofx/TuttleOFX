@@ -23,7 +23,7 @@ JpegReaderProcessParams JpegReaderPlugin::getProcessParams( const OfxTime time )
 
 	params._filepath = getAbsoluteFilenameAt( time );
 	params._flip = _paramFlip->getValue();
-	
+
 	return params;
 }
 
@@ -42,12 +42,13 @@ bool JpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgum
 		rod.y1 = 0;
 		rod.y2 = jpegDims.y;
 	}
-	catch( ... )
+	catch( std::exception& e )
 	{
-			BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Jpeg: Unable to open file." )
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "Jpeg: Unable to open file" )
 			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}
+
 	return true;
 }
 

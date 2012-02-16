@@ -19,3 +19,7 @@ os.chdir ( ".." )
 os.chdir ( "./openjpeg" )
 os.system( "./configure" )
 os.chdir ( ".." )
+
+os.chdir ( "./libtiff" )
+os.system( "./configure" )
+os.chdir ( ".." )

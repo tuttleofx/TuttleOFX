@@ -13,6 +13,8 @@ project
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+		<define>EMBED_PLUGINS
+		<define>USE_JASPER
 	: usage-requirements
 		<include>.
 		<include>src/include
@@ -28,10 +30,16 @@ alias	headers		:
 
 lib	openimageio	:
 			 [ glob
+			       src/libOpenImageIO/*.cpp
+			       src/libutil/*.cpp
+			       src/libtexture/*.cpp
 			       src/bmp.imageio/*.cpp
-#			       src/cineon.imageio/*.cpp
+			#       src/cineon.imageio/*.cpp
+			#       src/cineon.imageio/libcineon/*.cpp
 			       src/dds.imageio/*.cpp
+			       src/dds.imageio/squich/*.cpp
 			       src/dpx.imageio/*.cpp
+			       src/dpx.imageio/libdpx/*.cpp
 			       src/field3D.imageio/*.cpp
 			       src/fits.imageio/*.cpp
 			       src/hdr.imageio/*.cpp
@@ -43,6 +51,7 @@ lib	openimageio	:
 			       src/png.imageio/*.cpp
 			       src/pnm.imageio/*.cpp
 			       src/ptex.imageio/*.cpp
+			       src/ptex.imageio/ptex/*.cpp
 			       src/sgi.imageio/*.cpp
 			       src/socket.imageio/*.cpp
 			       src/softimage.imageio/*.cpp
@@ -50,8 +59,11 @@ lib	openimageio	:
 			       src/tiff.imageio/*.cpp
 			       src/zfile.imageio/*.cpp
 			 ]
-			../openexr
-			../jasper
+			../openexr/<link>static
+			../jasper/<link>static
+			../libpng/<link>static
+			../libtiff/<link>static
+			../jpeg/<link>static
 			;
 
 install dist

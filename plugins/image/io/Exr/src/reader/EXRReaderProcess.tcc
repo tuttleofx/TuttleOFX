@@ -78,9 +78,10 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			dst = flipped_up_down_view( this->_dstView );
 		}
 
-		switch( (ECompType)_params._outComponents )
+		//TUTTLE_COUT( "read " << _params._outComponents );
+		switch( (EParamOutputComponents)_params._outComponents )
 		{
-			case eGray:
+			case eParamOutputComponentsGray:
 			{
 				gray_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename gray_image_t::view_t dv( view( img ) );
@@ -88,7 +89,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				copy_and_convert_pixels( dv, this->_dstView );
 				break;
 			}
-			case eRGB:
+			case eParamOutputComponentsRGB:
 			{
 				rgb_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename rgb_image_t::view_t dv( view( img ) );
@@ -97,7 +98,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				fill_alpha_max( dst );
 				break;
 			}
-			case eRGBA:
+			case eParamOutputComponentsRGBA:
 			{
 				rgba_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename rgba_image_t::view_t dv( view( img ) );
@@ -144,21 +145,21 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 	imageDims.y++;  // Height
 
 	// Get number of output components
-	switch( (ECompType)params._outComponents )
+	switch( (EParamOutputComponents)params._outComponents )
 	{
-		case eGray:
+		case eParamOutputComponentsGray:
 		{
 			// Copy 1 channel starting by the first channel (0)
 			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 1, 1 );
 			break;
 		}
-		case eRGB:
+		case eParamOutputComponentsRGB:
 		{
 			// Copy 3 channels starting by the first channel (0)
 			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 3, 3 );
 			break;
 		}
-		case eRGBA:
+		case eParamOutputComponentsRGBA:
 		{
 			// Copy 4 channels starting by the first channel (0)
 			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 4, 4 );
@@ -170,9 +171,9 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 template<class View>
 template<class DView>
 void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
-                                          Imf::FrameBuffer& frameBuffer,
-                                          DView& dst, int w, int h,
-                                          int n, int left, int nc )
+					  Imf::FrameBuffer& frameBuffer,
+					  DView& dst, int w, int h,
+					  int n, int left, int nc )
 {
 	using namespace boost::gil;
 	const Imf::Header& header = input.header();
@@ -190,13 +191,13 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 				std::vector<half> array( w * h );
 				//@todo: check: this may bug: swap w and h
 				frameBuffer.insert( _plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
-				                    Imf::Slice( ch.type,
-				                                (char*)&array[0],
-				                                sizeof( half ) * 1,        // xStride
-				                                sizeof( half ) * w,        // yStride
-				                                1, 1,                     // x/y sampling
-				                                1.0 )
-				                    ); // fillValue
+						    Imf::Slice( ch.type,
+								(char*)&array[0],
+								sizeof( half ) * 1,        // xStride
+								sizeof( half ) * w,        // yStride
+								1, 1,                     // x/y sampling
+								1.0 )
+						    ); // fillValue
 				channelCopy( input, frameBuffer, dst, w, h, ++n, --left, nc );
 				break;
 			}
@@ -204,13 +205,13 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 			{
 				std::vector<float> array( w * h );
 				frameBuffer.insert( _plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
-				                    Imf::Slice( ch.type,
-				                                (char*)&array[0],
-				                                sizeof( float ) * 1,       // xStride
-				                                sizeof( float ) * w,       // yStride
-				                                1, 1,                     // x/y sampling
-				                                std::numeric_limits<float>::max() )
-				                    ); // fillValue
+						    Imf::Slice( ch.type,
+								(char*)&array[0],
+								sizeof( float ) * 1,       // xStride
+								sizeof( float ) * w,       // yStride
+								1, 1,                     // x/y sampling
+								std::numeric_limits<float>::max() )
+						    ); // fillValue
 				channelCopy( input, frameBuffer, dst, w, h, ++n, --left, nc );
 				break;
 			}
@@ -218,13 +219,13 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 			{
 				std::vector<boost::uint32_t> array( w * h );
 				frameBuffer.insert( _plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
-				                    Imf::Slice( ch.type,
-				                                (char*)&array[0],
-				                                sizeof( boost::uint32_t ) * 1,         // xStride
-				                                sizeof( boost::uint32_t ) * w,         // yStride
-				                                1, 1, // x/y sampling
-				                                std::numeric_limits<boost::uint32_t>::max() )
-				                    ); // fillValue
+						    Imf::Slice( ch.type,
+								(char*)&array[0],
+								sizeof( boost::uint32_t ) * 1,         // xStride
+								sizeof( boost::uint32_t ) * w,         // yStride
+								1, 1, // x/y sampling
+								std::numeric_limits<boost::uint32_t>::max() )
+						    ); // fillValue
 				channelCopy( input, frameBuffer, dst, w, h, ++n, --left, nc );
 				break;
 			}
@@ -239,7 +240,7 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 		{
 			const Imf::Slice* slice =
 			    frameBuffer.findSlice(
-			        _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()].c_str() );
+				_plugin.channelNames()[_plugin.channelChoice()[s]->getValue()].c_str() );
 			if( !slice )
 			{
 				BOOST_THROW_EXCEPTION( exception::Value()

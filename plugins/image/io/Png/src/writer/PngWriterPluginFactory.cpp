@@ -16,8 +16,12 @@ namespace writer {
 void PngWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttlePngWriter", "PngWriter",
-                    "Png file writer" );
+		    "Png file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
+    desc.setDescription( "PNG File writer\n"
+			 "Plugin is used to read png files.\n\n"
+			 "supported extensions:\n"
+			 "png" );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextWriter );
@@ -45,7 +49,7 @@ void PngWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext               context )
+						OFX::EContext               context )
 {
     OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
@@ -90,7 +94,7 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* PngWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext        context )
+							  OFX::EContext        context )
 {
     return new PngWriterPlugin( handle );
 }

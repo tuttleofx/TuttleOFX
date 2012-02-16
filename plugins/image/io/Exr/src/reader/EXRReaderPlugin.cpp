@@ -25,10 +25,12 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 {
 	_outComponents = fetchChoiceParam( kParamOutputComponents );
+
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputRedIs ) );
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputGreenIs ) );
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputBlueIs ) );
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputAlphaIs ) );
+
 	updateCombos();
 }
 
@@ -170,7 +172,6 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
 		const Header& h             = in.header();
 		const Imath::V2i dataWindow = h.dataWindow().size();
-
 		rod.x1 = 0;
 		rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
 		rod.y1 = 0;
@@ -178,9 +179,9 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	}
 	catch( ... )
 	{
-			BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "EXR: Unable to open file." )
-			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		<< exception::user( "EXR: Unable to open file." )
+		<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}
 	return true;
 }

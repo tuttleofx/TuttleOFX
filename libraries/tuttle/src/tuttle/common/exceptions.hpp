@@ -348,8 +348,11 @@ struct BitDepthMismatch : virtual public ImageFormat {};
  */
 struct WrongRowBytes : virtual public ImageFormat {};
 
-/** @brief Status error code indicating that something failed due an illegal data */
+/** @brief Status error code indicating that something failed due an illegal data. */
 struct Data : virtual public Value {};
+
+/** @brief Something that could work, but is not implemeted. */
+struct NotImplemented : virtual public Unsupported {};
 
 /**
  * @brief File manipulation error.

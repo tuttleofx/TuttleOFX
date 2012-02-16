@@ -29,14 +29,14 @@ public:
 
 protected:
 	OpenImageIOReaderPlugin&    _plugin;        ///< Rendering plugin
-	
+
 public:
 	OpenImageIOReaderProcess( OpenImageIOReaderPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	View& readImage( View& dst, const std::string& filepath );
-	
+	View& readImage( View& dst, const std::string& filepath, const bool flip=0 );
+
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{
 		This* this_ptr = reinterpret_cast<This*>(opaque_data);
