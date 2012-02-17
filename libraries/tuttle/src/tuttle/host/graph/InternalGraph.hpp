@@ -145,7 +145,7 @@ public:
 	{
 		// clear_vertex is not called by boost graph itself.
 		// It may result in an undefined behaviour if not called before.
-		clear_vertex( vd, _graph ); // remove in and out edges
+		boost::clear_vertex( vd, _graph ); // remove in and out edges
 		boost::remove_vertex( vd, _graph ); // finally remove the vertex from the boost graph
 		rebuildVertexDescriptorMap();
 	}

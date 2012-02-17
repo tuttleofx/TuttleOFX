@@ -135,6 +135,7 @@ public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
 	typedef typename Vertex::Key VertexKey;
+	typedef typename TGraph::vertex_descriptor vertex_descriptor;
 	typedef typename TGraph::Edge Edge;
 	typedef typename TGraph::edge_descriptor edge_descriptor;
 
@@ -142,6 +143,18 @@ public:
 		: _graph( graph )
 	{}
 
+	struct ChangeConnection
+	{
+		vertex_descriptor _identityVertex; ///< the identity node to remove
+		struct ClipConnection
+		{
+			vertex_descriptor _node;
+			std::string _clip;
+		};
+		ClipConnection _input;
+		std::vector< ClipConnection > _outputs;
+	};
+	
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor vd, Graph& g )
 	{
@@ -151,32 +164,45 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		std::string clip;
-		OfxTime time;
-		if( vertex.getProcessNode().isIdentity( vertex.getProcessDataAtTime(), clip, time ) )
+		std::string inputClip;
+		OfxTime atTime;
+		if( vertex.getProcessNode().isIdentity( vertex.getProcessDataAtTime(), inputClip, atTime ) )
 		{
 			try
 			{
-				if( clip.size() == 0 )
+				if( inputClip.size() == 0 )
 				{
 					BOOST_THROW_EXCEPTION( exception::Logic()
-						<< exception::dev() + "Empty clip name. It's seems to be an error in the plugin" );
+						<< exception::dev() + "There is an error in the plugin: The plugin declares to be identity but don't give the name of the input clip to use." );
 				}
-//				Vertex& replace = _graph.getVertex( VertexKey( clip, time ) );
-				VertexKey replaceKey( clip, time );
+				ChangeConnection reconnect;
+				reconnect._identityVertex = vd;
+				reconnect._input._clip = inputClip;
 				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
 				{
 					const Edge& e = _graph.instance( ed );
-					const Vertex& in = _graph.sourceInstance( ed );
-					_graph.connect( replaceKey,
-					                in.getKey(),
-					                e.getInAttrName() );
+					if( ( e.getInAttrName() == inputClip ) &&
+					    ( e.getOutTime() == atTime )
+					  )
+					{
+						vertex_descriptor in = _graph.source( ed );
+						reconnect._input._node = in;
+					}
 				}
-				_graph.removeVertex( vd );
+				BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+				{
+					const Edge& e = _graph.instance( ed );
+					vertex_descriptor out = _graph.target( ed );
+					ChangeConnection c;
+					c._node = out;
+					c._clip = e.getInAttrName();
+					reconnect._outputs.push_back(c);
+				}
+				_toRemove.push_back( reconnect );
 			}
 			catch( boost::exception& e )
 			{
-				e << exception::user() + "A node is declared identity without given a valid input clip ("+quotes(clip)+", "+time+ ")."
+				e << exception::user() + "A node is declared identity without given a valid input clip ("+quotes(inputClip)+", "+atTime+ ")."
 				  << exception::nodeName( vertex.getName() )
 				  << exception::time( vertex.getProcessDataAtTime()._time );
 				throw;
@@ -184,8 +210,19 @@ public:
 		}
 	}
 
+//				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
+//				{
+//					const Edge& e = _graph.instance( ed );
+//					const Vertex& in = _graph.sourceInstance( ed );
+//					_graph.connect( replaceKey,
+//					                in.getKey(),
+//					                e.getInAttrName() );
+//				}
+//				_graph.removeVertex( vd );
+	
 private:
 	TGraph& _graph;
+	std::vector<ChangeConnection> _toRemove;
 };
 
 template<class TGraph>

@@ -182,6 +182,9 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 	{
 		connectClips<InternalGraphImpl>( _graph );
 
+//		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
+//		renderGraph.depthFirstSearch( timeDomainVisitor );
+		
 		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( _graph.getVertexDescriptor(_outputId), _graph.getGraph() ) )
 		{
 			ProcessVertex& v = _graph.targetInstance( ed );
@@ -199,8 +202,6 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			TUTTLE_COUT_DEBUG( "Compute full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
 		}
 
-//		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
-//		renderGraph.depthFirstSearch( timeDomainVisitor );
 	}
 
 	TUTTLE_TCOUT( "process render..." );

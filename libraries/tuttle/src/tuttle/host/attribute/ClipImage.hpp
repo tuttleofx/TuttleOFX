@@ -174,14 +174,6 @@ public:
 	 */
 	void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const;
 
-	const bool isConnected() const { return _isConnected; }
-
-	/**
-	 * @brief Connected
-	 * Says whether the clip is actually connected at the moment.
-	 */
-	void setConnected( const bool isConnected = true ) { _isConnected = isConnected; }
-
 	/**
 	 * @brief override this to fill in the image at the given time.
 	 * The bounds of the image on the image plane should be
