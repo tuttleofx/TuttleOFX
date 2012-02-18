@@ -18,11 +18,11 @@ static const bool kSupportTiles = false;
 void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleExrReader", "ExrReader",
-	                "Exr file reader" );
+			"Exr file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
 	desc.setDescription( "EXR File reader\n"
-	                     "Plugin is used to read exr files." );
+			     "Plugin is used to read exr files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
@@ -47,7 +47,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext               context )
+						OFX::EContext               context )
 {
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	// Exr only supports RGB(A)
@@ -58,37 +58,44 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	describeReaderParamsInContext( desc, context );
 
 	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kParamOutputComponents );
-	assert( outComponents );
+	outComponents->setLabel( "Components" );
+	outComponents->appendOption( kParamOutputComponentsGray );
+	outComponents->appendOption( kParamOutputComponentsRGB );
+	outComponents->appendOption( kParamOutputComponentsRGBA );
 	outComponents->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outComponents->setEvaluateOnChange( true );
-	outComponents->setLabel( "Components to output" );
-	outComponents->setDefault( 0 );
+	outComponents->setDefault( eParamOutputComponentsRGB );
 
 	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kParamOutputRedIs );
-	assert( outRedIs );
-	outRedIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outRedIs->setEvaluateOnChange( true );
+	outRedIs->appendOption( "0" );
+	outRedIs->appendOption( "1" );
+	outRedIs->appendOption( "2" );
+	outRedIs->appendOption( "3" );
+	/*outRedIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outRedIs->setEvaluateOnChange( true );*/
 	outRedIs->setLabel( "Red is" );
 	outRedIs->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kParamOutputGreenIs );
-	assert( outGreenIs );
-	outGreenIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outGreenIs->setEvaluateOnChange( true );
+	outGreenIs->appendOption( "0" );
+	outGreenIs->appendOption( "1" );
+	outGreenIs->appendOption( "2" );
+	outGreenIs->appendOption( "3" );
 	outGreenIs->setLabel( "Green is" );
 	outGreenIs->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kParamOutputBlueIs );
-	assert( outBlueIs );
-	outBlueIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outBlueIs->setEvaluateOnChange( true );
+	outBlueIs->appendOption( "0" );
+	outBlueIs->appendOption( "1" );
+	outBlueIs->appendOption( "2" );
+	outBlueIs->appendOption( "3" );
 	outBlueIs->setLabel( "Blue is" );
 	outBlueIs->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kParamOutputAlphaIs );
-	assert( outAlphaIs );
-	outAlphaIs->setEvaluateOnChange( true );
-	outAlphaIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outAlphaIs->appendOption( "0" );
+	outAlphaIs->appendOption( "1" );
+	outAlphaIs->appendOption( "2" );
+	outAlphaIs->appendOption( "3" );
 	outAlphaIs->setLabel( "Alpha is" );
 	outAlphaIs->setDefault( 0 );
 }
@@ -100,7 +107,7 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* EXRReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext        context )
+							  OFX::EContext        context )
 {
 	return new EXRReaderPlugin( handle );
 }

@@ -19,7 +19,7 @@ template<class View>
 class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 {
 	typedef OpenImageIOWriterProcess<View> This;
-	
+
 public:
 	typedef typename terry::image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
@@ -35,8 +35,8 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	void writeImage( const View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth );
-	
+	void writeImage( View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth, const bool flip=0 );
+
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{
 		This* this_ptr = reinterpret_cast<This*>(opaque_data);

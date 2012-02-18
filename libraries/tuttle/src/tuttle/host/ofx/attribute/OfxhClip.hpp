@@ -66,11 +66,6 @@ public:
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	}
 
-	// Connected -
-	//
-	//  Says whether the clip is actually connected at the moment.
-	virtual const bool isConnected() const = 0;
-
 private:
 	friend class boost::serialization::access;
 	template<class Archive>

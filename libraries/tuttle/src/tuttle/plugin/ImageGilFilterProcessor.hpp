@@ -32,6 +32,9 @@ ImageGilFilterProcessor<SView, DView>::ImageGilFilterProcessor( OFX::ImageEffect
 	: ImageGilProcessor<DView>( effect )
 {
 	_clipSrc = effect.fetchClip( kOfxImageEffectSimpleSourceClipName );
+	
+	if( ! _clipSrc->isConnected() )
+		BOOST_THROW_EXCEPTION( exception::ImageNotConnected() );
 }
 
 template<class SView, class DView>

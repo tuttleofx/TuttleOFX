@@ -82,7 +82,7 @@ void ProcessGraph::relink()
     // tie(ie, ieEnd) = in_edges(v, g);
 
     for( ; oe != oeEnd; ++oe )
-        source( oe )
+	source( oe )
 
     _graph.removeVertex( v );
    }
@@ -174,13 +174,16 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			v.getProcessNode().setProcessData( &v._data );
 		}
 	}
-	
+
 	memory::MemoryCache result;
 	std::list<TimeRange> timeRanges = options._timeRanges;
-	
+
 	if( timeRanges.empty() )
 	{
 		connectClips<InternalGraphImpl>( _graph );
+
+//		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
+//		renderGraph.depthFirstSearch( timeDomainVisitor );
 		
 		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( _graph.getVertexDescriptor(_outputId), _graph.getGraph() ) )
 		{
@@ -194,15 +197,13 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				timeDomain.min = 0;
 			if( timeDomain.max == std::numeric_limits<int>::max() )
 				timeDomain.max = 0;
-			
+
 			timeRanges.push_back( TimeRange( timeDomain ) );
-			TUTTLE_TCOUT( "Compute full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
+			TUTTLE_COUT_DEBUG( "Compute full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
 		}
-		
-//		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
-//		renderGraph.depthFirstSearch( timeDomainVisitor );
+
 	}
-	
+
 	TUTTLE_TCOUT( "process render..." );
 	//--- RENDER
 	// at each frame
@@ -211,7 +212,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		defaultOptions._renderTimeRange.x = timeRange._begin;
 		defaultOptions._renderTimeRange.y = timeRange._end;
 		defaultOptions._step              = timeRange._step;
-		
+
 		TUTTLE_TCOUT( "process begin sequence" );
 		//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 		for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
@@ -411,12 +412,20 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				TUTTLE_COUT( " " );
 
 			}
+			catch( tuttle::exception::FileNotExist& e )
+			{
+				TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
+#ifndef TUTTLE_PRODUCTION
+				TUTTLE_COUT_ERROR( boost::diagnostic_information(e) );
+#endif
+			}
 			catch( ... )
 			{
 				if( options._continueOnError )
 				{
-					TUTTLE_COUT_ERROR( "Can't compute frame " << time << "." );
+					TUTTLE_COUT( tuttle::common::kColorError << "Skip frame " << time << "." << tuttle::common::kColorStd );
 #ifndef TUTTLE_PRODUCTION
+					TUTTLE_COUT_ERROR( "Skip frame " << time << "." );
 					TUTTLE_COUT( boost::current_exception_diagnostic_information() );
 #endif
 				}
@@ -426,7 +435,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				}
 			}
 		}
-		
+
 		TUTTLE_TCOUT( "process end sequence" );
 		//--- END sequence render
 		BOOST_FOREACH( NodeMap::value_type& p, _nodes )
@@ -435,7 +444,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		}
 	}
 
-	
+
 	return result;
 }
 

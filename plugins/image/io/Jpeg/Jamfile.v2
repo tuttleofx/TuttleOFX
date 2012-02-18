@@ -6,23 +6,25 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements
-		<include>src
-	: build-dir $(BUILD)/Jpeg
-	;
+    : requirements
+	<include>src
+	<os>LINUX:<include>/usr/include
+    : build-dir $(BUILD)/Jpeg
+    ;
 
+#use-project /jpeg    : $(3RD_PARTY)/turbojpeg ;
 use-project /jpeg    : $(3RD_PARTY)/jpeg ;
 
 ###############################################################################
-# Product 
+# Product
 ###############################################################################
 plugin Jpeg :
-		[ glob-tree *.cpp : tests ]
-		/tuttleplugin/<link>static
-		/jpeg
-	:
-		<os>LINUX:<find-shared-library>dl
-	;
+	[ glob-tree *.cpp : tests ]
+	/tuttleplugin/<link>static
+	/jpeg/<link>static
+    :
+	<os>LINUX:<find-shared-library>dl
+    ;
 ###############################################################################
 # Automatic install
 ###############################################################################

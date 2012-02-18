@@ -16,11 +16,62 @@ namespace reader {
 void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleRawReader", "RawReader",
-                    "Raw file reader" );
+		    "Raw file reader" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
+    std::vector<std::string> extension;
+    extension.push_back( "3fr" );
+    extension.push_back( "ari" );
+    extension.push_back( "arw" );
+    extension.push_back( "bay" );
+    extension.push_back( "crw" );
+    extension.push_back( "cr2" );
+    extension.push_back( "cap" );
+    extension.push_back( "dng" );
+    extension.push_back( "dcs" );
+    extension.push_back( "dcr" );
+    extension.push_back( "dng" );
+    extension.push_back( "drf" );
+    extension.push_back( "eip" );
+    extension.push_back( "erf" );
+    extension.push_back( "fff" );
+    extension.push_back( "iiq" );
+    extension.push_back( "k25" );
+    extension.push_back( "kdc" );
+    extension.push_back( "mef" );
+    extension.push_back( "mos" );
+    extension.push_back( "mrw" );
+    extension.push_back( "nef" );
+    extension.push_back( "nrw" );
+    extension.push_back( "obm" );
+    extension.push_back( "orf" );
+    extension.push_back( "pef" );
+    extension.push_back( "ptx" );
+    extension.push_back( "pxn" );
+    extension.push_back( "r3d" );
+    extension.push_back( "rad" );
+    extension.push_back( "raf" );
+    extension.push_back( "rw2" );
+    extension.push_back( "raw" );
+    extension.push_back( "rwl" );
+    extension.push_back( "rwz" );
+    extension.push_back( "srf" );
+    extension.push_back( "sr2" );
+    extension.push_back( "srw" );
+    extension.push_back( "x3f" );
+
+    std::string listOfExt;
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	listOfExt += extension.at(i);
+	listOfExt += ", ";
+    }
+    listOfExt.erase( listOfExt.size()-2, 2 );
     desc.setDescription( "Raw File reader\n"
-                         "Plugin is used to read raw files." );
+			 "Plugin is used to read raw files.\n\n"
+			 "supported extensions: \n" +
+			 listOfExt
+			 );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextReader );
@@ -32,46 +83,10 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
     desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
     // add supported extensions
-    desc.addSupportedExtension( "3fr" );
-    desc.addSupportedExtension( "ari" );
-    desc.addSupportedExtension( "arw" );
-    desc.addSupportedExtension( "srf" );
-    desc.addSupportedExtension( "sr2" );
-    desc.addSupportedExtension( "bay" );
-    desc.addSupportedExtension( "crw" );
-    desc.addSupportedExtension( "cr2" );
-    desc.addSupportedExtension( "cap" );
-    desc.addSupportedExtension( "iiq" );
-    desc.addSupportedExtension( "eip" );
-    desc.addSupportedExtension( "dcs" );
-    desc.addSupportedExtension( "dcr" );
-    desc.addSupportedExtension( "drf" );
-    desc.addSupportedExtension( "k25" );
-    desc.addSupportedExtension( "kdc" );
-    desc.addSupportedExtension( "dng" );
-    desc.addSupportedExtension( "erf" );
-    desc.addSupportedExtension( "fff" );
-    desc.addSupportedExtension( "mef" );
-    desc.addSupportedExtension( "mos" );
-    desc.addSupportedExtension( "mrw" );
-    desc.addSupportedExtension( "nef" );
-    desc.addSupportedExtension( "nrw" );
-    desc.addSupportedExtension( "mos" );
-    desc.addSupportedExtension( "orf" );
-    desc.addSupportedExtension( "pef" );
-    desc.addSupportedExtension( "ptx" );
-    desc.addSupportedExtension( "pxn" );
-    desc.addSupportedExtension( "r3d" );
-    desc.addSupportedExtension( "rad" );
-    desc.addSupportedExtension( "raf" );
-    desc.addSupportedExtension( "rw2" );
-    desc.addSupportedExtension( "raw" );
-    desc.addSupportedExtension( "rwl" );
-    desc.addSupportedExtension( "dng" );
-    desc.addSupportedExtension( "rwz" );
-    desc.addSupportedExtension( "obm" );
-    desc.addSupportedExtension( "srw" );
-    desc.addSupportedExtension( "x3f" );
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	desc.addSupportedExtension( extension.at(i) );
+    }
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -87,7 +102,7 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext               context )
+						OFX::EContext               context )
 {
     // Create the mandated output clip
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -111,7 +126,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* RawReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext        context )
+							  OFX::EContext        context )
 {
     return new RawReaderPlugin( handle );
 }

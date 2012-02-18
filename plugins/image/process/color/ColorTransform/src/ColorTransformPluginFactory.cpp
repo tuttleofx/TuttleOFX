@@ -67,8 +67,20 @@ void ColorTransformPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	
 	OFX::DoubleParamDescriptor* paramSaturation = desc.defineDoubleParam( kParamSaturation );
 	paramSaturation->setLabel( "Saturation" );
-	paramSaturation->setDefault( 0.0 );
+	paramSaturation->setDefault( 1.0 );
 	paramSaturation->setDisplayRange( 0.0, 1.0 );
+	
+	////
+	
+	OFX::DoubleParamDescriptor* paramContrastRGB = desc.defineDoubleParam( kParamContrastRGB );
+	paramContrastRGB->setLabel( "Global Contrast RGB" );
+	paramContrastRGB->setHint( "Global manipulation of RGB contrast." );
+	paramContrastRGB->setDefault( 1.0 );
+	paramContrastRGB->setDisplayRange( 0.0, 1.0 );
+	
+	OFX::RGBAParamDescriptor* paramContrast = desc.defineRGBAParam( kParamContrast );
+	paramContrast->setLabel( "Contrast" );
+	paramContrast->setDefault( 1.0, 1.0, 1.0, 1.0 );
 	
 	
 	OFX::DoubleParamDescriptor* paramBrightnessRGB = desc.defineDoubleParam( kParamBrightnessRGB );
@@ -82,27 +94,6 @@ void ColorTransformPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	paramBrightness->setDefault( 1.0, 1.0, 1.0, 1.0 );
 	
 	
-	OFX::DoubleParamDescriptor* paramPivotRGB = desc.defineDoubleParam( kParamPivotRGB );
-	paramPivotRGB->setLabel( "Global Pivot RGB" );
-	paramPivotRGB->setHint( "Global manipulation of RGB pivot." );
-	paramPivotRGB->setDefault( 0.0 );
-	paramPivotRGB->setDisplayRange( 0.0, 1.0 );
-	
-	OFX::RGBAParamDescriptor* paramPivot = desc.defineRGBAParam( kParamPivot );
-	paramPivot->setLabel( "Pivot" );
-	paramPivot->setDefault( 0.0, 0.0, 0.0, 0.0 );
-	
-	
-	OFX::DoubleParamDescriptor* paramContrastRGB = desc.defineDoubleParam( kParamContrastRGB );
-	paramContrastRGB->setLabel( "Global Contrast RGB" );
-	paramContrastRGB->setHint( "Global manipulation of RGB contrast." );
-	paramContrastRGB->setDefault( 1.0 );
-	paramContrastRGB->setDisplayRange( 0.0, 1.0 );
-	
-	OFX::RGBAParamDescriptor* paramContrast = desc.defineRGBAParam( kParamContrast );
-	paramContrast->setLabel( "Contrast" );
-	paramContrast->setDefault( 1.0, 1.0, 1.0, 1.0 );
-	
 	OFX::DoubleParamDescriptor* paramOffsetRGB = desc.defineDoubleParam( kParamOffsetRGB );
 	paramOffsetRGB->setLabel( "Global Offset RGB" );
 	paramOffsetRGB->setHint( "Global manipulation of RGB offset." );
@@ -112,6 +103,19 @@ void ColorTransformPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	OFX::RGBAParamDescriptor* paramOffset = desc.defineRGBAParam( kParamOffset );
 	paramOffset->setLabel( "Offset" );
 	paramOffset->setDefault( 0.0, 0.0, 0.0, 0.0 );
+	
+	
+	OFX::DoubleParamDescriptor* paramPivotRGB = desc.defineDoubleParam( kParamPivotRGB );
+	paramPivotRGB->setLabel( "Global Pivot RGB" );
+	paramPivotRGB->setHint( "Global manipulation of RGB pivot." );
+	paramPivotRGB->setDefault( 0.5 );
+	paramPivotRGB->setDisplayRange( 0.0, 1.0 );
+	
+	OFX::RGBAParamDescriptor* paramPivot = desc.defineRGBAParam( kParamPivot );
+	paramPivot->setLabel( "Pivot" );
+	paramPivot->setDefault( 0.5, 0.5, 0.5, 0.5 );
+	
+	
 }
 
 /**

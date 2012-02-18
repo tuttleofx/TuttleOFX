@@ -26,6 +26,10 @@ public:
 		return *this;
 	}
 	
+	inline OfxTime getOutTime() const { return _outTime; }
+	inline OfxTime getInTime() const { return _inTime; }
+	
+private:
 	OfxTime _inTime;
 	OfxTime _outTime;
 };

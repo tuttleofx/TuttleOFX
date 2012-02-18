@@ -36,14 +36,15 @@ public:
 public:
 	OFX::DoubleParam* _paramHueShift;
 	OFX::DoubleParam* _paramSaturation;
-	OFX::DoubleParam* _paramBrightnessRGB;
-	OFX::RGBAParam* _paramBrightness;
-	OFX::DoubleParam* _paramPivotRGB;
-	OFX::RGBAParam* _paramPivot;
+	
 	OFX::DoubleParam* _paramContrastRGB;
 	OFX::RGBAParam* _paramContrast;
+	OFX::DoubleParam* _paramBrightnessRGB;
+	OFX::RGBAParam* _paramBrightness;
 	OFX::DoubleParam* _paramOffsetRGB;
 	OFX::RGBAParam* _paramOffset;
+	OFX::DoubleParam* _paramPivotRGB;
+	OFX::RGBAParam* _paramPivot;
 };
 
 }

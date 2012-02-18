@@ -40,13 +40,13 @@ void OpenImageIOReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
+	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath, _plugin.getProcessParams( this->_renderArgs.time )._flip );
 }
 
 /**
  */
 template<class View>
-View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& filepath )
+View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& filepath, const bool flip )
 {
 	using namespace boost;
 	using namespace OpenImageIO;
@@ -57,6 +57,11 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	}
 	ImageSpec spec;
 	in->open( filepath, spec );
+
+	if( flip )
+	{
+		dst = flipped_up_down_view( dst );
+	}
 
 	typedef mpl::map<
 	    mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT8> >,
@@ -69,7 +74,7 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	const stride_t ystride = dst.pixels().row_size(); // xstride * dst.width();
 //	const stride_t zstride = gil::is_planar<View>::value ? ystride * dst.height() : sizeof(Channel);
 	const stride_t zstride = ystride * dst.height();
-	
+
 	in->read_image(
 			mpl::at<MapBits, Channel>::type::value,
 			&( ( *dst.begin() )[0] ), // get the adress of the first channel value from the first pixel

@@ -35,7 +35,7 @@ void PinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 {
 	using namespace terry;
 	using namespace terry::sampler;
-	
+
 	const terry::Rect<std::ssize_t> procWindowOutput = ofxToGil( this->translateRoWToOutputClipCoordinates( procWindowRoW ) );
 
 	switch( _params._samplerProcessParams._filter )

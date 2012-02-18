@@ -28,12 +28,12 @@ public:
 public:
 	RawReaderProcessParams getProcessParams( const OfxTime time );
 
-	void updateInfos();
+	void updateInfos( const OfxTime time );
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	
+
 	void render( const OFX::RenderArguments& args );
 
 public:

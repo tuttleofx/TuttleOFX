@@ -43,7 +43,6 @@ void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	using namespace boost::gil;
 	ImageGilProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.time );
-	_dpxImage.read( _params._filepath, true );
 }
 
 /**
@@ -64,6 +63,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 	using namespace mpl;
 	using namespace boost::gil;
 
+	_dpxImage.read( _params._filepath, true );
+
 	if( _params._flip )
 	{
 		dst = flipped_up_down_view( dst );
@@ -75,8 +76,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			// Tests passed: fill, non fill, big endian, little endian
 			rgb8c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-			                                     (const rgb8_pixel_t*)( _dpxImage.data() ),
-			                                     _dpxImage.width() * 3 );
+							     (const rgb8_pixel_t*)( _dpxImage.data() ),
+							     _dpxImage.width() * 3 );
 			copy_and_convert_pixels( src, dst );
 			break;
 		}
@@ -84,8 +85,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			// Tests passed: fill, non fill, big endian, little endian
 			rgba8c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-			                                      (const rgba8_pixel_t*)( _dpxImage.data() ),
-			                                      _dpxImage.width() * 4 );
+							      (const rgba8_pixel_t*)( _dpxImage.data() ),
+							      _dpxImage.width() * 4 );
 
 			copy_and_convert_pixels( src, dst );
 			break;
@@ -94,8 +95,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			// Untested (need images samples), quite sure it is working
 			abgr8c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-			                                      (const abgr8_pixel_t*)( _dpxImage.data() ),
-			                                      _dpxImage.width() * 4 );
+							      (const abgr8_pixel_t*)( _dpxImage.data() ),
+							      _dpxImage.width() * 4 );
 
 			copy_and_convert_pixels( src, dst );
 			break;
@@ -120,8 +121,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					int width               = _dpxImage.width();
 					int height              = _dpxImage.height();
 					rgb10_packed_view_t src = interleaved_view( width, height,
-					                                            ( rgb10_packed_pixel_t* )( _dpxImage.data() ),
-					                                            width * sizeof( uint32_t ) );
+										    ( rgb10_packed_pixel_t* )( _dpxImage.data() ),
+										    width * sizeof( uint32_t ) );
 					// This is temporary but needed because of a probable bug in gil
 					// Should be using copy_and_convert_pixels
 					rgb16_image_t img16( width, height );
@@ -212,8 +213,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					int width               = _dpxImage.width();
 					int height              = _dpxImage.height();
 					rgb12_packed_view_t src = interleaved_view( width, height,
-					                                            ( rgb12_packed_pixel_t* )( _dpxImage.data() ),
-					                                            _dpxImage.width() * 6 );
+										    ( rgb12_packed_pixel_t* )( _dpxImage.data() ),
+										    _dpxImage.width() * 6 );
 					// This is temporary but needed because of a probable bug in gil
 					// Should be using copy_and_convert_pixels
 					rgb16_image_t img16( width, height );
@@ -253,8 +254,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				default:
 				{
 					rgba12_packed_view_t vw = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-					                                            ( rgba12_packed_pixel_t* )( _dpxImage.data() ),
-					                                            _dpxImage.width() * sizeof( uint64_t ) );
+										    ( rgba12_packed_pixel_t* )( _dpxImage.data() ),
+										    _dpxImage.width() * sizeof( uint64_t ) );
 
 					copy_and_convert_pixels( vw, dst );
 					break;
@@ -280,8 +281,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				default:
 				{
 					abgr12_packed_view_t vw = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-					                                            ( abgr12_packed_pixel_t* )( _dpxImage.data() ),
-					                                            _dpxImage.width() * sizeof( uint64_t ) );
+										    ( abgr12_packed_pixel_t* )( _dpxImage.data() ),
+										    _dpxImage.width() * sizeof( uint64_t ) );
 
 					copy_and_convert_pixels( vw, dst );
 					break;
@@ -298,8 +299,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			TUTTLE_COUT_VAR( sizeof( rgb16_pixel_t ) );
 			// Tests passed: fill, non fill, big endian, little endian
 			rgb16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-			                                      (const rgb16_pixel_t*)( _dpxImage.data() ),
-			                                      _dpxImage.width() * sizeof( rgb16_pixel_t ) );
+							      (const rgb16_pixel_t*)( _dpxImage.data() ),
+							      _dpxImage.width() * sizeof( rgb16_pixel_t ) );
 			copy_and_convert_pixels( src, dst );
 			break;
 		}
@@ -307,8 +308,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			// Tests passed: fill, non fill, big endian, little endian
 			rgba16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-			                                       (const rgba16_pixel_t*)( _dpxImage.data() ),
-			                                       _dpxImage.width() * sizeof( uint64_t ) );
+							       (const rgba16_pixel_t*)( _dpxImage.data() ),
+							       _dpxImage.width() * sizeof( uint64_t ) );
 
 			copy_and_convert_pixels( src, dst );
 			break;
@@ -317,8 +318,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			// Untested (need images samples), quite sure it is working
 			abgr16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-			                                       (const abgr16_pixel_t*)( _dpxImage.data() ),
-			                                       _dpxImage.width() * sizeof( uint64_t ) );
+							       (const abgr16_pixel_t*)( _dpxImage.data() ),
+							       _dpxImage.width() * sizeof( uint64_t ) );
 
 			copy_and_convert_pixels( src, dst );
 			break;
@@ -327,8 +328,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			BOOST_THROW_EXCEPTION( exception::Failed()
 				<< exception::dev() + "Unrecognized image type, bit depth is " + _dpxImage.getHeader().bitSize() + ", component type is: " + _dpxImage.getHeader().descriptor() + ".\n"
-				                    + "DPX HEADER:\n"
-				                    + _dpxImage.getHeader() );
+						    + "DPX HEADER:\n"
+						    + _dpxImage.getHeader() );
 			break;
 		}
 	}

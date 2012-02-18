@@ -30,7 +30,7 @@ Host::Host()
 	/// @todo tuttle set host properties correctly...
 	_properties.setStringProperty( kOfxPropName, "TuttleOfx" );
 	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx Alpha" );
-	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, true );
+	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, false );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, false );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultiResolution, true );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, true ); ///< @todo tuttle: we hope to do this !

@@ -26,8 +26,8 @@ public:
 	{
 		if( this == &e )
 			return *this;
-		_in         = e._in;
 		_out        = e._out;
+		_in         = e._in;
 		_inAttrName = e._inAttrName;
 		_name       = e._name;
 		_localId    = e._localId;

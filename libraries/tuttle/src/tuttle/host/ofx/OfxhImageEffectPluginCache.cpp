@@ -36,7 +36,7 @@ OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::str
 	{
 		OfxhImageEffectPlugin& p = **i;
 
-		if( p.getIdentifier() != id )
+		if( p.getIdentifier() != idLower )
 		{
 			continue;
 		}

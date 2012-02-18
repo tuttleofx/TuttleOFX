@@ -1079,7 +1079,7 @@ public:
 
     /** @brief what is the time domain of this effect, valid only in the general context
      *
-     * return true is range was set, otherwise the default (the union of the time domain of all input clips) is used
+     * return true if range was set, otherwise the default (the union of the time domain of all input clips) is used
      */
     virtual bool getTimeDomain( OfxRangeD& range );
 

@@ -12,7 +12,7 @@ namespace tuttle {
 namespace plugin {
 
 void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
-                                    OFX::EContext               context )
+				    OFX::EContext               context )
 {
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
 	render->setLabels( "Render", "Render", "Render step" );
@@ -37,7 +37,7 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 	flip->setHint( "Vertically flip the image." );
 //	bool hostFlip = OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke";
 //	flip->setDefault( hostFlip );
-	flip->setDefault( true );
+	flip->setDefault( false );
 }
 
 }
