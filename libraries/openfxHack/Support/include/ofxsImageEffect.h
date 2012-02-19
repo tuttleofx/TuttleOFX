@@ -188,20 +188,15 @@ protected:
     const std::string& getHelperID() const           { return _id; }
     unsigned int       getHelperMajorVersion() const { return _maj; }
     unsigned int       getHelperMinorVersion() const { return _min; }
-    std::string        toString( unsigned int val )
-    {
-        std::ostringstream ss;
-
-        ss << val;
-        return ss.str();
-    }
 
     FactoryMainEntryHelper( const std::string& id, const unsigned int maj, const unsigned int min )
     : _id( id )
     , _maj( maj )
     , _min( min )
     {
-        _uid = id + toString( maj ) + toString( min );
+		std::ostringstream ss;
+		ss << id << "." << maj << "." << min;
+        _uid = ss.str();
     }
 
     const std::string& getHelperUID() const { return _uid; }
