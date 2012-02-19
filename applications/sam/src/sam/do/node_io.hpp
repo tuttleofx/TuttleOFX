@@ -14,8 +14,14 @@ namespace samdo {
 /// get Default or choice values
 std::vector<std::string> getDefaultOrChoiceValues( const tuttle::host::ofx::property::OfxhProperty& prop )
 {
+	using namespace tuttle::host::ofx::property;
+	
     std::vector<std::string> s;
-    if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
+	// if displayable types
+    if(
+		( prop.getType() != ePointer ) &&
+		( prop.getType() != eNone )
+	  )
     {
         int n = 0;
         for( ; n < (int)( prop.getDimension() ) - 1; ++n )
