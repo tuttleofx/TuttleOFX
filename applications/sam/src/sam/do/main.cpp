@@ -96,7 +96,7 @@ std::vector<std::string> getChoiceValuesForParameter( const tuttle::host::ofx::p
 		const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
 		std::string label = itProperty->first;
 
-		if( std::strcmp( label.c_str(), "OfxParamPropChoiceOption" ) == 0 )
+		if( std::strcmp( label.c_str(), kOfxParamPropChoiceOption ) == 0 )
 		{
 			choiceValues = sam::samdo::getDefaultOrChoiceValues( prop );
 			return choiceValues;
@@ -115,20 +115,20 @@ void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std
 	{
 		const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
 
-		std::string label = itProperty->first;
+		const std::string label = itProperty->first;
 
-		if( std::strcmp( label.c_str(), "OfxParamPropChoiceOption" ) == 0 )
+		if( std::strcmp( label.c_str(), kOfxParamPropChoiceOption ) == 0 )
 		{
 			choiceValues = getChoiceValues( prop );
 		}
-		if( std::strcmp( label.c_str(), "OfxParamPropDefault" ) == 0 )
+		if( std::strcmp( label.c_str(), kOfxParamPropDefault ) == 0 )
 		{
 			defaultValue = getDefaultValues( prop );
 		}
-		if( std::strcmp( label.c_str(), "OfxParamPropType" ) == 0 )
+		if( std::strcmp( label.c_str(), kOfxParamPropType ) == 0 )
 		{
 			std::string type = getPropType( prop );
-			type.erase( 0, 12 );
+			type.erase( 0, 12 ); /// @todo remove this.
 			if( std::strcmp( type.c_str(), "Group" ) ) // if it isn't a group parameter, we print the parameter.
 			{
 				std::string stringDefaultValue = defaultValue;
@@ -140,7 +140,7 @@ void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std
 
 				TUTTLE_COUT( "\t" << sam::samdo::_color._green << std::left << std::setw( 25 ) << context + ":" << sam::samdo::_color._std << std::setw( 15 ) << type << sam::samdo::_color._yellow << stringDefaultValue << sam::samdo::_color._std );
 				if( choiceValues.size() )
-					for( size_t i = 0; i < choiceValues.size(); i++ )
+					for( std::size_t i = 0; i < choiceValues.size(); i++ )
 						TUTTLE_COUT( "\t\t\t\t\t" << sam::samdo::_color._red << "- " << choiceValues.at( i ) << sam::samdo::_color._std );
 			}
 		}
