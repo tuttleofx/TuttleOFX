@@ -548,8 +548,7 @@ int main( int argc, char** argv )
 							{
 								if( param.getSecret() )
 									continue; // ignore secret parameters
-								std::string ofxType = param.getParamType();
-								ofxType.erase( 0, 12 );
+								const std::string ofxType = param.getParamTypeName();
 								if( std::strcmp( ofxType.c_str(), "Group" ) ) // if it isn't a group parameter, we print the parameter.
 									TUTTLE_COUT( "\t" << _color._green << std::left << std::setw( 25 ) << ( param.getScriptName() + ":" ) << _color._std << std::setw( 10 ) << ofxType << " x" << param.getSize() );
 							}
@@ -659,12 +658,12 @@ int main( int argc, char** argv )
 							const std::string paramName = node_vm["param"].as<std::string > ();
 							TUTTLE_COUT( "\tsam do " << nodeFullName );
 							TUTTLE_COUT( _color._blue << "PARAM: " << _color._green << paramName << _color._std );
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT(
 										 "\t" << _color._red <<
 										 ( param.getSecret() ? "SECRET -- " : "" ) <<
-										 param.getScriptName() << ": " << param.getParamType() << " x" << param.getSize() <<
+										 param.getScriptName() << ": " << param.getParamTypeName() << " x" << param.getSize() <<
 										 _color._std
 										 );
 							TUTTLE_COUT( "" );
@@ -680,15 +679,15 @@ int main( int argc, char** argv )
 						if( node_vm.count( "parameter-type" ) )
 						{
 							const std::string paramName = node_vm["parameter-type"].as<std::string > ();
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
-							TUTTLE_COUT( param.getParamType() );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
+							TUTTLE_COUT( param.getParamTypeName() );
 							exit( 0 );
 						}
 
 						if( node_vm.count( "parameter-values" ) )
 						{
 							const std::string paramName = node_vm["parameter-values"].as<std::string > ();
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
 							std::vector<std::string> values = getChoiceValuesForParameter( param.getProperties() );
 							for( size_t i = 0; i < values.size(); i++ )
 							{
@@ -700,7 +699,7 @@ int main( int argc, char** argv )
 						if( node_vm.count( "parameter-default" ) )
 						{
 							const std::string paramName = node_vm["parameter-default"].as<std::string > ();
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
 							/// @todo
 							TUTTLE_TCOUT( "TODO: display default value." );
 							exit( 0 );
@@ -745,7 +744,7 @@ int main( int argc, char** argv )
 								// setup the node with parameter value in tuttle.
 								if( paramName.size() )
 								{
-									currentNode.getParam( paramName ).setValueFromExpression( paramValue );
+									currentNode.getParamByScriptName( paramName ).setValueFromExpression( paramValue );
 								}
 								else
 								{
