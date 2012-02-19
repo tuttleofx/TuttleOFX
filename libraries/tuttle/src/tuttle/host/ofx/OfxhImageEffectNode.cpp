@@ -845,7 +845,7 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 	}
 	else
 	{
-		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist( "getRegionOfDefinitionAction error." ) );
+		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist( "" ) );
 		//BOOST_THROW_EXCEPTION( OfxhException( stat, "getRegionOfDefinitionAction error." ) );
 	}
 }
@@ -1338,7 +1338,8 @@ void OfxhImageEffectNode::getClipPreferencesAction() OFX_EXCEPTION_SPEC
 				      &outArgs );
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException( status ) );
+		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist( "" ) );
+//		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 
 	// Setup members data from loaded properties
 	setupClipInstancePreferences( outArgs );
