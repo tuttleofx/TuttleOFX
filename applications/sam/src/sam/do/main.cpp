@@ -1,8 +1,10 @@
 #include "commandLine.hpp"
-#include "node_io.hpp"
-#include "node.hpp"
 #include "global.hpp"
 #include "nodeDummy.hpp"
+
+#include <sam/common/node.hpp>
+#include <sam/common/node_io.hpp>
+#include <sam/common/properties.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
@@ -18,60 +20,16 @@
 
 #include <iostream>
 
-std::string getDefaultValues( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-    std::string s;
-    std::vector<std::string> values = sam::samdo::getDefaultOrChoiceValues( prop );
 
-    for( size_t i=0; i < values.size(); i++ )
-    {
-	s += values.at( i );
-	s += " ";
-    }
-    return s;
-}
 
 std::string getPrintableDefaultValues( const tuttle::host::ofx::property::OfxhProperty& prop )
 {
     std::string s;
-    std::vector<std::string> values = sam::samdo::getDefaultOrChoiceValues( prop );
+    std::vector<std::string> values = sam::getDefaultOrChoiceValues( prop );
 
-    s += sam::samdo::_color._green;
-    s += getDefaultValues( prop );
-    s += sam::samdo::_color._std;
-    return s;
-}
-
-/// get defaults values of plugin properties
-std::vector<std::string> getChoiceValues( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-    return sam::samdo::getDefaultOrChoiceValues( prop );
-}
-
-/// get default value of plugin properties
-std::string getDefaultChoiceValue( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-    std::string s;
-    if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
-    {
-	int indexForDefaultValue =  std::atoi( getPrintableDefaultValues( prop ).c_str() );
-	s += prop.getStringValue( indexForDefaultValue );
-    }
-    return s;
-}
-
-/// get defaults values of plugin properties
-std::string getPropType(const tuttle::host::ofx::property::OfxhProperty& prop)
-{
-    std::string s;
-    if( !(prop.getType() == 3) ) // if Pointer, we don't have _value and _defaultValue properties
-    {
-	int n = 0;
-	if( prop.getDimension() > 0 )
-	{
-	    s += prop.getStringValue( n );
-	}
-    }
+    s += sam::_color._green;
+    s += sam::getDefaultOrChoiceValues( prop ).at(0);
+    s += sam::_color._std;
     return s;
 }
 
@@ -87,57 +45,16 @@ std::vector<std::string> getChoiceValuesForParameter( const tuttle::host::ofx::p
 
 	if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
 	{
-	    choiceValues = sam::samdo::getDefaultOrChoiceValues( prop );
+	    choiceValues = sam::getDefaultOrChoiceValues( prop );
 	    return choiceValues;
 	}
     }
     return choiceValues;
 }
 
-void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std::string context="" )
-{
-    std::string defaultValue;
-    std::vector<std::string> choiceValues;
-
-    tuttle::host::ofx::property::PropertyMap propMap = properties.getMap();
-    for( tuttle::host::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
-    {
-	const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
-
-	std::string label = itProperty->first;
-
-	if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
-	{
-	    choiceValues = getChoiceValues( prop );
-	}
-	if( std::strcmp( label.c_str() , "OfxParamPropDefault" ) == 0 )
-	{
-	    defaultValue = getDefaultValues( prop );
-	}
-	if( std::strcmp( label.c_str() , "OfxParamPropType" ) == 0 )
-	{
-	    std::string type = getPropType( prop );
-	    type.erase(0, 12);
-	    if( std::strcmp( type.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
-	    {
-		std::string stringDefaultValue = defaultValue;
-		if( choiceValues.size() ) // if it's a choice, we take the nth argument
-		{
-			int indexOfDefaultValue = std::atoi( defaultValue.c_str() );
-			stringDefaultValue = choiceValues.at( indexOfDefaultValue ) ;
-		}
-
-		TUTTLE_COUT( "\t" << sam::samdo::_color._green << std::left << std::setw (25) << context + ":" << sam::samdo::_color._std << std::setw( 15 ) << type << sam::samdo::_color._yellow << stringDefaultValue << sam::samdo::_color._std );
-		if( choiceValues.size() )
-		    for( size_t i=0; i < choiceValues.size(); i++ )
-			TUTTLE_COUT( "\t\t\t\t\t" << sam::samdo::_color._red << "- " << choiceValues.at( i ) << sam::samdo::_color._std );
-	    }
-	}
-    }
-}
-
 int main( int argc, char** argv )
 {
+    using namespace sam;
     using namespace sam::samdo;
     namespace ttl = tuttle::host;
 
@@ -305,6 +222,8 @@ int main( int argc, char** argv )
 		    SAM_DO_EXAMPLE_LINE_COUT ( "All Frames in Directory: "       , "/path/to/directory"  );
 
 		    SAM_DO_EXAMPLE_TITLE_COUT( "Processing options" );
+		    SAM_DO_EXAMPLE_LINE_COUT ( "Range process: "             , "sam do reader in.@.dpx // writer out.@.exr // --range 50,100" );
+		    SAM_DO_EXAMPLE_LINE_COUT ( "Single process: "            , "sam do reader in.@.dpx // writer out.@.exr // --range 59" );
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Multiple CPUs: "             , "sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4" );
 		    SAM_DO_EXAMPLE_LINE_COUT ( "Continues whatever happens: ", "sam do reader in.@.dpx // writer out.@.exr // --continueOnError" );
 
@@ -529,33 +448,13 @@ int main( int argc, char** argv )
 			    ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
 			    BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
 			    {
-				if( param.getSecret() )
-				    continue; // ignore secret parameters
+				//if( param.getSecret() )
+				//    continue; // ignore secret parameters
 				std::string ofxType = param.getParamType();
 				ofxType.erase(0, 12);
 				if( std::strcmp( ofxType.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
-				    TUTTLE_COUT( "\t" << _color._green << std::left << std::setw(25) << ( param.getScriptName() + ":" ) << _color._std << std::setw(10) << ofxType << " x" << param.getSize() );
-			    }
-
-			    TUTTLE_COUT( std::endl << _color._blue  << "PARAMETERS DETAILS" << _color._std );
-			    typedef std::map<std::string, tuttle::host::ofx::attribute::OfxhParamDescriptor*> ParamDescriptorMap;
-
-			    // get contexts
-			    ParamDescriptorMap::const_iterator it = currentNode.asImageEffectNode().getDescriptor( ).getParams().begin();
-			    std::string strParamsContexts;
-			    for( ; it != currentNode.asImageEffectNode().getDescriptor( ).getParams().end(); ++it )
-			    {
-				strParamsContexts += (*it).first + ", ";
-			    }
-			    strParamsContexts.erase( strParamsContexts.size()-2, 2 );
-
-			    //TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
-
-			    // get propeties in each context
-			    ParamDescriptorMap::const_iterator it2 = currentNode.asImageEffectNode().getDescriptor( ).getParams().begin();
-			    for( ; it2 != currentNode.asImageEffectNode().getDescriptor().getParams().end(); it2++ )
-			    {
-				printProperties( (*it2).second->getProperties(), (*it2).first );
+					printProperties( param.getProperties(), param.getScriptName() );
+				    //TUTTLE_COUT( "\t" << _color._green << std::left << std::setw(25) << ( param.getScriptName() + ":" ) << _color._std << std::setw(10) << ofxType << " x" << param.getSize() );
 			    }
 
 			    TUTTLE_COUT( "" );
@@ -824,7 +723,9 @@ int main( int argc, char** argv )
     catch( ... )
     {
 	TUTTLE_CERR( _color._red << "sam do - error" );
+#ifndef TUTTLE_PRODUCTION
 	TUTTLE_CERR( boost::current_exception_diagnostic_information() << _color._std );
+#endif
 	exit( -2 );
     }
     return 0;
