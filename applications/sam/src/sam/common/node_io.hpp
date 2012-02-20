@@ -30,6 +30,22 @@ std::vector<std::string> getDefaultOrChoiceValues( const tuttle::host::ofx::prop
     return s;
 }
 
+/// get defaults values of plugin properties
+std::string getPropertyType( const tuttle::host::ofx::property::OfxhProperty& prop )
+{
+	std::string s;
+	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value and _defaultValue properties
+	{
+		int n = 0;
+		if( prop.getDimension() > 0 )
+		{
+			s += prop.getStringValue( n );
+		}
+	}
+	return s;
+}
+
+
 /**
  * @todo
  */
@@ -61,7 +77,7 @@ void coutClips( const ttl::Graph::Node& node )
 //		TUTTLE_COUT("");
 //	}
 }
-
+/*
 void coutParametersWithDetails( const ttl::Graph::Node& node )
 {
     const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
@@ -85,6 +101,71 @@ void coutParametersWithDetails( const ttl::Graph::Node& node )
 	}
 	TUTTLE_COUT("");
     }
+}*/
+
+void coutParametersWithDetails( const tuttle::host::ofx::property::OfxhSet properties, std::string context="" )
+{
+	std::vector<std::string> defaultValue;
+	std::vector<std::string> choiceValues;
+
+	tuttle::host::ofx::property::PropertyMap propMap = properties.getMap();
+	for( tuttle::host::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
+	{
+		const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
+
+		std::string label = itProperty->first;
+
+		if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
+		{
+			choiceValues = getDefaultOrChoiceValues( prop );
+		}
+		if( std::strcmp( label.c_str() , "OfxParamPropDefault" ) == 0 )
+		{
+			defaultValue = getDefaultOrChoiceValues( prop );
+		}
+		if( std::strcmp( label.c_str() , "OfxParamPropType" ) == 0 )
+		{
+			std::string type = getPropertyType( prop );
+			type.erase(0, 12);
+			if( std::strcmp( type.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
+			{
+				std::string stringDefaultValue;
+				for (unsigned int i=0; i<defaultValue.size(); i++ )
+					stringDefaultValue += defaultValue.at(i) + ",";
+				stringDefaultValue.erase( stringDefaultValue.size()-1, 1 );
+
+				if( choiceValues.size() ) // if it's a choice, we take the nth argument
+				{
+					int indexOfDefaultValue = boost::lexical_cast<int>( defaultValue.at(0).c_str() );
+					stringDefaultValue = choiceValues.at( indexOfDefaultValue ) ;
+					TUTTLE_COUT( "\t" << _color._green << std::left << std::setw (25) << context + ":" << _color._yellow << std::setw( 15 ) << stringDefaultValue << _color._std );
+					for( size_t i=0; i < choiceValues.size(); i++ )
+						TUTTLE_COUT( "\t\t\t\t\t" << sam::_color._red << "- " << choiceValues.at( i ) << _color._std );
+				}
+				else
+				{
+					TUTTLE_COUT( "\t" << _color._green << std::left << std::setw (25) << context + ":" << _color._std << std::setw( 15 ) << type << sam::_color._yellow << stringDefaultValue << _color._std );
+				}
+			}
+		}
+	}
+}
+
+void coutParametersWithDetails( const ttl::Graph::Node& node )
+{
+	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
+
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+	{
+		//if( param.getSecret() )
+		//    continue; // ignore secret parameters
+		const std::string ofxType = param.getParamTypeName();
+
+		if( std::strcmp( ofxType.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
+			coutParametersWithDetails( param.getProperties(), param.getScriptName() );
+
+		//TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
+	}
 }
 
 void coutParameters( const ttl::Graph::Node& node )
@@ -92,8 +173,8 @@ void coutParameters( const ttl::Graph::Node& node )
     const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
     BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
     {
-	if( param.getSecret() )
-	    continue; // ignore secret parameters
+	//if( param.getSecret() )
+	//    continue; // ignore secret parameters
 	TUTTLE_COUT( param.getScriptName() );
     }
 }

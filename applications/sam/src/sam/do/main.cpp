@@ -330,21 +330,21 @@ int main( int argc, char** argv )
 				infoOptions.add_options()
 					( "help,h", "show node help" )
 					( "version,v", "display node version" )
-					( "attributes,a", "show all attributes: parameters+clips" )
-					( "properties", "list properties of the node" )
-					( "clips,c", "list clips of the node" )
-					( "clip,C", bpo::value<std::string > (), "display clip informations" )
-					( "parameters,p", "list parameters of the node" )
-					( "param,P", bpo::value<std::string > (), "display parameter informations" )
 					;
 				bpo::options_description confOptions;
 				confOptions.add_options()
 					( "verbose,V", "explain what is being done" )
 					( "nb-cores", bpo::value<std::size_t > (), "set a fix number of CPUs" )
 					;
-				// describe hidden options
-				bpo::options_description hiddenOptions;
-				hiddenOptions.add_options()
+				// describe openFX options
+				bpo::options_description openfxOptions;
+				openfxOptions.add_options()
+					( "attributes,a", "show all attributes: parameters+clips" )
+					( "properties", "list properties of the node" )
+					( "clips,c", "list clips of the node" )
+					( "clip,C", bpo::value<std::string > (), "display clip informations" )
+					( "parameters,p", "list parameters of the node" )
+					( "param,P", bpo::value<std::string > (), "display parameter informations" )
 					( "param-values", bpo::value< std::vector<std::string> >(), "node parameters" )
 					// for auto completion
 					( "parameters-list", "list parameters of the node" )
@@ -358,7 +358,7 @@ int main( int argc, char** argv )
 				param_values.add( "param-values", -1 );
 
 				bpo::options_description all_options;
-				all_options.add( infoOptions ).add( confOptions ).add( hiddenOptions );
+				all_options.add( infoOptions ).add( confOptions ).add( openfxOptions );
 
 				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 
@@ -438,22 +438,13 @@ int main( int argc, char** argv )
 							}
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
-							ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
-
-							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
-							{
-								//if( param.getSecret() )
-								//    continue; // ignore secret parameters
-								const std::string ofxType = param.getParamTypeName();
-
-								if( std::strcmp( ofxType.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
-									printProperties( param.getProperties(), param.getScriptName() );
-								//TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
-							}
+							coutParametersWithDetails( currentNode );
 
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( _color._blue << "DISPLAY OPTIONS (replace the process)" << _color._std );
 							TUTTLE_COUT( infoOptions );
+							TUTTLE_COUT( _color._blue << "OPEN FX OPTIONS" << _color._std );
+							TUTTLE_COUT( openfxOptions );
 							TUTTLE_COUT( _color._blue << "CONFIGURE PROCESS" << _color._std );
 							TUTTLE_COUT( confOptions );
 
