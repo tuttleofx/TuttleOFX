@@ -106,7 +106,7 @@ void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string&
 	    BOOST_THROW_EXCEPTION( tuttle::exception::Value()
 		<< tuttle::exception::user() + "Unsupported extension \"" + extension + "\"." );
 	}
-	TUTTLE_COUT( _color._yellow << "Replace "<< dummyNodeName << "with :" << inputNode  << _color._std );
+	TUTTLE_COUT( _color._yellow << "Replace "<< dummyNodeName << " with: " << inputNode  << _color._std );
     }
 }
 

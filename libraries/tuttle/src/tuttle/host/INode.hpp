@@ -82,6 +82,8 @@ public:
 	
 	virtual const ofx::attribute::OfxhParam& getParam( const std::string& name ) const = 0;
 	virtual ofx::attribute::OfxhParam&       getParam( const std::string& name ) = 0;
+	virtual const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name ) const = 0;
+	virtual ofx::attribute::OfxhParam&       getParamByScriptName( const std::string& name ) = 0;
 	virtual const ofx::attribute::OfxhParam& getParam( const std::size_t  index ) const = 0;
 	virtual ofx::attribute::OfxhParam&       getParam( const std::size_t  index ) = 0;
 

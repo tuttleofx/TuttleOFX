@@ -143,6 +143,8 @@ public:
 	const attribute::Attribute& getSingleInputAttribute() const;
 	ofx::attribute::OfxhParam&       getParam( const std::string& name );
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const;
+	ofx::attribute::OfxhParam&       getParamByScriptName( const std::string& name );
+	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name ) const;
 	ofx::attribute::OfxhParam&       getParam( const std::size_t index );
 	const ofx::attribute::OfxhParam& getParam( const std::size_t index ) const;
 
