@@ -21,55 +21,6 @@
 #include <iostream>
 
 
-
-std::string getPrintableDefaultValues( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-	std::string s;
-    std::vector<std::string> values = sam::getDefaultOrChoiceValues( prop );
-
-    s += sam::_color._green;
-    s += sam::getDefaultOrChoiceValues( prop ).at(0);
-    s += sam::_color._std;
-	return s;
-}
-
-
-
-std::string getDefaultChoiceValue( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-	using namespace tuttle::host::ofx::property;
-	std::string s;
-	// if has value
-	if(
-		( prop.getType() != eNone ) &&
-		( prop.getType() != ePointer )
-	 )
-	{
-		const int indexForDefaultValue = std::atoi( getPrintableDefaultValues( prop ).c_str() ); /// @todo WTF?
-		s += prop.getStringValue( indexForDefaultValue );
-	}
-	return s;
-}
-
-/// get defaults values of plugin properties
-std::string getPropType( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-	using namespace tuttle::host::ofx::property;
-	std::string s;
-	if(
-		( prop.getType() != eNone ) &&
-		( prop.getType() != ePointer )
-	  )
-	{
-		int n = 0;
-		if( prop.getDimension() > 0 )
-		{
-			s += prop.getStringValue( n );
-		}
-	}
-	return s;
-}
-
 std::vector<std::string> getChoiceValuesForParameter( const tuttle::host::ofx::property::OfxhSet properties, std::string context = "" )
 {
 	std::vector<std::string> choiceValues;
@@ -491,16 +442,13 @@ int main( int argc, char** argv )
 
 							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
 							{
-				//if( param.getSecret() )
-				//    continue; // ignore secret parameters
+								//if( param.getSecret() )
+								//    continue; // ignore secret parameters
 								const std::string ofxType = param.getParamTypeName();
-								if( std::strcmp( ofxType.c_str(), "Group" ) ) // if it isn't a group parameter, we print the parameter.
-				std::string ofxType = param.getParamType();
-				ofxType.erase(0, 12);
-				if( std::strcmp( ofxType.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
-					printProperties( param.getProperties(), param.getScriptName() );
-				    //TUTTLE_COUT( "\t" << _color._green << std::left << std::setw(25) << ( param.getScriptName() + ":" ) << _color._std << std::setw(10) << ofxType << " x" << param.getSize() );
-			    //TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
+
+								if( std::strcmp( ofxType.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
+									printProperties( param.getProperties(), param.getScriptName() );
+								//TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
 							}
 
 							TUTTLE_COUT( "" );

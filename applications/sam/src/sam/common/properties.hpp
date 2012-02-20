@@ -4,19 +4,6 @@
 #include "node_io.hpp"
 #include <tuttle/host/Graph.hpp>
 
-/// get default value of plugin properties
-/*std::string getDefaultChoiceValue( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-	std::string s;
-	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
-	{
-		std::vector<std::string> values = sam::getDefaultOrChoiceValues( prop );
-		int indexForDefaultValue =  std::atoi( values.at(0).c_str() );
-		s += prop.getStringValue( indexForDefaultValue );
-	}
-	return s;
-}*/
-
 /// get defaults values of plugin properties
 std::string getPropertyType(const tuttle::host::ofx::property::OfxhProperty& prop)
 {
@@ -65,7 +52,7 @@ void printProperties( const tuttle::host::ofx::property::OfxhSet properties, std
 
 				if( choiceValues.size() ) // if it's a choice, we take the nth argument
 				{
-					int indexOfDefaultValue = std::atoi( defaultValue.at(0).c_str() );
+					int indexOfDefaultValue = boost::lexical_cast<int>( defaultValue.at(0).c_str() );
 					stringDefaultValue = choiceValues.at( indexOfDefaultValue ) ;
 					TUTTLE_COUT( "\t" << sam::_color._green << std::left << std::setw (25) << context + ":" << sam::_color._yellow << std::setw( 15 ) << stringDefaultValue << sam::_color._std );
 					for( size_t i=0; i < choiceValues.size(); i++ )
