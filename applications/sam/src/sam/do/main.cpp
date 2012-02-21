@@ -51,9 +51,9 @@ int main( int argc, char** argv )
 		if( argc <= 1 ) // no argument
 		{
 			TUTTLE_COUT(
-						 "sam do: missing operands.\n"
-						 "'sam do --help' for more informations.\n"
-						 );
+				 "sam do: missing operands.\n"
+				 "'sam do --help' for more informations.\n"
+				 );
 			exit( -1 );
 		}
 
@@ -147,8 +147,7 @@ int main( int argc, char** argv )
 
 				if( samdo_vm.count( "help" ) )
 				{
-					TUTTLE_COUT( std::left );
-					TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+					TUTTLE_COUT( std::left << _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 
 					TUTTLE_COUT( _color._blue << "NAME" << _color._std );
 					TUTTLE_COUT( _color._green << "\tsam do - A command line to execute a list of OpenFX nodes." << _color._std << std::endl );
