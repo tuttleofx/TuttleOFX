@@ -115,19 +115,20 @@ void coutParametersWithDetails( const tuttle::host::ofx::property::OfxhSet prope
 
 		std::string label = itProperty->first;
 
-		if( std::strcmp( label.c_str() , "OfxParamPropChoiceOption" ) == 0 )
+		if( std::strcmp( label.c_str() , kOfxParamPropChoiceOption ) == 0 )
 		{
 			choiceValues = getDefaultOrChoiceValues( prop );
 		}
-		if( std::strcmp( label.c_str() , "OfxParamPropDefault" ) == 0 )
+		if( std::strcmp( label.c_str() , kOfxParamPropDefault ) == 0 )
 		{
 			defaultValue = getDefaultOrChoiceValues( prop );
 		}
-		if( std::strcmp( label.c_str() , "OfxParamPropType" ) == 0 )
+		if( std::strcmp( label.c_str() , kOfxParamPropType ) == 0 )
 		{
 			std::string type = getPropertyType( prop );
 			type.erase(0, 12);
-			if( std::strcmp( type.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
+
+			if( std::strcmp( type.c_str() , "Group" ) && std::strcmp( type.c_str() , "PushButton" )  ) // if it isn't a group or a button parameter, we print the parameter.
 			{
 				std::string stringDefaultValue;
 				for (unsigned int i=0; i<defaultValue.size(); i++ )
