@@ -1,7 +1,8 @@
 #ifndef _SAM_DO_NODE_DUMMY_HPP_
 #define	_SAM_DO_NODE_DUMMY_HPP_
 
-#include "node_io.hpp"
+#include <sam/common/node_io.hpp>
+
 #include "global.hpp"
 
 #include <tuttle/common/clip/Sequence.hpp>
