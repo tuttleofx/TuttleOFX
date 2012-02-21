@@ -15,6 +15,14 @@ const std::string& OfxhParamAccessor::getParamType() const
 	return getProperties().getStringProperty( kOfxParamPropType );
 }
 
+std::string OfxhParamAccessor::getParamTypeName() const
+{
+	static const std::string ofxPrefix = "OfxParamType";
+	const std::string& type = getParamType();
+	BOOST_ASSERT( type.size() > ofxPrefix.size() );
+	return type.substr( ofxPrefix.size() );
+}
+
 const std::string& OfxhParamAccessor::getParentName() const
 {
 	return getProperties().getStringProperty( kOfxParamPropParent );

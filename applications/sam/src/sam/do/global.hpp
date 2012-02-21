@@ -14,8 +14,6 @@ namespace samdo {
 
 namespace ttl = tuttle::host;
 
-Color _color;
-
 /*
 struct NodeCommand
 {

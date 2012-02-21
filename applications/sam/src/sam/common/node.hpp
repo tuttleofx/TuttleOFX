@@ -1,5 +1,5 @@
-#ifndef _SAM_DO_NODE_HPP_
-#define	_SAM_DO_NODE_HPP_
+#ifndef _SAM_NODE_HPP_
+#define	_SAM_NODE_HPP_
 
 #include <tuttle/host/Core.hpp>
 
@@ -9,19 +9,18 @@
 #include <map>
 
 namespace sam {
-namespace samdo {
 
 inline std::string retrieveNodeFullname( const std::string& userId )
 {
 	std::string userIdLower = userId;
 	boost::to_lower( userIdLower );
-	
+
 	std::vector<std::string> results;
 	std::vector<std::string> ambiguousResults;
-	
+
 	typedef std::map<std::string, tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin*> PluginMap;
 	const PluginMap& pluginsById = tuttle::host::Core::instance().getImageEffectPluginCache().getPluginsByID();
-	
+
 	if( pluginsById.find(userIdLower) != pluginsById.end() )
 	{
 		return userIdLower;
@@ -53,7 +52,7 @@ inline std::string retrieveNodeFullname( const std::string& userId )
 	}
 	if( ambiguousResults.size() == 1 )
 		return ambiguousResults.front();
-		
+
 	if( ambiguousResults.size() > 1 )
 	{
 		tuttle::exception::user userMsg;
@@ -66,12 +65,10 @@ inline std::string retrieveNodeFullname( const std::string& userId )
 		BOOST_THROW_EXCEPTION( tuttle::exception::Value()
 			<< userMsg );
 	}
-	
+
 	BOOST_THROW_EXCEPTION( tuttle::exception::Value()
 		<< tuttle::exception::user() + "Unrecognized node name \"" + userId + "\"." );
 }
 
-
-}
 }
 #endif

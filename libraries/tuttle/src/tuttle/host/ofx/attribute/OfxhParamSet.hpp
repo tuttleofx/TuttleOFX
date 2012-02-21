@@ -6,6 +6,7 @@
 #include <tuttle/host/ofx/OfxhIObject.hpp>
 
 #include <boost/ptr_container/ptr_vector.hpp>
+
 #include <map>
 
 namespace tuttle {
@@ -28,12 +29,11 @@ public:
 	typedef boost::ptr_vector<OfxhParam> ParamVector;
 
 protected:
-	ParamMap _params;        ///< params by name
-	ParamVector _paramVector;    ///< params list
+	ParamMap _params;             ///< params by name
+	ParamMap _paramsByScriptName; ///< params by script name
+	ParamVector _paramVector;     ///< params list
 
 public:
-	/// ctor
-	///
 	/// The propery set being passed in belongs to the owning
 	/// plugin instance.
 	explicit OfxhParamSet();
@@ -60,19 +60,31 @@ public:
 	const ParamVector& getParamVector() const { return _paramVector; }
 	ParamVector&       getParamVector()       { return _paramVector; }
 
-	// get the param
 	OfxhParam& getParam( const std::string& name )
 	{
 		ParamMap::iterator it = _params.find( name );
-
 		if( it == _params.end() )
+		{
 			BOOST_THROW_EXCEPTION( exception::BadIndex()
-					<< exception::user() + "Param \"" + name + "\" not found."
+					<< exception::user() + "Param name \"" + name + "\" not found."
 				);
+		}
 		return *it->second;
 	}
-
 	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>( this )->getParam( name ); }
+
+	OfxhParam& getParamByScriptName( const std::string& scriptName )
+	{
+		ParamMap::iterator it = _paramsByScriptName.find( scriptName );
+		if( it == _paramsByScriptName.end() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+					<< exception::user() + "Param script name \"" + scriptName + "\" not found."
+				);
+		}
+		return *it->second;
+	}
+	const OfxhParam& getParamByScriptName( const std::string& name ) const { return const_cast<This*>( this )->getParamByScriptName( name ); }
 
 	// get the param
 	OfxhParam& getParam( const std::size_t index )
@@ -107,7 +119,7 @@ protected:
 //	virtual void referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
 
 	/// add a param
-	virtual void addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
+	virtual void addParam( OfxhParam* instance ) OFX_EXCEPTION_SPEC;
 
 	/// make a parameter instance
 	///

@@ -1,7 +1,8 @@
 #ifndef _SAM_DO_NODE_DUMMY_HPP_
 #define	_SAM_DO_NODE_DUMMY_HPP_
 
-#include "node_io.hpp"
+#include <sam/common/node_io.hpp>
+
 #include "global.hpp"
 
 #include <tuttle/common/clip/Sequence.hpp>
@@ -105,7 +106,7 @@ void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string&
 	    BOOST_THROW_EXCEPTION( tuttle::exception::Value()
 		<< tuttle::exception::user() + "Unsupported extension \"" + extension + "\"." );
 	}
-	TUTTLE_COUT( _color._yellow << "Replace "<< dummyNodeName << "with :" << inputNode  << _color._std );
+	TUTTLE_COUT( _color._yellow << "Replace "<< dummyNodeName << " with: " << inputNode  << _color._std );
     }
 }
 

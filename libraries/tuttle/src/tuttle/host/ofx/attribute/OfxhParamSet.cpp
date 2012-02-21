@@ -1,5 +1,8 @@
 #include "OfxhParamSet.hpp"
 
+#include <boost/foreach.hpp>
+
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -15,11 +18,10 @@ OfxhParamSet::OfxhParamSet( const OfxhParamSet& other )
 
 void OfxhParamSet::initMapFromList()
 {
-	for( ParamVector::iterator it = _paramVector.begin(), itEnd = _paramVector.end();
-	     it != itEnd;
-	     ++it )
+	BOOST_FOREACH( OfxhParam& p, _paramVector )
 	{
-		_params[it->getName()] = &( *it );
+		_params[p.getName()] = &p;
+		_paramsByScriptName[p.getScriptName()] = &p;
 	}
 }
 
@@ -66,14 +68,15 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 	//	_allParams[name] = instance;
 //}
 
-void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
+void OfxhParamSet::addParam( OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {
-	if( _params.find( name ) != _params.end() )
+	if( _params.find( instance->getName() ) != _params.end() )
 	{
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to add a new parameter which already exists." ) );
 	}
 	_paramVector.push_back( instance );
-	_params[name] = instance;
+	_params[instance->getName()] = instance;
+	_paramsByScriptName[instance->getScriptName()] = instance;
 	//	referenceParam( name, instance );
 }
 

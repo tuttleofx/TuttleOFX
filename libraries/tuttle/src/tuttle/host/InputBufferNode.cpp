@@ -64,6 +64,18 @@ const ofx::attribute::OfxhParam& InputBufferNode::getParam( const std::string& n
 		<< exception::dev( "No param on InputBufferNode." ) );
 }
 
+ofx::attribute::OfxhParam&       InputBufferNode::getParamByScriptName( const std::string& name )
+{
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "No param on InputBufferNode." ) );
+}
+
+const ofx::attribute::OfxhParam& InputBufferNode::getParamByScriptName( const std::string& name ) const
+{
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "No param on InputBufferNode." ) );
+}
+
 ofx::attribute::OfxhParam&       InputBufferNode::getParam( const std::size_t index )
 {
 	BOOST_THROW_EXCEPTION( exception::Bug()

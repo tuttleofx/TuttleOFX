@@ -34,8 +34,8 @@ public:
 	void                             setName( const std::string& name )        { return ofx::imageEffect::OfxhImageEffectNodeBase::setName(name); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
-//	const attribute::Param& getParam( const std::string& name ) const { return dynamic_cast<const attribute::Param&>( ofx::attribute::OfxhParamSet::getParam( name ) ); }
-//	attribute::Param&       getParam( const std::string& name )       { return dynamic_cast<attribute::Param&>( ofx::attribute::OfxhParamSet::getParam( name ) ); }
+	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParamByScriptName( name ); }
+	ofx::attribute::OfxhParam&       getParamByScriptName( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParamByScriptName( name ); }
 	const ofx::attribute::OfxhParam& getParam( const std::size_t  index ) const { return ofx::attribute::OfxhParamSet::getParam( index ); }
 	ofx::attribute::OfxhParam&       getParam( const std::size_t  index )       { return ofx::attribute::OfxhParamSet::getParam( index ); }
 

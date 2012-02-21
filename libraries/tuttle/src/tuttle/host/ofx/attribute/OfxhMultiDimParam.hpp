@@ -57,7 +57,7 @@ public:
 			if( getSize() != allExp.size() )
 			{
 				BOOST_THROW_EXCEPTION( exception::Value()
-					<< exception::user() + "Set " + allExp.size() + " values for a double2d parameter."
+					<< exception::user() + "Set " + allExp.size() + " values on a multidimensional parameter of size " + DIM + "."
 					);
 			}
 			for( std::size_t i = 0; i < getSize(); ++i )

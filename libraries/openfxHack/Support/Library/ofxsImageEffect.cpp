@@ -44,6 +44,7 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 
 #include <algorithm> // for find
@@ -63,48 +64,61 @@ OFX::PluginFactoryArray plugIDs;
 //Put it all into a map, so we know when to delete what!
 struct OfxPlugInfo
 {
-    OfxPlugInfo() {}
-    OfxPlugInfo( OFX::PluginFactory* f, OfxPlugin* p ) : _factory( f ),
-        _plug( p ) {}
+    OfxPlugInfo()
+	: _factory(NULL)
+	, _plug(NULL)
+	{}
+    OfxPlugInfo( OFX::PluginFactory* f, OfxPlugin* p )
+	: _factory( f )
+	, _plug( p )
+	{}
     OFX::PluginFactory* _factory;
     OfxPlugin* _plug;
 };
-typedef std::map<std::string, OfxPlugInfo> OfxPlugInfoMap;
-OfxPlugInfoMap plugInfoMap;
 
+typedef std::map<std::string, OfxPlugInfo> OfxPlugInfoMap;
 typedef std::vector<OfxPlugin*> OfxPluginArray;
+
+namespace Private {
+OfxPlugInfoMap plugInfoMap;
 OfxPluginArray ofxPlugs;
 
 /** @brief the global host description */
 ImageEffectHostDescription gHostDescription;
 bool gHostDescriptionHasInit = false;
 
-ImageEffectHostDescription* getImageEffectHostDescription()
-{
-    if( gHostDescriptionHasInit )
-        return &gHostDescription;
-    return NULL;
-}
 
-namespace Private {
+/** @brief Keeps count of how many times load/unload have been called */
+int gLoadCount = 0;
+bool gHasInit = false;
+
 // Suite and host pointers
-OfxHost* gHost                      = 0;
-OfxImageEffectSuiteV1* gEffectSuite = 0;
-OfxPropertySuiteV1* gPropSuite      = 0;
-OfxInteractSuiteV1* gInteractSuite  = 0;
-OfxParameterSuiteV1* gParamSuite    = 0;
-OfxMemorySuiteV1* gMemorySuite      = 0;
-OfxMultiThreadSuiteV1* gThreadSuite = 0;
-OfxMessageSuiteV1* gMessageSuite    = 0;
-OfxProgressSuiteV1* gProgressSuite  = 0;
-OfxTimeLineSuiteV1* gTimeLineSuite  = 0;
-OfxParametricParameterSuiteV1* gParametricParameterSuite = 0;
-NukeOfxCameraSuiteV1* gCameraParameterSuite = 0;
+OfxHost* gHost                      = NULL;
+OfxImageEffectSuiteV1* gEffectSuite = NULL;
+OfxPropertySuiteV1* gPropSuite      = NULL;
+OfxInteractSuiteV1* gInteractSuite  = NULL;
+OfxParameterSuiteV1* gParamSuite    = NULL;
+OfxMemorySuiteV1* gMemorySuite      = NULL;
+OfxMultiThreadSuiteV1* gThreadSuite = NULL;
+OfxMessageSuiteV1* gMessageSuite    = NULL;
+OfxProgressSuiteV1* gProgressSuite  = NULL;
+OfxTimeLineSuiteV1* gTimeLineSuite  = NULL;
+OfxParametricParameterSuiteV1* gParametricParameterSuite = NULL;
+NukeOfxCameraSuiteV1* gCameraParameterSuite = NULL;
 
 // @brief the set of descriptors, one per context used by kOfxActionDescribeInContext,
 //'eContextNone' is the one used by the kOfxActionDescribe
 EffectDescriptorMap gEffectDescriptors;
-};
+} // namespace Private
+
+
+ImageEffectHostDescription* getImageEffectHostDescription()
+{
+    if( Private::gHostDescriptionHasInit )
+        return &Private::gHostDescription;
+    return NULL;
+}
+
 
 /** @brief map a std::string to a context */
 EContext mapContextStringToEnum( const std::string& s )
@@ -573,7 +587,7 @@ void ImageEffectDescriptor::addSupportedContext( EContext v )
   void ImageEffectDescriptor::setOverlayInteractDescriptor(EffectInteractWrap* desc)
 {
     _overlayDescriptor.reset( desc );
-    if( OFX::gHostDescription.supportsOverlays && desc->getMainEntry() )
+    if( OFX::Private::gHostDescription.supportsOverlays && desc->getMainEntry() )
         _effectProps.propSetPointer( kOfxImageEffectPluginPropOverlayInteractV1, (void*)desc->getMainEntry() );
 }
 
@@ -1663,10 +1677,10 @@ namespace Private {
 /** @brief Creates the global host description and sets its properties */
 void fetchHostDescription( OfxHost* host )
 {
-    OFX::Log::error( OFX::gHostDescriptionHasInit, "Tried to create host description when we already have one." );
-    if( !OFX::gHostDescriptionHasInit )
+    OFX::Log::error( OFX::Private::gHostDescriptionHasInit, "Tried to create host description when we already have one." );
+    if( !OFX::Private::gHostDescriptionHasInit )
     {
-        OFX::gHostDescriptionHasInit = true;
+        OFX::Private::gHostDescriptionHasInit = true;
         // wrap the property handle up with a property set
         PropertySet hostProps( host->host );
 
@@ -1718,13 +1732,10 @@ OFX::PropertySet fetchEffectProps( OfxImageEffectHandle handle )
     return OFX::PropertySet( propHandle );
 }
 
-/** @brief Keeps count of how many times load/unload have been called */
-int gLoadCount = 0;
-
 /** @brief Library side load action, this fetches all the suite pointers */
 void loadAction( void )
 {
-    gLoadCount++;
+    ++Private::gLoadCount;
 
     //OfxStatus status = kOfxStatOK;
 
@@ -1733,7 +1744,7 @@ void loadAction( void )
     if( !gHost )
         BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
 
-    if( gLoadCount == 1 )
+    if( Private::gLoadCount == 1 )
     {
         gEffectSuite   = (OfxImageEffectSuiteV1*) fetchSuite( kOfxImageEffectSuite, 1 );
         gPropSuite     = (OfxPropertySuiteV1*)    fetchSuite( kOfxPropertySuite, 1 );
@@ -1750,12 +1761,12 @@ void loadAction( void )
         fetchHostDescription( gHost );
 
         /// and set some dendent flags
-        OFX::gHostDescription.supportsProgressSuite = gProgressSuite != NULL;
-        OFX::gHostDescription.supportsTimeLineSuite = gTimeLineSuite != NULL;
+        OFX::Private::gHostDescription.supportsProgressSuite = ( gProgressSuite != NULL );
+        OFX::Private::gHostDescription.supportsTimeLineSuite = ( gTimeLineSuite != NULL );
 
         // fetch the interact suite if the host supports interaction
-        if( OFX::gHostDescription.supportsOverlays || OFX::gHostDescription.supportsCustomInteract )
-            gInteractSuite = (OfxInteractSuiteV1*)    fetchSuite( kOfxInteractSuite, 1 );
+        if( OFX::Private::gHostDescription.supportsOverlays || OFX::Private::gHostDescription.supportsCustomInteract )
+            gInteractSuite = (OfxInteractSuiteV1*) fetchSuite( kOfxInteractSuite, 1 );
     }
 
     // initialise the validation code
@@ -1769,21 +1780,7 @@ void loadAction( void )
 /** @brief Library side unload action, this fetches all the suite pointers */
 void unloadAction( const char* id )
 {
-    --gLoadCount;
-
-    if( gLoadCount == 0 )
-    {
-        // force these to null
-        gEffectSuite   = NULL;
-        gPropSuite     = NULL;
-        gParamSuite    = NULL;
-        gMemorySuite   = NULL;
-        gThreadSuite   = NULL;
-        gMessageSuite  = NULL;
-        gInteractSuite = NULL;
-        gParametricParameterSuite = NULL;
-        gCameraParameterSuite = NULL;
-    }
+    --Private::gLoadCount;
 
     {
         EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
@@ -1796,11 +1793,33 @@ void unloadAction( const char* id )
         toBeDeleted.clear();
     }
     {
-        OFX::OfxPlugInfoMap::iterator it  = OFX::plugInfoMap.find( id );
-        OfxPlugin* plug                   = it->second._plug;
-        OFX::OfxPluginArray::iterator it2 = std::find( ofxPlugs.begin(), ofxPlugs.end(), plug );
-        ( *it2 ) = NULL;
-        delete plug;
+		OFX::OfxPlugInfoMap::iterator it  = OFX::Private::plugInfoMap.find( id );
+		if( it == OFX::Private::plugInfoMap.end() )
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadIndex, std::string("Can't unload the plugin \"") + id + "\".") );
+		OfxPlugin* plugin = it->second._plug;
+		OFX::OfxPluginArray::iterator it2 = std::find( ofxPlugs.begin(), ofxPlugs.end(), plugin );
+		if( it2 == ofxPlugs.end() )
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadIndex, std::string("Can't unload the plugin \"") + id + "\".") );
+		(*it2) = NULL; // set the plugin as unloaded but keep the index
+		delete plugin;
+		//it->second._plug = NULL; // delete the plugin but keep an entry into the map
+    }
+	
+    if( Private::gLoadCount == 0 )
+    {
+        // force these to null
+        gEffectSuite   = NULL;
+        gPropSuite     = NULL;
+        gParamSuite    = NULL;
+        gMemorySuite   = NULL;
+        gThreadSuite   = NULL;
+        gMessageSuite  = NULL;
+        gInteractSuite = NULL;
+        gParametricParameterSuite = NULL;
+        gCameraParameterSuite = NULL;
+		
+		ofxPlugs.clear();
+		gHasInit = false;
     }
 }
 
@@ -2640,7 +2659,20 @@ void setHost( OfxHost* host )
     gHost = host;
 }
 
-}; // namespace Private
+OfxPlugInfo generatePlugInfo( PluginFactory* factory )
+{
+    std::auto_ptr<OfxPlugin> ofxPlugin( new OfxPlugin() );
+    ofxPlugin->pluginApi          = kOfxImageEffectPluginApi;
+    ofxPlugin->apiVersion         = kOfxImageEffectPluginApiVersion;
+    ofxPlugin->pluginIdentifier   = factory->getID().c_str();
+    ofxPlugin->pluginVersionMajor = factory->getMajorVersion();
+    ofxPlugin->pluginVersionMinor = factory->getMinorVersion();
+    ofxPlugin->setHost            = OFX::Private::setHost;
+    ofxPlugin->mainEntry          = factory->getMainEntry();
+    return OfxPlugInfo( factory, ofxPlugin.release() );
+}
+
+} // namespace Private
 
 /** @brief Fetch's a suite from the host and logs errors */
 void* fetchSuite( const char* suiteName, int suiteVersion, bool optional )
@@ -2659,76 +2691,57 @@ void* fetchSuite( const char* suiteName, int suiteVersion, bool optional )
     return suite;
 }
 
-}; // namespace OFX
+} // namespace OFX
 
-namespace OFX
-{
-namespace Plugin
-{
+namespace OFX {
+namespace Plugin {
 void getPluginIDs( OFX::PluginFactoryArray& ids );
 }
 }
 
-OFX::OfxPlugInfo generatePlugInfo( OFX::PluginFactory* factory, std::string& newID )
-{
-    newID = factory->getUID();
-    std::auto_ptr<OfxPlugin> ofxPlugin( new OfxPlugin() );
-    ofxPlugin->pluginApi          = kOfxImageEffectPluginApi;
-    ofxPlugin->apiVersion         = kOfxImageEffectPluginApiVersion;
-    ofxPlugin->pluginIdentifier   = factory->getID().c_str();
-    ofxPlugin->pluginVersionMajor = factory->getMajorVersion();
-    ofxPlugin->pluginVersionMinor = factory->getMinorVersion();
-    ofxPlugin->setHost            = OFX::Private::setHost;
-    ofxPlugin->mainEntry          = factory->getMainEntry();
-    return OFX::OfxPlugInfo( factory, ofxPlugin.release() );
-}
-
-bool gHasInit = false;
 
 void init()
 {
+	using namespace OFX;
+	using namespace OFX::Private;
     if( gHasInit )
+	{
         return;
+	}
+	
+    ::OFX::Plugin::getPluginIDs( plugIDs );
+	ofxPlugs.reserve( plugIDs.size() );
 
-    OFX::Plugin::getPluginIDs( OFX::plugIDs );
-    if( OFX::ofxPlugs.empty() )
-        OFX::ofxPlugs.resize( OFX::plugIDs.size() );
-
-    int counter = 0;
-    for( OFX::PluginFactoryArray::const_iterator it = OFX::plugIDs.begin(); it != OFX::plugIDs.end(); ++it, ++counter )
+    BOOST_FOREACH( PluginFactory* factory, plugIDs )
     {
-        std::string newID;
-        OFX::OfxPlugInfo info = generatePlugInfo( *it, newID );
-        OFX::plugInfoMap[newID] = info;
-        OFX::ofxPlugs[counter]  = info._plug;
+        OfxPlugInfo info = generatePlugInfo( factory );
+        const std::string newID = factory->getUID();
+        plugInfoMap[newID] = info;
+        ofxPlugs.push_back( info._plug );
     }
     gHasInit = true;
 }
+
 
 /** @brief, mandated function returning the number of plugins, which is always 1 */
 OfxExport int OfxGetNumberOfPlugins( void )
 {
     init();
-    return (int)OFX::plugIDs.size();
+    return static_cast<int>( OFX::plugIDs.size() );
 }
 
 /** @brief, mandated function returning the nth plugin
  *
  * We call the plugin side defined OFX::Plugin::getPluginID function to find out what to set.
  */
-
 OfxExport OfxPlugin* OfxGetPlugin( int nth )
 {
     init();
-    int numPlugs = (int)OFX::plugInfoMap.size();
-    OFX::Log::error( nth >= numPlugs, "Host attempted to get plugin %d, when there is only %d plugin(s), so it should have asked for 0.", nth, numPlugs );
-    if( OFX::ofxPlugs[nth] == 0 )
-    {
-        std::string newID;
-        OFX::OfxPlugInfo info = generatePlugInfo( OFX::plugIDs[nth], newID );
-        OFX::plugInfoMap[newID] = info;
-        OFX::ofxPlugs[nth]      = info._plug;
-    }
-    return OFX::ofxPlugs[nth];
+    const int numPlugs = static_cast<int>( OFX::Private::plugInfoMap.size() );
+    OFX::Log::error( nth >= numPlugs, "Host attempted to get plugin %d, when there is only %d plugin(s).", nth, numPlugs );
+	BOOST_ASSERT( nth < numPlugs  );
+    OFX::Log::error( OFX::Private::ofxPlugs[nth] == NULL, "Host attempted to get plugin %d, but it is unloaded.", nth );
+	BOOST_ASSERT( OFX::Private::ofxPlugs[nth] != NULL );
+    return OFX::Private::ofxPlugs[nth];
 }
 

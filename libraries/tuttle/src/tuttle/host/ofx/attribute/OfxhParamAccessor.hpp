@@ -26,6 +26,7 @@ public:
 	virtual bool verifyMagic() { return true; }
 
 	const std::string& getParamType() const;
+	std::string getParamTypeName() const;
 
 	const std::string& getParentName() const;
 
