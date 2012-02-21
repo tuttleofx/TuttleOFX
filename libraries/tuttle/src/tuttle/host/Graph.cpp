@@ -60,6 +60,10 @@ Graph::Node& Graph::createNode( const std::string& id )
 	{
 		plugInst = plug->createInstance( kOfxImageEffectContextWriter );
 	}
+	else if( plug->supportsContext( kOfxImageEffectContextGeneral ) )
+	{
+		plugInst = plug->createInstance( kOfxImageEffectContextGeneral );
+	}
 	else if( plug->supportsContext( kOfxImageEffectContextGenerator ) )
 	{
 		plugInst = plug->createInstance( kOfxImageEffectContextGenerator );
@@ -68,10 +72,6 @@ Graph::Node& Graph::createNode( const std::string& id )
 	{
 		plugInst = plug->createInstance( kOfxImageEffectContextFilter );
 	}
-	else if( plug->supportsContext( kOfxImageEffectContextGeneral ) )
-	{
-		plugInst = plug->createInstance( kOfxImageEffectContextGeneral );
-	}
 	else
 	{
 		BOOST_THROW_EXCEPTION( exception::Logic()
@@ -79,15 +79,19 @@ Graph::Node& Graph::createNode( const std::string& id )
 	}
 
 	if( !plugInst )
+	{
 		BOOST_THROW_EXCEPTION( exception::Logic()
 		    << exception::user( "Plugin not found. plugInst (" + id + ")" ) );
+	}
 	ImageEffectNode* node = dynamic_cast<ImageEffectNode*>( plugInst );
 	if( !node )
+	{
 		BOOST_THROW_EXCEPTION( exception::Logic()
 		    << exception::user( "Plugin not found (" + id + ")." ) );
+	}
 
 	std::stringstream uniqueName;
-	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
+	uniqueName << node->getLabel() << "_" << ++_instanceCount[node->getLabel()];
 	node->setName( uniqueName.str() );
 
 	std::string key( node->getName() ); // for constness

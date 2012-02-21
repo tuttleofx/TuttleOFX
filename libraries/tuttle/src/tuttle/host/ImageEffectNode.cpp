@@ -616,7 +616,7 @@ INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 
 void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 {
-//	TUTTLE_TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
+	TUTTLE_TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
 //	setCurrentTime( vData._time );
 
 	checkClipsConnections();
@@ -633,7 +633,7 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 	vData._apiImageEffect._renderRoD = rod;
 	vData._apiImageEffect._renderRoI = rod; ///< @todo tuttle: tile supports
 	
-//	TUTTLE_TCOUT_VAR( rod );
+	TUTTLE_TCOUT_VAR( rod );
 }
 
 
@@ -712,6 +712,8 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		}
 		else
 		{
+			if( ! clip.isConnected() )
+				continue;
 			image = memoryCache.get( clip.getIdentifier(), vData._time );
 			if( image.get() == NULL )
 			{
@@ -732,6 +734,8 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
+		if( ! clip.isConnected() )
+			continue;
 		memory::CACHE_ELEMENT image = memoryCache.get( clip.getIdentifier(), vData._time );
 		if( image.get() == NULL )
 		{
