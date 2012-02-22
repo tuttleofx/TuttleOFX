@@ -7,6 +7,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
+#include <limits>
+
 using namespace tuttle::common;
 using namespace tuttle::host;
 namespace bfs = boost::filesystem;
@@ -21,8 +23,8 @@ static int _notNullImage   = 0;
 static int _nullFileSize   = 0;
 static int _corruptedImage = 0;
 static int _missingFiles   = 0;
-static std::streambuf * const _stdCout = std::cout.rdbuf(); // back up cout's streambuf
-static std::streambuf * const _stdCerr = std::cerr.rdbuf(); // back up cout's streambuf
+//static std::streambuf * const _stdCout = std::cout.rdbuf(); // back up cout's streambuf
+//static std::streambuf * const _stdCerr = std::cerr.rdbuf(); // back up cout's streambuf
 
 enum EReturnCode
 {
@@ -57,18 +59,26 @@ EImageStatus diffImageStatus( Graph::Node& read1, Graph::Node& read2, Graph::Nod
 		read1.getParam( "filename" ).setValue( filename1.string() );
 		read2.getParam( "filename" ).setValue( filename2.string() );
 		graph.compute( stat );
-
+		std::cout << "diff = ";
 		for( unsigned int i = 0; i<4; ++i )
 		{
-			if( stat.getParam( "quality" ).getDoubleValueAtIndex(i) != 0 )
+			std::cout << stat.getParam( "quality" ).getDoubleValueAtIndex(i) << "  ";
+		}
+		std::cout << std::endl;
+
+		for( unsigned int i = 0; i<3; ++i )
+		{
+			if( stat.getParam( "quality" ).getDoubleValueAtIndex(i) != std::numeric_limits<double>::infinity() )
 				return eImageStatusDiffNotNull;
 		}
-		std::cout << "stat:" << stat << std::endl;
+		std::cout << stat << std::endl;
 
 		return eImageStatusDiffNull;
 	}
 	catch( ... )
 	{
+		std::cerr << boost::current_exception() << std::endl;
+		std::cerr<< boost::current_exception_diagnostic_information() << std::endl;
 		return eImageStatusImageError;
 	}
 }
@@ -77,7 +87,7 @@ EImageStatus diffFile( Graph::Node& read1, Graph::Node& read2, Graph::Node& stat
 {
 	EImageStatus s = diffImageStatus( read1, read2, stat, graph, filename1, filename2 );
 
-	std::cout.rdbuf(_stdCout); // restore cout's original streambuf
+	//std::cout.rdbuf(_stdCout); // restore cout's original streambuf
 	switch( s )
 	{
 		case eImageStatusDiffNull:
@@ -100,7 +110,7 @@ EImageStatus diffFile( Graph::Node& read1, Graph::Node& read2, Graph::Node& stat
 			break;
 	}
 	std::cout << filename1 << "  |  " << filename2 << std::endl;
-	std::cout.rdbuf(0); // remove cout's streambuf
+	//std::cout.rdbuf(0); // remove cout's streambuf
 	return s;
 }
 
@@ -214,15 +224,15 @@ int main( int argc, char** argv )
 
 		if ( vm.count("brief") )
 		{
-			std::cout.rdbuf(_stdCout);
+			//std::cout.rdbuf(_stdCout);
 			TUTTLE_COUT( _color._green << "diff image files" << _color._std );
-			std::cout.rdbuf(0);
+			//std::cout.rdbuf(0);
 			return 0;
 		}
 
 		if( vm.count("help") )
 		{
-			std::cout.rdbuf(_stdCout); // restore cout's original streambuf
+			//std::cout.rdbuf(_stdCout); // restore cout's original streambuf
 			TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 			TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
 			TUTTLE_COUT( _color._green << "\tsam-diff - compute difference between 2 images/sequences" << _color._std << std::endl);
@@ -235,7 +245,7 @@ int main( int argc, char** argv )
 
 			TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
 			TUTTLE_COUT( desc );
-			std::cout.rdbuf(0); // remove cout's streambuf
+			//std::cout.rdbuf(0); // remove cout's streambuf
 			return 0;
 		}
 		if( !vm.count("reader") )
@@ -275,8 +285,8 @@ int main( int argc, char** argv )
 		read1.getParam("explicitConversion").setValue(3); // force reader to use float image buffer
 		read2.getParam("explicitConversion").setValue(3); // force reader to use float image buffer
 		//graph.connect( viewer, stat );
-		graph.connect( read1, stat );
-		graph.connect( read2, stat );
+		graph.connect( read1,  stat );
+		graph.connect( read2, stat.getAttribute("SourceB") );
 
 		bfs::path path1 = inputs.at(0);
 		bfs::path path2 = inputs.at(1);
@@ -344,9 +354,9 @@ int main( int argc, char** argv )
 	}
 	catch( ... )
 	{
-		std::cerr.rdbuf(_stdCerr); // restore cout's original streambuf
+		//std::cerr.rdbuf(_stdCerr); // restore cout's original streambuf
 		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
-		std::cerr.rdbuf(0); // remove cerr's streambuf
+		//std::cerr.rdbuf(0); // remove cerr's streambuf
 		return -1;
 	}
 	//std::cout.rdbuf(_stdCerr); // restore cout's original streambuf
