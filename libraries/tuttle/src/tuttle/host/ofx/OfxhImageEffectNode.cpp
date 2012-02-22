@@ -825,7 +825,7 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 
 	property::OfxhSet inArgs( inStuff );
 	property::OfxhSet outArgs( outStuff );
-	
+
 	inArgs.setDoubleProperty( kOfxPropTime, time );
 
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
@@ -845,6 +845,9 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 	}
 	else
 	{
+		// defined to process sequences with hole
+		// find a best way to do this ??
+		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist() );
 		BOOST_THROW_EXCEPTION( OfxhException( stat, "getRegionOfDefinitionAction error." ) );
 	}
 }
@@ -1311,7 +1314,7 @@ bool OfxhImageEffectNode::isLeafNode() const
 void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outArgs )
 {
 	const bool isLeaf = isLeafNode();
-	
+
 	for( ClipImageMap::iterator it = _clips.begin();
 	     it != _clips.end();
 	     ++it )
@@ -1325,13 +1328,13 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 
 		const property::String& propPixelDepth = outArgs.fetchStringProperty( depthParamName );
 		clip->setBitDepthString( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
-		
+
 		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
 		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
 
 		const property::Double& propPixelAspectRatio = outArgs.fetchDoubleProperty( parParamName );
 		clip->setPixelAspectRatio( propPixelAspectRatio.getValue(), propPixelAspectRatio.getModifiedBy() );
-		
+
 		if( isLeaf &&
 			it->first == kOfxImageEffectOutputClipName &&
 			propPixelDepth.getModifiedBy() != property::eModifiedByPlugin &&
