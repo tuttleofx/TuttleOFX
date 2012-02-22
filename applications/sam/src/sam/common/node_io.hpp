@@ -127,8 +127,7 @@ void coutParametersWithDetails( const tuttle::host::ofx::property::OfxhSet prope
 		{
 			std::string type = getPropertyType( prop );
 			type.erase(0, 12);
-
-			if( std::strcmp( type.c_str() , "Group" ) && std::strcmp( type.c_str() , "PushButton" )  ) // if it isn't a group or a button parameter, we print the parameter.
+			if( std::strcmp( type.c_str() , "Group" ) && std::strcmp( type.c_str() , "PushButton" ) && std::strcmp( type.c_str() , "Page" ) ) // if it isn't a group or a button parameter, we print the parameter.
 			{
 				std::string stringDefaultValue;
 				for (unsigned int i=0; i<defaultValue.size(); i++ )
@@ -162,7 +161,7 @@ void coutParametersWithDetails( const ttl::Graph::Node& node )
 		//    continue; // ignore secret parameters
 		const std::string ofxType = param.getParamTypeName();
 
-		if( std::strcmp( ofxType.c_str() , "Group" ) ) // if it isn't a group parameter, we print the parameter.
+		if( std::strcmp( ofxType.c_str() , "Group" ) && std::strcmp( ofxType.c_str() , "PushButton" ) ) // if it isn't a group parameter, we print the parameter.
 			coutParametersWithDetails( param.getProperties(), param.getScriptName() );
 
 		//TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
