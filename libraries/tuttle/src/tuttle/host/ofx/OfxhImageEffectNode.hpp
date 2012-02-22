@@ -404,6 +404,12 @@ private:
 	/// stuff with wierd components etc... Calls setDefaultClipPreferences
 	virtual void setupClipPreferencesArgs( property::OfxhSet& args );
 
+	/**
+	 * @brief Check if the node is a leaf in the graph.
+	 * If there is no input clip connected.
+	 */
+	bool isLeafNode() const;
+	
 public:
 	/**
 	 * Run the clip preferences action from the effect.

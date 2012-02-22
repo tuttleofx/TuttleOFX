@@ -125,8 +125,7 @@ void coutParametersWithDetails( const tuttle::host::ofx::property::OfxhSet prope
 		}
 		if( std::strcmp( label.c_str() , kOfxParamPropType ) == 0 )
 		{
-			std::string type = getPropertyType( prop );
-			type.erase(0, 12);
+			const std::string type = getPropertyType( prop ).substr( 12 ); // remove ofx prefix "OfxParamProp"
 			if( std::strcmp( type.c_str() , "Group" ) && std::strcmp( type.c_str() , "PushButton" ) && std::strcmp( type.c_str() , "Page" ) ) // if it isn't a group or a button parameter, we print the parameter.
 			{
 				std::string stringDefaultValue;
