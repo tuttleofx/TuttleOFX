@@ -4,7 +4,6 @@
 
 #include <sam/common/node.hpp>
 #include <sam/common/node_io.hpp>
-#include <sam/common/properties.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
