@@ -72,6 +72,7 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 	{
 		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
 	}
+
 	ImageSpec spec( src.width(), src.height(), gil::num_channels<View>::value, bitDepth );
 	out->open( filepath, spec );
 
@@ -90,11 +91,11 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 
 	const stride_t xstride = gil::is_planar<View>::value ? sizeof(Channel) : src.num_channels() * sizeof(Channel);
 	const stride_t ystride = src.pixels().row_size(); // xstride * src.width();
-//	const stride_t zstride = gil::is_planar<View>::value ? ystride * src.height() : sizeof(Channel);
+//	const stride_t zstride = gil::is_planar<View>::value ? ystride * src.height() : sizeOfChannel;
 	const stride_t zstride = ystride * src.height();
 
 	out->write_image(
-			mpl::at<MapBits, ChannelType>::type::value,
+			bitDepth, //mpl::at<MapBits, ChannelType>::type::value,
 			&( ( *src.begin() )[0] ), // get the adress of the first channel value from the first pixel
 			xstride,
 			ystride,
