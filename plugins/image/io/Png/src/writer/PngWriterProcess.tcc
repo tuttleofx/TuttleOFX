@@ -28,7 +28,7 @@ template<class View>
 void PngWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
-	
+
 	_params = _plugin.getProcessParams( args.time );
 }
 
@@ -48,7 +48,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	{
 		srcView = flipped_up_down_view( srcView );
 	}
-	
+
 	try
 	{
 		switch( _params._bitDepth )
@@ -101,6 +101,12 @@ void PngWriterProcess<View>::writeImage( View& src )
 		case eParamComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
+			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
+			break;
+		}
+		case eParamComponentsGray:
+		{
+			typedef pixel<Bits, gray_layout_t> OutPixelType;
 			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
 			break;
 		}

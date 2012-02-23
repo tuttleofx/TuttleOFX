@@ -74,8 +74,9 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     components->setLabel( "Components" );
     components->appendOption( kParamOutputComponentsRGBA );
     components->appendOption( kParamOutputComponentsRGB );
+    components->appendOption( kParamOutputComponentsGray );
     components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    components->setDefault( 0 );
+    components->setDefault( eParamComponentsRGBA );
 
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
     bitDepth->setLabel( "Bit depth" );
