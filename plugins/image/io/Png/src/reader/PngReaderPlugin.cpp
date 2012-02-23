@@ -74,7 +74,15 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		case eParamReaderExplicitConversionAuto:
 		{
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
-			const int bitDepth      = png_read_precision( filename );
+			if( ! boost::filesystem::exists( filename ) )
+			{
+				BOOST_THROW_EXCEPTION( exception::FileNotExist()
+					<< exception::user( "PNG: Unable to open file" )
+					<< exception::filename( filename ) );
+			}
+			int bitDepth;
+				bitDepth      = png_read_precision( filename );
+
 			switch( bitDepth )
 			{
 				case 8:
