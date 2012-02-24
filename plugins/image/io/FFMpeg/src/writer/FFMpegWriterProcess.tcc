@@ -9,7 +9,7 @@ namespace writer {
 
 template<class View>
 FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 	, _params( _plugin.getProcessParams() )
 {

@@ -22,7 +22,7 @@ namespace merge {
 
 template<class View, class Functor>
 MergeProcess<View, Functor>::MergeProcess( MergePlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {}
 

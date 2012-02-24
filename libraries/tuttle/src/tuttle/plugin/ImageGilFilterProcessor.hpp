@@ -21,15 +21,15 @@ protected:
 	SView _srcView; ///< @brief source clip (filters have only one input)
 
 public:
-	ImageGilFilterProcessor( OFX::ImageEffect& effect );
+	ImageGilFilterProcessor( OFX::ImageEffect& effect, const EImageOrientation imageOrientation );
 	virtual ~ImageGilFilterProcessor();
 
 	virtual void setup( const OFX::RenderArguments& args );
 };
 
 template<class SView, class DView>
-ImageGilFilterProcessor<SView, DView>::ImageGilFilterProcessor( OFX::ImageEffect& effect )
-	: ImageGilProcessor<DView>( effect )
+ImageGilFilterProcessor<SView, DView>::ImageGilFilterProcessor( OFX::ImageEffect& effect, const EImageOrientation imageOrientation )
+	: ImageGilProcessor<DView>( effect, imageOrientation )
 {
 	_clipSrc = effect.fetchClip( kOfxImageEffectSimpleSourceClipName );
 	
@@ -49,14 +49,14 @@ void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& a
 	// source view
 //	TUTTLE_COUT_INFOS;
 //	TUTTLE_COUT_VAR( "src - fetchImage " << time );
-	this->_src.reset( _clipSrc->fetchImage( args.time ) );
-	if( !this->_src.get() )
+	_src.reset( _clipSrc->fetchImage( args.time ) );
+	if( ! _src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( this->_src->getRowBytes() == 0 )
+	if( _src->getRowBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
-	this->_srcView = tuttle::plugin::getView<SView>( this->_src.get(), _srcPixelRod );
+	_srcView = ImageGilProcessor<DView>::template getCustomView<SView>( _src.get(), _srcPixelRod );
 
 //	// Make sure bit depths are same
 //	if( this->_src->getPixelDepth() != this->_dst->getPixelDepth() ||

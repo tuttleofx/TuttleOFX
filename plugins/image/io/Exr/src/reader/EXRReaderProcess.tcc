@@ -33,7 +33,7 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

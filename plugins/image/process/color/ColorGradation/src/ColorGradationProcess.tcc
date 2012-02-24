@@ -21,7 +21,7 @@ using namespace boost::gil;
 
 template<class View>
 ColorGradationProcess<View>::ColorGradationProcess( ColorGradationPlugin& effect )
-	: ImageGilFilterProcessor<View>( effect )
+	: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 	, _plugin( effect )
 {}
 

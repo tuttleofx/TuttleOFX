@@ -9,7 +9,7 @@ namespace reader {
 
 template<class View>
 FFMpegReaderProcess<View>::FFMpegReaderProcess( FFMpegReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -47,7 +47,7 @@ void FFMpegReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 	                      (const rgb8c_pixel_t*)( _plugin._reader.data() ),
 	                      _plugin._reader.width() * 3 );
 
-	copy_and_convert_pixels( ffmpegSrcView, flipped_up_down_view( this->_dstView ) );
+	copy_and_convert_pixels( ffmpegSrcView, this->_dstView );
 }
 
 }

@@ -71,7 +71,7 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 		return false;
 	}
 	// Compute if source is OK
-	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	SView srcView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );	// get current view from source clip
 	
 	_imgCopy.clear();			//clear buffer
 	if( vboWithDiscretization )	//does user want to discretize the VBO
@@ -174,7 +174,7 @@ bool CloudPointData::generateColorSelectionVBO(OFX::Clip* clipColor, const OfxPo
 		return false;
 	}
 	// Compute if source is OK
-	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	SView srcView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );	// get current view from source clip
 
 	if(vboWithDiscretization) //there is discretization on VBO
 	{
@@ -247,14 +247,14 @@ bool CloudPointData::generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPo
 		return false;
 	}
 	// Compute if source is OK
-	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	SView srcView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );	// get current view from source clip
 
-	if(vboWithDiscretization) //there is discretization on VBO
+	if( vboWithDiscretization ) //there is discretization on VBO
 	{
 		//treatment VBO discretization (maybe)
 	}
 	//VBO without discretization
-	generateAllPointsSpillVBOData(srcView); //generate a selection VBO without discretization
+	generateAllPointsSpillVBOData( srcView ); //generate a selection VBO without discretization
 	_isSpillSelectionVBOBuilt = true;	// selection VBO is not built 
 	return true;					// treatment has been done correctly
 }

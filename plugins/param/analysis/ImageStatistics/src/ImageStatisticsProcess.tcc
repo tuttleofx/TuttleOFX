@@ -323,7 +323,7 @@ void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputPara
 
 template<class View>
 ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

@@ -39,7 +39,7 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 RawReaderProcess<View>::RawReaderProcess( RawReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 	, _p1( _rawProcessor.imgdata.idata )
 	, _size( _rawProcessor.imgdata.sizes )

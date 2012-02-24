@@ -20,7 +20,7 @@ namespace text {
 
 template<class View>
 TextProcess<View>::TextProcess( TextPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 //	Py_Initialize();

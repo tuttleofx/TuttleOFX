@@ -27,7 +27,7 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

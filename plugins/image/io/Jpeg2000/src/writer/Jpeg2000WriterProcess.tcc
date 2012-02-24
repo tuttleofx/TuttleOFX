@@ -11,7 +11,7 @@ namespace writer {
 
 template<class View>
 Jpeg2000WriterProcess<View>::Jpeg2000WriterProcess( Jpeg2000WriterPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
+: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 , _plugin( instance )
 {
 	this->setNoMultiThreading();

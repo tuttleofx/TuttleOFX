@@ -16,7 +16,7 @@ using namespace boost::gil;
 
 template<class View>
 DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

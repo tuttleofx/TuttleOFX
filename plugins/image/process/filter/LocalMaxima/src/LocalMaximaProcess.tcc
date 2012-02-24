@@ -20,7 +20,7 @@ namespace localmaxima {
 
 template<class SView, class DView>
 LocalMaximaProcess<SView, DView>::LocalMaximaProcess( LocalMaximaPlugin &effect )
-: ImageGilFilterProcessor<SView, DView>( effect )
+: ImageGilFilterProcessor<SView, DView>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }

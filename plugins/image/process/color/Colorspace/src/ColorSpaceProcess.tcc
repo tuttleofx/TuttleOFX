@@ -12,7 +12,7 @@ using namespace boost::gil;
 
 template<class View>
 ColorSpaceProcess<View>::ColorSpaceProcess( ColorSpacePlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {
 }

@@ -12,69 +12,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/assert.hpp>
 
-/*
-   namespace boost {
-   namespace gil {
-
-   struct red2_t {};
-   struct green2_t {};
-   struct blue2_t {};
-   struct alpha2_t {};
-
-   /// \ingroup ColorSpaceModel
-   typedef boost::mpl::vector8<red_t,red2_t,green_t,green2_t,blue_t,blue2_t,alpha_t,alpha2_t> RrGgBbAa_t;
-   //typedef RrGgBbAa_t RrGgBbaa_t;
-   /// \ingroup LayoutModel
-   typedef layout<RrGgBbAa_t> RrGgBbAa_layout_t;
-   //typedef layout<RrGgBbaa_t> RrGgBbaa_layout_t;
-
-   GIL_DEFINE_ALL_TYPEDEFS(8, RrGgBbAa)
-   //GIL_DEFINE_ALL_TYPEDEFS(8, RrGgBbaa)
-
-
-   template<>
-   struct default_color_converter_impl<RrGgBbAa_t,rgb_t> {
-    template <typename P1, typename P2>
-    void operator()(const P1& src, P2& dst) const {
-        typedef typename channel_type<P2>::type T2;
-        pixel<T2,rgb_layout_t> tmp;
-        get_color(dst,red_t())  =get_color(tmp,red_t());
-        get_color(dst,green_t())=get_color(tmp,green_t());
-        get_color(dst,blue_t()) =get_color(tmp,blue_t());
-    }
-   };
-
-   template<>
-   struct default_color_converter_impl<RrGgBbAa_t,rgba_t> {
-    template <typename P1, typename P2>
-    void operator()(const P1& src, P2& dst) const {
-        typedef typename channel_type<P2>::type T2;
-        pixel<T2,rgb_layout_t> tmp;
-        get_color(dst,red_t())  =get_color(tmp,red_t());
-        get_color(dst,green_t())=get_color(tmp,green_t());
-        get_color(dst,blue_t()) =get_color(tmp,blue_t());
-        get_color(dst,alpha_t())=channel_convert<T2>(alpha_or_max(src));
-    }
-   };
-
-   template<>
-   struct default_color_converter_impl<RrGgBbAa_t,RrGgBbAa_t> {
-    template <typename P1, typename P2>
-    void operator()(const P1& src, P2& dst) const {
-        typedef typename channel_type<P2>::type T2;
-        pixel<T2,rgb_layout_t> tmp;
-        get_color(dst,red_t())  =get_color(tmp,red_t());
-        get_color(dst,red2_t())  =get_color(tmp,red2_t());
-        get_color(dst,green_t())=get_color(tmp,green_t());
-        get_color(dst,green2_t())=get_color(tmp,green2_t());
-        get_color(dst,blue_t()) =get_color(tmp,blue_t());
-        get_color(dst,blue2_t()) =get_color(tmp,blue2_t());
-    }
-   };
-
-   }
-   }
- */
 
 #if ( MAGICKCORE_QUANTUM_DEPTH == 8 )
  #warning "MAGICKCORE_QUANTUM_DEPTH is 8"
@@ -121,7 +58,7 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 ImageMagickReaderProcess<View>::ImageMagickReaderProcess( ImageMagickReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

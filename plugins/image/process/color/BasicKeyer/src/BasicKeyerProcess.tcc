@@ -6,7 +6,7 @@ namespace basicKeyer {
 
 template<class View>
 BasicKeyerProcess<View>::BasicKeyerProcess( BasicKeyerPlugin& instance )
-	: Parent( instance )
+	: Parent( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {}
 

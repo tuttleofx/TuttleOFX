@@ -6,11 +6,18 @@
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/image.hpp>
 #include <boost/gil/image_view.hpp>
+#include <boost/gil/image_view_factory.hpp>
 
 
 namespace tuttle {
 namespace plugin {
 
+enum EImageOrientation
+{
+	eImageOrientationIndependant, //< Use memory order if your process is idenpendant image order
+	eImageOrientationFromTopToBottom, //< Use image orientation from top to bottom
+	eImageOrientationFromBottomToTop //< Use image orientation from bottom to top
+};
 
 /**
  * @brief Return a full gil view of an image.
@@ -21,24 +28,57 @@ namespace plugin {
  *            so we need to use the rod of the clip and not from the image.
  */
 template<class View>
-View getView( OFX::Image* img, const OfxRectI& rod )
+View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation orientation )
 {
 	using namespace boost::gil;
 	typedef typename View::value_type Pixel;
 
 	//	OfxRectI imgrod = img->getRegionOfDefinition(); // bug in nuke returns bounds... not the clip rod with renderscale...
-	OfxRectI bounds = img->getBounds();
+	const OfxRectI bounds = img->getBounds();
 //	TUTTLE_COUT_VAR( bounds );
 //	TUTTLE_COUT_VAR( imgrod );
 //	TUTTLE_COUT_VAR( rod );
-	point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
+	const point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
 	                                    bounds.y2 - bounds.y1 );
 
-	// Build views
+	// Build view
+	/**
+	 * About image ordering from OpenFX documentation:
+	 * 
+	 * Images are always left to right, bottom to top,
+	 * with the pixel data pointer being at the bottom left of the image.
+	 * The pixels in a scan line are contiguously packed.
+	 * Scanlines need not be contiguously packed.
+	 * The number of bytes between between a pixel in the same column,
+	 * but separated by a scan line is known as the rowbytes of an image.
+	 * Rowbytes can be negative, allowing for compositing systems with a native
+	 * top to bottom scanline order to trivially support bottom to top images.
+	 */
 	View tileView = interleaved_view( tileSize.x, tileSize.y,
-	                                  static_cast<Pixel*>( img->getPixelData() ),
-	                                  img->getRowBytes() );
-
+										static_cast<Pixel*>( img->getPixelData() ),
+										img->getRowBytes() );
+	switch( orientation )
+	{
+		case eImageOrientationIndependant: // use memory order
+		{
+			if( img->getRowBytes() < 0 ) // if the host use from top to bottom
+			{
+				tileView = flipped_up_down_view( tileView );
+			}
+			break;
+		}
+		case eImageOrientationFromTopToBottom:
+		{
+			tileView = flipped_up_down_view( tileView );
+			break;
+		}
+		case eImageOrientationFromBottomToTop:
+		{
+			// by default in OpenFX we are in this order
+			break;
+		}
+	}
+	
 	// if the tile is equals to the full image
 	// directly return the tile
 	if( bounds.x1 == rod.x1 && bounds.y1 == rod.y1 &&

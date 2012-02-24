@@ -18,7 +18,7 @@ namespace writer {
 
 template<class View>
 PngWriterProcess<View>::PngWriterProcess( PngWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

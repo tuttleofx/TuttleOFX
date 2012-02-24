@@ -10,7 +10,7 @@ namespace quality {
 
 template<class View>
 DiffProcess<View>::DiffProcess( DiffPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

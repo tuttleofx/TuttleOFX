@@ -8,7 +8,7 @@ namespace colorSpaceKeyer {
 
 template<class View>
 ColorSpaceKeyerProcess<View>::ColorSpaceKeyerProcess( ColorSpaceKeyerPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 	//this->setNoMultiThreading();

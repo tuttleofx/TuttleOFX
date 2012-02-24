@@ -204,7 +204,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 //	BOOST_ASSERT( srcPixelRod.y2 == src->getBounds().y2 );
 	
 	// Compute if source is OK
-	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	SView srcView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );	// get current view from source clip
 	
 	OfxPointI imgSize;
 	imgSize.x = srcView.width();
@@ -361,7 +361,7 @@ void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTi
 	}
 	
 	// Compute if source is OK
-	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	SView srcView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );	// get current view from source clip
 	
 	OfxPointI imgSize;
 	imgSize.x = srcView.width();

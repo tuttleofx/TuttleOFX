@@ -8,7 +8,7 @@ namespace colorTransform {
 
 template<class View>
 ColorTransformProcess<View>::ColorTransformProcess( ColorTransformPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }

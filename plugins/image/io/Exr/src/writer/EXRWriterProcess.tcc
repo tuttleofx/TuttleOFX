@@ -20,7 +20,7 @@ using namespace boost::gil;
 
 template<class View>
 EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

@@ -17,7 +17,7 @@ namespace writer {
 
 template<class View>
 JpegWriterProcess<View>::JpegWriterProcess( JpegWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

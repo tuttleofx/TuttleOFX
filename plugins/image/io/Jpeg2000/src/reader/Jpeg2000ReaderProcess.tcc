@@ -8,7 +8,7 @@ namespace reader {
 
 template<class View>
 Jpeg2000ReaderProcess<View>::Jpeg2000ReaderProcess( Jpeg2000ReaderPlugin &instance )
-: ImageGilProcessor<View>( instance )
+: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 , _plugin( instance )
 {
 	this->setNoMultiThreading();

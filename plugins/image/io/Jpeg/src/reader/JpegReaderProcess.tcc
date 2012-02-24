@@ -29,7 +29,7 @@ typedef any_image_t::view_t any_view_t;
 
 template<class View>
 JpegReaderProcess<View>::JpegReaderProcess( JpegReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

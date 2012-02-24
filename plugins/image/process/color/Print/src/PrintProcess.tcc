@@ -99,7 +99,7 @@ struct call_pixel_by_channel_t
 
 template<class View>
 PrintProcess<View>::PrintProcess( PrintPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationFromTopToBottom )
 , _plugin( effect )
 {
 	this->setNoMultiThreading();
@@ -186,7 +186,8 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 					gray8_view_t gViewGray( view(gImgGray) );
 					rgb8_image_t gImg( src.dimensions() );
 					rgb8_view_t gView( view(gImg) );
-                                        if( _params._flip ) // on Nuke, need to Flip, but not in sam-do
+					
+					if( _params._flip )
 					{
 						src = flipped_up_down_view( src );
 					}
