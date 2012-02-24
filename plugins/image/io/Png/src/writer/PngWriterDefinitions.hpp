@@ -18,11 +18,13 @@ enum EParamBitDepth
 static const std::string kParamOutputComponents     = "components";
 static const std::string kParamOutputComponentsRGBA = "rgba";
 static const std::string kParamOutputComponentsRGB  = "rgb";
+static const std::string kParamOutputComponentsGray = "gray";
 
 enum EParamComponents
 {
 	eParamComponentsRGBA = 0,
-	eParamComponentsRGB
+	eParamComponentsRGB,
+	eParamComponentsGray
 };
 
 }

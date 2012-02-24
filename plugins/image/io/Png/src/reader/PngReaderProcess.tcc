@@ -23,9 +23,9 @@ using namespace boost::gil;
 namespace bfs = boost::filesystem;
 
 typedef any_image < boost::mpl::vector
-                    < rgba8_image_t, rgba16_image_t, rgba32f_image_t,
-                      rgb8_image_t,  rgb16_image_t,  rgb32f_image_t >
-                    > any_image_t;
+		    < rgba8_image_t, rgba16_image_t, rgba32f_image_t,
+		      rgb8_image_t,  rgb16_image_t,  rgb32f_image_t >
+		    > any_image_t;
 typedef any_image_t::view_t any_view_t;
 
 template<class View>
@@ -79,13 +79,26 @@ View& PngReaderProcess<View>::readImage( View& dst )
 	catch( boost::exception& e )
 	{
 		e << exception::filename( _params._filepath );
+#ifdef TUTTLE_PRODUCTION
 		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
+#else
+		TUTTLE_COUT( e.what() );
+#endif
+		//		throw;
+	}
+	catch( std::exception& e )
+	{
+#ifdef TUTTLE_PRODUCTION
+		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
+#else
+		TUTTLE_COUT( e.what() );
+#endif
 		//		throw;
 	}
 	catch(... )
 	{
 		//		BOOST_THROW_EXCEPTION( exception::Unknown()
-		//			<< exception::user( "Unable to write image")
+		//			<< exception::user( "Unable to read image")
 		//			<< exception::filename(filepath) );
 		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}

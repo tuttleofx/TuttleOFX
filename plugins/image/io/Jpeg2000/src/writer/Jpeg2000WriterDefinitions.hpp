@@ -10,17 +10,23 @@ namespace plugin {
 namespace jpeg2000 {
 namespace writer {
 
-	enum EParamBitDepth
-	{
-		eParamBitDepth8 = 0,
-		eParamBitDepth12,
-		eParamBitDepth16,
-		eParamBitDepth32
-	};
+enum EParamBitDepth
+{
+	eParamBitDepth8 = 0,
+	eParamBitDepth12,
+	eParamBitDepth16,
+	eParamBitDepth32
+};
 
 
-static const std::string kParamCinemaProfil       = "cinemaProfil";
-static const std::string kParamLossless           = "lossless";
+static const std::string kParamCinemaProfil        = "cinemaProfil";
+
+static const std::string kParamCinemaProfilNoDigit = "notDigt Not Digital Cinema";
+static const std::string kParamCinemaProfil2k24fps = "2k24fps 2K Digital Cinema at 24 fps";
+static const std::string kParamCinemaProfil2k48fps = "2k48fps 2K Digital Cinema at 48 fps";
+static const std::string kParamCinemaProfil4k24fps = "4k24fps 4K Digital Cinema at 24 fps";
+
+static const std::string kParamLossless            = "lossless";
 
 }
 }

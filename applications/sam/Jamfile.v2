@@ -10,7 +10,7 @@ import os ;
 project
 	: requirements
 		<include>src
-	: 
+	:
 		build-dir $(BUILD)
 	;
 
@@ -21,7 +21,6 @@ exe sam :
 		[ glob src/sam/sam/*.cpp ]
 
 		/boost//program_options/<link>static
-
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -46,9 +45,9 @@ exe sam-ls :
 ###############################################################################
 exe sam-cp :
 		[ glob src/sam/cp/*.cpp ]
-		
+
 		/boost//program_options/<link>static
-		
+
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -59,9 +58,9 @@ exe sam-cp :
 ###############################################################################
 exe sam-mv :
 		[ glob src/sam/mv/*.cpp ]
-		
+
 		/boost//program_options/<link>static
-		
+
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -74,7 +73,7 @@ exe sam-rm :
 		[ glob src/sam/rm/*.cpp ]
 
 		/boost//program_options/<link>static
-		
+
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -86,10 +85,10 @@ exe sam-rm :
 ###############################################################################
 exe sam-do :
 		[ glob src/sam/do/*.cpp ]
-		
+
 		/boost//program_options/<link>static
 		/boost//python/<link>shared
-		
+
 		/tuttlecommon/<link>static
 		/tuttlehost/<link>static
 	:
@@ -103,9 +102,9 @@ exe sam-do :
 ###############################################################################
 exe sam-info :
 		[ glob src/sam/info/*.cpp ]
-		
+
 		/boost//program_options/<link>static
-		
+
 		/tuttlecommon/<link>static
 	:
 		<include>$(MAGICK_INCLUDE)
@@ -119,10 +118,10 @@ exe sam-info :
 ###############################################################################
 exe sam-plugins :
 		[ glob src/sam/plugins/*.cpp ]
-		
+
 		/boost//program_options/<link>static
 		/boost//python/<link>shared
-		
+
 		/tuttlecommon/<link>static
 		/tuttlehost/<link>static
 	:
@@ -139,7 +138,7 @@ exe sam-check :
 
 		/boost//program_options/<link>static
 		/boost//python/<link>shared
-		
+
 		/tuttlecommon/<link>static
 		/tuttlehost/<link>static
 	:
@@ -147,8 +146,24 @@ exe sam-check :
 		<os>LINUX:<find-shared-library>dl
 		<os>LINUX:<library>/python
 	;
-	
-	
+
+###############################################################################
+# diff
+###############################################################################
+exe sam-diff :
+		[ glob src/sam/diff/*.cpp ]
+
+		/boost//program_options/<link>static
+		/boost//python/<link>shared
+
+		/tuttlecommon/<link>static
+		/tuttlehost/<link>static
+	:
+		<os>NT:<find-shared-library>shell32
+		<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<library>/python
+	;
+
 ###############################################################################
 # install
 ###############################################################################
@@ -165,6 +180,7 @@ install sam-install-bins
 		sam-info
 		sam-check
 		sam-plugins
+		sam-diff
 	:
 		<variant>debug:<location>$(DIST_DEBUG)/bin
 		<variant>release:<location>$(DIST_RELEASE)/bin

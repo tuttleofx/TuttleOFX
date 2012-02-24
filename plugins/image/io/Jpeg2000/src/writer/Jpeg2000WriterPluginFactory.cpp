@@ -18,14 +18,14 @@ namespace writer {
 void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     desc.setLabels(
-        "TuttleJpeg2000Writer",
-        "Jpeg2000Writer",
-        "Jpeg 2000 image writer" );
+	"TuttleJpeg2000Writer",
+	"Jpeg2000Writer",
+	"Jpeg 2000 image writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
     desc.setDescription( "Jpeg2000 writer\n"
-                         "plugin is used to output jpeg 2000 files.\n"
-                         "In the filename pattern, put @ where you want your incrementation to be." );
+			 "plugin is used to output jpeg 2000 files.\n"
+			 "In the filename pattern, put @ where you want your incrementation to be." );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextWriter );
@@ -55,7 +55,7 @@ void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                     OFX::EContext context )
+						     OFX::EContext context )
 {
     OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -89,10 +89,10 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
     lossless->setDefault( false );
 
     OFX::ChoiceParamDescriptor* cineProfil = desc.defineChoiceParam( kParamCinemaProfil );
-    cineProfil->appendOption( "Not Digital Cinema" );
-    cineProfil->appendOption( "2K Digital Cinema at 24 fps" );
-    cineProfil->appendOption( "2K Digital Cinema at 48 fps" );
-    cineProfil->appendOption( "4K Digital Cinema at 24 fps" );
+    cineProfil->appendOption( kParamCinemaProfilNoDigit );
+    cineProfil->appendOption( kParamCinemaProfil2k24fps );
+    cineProfil->appendOption( kParamCinemaProfil2k48fps );
+    cineProfil->appendOption( kParamCinemaProfil4k24fps );
     cineProfil->setDefault( 0 );
 
     describeWriterParamsInContext( desc, context );
@@ -105,7 +105,7 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
  * @return  plugin instance
  */
 OFX::ImageEffect* Jpeg2000WriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+							    OFX::EContext context )
 {
     return new Jpeg2000WriterPlugin(handle);
 }
