@@ -357,24 +357,35 @@ void OfxhPluginCache::scanPluginFiles()
 			for( int j = 0; j < i->getNPlugins(); ++j )
 			{
 				OfxhPlugin& plug                   = i->getPlugin( j );
-				APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
-
-				if( binChanged )
+				try
 				{
-					api.loadFromPlugin( plug );
+					APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
+
+					if( binChanged )
+					{
+						api.loadFromPlugin( plug ); // may throw
+					}
+
+					std::string reason;
+
+					if( api.pluginSupported( plug, reason ) )
+					{
+						addPlugin( &plug );
+						api.confirmPlugin( plug );
+					}
+					else
+					{
+						TUTTLE_COUT_ERROR(
+							"Ignoring plugin " << quotes(plug.getIdentifier()) <<
+							": unsupported, " << reason << "." );
+					}
 				}
-
-				std::string reason;
-
-				if( api.pluginSupported( plug, reason ) )
+				catch(...)
 				{
-					addPlugin( &plug );
-					api.confirmPlugin( plug );
-				}
-				else
-				{
-					TUTTLE_COUT_ERROR( "Ignoring plugin " << plug.getIdentifier() <<
-					            " as unsupported (" << reason << ")" );
+					TUTTLE_COUT_ERROR(
+						"Ignoring plugin " << quotes(plug.getIdentifier()) <<
+						": loading error." );
+					
 				}
 			}
 
