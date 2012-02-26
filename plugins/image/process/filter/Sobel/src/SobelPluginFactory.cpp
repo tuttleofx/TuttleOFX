@@ -133,8 +133,9 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::ChoiceParamDescriptor* outputComponent = desc.defineChoiceParam( kParamOutputComponent );
 	outputComponent->setLabel( "Output component" );
-	outputComponent->appendOption( OFX::getImageEffectHostDescription()->supportsPixelComponent(OFX::ePixelComponentRGBA) ? kParamOutputComponentRGBA : "---" );
 	outputComponent->appendOption( OFX::getImageEffectHostDescription()->supportsPixelComponent(OFX::ePixelComponentRGB) ? kParamOutputComponentRGB : "---" );
+	outputComponent->appendOption( OFX::getImageEffectHostDescription()->supportsPixelComponent(OFX::ePixelComponentRGBA) ? kParamOutputComponentRGBA : "---" );
+	outputComponent->setDefault( 0 );
 	outputComponent->setIsSecret( OFX::getImageEffectHostDescription()->_supportedComponents.size() == 1 );
 }
 
