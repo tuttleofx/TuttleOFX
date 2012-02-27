@@ -123,10 +123,11 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 
     OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kParamOutputComponents );
     components->setLabel( "Components" );
+    components->appendOption( kParamOutputComponentsGray );
     components->appendOption( kParamOutputComponentsRGBA );
     components->appendOption( kParamOutputComponentsRGB );
     components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    components->setDefault( 0 );
+    components->setDefault( eParamComponentsRGBA );
 
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
     bitDepth->setLabel( "Bit depth" );

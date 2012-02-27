@@ -16,8 +16,7 @@ struct OpenImageIOWriterProcessParams
 {
 	std::string           _filepath;           ///< filepath
 	EParamComponents      _components;         ///< Force RGB
-	bool                  _flip;               ///< Flip vertical
-	OpenImageIO::TypeDesc _bitDepth;           ///< Output bit depth
+	EParamBitDepth        _bitDepth;           ///< Output bit depth
 };
 
 /**

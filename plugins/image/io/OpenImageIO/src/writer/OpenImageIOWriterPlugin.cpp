@@ -22,21 +22,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams( const 
 
 	params._filepath   = getAbsoluteFilenameAt( time );
 	params._components = static_cast<EParamComponents>( this->_components->getValue() );
-	switch( static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() ) )
-	{
-		case eParamBitDepth8:
-			params._bitDepth = TypeDesc::UINT8;
-			break;
-		case eParamBitDepth16:
-			params._bitDepth = TypeDesc::UINT16;
-			break;
-		case eParamBitDepth32:
-			params._bitDepth = TypeDesc::FLOAT;
-			break;
-		default:
-			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::user() + "Incorrect bit depth param value." );
-	}
+	params._bitDepth   = static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() );
 	return params;
 }
 

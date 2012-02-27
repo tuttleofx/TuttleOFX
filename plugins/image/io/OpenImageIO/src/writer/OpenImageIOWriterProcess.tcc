@@ -2,6 +2,7 @@
 #include "OpenImageIOWriterPlugin.hpp"
 
 #include <terry/globals.hpp>
+#include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <imageio.h>
@@ -39,10 +40,64 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
 	OpenImageIOWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
+
 	try
 	{
 		/// @todo tuttle: use params._components
-		writeImage( this->_srcView, params._filepath, params._bitDepth, params._flip );
+		switch( (int) params._bitDepth )
+		{
+			case eParamBitDepth8:
+			{
+				switch( params._components )
+				{
+					case eParamComponentsGray:
+						writeImage<gray8_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eParamComponentsRGBA:
+						writeImage<rgba8_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eParamComponentsRGB:
+						writeImage<rgb8_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+				}
+				break;
+			}
+			case eParamBitDepth16:
+			{
+				switch( params._components )
+				{
+					case eParamComponentsGray:
+						writeImage<gray16_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eParamComponentsRGBA:
+						writeImage<rgba16_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eParamComponentsRGB:
+						writeImage<rgb16_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+				}
+				break;
+			}
+			case eParamBitDepth32:
+			{
+				switch( params._components )
+				{
+					case eParamComponentsGray:
+						writeImage<gray32_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eParamComponentsRGBA:
+						writeImage<rgba32_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eParamComponentsRGB:
+						writeImage<rgb32_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+				}
+				break;
+			}
+			default:
+				BOOST_THROW_EXCEPTION( exception::Unsupported()
+					    << exception::user( "DPX Writer: Unsupported bitdepth..." ) );
+		}
 	}
 	catch( exception::Common& e )
 	{
@@ -63,7 +118,8 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
  *
  */
 template<class View>
-void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth, const bool flip )
+template<class WImage>
+void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& filepath, const EParamBitDepth bitDepth, const EParamComponents components )
 {
 	using namespace boost;
 	using namespace OpenImageIO;
@@ -73,38 +129,59 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
 	}
 
-	ImageSpec spec( src.width(), src.height(), gil::num_channels<View>::value, bitDepth );
-	out->open( filepath, spec );
+	WImage img( src.width(), src.height() );
 
-	if( flip )
+	typename WImage::view_t vw( view( img ) );
+	copy_and_convert_pixels( terry::clamp_view( src ), vw );
+
+	OpenImageIO::TypeDesc oiioBitDepth;
+	size_t sizeOfChannel = 0;
+	switch( bitDepth )
 	{
-		src = flipped_up_down_view( src );
+		case eParamBitDepth8:
+			oiioBitDepth = TypeDesc::UINT8;
+			sizeOfChannel = 1;
+			break;
+		case eParamBitDepth16:
+			oiioBitDepth = TypeDesc::UINT16;
+			sizeOfChannel = 2;
+			break;
+		case eParamBitDepth32:
+			oiioBitDepth = TypeDesc::FLOAT;
+			sizeOfChannel = 4;
+			break;
+		default:
+			BOOST_THROW_EXCEPTION( exception::Bug()
+				<< exception::user() + "Incorrect bit depth param value." );
 	}
 
-	typedef mpl::map<
-	    mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT8> >,
-	    mpl::pair<gil::bits16, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT16> >,
-	    mpl::pair<gil::bits32, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT32> >,
-	    mpl::pair<gil::bits32f, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::FLOAT> >
-	    > MapBits;
-	typedef typename gil::channel_type<View>::type ChannelType;
+	ImageSpec spec( src.width(), src.height(), gil::num_channels<WImage>::value, oiioBitDepth );
+	out->open( filepath, spec );
 
-	const stride_t xstride = gil::is_planar<View>::value ? sizeof(Channel) : src.num_channels() * sizeof(Channel);
-	const stride_t ystride = src.pixels().row_size(); // xstride * src.width();
-//	const stride_t zstride = gil::is_planar<View>::value ? ystride * src.height() : sizeOfChannel;
-	const stride_t zstride = ystride * src.height();
+	const stride_t xstride = gil::is_planar<WImage>::value ? sizeOfChannel : vw.num_channels() * sizeOfChannel;
+	const stride_t ystride = vw.pixels().row_size();
+	const stride_t zstride = ystride * vw.height();
+
+	typedef typename boost::gil::channel_type<WImage>::type channel_t;
+
+	TUTTLE_COUT( sizeOfChannel << "  " << vw.num_channels() << "  " << gil::is_planar<WImage>::value );
+
+	TUTTLE_COUT( xstride << " " << ystride << " " << zstride );
 
 	out->write_image(
-			bitDepth, //mpl::at<MapBits, ChannelType>::type::value,
-			&( ( *src.begin() )[0] ), // get the adress of the first channel value from the first pixel
+			oiioBitDepth,
+			&( ( *vw.begin() )[0] ),// get the adress of the first channel value from the first pixel
 			xstride,
 			ystride,
 			zstride,
 			&progressCallback,
 			this
 		);
+
 	out->close();
 }
+
+
 
 }
 }
