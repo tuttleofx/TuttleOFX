@@ -2569,7 +2569,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
         [OFX::tag_ofxStatus*] = kOfxStatErrValue
         [boost::errinfo_file_name_*] = /datas/tmp/master32secsh01.0014.dpx
         */
-        if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >( e ) )
+        if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
         {
             std::cerr << "Error: " << *messageException << std::endl;
         }

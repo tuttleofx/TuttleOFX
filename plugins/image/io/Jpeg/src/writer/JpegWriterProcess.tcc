@@ -58,7 +58,7 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 		e << exception::filename( _params._filepath );
 		throw;
 	}
-	catch(... )
+	catch(...)
 	{
 		BOOST_THROW_EXCEPTION( exception::Unknown()
 			<< exception::user( "Unable to write image" )

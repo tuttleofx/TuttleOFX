@@ -78,29 +78,16 @@ View& PngReaderProcess<View>::readImage( View& dst )
 	}
 	catch( boost::exception& e )
 	{
+		e << exception::user( "Png: Unable to open file." );
 		e << exception::filename( _params._filepath );
-#ifdef TUTTLE_PRODUCTION
-		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
-#else
-		TUTTLE_COUT( e.what() );
-#endif
-		//		throw;
-	}
-	catch( std::exception& e )
-	{
-#ifdef TUTTLE_PRODUCTION
-		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
-#else
-		TUTTLE_COUT( e.what() );
-#endif
-		//		throw;
+		throw;
 	}
 	catch(... )
 	{
-		//		BOOST_THROW_EXCEPTION( exception::Unknown()
-		//			<< exception::user( "Unable to read image")
-		//			<< exception::filename(filepath) );
-		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Png: Unable to open file." )
+			<< exception::dev( boost::current_exception_diagnostic_information() )
+			<< exception::filename( _params._filepath ) );
 	}
 	return dst;
 }
