@@ -58,14 +58,28 @@ void reshape(int width,int height)
 template< typename Pixel_t>
 void loadNewTexture( const Pixel_t& view  )
 {
+	TUTTLE_COUT("don't find template to load the texture.");
+}
 
+template<>
+void loadNewTexture( const boost::gil::gray8_view_t& src )
+{
+    unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE8, src.width(), src.height(), 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
 }
 
 template<>
 void loadNewTexture( const boost::gil::rgb8_view_t& src )
 {
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
-
     glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -81,8 +95,23 @@ template<>
 void loadNewTexture( const boost::gil::rgba8_view_t& src )
 {
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
-
     glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::gray16_view_t& src )
+{
+    short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE16, src.width(), src.height(), 0, GL_LUMINANCE, GL_UNSIGNED_SHORT, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -98,7 +127,7 @@ void loadNewTexture( const boost::gil::rgb16_view_t& src )
 {
     short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_SHORT, dataPtr );
+    glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_UNSIGNED_SHORT, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -114,7 +143,23 @@ void loadNewTexture( const boost::gil::rgba16_view_t& src )
 {
     short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_SHORT, dataPtr );
+    glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_UNSIGNED_SHORT, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::gray32_view_t& src )
+{
+    float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src.width(), src.height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -147,6 +192,22 @@ void loadNewTexture( const boost::gil::rgba32_view_t& src )
     float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+template<>
+void loadNewTexture( const boost::gil::gray32f_view_t& src )
+{
+    unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src.width(), src.height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -223,6 +284,9 @@ void keyboard(unsigned char k, int x, int y)
     switch (k)
     {
 	case '\r':
+	    glutDestroyWindow(windowID);
+	    return;
+	case 27: // ESCAPE key
 	    glutDestroyWindow(windowID);
 	    return;
 	case SPACEBAR:

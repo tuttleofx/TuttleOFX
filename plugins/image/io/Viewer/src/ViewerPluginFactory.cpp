@@ -18,8 +18,8 @@ static const bool kSupportTiles = false;
  */
 void ViewerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-        desc.setLabels( "TuttleViewer", "Viewer", "Viewer" );
-        desc.setPluginGrouping( "tuttle/image/io" );
+	desc.setLabels( "TuttleViewer", "Viewer", "Viewer" );
+	desc.setPluginGrouping( "tuttle/image/io" );
 
 	desc.setDescription( "Plugin under early development." );
 
@@ -28,8 +28,8 @@ void ViewerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	//desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	//desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
@@ -43,7 +43,7 @@ void ViewerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void ViewerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+						  OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -67,7 +67,7 @@ void ViewerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* ViewerPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+							    OFX::EContext context )
 {
 	return new ViewerPlugin( handle );
 }
