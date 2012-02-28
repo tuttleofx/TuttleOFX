@@ -46,57 +46,85 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 		/// @todo tuttle: use params._components
 		switch( (int) params._bitDepth )
 		{
-			case eParamBitDepth8:
+			case eTuttlePluginBitDepth8:
 			{
 				switch( params._components )
 				{
-					case eParamComponentsGray:
+					case eTuttlePluginComponentsGray:
 						writeImage<gray8_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
-					case eParamComponentsRGBA:
+					case eTuttlePluginComponentsRGBA:
 						writeImage<rgba8_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
-					case eParamComponentsRGB:
+					case eTuttlePluginComponentsRGB:
 						writeImage<rgb8_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "ExrWriter: components not supported" ) );
 				}
 				break;
 			}
-			case eParamBitDepth16:
+			case eTuttlePluginBitDepth16:
 			{
 				switch( params._components )
 				{
-					case eParamComponentsGray:
+					case eTuttlePluginComponentsGray:
 						writeImage<gray16_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
-					case eParamComponentsRGBA:
+					case eTuttlePluginComponentsRGBA:
 						writeImage<rgba16_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
-					case eParamComponentsRGB:
+					case eTuttlePluginComponentsRGB:
 						writeImage<rgb16_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "ExrWriter: components not supported" ) );
 				}
 				break;
 			}
-			case eParamBitDepth32:
+			case eTuttlePluginBitDepth32:
 			{
 				switch( params._components )
 				{
-					case eParamComponentsGray:
+					case eTuttlePluginComponentsGray:
 						writeImage<gray32_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
-					case eParamComponentsRGBA:
+					case eTuttlePluginComponentsRGBA:
 						writeImage<rgba32_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
-					case eParamComponentsRGB:
+					case eTuttlePluginComponentsRGB:
 						writeImage<rgb32_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "ExrWriter: components not supported" ) );
+				}
+				break;
+			}
+			case eTuttlePluginBitDepth32f:
+			{
+				switch( params._components )
+				{
+					case eTuttlePluginComponentsGray:
+						writeImage<gray32f_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eTuttlePluginComponentsRGBA:
+						writeImage<rgba32f_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eTuttlePluginComponentsRGB:
+						writeImage<rgb32f_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "ExrWriter: components not supported" ) );
 				}
 				break;
 			}
 			default:
 				BOOST_THROW_EXCEPTION( exception::Unsupported()
-					    << exception::user( "DPX Writer: Unsupported bitdepth..." ) );
+					    << exception::user( "OIIO Writer: Unsupported bitdepth..." ) );
 		}
 	}
 	catch( exception::Common& e )
@@ -107,7 +135,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	catch(... )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unknown()
-			<< exception::user( "Unable to write image")
+			<< exception::user( "OIIO Writer: Unable to write image")
 			<< exception::dev( boost::current_exception_diagnostic_information() )
 			<< exception::filename(params._filepath) );
 	}
@@ -119,7 +147,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
  */
 template<class View>
 template<class WImage>
-void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& filepath, const EParamBitDepth bitDepth, const EParamComponents components )
+void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& filepath, const ETuttlePluginBitDepth bitDepth, const ETuttlePluginComponents components )
 {
 	using namespace boost;
 	using namespace OpenImageIO;
@@ -138,15 +166,19 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 	size_t sizeOfChannel = 0;
 	switch( bitDepth )
 	{
-		case eParamBitDepth8:
+		case eTuttlePluginBitDepth8:
 			oiioBitDepth = TypeDesc::UINT8;
 			sizeOfChannel = 1;
 			break;
-		case eParamBitDepth16:
+		case eTuttlePluginBitDepth16:
 			oiioBitDepth = TypeDesc::UINT16;
 			sizeOfChannel = 2;
 			break;
-		case eParamBitDepth32:
+		case eTuttlePluginBitDepth32:
+			oiioBitDepth = TypeDesc::UINT;
+			sizeOfChannel = 4;
+			break;
+		case eTuttlePluginBitDepth32f:
 			oiioBitDepth = TypeDesc::FLOAT;
 			sizeOfChannel = 4;
 			break;
@@ -163,10 +195,6 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 	const stride_t zstride = ystride * vw.height();
 
 	typedef typename boost::gil::channel_type<WImage>::type channel_t;
-
-	TUTTLE_COUT( sizeOfChannel << "  " << vw.num_channels() << "  " << gil::is_planar<WImage>::value );
-
-	TUTTLE_COUT( xstride << " " << ystride << " " << zstride );
 
 	out->write_image(
 			oiioBitDepth,

@@ -12,7 +12,7 @@ namespace writer {
 OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_components = fetchChoiceParam( kParamOutputComponents );
+	_components = fetchChoiceParam( kTuttlePluginComponents );
 }
 
 OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams( const OfxTime time )
@@ -21,8 +21,8 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams( const 
 	OpenImageIOWriterProcessParams params;
 
 	params._filepath   = getAbsoluteFilenameAt( time );
-	params._components = static_cast<EParamComponents>( this->_components->getValue() );
-	params._bitDepth   = static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() );
+	params._components = static_cast<ETuttlePluginComponents>( this->_components->getValue() );
+	params._bitDepth   = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
 	return params;
 }
 

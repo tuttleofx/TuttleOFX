@@ -19,12 +19,51 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 		    "OpenImageIO file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
+    std::vector<std::string> extension;
+    extension.push_back( "bmp" );
+    extension.push_back( "cin" );
+    extension.push_back( "dds" );
+    extension.push_back( "dpx" );
+    extension.push_back( "exr" );
+    extension.push_back( "fits" );
+    extension.push_back( "hdr" );
+    extension.push_back( "ico" );
+    extension.push_back( "j2k" );
+    extension.push_back( "j2c" );
+    extension.push_back( "jp2" );
+    extension.push_back( "jpeg" );
+    extension.push_back( "jpg" );
+    extension.push_back( "jpe" );
+    extension.push_back( "jfif" );
+    extension.push_back( "jfi" );
+    extension.push_back( "pbm" );
+    extension.push_back( "pgm" );
+    extension.push_back( "png" );
+    extension.push_back( "pnm" );
+    extension.push_back( "ppm" );
+    extension.push_back( "pic" );
+    extension.push_back( "rgbe" );
+    extension.push_back( "sgi" );
+    extension.push_back( "tga" );
+    extension.push_back( "tif" );
+    extension.push_back( "tiff" );
+    extension.push_back( "tpic" );
+    extension.push_back( "webp" );
+
+    std::string listOfExt;
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	listOfExt += extension.at(i);
+	listOfExt += ", ";
+    }
+    listOfExt.erase( listOfExt.size()-2, 2 );
+
     desc.setDescription(
 	"OpenImageIO Writer"
 	"\n\n"
-	"supported formats:\n"
-	"TIFF\nJPEG/JFIF\nOpenEXR\nPNG\nHDR/RGBE\nTarga\nJPEG-2000\nDPX\nCineon\nFITS\nBMP\nICO\nRMan Zfile\nSoftimagePIC\nDDS\nSGI\nPNM\nPPM\nPGM\nPBM\nField3d\nWebP"
-	"\n" );
+	"supported extensions: \n" +
+	listOfExt
+    );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextWriter );
@@ -36,55 +75,10 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // add supported extensions
-	// tiff
-    desc.addSupportedExtension( "tif" );
-    desc.addSupportedExtension( "tiff" );
-	// jpeg
-    desc.addSupportedExtension( "jpeg" );
-    desc.addSupportedExtension( "jpg" );
-    desc.addSupportedExtension( "jpe" );
-    desc.addSupportedExtension( "jfif" );
-    desc.addSupportedExtension( "jfi" );
-	// exr
-    desc.addSupportedExtension( "exr" );
-	// hrd
-    desc.addSupportedExtension( "hdr" );
-    desc.addSupportedExtension( "rgbe" );
-	// png
-    desc.addSupportedExtension( "png" );
-	// targa
-    desc.addSupportedExtension( "tga" );
-    desc.addSupportedExtension( "tpic" );
-	// jpeg-2000
-    desc.addSupportedExtension( "j2k" );
-    desc.addSupportedExtension( "jp2" );
-    desc.addSupportedExtension( "j2c" );
-	// dpx
-    desc.addSupportedExtension( "dpx" );
-	// cineon
-    desc.addSupportedExtension( "cin" );
-	// fits
-    desc.addSupportedExtension( "fits" );
-	// bmp
-    desc.addSupportedExtension( "bmp" );
-	// ico
-    desc.addSupportedExtension( "ico" );
-	// SoftimagePIC
-    desc.addSupportedExtension( "pic" );
-	// DDS
-    desc.addSupportedExtension( "dds" );
-	// sgi
-    desc.addSupportedExtension( "sgi" );
-	// pnm
-    desc.addSupportedExtension( "pnm" );
-	// ppm
-    desc.addSupportedExtension( "ppm" );
-	// pgm
-    desc.addSupportedExtension( "pgm" );
-	// pbm
-    desc.addSupportedExtension( "pbm" );
-	// webP
-    desc.addSupportedExtension( "webp" );
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	desc.addSupportedExtension( extension.at(i) );
+    }
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -121,21 +115,22 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kParamOutputComponents );
+    OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
     components->setLabel( "Components" );
-    components->appendOption( kParamOutputComponentsGray );
-    components->appendOption( kParamOutputComponentsRGBA );
-    components->appendOption( kParamOutputComponentsRGB );
+    components->appendOption( kTuttlePluginComponentsGray );
+    components->appendOption( kTuttlePluginComponentsRGB );
+    components->appendOption( kTuttlePluginComponentsRGBA );
     components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    components->setDefault( eParamComponentsRGBA );
+    components->setDefault( eTuttlePluginComponentsRGBA );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
+    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
     bitDepth->setLabel( "Bit depth" );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
+    bitDepth->appendOption( kTuttlePluginBitDepth32 );
     bitDepth->appendOption( kTuttlePluginBitDepth32f );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( 1 );
+    bitDepth->setDefault( eTuttlePluginBitDepth16 );
 
     OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam( kParamOutputCompression );
     compression->setLabel( "Compression" );

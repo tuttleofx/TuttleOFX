@@ -35,7 +35,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	template<class WImage>
-	void writeImage( View& src, const std::string& filepath, const EParamBitDepth bitDepth, const EParamComponents components );
+	void writeImage( View& src, const std::string& filepath, const ETuttlePluginBitDepth bitDepth, const ETuttlePluginComponents components );
 
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{
