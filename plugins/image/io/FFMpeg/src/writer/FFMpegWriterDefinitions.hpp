@@ -9,6 +9,11 @@ namespace plugin {
 namespace ffmpeg {
 namespace writer {
 
+enum ETuttlePluginBitDepth
+{
+	eTuttlePluginBitDepth8 = 0
+};
+
 static const std::string kParamFormat                    = "format";
 static const std::string kParamCodec                     = "codec";
 static const std::string kParamBitrate                   = "bitrate";
