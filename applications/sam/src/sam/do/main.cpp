@@ -714,9 +714,9 @@ int main( int argc, char** argv )
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( _color._red << "sam do - error" );
+		TUTTLE_CERR( _color._red << "sam do - error" << _color._std );
 #ifndef TUTTLE_PRODUCTION
-		TUTTLE_CERR( boost::current_exception_diagnostic_information() << _color._std );
+		TUTTLE_CERR( _color._red << boost::current_exception_diagnostic_information() << _color._std );
 #endif
 		exit( -2 );
 	}
