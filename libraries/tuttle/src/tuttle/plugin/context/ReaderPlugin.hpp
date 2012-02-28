@@ -94,7 +94,6 @@ public:
 	/// @{
 	OFX::StringParam*    _paramFilepath;     ///< File path
 	OFX::ChoiceParam*    _paramExplicitConv; ///< Explicit conversion
-	OFX::BooleanParam*   _paramFlip;         ///< vertically flip the buffer
 	/// @}
 
 private:

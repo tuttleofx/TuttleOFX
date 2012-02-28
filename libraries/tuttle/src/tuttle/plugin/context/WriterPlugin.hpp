@@ -99,7 +99,6 @@ public:
 	OFX::BooleanParam*    _paramRenderAlways;     ///< Render always
 	OFX::ChoiceParam*     _paramBitDepth;         ///< Bit depth
 	OFX::IntParam*        _paramForceNewRender;   ///< Hack parameter, to force a new rendering
-	OFX::BooleanParam*    _paramFlip;             ///< Vertically flip the image
 	/// @}
 };
 

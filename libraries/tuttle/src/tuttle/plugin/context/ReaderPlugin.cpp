@@ -12,7 +12,6 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 	_paramFilepath     = fetchStringParam( kParamReaderFilename );
 	_isSequence        = _filePattern.initFromDetection( _paramFilepath->getValue() );
 	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
-	_paramFlip         = fetchBooleanParam( kParamReaderFlip );
 }
 
 ReaderPlugin::~ReaderPlugin()
