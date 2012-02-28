@@ -73,14 +73,16 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-    bitDepth->setLabel( "Precision" );
+    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth12 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
+#ifndef TUTTLE_PRODUCTION
     bitDepth->appendOption( kTuttlePluginBitDepth32 );
+#endif
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( 1 );
+    bitDepth->setDefault( eTuttlePluginBitDepth8 );
     desc.addClipPreferencesSlaveParam( *bitDepth );
 
     OFX::BooleanParamDescriptor* lossless = desc.defineBooleanParam( kParamLossless );

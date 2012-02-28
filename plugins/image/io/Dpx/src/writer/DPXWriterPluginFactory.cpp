@@ -68,22 +68,28 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-    componentsType->setLabel( "Components type" );
-    componentsType->appendOption( "rgb" );
-    componentsType->appendOption( "rgba" );
-    componentsType->appendOption( "abgr" );
+    OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kTuttlePluginComponents );
+    componentsType->setLabel( kTuttlePluginComponentsLabel );
+    componentsType->appendOption( kTuttlePluginComponentsRGB );
+    componentsType->appendOption( kTuttlePluginComponentsRGBA );
+    componentsType->appendOption( kTuttlePluginComponentsABGR );
     componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     componentsType->setDefault( 1 );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-    bitDepth->setLabel( "Bit depth" );
+    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
+#ifndef TUTTLE_PRODUCTION
     bitDepth->appendOption( kTuttlePluginBitDepth10 );
     bitDepth->appendOption( kTuttlePluginBitDepth12 );
+#endif
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( eParamBitDepth10 );
+#ifdef TUTTLE_PRODUCTION
+    bitDepth->setDefault( eTuttlePluginBitDepth8 );
+#else
+    bitDepth->setDefault( eTuttlePluginBitDepth10 );
+#endif
 
     OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
     compressed->setLabel( "Remove unused bits (bit streaming)" );

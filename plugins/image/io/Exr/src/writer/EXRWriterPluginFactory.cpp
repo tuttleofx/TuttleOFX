@@ -16,11 +16,11 @@ namespace writer {
 void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleExrWriter", "ExrWriter",
-	                "Exr file writer" );
+			"Exr file writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
 	desc.setDescription( "EXR File writer\n"
-	                     "Plugin is used to write exr files." );
+			     "Plugin is used to write exr files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
@@ -45,7 +45,7 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext               context )
+						OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	// Exr only supports RGB(A)
@@ -67,28 +67,30 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-	componentsType->setLabel( "Components type" );
-        componentsType->appendOption( kParamComponentsGray );
-        componentsType->appendOption( kParamComponentsRgb );
-        componentsType->appendOption( kParamComponentsRgba );
+	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kTuttlePluginComponents );
+	componentsType->setLabel( kTuttlePluginComponentsLabel );
+	componentsType->appendOption( kTuttlePluginComponentsGray );
+	componentsType->appendOption( kTuttlePluginComponentsRGB );
+	componentsType->appendOption( kTuttlePluginComponentsRGBA );
 	componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-        componentsType->setDefault( eParamBitDepth32f );
+	componentsType->setDefault( eTuttlePluginComponentsRGBA );
 
-        OFX::ChoiceParamDescriptor* storageType = desc.defineChoiceParam( kParamStorageType );
-        storageType->setLabel( "Storage type" );
-        storageType->appendOption( kParamStorageScanLine );
-        storageType->appendOption( kParamStorageTiles    );
-        storageType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-        storageType->setDefault( eParamStorageScanLine );
+	OFX::ChoiceParamDescriptor* storageType = desc.defineChoiceParam( kParamStorageType );
+	storageType->setLabel( "Storage type" );
+	storageType->appendOption( kParamStorageScanLine );
+#ifndef TUTTLE_PRODUCTION
+	storageType->appendOption( kParamStorageTiles    );
+#endif
+	storageType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	storageType->setDefault( eParamStorageScanLine );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-	bitDepth->setLabel( "Bit depth" );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+	bitDepth->setLabel( kTuttlePluginBitDepthLabel );
 	bitDepth->appendOption( kTuttlePluginBitDepth16f );
-	bitDepth->appendOption( kTuttlePluginBitDepth32f );
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
+	bitDepth->appendOption( kTuttlePluginBitDepth32f );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	bitDepth->setDefault( 1 );
+	bitDepth->setDefault( 2 );
 
 	describeWriterParamsInContext( desc, context );
 }
@@ -100,7 +102,7 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* EXRWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext        context )
+							  OFX::EContext        context )
 {
 	return new EXRWriterPlugin( handle );
 }

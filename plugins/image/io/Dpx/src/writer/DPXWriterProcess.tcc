@@ -42,12 +42,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	BOOST_ASSERT( this->_srcPixelRod == this->_dstPixelRod );
 
-
 	View src = this->_srcView;
-	if( _params._flip )
-	{
-		src = flipped_up_down_view( this->_srcView );
-	}
 
 	int packing = ( _params._compressed == false );
 
@@ -55,33 +50,38 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	{
 		switch( _params._bitDepth )
 		{
-			case 16:
+			case eTuttlePluginBitDepth16:
 			{
 				switch( _params._componentsType )
 				{
-					case 0:
+					case eTuttlePluginComponentsRGB:
 					{
 						writeImage<rgb16_image_t>( src, _params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
 						break;
 					}
-					case 1:
+					case eTuttlePluginComponentsRGBA:
 					{
 						writeImage<rgba16_image_t>( src, _params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
 						break;
 					}
-					case 2:
+					case eTuttlePluginComponentsABGR:
 					{
 						writeImage<abgr16_image_t>( src, _params._filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
 						break;
 					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Dpx Writer: components not supported" ) );
 				}
 				break;
 			}
-			case 12:
+#ifndef TUTTLE_PRODUCTION
+			case eTuttlePluginBitDepth12:
 			{
 				switch( _params._componentsType )
 				{
-					case 0:
+					case eTuttlePluginComponentsRGB:
+					{
 						///@todo to get it working:
 						// swap half byte then swap shorts (16 bits)
 						// ex: 0405 -> 4050 -> 5040
@@ -90,61 +90,88 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "DPX Writer: Unsupported 12 bits rgb image..." ) );
 						break;
-					case 1:
+					}
+					case eTuttlePluginComponentsRGBA:
+					{
 						//						writeImage<rgba12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeR12G12B12A12, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "DPX Writer: Unsupported 12 bits rgba image..." ) );
 						break;
-					case 2:
+					}
+					case eTuttlePluginComponentsABGR:
+					{
 						//						writeImage<abgr12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeA12B12G12R12, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "DPX Writer: Unsupported 12 bits abgr image..." ) );
 						break;
+					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Dpx Writer: components not supported" ) );
 				}
 				break;
 			}
-			case 10:
+			case eTuttlePluginBitDepth10:
 			{
 				switch( _params._componentsType )
 				{
-					case 0:
+					case eTuttlePluginComponentsRGB:
+					{
 						//						writeImage<rgb10_packed_image_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "DPX Writer: Unsupported 10 bits rgb image..." ) );
 						break;
-					case 1:
+					}
+					case eTuttlePluginComponentsRGBA:
+					{
 						// Unsupported
 						//						writeImage<rgba10_view_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10A10, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "DPX Writer: Unsupported 10 bits rgba image..." ) );
 						break;
-					case 2:
+					}
+					case eTuttlePluginComponentsABGR:
+					{
 						//						writeImage<abgr10_view_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeA10B10G10R10, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "DPX Writer: Unsupported 10 bits abgr image..." ) );
 						break;
+					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Dpx Writer: components not supported" ) );
 				}
 				break;
 			}
-			case 8:
+#endif
+			case eTuttlePluginBitDepth8:
 			{
 				switch( _params._componentsType )
 				{
-					case 0:
+					case eTuttlePluginComponentsRGB:
+					{
 						writeImage<rgb8_image_t>( src, _params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8, packing );
 						break;
-					case 1:
+					}
+					case eTuttlePluginComponentsRGBA:
+					{
 						writeImage<rgba8_image_t>( src, _params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8A8, packing );
 						break;
-					case 2:
+					}
+					case eTuttlePluginComponentsABGR:
+					{
 						writeImage<abgr8_image_t>( src, _params._filepath, 8, tuttle::io::DpxImage::eCompTypeA8B8G8R8, packing );
 						break;
+					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Dpx Writer: components not supported" ) );
 				}
 				break;
 			}
 			default:
 				BOOST_THROW_EXCEPTION( exception::Unsupported()
-				            << exception::user( "DPX Writer: Unsupported bitdepth..." ) );
+					    << exception::user( "DPX Writer: Unsupported bitdepth..." ) );
 		}
 	}
 	catch( exception::Common& e )

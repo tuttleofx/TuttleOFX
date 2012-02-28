@@ -9,9 +9,9 @@ namespace plugin {
 namespace jpeg {
 namespace writer {
 
-enum EParamBitDepth
+enum ETuttlePluginBitDepth
 {
-	eParamBitDepth8 = 0
+	eTuttlePluginBitDepth8
 };
 
 static const std::string kParamPremult = "premult";

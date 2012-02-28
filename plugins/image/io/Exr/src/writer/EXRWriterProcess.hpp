@@ -36,7 +36,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 protected:
-	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
+	EXRWriterPlugin&       _plugin;        ///< Rendering plugin
 	EXRWriterProcessParams _params;
 
 	template<class WPixel>

@@ -46,87 +46,95 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( ( this->_srcPixelRod == this->_dstPixelRod ) );
 
 	View src = this->_srcView;
-	if( _params._flip )
-	{
-		src = flipped_up_down_view( this->_srcView );
-	}
 
 	try
 	{
 		switch( _params._bitDepth )
 		{
-			case eParamBitDepth16f:
+			case eTuttlePluginBitDepth16f:
 			{
 				switch( _params._componentsType )
 				{
-					case eGray:
+					case eTuttlePluginComponentsGray:
 					{
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray16h_pixel_t>(src, filepath, Imf::HALF);
 						break;
 					}
-					case eRGB:
+					case eTuttlePluginComponentsRGB:
 					{
 						writeImage<rgb16h_pixel_t>( src, _params._filepath, Imf::HALF );
 						break;
 					}
-					case eRGBA:
+					case eTuttlePluginComponentsRGBA:
 					{
 						writeImage<rgba16h_pixel_t>( src, _params._filepath, Imf::HALF );
 						break;
 					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Exr Writer: components not supported" ) );
 				}
 				break;
 			}
-			case eParamBitDepth32f:
+			case eTuttlePluginBitDepth32f:
 			{
 				switch( _params._componentsType )
 				{
-					case eGray:
+					case eTuttlePluginComponentsGray:
 					{
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32f_pixel_t>(src, _params._filepath, Imf::FLOAT);
 						break;
 					}
-					case eRGB:
+					case eTuttlePluginComponentsRGB:
 					{
 						writeImage<rgb32f_pixel_t>( src, _params._filepath, Imf::FLOAT );
 						break;
 					}
-					case eRGBA:
+					case eTuttlePluginComponentsRGBA:
 					{
 						writeImage<rgba32f_pixel_t>( src, _params._filepath, Imf::FLOAT );
 						break;
 					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Exr Writer: components not supported" ) );
 				}
 				break;
 			}
-			case eParamBitDepth32:
+			case eTuttlePluginBitDepth32:
 			{
 				switch( _params._componentsType )
 				{
-					case eGray:
+					case eTuttlePluginComponentsGray:
 					{
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
 						    << exception::user( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32_pixel_t>(src, _params._filepath, Imf::FLOAT);
 						break;
 					}
-					case eRGB:
+					case eTuttlePluginComponentsRGB:
 					{
 						writeImage<rgb32_pixel_t>( src, _params._filepath, Imf::UINT );
 						break;
 					}
-					case eRGBA:
+					case eTuttlePluginComponentsRGBA:
 					{
 						writeImage<rgba32_pixel_t>( src, _params._filepath, Imf::UINT );
 						break;
 					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Exr Writer: components not supported" ) );
 				}
 				break;
 			}
+			default:
+				BOOST_THROW_EXCEPTION( exception::Unsupported()
+				    << exception::user( "Exr Writer: bit depth not supported" ) );
 		}
 	}
 	catch( exception::Common& e )

@@ -14,21 +14,18 @@ using namespace boost::gil;
 EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_componentsType = fetchChoiceParam( kParamComponentsType );
+	_componentsType = fetchChoiceParam( kTuttlePluginComponents );
 	_storageType    = fetchChoiceParam( kParamStorageType );
-
-	_paramFlip->setValue( true );
 }
 
 EXRWriterProcessParams EXRWriterPlugin::getProcessParams( const OfxTime time )
 {
 	EXRWriterProcessParams params;
 
-	params._bitDepth       = ( EParamBitDepth )   this->_paramBitDepth->getValue();
-	params._componentsType = ( EParamComponents ) _componentsType->getValue();
+	params._bitDepth       = ( ETuttlePluginBitDepth )   this->_paramBitDepth->getValue();
+	params._componentsType = ( ETuttlePluginComponents ) _componentsType->getValue();
 	params._storageType    = ( EParamStorage )    _storageType->getValue();
 	params._filepath       = getAbsoluteFilenameAt( time );
-	params._flip           = _paramFlip->getValue();
 
 	return params;
 }

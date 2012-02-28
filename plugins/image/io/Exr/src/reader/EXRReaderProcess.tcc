@@ -73,15 +73,11 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		typedef image<gray_pixel_t, false> gray_image_t;
 
 		View dst = this->_dstView;
-		if( _params._flip )
-		{
-			dst = flipped_up_down_view( this->_dstView );
-		}
 
 		//TUTTLE_COUT( "read " << _params._outComponents );
-		switch( (EParamOutputComponents)_params._outComponents )
+		switch( (ETuttlePluginComponents)_params._outComponents )
 		{
-			case eParamOutputComponentsGray:
+			case eTuttlePluginComponentsGray:
 			{
 				gray_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename gray_image_t::view_t dv( view( img ) );
@@ -89,7 +85,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				copy_and_convert_pixels( dv, this->_dstView );
 				break;
 			}
-			case eParamOutputComponentsRGB:
+			case eTuttlePluginComponentsRGB:
 			{
 				rgb_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename rgb_image_t::view_t dv( view( img ) );
@@ -98,7 +94,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				fill_alpha_max( dst );
 				break;
 			}
-			case eParamOutputComponentsRGBA:
+			case eTuttlePluginComponentsRGBA:
 			{
 				rgba_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename rgba_image_t::view_t dv( view( img ) );
@@ -106,6 +102,9 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				copy_and_convert_pixels( dv, dst );
 				break;
 			}
+			default:
+				BOOST_THROW_EXCEPTION( exception::Unsupported()
+				    << exception::user( "ExrWriter: bit depth not supported" ) );
 		}
 	}
 	catch( boost::exception& e )
@@ -145,26 +144,29 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 	imageDims.y++;  // Height
 
 	// Get number of output components
-	switch( (EParamOutputComponents)params._outComponents )
+	switch( (ETuttlePluginComponents)params._outComponents )
 	{
-		case eParamOutputComponentsGray:
+		case eTuttlePluginComponentsGray:
 		{
 			// Copy 1 channel starting by the first channel (0)
 			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 1, 1 );
 			break;
 		}
-		case eParamOutputComponentsRGB:
+		case eTuttlePluginComponentsRGB:
 		{
 			// Copy 3 channels starting by the first channel (0)
 			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 3, 3 );
 			break;
 		}
-		case eParamOutputComponentsRGBA:
+		case eTuttlePluginComponentsRGBA:
 		{
 			// Copy 4 channels starting by the first channel (0)
 			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 4, 4 );
 			break;
 		}
+		default:
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+			    << exception::user( "ExrWriter: bit depth not supported" ) );
 	}
 }
 

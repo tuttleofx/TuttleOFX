@@ -42,7 +42,6 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 	Jpeg2000ReaderProcessParams params;
 
 	params._paramFilepath = getAbsoluteFilenameAt(time);
-	params._flip = _paramFlip->getValue();
 
 	return params;
 }

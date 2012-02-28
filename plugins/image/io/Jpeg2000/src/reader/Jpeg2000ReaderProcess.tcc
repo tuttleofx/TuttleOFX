@@ -38,10 +38,7 @@ void Jpeg2000ReaderProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	using namespace boost::gil;
 
 	View dstView = this->_dstView;
-	if( _params._flip )
-	{
-		dstView = flipped_up_down_view( dstView );
-	}
+
 	switch(_plugin._reader.components())
 	{
 		case 1:

@@ -70,20 +70,20 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kParamOutputComponents );
-    components->setLabel( "Components" );
-    components->appendOption( kParamOutputComponentsRGBA );
-    components->appendOption( kParamOutputComponentsRGB );
-    components->appendOption( kParamOutputComponentsGray );
+    OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
+    components->setLabel( kTuttlePluginComponentsLabel );
+    components->appendOption( kTuttlePluginComponentsGray );
+    components->appendOption( kTuttlePluginComponentsRGB );
+    components->appendOption( kTuttlePluginComponentsRGBA );
     components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    components->setDefault( eParamComponentsRGBA );
+    components->setDefault( eTuttlePluginComponentsRGBA );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-    bitDepth->setLabel( "Bit depth" );
+    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( 1 );
+    bitDepth->setDefault( eTuttlePluginBitDepth8 );
 
     describeWriterParamsInContext( desc, context );
 }

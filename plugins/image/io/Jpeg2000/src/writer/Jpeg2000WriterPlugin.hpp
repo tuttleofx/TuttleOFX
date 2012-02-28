@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_JPEG2000_WRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_JPEG2000_WRITER_PLUGIN_HPP_
 
+#include "Jpeg2000WriterDefinitions.hpp"
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
 namespace tuttle {
@@ -10,11 +11,10 @@ namespace writer {
 
 struct Jpeg2000ProcessParams
 {
-	std::string _filepath; ///< filepath
-	int _bitDepth;         ///< Precision (in bits)
-	int _cineProfil;       ///< Cinema Profile
-	bool _lossless;        ///< Lossless compression
-	bool _flip;            ///< Vertically flip the image
+	std::string           _filepath; ///< filepath
+	ETuttlePluginBitDepth _bitDepth;         ///< Precision (in bits)
+	int                   _cineProfil;       ///< Cinema Profile
+	bool                  _lossless;        ///< Lossless compression
 };
 
 /**
@@ -27,7 +27,7 @@ public:
 
 public:
 	Jpeg2000ProcessParams getProcessParams(const OfxTime time);
-	
+
 	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
 	void render( const OFX::RenderArguments &args );

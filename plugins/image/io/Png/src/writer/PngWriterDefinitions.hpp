@@ -1,30 +1,25 @@
 #ifndef _PNGWRITER_DEFINITIONS_HPP_
 #define _PNGWRITER_DEFINITIONS_HPP_
 
-#include <tuttle/plugin/context/WriterDefinition.hpp>
 #include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/context/WriterDefinition.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace png {
 namespace writer {
 
-enum EParamBitDepth
+enum ETuttlePluginBitDepth
 {
-	eParamBitDepth8 = 0,
-	eParamBitDepth16
+	eTuttlePluginBitDepth8 = 0,
+	eTuttlePluginBitDepth16
 };
 
-static const std::string kParamOutputComponents     = "components";
-static const std::string kParamOutputComponentsRGBA = "rgba";
-static const std::string kParamOutputComponentsRGB  = "rgb";
-static const std::string kParamOutputComponentsGray = "gray";
-
-enum EParamComponents
+enum ETuttlePluginComponents
 {
-	eParamComponentsRGBA = 0,
-	eParamComponentsRGB,
-	eParamComponentsGray
+	eTuttlePluginComponentsGray = 0,
+	eTuttlePluginComponentsRGB,
+	eTuttlePluginComponentsRGBA
 };
 
 }

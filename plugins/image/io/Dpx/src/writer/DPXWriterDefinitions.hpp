@@ -8,16 +8,23 @@ namespace plugin {
 namespace dpx {
 namespace writer {
 
-enum EParamBitDepth
+enum ETuttlePluginBitDepth
 {
-	eParamBitDepth8 = 0,
-	eParamBitDepth10,
-	eParamBitDepth12,
-	eParamBitDepth16,
-	eParamBitDepth32
+	eTuttlePluginBitDepth8 = 0,
+#ifndef TUTTLE_PRODUCTION
+	eTuttlePluginBitDepth10,
+	eTuttlePluginBitDepth12,
+#endif
+	eTuttlePluginBitDepth16
 };
 
-static const std::string kParamComponentsType = "componentsType";
+enum ETuttlePluginComponents
+{
+	eTuttlePluginComponentsRGB = 0,
+	eTuttlePluginComponentsRGBA,
+	eTuttlePluginComponentsABGR
+};
+
 static const std::string kParamCompressed     = "compressed";
 
 }

@@ -17,15 +17,15 @@ namespace reader {
 void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     desc.setLabels(
-        "TuttleJpeg2000Reader",
-        "Jpeg2000Reader",
-        "Jpeg2000 image reader" );
+	"TuttleJpeg2000Reader",
+	"Jpeg2000Reader",
+	"Jpeg2000 image reader" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
     desc.setDescription(
-        "Jpeg2000 io.\n"
-        "Plugin is used to read jpeg 2000 files."
-        );
+	"Jpeg2000 io.\n"
+	"Plugin is used to read jpeg 2000 files."
+	);
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextReader );
@@ -55,11 +55,11 @@ void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                   OFX::EContext context )
+						   OFX::EContext context )
 {
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-//	srcClip->addSupportedComponent( OFX::ePixelComponentRGB ); /// @todo: support RGB
+//	dstClip->addSupportedComponent( OFX::ePixelComponentRGB ); /// @todo: support RGB
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
@@ -73,7 +73,7 @@ void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
  * @return  plugin instance
  */
 OFX::ImageEffect* Jpeg2000ReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+							    OFX::EContext context )
 {
     return new Jpeg2000ReaderPlugin(handle);
 }

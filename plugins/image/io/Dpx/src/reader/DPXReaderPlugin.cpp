@@ -25,7 +25,6 @@ DPXReaderProcessParams DPXReaderPlugin::getProcessParams( const OfxTime time )
 	DPXReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
-	params._flip = _paramFlip->getValue();
 
 	return params;
 }
@@ -44,8 +43,8 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		TUTTLE_COUT( headerStr.str() );
 
 		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             headerStr.str() );
+			     "", // No XML resources
+			     headerStr.str() );
 	}
 }
 

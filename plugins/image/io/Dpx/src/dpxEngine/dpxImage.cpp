@@ -554,6 +554,11 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 			{
 				break;
 			}
+			// 10 bits doesn't need convertion
+			case 10:
+			{
+				break;
+			}
 			// Need short swap
 			case 12:
 			{

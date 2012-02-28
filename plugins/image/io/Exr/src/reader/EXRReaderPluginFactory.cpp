@@ -57,13 +57,13 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 
 	describeReaderParamsInContext( desc, context );
 
-	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kParamOutputComponents );
-	outComponents->setLabel( "Components" );
-	outComponents->appendOption( kParamOutputComponentsGray );
-	outComponents->appendOption( kParamOutputComponentsRGB );
-	outComponents->appendOption( kParamOutputComponentsRGBA );
+	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kTuttlePluginComponents );
+	outComponents->setLabel( kTuttlePluginComponentsLabel );
+	outComponents->appendOption( kTuttlePluginComponentsGray );
+	outComponents->appendOption( kTuttlePluginComponentsRGB );
+	outComponents->appendOption( kTuttlePluginComponentsRGBA );
 	outComponents->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outComponents->setDefault( eParamOutputComponentsRGB );
+	outComponents->setDefault( eTuttlePluginComponentsRGB );
 
 	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kParamOutputRedIs );
 	outRedIs->appendOption( "0" );

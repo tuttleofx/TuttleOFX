@@ -26,7 +26,6 @@ PngReaderProcessParams PngReaderPlugin::getProcessParams( const OfxTime time )
 	PngReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
-	params._flip = _paramFlip->getValue();
 	return params;
 }
 

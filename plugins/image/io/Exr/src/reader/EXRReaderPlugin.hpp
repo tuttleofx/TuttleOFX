@@ -13,7 +13,6 @@ struct EXRReaderProcessParams
 {
 	std::string _filepath;      ///< filepath
 	int _outComponents;         ///< Components type
-	bool _flip;
 };
 
 /**
