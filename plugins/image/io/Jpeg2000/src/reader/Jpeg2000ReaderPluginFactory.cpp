@@ -59,7 +59,7 @@ void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 {
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-//	dstClip->addSupportedComponent( OFX::ePixelComponentRGB ); /// @todo: support RGB
+    dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 

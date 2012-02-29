@@ -127,6 +127,7 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     bitDepth->setLabel( "Bit depth" );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
+    bitDepth->appendOption( kTuttlePluginBitDepth16f );
     bitDepth->appendOption( kTuttlePluginBitDepth32 );
     bitDepth->appendOption( kTuttlePluginBitDepth32f );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );

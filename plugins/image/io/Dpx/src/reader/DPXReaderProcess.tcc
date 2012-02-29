@@ -227,6 +227,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					}
 					copy_and_convert_pixels( vw16, dst );
 					break;
+
 				}
 			}
 			break;
@@ -248,11 +249,13 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
+					BOOST_THROW_EXCEPTION( exception::Failed()
+						<< exception::dev() + "Unsupported dpx file format (RGBA12 byte packed). " );
 					rgba12_packed_view_t vw = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 										    ( rgba12_packed_pixel_t* )( _dpxImage.data() ),
 										    _dpxImage.width() * sizeof( uint64_t ) );
 
-					copy_and_convert_pixels( vw, dst );
+					//copy_and_convert_pixels( vw, dst );
 					break;
 				}
 			}
@@ -275,11 +278,14 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
+					BOOST_THROW_EXCEPTION( exception::Failed()
+						<< exception::dev() + "Unsupported dpx file format (ABGR12 byte packed). " );
+/*
 					abgr12_packed_view_t vw = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 										    ( abgr12_packed_pixel_t* )( _dpxImage.data() ),
 										    _dpxImage.width() * sizeof( uint64_t ) );
 
-					copy_and_convert_pixels( vw, dst );
+					//copy_and_convert_pixels( vw, dst );*/
 					break;
 				}
 			}

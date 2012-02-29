@@ -7,6 +7,8 @@
 
 #include <imageio.h>
 
+#include "../Exr/src/half/gilHalf.hpp"
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -43,7 +45,6 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 
 	try
 	{
-		/// @todo tuttle: use params._components
 		switch( (int) params._bitDepth )
 		{
 			case eTuttlePluginBitDepth8:
@@ -77,6 +78,25 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 						break;
 					case eTuttlePluginComponentsRGB:
 						writeImage<rgb16_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "ExrWriter: components not supported" ) );
+				}
+				break;
+			}
+			case eTuttlePluginBitDepth16f:
+			{
+				switch( params._components )
+				{
+					case eTuttlePluginComponentsGray:
+						writeImage<gray16h_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eTuttlePluginComponentsRGBA:
+						writeImage<rgba16h_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
+						break;
+					case eTuttlePluginComponentsRGB:
+						writeImage<rgb16h_image_t>( this->_srcView, params._filepath, params._bitDepth, params._components );
 						break;
 					default:
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
@@ -172,6 +192,10 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 			break;
 		case eTuttlePluginBitDepth16:
 			oiioBitDepth = TypeDesc::UINT16;
+			sizeOfChannel = 2;
+			break;
+		case eTuttlePluginBitDepth16f:
+			oiioBitDepth = TypeDesc::HALF;
 			sizeOfChannel = 2;
 			break;
 		case eTuttlePluginBitDepth32:

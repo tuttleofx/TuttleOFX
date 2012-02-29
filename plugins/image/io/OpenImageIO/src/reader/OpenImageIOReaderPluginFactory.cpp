@@ -46,12 +46,14 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     extension.push_back( "pnm" );
     extension.push_back( "ppm" );
     extension.push_back( "pic" );
+    extension.push_back( "psd" );
     extension.push_back( "rgbe" );
     extension.push_back( "sgi" );
     extension.push_back( "tga" );
     extension.push_back( "tif" );
     extension.push_back( "tiff" );
     extension.push_back( "tpic" );
+    extension.push_back( "tx" );
     extension.push_back( "webp" );
 
     std::string listOfExt;

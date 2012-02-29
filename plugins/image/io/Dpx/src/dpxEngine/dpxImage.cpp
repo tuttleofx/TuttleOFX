@@ -605,30 +605,6 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 	return pData;
 }
 
-inline const std::size_t DpxImage::components() const
-{
-	switch( componentsType() )
-	{
-		case eCompTypeR8G8B8:
-		case eCompTypeR10G10B10:
-		case eCompTypeR12G12B12:
-		case eCompTypeR16G16B16:
-			return 3;
-		case eCompTypeR8G8B8A8:
-		case eCompTypeA8B8G8R8:
-		case eCompTypeR10G10B10A10:
-		case eCompTypeA10B10G10R10:
-		case eCompTypeR12G12B12A12:
-		case eCompTypeA12B12G12R12:
-		case eCompTypeR16G16B16A16:
-		case eCompTypeA16B16G16R16:
-			return 4;
-		default:
-			break;
-	}
-	return 0;
-}
-
 const std::size_t DpxImage::dataSize() const
 {
 	boost::uint16_t packing = _header.packing();

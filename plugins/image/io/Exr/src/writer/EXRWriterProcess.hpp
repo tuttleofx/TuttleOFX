@@ -40,6 +40,9 @@ protected:
 	EXRWriterProcessParams _params;
 
 	template<class WPixel>
+	void writeGrayImage( View& src, std::string& filepath, Imf::PixelType pixType );
+
+	template<class WPixel>
 	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType );
 
 };

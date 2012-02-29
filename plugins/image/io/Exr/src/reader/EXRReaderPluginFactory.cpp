@@ -50,18 +50,18 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 						OFX::EContext               context )
 {
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	describeReaderParamsInContext( desc, context );
 
 	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kTuttlePluginComponents );
 	outComponents->setLabel( kTuttlePluginComponentsLabel );
-	outComponents->appendOption( kTuttlePluginComponentsGray );
 	outComponents->appendOption( kTuttlePluginComponentsRGB );
 	outComponents->appendOption( kTuttlePluginComponentsRGBA );
+	outComponents->appendOption( kTuttlePluginComponentsGray );
 	outComponents->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	outComponents->setDefault( eTuttlePluginComponentsRGB );
 
@@ -70,8 +70,6 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	outRedIs->appendOption( "1" );
 	outRedIs->appendOption( "2" );
 	outRedIs->appendOption( "3" );
-	/*outRedIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outRedIs->setEvaluateOnChange( true );*/
 	outRedIs->setLabel( "Red is" );
 	outRedIs->setDefault( 0 );
 

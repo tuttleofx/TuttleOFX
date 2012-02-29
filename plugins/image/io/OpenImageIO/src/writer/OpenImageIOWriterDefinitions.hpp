@@ -13,6 +13,7 @@ enum ETuttlePluginBitDepth
 {
 	eTuttlePluginBitDepth8 = 0,
 	eTuttlePluginBitDepth16,
+	eTuttlePluginBitDepth16f,
 	eTuttlePluginBitDepth32,
 	eTuttlePluginBitDepth32f
 };

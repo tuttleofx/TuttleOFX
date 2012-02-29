@@ -52,13 +52,11 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     srcClip->setSupportsTiles( kSupportTiles );
 
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Controls
@@ -74,7 +72,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     componentsType->appendOption( kTuttlePluginComponentsRGBA );
     componentsType->appendOption( kTuttlePluginComponentsABGR );
     componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    componentsType->setDefault( 1 );
+    componentsType->setDefault( 0 );
 
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
     bitDepth->setLabel( kTuttlePluginBitDepthLabel );
@@ -86,7 +84,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 #ifdef TUTTLE_PRODUCTION
-    bitDepth->setDefault( eTuttlePluginBitDepth8 );
+    bitDepth->setDefault( 1 );
 #else
     bitDepth->setDefault( eTuttlePluginBitDepth10 );
 #endif

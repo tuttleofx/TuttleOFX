@@ -48,14 +48,12 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 						OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	// Exr only supports RGB(A)
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );

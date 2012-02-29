@@ -65,11 +65,11 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 
+	DpxImage dpxImg;
+	dpxImg.readHeader( filename );
+
 	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
-		DpxImage dpxImg;
-		dpxImg.readHeader( filename );
-
 		OFX::EBitDepth bd = OFX::eBitDepthNone;
 		switch( dpxImg.componentsType() )
 		{
@@ -99,7 +99,26 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 		clipPreferences.setClipBitDepth( *_clipDst, bd );
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	switch( dpxImg.components() )
+	{
+		case 3:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+			break;
+		}
+
+		case 4:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+		default:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+	}
+
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 /**
@@ -118,10 +137,14 @@ void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
-			doGilRender<DPXReaderProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			doGilRender<DPXReaderProcess, false, rgba_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentRGB:
+		{
+			doGilRender<DPXReaderProcess, false, rgb_layout_t>( *this, args, bitDepth );
+			return;
+		}
 		case OFX::ePixelComponentAlpha:
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:

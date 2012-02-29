@@ -141,7 +141,8 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( exception::ImageFormat() );
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
 	}
 
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
