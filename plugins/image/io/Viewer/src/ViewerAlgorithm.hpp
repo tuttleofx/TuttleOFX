@@ -32,6 +32,8 @@ int w_out, h_out;
 
 int angle_cam = 60;
 
+char loadedTexture = 0;
+
 void reshape(int width,int height)
 {
     int w, h;
@@ -58,12 +60,14 @@ void reshape(int width,int height)
 template< typename Pixel_t>
 void loadNewTexture( const Pixel_t& view  )
 {
-	TUTTLE_COUT("don't find template to load the texture.");
+    loadedTexture = 0;
+    TUTTLE_COUT("don't find template to load the texture.");
 }
 
 template<>
 void loadNewTexture( const boost::gil::gray8_view_t& src )
 {
+    loadedTexture = 1;
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE8, src.width(), src.height(), 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataPtr );
 
@@ -79,6 +83,7 @@ void loadNewTexture( const boost::gil::gray8_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgb8_view_t& src )
 {
+    loadedTexture = 2;
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
     glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, dataPtr );
 
@@ -94,6 +99,7 @@ void loadNewTexture( const boost::gil::rgb8_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgba8_view_t& src )
 {
+    loadedTexture = 3;
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
     glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, dataPtr );
 
@@ -109,6 +115,7 @@ void loadNewTexture( const boost::gil::rgba8_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::gray16_view_t& src )
 {
+    loadedTexture = 4;
     short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE16, src.width(), src.height(), 0, GL_LUMINANCE, GL_UNSIGNED_SHORT, dataPtr );
@@ -125,6 +132,7 @@ void loadNewTexture( const boost::gil::gray16_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgb16_view_t& src )
 {
+    loadedTexture = 5;
     short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_UNSIGNED_SHORT, dataPtr );
@@ -141,6 +149,7 @@ void loadNewTexture( const boost::gil::rgb16_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgba16_view_t& src )
 {
+    loadedTexture = 6;
     short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_UNSIGNED_SHORT, dataPtr );
@@ -157,6 +166,7 @@ void loadNewTexture( const boost::gil::rgba16_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::gray32_view_t& src )
 {
+    loadedTexture = 7;
     float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src.width(), src.height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
@@ -173,6 +183,7 @@ void loadNewTexture( const boost::gil::gray32_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgb32_view_t& src )
 {
+    loadedTexture = 8;
     float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_FLOAT, dataPtr );
@@ -189,6 +200,7 @@ void loadNewTexture( const boost::gil::rgb32_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgba32_view_t& src )
 {
+    loadedTexture = 9;
     float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
@@ -205,6 +217,7 @@ void loadNewTexture( const boost::gil::rgba32_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::gray32f_view_t& src )
 {
+    loadedTexture = 10;
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src.width(), src.height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
@@ -221,6 +234,7 @@ void loadNewTexture( const boost::gil::gray32f_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgb32f_view_t& src )
 {
+    loadedTexture = 11;
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_FLOAT, dataPtr );
@@ -237,6 +251,7 @@ void loadNewTexture( const boost::gil::rgb32f_view_t& src )
 template<>
 void loadNewTexture( const boost::gil::rgba32f_view_t& src )
 {
+    loadedTexture = 12;
     unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
 
     glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
@@ -279,6 +294,28 @@ void idle()
     glutPostRedisplay();
 }
 
+void displayInformations()
+{
+	std::string textureType;
+	switch( loadedTexture )
+	{
+		case 0 : textureType = "undefined type"; break;
+		case 1 : textureType = "Gray 8  bits"; break;
+		case 2 : textureType = "RGB  8  bits"; break;
+		case 3 : textureType = "RGBA 8  bits"; break;
+		case 4 : textureType = "Gray 16 bits"; break;
+		case 5 : textureType = "RGB  16 bits"; break;
+		case 6 : textureType = "RGBA 16 bits"; break;
+		case 7 : textureType = "Gray 32 bits"; break;
+		case 8 : textureType = "RGB  32 bits"; break;
+		case 9 : textureType = "RGBA 32 bits"; break;
+		case 10: textureType = "Gray 32 float"; break;
+		case 11: textureType = "RGB  32 float"; break;
+		case 12: textureType = "RGBA 32 float"; break;
+	}
+	std::cout << textureType << std::endl;
+}
+
 void keyboard(unsigned char k, int x, int y)
 {
     switch (k)
@@ -288,6 +325,9 @@ void keyboard(unsigned char k, int x, int y)
 	    return;
 	case 27: // ESCAPE key
 	    glutDestroyWindow(windowID);
+	    return;
+	case 'i': // ESCAPE key
+	    displayInformations();
 	    return;
 	case SPACEBAR:
 	    glutDestroyWindow(windowID);
