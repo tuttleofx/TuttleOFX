@@ -9,7 +9,7 @@ CYAN='\e[1;36m'
 NC='\e[0m'  # No Color
 
 
-export TUTTLE_ROOT=`pwd`/../../dist/linux/release
+export TUTTLE_ROOT=`pwd`/../../../../dist/linux/release
 export OFX_PLUGIN_PATH=$TUTTLE_ROOT/plugin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUTTLE_ROOT/lib
 export PATH=$PATH:$TUTTLE_ROOT/bin
