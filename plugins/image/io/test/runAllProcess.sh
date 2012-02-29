@@ -1,5 +1,5 @@
 #!/bin/bash
 
 ./generateTestImages.sh
-./diff.sh
-./clean.sh
+./checkTestImages.sh
+./cleanTestImages.sh

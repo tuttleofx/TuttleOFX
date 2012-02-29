@@ -39,16 +39,16 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUTTLE_ROOT/lib
 export PATH=$PATH:$TUTTLE_ROOT/bin
 export SAM_PATH=$TUTTLE_ROOT/bin
 
-if [ ! -d "$TUTTLE_ROOT/.tuttleofxTest" ]; then
-   mkdir $TUTTLE_ROOT/.tuttleofxTest           
+if [ ! -d "$HOME/.tuttleofx" ]; then
+   mkdir $HOME/.tuttleofx           
 fi
 
-export TUTTLE_HOME=$TUTTLE_ROOT/.tuttleofxTest
+export TUTTLE_HOME=$HOME/.tuttleofx
 
 if [[ $# == 1 ]] ; then
-	sam-do reader $* // viewer > /dev/null
+	sam-do reader $* // viewer #> /dev/null
 else
-	sam-do $* // viewer > /dev/null
+	sam-do $* // viewer #> /dev/null
 fi
 
 echo -e "$NC"
