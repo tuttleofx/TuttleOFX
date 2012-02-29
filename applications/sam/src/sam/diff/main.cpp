@@ -60,7 +60,7 @@ EImageStatus diffImageStatus( Graph::Node& read1, Graph::Node& read2, Graph::Nod
 		read2.getParam( "filename" ).setValue( filename2.string() );
 		graph.compute( stat );
 		std::cout << "diff = ";
-		for( unsigned int i = 0; i<4; ++i )
+		for( unsigned int i = 0; i<3; ++i )
 		{
 			std::cout << stat.getParam( "quality" ).getDoubleValueAtIndex(i) << "  ";
 		}
@@ -242,6 +242,7 @@ int main( int argc, char** argv )
 
 			TUTTLE_COUT( "diff if sequence have black images." );
 			TUTTLE_COUT( "This tools process the PSNR of an image, and if it's null, the image is considered black." );
+			TUTTLE_COUT( "Only compare RGB layout, not Alpha." );
 
 			TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
 			TUTTLE_COUT( desc );
