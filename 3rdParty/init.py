@@ -171,7 +171,7 @@ allLibs = [
 		('jpeg',        'http://freefr.dl.sourceforge.net/project/libjpeg/libjpeg/6b/jpegsrc.v6b.tar.gz'                            , 'jpeg-6b'                        , False), #if not windows else ('jpeg'    , 'http://netcologne.dl.sourceforge.net/project/libjpeg/libjpeg/6b/jpegsr6.zip'                 , '', False),
 		('openjpeg',    'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'                                       , 'openjpeg_v1_4_sources_r697'     , False),
 		('ffmpeg',      'http://ffmpeg.org/releases/ffmpeg-0.8.2.tar.bz2'                                                           , 'ffmpeg-0.8.2'                   , False),
-		('openimageio', 'https://github.com/OpenImageIO/oiio/tarball/RB-1.0/OpenImageIO-oiio-Release-1.0.0-0-g5b37f1c.tar.gz'       , 'OpenImageIO-oiio-5b37f1c'       , False),
+		('openimageio', 'https://github.com/OpenImageIO/oiio/tarball/RB-1.0/OpenImageIO-oiio-Release-1.0.0-0-g5b37f1c.tar.gz'       , 'OpenImageIO-oiio-1d4673f'       , False),
 		('opencolorio', 'http://github.com/imageworks/OpenColorIO/tarball/v1.0.4/imageworks-OpenColorIO-v1.0.4-0-gc0a9a92.tar.gz'   , 'imageworks-OpenColorIO-12fb440' , False),
 		('imagemagick', 'http://www.imagemagick.org/download/ImageMagick.tar.gz'                                                    , 'ImageMagick-6.7.5-6'            , False)
 	]
