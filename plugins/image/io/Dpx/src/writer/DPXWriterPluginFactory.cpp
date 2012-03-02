@@ -60,8 +60,8 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
-    filename->setLabel( "Filename" );
+    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+    filename->setLabel( kTuttlePluginFilenameLabel );
     filename->setStringType( OFX::eStringTypeFilePath );
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
@@ -77,22 +77,17 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
     bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
-#ifndef TUTTLE_PRODUCTION
     bitDepth->appendOption( kTuttlePluginBitDepth10 );
     bitDepth->appendOption( kTuttlePluginBitDepth12 );
-#endif
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-#ifdef TUTTLE_PRODUCTION
-    bitDepth->setDefault( 1 );
-#else
     bitDepth->setDefault( eTuttlePluginBitDepth10 );
-#endif
 
-    OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
-    compressed->setLabel( "Remove unused bits (bit streaming)" );
+
+    OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamPacket );
+    compressed->setLabel( kParamPacketLabel );
     compressed->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    compressed->setDefault( false );
+    compressed->setDefault( true );
 
     describeWriterParamsInContext( desc, context );
 }

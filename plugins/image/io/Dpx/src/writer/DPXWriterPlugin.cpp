@@ -19,7 +19,7 @@ DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
 	_componentsType = fetchChoiceParam( kTuttlePluginComponents );
-	_compressed     = fetchBooleanParam( kParamCompressed );
+	_packed         = fetchBooleanParam( kParamPacket );
 }
 
 DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
@@ -29,7 +29,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 	params._filepath       = getAbsoluteFilenameAt( time );
 	params._componentsType = static_cast<ETuttlePluginComponents>( _componentsType->getValue() );
 	params._bitDepth       = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
-	params._compressed     = _compressed->getValue();
+	params._packed         = _packed->getValue();
 
 	return params;
 }

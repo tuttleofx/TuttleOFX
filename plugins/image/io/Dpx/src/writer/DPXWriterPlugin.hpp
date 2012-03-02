@@ -14,7 +14,7 @@ struct DPXWriterProcessParams
 	std::string             _filepath;       ///< filepath
 	ETuttlePluginBitDepth   _bitDepth;               ///< Output bit depth
 	ETuttlePluginComponents _componentsType;         ///< Components type
-	bool                    _compressed;            ///< Bit streaming
+	bool                    _packed;            ///< Bit streaming
 };
 
 /**
@@ -35,7 +35,7 @@ public:
 
 protected:
 	OFX::ChoiceParam*    _componentsType;  ///< Dpx components type
-	OFX::BooleanParam*   _compressed;      ///< Dpx is bit streamed
+	OFX::BooleanParam*   _packed;          ///< Dpx is bit streamed
 };
 
 }

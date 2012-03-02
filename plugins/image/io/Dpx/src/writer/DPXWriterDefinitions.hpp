@@ -11,10 +11,8 @@ namespace writer {
 enum ETuttlePluginBitDepth
 {
 	eTuttlePluginBitDepth8 = 0,
-#ifndef TUTTLE_PRODUCTION
 	eTuttlePluginBitDepth10,
 	eTuttlePluginBitDepth12,
-#endif
 	eTuttlePluginBitDepth16
 };
 
@@ -25,7 +23,8 @@ enum ETuttlePluginComponents
 	eTuttlePluginComponentsABGR
 };
 
-static const std::string kParamCompressed     = "compressed";
+static const std::string kParamPacket      = "packed";
+static const std::string kParamPacketLabel = "Packed";
 
 }
 }
