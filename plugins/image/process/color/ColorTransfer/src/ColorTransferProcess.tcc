@@ -68,7 +68,7 @@ struct ColorParams
 
 template<class View>
 ColorTransferProcess<View>::ColorTransferProcess( ColorTransferPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }
@@ -149,7 +149,7 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 		}
 		// _srcRefPixelRod = _srcRef->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_srcRefPixelRod = _plugin._clipSrcRef->getPixelRod( args.time, args.renderScale );
-		this->_srcRefView = tuttle::plugin::getView<View > ( this->_srcRef.get( ), _srcRefPixelRod );
+		this->_srcRefView = getView( this->_srcRef.get(), _srcRefPixelRod );
 	}
 	else
 	{
@@ -169,7 +169,7 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 	}
 	// _dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_dstRefPixelRod = _plugin._clipDstRef->getPixelRod( args.time, args.renderScale );
-	this->_dstRefView = tuttle::plugin::getView<View > ( this->_dstRef.get( ), _dstRefPixelRod );
+	this->_dstRefView = getView( this->_dstRef.get( ), _dstRefPixelRod );
 
 	// analyse srcRef and dstRef
 	Pixel srcRefDeviation, dstRefDeviation;

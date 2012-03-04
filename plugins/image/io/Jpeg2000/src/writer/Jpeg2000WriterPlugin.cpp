@@ -34,28 +34,9 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 {
 	Jpeg2000ProcessParams params;
 	params._filepath = getAbsoluteFilenameAt(time);
-	switch( static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()) )
-	{
-		case eParamBitDepth8:
-			params._bitDepth = 8;
-			break;
-		case eParamBitDepth12:
-			params._bitDepth = 12;
-			break;
-		case eParamBitDepth16:
-			params._bitDepth = 16;
-			break;
-		case eParamBitDepth32:
-			params._bitDepth = 32;
-			break;
-		default:
-			BOOST_THROW_EXCEPTION( exception::Value()
-				<< exception::dev("Incorrect bit depth.") );
-			break;
-	}
+	params._bitDepth = ( ETuttlePluginBitDepth ) this->_paramBitDepth->getValue();
 	params._cineProfil = _paramCineProfil->getValue();
 	params._lossless = _paramLossless->getValue();
-	params._flip = _paramFlip->getValue();
 
 	return params;
 }
@@ -87,7 +68,7 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
 {
 	WriterPlugin::render( args );
-	
+
 	doGilRender<Jpeg2000WriterProcess>( *this, args );
 }
 

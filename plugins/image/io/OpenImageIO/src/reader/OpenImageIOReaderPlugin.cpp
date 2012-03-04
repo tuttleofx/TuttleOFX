@@ -26,7 +26,6 @@ OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams( const 
 	OpenImageIOReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
-	params._flip     = _paramFlip->getValue();
 	return params;
 }
 
@@ -130,7 +129,22 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 	}
 
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	switch( spec.nchannels )
+	{
+		case 1 :
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+			break;
+		case 3 :
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+			break;
+		case 4 :
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		default:
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+	}
+
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 	in->close();
 }

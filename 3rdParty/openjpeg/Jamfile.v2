@@ -26,8 +26,11 @@ project
 ###############################################################################
 alias	headers		: [ glob-tree *.h ] ;
 
-lib	openjpeg		: 
+lib	openjpeg		:
 			  [ glob libopenjpeg/*.c  ]
+			  ../libpng/<link>static
+			  ../lcms/<link>static
+			  ../libtiff/<link>static
 			;
 
 install dist

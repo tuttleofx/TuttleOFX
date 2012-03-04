@@ -34,8 +34,8 @@ lib	openimageio	:
 			       src/libutil/*.cpp
 			       src/libtexture/*.cpp
 			       src/bmp.imageio/*.cpp
-			#       src/cineon.imageio/*.cpp
-			#       src/cineon.imageio/libcineon/*.cpp
+			       src/cineon.imageio/*.cpp
+			       src/cineon.imageio/libcineon/*.cpp
 			       src/dds.imageio/*.cpp
 			       src/dds.imageio/squich/*.cpp
 			       src/dpx.imageio/*.cpp
@@ -50,17 +50,21 @@ lib	openimageio	:
 			       src/openexr.imageio/*.cpp
 			       src/png.imageio/*.cpp
 			       src/pnm.imageio/*.cpp
+			       src/psd.imageio/*.cpp
 			       src/ptex.imageio/*.cpp
 			       src/ptex.imageio/ptex/*.cpp
+			       src/rla.imageio/*.cpp
 			       src/sgi.imageio/*.cpp
 			       src/socket.imageio/*.cpp
 			       src/softimage.imageio/*.cpp
 			       src/targa.imageio/*.cpp
 			       src/tiff.imageio/*.cpp
+			#       src/webp.imageio/*.cpp
 			       src/zfile.imageio/*.cpp
 			 ]
 			../openexr/<link>static
-			../jasper/<link>static
+			#../jasper/<link>static
+			../openjpeg/<link>static
 			../libpng/<link>static
 			../libtiff/<link>static
 			../jpeg/<link>static

@@ -29,7 +29,13 @@ protected:
 	void setup( const OFX::RenderArguments& args );
 
 	template<class WImage>
-	void writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const int packing );
+	void write10bitsImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const bool packing );
+
+	template<class WImage>
+	void writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const bool packing );
+
+	template<class SRC_V, class T>
+	boost::uint8_t* viewToBitStream( SRC_V& src, const int nc, const int channelSize );
 
 public:
 	DPXWriterProcess( DPXWriterPlugin& instance );

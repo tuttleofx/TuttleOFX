@@ -79,7 +79,7 @@ public:
 
 	std::string getIdentifier() const
 	{
-		if( isOutput() )
+		if( isOutput() || ! isConnected() )
 			return getFullName();
 		else
 			return getConnectedClipFullName();

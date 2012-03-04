@@ -20,7 +20,7 @@ using namespace boost::gil;
 
 template<class View>
 EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -44,89 +44,91 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( ( procWindowRoW == this->_dstPixelRod ) );
 	BOOST_ASSERT( ( this->_srcPixelRod == this->_dstPixelRod ) );
-	
+
 	View src = this->_srcView;
-	if( _params._flip )
-	{
-		src = flipped_up_down_view( this->_srcView );
-	}
 
 	try
 	{
 		switch( _params._bitDepth )
 		{
-			case eParamBitDepth16f:
+			case eTuttlePluginBitDepth16f:
 			{
 				switch( _params._componentsType )
 				{
-					case eGray:
+					case eTuttlePluginComponentsGray:
 					{
-						BOOST_THROW_EXCEPTION( exception::Unsupported()
-						    << exception::user( "ExrWriter: Gray not supported!" ) );
-						// writeImage<gray16h_pixel_t>(src, filepath, Imf::HALF);
+						writeGrayImage<gray16h_pixel_t>( src, _params._filepath, Imf::HALF );
 						break;
 					}
-					case eRGB:
+					case eTuttlePluginComponentsRGB:
 					{
 						writeImage<rgb16h_pixel_t>( src, _params._filepath, Imf::HALF );
 						break;
 					}
-					case eRGBA:
+					case eTuttlePluginComponentsRGBA:
 					{
 						writeImage<rgba16h_pixel_t>( src, _params._filepath, Imf::HALF );
 						break;
 					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Exr Writer: components not supported" ) );
 				}
 				break;
 			}
-			case eParamBitDepth32f:
+			case eTuttlePluginBitDepth32f:
 			{
 				switch( _params._componentsType )
 				{
-					case eGray:
+					case eTuttlePluginComponentsGray:
 					{
-						BOOST_THROW_EXCEPTION( exception::Unsupported()
-						    << exception::user( "ExrWriter: Gray not supported!" ) );
-						// writeImage<gray32f_pixel_t>(src, _params._filepath, Imf::FLOAT);
+						writeGrayImage<gray32f_pixel_t>(src, _params._filepath, Imf::FLOAT);
 						break;
 					}
-					case eRGB:
+					case eTuttlePluginComponentsRGB:
 					{
 						writeImage<rgb32f_pixel_t>( src, _params._filepath, Imf::FLOAT );
 						break;
 					}
-					case eRGBA:
+					case eTuttlePluginComponentsRGBA:
 					{
 						writeImage<rgba32f_pixel_t>( src, _params._filepath, Imf::FLOAT );
 						break;
 					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Exr Writer: components not supported" ) );
 				}
 				break;
 			}
-			case eParamBitDepth32:
+			case eTuttlePluginBitDepth32:
 			{
 				switch( _params._componentsType )
 				{
-					case eGray:
+					case eTuttlePluginComponentsGray:
 					{
-						BOOST_THROW_EXCEPTION( exception::Unsupported()
-						    << exception::user( "ExrWriter: Gray not supported!" ) );
-						// writeImage<gray32_pixel_t>(src, _params._filepath, Imf::FLOAT);
+						writeGrayImage<gray32_pixel_t>(src, _params._filepath, Imf::UINT);
 						break;
 					}
-					case eRGB:
+					case eTuttlePluginComponentsRGB:
 					{
 						writeImage<rgb32_pixel_t>( src, _params._filepath, Imf::UINT );
 						break;
 					}
-					case eRGBA:
+					case eTuttlePluginComponentsRGBA:
 					{
 						writeImage<rgba32_pixel_t>( src, _params._filepath, Imf::UINT );
 						break;
 					}
+					default:
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+						    << exception::user( "Exr Writer: components not supported" ) );
 				}
 				break;
 			}
+			default:
+				BOOST_THROW_EXCEPTION( exception::Unsupported()
+				    << exception::user( "Exr Writer: bit depth not supported" ) );
 		}
 	}
 	catch( exception::Common& e )
@@ -147,18 +149,17 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 template<class View>
 template<class WPixel>
-void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType )
+void EXRWriterProcess<View>::writeGrayImage( View& src, std::string& filepath, Imf::PixelType pixType )
 {
 	using namespace terry;
-	
+
 	std::size_t bitsTypeSize = 0;
 
-	typedef image<WPixel, true> image_t;
+	typedef image<WPixel, false> image_t;
 	typedef typename image_t::view_t view_t;
 	image_t img( src.width(), src.height() );
-        view_t  dvw( view( img ) );
-        View    flippedView = flipped_up_down_view( src );
-	copy_and_convert_pixels( clamp_view( flippedView ), dvw );
+	view_t  dvw( view( img ) );
+	copy_and_convert_pixels( clamp_view( src ), dvw );
 	Imf::Header header( src.width(), src.height() );
 	switch( pixType )
 	{
@@ -183,6 +184,70 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 			header.channels().insert( "Y", Imf::Channel( pixType ) );
 			break;
 		}
+		// RGB
+		// RGBA
+		default:
+			BOOST_THROW_EXCEPTION( exception::ImageFormat()
+			    << exception::user( "ExrWriter: incompatible image type" ) );
+			break;
+	}
+
+	Imf::OutputFile file( filepath.c_str(), header );
+	Imf::FrameBuffer frameBuffer;
+
+	switch( dvw.num_channels() )
+	{
+		// Gray
+		case 1:
+		{
+			char* pixelsY = (char*)boost::gil::interleaved_view_get_raw_data( dvw );
+			frameBuffer.insert( "Y", Imf::Slice( pixType, pixelsY, bitsTypeSize, bitsTypeSize * src.width() ) );
+			break;
+		}
+		// RGB
+		// RGBA
+		default:
+			BOOST_THROW_EXCEPTION( exception::ImageFormat()
+			    << exception::user( "ExrWriter: incompatible image type" ) );
+			break;
+	}
+	file.setFrameBuffer( frameBuffer );
+	// Finalize output
+	file.writePixels( src.height() );
+}
+
+
+template<class View>
+template<class WPixel>
+void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType )
+{
+	using namespace terry;
+
+	std::size_t bitsTypeSize = 0;
+
+	typedef image<WPixel, true> image_t;
+	typedef typename image_t::view_t view_t;
+	image_t img( src.width(), src.height() );
+	view_t  dvw( view( img ) );
+	copy_and_convert_pixels( clamp_view( src ), dvw );
+	Imf::Header header( src.width(), src.height() );
+	switch( pixType )
+	{
+		case Imf::HALF:
+			bitsTypeSize = sizeof( half );
+			break;
+		case Imf::FLOAT:
+			bitsTypeSize = sizeof( float );
+			break;
+		case Imf::UINT:
+			bitsTypeSize = sizeof( boost::uint32_t );
+			break;
+		default:
+			break;
+	}
+
+	switch( dvw.num_channels() )
+	{
 		case 3:
 		{
 			header.channels().insert( "R", Imf::Channel( pixType ) );
@@ -198,8 +263,11 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 			header.channels().insert( "A", Imf::Channel( pixType ) );
 			break;
 		}
+		// Gray
+		case 1:
 		default:
-			return;
+			BOOST_THROW_EXCEPTION( exception::ImageFormat()
+			    << exception::user( "ExrWriter: incompatible image type" ) );
 	}
 
 	Imf::OutputFile file( filepath.c_str(), header );
@@ -207,13 +275,6 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 
 	switch( dvw.num_channels() )
 	{
-		// Gray
-		case 1:
-		{
-			char* pixelsY = (char*)boost::gil::planar_view_get_raw_data( dvw, 0 );
-			frameBuffer.insert( "Y", Imf::Slice( pixType, pixelsY, bitsTypeSize, bitsTypeSize * src.width() ) );
-			break;
-		}
 		// RGB
 		case 3:
 		{
@@ -238,6 +299,8 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 			frameBuffer.insert( "A", Imf::Slice( pixType, pixelsA, bitsTypeSize, bitsTypeSize * src.width() ) );
 			break;
 		}
+		// Gray
+		case 1:
 		default:
 			BOOST_THROW_EXCEPTION( exception::ImageFormat()
 			    << exception::user( "ExrWriter: incompatible image type" ) );

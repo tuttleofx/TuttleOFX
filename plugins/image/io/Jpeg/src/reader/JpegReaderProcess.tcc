@@ -29,7 +29,7 @@ typedef any_image_t::view_t any_view_t;
 
 template<class View>
 JpegReaderProcess<View>::JpegReaderProcess( JpegReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -67,28 +67,21 @@ View& JpegReaderProcess<View>::readImage( View& dst )
 		jpeg_read_image( _params._filepath, anyImg );
 
 		any_view_t srcView = view( anyImg );
-		if( _params._flip )
-		{
-			srcView = flipped_up_down_view( srcView );
-		}
 		srcView = subimage_view( srcView, 0, 0, dst.width(), dst.height() );
 		copy_and_convert_pixels( srcView, dst );
 	}
 	catch( boost::exception& e )
 	{
-		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::dev( "Jpeg: Unable to open file." )
-			<< exception::filename( _params._filepath ) );
-		//e << exception::filename( _params._filepath );
-		//TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
-		//		throw;
+		e << exception::user( "Jpeg: Unable to open file." );
+		e << exception::filename( _params._filepath );
+		throw;
 	}
 	catch(... )
 	{
-		//		BOOST_THROW_EXCEPTION( exception::Unknown()
-		//			<< exception::user( "Unable to read image")
-		//			<< exception::filename(filepath) );
-		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Jpeg: Unable to open file." )
+			<< exception::dev( boost::current_exception_diagnostic_information() )
+			<< exception::filename( _params._filepath ) );
 	}
 	return dst;
 }

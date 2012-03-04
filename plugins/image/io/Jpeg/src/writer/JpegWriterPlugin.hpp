@@ -14,7 +14,6 @@ struct JpegWriterProcessParams
 	bool _premult;              ///< Premultiply by alpha or directly use RGB channels
 	int _bitDepth;              ///< Output bit depth
 	int _quality;
-	bool _flip;
 };
 
 /**

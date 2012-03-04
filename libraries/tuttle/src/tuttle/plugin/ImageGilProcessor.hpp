@@ -35,9 +35,6 @@ public:
 	typedef typename View::value_type Pixel;
 	typedef typename terry::image_from_view<View>::type Image;
 
-private:
-	unsigned int _nbThreads;
-
 protected:
 	OFX::ImageEffect& _effect; ///< effect to render with
 	OFX::RenderArguments _renderArgs; ///< render arguments
@@ -47,9 +44,13 @@ protected:
 	OfxPointI _dstPixelRodSize;
 	View _dstView; ///< image to process into
 
+private:
+	unsigned int _nbThreads;
+	EImageOrientation _imageOrientation;
+
 public:
 	/** @brief ctor */
-	ImageGilProcessor( OFX::ImageEffect& effect );
+	ImageGilProcessor( OFX::ImageEffect& effect, const EImageOrientation imageOrientation );
 	virtual ~ImageGilProcessor();
 
 	void setNoMultiThreading()                        { _nbThreads = 1; }
@@ -129,7 +130,12 @@ public:
 	 */
 	View getView( OFX::Image* img, const OfxRectI& rod ) const
 	{
-		return tuttle::plugin::getView<View>( img, rod );
+		return tuttle::plugin::getGilView<View>( img, rod, _imageOrientation );
+	}
+	template<typename CustomView>
+	CustomView getCustomView( OFX::Image* img, const OfxRectI& rod ) const
+	{
+		return tuttle::plugin::getGilView<CustomView>( img, rod, _imageOrientation );
 	}
 
 	/** @brief overridden from OFX::MultiThread::Processor. This function is called once on each SMP thread by the base class */
@@ -164,11 +170,11 @@ public:
 };
 
 template <class View>
-ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
+ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect, const EImageOrientation imageOrientation )
 	: OfxProgress( effect )
-	, _nbThreads( 0 )
-	,                 // auto, maximum allowable number of CPUs will be used
-	_effect( effect )
+	, _effect( effect )
+	, _nbThreads( 0 ) // auto, maximum allowable number of CPUs will be used
+	, _imageOrientation( imageOrientation )
 {
 	_renderArgs.renderWindow.x1 = _renderArgs.renderWindow.y1 = _renderArgs.renderWindow.x2 = _renderArgs.renderWindow.y2 = 0;
 	_renderArgs.renderScale.x   = _renderArgs.renderScale.y = 0;

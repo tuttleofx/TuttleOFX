@@ -18,37 +18,19 @@ using namespace boost::gil;
 DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_componentsType = fetchChoiceParam( kParamComponentsType );
-	_compressed     = fetchBooleanParam( kParamCompressed );
+	_componentsType = fetchChoiceParam( kTuttlePluginComponents );
+	_packed         = fetchBooleanParam( kParamPacket );
 }
 
 DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 {
 	DPXWriterProcessParams params;
 
-	params._componentsType = _componentsType->getValue();
-	params._compressed     = _compressed->getValue();
 	params._filepath       = getAbsoluteFilenameAt( time );
-	switch( static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() ) )
-	{
-		case eParamBitDepth8:
-			params._bitDepth = 8;
-			break;
-		case eParamBitDepth10:
-			params._bitDepth = 10;
-			break;
-		case eParamBitDepth12:
-			params._bitDepth = 12;
-			break;
-		case eParamBitDepth16:
-			params._bitDepth = 16;
-			break;
-		default:
-			BOOST_THROW_EXCEPTION( exception::Value()
-				<< exception::user() + "Incorrect bit depth." );
-			break;
-	}
-	params._flip = _paramFlip->getValue();
+	params._componentsType = static_cast<ETuttlePluginComponents>( _componentsType->getValue() );
+	params._bitDepth       = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
+	params._packed         = _packed->getValue();
+
 	return params;
 }
 
@@ -72,6 +54,10 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			return;
 		}
 		case OFX::ePixelComponentRGB:
+		{
+			doGilRender<DPXWriterProcess, false, boost::gil::rgb_layout_t>( *this, args, bitDepth );
+			return;
+		}
 		case OFX::ePixelComponentAlpha:
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:

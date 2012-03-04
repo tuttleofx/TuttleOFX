@@ -35,10 +35,10 @@ public:
 
 		// read in some of the signature bytes
 		io_error_if( fread( buf, 1, PNG_BYTES_TO_CHECK, get() ) != detail::PNG_BYTES_TO_CHECK,
-		             "png_check_validity: fail to read file" );
+			     "png_check_validity: fail to read file" );
 		// compare the first PNG_BYTES_TO_CHECK bytes of the signature.
 		io_error_if( png_sig_cmp( (png_bytep)buf, (png_size_t)0, detail::PNG_BYTES_TO_CHECK ) != 0,
-		             "png_check_validity: invalid png file" );
+			     "png_check_validity: invalid png file" );
 
 		_png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
 		io_error_if( _png_ptr == NULL, "png_get_file_size: fail to call png_create_write_struct()" );
@@ -72,8 +72,8 @@ public:
 		png_uint_32 width, height;
 
 		png_get_IHDR( _png_ptr, _info_ptr,
-		              &width, &height, &bit_depth, &color_type, &interlace_type,
-		              int_p_NULL, int_p_NULL );
+			      &width, &height, &bit_depth, &color_type, &interlace_type,
+			      int_p_NULL, int_p_NULL );
 	}
 
 	int get_bit_depth()      { return bit_depth; }
@@ -92,6 +92,25 @@ inline size_t png_read_precision( const std::string& filename )
 
 	m.read_header();
 	return m.get_bit_depth();
+}
+
+
+/// \ingroup PNG_IO
+/// \brief describes which color/alpha channels are present.
+///  PNG_COLOR_TYPE_GRAY        (bit depths 1, 2, 4, 8, 16)
+///  PNG_COLOR_TYPE_GRAY_ALPHA  (bit depths 8, 16)
+///  PNG_COLOR_TYPE_PALETTE     (bit depths 1, 2, 4, 8)
+///  PNG_COLOR_TYPE_RGB         (bit_depths 8, 16)
+///  PNG_COLOR_TYPE_RGB_ALPHA   (bit_depths 8, 16)
+///  PNG_COLOR_MASK_PALETTE
+///  PNG_COLOR_MASK_COLOR
+///  PNG_COLOR_MASK_ALPHA
+inline size_t png_read_color_type( const std::string& filename )
+{
+	detail::png_reader_info m( filename );
+
+	m.read_header();
+	return m.get_color_type();
 }
 
 }

@@ -6,7 +6,7 @@ namespace colorGradient {
 
 template<class View, template<typename> class ColorGradientFunctor>
 ColorGradientProcess<View, ColorGradientFunctor>::ColorGradientProcess( ColorGradientPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {}
 

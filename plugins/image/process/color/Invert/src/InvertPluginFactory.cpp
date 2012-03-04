@@ -67,7 +67,7 @@ void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::GroupParamDescriptor* processGroup = desc.defineGroupParam( kParamProcessGroup );
-	processGroup->setLabel( "Process" );
+	processGroup->setLabel( "Channels" );
 
 	OFX::BooleanParamDescriptor* processR = desc.defineBooleanParam( kParamProcessR );
 	processR->setLabel( "R" );
@@ -86,7 +86,7 @@ void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 
 	OFX::BooleanParamDescriptor* processA = desc.defineBooleanParam( kParamProcessA );
 	processA->setLabel( "A" );
-	processA->setDefault( true );
+	processA->setDefault( false );
 	processA->setParent( processGroup );
 }
 

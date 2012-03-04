@@ -17,7 +17,7 @@ namespace writer {
 
 template<class View>
 JpegWriterProcess<View>::JpegWriterProcess( JpegWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -44,10 +44,6 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	using namespace boost::gil;
 
 	View srcView = this->_srcView;
-	if( _params._flip )
-	{
-		srcView = flipped_up_down_view( srcView );
-	}
 
 	try
 	{
@@ -58,7 +54,7 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 		e << exception::filename( _params._filepath );
 		throw;
 	}
-	catch(... )
+	catch(...)
 	{
 		BOOST_THROW_EXCEPTION( exception::Unknown()
 			<< exception::user( "Unable to write image" )

@@ -19,7 +19,7 @@ namespace writer {
 void ImageMagickWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleImageMagickWriter", "ImageMagickWriter",
-                    "ImageMagick file writer" );
+		    "ImageMagick file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
     // add the supported contexts
@@ -184,7 +184,7 @@ void ImageMagickWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                        OFX::EContext               context )
+							OFX::EContext               context )
 {
     OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
@@ -206,11 +206,11 @@ void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-    bitDepth->setLabel( "Bit depth" );
+    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( 0 );
+    bitDepth->setDefault( eTuttlePluginBitDepth8 );
 
     OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
     premult->setLabel( "Premult" );
@@ -248,7 +248,7 @@ void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* ImageMagickWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                                  OFX::EContext        context )
+								  OFX::EContext        context )
 {
     return new ImageMagickWriterPlugin( handle );
 }

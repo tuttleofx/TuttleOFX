@@ -14,7 +14,7 @@ namespace bitDepth {
 
 template<class SView, class DView>
 BitDepthProcess<SView, DView>::BitDepthProcess( BitDepthPlugin& instance )
-	: ImageGilProcessor<DView>( instance )
+	: ImageGilProcessor<DView>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {
 	_clipSrc = _plugin.fetchClip( kOfxImageEffectSimpleSourceClipName );
@@ -26,14 +26,14 @@ void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 	ImageGilProcessor<DView>::setup( args );
 
 	// source view
-	this->_src.reset( this->_clipSrc->fetchImage( args.time ) );
-	if( !this->_src.get() )
+	_src.reset( _clipSrc->fetchImage( args.time ) );
+	if( ! _src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( this->_src->getRowBytes() == 0 )
+	if( _src->getRowBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcView = ::tuttle::plugin::getView<SView>( this->_src.get(), this->_clipSrc->getPixelRod( args.time ) );
+	_srcView = ImageGilProcessor<DView>::template getCustomView<SView>( _src.get(), _clipSrc->getPixelRod( args.time ) );
 	//	this->_srcPixelRod = this->_src->getRegionOfDefinition(); // bug in nuke, returns bounds
-	this->_srcPixelRod = this->_clipSrc->getPixelRod( args.time );
+	_srcPixelRod = _clipSrc->getPixelRod( args.time );
 }
 
 /**

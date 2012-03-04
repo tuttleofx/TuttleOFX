@@ -17,7 +17,7 @@ namespace invert {
 
 template<class View>
 InvertProcess<View>::InvertProcess( InvertPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {
 }

@@ -13,7 +13,7 @@ namespace pinning {
 
 template<class View>
 PinningProcess<View>::PinningProcess( PinningPlugin& effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }

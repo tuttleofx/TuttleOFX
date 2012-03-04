@@ -2552,13 +2552,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
     catch( boost::exception& e )
     {
-        /*
-        [tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
-        [OFX::tag_ofxStatus*] = kOfxStatErrValue
-        [boost::errinfo_file_name_*] = /datas/tmp/master32secsh01.0014.dpx
-        */
         typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
-        std::cerr << tuttle::common::kColorError;
         if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
         {
             stat = *status;
@@ -2567,14 +2561,25 @@ OfxStatus mainEntryStr( const char*          actionRaw,
         {
             stat = kOfxStatFailed;
         }
-
-        if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >( e ) )
+		
+        std::cerr << tuttle::common::kColorError;
+        std::cerr << "__________" << std::endl;
+        /*
+        [tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
+        [OFX::tag_ofxStatus*] = kOfxStatErrValue
+        [boost::errinfo_file_name_*] = /datas/tmp/master32secsh01.0014.dpx
+        */
+        if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
         {
-            std::cerr << *messageException << std::endl;
+            std::cerr << "Error: " << *messageException << std::endl;
         }
+		else
+		{
+            std::cerr << "Error: " "No message." << std::endl;
+		}
         if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >( e ) )
         {
-            std::cerr << "\"" << *filenameException << "\"" << std::endl;
+            std::cerr << "filename: \"" << *filenameException << "\"" << std::endl;
         }
         /*
         if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::dev >( e ) )
@@ -2592,8 +2597,8 @@ OfxStatus mainEntryStr( const char*          actionRaw,
         std::cerr << "----------" << std::endl;
         std::cerr << "* Backtrace" << std::endl;
         std::cerr << boost::trace(e);
-        std::cerr << "__________" << std::endl;
 #endif
+        std::cerr << "__________" << std::endl;
         std::cerr << tuttle::common::kColorStd;
     }
 

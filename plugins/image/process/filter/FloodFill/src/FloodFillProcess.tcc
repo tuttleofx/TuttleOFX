@@ -20,7 +20,7 @@ namespace floodFill {
 
 template<class View>
 FloodFillProcess<View>::FloodFillProcess( FloodFillPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 	this->setNoMultiThreading();

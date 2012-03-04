@@ -8,7 +8,7 @@ namespace reader {
 
 template<class View>
 Jpeg2000ReaderProcess<View>::Jpeg2000ReaderProcess( Jpeg2000ReaderPlugin &instance )
-: ImageGilProcessor<View>( instance )
+: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 , _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -38,10 +38,7 @@ void Jpeg2000ReaderProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	using namespace boost::gil;
 
 	View dstView = this->_dstView;
-	if( _params._flip )
-	{
-		dstView = flipped_up_down_view( dstView );
-	}
+
 	switch(_plugin._reader.components())
 	{
 		case 1:

@@ -25,7 +25,6 @@ FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
 	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath     = fetchStringParam( kParamReaderFilename );
 	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
-	_paramFlip = fetchBooleanParam( kParamReaderFlip );
 }
 
 FFMpegReaderParams FFMpegReaderPlugin::getProcessParams() const

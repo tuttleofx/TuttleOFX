@@ -15,7 +15,7 @@ namespace thinning {
 
 template<class View>
 ThinningProcess<View>::ThinningProcess( ThinningPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }

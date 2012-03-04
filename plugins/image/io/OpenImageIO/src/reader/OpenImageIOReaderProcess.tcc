@@ -25,7 +25,7 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 OpenImageIOReaderProcess<View>::OpenImageIOReaderProcess( OpenImageIOReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -40,13 +40,13 @@ void OpenImageIOReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath, _plugin.getProcessParams( this->_renderArgs.time )._flip );
+	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
 }
 
 /**
  */
 template<class View>
-View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& filepath, const bool flip )
+View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& filepath )
 {
 	using namespace boost;
 	using namespace OpenImageIO;
@@ -57,11 +57,6 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	}
 	ImageSpec spec;
 	in->open( filepath, spec );
-
-	if( flip )
-	{
-		dst = flipped_up_down_view( dst );
-	}
 
 	typedef mpl::map<
 	    mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT8> >,

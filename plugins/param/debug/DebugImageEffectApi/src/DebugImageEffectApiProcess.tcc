@@ -4,7 +4,7 @@ namespace debugImageEffectApi {
 
 template<class View>
 DebugImageEffectApiProcess<View>::DebugImageEffectApiProcess( DebugImageEffectApiPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {}
 

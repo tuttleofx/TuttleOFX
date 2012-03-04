@@ -21,7 +21,7 @@ namespace normalize {
 
 template<class View>
 NormalizeProcess<View>::NormalizeProcess( NormalizePlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }

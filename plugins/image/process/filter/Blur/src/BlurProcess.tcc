@@ -5,15 +5,13 @@
 
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
-//#include <boost/lambda/lambda.hpp>
-
 namespace tuttle {
 namespace plugin {
 namespace blur {
 
 template<class View>
 BlurProcess<View>::BlurProcess( BlurPlugin& effect )
-	: ImageGilFilterProcessor<View>( effect )
+	: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 	, _plugin( effect )
 {}
 

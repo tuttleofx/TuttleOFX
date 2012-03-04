@@ -27,7 +27,7 @@ namespace sobel {
 
 template<class SView, class DView>
 SobelProcess<SView,DView>::SobelProcess( SobelPlugin &effect )
-: ImageGilFilterProcessor<SView,DView>( effect )
+: ImageGilFilterProcessor<SView,DView>( effect, eImageOrientationFromTopToBottom )
 , _plugin( effect )
 {
 	using namespace terry::numeric;

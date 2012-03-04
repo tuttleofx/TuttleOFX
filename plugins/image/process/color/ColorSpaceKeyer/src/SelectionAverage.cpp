@@ -95,7 +95,7 @@ bool SelectionAverage::computeAverageSelection(OFX::Clip* clipColor, const OfxPo
 	}
 
 	// Compute if source is OK
-	SView colorView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );		// get current view from color clip
+	SView colorView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );		// get current view from color clip
 	ComputeAverage<SView>::CPixel average = ComputeAverage<SView>()( colorView );	// compute color clip average
 	
 	//copy computed average into average stock variable
@@ -151,7 +151,7 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 	}
 
 	// Compute if source is OK
-	SView colorView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );		// get current view from color clip
+	SView colorView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );		// get current view from color clip
 	Pixel_extend_GeodesicForm funct(geodesicForm);	//functor declaration			//initialize functor
 	terry::algorithm::transform_pixels(colorView, funct);									//with functor reference;
 }

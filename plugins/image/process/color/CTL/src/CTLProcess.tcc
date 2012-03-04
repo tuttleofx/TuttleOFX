@@ -134,7 +134,7 @@ void callCtl(
 
 template<class View>
 CTLProcess<View>::CTLProcess( CTLPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 	ctlPlugin = &_plugin;

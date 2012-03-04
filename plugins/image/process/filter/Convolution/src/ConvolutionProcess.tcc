@@ -13,7 +13,7 @@ namespace convolution {
 
 template<class View>
 ConvolutionProcess<View>::ConvolutionProcess( ConvolutionPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {}
 

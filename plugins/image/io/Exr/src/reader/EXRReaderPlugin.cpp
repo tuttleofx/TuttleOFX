@@ -24,7 +24,7 @@ using namespace boost::gil;
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 {
-	_outComponents = fetchChoiceParam( kParamOutputComponents );
+	_outComponents = fetchChoiceParam( kTuttlePluginComponents );
 
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputRedIs ) );
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputGreenIs ) );
@@ -40,7 +40,6 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 
 	params._filepath      = getAbsoluteFilenameAt( time );
 	params._outComponents = _outComponents->getValue();
-	params._flip          = _paramFlip->getValue();
 
 	return params;
 }
@@ -52,7 +51,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		ReaderPlugin::changedParam( args, paramName );
 		updateCombos();
 	}
-	else if( paramName == kParamOutputComponents )
+	else if( paramName == kTuttlePluginComponents )
 	{
 		switch( _outComponents->getValue() )
 		{

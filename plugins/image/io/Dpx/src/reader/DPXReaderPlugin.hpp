@@ -11,7 +11,6 @@ namespace reader {
 struct DPXReaderProcessParams
 {
 	std::string _filepath;      ///< filepath
-	bool _flip;
 };
 
 /**

@@ -27,7 +27,7 @@ using namespace boost::filesystem;
 
 template<class View>
 LutProcess<View>::LutProcess( LutPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {
 	_lut3D = &_plugin._lut3D;

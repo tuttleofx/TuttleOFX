@@ -11,7 +11,7 @@ namespace writer {
 
 template<class View>
 Jpeg2000WriterProcess<View>::Jpeg2000WriterProcess( Jpeg2000WriterPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
+: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 , _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -46,24 +46,20 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	_writer.setLossless( _params._lossless );
 
 	View srcView = this->_srcView;
-	if( _params._flip )
-	{
-		srcView = flipped_up_down_view( srcView );
-	}
 
 //	TUTTLE_COUT_VAR( this->_srcView.dimensions() );
 //	TUTTLE_COUT_VAR( srcView.dimensions() );
 
 	switch(_params._bitDepth)
 	{
-		case 8:
+		case eTuttlePluginBitDepth8:
 		{
 			rgb8_image_t img( srcView.dimensions() );
 			rgb8_view_t vw( view(img) );
 
 			// Convert pixels in PIX_FMT_RGB24
 			copy_and_convert_pixels( clamp_view(srcView), vw );
-			
+
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 
 			_writer.open( _params._filepath, srcView.width(), srcView.height(), num_channels<rgb8_view_t::value_type>::type::value, 8 );
@@ -71,8 +67,8 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 
 			break;
 		}
-		case 12:
-		case 16:
+		case eTuttlePluginBitDepth12:
+		case eTuttlePluginBitDepth16:
 		{
 			rgb16_image_t img( srcView.dimensions() );
 			rgb16_view_t vw( view(img) );
@@ -88,7 +84,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 
 			break;
 		}
-		case 32:
+		case eTuttlePluginBitDepth32:
 		{
 			rgb32_image_t img( srcView.dimensions() );
 			rgb32_view_t vw( view(img) );

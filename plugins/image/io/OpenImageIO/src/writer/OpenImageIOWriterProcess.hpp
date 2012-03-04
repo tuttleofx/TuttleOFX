@@ -23,7 +23,6 @@ class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 public:
 	typedef typename terry::image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef typename View::point_t Point;
 	typedef typename View::coord_t Coord;
 
@@ -35,7 +34,8 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	void writeImage( View& src, const std::string& filepath, const OpenImageIO::TypeDesc bitDepth, const bool flip=0 );
+	template<class WImage>
+	void writeImage( View& src, const std::string& filepath, const ETuttlePluginBitDepth bitDepth, const ETuttlePluginComponents components );
 
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{

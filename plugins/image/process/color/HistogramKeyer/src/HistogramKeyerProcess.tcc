@@ -8,7 +8,7 @@ namespace histogramKeyer {
 
 template<class View>
 HistogramKeyerProcess<View>::HistogramKeyerProcess( HistogramKeyerPlugin& effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }

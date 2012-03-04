@@ -16,7 +16,7 @@ namespace writer {
 
 template<class View>
 ImageMagickWriterProcess<View>::ImageMagickWriterProcess( ImageMagickWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();

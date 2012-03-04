@@ -10,8 +10,9 @@ namespace checkerboard {
 
 template<class View>
 CheckerboardProcess<View>::CheckerboardProcess( CheckerboardPlugin& instance )
-	: ImageGilProcessor<View>( instance )
-	, _plugin( instance ) {}
+: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
+, _plugin( instance )
+{}
 
 template<class View>
 CheckerboardParams<View> CheckerboardProcess<View>::getParams()

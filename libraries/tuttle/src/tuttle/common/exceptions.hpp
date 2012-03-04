@@ -364,6 +364,7 @@ struct File : virtual public Value
 	{}
 	File( const std::string path )
 	{
+		*this << user("File error.");
 		*this << filename(path);
 	}
 };
@@ -377,6 +378,7 @@ struct FileNotExist : virtual public File
 	{}
 	FileNotExist( const std::string path )
 	{
+		*this << user("No such file.");
 		*this << filename(path);
 	}
 };
@@ -390,6 +392,7 @@ struct NoDirectory : virtual public File
 	{}
 	NoDirectory( const std::string path )
 	{
+		*this << user("No such directory.");
 		*this << filename(path);
 	}
 };
@@ -403,6 +406,7 @@ struct ReadOnlyFile : virtual public File
 	{}
 	ReadOnlyFile( const std::string path )
 	{
+		*this << user("Read-only file.");
 		*this << filename(path);
 	}
 };

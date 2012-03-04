@@ -13,7 +13,6 @@ struct RawReaderProcessParams
 {
 	std::string _filepath;       ///< filepath
 	EFiltering _filtering;
-	bool _flip;
 };
 
 /**

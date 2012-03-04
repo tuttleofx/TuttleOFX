@@ -47,7 +47,7 @@ EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& grap
 {
 	if( bfs::exists( filename ) == 0 )
 		return eImageStatusNoFile;
-	
+
 	if( bfs::file_size( filename ) == 0 )
 		return eImageStatusFileSizeError;
 
@@ -139,7 +139,7 @@ int main( int argc, char** argv )
 
 		bpo::options_description desc;
 		bpo::options_description hidden;
-		
+
 		desc.add_options()
 			("help,h",   "display help")
 			("reader,n", bpo::value(&readerId)/*->required()*/, "reader node identifier \"tuttle.XXXreader\".")
@@ -226,7 +226,7 @@ int main( int argc, char** argv )
 			std::cout.rdbuf(_stdCout); // restore cout's original streambuf
 			TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 			TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
-			TUTTLE_COUT( _color._green << "\tsam-check - list directory contents" << _color._std << std::endl);
+			TUTTLE_COUT( _color._green << "\tsam-check - detect black images in sequences" << _color._std << std::endl);
 			TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
 			TUTTLE_COUT( _color._green << "\tsam-check [reader] [input] [options]" << _color._std << std::endl );
 			TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );

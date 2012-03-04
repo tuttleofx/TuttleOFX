@@ -10,7 +10,7 @@ namespace mathOperator {
 
 template<class View>
 MathOperatorProcess<View>::MathOperatorProcess( MathOperatorPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }

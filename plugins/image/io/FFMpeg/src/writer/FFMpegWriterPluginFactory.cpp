@@ -17,7 +17,7 @@ namespace writer {
 void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleFfmpegWriter", "FfmpegWriter",
-	                "Ffmpeg video writer" );
+			"Ffmpeg video writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
@@ -43,7 +43,7 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                   OFX::EContext               context )
+						   OFX::EContext               context )
 {
 	VideoFFmpegWriter writer;
 
@@ -67,11 +67,11 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-	bitDepth->setLabel( "Bit depth" );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+	bitDepth->setLabel( kTuttlePluginBitDepthLabel );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	bitDepth->setDefault( 0 );
+	bitDepth->setDefault( eTuttlePluginBitDepth8 );
 
 
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
@@ -202,7 +202,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
     avAudioServiceType->appendOption( kParamAVASTVoiceOver         );
     avAudioServiceType->appendOption( kParamAVASTKaraoke           );
     avAudioServiceType->appendOption( kParamAVASTNb                 );
-    avAudioServiceType->setDefault ( AV_AUDIO_SERVICE_TYPE_MAIN );
+    //avAudioServiceType->setDefault ( AV_AUDIO_SERVICE_TYPE_MAIN );
 
 	describeWriterParamsInContext( desc, context );
 }
@@ -214,7 +214,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
  * @return  plugin instance
  */
 OFX::ImageEffect* FFMpegWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                             OFX::EContext        context )
+							     OFX::EContext        context )
 {
 	return new FFMpegWriterPlugin( handle );
 }

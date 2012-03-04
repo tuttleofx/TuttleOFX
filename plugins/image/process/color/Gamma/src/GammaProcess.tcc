@@ -9,7 +9,7 @@ namespace gamma {
 
 template<class View>
 GammaProcess<View>::GammaProcess( GammaPlugin& effect )
-	: ImageGilFilterProcessor<View>( effect )
+	: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 	, _plugin( effect )
 {}
 

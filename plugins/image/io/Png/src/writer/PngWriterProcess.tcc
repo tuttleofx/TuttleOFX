@@ -18,7 +18,7 @@ namespace writer {
 
 template<class View>
 PngWriterProcess<View>::PngWriterProcess( PngWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();
@@ -28,7 +28,7 @@ template<class View>
 void PngWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
-	
+
 	_params = _plugin.getProcessParams( args.time );
 }
 
@@ -44,24 +44,20 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	using namespace boost::gil;
 
 	View srcView = this->_srcView;
-	if( _params._flip )
-	{
-		srcView = flipped_up_down_view( srcView );
-	}
-	
+
 	try
 	{
 		switch( _params._bitDepth )
 		{
-			case 8:
+			case eTuttlePluginBitDepth8:
 				writeImage<bits8>( srcView );
 				break;
-			case 16:
+			case eTuttlePluginBitDepth16:
 				writeImage<bits16>( srcView );
 				break;
 			default:
 				BOOST_THROW_EXCEPTION( exception::ImageFormat()
-				    << exception::user( "Unrecognized bit depth" ) );
+				    << exception::user( "PNG Writer: Unrecognized bit depth" ) );
 				break;
 		}
 	}
@@ -92,18 +88,28 @@ void PngWriterProcess<View>::writeImage( View& src )
 
 	switch( _params._components )
 	{
-		case eParamComponentsRGBA:
+		case eTuttlePluginComponentsRGBA:
 		{
 			typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
 			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
 			break;
 		}
-		case eParamComponentsRGB:
+		case eTuttlePluginComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
 			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
 			break;
 		}
+		case eTuttlePluginComponentsGray:
+		{
+			typedef pixel<Bits, gray_layout_t> OutPixelType;
+			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
+			break;
+		}
+		default:
+			BOOST_THROW_EXCEPTION( exception::ImageFormat()
+			    << exception::user( "PNG Writer: Unrecognized component choice." ) );
+			break;
 	}
 }
 

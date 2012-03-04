@@ -39,7 +39,7 @@
 #define TUTTLE_COUT_EXCEPTION_DEBUG TUTTLE_COUT_EXCEPTION
 
 #ifdef __WINDOWS__
- #include <tuttle/common/system/windows/MemoryLeaks.h>
+ #include <tuttle/common/system/windows/MemoryLeaks.hpp>
 #endif
 
 #endif

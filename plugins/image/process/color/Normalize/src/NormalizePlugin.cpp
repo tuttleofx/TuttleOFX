@@ -111,7 +111,7 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 					{
 						typedef rgba32f_view_t View;
 						typedef View::value_type Pixel;
-						View srcView = getView<View>( src.get(), srcPixelRod );
+						View srcView = getGilView<View>( src.get(), srcPixelRod, eImageOrientationIndependant );
 						analyseInputMinMax<View>( srcView, mode, min, max, progress );
 						break;
 					}
@@ -119,7 +119,7 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 					{
 						typedef rgba16_view_t View;
 						typedef View::value_type Pixel;
-						View srcView = getView<View>( src.get(), srcPixelRod );
+						View srcView = getGilView<View>( src.get(), srcPixelRod, eImageOrientationIndependant );
 						Pixel smin, smax;
 						analyseInputMinMax<View>( srcView, mode, smin, smax, progress );
 						color_convert(smin, min);
@@ -130,7 +130,7 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 					{
 						typedef rgba8_view_t View;
 						typedef View::value_type Pixel;
-						View srcView = getView<View>( src.get(), srcPixelRod );
+						View srcView = getGilView<View>( src.get(), srcPixelRod, eImageOrientationIndependant );
 						Pixel smin, smax;
 						analyseInputMinMax<View>( srcView, mode, smin, smax, progress );
 						color_convert(smin, min);

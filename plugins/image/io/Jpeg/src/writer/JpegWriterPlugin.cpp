@@ -23,7 +23,6 @@ JpegWriterProcessParams JpegWriterPlugin::getProcessParams( const OfxTime time )
 	params._filepath = getAbsoluteFilenameAt( time );
 	params._quality  = this->_paramQuality->getValue();
 	params._premult  = this->_paramPremult->getValue();
-	params._flip     = this->_paramFlip->getValue();
 	return params;
 }
 

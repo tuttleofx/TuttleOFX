@@ -16,8 +16,10 @@ namespace reader {
 void ImageMagickReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleImageMagickReader", "ImageMagickReader",
-                    "ImageMagick file reader" );
+		    "ImageMagick file reader" );
     desc.setPluginGrouping( "tuttle/image/io" );
+
+    desc.setDescription( "IMAGEMAGICK File reader\n plugin is used to read imagemagick files." );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextReader );
@@ -181,7 +183,7 @@ void ImageMagickReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void ImageMagickReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                        OFX::EContext               context )
+							OFX::EContext               context )
 {
     // Create the mandated output clip
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -200,7 +202,7 @@ void ImageMagickReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* ImageMagickReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                                  OFX::EContext        context )
+								  OFX::EContext        context )
 {
     return new ImageMagickReaderPlugin( handle );
 }

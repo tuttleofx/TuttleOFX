@@ -767,7 +767,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		     ++it )
 		{
 			attribute::OfxhClipImage* clip = it->second;
-			if( !clip->isOutput() && !clip->isOptional() )
+			if( ! clip->isOutput() && clip->isConnected() )
 			{
 				if( !gotOne )
 					rod = clip->fetchRegionOfDefinition( time );
@@ -845,8 +845,10 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 	}
 	else
 	{
-		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist( "" ) );
-		//BOOST_THROW_EXCEPTION( OfxhException( stat, "getRegionOfDefinitionAction error." ) );
+		// defined to process sequences with hole
+		// find a best way to do this ??
+		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist() );
+		BOOST_THROW_EXCEPTION( OfxhException( stat, "getRegionOfDefinitionAction error." ) );
 	}
 }
 
@@ -869,12 +871,15 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		     ++it )
 		{
 			if( !it->second->isOutput() ||
-			    getContext() == kOfxImageEffectContextGenerator || /// @todo tuttle: why particular case for generator and reader ?? maybe we can remove this !
+			    getContext() == kOfxImageEffectContextGenerator ||
 			    getContext() == kOfxImageEffectContextReader )
 			{
-				/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
-				OfxRectD roi = it->second->fetchRegionOfDefinition( time );
-				rois[it->second] = roi;
+				if( it->second->isOutput() || it->second->isConnected() ) // needed to be able to fetch the RoD
+				{
+					/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
+					OfxRectD roi = it->second->fetchRegionOfDefinition( time );
+					rois[it->second] = roi;
+				}
 			}
 		}
 	}
@@ -935,25 +940,28 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 			    getContext() == kOfxImageEffectContextGenerator ||
 			    getContext() == kOfxImageEffectContextReader )
 			{
-				/// @todo tuttle: depending on framesNeeded !
-				OfxRectD rod = it->second->fetchRegionOfDefinition( time );
-				if( it->second->supportsTiles() )
+				if( it->second->isOutput() || it->second->isConnected() ) // needed to be able to fetch the RoD
 				{
-					std::string name = "OfxImageClipPropRoI_" + it->first;
-					OfxRectD thisRoi;
-					thisRoi.x1 = outArgs.getDoubleProperty( name, 0 );
-					thisRoi.y1 = outArgs.getDoubleProperty( name, 1 );
-					thisRoi.x2 = outArgs.getDoubleProperty( name, 2 );
-					thisRoi.y2 = outArgs.getDoubleProperty( name, 3 );
+					/// @todo tuttle: depending on framesNeeded !
+					OfxRectD rod = it->second->fetchRegionOfDefinition( time );
+					if( it->second->supportsTiles() )
+					{
+						std::string name = "OfxImageClipPropRoI_" + it->first;
+						OfxRectD thisRoi;
+						thisRoi.x1 = outArgs.getDoubleProperty( name, 0 );
+						thisRoi.y1 = outArgs.getDoubleProperty( name, 1 );
+						thisRoi.x2 = outArgs.getDoubleProperty( name, 2 );
+						thisRoi.y2 = outArgs.getDoubleProperty( name, 3 );
 
-					/// and clamp it to the clip's rod
-					thisRoi          = clamp( thisRoi, rod );
-					rois[it->second] = thisRoi;
-				}
-				else
-				{
-					/// not supporting tiles on this input, so set it to the rod
-					rois[it->second] = rod;
+						/// and clamp it to the clip's rod
+						thisRoi          = clamp( thisRoi, rod );
+						rois[it->second] = thisRoi;
+					}
+					else
+					{
+						/// not supporting tiles on this input, so set it to the rod
+						rois[it->second] = rod;
+					}
 				}
 			}
 		}
@@ -1266,7 +1274,7 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 	/// now add the clip gubbins to the out args
 	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
 	     it != _clips.end();
-	     it++ )
+	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;
 
@@ -1289,26 +1297,54 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 	}
 }
 
+bool OfxhImageEffectNode::isLeafNode() const
+{
+	for( ClipImageMap::const_iterator it = _clips.begin();
+	     it != _clips.end();
+	     ++it )
+	{
+		attribute::OfxhClipImage* clip = it->second;
+
+		if( ! clip->isOutput() && clip->isConnected() )
+			return false;
+	}
+	return true;
+}
+
 void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outArgs )
 {
+	const bool isLeaf = isLeafNode();
+
 	for( ClipImageMap::iterator it = _clips.begin();
 	     it != _clips.end();
-	     it++ )
+	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;
 
 		// Properties setup
-		std::string componentParamName = "OfxImageClipPropComponents_" + it->first;
-		std::string depthParamName     = "OfxImageClipPropDepth_" + it->first;
-		std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
+		const std::string componentParamName = "OfxImageClipPropComponents_" + it->first;
+		const std::string depthParamName     = "OfxImageClipPropDepth_" + it->first;
+		const std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
 
 		const property::String& propPixelDepth = outArgs.fetchStringProperty( depthParamName );
 		clip->setBitDepthString( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
+
 		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
 		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
 
 		const property::Double& propPixelAspectRatio = outArgs.fetchDoubleProperty( parParamName );
 		clip->setPixelAspectRatio( propPixelAspectRatio.getValue(), propPixelAspectRatio.getModifiedBy() );
+
+		if( isLeaf &&
+			it->first == kOfxImageEffectOutputClipName &&
+			propPixelDepth.getModifiedBy() != property::eModifiedByPlugin &&
+			propPixelDepth.getValue() == kOfxBitDepthNone
+		  )
+		{
+			// If a generator node (even if declared in the general context) don't set the
+			// bitdepth... we set an arbitrary default value.
+			clip->setBitDepthString( kOfxBitDepthFloat, property::eModifiedByHost );
+		}
 	}
 
 	_outputFrameRate         = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRate );
@@ -1338,8 +1374,7 @@ void OfxhImageEffectNode::getClipPreferencesAction() OFX_EXCEPTION_SPEC
 				      &outArgs );
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist( "" ) );
-//		BOOST_THROW_EXCEPTION( OfxhException( status ) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 
 	// Setup members data from loaded properties
 	setupClipInstancePreferences( outArgs );

@@ -10,7 +10,7 @@ namespace constant {
 
 template<class View>
 ConstantProcess<View>::ConstantProcess( ConstantPlugin& instance )
-	: ImageGilProcessor<View>( instance )
+	: ImageGilProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance ) {}
 
 template<class View>

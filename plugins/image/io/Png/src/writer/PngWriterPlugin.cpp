@@ -14,7 +14,7 @@ using namespace boost::gil;
 PngWriterPlugin::PngWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_paramOutputComponents = fetchChoiceParam( kParamOutputComponents );
+	_paramOutputComponents = fetchChoiceParam( kTuttlePluginComponents );
 }
 
 PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )
@@ -22,20 +22,9 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )
 	PngWriterProcessParams params;
 
 	params._filepath   = getAbsoluteFilenameAt( time );
-	params._components = static_cast<EParamComponents>( this->_paramOutputComponents->getValue() );
-	switch( static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() ) )
-	{
-		case eParamBitDepth8:
-			params._bitDepth = 8;
-			break;
-		case eParamBitDepth16:
-			params._bitDepth = 16;
-			break;
-		default:
-			BOOST_THROW_EXCEPTION( exception::Unsupported()
-				<< exception::user( "Incorrect bit depth." ) );
-	}
-	params._flip = _paramFlip->getValue();
+	params._components = static_cast<ETuttlePluginComponents>( this->_paramOutputComponents->getValue() );
+	params._bitDepth   = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
+
 	return params;
 }
 
@@ -46,7 +35,7 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )
 void PngWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
-	
+
 	doGilRender<PngWriterProcess>( *this, args );
 }
 
