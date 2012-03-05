@@ -1,6 +1,7 @@
 #include "CTLPluginFactory.hpp"
 #include "CTLPlugin.hpp"
 #include "CTLDefinitions.hpp"
+
 #include "ofxsImageEffect.h"
 
 #include <limits>
@@ -19,7 +20,7 @@ static const bool kSupportTiles = false;
 void CTLPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleCTL", "CTL",
-		            "ColorTransformationLanguage" );
+			    "ColorTransformationLanguage" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription(
@@ -60,7 +61,7 @@ void CTLPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+						  OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -106,11 +107,11 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	updateRender->setLabel( "Update" );
 	updateRender->setHint ( "Rendering the CTL code" );
 
-	OFX::StringParamDescriptor* file = desc.defineStringParam( kParamCTLFile );
-	file->setLabel( "CTL file" );
+	OFX::StringParamDescriptor* file = desc.defineStringParam( kTuttlePluginFilename );
+	file->setLabel( kTuttlePluginFilenameLabel );
 	file->setHint ( "CTL source code file." );
 	file->setStringType( OFX::eStringTypeFilePath );
-	
+
 
 }
 
@@ -121,7 +122,7 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* CTLPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+							    OFX::EContext context )
 {
 	return new CTLPlugin( handle );
 }

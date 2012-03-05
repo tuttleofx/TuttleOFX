@@ -18,7 +18,7 @@ CTLPlugin::CTLPlugin( OfxImageEffectHandle handle )
 {
 	_paramInput        = fetchChoiceParam     ( kParamChooseInput );
 	_paramCode         = fetchStringParam     ( kParamCTLCode );
-	_paramFile         = fetchStringParam     ( kParamCTLFile );
+	_paramFile         = fetchStringParam     ( kTuttlePluginFilename );
 	_paramUpdateRender = fetchPushButtonParam ( kParamChooseInputCodeUpdate );
 
 	changedParam ( _instanceChangedArgs, kParamChooseInput );
@@ -78,7 +78,7 @@ void CTLPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::s
 	{
 		_paramInput->setValue( eParamChooseInputCode );
 	}
-	else if( paramName == kParamCTLFile )
+	else if( paramName == kTuttlePluginFilename )
 	{
 		_paramInput->setValue( eParamChooseInputFile );
 	}
