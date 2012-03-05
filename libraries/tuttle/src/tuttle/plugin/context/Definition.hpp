@@ -6,6 +6,9 @@
 namespace tuttle {
 namespace plugin {
 
+static const std::string kTuttlePluginFilename      = "filename";
+static const std::string kTuttlePluginFilenameLabel = "Filename";
+
 static const std::string kTuttlePluginBitDepth      = "bitDepth";
 static const std::string kTuttlePluginBitDepthLabel = "Bit depth";
 

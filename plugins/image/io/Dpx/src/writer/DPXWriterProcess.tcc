@@ -120,7 +120,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					case eTuttlePluginComponentsRGBA:
 					{
 						//write10bitsImage<rgba10_stream_ptr_t>( src, _params._filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10A10, _params._packed );
-						writeImage<rgba10_image_t>( src, _params._filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10A10, _params._packed );
+						//writeImage<rgba10_image_t>( src, _params._filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10A10, _params._packed );
 						break;
 					}
 					case eTuttlePluginComponentsABGR:

@@ -119,7 +119,7 @@ project
     requirements
 	# multithreading on
 	<threading>multi
-
+	<include>$(BOOST_HACK)
 	<define>BOOST_ALL_NO_LIB
 
 	#<variant>release:<warnings-as-errors>on

@@ -203,19 +203,13 @@ sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_16bits.001.sgi bitDepth=16
 sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_16bits.003.sgi bitDepth=16i components=rgba >> process.txt
 
 echo "- OIIO exr"
-sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_gray_8bits.001.exr bitDepth=8i components=gray >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_gray_8bits.003.exr bitDepth=8i components=gray >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_rgb_8bits.001.exr bitDepth=8i components=rgb >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_rgb_8bits.003.exr bitDepth=8i components=rgb >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_rgba_8bits.001.exr bitDepth=8i components=rgba >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_rgba_8bits.003.exr bitDepth=8i components=rgba >> process.txt
 
-sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_gray_16bits.001.exr bitDepth=16i components=gray >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_gray_16bits.003.exr bitDepth=16i components=gray >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16bits.001.exr bitDepth=16i components=rgb >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16bits.003.exr bitDepth=16i components=rgb >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_16bits.001.exr bitDepth=16i components=rgba >> process.txt
-sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_16bits.003.exr bitDepth=16i components=rgba >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_gray_16float.001.exr bitDepth=16f components=gray >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_gray_16float.003.exr bitDepth=16f components=gray >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16float.001.exr bitDepth=16f components=rgb >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16float.003.exr bitDepth=16f components=rgb >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_16float.001.exr bitDepth=16f components=rgba >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_16float.003.exr bitDepth=16f components=rgba >> process.txt
 
 sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_gray_32bits.001.exr bitDepth=32i components=gray >> process.txt
 sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_gray_32bits.003.exr bitDepth=32i components=gray >> process.txt
@@ -231,4 +225,19 @@ sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_32float.003.exr bitDepth=32
 sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_32float.001.exr bitDepth=32f components=rgba >> process.txt
 sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgba_32float.003.exr bitDepth=32f components=rgba >> process.txt
 
+echo "- OIIO hdr"
+sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_rgb_8bits.001.hdr bitDepth=8i components=rgb >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH8 // oiiowriter oiio_rgb_8bits.003.hdr bitDepth=8i components=rgb >> process.txt
+
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16bits.001.hdr bitDepth=16i components=rgb >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16bits.003.hdr bitDepth=16i components=rgb >> process.txt
+
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16float.001.hdr bitDepth=16f components=rgb >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_16float.003.hdr bitDepth=16f components=rgb >> process.txt
+
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_32bits.001.hdr bitDepth=32i components=rgb >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_32bits.003.hdr bitDepth=32i components=rgb >> process.txt
+
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_32float.001.hdr bitDepth=32f components=rgb >> process.txt
+sam-do $SRC_IMAGE $BITDEPTH16 // oiiowriter oiio_rgb_32float.003.hdr bitDepth=32f components=rgb >> process.txt
 

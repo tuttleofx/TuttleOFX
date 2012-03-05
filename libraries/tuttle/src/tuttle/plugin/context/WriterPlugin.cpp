@@ -14,7 +14,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 {
     _clipSrc             = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst             = fetchClip( kOfxImageEffectOutputClipName );
-    _paramFilepath       = fetchStringParam( kParamWriterFilename );
+    _paramFilepath       = fetchStringParam( kTuttlePluginFilename );
     _paramRenderButton   = fetchPushButtonParam( kParamWriterRender );
     _paramRenderAlways   = fetchBooleanParam( kParamWriterRenderAlways );
     _paramBitDepth       = fetchChoiceParam( kTuttlePluginBitDepth );
@@ -28,7 +28,7 @@ WriterPlugin::~WriterPlugin()
 
 void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-    if( paramName == kParamWriterFilename )
+    if( paramName == kTuttlePluginFilename )
     {
 	_isSequence = _filePattern.initFromDetection( _paramFilepath->getValue() );
     }

@@ -12,7 +12,7 @@ namespace tuttle {
 namespace plugin {
 
 void describeSamplerParamsInContext( OFX::ImageEffectDescriptor& desc,
-                                     OFX::EContext               context )
+				     OFX::EContext               context )
 {
     OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
     filter->setLabel		( kParamFilterLabel );
@@ -27,38 +27,38 @@ void describeSamplerParamsInContext( OFX::ImageEffectDescriptor& desc,
     filter->appendOption	( kParamFilterRifman    );
     filter->appendOption	( kParamFilterMitchell  );
     filter->appendOption	( kParamFilterParzen    );
-#ifndef TUTTLE_PRODUCTION
     filter->appendOption	( kParamFilterLanczos   );
     filter->appendOption	( kParamFilterLanczos3  );
     filter->appendOption	( kParamFilterLanczos4  );
     filter->appendOption	( kParamFilterLanczos6  );
     filter->appendOption	( kParamFilterLanczos12 );
+#ifndef TUTTLE_PRODUCTION
     filter->appendOption	( kParamFilterGaussian  );
 #endif
 
     filter->setDefault	( terry::sampler::eParamFilterBicubic   );
     filter->setHint(
-            "Interpolation methods\n"
-            "\n"
-            "nearest: Nearest Neighbor sampler\n"
-            "bilinear: Bilinear sample\n"
-            "bc: 2nd order sampler with B-C parametrable\n"
-            "bicubic: Cubic filter(0.0, 0.0)\n"
-            "catmul-rom: Cubic filter(0.0, 0.5)\n"
-            "keys: Cubic filter(0.0, 0.5)\n"
-            "simon: Cubic filter(0.0, 0.75)\n"
-            "rifman: Cubic filter(0.0, 1.0)\n"
-            "mitchell: Cubic filter(1/3, 1/3)\n"
-            "parzen: Cubic filter(1.0, 0.0)\n"
+	    "Interpolation methods\n"
+	    "\n"
+	    "nearest: Nearest Neighbor sampler\n"
+	    "bilinear: Bilinear sample\n"
+	    "bc: 2nd order sampler with B-C parametrable\n"
+	    "bicubic: Cubic filter(0.0, 0.0)\n"
+	    "catmul-rom: Cubic filter(0.0, 0.5)\n"
+	    "keys: Cubic filter(0.0, 0.5)\n"
+	    "simon: Cubic filter(0.0, 0.75)\n"
+	    "rifman: Cubic filter(0.0, 1.0)\n"
+	    "mitchell: Cubic filter(1/3, 1/3)\n"
+	    "parzen: Cubic filter(1.0, 0.0)\n"
 #ifndef TUTTLE_PRODUCTION
-            "lanczos: Lanczos sampler with parametrable filter size\n"
-            "lanczos3: Lanczos sampler with filter size = 3\n"
-            "lanczos4: Lanczos sampler with filter size = 4\n"
-            "lanczos6: Lanczos sampler with filter size = 6\n"
-            "lanczos12: Lanczos sampler with filter size = 12 \n"
-            "gaussian: Gaussian sampler with parametrable filter size and sigma value\n"
+	    "lanczos: Lanczos sampler with parametrable filter size\n"
+	    "lanczos3: Lanczos sampler with filter size = 3\n"
+	    "lanczos4: Lanczos sampler with filter size = 4\n"
+	    "lanczos6: Lanczos sampler with filter size = 6\n"
+	    "lanczos12: Lanczos sampler with filter size = 12 \n"
+	    "gaussian: Gaussian sampler with parametrable filter size and sigma value\n"
 #endif
-        );
+	);
 
     OFX::DoubleParamDescriptor* B = desc.defineDoubleParam( kParamFilterB );
     B->setLabel			( "B value" );

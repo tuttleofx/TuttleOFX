@@ -31,6 +31,9 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+	// add supported extensions
+	desc.addSupportedExtension( "exr" );
+
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setHostFrameThreading( false );
@@ -59,8 +62,8 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
-	filename->setLabel( "Filename" );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+	filename->setLabel( kTuttlePluginFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );

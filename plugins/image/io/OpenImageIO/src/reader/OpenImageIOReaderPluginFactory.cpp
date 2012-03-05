@@ -67,6 +67,8 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     desc.setDescription(
 	"OpenImageIO Reader"
 	"\n\n"
+	"Compression is only available for Exr format."
+	"\n"
 	"supported extensions: \n" +
 	listOfExt
     );
