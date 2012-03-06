@@ -20,6 +20,8 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabels( "TuttleLut", "Lut", "Color transformation through CLUT file" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
+	desc.setDescription( "Image Luter is used to lut components of an image." );
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
@@ -53,13 +55,10 @@ void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX:
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
 	filename->setDefault( "" );
-	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
+	filename->setLabels( kTuttlePluginFilenameLabel, kTuttlePluginFilenameLabel, kTuttlePluginFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelp );
-	helpButton->setLabel( "Help" );
 }
 
 /**

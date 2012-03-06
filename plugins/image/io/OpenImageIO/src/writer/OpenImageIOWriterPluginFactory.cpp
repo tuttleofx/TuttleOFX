@@ -109,14 +109,14 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
-    filename->setLabel( "Filename" );
+    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+    filename->setLabel( kTuttlePluginFilenameLabel );
     filename->setStringType( OFX::eStringTypeFilePath );
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
     OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
-    components->setLabel( "Components" );
+    components->setLabel( kTuttlePluginComponentsLabel );
     components->appendOption( kTuttlePluginComponentsGray );
     components->appendOption( kTuttlePluginComponentsRGB );
     components->appendOption( kTuttlePluginComponentsRGBA );
@@ -124,7 +124,7 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     components->setDefault( eTuttlePluginComponentsRGBA );
 
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-    bitDepth->setLabel( "Bit depth" );
+    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->appendOption( kTuttlePluginBitDepth16f );
@@ -135,8 +135,11 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 
     OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam( kParamOutputCompression );
     compression->setLabel( "Compression" );
+#ifndef TUTTLE_PRODUCTION
     compression->appendOption( kParamOutputCompressionNone );
+#endif
     compression->appendOption( kParamOutputCompressionZip );
+#ifndef TUTTLE_PRODUCTION
     compression->appendOption( kParamOutputCompressionZips );
     compression->appendOption( kParamOutputCompressionRle );
     compression->appendOption( kParamOutputCompressionPiz );
@@ -144,6 +147,9 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     compression->appendOption( kParamOutputCompressionB44 );
     compression->appendOption( kParamOutputCompressionB44a );
     bitDepth->setDefault( eParamCompressionNone );
+#else
+    bitDepth->setDefault( 0 );
+#endif
 
     describeWriterParamsInContext( desc, context );
 }

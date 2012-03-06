@@ -14,8 +14,8 @@ namespace plugin {
 void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 				    OFX::EContext               context )
 {
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
-	filename->setLabel( "Filename" );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+	filename->setLabel( kTuttlePluginFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );

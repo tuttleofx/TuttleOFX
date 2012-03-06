@@ -309,8 +309,7 @@ struct BadConversion : virtual public Value {};
  *           The error comes from host.
  * * host:   Error with memory cache or memory pool.
  */
-//struct ImageNotReady : virtual public Value {};
-struct ImageNotReady : virtual public Common {};
+struct ImageNotReady : virtual public Value {};
 
 /**
  * @brief A non optional input clip in not connected.

@@ -48,7 +48,7 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 
 void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-	if( paramName == kParamReaderFilename )
+	if( paramName == kTuttlePluginFilename )
 	{
 		_reader.close();
 		_fileInfos._failed = true;

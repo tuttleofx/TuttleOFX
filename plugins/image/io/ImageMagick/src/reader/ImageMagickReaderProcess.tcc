@@ -86,9 +86,10 @@ void ImageMagickReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 template<class SView, class DView>
 void copy_and_convert_from_buffer( Image* image, DView& dst )
 {
-	TUTTLE_COUT_VAR( sizeof( typename SView::value_type ) );
+	//TUTTLE_COUT_VAR( sizeof( typename SView::value_type ) );
 	//	boost::scoped_ptr<PixelPacket> buffer( GetImagePixels( image, 0, 0, dst.width(), dst.height() ) );
-	PixelPacket* buffer = GetImagePixels( image, 0, 0, dst.width(), dst.height() );
+	ExceptionInfo exception;
+	PixelPacket* buffer =  GetAuthenticPixels( image, 0, 0, dst.width(), dst.height(), &exception );
 
 	SView bufferView = interleaved_view( dst.width(), dst.height(),
 					  ( typename SView::value_type* )( buffer ),
@@ -104,7 +105,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 {
 	BOOST_STATIC_ASSERT( sizeof( Quantum ) == 2 ); // imagemagick compiled in 16 bits not 8 !
 
-	TUTTLE_COUT_VAR( filepath );
+	//TUTTLE_COUT_VAR( filepath );
 
 	ImageInfo* imageInfo = AcquireImageInfo();
 	GetImageInfo( imageInfo );
@@ -117,7 +118,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 	CatchException( exceptionsInfo );
 
 	unsigned long bitDepth = GetImageDepth( image, exceptionsInfo );
-
+/*
 	switch( image->colorspace )
 	{
 		case RGBColorspace:
@@ -131,7 +132,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 			break;
 		default:
 			TUTTLE_COUT( "Particular colorspace: needs a conversion to RGB." );
-	}
+	}*/
 
 	if( image->colorspace != RGBColorspace &&
 	    image->colorspace != GRAYColorspace &&

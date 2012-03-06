@@ -64,8 +64,8 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
-    filename->setLabel( "Filename" );
+    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+    filename->setLabel( kTuttlePluginFilenameLabel );
     filename->setStringType( OFX::eStringTypeFilePath );
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );

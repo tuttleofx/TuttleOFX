@@ -25,7 +25,11 @@
  * @def   TUTTLE_INFOS
  * @brief informations : filename, line number, function name
  **/
+#ifndef BOOST_EXCEPTION_DISABLE
  #define OFXS_INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << ::std::endl << "function: " << BOOST_CURRENT_FUNCTION
+#else
+ #define OFXS_INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << ::std::endl
+#endif
 
 
 #define OFXS_COUT_WARNING(... )  \

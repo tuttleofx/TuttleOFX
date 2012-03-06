@@ -9,7 +9,7 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 	: OFX::ImageEffect( handle )
 {
 	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
-	_paramFilepath     = fetchStringParam( kParamReaderFilename );
+	_paramFilepath     = fetchStringParam( kTuttlePluginFilename );
 	_isSequence        = _filePattern.initFromDetection( _paramFilepath->getValue() );
 	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
 }
@@ -19,7 +19,7 @@ ReaderPlugin::~ReaderPlugin()
 
 void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kParamReaderFilename )
+	if( paramName == kTuttlePluginFilename )
 	{
 		_isSequence = _filePattern.initFromDetection( _paramFilepath->getValue() );
 	}

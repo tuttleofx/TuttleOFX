@@ -46,7 +46,7 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 
 void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kParamReaderFilename )
+	if( paramName == kTuttlePluginFilename )
 	{
 		ReaderPlugin::changedParam( args, paramName );
 		updateCombos();

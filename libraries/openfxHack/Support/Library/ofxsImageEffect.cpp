@@ -115,7 +115,7 @@ EffectDescriptorMap gEffectDescriptors;
 ImageEffectHostDescription* getImageEffectHostDescription()
 {
     if( Private::gHostDescriptionHasInit )
-        return &Private::gHostDescription;
+	return &Private::gHostDescription;
     return NULL;
 }
 
@@ -124,21 +124,21 @@ ImageEffectHostDescription* getImageEffectHostDescription()
 EContext mapContextStringToEnum( const std::string& s )
 {
     if( s == kOfxImageEffectContextGenerator )
-        return eContextGenerator;
+	return eContextGenerator;
     if( s == kOfxImageEffectContextFilter )
-        return eContextFilter;
+	return eContextFilter;
     if( s == kOfxImageEffectContextTransition )
-        return eContextTransition;
+	return eContextTransition;
     if( s == kOfxImageEffectContextPaint )
-        return eContextPaint;
+	return eContextPaint;
     if( s == kOfxImageEffectContextGeneral )
-        return eContextGeneral;
+	return eContextGeneral;
     if( s == kOfxImageEffectContextRetimer )
-        return eContextRetimer;
+	return eContextRetimer;
     if( s == kOfxImageEffectContextReader )
-        return eContextReader;
+	return eContextReader;
     if( s == kOfxImageEffectContextWriter )
-        return eContextWriter;
+	return eContextWriter;
     OFX::Log::error( true, "Unknown image effect context '%s'", s.c_str() );
     BOOST_THROW_EXCEPTION( std::invalid_argument( s ) );
     return eContextGeneral;
@@ -149,24 +149,24 @@ const std::string mapContextEnumToString( const EContext s )
 {
     switch( s )
     {
-        case eContextGenerator:
-            return kOfxImageEffectContextGenerator;
-        case eContextFilter:
-            return kOfxImageEffectContextFilter;
-        case eContextTransition:
-            return kOfxImageEffectContextTransition;
-        case eContextPaint:
-            return kOfxImageEffectContextPaint;
-        case eContextGeneral:
-            return kOfxImageEffectContextGeneral;
-        case eContextRetimer:
-            return kOfxImageEffectContextRetimer;
-        case eContextReader:
-            return kOfxImageEffectContextReader;
-        case eContextWriter:
-            return kOfxImageEffectContextWriter;
-        case eContextNone:
-            return "ContextNone...";
+	case eContextGenerator:
+	    return kOfxImageEffectContextGenerator;
+	case eContextFilter:
+	    return kOfxImageEffectContextFilter;
+	case eContextTransition:
+	    return kOfxImageEffectContextTransition;
+	case eContextPaint:
+	    return kOfxImageEffectContextPaint;
+	case eContextGeneral:
+	    return kOfxImageEffectContextGeneral;
+	case eContextRetimer:
+	    return kOfxImageEffectContextRetimer;
+	case eContextReader:
+	    return kOfxImageEffectContextReader;
+	case eContextWriter:
+	    return kOfxImageEffectContextWriter;
+	case eContextNone:
+	    return "ContextNone...";
     }
     OFX::Log::error( true, "Unknown image effect context enum '%d'", (int)s );
     BOOST_THROW_EXCEPTION( std::invalid_argument( "Unknown image effect context enum." ) );
@@ -176,15 +176,15 @@ const std::string mapContextEnumToString( const EContext s )
 const std::string mapMessageTypeEnumToString( const OFX::Message::EMessageType type )
 {
     if( type == OFX::Message::eMessageFatal )
-        return kOfxMessageFatal;
+	return kOfxMessageFatal;
     else if( type == OFX::Message::eMessageError )
-        return kOfxMessageError;
+	return kOfxMessageError;
     else if( type == OFX::Message::eMessageMessage )
-        return kOfxMessageMessage;
+	return kOfxMessageMessage;
     else if( type == OFX::Message::eMessageLog )
-        return kOfxMessageLog;
+	return kOfxMessageLog;
     else if( type == OFX::Message::eMessageQuestion )
-        return kOfxMessageQuestion;
+	return kOfxMessageQuestion;
     OFX::Log::error( true, "Unknown message type enum '%d'", type );
     return 0;
 }
@@ -192,13 +192,13 @@ const std::string mapMessageTypeEnumToString( const OFX::Message::EMessageType t
 OFX::Message::EMessageReply mapMessageReplyStatusToEnum( const OfxStatus stat )
 {
     if( stat == kOfxStatOK )
-        return OFX::Message::eMessageReplyOK;
+	return OFX::Message::eMessageReplyOK;
     else if( stat == kOfxStatReplyYes )
-        return OFX::Message::eMessageReplyYes;
+	return OFX::Message::eMessageReplyYes;
     else if( stat == kOfxStatReplyNo )
-        return OFX::Message::eMessageReplyNo;
+	return OFX::Message::eMessageReplyNo;
     else if( stat == kOfxStatFailed )
-        return OFX::Message::eMessageReplyFailed;
+	return OFX::Message::eMessageReplyFailed;
     OFX::Log::error( true, "Unknown message reply status value '%d'", stat );
     return OFX::Message::eMessageReplyFailed;
 }
@@ -207,14 +207,14 @@ OfxStatus mapMessageReplyEnumToStatus( const OFX::Message::EMessageReply stat )
 {
     switch( stat )
     {
-        case OFX::Message::eMessageReplyOK:
-            return kOfxStatOK;
-        case OFX::Message::eMessageReplyYes:
-            return kOfxStatReplyYes;
-        case OFX::Message::eMessageReplyNo:
-            return kOfxStatReplyNo;
-        case OFX::Message::eMessageReplyFailed:
-            return kOfxStatFailed;
+	case OFX::Message::eMessageReplyOK:
+	    return kOfxStatOK;
+	case OFX::Message::eMessageReplyYes:
+	    return kOfxStatReplyYes;
+	case OFX::Message::eMessageReplyNo:
+	    return kOfxStatReplyNo;
+	case OFX::Message::eMessageReplyFailed:
+	    return kOfxStatFailed;
     }
     OFX::Log::error( true, "Unknown message reply status enum '%d'", stat );
     return kOfxStatFailed;
@@ -224,11 +224,11 @@ OfxStatus mapMessageReplyEnumToStatus( const OFX::Message::EMessageReply stat )
 InstanceChangeReason mapInstanceChangedReasonStringToEnum( const std::string& s )
 {
     if( s == kOfxChangePluginEdited )
-        return eChangePluginEdit;
+	return eChangePluginEdit;
     if( s == kOfxChangeUserEdited )
-        return eChangeUserEdit;
+	return eChangeUserEdit;
     if( s == kOfxChangeTime )
-        return eChangeTime;
+	return eChangeTime;
     OFX::Log::error( true, "Unknown instance changed reason '%s'", s.c_str() );
     BOOST_THROW_EXCEPTION( std::invalid_argument( s ) );
     return eChangePluginEdit;
@@ -239,23 +239,23 @@ EBitDepth mapBitDepthStringToEnum( const std::string& str )
 {
     if( str == kOfxBitDepthByte )
     {
-        return eBitDepthUByte;
+	return eBitDepthUByte;
     }
     else if( str == kOfxBitDepthShort )
     {
-        return eBitDepthUShort;
+	return eBitDepthUShort;
     }
     else if( str == kOfxBitDepthFloat )
     {
-        return eBitDepthFloat;
+	return eBitDepthFloat;
     }
     else if( str == kOfxBitDepthNone )
     {
-        return eBitDepthNone;
+	return eBitDepthNone;
     }
     else
     {
-        return eBitDepthCustom;
+	return eBitDepthCustom;
     }
 }
 
@@ -263,16 +263,16 @@ const std::string mapBitDepthEnumToString( const EBitDepth e )
 {
     switch(e)
     {
-        case eBitDepthUByte:
-            return kOfxBitDepthByte;
-        case eBitDepthUShort:
-            return kOfxBitDepthShort;
-        case eBitDepthFloat:
-            return kOfxBitDepthFloat;
-        case eBitDepthNone:
-            return kOfxBitDepthNone;
-        case eBitDepthCustom:
-            return "eBitDepthCustom";
+	case eBitDepthUByte:
+	    return kOfxBitDepthByte;
+	case eBitDepthUShort:
+	    return kOfxBitDepthShort;
+	case eBitDepthFloat:
+	    return kOfxBitDepthFloat;
+	case eBitDepthNone:
+	    return kOfxBitDepthNone;
+	case eBitDepthCustom:
+	    return "eBitDepthCustom";
     }
     BOOST_THROW_EXCEPTION( std::invalid_argument( "BitDepth enum: " + boost::lexical_cast<std::string>(e) ) );
     return kOfxBitDepthNone;
@@ -283,23 +283,23 @@ EPixelComponent mapPixelComponentStringToEnum( const std::string& str )
 {
     if( str == kOfxImageComponentRGBA )
     {
-        return ePixelComponentRGBA;
+	return ePixelComponentRGBA;
     }
     else if( str == kOfxImageComponentRGB )
     {
-        return ePixelComponentRGB;
+	return ePixelComponentRGB;
     }
     else if( str == kOfxImageComponentAlpha )
     {
-        return ePixelComponentAlpha;
+	return ePixelComponentAlpha;
     }
     else if( str == kOfxImageComponentNone )
     {
-        return ePixelComponentNone;
+	return ePixelComponentNone;
     }
     else
     {
-        return ePixelComponentCustom;
+	return ePixelComponentCustom;
     }
 }
 
@@ -307,16 +307,16 @@ std::string mapPixelComponentEnumToString( const EPixelComponent e )
 {
     switch(e)
     {
-        case ePixelComponentRGBA:
-            return kOfxImageComponentRGBA;
-        case ePixelComponentRGB:
-            return kOfxImageComponentRGB;
-        case ePixelComponentAlpha:
-            return kOfxImageComponentAlpha;
-        case ePixelComponentNone:
-            return kOfxImageComponentNone;
-        case ePixelComponentCustom:
-            return "ePixelComponentCustom";
+	case ePixelComponentRGBA:
+	    return kOfxImageComponentRGBA;
+	case ePixelComponentRGB:
+	    return kOfxImageComponentRGB;
+	case ePixelComponentAlpha:
+	    return kOfxImageComponentAlpha;
+	case ePixelComponentNone:
+	    return kOfxImageComponentNone;
+	case ePixelComponentCustom:
+	    return "ePixelComponentCustom";
     }
     BOOST_THROW_EXCEPTION( std::invalid_argument( "EPixelComponent: " + boost::lexical_cast<std::string>(e) ) );
 }
@@ -326,15 +326,15 @@ EPreMultiplication mapPreMultiplicationStringToEnum( const std::string& str )
 {
     if( str == kOfxImageOpaque )
     {
-        return eImageOpaque;
+	return eImageOpaque;
     }
     else if( str == kOfxImagePreMultiplied )
     {
-        return eImagePreMultiplied;
+	return eImagePreMultiplied;
     }
     else if( str == kOfxImageUnPreMultiplied )
     {
-        return eImageUnPreMultiplied;
+	return eImageUnPreMultiplied;
     }
     BOOST_THROW_EXCEPTION( std::invalid_argument( str ) );
     return eImageOpaque;
@@ -344,12 +344,12 @@ std::string mapPreMultiplicationEnumToString( const EPreMultiplication e )
 {
     switch( e )
     {
-        case eImageOpaque:
-            return kOfxImageOpaque;
-        case eImagePreMultiplied:
-            return kOfxImagePreMultiplied;
-        case eImageUnPreMultiplied:
-            return kOfxImageUnPreMultiplied;
+	case eImageOpaque:
+	    return kOfxImageOpaque;
+	case eImagePreMultiplied:
+	    return kOfxImagePreMultiplied;
+	case eImageUnPreMultiplied:
+	    return kOfxImageUnPreMultiplied;
     }
     BOOST_THROW_EXCEPTION( std::invalid_argument( "PreMultiplicationEnum: " + boost::lexical_cast<std::string>(e) ) );
     return "";
@@ -360,19 +360,19 @@ EField mapFieldStringToEnum( const std::string& str )
 {
     if( str == kOfxImageFieldNone )
     {
-        return eFieldNone;
+	return eFieldNone;
     }
     else if( str == kOfxImageFieldBoth )
     {
-        return eFieldBoth;
+	return eFieldBoth;
     }
     else if( str == kOfxImageFieldLower )
     {
-        return eFieldLower;
+	return eFieldLower;
     }
     else if( str == kOfxImageFieldUpper )
     {
-        return eFieldUpper;
+	return eFieldUpper;
     }
     BOOST_THROW_EXCEPTION( std::invalid_argument( str ) );
     return eFieldNone;
@@ -382,14 +382,14 @@ std::string mapFieldEnumToString( const EField e )
 {
     switch( e )
     {
-        case eFieldNone:
-            return kOfxImageFieldNone;
-        case eFieldBoth:
-            return kOfxImageFieldBoth;
-        case eFieldLower:
-            return kOfxImageFieldLower;
-        case eFieldUpper:
-            return kOfxImageFieldUpper;
+	case eFieldNone:
+	    return kOfxImageFieldNone;
+	case eFieldBoth:
+	    return kOfxImageFieldBoth;
+	case eFieldLower:
+	    return kOfxImageFieldLower;
+	case eFieldUpper:
+	    return kOfxImageFieldUpper;
     }
     BOOST_THROW_EXCEPTION( std::invalid_argument( boost::lexical_cast<std::string>(e) ) );
     return "";
@@ -419,17 +419,17 @@ void ClipDescriptor::setFieldExtraction( EFieldExtraction v )
 {
     switch( v )
     {
-        case eFieldExtractBoth:
-            _clipProps.propSetString( kOfxImageClipPropFieldExtraction, kOfxImageFieldBoth );
-            break;
+	case eFieldExtractBoth:
+	    _clipProps.propSetString( kOfxImageClipPropFieldExtraction, kOfxImageFieldBoth );
+	    break;
 
-        case eFieldExtractSingle:
-            _clipProps.propSetString( kOfxImageClipPropFieldExtraction, kOfxImageFieldSingle );
-            break;
+	case eFieldExtractSingle:
+	    _clipProps.propSetString( kOfxImageClipPropFieldExtraction, kOfxImageFieldSingle );
+	    break;
 
-        case eFieldExtractDoubled:
-            _clipProps.propSetString( kOfxImageClipPropFieldExtraction, kOfxImageFieldDoubled );
-            break;
+	case eFieldExtractDoubled:
+	    _clipProps.propSetString( kOfxImageClipPropFieldExtraction, kOfxImageFieldDoubled );
+	    break;
     }
 }
 
@@ -440,20 +440,20 @@ void ClipDescriptor::addSupportedComponent( EPixelComponent v )
 
     switch( v )
     {
-        case ePixelComponentRGBA:
-            _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentRGBA, n );
-            break;
-        case ePixelComponentRGB:
-            _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentRGB, n );
-            break;
-        case ePixelComponentAlpha:
-            _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentAlpha, n );
-            break;
-        case ePixelComponentCustom:
-            break;
-        case ePixelComponentNone:
-            _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentNone, n );
-            break;
+	case ePixelComponentRGBA:
+	    _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentRGBA, n );
+	    break;
+	case ePixelComponentRGB:
+	    _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentRGB, n );
+	    break;
+	case ePixelComponentAlpha:
+	    _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentAlpha, n );
+	    break;
+	case ePixelComponentCustom:
+	    break;
+	case ePixelComponentNone:
+	    _clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentNone, n );
+	    break;
     }
 }
 
@@ -520,11 +520,11 @@ ImageEffectDescriptor::~ImageEffectDescriptor()
     std::map<std::string, ClipDescriptor*>::iterator iter;
     for( iter = _definedClips.begin(); iter != _definedClips.end(); ++iter )
     {
-        if( iter->second )
-        {
-            delete iter->second;
-            iter->second = NULL;
-        }
+	if( iter->second )
+	{
+	    delete iter->second;
+	    iter->second = NULL;
+	}
     }
 }
 
@@ -555,32 +555,32 @@ void ImageEffectDescriptor::addSupportedContext( EContext v )
 
     switch( v )
     {
-        case eContextGenerator:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGenerator, n );
-            break;
-        case eContextFilter:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextFilter, n );
-            break;
-        case eContextTransition:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextTransition, n );
-            break;
-        case eContextPaint:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextPaint, n );
-            break;
-        case eContextGeneral:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGeneral, n );
-            break;
-        case eContextRetimer:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextRetimer, n );
-            break;
-        case eContextReader:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextReader, n );
-            break;
-        case eContextWriter:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextWriter, n );
-            break;
-        case eContextNone:
-            break;
+	case eContextGenerator:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGenerator, n );
+	    break;
+	case eContextFilter:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextFilter, n );
+	    break;
+	case eContextTransition:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextTransition, n );
+	    break;
+	case eContextPaint:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextPaint, n );
+	    break;
+	case eContextGeneral:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGeneral, n );
+	    break;
+	case eContextRetimer:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextRetimer, n );
+	    break;
+	case eContextReader:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextReader, n );
+	    break;
+	case eContextWriter:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextWriter, n );
+	    break;
+	case eContextNone:
+	    break;
     }
 }
 
@@ -588,7 +588,7 @@ void ImageEffectDescriptor::addSupportedContext( EContext v )
 {
     _overlayDescriptor.reset( desc );
     if( OFX::Private::gHostDescription.supportsOverlays && desc->getMainEntry() )
-        _effectProps.propSetPointer( kOfxImageEffectPluginPropOverlayInteractV1, (void*)desc->getMainEntry() );
+	_effectProps.propSetPointer( kOfxImageEffectPluginPropOverlayInteractV1, (void*)desc->getMainEntry() );
 }
 
 /** @brief Add a pixel depth to those supported */
@@ -598,21 +598,21 @@ void ImageEffectDescriptor::addSupportedBitDepth( EBitDepth v )
 
     switch( v )
     {
-        case eBitDepthUByte:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthByte, n );
-            break;
-        case eBitDepthUShort:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthShort, n );
-            break;
-        case eBitDepthFloat:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthFloat, n );
-            break;
-        case eBitDepthNone:
-            _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthNone, n );
-            break;
-        case eBitDepthCustom:
-            // what the good way ?
-            break;
+	case eBitDepthUByte:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthByte, n );
+	    break;
+	case eBitDepthUShort:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthShort, n );
+	    break;
+	case eBitDepthFloat:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthFloat, n );
+	    break;
+	case eBitDepthNone:
+	    _effectProps.propSetString( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthNone, n );
+	    break;
+	case eBitDepthCustom:
+	    // what the good way ?
+	    break;
     }
 }
 
@@ -676,15 +676,15 @@ void ImageEffectDescriptor::setRenderThreadSafety( ERenderSafety v )
 {
     switch( v )
     {
-        case eRenderUnsafe:
-            _effectProps.propSetString( kOfxImageEffectPluginRenderThreadSafety, kOfxImageEffectRenderUnsafe );
-            break;
-        case eRenderInstanceSafe:
-            _effectProps.propSetString( kOfxImageEffectPluginRenderThreadSafety, kOfxImageEffectRenderInstanceSafe );
-            break;
-        case eRenderFullySafe:
-            _effectProps.propSetString( kOfxImageEffectPluginRenderThreadSafety, kOfxImageEffectRenderFullySafe );
-            break;
+	case eRenderUnsafe:
+	    _effectProps.propSetString( kOfxImageEffectPluginRenderThreadSafety, kOfxImageEffectRenderUnsafe );
+	    break;
+	case eRenderInstanceSafe:
+	    _effectProps.propSetString( kOfxImageEffectPluginRenderThreadSafety, kOfxImageEffectRenderInstanceSafe );
+	    break;
+	case eRenderFullySafe:
+	    _effectProps.propSetString( kOfxImageEffectPluginRenderThreadSafety, kOfxImageEffectRenderFullySafe );
+	    break;
     }
 }
 
@@ -703,26 +703,26 @@ ClipDescriptor* ImageEffectDescriptor::defineClip( const std::string& name )
     std::map<std::string, ClipDescriptor*>::const_iterator search;
     search = _definedClips.find( name );
     if( search != _definedClips.end() )
-        return search->second;
+	return search->second;
 
     // no, so make it
     OfxPropertySetHandle propSet;
     OfxStatus stat = OFX::Private::gEffectSuite->clipDefine( _effectHandle, name.c_str(), &propSet );
     if( stat == kOfxStatOK )
     {
-        ClipDescriptor* clip = new ClipDescriptor( name, propSet );
+	ClipDescriptor* clip = new ClipDescriptor( name, propSet );
 
-        _definedClips[name]            = clip;
-        _clipComponentsPropNames[name] = std::string( "OfxImageClipPropComponents_" ) + name;
-        _clipDepthPropNames[name]      = std::string( "OfxImageClipPropDepth_" ) + name;
-        _clipPARPropNames[name]        = std::string( "OfxImageClipPropPAR_" ) + name;
-        _clipROIPropNames[name]        = std::string( "OfxImageClipPropRoI_" ) + name;
-        _clipFrameRangePropNames[name] = std::string( "OfxImageClipPropFrameRange_" ) + name;
+	_definedClips[name]            = clip;
+	_clipComponentsPropNames[name] = std::string( "OfxImageClipPropComponents_" ) + name;
+	_clipDepthPropNames[name]      = std::string( "OfxImageClipPropDepth_" ) + name;
+	_clipPARPropNames[name]        = std::string( "OfxImageClipPropPAR_" ) + name;
+	_clipROIPropNames[name]        = std::string( "OfxImageClipPropRoI_" ) + name;
+	_clipFrameRangePropNames[name] = std::string( "OfxImageClipPropFrameRange_" ) + name;
 
-        return clip;
+	return clip;
     }
     else
-        return NULL;
+	return NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -748,20 +748,20 @@ Image::Image( OfxPropertySetHandle props )
     _pixelBytes = 0;
     switch( _pixelComponents )
     {
-        case ePixelComponentRGBA: _pixelBytes   = 4; break;
-        case ePixelComponentRGB: _pixelBytes   = 3; break;
-        case ePixelComponentAlpha: _pixelBytes  = 1; break;
-        case ePixelComponentCustom: _pixelBytes = 0; break;
-        case ePixelComponentNone: _pixelBytes   = 0; break;
+	case ePixelComponentRGBA: _pixelBytes   = 4; break;
+	case ePixelComponentRGB: _pixelBytes   = 3; break;
+	case ePixelComponentAlpha: _pixelBytes  = 1; break;
+	case ePixelComponentCustom: _pixelBytes = 0; break;
+	case ePixelComponentNone: _pixelBytes   = 0; break;
     }
 
     switch( _pixelDepth )
     {
-        case eBitDepthUByte: _pixelBytes  *= 1; break;
-        case eBitDepthUShort: _pixelBytes *= 2; break;
-        case eBitDepthFloat: _pixelBytes  *= 4; break;
-        case eBitDepthCustom: /* what the good way ? */ break;
-        case eBitDepthNone: _pixelBytes = 0; break;
+	case eBitDepthUByte: _pixelBytes  *= 1; break;
+	case eBitDepthUShort: _pixelBytes *= 2; break;
+	case eBitDepthFloat: _pixelBytes  *= 4; break;
+	case eBitDepthCustom: /* what the good way ? */ break;
+	case eBitDepthNone: _pixelBytes = 0; break;
     }
 
     str                = _imageProps.propGetString( kOfxImageEffectPropPreMultiplication );
@@ -780,24 +780,24 @@ Image::Image( OfxPropertySetHandle props )
     str = _imageProps.propGetString( kOfxImagePropField );
     if( str == kOfxImageFieldNone )
     {
-        _field = eFieldNone;
+	_field = eFieldNone;
     }
     else if( str == kOfxImageFieldBoth )
     {
-        _field = eFieldBoth;
+	_field = eFieldBoth;
     }
     else if( str == kOfxImageFieldLower )
     {
-        _field = eFieldLower;
+	_field = eFieldLower;
     }
     else if( str == kOfxImageFieldUpper )
     {
-        _field = eFieldLower;
+	_field = eFieldLower;
     }
     else
     {
-        OFX::Log::error( true, "Unknown field state '%s' reported on an image", str.c_str() );
-        _field = eFieldNone;
+	OFX::Log::error( true, "Unknown field state '%s' reported on an image", str.c_str() );
+	_field = eFieldNone;
     }
 
     _uniqueID = _imageProps.propGetString( kOfxImagePropUniqueIdentifier );
@@ -825,7 +825,7 @@ void* Image::getPixelAddress( int x, int y )
 {
     // are we in the image bounds
     if( x < _bounds.x1 || x >= _bounds.x2 || y < _bounds.y1 || y > _bounds.y2 || _pixelBytes == 0 )
-        return 0;
+	return 0;
 
     char* pix = ( char* )( ( (char*) _pixelData ) + ( y - _bounds.y1 ) * _rowBytes );
     pix += ( x - _bounds.x1 ) * _pixelBytes;
@@ -861,17 +861,17 @@ EBitDepth Clip::getPixelDepth( void ) const
 
     try
     {
-        bitDepth = mapBitDepthStringToEnum( str );
-        if( bitDepth == eBitDepthNone && isConnected() )
-        {
-            OFX::Log::error( true, "Clip %s is connected and has no pixel depth.", _clipName.c_str() );
-        }
+	bitDepth = mapBitDepthStringToEnum( str );
+	if( bitDepth == eBitDepthNone && isConnected() )
+	{
+	    OFX::Log::error( true, "Clip %s is connected and has no pixel depth.", _clipName.c_str() );
+	}
     }
     // gone wrong ?
     catch( std::invalid_argument& )
     {
-        OFX::Log::error( true, "Unknown pixel depth property '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
-        bitDepth = eBitDepthNone;
+	OFX::Log::error( true, "Unknown pixel depth property '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
+	bitDepth = eBitDepthNone;
     }
     return bitDepth;
 }
@@ -884,17 +884,17 @@ EPixelComponent Clip::getPixelComponents( void ) const
 
     try
     {
-        pix = mapPixelComponentStringToEnum( str );
-        if( pix == ePixelComponentNone && isConnected() )
-        {
-            OFX::Log::error( true, "Clip %s is connected and has no pixel component type!", _clipName.c_str() );
-        }
+	pix = mapPixelComponentStringToEnum( str );
+	if( pix == ePixelComponentNone && isConnected() )
+	{
+	    OFX::Log::error( true, "Clip %s is connected and has no pixel component type!", _clipName.c_str() );
+	}
     }
     // gone wrong ?
     catch( std::invalid_argument& )
     {
-        OFX::Log::error( true, "Unknown  pixel component type '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
-        pix = ePixelComponentNone;
+	OFX::Log::error( true, "Unknown  pixel component type '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
+	pix = ePixelComponentNone;
     }
     return pix;
 }
@@ -907,17 +907,17 @@ EBitDepth Clip::getUnmappedPixelDepth( void ) const
 
     try
     {
-        bitDepth = mapBitDepthStringToEnum( str );
-        if( bitDepth == eBitDepthNone && !isConnected() )
-        {
-            OFX::Log::error( true, "Clip %s is connected and has no unmapped pixel depth.", _clipName.c_str() );
-        }
+	bitDepth = mapBitDepthStringToEnum( str );
+	if( bitDepth == eBitDepthNone && !isConnected() )
+	{
+	    OFX::Log::error( true, "Clip %s is connected and has no unmapped pixel depth.", _clipName.c_str() );
+	}
     }
     // gone wrong ?
     catch( std::invalid_argument& )
     {
-        OFX::Log::error( true, "Unknown unmapped pixel depth property '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
-        bitDepth = eBitDepthNone;
+	OFX::Log::error( true, "Unknown unmapped pixel depth property '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
+	bitDepth = eBitDepthNone;
     }
     return bitDepth;
 }
@@ -930,17 +930,17 @@ EPixelComponent Clip::getUnmappedPixelComponents( void ) const
 
     try
     {
-        pix = mapPixelComponentStringToEnum( str );
-        if( pix == ePixelComponentNone && !isConnected() )
-        {
-            OFX::Log::error( true, "Clip %s is connected and has no unmapped pixel component type!", _clipName.c_str() );
-        }
+	pix = mapPixelComponentStringToEnum( str );
+	if( pix == ePixelComponentNone && !isConnected() )
+	{
+	    OFX::Log::error( true, "Clip %s is connected and has no unmapped pixel component type!", _clipName.c_str() );
+	}
     }
     // gone wrong ?
     catch( std::invalid_argument& )
     {
-        OFX::Log::error( true, "Unknown unmapped pixel component type '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
-        pix = ePixelComponentNone;
+	OFX::Log::error( true, "Unknown unmapped pixel component type '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
+	pix = ePixelComponentNone;
     }
     return pix;
 }
@@ -953,13 +953,13 @@ EPreMultiplication Clip::getPreMultiplication( void ) const
 
     try
     {
-        premult = mapPreMultiplicationStringToEnum( str );
+	premult = mapPreMultiplicationStringToEnum( str );
     }
     // gone wrong ?
     catch( std::invalid_argument& )
     {
-        OFX::Log::error( true, "Unknown premultiplication type '%s' reported on clip %s!", str.c_str(), _clipName.c_str() );
-        premult = eImageOpaque;
+	OFX::Log::error( true, "Unknown premultiplication type '%s' reported on clip %s!", str.c_str(), _clipName.c_str() );
+	premult = eImageOpaque;
     }
     return premult;
 }
@@ -972,15 +972,15 @@ EField Clip::getFieldOrder( void ) const
 
     try
     {
-        field = mapFieldStringToEnum( str );
-        OFX::Log::error( field != eFieldNone && field != eFieldLower && field != eFieldUpper,
-                         "Field order '%s' reported on a clip %s is invalid, it must be none, lower or upper.", str.c_str(), _clipName.c_str() );
+	field = mapFieldStringToEnum( str );
+	OFX::Log::error( field != eFieldNone && field != eFieldLower && field != eFieldUpper,
+			 "Field order '%s' reported on a clip %s is invalid, it must be none, lower or upper.", str.c_str(), _clipName.c_str() );
     }
     // gone wrong ?
     catch( std::invalid_argument& )
     {
-        OFX::Log::error( true, "Unknown field order '%s' reported on a clip %s.", str.c_str(), _clipName.c_str() );
-        field = eFieldNone;
+	OFX::Log::error( true, "Unknown field order '%s' reported on a clip %s.", str.c_str(), _clipName.c_str() );
+	field = eFieldNone;
     }
     return field;
 }
@@ -1043,7 +1043,7 @@ OfxRectD Clip::getCanonicalRod( const OfxTime t ) const
 
     if( stat == kOfxStatFailed )
     {
-        bounds.x1 = bounds.x2 = bounds.y1 = bounds.y2 = 0;
+	bounds.x1 = bounds.x2 = bounds.y1 = bounds.y2 = 0;
     }
     throwSuiteStatusException( stat );
     return bounds;
@@ -1065,7 +1065,7 @@ OfxRectI Clip::getPixelRod( const OfxTime t ) const
     OfxRectD rod = getCanonicalRod(t);
     double ratio = getPixelAspectRatio();
     if( ratio == 0 )
-        ratio = 1;
+	ratio = 1;
 
     OfxRectI pixRod;
     pixRod.x1 = boost::numeric_cast<int>(rod.x1 / ratio);
@@ -1093,10 +1093,10 @@ Image* Clip::fetchImage( OfxTime t )
 
     if( stat == kOfxStatFailed )
     {
-        return NULL; // not an error, fetched images out of range/region, assume black and transparent
+	return NULL; // not an error, fetched images out of range/region, assume black and transparent
     }
     else
-        throwSuiteStatusException( stat );
+	throwSuiteStatusException( stat );
 
     return new Image( imageHandle );
 }
@@ -1109,10 +1109,10 @@ Image* Clip::fetchImage( OfxTime t, OfxRectD bounds )
 
     if( stat == kOfxStatFailed )
     {
-        return NULL; // not an error, fetched images out of range/region, assume black and transparent
+	return NULL; // not an error, fetched images out of range/region, assume black and transparent
     }
     else
-        throwSuiteStatusException( stat );
+	throwSuiteStatusException( stat );
 
     return new Image( imageHandle );
 }
@@ -1158,11 +1158,11 @@ ImageEffect::~ImageEffect()
     std::map<std::string, Clip*>::iterator iter;
     for( iter = _fetchedClips.begin(); iter != _fetchedClips.end(); ++iter )
     {
-        if( iter->second )
-        {
-            delete iter->second;
-            iter->second = NULL;
-        }
+	if( iter->second )
+	{
+	    delete iter->second;
+	    iter->second = NULL;
+	}
     }
 }
 
@@ -1243,7 +1243,7 @@ OFX::Message::EMessageReply ImageEffect::sendMessage( OFX::Message::EMessageType
 {
     if( !OFX::Private::gMessageSuite->message )
     {
-        throwHostMissingSuiteException( "message" );
+	throwHostMissingSuiteException( "message" );
     }
     OfxStatus stat = OFX::Private::gMessageSuite->message( _effectHandle, mapMessageTypeEnumToString( type ).c_str(), id.c_str(), msg.c_str() );
     return mapMessageReplyStatusToEnum( stat );
@@ -1256,7 +1256,7 @@ Clip* ImageEffect::fetchClip( const std::string& name )
     std::map<std::string, Clip*>::const_iterator search;
     search = _fetchedClips.find( name );
     if( search != _fetchedClips.end() )
-        return search->second;
+	return search->second;
 
     // fetch the property set handle of the effect
     OfxImageClipHandle clipHandle   = 0;
@@ -1296,8 +1296,8 @@ void ImageEffect::addOverlayInteract( OverlayInteract* interact )
     // we don't, put it in there
     if( i == _overlayInteracts.end() )
     {
-        // we have a new one to add in here
-        _overlayInteracts.push_back( interact );
+	// we have a new one to add in here
+	_overlayInteracts.push_back( interact );
     }
 }
 
@@ -1311,7 +1311,7 @@ void ImageEffect::removeOverlayInteract( OverlayInteract* interact )
     // and remove it
     if( i != _overlayInteracts.end() )
     {
-        _overlayInteracts.erase( i );
+	_overlayInteracts.erase( i );
     }
 }
 
@@ -1322,7 +1322,7 @@ void ImageEffect::redrawOverlays( void )
     std::list<OverlayInteract*>::iterator i;
     for( i = _overlayInteracts.begin(); i != _overlayInteracts.end(); ++i )
     {
-        ( *i )->requestRedraw();
+	( *i )->requestRedraw();
     }
 }
 
@@ -1424,8 +1424,8 @@ void ImageEffect::progressStart( const std::string& message )
 {
     if( OFX::Private::gProgressSuite )
     {
-        OfxStatus stat = OFX::Private::gProgressSuite->progressStart( (void*) _effectHandle, message.c_str() );
-        _progressStartSuccess = ( stat == kOfxStatOK );
+	OfxStatus stat = OFX::Private::gProgressSuite->progressStart( (void*) _effectHandle, message.c_str() );
+	_progressStartSuccess = ( stat == kOfxStatOK );
     }
 }
 
@@ -1434,7 +1434,7 @@ void ImageEffect::progressEnd()
 {
     if( OFX::Private::gProgressSuite && _progressStartSuccess )
     {
-        OFX::Private::gProgressSuite->progressEnd( (void*) _effectHandle );
+	OFX::Private::gProgressSuite->progressEnd( (void*) _effectHandle );
     }
 }
 
@@ -1444,9 +1444,9 @@ bool ImageEffect::progressUpdate( const double t )
 {
     if( OFX::Private::gProgressSuite && _progressStartSuccess )
     {
-        const OfxStatus stat = OFX::Private::gProgressSuite->progressUpdate( (void*) _effectHandle, t );
-        if( stat == kOfxStatReplyNo )
-            return true;
+	const OfxStatus stat = OFX::Private::gProgressSuite->progressUpdate( (void*) _effectHandle, t );
+	if( stat == kOfxStatReplyNo )
+	    return true;
     }
     return false;
 }
@@ -1457,9 +1457,9 @@ double ImageEffect::timeLineGetTime()
 {
     if( OFX::Private::gTimeLineSuite )
     {
-        double time;
-        if( OFX::Private::gTimeLineSuite->getTime( (void*) _effectHandle, &time ) == kOfxStatOK )
-            return time;
+	double time;
+	if( OFX::Private::gTimeLineSuite->getTime( (void*) _effectHandle, &time ) == kOfxStatOK )
+	    return time;
     }
     return 0;
 }
@@ -1469,7 +1469,7 @@ void ImageEffect::timeLineGotoTime( const double t )
 {
     if( OFX::Private::gTimeLineSuite )
     {
-        OFX::Private::gTimeLineSuite->gotoTime( (void*) _effectHandle, t );
+	OFX::Private::gTimeLineSuite->gotoTime( (void*) _effectHandle, t );
     }
 }
 
@@ -1479,7 +1479,7 @@ void ImageEffect:: timeLineGetBounds( double& t1, double& t2 )
     t1 = t2 = 0;
     if( OFX::Private::gTimeLineSuite )
     {
-        OFX::Private::gTimeLineSuite->getTimeBounds( (void*) _effectHandle, &t1, &t2 );
+	OFX::Private::gTimeLineSuite->getTimeBounds( (void*) _effectHandle, &t1, &t2 );
     }
 }
 
@@ -1491,7 +1491,7 @@ const std::string& ClipPreferencesSetter::extractValueForName( const StringStrin
     StringStringMap::const_iterator it = m.find( name );
 
     if( it == m.end() )
-        BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( name ) );
+	BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( name ) );
     return it->second;
 }
 
@@ -1503,20 +1503,20 @@ void ClipPreferencesSetter::setClipComponents( Clip& clip, EPixelComponent comps
 
     switch( comps )
     {
-        case ePixelComponentRGBA:
-            outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGBA );
-            break;
-        case ePixelComponentRGB:
-            outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGB );
-            break;
-        case ePixelComponentAlpha:
-            outArgs_.propSetString( propName.c_str(), kOfxImageComponentAlpha );
-            break;
-        case ePixelComponentCustom:
-            break;
-        case ePixelComponentNone:
-            outArgs_.propSetString( propName.c_str(), kOfxImageComponentNone );
-            break;
+	case ePixelComponentRGBA:
+	    outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGBA );
+	    break;
+	case ePixelComponentRGB:
+	    outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGB );
+	    break;
+	case ePixelComponentAlpha:
+	    outArgs_.propSetString( propName.c_str(), kOfxImageComponentAlpha );
+	    break;
+	case ePixelComponentCustom:
+	    break;
+	case ePixelComponentNone:
+	    outArgs_.propSetString( propName.c_str(), kOfxImageComponentNone );
+	    break;
     }
 }
 
@@ -1528,32 +1528,32 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, EBitDepth bitDepth )
 
     if( _imageEffectHostDescription->supportsMultipleClipDepths )
     {
-        switch( bitDepth )
-        {
-            case eBitDepthUByte:
-                outArgs_.propSetString( propName.c_str(), kOfxBitDepthByte );
-                break;
-            case eBitDepthUShort:
-                outArgs_.propSetString( propName.c_str(), kOfxBitDepthShort );
-                break;
-            case eBitDepthFloat:
-                outArgs_.propSetString( propName.c_str(), kOfxBitDepthFloat );
-                break;
-            case eBitDepthNone:
-                outArgs_.propSetString( propName.c_str(), kOfxBitDepthNone );
-                break;
-            case eBitDepthCustom:
-                // what the good way ?
-                break;
-        }
+	switch( bitDepth )
+	{
+	    case eBitDepthUByte:
+		outArgs_.propSetString( propName.c_str(), kOfxBitDepthByte );
+		break;
+	    case eBitDepthUShort:
+		outArgs_.propSetString( propName.c_str(), kOfxBitDepthShort );
+		break;
+	    case eBitDepthFloat:
+		outArgs_.propSetString( propName.c_str(), kOfxBitDepthFloat );
+		break;
+	    case eBitDepthNone:
+		outArgs_.propSetString( propName.c_str(), kOfxBitDepthNone );
+		break;
+	    case eBitDepthCustom:
+		// what the good way ?
+		break;
+	}
     }
     else
     {
-        // BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support multiple bit depths.") );
-        // it's not clear what we need to to in this case...
-        // set the value supported by the host or set nothing
-        // by setting this value, we may have less problem depending on host implementations
-        outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getPixelDepth() ) );
+	// BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support multiple bit depths.") );
+	// it's not clear what we need to to in this case...
+	// set the value supported by the host or set nothing
+	// by setting this value, we may have less problem depending on host implementations
+	outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getPixelDepth() ) );
     }
 }
 
@@ -1561,7 +1561,7 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, EBitDepth bitDepth )
 void ClipPreferencesSetter::setPixelAspectRatio( Clip& clip, double PAR )
 {
     if( ! _imageEffectHostDescription->supportsMultipleClipPARs )
-        return;
+	return;
 //		BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support multiple Pixel Aspect Ratios.") );
 
     doneSomething_ = true;
@@ -1573,7 +1573,7 @@ void ClipPreferencesSetter::setPixelAspectRatio( Clip& clip, double PAR )
 void ClipPreferencesSetter::setOutputFrameRate( double v )
 {
     if( ! _imageEffectHostDescription->supportsSetableFrameRate )
-        return;
+	return;
 //		BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support setable frame rate.") );
 
     doneSomething_ = true;
@@ -1586,15 +1586,15 @@ void ClipPreferencesSetter::setOutputPremultiplication( EPreMultiplication v )
     doneSomething_ = true;
     switch( v )
     {
-        case eImageOpaque:
-            outArgs_.propSetString( kOfxImageEffectPropPreMultiplication, kOfxImageOpaque );
-            break;
-        case eImagePreMultiplied:
-            outArgs_.propSetString( kOfxImageEffectPropPreMultiplication, kOfxImagePreMultiplied );
-            break;
-        case eImageUnPreMultiplied:
-            outArgs_.propSetString( kOfxImageEffectPropPreMultiplication, kOfxImageUnPreMultiplied );
-            break;
+	case eImageOpaque:
+	    outArgs_.propSetString( kOfxImageEffectPropPreMultiplication, kOfxImageOpaque );
+	    break;
+	case eImagePreMultiplied:
+	    outArgs_.propSetString( kOfxImageEffectPropPreMultiplication, kOfxImagePreMultiplied );
+	    break;
+	case eImageUnPreMultiplied:
+	    outArgs_.propSetString( kOfxImageEffectPropPreMultiplication, kOfxImageUnPreMultiplied );
+	    break;
     }
 }
 
@@ -1617,12 +1617,12 @@ void ClipPreferencesSetter::setOutputFielding( EField v )
     doneSomething_ = true;
     switch( v )
     {
-        case eFieldNone: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldNone, 0, false ); break;
-        case eFieldLower: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldLower, 0, false ); break;
-        case eFieldUpper: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldUpper, 0, false ); break;
-        case eFieldBoth: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldBoth, 0, false ); break;
-            // kOfxImageFieldSingle ?
-            // kOfxImageFieldDoubled ?
+	case eFieldNone: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldNone, 0, false ); break;
+	case eFieldLower: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldLower, 0, false ); break;
+	case eFieldUpper: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldUpper, 0, false ); break;
+	case eFieldBoth: outArgs_.propSetString( kOfxImageClipPropFieldOrder, kOfxImageFieldBoth, 0, false ); break;
+	    // kOfxImageFieldSingle ?
+	    // kOfxImageFieldDoubled ?
     }
 }
 
@@ -1637,12 +1637,12 @@ ImageMemory::ImageMemory( size_t nBytes, ImageEffect* associatedEffect )
 
     if( associatedEffect != 0 )
     {
-        effectHandle = associatedEffect->_effectHandle;
+	effectHandle = associatedEffect->_effectHandle;
     }
 
     OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryAlloc( effectHandle, nBytes, &_handle );
     if( stat == kOfxStatErrMemory )
-        BOOST_THROW_EXCEPTION( std::bad_alloc() );
+	BOOST_THROW_EXCEPTION( std::bad_alloc() );
     throwSuiteStatusException( stat );
 }
 
@@ -1660,7 +1660,7 @@ void* ImageMemory::lock( void )
     OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryLock( _handle, &ptr );
 
     if( stat == kOfxStatErrMemory )
-        BOOST_THROW_EXCEPTION( std::bad_alloc() );
+	BOOST_THROW_EXCEPTION( std::bad_alloc() );
     throwSuiteStatusException( stat );
     return ptr;
 }
@@ -1680,44 +1680,44 @@ void fetchHostDescription( OfxHost* host )
     OFX::Log::error( OFX::Private::gHostDescriptionHasInit, "Tried to create host description when we already have one." );
     if( !OFX::Private::gHostDescriptionHasInit )
     {
-        OFX::Private::gHostDescriptionHasInit = true;
-        // wrap the property handle up with a property set
-        PropertySet hostProps( host->host );
+	OFX::Private::gHostDescriptionHasInit = true;
+	// wrap the property handle up with a property set
+	PropertySet hostProps( host->host );
 
-        // and get some properties
-        gHostDescription.hostName                    = hostProps.propGetString( kOfxPropName );
-        gHostDescription.hostLabel                   = hostProps.propGetString( kOfxPropLabel );
-        gHostDescription.hostIsBackground            = hostProps.propGetInt( kOfxImageEffectHostPropIsBackground ) != 0;
-        gHostDescription.supportsOverlays            = hostProps.propGetInt( kOfxImageEffectPropSupportsOverlays ) != 0;
-        gHostDescription.supportsMultiResolution     = hostProps.propGetInt( kOfxImageEffectPropSupportsMultiResolution ) != 0;
-        gHostDescription.supportsTiles               = hostProps.propGetInt( kOfxImageEffectPropSupportsTiles ) != 0;
-        gHostDescription.temporalClipAccess          = hostProps.propGetInt( kOfxImageEffectPropTemporalClipAccess ) != 0;
-        gHostDescription.supportsMultipleClipDepths  = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
-        gHostDescription.supportsMultipleClipPARs    = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipPARs ) != 0;
-        gHostDescription.supportsSetableFrameRate    = hostProps.propGetInt( kOfxImageEffectPropSetableFrameRate ) != 0;
-        gHostDescription.supportsSetableFielding     = hostProps.propGetInt( kOfxImageEffectPropSetableFielding ) != 0;
-        gHostDescription.supportsStringAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsStringAnimation ) != 0;
-        gHostDescription.supportsCustomInteract      = hostProps.propGetInt( kOfxParamHostPropSupportsCustomInteract ) != 0;
-        gHostDescription.supportsChoiceAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsChoiceAnimation ) != 0;
-        gHostDescription.supportsBooleanAnimation    = hostProps.propGetInt( kOfxParamHostPropSupportsBooleanAnimation ) != 0;
-        gHostDescription.supportsCustomAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsCustomAnimation ) != 0;
-        gHostDescription.supportsParametricParameter = gParametricParameterSuite != NULL;
-        gHostDescription.supportsCameraParameter     = gCameraParameterSuite != NULL;
-        gHostDescription.maxParameters               = hostProps.propGetInt( kOfxParamHostPropMaxParameters );
-        gHostDescription.maxPages                    = hostProps.propGetInt( kOfxParamHostPropMaxPages );
-        gHostDescription.pageRowCount                = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 0 );
-        gHostDescription.pageColumnCount             = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 1 );
-        int numComponents = hostProps.propGetDimension( kOfxImageEffectPropSupportedComponents );
-        for( int i = 0; i < numComponents; ++i )
-            gHostDescription._supportedComponents.push_back( mapPixelComponentStringToEnum( hostProps.propGetString( kOfxImageEffectPropSupportedComponents, i ) ) );
+	// and get some properties
+	gHostDescription.hostName                    = hostProps.propGetString( kOfxPropName );
+	gHostDescription.hostLabel                   = hostProps.propGetString( kOfxPropLabel );
+	gHostDescription.hostIsBackground            = hostProps.propGetInt( kOfxImageEffectHostPropIsBackground ) != 0;
+	gHostDescription.supportsOverlays            = hostProps.propGetInt( kOfxImageEffectPropSupportsOverlays ) != 0;
+	gHostDescription.supportsMultiResolution     = hostProps.propGetInt( kOfxImageEffectPropSupportsMultiResolution ) != 0;
+	gHostDescription.supportsTiles               = hostProps.propGetInt( kOfxImageEffectPropSupportsTiles ) != 0;
+	gHostDescription.temporalClipAccess          = hostProps.propGetInt( kOfxImageEffectPropTemporalClipAccess ) != 0;
+	gHostDescription.supportsMultipleClipDepths  = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
+	gHostDescription.supportsMultipleClipPARs    = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipPARs ) != 0;
+	gHostDescription.supportsSetableFrameRate    = hostProps.propGetInt( kOfxImageEffectPropSetableFrameRate ) != 0;
+	gHostDescription.supportsSetableFielding     = hostProps.propGetInt( kOfxImageEffectPropSetableFielding ) != 0;
+	gHostDescription.supportsStringAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsStringAnimation ) != 0;
+	gHostDescription.supportsCustomInteract      = hostProps.propGetInt( kOfxParamHostPropSupportsCustomInteract ) != 0;
+	gHostDescription.supportsChoiceAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsChoiceAnimation ) != 0;
+	gHostDescription.supportsBooleanAnimation    = hostProps.propGetInt( kOfxParamHostPropSupportsBooleanAnimation ) != 0;
+	gHostDescription.supportsCustomAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsCustomAnimation ) != 0;
+	gHostDescription.supportsParametricParameter = gParametricParameterSuite != NULL;
+	gHostDescription.supportsCameraParameter     = gCameraParameterSuite != NULL;
+	gHostDescription.maxParameters               = hostProps.propGetInt( kOfxParamHostPropMaxParameters );
+	gHostDescription.maxPages                    = hostProps.propGetInt( kOfxParamHostPropMaxPages );
+	gHostDescription.pageRowCount                = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 0 );
+	gHostDescription.pageColumnCount             = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 1 );
+	int numComponents = hostProps.propGetDimension( kOfxImageEffectPropSupportedComponents );
+	for( int i = 0; i < numComponents; ++i )
+	    gHostDescription._supportedComponents.push_back( mapPixelComponentStringToEnum( hostProps.propGetString( kOfxImageEffectPropSupportedComponents, i ) ) );
 
-        int numContexts = hostProps.propGetDimension( kOfxImageEffectPropSupportedContexts );
-        for( int i = 0; i < numContexts; ++i )
-            gHostDescription._supportedContexts.push_back( mapContextStringToEnum( hostProps.propGetString( kOfxImageEffectPropSupportedContexts, i ) ) );
+	int numContexts = hostProps.propGetDimension( kOfxImageEffectPropSupportedContexts );
+	for( int i = 0; i < numContexts; ++i )
+	    gHostDescription._supportedContexts.push_back( mapContextStringToEnum( hostProps.propGetString( kOfxImageEffectPropSupportedContexts, i ) ) );
 
-        int numPixelDepths = hostProps.propGetDimension( kOfxImageEffectPropSupportedPixelDepths );
-        for( int i = 0; i < numPixelDepths; ++i )
-            gHostDescription._supportedPixelDepths.push_back( mapBitDepthStringToEnum( hostProps.propGetString( kOfxImageEffectPropSupportedPixelDepths, i ) ) );
+	int numPixelDepths = hostProps.propGetDimension( kOfxImageEffectPropSupportedPixelDepths );
+	for( int i = 0; i < numPixelDepths; ++i )
+	    gHostDescription._supportedPixelDepths.push_back( mapBitDepthStringToEnum( hostProps.propGetString( kOfxImageEffectPropSupportedPixelDepths, i ) ) );
     }
 }
 
@@ -1742,31 +1742,31 @@ void loadAction( void )
     // fetch the suites
     OFX::Log::error( gHost == 0, "Host pointer has not been set." );
     if( !gHost )
-        BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
+	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
 
     if( Private::gLoadCount == 1 )
     {
-        gEffectSuite   = (OfxImageEffectSuiteV1*) fetchSuite( kOfxImageEffectSuite, 1 );
-        gPropSuite     = (OfxPropertySuiteV1*)    fetchSuite( kOfxPropertySuite, 1 );
-        gParamSuite    = (OfxParameterSuiteV1*)   fetchSuite( kOfxParameterSuite, 1 );
-        gMemorySuite   = (OfxMemorySuiteV1*)      fetchSuite( kOfxMemorySuite, 1 );
-        gThreadSuite   = (OfxMultiThreadSuiteV1*) fetchSuite( kOfxMultiThreadSuite, 1 );
-        gMessageSuite  = (OfxMessageSuiteV1*)     fetchSuite( kOfxMessageSuite, 1 );
-        gProgressSuite = (OfxProgressSuiteV1*)     fetchSuite( kOfxProgressSuite, 1, true );
-        gTimeLineSuite = (OfxTimeLineSuiteV1*)     fetchSuite( kOfxTimeLineSuite, 1, true );
-        gParametricParameterSuite = static_cast<OfxParametricParameterSuiteV1*>( OFX::fetchSuite( kOfxParametricParameterSuite, 1, true ) );
-        gCameraParameterSuite = static_cast<NukeOfxCameraSuiteV1*>( OFX::fetchSuite( kNukeOfxCameraSuite, 1, true ) );
+	gEffectSuite   = (OfxImageEffectSuiteV1*) fetchSuite( kOfxImageEffectSuite, 1 );
+	gPropSuite     = (OfxPropertySuiteV1*)    fetchSuite( kOfxPropertySuite, 1 );
+	gParamSuite    = (OfxParameterSuiteV1*)   fetchSuite( kOfxParameterSuite, 1 );
+	gMemorySuite   = (OfxMemorySuiteV1*)      fetchSuite( kOfxMemorySuite, 1 );
+	gThreadSuite   = (OfxMultiThreadSuiteV1*) fetchSuite( kOfxMultiThreadSuite, 1 );
+	gMessageSuite  = (OfxMessageSuiteV1*)     fetchSuite( kOfxMessageSuite, 1 );
+	gProgressSuite = (OfxProgressSuiteV1*)     fetchSuite( kOfxProgressSuite, 1, true );
+	gTimeLineSuite = (OfxTimeLineSuiteV1*)     fetchSuite( kOfxTimeLineSuite, 1, true );
+	gParametricParameterSuite = static_cast<OfxParametricParameterSuiteV1*>( OFX::fetchSuite( kOfxParametricParameterSuite, 1, true ) );
+	gCameraParameterSuite = static_cast<NukeOfxCameraSuiteV1*>( OFX::fetchSuite( kNukeOfxCameraSuite, 1, true ) );
 
-        // OK check and fetch host information
-        fetchHostDescription( gHost );
+	// OK check and fetch host information
+	fetchHostDescription( gHost );
 
-        /// and set some dendent flags
-        OFX::Private::gHostDescription.supportsProgressSuite = ( gProgressSuite != NULL );
-        OFX::Private::gHostDescription.supportsTimeLineSuite = ( gTimeLineSuite != NULL );
+	/// and set some dendent flags
+	OFX::Private::gHostDescription.supportsProgressSuite = ( gProgressSuite != NULL );
+	OFX::Private::gHostDescription.supportsTimeLineSuite = ( gTimeLineSuite != NULL );
 
-        // fetch the interact suite if the host supports interaction
-        if( OFX::Private::gHostDescription.supportsOverlays || OFX::Private::gHostDescription.supportsCustomInteract )
-            gInteractSuite = (OfxInteractSuiteV1*) fetchSuite( kOfxInteractSuite, 1 );
+	// fetch the interact suite if the host supports interaction
+	if( OFX::Private::gHostDescription.supportsOverlays || OFX::Private::gHostDescription.supportsCustomInteract )
+	    gInteractSuite = (OfxInteractSuiteV1*) fetchSuite( kOfxInteractSuite, 1 );
     }
 
     // initialise the validation code
@@ -1783,14 +1783,14 @@ void unloadAction( const char* id )
     --Private::gLoadCount;
 
     {
-        EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
-        EffectContextMap& toBeDeleted    = it->second;
-        for( EffectContextMap::iterator it2 = toBeDeleted.begin(); it2 != toBeDeleted.end(); ++it2 )
-        {
-            OFX::ImageEffectDescriptor* desc = it2->second;
-            delete desc;
-        }
-        toBeDeleted.clear();
+	EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
+	EffectContextMap& toBeDeleted    = it->second;
+	for( EffectContextMap::iterator it2 = toBeDeleted.begin(); it2 != toBeDeleted.end(); ++it2 )
+	{
+	    OFX::ImageEffectDescriptor* desc = it2->second;
+	    delete desc;
+	}
+	toBeDeleted.clear();
     }
     {
 		OFX::OfxPlugInfoMap::iterator it  = OFX::Private::plugInfoMap.find( id );
@@ -1804,20 +1804,20 @@ void unloadAction( const char* id )
 		delete plugin;
 		//it->second._plug = NULL; // delete the plugin but keep an entry into the map
     }
-	
+
     if( Private::gLoadCount == 0 )
     {
-        // force these to null
-        gEffectSuite   = NULL;
-        gPropSuite     = NULL;
-        gParamSuite    = NULL;
-        gMemorySuite   = NULL;
-        gThreadSuite   = NULL;
-        gMessageSuite  = NULL;
-        gInteractSuite = NULL;
-        gParametricParameterSuite = NULL;
-        gCameraParameterSuite = NULL;
-		
+	// force these to null
+	gEffectSuite   = NULL;
+	gPropSuite     = NULL;
+	gParamSuite    = NULL;
+	gMemorySuite   = NULL;
+	gThreadSuite   = NULL;
+	gMessageSuite  = NULL;
+	gInteractSuite = NULL;
+	gParametricParameterSuite = NULL;
+	gCameraParameterSuite = NULL;
+
 		ofxPlugs.clear();
 		gHasInit = false;
     }
@@ -1844,7 +1844,7 @@ ImageEffect* retrieveImageEffectPointer( OfxImageEffectHandle handle )
 
     if( instance == NULL )
     {
-        BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle, std::string("Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: ") + kOfxPropInstanceData + " is NULL).\nThe plugin will crash...") );
+	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle, std::string("Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: ") + kOfxPropInstanceData + " is NULL).\nThe plugin will crash...") );
     }
     // and dance to the music
     return instance;
@@ -1852,34 +1852,34 @@ ImageEffect* retrieveImageEffectPointer( OfxImageEffectHandle handle )
 
 /** @brief Checks the handles passed into the plugin's main entry point */
 void checkMainHandles( const std::string& action,  const void* handle,
-                       OfxPropertySetHandle inArgsHandle,  OfxPropertySetHandle outArgsHandle,
-                       bool handleCanBeNull, bool inArgsCanBeNull, bool outArgsCanBeNull )
+		       OfxPropertySetHandle inArgsHandle,  OfxPropertySetHandle outArgsHandle,
+		       bool handleCanBeNull, bool inArgsCanBeNull, bool outArgsCanBeNull )
 {
     if( handleCanBeNull )
-        OFX::Log::warning( handle != 0, "Handle passed to '%s' is not null.", action.c_str() );
+	OFX::Log::warning( handle != 0, "Handle passed to '%s' is not null.", action.c_str() );
     else
-        OFX::Log::error( handle == 0, "'Handle passed to '%s' is null.", action.c_str() );
+	OFX::Log::error( handle == 0, "'Handle passed to '%s' is null.", action.c_str() );
 
     if( inArgsCanBeNull )
-        OFX::Log::warning( inArgsHandle != 0, "'inArgs' Handle passed to '%s' is not null.", action.c_str() );
+	OFX::Log::warning( inArgsHandle != 0, "'inArgs' Handle passed to '%s' is not null.", action.c_str() );
     else
-        OFX::Log::error( inArgsHandle == 0, "'inArgs' handle passed to '%s' is null.", action.c_str() );
+	OFX::Log::error( inArgsHandle == 0, "'inArgs' handle passed to '%s' is null.", action.c_str() );
 
     if( outArgsCanBeNull )
-        OFX::Log::warning( outArgsHandle != 0, "'outArgs' Handle passed to '%s' is not null.", action.c_str() );
+	OFX::Log::warning( outArgsHandle != 0, "'outArgs' Handle passed to '%s' is not null.", action.c_str() );
     else
-        OFX::Log::error( outArgsHandle == 0, "'outArgs' handle passed to '%s' is null.", action.c_str() );
+	OFX::Log::error( outArgsHandle == 0, "'outArgs' handle passed to '%s' is null.", action.c_str() );
 
     // validate the property sets on the arguments
     OFX::Validation::validateActionArgumentsProperties( action, inArgsHandle, outArgsHandle );
 
     // throw exceptions if null when not meant to be null
     if( !handleCanBeNull && !handle )
-        throwSuiteStatusException( kOfxStatErrBadHandle );
+	throwSuiteStatusException( kOfxStatErrBadHandle );
     if( !inArgsCanBeNull && !inArgsHandle )
-        throwSuiteStatusException( kOfxStatErrBadHandle );
+	throwSuiteStatusException( kOfxStatErrBadHandle );
     if( !outArgsCanBeNull && !outArgsHandle )
-        throwSuiteStatusException( kOfxStatErrBadHandle );
+	throwSuiteStatusException( kOfxStatErrBadHandle );
 }
 
 /** @brief Fetches the arguments used in a render action 'inargs' property set into a POD struct */
@@ -1898,14 +1898,14 @@ void getRenderActionArguments( RenderArguments& args,  OFX::PropertySet inArgs )
     std::string str = inArgs.propGetString( kOfxImageEffectPropFieldToRender );
     try
     {
-        args.fieldToRender = mapFieldStringToEnum( str );
+	args.fieldToRender = mapFieldStringToEnum( str );
     }
     catch( std::invalid_argument )
     {
-        // dud field?
-        OFX::Log::error( true, "Unknown field to render '%s'", str.c_str() );
+	// dud field?
+	OFX::Log::error( true, "Unknown field to render '%s'", str.c_str() );
 
-        // HACK need to throw something to cause a failure
+	// HACK need to throw something to cause a failure
     }
 }
 
@@ -1975,9 +1975,9 @@ bool isIdentityAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, OFX
 
     if( v && identityClip )
     {
-        outArgs.propSetString( kOfxPropName, identityClip->name() );
-        outArgs.propSetDouble( kOfxPropTime, identityTime );
-        return true;
+	outArgs.propSetString( kOfxPropName, identityClip->name() );
+	outArgs.propSetDouble( kOfxPropTime, identityTime );
+	return true;
     }
     return false;
 }
@@ -2003,11 +2003,11 @@ bool regionOfDefinitionAction( OfxImageEffectHandle handle, OFX::PropertySet inA
 
     if( v )
     {
-        outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.x1, 0 );
-        outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.y1, 1 );
-        outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.x2, 2 );
-        outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.y2, 3 );
-        return true;
+	outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.x1, 0 );
+	outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.y1, 1 );
+	outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.x2, 2 );
+	outArgs.propSetDouble( kOfxImageEffectPropRegionOfDefinition, rod.y2, 3 );
+	return true;
     }
     return false;
 }
@@ -2024,35 +2024,35 @@ bool regionsOfInterestAction( OfxImageEffectHandle handle, OFX::PropertySet inAr
     const char* _plugname;
 
     public:
-        /** @brief ctor */
-        ActualROISetter( OFX::PropertySet& args, const std::map<std::string, std::string>& clipROIPropNames )
-            : doneSomething_( false ),
-            outArgs_( args ),
-            clipROIPropNames_( clipROIPropNames )
-        {}
+	/** @brief ctor */
+	ActualROISetter( OFX::PropertySet& args, const std::map<std::string, std::string>& clipROIPropNames )
+	    : doneSomething_( false ),
+	    outArgs_( args ),
+	    clipROIPropNames_( clipROIPropNames )
+	{}
 
-        /** @brief did we set something ? */
-        bool didSomething( void ) const { return doneSomething_; }
+	/** @brief did we set something ? */
+	bool didSomething( void ) const { return doneSomething_; }
 
-        /** @brief set the RoI of the clip */
-        virtual void setRegionOfInterest( const Clip& clip, const OfxRectD& roi )
-        {
-            std::map<std::string, std::string>::const_iterator it = clipROIPropNames_.find( clip.name() );
-            if( it == clipROIPropNames_.end() )
-                BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( clip.name() ) );
+	/** @brief set the RoI of the clip */
+	virtual void setRegionOfInterest( const Clip& clip, const OfxRectD& roi )
+	{
+	    std::map<std::string, std::string>::const_iterator it = clipROIPropNames_.find( clip.name() );
+	    if( it == clipROIPropNames_.end() )
+		BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( clip.name() ) );
 
-            // construct the name of the property
-            const std::string& propName = it->second;
+	    // construct the name of the property
+	    const std::string& propName = it->second;
 
-            // and set it
-            outArgs_.propSetDouble( propName.c_str(), roi.x1, 0 );
-            outArgs_.propSetDouble( propName.c_str(), roi.y1, 1 );
-            outArgs_.propSetDouble( propName.c_str(), roi.x2, 2 );
-            outArgs_.propSetDouble( propName.c_str(), roi.y2, 3 );
+	    // and set it
+	    outArgs_.propSetDouble( propName.c_str(), roi.x1, 0 );
+	    outArgs_.propSetDouble( propName.c_str(), roi.y1, 1 );
+	    outArgs_.propSetDouble( propName.c_str(), roi.x2, 2 );
+	    outArgs_.propSetDouble( propName.c_str(), roi.y2, 3 );
 
-            // and record the face we have done something
-            doneSomething_ = true;
-        }
+	    // and record the face we have done something
+	    doneSomething_ = true;
+	}
 
     }; // end of local class
 
@@ -2079,7 +2079,7 @@ bool regionsOfInterestAction( OfxImageEffectHandle handle, OFX::PropertySet inAr
 
     // did we do anything ?
     if( setRoIs.didSomething() )
-        return true;
+	return true;
     return false;
 }
 
@@ -2094,55 +2094,55 @@ bool framesNeededAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, O
     const std::map<std::string, std::string>& _clipFrameRangePropNames;
 
     public:
-        /** @brief ctor */
-        ActualSetter( OFX::PropertySet& args, const std::map<std::string, std::string>& clipFrameRangePropNames )
-            : outArgs_( args ),
-            _clipFrameRangePropNames( clipFrameRangePropNames )
-        {}
+	/** @brief ctor */
+	ActualSetter( OFX::PropertySet& args, const std::map<std::string, std::string>& clipFrameRangePropNames )
+	    : outArgs_( args ),
+	    _clipFrameRangePropNames( clipFrameRangePropNames )
+	{}
 
-        /** @brief set the RoI of the clip */
-        virtual void setFramesNeeded( const Clip& clip, const OfxRangeD& range )
-        {
-            // insert this into the vector which is in the map
-            frameRanges_[clip.name()].push_back( range );
-        }
+	/** @brief set the RoI of the clip */
+	virtual void setFramesNeeded( const Clip& clip, const OfxRangeD& range )
+	{
+	    // insert this into the vector which is in the map
+	    frameRanges_[clip.name()].push_back( range );
+	}
 
-        /** @brief write frameRanges_ back to the property set */
-        bool setOutProperties( void )
-        {
-            bool didSomething = false;
+	/** @brief write frameRanges_ back to the property set */
+	bool setOutProperties( void )
+	{
+	    bool didSomething = false;
 
-            std::map<std::string, std::vector<OfxRangeD> >::iterator i;
+	    std::map<std::string, std::vector<OfxRangeD> >::iterator i;
 
-            for( i = frameRanges_.begin(); i != frameRanges_.end(); ++i )
-            {
-                if( i->first != kOfxImageEffectOutputClipName )
-                {
-                    didSomething = true;
+	    for( i = frameRanges_.begin(); i != frameRanges_.end(); ++i )
+	    {
+		if( i->first != kOfxImageEffectOutputClipName )
+		{
+		    didSomething = true;
 
-                    // Make the property name we are setting
-                    const std::map<std::string, std::string>::const_iterator it = _clipFrameRangePropNames.find( i->first );
-                    if( it == _clipFrameRangePropNames.end() )
-                        BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( i->first ) );
+		    // Make the property name we are setting
+		    const std::map<std::string, std::string>::const_iterator it = _clipFrameRangePropNames.find( i->first );
+		    if( it == _clipFrameRangePropNames.end() )
+			BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( i->first ) );
 
-                    const std::string& propName = it->second;
+		    const std::string& propName = it->second;
 
-                    // fetch the list of frame ranges
-                    std::vector<OfxRangeD>& clipRange = i->second;
-                    std::vector<OfxRangeD>::iterator j;
-                    int n = 0;
+		    // fetch the list of frame ranges
+		    std::vector<OfxRangeD>& clipRange = i->second;
+		    std::vector<OfxRangeD>::iterator j;
+		    int n = 0;
 
-                    // and set 'em
-                    for( j = clipRange.begin(); j < clipRange.end(); ++j )
-                    {
-                        outArgs_.propSetDouble( propName.c_str(), j->min, n++ );
-                        outArgs_.propSetDouble( propName.c_str(), j->max, n++ );
-                    }
-                }
-            }
+		    // and set 'em
+		    for( j = clipRange.begin(); j < clipRange.end(); ++j )
+		    {
+			outArgs_.propSetDouble( propName.c_str(), j->min, n++ );
+			outArgs_.propSetDouble( propName.c_str(), j->max, n++ );
+		    }
+		}
+	    }
 
-            return didSomething;
-        }
+	    return didSomething;
+	}
 
     }; // end of local class
 
@@ -2161,7 +2161,7 @@ bool framesNeededAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, O
 
     // Write it back to the properties and see if we set anything
     if( setFrames.setOutProperties() )
-        return true;
+	return true;
     return false;
 }
 
@@ -2186,8 +2186,8 @@ bool getTimeDomainAction( OfxImageEffectHandle handle, OFX::PropertySet& outArgs
 
     if( v )
     {
-        outArgs.propSetDouble( kOfxImageEffectPropFrameRange, timeDomain.min, 0 );
-        outArgs.propSetDouble( kOfxImageEffectPropFrameRange, timeDomain.max, 1 );
+	outArgs.propSetDouble( kOfxImageEffectPropFrameRange, timeDomain.min, 0 );
+	outArgs.propSetDouble( kOfxImageEffectPropFrameRange, timeDomain.max, 1 );
     }
 
     return v;
@@ -2208,7 +2208,7 @@ bool clipPreferencesAction( OfxImageEffectHandle handle, OFX::PropertySet& outAr
 
     // did we do anything ?
     if( prefs.didSomething() )
-        return true;
+	return true;
     return false;
 }
 
@@ -2245,17 +2245,17 @@ void instanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs
 
     if( changedType == kOfxTypeParameter )
     {
-        // and call the plugin client code
-        effectInstance->changedParam( args, changedName );
+	// and call the plugin client code
+	effectInstance->changedParam( args, changedName );
     }
     else if( changedType == kOfxTypeClip )
     {
-        // and call the plugin client code
-        effectInstance->changedClip( args, changedName );
+	// and call the plugin client code
+	effectInstance->changedClip( args, changedName );
     }
     else
     {
-        OFX::Log::error( true, "Instance Changed called with unknown type '%s' of object '%s'", changedType.c_str(), changedName.c_str() );
+	OFX::Log::error( true, "Instance Changed called with unknown type '%s' of object '%s'", changedType.c_str(), changedName.c_str() );
     }
 }
 
@@ -2274,10 +2274,10 @@ void endInstanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet inA
 /** @brief The main entry point for the plugin
  */
 OfxStatus mainEntryStr( const char*          actionRaw,
-                        const void*          handleRaw,
-                        OfxPropertySetHandle inArgsRaw,
-                        OfxPropertySetHandle outArgsRaw,
-                        const char*          plugname )
+			const void*          handleRaw,
+			OfxPropertySetHandle inArgsRaw,
+			OfxPropertySetHandle outArgsRaw,
+			const char*          plugname )
 {
     OFX::Log::print( "********************************************************************************" );
     OFX::Log::print( "START mainEntry (%s)", actionRaw );
@@ -2293,364 +2293,364 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
     try
     {
-        // turn the action into a std::string
-        std::string action( actionRaw );
-        OfxPlugInfoMap::iterator it = plugInfoMap.find( plugname );
-        if( it == plugInfoMap.end() )
-            BOOST_THROW_EXCEPTION( std::logic_error( "Action not recognized: " + action ) );
-        OFX::PluginFactory* factory = it->second._factory;
+	// turn the action into a std::string
+	std::string action( actionRaw );
+	OfxPlugInfoMap::iterator it = plugInfoMap.find( plugname );
+	if( it == plugInfoMap.end() )
+	    BOOST_THROW_EXCEPTION( std::logic_error( "Action not recognized: " + action ) );
+	OFX::PluginFactory* factory = it->second._factory;
 
-        // figure the actions
-        if( action == kOfxActionLoad )
-        {
-            // call the support load function, param-less
-            OFX::Private::loadAction();
+	// figure the actions
+	if( action == kOfxActionLoad )
+	{
+	    // call the support load function, param-less
+	    OFX::Private::loadAction();
 
-            // call the plugin side load action, param-less
-            factory->load();
+	    // call the plugin side load action, param-less
+	    factory->load();
 
-            // got here, must be good
-            stat = kOfxStatOK;
-        }
-        // figure the actions
-        else if( action == kOfxActionUnload )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, true, true, true );
+	    // got here, must be good
+	    stat = kOfxStatOK;
+	}
+	// figure the actions
+	else if( action == kOfxActionUnload )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, true, true, true );
 
-            // call the plugin side unload action, param-less, should be called, eve if the stat above failed!
-            factory->unload();
+	    // call the plugin side unload action, param-less, should be called, eve if the stat above failed!
+	    factory->unload();
 
-            // call the support unload function, param-less
-            OFX::Private::unloadAction( plugname );
+	    // call the support unload function, param-less
+	    OFX::Private::unloadAction( plugname );
 
-            // got here, must be good
-            stat = kOfxStatOK;
-        }
+	    // got here, must be good
+	    stat = kOfxStatOK;
+	}
 
-        else if( action == kOfxActionDescribe )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
+	else if( action == kOfxActionDescribe )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
 
-            // make the plugin descriptor
-            ImageEffectDescriptor* desc = new ImageEffectDescriptor( handle );
+	    // make the plugin descriptor
+	    ImageEffectDescriptor* desc = new ImageEffectDescriptor( handle );
 
-            // validate the host
-            OFX::Validation::validatePluginDescriptorProperties( fetchEffectProps( handle ) );
+	    // validate the host
+	    OFX::Validation::validatePluginDescriptorProperties( fetchEffectProps( handle ) );
 
-            //  and pass it to the plugin to do something with it
+	    //  and pass it to the plugin to do something with it
 
-            factory->describe( *desc );
+	    factory->describe( *desc );
 
-            // add it to our map
-            gEffectDescriptors[plugname][eContextNone] = desc;
+	    // add it to our map
+	    gEffectDescriptors[plugname][eContextNone] = desc;
 
-            // got here, must be good
-            stat = kOfxStatOK;
-        }
-        else if( action == kOfxImageEffectActionDescribeInContext )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
+	    // got here, must be good
+	    stat = kOfxStatOK;
+	}
+	else if( action == kOfxImageEffectActionDescribeInContext )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
 
-            // make the plugin descriptor and pass it to the plugin to do something with it
-            ImageEffectDescriptor* desc = new ImageEffectDescriptor( handle );
+	    // make the plugin descriptor and pass it to the plugin to do something with it
+	    ImageEffectDescriptor* desc = new ImageEffectDescriptor( handle );
 
-            // figure the context and map it to an enum
-            std::string contextStr = inArgs.propGetString( kOfxImageEffectPropContext );
-            EContext context    = mapContextStringToEnum( contextStr );
+	    // figure the context and map it to an enum
+	    std::string contextStr = inArgs.propGetString( kOfxImageEffectPropContext );
+	    EContext context    = mapContextStringToEnum( contextStr );
 
-            // validate the host
-            OFX::Validation::validatePluginDescriptorProperties( fetchEffectProps( handle ) );
+	    // validate the host
+	    OFX::Validation::validatePluginDescriptorProperties( fetchEffectProps( handle ) );
 
-            // call plugin descibe in context
-            factory->describeInContext( *desc, context );
+	    // call plugin descibe in context
+	    factory->describeInContext( *desc, context );
 
-            // add it to our map
-            gEffectDescriptors[plugname][context] = desc;
+	    // add it to our map
+	    gEffectDescriptors[plugname][context] = desc;
 
-            // got here, must be good
-            stat = kOfxStatOK;
-        }
-        else if( action == kOfxActionCreateInstance )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
+	    // got here, must be good
+	    stat = kOfxStatOK;
+	}
+	else if( action == kOfxActionCreateInstance )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
 
-            // fetch the effect props to figure the context
-            PropertySet effectProps = fetchEffectProps( handle );
+	    // fetch the effect props to figure the context
+	    PropertySet effectProps = fetchEffectProps( handle );
 
-            // get the context and turn it into an enum
-            std::string str     = effectProps.propGetString( kOfxImageEffectPropContext );
-            EContext context = mapContextStringToEnum( str );
+	    // get the context and turn it into an enum
+	    std::string str     = effectProps.propGetString( kOfxImageEffectPropContext );
+	    EContext context = mapContextStringToEnum( str );
 
-            // make the image effect instance for this context
-            /*ImageEffect *instance = */ factory->createInstance( handle, context );
+	    // make the image effect instance for this context
+	    /*ImageEffect *instance = */ factory->createInstance( handle, context );
 
-            // validate the plugin handle's properties
-            OFX::Validation::validatePluginInstanceProperties( fetchEffectProps( handle ) );
+	    // validate the plugin handle's properties
+	    OFX::Validation::validatePluginInstanceProperties( fetchEffectProps( handle ) );
 
-            // got here, must be good
-            stat = kOfxStatOK;
-        }
-        else if( action == kOfxActionDestroyInstance )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
+	    // got here, must be good
+	    stat = kOfxStatOK;
+	}
+	else if( action == kOfxActionDestroyInstance )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
 
-            // fetch our pointer out of the props on the handle
-            ImageEffect* instance = retrieveImageEffectPointer( handle );
+	    // fetch our pointer out of the props on the handle
+	    ImageEffect* instance = retrieveImageEffectPointer( handle );
 
-            // kill it
-            delete instance;
+	    // kill it
+	    delete instance;
 
-            // got here, must be good
-            stat = kOfxStatOK;
-        }
-        else if( action == kOfxImageEffectActionRender )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
+	    // got here, must be good
+	    stat = kOfxStatOK;
+	}
+	else if( action == kOfxImageEffectActionRender )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
 
-            // call the render action skin
-            renderAction( handle, inArgs );
+	    // call the render action skin
+	    renderAction( handle, inArgs );
 
-            // got here, must be good
-            stat = kOfxStatOK;
-        }
-        else if( action == kOfxImageEffectActionBeginSequenceRender )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
+	    // got here, must be good
+	    stat = kOfxStatOK;
+	}
+	else if( action == kOfxImageEffectActionBeginSequenceRender )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
 
-            // call the begin render action skin
-            beginSequenceRenderAction( handle, inArgs );
-        }
-        else if( action == kOfxImageEffectActionEndSequenceRender )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
+	    // call the begin render action skin
+	    beginSequenceRenderAction( handle, inArgs );
+	}
+	else if( action == kOfxImageEffectActionEndSequenceRender )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
 
-            // call the begin render action skin
-            endSequenceRenderAction( handle, inArgs );
-        }
-        else if( action == kOfxImageEffectActionIsIdentity )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
+	    // call the begin render action skin
+	    endSequenceRenderAction( handle, inArgs );
+	}
+	else if( action == kOfxImageEffectActionIsIdentity )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
 
-            // call the identity action, if it is, return OK
-            if( isIdentityAction( handle, inArgs, outArgs ) )
-                stat = kOfxStatOK;
-        }
-        else if( action == kOfxImageEffectActionGetRegionOfDefinition )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
+	    // call the identity action, if it is, return OK
+	    if( isIdentityAction( handle, inArgs, outArgs ) )
+		stat = kOfxStatOK;
+	}
+	else if( action == kOfxImageEffectActionGetRegionOfDefinition )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
 
-            // call the rod action, return OK if it does something
-            if( regionOfDefinitionAction( handle, inArgs, outArgs ) )
-                stat = kOfxStatOK;
-        }
-        else if( action == kOfxImageEffectActionGetRegionsOfInterest )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
+	    // call the rod action, return OK if it does something
+	    if( regionOfDefinitionAction( handle, inArgs, outArgs ) )
+		stat = kOfxStatOK;
+	}
+	else if( action == kOfxImageEffectActionGetRegionsOfInterest )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
 
-            // call the RoI action, return OK if it does something
-            if( regionsOfInterestAction( handle, inArgs, outArgs, plugname ) )
-                stat = kOfxStatOK;
-        }
-        else if( action == kOfxImageEffectActionGetFramesNeeded )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
+	    // call the RoI action, return OK if it does something
+	    if( regionsOfInterestAction( handle, inArgs, outArgs, plugname ) )
+		stat = kOfxStatOK;
+	}
+	else if( action == kOfxImageEffectActionGetFramesNeeded )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, false );
 
-            // call the frames needed action, return OK if it does something
-            if( framesNeededAction( handle, inArgs, outArgs, plugname ) )
-                stat = kOfxStatOK;
-        }
-        else if( action == kOfxImageEffectActionGetClipPreferences )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, false );
+	    // call the frames needed action, return OK if it does something
+	    if( framesNeededAction( handle, inArgs, outArgs, plugname ) )
+		stat = kOfxStatOK;
+	}
+	else if( action == kOfxImageEffectActionGetClipPreferences )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, false );
 
-            // call the frames needed action, return OK if it does something
-            if( clipPreferencesAction( handle, outArgs, plugname ) )
-                stat = kOfxStatOK;
-        }
-        else if( action == kOfxActionPurgeCaches )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
+	    // call the frames needed action, return OK if it does something
+	    if( clipPreferencesAction( handle, outArgs, plugname ) )
+		stat = kOfxStatOK;
+	}
+	else if( action == kOfxActionPurgeCaches )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
 
-            // fetch our pointer out of the props on the handle
-            ImageEffect* instance = retrieveImageEffectPointer( handle );
+	    // fetch our pointer out of the props on the handle
+	    ImageEffect* instance = retrieveImageEffectPointer( handle );
 
-            // purge 'em
-            instance->purgeCaches();
-        }
-        else if( action == kOfxActionSyncPrivateData )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
+	    // purge 'em
+	    instance->purgeCaches();
+	}
+	else if( action == kOfxActionSyncPrivateData )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
 
-            // fetch our pointer out of the props on the handle
-            ImageEffect* instance = retrieveImageEffectPointer( handle );
+	    // fetch our pointer out of the props on the handle
+	    ImageEffect* instance = retrieveImageEffectPointer( handle );
 
-            // and sync it
-            instance->syncPrivateData();
-        }
-        else if( action == kOfxImageEffectActionGetTimeDomain )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, false );
+	    // and sync it
+	    instance->syncPrivateData();
+	}
+	else if( action == kOfxImageEffectActionGetTimeDomain )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, false );
 
-            // call the instance changed action
-            if( getTimeDomainAction( handle, outArgs ) )
-                stat = kOfxStatOK;
+	    // call the instance changed action
+	    if( getTimeDomainAction( handle, outArgs ) )
+		stat = kOfxStatOK;
 
-            // fetch our pointer out of the props on the handle
-            /*ImageEffect *instance = */ retrieveImageEffectPointer( handle );
+	    // fetch our pointer out of the props on the handle
+	    /*ImageEffect *instance = */ retrieveImageEffectPointer( handle );
 
-        }
-        else if( action == kOfxActionBeginInstanceChanged )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
+	}
+	else if( action == kOfxActionBeginInstanceChanged )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
 
-            // call the instance changed action
-            beginInstanceChangedAction( handle, inArgs );
-        }
-        else if( action == kOfxActionInstanceChanged )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
+	    // call the instance changed action
+	    beginInstanceChangedAction( handle, inArgs );
+	}
+	else if( action == kOfxActionInstanceChanged )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
 
-            // call the instance changed action
-            instanceChangedAction( handle, inArgs );
-        }
-        else if( action == kOfxActionEndInstanceChanged )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
+	    // call the instance changed action
+	    instanceChangedAction( handle, inArgs );
+	}
+	else if( action == kOfxActionEndInstanceChanged )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, false, true );
 
-            // call the instance changed action
-            endInstanceChangedAction( handle, inArgs );
-        }
-        else if( action == kOfxActionBeginInstanceEdit )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
+	    // call the instance changed action
+	    endInstanceChangedAction( handle, inArgs );
+	}
+	else if( action == kOfxActionBeginInstanceEdit )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
 
-            // fetch our pointer out of the props on the handle
-            ImageEffect* instance = retrieveImageEffectPointer( handle );
+	    // fetch our pointer out of the props on the handle
+	    ImageEffect* instance = retrieveImageEffectPointer( handle );
 
-            // call the begin edit function
-            instance->beginEdit();
-        }
-        else if( action == kOfxActionEndInstanceEdit )
-        {
-            checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
+	    // call the begin edit function
+	    instance->beginEdit();
+	}
+	else if( action == kOfxActionEndInstanceEdit )
+	{
+	    checkMainHandles( actionRaw, handleRaw, inArgsRaw, outArgsRaw, false, true, true );
 
-            // fetch our pointer out of the props on the handle
-            ImageEffect* instance = retrieveImageEffectPointer( handle );
+	    // fetch our pointer out of the props on the handle
+	    ImageEffect* instance = retrieveImageEffectPointer( handle );
 
-            // call the end edit function
-            instance->endEdit();
-        }
-        else if( actionRaw )
-        {
-            OFX::Log::error( true, "Unknown action '%s'.", actionRaw );
-        }
-        else
-        {
-            OFX::Log::error( true, "Requested action was a null pointer." );
-        }
+	    // call the end edit function
+	    instance->endEdit();
+	}
+	else if( actionRaw )
+	{
+	    OFX::Log::error( true, "Unknown action '%s'.", actionRaw );
+	}
+	else
+	{
+	    OFX::Log::error( true, "Requested action was a null pointer." );
+	}
     }
-
     catch( boost::exception& e )
     {
-        typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
-        if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
-        {
-            stat = *status;
-        }
-        else
-        {
-            stat = kOfxStatFailed;
-        }
-		
-        std::cerr << tuttle::common::kColorError;
-        std::cerr << "__________" << std::endl;
-        /*
-        [tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
-        [OFX::tag_ofxStatus*] = kOfxStatErrValue
-        [boost::errinfo_file_name_*] = /datas/tmp/master32secsh01.0014.dpx
-        */
-        if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
-        {
-            std::cerr << "Error: " << *messageException << std::endl;
-        }
+	typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
+	if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
+	{
+	    stat = *status;
+	}
+	else
+	{
+	    stat = kOfxStatFailed;
+	}
+
+	std::cerr << tuttle::common::kColorError;
+	std::cerr << "__________" << std::endl;
+	/*
+	[tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
+	[OFX::tag_ofxStatus*] = kOfxStatErrValue
+	[boost::errinfo_file_name_*] = /datas/tmp/master32secsh01.0014.dpx
+	*/
+	if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
+	{
+	    std::cerr << "Error: " << *messageException << std::endl;
+	}
 		else
 		{
-            std::cerr << "Error: " "No message." << std::endl;
+	    std::cerr << "Error: " "No message." << std::endl;
 		}
-        if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >( e ) )
-        {
-            std::cerr << "filename: \"" << *filenameException << "\"" << std::endl;
-        }
-        /*
-        if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::dev >( e ) )
-        {
-            std::cerr << *messageException << std::endl;
-        }
-        */
+	if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >( e ) )
+	{
+	    std::cerr << "filename: \"" << *filenameException << "\"" << std::endl;
+	}
+	/*
+	if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::dev >( e ) )
+	{
+	    std::cerr << *messageException << std::endl;
+	}
+	*/
 
 #ifndef TUTTLE_PRODUCTION
-        std::cerr << "__________" << std::endl;
-        std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
-
-        std::cerr << boost::diagnostic_information(e);
-//		std::cerr << "* inArgs: " << inArgs << std::endl;
-        std::cerr << "----------" << std::endl;
-        std::cerr << "* Backtrace" << std::endl;
-        std::cerr << boost::trace(e);
+	std::cerr << "__________" << std::endl;
+	std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
+#ifndef BOOST_EXCEPTION_DISABLE
+	std::cerr << boost::diagnostic_information(e);
 #endif
-        std::cerr << "__________" << std::endl;
-        std::cerr << tuttle::common::kColorStd;
+//		std::cerr << "* inArgs: " << inArgs << std::endl;
+	std::cerr << "----------" << std::endl;
+	std::cerr << "* Backtrace" << std::endl;
+	std::cerr << boost::trace(e);
+#endif
+	std::cerr << "__________" << std::endl;
+	std::cerr << tuttle::common::kColorStd;
     }
 
     // catch suite exceptions
     catch( OFX::Exception::Suite& e )
     {
-        std::cerr << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
-        stat = e.status();
+	std::cerr << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
+	stat = e.status();
     }
 
     // catch host inadequate exceptions
     catch( OFX::Exception::HostInadequate& e )
     {
-        std::cerr << "Caught OFX::Exception::HostInadequate (" << e.what() << ")" << std::endl;
-        stat = kOfxStatErrMissingHostFeature;
+	std::cerr << "Caught OFX::Exception::HostInadequate (" << e.what() << ")" << std::endl;
+	stat = kOfxStatErrMissingHostFeature;
     }
 
     // catch exception due to a property being unknown to the host, implies something wrong with host if not caught further down
     catch( OFX::Exception::PropertyUnknownToHost& e )
     {
-        std::cerr << "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" << std::endl;
-        stat = kOfxStatErrMissingHostFeature;
+	std::cerr << "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" << std::endl;
+	stat = kOfxStatErrMissingHostFeature;
     }
 
     // catch memory
     catch( std::bad_alloc& e )
     {
-        std::cerr << "Caught std::bad_alloc (" << e.what() << ")" << std::endl;
-        stat = kOfxStatErrMemory;
+	std::cerr << "Caught std::bad_alloc (" << e.what() << ")" << std::endl;
+	stat = kOfxStatErrMemory;
     }
 
     // catch a custom client exception, if defined
     #ifdef OFX_CLIENT_EXCEPTION_TYPE
     catch( OFX_CLIENT_EXCEPTION_TYPE& e )
     {
-        std::cerr << "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" << std::endl;
-        stat = OFX_CLIENT_EXCEPTION_HANDLER( e, plugname );
+	std::cerr << "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" << std::endl;
+	stat = OFX_CLIENT_EXCEPTION_HANDLER( e, plugname );
     }
     #endif
 
     // catch all exceptions
     catch( std::exception& e )
     {
-        std::cerr << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
-        stat = kOfxStatFailed;
+	std::cerr << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
+	stat = kOfxStatFailed;
     }
 
     // Catch anything else, unknown
     catch( ... )
     {
-        std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
-        stat = kOfxStatFailed;
+	std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
+	stat = kOfxStatFailed;
     }
 
     OFX::Log::outdent();
@@ -2686,13 +2686,13 @@ void* fetchSuite( const char* suiteName, int suiteVersion, bool optional )
 
     if( suite == 0 )
     {
-        if( optional )
-            OFX::Log::warning( suite == 0, "Could not fetch the optional suite '%s' version %d.", suiteName, suiteVersion );
-        else
-            OFX::Log::error( suite == 0, "Could not fetch the mandatory suite '%s' version %d.", suiteName, suiteVersion );
+	if( optional )
+	    OFX::Log::warning( suite == 0, "Could not fetch the optional suite '%s' version %d.", suiteName, suiteVersion );
+	else
+	    OFX::Log::error( suite == 0, "Could not fetch the mandatory suite '%s' version %d.", suiteName, suiteVersion );
     }
     if( !optional && suite == 0 )
-        BOOST_THROW_EXCEPTION( OFX::Exception::HostInadequate( suiteName ) );
+	BOOST_THROW_EXCEPTION( OFX::Exception::HostInadequate( suiteName ) );
     return suite;
 }
 
@@ -2711,18 +2711,18 @@ void init()
 	using namespace OFX::Private;
     if( gHasInit )
 	{
-        return;
+	return;
 	}
-	
+
     ::OFX::Plugin::getPluginIDs( plugIDs );
 	ofxPlugs.reserve( plugIDs.size() );
 
     BOOST_FOREACH( PluginFactory* factory, plugIDs )
     {
-        OfxPlugInfo info = generatePlugInfo( factory );
-        const std::string newID = factory->getUID();
-        plugInfoMap[newID] = info;
-        ofxPlugs.push_back( info._plug );
+	OfxPlugInfo info = generatePlugInfo( factory );
+	const std::string newID = factory->getUID();
+	plugInfoMap[newID] = info;
+	ofxPlugs.push_back( info._plug );
     }
     gHasInit = true;
 }

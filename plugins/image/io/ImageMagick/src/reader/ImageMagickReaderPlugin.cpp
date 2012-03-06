@@ -19,9 +19,7 @@ ImageMagickReaderPlugin::ImageMagickReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 {
 	//InitializeMagick( "" );
-	TUTTLE_COUT( "init.. ");
 	MagickCoreGenesis( "",MagickFalse);
-	TUTTLE_COUT( "init.. done");
 }
 
 ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams( const OfxTime time )
@@ -71,7 +69,6 @@ void ImageMagickReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args
 
 bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	TUTTLE_COUT( "get rod");
 	ImageInfo* imageInfo = AcquireImageInfo();
 
 	GetImageInfo( imageInfo );
@@ -80,9 +77,7 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
 	GetExceptionInfo( exceptionsInfo );
 
-	TUTTLE_COUT( "Ping");
 	Image* image = PingImage( imageInfo, exceptionsInfo );
-	TUTTLE_COUT( "ping done");
 
 	if( !image )
 	{
