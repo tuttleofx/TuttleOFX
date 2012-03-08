@@ -94,7 +94,7 @@ class Tuttle( SConsProject ):
 
 	def createOfxPlugin( self, sources=[], libs=[], dirs=[], mainFile='src/mainEntry.cpp' ):
 		'''
-		Create an openfx plugin from sources files list and libraries list.
+		Create an openfx plugin from sources files and libraries dependencies.
 		'''
 		pluginName = self.getName() # eg. 'Foo'
 		versions = self.retrieveOfxPluginVersions( os.path.join(self.getRealAbsoluteCwd(), mainFile) )
@@ -143,7 +143,7 @@ class Tuttle( SConsProject ):
 
 #______________________________________________________________________________#
 
-# Create the object shared in all SConscripts
+# Create the object available in all SConscripts
 project = Tuttle()
 Export('project')
 Export({'libs':project.libs})
