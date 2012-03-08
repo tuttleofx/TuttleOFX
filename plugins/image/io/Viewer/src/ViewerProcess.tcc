@@ -11,7 +11,7 @@ namespace viewer {
 
 template<class View>
 ViewerProcess<View>::ViewerProcess( ViewerPlugin &effect )
-: ImageGilFilterProcessor<View>( effect, eImageOrientationFromTopToBottom )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationFromBottomToTop )
 , _plugin( effect )
 {
     this->setNoMultiThreading();
@@ -40,7 +40,7 @@ void ViewerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 	copy_pixels( src, dst );
 
 	openGLWindow( src.width(), src.height() );
-	
+
 	/// @todo copy into a new buffer or do something if offset between lines, etc.
 	loadNewTexture( src );
 

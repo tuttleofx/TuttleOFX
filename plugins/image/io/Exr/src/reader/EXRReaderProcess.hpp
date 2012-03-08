@@ -23,14 +23,14 @@ template<class View>
 class EXRReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	typedef typename View::value_type Pixel;
-	EXRReaderPlugin&    _plugin;                        ///< Rendering plugin
-	EXRReaderProcessParams _params;
-	boost::scoped_ptr<Imf::InputFile>   _exrImage;      ///< Pointer to an exr image
+	typedef typename View::value_type   Pixel;
+	EXRReaderPlugin&                    _plugin;    ///< Rendering plugin
+	EXRReaderProcessParams              _params;
+	boost::scoped_ptr<Imf::InputFile>   _exrImage;  ///< Pointer to an exr image
 
 	template<class DView>
 	void channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer,
-	                  DView& dst, int w, int h, int n, int left, int nc );
+			  DView& dst, int w, int h, int n, int left, int nc );
 	template<class DView>
 	void sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n );
 

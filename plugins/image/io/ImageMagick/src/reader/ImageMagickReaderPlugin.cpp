@@ -18,7 +18,8 @@ using namespace boost::gil;
 ImageMagickReaderPlugin::ImageMagickReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 {
-	InitializeMagick( "" );
+	//InitializeMagick( "" );
+	MagickCoreGenesis( "",MagickFalse);
 }
 
 ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams( const OfxTime time )
@@ -26,7 +27,6 @@ ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams( const 
 	ImageMagickReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
-	params._flip = _paramFlip->getValue();
 
 	return params;
 }
@@ -38,7 +38,7 @@ ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams( const 
 void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	ReaderPlugin::render( args );
-	
+
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
 	OFX::EPixelComponent components = _clipDst->getPixelComponents();
@@ -64,16 +64,7 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 
 void ImageMagickReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kImageMagickReaderHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kImageMagickReaderHelpString );
-	}
-	else
-	{
-		ReaderPlugin::changedParam( args, paramName );
-	}
+	ReaderPlugin::changedParam( args, paramName );
 }
 
 bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
@@ -90,11 +81,11 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 
 	if( !image )
 	{
-		rod.x1 = 0;
-		rod.x2 = 0;
-		rod.y1 = 0;
-		rod.y2 = 0;
-		return true;
+		imageInfo      = DestroyImageInfo( imageInfo );
+		exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::user( "ImageMagick: Unable to open file" )
+			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}
 
 	point2<ptrdiff_t> imagemagickDims( image->columns, image->rows );

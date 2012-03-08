@@ -14,10 +14,9 @@ namespace writer {
 
 struct OpenImageIOWriterProcessParams
 {
-	std::string           _filepath;           ///< filepath
-	EParamComponents      _components;         ///< Force RGB
-	bool                  _flip;               ///< Flip vertical
-	OpenImageIO::TypeDesc _bitDepth;           ///< Output bit depth
+	std::string             _filepath;           ///< filepath
+	ETuttlePluginComponents _components;         ///< Force RGB
+	ETuttlePluginBitDepth   _bitDepth;           ///< Output bit depth
 };
 
 /**

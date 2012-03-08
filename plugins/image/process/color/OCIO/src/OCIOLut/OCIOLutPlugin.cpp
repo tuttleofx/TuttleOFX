@@ -22,7 +22,7 @@ static const std::string kLutHelpString =
 
 OCIOLutPlugin::OCIOLutPlugin(OfxImageEffectHandle handle) :
 	ImageEffectGilPlugin(handle) {
-	_paramFilename = fetchStringParam(kParamInputFilename);
+	_paramFilename = fetchStringParam(kTuttlePluginFilename);
 	_paramInterpolationType = fetchChoiceParam(kParamInterpolationType);
 
 }

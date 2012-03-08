@@ -35,7 +35,7 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	View& readImage( View& dst, const std::string& filepath, const bool flip=0 );
+	View& readImage( View& dst, const std::string& filepath );
 
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{

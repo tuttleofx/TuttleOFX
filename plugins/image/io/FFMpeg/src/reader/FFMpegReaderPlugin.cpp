@@ -23,9 +23,8 @@ FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
 	setSequentialRender( true );
 
 	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
-	_paramFilepath     = fetchStringParam( kParamReaderFilename );
+	_paramFilepath     = fetchStringParam( kTuttlePluginFilename );
 	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
-	_paramFlip = fetchBooleanParam( kParamReaderFlip );
 }
 
 FFMpegReaderParams FFMpegReaderPlugin::getProcessParams() const
@@ -57,7 +56,7 @@ bool FFMpegReaderPlugin::ensureVideoIsOpen()
 void FFMpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	ReaderPlugin::changedParam( args, paramName );
-	if( paramName == kParamReaderFilename )
+	if( paramName == kTuttlePluginFilename )
 	{
 		_errorInFile = false;
 	}

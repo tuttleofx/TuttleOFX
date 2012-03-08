@@ -14,12 +14,11 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 {
     _clipSrc             = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst             = fetchClip( kOfxImageEffectOutputClipName );
-    _paramFilepath       = fetchStringParam( kParamWriterFilename );
+    _paramFilepath       = fetchStringParam( kTuttlePluginFilename );
     _paramRenderButton   = fetchPushButtonParam( kParamWriterRender );
     _paramRenderAlways   = fetchBooleanParam( kParamWriterRenderAlways );
-    _paramBitDepth       = fetchChoiceParam( kParamWriterBitDepth );
+    _paramBitDepth       = fetchChoiceParam( kTuttlePluginBitDepth );
     _paramForceNewRender = fetchIntParam( kParamWriterForceNewRender );
-    _paramFlip           = fetchBooleanParam( kParamWriterFlip );
     _isSequence          = _filePattern.initFromDetection( _paramFilepath->getValue() );
 }
 
@@ -29,16 +28,16 @@ WriterPlugin::~WriterPlugin()
 
 void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-    if( paramName == kParamWriterFilename )
+    if( paramName == kTuttlePluginFilename )
     {
-        _isSequence = _filePattern.initFromDetection( _paramFilepath->getValue() );
+	_isSequence = _filePattern.initFromDetection( _paramFilepath->getValue() );
     }
     else if( paramName == kParamWriterRender )
     {
-        _oneRender       = true;
-        _oneRenderAtTime = args.time;
-        // modify the plugin to force a new render
-        _paramForceNewRender->setValue( _paramForceNewRender->getValue() + 1 );
+	_oneRender       = true;
+	_oneRenderAtTime = args.time;
+	// modify the plugin to force a new render
+	_paramForceNewRender->setValue( _paramForceNewRender->getValue() + 1 );
     }
 }
 
@@ -53,15 +52,15 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
     // little hack for the push button Render
     if( _oneRender && _oneRenderAtTime == args.time )
     {
-        return false;
+	return false;
     }
     if( OFX::getImageEffectHostDescription()->hostIsBackground )
     {
-        return false;
+	return false;
     }
     if( _paramRenderAlways->getValue() )
     {
-        return false;
+	return false;
     }
     identityClip = _clipSrc;
     identityTime = args.time;
@@ -73,7 +72,7 @@ void WriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments&
     boost::filesystem::path dir( getAbsoluteDirectory() );
     if( ! boost::filesystem::exists( dir ) )
     {
-        boost::filesystem::create_directories( dir );
+	boost::filesystem::create_directories( dir );
     }
 }
 

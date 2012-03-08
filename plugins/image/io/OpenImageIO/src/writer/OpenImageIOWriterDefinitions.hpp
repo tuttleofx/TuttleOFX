@@ -9,21 +9,20 @@ namespace plugin {
 namespace openImageIO {
 namespace writer {
 
-enum EParamBitDepth
+enum ETuttlePluginBitDepth
 {
-	eParamBitDepth8 = 0,
-	eParamBitDepth16,
-	eParamBitDepth32
+	eTuttlePluginBitDepth8 = 0,
+	eTuttlePluginBitDepth16,
+	eTuttlePluginBitDepth16f,
+	eTuttlePluginBitDepth32,
+	eTuttlePluginBitDepth32f
 };
 
-static const std::string kParamOutputComponents     = "components";
-static const std::string kParamOutputComponentsRGBA = "rgba";
-static const std::string kParamOutputComponentsRGB  = "rgb";
-
-enum EParamComponents
+enum ETuttlePluginComponents
 {
-	eParamComponentsRGBA = 0,
-	eParamComponentsRGB
+	eTuttlePluginComponentsGray = 0,
+	eTuttlePluginComponentsRGB,
+	eTuttlePluginComponentsRGBA
 };
 
 static const std::string kParamOutputCompression  = "compression";

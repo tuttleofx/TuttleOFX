@@ -13,12 +13,11 @@ namespace plugin {
 namespace lut {
 
 using namespace boost::gil;
-static const std::string kLutHelpString = "<b>Image Luter</b> is used to lut components of an image.  <br />";
 
 LutPlugin::LutPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-	_sFilename = fetchStringParam( kInputFilename );
+	_sFilename = fetchStringParam( kTuttlePluginFilename );
 }
 
 /**
@@ -52,13 +51,7 @@ void LutPlugin::render( const OFX::RenderArguments& args )
 
 void LutPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kHelp )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kLutHelpString );
-	}
-	else if( paramName == kInputFilename )
+	if( paramName == kTuttlePluginFilename )
 	{
 		std::string str;
 		_sFilename->getValue( str );

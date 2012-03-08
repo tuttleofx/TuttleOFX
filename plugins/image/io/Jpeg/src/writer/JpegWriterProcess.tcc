@@ -44,10 +44,6 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	using namespace boost::gil;
 
 	View srcView = this->_srcView;
-	if( _params._flip )
-	{
-		srcView = flipped_up_down_view( srcView );
-	}
 
 	try
 	{

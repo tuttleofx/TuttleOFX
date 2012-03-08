@@ -78,7 +78,7 @@ void OCIOLutProcess<View>::applyLut( View& dst, View& src )
 		}
 		else
 		{
-			for( std::size_t y = 0; y < dst.height(); ++y )
+			for( std::size_t y = 0; y < (unsigned int)dst.height(); ++y )
 			{
 				// Wrap the image in a light-weight ImageDescription
 				OCIO::PackedImageDesc imageDesc( (float*) &( dst( 0, y )[0] ),

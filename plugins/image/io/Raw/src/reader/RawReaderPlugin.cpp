@@ -27,8 +27,8 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 
 	params._filepath  = getAbsoluteFilenameAt( time );
 	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
-	params._flip      = _paramFlip->getValue();
-	TUTTLE_COUT( time << "  " << getAbsoluteFilenameAt( time ) );
+
+//	TUTTLE_COUT( time << "  " << getAbsoluteFilenameAt( time ) );
 	return params;
 }
 

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+red='\e[0;31m'
+RED='\e[1;31m'
+blue='\e[0;34m'
+BLUE='\e[1;34m'
+green='\e[0;32m'
+GREEN='\e[1;32m'
+cyan='\e[0;36m'
+CYAN='\e[1;36m'
+NC='\e[0m'              # No Color
+
+if [[ $# == 0 ]] ; then
+   echo -e "$BLUE""TuttleOFX project [http://sites.google.com/site/tuttleofx]$NC
+
+$BLUE""NAME$NC
+ $GREEN""sam-viewer - view images or sequences$NC
+
+$BLUE""SYNOPSIS$NC
+ sam-viewer [directory - file - sequence]
+ sam-viewer specificReader [directory - file - sequence]
+
+$BLUE""DESCRIPTION$NC
+
+Viewer for sequences and files.
+"
+exit
+fi
+
+if [[ $1 == "--brief" ]] ; then
+	echo -e "$GREEN""viewer of file/sequence$NC"
+	exit
+fi
+
+
+export TUTTLE_ROOT=/datas/mrn/dev/TuttleOFX/dist/linux/release
+export OFX_PLUGIN_PATH=$TUTTLE_ROOT/plugin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUTTLE_ROOT/lib
+export PATH=$PATH:$TUTTLE_ROOT/bin
+export SAM_PATH=$TUTTLE_ROOT/bin
+
+if [ ! -d "$HOME/.tuttleofx" ]; then
+   mkdir $HOME/.tuttleofx           
+fi
+
+export TUTTLE_HOME=$HOME/.tuttleofx
+
+if [[ $# == 1 ]] ; then
+	sam-do reader $* // viewer #> /dev/null
+else
+	sam-do $* // viewer #> /dev/null
+fi
+
+echo -e "$NC"

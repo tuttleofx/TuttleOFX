@@ -23,3 +23,8 @@ os.chdir ( ".." )
 os.chdir ( "./libtiff" )
 os.system( "./configure" )
 os.chdir ( ".." )
+
+os.chdir ( "./libxml" )
+os.system( "./configure" )
+os.chdir ( ".." )
+

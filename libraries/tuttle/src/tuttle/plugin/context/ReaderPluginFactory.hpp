@@ -14,8 +14,8 @@ namespace plugin {
 void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 				    OFX::EContext               context )
 {
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
-	filename->setLabel( "Filename" );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+	filename->setLabel( kTuttlePluginFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
@@ -39,13 +39,6 @@ void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 		explicitConversion->setIsSecret( true );
 		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
 	}
-
-	OFX::BooleanParamDescriptor* flip = desc.defineBooleanParam( kParamReaderFlip );
-	flip->setLabel( "Flip" );
-	flip->setHint( "Vertically flip the image." );
-	//bool hostFlip = OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke";
-	//flip->setDefault( hostFlip );
-	flip->setDefault( false );
 }
 
 }

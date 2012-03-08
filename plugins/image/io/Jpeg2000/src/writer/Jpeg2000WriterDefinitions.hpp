@@ -10,14 +10,13 @@ namespace plugin {
 namespace jpeg2000 {
 namespace writer {
 
-enum EParamBitDepth
+enum ETuttlePluginBitDepth
 {
-	eParamBitDepth8 = 0,
-	eParamBitDepth12,
-	eParamBitDepth16,
-	eParamBitDepth32
+	eTuttlePluginBitDepth8 = 0,
+	eTuttlePluginBitDepth12,
+	eTuttlePluginBitDepth16,
+	eTuttlePluginBitDepth32
 };
-
 
 static const std::string kParamCinemaProfil        = "cinemaProfil";
 

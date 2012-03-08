@@ -22,7 +22,6 @@ JpegReaderProcessParams JpegReaderPlugin::getProcessParams( const OfxTime time )
 	JpegReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
-	params._flip = _paramFlip->getValue();
 
 	return params;
 }
@@ -60,7 +59,7 @@ void JpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefe
 	{
 		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA ); /// RGB
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 

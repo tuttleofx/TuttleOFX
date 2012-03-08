@@ -12,8 +12,7 @@ namespace reader {
 struct EXRReaderProcessParams
 {
 	std::string _filepath;      ///< filepath
-	int _outComponents;         ///< Components type
-	bool _flip;
+	int         _outComponents; ///< Components type
 };
 
 /**
@@ -26,11 +25,11 @@ public:
 	EXRReaderProcessParams getProcessParams( const OfxTime time );
 
 public:
-	void                                  changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	void                                  getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	bool                                  getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	void changedParam         ( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void getClipPreferences   ( OFX::ClipPreferencesSetter& clipPreferences );
+	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 
-	void                             render( const OFX::RenderArguments& args );
+	void render( const OFX::RenderArguments& args );
 
 	const std::vector<std::string>&       channelNames() const  { return _vChannelNames; }
 	const std::vector<OFX::ChoiceParam*>& channelChoice() const { return _vChannelChoice; }

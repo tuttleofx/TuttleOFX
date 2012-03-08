@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_CTL_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
-
+#include <tuttle/plugin/context/Definition.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -21,7 +21,6 @@ enum EParamChooseInput
 };
 
 static const std::string kParamCTLCode               ( "code" );
-static const std::string kParamCTLFile               ( "file" );
 
 }
 }

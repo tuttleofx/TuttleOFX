@@ -6,12 +6,13 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>.
 		<include>include
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+		<define>HAVE_ERRNO_H
 	: usage-requirements
 		<include>include
 	: build-dir $(DIST)/3rdParty/libxml/obj

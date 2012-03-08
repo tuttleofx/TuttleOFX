@@ -166,10 +166,6 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		TUTTLE_TCOUT_VAR( sizeof( RawPixel ) );
 		TUTTLE_TCOUT_VAR( imageView.dimensions() );
 		TUTTLE_TCOUT_VAR( dst.dimensions() );
-		if( _params._flip )
-		{
-			dst = flipped_up_down_view( this->_dstView );
-		}
 		copy_and_convert_pixels( imageView, dst );
 		//		free( image );
 		_rawProcessor.recycle();

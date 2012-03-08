@@ -26,7 +26,6 @@ PngReaderProcessParams PngReaderPlugin::getProcessParams( const OfxTime time )
 	PngReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
-	params._flip = _paramFlip->getValue();
 	return params;
 }
 
@@ -81,8 +80,8 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 					<< exception::filename( filename ) );
 			}
 			int bitDepth;
-				bitDepth      = png_read_precision( filename );
-
+			bitDepth      = png_read_precision( filename );
+			TUTTLE_COUT(bitDepth);
 			switch( bitDepth )
 			{
 				case 8:
@@ -113,7 +112,22 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			break;
 		}
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	TUTTLE_COUT(png_read_color_type( filename ));
+	switch( png_read_color_type( filename ) )
+	{
+		case 0 :
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+			break;
+		case 2 :
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+			break;
+		case 6 :
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		default:
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+	}
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 
 }

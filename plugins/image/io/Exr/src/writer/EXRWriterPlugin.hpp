@@ -11,11 +11,10 @@ namespace writer {
 
 struct EXRWriterProcessParams
 {
-        std::string      _filepath;          ///< filepath
-        EParamBitDepth   _bitDepth;          ///< Bit depth
-        EParamComponents _componentsType;    ///< Components type
-        EParamStorage    _storageType;       ///< Storage type (Scan line or tile)
-        bool             _flip;
+	std::string             _filepath;          ///< filepath
+	ETuttlePluginBitDepth   _bitDepth;          ///< Bit depth
+	ETuttlePluginComponents _componentsType;    ///< Components type
+	EParamStorage           _storageType;       ///< Storage type (Scan line or tile)
 };
 
 /**
@@ -29,11 +28,11 @@ public:
 
 public:
 	EXRWriterProcessParams getProcessParams( const OfxTime time );
-        void                   render( const OFX::RenderArguments& args );
+	void                   render( const OFX::RenderArguments& args );
 
 protected:
 	OFX::ChoiceParam*     _componentsType;  ///< Components type
-        OFX::ChoiceParam*     _storageType;     ///< Storage type
+	OFX::ChoiceParam*     _storageType;     ///< Storage type
 };
 
 }

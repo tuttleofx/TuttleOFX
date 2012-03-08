@@ -11,8 +11,8 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::openImageIO::reader::OpenImageIOReaderPluginFactory, "tuttle.openimageioreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::openImageIO::writer::OpenImageIOWriterPluginFactory, "tuttle.openimageiowriter" );
+	mAppendPluginFactory( ids, tuttle::plugin::openImageIO::reader::OpenImageIOReaderPluginFactory, "tuttle.oiioreader" );
+	mAppendPluginFactory( ids, tuttle::plugin::openImageIO::writer::OpenImageIOWriterPluginFactory, "tuttle.oiiowriter" );
 }
 
 }

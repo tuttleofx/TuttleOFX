@@ -9,14 +9,6 @@ namespace plugin {
 namespace jpeg2000 {
 namespace reader {
 
-enum EParamBitDepth
-{
-	eParamBitDepthAuto = 0,
-	eParamBitDepth8,
-	eParamBitDepth16,
-	eParamBitDepth32
-};
-
 }
 }
 }

@@ -65,11 +65,6 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 
 	_dpxImage.read( _params._filepath, true );
 
-	if( _params._flip )
-	{
-		dst = flipped_up_down_view( dst );
-	}
-
 	switch( _dpxImage.componentsType() )
 	{
 		case tuttle::io::DpxImage::eCompTypeR8G8B8:
@@ -232,6 +227,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					}
 					copy_and_convert_pixels( vw16, dst );
 					break;
+
 				}
 			}
 			break;
@@ -253,11 +249,13 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
+					BOOST_THROW_EXCEPTION( exception::Failed()
+						<< exception::dev() + "Unsupported dpx file format (RGBA12 byte packed). " );
 					rgba12_packed_view_t vw = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 										    ( rgba12_packed_pixel_t* )( _dpxImage.data() ),
 										    _dpxImage.width() * sizeof( uint64_t ) );
 
-					copy_and_convert_pixels( vw, dst );
+					//copy_and_convert_pixels( vw, dst );
 					break;
 				}
 			}
@@ -280,11 +278,14 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
+					BOOST_THROW_EXCEPTION( exception::Failed()
+						<< exception::dev() + "Unsupported dpx file format (ABGR12 byte packed). " );
+/*
 					abgr12_packed_view_t vw = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 										    ( abgr12_packed_pixel_t* )( _dpxImage.data() ),
 										    _dpxImage.width() * sizeof( uint64_t ) );
 
-					copy_and_convert_pixels( vw, dst );
+					//copy_and_convert_pixels( vw, dst );*/
 					break;
 				}
 			}
@@ -293,10 +294,10 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		case tuttle::io::DpxImage::eCompTypeR16G16B16:
 		{
 			/// @todo: bug here.
-			TUTTLE_COUT_INFOS;
-			TUTTLE_COUT_VAR( _dpxImage.width() );
-			TUTTLE_COUT_VAR( _dpxImage.height() );
-			TUTTLE_COUT_VAR( sizeof( rgb16_pixel_t ) );
+			//TUTTLE_COUT_INFOS;
+			//TUTTLE_COUT_VAR( _dpxImage.width() );
+			//TUTTLE_COUT_VAR( _dpxImage.height() );
+			//TUTTLE_COUT_VAR( sizeof( rgb16_pixel_t ) );
 			// Tests passed: fill, non fill, big endian, little endian
 			rgb16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 							      (const rgb16_pixel_t*)( _dpxImage.data() ),

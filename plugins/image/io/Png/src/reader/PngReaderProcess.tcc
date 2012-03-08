@@ -69,10 +69,6 @@ View& PngReaderProcess<View>::readImage( View& dst )
 	{
 		png_read_image( _params._filepath, anyImg );
 		any_view_t srcView = view( anyImg );
-		if( _params._flip )
-		{
-			srcView = flipped_up_down_view( srcView );
-		}
 		srcView = subimage_view( srcView, 0, 0, dst.width(), dst.height() );
 		copy_and_convert_pixels( srcView, dst );
 	}

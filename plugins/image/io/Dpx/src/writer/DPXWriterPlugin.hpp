@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_DPXWRITER_PLUGIN_HPP_
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
+#include "DPXWriterDefinitions.hpp"
 
 namespace tuttle {
 namespace plugin {
@@ -10,11 +11,10 @@ namespace writer {
 
 struct DPXWriterProcessParams
 {
-	std::string _filepath;       ///< filepath
-	int _bitDepth;               ///< Output bit depth
-	int _componentsType;         ///< Components type
-	bool _compressed;            ///< Bit streaming
-	bool _flip;
+	std::string             _filepath;       ///< filepath
+	ETuttlePluginBitDepth   _bitDepth;               ///< Output bit depth
+	ETuttlePluginComponents _componentsType;         ///< Components type
+	bool                    _packed;            ///< Bit streaming
 };
 
 /**
@@ -28,14 +28,14 @@ public:
 
 public:
 	DPXWriterProcessParams getProcessParams( const OfxTime time );
-	
+
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 	void render( const OFX::RenderArguments& args );
 
 protected:
 	OFX::ChoiceParam*    _componentsType;  ///< Dpx components type
-	OFX::BooleanParam*   _compressed;      ///< Dpx is bit streamed
+	OFX::BooleanParam*   _packed;          ///< Dpx is bit streamed
 };
 
 }

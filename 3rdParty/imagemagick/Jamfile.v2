@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for openjpeg library
+## Main BJam makefile for imageMagick library
 ###############################################################################
 
 ###############################################################################
@@ -8,34 +8,50 @@
 project
 	: requirements
 		<include>.
-		<include>libopenjpeg
-		<toolset>gcc:<cxxflags>-std=c99
-		<toolset>gcc:<cflags>-std=c99
+		<include>ltdl
+		<include>ltdl/libltdl
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
-		<os>NT:<define>PACKAGE_VERSION="t"
+		#<linkflags>-lltdl
+		<cflags>-std=gnu99
+		<define>HAVE_DIRENT_H
+		<define>LTDL
+		#<define>LT_SCOPE extern
 	: usage-requirements
 		<include>.
-		<include>libopenjpeg
-	: build-dir $(BUILD)/3rdParty/openjpeg
-	;
+	: build-dir $(BUILD)/3rdParty/imagemagick
+    ;
 
 ###############################################################################
-# libraw library
+# imagemagick library
 ###############################################################################
 alias	headers		: [ glob-tree *.h ] ;
 
-lib	openjpeg		:
-			  [ glob libopenjpeg/*.c  ]
+lib	imagemagick	:
+			  [ glob magick/*.c
+				 coders/*.c
+				 filters/analyze.c
+				 ltdl/*.c
+				 ltdl/loaders/dlopen.c
+				 ltdl/loaders/dld_link.c
+				 ltdl/loaders/preopen.c
+			  ]
+			  ../jasper/<link>static
+			  ../freetype/<link>static
+			  ../jpeg/<link>static
+			  ../libtiff/<link>static
 			  ../libpng/<link>static
 			  ../lcms/<link>static
-			  ../libtiff/<link>static
+			  ../openexr/<link>static
+			  ../libxml/<link>static
+			  ../zlib/<link>static
+			  ../bzlib/<link>static
 			;
 
 install dist
 	:
-		openjpeg
+		imagemagick
 	:
 		<variant>debug:<location>$(DIST_DEBUG)/lib
 		<variant>release:<location>$(DIST_RELEASE)/lib

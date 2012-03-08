@@ -296,7 +296,30 @@ public:
 	inline const boost::uint32_t width() const   { return _header.width(); }
 	inline const boost::uint32_t height() const  { return _header.height(); }
 	inline const boost::uint16_t packing() const { return _header.packing(); }
-	inline const size_t          components() const;
+	inline const size_t          components() const
+	{
+		switch( componentsType() )
+		{
+			case eCompTypeR8G8B8:
+			case eCompTypeR10G10B10:
+			case eCompTypeR12G12B12:
+			case eCompTypeR16G16B16:
+				return 3;
+			case eCompTypeR8G8B8A8:
+			case eCompTypeA8B8G8R8:
+			case eCompTypeR10G10B10A10:
+			case eCompTypeA10B10G10R10:
+			case eCompTypeR12G12B12A12:
+			case eCompTypeA12B12G12R12:
+			case eCompTypeR16G16B16A16:
+			case eCompTypeA16B16G16R16:
+				return 4;
+			default:
+				break;
+		}
+		return 0;
+	}
+
 	const EDPX_CompType          componentsType() const;
 	const size_t                 dataSize() const;
 

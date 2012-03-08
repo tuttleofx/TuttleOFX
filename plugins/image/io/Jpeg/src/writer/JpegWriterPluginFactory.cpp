@@ -16,8 +16,29 @@ namespace writer {
 void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleJpegWriter", "JpegWriter",
-                    "Jpeg file writer" );
+		    "Jpeg file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
+
+    std::vector<std::string> extension;
+    extension.push_back( "jpeg" );
+    extension.push_back( "jpg" );
+    extension.push_back( "jpe" );
+    extension.push_back( "jfif" );
+    extension.push_back( "jfi" );
+
+    std::string listOfExt;
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	listOfExt += extension.at(i);
+	listOfExt += ", ";
+    }
+    listOfExt.erase( listOfExt.size()-2, 2 );
+
+    desc.setDescription( "JPEG File reader\n"
+			 "Plugin is used to write jpeg files.\n\n"
+			 "supported extensions: \n" +
+			 listOfExt
+    );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextWriter );
@@ -29,11 +50,10 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // add supported extensions
-    desc.addSupportedExtension( "jpeg" );
-    desc.addSupportedExtension( "jpg" );
-    desc.addSupportedExtension( "jpe" );
-    desc.addSupportedExtension( "jfif" );
-    desc.addSupportedExtension( "jfi" );
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	desc.addSupportedExtension( extension.at(i) );
+    }
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -49,7 +69,7 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                 OFX::EContext               context )
+						 OFX::EContext               context )
 {
     OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
@@ -65,17 +85,17 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
-    filename->setLabel( "Filename" );
+    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+    filename->setLabel( kTuttlePluginFilenameLabel );
     filename->setStringType( OFX::eStringTypeFilePath );
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-    bitDepth->setLabel( "Bit depth" );
+    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( 0 );
+    bitDepth->setDefault( eTuttlePluginBitDepth8 );
 
     OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
     premult->setLabel( "Premult" );
@@ -97,7 +117,7 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
  * @return  plugin instance
  */
 OFX::ImageEffect* JpegWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                           OFX::EContext        context )
+							   OFX::EContext        context )
 {
     return new JpegWriterPlugin( handle );
 }

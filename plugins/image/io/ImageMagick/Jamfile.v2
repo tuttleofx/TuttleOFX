@@ -8,18 +8,19 @@
 project
 	: requirements
 		<include>src
-		<include>$(MAGICK_INCLUDE)
-		<linkflags>$(MAGICK_LIBS)
 	: build-dir $(BUILD)/ImageMagick
 	;
 
 
+use-project /imagemagick : $(3RD_PARTY)/imagemagick ;
+
 ###############################################################################
-# Product 
+# Product
 ###############################################################################
-plugin ImageMagick : 
+plugin ImageMagick :
 		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
+		/imagemagick/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 	;

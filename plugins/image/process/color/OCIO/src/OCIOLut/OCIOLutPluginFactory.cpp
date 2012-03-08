@@ -55,9 +55,9 @@ void OCIOLutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamInputFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
 	filename->setDefault( "" );
-	filename->setLabel( "Filename" );
+	filename->setLabel( kTuttlePluginFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 
 	OFX::ChoiceParamDescriptor* interpolationType = desc.defineChoiceParam( kParamInterpolationType );

@@ -52,43 +52,42 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
     OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     srcClip->setSupportsTiles( kSupportTiles );
 
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
-    filename->setLabel( "Filename" );
+    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+    filename->setLabel( kTuttlePluginFilenameLabel );
     filename->setStringType( OFX::eStringTypeFilePath );
     filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-    componentsType->setLabel( "Components type" );
-    componentsType->appendOption( "rgb" );
-    componentsType->appendOption( "rgba" );
-    componentsType->appendOption( "abgr" );
+    OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kTuttlePluginComponents );
+    componentsType->setLabel( kTuttlePluginComponentsLabel );
+    componentsType->appendOption( kTuttlePluginComponentsRGB );
+    componentsType->appendOption( kTuttlePluginComponentsRGBA );
+    componentsType->appendOption( kTuttlePluginComponentsABGR );
     componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    componentsType->setDefault( 1 );
+    componentsType->setDefault( 0 );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
-    bitDepth->setLabel( "Bit depth" );
+    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth10 );
     bitDepth->appendOption( kTuttlePluginBitDepth12 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( eParamBitDepth10 );
+    bitDepth->setDefault( eTuttlePluginBitDepth10 );
 
-    OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
-    compressed->setLabel( "Remove unused bits (bit streaming)" );
+
+    OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamPacket );
+    compressed->setLabel( kParamPacketLabel );
     compressed->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    compressed->setDefault( false );
+    compressed->setDefault( true );
 
     describeWriterParamsInContext( desc, context );
 }

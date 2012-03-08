@@ -16,11 +16,29 @@ namespace reader {
 void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleJpegReader", "JpegReader",
-                    "Jpeg file reader" );
+		    "Jpeg file reader" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
+    std::vector<std::string> extension;
+    extension.push_back( "jpeg" );
+    extension.push_back( "jpg" );
+    extension.push_back( "jpe" );
+    extension.push_back( "jfif" );
+    extension.push_back( "jfi" );
+
+    std::string listOfExt;
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	listOfExt += extension.at(i);
+	listOfExt += ", ";
+    }
+    listOfExt.erase( listOfExt.size()-2, 2 );
+
     desc.setDescription( "JPEG File reader\n"
-                         "Plugin is used to read jpeg files." );
+			 "Plugin is used to read jpeg files.\n\n"
+			 "supported extensions: \n" +
+			 listOfExt
+    );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextReader );
@@ -33,11 +51,11 @@ void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
     desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
     // add supported extensions
-    desc.addSupportedExtension( "jpeg" );
-    desc.addSupportedExtension( "jpg" );
-    desc.addSupportedExtension( "jpe" );
-    desc.addSupportedExtension( "jfif" );
-    desc.addSupportedExtension( "jfi" );
+    for( unsigned int i=0; i< extension.size(); i++ )
+    {
+	desc.addSupportedExtension( extension.at(i) );
+    }
+
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -53,12 +71,10 @@ void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void JpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                 OFX::EContext               context )
+						 OFX::EContext               context )
 {
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
     describeReaderParamsInContext( desc, context );
@@ -71,7 +87,7 @@ void JpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
  * @return  plugin instance
  */
 OFX::ImageEffect* JpegReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                           OFX::EContext        context )
+							   OFX::EContext        context )
 {
     return new JpegReaderPlugin( handle );
 }

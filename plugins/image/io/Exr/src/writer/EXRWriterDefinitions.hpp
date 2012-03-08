@@ -3,28 +3,26 @@
 
 #include <tuttle/plugin/global.hpp>
 
+#include <tuttle/plugin/context/WriterDefinition.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace exr {
 namespace writer {
 
-enum EParamBitDepth
+enum ETuttlePluginBitDepth
 {
-	eParamBitDepth16f = 0,
-	eParamBitDepth32f,
-	eParamBitDepth32
+	eTuttlePluginBitDepth16f,
+	eTuttlePluginBitDepth32,
+	eTuttlePluginBitDepth32f
 };
 
-static const std::string kParamComponentsType = "componentType";
-static const std::string kParamComponentsGray = "gray";
-static const std::string kParamComponentsRgb  = "rgb";
-static const std::string kParamComponentsRgba = "rgba";
-
-enum EParamComponents
+enum ETuttlePluginComponents
 {
-    eGray,
-    eRGB,
-    eRGBA
+	eTuttlePluginComponentsGray = 0,
+	eTuttlePluginComponentsRGB,
+	eTuttlePluginComponentsRGBA,
+	eTuttlePluginComponentsABGR
 };
 
 static const std::string kParamStorageType     = "storage";
@@ -33,8 +31,8 @@ static const std::string kParamStorageTiles    = "tiles";
 
 enum EParamStorage
 {
-        eParamStorageScanLine = 0,
-        eParamStorageTiles
+	eParamStorageScanLine = 0,
+	eParamStorageTiles
 };
 
 }

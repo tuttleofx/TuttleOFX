@@ -42,14 +42,13 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 	Jpeg2000ReaderProcessParams params;
 
 	params._paramFilepath = getAbsoluteFilenameAt(time);
-	params._flip = _paramFlip->getValue();
 
 	return params;
 }
 
 void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-	if( paramName == kParamReaderFilename )
+	if( paramName == kTuttlePluginFilename )
 	{
 		_reader.close();
 		_fileInfos._failed = true;
@@ -94,30 +93,29 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 
 	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
-		clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
-		switch( fileInfo._components )
-		{
-			case 1:
-				clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentAlpha );
-				break;
-			case 3:
-			case 4:
-				clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-				break;
-			default:
-			{
-				BOOST_THROW_EXCEPTION( exception::ImageFormat()
-					<< exception::user() + "Unexpected number of channels (" + fileInfo._components + ")" );
-			}
-		}
-
 		clipPreferences.setClipBitDepth( *_clipDst, fileInfo._precisionType );
 	}
 	else // if we explicitly specify which conversion we want
 	{
 		clipPreferences.setClipBitDepth( *_clipDst, getOfxExplicitConversion() );
-		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-		clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
+	}
+	clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
+	switch( fileInfo._components )
+	{
+		case 1:
+			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentAlpha );
+			break;
+		case 3:
+			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
+			break;
+		case 4:
+			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		default:
+		{
+			BOOST_THROW_EXCEPTION( exception::ImageFormat()
+				<< exception::user() + "Unexpected number of channels (" + fileInfo._components + ")" );
+		}
 	}
 }
 
@@ -158,6 +156,40 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 			case OFX::eBitDepthFloat:
 			{
 				Jpeg2000ReaderProcess<rgba32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+			{
+				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			}
+			case OFX::eBitDepthCustom:
+			{
+				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+			}
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentRGB )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				Jpeg2000ReaderProcess<rgb8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				Jpeg2000ReaderProcess<rgb16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				Jpeg2000ReaderProcess<rgb32f_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
 			}
