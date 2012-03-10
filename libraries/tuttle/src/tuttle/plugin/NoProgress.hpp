@@ -11,7 +11,7 @@ class NoProgress : public IProgress
 public:
 	void progressBegin( const int numSteps, const std::string& msg = "" );
 	void progressEnd();
-	bool progressForward( const int nSteps = 1 );
+	bool progressForward( const int nSteps );
 
 protected:
 	double _stepSize; ///< Step size of progess bar

@@ -20,6 +20,8 @@ BOOST_AUTO_TEST_CASE( rgb_to_rgb )
 	::terry::rgb32f_pixel_t b;
 
 	terry::color::color_transformation( rgb_full_params, a, rgb_full_params, b );
+	
+	// @todo check a == b
 }
 
 BOOST_AUTO_TEST_CASE( rgb_to_hsl )

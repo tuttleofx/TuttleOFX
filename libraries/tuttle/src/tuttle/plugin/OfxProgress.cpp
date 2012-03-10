@@ -49,7 +49,8 @@ bool OfxProgress::progressUpdate( const double p )
 	{
 		return true;
 	}
-	return _effect.progressUpdate( p );
+	_counter = p;
+	return _effect.progressUpdate( _counter );
 }
 
 /**

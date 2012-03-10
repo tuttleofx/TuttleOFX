@@ -27,6 +27,9 @@ void Move2DProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
 	
 	for( int y = procWindowOutput.y1;
 			 y < procWindowOutput.y2;
@@ -40,7 +43,7 @@ void Move2DProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 		{
 			(*dst_it) = (*src_it);
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 	/*

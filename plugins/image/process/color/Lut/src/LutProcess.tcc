@@ -51,6 +51,9 @@ void LutProcess<View>::applyLut( View& dst, View& src, const OfxRectI& procWindo
 	using namespace boost::gil;
 	typedef typename View::x_iterator vIterator;
 	typedef typename channel_type<View>::type Pixel;
+	const OfxPointI procWindowSize = {
+		procWindow.x2 - procWindow.x1,
+		procWindow.y2 - procWindow.y1 };
 
 	for( int y = procWindow.y1; y < procWindow.y2; ++y )
 	{
@@ -67,7 +70,7 @@ void LutProcess<View>::applyLut( View& dst, View& src, const OfxRectI& procWindo
 			++sit;
 			++dit;
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }

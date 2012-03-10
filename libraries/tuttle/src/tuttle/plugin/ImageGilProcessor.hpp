@@ -58,7 +58,7 @@ public:
 	void setNbThreadsAuto()                           { _nbThreads = 0; }
 
 	/** @brief called before any MP is done */
-	virtual void preProcess() { progressBegin( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 ); }
+	virtual void preProcess() { progressBegin( ( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 ) * ( _renderArgs.renderWindow.x2 - _renderArgs.renderWindow.x1 ) ); }
 
 	/** @brief called before any MP is done */
 	virtual void postProcess() { progressEnd(); }

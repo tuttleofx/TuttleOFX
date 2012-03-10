@@ -13,7 +13,7 @@ struct NoProgress
 {
         void progressBegin( const int numSteps, const std::string& msg = "" ){}
         void progressEnd(){}
-        bool progressForward( const int nSteps = 1 ){ return false; }
+        bool progressForward( const int nSteps ){ return false; }
 };
 
 

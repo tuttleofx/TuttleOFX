@@ -41,6 +41,7 @@ public:
     point2<T> cornerMin() const { return point2<T>(x1, y1); }
     point2<T> cornerMax() const { return point2<T>(x2, y2); }
     
+	// return unsigned ?
     point2<T> size() const { return point2<T>(x2-x1, y2-y1); }
 
     T x1,y1,x2,y2;
