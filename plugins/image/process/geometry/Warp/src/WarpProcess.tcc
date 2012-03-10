@@ -1,7 +1,8 @@
 #include "WarpAlgorithm.hpp"
 #include "WarpPlugin.hpp"
 
-#include <tuttle/plugin/image/resample.hpp>
+#include <terry/sampler/resample_progress.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <terry/globals.hpp>
@@ -12,7 +13,7 @@ namespace warp {
 
 template<class View>
 WarpProcess<View>::WarpProcess( WarpPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationFromTopToBottom )
 , _plugin( effect )
 {
 	_clipSrcB = effect.fetchClip( kClipSourceB );
@@ -38,7 +39,7 @@ void WarpProcess<View>::setup( const OFX::RenderArguments& args )
 		}
 		// _srcBPixelRod = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_srcBPixelRod = _clipSrcB->getPixelRod( args.time, args.renderScale );
-		this->_srcBView = tuttle::plugin::getView<View > ( this->_srcB.get( ), _srcBPixelRod );
+		this->_srcBView = this->getView( this->_srcB.get( ), _srcBPixelRod );
 		_tpsB.setup( _params._bezierOut, _params._bezierIn, _params._rigiditeTPS, _params._activateWarp, this->_srcBPixelRod.x2 - this->_srcBPixelRod.x1, this->_srcBPixelRod.y2 - this->_srcBPixelRod.y1, ( 1.0 - _params._transition ) );
 	}
 	//TPS_Morpher<Scalar> tps( _params._inPoints, _params._outPoints , _params._rigiditeTPS);
@@ -55,6 +56,8 @@ template<class View>
 void WarpProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	using namespace terry::sampler;
+	using namespace terry::algorithm;
 	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 	const OfxRectI procWindowSrcA = translateRegion( procWindowRoW, this->_srcPixelRod );
 	const OfxRectI procWindowSrcB = translateRegion( procWindowRoW, this->_srcBPixelRod );
@@ -62,6 +65,8 @@ void WarpProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
 								procWindowRoW.y2 - procWindowRoW.y1 };
 
+	const EParamFilterOutOfImage outOfImageProcess = eParamFilterOutBlack; /// @todo expose as parameter
+	
 	if( this->_clipSrcB->isConnected( ) )
 	{
 		Image imgA( procWindowSize.x, procWindowSize.y );
@@ -75,8 +80,8 @@ void WarpProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 						this->_srcBPixelRod.x1-procWindowRoW.x1, this->_srcBPixelRod.y1-procWindowRoW.y1,
 						this->_srcBView.width(), this->_srcBView.height() );
 
-		resample_pixels_progress<terry::sampler::bilinear_sampler>( this->_srcView, viewA, _tpsA, procWindowSrcA, this );
-		resample_pixels_progress<terry::sampler::bilinear_sampler>( this->_srcBView, viewB, _tpsB, procWindowSrcB, this );
+		resample_pixels_progress<terry::sampler::bilinear_sampler>( this->_srcView, viewA, _tpsA, procWindowSrcA, outOfImageProcess, this->getOfxProgress() );
+		resample_pixels_progress<terry::sampler::bilinear_sampler>( this->_srcBView, viewB, _tpsB, procWindowSrcB, outOfImageProcess, this->getOfxProgress() );
 
 		//fondu entre imgA et imgB = this->_dstView FAITEALAMAIN
 		View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
@@ -86,7 +91,7 @@ void WarpProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 								   view( imgB ),
 								   dst,
 								   pixel_merge_t<Pixel > ( _params._transition ),
-								   *this );
+								   this->getOfxProgress() );
 	}
 	else
 	{
@@ -94,7 +99,7 @@ void WarpProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 						this->_dstView,
 						this->_srcPixelRod.x1-this->_dstPixelRod.x1, this->_srcPixelRod.y1-this->_dstPixelRod.y1,
 						this->_srcView.width(), this->_srcView.height() );
-		resample_pixels_progress<terry::sampler::bilinear_sampler > ( this->_srcView, dst, _tpsA, procWindowSrcA, this );
+		resample_pixels_progress<terry::sampler::bilinear_sampler > ( this->_srcView, dst, _tpsA, procWindowSrcA, outOfImageProcess, this->getOfxProgress() );
 	}
 }
 

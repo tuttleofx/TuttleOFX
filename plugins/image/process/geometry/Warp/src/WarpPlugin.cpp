@@ -3,7 +3,7 @@
 #include "WarpDefinitions.hpp"
 #include "Bezier/bezier.hpp"
 
-#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ofxToGil/image.hpp>
 #include <tuttle/plugin/global.hpp>
 
 #include <ofxsImageEffect.h>

@@ -3,9 +3,9 @@
 
 #include "TPS/tps.hpp"
 
-#include <tuttle/plugin/image/algorithm.hpp>
-#include <boost/gil/extension/channel.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <terry/channel.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
 
 
 namespace boost {
@@ -41,6 +41,7 @@ struct pixel_merge_t
    Pixel operator()( const Pixel& srcA, const Pixel& srcB ) const
    {
        using namespace boost::gil;
+       using namespace terry::numeric;
        Pixel res;
        // res = (srcA * _ratioA) + (srcB * _ratioB)
        pixel_assigns_t<Pixel,Pixel>()(
