@@ -37,7 +37,7 @@ void colorspace_pixels_progress(
 			// *dst_it = *src_it;
 			colorSpaceAPI->colorspace_convert( eGradationLawIn, eLayoutIn, eTempIn, eGradationLawOut, eLayoutOut, eTempOut , *src_it , *dst_it  );
 		}
-		if( p->progressForward() )
+		if( p->progressForward( dsl_view.width() ) )
 			return;
 	}
 }

@@ -139,7 +139,7 @@ struct FullColorParams
 template< typename Color, typename ChannelType >
 struct color_to_pixel
 {
-	typedef pixel<ChannelType, typename Color::layout> type;
+	typedef boost::gil::pixel<ChannelType, typename Color::layout> type;
 };
 
 /**
@@ -185,10 +185,10 @@ struct color_transformation_types_impl
 		>::type FColor; // final destination color
 	
 	typedef FullColorParams<Color> FullParams;
-	typedef pixel<ChannelType, typename SColor::layout> SPixel;
-	typedef pixel<ChannelType, typename DColor::layout> DPixel;
-	typedef pixel<ChannelType, typename NextColor::layout> NextPixel;
-	typedef pixel<ChannelType, typename FColor::layout> FPixel;
+	typedef boost::gil::pixel<ChannelType, typename SColor::layout> SPixel;
+	typedef boost::gil::pixel<ChannelType, typename DColor::layout> DPixel;
+	typedef boost::gil::pixel<ChannelType, typename NextColor::layout> NextPixel;
+	typedef boost::gil::pixel<ChannelType, typename FColor::layout> FPixel;
 };
 
 /**
@@ -349,8 +349,8 @@ struct color_transformation_static_for
 template<class Color, class ChannelType>
 void color_transformation_to_root(
 		const FullColorParams<Color>& params,
-		const pixel<ChannelType, typename Color::layout>& src,
-		      pixel<ChannelType,XYZ::layout>& dst )
+		const boost::gil::pixel<ChannelType, typename Color::layout>& src,
+		      boost::gil::pixel<ChannelType,XYZ::layout>& dst )
 {
 	color_transformation_static_for<typename FullColorParams<Color>::from_root, ChannelType, false>()(
 		params,
@@ -363,9 +363,9 @@ void color_transformation_to_root(
  */
 template<class Color, typename ChannelType>
 void color_transformation_from_root(
-		const pixel<ChannelType,XYZ::layout>& src,
+		const boost::gil::pixel<ChannelType,XYZ::layout>& src,
 		const FullColorParams<Color>& params,
-		      pixel<ChannelType, typename Color::layout>& dst
+		      boost::gil::pixel<ChannelType, typename Color::layout>& dst
 	)
 {
 	color_transformation_static_for<typename FullColorParams<Color>::from_root, ChannelType, true>()(
@@ -381,14 +381,14 @@ void color_transformation_from_root(
 template<class SColor, class DColor, typename ChannelType>
 void color_transformation(
 		const FullColorParams<SColor>& sParams,
-		const pixel<ChannelType, typename SColor::layout>& src,
+		const boost::gil::pixel<ChannelType, typename SColor::layout>& src,
 		const FullColorParams<DColor>& dParams,
-		pixel<ChannelType, typename DColor::layout>& dst )
+		boost::gil::pixel<ChannelType, typename DColor::layout>& dst )
 {
 	using namespace terry;
 	using namespace terry::numeric;
 	
-	pixel<ChannelType,XYZ::layout> root;
+	boost::gil::pixel<ChannelType,XYZ::layout> root;
 
 	color_transformation_to_root<SColor, ChannelType>( sParams, src, root );
 	color_transformation_from_root<DColor, ChannelType>( root, dParams, dst );

@@ -13,7 +13,7 @@ public:
 
 	virtual void progressBegin( const int numSteps, const std::string& msg = "" ) = 0;
 	virtual void progressEnd() = 0;
-	virtual bool progressForward( const int nSteps = 1 ) = 0;
+	virtual bool progressForward( const int nSteps ) = 0;
 	
 };
 

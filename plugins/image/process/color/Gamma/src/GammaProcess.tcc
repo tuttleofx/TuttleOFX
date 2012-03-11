@@ -23,6 +23,10 @@ void GammaProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	using namespace boost::gil;
 	GammaProcessParams<GammaPlugin::Scalar> params = _plugin.getProcessParams();
 	OfxRectI procWindowOutput                      = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	rgba32f_pixel_t wpix;
 
 	for( int y = procWindowOutput.y1;
@@ -58,7 +62,7 @@ void GammaProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			}
 			color_convert( wpix, *dst_it );
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 	/*

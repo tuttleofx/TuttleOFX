@@ -41,13 +41,13 @@ struct RGB
 };
 
 template<typename SChannelType, typename DChannelType>
-void color_transformation_step( const RGBParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,XYZ::layout>& dst )
+void color_transformation_step( const RGBParams& params, const boost::gil::pixel<SChannelType,RGB::layout>& src, boost::gil::pixel<DChannelType,XYZ::layout>& dst )
 {
 	std::cout << "color_transformation_step RGB to XYZ" << std::endl;
 	numeric::pixel_zeros( dst );
 }
 template<typename SChannelType, typename DChannelType>
-void color_transformation_step( const RGBParams& params, const pixel<SChannelType,XYZ::layout>& src, pixel<DChannelType,RGB::layout>& dst )
+void color_transformation_step( const RGBParams& params, const boost::gil::pixel<SChannelType,XYZ::layout>& src, boost::gil::pixel<DChannelType,RGB::layout>& dst )
 {
 	std::cout << "color_transformation_step XYZ to RGB" << std::endl;
 	numeric::pixel_zeros( dst );

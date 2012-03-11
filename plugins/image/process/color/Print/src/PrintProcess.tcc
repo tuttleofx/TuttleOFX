@@ -174,7 +174,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 							std::cout << " | ";
 						}
 						std::cout << "\n";
-						if( this->progressForward() )
+						if( this->progressForward( region.x2 - region.x1 ) )
 							return;
 					}
 					break;

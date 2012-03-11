@@ -88,7 +88,7 @@ void OCIOLutProcess<View>::applyLut( View& dst, View& src )
 				// Apply the color transformation (in place)
 				// Need normalized values
 				processor->apply( imageDesc );
-				if( this->progressForward() )
+				if( this->progressForward( dst.width() ) )
 					return;
 			}
 		}

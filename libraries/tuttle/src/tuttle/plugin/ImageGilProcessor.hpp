@@ -42,6 +42,7 @@ protected:
 	boost::scoped_ptr<OFX::Image> _dst;
 	OfxRectI _dstPixelRod;
 	OfxPointI _dstPixelRodSize;
+	OfxPointI _renderWindowSize;
 	View _dstView; ///< image to process into
 
 private:
@@ -58,7 +59,7 @@ public:
 	void setNbThreadsAuto()                           { _nbThreads = 0; }
 
 	/** @brief called before any MP is done */
-	virtual void preProcess() { progressBegin( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 ); }
+	virtual void preProcess() { progressBegin( _renderWindowSize.y * _renderWindowSize.x ); }
 
 	/** @brief called before any MP is done */
 	virtual void postProcess() { progressEnd(); }
@@ -94,6 +95,8 @@ public:
 	virtual void setupAndProcess( const OFX::RenderArguments& args )
 	{
 		_renderArgs = args;
+		_renderWindowSize.x = ( _renderArgs.renderWindow.x2 - _renderArgs.renderWindow.x1 );
+		_renderWindowSize.y = ( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 );
 		try
 		{
 			setup( args );
@@ -139,16 +142,15 @@ public:
 	}
 
 	/** @brief overridden from OFX::MultiThread::Processor. This function is called once on each SMP thread by the base class */
-	void multiThreadFunction( unsigned int threadId, unsigned int nThreads )
+	void multiThreadFunction( const unsigned int threadId, const unsigned int nThreads )
 	{
 		// slice the y range into the number of threads it has
-		int dy   = std::abs( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 );
-		int y1   = _renderArgs.renderWindow.y1 + threadId * dy / nThreads;
-		int step = ( threadId + 1 ) * dy / nThreads;
-		int y2   = _renderArgs.renderWindow.y1 + ( step < dy ? step : dy );
+		const int dy   = std::abs( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 );
+		const int y1   = _renderArgs.renderWindow.y1 + threadId * dy / nThreads;
+		const int step = ( threadId + 1 ) * dy / nThreads;
+		const int y2   = _renderArgs.renderWindow.y1 + ( step < dy ? step : dy );
 
 		OfxRectI winRoW = _renderArgs.renderWindow;
-
 		winRoW.y1 = y1;
 		winRoW.y2 = y2;
 
