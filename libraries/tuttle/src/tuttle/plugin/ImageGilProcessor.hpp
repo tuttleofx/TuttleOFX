@@ -142,16 +142,15 @@ public:
 	}
 
 	/** @brief overridden from OFX::MultiThread::Processor. This function is called once on each SMP thread by the base class */
-	void multiThreadFunction( unsigned int threadId, unsigned int nThreads )
+	void multiThreadFunction( const unsigned int threadId, const unsigned int nThreads )
 	{
 		// slice the y range into the number of threads it has
-		int dy   = std::abs( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 );
-		int y1   = _renderArgs.renderWindow.y1 + threadId * dy / nThreads;
-		int step = ( threadId + 1 ) * dy / nThreads;
-		int y2   = _renderArgs.renderWindow.y1 + ( step < dy ? step : dy );
+		const int dy   = std::abs( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 );
+		const int y1   = _renderArgs.renderWindow.y1 + threadId * dy / nThreads;
+		const int step = ( threadId + 1 ) * dy / nThreads;
+		const int y2   = _renderArgs.renderWindow.y1 + ( step < dy ? step : dy );
 
 		OfxRectI winRoW = _renderArgs.renderWindow;
-
 		winRoW.y1 = y1;
 		winRoW.y2 = y2;
 
