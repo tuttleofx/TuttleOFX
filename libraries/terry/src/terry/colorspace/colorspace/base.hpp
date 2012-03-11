@@ -36,9 +36,50 @@ using namespace ::boost::gil;
 											 rowsize_in_bytes)); \
 	}
 
+// A customized version of the equivalent GIL define.
+// We only have removed the forward declarations
+// which creates compilation troubles, with terry namespace...
+#define TERRY_GIL_DEFINE_BASE_TYPEDEFS_INTERNAL(T,CS,LAYOUT)                                              \
+    typedef pixel<bits##T, LAYOUT >                        CS##T##_pixel_t;        \
+    typedef const pixel<bits##T, LAYOUT >                   CS##T##c_pixel_t;        \
+    typedef pixel<bits##T, LAYOUT >&                      CS##T##_ref_t;            \
+    typedef const pixel<bits##T, LAYOUT >&                CS##T##c_ref_t;            \
+    typedef CS##T##_pixel_t*                                               CS##T##_ptr_t;            \
+    typedef CS##T##c_pixel_t*                                               CS##T##c_ptr_t;            \
+    typedef memory_based_step_iterator<CS##T##_ptr_t>                               CS##T##_step_ptr_t;        \
+    typedef memory_based_step_iterator<CS##T##c_ptr_t>                               CS##T##c_step_ptr_t;    \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##_ptr_t> >       CS##T##_loc_t;            \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##c_ptr_t> >       CS##T##c_loc_t;            \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##_step_ptr_t> >  CS##T##_step_loc_t;        \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##c_step_ptr_t> > CS##T##c_step_loc_t;    \
+    typedef image_view<CS##T##_loc_t>                                        CS##T##_view_t;            \
+    typedef image_view<CS##T##c_loc_t>                                        CS##T##c_view_t;        \
+    typedef image_view<CS##T##_step_loc_t>                                    CS##T##_step_view_t;    \
+    typedef image_view<CS##T##c_step_loc_t>                                   CS##T##c_step_view_t;    \
+    typedef image<CS##T##_pixel_t,false,std::allocator<unsigned char> >           CS##T##_image_t;
+
+// A customized version of the equivalent GIL define
+// CS = 'bgr' CS_FULL = 'rgb_t' LAYOUT='bgr_layout_t'
+#define TERRY_GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(T,CS,CS_FULL,LAYOUT)                                                                \
+    TERRY_GIL_DEFINE_BASE_TYPEDEFS_INTERNAL(T,CS,LAYOUT)                                                                    \
+    typedef planar_pixel_reference<bits##T&,CS_FULL >                                          CS##T##_planar_ref_t;        \
+    typedef planar_pixel_reference<const bits##T&,CS_FULL >                                      CS##T##c_planar_ref_t;        \
+    typedef planar_pixel_iterator<bits##T*,CS_FULL >                                          CS##T##_planar_ptr_t;        \
+    typedef planar_pixel_iterator<const bits##T*,CS_FULL >                                      CS##T##c_planar_ptr_t;        \
+    typedef memory_based_step_iterator<CS##T##_planar_ptr_t>                              CS##T##_planar_step_ptr_t;    \
+    typedef memory_based_step_iterator<CS##T##c_planar_ptr_t>                              CS##T##c_planar_step_ptr_t;    \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##_planar_ptr_t> >          CS##T##_planar_loc_t;        \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##c_planar_ptr_t> >      CS##T##c_planar_loc_t;        \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##_planar_step_ptr_t> >  CS##T##_planar_step_loc_t;    \
+    typedef memory_based_2d_locator<memory_based_step_iterator<CS##T##c_planar_step_ptr_t> > CS##T##c_planar_step_loc_t;    \
+    typedef image_view<CS##T##_planar_loc_t>                                      CS##T##_planar_view_t;        \
+    typedef image_view<CS##T##c_planar_loc_t>                                      CS##T##c_planar_view_t;        \
+    typedef image_view<CS##T##_planar_step_loc_t>                                  CS##T##_planar_step_view_t;    \
+    typedef image_view<CS##T##c_planar_step_loc_t>                                  CS##T##c_planar_step_view_t;\
+    typedef image<CS##T##_pixel_t,true,std::allocator<unsigned char> >              CS##T##_planar_image_t;
 
 #define TERRY_DEFINE_ALL_TYPEDEFS(T,CS)         \
-    GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(T,CS,color::CS##_colorspace_t,color::CS##_layout_t)
+    TERRY_GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(T,CS,color::CS##_colorspace_t,color::CS##_layout_t)
 
 #define TERRY_DEFINE_COLORSPACE_STANDARD_TYPEDEFS(CS) \
 	TERRY_DEFINE_ALL_TYPEDEFS(8,  CS) \
