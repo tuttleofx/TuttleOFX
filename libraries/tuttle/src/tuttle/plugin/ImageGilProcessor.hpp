@@ -42,6 +42,7 @@ protected:
 	boost::scoped_ptr<OFX::Image> _dst;
 	OfxRectI _dstPixelRod;
 	OfxPointI _dstPixelRodSize;
+	OfxPointI _renderWindowSize;
 	View _dstView; ///< image to process into
 
 private:
@@ -58,7 +59,7 @@ public:
 	void setNbThreadsAuto()                           { _nbThreads = 0; }
 
 	/** @brief called before any MP is done */
-	virtual void preProcess() { progressBegin( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 ); }
+	virtual void preProcess() { progressBegin( _renderWindowSize.y * _renderWindowSize.x ); }
 
 	/** @brief called before any MP is done */
 	virtual void postProcess() { progressEnd(); }
@@ -94,6 +95,8 @@ public:
 	virtual void setupAndProcess( const OFX::RenderArguments& args )
 	{
 		_renderArgs = args;
+		_renderWindowSize.x = ( _renderArgs.renderWindow.x2 - _renderArgs.renderWindow.x1 );
+		_renderWindowSize.y = ( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 );
 		try
 		{
 			setup( args );

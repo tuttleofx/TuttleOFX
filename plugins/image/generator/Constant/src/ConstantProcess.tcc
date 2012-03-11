@@ -55,6 +55,9 @@ void ConstantProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
 
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -68,7 +71,7 @@ void ConstantProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 		{
 			*dst_it = *src_it;
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }

@@ -224,7 +224,7 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 		{
 			*dst_it = *src_it;
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 

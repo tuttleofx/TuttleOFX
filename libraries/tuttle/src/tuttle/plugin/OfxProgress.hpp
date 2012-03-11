@@ -31,14 +31,18 @@ protected:
 	double _counter; ///< Current position in [0; 1]
 
 public:
-	OfxProgress( OFX::ImageEffect& effect ) : _effect( effect )
-		, _mutex( 0 ) {}
+	OfxProgress( OFX::ImageEffect& effect )
+	: _effect( effect )
+	, _mutex( 0 )
+	, _stepSize( 0 )
+	, _counter( 0 )
+	{}
 
 	virtual ~OfxProgress() {}
 
 	void progressBegin( const int numSteps, const std::string& msg = "" );
 	void progressEnd();
-	bool progressForward( const int nSteps = 1 );
+	bool progressForward( const int nSteps );
 	
 	bool progressUpdate( const double p );
 	

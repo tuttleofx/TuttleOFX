@@ -28,6 +28,8 @@ public:
 
 	void setup( const OFX::RenderArguments& args );
 	
+	void preProcess();
+	
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 

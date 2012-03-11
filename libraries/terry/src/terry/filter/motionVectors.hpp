@@ -67,7 +67,7 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 			boost::gil::get_color( *it_xVec, boost::gil::gray_color_t() ) = motion.x;
 			boost::gil::get_color( *it_yVec, boost::gil::gray_color_t() ) = motion.y;
 		}
-		if( p.progressForward() )
+		if( p.progressForward( xVecView.width() ) )
 			return true;
 	}
 	return false;
@@ -86,10 +86,10 @@ bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& i
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
 	correlate_rows<GPixel>( color_converted_view<GPixel>( img ), kernel, xGradientView, topleft, boundary_option );
-	if( p.progressForward( xGradientView.height() ) )
+	if( p.progressForward( xGradientView.size() ) )
 		return true;
 	correlate_cols<GPixel>( color_converted_view<GPixel>( img ), kernel, yGradientView, topleft, boundary_option );
-	if( p.progressForward( yGradientView.height() ) )
+	if( p.progressForward( yGradientView.size() ) )
 		return true;
 	return false;
 }
@@ -109,10 +109,10 @@ bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& i
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
 	correlate_rows_cols<GPixel,Alloc>( color_converted_view<GPixel>( img ), kernel, kernelSecondary, xGradientView, topleft, boundary_option );
-	if( p.progressForward( xGradientView.height() ) )
+	if( p.progressForward( xGradientView.size() ) )
 		return true;
 	correlate_rows_cols<GPixel,Alloc>( color_converted_view<GPixel>( img ), kernelSecondary, kernel, yGradientView, topleft, boundary_option );
-	if( p.progressForward( yGradientView.height() ) )
+	if( p.progressForward( yGradientView.size() ) )
 		return true;
 	return false;
 }
@@ -153,6 +153,8 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const Rect<std::ssiz
 	typedef typename DstView::coord_t Coord;
 	typedef typename DstView::value_type DstPixel;
 
+	const point2<std::ssize_t> procWindowSize = procWindowRoW.size();
+	
 	DstPixel black;
 	color_convert( boost::gil::rgba32f_pixel_t( 0.0, 0.0, 0.0, 0.0 ), black );
 
@@ -217,7 +219,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const Rect<std::ssiz
 
 		// notify the end of the line to inform the progress
 		// and allows the host to abort
-		if( p.progressForward() )
+		if( p.progressForward( procWindowSize.x ) )
 			return true;
 	}
 	return false;

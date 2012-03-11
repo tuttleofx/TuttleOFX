@@ -21,6 +21,7 @@ public:
 	RawReaderProcess( RawReaderPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
+	void preProcess();
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	View& readImage( View& dst, const std::string& filepath );

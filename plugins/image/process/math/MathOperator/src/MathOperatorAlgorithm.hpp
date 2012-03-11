@@ -12,6 +12,10 @@ namespace bgil = boost::gil;
 template< class View >
 void MathOperatorProcess<View>::processImagePlus( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -36,7 +40,7 @@ void MathOperatorProcess<View>::processImagePlus( OfxRectI& procWindowOutput, co
 			
 			color_convert( wpix, *dst_it );
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }
@@ -44,6 +48,10 @@ void MathOperatorProcess<View>::processImagePlus( OfxRectI& procWindowOutput, co
 template< class View >
 void MathOperatorProcess<View>::processImageMultiply( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -68,7 +76,7 @@ void MathOperatorProcess<View>::processImageMultiply( OfxRectI& procWindowOutput
 			
 			color_convert( wpix, *dst_it );
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }
@@ -76,6 +84,10 @@ void MathOperatorProcess<View>::processImageMultiply( OfxRectI& procWindowOutput
 template< class View >
 void MathOperatorProcess<View>::processImagePow( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -100,7 +112,7 @@ void MathOperatorProcess<View>::processImagePow( OfxRectI& procWindowOutput, con
 			
 			color_convert( wpix, *dst_it );
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }
@@ -109,6 +121,10 @@ void MathOperatorProcess<View>::processImagePow( OfxRectI& procWindowOutput, con
 template< class View >
 void MathOperatorProcess<View>::processImageSqrt( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -133,7 +149,7 @@ void MathOperatorProcess<View>::processImageSqrt( OfxRectI& procWindowOutput, co
 			
 			color_convert( wpix, *dst_it );
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }
@@ -141,6 +157,10 @@ void MathOperatorProcess<View>::processImageSqrt( OfxRectI& procWindowOutput, co
 template< class View >
 void MathOperatorProcess<View>::processImageLn( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -165,7 +185,7 @@ void MathOperatorProcess<View>::processImageLn( OfxRectI& procWindowOutput, cons
 			
 			color_convert( wpix, *dst_it );
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }
@@ -174,6 +194,10 @@ void MathOperatorProcess<View>::processImageLn( OfxRectI& procWindowOutput, cons
 template< class View >
 void MathOperatorProcess<View>::processImageLog( OfxRectI& procWindowOutput, const OfxRectI& procWindowRoW, const boost::gil::rgba32f_pixel_t& values, const boost::gil::rgba8_pixel_t& processChannel )
 {
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	boost::gil::rgba32f_pixel_t wpix;
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -198,7 +222,7 @@ void MathOperatorProcess<View>::processImageLog( OfxRectI& procWindowOutput, con
 
 			color_convert( wpix, *dst_it );
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }
