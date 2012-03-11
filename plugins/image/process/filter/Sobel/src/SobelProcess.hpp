@@ -30,6 +30,7 @@ public:
     SobelProcess( SobelPlugin& effect );
 
 	void setup( const OFX::RenderArguments& args );
+	void preProcess();
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 //	template<class ProcPixelGray>

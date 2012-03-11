@@ -42,6 +42,12 @@ void SobelProcess<SView,DView>::setup( const OFX::RenderArguments& args )
 	_params = _plugin.getProcessParams( args.renderScale );
 }
 
+template <class SView, class DView>
+void SobelProcess<SView,DView>::preProcess()
+{
+	progressBegin( 5 /* steps */ * this->_renderWindowSize.x * this->_renderWindowSize.y );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window
@@ -218,10 +224,10 @@ void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mp
 	using namespace boost;
 	using namespace terry;
 	using namespace terry::algorithm;
-	
+		
 	if( ! _params._computeGradientDirection )
 	{
-		fill_pixels( kth_channel_view<3>(dst), _pixelZero );
+		fill_pixels( kth_channel_view<3>(dst), channel_traits< typename channel_type<DView>::type >::max_value() );
 		if( this->progressForward( dst.size() ) )
 			return;
 	}
