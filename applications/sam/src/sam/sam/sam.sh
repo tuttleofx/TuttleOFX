@@ -153,3 +153,6 @@ fi
 
 # On active l'auto-completion de la commande grenlibre en relation avec la fonction _grenlibre
 complete $OPTIONS -F _sam sam
+
+complete $OPTIONS -F _sam_do sam-do
+
