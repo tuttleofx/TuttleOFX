@@ -45,7 +45,7 @@ void SobelProcess<SView,DView>::setup( const OFX::RenderArguments& args )
 template <class SView, class DView>
 void SobelProcess<SView,DView>::preProcess()
 {
-	progressBegin( 5 /* steps */ * this->_renderWindowSize.x * this->_renderWindowSize.y );
+	this->progressBegin( 5 /* steps */ * this->_renderWindowSize.x * this->_renderWindowSize.y );
 }
 
 /**
