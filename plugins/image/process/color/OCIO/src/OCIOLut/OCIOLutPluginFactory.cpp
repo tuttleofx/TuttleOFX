@@ -33,6 +33,7 @@ void OCIOLutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+
 }
 
 /**
