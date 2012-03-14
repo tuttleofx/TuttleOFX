@@ -16,7 +16,7 @@ namespace reader {
 void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
     desc.setLabels( "TuttleDpxReader", "DpxReader",
-                    "Dpx file reader" );
+		    "Dpx file reader" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
     desc.setDescription( "Digital Picture Exchange (DPX), ANSI/SMPTE standard (268M-2003)" );
@@ -47,7 +47,7 @@ void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext               context )
+						OFX::EContext               context )
 {
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     // Dpx only supports RGB(A)
@@ -69,7 +69,7 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* DPXReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext        context )
+							  OFX::EContext        context )
 {
     return new DPXReaderPlugin( handle );
 }

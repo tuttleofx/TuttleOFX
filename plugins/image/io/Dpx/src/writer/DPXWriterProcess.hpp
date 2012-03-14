@@ -1,7 +1,7 @@
 #ifndef _DPXWRITER_PROCESS_HPP_
 #define _DPXWRITER_PROCESS_HPP_
 
-#include <dpxEngine/dpxImage.hpp>
+#include <DPX.h>
 
 #include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
@@ -14,6 +14,7 @@ namespace plugin {
 namespace dpx {
 namespace writer {
 
+
 /**
  * @brief Dpx writer
  */
@@ -21,21 +22,13 @@ template<class View>
 class DPXWriterProcess : public ImageGilFilterProcessor<View>
 {
 protected:
-	DPXWriterPlugin&      _plugin;        ///< Rendering plugin
+	DPXWriterPlugin&       _plugin;        ///< Rendering plugin
 	DPXWriterProcessParams _params;
-	tuttle::io::DpxHeader _dpxHeader;     ///< Dpx image header
-	tuttle::io::DpxImage _dpxImg;         ///< Dpx image reader
 
 	void setup( const OFX::RenderArguments& args );
 
-	template<class WImage>
-	void write10bitsImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const bool packing );
-
-	template<class WImage>
-	void writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const bool packing );
-
-	template<class SRC_V, class T>
-	boost::uint8_t* viewToBitStream( SRC_V& src, const int nc, const int channelSize );
+	//template<class WPixel>
+	//void writeImage( View& src, ::dpx::Writer& writer);
 
 public:
 	DPXWriterProcess( DPXWriterPlugin& instance );

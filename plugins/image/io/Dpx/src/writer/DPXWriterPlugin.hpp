@@ -4,6 +4,8 @@
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 #include "DPXWriterDefinitions.hpp"
 
+#include <DPX.h>
+
 namespace tuttle {
 namespace plugin {
 namespace dpx {
@@ -11,10 +13,14 @@ namespace writer {
 
 struct DPXWriterProcessParams
 {
-	std::string             _filepath;       ///< filepath
-	ETuttlePluginBitDepth   _bitDepth;               ///< Output bit depth
-	ETuttlePluginComponents _componentsType;         ///< Components type
-	bool                    _packed;            ///< Bit streaming
+	std::string               _filepath;       ///< filepath
+	ETuttlePluginBitDepth     _bitDepth;       ///< Output bit depth
+	::dpx::Descriptor         _descriptor;     ///< Components type
+	::dpx::Characteristic     _transfer;
+	::dpx::Characteristic     _colorimetric;
+	::dpx::Packing            _packed;         ///< Bit streaming packing
+	::dpx::Encoding           _encoding;
+
 };
 
 /**
@@ -34,8 +40,14 @@ public:
 	void render( const OFX::RenderArguments& args );
 
 protected:
-	OFX::ChoiceParam*    _componentsType;  ///< Dpx components type
-	OFX::BooleanParam*   _packed;          ///< Dpx is bit streamed
+	OFX::ChoiceParam*    _bitDepth;        ///< Dpx bit depth
+	OFX::ChoiceParam*    _descriptor;      ///< Dpx descriptor
+	OFX::ChoiceParam*    _transfer;        ///< Dpx transfer
+	OFX::ChoiceParam*    _colorimetric;    ///< Dpx colorimetric
+	OFX::ChoiceParam*    _packed;          ///< Dpx packed method
+	OFX::ChoiceParam*    _encoding;        ///< Dpx encoding
+
+	DPXWriterProcessParams params;
 };
 
 }

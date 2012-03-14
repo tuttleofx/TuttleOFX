@@ -113,26 +113,36 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
+					TUTTLE_COUT("default");
 					int width               = _dpxImage.width();
 					int height              = _dpxImage.height();
-					rgb10_packed_view_t src = interleaved_view( width, height,
-										    ( rgb10_packed_pixel_t* )( _dpxImage.data() ),
+					gray32_view_t src = interleaved_view( width, height,
+										    ( gray32_pixel_t* )( _dpxImage.rawData() ),
 										    width * sizeof( uint32_t ) );
-					// This is temporary but needed because of a probable bug in gil
-					// Should be using copy_and_convert_pixels
+
 					rgb16_image_t img16( width, height );
 					rgb16_view_t vw16( view( img16 ) );
-					for( typename rgb10_packed_view_t::y_coord_t y = 0; y < height; ++y )
+					for( typename gray32_view_t::y_coord_t y = 0; y < height; ++y )
 					{
-						typename rgb10_packed_view_t::x_iterator sit = src.row_begin( y );
-						typename rgb16_view_t::x_iterator dit        = vw16.row_begin( y );
-						for( typename rgb10_packed_view_t::x_coord_t x = 0; x < width; ++x )
+						typename gray32_view_t::x_iterator sit = src.row_begin( y );
+						typename rgb16_view_t::x_iterator  dit = vw16.row_begin( y );
+						for( typename gray32_view_t::x_coord_t x = 0; x < width; ++x )
 						{
-							color_convert( *sit, *dit );
+							uint32_t pixel = (uint32_t) *sit;
+
+							short red   = ( ( pixel & 0xffc00000 ) >> 22 );
+							short green = ( ( pixel & 0x003ff000 ) >> 12 );
+							short blue  = ( ( pixel & 0x00000ffc ) >>  2 );
+
+							get_color( *dit, red_t()   ) = red ;
+							get_color( *dit, green_t() ) = green ;
+							get_color( *dit, blue_t()  ) = blue ;
+
 							++sit;
 							++dit;
 						}
 					}
+
 					copy_and_convert_pixels( vw16, dst );
 					break;
 				}
