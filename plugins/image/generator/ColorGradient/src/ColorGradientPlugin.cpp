@@ -129,13 +129,6 @@ void ColorGradientPlugin::render( const OFX::RenderArguments& args )
 void ColorGradientPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	GeneratorPlugin::getClipPreferences( clipPreferences );
-
-	if( getExplicitConversion() == eParamGeneratorExplicitConversionAuto )
-	{
-		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthFloat );
-	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 
 void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

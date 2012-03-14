@@ -28,13 +28,6 @@ void CheckerboardPlugin::render( const OFX::RenderArguments& args )
 void CheckerboardPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	GeneratorPlugin::getClipPreferences( clipPreferences );
-
-	if( getExplicitConversion() == eParamGeneratorExplicitConversionAuto )
-	{
-		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthFloat );
-	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 
 }
