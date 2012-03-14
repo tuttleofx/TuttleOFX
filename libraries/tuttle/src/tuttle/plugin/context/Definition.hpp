@@ -20,6 +20,8 @@ static const std::string kTuttlePluginBitDepth16    = "16i   16 bits integer";
 static const std::string kTuttlePluginBitDepth16f   = "16f   16 bits floating point";
 static const std::string kTuttlePluginBitDepth32    = "32i   32 bits integer";
 static const std::string kTuttlePluginBitDepth32f   = "32f   32 bits floating point";
+static const std::string kTuttlePluginBitDepth64    = "64i   64 bits integer";
+static const std::string kTuttlePluginBitDepth64f   = "64f   64 bits floating point";
 
 static const std::string kTuttlePluginComponents      = "components";
 static const std::string kTuttlePluginComponentsLabel = "Components";
