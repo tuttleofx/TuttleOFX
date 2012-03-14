@@ -27,13 +27,8 @@ protected:
 
 	void setup( const OFX::RenderArguments& args );
 
-	//template<class WPixel>
-	//void writeImage( View& src, ::dpx::Writer& writer);
-
 public:
 	DPXWriterProcess( DPXWriterPlugin& instance );
-
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

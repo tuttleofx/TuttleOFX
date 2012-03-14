@@ -38,6 +38,11 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
 
+	void* dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelData();
+	void* dataDstPtr = _clipDst->fetchImage( args.time )->getPixelData();
+
+
+
 	ETuttlePluginBitDepth eOutBitDepth = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
 	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
 
@@ -348,7 +353,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
 	}
 
-	if( ! writer.WriteElement( 0, _clipSrc->fetchImage( args.time )->getPixelData(), ::dpx::kByte ) )
+	if( ! writer.WriteElement( 0, dataSrcPtr, ::dpx::kByte ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX User Data)" ) );

@@ -166,39 +166,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	encoding->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	encoding->setDefault( 0 );
 
-/*
-
-
-
-		 * \param element element number (0-7)
-ok	 * \param desc image descriptor
-ok	 * \param bitDepth bit depth of image, valid values are [8,10,12,16,32,64]
-ok	 * \param transfer transfer characteristic
-ok	 * \param colorimetric colorimetric specification
-ok	 * \param packing packing type
-ok	 * \param encoding encoding type
-		 * \param dataSign
-		 * \param lowData
-		 * \param lowQuantity
-		 * \param highData
-		 * \param highQuantity
-		 * \param eolnPadding end of line padding (in bytes)
-		 * \param eoimPadding end of image padding (in bytes)
-
-		void SetElement(const int element = 0,
-			const Descriptor desc = kRGB,
-			const U8 bitDepth = 10,
-			const Characteristic transfer = kLogarithmic,
-			const Characteristic colorimetric = kLogarithmic,
-			const Packing packing = kFilledMethodA,
-			const Encoding encoding = kNone,
-			const U32 dataSign = 0,
-			const U32 lowData = ~0, const R32 lowQuantity = std::numeric_limits<float>::quiet_NaN(),
-			const U32 highData = ~0, const R32 highQuantity = std::numeric_limits<float>::quiet_NaN(),
-			const U32 eolnPadding = 0, const U32 eoimPadding = 0);
-
-*/
-
 	describeWriterParamsInContext( desc, context );
 
 }
