@@ -17,7 +17,6 @@ static const bool kSupportTiles = true;
 void describeGeneratorParamsInContext( OFX::ImageEffectDescriptor& desc,
 				       OFX::EContext               context )
 {
-/* to activate this
 	// Create the mandated optional input clip
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -25,7 +24,6 @@ void describeGeneratorParamsInContext( OFX::ImageEffectDescriptor& desc,
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 	srcClip->setOptional(true);
-*/
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -53,6 +51,13 @@ void describeGeneratorParamsInContext( OFX::ImageEffectDescriptor& desc,
 		explicitConversion->setIsSecret( true );
 		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
 	}
+
+	OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
+	components->setLabel    ( kTuttlePluginComponentsLabel );
+	components->appendOption( kTuttlePluginComponentsGray );
+	components->appendOption( kTuttlePluginComponentsRGB );
+	components->appendOption( kTuttlePluginComponentsRGBA );
+	components->setDefault  ( 2 ); // rgba
 
 	OFX::ChoiceParamDescriptor* method = desc.defineChoiceParam( kParamMode );
 	method->setLabel    ( "Mode" );

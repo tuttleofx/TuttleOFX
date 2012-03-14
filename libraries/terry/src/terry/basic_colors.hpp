@@ -36,7 +36,7 @@ struct black_filler
 	{
 		using namespace boost::gil;
 		P p2;
-		for( int v = 0; v < num_channels<P>::type::value; ++v )
+		for( int v = 0; v < num_channels<P>::value; ++v )
 		{
 			p2[v] = 0;
 		}

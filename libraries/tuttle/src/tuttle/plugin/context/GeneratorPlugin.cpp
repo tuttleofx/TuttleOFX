@@ -11,6 +11,7 @@ GeneratorPlugin::GeneratorPlugin( OfxImageEffectHandle handle )
 {
 	_clipDst                = fetchClip         ( kOfxImageEffectOutputClipName );
 	_paramExplicitConv      = fetchChoiceParam  ( kParamGeneratorExplicitConversion );
+	_paramComponents        = fetchChoiceParam  ( kTuttlePluginComponents );
 
 	_paramMode              = fetchChoiceParam  ( kParamMode );
 	_paramFormat            = fetchChoiceParam  ( kParamFormat );
@@ -152,7 +153,26 @@ void GeneratorPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			break;
 		}
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+
+	switch( _paramComponents->getValue() )
+	{
+		case eParamGeneratorComponentsAlpha:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+			break;
+		}
+		case eParamGeneratorComponentsRGB:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+			break;
+		}
+		//case eParamGeneratorExplicitConversionAuto:
+		case eParamGeneratorComponentsRGBA:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+	}
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 
