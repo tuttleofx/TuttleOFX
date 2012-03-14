@@ -38,7 +38,7 @@ public:
 	void setRenderWindow( OfxRectI rect ) { _renderWindow = rect; }
 
 	/** @brief overridden from OFX::MultiThread::Processor. This function is called once on each SMP thread by the base class */
-	void multiThreadFunction( unsigned int threadId, unsigned int nThreads )
+	void multiThreadFunction( const unsigned int threadId, const unsigned int nThreads )
 	{
 		// slice the y range into the number of threads it has
 		unsigned int dy   = _renderWindow.y2 - _renderWindow.y1;

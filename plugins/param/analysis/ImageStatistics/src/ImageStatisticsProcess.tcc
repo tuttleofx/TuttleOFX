@@ -383,6 +383,10 @@ void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+	
 	if( _processParams._chooseOutput == eParamChooseOutputSource )
 	{
 		for( int y = procWindowOutput.y1;
@@ -397,7 +401,7 @@ void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 			{
 				( *dst_it ) = ( *src_it );
 			}
-			if( this->progressForward() )
+			if( this->progressForward( procWindowSize.x ) )
 				return;
 		}
 	}
@@ -414,7 +418,7 @@ void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 			{
 				( *dst_it ) = _outputPixel;
 			}
-			if( this->progressForward() )
+			if( this->progressForward( procWindowSize.x ) )
 				return;
 		}
 	}

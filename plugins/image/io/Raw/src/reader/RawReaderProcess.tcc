@@ -23,7 +23,7 @@ static int progressCallback( void* data, LibRaw_progress p, int iteration, int e
 	typedef RawReaderProcess<View> PluginProcess;
 	PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
 	TUTTLE_COUT_DEBUG( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
-	if( process->progressForward( iteration ) )
+	if( process->progressUpdate( iteration / (double)expected ) )
 		return 1; // cancel processing immediately
 	return 0; // can continue
 }
@@ -60,6 +60,12 @@ void RawReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.time );
+}
+
+template<class View>
+void RawReaderProcess<View>::preProcess()
+{
+	// remove default implementation
 }
 
 /**

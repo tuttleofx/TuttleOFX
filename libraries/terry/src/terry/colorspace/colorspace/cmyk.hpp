@@ -56,13 +56,13 @@ struct CMYK
 };
 
 template<typename SChannelType, typename DChannelType>
-void color_transformation_step( const CMYKParams& params, const pixel<SChannelType,CMYK::layout>& src, pixel<DChannelType,RGB::layout>& dst )
+void color_transformation_step( const CMYKParams& params, const boost::gil::pixel<SChannelType,CMYK::layout>& src, boost::gil::pixel<DChannelType,RGB::layout>& dst )
 {
 	std::cout << "color_transformation_step CMYK to RGB" << std::endl;
 	numeric::pixel_zeros( dst );
 }
 template<typename SChannelType, typename DChannelType>
-void color_transformation_step( const CMYKParams& params, const pixel<SChannelType,RGB::layout>& src, pixel<DChannelType,CMYK::layout>& dst )
+void color_transformation_step( const CMYKParams& params, const boost::gil::pixel<SChannelType,RGB::layout>& src, boost::gil::pixel<DChannelType,CMYK::layout>& dst )
 {
 	std::cout << "color_transformation_step RGB to CMYK" << std::endl;
 	numeric::pixel_zeros( dst );

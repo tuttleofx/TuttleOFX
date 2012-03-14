@@ -21,11 +21,20 @@ InvertProcess<View>::InvertProcess( InvertPlugin& instance )
 	, _plugin( instance )
 {
 }
+
 template<class View>
 void InvertProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
+}
+
+template<class View>
+void InvertProcess<View>::preProcess()
+{
+	const std::size_t nbChannels = boost::gil::num_channels<View>::value;
+	const bool onePass = _params._red && _params._green && _params._blue;
+	this->progressBegin( this->_dstView.size() * (onePass ? 1 : nbChannels) );
 }
 
 /**
@@ -52,27 +61,28 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 
 	if( _params._red &&
 	    _params._green &&
-	    _params._blue &&
-	    _params._alpha )
+	    _params._blue )
 	{
-		transform_pixels_progress(
-			src,
-			dst,
-			transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
-			*this
-			);
-	}
-	else if( _params._red &&
-	    _params._green &&
-	    _params._blue &&
-	    !_params._alpha )
-	{
-		transform_pixels_progress(
-			src,
-			dst,
-			pixel_invert_colors_t(),
-			*this
-			);
+		// If all channel colors are inverted, which is the most used case
+		// do it in one pass
+		if( _params._alpha )
+		{
+			transform_pixels_progress(
+				src,
+				dst,
+				transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
+				*this
+				);
+		}
+		else
+		{
+			transform_pixels_progress(
+				src,
+				dst,
+				pixel_invert_colors_t(),
+				*this
+				);
+		}
 	}
 	else
 	{
@@ -91,6 +101,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 			else
 			{
 				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+				this->progressForward( dst.size() );
 			}
 		}
 		{
@@ -107,6 +118,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 			else
 			{
 				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+				this->progressForward( dst.size() );
 			}
 		}
 		{
@@ -123,6 +135,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 			else
 			{
 				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+				this->progressForward( dst.size() );
 			}
 		}
 		{
@@ -139,6 +152,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 			else
 			{
 				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+				this->progressForward( dst.size() );
 			}
 		}
 	}

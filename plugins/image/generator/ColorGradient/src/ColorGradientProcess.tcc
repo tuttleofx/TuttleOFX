@@ -40,6 +40,9 @@ void ColorGradientProcess<View, ColorGradientFunctor>::multiThreadProcessImages(
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
 
 	for( int y = procWindowOutput.y1;
 	     y < procWindowOutput.y2;
@@ -53,7 +56,7 @@ void ColorGradientProcess<View, ColorGradientFunctor>::multiThreadProcessImages(
 		{
 			*dst_it = *src_it;
 		}
-		if( this->progressForward() )
+		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
 }

@@ -3,6 +3,8 @@
 
 #include "OCIOLutPlugin.hpp"
 
+#include <OpenColorIO/OpenColorIO.h>
+
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
@@ -17,6 +19,8 @@ namespace plugin {
 namespace ocio{
 namespace lut {
 
+namespace OCIO = OCIO_NAMESPACE;
+
 /**
  * @brief Lut process
  */
@@ -26,6 +30,8 @@ class OCIOLutProcess : public ImageGilFilterProcessor<View>
 private:
 	OCIOLutPlugin&  _plugin;        ///< Rendering plugin
 	OCIOLutProcessParams _params; ///< parameters
+
+	OCIO::ConstConfigRcPtr config;
 
 public:
 	OCIOLutProcess<View>( OCIOLutPlugin & instance );

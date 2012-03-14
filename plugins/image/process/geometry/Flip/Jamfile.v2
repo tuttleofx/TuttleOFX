@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Lut Plugin
+## Main BJam makefile for TuttleOFX Flip Plugin
 ###############################################################################
 import os ;
 
@@ -7,24 +7,25 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
+    : requirements
         <include>src
-    : build-dir $(BUILD)/Lut
+        <threading>multi
+    : build-dir $(BUILD)/Flip
     ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Lut :
-	[ glob src/*.cpp ]
-	[ glob src/lutEngine/*.cpp ]
-	/boost/filesystem/<link>static
-	/boost/system/<link>static
-	/tuttleplugin/<link>static
+plugin Flip :
+    	[ glob src/*.cpp ]
+    	/tuttleplugin/<link>static
+	:
+		<os>NT:<find-shared-library>opengl32
+		<os>MACOSX:<linkflags>"-framework OpenGL"
     ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Lut : $(DIST) ;
+auto_install Flip : $(DIST) ;
 

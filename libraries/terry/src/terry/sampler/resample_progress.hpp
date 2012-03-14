@@ -33,6 +33,9 @@ void resample_pixels_progress(
 {
 	typedef typename DstView::point_t Point2;
 	typedef typename DstView::value_type Pixel;
+	
+	terry::point2<std::ssize_t> procWindowSize = procWindow.size();
+	
 	Point2 dst_p;
 	Pixel black;
 	color_convert( boost::gil::rgba32f_pixel_t( 0.0, 0.0, 0.0, 0.0 ), black );
@@ -47,7 +50,7 @@ void resample_pixels_progress(
 				xit[dst_p.x] = black; // if it is outside of the source image
 			}
 		}
-		if( p.progressForward() )
+		if( p.progressForward( procWindowSize.x ) )
 			return;
 	}
 }
