@@ -10,8 +10,6 @@ namespace bitDepth {
 static const std::string kParamHelpButton     = "help";
 static const std::string kParamOutputBitDepth = "outputBitDepth";
 
-static const std::string kBitDepthHelpString = "<b>Bit depth convertor</b> plugin is used to convert pixels bit depths.  <br />";
-
 }
 }
 }

@@ -20,16 +20,6 @@ BitDepthPlugin::BitDepthPlugin( OfxImageEffectHandle handle )
 	_paramOutBitDepth = fetchChoiceParam( kParamOutputBitDepth );
 }
 
-void BitDepthPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
-{
-	if( paramName == kParamHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kBitDepthHelpString );
-	}
-}
-
 void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	if( _paramOutBitDepth->getValue() != 0 )
