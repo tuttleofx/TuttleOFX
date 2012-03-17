@@ -16,6 +16,14 @@ enum EParamGeneratorExplicitConversion
 	eParamGeneratorExplicitConversionFloat
 };
 
+enum EParamGeneratorComponents
+{
+	eParamGeneratorComponentsAlpha = 0,
+	eParamGeneratorComponentsRGB,
+	eParamGeneratorComponentsRGBA
+};
+
+
 static const std::string kParamMode              = "mode";
 static const std::string kParamModeFormat        = "format";
 static const std::string kParamModeSize          = "size";

@@ -55,7 +55,7 @@ public:
 	/// @name user parameters
 	/// @{
 	OFX::ChoiceParam*       _paramExplicitConv; ///< Explicit conversion
-	/// @}
+	OFX::ChoiceParam*       _paramComponents;
 
 	OFX::ChoiceParam*       _paramMode;
 
@@ -67,7 +67,7 @@ public:
 	OFX::BooleanParam*      _paramSizeSpecificRatio;
 	OFX::DoubleParam*       _paramSizeRatioValue;
 	OFX::ChoiceParam*       _paramSizeOrientation;
-
+	/// @}
 };
 
 }

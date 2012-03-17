@@ -84,6 +84,7 @@ void OCIOLutPlugin::render(const OFX::RenderArguments& args) {
 OCIOLutProcessParams OCIOLutPlugin::getProcessParams(
 		const OfxPointD& renderScale) const {
 	using namespace boost::filesystem;
+
 	OCIOLutProcessParams params;
 	EInterpolationType
 			interpolationType =
@@ -94,6 +95,9 @@ OCIOLutProcessParams OCIOLutPlugin::getProcessParams(
 	if (!bfs::exists(str)) {
 		BOOST_THROW_EXCEPTION( exception::FileNotExist( )
 				<< exception::filename( str ) );
+
+		//				 ::boost::throw_exception( exception::Failed( ));
+		////		throw new std::string("File doesn't exist.");
 	}
 	//Init the OCIO file transform
 	params._fileTransform = OCIO::FileTransform::Create();
@@ -117,7 +121,6 @@ OCIOLutProcessParams OCIOLutPlugin::getProcessParams(
 
 	outputColorSpace->setTransform(params._groupTransform,
 			OCIO::COLORSPACE_DIR_FROM_REFERENCE);
-
 
 	TUTTLE_COUT_DEBUG( tuttle::common::kColorMagenta << "Specified Transform:" << *(params._groupTransform) << tuttle::common::kColorStd <<std::endl);
 

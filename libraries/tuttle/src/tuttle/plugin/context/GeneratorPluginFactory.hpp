@@ -52,6 +52,13 @@ void describeGeneratorParamsInContext( OFX::ImageEffectDescriptor& desc,
 		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
 	}
 
+	OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
+	components->setLabel    ( kTuttlePluginComponentsLabel );
+	components->appendOption( kTuttlePluginComponentsGray );
+	components->appendOption( kTuttlePluginComponentsRGB );
+	components->appendOption( kTuttlePluginComponentsRGBA );
+	components->setDefault  ( 2 ); // rgba
+
 	OFX::ChoiceParamDescriptor* method = desc.defineChoiceParam( kParamMode );
 	method->setLabel    ( "Mode" );
 	method->appendOption( kParamModeFormat );
