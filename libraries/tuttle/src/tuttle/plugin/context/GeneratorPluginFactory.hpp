@@ -17,7 +17,6 @@ static const bool kSupportTiles = true;
 void describeGeneratorParamsInContext( OFX::ImageEffectDescriptor& desc,
 				       OFX::EContext               context )
 {
-/* to activate this
 	// Create the mandated optional input clip
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -25,7 +24,6 @@ void describeGeneratorParamsInContext( OFX::ImageEffectDescriptor& desc,
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 	srcClip->setOptional(true);
-*/
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
