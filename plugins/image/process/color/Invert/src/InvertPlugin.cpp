@@ -8,26 +8,25 @@ namespace plugin {
 namespace invert {
 
 using namespace boost::gil;
-static const std::string kInvertHelpString = "<b>Image inverter</b> is used to invert components of an image.  <br />";
 
 InvertPlugin::InvertPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-	_processGroup = fetchGroupParam( kParamProcessGroup );
-	_processR = fetchBooleanParam( kParamProcessR );
-	_processG = fetchBooleanParam( kParamProcessG );
-	_processB = fetchBooleanParam( kParamProcessB );
-	_processA = fetchBooleanParam( kParamProcessA );
+	_paramProcessGroup = fetchGroupParam( kParamProcessGroup );
+	_paramProcessR = fetchBooleanParam( kParamProcessR );
+	_paramProcessG = fetchBooleanParam( kParamProcessG );
+	_paramProcessB = fetchBooleanParam( kParamProcessB );
+	_paramProcessA = fetchBooleanParam( kParamProcessA );
 }
 
 InvertProcessParams InvertPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	InvertProcessParams params;
 
-	params._red     = _processR->getValue();
-	params._green     = _processG->getValue();
-	params._blue     = _processB->getValue();
-	params._alpha     = _processA->getValue();
+	params._red = _paramProcessR->getValue();
+	params._green = _paramProcessG->getValue();
+	params._blue = _paramProcessB->getValue();
+	params._alpha = _paramProcessA->getValue();
 
 	return params;
 }
@@ -39,8 +38,8 @@ InvertProcessParams InvertPlugin::getProcessParams( const OfxPointD& renderScale
 void InvertPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent components = _clipDst->getPixelComponents();
+	const OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+	const OFX::EPixelComponent components = _clipDst->getPixelComponents();
 
 	switch( components )
 	{
@@ -59,16 +58,6 @@ void InvertPlugin::render( const OFX::RenderArguments& args )
 		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Unknown() );
-}
-
-void InvertPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
-{
-	if( paramName == "Help" )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kInvertHelpString );
-	}
 }
 
 }
