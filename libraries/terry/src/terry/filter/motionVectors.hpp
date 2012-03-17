@@ -4,6 +4,8 @@
 #include <terry/channel.hpp>
 #include <terry/filter/convolve.hpp>
 #include <terry/sampler/sampler.hpp>
+#include <terry/sampler/details.hpp>
+#include <terry/point/operations.hpp>
 
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
@@ -95,7 +97,7 @@ bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& i
 }
 
 template<
-	typename Alloc,
+	template<typename> class Alloc,
 	typename GView,
 	typename View,
 	typename Point,

@@ -594,7 +594,7 @@ void correlate_rows_cols_auto( const SrcView& src,
 
 /// @ingroup ImageAlgorithms
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
-template <typename PixelAccum, typename Alloc, typename SrcView, typename KernelX, typename KernelY, typename DstView>
+template <typename PixelAccum, template<typename> class Alloc, typename SrcView, typename KernelX, typename KernelY, typename DstView>
 GIL_FORCEINLINE
 void correlate_rows_cols( const SrcView& src,
                           const KernelX& kernelX,
