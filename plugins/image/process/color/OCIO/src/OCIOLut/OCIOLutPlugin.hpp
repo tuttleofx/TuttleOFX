@@ -29,8 +29,6 @@ public:
 
 public:
 	void render( const OFX::RenderArguments& args );
-	void changedParam( const OFX::InstanceChangedArgs& args,
-					 const std::string& paramName );
 
 public:
 	OFX::StringParam* _paramFilename;
