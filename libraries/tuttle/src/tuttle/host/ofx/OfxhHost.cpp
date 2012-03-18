@@ -51,10 +51,10 @@ namespace ofx {
 #define kOfxHostSupportHostPointer "sf.openfx.net.OfxHostSupportHostPointer"
 
 static property::OfxhPropSpec hostStuffs[] = {
-	{ kOfxPropType, property::eString, 1, false, "Host" },
-	{ kOfxPropName, property::eString, 1, false, "UNKNOWN" },
-	{ kOfxPropLabel, property::eString, 1, false, "UNKNOWN" },
-	{ kOfxHostSupportHostPointer,    property::ePointer,    0,    false,    NULL },
+	{ kOfxPropType, property::ePropTypeString, 1, false, "Host" },
+	{ kOfxPropName, property::ePropTypeString, 1, false, "UNKNOWN" },
+	{ kOfxPropLabel, property::ePropTypeString, 1, false, "UNKNOWN" },
+	{ kOfxHostSupportHostPointer,    property::ePropTypePointer,    0,    false,    NULL },
 	{ 0 },
 };
 

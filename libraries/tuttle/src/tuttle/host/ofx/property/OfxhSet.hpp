@@ -44,7 +44,7 @@ namespace property {
 struct OfxhPropSpec
 {
 	const char* name;          ///< name of the property
-	TypeEnum type;             ///< type
+	EPropType type;             ///< type
 	int dimension;             ///< fixed dimension of the property, set to zero if variable dimension
 	bool readonly;             ///< is the property plug-in read only
 	const char* defaultValue;  ///< Default value as a string. Pointers are ignored and always null.
@@ -165,7 +165,8 @@ public:
 
 	void eraseProperty( const std::string& propName );
 
-	bool hasProperty( const std::string& propName, bool followChain = false ) const;
+	bool hasProperty( const std::string& propName, bool followChain = true ) const;
+	bool hasLocalProperty( const std::string& propName ) const;
 
 	inline OfxhSet& operator+( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
 

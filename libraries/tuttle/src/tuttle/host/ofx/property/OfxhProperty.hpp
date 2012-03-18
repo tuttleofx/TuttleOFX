@@ -60,28 +60,28 @@ class OfxhGetHook;
 class OfxhNotifyHook;
 
 /// type of a property
-enum TypeEnum
+enum EPropType
 {
-	eNone    = -1,
-	eInt     = 0,
-	eDouble  = 1,
-	eString  = 2,
-	ePointer = 3
+	ePropTypeNone    = -1,
+	ePropTypeInt     = 0,
+	ePropTypeDouble  = 1,
+	ePropTypeString  = 2,
+	ePropTypePointer = 3
 };
 
-inline std::string mapTypeEnumToString( const TypeEnum& e )
+inline std::string mapTypeEnumToString( const EPropType& e )
 {
 	switch( e )
 	{
-		case eNone:
+		case ePropTypeNone:
 			return "none";
-		case eInt:
+		case ePropTypeInt:
 			return "int";
-		case eDouble:
+		case ePropTypeDouble:
 			return "double";
-		case eString:
+		case ePropTypeString:
 			return "string";
-		case ePointer:
+		case ePropTypePointer:
 			return "pointer";
 	}
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
@@ -102,8 +102,8 @@ public:
 
 protected:
 	std::string _name;                         ///< name of this property
-	TypeEnum _type;                            ///< type of this property
-	size_t _dimension;                         ///< the fixed dimension of this property
+	EPropType _type;                           ///< type of this property
+	std::size_t _dimension;                    ///< the fixed dimension of this property
 	bool _pluginReadOnly;                      ///< set is forbidden through suite: value may still change between getValue() calls
 	EModifiedBy _modifiedBy;                   ///< who set this property most recently
 	std::vector<OfxhNotifyHook*> _notifyHooks; ///< hooks to call whenever the property is set
@@ -113,8 +113,8 @@ protected:
 
 public:
 	OfxhProperty( const std::string& name,
-	              TypeEnum           type,
-	              size_t             dimension = 1,
+	              EPropType          type,
+	              std::size_t        dimension = 1,
 	              bool               pluginReadOnly = false );
 
 	OfxhProperty( const This& other );
@@ -169,7 +169,7 @@ public:
 	}
 
 	/// get the type of this property
-	TypeEnum getType() const
+	EPropType getType() const
 	{
 		return _type;
 	}
@@ -190,10 +190,10 @@ public:
 	void notify( bool single, int indexOrN );
 
 	// get the current dimension of this property
-	virtual size_t getDimension() const = 0;
+	virtual std::size_t getDimension() const = 0;
 
 	/// get the fixed dimension of this property
-	size_t getFixedDimension() const
+	std::size_t getFixedDimension() const
 	{
 		return _dimension;
 	}

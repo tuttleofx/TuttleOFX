@@ -14,8 +14,8 @@ OfxhClipDescriptor::OfxhClipDescriptor()
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
 	static const property::OfxhPropSpec clipDescriptorStuffs[] = {
-		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
-		{ kOfxImageClipPropOptional, property::eInt, 1, false, "0" },
+		{ kOfxPropType, property::ePropTypeString, 1, true, kOfxTypeClip },
+		{ kOfxImageClipPropOptional, property::ePropTypeInt, 1, false, "0" },
 		{ 0 },
 	};
 
@@ -31,8 +31,8 @@ OfxhClipDescriptor::OfxhClipDescriptor( const property::OfxhSet& properties )
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
 	static const property::OfxhPropSpec clipDescriptorStuffs[] = {
-		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
-		{ kOfxImageClipPropOptional, property::eInt, 1, false, "0" },
+		{ kOfxPropType, property::ePropTypeString, 1, true, kOfxTypeClip },
+		{ kOfxImageClipPropOptional, property::ePropTypeInt, 1, false, "0" },
 		{ 0 },
 	};
 

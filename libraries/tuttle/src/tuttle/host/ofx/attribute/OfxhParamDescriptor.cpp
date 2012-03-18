@@ -8,7 +8,7 @@ namespace attribute {
 struct TypeMap
 {
 	const char* paramType;
-	property::TypeEnum propType;
+	property::EPropType propType;
 	int propDimension;
 };
 
@@ -34,21 +34,21 @@ bool isIntParam( const std::string& paramType )
 }
 
 static TypeMap typeMap[] = {
-	{ kOfxParamTypeInteger, property::eInt, 1 },
-	{ kOfxParamTypeDouble, property::eDouble, 1 },
-	{ kOfxParamTypeBoolean, property::eInt, 1 },
-	{ kOfxParamTypeChoice, property::eInt, 1 },
-	{ kOfxParamTypeRGBA, property::eDouble, 4 },
-	{ kOfxParamTypeRGB, property::eDouble, 3 },
-	{ kOfxParamTypeDouble2D, property::eDouble, 2 },
-	{ kOfxParamTypeInteger2D, property::eInt, 2 },
-	{ kOfxParamTypeDouble3D, property::eDouble, 3 },
-	{ kOfxParamTypeInteger3D, property::eInt, 3 },
-	{ kOfxParamTypeString, property::eString, 1 },
-	{ kOfxParamTypeCustom, property::eString, 1 },
-	{ kOfxParamTypeGroup, property::eNone },
-	{ kOfxParamTypePage, property::eNone },
-	{ kOfxParamTypePushButton, property::eNone },
+	{ kOfxParamTypeInteger, property::ePropTypeInt, 1 },
+	{ kOfxParamTypeDouble, property::ePropTypeDouble, 1 },
+	{ kOfxParamTypeBoolean, property::ePropTypeInt, 1 },
+	{ kOfxParamTypeChoice, property::ePropTypeInt, 1 },
+	{ kOfxParamTypeRGBA, property::ePropTypeDouble, 4 },
+	{ kOfxParamTypeRGB, property::ePropTypeDouble, 3 },
+	{ kOfxParamTypeDouble2D, property::ePropTypeDouble, 2 },
+	{ kOfxParamTypeInteger2D, property::ePropTypeInt, 2 },
+	{ kOfxParamTypeDouble3D, property::ePropTypeDouble, 3 },
+	{ kOfxParamTypeInteger3D, property::ePropTypeInt, 3 },
+	{ kOfxParamTypeString, property::ePropTypeString, 1 },
+	{ kOfxParamTypeCustom, property::ePropTypeString, 1 },
+	{ kOfxParamTypeGroup, property::ePropTypeNone },
+	{ kOfxParamTypePage, property::ePropTypeNone },
+	{ kOfxParamTypePushButton, property::ePropTypeNone },
 	{ 0 }
 };
 
@@ -66,7 +66,7 @@ bool isStandardType( const std::string& type )
 	return false;
 }
 
-bool findType( const std::string paramType, property::TypeEnum& propType, int& propDim )
+bool findType( const std::string paramType, property::EPropType& propType, int& propDim )
 {
 	TypeMap* tm = typeMap;
 
@@ -93,18 +93,18 @@ OfxhParamDescriptor::OfxhParamDescriptor( const std::string& type, const std::st
 	const char* cname = name.c_str();
 
 	static const property::OfxhPropSpec paramDescriptorProps[] = {
-		{ kOfxPropType, property::eString, 1, true, kOfxTypeParameter },
-		{ kOfxParamPropSecret, property::eInt, 1, false, "0" },
-		{ kOfxParamPropHint, property::eString, 1, false, "" },
-		{ kOfxParamPropParent, property::eString, 1, false, "" },
-		{ kOfxParamPropEnabled, property::eInt, 1, false, "1" },
-		{ kOfxParamPropDataPtr, property::ePointer, 1, false, 0 },
+		{ kOfxPropType, property::ePropTypeString, 1, true, kOfxTypeParameter },
+		{ kOfxParamPropSecret, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropHint, property::ePropTypeString, 1, false, "" },
+		{ kOfxParamPropParent, property::ePropTypeString, 1, false, "" },
+		{ kOfxParamPropEnabled, property::ePropTypeInt, 1, false, "1" },
+		{ kOfxParamPropDataPtr, property::ePropTypePointer, 1, false, 0 },
 		{ 0 }
 	};
 
 	const property::OfxhPropSpec dynamicParamDescriptorProps[] = {
-		{ kOfxParamPropType, property::eString, 1, true, ctype },
-		{ kOfxParamPropScriptName, property::eString, 1, false, cname }, ///< @todo TUTTLE_TODO : common property for all Attributes
+		{ kOfxParamPropType, property::ePropTypeString, 1, true, ctype },
+		{ kOfxParamPropScriptName, property::ePropTypeString, 1, false, cname }, ///< @todo TUTTLE_TODO : common property for all Attributes
 		{ 0 }
 	};
 
@@ -122,13 +122,13 @@ OfxhParamDescriptor::OfxhParamDescriptor( const std::string& type, const std::st
  */
 void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 {
-	property::TypeEnum propType = property::eString;
+	property::EPropType propType = property::ePropTypeString;
 	int propDim                 = 1;
 
 	findType( type, propType, propDim );
 
 
-	if( propType != property::eNone )
+	if( propType != property::ePropTypeNone )
 		initValueParamProps( type, propType, propDim );
 	else
 		initNoValueParamProps();
@@ -136,8 +136,8 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 	if( type == kOfxParamTypeString )
 	{
 		static const property::OfxhPropSpec allString[] = {
-			{ kOfxParamPropStringMode, property::eString, 1, false, kOfxParamStringIsSingleLine },
-			{ kOfxParamPropStringFilePathExists, property::eInt, 1, false, "1" },
+			{ kOfxParamPropStringMode, property::ePropTypeString, 1, false, kOfxParamStringIsSingleLine },
+			{ kOfxParamPropStringFilePathExists, property::ePropTypeInt, 1, false, "1" },
 			{ 0 }
 		};
 
@@ -157,7 +157,7 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 	if( type == kOfxParamTypeChoice )
 	{
 		static const property::OfxhPropSpec allChoice[] = {
-			{ kOfxParamPropChoiceOption, property::eString, 0, false, "" },
+			{ kOfxParamPropChoiceOption, property::ePropTypeString, 0, false, "" },
 			{ 0 }
 		};
 
@@ -166,7 +166,7 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 	else if( type == kOfxParamTypeCustom )
 	{
 		static const property::OfxhPropSpec allCustom[] = {
-			{ kOfxParamPropCustomInterpCallbackV1, property::ePointer, 1, false, 0 },
+			{ kOfxParamPropCustomInterpCallbackV1, property::ePropTypePointer, 1, false, 0 },
 			{ 0 },
 		};
 
@@ -175,7 +175,7 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 	else if( type == kOfxParamTypePage )
 	{
 		static const property::OfxhPropSpec allPage[] = {
-			{ kOfxParamPropPageChild, property::eString, 0, false, "" },
+			{ kOfxParamPropPageChild, property::ePropTypeString, 0, false, "" },
 			{ 0 }
 		};
 		getEditableProperties().addProperties( allPage );
@@ -183,7 +183,7 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 	else if( type == kOfxParamTypeGroup )
 	{
 		static const property::OfxhPropSpec allGroup[] = {
-			{ kOfxParamPropGroupOpen, property::eInt, 1, false, "1" },
+			{ kOfxParamPropGroupOpen, property::ePropTypeInt, 1, false, "1" },
 			{ 0 }
 		};
 
@@ -197,11 +197,11 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 void OfxhParamDescriptor::initInteractParamProps( const std::string& type )
 {
 	static const property::OfxhPropSpec allButGroupPageProps[] = {
-		{ kOfxParamPropInteractV1, property::ePointer, 1, false, 0 },
-		{ kOfxParamPropInteractSize, property::eDouble, 2, false, "0" },
-		{ kOfxParamPropInteractSizeAspect, property::eDouble, 1, false, "1" },
-		{ kOfxParamPropInteractMinimumSize, property::eInt, 2, false, "10" },
-		{ kOfxParamPropInteractPreferedSize, property::eInt, 2, false, "10" },
+		{ kOfxParamPropInteractV1, property::ePropTypePointer, 1, false, 0 },
+		{ kOfxParamPropInteractSize, property::ePropTypeDouble, 2, false, "0" },
+		{ kOfxParamPropInteractSizeAspect, property::ePropTypeDouble, 1, false, "1" },
+		{ kOfxParamPropInteractMinimumSize, property::ePropTypeInt, 2, false, "10" },
+		{ kOfxParamPropInteractPreferedSize, property::ePropTypeInt, 2, false, "10" },
 		{ 0 }
 	};
 
@@ -211,22 +211,22 @@ void OfxhParamDescriptor::initInteractParamProps( const std::string& type )
 /**
  * add standard properties to a value holding param
  */
-void OfxhParamDescriptor::initValueParamProps( const std::string& type, property::TypeEnum valueType, int dim )
+void OfxhParamDescriptor::initValueParamProps( const std::string& type, property::EPropType valueType, int dim )
 {
 	static const property::OfxhPropSpec invariantProps[] = {
-		{ kOfxParamPropAnimates, property::eInt, 1, false, "1" },
-		{ kOfxParamPropIsAnimating, property::eInt, 1, false, "0" },
-		{ kOfxParamPropIsAutoKeying, property::eInt, 1, false, "0" },
-		{ kOfxParamPropPersistant, property::eInt, 1, false, "1" },
-		{ kOfxParamPropEvaluateOnChange, property::eInt, 1, false, "1" },
-		{ kOfxParamPropPluginMayWrite, property::eInt, 1, false, "0" },
-		{ kOfxParamPropCanUndo, property::eInt, 1, false, "1" },
-		{ kOfxParamPropCacheInvalidation, property::eString, 1, false, kOfxParamInvalidateValueChange },
+		{ kOfxParamPropAnimates, property::ePropTypeInt, 1, false, "1" },
+		{ kOfxParamPropIsAnimating, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropIsAutoKeying, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropPersistant, property::ePropTypeInt, 1, false, "1" },
+		{ kOfxParamPropEvaluateOnChange, property::ePropTypeInt, 1, false, "1" },
+		{ kOfxParamPropPluginMayWrite, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropCanUndo, property::ePropTypeInt, 1, false, "1" },
+		{ kOfxParamPropCacheInvalidation, property::ePropTypeString, 1, false, kOfxParamInvalidateValueChange },
 		{ 0 }
 	};
 
 	property::OfxhPropSpec variantProps[] = {
-		{ kOfxParamPropDefault, valueType, dim, false, valueType == property::eString ? "" : "0" },
+		{ kOfxParamPropDefault, valueType, dim, false, valueType == property::ePropTypeString ? "" : "0" },
 		{ 0 }
 	};
 
@@ -237,14 +237,14 @@ void OfxhParamDescriptor::initValueParamProps( const std::string& type, property
 void OfxhParamDescriptor::initNoValueParamProps()
 {
 	static const property::OfxhPropSpec invariantProps[] = {
-		{ kOfxParamPropAnimates, property::eInt, 1, false, "0" },
-		{ kOfxParamPropIsAnimating, property::eInt, 1, false, "0" },
-		{ kOfxParamPropIsAutoKeying, property::eInt, 1, false, "0" },
-		{ kOfxParamPropPersistant, property::eInt, 1, false, "0" },
-		{ kOfxParamPropEvaluateOnChange, property::eInt, 1, false, "0" },
-		{ kOfxParamPropPluginMayWrite, property::eInt, 1, false, "0" },
-		{ kOfxParamPropCanUndo, property::eInt, 1, false, "0" },
-		{ kOfxParamPropCacheInvalidation, property::eString, 1, false, "" },
+		{ kOfxParamPropAnimates, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropIsAnimating, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropIsAutoKeying, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropPersistant, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropEvaluateOnChange, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropPluginMayWrite, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropCanUndo, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxParamPropCacheInvalidation, property::ePropTypeString, 1, false, "" },
 		{ 0 }
 	};
 
@@ -254,7 +254,7 @@ void OfxhParamDescriptor::initNoValueParamProps()
 /**
  * add standard properties to a value holding param
  */
-void OfxhParamDescriptor::initNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim )
+void OfxhParamDescriptor::initNumericParamProps( const std::string& type, property::EPropType valueType, int dim )
 {
 	static std::string dbl_minstr, dbl_maxstr, int_minstr, int_maxstr;
 	bool doneOne = false;
@@ -278,21 +278,21 @@ void OfxhParamDescriptor::initNumericParamProps( const std::string& type, proper
 	}
 
 	property::OfxhPropSpec allNumeric[] = {
-		{ kOfxParamPropDisplayMin, valueType, dim, false, isColourParam( type ) ? "0" : ( valueType == property::eDouble ? dbl_minstr : int_minstr ).c_str() },
-		{ kOfxParamPropDisplayMax, valueType, dim, false, isColourParam( type ) ? "1" : ( valueType == property::eDouble ? dbl_maxstr : int_maxstr ).c_str() },
-		{ kOfxParamPropMin, valueType, dim, false, ( valueType == property::eDouble ? dbl_minstr : int_minstr ).c_str() },
-		{ kOfxParamPropMax, valueType, dim, false, ( valueType == property::eDouble ? dbl_maxstr : int_maxstr ).c_str() },
+		{ kOfxParamPropDisplayMin, valueType, dim, false, isColourParam( type ) ? "0" : ( valueType == property::ePropTypeDouble ? dbl_minstr : int_minstr ).c_str() },
+		{ kOfxParamPropDisplayMax, valueType, dim, false, isColourParam( type ) ? "1" : ( valueType == property::ePropTypeDouble ? dbl_maxstr : int_maxstr ).c_str() },
+		{ kOfxParamPropMin, valueType, dim, false, ( valueType == property::ePropTypeDouble ? dbl_minstr : int_minstr ).c_str() },
+		{ kOfxParamPropMax, valueType, dim, false, ( valueType == property::ePropTypeDouble ? dbl_maxstr : int_maxstr ).c_str() },
 		{ 0 }
 	};
 
 	getEditableProperties().addProperties( allNumeric );
 
 	/// if any double or a colour
-	if( valueType == property::eDouble )
+	if( valueType == property::ePropTypeDouble )
 	{
 		static const property::OfxhPropSpec allDouble[] = {
-			{ kOfxParamPropIncrement, property::eDouble, 1, false, "1" },
-			{ kOfxParamPropDigits, property::eInt, 1, false, "2" },
+			{ kOfxParamPropIncrement, property::ePropTypeDouble, 1, false, "1" },
+			{ kOfxParamPropDigits, property::ePropTypeInt, 1, false, "2" },
 			{ 0 }
 		};
 		getEditableProperties().addProperties( allDouble );
@@ -302,7 +302,7 @@ void OfxhParamDescriptor::initNumericParamProps( const std::string& type, proper
 	if( isDoubleParam( type ) )
 	{
 		static const property::OfxhPropSpec allDouble[] = {
-			{ kOfxParamPropDoubleType, property::eString, 1, false, kOfxParamDoubleTypePlain },
+			{ kOfxParamPropDoubleType, property::ePropTypeString, 1, false, kOfxParamDoubleTypePlain },
 			{ 0 }
 		};
 		getEditableProperties().addProperties( allDouble );
@@ -310,7 +310,7 @@ void OfxhParamDescriptor::initNumericParamProps( const std::string& type, proper
 		if( dim == 1 )
 		{
 			static const property::OfxhPropSpec allDouble1D[] = {
-				{ kOfxParamPropShowTimeMarker, property::eInt, 1, false, "0" },
+				{ kOfxParamPropShowTimeMarker, property::ePropTypeInt, 1, false, "0" },
 				{ 0 }
 			};
 
@@ -322,7 +322,7 @@ void OfxhParamDescriptor::initNumericParamProps( const std::string& type, proper
 	if( isDoubleParam( type ) && ( dim == 2 || dim == 3 ) )
 	{
 		property::OfxhPropSpec all2D3D[] = {
-			{ kOfxParamPropDimensionLabel, property::eString, dim, false, "" },
+			{ kOfxParamPropDimensionLabel, property::ePropTypeString, dim, false, "" },
 			{ 0 },
 		};
 
@@ -339,7 +339,7 @@ void OfxhParamDescriptor::initNumericParamProps( const std::string& type, proper
 	if( isColourParam( type ) )
 	{
 		property::OfxhPropSpec allColor[] = {
-			{ kOfxParamPropDimensionLabel, property::eString, dim, false, "" },
+			{ kOfxParamPropDimensionLabel, property::ePropTypeString, dim, false, "" },
 			{ 0 },
 		};
 

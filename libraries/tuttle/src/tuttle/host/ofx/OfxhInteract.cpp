@@ -50,8 +50,8 @@ namespace interact {
 // descriptor
 //
 static property::OfxhPropSpec interactDescriptorStuffs[] = {
-	{ kOfxInteractPropHasAlpha, property::eInt, 1, true, "0" },
-	{ kOfxInteractPropBitDepth, property::eInt, 1, true, "0" },
+	{ kOfxInteractPropHasAlpha, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxInteractPropBitDepth, property::ePropTypeInt, 1, true, "0" },
 	{ 0 },
 };
 
@@ -103,29 +103,29 @@ OfxStatus OfxhInteractDescriptor::callEntry( const char*          action,
 
 ////////////////////////////////////////////////////////////////////////////////
 static property::OfxhPropSpec interactInstanceStuffs[] = {
-	{ kOfxPropEffectInstance, property::ePointer, 1, true, NULL },
-	{ kOfxPropInstanceData, property::ePointer, 1, false, NULL },
-	{ kOfxInteractPropPixelScale, property::eDouble, 2, true, "1.0f" },
-	{ kOfxInteractPropBackgroundColour, property::eDouble, 3, true, "0.0f" },
-	{ kOfxInteractPropViewportSize, property::eDouble, 2, true, "100.0f" },
-	{ kOfxInteractPropSlaveToParam, property::eString, 0, false, "" },
+	{ kOfxPropEffectInstance, property::ePropTypePointer, 1, true, NULL },
+	{ kOfxPropInstanceData, property::ePropTypePointer, 1, false, NULL },
+	{ kOfxInteractPropPixelScale, property::ePropTypeDouble, 2, true, "1.0f" },
+	{ kOfxInteractPropBackgroundColour, property::ePropTypeDouble, 3, true, "0.0f" },
+	{ kOfxInteractPropViewportSize, property::ePropTypeDouble, 2, true, "100.0f" },
+	{ kOfxInteractPropSlaveToParam, property::ePropTypeString, 0, false, "" },
 	{ 0 },
 };
 
 static property::OfxhPropSpec interactArgsStuffs[] = {
-	{ kOfxPropEffectInstance, property::ePointer, 1, false, NULL },
-	{ kOfxPropTime, property::eDouble, 1, false, "0.0" },
-	{ kOfxImageEffectPropRenderScale, property::eDouble, 2, false, "0.0" },
-	{ kOfxInteractPropBackgroundColour, property::eDouble, 3, false, "0.0f" },
-	{ kOfxInteractPropViewportSize, property::eDouble, 2, false, "0.0f" },
-	{ kOfxInteractPropPixelScale, property::eDouble, 2, false, "1.0f" },
-	{ kOfxInteractPropPenPosition, property::eDouble, 2, false, "0.0" },
+	{ kOfxPropEffectInstance, property::ePropTypePointer, 1, false, NULL },
+	{ kOfxPropTime, property::ePropTypeDouble, 1, false, "0.0" },
+	{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, false, "0.0" },
+	{ kOfxInteractPropBackgroundColour, property::ePropTypeDouble, 3, false, "0.0f" },
+	{ kOfxInteractPropViewportSize, property::ePropTypeDouble, 2, false, "0.0f" },
+	{ kOfxInteractPropPixelScale, property::ePropTypeDouble, 2, false, "1.0f" },
+	{ kOfxInteractPropPenPosition, property::ePropTypeDouble, 2, false, "0.0" },
 	#ifdef kOfxInteractPropPenViewportPosition
-	{ kOfxInteractPropPenViewportPosition, property::eInt, 2, false, "0" },
+	{ kOfxInteractPropPenViewportPosition, property::ePropTypeInt, 2, false, "0" },
 	#endif
-	{ kOfxInteractPropPenPressure, property::eDouble, 1, false, "0.0" },
-	{ kOfxPropKeyString, property::eString, 1, false, "" },
-	{ kOfxPropKeySym, property::eInt, 1, false, "0" },
+	{ kOfxInteractPropPenPressure, property::ePropTypeDouble, 1, false, "0.0" },
+	{ kOfxPropKeyString, property::ePropTypeString, 1, false, "" },
+	{ kOfxPropKeySym, property::ePropTypeInt, 1, false, "0" },
 	{ 0 },
 };
 

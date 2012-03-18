@@ -50,8 +50,8 @@ namespace ofx {
 namespace property {
 
 OfxhProperty::OfxhProperty( const std::string& name,
-                            TypeEnum           type,
-                            size_t             dimension,
+                            EPropType          type,
+                            std::size_t        dimension,
                             bool               pluginReadOnly )
 	: _name( name )
 	, _type( type )

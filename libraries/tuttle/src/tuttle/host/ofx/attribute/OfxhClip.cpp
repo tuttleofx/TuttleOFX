@@ -12,7 +12,7 @@ OfxhClip::OfxhClip( const OfxhClipDescriptor& desc )
 	/// extra properties for the instance, these are fetched from the host
 	/// via a get hook and some virtuals
 	static const property::OfxhPropSpec clipInstanceStuffs[] = {
-		{ kOfxImageClipPropConnected, property::eInt, 1, true, "0" },
+		{ kOfxImageClipPropConnected, property::ePropTypeInt, 1, true, "0" },
 		{ 0 },
 	};
 

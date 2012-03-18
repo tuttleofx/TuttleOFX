@@ -619,7 +619,7 @@ void ImageEffectDescriptor::addSupportedBitDepth( EBitDepth v )
 /** @brief Add a file extension to those supported */
 void ImageEffectDescriptor::addSupportedExtension( const std::string& ext )
 {
-    int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
+    const int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
     _effectProps.propSetString( kTuttleOfxImageEffectPropSupportedExtensions, ext, n );
 }
 

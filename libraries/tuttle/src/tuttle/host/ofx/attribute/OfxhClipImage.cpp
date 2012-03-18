@@ -19,18 +19,18 @@ OfxhClipImage::OfxhClipImage( const attribute::OfxhClipImageDescriptor& desc )
 	 * via a get hook and some virtuals
 	 */
 	static property::OfxhPropSpec clipImageInstanceStuffs[] = {
-		{ kOfxImageEffectPropPixelDepth, property::eString, 1, true, kOfxBitDepthNone },
-		{ kOfxImageEffectPropComponents, property::eString, 1, true, kOfxImageComponentNone },
-		{ kOfxImageClipPropUnmappedPixelDepth, property::eString, 1, true, kOfxBitDepthNone },
-		{ kOfxImageClipPropUnmappedComponents, property::eString, 1, true, kOfxImageComponentNone },
-		{ kOfxImageEffectPropPreMultiplication, property::eString, 1, true, kOfxImageOpaque },
-		{ kOfxImagePropPixelAspectRatio, property::eDouble, 1, true, "1.0" },
-		{ kOfxImageEffectPropFrameRate, property::eDouble, 1, true, "25.0" },
-		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
-		{ kOfxImageClipPropFieldOrder, property::eString, 1, true, kOfxImageFieldNone },
-		{ kOfxImageEffectPropUnmappedFrameRange, property::eDouble, 2, true, "0" },
-		{ kOfxImageEffectPropUnmappedFrameRate, property::eDouble, 1, true, "25.0" },
-		{ kOfxImageClipPropContinuousSamples, property::eInt, 1, true, "0" },
+		{ kOfxImageEffectPropPixelDepth, property::ePropTypeString, 1, true, kOfxBitDepthNone },
+		{ kOfxImageEffectPropComponents, property::ePropTypeString, 1, true, kOfxImageComponentNone },
+		{ kOfxImageClipPropUnmappedPixelDepth, property::ePropTypeString, 1, true, kOfxBitDepthNone },
+		{ kOfxImageClipPropUnmappedComponents, property::ePropTypeString, 1, true, kOfxImageComponentNone },
+		{ kOfxImageEffectPropPreMultiplication, property::ePropTypeString, 1, true, kOfxImageOpaque },
+		{ kOfxImagePropPixelAspectRatio, property::ePropTypeDouble, 1, true, "1.0" },
+		{ kOfxImageEffectPropFrameRate, property::ePropTypeDouble, 1, true, "25.0" },
+		{ kOfxImageEffectPropFrameRange, property::ePropTypeDouble, 2, true, "0" },
+		{ kOfxImageClipPropFieldOrder, property::ePropTypeString, 1, true, kOfxImageFieldNone },
+		{ kOfxImageEffectPropUnmappedFrameRange, property::ePropTypeDouble, 2, true, "0" },
+		{ kOfxImageEffectPropUnmappedFrameRate, property::ePropTypeDouble, 1, true, "25.0" },
+		{ kOfxImageClipPropContinuousSamples, property::ePropTypeInt, 1, true, "0" },
 		{ 0 },
 	};
 

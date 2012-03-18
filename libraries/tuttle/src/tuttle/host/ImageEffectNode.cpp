@@ -386,7 +386,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 			biggestBitDepth = ofx::imageEffect::findDeepestBitDepth( linkClip.getBitDepthString(), biggestBitDepth );
 		}
 	}
-	std::string validBitDepth = this->bestSupportedBitDepth( biggestBitDepth );
+	const std::string validBitDepth = this->bestSupportedBitDepth( biggestBitDepth );
 
 	// bit depth
 	if( supportsMultipleClipDepths() )

@@ -53,11 +53,11 @@ private:
 	void initInteractParamProps( const std::string& type );
 
 	/// add standard properties to a value holding param
-	void initValueParamProps( const std::string& type, property::TypeEnum valueType, int dim );
+	void initValueParamProps( const std::string& type, property::EPropType valueType, int dim );
 	void initNoValueParamProps();
 
 	/// add standard properties to a value holding param
-	void initNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim );
+	void initNumericParamProps( const std::string& type, property::EPropType valueType, int dim );
 
 private:
 	friend class boost::serialization::access;

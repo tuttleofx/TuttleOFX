@@ -35,11 +35,6 @@ public:
 		return getName() == kOfxOutputAttributeName;
 	}
 
-	//					{ kOfxPropName, Property::eString, 1, false, cname },
-	//					{ kOfxPropLabel, Property::eString, 1, false, cname },
-	//					{ kOfxPropShortLabel, Property::eString, 1, false, cname },
-	//					{ kOfxPropLongLabel, Property::eString, 1, false, cname },
-
 	void setAllNames( const std::string& name )
 	{
 		setName( name );

@@ -43,7 +43,7 @@ struct OfxhIntValue
 	typedef int APITypeConstless;  ///< C type of the property that is passed across the raw API, without any const it
 	typedef int Type; ///< Type we actually hold and deal with the propery in everything by the raw API
 	typedef int ReturnType; ///< type to return from a function call
-	static const TypeEnum typeCode = eInt;
+	static const EPropType typeCode = ePropTypeInt;
 	static int kEmpty;
 };
 
@@ -54,7 +54,7 @@ struct OfxhDoubleValue
 	typedef double APITypeConstless;
 	typedef double Type;
 	typedef double ReturnType; ///< type to return from a function call
-	static const TypeEnum typeCode = eDouble;
+	static const EPropType typeCode = ePropTypeDouble;
 	static double kEmpty;
 };
 
@@ -65,7 +65,7 @@ struct OfxhPointerValue
 	typedef void* APITypeConstless;
 	typedef void* Type;
 	typedef void* ReturnType; ///< type to return from a function call
-	static const TypeEnum typeCode = ePointer;
+	static const EPropType typeCode = ePropTypePointer;
 	static void* kEmpty;
 };
 
@@ -76,7 +76,7 @@ struct OfxhStringValue
 	typedef char* APITypeConstless;
 	typedef std::string Type;
 	typedef const std::string& ReturnType; ///< type to return from a function call
-	static const TypeEnum typeCode = eString;
+	static const EPropType typeCode = ePropTypeString;
 	static std::string kEmpty;
 };
 
@@ -136,7 +136,7 @@ public:
 	{
 		if( OfxhProperty::operator!=( other ) )
 			return false;
-		if( getType() == ePointer )
+		if( getType() == ePropTypePointer )
 			return true; // we can't compare abstract pointer content, so assume true.
 		if( _value != other._value )
 		{
