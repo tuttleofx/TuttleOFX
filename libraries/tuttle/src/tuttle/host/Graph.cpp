@@ -35,7 +35,7 @@ InputBufferNode& Graph::createInputBuffer()
 
 	std::string key( node->getName() ); // for constness
 	_nodes.insert( key, node );
-	addToGraph( *node );
+	addToInternalGraph( *node );
 
 	return *node;
 }
@@ -96,31 +96,70 @@ Graph::Node& Graph::createNode( const std::string& id )
 
 	std::string key( node->getName() ); // for constness
 	_nodes.insert( key, node );
-	addToGraph( *node );
+	addToInternalGraph( *node );
 
 	return *node;
 }
 
-void Graph::addToGraph( Node& node )
+void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
+{
+	// it's the same name, nothing to do.
+	if( node.getName() == newUniqueName )
+		return;
+	
+	{
+		// check if newUniqueName is not already in the graph
+		NodeMap::iterator itNew = _nodes.find( newUniqueName );
+		if( itNew != _nodes.end() )
+		{
+			BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "New node name " + quotes(newUniqueName) + " already exists." );
+		}
+	}
+	NodeMap::iterator it = _nodes.find( node.getName() );
+	if( it == _nodes.end() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::user() + "Node " + quotes(node.getName()) + " is not in the graph." );
+	}
+	
+	// rename the key into the map
+	NodeMap::auto_type n = _nodes.release( it );
+	n->setName( newUniqueName );
+	std::string key( newUniqueName ); // for constness
+	_nodes.insert( key, n.release() );
+	
+	// warning: loose all connections !!!
+	removeFromInternalGraph( node );
+	addToInternalGraph( node );
+}
+
+void Graph::addToInternalGraph( Node& node )
 {
 	Vertex v( node.getName(), node );
 
-	TUTTLE_COUT_DEBUG( node.getName() );
+	TUTTLE_TCOUT( node.getName() );
 
 	_graph.addVertex( v );
 }
 
-void Graph::removeFromGraph( Node& node )
+void Graph::removeFromInternalGraph( Node& node )
 {
-	//	graph::Vertex v( node.getName(), &node );
-	//
-	//	_nodesList.find( &node );
-	//	_nodes[node.getName()] = node;
-	//	_graph.addVertex( v );
+	unsigned int id = _graph.getVertexDescriptor( node.getName() );
+	_graph.removeVertex( id );
 }
 
-void Graph::deleteNode( const Node& node )
-{}
+void Graph::deleteNode( Node& node )
+{
+	NodeMap::iterator it = _nodes.find( node.getName() );
+	if( it != _nodes.end() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::user("Node not found.") );
+	}
+	removeFromInternalGraph( node );
+	_nodes.erase( it ); // will delete the node
+}
 
 void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr )
 {

@@ -3,6 +3,8 @@
 
 #include <tuttle/host/Graph.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+
 #include <vector>
 #include <string>
 
@@ -11,58 +13,46 @@ namespace sam {
 namespace ttl = tuttle::host;
 Color _color;
 
-/// get Default or choice values
-std::vector<std::string> getDefaultOrChoiceValues( const tuttle::host::ofx::property::OfxhProperty& prop )
+/**
+ * @brief Get all values of the property as a vector of strings.
+ */
+std::vector<std::string> getStringValues( const tuttle::host::ofx::property::OfxhProperty& prop )
 {
-    std::vector<std::string> s;
-    if( !(prop.getType() == 3) ) // if Pointer, we don't have _value
-    {
-	int n = 0;
-	for( ; n < (int)( prop.getDimension() ) - 1; ++n )
+	std::vector<std::string> s;
+	for( std::size_t n = 0; n < prop.getDimension(); ++n )
 	{
-	    s.push_back( prop.getStringValue( n ) );
-	}
-	if( prop.getDimension() > 0 )
-	{
-	    s .push_back( prop.getStringValue( n ) );
-	}
-    }
-    return s;
-}
-
-/// get defaults values of plugin properties
-std::string getPropertyType( const tuttle::host::ofx::property::OfxhProperty& prop )
-{
-	std::string s;
-	if( !(prop.getType() == 3) ) // if Pointer, we don't have _value and _defaultValue properties
-	{
-		int n = 0;
-		if( prop.getDimension() > 0 )
-		{
-			s += prop.getStringValue( n );
-		}
+		s.push_back( prop.getStringValue( n ) );
 	}
 	return s;
 }
 
+/**
+ * @brief Return a string to represent the property value or values.
+ * If multiple values, return a string like "a,b,c".
+ */
+std::string getFormattedStringValue( const tuttle::host::ofx::property::OfxhProperty& prop )
+{
+	return boost::algorithm::join( getStringValues( prop ), "," );
+}
 
 /**
  * @todo
  */
 void coutProperties( const ttl::Graph::Node& node )
 {
-    const ttl::ofx::property::OfxhSet& props = node.getProperties();
-    BOOST_FOREACH( ttl::ofx::property::PropertyMap::const_reference clip, props.getMap() )
-    {
-	TUTTLE_COUT(
-	    "\t" <<
-	    _color._green <<
-	    clip.first << " " <<
-	    _color._red <<
-	    (clip.second->getDimension() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(clip.second->getDimension())) : "") <<
-	    _color._std
-	    );
-    }
+	const ttl::ofx::property::OfxhSet& props = node.getProperties();
+
+	BOOST_FOREACH( ttl::ofx::property::PropertyMap::const_reference clip, props.getMap() )
+	{
+		TUTTLE_COUT(
+					 "\t" <<
+					 _color._green <<
+					 clip.first << " " <<
+					 _color._red <<
+					 ( clip.second->getDimension() > 1 ? ( std::string( " x" ) + boost::lexical_cast<std::string > ( clip.second->getDimension() ) ) : "" ) <<
+					 _color._std
+					 );
+	}
 }
 
 /**
@@ -71,79 +61,156 @@ void coutProperties( const ttl::Graph::Node& node )
 void coutClips( const ttl::Graph::Node& node )
 {
 //	ttl::ofx::attribute::OfxhClipSet& clips = node.getClipSet();
-//	BOOST_FOREACH( ttl::ofx::attribute::OfxhClip& clip, clips.getClipVector() )
-//	{
-//		/// @todo
-//		TUTTLE_COUT("");
-//	}
+	//	BOOST_FOREACH( ttl::ofx::attribute::OfxhClip& clip, clips.getClipVector() )
+	//	{
+	//		/// @todo
+	//		TUTTLE_COUT("");
+	//	}
 }
+
+void coutParameterValues( std::ostream& os, const ttl::ofx::attribute::OfxhParam& param )
+{
+	using namespace tuttle::host::ofx::property;
+	
+	if( param.getProperties().hasProperty( kOfxParamPropChoiceOption ) )
+	{
+		const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropChoiceOption );
+		
+		for( std::size_t n = 0; n < prop.getDimension(); ++n )
+		{
+			os << prop.getStringValue( n ) << " ";
+		}
+	}
+	else
+	{
+		const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropDefault );
+		const std::string defaultValue = getFormattedStringValue( prop );
+		
+		if( ! param.getProperties().hasProperty( kOfxParamPropDisplayMin ) )
+		{
+			// no min/max values, we are not a numeric parameter
+			os << defaultValue << " ";
+		}
+		else
+		{
+//			const OfxhProperty& propMin = param.getProperties().fetchProperty( kOfxParamPropMin );
+//			const std::string minValue = getFormattedStringValue( propMin );
+			const OfxhProperty& propDisplayMin = param.getProperties().fetchProperty( kOfxParamPropDisplayMin );
+			const std::string displayMinValue = getFormattedStringValue( propDisplayMin );
+			
+//			os << minValue << " ";
+//			if( minValue != displayMinValue )
+				os << displayMinValue << " ";
+			
+			os << defaultValue << " ";
+			
+			const OfxhProperty& propDisplayMax = param.getProperties().fetchProperty( kOfxParamPropDisplayMax );
+			const std::string displayMaxValue = getFormattedStringValue( propDisplayMax );
+//			const OfxhProperty& propMax = param.getProperties().fetchProperty( kOfxParamPropMax );
+//			const std::string maxValue = getFormattedStringValue( propMax );
+			
+			os << displayMaxValue << " ";
+//			if( minValue != displayMinValue )
+//				os << maxValue << " ";
+		}
+		
+	}
+}
+
 /*
 void coutParametersWithDetails( const ttl::Graph::Node& node )
 {
-    const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
-    BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
-    {
+	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+	{
 	if( param.getSecret() )
-	    continue; // ignore secret parameters
+		continue; // ignore secret parameters
 	TUTTLE_COUT(
-	    "\t" <<
-	    _color._green <<
-	    param.getScriptName() << ":\t" <<
-	    _color._red <<
-	    param.getParamType() <<
-	    (param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "") <<
-	    _color._std
-	    );
+		"\t" <<
+		_color._green <<
+		param.getScriptName() << ":\t" <<
+		_color._red <<
+		param.getParamType() <<
+		(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "") <<
+		_color._std
+		);
 	const std::string& hint = param.getHint();
 	if( hint.size() )
 	{
-	    TUTTLE_COUT( hint );
+		TUTTLE_COUT( hint );
 	}
 	TUTTLE_COUT("");
-    }
+	}
 }*/
 
-void coutParametersWithDetails( const tuttle::host::ofx::property::OfxhSet properties, std::string context="" )
+void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 {
-	std::vector<std::string> defaultValue;
+	using namespace tuttle::host::ofx::property;
+	
 	std::vector<std::string> choiceValues;
-
-	tuttle::host::ofx::property::PropertyMap propMap = properties.getMap();
-	for( tuttle::host::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
+	std::vector<std::string> defaultValues;
+	int choiceDefaultIndexValue = 0;
+	
+	if( param.getProperties().hasProperty( kOfxParamPropChoiceOption ) )
 	{
-		const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
-
-		std::string label = itProperty->first;
-
-		if( std::strcmp( label.c_str() , kOfxParamPropChoiceOption ) == 0 )
+		const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropChoiceOption );
+		choiceValues = getStringValues( prop );
+	}
+	if( param.getProperties().hasProperty( kOfxParamPropDefault ) )
+	{
+		const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropDefault );
+		defaultValues = getStringValues( prop );
+		if( prop.getType() == ePropTypeInt )
 		{
-			choiceValues = getDefaultOrChoiceValues( prop );
+			choiceDefaultIndexValue = param.getProperties().getIntProperty( kOfxParamPropDefault, 0 );
 		}
-		if( std::strcmp( label.c_str() , kOfxParamPropDefault ) == 0 )
+	}
+	
+	{
+		const std::string type = param.getParamTypeName();
+		
+		// if it isn't a group or a button parameter, we print the parameter.
+		if( ( type != "Group" ) &&
+			( type != "PushButton" ) &&
+			( type != "Page" ) )
 		{
-			defaultValue = getDefaultOrChoiceValues( prop );
-		}
-		if( std::strcmp( label.c_str() , kOfxParamPropType ) == 0 )
-		{
-			const std::string type = getPropertyType( prop ).substr( 12 ); // remove ofx prefix "OfxParamProp"
-			if( std::strcmp( type.c_str() , "Group" ) && std::strcmp( type.c_str() , "PushButton" ) && std::strcmp( type.c_str() , "Page" ) ) // if it isn't a group or a button parameter, we print the parameter.
+			std::string stringDefaultValue;
+
+			if( choiceValues.size() ) // if it's a choice, we take the nth argument
 			{
-				std::string stringDefaultValue;
-				for (unsigned int i=0; i<defaultValue.size(); i++ )
-					stringDefaultValue += defaultValue.at(i) + ",";
-				stringDefaultValue.erase( stringDefaultValue.size()-1, 1 );
-
-				if( choiceValues.size() ) // if it's a choice, we take the nth argument
+				stringDefaultValue = choiceValues[choiceDefaultIndexValue];
+				TUTTLE_COUT( "\t" << _color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " << _color._yellow << std::setw( 15 ) << stringDefaultValue << _color._std );
+				for( size_t i = 0; i < choiceValues.size(); ++i )
 				{
-					int indexOfDefaultValue = boost::lexical_cast<int>( defaultValue.at(0).c_str() );
-					stringDefaultValue = choiceValues.at( indexOfDefaultValue ) ;
-					TUTTLE_COUT( "\t" << _color._green << std::left << std::setw (25) << context + ":" << _color._yellow << std::setw( 15 ) << stringDefaultValue << _color._std );
-					for( size_t i=0; i < choiceValues.size(); i++ )
-						TUTTLE_COUT( "\t\t\t\t\t" << sam::_color._red << "- " << choiceValues.at( i ) << _color._std );
+					TUTTLE_COUT( "\t\t\t\t\t" << sam::_color._red << "- " << choiceValues[i] << _color._std );
 				}
-				else
+			}
+			else
+			{
+				stringDefaultValue = boost::algorithm::join( defaultValues, "," );
+				std::cout << "\t" <<
+					_color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
+					_color._std << std::setw( 15 ) << type << sam::_color._yellow << stringDefaultValue << _color._std;
+				
+				if( param.getProperties().hasProperty( kOfxParamPropDisplayMin ) )
 				{
-					TUTTLE_COUT( "\t" << _color._green << std::left << std::setw (25) << context + ":" << _color._std << std::setw( 15 ) << type << sam::_color._yellow << stringDefaultValue << _color._std );
+					const OfxhProperty& propDisplayMin = param.getProperties().fetchProperty( kOfxParamPropDisplayMin );
+					const std::string minDisplayValue = getFormattedStringValue( propDisplayMin );
+					const OfxhProperty& propDisplayMax = param.getProperties().fetchProperty( kOfxParamPropDisplayMax );
+					const std::string maxDisplayValue = getFormattedStringValue( propDisplayMax );
+					
+					std::cout << "  [" << minDisplayValue << " --> " << maxDisplayValue << "]";
+				}
+				std::cout << std::endl;
+			}
+			if( param.getProperties().hasProperty( kOfxParamPropHint ) )
+			{
+				const std::string& hint = param.getProperties().getStringProperty( kOfxParamPropHint );
+				if( hint.size() )
+				{
+					std::cout << _color._std << "\t"
+						<< std::left << std::setw( 27 ) << " " << hint
+						<< std::endl;
 				}
 			}
 		}
@@ -158,24 +225,23 @@ void coutParametersWithDetails( const ttl::Graph::Node& node )
 	{
 		//if( param.getSecret() )
 		//    continue; // ignore secret parameters
-		const std::string ofxType = param.getParamTypeName();
-
-		if( std::strcmp( ofxType.c_str() , "Group" ) && std::strcmp( ofxType.c_str() , "PushButton" ) ) // if it isn't a group parameter, we print the parameter.
-			coutParametersWithDetails( param.getProperties(), param.getScriptName() );
-
+		
+		// if it is a displayable parameter
+		coutParameterWithDetails( param );
 		//TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
 	}
 }
 
 void coutParameters( const ttl::Graph::Node& node )
 {
-    const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
-    BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
-    {
-	//if( param.getSecret() )
-	//    continue; // ignore secret parameters
-	TUTTLE_COUT( param.getScriptName() );
-    }
+	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
+
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+	{
+		//if( param.getSecret() )
+		//    continue; // ignore secret parameters
+		TUTTLE_COUT( param.getScriptName() );
+	}
 }
 
 }
