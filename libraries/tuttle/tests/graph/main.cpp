@@ -54,91 +54,82 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 
 BOOST_AUTO_TEST_CASE( create_processGraph )
 {
-	try
-	{
-		//		::boost::execution_monitor ex_mon;
+	//		::boost::execution_monitor ex_mon;
 
-		using namespace std;
-		using namespace tuttle::host;
+	using namespace std;
+	using namespace tuttle::host;
 
-		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-		Core::instance().preload();
-		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
+	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
+	Core::instance().preload();
+	TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
 
-		TUTTLE_TCOUT( "__________________________________________________1" );
+	TUTTLE_TCOUT( "__________________________________________________1" );
 
-		Graph g;
-		Graph::Node& read1 = g.createNode( "tuttle.pngreader" );
-		/*Graph::Node& read2   = */ g.createNode( "tuttle.dpxreader" );
-		//		/*Graph::Node& read2   = */g.createNode( "tuttle.dpxreader" );
-		Graph::Node& read3 = g.createNode( "tuttle.exrreader" );
-		//		Graph::Node& bitdepth = g.createNode( "tuttle.bitdepth" );
-		Graph::Node& invert1 = g.createNode( "tuttle.invert" );
-		Graph::Node& invert2 = g.createNode( "tuttle.invert" );
-		Graph::Node& invert3 = g.createNode( "tuttle.invert" );
-		Graph::Node& invert4 = g.createNode( "tuttle.invert" );
-		/*Graph::Node& crop1   = */ g.createNode( "tuttle.crop" );
-		Graph::Node& merge1 = g.createNode( "tuttle.merge" );
-		Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
-		Graph::Node& write4 = g.createNode( "tuttle.pngwriter" );
-		Graph::Node& write2 = g.createNode( "tuttle.dpxwriter" );
-		Graph::Node& write3 = g.createNode( "tuttle.exrwriter" );
+	Graph g;
+	Graph::Node& read1 = g.createNode( "tuttle.pngreader" );
+	/*Graph::Node& read2   = */ g.createNode( "tuttle.dpxreader" );
+	//		/*Graph::Node& read2   = */g.createNode( "tuttle.dpxreader" );
+	Graph::Node& read3 = g.createNode( "tuttle.exrreader" );
+	//		Graph::Node& bitdepth = g.createNode( "tuttle.bitdepth" );
+	Graph::Node& invert1 = g.createNode( "tuttle.invert" );
+	Graph::Node& invert2 = g.createNode( "tuttle.invert" );
+	Graph::Node& invert3 = g.createNode( "tuttle.invert" );
+	Graph::Node& invert4 = g.createNode( "tuttle.invert" );
+	/*Graph::Node& crop1   = */ g.createNode( "tuttle.crop" );
+	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
+	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
+	Graph::Node& write4 = g.createNode( "tuttle.pngwriter" );
+	Graph::Node& write2 = g.createNode( "tuttle.dpxwriter" );
+	Graph::Node& write3 = g.createNode( "tuttle.exrwriter" );
 
-		TUTTLE_TCOUT( "__________________________________________________2" );
-		// Setup parameters
-		read1.getParam( "filename" ).setValue( "data/input.png" );
-		//		read2.getParam( "filename" ).setValue( "data/input.dpx" );
-		read3.getParam( "filename" ).setValue( "data/input.exr" );
-		//bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
-		//	crop1.getParam( "Down" ).setValue( 400 );
-		write1.getParam( "filename" ).setValue( "data/output1.png" );
-		write2.getParam( "filename" ).setValue( "data/output2.dpx" );
-		write3.getParam( "filename" ).setValue( "data/output3.exr" );
-		write4.getParam( "filename" ).setValue( "data/output4.png" );
+	TUTTLE_TCOUT( "__________________________________________________2" );
+	// Setup parameters
+	read1.getParam( "filename" ).setValue( "data/input.png" );
+	//		read2.getParam( "filename" ).setValue( "data/input.dpx" );
+	read3.getParam( "filename" ).setValue( "data/input.exr" );
+	//bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
+	//	crop1.getParam( "Down" ).setValue( 400 );
+	write1.getParam( "filename" ).setValue( "data/output1.png" );
+	write2.getParam( "filename" ).setValue( "data/output2.dpx" );
+	write3.getParam( "filename" ).setValue( "data/output3.exr" );
+	write4.getParam( "filename" ).setValue( "data/output4.png" );
 
-		TUTTLE_TCOUT( "__________________________________________________3" );
-		TUTTLE_TCOUT( "connect" );
-		g.connect( read1, invert1 );
-		TUTTLE_TCOUT( "connect" );
-		//		g.connect( invert1, bitdepth );
-		TUTTLE_TCOUT( "connect" );
-		g.connect( invert1, invert2 );
-		TUTTLE_TCOUT( "connect" );
-		g.connect( invert2, invert3 );
-		TUTTLE_TCOUT( "connect" );
-		g.connect( invert3, write1 );
-		TUTTLE_TCOUT( "connect" );
-		g.connect( invert1, invert4 );
-		TUTTLE_TCOUT( "connect" );
-		g.connect( invert4, write2 );
-		TUTTLE_TCOUT( "connect" );
-		g.connect( invert1, write3 );
+	TUTTLE_TCOUT( "__________________________________________________3" );
+	TUTTLE_TCOUT( "connect" );
+	g.connect( read1, invert1 );
+	TUTTLE_TCOUT( "connect" );
+	//		g.connect( invert1, bitdepth );
+	TUTTLE_TCOUT( "connect" );
+	g.connect( invert1, invert2 );
+	TUTTLE_TCOUT( "connect" );
+	g.connect( invert2, invert3 );
+	TUTTLE_TCOUT( "connect" );
+	g.connect( invert3, write1 );
+	TUTTLE_TCOUT( "connect" );
+	g.connect( invert1, invert4 );
+	TUTTLE_TCOUT( "connect" );
+	g.connect( invert4, write2 );
+	TUTTLE_TCOUT( "connect" );
+	g.connect( invert1, write3 );
 
-		TUTTLE_TCOUT( "__________3.5" );
-		g.connect( invert1, merge1.getAttribute( "A" ) );
-		//	g.connect( bitdepth, merge1.getAttribute("A") );
-		TUTTLE_TCOUT( "__________3.5" );
-		g.connect( read3, merge1.getAttribute( "B" ) );
-		TUTTLE_TCOUT( "__________3.5" );
-		//	g.connect( merge1, crop1 );
-		g.connect( merge1, write4 );
+	TUTTLE_TCOUT( "__________3.5" );
+	g.connect( invert1, merge1.getAttribute( "A" ) );
+	//	g.connect( bitdepth, merge1.getAttribute("A") );
+	TUTTLE_TCOUT( "__________3.5" );
+	g.connect( read3, merge1.getAttribute( "B" ) );
+	TUTTLE_TCOUT( "__________3.5" );
+	//	g.connect( merge1, crop1 );
+	g.connect( merge1, write4 );
 
-		TUTTLE_TCOUT( "__________________________________________________4" );
-		std::list<std::string> outputs;
-		outputs.push_back( write1.getName() );
-		outputs.push_back( write2.getName() );
-		outputs.push_back( write3.getName() );
-		outputs.push_back( write4.getName() );
-		g.compute( outputs );
+	TUTTLE_TCOUT( "__________________________________________________4" );
+	std::list<std::string> outputs;
+	outputs.push_back( write1.getName() );
+	outputs.push_back( write2.getName() );
+	outputs.push_back( write3.getName() );
+	outputs.push_back( write4.getName() );
+	g.compute( outputs );
 
-		TUTTLE_TCOUT( "__________________________________________________5" );
-	}
-	catch(... )
-	{
-		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
-		BOOST_FAIL( "Exception" );
-
-	}
+	TUTTLE_TCOUT( "__________________________________________________5" );
 }
 
 //BOOST_AUTO_TEST_CASE( graph_compute )

@@ -152,7 +152,7 @@ public:
 	bool releaseReference()
 	{
 		--_referenceCount;
-		TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() << ", ref:" << getReference() );
+		TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() << ", ref:" << getReference() << ", name:" << getClipName() );
 		if( _referenceCount < 0 )
 			BOOST_THROW_EXCEPTION( std::logic_error( "Try to release an undeclared reference to an Image." ) );
 		return _referenceCount <= 0;
