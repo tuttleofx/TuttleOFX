@@ -19,6 +19,8 @@ lib IlmThread
 		IlmThreadSemaphore.cpp
 		$(plateformFiles)
 		../Iex//Iex
+	:
+		<link>static
 	;
 
 install dist

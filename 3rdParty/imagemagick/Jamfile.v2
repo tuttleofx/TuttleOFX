@@ -2,24 +2,44 @@
 ## Main BJam makefile for imageMagick library
 ###############################################################################
 
+import path ;
+
+
 ###############################################################################
 # Global project requirements
 ###############################################################################
+
 project
 	: requirements
 		<include>.
+		<include>config
 		<include>ltdl
 		<include>ltdl/libltdl
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
-		#<linkflags>-lltdl
+
 		<cflags>-std=gnu99
-		<define>HAVE_DIRENT_H
+
+		<define>QUANTUM_DEPTH=16
 		<define>LTDL
-		#<define>LT_SCOPE extern
+		<define>LTDLOPEN='libltdl'
+
+		<linkflags>-lltdl
+		[ evaluate-if-header-is-available <define>HAVE_ARGZ_H : /usr/include/argz.h ]
+		[ evaluate-if-header-is-available <define>HAVE_DIRENT_H : /usr/include/dirent.h ]
+
+		[ evaluate-if-header-is-available <define>FREETYPE_DELEGATE : /usr/include/freetype2/freetype/freetype.h,$(3RD_PARTY)/freetype/include/freetype/freetype.h ]
+		[ evaluate-if-header-is-available <define>OPENEXR_DELEGATE : /usr/include/OpenEXR/ImfVersion.h,$(3RD_PARTY)/openexr/IlmImf/ImfVersion.h ]
+		[ evaluate-if-header-is-available <define>PNG_DELEGATE : /usr/include/png.h,$(3RD_PARTY)/libpng/png.h ]
+		[ evaluate-if-header-is-available <define>TIFF_DELEGATE : /usr/include/tiff.h,$(3RD_PARTY)/libtiff/libtiff/tiff.h ]
+		[ evaluate-if-header-is-available <define>BZLIB_DELEGATE : /usr/include/bzlib.h,$(3RD_PARTY)/bzlib/bzlib.h ]
+		[ evaluate-if-header-is-available <define>ZLIB_DELEGATE : /usr/include/zlib.h,$(3RD_PARTY)/zlib/zlib.h ]
+
+		<link>static
 	: usage-requirements
 		<include>.
+		<linkflags>-lltdl
 	: build-dir $(BUILD)/3rdParty/imagemagick
     ;
 
@@ -32,21 +52,17 @@ lib	imagemagick	:
 			  [ glob magick/*.c
 				 coders/*.c
 				 filters/analyze.c
-				 ltdl/*.c
-				 ltdl/loaders/dlopen.c
-				 ltdl/loaders/dld_link.c
-				 ltdl/loaders/preopen.c
 			  ]
-			  ../jasper/<link>static
-			  ../freetype/<link>static
-			  ../jpeg/<link>static
-			  ../libtiff/<link>static
-			  ../libpng/<link>static
-			  ../lcms/<link>static
-			  ../openexr/<link>static
-			  ../libxml/<link>static
-			  ../zlib/<link>static
-			  ../bzlib/<link>static
+			/project-config//jasper
+			/project-config//freetype
+			/project-config//jpeg
+			/project-config//libtiff
+			/project-config//libpng
+			/project-config//lcms2
+			/project-config//openexr
+			/project-config//libxml
+			/project-config//zlib
+			/project-config//bzlib
 			;
 
 install dist

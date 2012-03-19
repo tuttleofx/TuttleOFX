@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for libopencolorio library
+## Main BJam makefile for lcms2 library
 ###############################################################################
 
 ###############################################################################
@@ -7,41 +7,27 @@
 ###############################################################################
 project
 	: requirements
-		<include>export
-		<include>src/core
-
+		<include>include/
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
-
-		<link>static
 	: usage-requirements
-		<include>export
-	: build-dir $(BUILD)/3rdParty/opencolorio
+		<include>include/
+	: build-dir $(DIST)/3rdParty/lcms2/obj
     ;
 
+###############################################################################
+# lcms2 library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
 
-###############################################################################
-# libraw library
-###############################################################################
-alias	headers		:
-			 [ glob-tree *.h ]
+lib	lcms2	:
+			  [ glob src/*.c ]
 			;
 
-
-lib	opencolorio	:
-			 [ glob
-			       src/core/*.cpp
-			       src/core/pystring/*.cpp
-			       src/core/md5/*.cpp
-			 ]
-			/project-config//yaml
-			/project-config//tinyxml
-			;
-
-install dist
+install	dist_src
 	:
-		opencolorio
+		lcms2
 	:
 		<variant>debug:<location>$(DIST_DEBUG)/lib
 		<variant>release:<location>$(DIST_RELEASE)/lib

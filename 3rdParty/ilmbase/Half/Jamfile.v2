@@ -2,7 +2,7 @@
 # Jamfile for ilmbase Half package
 #
 
-# this Jamfile is a bit different because we have to 
+# this Jamfile is a bit different because we have to
 # generate eLut.h and toFloat.h header files
 
 path-constant HERE : . ;
@@ -39,6 +39,7 @@ project Half
 		<include>.
 		<warnings-as-errors>off
 		<warnings>off
+		<link>static
 	: usage-requirements
 		<include>.
 	;

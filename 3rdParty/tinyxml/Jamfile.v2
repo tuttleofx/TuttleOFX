@@ -11,6 +11,8 @@ project
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+		<define>TIXML_USE_STL
+		<link>static
 	: usage-requirements
 		<include>.
 		<define>TIXML_USE_STL
@@ -20,7 +22,7 @@ project
 ###############################################################################
 # tinyxml library
 ###############################################################################
-lib tinyxml : 
+lib tinyxml :
 	 [ glob *.cpp ]
 	;
 

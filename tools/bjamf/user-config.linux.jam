@@ -8,6 +8,62 @@
 # Configure with an explicit installation prefix.
 # using qt : /usr/opt/qt ;
 
+project user-config ;
+
+path-constant   3RD_PARTY       : 3rdParty ;
+
+# include test.jam ;
+
+##############################################################################
+# name     : libpng
+# purpose  : PNG library
+# website  : http://libpng.sourceforge.net/
+# download : http://sourceforge.net/projects/libpng/
+##############################################################################
+
+lib libpng	: : <file>/usr/lib64/libpng.so
+		: : <include>/usr/include/libpng12 ;
+
+##############################################################################
+# name     : Zlib
+# purpose  : compression library
+# website  : http://www.zlib.net/
+# download : http://www.zlib.net/
+##############################################################################
+lib zlib	: : <file>/usr/lib64/libz.so
+		: : <include>/usr/include ;
+
+##############################################################################
+# name     : IlmBase
+# purpose  : IlmBase used by OpenEXR and CTL libraries
+# website  : http://www.openexr.com/
+# download : http://www.openexr.com/downloads.html
+##############################################################################
+lib ilmbase	: :
+		    <file>/usr/lib64/libHalf.so
+		    <file>/usr/lib64/libIex.so
+		    <file>/usr/lib64/libIlmThread.so
+		    <file>/usr/lib64/libImath.so
+		: : <include>/usr/include/OpenEXR ;
+
+##############################################################################
+# name     : OpenEXR
+# purpose  : OpenEXR library, to open/write exr files
+# website  : http://www.openexr.com/
+# download : http://www.openexr.com/downloads.html
+##############################################################################
+lib openexr	: : <file>/usr/lib64/libIlmImf.so
+		: : <include>/usr/include/OpenEXR ;
+
+##############################################################################
+# name     : ImageMagick
+# purpose  : ImagePagick library, to open/write files
+# website  : http://www.imagemagick.org/
+# download : http://www.imagemagick.org/script/download.php
+##############################################################################
+lib imagemagick	: : <file>/usr/lib64/libMagickCore.so
+		: : <include>/usr/include/ImageMagick/ ;
+
 #########################
 # Python configuration. #
 #########################
@@ -20,8 +76,8 @@ using python
   : /usr/include/python2.6  # includes
   : /usr/lib64              # libs
   :
-  	<os>LINUX
-  	<address-model>64
+	<os>LINUX
+	<address-model>64
   ;
 
 using python
@@ -30,8 +86,8 @@ using python
   : /usr/include/python2.6  # includes
   : /usr/lib                # libs
   :
-  	<os>LINUX
-  	<address-model>32
+	<os>LINUX
+	<address-model>32
   ;
 
 using python
@@ -62,9 +118,9 @@ using python
   :
   	<os>LINUX
   	<address-model>64
-   ;
+  ;
 
- using python
+using python
   : 3.1                    # version
   : /usr/bin/python3.1     # bin directory
   : /usr/include/python3.1 # includes
@@ -72,5 +128,5 @@ using python
   :
   	<os>LINUX
   	<address-model>32
-   ;
- 
+  ;
+

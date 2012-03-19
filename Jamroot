@@ -52,6 +52,8 @@ local rule check-required-env ( var ) {
 	}
 }
 
+include tools/bjamf/rules.jam ;
+
 ##############################################################################
 # Python
 ##############################################################################
@@ -122,7 +124,7 @@ project
 	<include>$(BOOST_HACK)
 	<define>BOOST_ALL_NO_LIB
 	#disable detailed boost exception
-	<define>BOOST_EXCEPTION_DISABLE 
+	<define>BOOST_EXCEPTION_DISABLE
 
 	#<variant>release:<warnings-as-errors>on
 	<variant>release:<define>TUTTLE_PRODUCTION
