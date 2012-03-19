@@ -86,8 +86,6 @@ void ImageMagickReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 template<class SView, class DView>
 void copy_and_convert_from_buffer( Image* image, DView& dst )
 {
-	//TUTTLE_COUT_VAR( sizeof( typename SView::value_type ) );
-	//	boost::scoped_ptr<PixelPacket> buffer( GetImagePixels( image, 0, 0, dst.width(), dst.height() ) );
 	ExceptionInfo exception;
 	PixelPacket* buffer =  GetAuthenticPixels( image, 0, 0, dst.width(), dst.height(), &exception );
 
@@ -168,9 +166,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				default:
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					TUTTLE_COUT( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>( bitDepth ) );
-					//					BOOST_THROW_EXCEPTION( exception::Unsupported()
-					//						<< exception::user( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) ) );
+					//TUTTLE_COUT( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>( bitDepth )+")" );
 					break;
 				}
 			}
@@ -198,9 +194,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				default:
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					TUTTLE_COUT( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>( bitDepth ) );
-					//					BOOST_THROW_EXCEPTION( exception::Unsupported()
-					//						<< exception::user( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) ) );
+					//TUTTLE_COUT( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>( bitDepth )+")" );
 					break;
 				}
 			}
@@ -229,9 +223,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				default:
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					TUTTLE_COUT( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>( bitDepth ) );
-					//					BOOST_THROW_EXCEPTION( exception::Unsupported()
-					//						<< exception::user( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) ) );
+					//TUTTLE_COUT( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>( bitDepth )+")" );
 					break;
 				}
 			}
@@ -240,7 +232,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 		default:
 		{
 			BOOST_THROW_EXCEPTION( exception::Unsupported()
-			    << exception::user( "Unknown color type (" + boost::lexical_cast<std::string>( colorType ) ) );
+			    << exception::user( "Unknown color type (" + boost::lexical_cast<std::string>( colorType )+")" ) );
 			break;
 		}
 	}
