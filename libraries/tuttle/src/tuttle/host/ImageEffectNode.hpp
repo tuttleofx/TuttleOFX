@@ -104,6 +104,9 @@ public:
 	ofx::attribute::OfxhParamSet& getParamSet() { return *this; }
 	const ofx::attribute::OfxhParamSet& getParamSet() const { return *this; }
 
+	ofx::attribute::OfxhClipImageSet& getClipImageSet() { return *this; }
+	const ofx::attribute::OfxhClipImageSet& getClipImageSet() const { return *this; }
+	
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
 		return getData(time)._apiImageEffect._renderRoD;

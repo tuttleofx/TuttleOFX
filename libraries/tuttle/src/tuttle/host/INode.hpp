@@ -19,6 +19,7 @@ namespace ofx {
 namespace attribute {
 class OfxhParam;
 class OfxhParamSet;
+class OfxhClipImageSet;
 }
 namespace property{
 class OfxhSet;
@@ -95,6 +96,9 @@ public:
 
 	virtual ofx::attribute::OfxhParamSet& getParamSet() = 0;
 	virtual const ofx::attribute::OfxhParamSet& getParamSet() const = 0;
+
+	virtual ofx::attribute::OfxhClipImageSet& getClipImageSet() = 0;
+	virtual const ofx::attribute::OfxhClipImageSet& getClipImageSet() const = 0;
 
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;

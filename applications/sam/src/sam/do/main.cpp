@@ -418,6 +418,9 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
 							coutParametersWithDetails( currentNode );
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( _color._blue << "CLIPS" << _color._std );
+							coutClipsWithDetails( currentNode );
 
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( _color._blue << "DISPLAY OPTIONS (override the process)" << _color._std );
@@ -443,10 +446,10 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( _color._blue << "ATTRIBUTES" << _color._std );
 							TUTTLE_COUT( "" );
-							TUTTLE_COUT( _color._blue << "\tCLIPS" << _color._std );
-							coutClips( currentNode );
+							TUTTLE_COUT( _color._blue << "- CLIPS" << _color._std );
+							coutClipsWithDetails( currentNode );
 							TUTTLE_COUT( "" );
-							TUTTLE_COUT( _color._blue << "\tPARAMETERS" << _color._std );
+							TUTTLE_COUT( _color._blue << "- PARAMETERS" << _color._std );
 							coutParametersWithDetails( currentNode );
 							TUTTLE_COUT( "" );
 							exit( 0 );
@@ -543,9 +546,9 @@ int main( int argc, char** argv )
 						{
 							const std::string paramName = node_vm["parameter-default"].as<std::string > ();
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
-							/// @todo
-							// param.displayValues(
-							TUTTLE_TCOUT( "TODO: display default value." );
+							
+							const ttl::ofx::property::OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropDefault );
+							TUTTLE_TCOUT( getFormattedStringValue( prop ) );
 							exit( 0 );
 						}
 

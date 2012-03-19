@@ -120,6 +120,18 @@ const ofx::attribute::OfxhParamSet& InputBufferNode::getParamSet() const
 		<< exception::dev( "No ParamSet on InputBufferNode." ) );
 }
 
+ofx::attribute::OfxhClipImageSet& InputBufferNode::getClipImageSet()
+{
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "No ClipImageSet on InputBufferNode." ) );
+}
+
+const ofx::attribute::OfxhClipImageSet& InputBufferNode::getClipImageSet() const
+{
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "No ClipImageSet on getClipImageSet." ) );
+}
+
 
 std::ostream& InputBufferNode::print( std::ostream& os ) const
 {

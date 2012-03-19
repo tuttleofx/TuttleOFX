@@ -58,14 +58,49 @@ void coutProperties( const ttl::Graph::Node& node )
 /**
  * @todo
  */
+void coutClipsWithDetails( const ttl::Graph::Node& node )
+{
+	const ttl::ofx::attribute::OfxhClipImageSet& clips = node.getClipImageSet();
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhClipImage& clip, clips.getClipsByOrder() )
+	{
+		std::cout << "\t" << _color._green << std::left << std::setw( 25 ) << clip.getName() << ": ";
+		
+		std::cout << _color._yellow;
+		{
+			std::vector<std::string> components = clip.getSupportedComponents();
+			BOOST_FOREACH( std::string& s, components )
+			{
+				s = s.substr( 17 ); // remove 'OfxImageComponent'
+			}
+			std::cout << "[" << boost::algorithm::join( components, ", " ) << "]";
+		}
+		if( clip.getProperties().getIntProperty( kOfxImageClipPropOptional ) )
+		{
+			std::cout << ", optional";
+		}
+		if( clip.isMask() )
+		{
+			std::cout << ", mask";
+		}
+//		if( clip.supportsTiles() )
+//		{
+//			std::cout << " supportTiles";
+//		}
+		if( clip.temporalAccess() )
+		{
+			std::cout << ", use temporal access";
+		}
+		std::cout << _color._std << std::endl;
+	}
+}
+
 void coutClips( const ttl::Graph::Node& node )
 {
-//	ttl::ofx::attribute::OfxhClipSet& clips = node.getClipSet();
-	//	BOOST_FOREACH( ttl::ofx::attribute::OfxhClip& clip, clips.getClipVector() )
-	//	{
-	//		/// @todo
-	//		TUTTLE_COUT("");
-	//	}
+	const ttl::ofx::attribute::OfxhClipImageSet& clips = node.getClipImageSet();
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhClipImage& clip, clips.getClipsByOrder() )
+	{
+		TUTTLE_COUT( clip.getName() );
+	}
 }
 
 void coutParameterValues( std::ostream& os, const ttl::ofx::attribute::OfxhParam& param )
