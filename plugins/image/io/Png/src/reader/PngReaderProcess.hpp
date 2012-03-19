@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_PNG_READER_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_PNG_READER_PROCESS_HPP_
 
+#include <png.h>
+
 #define png_infopp_NULL (png_infopp)NULL
 #ifndef int_p_NULL
 #define int_p_NULL (int*)NULL

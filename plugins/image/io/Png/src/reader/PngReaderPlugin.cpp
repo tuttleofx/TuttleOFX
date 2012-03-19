@@ -81,7 +81,7 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			}
 			int bitDepth;
 			bitDepth      = png_read_precision( filename );
-			TUTTLE_COUT(bitDepth);
+
 			switch( bitDepth )
 			{
 				case 8:
@@ -112,7 +112,7 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			break;
 		}
 	}
-	TUTTLE_COUT(png_read_color_type( filename ));
+
 	switch( png_read_color_type( filename ) )
 	{
 		case 0 :
