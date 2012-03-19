@@ -11,16 +11,13 @@ project
 	: build-dir $(BUILD)/ImageMagick
 	;
 
-
-use-project /imagemagick : $(3RD_PARTY)/imagemagick ;
-
 ###############################################################################
 # Product
 ###############################################################################
 plugin ImageMagick :
 		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
-		/imagemagick/<link>static
+		/project-config//imagemagick
 	:
 		<os>LINUX:<find-shared-library>dl
 	;

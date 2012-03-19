@@ -14,15 +14,13 @@ project
 	: build-dir $(BUILD)/Exr
 	;
 
-use-project /libexr : $(3RD_PARTY)/openexr ;
-
 ###############################################################################
-# Product 
+# Product
 ###############################################################################
-plugin Exr : 
+plugin Exr :
 		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
-		/libexr/<link>static
+		/project-config//openexr
 	:
 		<os>LINUX:<find-shared-library>dl
 	;
