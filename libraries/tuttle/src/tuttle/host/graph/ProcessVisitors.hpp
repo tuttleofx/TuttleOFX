@@ -31,12 +31,13 @@ inline void connectClips( TGraph& graph )
 
 		TUTTLE_TCOUT( "[connectClips] " << edge );
 		TUTTLE_TCOUT( vertexSource << "->" << vertexDest );
+		//TUTTLE_TCOUT_VAR( edge.getInAttrName() );
 		
 		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
 		{
 			INode& sourceNode = vertexSource.getProcessNode();
-			INode& targetNode = vertexDest.getProcessNode();
-			sourceNode.connect( targetNode, sourceNode.getAttribute( edge.getInAttrName() ) );
+			INode& destNode = vertexDest.getProcessNode();
+			sourceNode.connect( destNode, sourceNode.getAttribute( edge.getInAttrName() ) );
 		}
 	}
 }

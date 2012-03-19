@@ -15,35 +15,35 @@ namespace imageEffect {
 
 /// properties for the image effect host
 static property::OfxhPropSpec hostStuffs[] = {
-	{ kOfxImageEffectHostPropIsBackground, property::eInt, 1, true, "0" },
-	{ kOfxImageEffectPropSupportsOverlays, property::eInt, 1, true, "1" },
-	{ kOfxImageEffectPropSupportsMultiResolution, property::eInt, 1, true, "1" },
-	{ kOfxImageEffectPropSupportsTiles, property::eInt, 1, true, "1" },
-	{ kOfxImageEffectPropTemporalClipAccess, property::eInt, 1, true, "1" },
+	{ kOfxImageEffectHostPropIsBackground, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxImageEffectPropSupportsOverlays, property::ePropTypeInt, 1, true, "1" },
+	{ kOfxImageEffectPropSupportsMultiResolution, property::ePropTypeInt, 1, true, "1" },
+	{ kOfxImageEffectPropSupportsTiles, property::ePropTypeInt, 1, true, "1" },
+	{ kOfxImageEffectPropTemporalClipAccess, property::ePropTypeInt, 1, true, "1" },
 
 	/// xxx this needs defaulting manually
-	{ kOfxImageEffectPropSupportedComponents, property::eString, 0, true, "" },
+	{ kOfxImageEffectPropSupportedComponents, property::ePropTypeString, 0, true, "" },
 	/// xxx this needs defaulting manually
 
-	{ kOfxImageEffectPropSupportedPixelDepths, property::eString, 0, true, "" },
+	{ kOfxImageEffectPropSupportedPixelDepths, property::ePropTypeString, 0, true, "" },
 
 	/// xxx this needs defaulting manually
 
-	{ kOfxImageEffectPropSupportedContexts, property::eString, 0, true, "" },
+	{ kOfxImageEffectPropSupportedContexts, property::ePropTypeString, 0, true, "" },
 	/// xxx this needs defaulting manually
 
-	{ kOfxImageEffectPropSupportsMultipleClipDepths, property::eInt, 1, true, "1" },
-	{ kOfxImageEffectPropSupportsMultipleClipPARs, property::eInt, 1, true, "0" },
-	{ kOfxImageEffectPropSetableFrameRate, property::eInt, 1, true, "0" },
-	{ kOfxImageEffectPropSetableFielding, property::eInt, 1, true, "0" },
-	{ kOfxParamHostPropSupportsCustomInteract, property::eInt, 1, true, "0" },
-	{ kOfxParamHostPropSupportsStringAnimation, property::eInt, 1, true, "0" },
-	{ kOfxParamHostPropSupportsChoiceAnimation, property::eInt, 1, true, "0" },
-	{ kOfxParamHostPropSupportsBooleanAnimation, property::eInt, 1, true, "0" },
-	{ kOfxParamHostPropSupportsCustomAnimation, property::eInt, 1, true, "0" },
-	{ kOfxParamHostPropMaxParameters, property::eInt, 1, true, "-1" },
-	{ kOfxParamHostPropMaxPages, property::eInt, 1, true, "0" },
-	{ kOfxParamHostPropPageRowColumnCount, property::eInt, 2, true, "0" },
+	{ kOfxImageEffectPropSupportsMultipleClipDepths, property::ePropTypeInt, 1, true, "1" },
+	{ kOfxImageEffectPropSupportsMultipleClipPARs, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxImageEffectPropSetableFrameRate, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxImageEffectPropSetableFielding, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxParamHostPropSupportsCustomInteract, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxParamHostPropSupportsStringAnimation, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxParamHostPropSupportsChoiceAnimation, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxParamHostPropSupportsBooleanAnimation, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxParamHostPropSupportsCustomAnimation, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxParamHostPropMaxParameters, property::ePropTypeInt, 1, true, "-1" },
+	{ kOfxParamHostPropMaxPages, property::ePropTypeInt, 1, true, "0" },
+	{ kOfxParamHostPropPageRowColumnCount, property::ePropTypeInt, 2, true, "0" },
 	{ 0 },
 };
 

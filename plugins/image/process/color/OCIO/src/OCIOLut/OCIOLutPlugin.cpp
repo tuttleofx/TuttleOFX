@@ -17,8 +17,6 @@ namespace ocio {
 namespace lut {
 
 using namespace boost::gil;
-static const std::string kLutHelpString =
-		"<b>Image Luter</b> is used to lut components of an image.  <br />";
 
 OCIOLutPlugin::OCIOLutPlugin(OfxImageEffectHandle handle) :
 	ImageEffectGilPlugin(handle) {
@@ -129,10 +127,6 @@ OCIOLutProcessParams OCIOLutPlugin::getProcessParams(
 	params._config->addColorSpace(outputColorSpace);
 
 	return params;
-}
-
-void OCIOLutPlugin::changedParam(const OFX::InstanceChangedArgs& args,
-		const std::string& paramName) {
 }
 
 }

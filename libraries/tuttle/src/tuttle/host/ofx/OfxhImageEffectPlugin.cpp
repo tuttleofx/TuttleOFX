@@ -254,7 +254,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( const std::string& context )
 {
 	tuttle::host::ofx::property::OfxhPropSpec inargspec[] = {
-		{ kOfxImageEffectPropContext, tuttle::host::ofx::property::eString, 1, true, context.c_str() },
+		{ kOfxImageEffectPropContext, tuttle::host::ofx::property::ePropTypeString, 1, true, context.c_str() },
 		{ 0 }
 	};
 

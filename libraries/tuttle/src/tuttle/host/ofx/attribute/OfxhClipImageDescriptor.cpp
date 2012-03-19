@@ -28,12 +28,12 @@ void OfxhClipImageDescriptor::init( const std::string& name )
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
 	static const property::OfxhPropSpec clipImageDescriptorStuffs[] = {
-		{ kOfxClipPropType, property::eString, 1, true, kOfxClipTypeImage },
-		{ kOfxImageEffectPropSupportedComponents, property::eString, 0, false, "" },
-		{ kOfxImageEffectPropTemporalClipAccess, property::eInt, 1, false, "0" },
-		{ kOfxImageClipPropIsMask, property::eInt, 1, false, "0" },
-		{ kOfxImageClipPropFieldExtraction, property::eString, 1, false, kOfxImageFieldDoubled },
-		{ kOfxImageEffectPropSupportsTiles, property::eInt, 1, false, "1" },
+		{ kOfxClipPropType, property::ePropTypeString, 1, true, kOfxClipTypeImage },
+		{ kOfxImageEffectPropSupportedComponents, property::ePropTypeString, 0, false, "" },
+		{ kOfxImageEffectPropTemporalClipAccess, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxImageClipPropIsMask, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxImageClipPropFieldExtraction, property::ePropTypeString, 1, false, kOfxImageFieldDoubled },
+		{ kOfxImageEffectPropSupportsTiles, property::ePropTypeInt, 1, false, "1" },
 		{ 0 },
 	};
 

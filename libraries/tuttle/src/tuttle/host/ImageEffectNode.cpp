@@ -63,12 +63,10 @@ ImageEffectNode::~ImageEffectNode()
 
 void ImageEffectNode::connect( const INode& sourceEffect, attribute::Attribute& attr )
 {
-	const INode& source = sourceEffect;
+	const attribute::ClipImage& outputClip = dynamic_cast<const attribute::ClipImage&>( sourceEffect.getClip( kOfxImageEffectOutputClipName ) );
+	attribute::ClipImage& inputClip        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
 
-	const attribute::ClipImage& output = dynamic_cast<const attribute::ClipImage&>( source.getClip( kOfxImageEffectOutputClipName ) );
-	attribute::ClipImage& input        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
-
-	input.setConnectedClip( output );
+	inputClip.setConnectedClip( outputClip );
 }
 
 /**
@@ -386,7 +384,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 			biggestBitDepth = ofx::imageEffect::findDeepestBitDepth( linkClip.getBitDepthString(), biggestBitDepth );
 		}
 	}
-	std::string validBitDepth = this->bestSupportedBitDepth( biggestBitDepth );
+	const std::string validBitDepth = this->bestSupportedBitDepth( biggestBitDepth );
 
 	// bit depth
 	if( supportsMultipleClipDepths() )
@@ -734,7 +732,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
-		if( ! clip.isConnected() )
+		if( ! clip.isOutput() && ! clip.isConnected() )
 			continue;
 		memory::CACHE_ELEMENT image = memoryCache.get( clip.getIdentifier(), vData._time );
 		if( image.get() == NULL )
@@ -748,9 +746,10 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 			if( vData._finalNode )
 			{
 				// don't keep hand on final nodes
-				///@todo tuttle: case we compute a node to get the buffer...
 				--degree;
 			}
+			//TUTTLE_TCOUT_VAR2( clip.getIdentifier(), clip.getFullName() );
+			//TUTTLE_TCOUT( "image->addReference: " << degree );
 			if( degree > 0 )
 			{
 				image->addReference( degree ); // add a reference on this node for each future usages
@@ -758,6 +757,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		}
 		else
 		{
+			//TUTTLE_TCOUT_VAR2( clip.getIdentifier(), clip.getFullName() );
 			image->releaseReference();
 		}
 	}

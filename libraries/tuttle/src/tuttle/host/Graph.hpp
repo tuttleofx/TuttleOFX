@@ -124,11 +124,20 @@ public:
 	 * @param id is the plugin unique string identification (e.g. "tuttle.blur").
 	 */
 	Node& createNode( const std::string& id );
+
+	/**
+	 * @brief Rename a node in the current graph.
+	 * @param newUniqueName is the new unique node name.
+	 * 
+	 * @warning you will loose all connections.
+	 */
+	void renameNode( Node& node, const std::string& newUniqueName );
+	
 	/**
 	 * @brief Delete a node from the current graph.
 	 * This will remove all the connections.
 	 */
-	void deleteNode( const Node& node );
+	void deleteNode( Node& node );
 	/**
 	 * @brief Connect nodes (using there unique name in this graph).
 	 */
@@ -179,7 +188,7 @@ public:
 	std::list<Node*>         getNodesByContext( const std::string& type );
 	std::list<Node*>         getNodesByPlugin( const std::string& pluginId );
 	//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
-	inline const Node&             getNode( const std::string& id ) const { return _nodes.at( id ); }
+	inline const Node&             getNode( const std::string& name ) const { return _nodes.at( name ); }
 	inline Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
 	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
@@ -213,8 +222,8 @@ private:
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
 
 private:
-	void addToGraph( Node& node );
-	void removeFromGraph( Node& node );
+	void addToInternalGraph( Node& node );
+	void removeFromInternalGraph( Node& node );
 };
 
 }

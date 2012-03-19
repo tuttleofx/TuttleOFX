@@ -98,19 +98,19 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 	std::string key( spec.name ); // for constness
 	switch( spec.type )
 	{
-		case eInt:
+		case ePropTypeInt:
 			_props.insert( key, new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atoi( spec.defaultValue ) : 0 ) );
 			break;
-		case eDouble:
+		case ePropTypeDouble:
 			_props.insert( key, new Double( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atof( spec.defaultValue ) : 0 ) );
 			break;
-		case eString:
+		case ePropTypeString:
 			_props.insert( key, new String( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? spec.defaultValue : "" ) );
 			break;
-		case ePointer:
+		case ePropTypePointer:
 			_props.insert( key, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
 			break;
-		case eNone:
+		case ePropTypeNone:
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString( spec.type ) + ")" ) );
 	}
 }
@@ -141,6 +141,11 @@ bool OfxhSet::hasProperty( const std::string& propName, bool followChain ) const
 		}
 	}
 	return it != _props.end();
+}
+
+bool OfxhSet::hasLocalProperty( const std::string& propName ) const
+{
+	return hasProperty( propName, false );
 }
 
 /**

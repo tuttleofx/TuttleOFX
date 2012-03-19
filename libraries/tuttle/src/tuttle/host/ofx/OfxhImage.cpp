@@ -44,18 +44,18 @@ namespace imageEffect {
 std::ptrdiff_t OfxhImage::_count = 0;
 
 static property::OfxhPropSpec imageStuffs[] = {
-	{ kOfxPropType, property::eString, 1, false, kOfxTypeImage },
-	{ kOfxImageEffectPropPixelDepth, property::eString, 1, true, kOfxBitDepthNone },
-	{ kOfxImageEffectPropComponents, property::eString, 1, true, kOfxImageComponentNone },
-	{ kOfxImageEffectPropPreMultiplication, property::eString, 1, true, kOfxImageOpaque },
-	{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "1.0" },
-	{ kOfxImagePropPixelAspectRatio, property::eDouble, 1, true, "1.0" },
-	{ kOfxImagePropData, property::ePointer, 1, true, NULL },
-	{ kOfxImagePropBounds, property::eInt, 4, true, "0" },
-	{ kOfxImagePropRegionOfDefinition, property::eInt, 4, true, "0", },
-	{ kOfxImagePropRowBytes, property::eInt, 1, true, "0", },
-	{ kOfxImagePropField, property::eString, 1, true, "", },
-	{ kOfxImagePropUniqueIdentifier, property::eString, 1, true, "" },
+	{ kOfxPropType, property::ePropTypeString, 1, false, kOfxTypeImage },
+	{ kOfxImageEffectPropPixelDepth, property::ePropTypeString, 1, true, kOfxBitDepthNone },
+	{ kOfxImageEffectPropComponents, property::ePropTypeString, 1, true, kOfxImageComponentNone },
+	{ kOfxImageEffectPropPreMultiplication, property::ePropTypeString, 1, true, kOfxImageOpaque },
+	{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "1.0" },
+	{ kOfxImagePropPixelAspectRatio, property::ePropTypeDouble, 1, true, "1.0" },
+	{ kOfxImagePropData, property::ePropTypePointer, 1, true, NULL },
+	{ kOfxImagePropBounds, property::ePropTypeInt, 4, true, "0" },
+	{ kOfxImagePropRegionOfDefinition, property::ePropTypeInt, 4, true, "0", },
+	{ kOfxImagePropRowBytes, property::ePropTypeInt, 1, true, "0", },
+	{ kOfxImagePropField, property::ePropTypeString, 1, true, "", },
+	{ kOfxImagePropUniqueIdentifier, property::ePropTypeString, 1, true, "" },
 	{ 0 }
 };
 

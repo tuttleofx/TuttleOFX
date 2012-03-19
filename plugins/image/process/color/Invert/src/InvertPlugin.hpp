@@ -30,16 +30,14 @@ public:
 public:
 	InvertProcessParams getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
- 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-
 	void render( const OFX::RenderArguments& args );
 
 protected:
-	OFX::GroupParam* _processGroup;
-	OFX::BooleanParam* _processR;
-	OFX::BooleanParam* _processG;
-	OFX::BooleanParam* _processB;
-	OFX::BooleanParam* _processA;
+	OFX::GroupParam* _paramProcessGroup;
+	OFX::BooleanParam* _paramProcessR;
+	OFX::BooleanParam* _paramProcessG;
+	OFX::BooleanParam* _paramProcessB;
+	OFX::BooleanParam* _paramProcessA;
 };
 
 }

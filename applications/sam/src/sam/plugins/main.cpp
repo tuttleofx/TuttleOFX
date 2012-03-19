@@ -153,9 +153,9 @@ void getPluginProperties( const std::string& plugName )
 		typedef std::map<std::string, tth::ofx::attribute::OfxhClipImageDescriptor*> ContextMap;
 
 		// get contexts
-		ContextMap::const_iterator it = plugInst->getDescriptor( ).getClips().begin();
+		ContextMap::const_iterator it = plugInst->getDescriptor().getClips().begin();
 		std::string strClipContexts;
-		for( ; it != plugInst->getDescriptor( ).getClips().end(); ++it )
+		for( ; it != plugInst->getDescriptor().getClips().end(); ++it )
 		{
 			strClipContexts += (*it).first + ", " ;
 		}
@@ -165,7 +165,7 @@ void getPluginProperties( const std::string& plugName )
 
 
 		// get propeties in each context
-		ContextMap::const_iterator it2 = plugInst->getDescriptor( ).getClips().begin();
+		ContextMap::const_iterator it2 = plugInst->getDescriptor().getClips().begin();
 		for( ; it2 != plugInst->getDescriptor().getClips().end(); ++it2 )
 		{
 			printProperties( (*it2).second->getProperties(), (*it2).first );
@@ -179,9 +179,9 @@ void getPluginProperties( const std::string& plugName )
 		typedef std::map<std::string, tth::ofx::attribute::OfxhParamDescriptor*> ParamDescriptorMap;
 
 		// get contexts
-		ParamDescriptorMap::const_iterator it = plugInst->getDescriptor( ).getParams().begin();
+		ParamDescriptorMap::const_iterator it = plugInst->getDescriptor().getParams().begin();
 		std::string strParamsContexts;
-		for( ; it != plugInst->getDescriptor( ).getParams().end(); ++it )
+		for( ; it != plugInst->getDescriptor().getParams().end(); ++it )
 		{
 			strParamsContexts += (*it).first + ", ";
 		}
@@ -190,13 +190,13 @@ void getPluginProperties( const std::string& plugName )
 		TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
 
 		// get propeties in each context
-		ParamDescriptorMap::const_iterator it2 = plugInst->getDescriptor( ).getParams().begin();
+		ParamDescriptorMap::const_iterator it2 = plugInst->getDescriptor().getParams().begin();
 		for( ; it2 != plugInst->getDescriptor().getParams().end(); it2++ )
 		{
 			printProperties( (*it2).second->getProperties(), (*it2).first );
 		}
 		/*
-		const tth::ofx::property::OfxhSet paramProperties = plugInst->getDescriptor( ).getParamList().front().getProperties();
+		const tth::ofx::property::OfxhSet paramProperties = plugInst->getDescriptor().getParamList().front().getProperties();
 		printProperties( paramProperties, "" );
 		*/
 	}
@@ -221,7 +221,6 @@ bool isNotFiltered( std::string plugName, std::vector<std::string>& filters)
 
 int main( int argc, char** argv )
 {
-	bool				verbose			= false;
 	std::vector<std::string>	plugins;
 	std::vector<std::string>	foundPlugins;
 	std::vector<std::string>	filters;
@@ -337,10 +336,7 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	if (vm.count("verbose"))
-	{
-		verbose = true;
-	}
+	const bool verbose = vm.count("verbose");
 
 	if (vm.count("properties"))
 	{

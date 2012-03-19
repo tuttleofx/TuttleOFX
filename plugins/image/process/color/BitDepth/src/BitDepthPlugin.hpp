@@ -17,7 +17,6 @@ public:
 	BitDepthPlugin( OfxImageEffectHandle handle );
 
 public:
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
 	void render( const OFX::RenderArguments& args );

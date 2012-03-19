@@ -59,19 +59,19 @@ namespace imageEffect {
 
 static const property::OfxhPropSpec effectInstanceStuff[] = {
 	/* name                                 type                   dim.   r/o    default value */
-	{ kOfxPropType, property::eString, 1, true, kOfxTypeImageEffectInstance },
-	{ kOfxPropName, property::eString, 1, false, "UNIQUE_NAME_NOT_SET" },
-	{ kOfxImageEffectPropContext, property::eString, 1, true, "" },
-	{ kOfxPropInstanceData, property::ePointer, 1, false, NULL },
-	{ kOfxImageEffectPropPluginHandle, property::ePointer, 1, false, NULL },
-	{ kOfxImageEffectPropProjectSize, property::eDouble, 2, true, "0" },
-	{ kOfxImageEffectPropProjectOffset, property::eDouble, 2, true, "0" },
-	{ kOfxImageEffectPropProjectExtent, property::eDouble, 2, true, "0" },
-	{ kOfxImageEffectPropProjectPixelAspectRatio, property::eDouble, 1, true, "0" },
-	{ kOfxImageEffectInstancePropEffectDuration, property::eDouble, 1, true, "0" },
-	{ kOfxImageEffectInstancePropSequentialRender, property::eInt, 1, false, "0" },
-	{ kOfxImageEffectPropFrameRate, property::eDouble, 1, true, "0" },
-	{ kOfxPropIsInteractive, property::eInt, 1, true, "0" },
+	{ kOfxPropType, property::ePropTypeString, 1, true, kOfxTypeImageEffectInstance },
+	{ kOfxPropName, property::ePropTypeString, 1, false, "UNIQUE_NAME_NOT_SET" },
+	{ kOfxImageEffectPropContext, property::ePropTypeString, 1, true, "" },
+	{ kOfxPropInstanceData, property::ePropTypePointer, 1, false, NULL },
+	{ kOfxImageEffectPropPluginHandle, property::ePropTypePointer, 1, false, NULL },
+	{ kOfxImageEffectPropProjectSize, property::ePropTypeDouble, 2, true, "0" },
+	{ kOfxImageEffectPropProjectOffset, property::ePropTypeDouble, 2, true, "0" },
+	{ kOfxImageEffectPropProjectExtent, property::ePropTypeDouble, 2, true, "0" },
+	{ kOfxImageEffectPropProjectPixelAspectRatio, property::ePropTypeDouble, 1, true, "0" },
+	{ kOfxImageEffectInstancePropEffectDuration, property::ePropTypeDouble, 1, true, "0" },
+	{ kOfxImageEffectInstancePropSequentialRender, property::ePropTypeInt, 1, false, "0" },
+	{ kOfxImageEffectPropFrameRate, property::ePropTypeDouble, 1, true, "0" },
+	{ kOfxPropIsInteractive, property::ePropTypeInt, 1, true, "0" },
 	{ 0 }
 };
 
@@ -118,7 +118,7 @@ void OfxhImageEffectNode::initHook()
 
 			switch( spec.type )
 			{
-				case property::eDouble:
+				case property::ePropTypeDouble:
 					_properties.setGetHook( spec.name, this );
 					break;
 				default:
@@ -470,7 +470,7 @@ void OfxhImageEffectNode::createInstanceAction() OFX_EXCEPTION_SPEC
 void OfxhImageEffectNode::beginInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec stuff[] = {
-		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
+		{ kOfxPropChangeReason, property::ePropTypeString, 1, true, why.c_str() },
 		{ 0 }
 	};
 
@@ -498,11 +498,11 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
 		_clipPrefsDirty = true;
 
 	property::OfxhPropSpec stuff[] = {
-		{ kOfxPropType, property::eString, 1, true, kOfxTypeParameter },
-		{ kOfxPropName, property::eString, 1, true, paramName.c_str() },
-		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
-		{ kOfxPropTime, property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ kOfxPropType, property::ePropTypeString, 1, true, kOfxTypeParameter },
+		{ kOfxPropName, property::ePropTypeString, 1, true, paramName.c_str() },
+		{ kOfxPropChangeReason, property::ePropTypeString, 1, true, why.c_str() },
+		{ kOfxPropTime, property::ePropTypeDouble, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
 		{ 0 }
 	};
 
@@ -533,11 +533,11 @@ void OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatFailed ) );
 
 	property::OfxhPropSpec stuff[] = {
-		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
-		{ kOfxPropName, property::eString, 1, true, it->second->getName().c_str() },
-		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
-		{ kOfxPropTime, property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ kOfxPropType, property::ePropTypeString, 1, true, kOfxTypeClip },
+		{ kOfxPropName, property::ePropTypeString, 1, true, it->second->getName().c_str() },
+		{ kOfxPropChangeReason, property::ePropTypeString, 1, true, why.c_str() },
+		{ kOfxPropTime, property::ePropTypeDouble, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
 		{ 0 }
 	};
 
@@ -556,7 +556,7 @@ void OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName
 void OfxhImageEffectNode::endInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec whyStuff[] = {
-		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
+		{ kOfxPropChangeReason, property::ePropTypeString, 1, true, why.c_str() },
 		{ 0 }
 	};
 
@@ -619,10 +619,10 @@ void OfxhImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
 					     OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec stuff[] = {
-		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
-		{ kOfxImageEffectPropFrameStep, property::eDouble, 1, true, "0" },
-		{ kOfxPropIsInteractive, property::eInt, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ kOfxImageEffectPropFrameRange, property::ePropTypeDouble, 2, true, "0" },
+		{ kOfxImageEffectPropFrameStep, property::ePropTypeDouble, 1, true, "0" },
+		{ kOfxPropIsInteractive, property::ePropTypeInt, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
 		{ 0 }
 	};
 
@@ -650,10 +650,10 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 					OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
 	static const property::OfxhPropSpec stuff[] = {
-		{ kOfxPropTime, property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropFieldToRender, property::eString, 1, true, "" },
-		{ kOfxImageEffectPropRenderWindow, property::eInt, 4, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ kOfxPropTime, property::ePropTypeDouble, 1, true, "0" },
+		{ kOfxImageEffectPropFieldToRender, property::ePropTypeString, 1, true, "" },
+		{ kOfxImageEffectPropRenderWindow, property::ePropTypeInt, 4, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
 		{ 0 }
 	};
 
@@ -679,10 +679,10 @@ void OfxhImageEffectNode::endSequenceRenderAction( OfxTime   startFrame,
 					   OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec stuff[] = {
-		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
-		{ kOfxImageEffectPropFrameStep, property::eDouble, 1, true, "0" },
-		{ kOfxPropIsInteractive, property::eInt, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ kOfxImageEffectPropFrameRange, property::ePropTypeDouble, 2, true, "0" },
+		{ kOfxImageEffectPropFrameStep, property::ePropTypeDouble, 1, true, "0" },
+		{ kOfxPropIsInteractive, property::ePropTypeInt, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
 		{ 0 }
 	};
 
@@ -813,13 +813,13 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 						       OfxRectD& rod ) const OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec inStuff[] = {
-		{ kOfxPropTime, property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ kOfxPropTime, property::ePropTypeDouble, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
 		{ 0 }
 	};
 
 	property::OfxhPropSpec outStuff[] = {
-		{ kOfxImageEffectPropRegionOfDefinition, property::eDouble, 4, false, "0" },
+		{ kOfxImageEffectPropRegionOfDefinition, property::ePropTypeDouble, 4, false, "0" },
 		{ 0 }
 	};
 
@@ -887,9 +887,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 	{
 		/// set up the in args
 		static property::OfxhPropSpec inStuff[] = {
-			{ kOfxPropTime, property::eDouble, 1, true, "0" },
-			{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
-			{ kOfxImageEffectPropRegionOfInterest, property::eDouble, 4, true, 0 },
+			{ kOfxPropTime, property::ePropTypeDouble, 1, true, "0" },
+			{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
+			{ kOfxImageEffectPropRegionOfInterest, property::ePropTypeDouble, 4, true, 0 },
 			{ 0 }
 		};
 		property::OfxhSet inArgs( inStuff );
@@ -911,7 +911,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 				std::string name = "OfxImageClipPropRoI_" + it->first;
 
 				s.name         = name.c_str();
-				s.type         = property::eDouble;
+				s.type         = property::ePropTypeDouble;
 				s.dimension    = 4;
 				s.readonly     = false;
 				s.defaultValue = "";
@@ -980,7 +980,7 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 	if( temporalAccess() )
 	{
 		property::OfxhPropSpec inStuff[] = {
-			{ kOfxPropTime, property::eDouble, 1, true, "0" },
+			{ kOfxPropTime, property::ePropTypeDouble, 1, true, "0" },
 			{ 0 }
 		};
 		property::OfxhSet inArgs( inStuff );
@@ -996,7 +996,7 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 				std::string name = "OfxImageClipPropFrameRange_" + it->first;
 
 				s.name         = name.c_str();
-				s.type         = property::eDouble;
+				s.type         = property::ePropTypeDouble;
 				s.dimension    = 0;
 				s.readonly     = false;
 				s.defaultValue = "";
@@ -1069,16 +1069,16 @@ bool OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
 					    std::string&       clip ) const OFX_EXCEPTION_SPEC
 {
 	static property::OfxhPropSpec inStuff[] = {
-		{ kOfxPropTime, property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropFieldToRender, property::eString, 1, true, "" },
-		{ kOfxImageEffectPropRenderWindow, property::eInt, 4, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ kOfxPropTime, property::ePropTypeDouble, 1, true, "0" },
+		{ kOfxImageEffectPropFieldToRender, property::ePropTypeString, 1, true, "" },
+		{ kOfxImageEffectPropRenderWindow, property::ePropTypeInt, 4, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, true, "0" },
 		{ 0 }
 	};
 
 	static property::OfxhPropSpec outStuff[] = {
-		{ kOfxPropTime, property::eDouble, 1, false, "0.0" },
-		{ kOfxPropName, property::eString, 1, false, "" },
+		{ kOfxPropTime, property::ePropTypeDouble, 1, false, "0.0" },
+		{ kOfxPropName, property::ePropTypeString, 1, false, "" },
 		{ 0 }
 	};
 
@@ -1252,11 +1252,11 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 	setDefaultClipPreferences();
 
 	static property::OfxhPropSpec clipPrefsStuffs [] = {
-		{ kOfxImageEffectPropFrameRate, property::eDouble, 1, false, "1" },
-		{ kOfxImageEffectPropPreMultiplication, property::eString, 1, false, "" },
-		{ kOfxImageClipPropFieldOrder, property::eString, 1, false, "" },
-		{ kOfxImageClipPropContinuousSamples, property::eInt, 1, false, "0" },
-		{ kOfxImageEffectFrameVarying, property::eInt, 1, false, "0" },
+		{ kOfxImageEffectPropFrameRate, property::ePropTypeDouble, 1, false, "1" },
+		{ kOfxImageEffectPropPreMultiplication, property::ePropTypeString, 1, false, "" },
+		{ kOfxImageClipPropFieldOrder, property::ePropTypeString, 1, false, "" },
+		{ kOfxImageClipPropContinuousSamples, property::ePropTypeInt, 1, false, "0" },
+		{ kOfxImageEffectFrameVarying, property::ePropTypeInt, 1, false, "0" },
 		{ 0 }
 	};
 
@@ -1282,16 +1282,16 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 		std::string depthParamName     = "OfxImageClipPropDepth_" + it->first;
 		std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
 
-		property::OfxhPropSpec specComp = { componentParamName.c_str(), property::eString, 0, false, "" }; // note the support for multi-planar clips
+		property::OfxhPropSpec specComp = { componentParamName.c_str(), property::ePropTypeString, 0, false, "" }; // note the support for multi-planar clips
 		outArgs.createProperty( specComp );
 		// as it is variable dimension, there is no default value, so we have to set it explicitly
 		outArgs.setStringProperty( componentParamName, clip->getComponentsString() );
 
-		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::eString, 1, !multiBitDepth, clip->getBitDepthString().c_str() };
+		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::ePropTypeString, 1, !multiBitDepth, clip->getBitDepthString().c_str() };
 		outArgs.createProperty( specDep );
 		outArgs.setStringProperty( depthParamName, clip->getBitDepthString() );
 
-		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::eDouble, 1, false, "1" };
+		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::ePropTypeDouble, 1, false, "1" };
 		outArgs.createProperty( specPAR );
 		outArgs.setDoubleProperty( parParamName, 1.0 ); // Default pixel aspect ratio is set to 1.0
 	}
@@ -1448,7 +1448,7 @@ const std::string& OfxhImageEffectNode::bestSupportedBitDepth( const std::string
 bool OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec outStuff[] = {
-		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, false, "0.0" },
+		{ kOfxImageEffectPropFrameRange, property::ePropTypeDouble, 2, false, "0.0" },
 		{ 0 }
 	};
 

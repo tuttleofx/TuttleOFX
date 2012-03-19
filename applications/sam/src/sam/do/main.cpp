@@ -19,29 +19,9 @@
 
 #include <iostream>
 
-
-std::vector<std::string> getChoiceValuesForParameter( const tuttle::host::ofx::property::OfxhSet properties, std::string context = "" )
-{
-	std::vector<std::string> choiceValues;
-	std::string defaultValue;
-	tuttle::host::ofx::property::PropertyMap propMap = properties.getMap();
-	for( tuttle::host::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
-	{
-		const tuttle::host::ofx::property::OfxhProperty& prop = *( itProperty->second );
-		std::string label = itProperty->first;
-
-		if( std::strcmp( label.c_str(), kOfxParamPropChoiceOption ) == 0 )
-		{
-	    choiceValues = sam::getDefaultOrChoiceValues( prop );
-			return choiceValues;
-		}
-	}
-	return choiceValues;
-}
-
 int main( int argc, char** argv )
 {
-    using namespace sam;
+	using namespace sam;
 	using namespace sam::samdo;
 	namespace ttl = tuttle::host;
 
@@ -50,9 +30,9 @@ int main( int argc, char** argv )
 		if( argc <= 1 ) // no argument
 		{
 			TUTTLE_COUT(
-				 "sam do: missing operands.\n"
-				 "'sam do --help' for more informations.\n"
-				 );
+						 "sam do: missing operands.\n"
+						 "'sam do --help' for more informations.\n"
+						 );
 			exit( -1 );
 		}
 
@@ -80,7 +60,7 @@ int main( int argc, char** argv )
 				// Declare the supported options.
 				bpo::options_description infoOptions;
 				infoOptions.add_options()
-					( "help,h", "show node help" )
+					( "help,h", "show help" )
 					( "version,v", "display node version" )
 					( "nodes,n", "show list of all available nodes" )
 					( "color", "color the output" )
@@ -208,8 +188,8 @@ int main( int argc, char** argv )
 					SAM_DO_EXAMPLE_LINE_COUT( "All Frames in Directory: ", "/path/to/directory" );
 
 					SAM_DO_EXAMPLE_TITLE_COUT( "Processing options" );
-		    SAM_DO_EXAMPLE_LINE_COUT ( "Range process: "             , "sam do reader in.@.dpx // writer out.@.exr // --range 50,100" );
-		    SAM_DO_EXAMPLE_LINE_COUT ( "Single process: "            , "sam do reader in.@.dpx // writer out.@.exr // --range 59" );
+					SAM_DO_EXAMPLE_LINE_COUT( "Range process: ", "sam do reader in.@.dpx // writer out.@.exr // --range 50,100" );
+					SAM_DO_EXAMPLE_LINE_COUT( "Single process: ", "sam do reader in.@.dpx // writer out.@.exr // --range 59" );
 					SAM_DO_EXAMPLE_LINE_COUT( "Multiple CPUs: ", "sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4" );
 					SAM_DO_EXAMPLE_LINE_COUT( "Continues whatever happens: ", "sam do reader in.@.dpx // writer out.@.exr // --continueOnError" );
 
@@ -332,6 +312,7 @@ int main( int argc, char** argv )
 				bpo::options_description confOptions;
 				confOptions.add_options()
 					( "verbose,V", "explain what is being done" )
+					( "id", bpo::value<std::string > (), "set a name/id to the node" )
 					( "nb-cores", bpo::value<std::size_t > (), "set a fix number of CPUs" )
 					;
 				// describe openFX options
@@ -420,13 +401,13 @@ int main( int argc, char** argv )
 							// internal node help
 							if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect )
 							{
-								if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping, true ) )
+								if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping ) )
 								{
 									TUTTLE_COUT( "\t" << _color._green << currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxImageEffectPluginPropGrouping ).getValue() << _color._std );
 								}
 							}
 							TUTTLE_COUT( "" );
-							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription, true ) )
+							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription ) )
 							{
 								TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue( 0 ) );
 							}
@@ -439,12 +420,12 @@ int main( int argc, char** argv )
 							coutParametersWithDetails( currentNode );
 
 							TUTTLE_COUT( "" );
-							TUTTLE_COUT( _color._blue << "DISPLAY OPTIONS (replace the process)" << _color._std );
+							TUTTLE_COUT( _color._blue << "DISPLAY OPTIONS (override the process)" << _color._std );
 							TUTTLE_COUT( infoOptions );
-							TUTTLE_COUT( _color._blue << "OPEN FX OPTIONS" << _color._std );
-							TUTTLE_COUT( openfxOptions );
 							TUTTLE_COUT( _color._blue << "CONFIGURE PROCESS" << _color._std );
 							TUTTLE_COUT( confOptions );
+//							TUTTLE_COUT( _color._blue << "OPENFX OPTIONS" << _color._std );
+//							TUTTLE_COUT( openfxOptions );
 
 							TUTTLE_COUT( "" );
 							exit( 0 );
@@ -554,11 +535,7 @@ int main( int argc, char** argv )
 						{
 							const std::string paramName = node_vm["parameter-values"].as<std::string > ();
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
-							std::vector<std::string> values = getChoiceValuesForParameter( param.getProperties() );
-							for( size_t i = 0; i < values.size(); i++ )
-							{
-								TUTTLE_COUT( values.at( i ) );
-							}
+							coutParameterValues( std::cout, param );
 							exit( 0 );
 						}
 
@@ -567,14 +544,22 @@ int main( int argc, char** argv )
 							const std::string paramName = node_vm["parameter-default"].as<std::string > ();
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
 							/// @todo
+							// param.displayValues(
 							TUTTLE_TCOUT( "TODO: display default value." );
 							exit( 0 );
+						}
+
+						if( node_vm.count( "id" ) )
+						{
+							const std::string nodeId = node_vm["id"].as<std::string > ();
+							graph.renameNode( currentNode, nodeId );
 						}
 
 						// Analyse parameters
 						static const boost::regex re_param( "(?:([a-zA-Z_][a-zA-Z0-9_]*)=)?(.*)" );
 						if( node_vm.count( "param-values" ) )
 						{
+
 							bool orderedParams = true;
 							std::size_t paramIdx = 0;
 							const std::vector<std::string> params = node_vm["param-values"].as< std::vector<std::string> >();
@@ -643,6 +628,7 @@ int main( int argc, char** argv )
 					}
 					catch( ... )
 					{
+
 						TUTTLE_CERR( _color._red << "sam do - " << nodeFullName );
 						TUTTLE_CERR( "Unknown error." );
 						TUTTLE_CERR( "\n" );

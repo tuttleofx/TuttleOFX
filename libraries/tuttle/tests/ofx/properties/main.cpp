@@ -26,14 +26,14 @@ BOOST_AUTO_TEST_CASE( properties_get_and_set )
 
 	static const ofx::property::OfxhPropSpec testStuff[] = {
 		/* name                                 type                   dim.   r/o    default value */
-		{ testString_1_ro, ofx::property::eString, 1, true, "default_value" },
-		{ testString_2_rw, ofx::property::eString, 2, false, "default_value" },
-		{ testPointer_1_rw, ofx::property::ePointer, 1, false, NULL },
-		{ testDouble_2_ro, ofx::property::eDouble, 2, true, "0" },
-		{ testDouble_1_rw, ofx::property::eDouble, 1, false, "0" },
-		{ testInt_1_rw, ofx::property::eInt, 1, false, "0" },
-		{ testInt_2_rw, ofx::property::eInt, 2, false, "8" },
-		{ testInt_4_ro, ofx::property::eInt, 4, true, "0" },
+		{ testString_1_ro, ofx::property::ePropTypeString, 1, true, "default_value" },
+		{ testString_2_rw, ofx::property::ePropTypeString, 2, false, "default_value" },
+		{ testPointer_1_rw, ofx::property::ePropTypePointer, 1, false, NULL },
+		{ testDouble_2_ro, ofx::property::ePropTypeDouble, 2, true, "0" },
+		{ testDouble_1_rw, ofx::property::ePropTypeDouble, 1, false, "0" },
+		{ testInt_1_rw, ofx::property::ePropTypeInt, 1, false, "0" },
+		{ testInt_2_rw, ofx::property::ePropTypeInt, 2, false, "8" },
+		{ testInt_4_ro, ofx::property::ePropTypeInt, 4, true, "0" },
 		{ 0 }
 	};
 
