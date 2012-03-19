@@ -11,21 +11,21 @@ project
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+
+		<link>static
 	: usage-requirements
 		<include>.
 	: build-dir $(BUILD)/3rdParty/png
 	;
-
-use-project /zlib 	: ../zlib ;
 
 ###############################################################################
 # libpng library
 ###############################################################################
 alias headers : [ glob-tree *.h ] ;
 
-lib png : 
+lib png :
 	[ glob *.c ]
-	/zlib
+	/project-config//zlib
 	;
 
 install dist_src

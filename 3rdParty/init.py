@@ -160,7 +160,7 @@ allLibs = [
 		('freetype',    'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz'                                         , 'freetype-2.4.3'                 , False), #if not windows else ('freetype', 'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz'                           , '', False),
 		('libraw',      'http://www.libraw.org/data/LibRaw-0.14.5.tar.gz'                                                           , 'LibRaw-0.14.5'                  , False), #if not windows else ('libraw'  , 'http://www.libraw.org/data/LibRaw-0.13.5.zip'                                                , '', False),
 		('libcaca',     'http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz'                                              , 'libcaca-0.99.beta17'            , False),
-		('lcms',        'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.tar.gz'                                   , 'lcms2-2.1'                      , False), #if not windows else ('lcms'    , 'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.zip'                        , '', False),
+		('lcms2',       'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.tar.gz'                                   , 'lcms2-2.1'                      , False), #if not windows else ('lcms'    , 'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.zip'                        , '', False),
 		('bzlib',       'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'                                                              , 'bzip2-1.0.6'                    , False),
 		('libtiff',     'ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz'                                                 , 'tiff-3.9.5'                     , False), #if not windows else ('libtiff' , 'ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.zip'                                      , '', False),
 		('libtool',     'ftp://ftp.gnu.org/gnu/libtool/libtool-2.4.tar.gz'                                                          , 'libtool-2.4'                    , False),
@@ -169,9 +169,10 @@ allLibs = [
 		('xz',          'http://tukaani.org/xz/xz-5.0.2.tar.gz'                                                                     , 'xz-5.0.2'                       , False),
 		('gvc',         'http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.26.3.tar.gz'                                , 'graphviz-2.26.3'                , False),
 		('jpeg',        'http://freefr.dl.sourceforge.net/project/libjpeg/libjpeg/6b/jpegsrc.v6b.tar.gz'                            , 'jpeg-6b'                        , False), #if not windows else ('jpeg'    , 'http://netcologne.dl.sourceforge.net/project/libjpeg/libjpeg/6b/jpegsr6.zip'                 , '', False),
+		('turbojpeg',   'http://garr.dl.sourceforge.net/project/libjpeg-turbo/1.2.0/libjpeg-turbo-1.2.0.tar.gz'                     , 'libjpeg-turbo-1.2.0'            , False),
 		('openjpeg',    'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'                                       , 'openjpeg_v1_4_sources_r697'     , False),
 		('ffmpeg',      'http://ffmpeg.org/releases/ffmpeg-0.8.2.tar.bz2'                                                           , 'ffmpeg-0.8.2'                   , False),
-		('openimageio', 'https://github.com/OpenImageIO/oiio/tarball/RB-1.0/OpenImageIO-oiio-Release-1.0.0-0-g5b37f1c.tar.gz'       , 'OpenImageIO-oiio-d1b2ff0'       , False),
+		('openimageio', 'https://github.com/OpenImageIO/oiio/tarball/RB-1.0/OpenImageIO-oiio-Release-1.0.0-0-g5b37f1c.tar.gz'       , 'OpenImageIO-oiio-6441966'       , False),
 		('opencolorio', 'http://github.com/imageworks/OpenColorIO/tarball/v1.0.4/imageworks-OpenColorIO-v1.0.4-0-gc0a9a92.tar.gz'   , 'imageworks-OpenColorIO-12fb440' , False),
 		('imagemagick', 'http://www.imagemagick.org/download/ImageMagick.tar.gz'                                                    , 'ImageMagick-6.7.5-10'            , False)
 	]

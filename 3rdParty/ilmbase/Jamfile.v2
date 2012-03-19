@@ -6,3 +6,16 @@ project IlmBase
 		<os>NT:<include>config.windows
 		<os>LINUX:<include>config
 	;
+
+use-project /Half : Half ;
+use-project /Iex : Iex ;
+use-project /IlmThread : IlmThread ;
+use-project /Imath : Imath ;
+
+lib ilmbase :
+	/Half
+	/Iex
+	/IlmThread
+	/Imath
+	;
+

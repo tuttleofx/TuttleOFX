@@ -1,0 +1,29 @@
+
+
+# 1 means using in 3rdParty
+# 0 means using user-config target, configured to local library
+
+constant 3RDPARTY_BZLIB : 1 ;
+constant 3RDPARTY_CTL : 1 ;
+constant 3RDPARTY_FREETYPE : 1 ;
+constant 3RDPARTY_GVC : 1 ;
+constant 3RDPARTY_ILMBASE : 1 ;
+constant 3RDPARTY_IMAGEMAGICK : 1 ;
+constant 3RDPARTY_JASPER : 1 ;
+constant 3RDPARTY_JPEG : 1 ;
+constant 3RDPARTY_LCMS2 : 1 ;
+constant 3RDPARTY_LIBCACA : 1 ;
+constant 3RDPARTY_LIBPNG : 1 ;
+constant 3RDPARTY_LIBRAW : 1 ;
+constant 3RDPARTY_LIBTIFF : 1 ;
+constant 3RDPARTY_LIBTOOL : 1 ;
+constant 3RDPARTY_LIBXML : 1 ;
+constant 3RDPARTY_OPENCOLORIO : 1 ;
+constant 3RDPARTY_OPENEXR : 1 ;
+constant 3RDPARTY_OPENIMAGEIO : 1 ;
+constant 3RDPARTY_OPENJPEG : 1 ;
+constant 3RDPARTY_TINYXML : 1 ;
+constant 3RDPARTY_TURBOJPEG : 0 ;
+constant 3RDPARTY_XZ : 1 ; # contains lzma library
+constant 3RDPARTY_YAML : 1 ;
+constant 3RDPARTY_ZLIB : 1 ;

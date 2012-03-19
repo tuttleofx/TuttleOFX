@@ -2,6 +2,7 @@ project Imath
 	: requirements
 		<warnings-as-errors>off
 		<warnings>off
+		<link>static
 	: usage-requirements <include>.
 	;
 

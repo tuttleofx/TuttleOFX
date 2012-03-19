@@ -6,7 +6,7 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>src/liblzma
 		<include>src/liblzma/api
 		<include>src/liblzma/lzma
@@ -28,9 +28,23 @@ project
 ###############################################################################
 alias	headers		: [ glob-tree *.h ] ;
 
-lib	lzma		:
-			  [ glob src/liblzma/check/*.c src/liblzma/common/*.c src/liblzma/check/*.c src/liblzma/delta/*.c src/liblzma/lz/*.c src/liblzma/lzma*.c src/liblzma/rangecoder/*.c src/liblzma/simple/*.c : src/liblzma/simple/arm.c src/liblzma/simple/ia64.c src/liblzma/simple/powerpc.c src/liblzma/simple/armthumb.c ]
-			;
+lib lzma :
+	[
+		glob src/liblzma/check/*.c
+		src/liblzma/common/*.c
+		src/liblzma/check/*.c
+		src/liblzma/delta/*.c
+		src/liblzma/lz/*.c
+		src/liblzma/lzma*.c
+		src/liblzma/rangecoder/*.c
+		src/liblzma/simple/*.c
+		:
+		src/liblzma/simple/arm.c
+		src/liblzma/simple/ia64.c
+		src/liblzma/simple/powerpc.c
+		src/liblzma/simple/armthumb.c
+	]
+	;
 
 install	dist_src
 	:

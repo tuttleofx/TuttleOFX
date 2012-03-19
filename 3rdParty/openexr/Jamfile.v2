@@ -2,9 +2,6 @@
 ## Main BJam makefile for openexr (ilmImf) library
 ###############################################################################
 
-use-project /base : ../ilmbase ;
-use-project /z    : ../zlib ;
-
 ###############################################################################
 # Global project requirements
 ###############################################################################
@@ -12,17 +9,17 @@ project
 	: requirements
 		<include>./IlmImf
 		<os>NT:<include>./config.windows
-		<os>LINUX:<include>./config 
-		<os>MACOSX:<include>./config 
-	 	<os>NT:<define>WIN32
-	 	<os>NT:<define>_WINDOWS
+		<os>LINUX:<include>./config
+		<os>MACOSX:<include>./config
+		<os>NT:<define>WIN32
+		<os>NT:<define>_WINDOWS
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
 		<include>./IlmImf
 		<os>NT:<include>./config.windows
-		<os>LINUX:<include>./config 
+		<os>LINUX:<include>./config
 		<os>MACOSX:<include>./config
 	: build-dir $(BUILD)/3rdParty/openexr
 	;
@@ -31,14 +28,11 @@ project
 ###############################################################################
 # OpenEXR library
 ###############################################################################
-lib IlmImf : 
-        [ glob IlmImf/*.cpp ]
-        /z
-        /base//Iex
-        /base//Half
-        /base//IlmThread
-        /base//Imath
-        ;
+lib IlmImf :
+	[ glob IlmImf/*.cpp ]
+	/project-config//zlib
+	/project-config//ilmbase
+	;
 
 install dist
 	:

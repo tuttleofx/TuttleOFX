@@ -3,4 +3,4 @@
 	url = git://github.com/tuttleofx/sconsProject.git
 [submodule "libraries/sequenceParser"]
 	path = libraries/sequenceParser
-	url = git://github.com/mikrosimage/SequenceParser.git
+	url = git://github.com/mikrosimage/sequenceparser.git

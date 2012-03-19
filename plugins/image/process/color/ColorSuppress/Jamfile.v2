@@ -2,39 +2,27 @@
 ## Main BJam makefile for TuttleOFX ColorSuppress Plugin
 ###############################################################################
 import os ;
- 
+
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>src
-  				<threading>multi 
-  				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/ColorSuppress/obj
+    : requirements
+	<include>src
+	<threading>multi
+	<os>NT:<define>_WINDOWS
+    : build-dir $(BUILD)/ColorSuppress
     ;
- 
+
 ###############################################################################
-# Dependencies
+# Product
 ###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
- 
-###############################################################################
-# Product 
-###############################################################################
-plugin ColorSuppress : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
-    opengl
-    ;
- 
+plugin ColorSuppress :
+	[ glob src/*.cpp ]
+	/tuttleplugin/<link>static
+	;
+
 ###############################################################################
 # Automatic install
 ###############################################################################
 auto_install ColorSuppress : $(DIST) ;
- 
