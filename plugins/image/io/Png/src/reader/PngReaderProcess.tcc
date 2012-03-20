@@ -23,7 +23,8 @@ using namespace boost::gil;
 namespace bfs = boost::filesystem;
 
 typedef any_image < boost::mpl::vector
-		    < rgba8_image_t, rgba16_image_t, rgba32f_image_t,
+		    < gray8_image_t, gray16_image_t, gray32f_image_t,
+		      rgba8_image_t, rgba16_image_t, rgba32f_image_t,
 		      rgb8_image_t,  rgb16_image_t,  rgb32f_image_t >
 		    > any_image_t;
 typedef any_image_t::view_t any_view_t;
@@ -74,14 +75,14 @@ View& PngReaderProcess<View>::readImage( View& dst )
 	}
 	catch( boost::exception& e )
 	{
-		e << exception::user( "Png: Unable to open file." );
+		e << exception::user( "Png: Unable to read information in file." );
 		e << exception::filename( _params._filepath );
 		throw;
 	}
-	catch(... )
+	catch( ... )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Png: Unable to open file." )
+			<< exception::user( "Png: Unable to read information in file." )
 			<< exception::dev( boost::current_exception_diagnostic_information() )
 			<< exception::filename( _params._filepath ) );
 	}
