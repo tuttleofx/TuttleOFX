@@ -28,3 +28,6 @@ os.chdir ( "./libxml" )
 os.system( "./configure" )
 os.chdir ( ".." )
 
+os.chdir ( "./imagemagick" )
+os.system( "./configure" )
+os.chdir ( ".." )
