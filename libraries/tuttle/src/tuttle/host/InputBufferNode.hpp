@@ -154,6 +154,8 @@ public:
 	ofx::attribute::OfxhParamSet& getParamSet();
 	const ofx::attribute::OfxhParamSet& getParamSet() const;
 
+	ofx::attribute::OfxhClipImageSet& getClipImageSet();
+	const ofx::attribute::OfxhClipImageSet& getClipImageSet() const;
 
 
 
