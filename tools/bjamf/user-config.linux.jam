@@ -1,3 +1,6 @@
+
+import os ;
+
 #####################
 # QT configuration. #
 #####################
@@ -57,12 +60,32 @@ lib openexr	: : <file>/usr/lib64/libIlmImf.so
 
 ##############################################################################
 # name     : ImageMagick
-# purpose  : ImagePagick library, to open/write files
+# purpose  : ImageMagick library, to open/write files
 # website  : http://www.imagemagick.org/
 # download : http://www.imagemagick.org/script/download.php
 ##############################################################################
 lib imagemagick	: : <file>/usr/lib64/libMagickCore.so
 		: : <include>/usr/include/ImageMagick/ ;
+
+##############################################################################
+# name     : TurboJpeg
+# purpose  : TurboJpeg library, to open/write jpeg files
+# website  : http://sourceforge.net/projects/libjpeg-turbo/
+# download : http://sourceforge.net/projects/libjpeg-turbo/
+##############################################################################
+lib turbojpeg	: : <file>/opt/libjpeg-turbo/lib64/libjpeg.so.62.0.0
+		: : <include>/opt/libjpeg-turbo/include/ ;
+
+##############################################################################
+# OpenGL
+##############################################################################
+
+if [ os.name ] = NT
+    {   lib opengl32 ;  alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX
+    {   alias opengl : ; }
+else if [ os.name ] = MACOSX
+    {   alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 #########################
 # Python configuration. #
@@ -90,43 +113,23 @@ using python
 	<address-model>32
   ;
 
-using python
-  : 2.7                     # version
-  : /usr/bin/python2.7      # bin directory
-  : /usr/include/python2.7  # includes
-  : /usr/lib64              # libs
-  :
-        <os>LINUX
-        <address-model>64
-  ;
+#using python
+#  : 3.1                    # version
+#  : /usr/bin/python3.1     # bin directory
+#  : /usr/include/python3.1 # includes
+#  : /usr/lib64             # libs
+#  :
+#  	<os>LINUX
+#  	<address-model>64
+#   ;
 
-using python
-  : 2.7                     # version
-  : /usr/bin/python2.7      # bin directory
-  : /usr/include/python2.7  # includes
-  : /usr/lib                # libs
-  :
-        <os>LINUX
-        <address-model>32
-  ;
-
-using python
-  : 3.1                    # version
-  : /usr/bin/python3.1     # bin directory
-  : /usr/include/python3.1 # includes
-  : /usr/lib64             # libs
-  :
-  	<os>LINUX
-  	<address-model>64
-  ;
-
-using python
-  : 3.1                    # version
-  : /usr/bin/python3.1     # bin directory
-  : /usr/include/python3.1 # includes
-  : /usr/lib               # libs
-  :
-  	<os>LINUX
-  	<address-model>32
-  ;
+# using python
+#  : 3.1                    # version
+#  : /usr/bin/python3.1     # bin directory
+#  : /usr/include/python3.1 # includes
+#  : /usr/lib               # libs
+#  :
+#  	<os>LINUX
+#  	<address-model>32
+#   ;
 

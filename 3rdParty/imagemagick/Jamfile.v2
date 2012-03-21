@@ -25,7 +25,6 @@ project
 		<define>LTDL
 		<define>LTDLOPEN='libltdl'
 
-		<linkflags>-lltdl
 		[ evaluate-if-header-is-available <define>HAVE_ARGZ_H : /usr/include/argz.h ]
 		[ evaluate-if-header-is-available <define>HAVE_DIRENT_H : /usr/include/dirent.h ]
 
@@ -39,7 +38,6 @@ project
 		<link>static
 	: usage-requirements
 		<include>.
-		<linkflags>-lltdl
 	: build-dir $(BUILD)/3rdParty/imagemagick
     ;
 
@@ -47,6 +45,18 @@ project
 # imagemagick library
 ###############################################################################
 alias	headers		: [ glob-tree *.h ] ;
+
+lib ltdl :
+	  [ glob
+		 ltdl/loaders/preopen.c
+		 ltdl/lt__alloc.c
+		 ltdl/lt_dlloader.c
+		 ltdl/lt_error.c
+		 ltdl/ltdl.c
+		 ltdl/slist.c
+	  ]
+
+;
 
 lib	imagemagick	:
 			  [ glob magick/*.c
@@ -63,6 +73,7 @@ lib	imagemagick	:
 			/project-config//libxml
 			/project-config//zlib
 			/project-config//bzlib
+			ltdl
 			;
 
 install dist
