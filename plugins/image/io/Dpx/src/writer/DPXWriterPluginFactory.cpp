@@ -65,7 +65,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
 	filename->setLabel( kTuttlePluginFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
@@ -76,11 +75,10 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 	bitDepth->appendOption( kTuttlePluginBitDepth64 );
-	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( eTuttlePluginBitDepth10 );
 
-	OFX::ChoiceParamDescriptor* descriptor = desc.defineChoiceParam( kParamDescriptor );
-	descriptor->setLabel( kParamDescriptorLabel );
+	OFX::ChoiceParamDescriptor* descriptor = desc.defineChoiceParam( kTuttlePluginComponents );
+	descriptor->setLabel( kTuttlePluginComponentsLabel );
 	descriptor->setHint( kParamDescriptorHint );
 	descriptor->appendOption( kParamDescriptorUserDefinedDescriptor );
 	descriptor->appendOption( kParamDescriptorRed );
@@ -106,8 +104,8 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	descriptor->appendOption( kParamDescriptorUserDefined7Comp );
 	descriptor->appendOption( kParamDescriptorUserDefined8Comp );
 	descriptor->appendOption( kParamDescriptorUndefinedDescriptor );
-	descriptor->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	descriptor->setDefault( 9 ); // RGB
+	descriptor->appendOption( kParamDescriptorAuto );
+	descriptor->setDefault( 24 ); // Auto
 
 	OFX::ChoiceParamDescriptor* transfer = desc.defineChoiceParam( kParamTransfer );
 	transfer->setLabel( kParamTransferLabel );
@@ -126,7 +124,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	transfer->appendOption( kParamCharacteristicZLinear );
 	transfer->appendOption( kParamCharacteristicZHomogeneous );
 	transfer->appendOption( kParamCharacteristicUndefinedCharacteristic );
-	transfer->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	transfer->setDefault( 2 ); // Linear
 
 	OFX::ChoiceParamDescriptor* colorimetric = desc.defineChoiceParam( kParamColorimetric );
@@ -146,7 +143,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	colorimetric->appendOption( kParamCharacteristicZLinear );
 	colorimetric->appendOption( kParamCharacteristicZHomogeneous );
 	colorimetric->appendOption( kParamCharacteristicUndefinedCharacteristic );
-	colorimetric->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	colorimetric->setDefault( 2 ); // Linear
 
 	OFX::ChoiceParamDescriptor* packed = desc.defineChoiceParam( kParamPacked );
@@ -155,7 +151,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	packed->appendOption( kParamPackedPacked );
 	packed->appendOption( kParamPackedMethodA );
 	packed->appendOption( kParamPackedMethodB );
-	packed->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	packed->setDefault( 1 );
 
 	OFX::ChoiceParamDescriptor* encoding = desc.defineChoiceParam( kParamEncoding );
@@ -163,8 +158,23 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	encoding->setHint( kParamEncodingHint );
 	encoding->appendOption( kParamEncodingNone );
 	encoding->appendOption( kParamEncodingRle );
-	encoding->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	encoding->setDefault( 0 );
+
+#ifndef TUTTLE_PRODUCTION
+	OFX::ChoiceParamDescriptor* orientation = desc.defineChoiceParam( kParamOrientation );
+	orientation->setLabel( kParamOrientationLabel );
+	orientation->setHint( kParamOrientationHint );
+	orientation->appendOption( kParamOrientationLeftToRightTopToBottom );
+	orientation->appendOption( kParamOrientationRightToLeftTopToBottom );
+	orientation->appendOption( kParamOrientationLeftToRightBottomToTop );
+	orientation->appendOption( kParamOrientationRightToLeftBottomToTop );
+	orientation->appendOption( kParamOrientationTopToBottomLeftToRight );
+	orientation->appendOption( kParamOrientationTopToBottomRightToLeft );
+	orientation->appendOption( kParamOrientationBottomToTopLeftToRight );
+	orientation->appendOption( kParamOrientationBottomToTopRightToLeft );
+	orientation->appendOption( kParamOrientationUndefinedOrientation );
+	orientation->setDefault( 0 );
+#endif
 
 	describeWriterParamsInContext( desc, context );
 

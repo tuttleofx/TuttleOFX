@@ -18,10 +18,8 @@ enum ETuttlePluginBitDepth
 	eTuttlePluginBitDepth64,
 };
 
-static const std::string kParamDescriptor       = "descriptor";
-static const std::string kParamDescriptorLabel  = "Descriptor";
 static const std::string kParamDescriptorHint   =
-	"Descriptor\n"
+	"Select Components\n"
 	"userDefined: User defined descriptor\n"
 	"red: Red\n"
 	"green: Green\n"
@@ -45,7 +43,9 @@ static const std::string kParamDescriptorHint   =
 	"6componentElement: User defined 6 component element\n"
 	"7componentElement: User defined 7 component element\n"
 	"8componentElement: User defined 8 component element\n"
-	"undefined: Undefined descriptor\n";
+	"undefined: Undefined descriptor\n"
+	"auto: Luma for 1 channel, RGB for 3 channels and RGBA for 4 channels\n"
+;
 
 static const std::string kParamDescriptorUserDefinedDescriptor = "userDefined";
 static const std::string kParamDescriptorRed      = "red";
@@ -71,6 +71,7 @@ static const std::string kParamDescriptorUserDefined6Comp = "6componentElement";
 static const std::string kParamDescriptorUserDefined7Comp = "7componentElement";
 static const std::string kParamDescriptorUserDefined8Comp = "8componentElement";
 static const std::string kParamDescriptorUndefinedDescriptor =  "undefined";
+static const std::string kParamDescriptorAuto     =  "auto";
 
 static const std::string kParamCharacteristicHint =
 	"user defined: User defined\n"
@@ -130,6 +131,19 @@ static const std::string kParamEncodingLabel  = "Encoding";
 static const std::string kParamEncodingHint  = "Encoding mode: no encoding (none) or Run Length Encoding (rle)";
 static const std::string kParamEncodingNone = "none";
 static const std::string kParamEncodingRle = "rle";
+
+static const std::string kParamOrientation  = "orientation";
+static const std::string kParamOrientationLabel  = "Orientation";
+static const std::string kParamOrientationHint  = "Orientation mode: select image orientation";
+static const std::string kParamOrientationLeftToRightTopToBottom = "lefttorighttoptobottom";
+static const std::string kParamOrientationRightToLeftTopToBottom = "righttolefttoptobottom";
+static const std::string kParamOrientationLeftToRightBottomToTop = "bottomtotoplefttorightbtt";
+static const std::string kParamOrientationRightToLeftBottomToTop = "bottomtotoprighttoleft";
+static const std::string kParamOrientationTopToBottomLeftToRight = "toptobottomlefttoright";
+static const std::string kParamOrientationTopToBottomRightToLeft = "toptobottomrighttoleft";
+static const std::string kParamOrientationBottomToTopLeftToRight = "bottomtotoplefttoright";
+static const std::string kParamOrientationBottomToTopRightToLeft = "bottomtotoprighttoleft";
+static const std::string kParamOrientationUndefinedOrientation   = "undefined";
 
 
 }

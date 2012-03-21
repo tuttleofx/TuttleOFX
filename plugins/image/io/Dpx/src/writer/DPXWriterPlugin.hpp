@@ -46,7 +46,9 @@ protected:
 	OFX::ChoiceParam*    _colorimetric;    ///< Dpx colorimetric
 	OFX::ChoiceParam*    _packed;          ///< Dpx packed method
 	OFX::ChoiceParam*    _encoding;        ///< Dpx encoding
-
+#ifndef TUTTLE_PRODUCTION
+	OFX::ChoiceParam*    _orientation;     ///< Dpx orientation
+#endif
 	DPXWriterProcessParams params;
 };
 

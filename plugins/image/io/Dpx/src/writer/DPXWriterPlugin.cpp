@@ -17,16 +17,18 @@ DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
 	_bitDepth       = fetchChoiceParam( kTuttlePluginBitDepth );
-	_descriptor     = fetchChoiceParam( kParamDescriptor );
+	_descriptor     = fetchChoiceParam( kTuttlePluginComponents );
 	_transfer       = fetchChoiceParam( kParamTransfer );
 	_colorimetric   = fetchChoiceParam( kParamColorimetric );
 	_packed         = fetchChoiceParam( kParamPacked );
 	_encoding       = fetchChoiceParam( kParamEncoding );
+#ifndef TUTTLE_PRODUCTION
+	_orientation    = fetchChoiceParam( kParamOrientation );
+#endif
 }
 
 DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 {
-
 	return params;
 }
 
@@ -39,12 +41,10 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	WriterPlugin::render( args );
 
 	void* dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelData();
-	void* dataDstPtr = _clipDst->fetchImage( args.time )->getPixelData();
-
-
 
 	ETuttlePluginBitDepth eOutBitDepth = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
 	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
+	OFX::EPixelComponent  components   = _clipDst->getPixelComponents();
 
 	::dpx::Descriptor     eDescriptor  = ::dpx::kUndefinedDescriptor;   ///< Components type
 	::dpx::Characteristic eTransfer;
@@ -54,13 +54,14 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 	std::string filename = this->_paramFilepath->getValue();
 
+#ifndef TUTTLE_PRODUCTION
+	::dpx::Orientation orientation = static_cast< ::dpx::Orientation >( _orientation->getValue() );
+#endif
+
 	::dpx::Writer   writer;
 	::dpx::DataSize dataSize;
 
 	OutStream       stream;
-
-
-	OFX::EPixelComponent components = _clipDst->getPixelComponents();
 
 	if( ! stream.Open( filename.c_str() ) )
 	{
@@ -77,6 +78,10 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	OfxPointI size = _clipSrc->getPixelRodSize( args.time );
 
 	writer.SetImageInfo( size.x, size.y );
+
+#ifndef TUTTLE_PRODUCTION
+	writer.header.SetImageOrientation( orientation );
+#endif
 
 	int ibitDepth = 0;
 
@@ -324,6 +329,17 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 						break;
 			}
 			eDescriptor = ::dpx::kUndefinedDescriptor; break;
+		case 24:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: eDescriptor = ::dpx::kLuma; break;
+				case OFX::ePixelComponentRGB:  eDescriptor = ::dpx::kRGB; break;
+				case OFX::ePixelComponentRGBA: eDescriptor = ::dpx::kRGBA;break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write CbYCr channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
 	}
 
 	switch( _transfer->getValue() )

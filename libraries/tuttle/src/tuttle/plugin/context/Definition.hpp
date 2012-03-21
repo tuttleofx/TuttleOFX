@@ -25,6 +25,7 @@ static const std::string kTuttlePluginBitDepth64f   = "64f   64 bits floating po
 
 static const std::string kTuttlePluginComponents      = "components";
 static const std::string kTuttlePluginComponentsLabel = "Components";
+static const std::string kTuttlePluginComponentsHint  = "Select components";
 static const std::string kTuttlePluginComponentsGray  = "gray";
 static const std::string kTuttlePluginComponentsRGB   = "rgb";
 static const std::string kTuttlePluginComponentsRGBA  = "rgba";
