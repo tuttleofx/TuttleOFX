@@ -2,6 +2,9 @@
 
 #include <tuttle/host/ofx/OfxhImageEffectNodeDescriptor.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -80,6 +83,73 @@ void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDesc
 		_clips[name] = instance;
 	}
 }
+
+OfxhClipImage& OfxhClipImageSet::getClip( const std::string& name, const bool acceptPartialName )
+{
+	ClipImageMap::const_iterator it = _clips.find( name );
+
+	if( it != _clips.end() )
+		return *it->second;
+
+	std::vector<std::string> matches;
+	OfxhClipImage* res = NULL;
+	if( acceptPartialName )
+	{
+		BOOST_FOREACH( ClipImageMap::value_type& p, _clips )
+		{
+			if( boost::algorithm::starts_with( p.first, name ) )
+			{
+				matches.push_back( p.first );
+				res = p.second;
+			}
+		}
+		if( matches.size() > 1 )
+		{
+			BOOST_THROW_EXCEPTION( exception::Value()
+					<< exception::user() + "Ambiguous partial clip name \"" + name + "\". Possible values are: " + boost::algorithm::join( matches, ", " ) + "."
+				);
+		}
+	}
+
+	if( matches.size() == 0 )
+	{
+		std::ostringstream ss;
+		ss << "Clip not found (" << name << ").\n";
+		ss << "List of existing clips [";
+		BOOST_FOREACH( const ClipImageMap::value_type& c, _clips )
+		{
+			ss << "(\"" << c.first << "\":\"" << c.second->getIdentifier() << "\"), ";
+		}
+		ss << "].\n";
+		BOOST_THROW_EXCEPTION( OfxhException( ss.str() ) );
+	}
+	return *res;
+}
+
+OfxhClipImage* OfxhClipImageSet::getClipPtr( const std::string& name, const bool acceptPartialName )
+{
+	try
+	{
+		return &this->getClip( name, acceptPartialName );
+	}
+	catch(...)
+	{
+		return NULL;
+	}
+}
+
+const OfxhClipImage* OfxhClipImageSet::getClipPtr( const std::string& name, const bool acceptPartialName ) const
+{
+	try
+	{
+		return &this->getClip( name, acceptPartialName );
+	}
+	catch(...)
+	{
+		return NULL;
+	}
+}
+
 
 }
 }

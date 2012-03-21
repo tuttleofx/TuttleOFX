@@ -34,8 +34,8 @@ public:
 	void                             setName( const std::string& name )        { return ofx::imageEffect::OfxhImageEffectNodeBase::setName(name); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
-	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParamByScriptName( name ); }
-	ofx::attribute::OfxhParam&       getParamByScriptName( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParamByScriptName( name ); }
+	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name, const bool acceptPartialName = false ) const { return ofx::attribute::OfxhParamSet::getParamByScriptName( name, acceptPartialName ); }
+	ofx::attribute::OfxhParam&       getParamByScriptName( const std::string& name, const bool acceptPartialName = false )       { return ofx::attribute::OfxhParamSet::getParamByScriptName( name, acceptPartialName ); }
 	const ofx::attribute::OfxhParam& getParam( const std::size_t  index ) const { return ofx::attribute::OfxhParamSet::getParam( index ); }
 	ofx::attribute::OfxhParam&       getParam( const std::size_t  index )       { return ofx::attribute::OfxhParamSet::getParam( index ); }
 
@@ -65,10 +65,10 @@ public:
 
 	void connect( const INode& sourceEffect, attribute::Attribute& attr );
 
-	attribute::ClipImage&       getClip( const std::string& name )       { return dynamic_cast<attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
-	const attribute::ClipImage& getClip( const std::string& name ) const { return dynamic_cast<attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
+	attribute::ClipImage&       getClip( const std::string& name, const bool acceptPartialName = false )       { return dynamic_cast<attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
+	const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const { return dynamic_cast<const attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
 
-	attribute::Attribute& getAttribute( const std::string& name ) { return dynamic_cast<attribute::ClipImage&>( getClip( name ) ); }
+	attribute::Attribute& getAttribute( const std::string& name ) { return getClip( name ); }
 	attribute::Attribute& getSingleInputAttribute()
 	{
 		ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
@@ -94,7 +94,7 @@ public:
 		else // if( inClips.empty() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
-			    << exception::user( "Connection failed : no clip." ) );
+			    << exception::user( "No source clip." ) );
 		}
 		return dynamic_cast<attribute::ClipImage&>( *inAttr );
 	}

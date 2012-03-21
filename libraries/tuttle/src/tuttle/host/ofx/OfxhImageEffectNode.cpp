@@ -715,7 +715,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		// generator is the extent
 		rod.x1 = rod.y1 = 0;
 		getProjectExtent( rod.x2, rod.y2 );
-		attribute::OfxhClipImage& clip = getClip( kOfxImageEffectOutputClipName );
+		const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectOutputClipName );
 		rod = clip.fetchRegionOfDefinition( time );
 		/// @todo tuttle: maybe RoD problems with Generator and Read here... to check !
 	}
@@ -726,7 +726,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		try
 		{
 			// filter and paint default to the input clip
-			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
 			/// @todo tuttle: depending on framesNeeded !
 			rod = clip.fetchRegionOfDefinition( time );
 		}
@@ -744,8 +744,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		try
 		{
 			// transition is the union of the two clips
-			attribute::OfxhClipImage& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
-			attribute::OfxhClipImage& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
+			const attribute::OfxhClipImage& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
+			const attribute::OfxhClipImage& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
 			/// @todo tuttle: depending on framesNeeded !
 			rod = clipFrom.fetchRegionOfDefinition( time );
 			rod = rectUnion( rod, clipTo.fetchRegionOfDefinition( time ) );

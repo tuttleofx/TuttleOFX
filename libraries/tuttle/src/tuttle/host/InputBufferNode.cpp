@@ -64,13 +64,13 @@ const ofx::attribute::OfxhParam& InputBufferNode::getParam( const std::string& n
 		<< exception::dev( "No param on InputBufferNode." ) );
 }
 
-ofx::attribute::OfxhParam&       InputBufferNode::getParamByScriptName( const std::string& name )
+ofx::attribute::OfxhParam&       InputBufferNode::getParamByScriptName( const std::string& name, const bool acceptPartialName )
 {
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::dev( "No param on InputBufferNode." ) );
 }
 
-const ofx::attribute::OfxhParam& InputBufferNode::getParamByScriptName( const std::string& name ) const
+const ofx::attribute::OfxhParam& InputBufferNode::getParamByScriptName( const std::string& name, const bool acceptPartialName ) const
 {
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::dev( "No param on InputBufferNode." ) );
@@ -88,7 +88,7 @@ const ofx::attribute::OfxhParam& InputBufferNode::getParam( const std::size_t in
 		<< exception::dev( "No param on InputBufferNode." ) );
 }
 
-attribute::ClipImage&       InputBufferNode::getClip( const std::string& name )
+attribute::ClipImage&       InputBufferNode::getClip( const std::string& name, const bool acceptPartialName )
 {
 	if( name != kOfxImageEffectOutputClipName )
 	{
@@ -98,7 +98,7 @@ attribute::ClipImage&       InputBufferNode::getClip( const std::string& name )
 	return _outputClip;
 }
 
-const attribute::ClipImage&       InputBufferNode::getClip( const std::string& name ) const
+const attribute::ClipImage&       InputBufferNode::getClip( const std::string& name, const bool acceptPartialName ) const
 {
 	if( name != kOfxImageEffectOutputClipName )
 	{

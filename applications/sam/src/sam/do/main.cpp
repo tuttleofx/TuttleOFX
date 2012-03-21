@@ -340,7 +340,7 @@ int main( int argc, char** argv )
 				all_options.add( infoOptions ).add( confOptions ).add( openfxOptions );
 
 				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
-
+				
 				BOOST_FOREACH( const std::vector<std::string>& command, cl_commands )
 				{
 					std::string userNodeName = command[0];
@@ -382,7 +382,6 @@ int main( int argc, char** argv )
 						//TUTTLE_COUT( "[" << nodeFullName << "]" );
 
 						ttl::Graph::Node& currentNode = graph.createNode( nodeFullName );
-						nodes.push_back( &currentNode );
 
 						// Check priority flags:
 						// If one flag to display informations is used in command line,
@@ -505,10 +504,10 @@ int main( int argc, char** argv )
 						}
 						if( node_vm.count( "param" ) )
 						{
-							const std::string paramName = node_vm["param"].as<std::string > ();
+							const std::string attributeName = node_vm["param"].as<std::string > ();
 							TUTTLE_COUT( "\tsam do " << nodeFullName );
-							TUTTLE_COUT( _color._blue << "PARAM: " << _color._green << paramName << _color._std );
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
+							TUTTLE_COUT( _color._blue << "PARAM: " << _color._green << attributeName << _color._std );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT(
 										 "\t" << _color._red <<
@@ -528,24 +527,24 @@ int main( int argc, char** argv )
 
 						if( node_vm.count( "parameter-type" ) )
 						{
-							const std::string paramName = node_vm["parameter-type"].as<std::string > ();
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
+							const std::string attributeName = node_vm["parameter-type"].as<std::string > ();
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
 							TUTTLE_COUT( param.getParamTypeName() );
 							exit( 0 );
 						}
 
 						if( node_vm.count( "parameter-values" ) )
 						{
-							const std::string paramName = node_vm["parameter-values"].as<std::string > ();
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
+							const std::string attributeName = node_vm["parameter-values"].as<std::string > ();
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
 							coutParameterValues( std::cout, param );
 							exit( 0 );
 						}
 
 						if( node_vm.count( "parameter-default" ) )
 						{
-							const std::string paramName = node_vm["parameter-default"].as<std::string > ();
-							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( paramName );
+							const std::string attributeName = node_vm["parameter-default"].as<std::string > ();
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
 							
 							const ttl::ofx::property::OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropDefault );
 							TUTTLE_TCOUT( getFormattedStringValue( prop ) );
@@ -558,55 +557,146 @@ int main( int argc, char** argv )
 							graph.renameNode( currentNode, nodeId );
 						}
 
-						// Analyse parameters
+						// Analyse attributes: parameters / clips
+						typedef std::pair<ttl::ofx::attribute::OfxhClipImage*, std::string> ClipAndConnection;
+						std::vector< ClipAndConnection > clipsToConnect;
+						
 						static const boost::regex re_param( "(?:([a-zA-Z_][a-zA-Z0-9_]*)=)?(.*)" );
 						if( node_vm.count( "param-values" ) )
 						{
-
 							bool orderedParams = true;
 							std::size_t paramIdx = 0;
 							const std::vector<std::string> params = node_vm["param-values"].as< std::vector<std::string> >();
 
-							BOOST_FOREACH( const std::string& p, params )
+							BOOST_FOREACH( const std::string& paramStr, params )
 							{
 								boost::cmatch matches;
-								if( !boost::regex_match( p.c_str(), matches, re_param ) )
+								if( !boost::regex_match( paramStr.c_str(), matches, re_param ) )
 								{
 									BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-														   << tuttle::exception::user() + "Parameter can't be parsed \"" + p + "\"." );
+														   << tuttle::exception::user() + "Parameter can't be parsed \"" + paramStr + "\"." );
 								}
 								if( matches.size() != 3 )
 								{
 									// should never happen
 									BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-														   << tuttle::exception::user() + "Parameter can't be parsed \"" + p + "\". " + matches.size() + " matches." );
+														   << tuttle::exception::user() + "Parameter can't be parsed \"" + paramStr + "\". " + matches.size() + " matches." );
 								}
-								const std::string paramName = matches[1];
-								const std::string paramValue = matches[2];
-								if( paramName.size() )
+								const std::string attributeName = matches[1];
+								const std::string attributeValue = matches[2];
+								if( attributeName.size() )
 								{
+									// if we start using non-ordered param (== named param)
+									// we can't use ordered parameters anymore
 									orderedParams = false;
 								}
 								else if( orderedParams == false )
 								{
 									BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-														   << tuttle::exception::user() + "Non-keyword parameter after keyword parameter. \"" + p + "\"." );
+														   << tuttle::exception::user() + "Non-keyword parameter after keyword parameter. \"" + paramStr + "\"." );
 								}
-								//								TUTTLE_COUT( "* " << p );
+								//								TUTTLE_COUT( "* " << paramStr );
 								//								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
 
 								// setup the node with parameter value in tuttle.
-								if( paramName.size() )
+								if( attributeName.size() )
 								{
-									currentNode.getParamByScriptName( paramName ).setValueFromExpression( paramValue );
+									// set a value to a named parameter or clip
+									using namespace ttl::ofx::attribute;
+									OfxhParam* param = NULL;
+									param = currentNode.getParamSet().getParamPtrByScriptName( attributeName );
+									
+									OfxhClipImage* clip = NULL;
+									
+									if( param == NULL )
+									{
+										// search in clips
+										clip = currentNode.getClipImageSet().getClipPtr( attributeName );
+									}
+									
+									if( param == NULL &&
+									    clip == NULL )
+									{
+										std::vector<std::string> allAttr;
+										std::vector<std::string> paramMatches;
+										std::vector<std::string> clipMatches;
+										//if( acceptPartialName ) // if sam-do accept partial names
+										{
+											BOOST_FOREACH( OfxhParamSet::ParamMap::value_type& p, currentNode.getParamSet().getParamsByScriptName() )
+											{
+												allAttr.push_back( p.first );
+												if( boost::algorithm::starts_with( p.first, attributeName ) )
+												{
+													paramMatches.push_back( p.first );
+													param = p.second;
+												}
+											}
+											BOOST_FOREACH( OfxhClipImageSet::ClipImageMap::value_type& c, currentNode.getClipImageSet().getClips() )
+											{
+												allAttr.push_back( c.first );
+												if( boost::algorithm::starts_with( c.first, attributeName ) )
+												{
+													clipMatches.push_back( c.first );
+													clip = c.second;
+												}
+											}
+											if( paramMatches.size() + clipMatches.size() > 1 )
+											{
+												std::vector<std::string> matches;
+												matches.insert( matches.begin(), paramMatches.begin(), paramMatches.end() );
+												matches.insert( matches.end(), clipMatches.begin(), clipMatches.end() );
+												BOOST_THROW_EXCEPTION( ttl::exception::Value()
+														<< ttl::exception::user() + "Ambiguous partial attribute name \"" + attributeName + "\". Possible values are: " + boost::algorithm::join( matches, ", " ) + "."
+													);
+											}
+										}
+
+										if( paramMatches.size() + clipMatches.size() == 0 )
+										{
+											BOOST_THROW_EXCEPTION( ttl::exception::Value()
+													<< ttl::exception::user() + "Attribute name \"" + attributeName + "\" not found. Possible values are: " + boost::algorithm::join( allAttr, ", " ) + "."
+												);
+										}
+									}
+									
+									if( param != NULL )
+									{
+										param->setValueFromExpression( attributeValue );
+									}
+									else if( clip != NULL )
+									{
+										clipsToConnect.push_back( ClipAndConnection( clip, attributeValue ) );
+									}
+									else
+									{
+										BOOST_THROW_EXCEPTION( ttl::exception::Value()
+											<< ttl::exception::user() + "Parameter or clip name " + tuttle::quotes(attributeName) + " not found." 
+											);
+									}
 								}
 								else
 								{
-									currentNode.getParam( paramIdx ).setValueFromExpression( paramValue );
+									currentNode.getParam( paramIdx ).setValueFromExpression( attributeValue );
 								}
 								++paramIdx;
 							}
 						}
+						
+						
+						if( nodes.size() > 0 )
+						{
+							if( clipsToConnect.size() == 0 )
+							{
+								// connect the new node to the last one
+								graph.connect( *nodes.back(), currentNode );
+							}
+							else
+							{
+								///@todo connect clips
+							}
+						}
+
+						nodes.push_back( &currentNode );
 					}
 					catch( const boost::program_options::error& e )
 					{
@@ -664,10 +754,7 @@ int main( int argc, char** argv )
 				}
 			}
 		}
-
-		// Connect all nodes linearly
-		graph.connect( nodes );
-
+		
 		// Execute the graph
 		ttl::ComputeOptions options;
 		if( range.size() >= 2 )

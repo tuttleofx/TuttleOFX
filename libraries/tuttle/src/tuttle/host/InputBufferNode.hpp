@@ -143,13 +143,13 @@ public:
 	const attribute::Attribute& getSingleInputAttribute() const;
 	ofx::attribute::OfxhParam&       getParam( const std::string& name );
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const;
-	ofx::attribute::OfxhParam&       getParamByScriptName( const std::string& name );
-	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name ) const;
+	ofx::attribute::OfxhParam&       getParamByScriptName( const std::string& name, const bool acceptPartialName = false );
+	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name, const bool acceptPartialName = false ) const;
 	ofx::attribute::OfxhParam&       getParam( const std::size_t index );
 	const ofx::attribute::OfxhParam& getParam( const std::size_t index ) const;
 
-	attribute::ClipImage&       getClip( const std::string& name );
-	const attribute::ClipImage& getClip( const std::string& name ) const;
+	attribute::ClipImage&       getClip( const std::string& name, const bool acceptPartialName = false );
+	const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const;
 
 	ofx::attribute::OfxhParamSet& getParamSet();
 	const ofx::attribute::OfxhParamSet& getParamSet() const;

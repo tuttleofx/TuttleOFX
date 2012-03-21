@@ -3,9 +3,11 @@
 
 #include "OfxhParamSetAccessor.hpp"
 #include "OfxhParam.hpp"
+
 #include <tuttle/host/ofx/OfxhIObject.hpp>
 
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/foreach.hpp>
 
 #include <map>
 
@@ -57,46 +59,22 @@ public:
 	const ParamMap& getParams() const { return _params; }
 	ParamMap&       getParams()       { return _params; }
 
+	const ParamMap& getParamsByScriptName() const { return _paramsByScriptName; }
+	ParamMap&       getParamsByScriptName()       { return _paramsByScriptName; }
+
 	const ParamVector& getParamVector() const { return _paramVector; }
 	ParamVector&       getParamVector()       { return _paramVector; }
 
-	OfxhParam& getParam( const std::string& name )
-	{
-		ParamMap::iterator it = _params.find( name );
-		if( it == _params.end() )
-		{
-			BOOST_THROW_EXCEPTION( exception::BadIndex()
-					<< exception::user() + "Param name \"" + name + "\" not found."
-				);
-		}
-		return *it->second;
-	}
+	OfxhParam& getParam( const std::string& name );
 	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>( this )->getParam( name ); }
 
-	OfxhParam& getParamByScriptName( const std::string& scriptName )
-	{
-		ParamMap::iterator it = _paramsByScriptName.find( scriptName );
-		if( it == _paramsByScriptName.end() )
-		{
-			BOOST_THROW_EXCEPTION( exception::BadIndex()
-					<< exception::user() + "Param script name \"" + scriptName + "\" not found."
-				);
-		}
-		return *it->second;
-	}
-	const OfxhParam& getParamByScriptName( const std::string& name ) const { return const_cast<This*>( this )->getParamByScriptName( name ); }
+	OfxhParam& getParamByScriptName( const std::string& scriptName, const bool acceptPartialName = false );
+	const OfxhParam& getParamByScriptName( const std::string& name, const bool acceptPartialName = false ) const { return const_cast<This*>( this )->getParamByScriptName( name, acceptPartialName ); }
+	OfxhParam* getParamPtrByScriptName( const std::string& name, const bool acceptPartialName = false );
+	const OfxhParam* getParamPtrByScriptName( const std::string& name, const bool acceptPartialName = false ) const;
 
 	// get the param
-	OfxhParam& getParam( const std::size_t index )
-	{
-		if( index > _paramVector.size() )
-			BOOST_THROW_EXCEPTION( exception::BadIndex()
-					<< exception::user() + "Param not found, index out of range. (index=" + index + ", nb params=" + _paramVector.size() + ")"
-				);
-
-		return _paramVector[index];
-	}
-
+	OfxhParam& getParam( const std::size_t index );
 	const OfxhParam& getParam( const std::size_t index ) const { return const_cast<This*>( this )->getParam( index ); }
 
 	#ifndef SWIG

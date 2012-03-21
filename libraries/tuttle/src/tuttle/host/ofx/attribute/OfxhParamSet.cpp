@@ -1,5 +1,8 @@
 #include "OfxhParamSet.hpp"
 
+
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/foreach.hpp>
 
 
@@ -67,6 +70,87 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 	//	}
 	//	_allParams[name] = instance;
 //}
+
+OfxhParam& OfxhParamSet::getParam( const std::string& name )
+{
+	ParamMap::iterator it = _params.find( name );
+	if( it == _params.end() )
+	{
+		BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Param name \"" + name + "\" not found."
+			);
+	}
+	return *it->second;
+}
+
+OfxhParam& OfxhParamSet::getParamByScriptName( const std::string& scriptName, const bool acceptPartialName )
+{
+	ParamMap::iterator it = _paramsByScriptName.find( scriptName );
+	if( it != _paramsByScriptName.end() )
+		return *it->second;
+
+	std::vector<std::string> matches;
+	OfxhParam* res = NULL;
+	if( acceptPartialName )
+	{
+		BOOST_FOREACH( ParamMap::value_type& p, _paramsByScriptName )
+		{
+			if( boost::algorithm::starts_with( p.first, scriptName ) )
+			{
+				matches.push_back( p.first );
+				res = p.second;
+			}
+		}
+		if( matches.size() > 1 )
+		{
+			BOOST_THROW_EXCEPTION( exception::Value()
+					<< exception::user() + "Ambiguous partial param script name \"" + scriptName + "\". Possible values are: " + boost::algorithm::join( matches, ", " ) + "."
+				);
+		}
+	}
+
+	if( matches.size() == 0 )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Param script name \"" + scriptName + "\" not found."
+			);
+	}
+	return *res;
+}
+OfxhParam* OfxhParamSet::getParamPtrByScriptName( const std::string& name, const bool acceptPartialName )
+{
+	try
+	{
+		return &this->getParamByScriptName( name, acceptPartialName );
+	}
+	catch(...)
+	{
+		return NULL;
+	}
+}
+const OfxhParam* OfxhParamSet::getParamPtrByScriptName( const std::string& name, const bool acceptPartialName ) const
+{
+	try
+	{
+		return &this->getParamByScriptName( name, acceptPartialName );
+	}
+	catch(...)
+	{
+		return NULL;
+	}
+}
+
+// get the param
+OfxhParam& OfxhParamSet::getParam( const std::size_t index )
+{
+	if( index > _paramVector.size() )
+		BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Param not found, index out of range. (index=" + index + ", nb params=" + _paramVector.size() + ")"
+			);
+
+	return _paramVector[index];
+}
+
 
 void OfxhParamSet::addParam( OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {

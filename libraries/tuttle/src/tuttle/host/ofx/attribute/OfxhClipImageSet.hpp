@@ -73,24 +73,17 @@ public:
 	/**
 	 * get the clip
 	 */
-	OfxhClipImage& getClip( const std::string& name ) const
+	OfxhClipImage& getClip( const std::string& name, const bool acceptPartialName = false );
+	
+	const OfxhClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const
 	{
-		ClipImageMap::const_iterator it = _clips.find( name );
-
-		if( it == _clips.end() )
-		{
-			std::ostringstream ss;
-			ss << "Clip not found (" << name << ").\n";
-			ss << "List of existing clips [";
-			BOOST_FOREACH( const ClipImageMap::value_type& c, _clips )
-			{
-				ss << "(\"" << c.first << "\":\"" << c.second->getIdentifier() << "\"), ";
-			}
-			ss << "].\n";
-			BOOST_THROW_EXCEPTION( OfxhException( ss.str() ) );
-		}
-		return *it->second;
+		 return const_cast<This*>( this )->getClip( name, acceptPartialName );
 	}
+
+	const OfxhClipImage* getClipPtr( const std::string& name, const bool acceptPartialName = false ) const;
+	
+	OfxhClipImage* getClipPtr( const std::string& name, const bool acceptPartialName = false );
+
 
 	/**
 	 * add a clip
