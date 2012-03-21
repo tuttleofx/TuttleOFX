@@ -102,3 +102,6 @@ else { alias yaml : /user-config//yaml ; }
 if $(3RDPARTY_ZLIB) = 1
      { alias zlib : $(3RD_PARTY)/zlib ; }
 else { alias zlib : /user-config//zlib ; }
+
+explicit imagemagick ;
+

@@ -38,19 +38,12 @@
 ##      ./bjam.sh variant=release [target]                                   #
 ##                                                                           #
 ##############################################################################
-
 import os ;
 import path ;
 import feature ;
 
 # versions of gcc with specific template-depth
 gcc-no-overflow = 4.5.0   4.5.1   4.5.2   4.5.3   4.6.0   4.6.1   4.6.2 ;
-
-local rule check-required-env ( var ) {
-	if ! $($(var)) {
-		EXIT Missing variable $(var) ;
-	}
-}
 
 include tools/bjamf/rules.jam ;
 
@@ -68,18 +61,6 @@ constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
 
 # can be found with command: MagickCore-config --libs
 constant	MAGICK_LIBS     : " -L/usr/lib64 -L/usr/lib64 -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lICE -lX11 -lXt -lz -lm -lgomp -lpthread" ;
-
-
-##############################################################################
-# OpenGL
-##############################################################################
-
-if [ os.name ] = NT
-    {   lib opengl32 ;  alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX
-    {   alias opengl : ; }
-else if [ os.name ] = MACOSX
-    {   alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 
 ##############################################################################
@@ -184,8 +165,8 @@ use-project     /tuttletests    : libraries/tuttle/tests ;
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-use-project /sam-tools          : applications/sam/ ;
-alias       /sam                : /sam-tools ;
+use-project     /sam-tools      : applications/sam/ ;
+alias           /sam            : /sam-tools ;
 
 #use-project    /pyTuttle       : applications/pyTuttle ;
 #use-project    /samtests       : applications/sam-ls/tests ;
@@ -212,7 +193,7 @@ explicit        /tuttle
 
 		/sam-tools
 		/qsam
-#               /samtests
+#		/samtests
 		/plugins
 		/pyTuttle
 		/tests
