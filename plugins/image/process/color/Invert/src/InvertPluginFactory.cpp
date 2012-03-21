@@ -23,7 +23,7 @@ namespace invert {
 void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleInvert", "Invert",
-	                "Image inverter" );
+			"Image inverter" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription(
@@ -55,37 +55,48 @@ void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-	/// @todo tuttle: support Alpha images.
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-//	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-//	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::GroupParamDescriptor* processGroup = desc.defineGroupParam( kParamProcessGroup );
-	processGroup->setLabel( "Channels" );
+	processGroup->setLabel( kParamProcessGroupLabel );
+
+	OFX::BooleanParamDescriptor* processGray = desc.defineBooleanParam( kParamProcessGray );
+	processGray->setLabel( kParamProcessGrayLabel );
+	processGray->setHint( kParamProcessGrayHint );
+	processGray->setDefault( true );
+	processGray->setParent( processGroup );
 
 	OFX::BooleanParamDescriptor* processR = desc.defineBooleanParam( kParamProcessR );
-	processR->setLabel( "R" );
+	processR->setLabel( kParamProcessRLabel );
+	processR->setHint( kParamProcessRHint );
 	processR->setDefault( true );
 	processR->setParent( processGroup );
 
 	OFX::BooleanParamDescriptor* processG = desc.defineBooleanParam( kParamProcessG );
-	processG->setLabel( "G" );
+	processG->setLabel( kParamProcessGLabel );
+	processG->setHint( kParamProcessGHint );
 	processG->setDefault( true );
 	processG->setParent( processGroup );
 
 	OFX::BooleanParamDescriptor* processB = desc.defineBooleanParam( kParamProcessB );
-	processB->setLabel( "B" );
+	processB->setLabel( kParamProcessBLabel );
+	processB->setHint( kParamProcessBHint );
 	processB->setDefault( true );
 	processB->setParent( processGroup );
 
 	OFX::BooleanParamDescriptor* processA = desc.defineBooleanParam( kParamProcessA );
-	processA->setLabel( "A" );
+	processA->setLabel( kParamProcessALabel );
+	processA->setHint( kParamProcessAHint );
 	processA->setDefault( false );
 	processA->setParent( processGroup );
 }

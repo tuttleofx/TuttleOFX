@@ -44,28 +44,232 @@ void InvertProcess<View>::preProcess()
 template<class View>
 void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	TUTTLE_COUT("undefined template");
+}
+
+
+template<>
+void InvertProcess<terry::rgba32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
 	using namespace boost::gil;
-	using namespace terry;
-	using namespace terry::algorithm;
-	using namespace terry::color;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
 
-	View src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
-	                          procWindowSize.x, procWindowSize.y );
-	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-	                          procWindowSize.x, procWindowSize.y );
+	terry::rgba32f_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
+	terry::rgba32f_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
 
-	if( _params._red &&
-	    _params._green &&
-	    _params._blue )
+	invertRGBAPixels<terry::rgba32f_view_t>( src, dst, _params._red, _params._green, _params._blue, _params._alpha );
+}
+
+template<>
+void InvertProcess<terry::rgba32_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::rgba32_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
+	terry::rgba32_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
+
+	invertRGBAPixels<terry::rgba32_view_t>( src, dst, _params._red, _params._green, _params._blue, _params._alpha );
+}
+
+template<>
+void InvertProcess<terry::rgba16_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::rgba16_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
+	terry::rgba16_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
+
+	invertRGBAPixels<terry::rgba16_view_t>( src, dst, _params._red, _params._green, _params._blue, _params._alpha );
+}
+
+template<>
+void InvertProcess<terry::rgba8_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::rgba8_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
+	terry::rgba8_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+				  procWindowSize.x, procWindowSize.y );
+
+	invertRGBAPixels<terry::rgba8_view_t>( src, dst, _params._red, _params._green, _params._blue, _params._alpha );
+}
+
+template<>
+void InvertProcess<terry::rgb32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::rgb32f_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::rgb32f_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertRGBPixels<terry::rgb32f_view_t>( src, dst, _params._red, _params._green, _params._blue );
+}
+
+template<>
+void InvertProcess<terry::rgb32_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::rgb32_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::rgb32_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertRGBPixels<terry::rgb32_view_t>( src, dst, _params._red, _params._green, _params._blue );
+}
+
+template<>
+void InvertProcess<terry::rgb16_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::rgb16_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::rgb16_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertRGBPixels<terry::rgb16_view_t>( src, dst, _params._red, _params._green, _params._blue );
+}
+
+template<>
+void InvertProcess<terry::rgb8_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::rgb8_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::rgb8_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertRGBPixels<terry::rgb8_view_t>( src, dst, _params._red, _params._green, _params._blue );
+}
+
+template<>
+void InvertProcess<terry::gray32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::gray32f_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::gray32f_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertGrayPixels<terry::gray32f_view_t>( src, dst, _params._gray );
+}
+
+template<>
+void InvertProcess<terry::gray32_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::gray32_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::gray32_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertGrayPixels<terry::gray32_view_t>( src, dst, _params._gray );
+}
+
+template<>
+void InvertProcess<terry::gray16_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::gray16_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::gray16_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertGrayPixels<terry::gray16_view_t>( src, dst, _params._gray );
+}
+
+template<>
+void InvertProcess<terry::gray8_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
+
+	terry::gray8_view_t src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+	terry::gray8_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1, procWindowSize.x, procWindowSize.y );
+
+
+	invertGrayPixels<terry::gray8_view_t>( src, dst, _params._gray );
+}
+
+template<class View>
+template<typename WorkView >
+void InvertProcess<View>::invertRGBAPixels( WorkView& src, WorkView& dst, bool red, bool green, bool blue, bool alpha )
+{
+	using namespace boost::gil;
+	using namespace terry;
+	using namespace terry::algorithm;
+	using namespace terry::color;
+
+	if( red && green && blue )
 	{
 		// If all channel colors are inverted, which is the most used case
 		// do it in one pass
-		if( _params._alpha )
+		if( alpha )
 		{
 			transform_pixels_progress(
 				src,
@@ -86,14 +290,13 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 	}
 	else
 	{
-		/// @todo tuttle: add a templated function to support Gray images.
 		{
 			typedef red_t LocalChannel;
-			if( _params._red )
+			if( red )
 			{
 				transform_pixels_progress(
-					channel_view<LocalChannel,View>(src),
-					channel_view<LocalChannel,View>(dst),
+					channel_view<LocalChannel,WorkView>(src),
+					channel_view<LocalChannel,WorkView>(dst),
 					transform_pixel_by_channel_t<channel_invert_t>(),
 					*this
 					);
@@ -106,11 +309,11 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 		}
 		{
 			typedef green_t LocalChannel;
-			if( _params._green )
+			if( green )
 			{
 				transform_pixels_progress(
-					channel_view<LocalChannel,View>(src),
-					channel_view<LocalChannel,View>(dst),
+					channel_view<LocalChannel,WorkView>(src),
+					channel_view<LocalChannel,WorkView>(dst),
 					transform_pixel_by_channel_t<channel_invert_t>(),
 					*this
 					);
@@ -123,11 +326,11 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 		}
 		{
 			typedef blue_t LocalChannel;
-			if( _params._blue )
+			if( blue )
 			{
 				transform_pixels_progress(
-					channel_view<LocalChannel,View>(src),
-					channel_view<LocalChannel,View>(dst),
+					channel_view<LocalChannel,WorkView>(src),
+					channel_view<LocalChannel,WorkView>(dst),
 					transform_pixel_by_channel_t<channel_invert_t>(),
 					*this
 					);
@@ -140,11 +343,11 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 		}
 		{
 			typedef alpha_t LocalChannel;
-			if( _params._alpha )
+			if( alpha )
 			{
 				transform_pixels_progress(
-					channel_view<LocalChannel,View>(src),
-					channel_view<LocalChannel,View>(dst),
+					channel_view<LocalChannel,WorkView>(src),
+					channel_view<LocalChannel,WorkView>(dst),
 					transform_pixel_by_channel_t<channel_invert_t>(),
 					*this
 					);
@@ -156,7 +359,104 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 			}
 		}
 	}
+}
 
+template<class View>
+template<typename WorkView >
+void InvertProcess<View>::invertRGBPixels( WorkView& src, WorkView& dst, bool red, bool green, bool blue )
+{
+	using namespace boost::gil;
+	using namespace terry;
+	using namespace terry::algorithm;
+	using namespace terry::color;
+
+	if( red && green && blue )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
+			*this
+			);
+	}
+	else
+	{
+		{
+			typedef red_t LocalChannel;
+			if( red )
+			{
+				transform_pixels_progress(
+					channel_view<LocalChannel,WorkView>(src),
+					channel_view<LocalChannel,WorkView>(dst),
+					transform_pixel_by_channel_t<channel_invert_t>(),
+					*this
+					);
+			}
+			else
+			{
+				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+				this->progressForward( dst.size() );
+			}
+		}
+		{
+			typedef green_t LocalChannel;
+			if( green )
+			{
+				transform_pixels_progress(
+					channel_view<LocalChannel,WorkView>(src),
+					channel_view<LocalChannel,WorkView>(dst),
+					transform_pixel_by_channel_t<channel_invert_t>(),
+					*this
+					);
+			}
+			else
+			{
+				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+				this->progressForward( dst.size() );
+			}
+		}
+		{
+			typedef blue_t LocalChannel;
+			if( blue )
+			{
+				transform_pixels_progress(
+					channel_view<LocalChannel,WorkView>(src),
+					channel_view<LocalChannel,WorkView>(dst),
+					transform_pixel_by_channel_t<channel_invert_t>(),
+					*this
+					);
+			}
+			else
+			{
+				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+				this->progressForward( dst.size() );
+			}
+		}
+	}
+}
+
+template<class View>
+template<typename WorkView >
+void InvertProcess<View>::invertGrayPixels( WorkView& src, WorkView& dst, bool gray )
+{
+	using namespace boost::gil;
+	using namespace terry;
+	using namespace terry::algorithm;
+
+	if( gray )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			transform_pixel_by_channel_t<terry::color::channel_invert_t>(),
+			*this
+			);
+	}
+	else
+	{
+		copy_pixels( src, dst );
+		this->progressForward( dst.size() );
+	}
 }
 
 }

@@ -17,16 +17,18 @@ InvertPlugin::InvertPlugin( OfxImageEffectHandle handle )
 	_paramProcessG = fetchBooleanParam( kParamProcessG );
 	_paramProcessB = fetchBooleanParam( kParamProcessB );
 	_paramProcessA = fetchBooleanParam( kParamProcessA );
+	_paramProcessGray = fetchBooleanParam( kParamProcessGray );
 }
 
 InvertProcessParams InvertPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	InvertProcessParams params;
 
-	params._red = _paramProcessR->getValue();
+	params._red   = _paramProcessR->getValue();
 	params._green = _paramProcessG->getValue();
-	params._blue = _paramProcessB->getValue();
+	params._blue  = _paramProcessB->getValue();
 	params._alpha = _paramProcessA->getValue();
+	params._gray  = _paramProcessGray->getValue();
 
 	return params;
 }
@@ -49,7 +51,15 @@ void InvertPlugin::render( const OFX::RenderArguments& args )
 			return;
 		}
 		case OFX::ePixelComponentRGB:
+		{
+			doGilRender<InvertProcess, false, boost::gil::rgb_layout_t>( *this, args, bitDepth );
+			return;
+		}
 		case OFX::ePixelComponentAlpha:
+		{
+			doGilRender<InvertProcess, false, boost::gil::gray_layout_t>( *this, args, bitDepth );
+			return;
+		}
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
 		{
