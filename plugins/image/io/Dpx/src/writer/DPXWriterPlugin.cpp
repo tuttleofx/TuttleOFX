@@ -4,7 +4,9 @@
 
 #include <boost/filesystem.hpp>
 
+#include <vector>
 #include <boost/gil/gil_all.hpp>
+#include <memory/OfxAllocator.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -40,11 +42,12 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
 
-	void* dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelData();
+	::tuttle::plugin::OfxAllocator<char> data;
 
 	ETuttlePluginBitDepth eOutBitDepth = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
 	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
-	OFX::EPixelComponent  components   = _clipDst->getPixelComponents();
+	OFX::EPixelComponent  components   = _clipSrc->getPixelComponents();
+	OfxPointI             size         = _clipSrc->getPixelRodSize( args.time );
 
 	::dpx::Descriptor     eDescriptor  = ::dpx::kUndefinedDescriptor;   ///< Components type
 	::dpx::Characteristic eTransfer;
@@ -75,15 +78,15 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 	writer.SetFileInfo( filename.c_str(), 0, "TuttleOFX DPX Writer", "project", "copyright", ~0, true );
 
-	OfxPointI size = _clipSrc->getPixelRodSize( args.time );
-
 	writer.SetImageInfo( size.x, size.y );
 
 #ifndef TUTTLE_PRODUCTION
 	writer.header.SetImageOrientation( orientation );
 #endif
 
-	int ibitDepth = 0;
+	int iBitDepth = 0;
+	int pixelSize = 0;
+	std::string inputComponentString = "unknown";
 
 	switch ( eOfxBitDepth )
 	{
@@ -92,30 +95,27 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
 				<< exception::user( "Dpx: Unable to compute custom or non bit depth" ) );
 			break;
-		case OFX::eBitDepthUByte:  dataSize = ::dpx::kByte; break;
-		case OFX::eBitDepthUShort: dataSize = ::dpx::kWord; break;
-		case OFX::eBitDepthFloat:  dataSize = ::dpx::kFloat; break;
+		case OFX::eBitDepthUByte:  dataSize = ::dpx::kByte;  pixelSize = 1; break;
+		case OFX::eBitDepthUShort: dataSize = ::dpx::kWord;  pixelSize = 2; break;
+		case OFX::eBitDepthFloat:  dataSize = ::dpx::kFloat; pixelSize = 4; break;
 	}
-
-	switch ( eOutBitDepth )
-	{
-		case eTuttlePluginBitDepth8:  ibitDepth = 8;  break;
-		case eTuttlePluginBitDepth10: ibitDepth = 10; break;
-		case eTuttlePluginBitDepth12: ibitDepth = 12; break;
-		case eTuttlePluginBitDepth16: ibitDepth = 16; break;
-		case eTuttlePluginBitDepth32: ibitDepth = 32; break;
-		case eTuttlePluginBitDepth64: ibitDepth = 64; break;
-	}
-
-	std::string inputComponentString = "unknown";
-
 	switch( components )
 	{
-		case OFX::ePixelComponentAlpha: inputComponentString = "Gray/Alpha"; break;
-		case OFX::ePixelComponentRGB  : inputComponentString = "RGB"; break;
-		case OFX::ePixelComponentRGBA : inputComponentString = "RGBA"; break;
+		case OFX::ePixelComponentAlpha: inputComponentString = "Gray/Alpha"; break; // pixelSize *= 1;
+		case OFX::ePixelComponentRGB  : inputComponentString = "RGB";  pixelSize *= 3; break;
+		case OFX::ePixelComponentRGBA : inputComponentString = "RGBA"; pixelSize = 4;  break;
 		default: break;
 	}
+	switch ( eOutBitDepth )
+	{
+		case eTuttlePluginBitDepth8:  iBitDepth = 8;  break;
+		case eTuttlePluginBitDepth10: iBitDepth = 10; break;
+		case eTuttlePluginBitDepth12: iBitDepth = 12; break;
+		case eTuttlePluginBitDepth16: iBitDepth = 16; break;
+		case eTuttlePluginBitDepth32: iBitDepth = 32; break;
+		case eTuttlePluginBitDepth64: iBitDepth = 64; break;
+	}
+
 
 	switch( _descriptor->getValue() )
 	{
@@ -357,7 +357,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 	writer.SetElement( 0,
 			eDescriptor,
-			ibitDepth,
+			iBitDepth,
 			eTransfer,
 			eColorimetric,
 			ePacked,
@@ -369,7 +369,18 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
 	}
 
-	if( ! writer.WriteElement( 0, dataSrcPtr, ::dpx::kByte ) )
+	char* dataPtr = data.allocate( size.x * size.y * pixelSize );
+	char* dataPtrIt = dataPtr;
+
+	for( int y = size.y; y > 0 ; y-- )
+	{
+		void* dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelAddress( 0, y );
+		memcpy( dataPtrIt, dataSrcPtr, size.x * pixelSize );
+
+		dataPtrIt += size.x * pixelSize;
+	}
+;
+	if( ! writer.WriteElement( 0, dataPtr, ::dpx::kByte ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX User Data)" ) );
@@ -380,6 +391,8 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX finish)" ) );
 	}
+
+	data.deallocate( dataPtr, 0 );
 }
 
 void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
