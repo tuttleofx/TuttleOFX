@@ -126,6 +126,10 @@ static const std::string kParamPackedPacked  = "packed";
 static const std::string kParamPackedMethodA = "a";
 static const std::string kParamPackedMethodB = "b";
 
+static const std::string kParamSwapEndian  = "swapendian";
+static const std::string kParamSwapEndianLabel  = "Swap Endian";
+static const std::string kParamSwapEndianHint   = "Swap endian";
+
 static const std::string kParamEncoding  = "encoding";
 static const std::string kParamEncodingLabel  = "Encoding";
 static const std::string kParamEncodingHint  = "Encoding mode: no encoding (none) or Run Length Encoding (rle)";
@@ -144,6 +148,9 @@ static const std::string kParamOrientationTopToBottomRightToLeft = "toptobottomr
 static const std::string kParamOrientationBottomToTopLeftToRight = "bottomtotoplefttoright";
 static const std::string kParamOrientationBottomToTopRightToLeft = "bottomtotoprighttoleft";
 static const std::string kParamOrientationUndefinedOrientation   = "undefined";
+
+static const std::string kParamProject = "project";
+static const std::string kParamCopyright   = "copyright";
 
 
 }

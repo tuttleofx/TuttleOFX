@@ -153,6 +153,11 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	packed->appendOption( kParamPackedMethodB );
 	packed->setDefault( 1 );
 
+	OFX::BooleanParamDescriptor* swapEndian = desc.defineBooleanParam( kParamSwapEndian );
+	swapEndian->setLabel( kParamSwapEndianLabel );
+	swapEndian->setHint( kParamSwapEndianHint );
+	swapEndian->setDefault( true );
+
 	OFX::ChoiceParamDescriptor* encoding = desc.defineChoiceParam( kParamEncoding );
 	encoding->setLabel( kParamEncodingLabel );
 	encoding->setHint( kParamEncodingHint );
@@ -175,6 +180,11 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	orientation->appendOption( kParamOrientationUndefinedOrientation );
 	orientation->setDefault( 0 );
 #endif
+
+	OFX::StringParamDescriptor* project = desc.defineStringParam( kParamProject );
+	project->setDefault( "" );
+	OFX::StringParamDescriptor* copyright = desc.defineStringParam( kParamCopyright );
+	copyright->setDefault( "" );
 
 	describeWriterParamsInContext( desc, context );
 

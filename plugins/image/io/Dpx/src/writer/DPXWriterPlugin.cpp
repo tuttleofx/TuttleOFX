@@ -23,10 +23,13 @@ DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 	_transfer       = fetchChoiceParam( kParamTransfer );
 	_colorimetric   = fetchChoiceParam( kParamColorimetric );
 	_packed         = fetchChoiceParam( kParamPacked );
+	_swapEndian     = fetchBooleanParam( kParamSwapEndian );
 	_encoding       = fetchChoiceParam( kParamEncoding );
 #ifndef TUTTLE_PRODUCTION
 	_orientation    = fetchChoiceParam( kParamOrientation );
 #endif
+	_project        = fetchStringParam( kParamProject );
+	_copyright      = fetchStringParam( kParamCopyright );
 }
 
 DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
@@ -76,7 +79,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 	writer.Start();
 
-	writer.SetFileInfo( filename.c_str(), 0, "TuttleOFX DPX Writer", "project", "copyright", ~0, true );
+	writer.SetFileInfo( filename.c_str(), 0, "TuttleOFX DPX Writer", _project->getValue().c_str(), _copyright->getValue().c_str(), ~0, _swapEndian->getValue() );
 
 	writer.SetImageInfo( size.x, size.y );
 
