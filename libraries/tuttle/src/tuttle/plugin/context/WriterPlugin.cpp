@@ -86,6 +86,11 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 	OfxPointI size = _clipSrc->getPixelRodSize( args.time );
 
 	int pixelSize = 0;
+
+	std::string filename = this->_paramFilepath->getValue();
+
+	std::cout << " --> " << filename;
+
 	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
 	OFX::EPixelComponent  components   = _clipDst->getPixelComponents();
 
