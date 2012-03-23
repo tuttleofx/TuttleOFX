@@ -46,7 +46,8 @@ int main( int argc, char** argv )
 
 		// create the graph
 		ttl::Graph graph;
-		std::list<ttl::Graph::Node*> nodes;
+		std::vector<ttl::Graph::Node*> nodes;
+		nodes.reserve(50);
 		std::vector<std::ssize_t> range;
 		std::vector<double> renderscale;
 		std::size_t step;
@@ -682,17 +683,61 @@ int main( int argc, char** argv )
 							}
 						}
 						
-						
-						if( nodes.size() > 0 )
+						// connect current node to previous node(s)
+						if( nodes.size() > 0 ) // if not the first node
 						{
 							if( clipsToConnect.size() == 0 )
 							{
-								// connect the new node to the last one
-								graph.connect( *nodes.back(), currentNode );
+								// No clip connection specified, so by default
+								// we connect the new node to the last previous node
+								
+								/// @todo We only check if we have more than one clip (assuming that it's the default "Output" clip...)
+								///       instead of checking the number of input clips...
+								// if we have an input clip
+								if( currentNode.getClipImageSet().getClips().size() > 1 )
+								{
+									graph.connect( *nodes.back(), currentNode );
+								}
 							}
 							else
 							{
-								///@todo connect clips
+								// The user has specified some clips to connect
+								BOOST_FOREACH( const ClipAndConnection& clip, clipsToConnect )
+								{
+									//TUTTLE_TCOUT_VAR3( clip.second, currentNode.getName(), clip.first->getName() );
+									
+									if( clip.second.size() <= 1 &&
+										( clip.second == " " ||
+									      clip.second == "!" ||
+									      clip.second == "/" ||
+									      clip.second == "-" ) )
+									{
+										// these keywords allows to keep this clip unconnected
+										//TUTTLE_TCOUT( "Don't connect the clip " << clip.first->getName() );
+										continue;
+									}
+									try
+									{
+										//TUTTLE_TCOUT( "Connect the clip " << clip.first->getName() );
+										// test if it's an index
+										const int relativeIndex = std::abs( boost::lexical_cast<int>( clip.second ) );
+										const int absIndex = nodes.size() - relativeIndex;
+										if( absIndex < 0 || absIndex >= nodes.size() )
+										{
+											using namespace ttl;
+											using tuttle::quotes;
+											BOOST_THROW_EXCEPTION( exception::Value()
+												<< exception::user() + "The relative index \""+ -relativeIndex + "\" for the connection of the clip " + quotes(clip.first->getName()) + " on node " + quotes(currentNode.getName()) + " is not valid."  );
+										}
+										graph.connect( *nodes[absIndex], currentNode.getAttribute( clip.first->getName() ) );
+									}
+									catch(...)
+									{
+										// It's not an index so we assume, it's the name/id of the clip.
+										// If the node doesn't exist it will throw an exception.
+										graph.connect( graph.getNode( clip.second ), currentNode.getAttribute( clip.first->getName() ) );
+									}
+								}
 							}
 						}
 
