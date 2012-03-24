@@ -20,11 +20,11 @@ void OCIOLutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleOcioLut", "OCIOLut", "Color transformation through LUT file using OpenColorIO Transform" );
 	desc.setPluginGrouping( "tuttle/image/process/color/ocio" );
-	
+
 	desc.setDescription(
 		"OCIO Lut\n"
 		"\n"
-		"Lut input filename (csp, 3dl, cube, hdl... see OpenColorIO docs to see all formats)" );
+		"Lut input filename (3dl, ccc, cc, csp, cub, cube, hdl, mga, m3d, spi1d, spi3d, spimtx, vf)" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
