@@ -25,6 +25,10 @@
 //#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
 #endif
 
+#ifdef __LINUX__
+#include <sys/ioctl.h>
+#endif
+
 // ofx
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
@@ -41,8 +45,8 @@ namespace tuttle {
 namespace host {
 
 ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
-                                  tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
-                                  const std::string&                                             context )
+				  tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
+				  const std::string&                                             context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( plugin, desc, context, false )
 {
 	populate();
@@ -111,9 +115,9 @@ ofx::OfxhMemory* ImageEffectNode::newMemoryInstance( size_t nBytes )
 
 // vmessage
 void ImageEffectNode::vmessage( const char* type,
-                                const char* id,
-                                const char* format,
-                                va_list     args ) const OFX_EXCEPTION_SPEC
+				const char* id,
+				const char* format,
+				va_list     args ) const OFX_EXCEPTION_SPEC
 {
 	vprintf( format, args );
 }
@@ -237,12 +241,12 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 	catch( exception::Common& e )
 	{
 		BOOST_THROW_EXCEPTION( ofx::OfxhException( *boost::get_error_info<exception::ofxStatus>( e ),
-		                                           boost::diagnostic_information( e ) ) );
+							   boost::diagnostic_information( e ) ) );
 	}
 	catch(... )
 	{
 		BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrUnknown,
-		                                           boost::current_exception_diagnostic_information() ) );
+							   boost::current_exception_diagnostic_information() ) );
 	}
 	return param;
 }
@@ -261,7 +265,8 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 void ImageEffectNode::progressStart( const std::string& message )
 {
 	//TUTTLE_COUT( message );
-	std::cout << std::left << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::flush;
+	if( !( getContext() == kOfxImageEffectContextReader || getContext() == kOfxImageEffectContextWriter ) )
+		std::cout << std::left << "       " << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::flush;
 }
 
 /// finish yer progress
@@ -270,11 +275,18 @@ void ImageEffectNode::progressEnd()
 	std::cout << std::endl;
 }
 
+#define TIOCGWINSZ  _IOR('t', 104, struct winsize)
+
 /// set the progress to some level of completion,
 /// returns true if you should abandon processing, false to continue
 bool ImageEffectNode::progressUpdate( const double progress )
 {
-	std::cout << "\r" << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::right << std::setw(3) << int(progress * 100) << "%" << std::left << std::flush;
+	//std::cout << "\r" << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::right << std::setw(3) << int(progress * 100) << "%" << std::left << std::flush;
+
+	if( getContext() == kOfxImageEffectContextReader || getContext() == kOfxImageEffectContextWriter )
+		std::cout << "\r" << tuttle::common::kColorStd << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << " " << std::left << std::flush;
+	else
+		std::cout << "\r" << tuttle::common::kColorStd << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << std::left << tuttle::common::kColorGreen << getName() << tuttle::common::kColorStd << std::flush;
 	return false;
 }
 
@@ -298,10 +310,10 @@ void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 
 /// override to get frame range of the effect
 void ImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
-                                         OfxTime   endFrame,
-                                         OfxTime   step,
-                                         bool      interactive,
-                                         OfxPointD renderScale ) OFX_EXCEPTION_SPEC
+					 OfxTime   endFrame,
+					 OfxTime   step,
+					 bool      interactive,
+					 OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
 	OfxhImageEffectNode::beginSequenceRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
@@ -493,11 +505,11 @@ void ImageEffectNode::coutBitDepthConnections() const
 		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
 		TUTTLE_TCOUT( "-- " << "clip: " << " = " << clip.getFullName() );
 		TUTTLE_TCOUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
-		             << " : " << ( propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
+			     << " : " << ( propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
 		TUTTLE_TCOUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
-		             << " : " << ( propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
+			     << " : " << ( propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
 		TUTTLE_TCOUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
-		             << " : " << ( propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
+			     << " : " << ( propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
 
 		if( !clip.isOutput() && clip.isConnected() )
 		{
@@ -521,10 +533,10 @@ void ImageEffectNode::validBitDepthConnections() const
 			if( clip.getBitDepth() != linkClip.getBitDepth() )
 			{
 				BOOST_THROW_EXCEPTION( exception::Logic()
-				        << exception::dev() + "Error in graph bit depth propagation."
-				                              "Connection between " + clip.getFullName() + " (" + clip.getBitDepth() + " bytes)" + " => " + linkClip.getFullName() + " (" + linkClip.getBitDepth() + " bytes)."
-				        << exception::pluginName( getName() )
-				        << exception::pluginIdentifier( getPlugin().getIdentifier() ) );
+					<< exception::dev() + "Error in graph bit depth propagation."
+							      "Connection between " + clip.getFullName() + " (" + clip.getBitDepth() + " bytes)" + " => " + linkClip.getFullName() + " (" + linkClip.getBitDepth() + " bytes)."
+					<< exception::pluginName( getName() )
+					<< exception::pluginIdentifier( getPlugin().getIdentifier() ) );
 			}
 		}
 	}
@@ -626,11 +638,11 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 
 	OfxRectD rod;
 	getRegionOfDefinitionAction( vData._time,
-	                             vData._nodeData->_renderScale,
-	                             rod );
+				     vData._nodeData->_renderScale,
+				     rod );
 	vData._apiImageEffect._renderRoD = rod;
 	vData._apiImageEffect._renderRoI = rod; ///< @todo tuttle: tile supports
-	
+
 	TUTTLE_TCOUT_VAR( rod );
 }
 
@@ -642,9 +654,9 @@ void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData
 	maximizeBitDepthFromWritesToReads();
 
 	getRegionOfInterestAction( vData._time,
-	                           vData._nodeData->_renderScale,
-	                           vData._apiImageEffect._renderRoI,
-	                           vData._apiImageEffect._inputsRoI );
+				   vData._nodeData->_renderScale,
+				   vData._apiImageEffect._renderRoI,
+				   vData._apiImageEffect._inputsRoI );
 //	TUTTLE_TCOUT_VAR( vData._renderRoD );
 //	TUTTLE_TCOUT_VAR( vData._renderRoI );
 }
@@ -723,12 +735,12 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	}
 
 	renderAction( vData._time,
-	              vData._apiImageEffect._field,
-	              roi,
-	              vData._nodeData->_renderScale );
+		      vData._apiImageEffect._field,
+		      roi,
+		      vData._nodeData->_renderScale );
 
 	debugOutputImage( vData._time );
-	
+
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
@@ -774,10 +786,10 @@ void ImageEffectNode::endSequence( graph::ProcessVertexData& vData )
 {
 //	TUTTLE_TCOUT( "end: " << getName() );
 	endSequenceRenderAction( vData._renderTimeRange.x,
-	                 vData._renderTimeRange.y,
-	                 vData._step,
-	                 vData._interactive,
-	                 vData._renderScale );
+			 vData._renderTimeRange.y,
+			 vData._step,
+			 vData._interactive,
+			 vData._renderScale );
 }
 
 
