@@ -58,7 +58,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	::dpx::Packing        ePacked;       ///< Bit streaming packing
 	::dpx::Encoding       eEncoding;
 
-	std::string filename = this->_paramFilepath->getValue();
+	std::string filename = getAbsoluteFilenameAt( args.time );
 
 #ifndef TUTTLE_PRODUCTION
 	::dpx::Orientation orientation = static_cast< ::dpx::Orientation >( _orientation->getValue() );
