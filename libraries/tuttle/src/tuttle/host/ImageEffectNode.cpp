@@ -25,10 +25,6 @@
 //#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
 #endif
 
-#ifdef __LINUX__
-#include <sys/ioctl.h>
-#endif
-
 // ofx
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
@@ -265,7 +261,7 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 void ImageEffectNode::progressStart( const std::string& message )
 {
 	//TUTTLE_COUT( message );
-	if( !( getContext() == kOfxImageEffectContextReader || getContext() == kOfxImageEffectContextWriter ) )
+	if( !( getContext() == kOfxImageEffectContextReader ) && !( getContext() == kOfxImageEffectContextWriter ) )
 		std::cout << std::left << "       " << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::flush;
 }
 
@@ -274,8 +270,6 @@ void ImageEffectNode::progressEnd()
 {
 	std::cout << std::endl;
 }
-
-#define TIOCGWINSZ  _IOR('t', 104, struct winsize)
 
 /// set the progress to some level of completion,
 /// returns true if you should abandon processing, false to continue
