@@ -132,6 +132,8 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 	// warning: loose all connections !!!
 	removeFromInternalGraph( node );
 	addToInternalGraph( node );
+	
+	node.setName( newUniqueName );
 }
 
 void Graph::addToInternalGraph( Node& node )
