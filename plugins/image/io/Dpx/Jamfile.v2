@@ -9,20 +9,30 @@ import os ;
 project
 	: requirements
 		<include>src
+		<include>src/dpx-google-code/libdpx/
 		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
 	:
 		build-dir $(BUILD)/Dpx
 	;
 
 ###############################################################################
-# Product 
+# Product
 ###############################################################################
 plugin Dpx :
-		[ glob-tree *.cpp : tests ]
+		# [ glob-tree *.cpp : tests ]
+		[ glob src/dpx-google-code/libdpx/*.cpp ]
+		#[ glob src/reader/*.cpp ]
+		[ glob src/writer/*.cpp ]
+		[ glob src/mainEntry.cpp ]
 		/tuttleplugin/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 	;
+
+#exe dpxheader :
+#		[ glob src/dpx-google-code/tools/dpxheader/dpxheader.cpp ]
+#		[ glob src/dpx-google-code/libdpx/*.cpp ]
+#	;
 
 ###############################################################################
 # Automatic install

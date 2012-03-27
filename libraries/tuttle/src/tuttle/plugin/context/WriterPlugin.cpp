@@ -1,6 +1,7 @@
 #include "WriterPlugin.hpp"
 
 #include <ofxCore.h>
+#include <cstdio>
 
 namespace tuttle {
 namespace plugin {
@@ -78,7 +79,48 @@ void WriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments&
 
 void WriterPlugin::render( const OFX::RenderArguments& args )
 {
-    _oneRender = false;
+	_oneRender = false;
+	void* dataSrcPtr;
+	void* dataDstPtr;
+
+	OfxPointI size = _clipSrc->getPixelRodSize( args.time );
+
+	int pixelSize = 0;
+
+	std::string filename = this->_paramFilepath->getValue();
+
+	std::cout << " --> " << filename;
+
+	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
+	OFX::EPixelComponent  components   = _clipDst->getPixelComponents();
+
+	switch ( eOfxBitDepth )
+	{
+		case OFX::eBitDepthCustom:
+		case OFX::eBitDepthNone:
+			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+				<< exception::user( "Writer: Unable to compute custom or non bit depth" ) );
+			break;
+		case OFX::eBitDepthUByte:  pixelSize = 1; break;
+		case OFX::eBitDepthUShort: pixelSize = 2; break;
+		case OFX::eBitDepthFloat:  pixelSize = 4; break;
+	}
+
+	switch( components )
+	{
+		case OFX::ePixelComponentAlpha: break; // pixelSize * 1
+		case OFX::ePixelComponentRGB  : pixelSize *= 3; break;
+		case OFX::ePixelComponentRGBA : pixelSize *= 4; break;
+		default: break;
+	}
+
+	for( int y=0; y< size.y; y++ )
+	{
+		dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelAddress( 0, y );
+		dataDstPtr = _clipDst->fetchImage( args.time )->getPixelAddress( 0, y );
+
+		memcpy( dataDstPtr, dataSrcPtr, size.x * pixelSize );
+	}
 }
 
 }
