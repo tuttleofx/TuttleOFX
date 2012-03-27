@@ -87,9 +87,8 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 
 	int pixelSize = 0;
 
-	std::string filename = this->_paramFilepath->getValue();
-
-	std::cout << " --> " << filename;
+	std::string filename =  getAbsoluteFilenameAt( args.time );
+	std::cout << " -->   " << filename;
 
 	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
 	OFX::EPixelComponent  components   = _clipDst->getPixelComponents();

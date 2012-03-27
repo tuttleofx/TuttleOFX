@@ -68,8 +68,8 @@ bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 void ReaderPlugin::render( const OFX::RenderArguments& args )
 {
-	std::string filename = _paramFilepath->getValue();
-	std::cout << filename ;
+	std::string filename =  getAbsoluteFilenameAt( args.time );;
+	std::cout << " >--   " << filename;
 
 }
 
