@@ -45,6 +45,13 @@ typedef packed_pixel<uint64_t, rgb8_quantum_packed_channels_t, bgr_layout_t> bgr
 typedef view_type_from_pixel<bgr8_quantum_packed_pixel_t>::type bgr8_quantum_packed_view_t;
 typedef image<bgr8_quantum_packed_pixel_t, false> bgr8_quantum_packed_image_t;
 
+// Gray
+typedef const packed_channel_reference<boost::uint64_t, sizeof( Quantum )*0*8, 8, true> gray8_quantum_packed_channel0_t;
+typedef mpl::vector<rgb8_quantum_packed_channel0_t> gray8_quantum_packed_channels_t;
+typedef packed_pixel<uint64_t, gray8_quantum_packed_channels_t, bgr_layout_t> gray8_quantum_packed_pixel_t;
+typedef view_type_from_pixel<gray8_quantum_packed_pixel_t>::type gray8_quantum_packed_view_t;
+typedef image<gray8_quantum_packed_pixel_t, false> gray8_quantum_packed_image_t;
+
 }
 }
 
@@ -91,7 +98,7 @@ void copy_and_convert_from_buffer( Image* image, DView& dst )
 
 	SView bufferView = interleaved_view( dst.width(), dst.height(),
 					  ( typename SView::value_type* )( buffer ),
-					  dst.width() * sizeof( typename SView::value_type ) ); //* sizeof(typename channel_type<SView>::type) );
+					  dst.width() * sizeof( typename SView::value_type ) );
 
 	boost::gil::copy_and_convert_pixels( bufferView, dst );
 }
@@ -115,30 +122,14 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 
 	CatchException( exceptionsInfo );
 
-	unsigned long bitDepth = GetImageDepth( image, exceptionsInfo );
-/*
-	switch( image->colorspace )
-	{
-		case RGBColorspace:
-			TUTTLE_COUT( "RGBColorspace" );
-			break;
-		case GRAYColorspace:
-			TUTTLE_COUT( "GRAYColorspace" );
-			break;
-		case TransparentColorspace:
-			TUTTLE_COUT( "TransparentColorspace" );
-			break;
-		default:
-			TUTTLE_COUT( "Particular colorspace: needs a conversion to RGB." );
-	}*/
-
 	if( image->colorspace != RGBColorspace &&
-	    image->colorspace != GRAYColorspace &&
+	   // image->colorspace != GRAYColorspace &&
 	    image->colorspace != TransparentColorspace )
 	{
-		TUTTLE_COUT( "Change colorspace to RGB." );
+		TUTTLE_COUT( " Change colorspace to RGB." );
 		SetImageColorspace( image, RGBColorspace );
 	}
+
 
 	QuantumType colorType = GetQuantumType( image, exceptionsInfo );
 
@@ -146,87 +137,29 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 	{
 		case RGBQuantum:
 		{
-			switch( bitDepth )
-			{
-				case 8:
-				{
-					copy_and_convert_from_buffer<bgra8_quantum_packed_view_t, View>( image, dst );
-					break;
-				}
-				case 16:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					break;
-				}
-				case 32:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					break;
-				}
-				default:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					//TUTTLE_COUT( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>( bitDepth )+")" );
-					break;
-				}
-			}
+			rgb16_image_t tmpImg ( dst.width(), dst.height() );
+			rgb16_view_t tmpVw = view( tmpImg );
+
+			copy_and_convert_from_buffer<bgr8_quantum_packed_view_t, rgb16_view_t>( image, tmpVw );
+			copy_and_convert_pixels( tmpVw, dst );
 			break;
 		}
 		case RGBAQuantum:
 		{
-			switch( bitDepth )
-			{
-				case 8:
-				{
-					copy_and_convert_from_buffer<bgra8_quantum_packed_view_t, View>( image, dst );
-					break;
-				}
-				case 16:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					break;
-				}
-				case 32:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					break;
-				}
-				default:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					//TUTTLE_COUT( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>( bitDepth )+")" );
-					break;
-				}
-			}
+
+			copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 			break;
 		}
 		case AlphaQuantum:
 		case GrayQuantum:
 		{
-			switch( bitDepth )
-			{
-				case 8:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					break;
-				}
-				case 16:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					break;
-				}
-				case 32:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					break;
-				}
-				default:
-				{
-					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					//TUTTLE_COUT( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>( bitDepth )+")" );
-					break;
-				}
-			}
+			rgba16_image_t tmpImg ( dst.width(), dst.height() );
+			rgba16_view_t tmpVw = view( tmpImg );
+
+			copy_and_convert_from_buffer<bgra8_quantum_packed_view_t, rgba16_view_t>( image, tmpVw );
+
+			copy_and_convert_pixels( boost::gil::nth_channel_view ( tmpVw, 4), dst );
+			//copy_and_convert_from_buffer<gray32_view_t, View>( image, dst );
 			break;
 		}
 		default:

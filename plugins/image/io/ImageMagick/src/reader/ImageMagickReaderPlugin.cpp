@@ -51,7 +51,15 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 			return;
 		}
 		case OFX::ePixelComponentRGB:
+		{
+			doGilRender<ImageMagickReaderProcess, false, boost::gil::rgb_layout_t>( *this, args, bitDepth );
+			return;
+		}
 		case OFX::ePixelComponentAlpha:
+		{
+			doGilRender<ImageMagickReaderProcess, false, boost::gil::gray_layout_t>( *this, args, bitDepth );
+			return;
+		}
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
 		{
@@ -112,29 +120,60 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
 	GetExceptionInfo( exceptionsInfo );
 
-	Image* image = PingImage( imageInfo, exceptionsInfo );
+//	Image* image = PingImage( imageInfo, exceptionsInfo );
+	Image* image = ReadImage( imageInfo, exceptionsInfo ); // necessary to obtain QuantumType
+
+	if( !image )
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "ImageMagick: " )
+			<< exception::filename( filename ) );
 
 	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
 		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); // by default
-		if( image )
+		unsigned long bitDepth = GetImageDepth( image, exceptionsInfo ); // if image information use it
+		if( bitDepth <= 8 )
 		{
-			unsigned long bitDepth = GetImageDepth( image, exceptionsInfo ); // if image information use it
-			if( bitDepth <= 8 )
-			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-			}
-			else if( bitDepth <= 16 )
-			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-			}
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+		}
+		else if( bitDepth <= 16 )
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 		}
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA ); /// @todo tuttle: retrieve info, gray / RGB / RGBA...
+
+	QuantumType colorType = GetQuantumType( image, exceptionsInfo );
+
+	switch( colorType )
+	{
+		case RGBQuantum:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+			break;
+		}
+		case RGBAQuantum:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+		case AlphaQuantum:
+		case GrayQuantum:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+			break;
+		}
+		default:
+		{
+			// convert in RGB colorspace
+			TUTTLE_COUT("convert to RGB colorspace");
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+	}
+
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info
 
-	if( image )
-		image = DestroyImage( image );
+	image          = DestroyImage( image );
 	imageInfo      = DestroyImageInfo( imageInfo );
 	exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
 }
