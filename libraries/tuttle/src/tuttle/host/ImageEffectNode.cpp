@@ -261,7 +261,7 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 void ImageEffectNode::progressStart( const std::string& message )
 {
 	//TUTTLE_COUT( message );
-	if( !( getContext() == kOfxImageEffectContextReader ) && !( getContext() == kOfxImageEffectContextWriter ) )
+	if( !( getContext() == kOfxImageEffectContextReader ) || !( getContext() == kOfxImageEffectContextWriter ) )
 		std::cout << std::left << "       " << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::flush;
 }
 
