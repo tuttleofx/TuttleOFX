@@ -14,6 +14,7 @@
 #include <boost/gil/image.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <boost/assert.hpp>
 
 #include <cmath>
@@ -76,7 +77,7 @@ inline point2<F> transform( const ::tuttle::plugin::lens::NormalLensUndistortPar
 		BOOST_ASSERT( cQ >= 0 );
 		BOOST_ASSERT( cR / ( sqrt( cQ * cQ * cQ ) ) <= 1 && cR / ( sqrt( cQ * cQ * cQ ) ) >= -1 );
 		t    = std::acos( cR / ( sqrt( cQ * cQ * cQ ) ) );
-		coef = -2 * std::sqrt( cQ ) * std::cos( ( t - M_PI_2 ) / 3.0 );
+		coef = -2.0 * std::sqrt( cQ ) * std::cos( ( t - (boost::math::constants::pi<F>() / 2.0) ) / 3.0 );
 	}
 	else
 	{

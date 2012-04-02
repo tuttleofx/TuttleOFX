@@ -71,8 +71,9 @@ check = project.Program(
 		libraries=libraries+[libs.tuttleHost],
 	)
 
-Alias( 'sam',
+Alias( 'sam-all',
 	[
+		sam,
 		ls,
 		cp,
 		mv,
