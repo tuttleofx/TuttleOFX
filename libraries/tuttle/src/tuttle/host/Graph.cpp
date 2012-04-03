@@ -107,6 +107,7 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 	if( node.getName() == newUniqueName )
 		return;
 	
+	TUTTLE_TCOUT( "Graph::renameNode: from: " << node.getName() << " -> to: " << newUniqueName );
 	{
 		// check if newUniqueName is not already in the graph
 		NodeMap::iterator itNew = _nodes.find( newUniqueName );
@@ -123,14 +124,15 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 			<< exception::user() + "Node " + quotes(node.getName()) + " is not in the graph." );
 	}
 	
+	// warning: loose all connections !!!
+	removeFromInternalGraph( node );
+	
 	// rename the key into the map
 	NodeMap::auto_type n = _nodes.release( it );
 	n->setName( newUniqueName );
 	std::string key( newUniqueName ); // for constness
 	_nodes.insert( key, n.release() );
 	
-	// warning: loose all connections !!!
-	removeFromInternalGraph( node );
 	addToInternalGraph( node );
 	
 	node.setName( newUniqueName );
@@ -138,16 +140,15 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 
 void Graph::addToInternalGraph( Node& node )
 {
+	//TUTTLE_TCOUT( "Graph::addToInternalGraph: " << node.getName() );
 	Vertex v( node.getName(), node );
-
-	TUTTLE_TCOUT( node.getName() );
-
 	_graph.addVertex( v );
 }
 
 void Graph::removeFromInternalGraph( Node& node )
 {
-	unsigned int id = _graph.getVertexDescriptor( node.getName() );
+	//TUTTLE_TCOUT( "Graph::removeFromInternalGraph: " << node.getName() );
+	const unsigned int id = _graph.getVertexDescriptor( node.getName() );
 	_graph.removeVertex( id );
 }
 
