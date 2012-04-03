@@ -92,7 +92,7 @@ class Tuttle( SConsProject ):
 			f.close()
 		return ( versionMajor, versionMinor )
 
-	def createOfxPlugin( self, sources=[], libs=[], dirs=[], mainFile='src/mainEntry.cpp' ):
+	def createOfxPlugin( self, sources=[], libs=[], dirs=[], mainFile='src/mainEntry.cpp', includes=[] ):
 		'''
 		Create an openfx plugin from sources files and libraries dependencies.
 		'''
@@ -110,6 +110,7 @@ class Tuttle( SConsProject ):
 
 		envLocal = self.createEnv( libs )
 		envLocal.Append( CPPPATH = dirs )
+		envLocal.Append( CPPPATH = includes )
 		plugin = envLocal.SharedLibrary( target=pluginName, source=allSources )
 		pluginInstall = envLocal.InstallAs( self.getOutputOfxPlugin(pluginFilename), plugin[0] )
 
@@ -124,18 +125,23 @@ class Tuttle( SConsProject ):
 		envLocal.Alias( 'all', 'ofxplugins' )
 
 		if self.windows:
+			#print 'visualProject...'
 			mode = 'Release'
 			if envLocal['mode'] is "debug":
 				mode = 'Debug'
+			#visualProjectFile = os.path.join('visualc', pluginName + envLocal['MSVSPROJECTSUFFIX'])
+			visualProjectFile = pluginName + envLocal['MSVSPROJECTSUFFIX']
+			#print 'visualProjectFile:', visualProjectFile
+			#print '[plugin]:', [plugin]
 			visual_project = envLocal.MSVSProject(
-				target = os.path.join('visualc', pluginName + envLocal['MSVSPROJECTSUFFIX']),
+				target = visualProjectFile,
 				srcs = allSources,
 				#incs = barincs,
 				#localincs = barlocalincs,
 				#resources = barresources,
 				#misc = barmisc,
 				buildtarget = plugin,
-				variant = [mode]
+				variant = [mode, mode, mode]
 				)
 			envLocal.Alias( 'visualProject',   visual_project )
 		return pluginInstall
