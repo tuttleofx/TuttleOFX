@@ -2,11 +2,14 @@
 #include "DPXWriterProcess.hpp"
 #include "DPXWriterDefinitions.hpp"
 
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+
+#include <boost/gil/gil_all.hpp>
+
 #include <boost/filesystem.hpp>
 
 #include <vector>
-#include <boost/gil/gil_all.hpp>
-#include <memory/OfxAllocator.hpp>
+
 
 namespace tuttle {
 namespace plugin {

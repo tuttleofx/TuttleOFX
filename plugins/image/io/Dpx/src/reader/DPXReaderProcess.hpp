@@ -1,8 +1,6 @@
 #ifndef _TUTTLE_PLUGIN_DPX_READER_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_DPX_READER_PROCESS_HPP_
 
-#include <dpxEngine/dpxImage.hpp>
-
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
 #include <ofxsImageEffect.h>
