@@ -1,7 +1,8 @@
 Import( 'project', 'libs' )
 
 project.createOfxPlugin(
-	dirs = ['src'],
+	dirs = ['src/writer', 'src/dpx-google-code'], # temporarily: do not compile the DPX reader
+	sources = ['src/mainEntry.cpp'],
 	includes = ['src/dpx-google-code/libdpx'],
 	libs = [
 		libs.tuttlePlugin,
