@@ -48,8 +48,6 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
 
-	::tuttle::plugin::OfxAllocator<char> data;
-
 	ETuttlePluginBitDepth eOutBitDepth = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
 	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
 	OFX::EPixelComponent  components   = _clipSrc->getPixelComponents();
@@ -375,15 +373,18 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
 	}
 
-	char* dataPtr = data.allocate( size.x * size.y * pixelSize );
-	char* dataPtrIt = dataPtr;
+	typedef std::vector<char, OfxAllocator<char> > DataVector;
+	DataVector data( size.x * size.y * pixelSize );
+	char* dataPtrIt = &data.front();
 
-	for( int y = size.y; y > 0 ; y-- )
+	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
+	const std::size_t rowBytesToCopy = size.x * pixelSize;
+	for( int y = size.y; y > 0; --y )
 	{
-		void* dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelAddress( 0, y );
+		void* dataSrcPtr = src->getPixelAddress( 0, y );
 		memcpy( dataPtrIt, dataSrcPtr, size.x * pixelSize );
 
-		dataPtrIt += size.x * pixelSize;
+		dataPtrIt += rowBytesToCopy;
 	}
 ;
 	if( ! writer.WriteElement( 0, dataPtr, ::dpx::kByte ) )
@@ -397,8 +398,6 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX finish)" ) );
 	}
-
-	data.deallocate( dataPtr, 0 );
 }
 
 void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
