@@ -2,8 +2,6 @@
 #include "DPXReaderProcess.hpp"
 #include "DPXReaderDefinitions.hpp"
 
-#include "dpxEngine/dpxImage.hpp"
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 
