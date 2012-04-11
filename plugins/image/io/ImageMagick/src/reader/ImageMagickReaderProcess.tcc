@@ -1,6 +1,7 @@
 #include "ImageMagickReaderDefinitions.hpp"
 #include "ImageMagickReaderProcess.hpp"
 
+#include <tuttle/common/system/system.hpp>
 #include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
@@ -14,14 +15,26 @@
 
 
 #if ( MAGICKCORE_QUANTUM_DEPTH == 8 )
-#warning "MAGICKCORE_QUANTUM_DEPTH is 8"
-#define MAGICKCORE_QUANTUM_SUPPORT boost::uint32_t
+ #ifdef _MSC_VER
+  #pragma NOTE( "MAGICKCORE_QUANTUM_DEPTH is 8" )
+ #else
+  #warning "MAGICKCORE_QUANTUM_DEPTH is 8"
+ #endif
+ #define MAGICKCORE_QUANTUM_SUPPORT boost::uint32_t
 #elif ( MAGICKCORE_QUANTUM_DEPTH == 16 )
-#warning "MAGICKCORE_QUANTUM_DEPTH is 16"
-#define MAGICKCORE_QUANTUM_SUPPORT boost::uint64_t
+ #ifdef _MSC_VER
+  #pragma NOTE( "MAGICKCORE_QUANTUM_DEPTH is 16" )
+ #else
+  #warning "MAGICKCORE_QUANTUM_DEPTH is 16"
+ #endif
+ #define MAGICKCORE_QUANTUM_SUPPORT boost::uint64_t
 #elif ( MAGICKCORE_QUANTUM_DEPTH == 32 )
-#warning "MAGICKCORE_QUANTUM_DEPTH is 32"
-#define MAGICKCORE_QUANTUM_SUPPORT boost::uint64_t
+ #ifdef _MSC_VER
+  #pragma NOTE( "MAGICKCORE_QUANTUM_DEPTH is 32" )
+ #else
+  #warning "MAGICKCORE_QUANTUM_DEPTH is 32"
+  #define MAGICKCORE_QUANTUM_SUPPORT boost::uint64_t
+ #endif
 #endif
 
 BOOST_STATIC_ASSERT( MAGICKCORE_QUANTUM_DEPTH != 8 || MAGICKCORE_QUANTUM_DEPTH != 16 );
@@ -87,7 +100,7 @@ void ImageMagickReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
+	readGilImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
 }
 
 template<class SView, class DView>
@@ -106,7 +119,7 @@ void copy_and_convert_from_buffer( Image* image, DView& dst )
 /**
  */
 template<class View>
-View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& filepath )
+View& ImageMagickReaderProcess<View>::readGilImage( View& dst, const std::string& filepath )
 {
 	ImageInfo* imageInfo = AcquireImageInfo();
 	GetImageInfo( imageInfo );
@@ -114,7 +127,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
 	GetExceptionInfo( exceptionsInfo );
 	
-	Image* image = ReadImage( imageInfo, exceptionsInfo );
+	::Image* image = ReadImage( imageInfo, exceptionsInfo );
 	
 	CatchException( exceptionsInfo );
 	

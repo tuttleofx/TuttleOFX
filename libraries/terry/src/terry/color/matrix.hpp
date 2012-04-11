@@ -3,6 +3,8 @@
 
 #include <terry/math/Matrix.hpp>
 
+#include <boost/math/constants/constants.hpp>
+
 namespace terry {
 namespace color {
 
@@ -401,8 +403,8 @@ Matrix5x5 simpleHueRotateMatrix( const typename Matrix5x5::value_type rotate )
 		);
 
 	/* rotate the hue */
-	const T zrs = std::sin( rotate * M_PI/180.0 );
-	const T zrc = std::cos( rotate * M_PI/180.0 );
+	const T zrs = std::sin( rotate * boost::math::constants::pi<T>() / 180.0 );
+	const T zrc = std::cos( rotate * boost::math::constants::pi<T>() / 180.0 );
 	matrix = prec_prod( matrix,
 		zRotateMatrix( zrs, zrc )
 		);
@@ -476,8 +478,8 @@ Matrix5x5 hueRotateMatrix( const typename Matrix5x5::value_type rotate )
 		);
 
 	// rotate the hue
-	const T zrs = std::sin(rotate*M_PI/180.0);
-	const T zrc = std::cos(rotate*M_PI/180.0);
+	const T zrs = std::sin(rotate * boost::math::constants::pi<T>() / 180.0);
+	const T zrc = std::cos(rotate * boost::math::constants::pi<T>() / 180.0);
 	matrix = prec_prod( matrix,
 		zRotateMatrix<Matrix5x5>( zrs, zrc )
 		);
@@ -503,3 +505,4 @@ Matrix5x5 hueRotateMatrix( const typename Matrix5x5::value_type rotate )
 }
 
 #endif
+

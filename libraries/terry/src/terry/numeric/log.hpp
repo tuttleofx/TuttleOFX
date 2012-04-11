@@ -1,6 +1,8 @@
 #ifndef _TERRY_NUMERIC_LOG_HPP_
 #define _TERRY_NUMERIC_LOG_HPP_
 
+#include <terry/globals.hpp>
+
 #include <cmath>
 
 namespace terry {
@@ -12,7 +14,8 @@ struct channel_log10_t : public std::unary_function<Channel, ChannelR>
 	GIL_FORCEINLINE
 	ChannelR operator()( typename channel_traits<Channel>::const_reference ch ) const
 	{
-		return std::log10( ChannelR( ch ) );
+		typedef typename floating_channel_type_t<ChannelR>::type T;
+		return std::log10( T( ch ) );
 	}
 };
 

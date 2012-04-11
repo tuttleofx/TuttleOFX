@@ -2,7 +2,7 @@
 #define OFXPLUGIN_VERSION_MINOR 0
 
 #include <tuttle/plugin/Plugin.hpp>
-#include "reader/DPXReaderPluginFactory.hpp"
+//#include "reader/DPXReaderPluginFactory.hpp"
 #include "writer/DPXWriterPluginFactory.hpp"
 
 namespace OFX

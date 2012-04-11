@@ -3,6 +3,7 @@
 
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
+#include <tuttle/common/utils/applicationPath.hpp>
 
 #include <tuttle/host/Core.hpp>
 
@@ -12,10 +13,10 @@
 #include <boost/throw_exception.hpp>
 
 
+namespace sam {
+
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
-
-namespace sam {
 
 Color _color;
 
@@ -164,13 +165,8 @@ int main( int argc, char** argv )
 		{
 			_color.enable();
 		}
-
-
-		bfs::path fullsam( argv[0] );
-		if( fullsam.is_relative() )
-		{
-			fullsam = bfs::current_path() / fullsam;
-		}
+		bfs::path fullsam = tuttle::common::applicationFilepath( argv[0] );
+		
 		bfs::path samDirectory( fullsam.parent_path() );
 		const std::vector<bfs::path> searchPaths = retrieveSearchPaths( samDirectory );
 

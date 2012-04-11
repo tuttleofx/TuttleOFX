@@ -11,6 +11,8 @@
 
 #include <boost/gil/gil_all.hpp>
 
+#include <boost/math/constants/constants.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace pushPixel {
@@ -45,7 +47,7 @@ PushPixelProcessParams<PushPixelPlugin::Scalar> PushPixelPlugin::getProcessParam
 	params._size *= renderScale.x;
 	params._intensity *= renderScale.x;
 	
-	static const double degreeToRadian = M_PI / 180.0;
+	static const double degreeToRadian = boost::math::constants::pi<double>() / 180.0;
 	params._angle = _paramAngle->getValue() * degreeToRadian;
 	
     params._interpolation = static_cast<EParamInterpolation>( _paramInterpolation->getValue() );

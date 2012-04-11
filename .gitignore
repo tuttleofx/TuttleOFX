@@ -33,6 +33,12 @@ Thumbs.db # Windows
 
 /nbproject
 
+# visual projects
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.*
+
 
 plugins/image/io/test/process.txt
 plugins/image/io/test/diff.txt

@@ -2,8 +2,10 @@
 #define _TERRY_SAMPLER_LANCZOS_HPP_
 
 #include "details.hpp"
-#include <cmath>
+
 #include <boost/math/constants/constants.hpp>
+
+#include <cmath>
 #include <limits>
 
 #define TUTTLE_PI boost::math::constants::pi<RESAMPLING_CORE_TYPE>()
@@ -30,7 +32,7 @@ namespace sampler {
 //  if (x > -std::numeric_limits<float>::epsilon() &&
 //      x < std::numeric_limits<float>::epsilon())
 //    return 1.0f;  // Special case the discontinuity at the origin.
-//  float xpi = x * static_cast<float>(M_PI);
+//  float xpi = x * static_cast<float>( boost::math::constants::pi<float>() );
 //  return (sin(xpi) / xpi) *  // sinc(x)
 //          sin(xpi / filter_size) / (xpi / filter_size);  // sinc(x/filter_size)
 //}
@@ -39,13 +41,7 @@ struct lanczos_sampler{
 	const size_t               _windowSize;
 	const RESAMPLING_CORE_TYPE _sharpen;
 
-	lanczos_sampler() :
-		_windowSize ( 6.0 ),
-		_sharpen    ( 1.0 )
-	{
-	}
-
-	lanczos_sampler( size_t filterSize, RESAMPLING_CORE_TYPE sharpen ) :
+	lanczos_sampler( std::size_t filterSize, RESAMPLING_CORE_TYPE sharpen ) :
 		_windowSize ( filterSize * 2 ),
 		_sharpen    ( sharpen )
 	{
@@ -68,7 +64,10 @@ struct lanczos_sampler{
 
 struct lanczos3_sampler : public lanczos_sampler
 {
-	lanczos3_sampler() {}
+	lanczos3_sampler() :
+		lanczos_sampler( 6.0, 1.0 )
+	{
+	}
 };
 
 struct lanczos4_sampler : public lanczos_sampler
