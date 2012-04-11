@@ -6,14 +6,15 @@
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+		<link>static
 	: usage-requirements
 		<include>.
-	: build-dir $(DIST)/3rdParty/Magick++/obj
+	: build-dir $(DIST)/3rdParty/bzlib
     ;
 
 ###############################################################################

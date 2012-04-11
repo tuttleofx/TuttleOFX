@@ -21,7 +21,6 @@ project
 
 		<cflags>-std=gnu99
 
-		<define>QUANTUM_DEPTH=16
 		<define>LTDL
 		<define>LTDLOPEN='libltdl'
 
@@ -35,9 +34,25 @@ project
 		[ evaluate-if-header-is-available <define>BZLIB_DELEGATE : /usr/include/bzlib.h,$(3RD_PARTY)/bzlib/bzlib.h ]
 		[ evaluate-if-header-is-available <define>ZLIB_DELEGATE : /usr/include/zlib.h,$(3RD_PARTY)/zlib/zlib.h ]
 
+		#[ evaluate-if-header-is-available <define>X11_DELEGATE : /usr/include/X11/X.h ]
+		#[ evaluate-if-header-is-available <define>HAVE_CL_CL_H : /usr/include/CL/cl.h ]
+
+		#[ evaluate-if-header-is-available <linkflags>-lX11 : /usr/include/X11/X.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lOpenCL : /usr/include/CL/cl.h ]
+		#[ evaluate-if-header-is-available <linkflags>-llcms : /usr/include/lcms.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lXext : /usr/include/X11/extensions/Xext.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lfontconfig : /usr/include/fontconfig/fontconfig.h ]
+
 		<link>static
 	: usage-requirements
 		<include>.
+
+		#[ evaluate-if-header-is-available <linkflags>-lX11 : /usr/include/X11/X.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lOpenCL : /usr/include/CL/cl.h ]
+		#[ evaluate-if-header-is-available <linkflags>-llcms : /usr/include/lcms.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lXext : /usr/include/X11/extensions/Xext.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lfontconfig : /usr/include/fontconfig/fontconfig.h ]
+
 	: build-dir $(BUILD)/3rdParty/imagemagick
     ;
 
@@ -62,6 +77,10 @@ lib	imagemagick	:
 			  [ glob magick/*.c
 				 coders/*.c
 				 filters/analyze.c
+				#:
+				# magick/xwindow.c
+				# magick/display.c
+				# magick/widget.c
 			  ]
 			/project-config//jasper
 			/project-config//freetype

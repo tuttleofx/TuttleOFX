@@ -8,11 +8,8 @@ path-constant HERE : . ;
 exe halfExpLogTable
 	:
 		IlmCtlSimd/halfExpLogTable.cpp
-		../ilmbase//Iex/<link>static
-		../ilmbase//Half/<link>static
-		../ilmbase//IlmThread/<link>static
-		../ilmbase//Imath/<link>static
-		../zlib//zlib/<link>static
+		/project-config//ilmbase
+		/project-config//zlib
 	;
 
 # as we want to execute them easily, we want them to be copied into this directory
@@ -34,13 +31,14 @@ actions generateHalfExpLog
 # Global project requirements
 ###############################################################################
 project
-	: requirements	
+	: requirements
 		<include>IlmCtl
 		<include>IlmCtlMath
 		<include>IlmCtlSimd
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+		<link>static
 	: usage-requirements
 		<include>.
 		<include>IlmCtl
@@ -56,13 +54,13 @@ alias	headers		: [ glob-tree *.h ] ;
 
 lib	ctl		:
 				[ glob IlmCtl/*.cpp IlmCtlMath/*.cpp IlmCtlSimd/*.cpp : IlmCtlSimd/halfExpLogTable.cpp ]
-				../openexr
+				/project-config//openexr
 			:
 				<implicit-dependency>halfExpLogTable.h
 				<implicit-dependency>halfExpLog.h
 			<os>NT:<link>static
 			;
-			
+
 install dist
 	:
 		ctl
