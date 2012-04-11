@@ -21,7 +21,7 @@ void LensDistortProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 
-	_params = _plugin.getProcessParams();;
+	_params = _plugin.getProcessParams();
 
 	OfxRectD srcRod = rectIntToDouble( this->_srcPixelRod );
 	OfxRectD dstRod = rectIntToDouble( this->_dstPixelRod );
