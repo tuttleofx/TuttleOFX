@@ -120,7 +120,9 @@ boost::filesystem::path applicationFilepath( const std::string& argv0, const boo
 		bfs::path exeLinkPath( ( boost::format("/proc/%s/exe") % getpid() ).str() );
 		if( bfs::exists( exeLinkPath ) && bfs::is_symlink( exeLinkPath ) )
 		{
-			return bfs::canonical( exeLinkPath );
+			return bfs::absolute( exeLinkPath, bfs::current_path() );
+			// only boost > 1.47 support canonical
+			//return bfs::canonical( exeLinkPath );
 		}
     }
 #endif
