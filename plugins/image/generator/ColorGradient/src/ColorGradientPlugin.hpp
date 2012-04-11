@@ -18,7 +18,7 @@ struct ColorGradientProcessParams
 	Point2 _cornerA;
 	Point2 _cornerB;
 	std::vector<Point2> _points;
-	std::vector<boost::gil::rgba32f_pixel_t> _colors;
+	std::vector<Pixel>  _colors;
 };
 
 /**
