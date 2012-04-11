@@ -111,6 +111,7 @@ exe sam-do :
 #		<os>NT:<find-shared-library>shell32
 #		<os>LINUX:<find-shared-library>dl
 #	;
+alias sam-info ;
 
 ###############################################################################
 # plugins
