@@ -18,7 +18,7 @@ namespace bitDepth {
 void BitDepthPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleBitDepth", "BitDepth",
-	                "Bit depth convertor" );
+			"Bit depth convertor" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription(
@@ -55,7 +55,7 @@ void BitDepthPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void BitDepthPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                               OFX::EContext               context )
+					       OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
@@ -78,9 +78,6 @@ void BitDepthPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	outBitDepth->appendOption( "short (16 bits)" );
 	outBitDepth->appendOption( "float (32 bits)" );
 	outBitDepth->setDefault( 3 );
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );
-	helpButton->setScriptName( "&Help" );
 }
 
 /**
@@ -90,7 +87,7 @@ void BitDepthPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* BitDepthPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                         OFX::EContext        context )
+							 OFX::EContext        context )
 {
 	return new BitDepthPlugin( handle );
 }

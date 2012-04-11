@@ -6,8 +6,6 @@
 
 #include <terry/clamp.hpp>
 
-#include <boost/gil/gil_all.hpp>
-
 namespace tuttle {
 namespace plugin {
 namespace bitDepth {
@@ -51,11 +49,11 @@ void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& pr
 	};
 
 	SView src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
-	                           procWindowSize.x,
-	                           procWindowSize.y );
+				   procWindowSize.x,
+				   procWindowSize.y );
 	DView dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-	                           procWindowSize.x,
-	                           procWindowSize.y );
+				   procWindowSize.x,
+				   procWindowSize.y );
 
 	copy_and_convert_pixels( terry::clamp_view(src), dst );
 }
