@@ -20,108 +20,258 @@ if [ ! -d "$TUTTLE_ROOT/.tuttleofxTest" ]; then
 fi
 export TUTTLE_HOME=$TUTTLE_ROOT/.tuttleofxTest
 
+resultFile=result.html
+cssFile=style.css
+
+rm $resultFile
+rm $cssFile
+
+# write header in html file
+
+function writeHtmlHeader {
+	echo "<html>" >>  $resultFile
+## HEAD
+	echo '<head>' >>  $resultFile
+	echo '<link rel="stylesheet" type="text/css" href="'$cssFile'">' >> $resultFile
+	echo '<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>' >> $resultFile
+	echo '<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>' >> $resultFile
+	echo '<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>' >> $resultFile
+	echo '<script>' >> $resultFile
+	echo '$(document).ready(function() {' >> $resultFile
+	echo '	$("#accordion").accordion({ collapsible:true, active:false, autoHeight:false });' >> $resultFile
+	echo '});' >> $resultFile
+
+	echo '</script>' >> $resultFile
+	echo '</head>' >> $resultFile
+## BODY
+	echo '<body>' >> $resultFile
+	echo '<center><h1>TuttleOFX File IO auto test result - Linux</h1></center>' >> $resultFile
+
+	echo '<div id="accordion">' >> $resultFile
+
+}
+
+function startFormat {
+	formatIsOK=1
+	echo '	<h3 style="background:none;" id="'$1'"><a href="#">'$1'</a></h3>' >> $resultFile
+	echo '	<div>' >> $resultFile
+	echo "		<table border='0' cellpadding=5 >" >> $resultFile
+	echo "		<tr><td bgcolor=#E4E4E4>Format</td><td bgcolor=#E4E4E4>Channels</td><td bgcolor=#E4E4E4>Bit Depth</td><td bgcolor=#E4E4E4>Plugin</td><td bgcolor=#E4E4E4>Read</td><td bgcolor=#E4E4E4>Write</td><tr>" >>  $resultFile
+}
+
+function writeHtmlInsertLigne {
+	echo "<tr>" >>  $resultFile
+	echo "<td>" $1 >>  $resultFile
+	echo "</td>" >>  $resultFile
+	echo "<td>" $2 >>  $resultFile
+	echo "</td>" >>  $resultFile
+	echo "<td>" $3 >>  $resultFile
+	echo "</td>" >>  $resultFile
+	echo "<td>" $4 >>  $resultFile
+	echo "</td>" >>  $resultFile
+	echo "<td "$5" >" $6 >>  $resultFile
+	echo "</td>" >>  $resultFile
+	echo "<td "$7">" $8 >>  $resultFile
+	echo "</td>" >>  $resultFile
+	echo "</tr>" >>  $resultFile
+}
+
+function endFormat {
+	echo '		</table>' >>  $resultFile
+	echo '	</div>' >> $resultFile
+
+	echo '#'$1' { ' >> $cssFile
+	if [ $formatIsOK -eq "1" ]; then
+		echo 'background-color:#94D64D !important;' >> $cssFile
+	else
+		echo 'background-color:#D67E55 !important;' >> $cssFile
+	fi
+	echo '}'>> $cssFile
+
+}
+
+function writeHtmlFooter {
+
+	echo "</body>" >>  $resultFile
+	echo "</html>" >>  $resultFile
+}
+
+function writeRGoodWGood {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#94D64D" "OK" "bgcolor=#94D64D" "OK"
+}
+
+function writeRGoodWBad {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#94D64D" "OK" "bgcolor=#D67E55" "BAD"
+}
+
+function writeRBadWGood {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#D67E55" "BAD" "bgcolor=#94D64D" "OK"
+}
+
+function writeRBadWBad {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#D67E55" "BAD" "bgcolor=#D67E55" "BAD"
+}
+
+function writeRUndefWGood {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#E4E4E4" "" "bgcolor=#94D64D" "OK"
+}
+
+function writeRUndefWBad {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#E4E4E4" "" "bgcolor=#D67E55" "BAD"
+}
+
+function writeRGoodWUndef {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#94D64D" "OK" "bgcolor=#E4E4E4" ""
+}
+
+function writeRBadWUndef {
+	writeHtmlInsertLigne $1 $2 $3 $4 "bgcolor=#D67E55" "BAD" "bgcolor=#E4E4E4" ""
+}
 
 echo "***********************************************"
-echo "****************      DIFF      ***************"
+echo "****************      DIFF     ***************"
 echo "***********************************************"
 
+
+
+function clearReadValues {
+	countReadOK=0
+	countReadBAD=0
+}
+
+# function to call diff node from TuttleOFX process
+# process the PSNR between 2 images
 function diff {
 	sam-diff --reader tuttle.$1reader --reader tuttle.$2reader --inputs $3 --inputs $4 >> diff.txt
 	if [ "$?" -eq "0" ]; then
-		echo -e "$BLUE""$1\t| $2 \t is OK ($3, $4)""$NC"
+		echo -e "$BLUE""$1 | $2 is OK ($3, $4)""$NC" | column -t
+		countReadOK=`expr $countReadOK + 1`
+		return 1
 	else
-		echo -e "$RED""$1\t| $2 \t not similar ($3, $4)  "`grep "diff =" diff.txt | tail -1`"$NC"
+		echo -e "$RED""$1\t| $2 not similar ($3, $4)  "`grep "diff =" diff.txt | tail -1`"$NC" | column -t
+		countReadBAD=`expr $countReadBAD + 1`
+		formatIsOK=0
+		return 0
 	fi
 }
 
-diff png         png         rgb_8bits.001.png          rgb_8bits.003.png
-diff png         png         rgb_16bits.001.png         rgb_16bits.003.png
 
-diff jpeg        jpeg        rgb.001.jpg                rgb.003.jpg
-diff dpx         dpx         rgb_8bits.001.dpx          rgb_8bits.003.dpx
-diff png         dpx         rgb_8bits.001.png          rgb_8bits.003.dpx
-diff dpx         dpx         rgb_16bits.001.dpx         rgb_16bits.003.dpx
-diff png         dpx         rgb_16bits.001.png         rgb_16bits.003.dpx
-diff dpx         dpx         rgba_8bits.001.dpx         rgba_8bits.003.dpx
-diff png         dpx         rgba_8bits.001.png         rgba_8bits.003.dpx
-diff dpx         dpx         rgba_16bits.001.dpx        rgba_16bits.003.dpx
-diff png         dpx         rgba_16bits.001.png        abgr_16bits.003.dpx
-diff dpx         dpx         abgr_8bits.001.dpx         abgr_8bits.003.dpx
-diff png         dpx         rgba_8bits.001.png         abgr_8bits.003.dpx
-diff dpx         dpx         abgr_16bits.001.dpx        abgr_16bits.003.dpx
-diff jpeg2000    jpeg2000    rgb_8bits.001.j2k          rgb_8bits.003.j2k
-diff jpeg2000    jpeg2000    rgb_12bits.001.j2k         rgb_12bits.003.j2k
-diff jpeg2000    jpeg2000    rgb_16bits.001.j2k         rgb_16bits.003.j2k
-diff png         jpeg2000    rgb_8bits.001.png          rgb_8bits.001.j2k
-diff png         jpeg2000    rgb_16bits.001.png         rgb_16bits.003.j2k
+writeHtmlHeader
+clearReadValues
+
+function checkComponentsBitDepth1 {
+	reader=$1
+	writer=$2
+	components=$3
+	bitDepth=$4
+	extension=$5
+	diff $reader $reader $components.$bitDepth.001.$extension  $components.$bitDepth.003.$extension
+	
+	if [ $countReadOK -eq 1 ]; then
+		writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer"
+		writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader"
+	else
+		writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer"
+		writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader"
+	fi
+	clearReadValues
+}
+
+function checkComponentsBitDepth {
+	diff oiio        oiio        $2.$3.001.$4          $2.$3.003.$4
+	diff imagemagick imagemagick $2.$3.001.$4          $2.$3.003.$4
+	diff oiio        imagemagick $2.$3.001.$4          $2.$3.001.$4
+
+	diff oiio        oiio        oiio.$2.$3.001.$4     $2.$3.003.$4
+	diff imagemagick imagemagick oiio.$2.$3.001.$4     $2.$3.003.$4
+	diff oiio        imagemagick oiio.$2.$3.001.$4     $2.$3.001.$4
+
+	diff oiio        oiio        oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
+	diff imagemagick imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
+	diff oiio        imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
+	
+	if [ $countReadOK -eq 9 ]; then
+		writeRUndefWGood "$4" "$2" "$3" "$1"
+		writeRGoodWGood  "$4" "$2" "$3" "OIIO"
+		writeRGoodWUndef "$4" "$2" "$3" "ImageMagick"
+	else
+		writeRUndefWBad "$4" "$2" "$3" "$1"
+		writeRBadWBad   "$4" "$2" "$3" "OIIO"
+		writeRBadWUndef "$4" "$2" "$3" "ImageMagick"
+	fi
+	clearReadValues
+}
+
+function checkPluginComponentsBitDepth {
+	diff $1          $1          $2.$3.001.$4          $2.$3.003.$4
+	diff oiio        oiio        $2.$3.001.$4          $2.$3.003.$4
+	diff imagemagick imagemagick $2.$3.001.$4          $2.$3.003.$4
+	diff imagemagick $1          $2.$3.001.$4          $2.$3.001.$4
+	diff oiio        $1          $2.$3.001.$4          $2.$3.001.$4
+	diff oiio        imagemagick $2.$3.001.$4          $2.$3.001.$4
+	
+	diff $1          $1          oiio.$2.$3.001.$4     $2.$3.003.$4
+	diff oiio        oiio        oiio.$2.$3.001.$4     $2.$3.003.$4
+	diff imagemagick imagemagick oiio.$2.$3.001.$4     $2.$3.003.$4
+	diff imagemagick $1          oiio.$2.$3.001.$4     $2.$3.001.$4
+	diff oiio        $1          oiio.$2.$3.001.$4     $2.$3.001.$4
+	diff oiio        imagemagick oiio.$2.$3.001.$4     $2.$3.001.$4
+	
+	diff $1          $1          oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
+	diff oiio        oiio        oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
+	diff imagemagick imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
+	diff imagemagick $1          oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
+	diff oiio        $1          oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
+	diff oiio        imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
+	
+	if [ $countReadOK -eq 18 ]; then
+		writeRGoodWGood  "$4" "$2" "$3" "$1"
+		writeRGoodWGood  "$4" "$2" "$3" "OIIO"
+		writeRGoodWUndef "$4" "$2" "$3" "ImageMagick"
+	else
+		writeRBadWBad   "$4" "$2" "$3" "$1"
+		writeRBadWBad   "$4" "$2" "$3" "OIIO"
+		writeRBadWUndef "$4" "$2" "$3" "ImageMagick"
+	fi
+	clearReadValues
+}
+
+echo "****************       PNG      ***************"
+startFormat PNG
+checkPluginComponentsBitDepth png gray 8bits  png
+checkPluginComponentsBitDepth png gray 16bits png
+checkPluginComponentsBitDepth png rgb  8bits  png
+checkPluginComponentsBitDepth png rgb  16bits png
+checkPluginComponentsBitDepth png rgba 8bits  png
+checkPluginComponentsBitDepth png rgba 16bits png
+endFormat PNG
+
+echo "****************      JPEG      ***************"
+startFormat Jpeg
+checkPluginComponentsBitDepth jpeg rgb  8bits jpg
+endFormat Jpeg
+
+echo "****************       DPX      ***************"
+startFormat DPX
+#                        reader      writer components bitDepth extension
+checkComponentsBitDepth1 imagemagick dpx    gray       8bits    dpx
+checkComponentsBitDepth1 imagemagick dpx    gray       10bits   dpx
+checkComponentsBitDepth1 imagemagick dpx    gray       12bits   dpx
+checkComponentsBitDepth1 imagemagick dpx    gray       16bits   dpx
+
+checkComponentsBitDepth dpx rgb  8bits dpx
+checkComponentsBitDepth dpx rgb  10bits dpx
+checkComponentsBitDepth dpx rgb  12bits dpx
+checkComponentsBitDepth dpx rgb  16bits dpx
+
+checkComponentsBitDepth dpx rgba 8bits dpx
+checkComponentsBitDepth dpx rgba 10bits dpx
+checkComponentsBitDepth dpx rgba 12bits dpx
+checkComponentsBitDepth dpx rgba 16bits dpx
+endFormat DPX
+
+#echo "****************   JPEG 2000    ***************"
 
 
-diff oiio        oiio        oiio_rgb_8bits.001.png     oiio_rgb_8bits.003.png
-diff png         png         oiio_rgb_8bits.001.png     oiio_rgb_8bits.003.png
-diff png         png         rgb_8bits.001.png          oiio_rgb_8bits.001.png
-diff png         oiio        oiio_rgb_8bits.001.png     oiio_rgb_8bits.001.png
-diff png         oiio        rgb_8bits.001.png          oiio_rgb_8bits.001.png
-diff png         oiio        oiio_rgb_8bits.001.png     rgb_8bits.001.png
-diff oiio        oiio        oiio_rgb_16bits.001.png    oiio_rgb_16bits.003.png
-diff oiio        oiio        oiio_rgb.001.jpg           oiio_rgb.003.jpg
-diff oiio        oiio        oiio_rgb_8bits.001.dpx     oiio_rgb_8bits.003.dpx
-diff oiio        oiio        oiio_rgb_8bits.001.png     oiio_rgb_8bits.003.dpx
-diff oiio        oiio        oiio_rgb_16bits.001.dpx    oiio_rgb_16bits.003.dpx
-diff oiio        oiio        oiio_rgb_16bits.001.png    oiio_rgb_16bits.003.dpx
-diff png         oiio        oiio_rgb_16bits.001.png    oiio_rgb_16bits.003.dpx
-diff png         dpx         oiio_rgb_16bits.001.png    oiio_rgb_16bits.003.dpx
-diff oiio        dpx         oiio_rgb_16bits.001.png    oiio_rgb_16bits.003.dpx
-diff oiio        oiio        oiio_rgba_8bits.001.dpx    oiio_rgba_8bits.003.dpx
-diff oiio        oiio        oiio_rgba_8bits.001.png    oiio_rgba_8bits.003.dpx
-diff oiio        oiio        rgba_8bits.001.png         rgba_8bits.003.dpx
-diff png         oiio        oiio_rgba_8bits.001.png    oiio_rgba_8bits.003.dpx
-diff oiio        dpx         oiio_rgba_8bits.001.png    oiio_rgba_8bits.003.dpx
 
-diff oiio        oiio        oiio_rgba_16bits.001.dpx   oiio_rgba_16bits.003.dpx
-diff oiio        oiio        oiio_rgba_16bits.001.png   oiio_rgba_16bits.003.dpx
-diff png         oiio        oiio_rgba_16bits.001.png   oiio_rgba_16bits.003.dpx
-
-
-
-#diff oiio        oiio        oiio_rgb_8bits.001.j2k    oiio_rgb_8bits.003.j2k
-#diff oiio        oiio        oiio_rgb_16bits.001.j2k   oiio_rgb_16bits.003.j2k
-#diff oiio        oiio        oiio_rgb_8bits.001.png    oiio_rgb_8bits.001.j2k
-#diff oiio        oiio        oiio_rgb_16bits.001.png   oiio_rgb_16bits.003.j2k
-#diff oiio        jpeg2000    oiio_rgb_8bits.001.j2k    oiio_rgb_8bits.003.j2k
-#diff jpeg2000    oiio        oiio_rgb_8bits.001.j2k    oiio_rgb_8bits.003.j2k
-#diff jpeg2000    jpeg2000    oiio_rgb_8bits.001.j2k    oiio_rgb_8bits.003.j2k
-#diff oiio        oiio        oiio_rgb_16bits.001.j2k   oiio_rgb_16bits.003.j2k
-#diff oiio        oiio        oiio_rgb_8bits.001.png    oiio_rgb_8bits.001.j2k
-#diff oiio        oiio        oiio_rgb_16bits.001.png   oiio_rgb_16bits.003.j2k
-
-
-diff oiio        oiio        oiio_gray_8bits.001.png    oiio_gray_8bits.001.sgi
-diff oiio        oiio        oiio_gray_16bits.001.png   oiio_gray_16bits.001.sgi
-
-diff oiio        oiio        oiio_rgb_8bits.001.png     oiio_rgb_8bits.001.sgi
-diff oiio        oiio        oiio_rgb_16bits.001.png    oiio_rgb_16bits.001.sgi
-
-diff oiio        oiio        oiio_rgba_8bits.001.png    oiio_rgba_8bits.001.sgi
-diff oiio        oiio        oiio_rgba_16bits.001.png   oiio_rgba_16bits.001.sgi
-
-diff oiio        oiio        gray_16float.001.exr       oiio_gray_16float.001.exr
-diff oiio        oiio        gray_32bits.001.exr        oiio_gray_32bits.001.exr
-diff oiio        oiio        gray_32float.001.exr       oiio_gray_32float.001.exr
-
-diff oiio        oiio        rgb_16float.001.exr        oiio_rgb_16float.001.exr
-diff oiio        oiio        rgb_32bits.001.exr         oiio_rgb_32bits.001.exr
-diff oiio        oiio        rgb_32float.001.exr        oiio_rgb_32float.001.exr
-
-diff png         oiio        oiio_rgb_32bits.001.png    oiio_rgb_32bits.001.exr
-diff png         oiio        oiio_rgb_32float.001.png   oiio_rgb_32float.001.exr
-
-diff oiio        oiio        rgba_16float.001.exr       oiio_rgba_16float.001.exr
-diff oiio        oiio        rgba_32bits.001.exr        oiio_rgba_32bits.001.exr
-diff oiio        oiio        rgba_32float.001.exr       oiio_rgba_32float.001.exr
-
-diff oiio        oiio        oiio_rgb_8bits.001.hdr     oiio_rgb_32float.001.exr
-diff oiio        oiio        oiio_rgb_32float.001.hdr   oiio_rgb_32float.001.exr
-
-diff oiio        oiio        oiio_rgb_32float.001.hdr   oiio_rgb_32float.003.png
-diff oiio        png         oiio_rgb_32float.001.hdr   oiio_rgb_32float.003.png
-
+writeHtmlFooter
