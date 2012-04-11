@@ -100,18 +100,17 @@ exe sam-do :
 ###############################################################################
 # info
 ###############################################################################
-exe sam-info :
-		[ glob src/sam/info/*.cpp ]
-
-		/boost//program_options/<link>static
-
-		/tuttlecommon/<link>static
-	:
-		<include>$(MAGICK_INCLUDE)
-		<linkflags>$(MAGICK_LIBS)
-		<os>NT:<find-shared-library>shell32
-		<os>LINUX:<find-shared-library>dl
-	;
+#exe sam-info :
+#		[ glob src/sam/info/*.cpp ]
+#
+#		/boost//program_options/<link>static
+#
+#		/tuttlecommon/<link>static
+#		/project-config//imagemagick
+#	:
+#		<os>NT:<find-shared-library>shell32
+#		<os>LINUX:<find-shared-library>dl
+#	;
 
 ###############################################################################
 # plugins
