@@ -26,6 +26,8 @@ cssFile=style.css
 rm $resultFile
 rm $cssFile
 
+date=`date +"%-d %B %Y"`
+
 # write header in html file
 
 function writeHtmlHeader {
@@ -45,6 +47,7 @@ function writeHtmlHeader {
 	echo '</head>' >> $resultFile
 ## BODY
 	echo '<body>' >> $resultFile
+	echo '<a style="color:#fff">update : ' $date '</a><br/>' >> $resultFile
 	echo '<div id="accordion">' >> $resultFile
 
 	echo 'body {' >> $cssFile
