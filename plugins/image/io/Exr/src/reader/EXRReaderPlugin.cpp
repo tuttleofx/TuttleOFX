@@ -121,16 +121,14 @@ void EXRReaderPlugin::updateCombos()
 			{
 				case 1:
 				{
-					_outComponents->appendOption( "Gray" );
-					_outComponents->setValue( 0 );
+					_outComponents->setValue( eTuttlePluginComponentsGray );
 					for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
 						_vChannelChoice[j]->setValue( 0 );
 					break;
 				}
 				case 3:
 				{
-					_outComponents->appendOption( "RGB" );
-					_outComponents->setValue( 1 );
+					_outComponents->setValue( eTuttlePluginComponentsRGB );
 					size_t nc = _vChannelChoice.size() - 1;
 					for( std::size_t j = 0; j < nc; ++j )
 						_vChannelChoice[nc - j - 1]->setValue( j );
@@ -139,8 +137,7 @@ void EXRReaderPlugin::updateCombos()
 				}
 				case 4:
 				{
-					_outComponents->appendOption( "RGBA" );
-					_outComponents->setValue( 2 );
+					_outComponents->setValue( eTuttlePluginComponentsRGBA );
 					size_t nc = _vChannelChoice.size();
 					for( std::size_t j = 0; j < nc; ++j )
 						_vChannelChoice[nc - j - 1]->setValue( j );

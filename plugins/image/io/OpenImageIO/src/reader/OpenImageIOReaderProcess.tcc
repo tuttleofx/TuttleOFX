@@ -56,7 +56,12 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
 	}
 	ImageSpec spec;
-	in->open( filepath, spec );
+	if( ! in->open( filepath, spec ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::user( "OIIO Reader: " + in->geterror () )
+			<< exception::filename( filepath ) );
+	}
 
 	typedef mpl::map<
 	    mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT8> >,

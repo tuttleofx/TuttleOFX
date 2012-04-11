@@ -65,7 +65,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 #endif
 
 	::dpx::Writer   writer;
-	::dpx::DataSize dataSize;
+	::dpx::DataSize dataSize = ::dpx::kByte;
 
 	OutStream       stream;
 
@@ -106,19 +106,74 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	{
 		case OFX::ePixelComponentAlpha: inputComponentString = "Gray/Alpha"; break; // pixelSize *= 1;
 		case OFX::ePixelComponentRGB  : inputComponentString = "RGB";  pixelSize *= 3; break;
-		case OFX::ePixelComponentRGBA : inputComponentString = "RGBA"; pixelSize = 4;  break;
+		case OFX::ePixelComponentRGBA : inputComponentString = "RGBA"; pixelSize *= 4;  break;
 		default: break;
 	}
 	switch ( eOutBitDepth )
 	{
-		case eTuttlePluginBitDepth8:  iBitDepth = 8;  break;
-		case eTuttlePluginBitDepth10: iBitDepth = 10; break;
-		case eTuttlePluginBitDepth12: iBitDepth = 12; break;
-		case eTuttlePluginBitDepth16: iBitDepth = 16; break;
-		case eTuttlePluginBitDepth32: iBitDepth = 32; break;
-		case eTuttlePluginBitDepth64: iBitDepth = 64; break;
+		case eTuttlePluginBitDepth8:
+			iBitDepth = 8;
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				case OFX::eBitDepthUShort:
+				case OFX::eBitDepthFloat:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthUByte: break;
+			}
+			break;
+		case eTuttlePluginBitDepth10:
+			iBitDepth = 10;
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				case OFX::eBitDepthFloat:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort: break;
+			}
+			break;
+		case eTuttlePluginBitDepth12:
+			iBitDepth = 12;
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				case OFX::eBitDepthFloat:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort: break;
+			}
+			break;
+		case eTuttlePluginBitDepth16:
+			iBitDepth = 16;
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				case OFX::eBitDepthFloat:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort: break;
+			}
+			break;
+		case eTuttlePluginBitDepth32:
+			iBitDepth = 32;
+			break;
+		case eTuttlePluginBitDepth64:
+			iBitDepth = 64;
+			break;
 	}
-
 
 	switch( _descriptor->getValue() )
 	{
@@ -357,7 +412,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	}
 	ePacked   = static_cast< ::dpx::Packing > ( _packed->getValue() );
 	eEncoding = static_cast< ::dpx::Encoding >( _encoding->getValue() );
-
+	
 	writer.SetElement( 0,
 			eDescriptor,
 			iBitDepth,
@@ -366,6 +421,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			ePacked,
 			eEncoding );
 
+	
 	if( ! writer.WriteHeader() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
@@ -377,13 +433,13 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 	for( int y = size.y; y > 0 ; y-- )
 	{
-		void* dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelAddress( 0, y );
+		void* dataSrcPtr = _clipSrc->fetchImage( args.time )->getPixelAddress( 0, y-1 );
 		memcpy( dataPtrIt, dataSrcPtr, size.x * pixelSize );
 
 		dataPtrIt += size.x * pixelSize;
 	}
-;
-	if( ! writer.WriteElement( 0, dataPtr, ::dpx::kByte ) )
+
+	if( ! writer.WriteElement( 0, dataPtr, dataSize ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX User Data)" ) );

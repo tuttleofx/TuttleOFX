@@ -41,7 +41,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
-	OpenImageIOWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
+	params = _plugin.getProcessParams( this->_renderArgs.time );
 
 	try
 	{
@@ -66,6 +66,8 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 				}
 				break;
 			}
+			case eTuttlePluginBitDepth10:
+			case eTuttlePluginBitDepth12:
 			case eTuttlePluginBitDepth16:
 			{
 				switch( params._components )
@@ -184,26 +186,42 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 
 	OpenImageIO::TypeDesc oiioBitDepth;
 	size_t sizeOfChannel = 0;
+	int    bitsPerSample  = 0;
 	switch( bitDepth )
 	{
 		case eTuttlePluginBitDepth8:
 			oiioBitDepth = TypeDesc::UINT8;
+			bitsPerSample = 8;
 			sizeOfChannel = 1;
+			break;
+		case eTuttlePluginBitDepth10:
+			oiioBitDepth = TypeDesc::UINT16;
+			bitsPerSample = 10;
+			sizeOfChannel = 2;
+			break;
+		case eTuttlePluginBitDepth12:
+			oiioBitDepth = TypeDesc::UINT16;
+			bitsPerSample = 12;
+			sizeOfChannel = 2;
 			break;
 		case eTuttlePluginBitDepth16:
 			oiioBitDepth = TypeDesc::UINT16;
+			bitsPerSample = 16;
 			sizeOfChannel = 2;
 			break;
 		case eTuttlePluginBitDepth16f:
 			oiioBitDepth = TypeDesc::HALF;
+			bitsPerSample = 16;
 			sizeOfChannel = 2;
 			break;
 		case eTuttlePluginBitDepth32:
 			oiioBitDepth = TypeDesc::UINT;
+			bitsPerSample = 32;
 			sizeOfChannel = 4;
 			break;
 		case eTuttlePluginBitDepth32f:
 			oiioBitDepth = TypeDesc::FLOAT;
+			bitsPerSample = 32;
 			sizeOfChannel = 4;
 			break;
 		default:
@@ -212,7 +230,19 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 	}
 
 	ImageSpec spec( src.width(), src.height(), gil::num_channels<WImage>::value, oiioBitDepth );
-	out->open( filepath, spec );
+
+	spec.attribute( "oiio:BitsPerSample", bitsPerSample );
+	spec.attribute( "CompressionQuality", params._quality );
+	
+	if( ! out->open( filepath, spec ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::user( "OIIO Writer: " + out->geterror () )
+			<< exception::filename(params._filepath) );
+	}
+
+
+	spec.attribute( "Orientation", params._orientation );
 
 	const stride_t xstride = gil::is_planar<WImage>::value ? sizeOfChannel : vw.num_channels() * sizeOfChannel;
 	const stride_t ystride = vw.pixels().row_size();

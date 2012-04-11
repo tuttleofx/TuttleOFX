@@ -9,8 +9,6 @@ import os ;
 project
 	: requirements
 		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-		<include>$(3RD_PARTY)/ilmbase/Iex
-		<include>$(3RD_PARTY)/ilmbase/Half
 	: build-dir $(BUILD)/Exr
 	;
 

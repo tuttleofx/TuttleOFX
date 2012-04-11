@@ -20,6 +20,8 @@ class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 {
 	typedef OpenImageIOWriterProcess<View> This;
 
+	OpenImageIOWriterProcessParams params;
+
 public:
 	typedef typename terry::image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;

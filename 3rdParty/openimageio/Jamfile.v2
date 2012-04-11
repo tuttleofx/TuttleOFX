@@ -62,12 +62,11 @@ lib	openimageio	:
 			#       src/webp.imageio/*.cpp
 			       src/zfile.imageio/*.cpp
 			 ]
-			../openexr/<link>static
-			#../jasper/<link>static
-			../openjpeg/<link>static
-			../libpng/<link>static
-			../libtiff/<link>static
-			../jpeg/<link>static
+			/project-config//openexr
+			/project-config//openjpeg
+			/project-config//libpng
+			/project-config//libtiff
+			/project-config//jpeg
 			;
 
 install dist

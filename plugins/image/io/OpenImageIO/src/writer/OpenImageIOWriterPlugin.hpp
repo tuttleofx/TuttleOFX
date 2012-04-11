@@ -16,7 +16,10 @@ struct OpenImageIOWriterProcessParams
 {
 	std::string             _filepath;           ///< filepath
 	ETuttlePluginComponents _components;         ///< Force RGB
-	ETuttlePluginBitDepth   _bitDepth;           ///< Output bit depth
+	ETuttlePluginBitDepth   _bitDepth;           ///< Output bit depth (real bit depth, not the buffer passed to OpenImageIO)
+
+	int                     _quality;            ///< Output quality
+	int                     _orientation;        ///< Output orientation
 };
 
 /**
@@ -33,6 +36,8 @@ public:
 
 public:
 	OFX::ChoiceParam* _components;             ///< Choose components RGBA/RGB
+	OFX::IntParam*    _quality;
+	OFX::ChoiceParam* _orientation;
 };
 
 }

@@ -53,8 +53,14 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 			<< exception::filename( filename ) );
 	}
 	OpenImageIO::ImageSpec spec;
-	in->open( filename, spec );
 
+	if( ! in->open( filename, spec ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::user( "OIIO Reader: " + in->geterror () )
+			<< exception::filename( filename ) );
+	}
+	
 	rod.x1 = 0;
 	rod.x2 = spec.width * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
