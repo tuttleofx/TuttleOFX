@@ -45,9 +45,13 @@ function writeHtmlHeader {
 	echo '</head>' >> $resultFile
 ## BODY
 	echo '<body>' >> $resultFile
-	echo '<center><h1>TuttleOFX File IO auto test result - Linux</h1></center>' >> $resultFile
-
 	echo '<div id="accordion">' >> $resultFile
+
+	echo 'body {' >> $cssFile
+	echo 'background-color:black;' >> $cssFile
+	echo '}' >> $cssFile
+
+
 
 }
 
