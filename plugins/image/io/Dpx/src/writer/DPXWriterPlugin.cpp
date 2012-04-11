@@ -430,20 +430,22 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	}
 
 	typedef std::vector<char, OfxAllocator<char> > DataVector;
-	DataVector data( size.x * size.y * pixelSize );
+	const std::size_t rowBytesToCopy = size.x * pixelSize;
+
+	DataVector data( rowBytesToCopy * size.y );
 	char* dataPtrIt = &data.front();
 
 	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
-	const std::size_t rowBytesToCopy = size.x * pixelSize;
+
 	for( int y = size.y; y > 0; --y )
 	{
 		void* dataSrcPtr = src->getPixelAddress( 0, y-1 );
-		memcpy( dataPtrIt, dataSrcPtr, size.x * pixelSize );
+		memcpy( dataPtrIt, dataSrcPtr, rowBytesToCopy );
 
 		dataPtrIt += rowBytesToCopy;
 	}
 
-	if( ! writer.WriteElement( 0, dataPtr, dataSize ) )
+	if( ! writer.WriteElement( 0, &data.front(), dataSize ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX User Data)" ) );
