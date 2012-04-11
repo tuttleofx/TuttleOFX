@@ -11,33 +11,30 @@ namespace quality {
 DiffPlugin::DiffPlugin( OfxImageEffectHandle handle )
 	: OFX::ImageEffect( handle )
 {
-	_clipSrcA      = fetchClip( kDiffSourceA );
-	_clipSrcB      = fetchClip( kDiffSourceB );
-	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
-	_qualityMesure = fetchRGBAParam( kOutputQualityMesure );
+	_clipSrcA = fetchClip( kDiffSourceA );
+	_clipSrcB = fetchClip( kDiffSourceB );
+	_clipDst  = fetchClip( kOfxImageEffectOutputClipName );
+
+	_measureFunction = fetchChoiceParam ( kMeasureFunction );
+	_qualityMesure   = fetchRGBAParam( kOutputQualityMesure );
 }
 
 DiffProcessParams DiffPlugin::getProcessParams() const
 {
 	DiffProcessParams params;
+	params.measureFunction = static_cast<EMeasureFunction>( _measureFunction->getValue() );
 
 	return params;
 }
 
 void DiffPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-//	if( paramName == kHelpButton )
-//	{
-//		sendMessage( OFX::Message::eMessageMessage,
-//		             "", // No XML resources
-//		             kHelpString );
-//	}
 }
 
 bool DiffPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	const OfxRectD irod = rectanglesIntersection( _clipSrcA->getCanonicalRod( args.time ),
-	                                              _clipSrcB->getCanonicalRod( args.time ) );
+						      _clipSrcB->getCanonicalRod( args.time ) );
 
 	// Intersection of A & B
 	rod.x1 = irod.x1;

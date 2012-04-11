@@ -10,7 +10,9 @@ namespace plugin {
 namespace quality {
 
 struct DiffProcessParams
-{};
+{
+	EMeasureFunction measureFunction;
+};
 
 /**
  * @brief Diff plugin
@@ -22,7 +24,7 @@ public:
 
 public:
 	DiffProcessParams getProcessParams() const;
-	
+
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
@@ -34,7 +36,11 @@ public:
 	OFX::Clip* _clipSrcA;               ///< Source image clip A
 	OFX::Clip* _clipSrcB;               ///< Source image clip B
 	OFX::Clip* _clipDst;                ///< Destination image clip
-	OFX::RGBAParam* _qualityMesure;
+
+	OFX::ChoiceParam* _measureFunction;
+
+	OFX::RGBAParam*   _qualityMesure;
+
 
 };
 
