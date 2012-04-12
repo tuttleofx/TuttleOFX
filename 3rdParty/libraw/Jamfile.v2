@@ -23,7 +23,7 @@ alias	headers		: [ glob-tree *.h ] ;
 
 lib	raw		:
 			  [ glob src/*.cpp internal/*.cpp dcraw/*.c ]
-			  ../jasper/<link>static
+			  /project-config//jasper
 			;
 
 install dist

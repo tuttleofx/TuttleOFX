@@ -33,7 +33,7 @@ lib	webp		:
 					src/enc/enc.c
 					src/enc/enc_sse2.c
 			  ]
-			  ../jasper/<link>static
+			  /project-config//jasper
 			;
 
 install dist
