@@ -14,7 +14,7 @@ project
 		<warnings-as-errors>off
 		<warnings>off
 		<define>EMBED_PLUGINS
-		<define>USE_JASPER
+		#<define>USE_JASPER
 	: usage-requirements
 		<include>.
 		<include>src/include
@@ -59,7 +59,7 @@ lib	openimageio	:
 			       src/softimage.imageio/*.cpp
 			       src/targa.imageio/*.cpp
 			       src/tiff.imageio/*.cpp
-			#       src/webp.imageio/*.cpp
+			       src/webp.imageio/*.cpp
 			       src/zfile.imageio/*.cpp
 			 ]
 			/project-config//openexr
@@ -67,6 +67,7 @@ lib	openimageio	:
 			/project-config//libpng
 			/project-config//libtiff
 			/project-config//jpeg
+			/project-config//webp
 			;
 
 install dist
