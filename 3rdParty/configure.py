@@ -31,3 +31,7 @@ os.chdir ( ".." )
 os.chdir ( "./imagemagick" )
 os.system( "./configure" )
 os.chdir ( ".." )
+
+os.chdir ( "./webp" )
+os.system( "./configure" )
+os.chdir ( ".." )
