@@ -37,7 +37,7 @@ lib	openimageio	:
 			       src/cineon.imageio/*.cpp
 			       src/cineon.imageio/libcineon/*.cpp
 			       src/dds.imageio/*.cpp
-			       src/dds.imageio/squich/*.cpp
+			       src/dds.imageio/squish/*.cpp
 			       src/dpx.imageio/*.cpp
 			       src/dpx.imageio/libdpx/*.cpp
 			       src/field3D.imageio/*.cpp
