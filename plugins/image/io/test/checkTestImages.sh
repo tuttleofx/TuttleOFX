@@ -166,119 +166,402 @@ function diff {
 writeHtmlHeader
 clearReadValues
 
-function checkComponentsBitDepth1 {
-	reader=$1
-	writer=$2
+function check1r1w {
+	reader1=$1
+	writer1=$2
 	components=$3
 	bitDepth=$4
 	extension=$5
-	diff $reader $reader $components.$bitDepth.001.$extension  $components.$bitDepth.003.$extension
+
+	diff $reader1 $reader1 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
 	
 	if [ $countReadOK -eq 1 ]; then
-		writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer"
-		writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader"
+		if [ $reader1 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer1"
+			writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader1"
+		fi
 	else
-		writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer"
-		writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader"
+		if [ $reader1 == $writer1 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer1"
+			writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader1"
+		fi
 	fi
 	clearReadValues
 }
 
-function checkComponentsBitDepth {
-	diff oiio        oiio        $2.$3.001.$4          $2.$3.003.$4
-	diff imagemagick imagemagick $2.$3.001.$4          $2.$3.003.$4
-	diff oiio        imagemagick $2.$3.001.$4          $2.$3.001.$4
+function check2r1w {
+	reader1=$1
+	reader2=$2
+	writer1=$3
+	components=$4
+	bitDepth=$5
+	extension=$6
 
-	diff oiio        oiio        oiio.$2.$3.001.$4     $2.$3.003.$4
-	diff imagemagick imagemagick oiio.$2.$3.001.$4     $2.$3.003.$4
-	diff oiio        imagemagick oiio.$2.$3.001.$4     $2.$3.001.$4
+	diff $reader1 $reader1 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader2 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader1 $reader2 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	
+	if [ $countReadOK -eq 3 ]; then
+		if [ $reader1 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader1"
+		fi
+		if [ $reader2 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader2"
+		fi
+		if [ $writer1 != $reader1 ]; then
+			if [ $writer1 != $reader2 ]; then
+				writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer1"
+			fi
+		fi
+	else
+		if [ $reader1 == $writer1 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader1"
+		fi
+		if [ $reader2 == $writer1 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader2"
+		fi
+		if [ $writer1 != $reader1 ]; then
+			if [ $writer1 != $reader2 ]; then
+				writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer1"
+			fi
+		fi
+	fi
+	clearReadValues
+}
 
-	diff oiio        oiio        oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
-	diff imagemagick imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
-	diff oiio        imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
+function check1r2w {
+	reader1=$1
+	writer1=$2
+	writer2=$3
+	components=$4
+	bitDepth=$5
+	extension=$6
+
+	diff $reader1 $reader1 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader1 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader1 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
+	
+	if [ $countReadOK -eq 3 ]; then
+		if [ $reader1 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader1 == $writer2 ]; then
+				writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader1"
+			fi
+		fi
+		if [ $writer1 != $reader1 ]; then
+			writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer1"
+		fi
+		if [ $writer2 != $reader1 ]; then
+			writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer1"
+		fi
+	else
+		if [ $reader1 == $writer1 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader1 == $writer2 ]; then
+				writeRBadWBad "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader1"
+			fi
+		fi
+		if [ $writer1 != $reader1 ]; then
+				writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer1"
+		fi
+		if [ $writer2 != $reader1 ]; then
+				writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer1"
+		fi
+	fi
+	clearReadValues
+}
+
+function check2r2w {
+	reader1=$1
+	reader2=$2
+	writer1=$3
+	writer2=$4
+	components=$5
+	bitDepth=$6
+	extension=$7
+
+	diff $reader1 $reader1 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader2 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader1 $reader2 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+
+	diff $reader1 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader2 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader1 $reader2 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+
+	diff $reader1 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
+	diff $reader2 $reader2 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
+	diff $reader1 $reader2 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
 	
 	if [ $countReadOK -eq 9 ]; then
-		writeRUndefWGood "$4" "$2" "$3" "$1"
-		writeRGoodWGood  "$4" "$2" "$3" "OIIO"
-		writeRGoodWUndef "$4" "$2" "$3" "ImageMagick"
+		if [ $reader1 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader1 == $writer2 ]; then
+				writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader1"
+			fi
+		fi
+		if [ $reader2 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader2 == $writer2 ]; then
+				writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader2"
+			fi
+		fi
+		if [ $writer1 != $reader1 ]; then
+			if [ $writer1 != $reader2 ]; then
+				writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer1"
+			fi
+		fi
+		if [ $writer2 != $reader1 ]; then
+			if [ $writer2 != $reader2 ]; then
+				writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer1"
+			fi
+		fi
 	else
-		writeRUndefWBad "$4" "$2" "$3" "$1"
-		writeRBadWBad   "$4" "$2" "$3" "OIIO"
-		writeRBadWUndef "$4" "$2" "$3" "ImageMagick"
+		if [ $reader1 == $writer1 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader1 == $writer2 ]; then
+				writeRBadWBad "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader1"
+			fi
+		fi
+		if [ $reader2 == $writer1 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader2 == $writer2 ]; then
+				writeRBadWBad "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader2"
+			fi
+		fi
+		if [ $writer1 != $reader1 ]; then
+			if [ $writer1 != $reader2 ]; then
+				writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer1"
+			fi
+		fi
+		if [ $writer2 != $reader1 ]; then
+			if [ $writer2 != $reader2 ]; then
+				writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer1"
+			fi
+		fi
 	fi
 	clearReadValues
 }
 
-function checkPluginComponentsBitDepth {
-	diff $1          $1          $2.$3.001.$4          $2.$3.003.$4
-	diff oiio        oiio        $2.$3.001.$4          $2.$3.003.$4
-	diff imagemagick imagemagick $2.$3.001.$4          $2.$3.003.$4
-	diff imagemagick $1          $2.$3.001.$4          $2.$3.001.$4
-	diff oiio        $1          $2.$3.001.$4          $2.$3.001.$4
-	diff oiio        imagemagick $2.$3.001.$4          $2.$3.001.$4
+function check3r2w {
+
+	reader1=$1
+	reader2=$2
+	reader3=$3
+	writer1=$4
+	writer2=$5
 	
-	diff $1          $1          oiio.$2.$3.001.$4     $2.$3.003.$4
-	diff oiio        oiio        oiio.$2.$3.001.$4     $2.$3.003.$4
-	diff imagemagick imagemagick oiio.$2.$3.001.$4     $2.$3.003.$4
-	diff imagemagick $1          oiio.$2.$3.001.$4     $2.$3.001.$4
-	diff oiio        $1          oiio.$2.$3.001.$4     $2.$3.001.$4
-	diff oiio        imagemagick oiio.$2.$3.001.$4     $2.$3.001.$4
+	components=$6
+	bitDepth=$7
+	extension=$8
+
+	diff $reader1 $reader1 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader2 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader3 $reader3 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader3 $reader1 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader1 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader3 $writer1.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+
+	diff $reader1 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader2 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader3 $reader3 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader3 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader3 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
 	
-	diff $1          $1          oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
-	diff oiio        oiio        oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
-	diff imagemagick imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.003.$4
-	diff imagemagick $1          oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
-	diff oiio        $1          oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
-	diff oiio        imagemagick oiio.$2.$3.001.$4     oiio.$2.$3.001.$4
+	diff $reader1 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
+	diff $reader2 $reader2 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
+	diff $reader3 $reader3 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
+	diff $reader3 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer1.$components.$bitDepth.003.$extension
+	diff $reader2 $reader1 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
+	diff $reader2 $reader3 $writer2.$components.$bitDepth.001.$extension  $writer2.$components.$bitDepth.003.$extension
 	
 	if [ $countReadOK -eq 18 ]; then
-		writeRGoodWGood  "$4" "$2" "$3" "$1"
-		writeRGoodWGood  "$4" "$2" "$3" "OIIO"
-		writeRGoodWUndef "$4" "$2" "$3" "ImageMagick"
+		if [ $reader1 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader1 == $writer2 ]; then
+				writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader1"
+			fi
+		fi
+		if [ $reader2 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader2 == $writer2 ]; then
+				writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader2"
+			fi
+		fi
+		if [ $reader3 == $writer1 ]; then
+			writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer1"
+		else
+			if [ $reader3 == $writer2 ]; then
+				writeRGoodWGood "$extension" "$components" "$bitDepth" "$writer2"
+			else
+				writeRGoodWUndef "$extension" "$components" "$bitDepth" "$reader3"
+			fi
+		fi
+		if [ $writer1 != $reader1 ]; then
+			if [ $writer1 != $reader2 ]; then
+				if [ $writer1 != $reader3 ]; then
+					writeRUndefWGood "$extension" "$components" "$bitDepth" "$writer1"
+				fi
+			fi
+		fi
 	else
-		writeRBadWBad   "$4" "$2" "$3" "$1"
-		writeRBadWBad   "$4" "$2" "$3" "OIIO"
-		writeRBadWUndef "$4" "$2" "$3" "ImageMagick"
+	if [ $reader1 == $writer1 ]; then
+		writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+	else
+		if [ $reader1 == $writer2 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer2"
+		else
+			writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader1"
+		fi
+	fi
+	if [ $reader2 == $writer1 ]; then
+		writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+	else
+		if [ $reader2 == $writer2 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer2"
+		else
+			writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader2"
+		fi
+	fi
+	if [ $reader3 == $writer1 ]; then
+		writeRBadWBad "$extension" "$components" "$bitDepth" "$writer1"
+	else
+		if [ $reader3 == $writer2 ]; then
+			writeRBadWBad "$extension" "$components" "$bitDepth" "$writer2"
+		else
+			writeRBadWUndef "$extension" "$components" "$bitDepth" "$reader3"
+		fi
+	fi
+	if [ $writer1 != $reader1 ]; then
+		if [ $writer1 != $reader2 ]; then
+			if [ $writer1 != $reader3 ]; then
+				writeRUndefWBad "$extension" "$components" "$bitDepth" "$writer1"
+			fi
+		fi
+	fi
 	fi
 	clearReadValues
 }
 
 echo "****************       PNG      ***************"
 startFormat PNG
-checkPluginComponentsBitDepth png gray 8bits  png
-checkPluginComponentsBitDepth png gray 16bits png
-checkPluginComponentsBitDepth png rgb  8bits  png
-checkPluginComponentsBitDepth png rgb  16bits png
-checkPluginComponentsBitDepth png rgba 8bits  png
-checkPluginComponentsBitDepth png rgba 16bits png
+check3r2w png oiio imagemagick png oiio gray  8bits png
+check3r2w png oiio imagemagick png oiio gray 16bits png
+check3r2w png oiio imagemagick png oiio rgb   8bits png
+check3r2w png oiio imagemagick png oiio rgb  16bits png
+check3r2w png oiio imagemagick png oiio rgba  8bits png
+check3r2w png oiio imagemagick png oiio rgba 16bits png
 endFormat PNG
 
 echo "****************      JPEG      ***************"
 startFormat Jpeg
-checkPluginComponentsBitDepth jpeg rgb  8bits jpg
+check3r2w imagemagick jpeg oiio jpeg oiio rgb  8bits jpg
 endFormat Jpeg
 
 echo "****************       DPX      ***************"
 startFormat DPX
-#                        reader      writer components bitDepth extension
-checkComponentsBitDepth1 imagemagick dpx    gray       8bits    dpx
-checkComponentsBitDepth1 imagemagick dpx    gray       10bits   dpx
-checkComponentsBitDepth1 imagemagick dpx    gray       12bits   dpx
-checkComponentsBitDepth1 imagemagick dpx    gray       16bits   dpx
+check1r1w imagemagick dpx gray  8bits dpx
+check1r1w imagemagick dpx gray 10bits dpx
+check1r1w imagemagick dpx gray 12bits dpx
+check1r1w imagemagick dpx gray 16bits dpx
 
-checkComponentsBitDepth dpx rgb  8bits dpx
-checkComponentsBitDepth dpx rgb  10bits dpx
-checkComponentsBitDepth dpx rgb  12bits dpx
-checkComponentsBitDepth dpx rgb  16bits dpx
+check2r2w imagemagick oiio dpx oiio rgb  8bits dpx
+check2r2w imagemagick oiio dpx oiio rgb 10bits dpx
+check2r2w imagemagick oiio dpx oiio rgb 12bits dpx
+check2r2w imagemagick oiio dpx oiio rgb 16bits dpx
 
-checkComponentsBitDepth dpx rgba 8bits dpx
-checkComponentsBitDepth dpx rgba 10bits dpx
-checkComponentsBitDepth dpx rgba 12bits dpx
-checkComponentsBitDepth dpx rgba 16bits dpx
+check2r2w imagemagick oiio dpx oiio rgba 8bits dpx
+check2r2w imagemagick oiio dpx oiio rgba 10bits dpx
+check2r2w imagemagick oiio dpx oiio rgba 12bits dpx
+check2r2w imagemagick oiio dpx oiio rgba 16bits dpx
+
+check2r2w imagemagick oiio dpx oiio abgr 8bits dpx
+check2r2w imagemagick oiio dpx oiio abgr 10bits dpx
+check2r2w imagemagick oiio dpx oiio abgr 12bits dpx
+check2r2w imagemagick oiio dpx oiio abgr 16bits dpx
 endFormat DPX
 
-#echo "****************   JPEG 2000    ***************"
+echo "****************       EXR      ***************"
+startFormat EXR
+check2r2w exr oiio exr oiio gray 16float exr
+check2r2w exr oiio exr oiio gray 32bits  exr
+check2r2w exr oiio exr oiio gray 32float exr
 
+check2r2w exr oiio exr oiio rgb 16float exr
+check2r2w exr oiio exr oiio rgb 32bits  exr
+check2r2w exr oiio exr oiio rgb 32float exr
 
+check2r2w exr oiio exr oiio rgba 16float exr
+check2r2w exr oiio exr oiio rgba 32bits  exr
+check2r2w exr oiio exr oiio rgba 32float exr
+endFormat EXR
 
+echo "****************   JPEG 2000    ***************"
+startFormat JPEG2000
+check1r1w jpeg2000 jpeg2000 rgb  8bits j2k
+check1r1w jpeg2000 jpeg2000 rgb 12bits j2k
+check1r1w jpeg2000 jpeg2000 rgb 16bits j2k
+endFormat JPEG2000
+
+echo "****************      TGA      ***************"
+startFormat TGA
+check2r1w oiio imagemagick oiio rgb  8bits tga
+check2r1w oiio imagemagick oiio rgb 12bits tga
+check2r1w oiio imagemagick oiio rgb 16bits tga
+endFormat TGA
+
+echo "****************      SGI      ***************"
+startFormat SGI
+check2r1w imagemagick oiio oiio gray 8bits  sgi
+check2r1w imagemagick oiio oiio gray 16bits sgi
+check2r1w imagemagick oiio oiio rgb  8bits  sgi
+check2r1w imagemagick oiio oiio rgb  16bits sgi
+check2r1w imagemagick oiio oiio rgba 8bits  sgi
+check2r1w imagemagick oiio oiio rgba 16bits sgi
+endFormat SGI
+
+echo "****************      HDR      ***************"
+startFormat HDR
+check2r1w oiio imagemagick oiio rgb  8bits  hdr
+check2r1w oiio imagemagick oiio rgb 16bits  hdr
+check1r1w oiio oiio rgb 16float hdr
+check1r1w oiio oiio rgb 32bits  hdr
+check1r1w oiio oiio rgb 32float hdr
+endFormat HDR
 writeHtmlFooter
