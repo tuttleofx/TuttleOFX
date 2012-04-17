@@ -100,7 +100,7 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 		folder = './'
 		if inNewDirectory == True : folder += filename[:-len(ext)-1]
 		zip.extractall( folder )
-		folderExtracted = zip.getnames()[0]
+		folderExtracted = zip.namelist()[0]
 
 	if ext == 'exe' :
 		fileToRun = download_dir + "/" + filename + ".exe"
