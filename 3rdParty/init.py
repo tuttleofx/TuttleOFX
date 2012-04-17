@@ -87,20 +87,20 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
-		folderExtracted = tar.getnames().index(0)
+		folderExtracted = tar.getnames()[0]
 
 	if ext == 'tgz' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
-		folderExtracted = tar.getnames().index(0)
+		folderExtracted = tar.getnames()[0]
 
 	if ext == 'zip' :
 		zip = zipfile.ZipFile( download_dir + "/" + filename, 'r' )
 		folder = './'
 		if inNewDirectory == True : folder += filename[:-len(ext)-1]
 		zip.extractall( folder )
-		folderExtracted = tar.getnames().index(0)
+		folderExtracted = tar.getnames()[0]
 
 	if ext == 'exe' :
 		fileToRun = download_dir + "/" + filename + ".exe"
