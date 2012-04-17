@@ -16,7 +16,7 @@ project
 		<link>static
 	: usage-requirements
 		<include>include
-	: build-dir $(DIST)/3rdParty/libxml/obj
+	: build-dir $(BUILD)/3rdParty/libxml
     ;
 
 ###############################################################################

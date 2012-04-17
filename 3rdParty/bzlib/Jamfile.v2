@@ -14,7 +14,7 @@ project
 		<link>static
 	: usage-requirements
 		<include>.
-	: build-dir $(DIST)/3rdParty/bzlib
+	: build-dir $(BUILD)/3rdParty/bzlib
     ;
 
 ###############################################################################

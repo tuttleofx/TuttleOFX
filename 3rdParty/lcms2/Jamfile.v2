@@ -15,7 +15,7 @@ project
 	: usage-requirements
 		<include>include/
 		<define>LCMS_VERSION=2010
-	: build-dir $(DIST)/3rdParty/lcms2/obj
+	: build-dir $(BUILD)/3rdParty/lcms2
     ;
 
 ###############################################################################
