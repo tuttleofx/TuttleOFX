@@ -80,7 +80,8 @@ def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
-		folderExtracted = tar.getnames().index(0)
+		print(tar.getnames()[0])
+		folderExtracted = tar.getnames()[0]
 
 	if ext == 'tar.bz2' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
@@ -177,8 +178,10 @@ allLibs = [
 		('ffmpeg',      'http://ffmpeg.org/releases/ffmpeg-0.8.2.tar.bz2'                                                           , 'ffmpeg-0.8.2'                   , False),
 		('openimageio', 'https://github.com/OpenImageIO/oiio/tarball/RB-1.0/OpenImageIO-oiio-Release-1.0.0-0-g5b37f1c.tar.gz'       , 'OpenImageIO-oiio-dffc74e'       , False),
 		('opencolorio', 'http://github.com/imageworks/OpenColorIO/tarball/v1.0.4/imageworks-OpenColorIO-v1.0.4-0-gc0a9a92.tar.gz'   , 'imageworks-OpenColorIO-12fb440' , False),
-		('imagemagick', 'http://www.imagemagick.org/download/ImageMagick.tar.gz'                                                    , 'ImageMagick-6.7.6-6'           , False),
-		('webp',        'https://webp.googlecode.com/files/libwebp-0.1.3.tar.gz'                                                    , 'libwebp-0.1.3'                  , False)
+		('imagemagick', 'http://www.imagemagick.org/download/ImageMagick.tar.gz'                                                    , 'ImageMagick-6.7.6-6'            , False),
+		('webp',        'https://webp.googlecode.com/files/libwebp-0.1.3.tar.gz'                                                    , 'libwebp-0.1.3'                  , False),
+		('tinyxml',     'http://netcologne.dl.sourceforge.net/project/tinyxml/tinyxml/2.6.1/tinyxml_2_6_1.tar.gz'                   , 'tinyxml_2_6_1'                  , False),
+		('yaml',        'http://yaml-cpp.googlecode.com/files/yaml-cpp-0.2.6.tar.gz'                                                , 'yaml-cpp-0.2.6'                 , False),
 	]
 
 
@@ -202,21 +205,25 @@ def insertInFile( filename, linesIndexes, textToAppend ):
 	os.rename('tmp.txt', filename)
 
 def commentInFile( filename, atLine ):
-	file = open( filename , 'r' )
-	fileTmp = open( 'tmp.txt' , 'w' )
-	lines = file.readlines()
+	print ( '%s' % filename )
+	if(os.path.exists( filename )):
+		file = open( filename , 'r' )
+		fileTmp = open( 'tmp.txt' , 'w' )
+		lines = file.readlines()
 
-	nlist = list( lines )
+		nlist = list( lines )
 
-	commentedLine = nlist[atLine]
-	commentedLine = "//" + commentedLine
-	nlist[atLine]=commentedLine
-	fileTmp.writelines( nlist )
+		commentedLine = nlist[atLine]
+		commentedLine = "//" + commentedLine
+		nlist[atLine]=commentedLine
+		fileTmp.writelines( nlist )
 
-	file.close()
-	fileTmp.close()
-	os.remove(filename)
-	os.rename('tmp.txt', filename)
+		file.close()
+		fileTmp.close()
+		os.remove(filename)
+		os.rename('tmp.txt', filename)
+	else:
+		print( 'file is not present.' )
 
 
 def makeModificationIfNecessaryInFile( filename, headerToInsert, atLine ):
@@ -257,12 +264,7 @@ headerToInsert = "#include <cstring>"
 atLine = 55
 makeModificationIfNecessaryInFile(filename, headerToInsert, atLine );
 
-#OpenColorIO third parties extraction
-
-download_dir = "opencolorio/ext"
-
-uncompress("tinyxml_2_6_1.tar.gz", "tar.gz", False, "tinyxml", "tinyxml")
-uncompress("yaml-cpp-r482.tar.gz", "tar.gz", False, "yaml", "yaml-cpp-r482")
+#OpenColorIO third parties patch
 
 #patch yaml
 filename = "yaml/src/emitter.cpp"
