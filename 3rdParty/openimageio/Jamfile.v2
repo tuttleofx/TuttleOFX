@@ -14,7 +14,7 @@ project
 		<warnings-as-errors>off
 		<warnings>off
 		<define>EMBED_PLUGINS
-		#<define>USE_JASPER
+		<define>USE_JASPER
 	: usage-requirements
 		<include>.
 		<include>src/include
@@ -66,6 +66,7 @@ lib	openimageio	:
 			/project-config//openjpeg
 			/project-config//libpng
 			/project-config//libtiff
+			/project-config//jasper
 			/project-config//jpeg
 			/project-config//webp
 			;
