@@ -76,27 +76,30 @@ def getKnownExtensions( filename ):
 	return [f for f in knownExtensions.keys() if filename.endswith(f)]
 
 def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
-
 	if ext == 'tar.gz' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
+		folderExtracted = tar.getnames()[0])
 
 	if ext == 'tar.bz2' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
+		folderExtracted = tar.getnames()[0])
 
 	if ext == 'tgz' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
+		folderExtracted = tar.getnames()[0])
 
 	if ext == 'zip' :
 		zip = zipfile.ZipFile( download_dir + "/" + filename, 'r' )
 		folder = './'
 		if inNewDirectory == True : folder += filename[:-len(ext)-1]
 		zip.extractall( folder )
+		folderExtracted = tar.getnames()[0])
 
 	if ext == 'exe' :
 		fileToRun = download_dir + "/" + filename + ".exe"
