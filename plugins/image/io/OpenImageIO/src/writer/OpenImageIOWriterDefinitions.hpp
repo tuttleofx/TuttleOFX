@@ -12,6 +12,8 @@ namespace writer {
 enum ETuttlePluginBitDepth
 {
 	eTuttlePluginBitDepth8 = 0,
+	eTuttlePluginBitDepth10,
+	eTuttlePluginBitDepth12,
 	eTuttlePluginBitDepth16,
 	eTuttlePluginBitDepth16f,
 	eTuttlePluginBitDepth32,
@@ -25,7 +27,24 @@ enum ETuttlePluginComponents
 	eTuttlePluginComponentsRGBA
 };
 
-static const std::string kParamOutputCompression  = "compression";
+static const std::string kParamOutputQuality      = "quality";
+static const std::string kParamOutputQualityLabel = "Quality";
+
+static const std::string kParamOutputOrientation      = "orientation";
+static const std::string kParamOutputOrientationLabel = "Orientation";
+
+static const std::string kParamOutputOrientationNormal              = "normal";
+static const std::string kParamOutputOrientationFlop                = "flop";
+static const std::string kParamOutputOrientationR180                = "180";
+static const std::string kParamOutputOrientationFlip                = "flip";
+static const std::string kParamOutputOrientationTransposed          = "transposed";
+static const std::string kParamOutputOrientationR90Clockwise        = "90clockwise";
+static const std::string kParamOutputOrientationTransverse          = "transverse";
+static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise";
+
+
+static const std::string kParamOutputCompression      = "compression";
+static const std::string kParamOutputCompressionLabel = "Compression";
 
 static const std::string kParamOutputCompressionNone  = "none   No compression";
 static const std::string kParamOutputCompressionZip   = "zip    Compression zlib, with blocs of 16 scanlines.";

@@ -112,7 +112,6 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
     filename->setLabel( kTuttlePluginFilenameLabel );
     filename->setStringType( OFX::eStringTypeFilePath );
-    filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
     OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
@@ -120,21 +119,39 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     components->appendOption( kTuttlePluginComponentsGray );
     components->appendOption( kTuttlePluginComponentsRGB );
     components->appendOption( kTuttlePluginComponentsRGBA );
-    components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     components->setDefault( eTuttlePluginComponentsRGBA );
 
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
     bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
+    bitDepth->appendOption( kTuttlePluginBitDepth10 );
+    bitDepth->appendOption( kTuttlePluginBitDepth12 );
     bitDepth->appendOption( kTuttlePluginBitDepth16 );
     bitDepth->appendOption( kTuttlePluginBitDepth16f );
     bitDepth->appendOption( kTuttlePluginBitDepth32 );
     bitDepth->appendOption( kTuttlePluginBitDepth32f );
-    bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     bitDepth->setDefault( eTuttlePluginBitDepth16 );
 
+    OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamOutputQuality );
+    quality->setLabel( kParamOutputQualityLabel );
+    quality->setRange( 0, 100 );
+    quality->setDisplayRange( 0, 100 );
+    quality->setDefault( 80 );
+
+    OFX::ChoiceParamDescriptor* orientation = desc.defineChoiceParam( kParamOutputOrientation );
+    orientation->setLabel( kParamOutputOrientationLabel );
+    orientation->appendOption( kParamOutputOrientationNormal );
+    orientation->appendOption( kParamOutputOrientationFlop );
+    orientation->appendOption( kParamOutputOrientationR180 );
+    orientation->appendOption( kParamOutputOrientationFlip );
+    orientation->appendOption( kParamOutputOrientationTransposed );
+    orientation->appendOption( kParamOutputOrientationR90Clockwise );
+    orientation->appendOption( kParamOutputOrientationTransverse );
+    orientation->appendOption( kParamOutputOrientationR90CounterClockwise );
+    orientation->setDefault( 0 );
+
     OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam( kParamOutputCompression );
-    compression->setLabel( "Compression" );
+    compression->setLabel( kParamOutputOrientationLabel );
 #ifndef TUTTLE_PRODUCTION
     compression->appendOption( kParamOutputCompressionNone );
 #endif
@@ -146,9 +163,9 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     compression->appendOption( kParamOutputCompressionPxr24 );
     compression->appendOption( kParamOutputCompressionB44 );
     compression->appendOption( kParamOutputCompressionB44a );
-    bitDepth->setDefault( eParamCompressionNone );
+    compression->setDefault( eParamCompressionNone );
 #else
-    bitDepth->setDefault( 0 );
+    compression->setDefault( 0 );
 #endif
 
     describeWriterParamsInContext( desc, context );

@@ -91,6 +91,10 @@ if $(3RDPARTY_TURBOJPEG) = 1
      { alias turbojpeg : $(3RD_PARTY)/turbojpeg ; }
 else { alias turbojpeg : /user-config//turbojpeg ; }
 
+if $(3RDPARTY_WEBP) = 1
+     { alias webp : $(3RD_PARTY)/webp ; }
+else { alias webp : /user-config//webp ; }
+
 if $(3RDPARTY_xz) = 1
      { alias xz : $(3RD_PARTY)/xz ; }
 else { alias xz : /user-config//xz ; }
@@ -102,6 +106,4 @@ else { alias yaml : /user-config//yaml ; }
 if $(3RDPARTY_ZLIB) = 1
      { alias zlib : $(3RD_PARTY)/zlib ; }
 else { alias zlib : /user-config//zlib ; }
-
-explicit imagemagick ;
 

@@ -37,7 +37,7 @@ lib	openimageio	:
 			       src/cineon.imageio/*.cpp
 			       src/cineon.imageio/libcineon/*.cpp
 			       src/dds.imageio/*.cpp
-			       src/dds.imageio/squich/*.cpp
+			       src/dds.imageio/squish/*.cpp
 			       src/dpx.imageio/*.cpp
 			       src/dpx.imageio/libdpx/*.cpp
 			       src/field3D.imageio/*.cpp
@@ -59,15 +59,16 @@ lib	openimageio	:
 			       src/softimage.imageio/*.cpp
 			       src/targa.imageio/*.cpp
 			       src/tiff.imageio/*.cpp
-			#       src/webp.imageio/*.cpp
+			       src/webp.imageio/*.cpp
 			       src/zfile.imageio/*.cpp
 			 ]
-			../openexr/<link>static
-			#../jasper/<link>static
-			../openjpeg/<link>static
-			../libpng/<link>static
-			../libtiff/<link>static
-			../jpeg/<link>static
+			/project-config//openexr
+			/project-config//openjpeg
+			/project-config//libpng
+			/project-config//libtiff
+			/project-config//jasper
+			/project-config//jpeg
+			/project-config//webp
 			;
 
 install dist

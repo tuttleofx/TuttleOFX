@@ -19,15 +19,15 @@ public:
 	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef float Scalar;
 protected:
-    ViewerPlugin&    _plugin;            ///< Rendering plugin
+	ViewerPlugin&    _plugin;            ///< Rendering plugin
 	ViewerProcessParams<Scalar> _params; ///< parameters
 
 public:
-    ViewerProcess( ViewerPlugin& effect );
+	ViewerProcess( ViewerPlugin& effect );
 
 	void setup( const OFX::RenderArguments& args );
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

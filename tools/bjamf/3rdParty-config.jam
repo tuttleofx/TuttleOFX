@@ -24,6 +24,7 @@ constant 3RDPARTY_OPENIMAGEIO : 1 ;
 constant 3RDPARTY_OPENJPEG : 1 ;
 constant 3RDPARTY_TINYXML : 1 ;
 constant 3RDPARTY_TURBOJPEG : 0 ;
+constant 3RDPARTY_WEBP : 1 ;
 constant 3RDPARTY_XZ : 1 ; # contains lzma library
 constant 3RDPARTY_YAML : 1 ;
 constant 3RDPARTY_ZLIB : 1 ;

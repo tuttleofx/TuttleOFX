@@ -8,12 +8,14 @@
 project
 	: requirements
 		<include>include/
+		<define>LCMS_VERSION=2010
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
 		<include>include/
-	: build-dir $(DIST)/3rdParty/lcms2/obj
+		<define>LCMS_VERSION=2010
+	: build-dir $(BUILD)/3rdParty/lcms2
     ;
 
 ###############################################################################

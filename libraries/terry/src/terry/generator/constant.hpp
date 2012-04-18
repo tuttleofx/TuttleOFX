@@ -13,10 +13,8 @@ template <typename P>
 // Models PixelValueConcept
 struct ConstantFunctor
 {
-        //typedef point2<ptrdiff_t>    point_t;
-        typedef boost::gil::point2<double>    point_t;
-
-        typedef ConstantFunctor const_t;
+	typedef boost::gil::point2<double>    point_t;
+	typedef ConstantFunctor const_t;
 	typedef P value_type;
 	typedef value_type reference;
 	typedef value_type const_reference;
@@ -24,17 +22,17 @@ struct ConstantFunctor
 	typedef reference result_type;
 	BOOST_STATIC_CONSTANT( bool, is_mutable = false );
 
-        value_type _color;
+	value_type _color;
 
-        ConstantFunctor() {}
-        ConstantFunctor( const value_type& color )
-                : _color( color )
-        {
-        }
-
-	result_type operator()( const point_t& p ) const
+	ConstantFunctor() {}
+	ConstantFunctor( const value_type& color )
+		: _color( color )
 	{
-                return _color;
+	}
+
+	result_type operator()( const point_t& ) const
+	{
+		return _color;
 	}
 
 };

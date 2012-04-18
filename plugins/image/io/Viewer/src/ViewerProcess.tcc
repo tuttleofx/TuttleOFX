@@ -14,14 +14,14 @@ ViewerProcess<View>::ViewerProcess( ViewerPlugin &effect )
 : ImageGilFilterProcessor<View>( effect, eImageOrientationFromBottomToTop )
 , _plugin( effect )
 {
-    this->setNoMultiThreading();
+	this->setNoMultiThreading();
 }
 
 template<class View>
 void ViewerProcess<View>::setup( const OFX::RenderArguments& args )
 {
-    ImageGilFilterProcessor<View>::setup( args );
-    _params = _plugin.getProcessParams( args.renderScale );
+	ImageGilFilterProcessor<View>::setup( args );
+	_params = _plugin.getProcessParams( args.renderScale );
 }
 
 /**

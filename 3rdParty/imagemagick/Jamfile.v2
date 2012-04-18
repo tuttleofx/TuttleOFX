@@ -20,22 +20,50 @@ project
 		<warnings>off
 
 		<cflags>-std=gnu99
-
-		<define>QUANTUM_DEPTH=16
+		<link>static
+		
 		<define>LTDL
 		<define>LTDLOPEN='libltdl'
-
+		<define>MAGICKCORE_LTDL_DELEGATE
+		
 		[ evaluate-if-header-is-available <define>HAVE_ARGZ_H : /usr/include/argz.h ]
 		[ evaluate-if-header-is-available <define>HAVE_DIRENT_H : /usr/include/dirent.h ]
 
-		[ evaluate-if-header-is-available <define>FREETYPE_DELEGATE : /usr/include/freetype2/freetype/freetype.h,$(3RD_PARTY)/freetype/include/freetype/freetype.h ]
-		[ evaluate-if-header-is-available <define>OPENEXR_DELEGATE : /usr/include/OpenEXR/ImfVersion.h,$(3RD_PARTY)/openexr/IlmImf/ImfVersion.h ]
-		[ evaluate-if-header-is-available <define>PNG_DELEGATE : /usr/include/png.h,$(3RD_PARTY)/libpng/png.h ]
-		[ evaluate-if-header-is-available <define>TIFF_DELEGATE : /usr/include/tiff.h,$(3RD_PARTY)/libtiff/libtiff/tiff.h ]
-		[ evaluate-if-header-is-available <define>BZLIB_DELEGATE : /usr/include/bzlib.h,$(3RD_PARTY)/bzlib/bzlib.h ]
-		[ evaluate-if-header-is-available <define>ZLIB_DELEGATE : /usr/include/zlib.h,$(3RD_PARTY)/zlib/zlib.h ]
+		[ evaluate-if-header-is-available <define>OPENEXR_DELEGATE <define>MAGICKCORE_OPENEXR_DELEGATE : /usr/include/OpenEXR/ImfVersion.h,$(3RD_PARTY)/openexr/IlmImf/ImfVersion.h ]
+		[ evaluate-if-header-is-available <define>PNG_DELEGATE <define>MAGICKCORE_PNG_DELEGATE : /usr/include/png.h,$(3RD_PARTY)/libpng/png.h ]
+		[ evaluate-if-header-is-available <define>TIFF_DELEGATE <define>MAGICKCORE_TIFF_DELEGATE : /usr/include/tiff.h,$(3RD_PARTY)/libtiff/libtiff/tiff.h ]
+		[ evaluate-if-header-is-available <define>HAVE_TIFFCONF_H : libtiff/libtiff/tiffconf.h ]
 
-		<link>static
+		[ evaluate-if-header-is-available <define>BZLIB_DELEGATE <define>MAGICKCORE_BZLIB_DELEGATE : /usr/include/bzlib.h,$(3RD_PARTY)/bzlib/bzlib.h ]
+		[ evaluate-if-header-is-available <define>ZLIB_DELEGATE <define>MAGICKCORE_ZLIB_DELEGATE : /usr/include/zlib.h,$(3RD_PARTY)/zlib/zlib.h ]
+		#[ evaluate-if-header-is-available <define>LZMA_DELEGATE <define>MAGICKCORE_LZMA_DELEGATE : $(3RD_PARTY)/xz/src/liblzma/api/lzma.h ]
+		[ evaluate-if-header-is-available <define>XML_DELEGATE <define>MAGICKCORE_XML_DELEGATE : /usr/include/libxml/xmlversion.h,$(3RD_PARTY)/libxml/libxml.h ]
+
+		[ evaluate-if-header-is-available <define>JP2_DELEGATE <define>MAGICKCORE_JP2_DELEGATE : $(3RD_PARTY)/jasper/src/libjasper/include/jasper/jasper.h ]
+		[ evaluate-if-header-is-available <define>JPEG_DELEGATE <define>MAGICKCORE_JPEG_DELEGATE : /usr/include/jpeglib.h,$(3RD_PARTY)/jpeg/jpeglib.h ]
+		[ evaluate-if-header-is-available <define>WEBP_DELEGATE <define>MAGICKCORE_WEBP_DELEGATE : $(3RD_PARTY)/webp/src/webp/decode.h ]
+
+		[ evaluate-if-header-is-available <define>LCMS_DELEGATE <define>MAGICKCORE_LCMS_DELEGATE : /usr/include/lcms2.h,/usr/include/lcms2/lcms2.h,$(3RD_PARTY)/lcms2/include/lcms2.h ]
+		[ evaluate-if-header-is-available <linkflags>-llcms : /usr/include/lcms.h ]
+		[ evaluate-if-header-is-available <define>HAVE_LCMS2_H : /usr/include/lcms2.h,$(3RD_PARTY)/lcms2/include/lcms2.h ]
+		[ evaluate-if-header-is-available <define>HAVE_LCMS2_LCMS2_H : /usr/include/lcms2/lcms2.h ]
+
+		#[ evaluate-if-header-is-available <define>FREETYPE_DELEGATE <define>MAGICKCORE_FREETYPE_DELEGATE : /usr/include/freetype2/freetype/freetype.h,$(3RD_PARTY)/freetype/include/freetype/freetype.h ]
+		#[ evaluate-if-header-is-available <define>FFTW_DELEGATE : /usr/include/fftw3.h,$(3RD_PARTY)/fftw/apifftw3.h ]
+		#[ evaluate-if-header-is-available <define>FONTCONFIG_DELEGATE : ]
+		#[ evaluate-if-header-is-available <define>FPX_DELEGATE : ]
+		#[ evaluate-if-header-is-available <define>GS_DELEGATE : ]
+		#[ evaluate-if-header-is-available <define>JBIG_DELEGATE : ]
+		#[ evaluate-if-header-is-available <define>GVC_DELEGATE <define>MAGICKCORE_GVC_DELEGATE : $(3RD_PARTY)/gvc/lib/gvc/gvc.h ]
+
+		#[ evaluate-if-header-is-available <define>X11_DELEGATE : /usr/include/X11/X.h ]
+		#[ evaluate-if-header-is-available <define>HAVE_CL_CL_H : /usr/include/CL/cl.h ]
+
+		#[ evaluate-if-header-is-available <linkflags>-lX11 : /usr/include/X11/X.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lOpenCL : /usr/include/CL/cl.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lXext : /usr/include/X11/extensions/Xext.h ]
+		#[ evaluate-if-header-is-available <linkflags>-lfontconfig : /usr/include/fontconfig/fontconfig.h ]
+
 	: usage-requirements
 		<include>.
 	: build-dir $(BUILD)/3rdParty/imagemagick
@@ -49,30 +77,37 @@ alias	headers		: [ glob-tree *.h ] ;
 lib ltdl :
 	  [ glob
 		 ltdl/loaders/preopen.c
+		 ltdl/loaders/dlopen.c
 		 ltdl/lt__alloc.c
 		 ltdl/lt_dlloader.c
 		 ltdl/lt_error.c
 		 ltdl/ltdl.c
 		 ltdl/slist.c
 	  ]
-
 ;
+
+explicit ltdl ;
 
 lib	imagemagick	:
 			  [ glob magick/*.c
 				 coders/*.c
 				 filters/analyze.c
 			  ]
-			/project-config//jasper
-			/project-config//freetype
-			/project-config//jpeg
-			/project-config//libtiff
-			/project-config//libpng
-			/project-config//lcms2
-			/project-config//openexr
-			/project-config//libxml
-			/project-config//zlib
-			/project-config//bzlib
+
+			[ evaluate-if-header-is-available /project-config//bzlib    : /usr/include/bzlib.h,$(3RD_PARTY)/bzlib/bzlib.h ]
+			[ evaluate-if-header-is-available /project-config//zlib     : /usr/include/zlib.h,$(3RD_PARTY)/zlib/zlib.h ]
+			#[ evaluate-if-header-is-available /project-config//xz       : $(3RD_PARTY)/xz/src/liblzma/api/lzma.h ]
+			[ evaluate-if-header-is-available /project-config//libxml   : /usr/include/libxml/xmlversion.h,$(3RD_PARTY)/libxml/libxml.h ]
+			
+			[ evaluate-if-header-is-available /project-config//lcms2    : /usr/include/lcms2.h,/usr/include/lcms2/lcms2.h,$(3RD_PARTY)/lcms2/include/lcms2.h ]
+			
+			[ evaluate-if-header-is-available /project-config//libpng   : /usr/include/png.h,$(3RD_PARTY)/libpng/png.h ]
+			[ evaluate-if-header-is-available /project-config//jpeg     : /usr/include/jpeglib.h,$(3RD_PARTY)/jpeg/jpeglib.h ]
+			[ evaluate-if-header-is-available /project-config//libtiff  : /usr/include/tiff.h,$(3RD_PARTY)/libtiff/libtiff/tiff.h ]
+			[ evaluate-if-header-is-available /project-config//jasper   : $(3RD_PARTY)/jasper/src/libjasper/include/jasper/jasper.h ]
+			[ evaluate-if-header-is-available /project-config//openexr  : /usr/include/OpenEXR/ImfVersion.h,$(3RD_PARTY)/openexr/IlmImf/ImfVersion.h ]
+			[ evaluate-if-header-is-available /project-config//webp     : $(3RD_PARTY)/webp/src/webp/decode.h ]
+			#[ evaluate-if-header-is-available /project-config//freetype : /usr/include/freetype2/freetype/freetype.h,$(3RD_PARTY)/freetype/include/freetype/freetype.h ]
 			ltdl
 			;
 

@@ -21,7 +21,7 @@ void ViewerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabels( "TuttleViewer", "Viewer", "Viewer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "Plugin under early development." );
+	desc.setDescription( kViewerHelp );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );

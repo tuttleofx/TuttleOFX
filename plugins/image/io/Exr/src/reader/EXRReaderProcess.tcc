@@ -74,7 +74,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 		View dst = this->_dstView;
 
-		//TUTTLE_COUT( "read " << _params._outComponents );
+		TUTTLE_COUT( "read " << _params._outComponents );
 		switch( (ETuttlePluginComponents)_params._outComponents )
 		{
 			case eTuttlePluginComponentsGray:

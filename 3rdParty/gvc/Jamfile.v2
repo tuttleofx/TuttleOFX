@@ -67,7 +67,7 @@ lib	libgvc		:
 				lib/common/y.tab.c
 				lib/pack/ptest.c
 			]
-			/zlib
+			/project-config//zlib
 			;
 
 install	dist_src

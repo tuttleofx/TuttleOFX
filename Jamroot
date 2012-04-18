@@ -54,16 +54,6 @@ include tools/bjamf/rules.jam ;
 # see the user-config.jam file
 
 ##############################################################################
-# Image Magick
-##############################################################################
-
-constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
-
-# can be found with command: MagickCore-config --libs
-constant	MAGICK_LIBS     : " -L/usr/lib64 -L/usr/lib64 -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lICE -lX11 -lXt -lz -lm -lgomp -lpthread" ;
-
-
-##############################################################################
 # Environment variables
 ##############################################################################
 
@@ -100,50 +90,52 @@ path-constant   BUILD           : ./.build ;
 project
     :
     requirements
-	# multithreading on
-	<threading>multi
-	<include>$(BOOST_HACK)
-	<define>BOOST_ALL_NO_LIB
-	#disable detailed boost exception
-	<define>BOOST_EXCEPTION_DISABLE
+        # multithreading on
+        <threading>multi
+        <define>BOOST_ALL_NO_LIB
+        #disable detailed boost exception
+        <define>BOOST_EXCEPTION_DISABLE
 
-	#<variant>release:<warnings-as-errors>on
-	<variant>release:<define>TUTTLE_PRODUCTION
-	#<variant>release:<define>TUTTLE_NO_COUT
-	<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
-	# or
-	#<variant>release:<toolset>gcc,<optimization>full
+        #<variant>release:<warnings-as-errors>on
+        <variant>release:<define>TUTTLE_PRODUCTION
+        #<variant>release:<define>TUTTLE_NO_COUT
+        <variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
+        # or
+        #<variant>release:<toolset>gcc,<optimization>full
 
-	<define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
+        <define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
 
-	<os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
-	<os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
-	<os>LINUX:<cxxflags>-fPIC
-	<os>LINUX:<cflags>-fPIC
+        <os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
+        <os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
+        <os>LINUX:<cxxflags>-fPIC
+        <os>LINUX:<cflags>-fPIC
 
-	<os>NT:<define>_WINDOWS
+        <os>NT:<define>_WINDOWS
 
-	# icu library off
-	#<define>BOOST_HAS_ICU=0
+        # icu library off
+        #<define>BOOST_HAS_ICU=0
 
-	#
-	# GCC specific flags
-	#
-	# removes deprecated header used by boost
-	<toolset>gcc:<cxxflags>-Wno-deprecated
+        #
+        # GCC specific flags
+        #
+        # removes deprecated header used by boost
+        <toolset>gcc:<cxxflags>-Wno-deprecated
 
-	<toolset-gcc:version>$(gcc-no-overflow):<cxxflags>"-ftemplate-depth=256"
+        <toolset-gcc:version>$(gcc-no-overflow):<cxxflags>"-ftemplate-depth=256"
 
-	# default build
-	#<variant>release
+        # default build
+        #<variant>release
 
-	#
-	# MSVC specific flags
-	#
-	<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
-	<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+        #
+        # MSVC specific flags
+        #
+        <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+        <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
 
-	<os>LINUX:<define>__LINUX__
+        <os>LINUX:<define>__LINUX__
+
+        <define>MAGICKCORE_QUANTUM_DEPTH=16
+        <define>QUANTUM_DEPTH=16
     ;
 
 ##############################################################################
@@ -178,9 +170,9 @@ alias           /sam            : /sam-tools ;
 use-project     /plugins        : plugins ;
 
 alias           /tests          : /plugins
-				  /tuttletests
-				  /samtests
-				;
+                                  /tuttletests
+                                  /samtests
+                                ;
 
 #
 # SAM INTERFACE IN QT4
@@ -189,12 +181,12 @@ use-project /qsam               : applications/qSam/ ;
 
 # all targets have to be marked as explicit
 explicit        /tuttle
-		/tuttletests
+                /tuttletests
 
-		/sam-tools
-		/qsam
+                /sam-tools
+                /qsam
 #		/samtests
-		/plugins
-		/pyTuttle
-		/tests
-		;
+                /plugins
+                /pyTuttle
+                /tests
+                ;

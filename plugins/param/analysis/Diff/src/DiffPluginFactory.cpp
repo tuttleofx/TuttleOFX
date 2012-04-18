@@ -64,15 +64,15 @@ void DiffPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::ChoiceParamDescriptor* diffFunction = desc.defineChoiceParam( kMeasureFunction );
 	assert( diffFunction );
-	diffFunction->setLabel( "Quality mesure function" );
-	diffFunction->appendOption( "PSNR (Peak Signal to Noise Ratio)" );
-//	diffFunction->appendOption( "MSE (Mean Square Error)" );
-//	diffFunction->appendOption( "SSIM (Structural SIMilarity)" );
-	diffFunction->setDefault( 0 );
+	diffFunction->setLabel( kMeasureFunctionLabel );
+	diffFunction->appendOption( kMeasureFunctionMSE );
+	diffFunction->appendOption( kMeasureFunctionPSNR );
+//	diffFunction->appendOption( kMeasureFunctionSSIM );
+	diffFunction->setDefault( eMeasureFunctionPSNR );
 
 	OFX::RGBAParamDescriptor* outputQualityMesure = desc.defineRGBAParam( kOutputQualityMesure );
 	assert( outputQualityMesure );
-	outputQualityMesure->setLabel( "Quality" );
+	outputQualityMesure->setLabel( kOutputQualityMesureLabel );
 	outputQualityMesure->setEvaluateOnChange( false );
 
 }

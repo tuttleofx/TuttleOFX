@@ -275,9 +275,7 @@ void ImageEffectNode::progressEnd()
 /// returns true if you should abandon processing, false to continue
 bool ImageEffectNode::progressUpdate( const double progress )
 {
-	//std::cout << "\r" << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::right << std::setw(3) << int(progress * 100) << "%" << std::left << std::flush;
-
-	if( getContext() == kOfxImageEffectContextReader || getContext() == kOfxImageEffectContextWriter )
+	if( ( getContext() == kOfxImageEffectContextReader ) || ( getContext() == kOfxImageEffectContextWriter ) )
 		std::cout << "\r" << tuttle::common::kColorStd << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << " " << std::left << std::flush;
 	else
 		std::cout << "\r" << tuttle::common::kColorStd << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << std::left << tuttle::common::kColorGreen << getName() << tuttle::common::kColorStd << std::flush;

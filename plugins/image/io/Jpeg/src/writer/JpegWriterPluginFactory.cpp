@@ -88,23 +88,21 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
     OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
     filename->setLabel( kTuttlePluginFilenameLabel );
     filename->setStringType( OFX::eStringTypeFilePath );
-    filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     desc.addClipPreferencesSlaveParam( *filename );
 
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
     bitDepth->setLabel( kTuttlePluginBitDepthLabel );
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
-    bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     bitDepth->setDefault( eTuttlePluginBitDepth8 );
 
     OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
     premult->setLabel( "Premult" );
-    premult->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
     premult->setDefault( true );
 
     OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamQuality );
     quality->setLabel( "Quality" );
-    quality->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+    quality->setRange( 0, 100 );
+    quality->setDisplayRange( 0, 100 );
     quality->setDefault( 80 );
 
     describeWriterParamsInContext( desc, context );

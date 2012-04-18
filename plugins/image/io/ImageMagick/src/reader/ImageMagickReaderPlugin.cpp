@@ -18,7 +18,6 @@ using namespace boost::gil;
 ImageMagickReaderPlugin::ImageMagickReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 {
-	//InitializeMagick( "" );
 	MagickCoreGenesis( "",MagickFalse);
 }
 

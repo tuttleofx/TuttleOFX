@@ -279,8 +279,6 @@ int main(int argc, char** argv) {
 		Graph::Node& read2 = graph.createNode(readerId.at(1));
 		//Graph::Node& viewer = graph.createNode( "tuttle.viewer" );
 		Graph::Node& stat = graph.createNode("tuttle.diff");
-		read1.getParam("explicitConversion").setValue(3); // force reader to use float image buffer
-		read2.getParam("explicitConversion").setValue(3); // force reader to use float image buffer
 		//graph.connect( viewer, stat );
 		graph.connect(read1, stat);
 		graph.connect(read2, stat.getAttribute("SourceB"));

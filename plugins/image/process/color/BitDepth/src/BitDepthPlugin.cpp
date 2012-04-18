@@ -5,7 +5,6 @@
 #include <tuttle/plugin/global.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -38,7 +37,7 @@ void BitDepthPlugin::render( const OFX::RenderArguments& args )
 	const OFX::EBitDepth srcBitDepth         = _clipSrc->getPixelDepth();
 	const OFX::EPixelComponent srcComponents = _clipSrc->getPixelComponents();
 
-    switch( srcComponents )
+	switch( srcComponents )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
@@ -143,7 +142,7 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments& args )
 	const OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
 	const OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-    switch( dstComponents )
+	switch( dstComponents )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
