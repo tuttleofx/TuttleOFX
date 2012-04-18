@@ -1,5 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
 #include <tuttle/common/clip/Sequence.hpp>

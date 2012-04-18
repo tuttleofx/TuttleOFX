@@ -24,7 +24,6 @@
 #define SAM_TOOL                "sam-mv"
 #endif
 
-
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace bal = boost::algorithm;
@@ -32,432 +31,354 @@ namespace ttl = tuttle::common;
 
 sam::Color _color;
 
-bool        enableColor   = false;
+bool enableColor = false;
 
-void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage,
-					const ttl::Sequence& d, int offset = 0 )
-{
-	// accept negative values in sequence
-	//	if( ( offset <0 ) & ( s.getFirstTime()+offset <0 ) )
-	//	{
-	//		TUTTLE_COUT("ERROR: index could not be negative.");
-	//		return ;
-	//	}
+void copy_sequence(const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage, const ttl::Sequence& d, int offset = 0) {
+    // accept negative values in sequence
+    //	if( ( offset <0 ) & ( s.getFirstTime()+offset <0 ) )
+    //	{
+    //		TUTTLE_COUT("ERROR: index could not be negative.");
+    //		return ;
+    //	}
 
-	//	TUTTLE_COUT( firstImage << " | " << lastImage );
-	//	if(s.getLastTime()-lastImage <= s.getFirstTime()+firstImage )
-	//	{
-	//		TUTTLE_COUT("error in index of first-image and/or last image");
-	//		return;
-	//	}
-	ttl::Sequence::Time begin;
-	ttl::Sequence::Time end;
-	ttl::Sequence::Time step;
-	if( offset > 0 )
-	{
-		begin = lastImage;
-		end = firstImage;
-		step = -s.getStep();
-	}
-	else
-	{
-		begin = firstImage;
-		end = lastImage;
-		step = s.getStep();
-	}
+    //	TUTTLE_COUT( firstImage << " | " << lastImage );
+    //	if(s.getLastTime()-lastImage <= s.getFirstTime()+firstImage )
+    //	{
+    //		TUTTLE_COUT("error in index of first-image and/or last image");
+    //		return;
+    //	}
+    ttl::Sequence::Time begin;
+    ttl::Sequence::Time end;
+    ttl::Sequence::Time step;
+    if (offset > 0) {
+        begin = lastImage;
+        end = firstImage;
+        step = -s.getStep();
+    } else {
+        begin = firstImage;
+        end = lastImage;
+        step = s.getStep();
+    }
 
-	for( ttl::Sequence::Time t = begin; (offset > 0) ? (t >= end) : (t <= end); t += step )
-	{
-		bfs::path sFile = s.getAbsoluteFilenameAt( t );
-		//TUTTLE_TCOUT_VAR( sFile );
-		if( bfs::exists( sFile ) )
-		{
-			bfs::path dFile = d.getAbsoluteFilenameAt( t + offset );
-			//TUTTLE_TCOUT( "do " << sFile << " -> " << dFile );
+    for (ttl::Sequence::Time t = begin; (offset > 0) ? (t >= end) : (t <= end); t += step) {
+        bfs::path sFile = s.getAbsoluteFilenameAt(t);
+        //TUTTLE_TCOUT_VAR( sFile );
+        if (bfs::exists(sFile)) {
+            bfs::path dFile = d.getAbsoluteFilenameAt(t + offset);
+            //TUTTLE_TCOUT( "do " << sFile << " -> " << dFile );
 #ifndef SAM_MOVEFILES // copy file(s)
-			if( bfs::exists( dFile ) )
-			{
-				TUTTLE_CERR( _color._error << "Could not copy: " << dFile.string( ) << _color._std );
-			}
-			else
-			{
-				try
-				{
-					//TUTTLE_COUT( "copy " << sFile << " -> " << dFile );
-					bfs::copy_file( sFile, dFile );
-				}
-				catch( const bpo::error& e )
-				{
-					TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std );
-				}
-				catch( ... )
-				{
-					TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
-				}
-			}
+            if (bfs::exists(dFile)) {
+                TUTTLE_CERR( _color._error << "Could not copy: " << dFile.string( ) << _color._std);
+            } else {
+                try {
+                    //TUTTLE_COUT( "copy " << sFile << " -> " << dFile );
+                    bfs::copy_file(sFile, dFile);
+                } catch (const bpo::error& e) {
+                    TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std);
+                } catch (...) {
+                    TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std);
+                }
+            }
 #else // move file(s)
-			if( bfs::exists( dFile ) )
-			{
-				TUTTLE_CERR( _color._error << "Could not move: " << dFile.string( ) << _color._std );
-			}
-			else
-			{
-				try
-				{
-					//TUTTLE_COUT( "move " << sFile << " -> " << dFile );
-					bfs::rename( sFile, dFile );
-				}
-				catch( const bpo::error& e )
-				{
-					TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std );
-				}
-				catch( ... )
-				{
-					TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
-				}
-			}
+            if( bfs::exists( dFile ) )
+            {
+                TUTTLE_CERR( _color._error << "Could not move: " << dFile.string( ) << _color._std );
+            }
+            else
+            {
+                try
+                {
+                    //TUTTLE_COUT( "move " << sFile << " -> " << dFile );
+                    bfs::rename( sFile, dFile );
+                }
+                catch( const bpo::error& e )
+                {
+                    TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std );
+                }
+                catch( ... )
+                {
+                    TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
+                }
+            }
 #endif
-		}
-	}
+        }
+    }
 }
 
-void copy_sequence( const ttl::Sequence& s,
-					const ttl::Sequence& d, const ttl::Sequence::Time offset = 0 )
-{
-	copy_sequence( s, s.getFirstTime(), s.getLastTime(),
-				   d, offset );
+void copy_sequence(const ttl::Sequence& s, const ttl::Sequence& d, const ttl::Sequence::Time offset = 0) {
+    copy_sequence(s, s.getFirstTime(), s.getLastTime(), d, offset);
 }
 
-void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage,
-					const bfs::path& d, const ttl::Sequence::Time offset = 0 )
-{
-	ttl::Sequence dSeq(s); // create dst from src
-	dSeq.setDirectory( d ); // modify path
-	copy_sequence( s, firstImage, lastImage,
-				   dSeq, offset );
+void copy_sequence(const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage, const bfs::path& d, const ttl::Sequence::Time offset = 0) {
+    ttl::Sequence dSeq(s); // create dst from src
+    dSeq.setDirectory(d); // modify path
+    copy_sequence(s, firstImage, lastImage, dSeq, offset);
 }
 
-void copy_sequence( const ttl::Sequence& s,
-					const bfs::path& d, const ttl::Sequence::Time offset = 0 )
-{
-	copy_sequence( s, s.getFirstTime(), s.getLastTime(),
-				   d, offset );
+void copy_sequence(const ttl::Sequence& s, const bfs::path& d, const ttl::Sequence::Time offset = 0) {
+    copy_sequence(s, s.getFirstTime(), s.getLastTime(), d, offset);
 }
 
-int sammvcp( int argc, char** argv )
-{
+int sammvcp(int argc, char** argv) {
 
-	using namespace sam;
-	ttl::EMaskOptions descriptionMask      = ttl::eMaskOptionsNone; // by default show nothing
-	std::string              availableExtensions;
-	std::vector<std::string> paths;
-	std::vector<std::string> filters;
-	std::string              outputPattern;
-	bool                     verbose       = false;
-	bool                     dstIsSeq      = false;
-	std::ssize_t             offset        = 0;
-	bool                     hasInputFirst = false;
-	std::ssize_t             inputFirst    = 0;
-	bool                     hasInputLast  = false;
-	std::ssize_t             inputLast     = 0;
-	std::ssize_t             outputFirst   = 0;
-	std::ssize_t             outputLast    = 0;
-	typedef enum {
-		eOffsetModeNotSet,
-		eOffsetModeValue,
-		eOffsetModeFirstTime,
-		eOffsetModeLastTime,
-	} EOffsetMode;
-	EOffsetMode offsetMode = eOffsetModeNotSet;
+    using namespace sam;
+    ttl::EMaskOptions descriptionMask = ttl::eMaskOptionsNone; // by default show nothing
+    std::string availableExtensions;
+    std::vector<std::string> paths;
+    std::vector<std::string> filters;
+    std::string outputPattern;
+    bool verbose = false;
+    bool dstIsSeq = false;
+    std::ssize_t offset = 0;
+    bool hasInputFirst = false;
+    std::ssize_t inputFirst = 0;
+    bool hasInputLast = false;
+    std::ssize_t inputLast = 0;
+    std::ssize_t outputFirst = 0;
+    std::ssize_t outputLast = 0;
+    typedef enum {
+        eOffsetModeNotSet, eOffsetModeValue, eOffsetModeFirstTime, eOffsetModeLastTime,
+    } EOffsetMode;
+    EOffsetMode offsetMode = eOffsetModeNotSet;
 
-	// Declare the supported options.
-	bpo::options_description mainOptions;
-	mainOptions.add_options( )
-		( kFilesOptionString.c_str()      , kFilesOptionMessage.c_str() )
-		( kOffsetOptionString.c_str()     , bpo::value<std::ssize_t>( ), kOffsetOptionMessage.c_str())
-//		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" )
-		( kVerboseOptionString.c_str()    , kVerboseOptionMessage.c_str() )
-		( kInputFirstOptionString.c_str()  , bpo::value<std::ssize_t>( ), kInputFirstOptionMessage.c_str() )
-		( kInputLastOptionString.c_str()   , bpo::value<std::ssize_t>( ),  kInputLastOptionMessage.c_str() )
-		( kOutputFirstOptionString.c_str() , bpo::value<std::ssize_t>( ), kOutputFirstOptionMessage.c_str() )
-		( kOutputLastOptionString.c_str()  , bpo::value<std::ssize_t>( ), kOutputLastOptionMessage.c_str())
-		( kColorOptionString.c_str()         ,  kColorOptionMessage.c_str()  )
-		( kBriefOptionString.c_str()        , kBriefOptionMessage.c_str() )
-		;
+    // Declare the supported options.
+    bpo::options_description mainOptions;
+    mainOptions.add_options()( //
+                    kHelpOptionString.c_str(), kHelpOptionMessage.c_str()) //
+    (kOffsetOptionString.c_str(), bpo::value<std::ssize_t>(), kOffsetOptionMessage.c_str()) //
+    //		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" ) //
+    (kVerboseOptionString.c_str(), kVerboseOptionMessage.c_str()) //
+    (kInputFirstOptionString.c_str(), bpo::value<std::ssize_t>(), kInputFirstOptionMessage.c_str()) //
+    (kInputLastOptionString.c_str(), bpo::value<std::ssize_t>(), kInputLastOptionMessage.c_str()) //
+    (kOutputFirstOptionString.c_str(), bpo::value<std::ssize_t>(), kOutputFirstOptionMessage.c_str()) //
+    (kOutputLastOptionString.c_str(), bpo::value<std::ssize_t>(), kOutputLastOptionMessage.c_str()) //
+    (kColorOptionString.c_str(), kColorOptionMessage.c_str()) //
+    (kBriefOptionString.c_str(), kBriefOptionMessage.c_str());
 
-	// describe hidden options
-	bpo::options_description hidden;
-	hidden.add_options( )
-		( kInputOptionString.c_str(), bpo::value< std::vector<std::string> >( ), kInputOptionMessage.c_str() )
-		( kEnableColorOptionString.c_str(), bpo::value<std::string>(), kEnableColorOptionMessage.c_str())
-		;
+    // describe hidden options
+    bpo::options_description hidden;
+    hidden.add_options()(kInputOptionString.c_str(), bpo::value<std::vector<std::string> >(), kInputOptionMessage.c_str())(kEnableColorOptionString.c_str(),
+                                                                                                                           bpo::value<std::string>(),
+                                                                                                                           kEnableColorOptionMessage.c_str());
 
-	// define default options 
-	bpo::positional_options_description pod;
-	pod.add(  kInputOptionLongName.c_str(), -1 );
+    // define default options
+    bpo::positional_options_description pod;
+    pod.add(kInputOptionString.c_str(), -1);
 
-	bpo::options_description cmdline_options;
-	cmdline_options.add( mainOptions ).add( hidden );
+    bpo::options_description cmdline_options;
+    cmdline_options.add(mainOptions).add(hidden);
 
-	//parse the command line, and put the result in vm
-	bpo::variables_map vm;
-	try
-	{
-		bpo::store( bpo::command_line_parser( argc, argv ).options( cmdline_options ).positional( pod ).run( ), vm );
+    //parse the command line, and put the result in vm
+    bpo::variables_map vm;
+    try {
+        bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-		// get environnement options and parse them
-		if( const char* env_options = std::getenv( SAM_MV_OR_CP_OPTIONS ) )
-		{
-			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
-			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
-		}
-		if( const char* env_options = std::getenv( "SAM_OPTIONS" ) )
-		{
-			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
-			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
-		}
-		bpo::notify( vm );
-	}
-	catch( const bpo::error& e)
-	{
-		TUTTLE_COUT( SAM_TOOL ": command line error:  " << e.what() );
-		exit( -2 );
-	}
-	catch(...)
-	{
-		TUTTLE_COUT( SAM_TOOL ": unknown error in command line.");
-		exit( -2 );
-	}
+        // get environnement options and parse them
+        if (const char* env_options = std::getenv(SAM_MV_OR_CP_OPTIONS)) {
+            const std::vector<std::string> vecOptions = bpo::split_unix(env_options, " ");
+            bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+        }
+        if (const char* env_options = std::getenv("SAM_OPTIONS")) {
+            const std::vector<std::string> vecOptions = bpo::split_unix(env_options, " ");
+            bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+        }
+        bpo::notify(vm);
+    } catch (const bpo::error& e) {
+        TUTTLE_COUT( SAM_TOOL ": command line error:  " << e.what());
+        exit(-2);
+    } catch (...) {
+        TUTTLE_COUT( SAM_TOOL ": unknown error in command line.");
+        exit(-2);
+    }
 
-	if ( vm.count(kColorOptionLongName.c_str()) )
-	{
-		enableColor = true;
-	}
-	if ( vm.count(kEnableColorOptionLongName.c_str()) )
-	{
-		const std::string str = vm[kEnableColorOptionLongName.c_str()].as<std::string>();
-		enableColor = string_to_boolean(str);
-	}
+    if (vm.count(kColorOptionLongName.c_str())) {
+        enableColor = true;
+    }
+    if (vm.count(kEnableColorOptionLongName.c_str())) {
+        const std::string str = vm[kEnableColorOptionLongName.c_str()].as<std::string>();
+        enableColor = string_to_boolean(str);
+    }
 
-	if( enableColor )
-	{
-		using namespace tuttle::common;
-		_color.enable();
-	}
+    if (enableColor) {
+        using namespace tuttle::common;
+        _color.enable();
+    }
 
-	if( vm.count( kHelpOptionLongName.c_str() ) )
-	{
-		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+    if (vm.count(kHelpOptionLongName.c_str())) {
+        TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
 #ifndef SAM_MOVEFILES
-		TUTTLE_COUT( _color._blue  <<"NAME" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-cp - copy sequence(s) in a directory" << _color._std << std::endl );
-		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl );
+        TUTTLE_COUT( _color._blue <<"NAME" << _color._std);
+        TUTTLE_COUT( _color._green << "\tsam-cp - copy sequence(s) in a directory" << _color._std << std::endl);
+        TUTTLE_COUT( _color._blue << "SYNOPSIS" << _color._std);
+        TUTTLE_COUT( _color._green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl);
 #else
-		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-mv - move sequence(s) in a directory" << _color._std << std::endl );
-		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl );
+        TUTTLE_COUT( _color._blue << "NAME" << _color._std );
+        TUTTLE_COUT( _color._green << "\tsam-mv - move sequence(s) in a directory" << _color._std << std::endl );
+        TUTTLE_COUT( _color._blue << "SYNOPSIS" << _color._std );
+        TUTTLE_COUT( _color._green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl );
 #endif
-		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
+        TUTTLE_COUT( _color._blue << "DESCRIPTION" << _color._std << std::endl);
 #ifndef SAM_MOVEFILES
-		TUTTLE_COUT( "Copy sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
+        TUTTLE_COUT( "Copy sequence of image files, and could remove trees (folder, files and sequences)." << std::endl);
 #else
-		TUTTLE_COUT( "Move sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
+        TUTTLE_COUT( "Move sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
 #endif
-		TUTTLE_COUT( _color._blue  << "OPTIONS" <<_color._std );
-		TUTTLE_COUT( mainOptions );
-		return 1;
-	}
+        TUTTLE_COUT( _color._blue << "OPTIONS" <<_color._std);
+        TUTTLE_COUT( mainOptions);
+        return 1;
+    }
 
-	if ( vm.count(kBriefOptionLongName.c_str()) )
-	{
+    if (vm.count(kBriefOptionLongName.c_str())) {
 #ifndef SAM_MOVEFILES
-		TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std );
+        TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std);
 #else
-		TUTTLE_COUT( _color._green << "move sequence(s) in a directory" << _color._std );
+        TUTTLE_COUT( _color._green << "move sequence(s) in a directory" << _color._std );
 #endif
-		return 0;
-	}
+        return 0;
+    }
 
-	if( vm.count( kExpressionOptionLongName.c_str() ) )
-	{
-		bal::split( filters, vm["expression"].as<std::string > ( ), bal::is_any_of( "," ) );
-	}
+    if (vm.count(kExpressionOptionLongName.c_str())) {
+        bal::split(filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
+    }
 
-	if( vm.count( kAllOptionLongName.c_str() ) )
-	{
-		// add .* files
-		descriptionMask |= ttl::eMaskOptionsDotFile;
-	}
+    if (vm.count(kAllOptionLongName.c_str())) {
+        // add .* files
+        descriptionMask |= ttl::eMaskOptionsDotFile;
+    }
 
-	// defines paths
-	if( vm.count( kInputOptionLongName.c_str() ) )
-	{
-		paths = vm[kInputOptionLongName.c_str()].as< std::vector<std::string> >();
-	}
+    // defines paths
+    if (vm.count(kInputOptionLongName.c_str())) {
+        paths = vm[kInputOptionLongName.c_str()].as<std::vector<std::string> >();
+    }
 
-	if( paths.size( ) < 2 )
-	{
-		TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std );
-		return 1;
-	}
+    if (paths.size() < 2) {
+        TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std);
+        return 1;
+    }
 
-	if( vm.count( kOffsetOptionLongName.c_str() ) )
-	{
-		offset = vm[kOffsetOptionLongName.c_str()].as<std::ssize_t>( );
-		offsetMode = eOffsetModeValue;
-	}
+    if (vm.count(kOffsetOptionLongName.c_str())) {
+        offset = vm[kOffsetOptionLongName.c_str()].as<std::ssize_t>();
+        offsetMode = eOffsetModeValue;
+    }
 
-	if( vm.count( kInputFirstOptionLongName.c_str() ) )
-	{
-		hasInputFirst = true;
-		inputFirst = vm[kInputFirstOptionLongName.c_str()].as<std::ssize_t>( );
-	}
+    if (vm.count(kInputFirstOptionLongName.c_str())) {
+        hasInputFirst = true;
+        inputFirst = vm[kInputFirstOptionLongName.c_str()].as<std::ssize_t>();
+    }
 
-	if( vm.count(kInputLastOptionLongName.c_str() ) )
-	{
-		hasInputLast = true;
-		inputLast = vm[kInputLastOptionLongName.c_str()].as<std::ssize_t>( );
-	}
+    if (vm.count(kInputLastOptionLongName.c_str())) {
+        hasInputLast = true;
+        inputLast = vm[kInputLastOptionLongName.c_str()].as<std::ssize_t>();
+    }
 
-	if( vm.count( kOutputFirstOptionLongName.c_str() ) )
-	{
-		outputFirst = vm[kOutputFirstOptionLongName.c_str()].as<std::ssize_t>( );
-		if( offsetMode != eOffsetModeNotSet )
-		{
-			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
-			return -1;
-		}
-		offsetMode = eOffsetModeFirstTime;
-	}
+    if (vm.count(kOutputFirstOptionLongName.c_str())) {
+        outputFirst = vm[kOutputFirstOptionLongName.c_str()].as<std::ssize_t>();
+        if (offsetMode != eOffsetModeNotSet) {
+            TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std);
+            return -1;
+        }
+        offsetMode = eOffsetModeFirstTime;
+    }
 
-	if( vm.count( kOutputLastOptionLongName.c_str() ) )
-	{
-		outputLast = vm[kOutputLastOptionLongName.c_str()].as<std::ssize_t>( );
-		if( offsetMode != eOffsetModeNotSet )
-		{
-			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
-			return -1;
-		}
-		offsetMode = eOffsetModeLastTime;
-	}
+    if (vm.count(kOutputLastOptionLongName.c_str())) {
+        outputLast = vm[kOutputLastOptionLongName.c_str()].as<std::ssize_t>();
+        if (offsetMode != eOffsetModeNotSet) {
+            TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std);
+            return -1;
+        }
+        offsetMode = eOffsetModeLastTime;
+    }
 
-	if( vm.count( kVerboseOptionLongName.c_str() ) )
-	{
-		verbose = true;
-	}
+    if (vm.count(kVerboseOptionLongName.c_str())) {
+        verbose = true;
+    }
 
-	bfs::path dstPath = paths.back( );
-	paths.pop_back( );
-	std::string sequencePattern;
+    bfs::path dstPath = paths.back();
+    paths.pop_back();
+    std::string sequencePattern;
 
-	if( ! bfs::is_directory( dstPath ) )
-	{
-		sequencePattern = dstPath.filename( ).string( );
-		dstPath = dstPath.parent_path( );
+    if (!bfs::is_directory(dstPath)) {
+        sequencePattern = dstPath.filename().string();
+        dstPath = dstPath.parent_path();
 
-		if( ! dstPath.empty() && ! bfs::is_directory( dstPath ) )
-		{
-			TUTTLE_CERR( _color._error << "Your destination is not in a valid directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std );
-			return -1;
-		}
-	}
-	else
-	{
-		if( paths.size( ) > 1 )
-		{
-			TUTTLE_CERR( _color._error << "To copy multiple sequences, your destination must be a directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std );
-			return -1;
-		}
-		sequencePattern = "";
-	}
-	
-	ttl::Sequence dstSeq( dstPath, descriptionMask );
+        if (!dstPath.empty() && !bfs::is_directory(dstPath)) {
+            TUTTLE_CERR( _color._error << "Your destination is not in a valid directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std);
+            return -1;
+        }
+    } else {
+        if (paths.size() > 1) {
+            TUTTLE_CERR( _color._error << "To copy multiple sequences, your destination must be a directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std);
+            return -1;
+        }
+        sequencePattern = "";
+    }
 
-	if( sequencePattern.size( ) > 0 )
-	{
-		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, ttl::Sequence::ePatternAll );
-		if( ! dstIsSeq ) // there is a pattern, but it's not valid.
-		{
-			TUTTLE_CERR( _color._error << "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." << _color._std );
-			return -1;
-		}
-	}
+    ttl::Sequence dstSeq(dstPath, descriptionMask);
 
-	try
-	{
-		BOOST_FOREACH( const bfs::path& srcPath, paths )
-		{
-			ttl::Sequence srcSeq( srcPath.branch_path( ), descriptionMask );
-			const bool srcIsSeq = srcSeq.initFromDetection( srcPath.string( ), ttl::Sequence::ePatternDefault );
-			if( ! srcIsSeq )
-			{
-				TUTTLE_CERR( _color._error << "Input is not a sequence: " << tuttle::quotes(srcPath.string()) << "."  << _color._std );
-				return -1;
-			}
-			if( srcSeq.getNbFiles( ) == 0 )
-			{
-				TUTTLE_CERR( _color._error << "No existing file for the input sequence: " << tuttle::quotes(srcPath.string()) << "." << _color._std );
-				return -1;
-			}
+    if (sequencePattern.size() > 0) {
+        dstIsSeq = dstSeq.initFromPattern(dstPath, sequencePattern, 0, 0, 1, descriptionMask, ttl::Sequence::ePatternAll);
+        if (!dstIsSeq) // there is a pattern, but it's not valid.
+        {
+            TUTTLE_CERR( _color._error << "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." << _color._std);
+            return -1;
+        }
+    }
 
-			ttl::Sequence::Time first = hasInputFirst ? inputFirst : srcSeq.getFirstTime();
-			ttl::Sequence::Time last = hasInputLast ? inputLast : srcSeq.getLastTime();
-			switch( offsetMode )
-			{
-				case eOffsetModeNotSet:
-				{
-					offset = 0;
-					break;
-				}
-				case eOffsetModeValue:
-				{
-					// set by "offset" command line option
-					break;
-				}
-				case eOffsetModeFirstTime:
-				{
-					// set by "input-first" command line option
-					offset = outputFirst - first;
-					break;
-				}
-				case eOffsetModeLastTime:
-				{
-					// set by "input-last" command line option
-					offset = outputLast - last;
-					break;
-				}
-			}
-			if( dstIsSeq )
-			{
-				if( verbose )
-				{
-					TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern( ) << " -> " << dstSeq.getAbsoluteStandardPattern( ) << " (" << srcSeq.getNbFiles( ) << ") " );
-				}
-				copy_sequence( srcSeq, first, last, dstSeq, offset );
-			}
-			else
-			{
-				if( verbose )
-				{
-					TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern( ) << " -> " << dstPath / srcSeq.getStandardPattern( ) << " (" << srcSeq.getNbFiles( ) << ")" );
-				}
-				copy_sequence( srcSeq, first, last, dstPath, offset );
-			}
-		}
-	}
-	catch( bfs::filesystem_error &ex )
-	{
-		TUTTLE_COUT( _color._error << ex.what( ) << _color._std );
-		return -2;
-	}
-	catch( ... )
-	{
-		TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
-		return -3;
-	}
+    try {
+        BOOST_FOREACH( const bfs::path& srcPath, paths ) {
+            ttl::Sequence srcSeq(srcPath.branch_path(), descriptionMask);
+            const bool srcIsSeq = srcSeq.initFromDetection(srcPath.string(), ttl::Sequence::ePatternDefault);
+            if (!srcIsSeq) {
+                TUTTLE_CERR( _color._error << "Input is not a sequence: " << tuttle::quotes(srcPath.string()) << "." << _color._std);
+                return -1;
+            }
+            if (srcSeq.getNbFiles() == 0) {
+                TUTTLE_CERR( _color._error << "No existing file for the input sequence: " << tuttle::quotes(srcPath.string()) << "." << _color._std);
+                return -1;
+            }
 
-	return 0;
+            ttl::Sequence::Time first = hasInputFirst ? inputFirst : srcSeq.getFirstTime();
+            ttl::Sequence::Time last = hasInputLast ? inputLast : srcSeq.getLastTime();
+            switch (offsetMode) {
+                case eOffsetModeNotSet: {
+                    offset = 0;
+                    break;
+                }
+                case eOffsetModeValue: {
+                    // set by "offset" command line option
+                    break;
+                }
+                case eOffsetModeFirstTime: {
+                    // set by "input-first" command line option
+                    offset = outputFirst - first;
+                    break;
+                }
+                case eOffsetModeLastTime: {
+                    // set by "input-last" command line option
+                    offset = outputLast - last;
+                    break;
+                }
+            }
+            if (dstIsSeq) {
+                if (verbose) {
+                    TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern( ) << " -> " << dstSeq.getAbsoluteStandardPattern( ) << " (" << srcSeq.getNbFiles( ) << ") ");
+                }
+                copy_sequence(srcSeq, first, last, dstSeq, offset);
+            } else {
+                if (verbose) {
+                    TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern( ) << " -> " << dstPath / srcSeq.getStandardPattern( ) << " (" << srcSeq.getNbFiles( ) << ")");
+                }
+                copy_sequence(srcSeq, first, last, dstPath, offset);
+            }
+        }
+    } catch (bfs::filesystem_error &ex) {
+        TUTTLE_COUT( _color._error << ex.what( ) << _color._std);
+        return -2;
+    } catch (...) {
+        TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std);
+        return -3;
+    }
+
+    return 0;
 }
 
