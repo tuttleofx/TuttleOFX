@@ -64,8 +64,12 @@ lib openexr	: : <file>/usr/lib64/libIlmImf.so
 # website  : http://www.imagemagick.org/
 # download : http://www.imagemagick.org/script/download.php
 ##############################################################################
-#lib openexr	: : <file>/usr/lib64/libMagickCore.so
+#lib imagemagick : : <file>/usr/lib64/libMagickCore.so
 #		: : <include>/usr/include/ImageMagick/ ;
+
+lib imagemagick : : <file>$(3RD_PARTY)/imagemagick/magick/.libs/libMagickCore.so
+		: : <include>$(3RD_PARTY)/imagemagick/
+		    <include>$(3RD_PARTY)/imagemagick/config ;
 
 ##############################################################################
 # name     : ImageMagick

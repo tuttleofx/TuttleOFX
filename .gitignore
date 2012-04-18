@@ -41,7 +41,9 @@ Thumbs.db # Windows
 
 
 plugins/image/io/test/process.txt
-plugins/image/io/test/diff.txt
+plugins/image/io/test/generate.txt
+plugins/image/io/test/result.html
+plugins/image/io/test/style.css
 /plugins/image/io/test/*.png
 /plugins/image/io/test/*.exr
 /plugins/image/io/test/*.dpx
@@ -49,3 +51,7 @@ plugins/image/io/test/diff.txt
 /plugins/image/io/test/*.sgi
 /plugins/image/io/test/*.jpg
 /plugins/image/io/test/*.j2k
+/plugins/image/io/test/*.ppm
+/plugins/image/io/test/*.tif
+/plugins/image/io/test/*.rgbe
+/plugins/image/io/test/*.hdr

@@ -14,7 +14,7 @@ project
 		<warnings-as-errors>off
 		<warnings>off
 		<define>EMBED_PLUGINS
-		#<define>USE_JASPER
+		<define>USE_JASPER
 	: usage-requirements
 		<include>.
 		<include>src/include
@@ -37,7 +37,7 @@ lib	openimageio	:
 			       src/cineon.imageio/*.cpp
 			       src/cineon.imageio/libcineon/*.cpp
 			       src/dds.imageio/*.cpp
-			       src/dds.imageio/squich/*.cpp
+			       src/dds.imageio/squish/*.cpp
 			       src/dpx.imageio/*.cpp
 			       src/dpx.imageio/libdpx/*.cpp
 			       src/field3D.imageio/*.cpp
@@ -66,6 +66,7 @@ lib	openimageio	:
 			/project-config//openjpeg
 			/project-config//libpng
 			/project-config//libtiff
+			/project-config//jasper
 			/project-config//jpeg
 			/project-config//webp
 			;
