@@ -1,5 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
@@ -145,6 +146,8 @@ void copy_sequence( const ttl::Sequence& s,
 
 int sammvcp( int argc, char** argv )
 {
+
+	using namespace sam;
 	ttl::EMaskOptions descriptionMask      = ttl::eMaskOptionsNone; // by default show nothing
 	std::string              availableExtensions;
 	std::vector<std::string> paths;
@@ -170,28 +173,28 @@ int sammvcp( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options( )
-		( "help,h"      , "show this help" )
-		( "offset,o"    , bpo::value<std::ssize_t>( ), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"" )
+		( kFilesOptionString.c_str()      , kFilesOptionMessage.c_str() )
+		( kOffsetOptionString.c_str()     , bpo::value<std::ssize_t>( ), kOffsetOptionMessage.c_str())
 //		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" )
-		( "verbose,v"   , "explain what is being done" )
-		( "input-first" , bpo::value<std::ssize_t>( ), "specify the first input image, in order to select a sub-range of the input sequence" )
-		( "input-last"  , bpo::value<std::ssize_t>( ), "specify the last input image, in order to select a sub-range of the input sequence" )
-		( "output-first", bpo::value<std::ssize_t>( ), "specify the first output image, in order to retime the sequence. It's another way to create an offset of your sequence." )
-		( "output-last" , bpo::value<std::ssize_t>( ), "specify the last output image, in order to retime the sequence" )
-		( "color"        , "display with colors" )
-		( "brief"        , "brief summary of the tool" )
+		( kVerboseOptionString.c_str()    , kVerboseOptionMessage.c_str() )
+		( kInputFirstOptionString.c_str()  , bpo::value<std::ssize_t>( ), kInputFirstOptionMessage.c_str() )
+		( kInputLastOptionString.c_str()   , bpo::value<std::ssize_t>( ),  kInputLastOptionMessage.c_str() )
+		( kOutputFirstOptionString.c_str() , bpo::value<std::ssize_t>( ), kOutputFirstOptionMessage.c_str() )
+		( kOutputLastOptionString.c_str()  , bpo::value<std::ssize_t>( ), kOutputLastOptionMessage.c_str())
+		( kColorOptionString.c_str()         ,  kColorOptionMessage.c_str()  )
+		( kBriefOptionString.c_str()        , kBriefOptionMessage.c_str() )
 		;
 
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options( )
-		( "input", bpo::value< std::vector<std::string> >( ), "input sequences, files, directories" )
-		( "enable-color", bpo::value<std::string>(), "enable/disable color")
+		( kInputOptionString.c_str(), bpo::value< std::vector<std::string> >( ), kInputOptionMessage.c_str() )
+		( kEnableColorOptionString.c_str(), bpo::value<std::string>(), kEnableColorOptionMessage.c_str())
 		;
 
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add( "input", -1 );
+	pod.add(  kInputOptionLongName.c_str(), -1 );
 
 	bpo::options_description cmdline_options;
 	cmdline_options.add( mainOptions ).add( hidden );
@@ -226,13 +229,13 @@ int sammvcp( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if ( vm.count("color") )
+	if ( vm.count(kColorOptionLongName.c_str()) )
 	{
 		enableColor = true;
 	}
-	if ( vm.count("enable-color") )
+	if ( vm.count(kEnableColorOptionLongName.c_str()) )
 	{
-		const std::string str = vm["enable-color"].as<std::string>();
+		const std::string str = vm[kEnableColorOptionLongName.c_str()].as<std::string>();
 		enableColor = string_to_boolean(str);
 	}
 
@@ -242,7 +245,7 @@ int sammvcp( int argc, char** argv )
 		_color.enable();
 	}
 
-	if( vm.count( "help" ) )
+	if( vm.count( kHelpOptionLongName.c_str() ) )
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 #ifndef SAM_MOVEFILES
@@ -267,7 +270,7 @@ int sammvcp( int argc, char** argv )
 		return 1;
 	}
 
-	if ( vm.count("brief") )
+	if ( vm.count(kBriefOptionLongName.c_str()) )
 	{
 #ifndef SAM_MOVEFILES
 		TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std );
@@ -277,21 +280,21 @@ int sammvcp( int argc, char** argv )
 		return 0;
 	}
 
-	if( vm.count( "expression" ) )
+	if( vm.count( kExpressionOptionLongName.c_str() ) )
 	{
 		bal::split( filters, vm["expression"].as<std::string > ( ), bal::is_any_of( "," ) );
 	}
 
-	if( vm.count( "all" ) )
+	if( vm.count( kAllOptionLongName.c_str() ) )
 	{
 		// add .* files
 		descriptionMask |= ttl::eMaskOptionsDotFile;
 	}
 
 	// defines paths
-	if( vm.count( "input" ) )
+	if( vm.count( kInputOptionLongName.c_str() ) )
 	{
-		paths = vm["input"].as< std::vector<std::string> >();
+		paths = vm[kInputOptionLongName.c_str()].as< std::vector<std::string> >();
 	}
 
 	if( paths.size( ) < 2 )
@@ -300,27 +303,27 @@ int sammvcp( int argc, char** argv )
 		return 1;
 	}
 
-	if( vm.count( "offset" ) )
+	if( vm.count( kOffsetOptionLongName.c_str() ) )
 	{
-		offset = vm["offset"].as<std::ssize_t>( );
+		offset = vm[kOffsetOptionLongName.c_str()].as<std::ssize_t>( );
 		offsetMode = eOffsetModeValue;
 	}
 
-	if( vm.count( "input-first" ) )
+	if( vm.count( kInputFirstOptionLongName.c_str() ) )
 	{
 		hasInputFirst = true;
-		inputFirst = vm["input-first"].as<std::ssize_t>( );
+		inputFirst = vm[kInputFirstOptionLongName.c_str()].as<std::ssize_t>( );
 	}
 
-	if( vm.count( "input-last" ) )
+	if( vm.count(kInputLastOptionLongName.c_str() ) )
 	{
 		hasInputLast = true;
-		inputLast = vm["input-last"].as<std::ssize_t>( );
+		inputLast = vm[kInputLastOptionLongName.c_str()].as<std::ssize_t>( );
 	}
 
-	if( vm.count( "output-first" ) )
+	if( vm.count( kOutputFirstOptionLongName.c_str() ) )
 	{
-		outputFirst = vm["output-first"].as<std::ssize_t>( );
+		outputFirst = vm[kOutputFirstOptionLongName.c_str()].as<std::ssize_t>( );
 		if( offsetMode != eOffsetModeNotSet )
 		{
 			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
@@ -329,9 +332,9 @@ int sammvcp( int argc, char** argv )
 		offsetMode = eOffsetModeFirstTime;
 	}
 
-	if( vm.count( "output-last" ) )
+	if( vm.count( kOutputLastOptionLongName.c_str() ) )
 	{
-		outputLast = vm["output-last"].as<std::ssize_t>( );
+		outputLast = vm[kOutputLastOptionLongName.c_str()].as<std::ssize_t>( );
 		if( offsetMode != eOffsetModeNotSet )
 		{
 			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
@@ -340,7 +343,7 @@ int sammvcp( int argc, char** argv )
 		offsetMode = eOffsetModeLastTime;
 	}
 
-	if( vm.count( "verbose" ) )
+	if( vm.count( kVerboseOptionLongName.c_str() ) )
 	{
 		verbose = true;
 	}

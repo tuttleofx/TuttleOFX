@@ -1,4 +1,5 @@
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 
@@ -224,30 +225,30 @@ int main( int argc, char** argv )
 	std::vector<std::string>	plugins;
 	std::vector<std::string>	foundPlugins;
 	std::vector<std::string>	filters;
-	
+	using namespace sam;
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("help,h"     , "show this help")
-		("all,a"      , "show list of all plugins available")
-		("filter,f"   , bpo::value<std::string>(), "filtering the output for research a plugin. ex: -f \"*blur,*tuttle*\"")
-		("color"      , "color the output")
-		("verbose,v"  , "explain what is being done")
-		("properties" , "list properties of the OpenFX plugin")
-		("clips"      , "list clips of the OpenFX plugin")
-		("parameters" , "list parameters of the OpenFX plugin")
-		("brief"            , "brief summary of the tool")
+		(kHelpOptionString.c_str()   , kHelpOptionMessage.c_str())
+		(kAllOptionString.c_str()      , kAllOptionMessage.c_str())
+		(kFilterOptionString.c_str()   , bpo::value<std::string>(), kFilterOptionMessage.c_str())
+		(kColorOptionString.c_str()      , kColorOptionMessage.c_str())
+		(kVerboseOptionString.c_str()  , kVerboseOptionMessage.c_str())
+		(kPropertiesOptionString.c_str() , kPropertiesOptionMessage.c_str())
+		(kClipsOptionString.c_str()      , kClipsOptionMessage.c_str())
+		(kParametersOptionString.c_str() , kParametersOptionMessage.c_str())
+		(kBriefOptionString.c_str()            , kBriefOptionMessage.c_str())
 	;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		("plugin", bpo::value< std::vector<std::string> >(), "input directories")
+		(kInputDirOptionString.c_str(), bpo::value< std::vector<std::string> >(), kInputDirOptionMessage.c_str())
 	;
 	
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add("plugin", -1);
+	pod.add(kInputDirOptionString.c_str(), -1);
 	
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
@@ -282,13 +283,13 @@ int main( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if (vm.count("color"))
+	if (vm.count(kColorOptionLongName.c_str()))
 	{
 		color = true;
 		_color.enable();
 	}
 
-	if( vm.count("help") )
+	if( vm.count(kHelpOptionLongName.c_str()) )
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -303,24 +304,24 @@ int main( int argc, char** argv )
 		return 0;
 	}
 	
-	if ( vm.count("brief") )
+	if ( vm.count(kBriefOptionLongName.c_str()) )
 	{
 		TUTTLE_COUT( _color._green << "show informations about OpenFX plugins" << _color._std );
 		return 0;
 	}
 
 	// defines plugins
-	if( vm.count("plugin") )
+	if( vm.count(kInputDirOptionLongName.c_str()) )
 	{
-		plugins = vm["plugin"].as< std::vector<std::string> >();
+		plugins = vm[kInputDirOptionLongName.c_str()].as< std::vector<std::string> >();
 	}
 	
-	if( vm.count("filter") )
+	if( vm.count(kFilterOptionLongName.c_str()) )
 	{
-		bal::split( filters, vm["filter"].as<std::string>(), bal::is_any_of(","));
+		bal::split( filters, vm[kFilterOptionLongName.c_str()].as<std::string>(), bal::is_any_of(","));
 	}
 	
-	if( vm.count("all") | (plugins.size() == 0) )
+	if( vm.count(kAllOptionLongName.c_str()) | (plugins.size() == 0) )
 	{
 		tth::Core::instance().preload();
 		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
@@ -336,19 +337,19 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	const bool verbose = vm.count("verbose");
+	const bool verbose = vm.count(kVerboseOptionLongName.c_str());
 
-	if (vm.count("properties"))
+	if (vm.count(kPropertiesOptionLongName.c_str()))
 	{
 		properties = true;
 	}
 
-	if (vm.count("clips"))
+	if (vm.count(kClipsOptionLongName.c_str()))
 	{
 		clips = true;
 	}
 
-	if (vm.count("parameters"))
+	if (vm.count(kParametersOptionLongName.c_str()))
 	{
 		parameters = true;
 	}

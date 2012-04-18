@@ -4,6 +4,7 @@
 
 #include <sam/common/node.hpp>
 #include <sam/common/node_io.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
@@ -61,29 +62,29 @@ int main( int argc, char** argv )
 				// Declare the supported options.
 				bpo::options_description infoOptions;
 				infoOptions.add_options()
-					( "help,h", "show help" )
-					( "version,v", "display node version" )
-					( "nodes,n", "show list of all available nodes" )
-					( "color", "color the output" )
-					( "script", "output is formated to using in script files" )
-					( "brief", "brief summary of the tool" )
+					( kHelpOptionString.c_str(), kHelpOptionMessage.c_str() )
+					( kVersionOptionString.c_str(), kVersionOptionMessage.c_str() )
+					( kNodesOptionString.c_str(), kNodesOptionMessage.c_str() )
+					( kColorOptionString.c_str(), kColorOptionMessage.c_str() )
+					( kScriptOptionString.c_str(),  kScriptOptionMessage.c_str() )
+					( kBriefOptionString.c_str(), kBriefOptionMessage.c_str() )
 					;
 				bpo::options_description confOptions;
 				confOptions.add_options()
-					( "continueOnError", "continue on error" )
-					( "range,r", bpo::value<std::string > (), "frame range to render" )
-					( "renderscale", bpo::value<std::string > (), "renderscale" )
-					( "verbose,V", "explain what is being done" )
-					( "quiet,Q", "don't print commands" )
-					( "nb-cores", bpo::value<std::size_t > (), "set a fix number of CPUs" )
+					( kContinueOnErrorOptionString.c_str(), kContinueOnErrorOptionMessage.c_str() )
+					( kRangeOptionString.c_str(), bpo::value<std::string > (), kRangeOptionMessage.c_str() )
+					( kRenderScaleOptionString.c_str(), bpo::value<std::string > (), kRenderScaleOptionMessage.c_str() )
+					( kVerboseOptionString.c_str(), kVerboseOptionMessage.c_str() )
+					( kQuietOptionString.c_str(), kQuietOptionMessage.c_str() )
+					( kNbCoresOptionString.c_str(), bpo::value<std::size_t > (), kNbCoresOptionString.c_str() )
 					;
 
 				// describe hidden options
 				bpo::options_description hidden;
 				hidden.add_options()
-					( "enable-color", bpo::value<std::string > (), "enable (or disable) color" )
+					( kEnableColorOptionString.c_str(), bpo::value<std::string > (), kEnableColorOptionMessage.c_str() )
 					// params for auto-completion
-					( "nodes-list", "show list of all available nodes" )
+					( kNodesOptionString.c_str(), kNodesOptionMessage.c_str() )
 					;
 
 				bpo::options_description all_options;
@@ -104,19 +105,19 @@ int main( int argc, char** argv )
 
 				bpo::notify( samdo_vm );
 
-				if( samdo_vm.count( "script" ) )
+				if( samdo_vm.count(kScriptOptionLongName.c_str() ) )
 				{
 					// disable color, disable directory printing and set relative path by default
 					script = true;
 				}
 
-				if( samdo_vm.count( "color" ) && !script )
+				if( samdo_vm.count( kColorOptionLongName.c_str() ) && !script )
 				{
 					enableColor = true;
 				}
-				if( samdo_vm.count( "enable-color" ) && !script )
+				if( samdo_vm.count(kEnableColorOptionLongName.c_str() ) && !script )
 				{
-					const std::string str = samdo_vm["enable-color"].as<std::string > ();
+					const std::string str = samdo_vm[kEnableColorOptionLongName.c_str()].as<std::string > ();
 					enableColor = string_to_boolean( str );
 				}
 
@@ -125,7 +126,7 @@ int main( int argc, char** argv )
 					_color.enable();
 				}
 
-				if( samdo_vm.count( "help" ) )
+				if( samdo_vm.count( kHelpOptionLongName.c_str() ) )
 				{
 					TUTTLE_COUT( std::left << _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 
@@ -201,7 +202,7 @@ int main( int argc, char** argv )
 					exit( 0 );
 				}
 
-				if( samdo_vm.count( "brief" ) )
+				if( samdo_vm.count( kBriefOptionLongName.c_str() ) )
 				{
 					TUTTLE_COUT( _color._green << "A command line to execute a list of OpenFX nodes" << _color._std );
 					return 0;
@@ -221,9 +222,8 @@ int main( int argc, char** argv )
 				// plugins loading
 				ttl::Core::instance().preload();
 
-				if( samdo_vm.count( "nodes" ) || samdo_vm.count( "nodes-list" ) )
+				if( samdo_vm.count( kNodesOptionLongName.c_str() )  )
 				{
-					if( samdo_vm.count( "nodes" ) )
 						TUTTLE_COUT( _color._blue << "NODES" << _color._std );
 					std::vector< std::string > pluginNames;
 					addDummyNodeInList( pluginNames );
@@ -237,7 +237,7 @@ int main( int argc, char** argv )
 					}
 					std::sort( pluginNames.begin(), pluginNames.end() );
 
-					const std::string indent = samdo_vm.count( "nodes" ) ? "\t" : "";
+					const std::string indent = samdo_vm.count( kNodesOptionLongName.c_str() ) ? "\t" : "";
 
 					BOOST_FOREACH( const std::string& pluginName, pluginNames )
 					{
@@ -247,9 +247,9 @@ int main( int argc, char** argv )
 				}
 
 				{
-					if( samdo_vm.count( "range" ) )
+					if( samdo_vm.count( kRangeOptionLongName.c_str() ) )
 					{
-						const std::string rangeStr = samdo_vm["range"].as<std::string > ();
+						const std::string rangeStr = samdo_vm[ kRangeOptionLongName.c_str()].as<std::string > ();
 						std::vector< std::string > rangeVStr = boost::program_options::split_unix( rangeStr, " ," );
 						range.reserve( rangeVStr.size() );
 						TUTTLE_TCOUT( rangeVStr.size() );
@@ -269,9 +269,9 @@ int main( int argc, char** argv )
 						step = 1;
 				}
 				{
-					if( samdo_vm.count( "renderscale" ) )
+					if( samdo_vm.count( kRenderScaleOptionLongName.c_str() ) )
 					{
-						const std::string renderscaleStr = samdo_vm["renderscale"].as<std::string > ();
+						const std::string renderscaleStr = samdo_vm[kRenderScaleOptionLongName.c_str()].as<std::string > ();
 						std::vector< std::string > renderscaleVStr = boost::program_options::split_unix( renderscaleStr, " ," );
 						renderscale.reserve( renderscaleVStr.size() );
 						TUTTLE_TCOUT( renderscaleVStr.size() );
@@ -287,7 +287,7 @@ int main( int argc, char** argv )
 					}
 				}
 				std::cerr.rdbuf( strm_buffer ); // restore old output buffer
-				continueOnError = samdo_vm.count( "continueOnError" );
+				continueOnError = samdo_vm.count(kContinueOnErrorOptionLongName.c_str()  );
 			}
 			catch( const boost::program_options::error& e )
 			{
@@ -307,14 +307,14 @@ int main( int argc, char** argv )
 				// Declare the supported options.
 				bpo::options_description infoOptions;
 				infoOptions.add_options()
-					( "help,h", "show node help" )
-					( "version,v", "display node version" )
+					( kHelpOptionString.c_str(), kHelpOptionMessage.c_str() )
+					( kVersionOptionString.c_str(), kVersionOptionMessage.c_str() )
 					;
 				bpo::options_description confOptions;
 				confOptions.add_options()
-					( "verbose,V", "explain what is being done" )
-					( "id", bpo::value<std::string > (), "set a name/id to the node" )
-					( "nb-cores", bpo::value<std::size_t > (), "set a fix number of CPUs" )
+					( kVerboseOptionString.c_str(), kVerboseOptionMessage.c_str() )
+					( kIdOptionString.c_str(), bpo::value<std::string > (), kIdOptionMessage.c_str() )
+					( kNbCoresOptionString.c_str(), bpo::value<std::size_t > (), kNbCoresOptionMessage.c_str() )
 					;
 				// describe openFX options
 				bpo::options_description openfxOptions;

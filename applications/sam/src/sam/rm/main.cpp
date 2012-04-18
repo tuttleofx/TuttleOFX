@@ -1,5 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 
@@ -148,6 +149,7 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
+	using namespace sam;
 
 	EMaskType                    researchMask      = eMaskTypeSequence;	// by default show sequences
 	EMaskOptions                 descriptionMask   = eMaskOptionsColor;	// by default show nothing
@@ -158,32 +160,32 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-			("all,a"           , "do not ignore entries starting with .")
-			("directories,d"   , "remove directories in path(s)")
-			("expression,e"    , bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
-			("files,f"         , "remove files in path(s)")
-			("help,h"          , "show this help")
-			("mask,m"          , "not remove sequences in path(s)")
-			("path-root,p"     , "show the root path for each objects")
-			("recursive,R"     , "remove subdirectories recursively")
-			("verbose,v"       , "explain what is being done")
-			("color"           , "display with colors")
-			("first-image"     , bpo::value<std::ssize_t>(), "specify the first image")
-			("last-image"      , bpo::value<std::ssize_t>(), "specify the last image")
-			("full-rm"         , "remove directories, files and sequences")
-			("brief"           , "brief summary of the tool")
+			(kAllOptionString.c_str()           , kAllOptionMessage.c_str())
+			(kDirectoriesOptionString.c_str()   , kDirectoriesOptionMessage.c_str())
+			(kExpressionOptionString.c_str()    , bpo::value<std::string>(), kExpressionOptionMessage.c_str())
+			(kFilesOptionString.c_str()         , kFilesOptionMessage.c_str())
+			(kHelpOptionString.c_str()          , kHelpOptionMessage.c_str())
+			(kIgnoreOptionString.c_str()         , kIgnoreOptionMessage.c_str())
+			(kPathOptionString.c_str()    , kPathOptionMessage.c_str())
+			(kRecursiveOptionString.c_str()     , kRecursiveOptionMessage.c_str() )
+			(kVerboseOptionString.c_str()       , kVerboseOptionMessage.c_str())
+			(kColorOptionString.c_str()           , kColorOptionMessage.c_str())
+			(kFirstImageOptionString.c_str()     , bpo::value<std::ssize_t>(), kFirstImageOptionMessage.c_str())
+			(kLastImageOptionString.c_str()      , bpo::value<std::ssize_t>(), kLastImageOptionMessage.c_str())
+			(kFullRMPathOptionString.c_str()        , kFullRMPathOptionMessage.c_str() )
+			(kBriefOptionString.c_str()           , kBriefOptionMessage.c_str() )
 			;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-			("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
-			("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+			(kInputDirOptionString.c_str(), bpo::value< std::vector<std::string> >(), kInputDirOptionMessage.c_str())
+			(kEnableColorOptionString.c_str(), bpo::value<std::string>(), kEnableColorOptionMessage.c_str())
 			;
 	
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add("input-dir", -1);
+	pod.add(kInputDirOptionString.c_str(), -1);
 	
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
@@ -223,13 +225,13 @@ int main( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if ( vm.count("color") )
+	if ( vm.count(kColorOptionLongName.c_str()) )
 	{
 		enableColor = true;
 	}
-	if ( vm.count("enable-color") )
+	if ( vm.count(kEnableColorOptionLongName.c_str()) )
 	{
-		const std::string str = vm["enable-color"].as<std::string>();
+		const std::string str = vm[kEnableColorOptionLongName.c_str()].as<std::string>();
 		enableColor = string_to_boolean( str );
 	}
 
@@ -239,7 +241,7 @@ int main( int argc, char** argv )
 		_color.enable();
 	}
 
-	if ( vm.count( "help" ) )
+	if ( vm.count(kHelpOptionLongName.c_str() ) )
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -253,71 +255,71 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	if ( vm.count("brief") )
+	if ( vm.count(kBriefOptionLongName.c_str()) )
 	{
 		TUTTLE_COUT( _color._green << "remove file sequences" << _color._std);
 		return 0;
 	}
 
-	if (vm.count("expression"))
+	if (vm.count(kExpressionOptionLongName.c_str()))
 	{
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if (vm.count("directories"))
+	if (vm.count(kDirectoriesOptionLongName.c_str()))
 	{
 		researchMask |= eMaskTypeDirectory;
 	}
 	
-	if (vm.count("files"))
+	if (vm.count(kFilesOptionLongName.c_str()))
 	{
 		researchMask |= eMaskTypeFile;
 	}
 	
-	if (vm.count("mask"))
+	if (vm.count(kIgnoreOptionLongName.c_str()))
 	{
 		researchMask &= ~eMaskTypeSequence;
 	}
 	
-	if (vm.count("verbose"))
+	if (vm.count(kVerboseOptionLongName.c_str()))
 	{
 		verbose = true;
 	}
 
-	if (vm.count("first-image"))
+	if (vm.count(kFirstImageOptionLongName.c_str()))
 	{
 		selectRange = true;
-		firstImage  = vm["first-image"].as< std::ssize_t >();
+		firstImage  = vm[kFirstImageOptionLongName.c_str()].as< std::ssize_t >();
 	}
 
-	if (vm.count("last-image"))
+	if (vm.count(kLastImageOptionLongName.c_str()))
 	{
 		selectRange = true;
-		lastImage  = vm["last-image"].as< std::ssize_t >();
+		lastImage  = vm[kLastImageOptionLongName.c_str()].as< std::ssize_t >();
 	}
 
-	if (vm.count("full-rm"))
+	if (vm.count(kFullRMPathOptionLongName.c_str()))
 	{
 		researchMask |= eMaskTypeDirectory;
 		researchMask |= eMaskTypeFile;
 		researchMask |= eMaskTypeSequence;
 	}
 	
-	if (vm.count("all"))
+	if (vm.count(kAllOptionLongName.c_str()))
 	{
 		// add .* files
 		descriptionMask |= eMaskOptionsDotFile;
 	}
 	
-	if (vm.count("path-root"))
+	if (vm.count(kPathOptionLongName.c_str()))
 	{
 		descriptionMask |= eMaskOptionsPath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
-	if (vm.count("input-dir"))
+	if (vm.count(kInputDirOptionLongName.c_str()))
 	{
-		paths = vm["input-dir"].as< std::vector<std::string> >();
+		paths = vm[kInputDirOptionLongName.c_str()].as< std::vector<std::string> >();
 	}
 	else
 	{
@@ -325,7 +327,7 @@ int main( int argc, char** argv )
 		return 1;
 	}
 
-	if (vm.count("recursive"))
+	if (vm.count(kRecursiveOptionLongName.c_str()))
 	{
 		recursiveListing = true;
 	}
