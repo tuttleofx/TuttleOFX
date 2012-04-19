@@ -3,11 +3,11 @@
 
 #include <terry/globals.hpp>
 #include <terry/clamp.hpp>
+#include <terry/openexr/half.hpp>
+
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <imageio.h>
-
-#include "../Exr/src/half/gilHalf.hpp"
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
@@ -41,6 +41,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
+	using namespace terry;
 	params = _plugin.getProcessParams( this->_renderArgs.time );
 
 	try

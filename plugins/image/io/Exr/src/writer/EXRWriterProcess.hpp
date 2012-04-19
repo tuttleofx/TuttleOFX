@@ -1,10 +1,10 @@
 #ifndef _EXRWRITER_PROCESS_HPP_
 #define _EXRWRITER_PROCESS_HPP_
 
-#include "../half/gilHalf.hpp"
-
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+#include <terry/openexr/half.hpp>
 #include <terry/globals.hpp>
 
 #include <ImfOutputFile.h>
