@@ -6,7 +6,7 @@ project.UnitTest(
 	includes=[project.getRealAbsoluteCwd('#libraries/tuttle/src')], # temporary solution
 	libraries = [
 		libs.terry,
-		libs.boost_unittestframework,
+		libs.boost_unit_test_framework,
 		]
 	)
 

@@ -6,7 +6,7 @@ if project.env['mode'] != 'production':
 		dirs = ['.'],
 		libraries = [
 			libs.tuttleHost,
-			libs.boost_unittestframework,
+			libs.boost_unit_test_framework,
 			]
 		)
 
