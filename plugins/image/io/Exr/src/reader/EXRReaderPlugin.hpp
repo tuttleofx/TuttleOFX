@@ -41,6 +41,7 @@ protected:
 	std::vector<OFX::ChoiceParam*> _vChannelChoice;  ///< Channel choice
 	std::vector<std::string>       _vChannelNames;   ///< Channel names
 	OFX::ChoiceParam*              _outComponents;   ///< Components list
+	int                            _channels;        ///< number of channels in file
 };
 
 }

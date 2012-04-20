@@ -1,11 +1,12 @@
 #include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 
-#include <terry/globals.hpp>
-#include <terry/basic_colors.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include "../half/gilHalf.hpp"
+
+#include <terry/globals.hpp>
+#include <terry/basic_colors.hpp>
+#include <terry/openexr/half.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -46,11 +47,20 @@ void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 
 	_params = _plugin.getProcessParams( args.time );
 
-	_exrImage.reset( new Imf::InputFile( _params._filepath.c_str() ) );
-	const Imf::Header& h = _exrImage->header();
-	typename Imath::V2i imageDims = h.dataWindow().size();
-	imageDims.x++;
-	imageDims.y++;
+	try
+	{
+		_exrImage.reset( new Imf::InputFile( _params._filepath.c_str() ) );
+		const Imf::Header& h = _exrImage->header();
+		typename Imath::V2i imageDims = h.dataWindow().size();
+		imageDims.x++;
+		imageDims.y++;
+	}
+	catch( ... )
+	{
+		BOOST_THROW_EXCEPTION( exception::File()
+		<< exception::user( "EXR: Error when reading header." )
+		<< exception::filename( _params._filepath.c_str() ) );
+	}
 }
 
 /**
@@ -65,39 +75,31 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	try
 	{
-		typedef pixel<typename channel_type< typename View::value_type >::type, rgb_layout_t > rgb_pixel_t;
-		typedef pixel<typename channel_type< typename View::value_type >::type, rgba_layout_t > rgba_pixel_t;
-		typedef pixel<typename channel_type< typename View::value_type >::type, gray_layout_t > gray_pixel_t;
-		typedef image<rgb_pixel_t, false> rgb_image_t;
-		typedef image<rgba_pixel_t, false> rgba_image_t;
-		typedef image<gray_pixel_t, false> gray_image_t;
-
 		View dst = this->_dstView;
 
-		TUTTLE_COUT( "read " << _params._outComponents );
 		switch( (ETuttlePluginComponents)_params._outComponents )
 		{
 			case eTuttlePluginComponentsGray:
 			{
-				gray_image_t img( this->_dstView.width(), this->_dstView.height() );
-				typename gray_image_t::view_t dv( view( img ) );
-				readImage( color_converted_view<gray_pixel_t>( dst ), _params._filepath );
-				copy_and_convert_pixels( dv, this->_dstView );
+				gray32f_image_t img( this->_dstView.width(), this->_dstView.height() );
+				typename gray32f_image_t::view_t dv( view( img ) );
+				readImage( dv, _params._filepath );
+				copy_and_convert_pixels( dv, dst );
 				break;
 			}
 			case eTuttlePluginComponentsRGB:
 			{
-				rgb_image_t img( this->_dstView.width(), this->_dstView.height() );
-				typename rgb_image_t::view_t dv( view( img ) );
+				rgb32f_image_t img( this->_dstView.width(), this->_dstView.height() );
+				typename rgb32f_image_t::view_t dv( view( img ) );
 				readImage( dv, _params._filepath );
 				copy_and_convert_pixels( dv, dst );
-				fill_alpha_max( dst );
+				//fill_alpha_min( dst );
 				break;
 			}
 			case eTuttlePluginComponentsRGBA:
 			{
-				rgba_image_t img( this->_dstView.width(), this->_dstView.height() );
-				typename rgba_image_t::view_t dv( view( img ) );
+				rgba32f_image_t img( this->_dstView.width(), this->_dstView.height() );
+				typename rgba32f_image_t::view_t dv( view( img ) );
 				readImage( dv, _params._filepath );
 				copy_and_convert_pixels( dv, dst );
 				break;
@@ -113,7 +115,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		throw;
 	}
-	catch(... )
+	catch( ... )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unknown()
 			<< exception::user( "Unable to write image")
@@ -134,7 +136,6 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 	using namespace Imf;
 
 	EXRReaderProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
-
 	Imf::InputFile in( filepath.c_str() );
 	Imf::FrameBuffer frameBuffer;
 	const Imf::Header& header = in.header();
@@ -258,6 +259,7 @@ template<class DView>
 void EXRReaderProcess<View>::sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n )
 {
 	using namespace boost::gil;
+	using namespace terry;
 	switch( slice->type )
 	{
 		case Imf::HALF:

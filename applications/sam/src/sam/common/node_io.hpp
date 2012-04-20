@@ -215,9 +215,11 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 			{
 				stringDefaultValue = choiceValues[choiceDefaultIndexValue];
 				TUTTLE_COUT( "\t" << _color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " << _color._yellow << std::setw( 15 ) << stringDefaultValue << _color._std );
-				for( size_t i = 0; i < choiceValues.size(); ++i )
+				for( std::size_t i = 0; i < choiceValues.size(); ++i )
 				{
-					TUTTLE_COUT( "\t\t\t\t\t" << sam::_color._red << "- " << choiceValues[i] << _color._std );
+					TUTTLE_COUT( "\t\t\t\t\t" << sam::_color._red
+						<< (( (std::size_t)(choiceDefaultIndexValue) == i ) ? "--> " : " -  ")
+						<< choiceValues[i] << _color._std );
 				}
 			}
 			else

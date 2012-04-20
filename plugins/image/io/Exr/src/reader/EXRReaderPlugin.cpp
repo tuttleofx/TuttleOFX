@@ -22,7 +22,8 @@ using namespace Imf;
 using namespace boost::gil;
 
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
-	: ReaderPlugin( handle )
+	: ReaderPlugin( handle ),
+	  _channels ( 0 )
 {
 	_outComponents = fetchChoiceParam( kTuttlePluginComponents );
 
@@ -55,7 +56,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	{
 		switch( _outComponents->getValue() )
 		{
-			case 0:
+			case eTuttlePluginComponentsGray:
 			{
 				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
 				{
@@ -64,7 +65,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 				_vChannelChoice[3]->setIsSecret( true );
 				break;
 			}
-			case 1:
+			case eTuttlePluginComponentsRGB:
 			{
 				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
 				{
@@ -73,7 +74,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 				_vChannelChoice[3]->setIsSecret( false );
 				break;
 			}
-			case 2:
+			case eTuttlePluginComponentsRGBA:
 			{
 				for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
 				{
@@ -88,6 +89,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		ReaderPlugin::changedParam( args, paramName );
 	}
 }
+
 void EXRReaderPlugin::updateCombos()
 {
 	const std::string filename( getAbsoluteFirstFilename() );
@@ -96,10 +98,9 @@ void EXRReaderPlugin::updateCombos()
 	{
 		// read dims
 		InputFile in( filename.c_str() );
-		const Header& h       = in.header();
+		const Header& h  = in.header();
 		const ChannelList& cl = h.channels();
-		int nc                = 0;
-
+		
 		_outComponents->resetOptions();
 		// Unhide output component type setup
 		_outComponents->setIsSecret( false );
@@ -116,31 +117,26 @@ void EXRReaderPlugin::updateCombos()
 			{
 				_vChannelChoice[j]->appendOption( it.name() );
 			}
-			++nc;
-			switch( nc )
+			++_channels;
+			switch( _channels )
 			{
 				case 1:
 				{
-					_outComponents->setValue( eTuttlePluginComponentsGray );
-					for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
-						_vChannelChoice[j]->setValue( 0 );
+					for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
+						_vChannelChoice.at(j)->setValue( 0 );
 					break;
 				}
 				case 3:
 				{
-					_outComponents->setValue( eTuttlePluginComponentsRGB );
-					size_t nc = _vChannelChoice.size() - 1;
-					for( std::size_t j = 0; j < nc; ++j )
-						_vChannelChoice[nc - j - 1]->setValue( j );
-					_vChannelChoice[3]->setValue( 0 );
+					for( std::size_t j = 0; j < _vChannelChoice.size() - 1; j++ )
+						_vChannelChoice.at(j)->setValue( 2 - j );
+					_vChannelChoice.at(3)->setValue( 0 );
 					break;
 				}
 				case 4:
 				{
-					_outComponents->setValue( eTuttlePluginComponentsRGBA );
-					size_t nc = _vChannelChoice.size();
-					for( std::size_t j = 0; j < nc; ++j )
-						_vChannelChoice[nc - j - 1]->setValue( j );
+					for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
+						_vChannelChoice.at(j)->setValue( 3 - j );
 					break;
 				}
 			}
@@ -151,13 +147,33 @@ void EXRReaderPlugin::updateCombos()
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-
-	const std::string filename( getAbsoluteFirstFilename() );
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	switch( _channels )
 	{
-		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); /// @todo tuttle: retrieve info from exr, can be 8, 16, 32 as interger or floating point values
+		case 1:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+			break;
+		}
+		case 3:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+			break;
+		}
+		case 4:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+		default:
+		{
+			std::string msg = "EXR: not support ";
+			msg += _channels;
+			msg += " channels.";
+			BOOST_THROW_EXCEPTION( exception::FileNotExist()
+								   << exception::user( msg ) );
+			break;
+		}
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info from exr
 }
 
