@@ -100,18 +100,17 @@ exe sam-do :
 ###############################################################################
 # info
 ###############################################################################
-#exe sam-info :
-#		[ glob src/sam/info/*.cpp ]
-#
-#		/boost//program_options/<link>static
-#
-#		/tuttlecommon/<link>static
-#		/project-config//imagemagick
-#	:
-#		<os>NT:<find-shared-library>shell32
-#		<os>LINUX:<find-shared-library>dl
-#	;
-alias sam-info ;
+exe sam-info :
+		[ glob src/sam/info/*.cpp ]
+
+		/boost//program_options/<link>static
+
+		/tuttlecommon/<link>static
+		/project-config//imagemagick
+	:
+		<os>NT:<find-shared-library>shell32
+		<os>LINUX:<find-shared-library>dl
+	;
 
 ###############################################################################
 # plugins
@@ -163,6 +162,21 @@ exe sam-diff :
 		<os>LINUX:<find-shared-library>dl
 		<os>LINUX:<library>/python
 	;
+	
+###############################################################################
+# viewer
+###############################################################################
+alias sam-viewer : [ glob src/sam/sam/sam-viewer ] ;
+
+###############################################################################
+# scripts
+###############################################################################
+alias sam-script : [ glob
+						src/sam/sam/sam.sh
+						src/sam/sam/initTuttleOFX
+						src/sam/sam/cleanTuttleOFX
+					] ;
+
 
 ###############################################################################
 # install
@@ -181,6 +195,8 @@ install sam-install-bins
 		sam-check
 		sam-plugins
 		sam-diff
+		sam-viewer
+		sam-script
 	:
 		<variant>debug:<location>$(DIST_DEBUG)/bin
 		<variant>release:<location>$(DIST_RELEASE)/bin
@@ -194,4 +210,11 @@ install sam-install-libs
 		<variant>release:<location>$(DIST_RELEASE)/lib
 		<install-dependencies>on
 		<install-type>LIB
+	;
+	
+explicit
+		sam-viewer
+		sam-script
+		sam-install-bins
+		sam-install-libs
 	;

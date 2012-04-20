@@ -1,0 +1,46 @@
+#!/bin/bash
+
+TUTTLE_ROOT=`pwd`
+
+if [ $# -eq 1 ]; then
+	TUTTLE_ROOT=$1
+fi
+
+export TUTTLE_ROOT=$TUTTLE_ROOT
+
+export OFX_PLUGIN_PATH=$OFX_PLUGIN_PATH:$TUTTLE_ROOT/plugin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUTTLE_ROOT/lib
+
+export PATH=$TUTTLE_ROOT/bin:$PATH
+
+if [ ! -d "$HOME/.tuttleofx" ]; then
+	mkdir $HOME/.tuttleofx
+fi
+export TUTTLE_HOME=$HOME/.tuttleofx
+
+export SAM_PATH=$TUTTLE_ROOT/bin
+export SAM_OPTIONS=--color
+export SAM_CHECK_OPTIONS=
+export SAM_DO_OPTIONS=
+export SAM_LS_OPTIONS=
+export SAM_RM_OPTIONS=
+export SAM_CP_OPTIONS=
+export SAM_MV_OPTIONS=
+export SAM_INFO_OPTIONS=
+export SAM_PLUGINS_OPTIONS=
+
+
+echo "#################################"
+echo "########### TuttleOFX ###########"
+echo "#################################"
+echo ""
+echo "- init done"
+echo ""
+echo "start using TuttleOFX with:"
+echo "sam"
+echo ""
+echo ""
+echo "to clean TuttleOFX cache files, run:"
+echo "source cleanTuttleCache"
+echo ""
+echo ""
