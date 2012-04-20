@@ -1,13 +1,18 @@
-#ifndef _GILHALF_HPP
-#define _GILHALF_HPP
+#ifndef _TERRY_OPENEXR_HALF_HPP_
+#define _TERRY_OPENEXR_HALF_HPP_
+
+/**
+ * @warning The file depends on the half.h file of OpenEXR project.
+ */
+
+#include <half.h>             // OpenEXR Half float
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/gil/gil_all.hpp>
 #include <boost/type_traits.hpp>
-#include <half.h>             // OpenEXR Half float
 
 namespace boost {
-namespace gil  {
+namespace gil {
 
 template <int N>
 struct devicen_t;
@@ -161,7 +166,6 @@ GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 16h, dev4n, devicen_t<4>, devicen_layout_t<4>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 16h, dev5n, devicen_t<5>, devicen_layout_t<5>)
 
 }
-}  // namespace boost::gil
+}
 
-#endif  /* _GILHALF_HPP */
-
+#endif

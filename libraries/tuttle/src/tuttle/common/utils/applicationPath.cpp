@@ -15,6 +15,7 @@
 
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
+#include <boost/version.hpp>
 
 #if defined( __WINDOWS__ )
 #include <windows.h>
@@ -114,17 +115,19 @@ boost::filesystem::path applicationFilepath( const std::string& argv0, const boo
 		}
 	}
 #elif defined( __LINUX__ )
+
+#if( BOOST_VERSION >= 104800 )
 	{
 		// Try looking for a /proc/<pid>/exe symlink first which points to
 		// the absolute path of the executable
 		bfs::path exeLinkPath( ( boost::format("/proc/%s/exe") % getpid() ).str() );
 		if( bfs::exists( exeLinkPath ) && bfs::is_symlink( exeLinkPath ) )
 		{
-			return bfs::absolute( exeLinkPath, bfs::current_path() );
-			// only boost > 1.47 support canonical
-			//return bfs::canonical( exeLinkPath );
+			return bfs::canonical( exeLinkPath ); // need boost version >= 1.48
 		}
     }
+#endif
+
 #endif
 
 	/// @todo on windows check which is the first local file or file in PATH...

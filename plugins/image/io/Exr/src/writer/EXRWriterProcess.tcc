@@ -1,9 +1,11 @@
 #include "EXRWriterDefinitions.hpp"
 #include "EXRWriterPlugin.hpp"
-#include "../half/gilHalf.hpp"
+
 
 #include <terry/globals.hpp>
 #include <terry/clamp.hpp>
+#include <terry/openexr/half.hpp>
+
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 

@@ -1,11 +1,12 @@
 #include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 
-#include <terry/globals.hpp>
-#include <terry/basic_colors.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include "../half/gilHalf.hpp"
+
+#include <terry/globals.hpp>
+#include <terry/basic_colors.hpp>
+#include <terry/openexr/half.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -258,6 +259,7 @@ template<class DView>
 void EXRReaderProcess<View>::sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n )
 {
 	using namespace boost::gil;
+	using namespace terry;
 	switch( slice->type )
 	{
 		case Imf::HALF:

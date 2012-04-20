@@ -4,10 +4,12 @@ project.createOfxPlugin(
 	dirs = ['src'],
 	libs = [
 		libs.tuttlePlugin,
+		libs.terry,
 		libs.boost_gil,
 		libs.openimageio,
 		libs.boost_filesystem,
 		libs.boost_regex,
+		libs.half,
 		]
 	)
 
