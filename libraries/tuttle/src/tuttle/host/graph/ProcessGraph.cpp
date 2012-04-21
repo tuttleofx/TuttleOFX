@@ -229,6 +229,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			{
 				TUTTLE_COUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
 				TUTTLE_TCOUT( "________________________________________ frame: " << time );
+				
 				// use an internal copy for inside the process
 				InternalGraphImpl renderGraph = _graph;
 				TUTTLE_TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
@@ -252,8 +253,8 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 					Vertex& v = renderGraph.instance( vd );
 					//BOOST_FOREACH( const OfxTime t, v._data._times )
 					for( ProcessVertexData::TimesSet::iterator it = v._data._times.begin(), itEnd = v._data._times.end();
-						 it != itEnd;
-						 ++it )
+						it != itEnd;
+						++it )
 					{
 						const OfxTime t = *it;
 						TUTTLE_TCOUT_VAR2( v, t );
@@ -281,6 +282,8 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 						}
 					}
 				}
+				
+				// give a link to the node on its attached process data
 				BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
 				{
 					ProcessVertexAtTime& v = renderGraphAtTime.instance(vd);
@@ -310,22 +313,31 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		#ifndef TUTTLE_PRODUCTION
 				graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
 		#endif
-				TUTTLE_TCOUT( "---------------------------------------- preprocess 1" );
-				graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
-				renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
+				{
+					TUTTLE_TCOUT( "---------------------------------------- preprocess 1" );
+					graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
+					renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
+				}
 
-				TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
-				graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
-				renderGraphAtTime.depthFirstSearchReverse( preProcess2Visitor );
+				{
+					TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
+					graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
+					renderGraphAtTime.depthFirstSearchReverse( preProcess2Visitor );
+				}
 
-				TUTTLE_TCOUT( "---------------------------------------- preprocess 3" );
-				graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
-				renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
-
-		//		TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
-		//		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
-		//		renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
-
+				{
+					TUTTLE_TCOUT( "---------------------------------------- preprocess 3" );
+					graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
+					renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
+				}
+				
+				{
+					TUTTLE_COUT( "---------------------------------------- remove identity nodes" );
+					graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
+					renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
+					TUTTLE_TCOUT_VAR( removeIdentityVisitor._toRemove.size() );
+					graph::visitor::removeIdentityNodes( renderGraphAtTime, removeIdentityVisitor._toRemove );
+				}
 		#ifndef TUTTLE_PRODUCTION
 				graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
 		#endif

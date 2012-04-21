@@ -23,7 +23,15 @@ public:
 	CycleDetector()
 		: _hasCycle( false )
 	{}
+//private:
+//	CycleDetector& operator=( const CycleDetector& other );
+	CycleDetector( const CycleDetector& other )
+		: _hasCycle( other._hasCycle )
+	{
+//		TUTTLE_COUT_INFOS;
+	}
 
+public:
 	template<class EdgeDescriptor, class Graph>
 	void back_edge( EdgeDescriptor, const Graph& )
 	{

@@ -170,16 +170,15 @@ public:
 	edge_descriptor addEdge( const vertex_descriptor& v1, const vertex_descriptor& v2, const Edge& prop )
 	{
 		edge_descriptor addedEdge = boost::add_edge( v1, v2, _graph ).first;
-
-		instance( addedEdge ) = prop;
-
+		
 		if( hasCycle() )
 		{
 			removeEdge( addedEdge );
 			BOOST_THROW_EXCEPTION( exception::Logic()
 			    << exception::user( "Connection error because the graph becomes cyclic." ) );
 		}
-
+		
+		instance( addedEdge ) = prop;
 		return addedEdge;
 	}
 
@@ -282,9 +281,9 @@ public:
 
 	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const { return adjacent_vertices( v, _graph ); }
 
-	std::size_t getVertexCount() const { return num_vertices( _graph ); }
+	std::size_t getVertexCount() const { return boost::num_vertices( _graph ); }
 
-	std::size_t getEdgeCount() const { return num_edges( _graph ); }
+	std::size_t getEdgeCount() const { return boost::num_edges( _graph ); }
 
 	degree_t getInDegree( const vertex_descriptor& v ) const { return in_degree( v, _graph ); }
 

@@ -5,7 +5,7 @@ namespace test {
 
 std::ostream& operator<<( std::ostream& os, const DummyVertex& v )
 {
-	os << v.name() ;
+	os << v.getName() ;
 	return os;
 }
 
