@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE( detect_cycle )
 	// B -> C : ok
 	BOOST_CHECK_NO_THROW( graph.addEdge( BDesc, CDesc, BtoC ) );
 	// C -> A : cycle -> exception
-//	BOOST_CHECK_THROW( graph.addEdge( CDesc, ADesc, CtoA ), exception::Logic ); /// @todo bug
+	BOOST_CHECK_THROW( graph.addEdge( CDesc, ADesc, CtoA ), exception::Logic );
 }
 
 

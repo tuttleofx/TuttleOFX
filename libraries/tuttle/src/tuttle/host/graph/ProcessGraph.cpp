@@ -333,10 +333,12 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				
 				{
 					TUTTLE_COUT( "---------------------------------------- remove identity nodes" );
-					graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
-					renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
-					TUTTLE_TCOUT_VAR( removeIdentityVisitor._toRemove.size() );
-					graph::visitor::removeIdentityNodes( renderGraphAtTime, removeIdentityVisitor._toRemove );
+					std::vector<graph::visitor::IdentityNodeConnection<InternalGraphAtTimeImpl> > toRemove;
+					
+					graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> vis( renderGraphAtTime, toRemove );
+					renderGraphAtTime.depthFirstVisit( vis, outputAtTime );
+					TUTTLE_TCOUT_VAR( toRemove.size() );
+					graph::visitor::removeIdentityNodes( renderGraphAtTime, toRemove );
 				}
 		#ifndef TUTTLE_PRODUCTION
 				graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );

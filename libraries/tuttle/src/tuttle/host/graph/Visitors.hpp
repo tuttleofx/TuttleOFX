@@ -20,15 +20,10 @@ namespace visitor {
 class CycleDetector : public boost::default_dfs_visitor
 {
 public:
-	CycleDetector()
-		: _hasCycle( false )
-	{}
-//private:
-//	CycleDetector& operator=( const CycleDetector& other );
-	CycleDetector( const CycleDetector& other )
-		: _hasCycle( other._hasCycle )
+	CycleDetector( bool& hasCycle )
+		: _hasCycle( hasCycle )
 	{
-//		TUTTLE_COUT_INFOS;
+		_hasCycle = false;
 	}
 
 public:
@@ -39,7 +34,7 @@ public:
 	}
 
 public:
-	bool _hasCycle;
+	bool& _hasCycle;
 };
 
 template<class TGraph>

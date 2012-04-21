@@ -292,10 +292,10 @@ public:
 	bool hasCycle()
 	{
 		// we use a depth first search visitor
-		visitor::CycleDetector vis;
-
+		bool hasCycle = false;
+		visitor::CycleDetector vis( hasCycle );
 		this->depthFirstSearch( vis );
-		return vis._hasCycle;
+		return hasCycle;
 	}
 
 	template<class Visitor>

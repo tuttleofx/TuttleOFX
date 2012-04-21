@@ -120,12 +120,12 @@ void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<Te
 }
 }
 
-#define BOOST_TEST_MODULE graph_tests
+#define BOOST_TEST_MODULE tuttle_boostgraph
 #include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
-BOOST_AUTO_TEST_SUITE( internalgraph_tests_suite01 )
+BOOST_AUTO_TEST_SUITE( tuttle_boostgraph_suite01 )
 
 BOOST_AUTO_TEST_CASE( create_internalGraph )
 {
@@ -146,10 +146,8 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	nodesDescriptor[n2] = graph.addVertex( graph::TestVertex( n2 ) );
 	nodesDescriptor[n3] = graph.addVertex( graph::TestVertex( n3 ) );
 
-	graph::TestEdge e1( n1, n2 );
-	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], e1 );
-	graph::TestEdge e2( n2, n3 );
-	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], e2 );
+	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], graph::TestEdge( n1, n2 ) );
+	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], graph::TestEdge( n2, n3 ) );
 
 	TUTTLE_TCOUT( "graph:" );
 	boost::print_graph( graph.getGraph() );
@@ -217,13 +215,12 @@ BOOST_AUTO_TEST_CASE( check_cycle )
 	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], graph::TestEdge( n1, n2 ) );
 	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], graph::TestEdge( n2, n3 ) );
 	
-	/// @todo
-//	BOOST_CHECK_THROW(
-//		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n2], graph::TestEdge( n3, n2 ) ),
-//		exception::Logic );
-//	BOOST_CHECK_THROW(
-//		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n1], graph::TestEdge( n3, n1 ) ),
-//		 exception::Logic );
+	BOOST_CHECK_THROW(
+		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n2], graph::TestEdge( n3, n2 ) ),
+		exception::Logic );
+	BOOST_CHECK_THROW(
+		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n1], graph::TestEdge( n3, n1 ) ),
+		 exception::Logic );
 	
 	TUTTLE_TCOUT( "graph:" );
 	boost::print_graph( graph.getGraph() );

@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE graph_tests
+#define BOOST_TEST_MODULE tuttle_graph
 #include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
-BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
+BOOST_AUTO_TEST_SUITE( tuttle_graph_suite01 )
 
 BOOST_AUTO_TEST_CASE( common_preload_plugins )
 {

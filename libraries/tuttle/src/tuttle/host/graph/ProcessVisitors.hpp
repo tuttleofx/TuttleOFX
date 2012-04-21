@@ -160,25 +160,11 @@ public:
 	typedef typename TGraph::Edge Edge;
 	typedef typename TGraph::edge_descriptor edge_descriptor;
 
-private:
-	RemoveIdentityNodes();
-	RemoveIdentityNodes& operator=( const RemoveIdentityNodes& );
-
 public:
-	RemoveIdentityNodes( const RemoveIdentityNodes& other )
-	: _graph( other._graph )
-	, _toRemove( other._toRemove )
-	{}
-	
-public:
-	RemoveIdentityNodes( TGraph& graph )
+	RemoveIdentityNodes( TGraph& graph, std::vector<IdentityNodeConnection<TGraph> >& toRemove )
 		: _graph( graph )
+		, _toRemove( toRemove )
 	{}
-
-	~RemoveIdentityNodes()
-	{
-		TUTTLE_TCOUT_INFOS;
-	}
 	
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor vd, Graph& g )
@@ -239,8 +225,7 @@ public:
 
 private:
 	TGraph& _graph;
-public:
-	std::vector<IdentityNodeConnection<TGraph> > _toRemove;
+	std::vector<IdentityNodeConnection<TGraph> >& _toRemove;
 	
 };
 
