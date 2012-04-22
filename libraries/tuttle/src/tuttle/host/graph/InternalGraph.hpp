@@ -169,7 +169,7 @@ public:
 
 	edge_descriptor addEdge( const vertex_descriptor& v1, const vertex_descriptor& v2, const Edge& prop )
 	{
-		edge_descriptor addedEdge = boost::add_edge( v1, v2, _graph ).first;
+		edge_descriptor addedEdge = boost::add_edge( v1, v2, prop, _graph ).first;
 		
 		if( hasCycle() )
 		{
@@ -177,8 +177,6 @@ public:
 			BOOST_THROW_EXCEPTION( exception::Logic()
 			    << exception::user( "Connection error because the graph becomes cyclic." ) );
 		}
-		
-		instance( addedEdge ) = prop;
 		return addedEdge;
 	}
 
