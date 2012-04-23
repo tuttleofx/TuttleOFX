@@ -78,7 +78,7 @@ private:
 
 #ifndef SWIG
 /**
- * @brief to make ClipInstance clonable (for use in boost::ptr_container)
+ * @brief to make clonable for use in boost::ptr_container.
  */
 inline OfxhClip* new_clone( const OfxhClip& a )
 {

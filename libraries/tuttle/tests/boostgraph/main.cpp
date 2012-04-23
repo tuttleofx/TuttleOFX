@@ -120,12 +120,12 @@ void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<Te
 }
 }
 
-#define BOOST_TEST_MODULE graph_tests
+#define BOOST_TEST_MODULE tuttle_boostgraph
 #include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
-BOOST_AUTO_TEST_SUITE( internalgraph_tests_suite01 )
+BOOST_AUTO_TEST_SUITE( tuttle_boostgraph_suite01 )
 
 BOOST_AUTO_TEST_CASE( create_internalGraph )
 {
@@ -133,24 +133,21 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	using namespace tuttle::host;
 
 	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
-	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge>::vertex_descriptor Descriptor;
+	typedef InternalGraph::vertex_descriptor Descriptor;
 	typedef std::map<std::string, int> InstanceCountMap;
 
 	std::string n1( "v1" );
 	std::string n2( "v2" );
 	std::string n3( "v3" );
 
-	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
 	InternalGraph graph;
 	std::map<std::string, Descriptor> nodesDescriptor;
 	nodesDescriptor[n1] = graph.addVertex( graph::TestVertex( n1 ) );
 	nodesDescriptor[n2] = graph.addVertex( graph::TestVertex( n2 ) );
 	nodesDescriptor[n3] = graph.addVertex( graph::TestVertex( n3 ) );
 
-	graph::TestEdge e1( n1, n2 );
-	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], e1 );
-	graph::TestEdge e2( n2, n3 );
-	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], e2 );
+	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], graph::TestEdge( n1, n2 ) );
+	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], graph::TestEdge( n2, n3 ) );
 
 	TUTTLE_TCOUT( "graph:" );
 	boost::print_graph( graph.getGraph() );
@@ -194,6 +191,39 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	    std::cout << " --" << name[*ei] << "--> " << id[target(*ei, g)] << "  ";
 	 */
 
+}
+
+BOOST_AUTO_TEST_CASE( check_cycle )
+{
+	using namespace std;
+	using namespace tuttle::host;
+
+	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
+	typedef InternalGraph::vertex_descriptor Descriptor;
+	typedef std::map<std::string, int> InstanceCountMap;
+
+	std::string n1( "v1" );
+	std::string n2( "v2" );
+	std::string n3( "v3" );
+
+	InternalGraph graph;
+	std::map<std::string, Descriptor> nodesDescriptor;
+	nodesDescriptor[n1] = graph.addVertex( graph::TestVertex( n1 ) );
+	nodesDescriptor[n2] = graph.addVertex( graph::TestVertex( n2 ) );
+	nodesDescriptor[n3] = graph.addVertex( graph::TestVertex( n3 ) );
+
+	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], graph::TestEdge( n1, n2 ) );
+	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], graph::TestEdge( n2, n3 ) );
+	
+	BOOST_CHECK_THROW(
+		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n2], graph::TestEdge( n3, n2 ) ),
+		exception::Logic );
+	BOOST_CHECK_THROW(
+		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n1], graph::TestEdge( n3, n1 ) ),
+		 exception::Logic );
+	
+	TUTTLE_TCOUT( "graph:" );
+	boost::print_graph( graph.getGraph() );
 }
 
 /*

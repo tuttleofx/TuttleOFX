@@ -6,6 +6,8 @@
 #include <ofxCore.h>
 #include <ofxAttribute.h>
 
+#include <boost/noncopyable.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -40,7 +42,7 @@ class ImageEffectNode;
 class InputBufferNode;
 
 
-class INode
+class INode : private boost::noncopyable
 {
 public:
 	typedef INode This;
@@ -58,9 +60,12 @@ public:
 public:
 	INode() {}
 	INode( const INode& e ) {}
-	virtual ~INode()                                = 0;
-	virtual INode*              clone() const       = 0;
-	virtual const std::string& getName() const     = 0;
+	
+	virtual ~INode() = 0;
+	virtual INode* clone() const = 0;
+	virtual bool operator==( const INode& ) const = 0;
+	
+	virtual const std::string& getName() const = 0;
 	virtual void setName( const std::string& name ) = 0;
 	virtual const ENodeType    getNodeType() const = 0;
 
@@ -203,6 +208,17 @@ public:
 	#endif
 };
 
+
+#ifndef SWIG
+/**
+ * @brief to make clonable for use in boost::ptr_container.
+ */
+inline INode* new_clone( const INode& a )
+{
+	return a.clone();
+}
+
+#endif
 
 inline std::string mapNodeTypeEnumToString( const INode::ENodeType e )
 {

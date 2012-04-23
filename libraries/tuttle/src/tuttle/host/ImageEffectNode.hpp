@@ -59,6 +59,7 @@ public:
 		return new ImageEffectNode( *this );
 	}
 
+	bool operator==( const INode& other ) const;
 	bool operator==( const ImageEffectNode& other ) const;
 
 	const ENodeType getNodeType() const { return eNodeTypeImageEffect; }

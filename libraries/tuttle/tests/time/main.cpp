@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE graph_tests
+#define BOOST_TEST_MODULE tuttle_time
 #include <boost/test/unit_test.hpp>
 //#include <boost/test/execution_monitor.hpp>
 //#include <boost/test/exception_safety.hpp>

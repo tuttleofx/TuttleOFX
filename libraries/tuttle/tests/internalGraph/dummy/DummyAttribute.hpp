@@ -1,11 +1,9 @@
 #ifndef _TUTTLE_DUMMYATTRIBUTE_HPP_
 #define _TUTTLE_DUMMYATTRIBUTE_HPP_
 
-#include "Attribute.hpp"
-
 #include <string>
 
-class DummyAttribute : public Attribute
+class DummyAttribute
 {
 public:
 	DummyAttribute() {}

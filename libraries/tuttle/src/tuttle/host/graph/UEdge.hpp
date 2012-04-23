@@ -12,6 +12,9 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
+/**
+ * @brief Edge of the user graph.
+ */
 class UEdge : public IEdge
 {
 public:
