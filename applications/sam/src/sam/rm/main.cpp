@@ -160,32 +160,32 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-			(kAllOptionString.c_str()           , kAllOptionMessage.c_str())
-			(kDirectoriesOptionString.c_str()   , kDirectoriesOptionMessage.c_str())
-			(kExpressionOptionString.c_str()    , bpo::value<std::string>(), kExpressionOptionMessage.c_str())
-			(kFilesOptionString.c_str()         , kFilesOptionMessage.c_str())
-			(kHelpOptionString.c_str()          , kHelpOptionMessage.c_str())
-			(kIgnoreOptionString.c_str()         , kIgnoreOptionMessage.c_str())
-			(kPathOptionString.c_str()    , kPathOptionMessage.c_str())
-			(kRecursiveOptionString.c_str()     , kRecursiveOptionMessage.c_str() )
-			(kVerboseOptionString.c_str()       , kVerboseOptionMessage.c_str())
-			(kColorOptionString.c_str()           , kColorOptionMessage.c_str())
-			(kFirstImageOptionString.c_str()     , bpo::value<std::ssize_t>(), kFirstImageOptionMessage.c_str())
-			(kLastImageOptionString.c_str()      , bpo::value<std::ssize_t>(), kLastImageOptionMessage.c_str())
-			(kFullRMPathOptionString.c_str()        , kFullRMPathOptionMessage.c_str() )
-			(kBriefOptionString.c_str()           , kBriefOptionMessage.c_str() )
+			(kAllOptionString           , kAllOptionMessage)
+			(kDirectoriesOptionString   , kDirectoriesOptionMessage)
+			(kExpressionOptionString    , bpo::value<std::string>(), kExpressionOptionMessage)
+			(kFilesOptionString         , kFilesOptionMessage)
+			(kHelpOptionString          , kHelpOptionMessage)
+			(kIgnoreOptionString         , kIgnoreOptionMessage)
+			(kPathOptionString    , kPathOptionMessage)
+			(kRecursiveOptionString     , kRecursiveOptionMessage )
+			(kVerboseOptionString       , kVerboseOptionMessage)
+			(kColorOptionString           , kColorOptionMessage)
+			(kFirstImageOptionString     , bpo::value<std::ssize_t>(), kFirstImageOptionMessage)
+			(kLastImageOptionString      , bpo::value<std::ssize_t>(), kLastImageOptionMessage)
+			(kFullRMPathOptionString        , kFullRMPathOptionMessage )
+			(kBriefOptionString           , kBriefOptionMessage )
 			;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-			(kInputDirOptionString.c_str(), bpo::value< std::vector<std::string> >(), kInputDirOptionMessage.c_str())
-			(kEnableColorOptionString.c_str(), bpo::value<std::string>(), kEnableColorOptionMessage.c_str())
+			(kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
+			(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage)
 			;
 	
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add(kInputDirOptionString.c_str(), -1);
+	pod.add(kInputDirOptionString, -1);
 	
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
@@ -225,13 +225,13 @@ int main( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if ( vm.count(kColorOptionLongName.c_str()) )
+	if ( vm.count(kColorOptionLongName) )
 	{
 		enableColor = true;
 	}
-	if ( vm.count(kEnableColorOptionLongName.c_str()) )
+	if ( vm.count(kEnableColorOptionLongName) )
 	{
-		const std::string str = vm[kEnableColorOptionLongName.c_str()].as<std::string>();
+		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
 		enableColor = string_to_boolean( str );
 	}
 
@@ -241,7 +241,7 @@ int main( int argc, char** argv )
 		_color.enable();
 	}
 
-	if ( vm.count(kHelpOptionLongName.c_str() ) )
+	if ( vm.count(kHelpOptionLongName ) )
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -255,71 +255,71 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	if ( vm.count(kBriefOptionLongName.c_str()) )
+	if ( vm.count(kBriefOptionLongName) )
 	{
 		TUTTLE_COUT( _color._green << "remove file sequences" << _color._std);
 		return 0;
 	}
 
-	if (vm.count(kExpressionOptionLongName.c_str()))
+	if (vm.count(kExpressionOptionLongName))
 	{
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if (vm.count(kDirectoriesOptionLongName.c_str()))
+	if (vm.count(kDirectoriesOptionLongName))
 	{
 		researchMask |= eMaskTypeDirectory;
 	}
 	
-	if (vm.count(kFilesOptionLongName.c_str()))
+	if (vm.count(kFilesOptionLongName))
 	{
 		researchMask |= eMaskTypeFile;
 	}
 	
-	if (vm.count(kIgnoreOptionLongName.c_str()))
+	if (vm.count(kIgnoreOptionLongName))
 	{
 		researchMask &= ~eMaskTypeSequence;
 	}
 	
-	if (vm.count(kVerboseOptionLongName.c_str()))
+	if (vm.count(kVerboseOptionLongName))
 	{
 		verbose = true;
 	}
 
-	if (vm.count(kFirstImageOptionLongName.c_str()))
+	if (vm.count(kFirstImageOptionLongName))
 	{
 		selectRange = true;
-		firstImage  = vm[kFirstImageOptionLongName.c_str()].as< std::ssize_t >();
+		firstImage  = vm[kFirstImageOptionLongName].as< std::ssize_t >();
 	}
 
-	if (vm.count(kLastImageOptionLongName.c_str()))
+	if (vm.count(kLastImageOptionLongName))
 	{
 		selectRange = true;
-		lastImage  = vm[kLastImageOptionLongName.c_str()].as< std::ssize_t >();
+		lastImage  = vm[kLastImageOptionLongName].as< std::ssize_t >();
 	}
 
-	if (vm.count(kFullRMPathOptionLongName.c_str()))
+	if (vm.count(kFullRMPathOptionLongName))
 	{
 		researchMask |= eMaskTypeDirectory;
 		researchMask |= eMaskTypeFile;
 		researchMask |= eMaskTypeSequence;
 	}
 	
-	if (vm.count(kAllOptionLongName.c_str()))
+	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
 		descriptionMask |= eMaskOptionsDotFile;
 	}
 	
-	if (vm.count(kPathOptionLongName.c_str()))
+	if (vm.count(kPathOptionLongName))
 	{
 		descriptionMask |= eMaskOptionsPath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
-	if (vm.count(kInputDirOptionLongName.c_str()))
+	if (vm.count(kInputDirOptionLongName))
 	{
-		paths = vm[kInputDirOptionLongName.c_str()].as< std::vector<std::string> >();
+		paths = vm[kInputDirOptionLongName].as< std::vector<std::string> >();
 	}
 	else
 	{
@@ -327,7 +327,7 @@ int main( int argc, char** argv )
 		return 1;
 	}
 
-	if (vm.count(kRecursiveOptionLongName.c_str()))
+	if (vm.count(kRecursiveOptionLongName))
 	{
 		recursiveListing = true;
 	}

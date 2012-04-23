@@ -144,26 +144,26 @@ int sammvcp(int argc, char** argv) {
     // Declare the supported options.
     bpo::options_description mainOptions;
     mainOptions.add_options()( //
-                    kHelpOptionString.c_str(), kHelpOptionMessage.c_str()) //
-    (kOffsetOptionString.c_str(), bpo::value<std::ssize_t>(), kOffsetOptionMessage.c_str()) //
+                    kHelpOptionString, kHelpOptionMessage) //
+    (kOffsetOptionString, bpo::value<std::ssize_t>(), kOffsetOptionMessage) //
     //		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" ) //
-    (kVerboseOptionString.c_str(), kVerboseOptionMessage.c_str()) //
-    (kInputFirstOptionString.c_str(), bpo::value<std::ssize_t>(), kInputFirstOptionMessage.c_str()) //
-    (kInputLastOptionString.c_str(), bpo::value<std::ssize_t>(), kInputLastOptionMessage.c_str()) //
-    (kOutputFirstOptionString.c_str(), bpo::value<std::ssize_t>(), kOutputFirstOptionMessage.c_str()) //
-    (kOutputLastOptionString.c_str(), bpo::value<std::ssize_t>(), kOutputLastOptionMessage.c_str()) //
-    (kColorOptionString.c_str(), kColorOptionMessage.c_str()) //
-    (kBriefOptionString.c_str(), kBriefOptionMessage.c_str());
+    (kVerboseOptionString, kVerboseOptionMessage) //
+    (kInputFirstOptionString, bpo::value<std::ssize_t>(), kInputFirstOptionMessage) //
+    (kInputLastOptionString, bpo::value<std::ssize_t>(), kInputLastOptionMessage) //
+    (kOutputFirstOptionString, bpo::value<std::ssize_t>(), kOutputFirstOptionMessage) //
+    (kOutputLastOptionString, bpo::value<std::ssize_t>(), kOutputLastOptionMessage) //
+    (kColorOptionString, kColorOptionMessage) //
+    (kBriefOptionString, kBriefOptionMessage);
 
     // describe hidden options
     bpo::options_description hidden;
-    hidden.add_options()(kInputOptionString.c_str(), bpo::value<std::vector<std::string> >(), kInputOptionMessage.c_str())(kEnableColorOptionString.c_str(),
+    hidden.add_options()(kInputOptionString, bpo::value<std::vector<std::string> >(), kInputOptionMessage)(kEnableColorOptionString,
                                                                                                                            bpo::value<std::string>(),
-                                                                                                                           kEnableColorOptionMessage.c_str());
+                                                                                                                           kEnableColorOptionMessage);
 
     // define default options
     bpo::positional_options_description pod;
-    pod.add(kInputOptionLongName.c_str(), -1);
+    pod.add(kInputOptionLongName, -1);
 
     bpo::options_description cmdline_options;
     cmdline_options.add(mainOptions).add(hidden);
@@ -191,11 +191,11 @@ int sammvcp(int argc, char** argv) {
         exit(-2);
     }
 
-    if (vm.count(kColorOptionLongName.c_str())) {
+    if (vm.count(kColorOptionLongName)) {
         enableColor = true;
     }
-    if (vm.count(kEnableColorOptionLongName.c_str())) {
-        const std::string str = vm[kEnableColorOptionLongName.c_str()].as<std::string>();
+    if (vm.count(kEnableColorOptionLongName)) {
+        const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
         enableColor = string_to_boolean(str);
     }
 
@@ -204,7 +204,7 @@ int sammvcp(int argc, char** argv) {
         _color.enable();
     }
 
-    if (vm.count(kHelpOptionLongName.c_str())) {
+    if (vm.count(kHelpOptionLongName)) {
         TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
 #ifndef SAM_MOVEFILES
         TUTTLE_COUT( _color._blue <<"NAME" << _color._std);
@@ -228,7 +228,7 @@ int sammvcp(int argc, char** argv) {
         return 1;
     }
 
-    if (vm.count(kBriefOptionLongName.c_str())) {
+    if (vm.count(kBriefOptionLongName)) {
 #ifndef SAM_MOVEFILES
         TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std);
 #else
@@ -237,18 +237,18 @@ int sammvcp(int argc, char** argv) {
         return 0;
     }
 
-    if (vm.count(kExpressionOptionLongName.c_str())) {
+    if (vm.count(kExpressionOptionLongName)) {
         bal::split(filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
     }
 
-    if (vm.count(kAllOptionLongName.c_str())) {
+    if (vm.count(kAllOptionLongName)) {
         // add .* files
         descriptionMask |= ttl::eMaskOptionsDotFile;
     }
 
     // defines paths
-    if (vm.count(kInputOptionLongName.c_str())) {
-        paths = vm[kInputOptionLongName.c_str()].as<std::vector<std::string> >();
+    if (vm.count(kInputOptionLongName)) {
+        paths = vm[kInputOptionLongName].as<std::vector<std::string> >();
     }
 
     if (paths.size() < 2) {
@@ -256,23 +256,23 @@ int sammvcp(int argc, char** argv) {
         return 1;
     }
 
-    if (vm.count(kOffsetOptionLongName.c_str())) {
-        offset = vm[kOffsetOptionLongName.c_str()].as<std::ssize_t>();
+    if (vm.count(kOffsetOptionLongName)) {
+        offset = vm[kOffsetOptionLongName].as<std::ssize_t>();
         offsetMode = eOffsetModeValue;
     }
 
-    if (vm.count(kInputFirstOptionLongName.c_str())) {
+    if (vm.count(kInputFirstOptionLongName)) {
         hasInputFirst = true;
-        inputFirst = vm[kInputFirstOptionLongName.c_str()].as<std::ssize_t>();
+        inputFirst = vm[kInputFirstOptionLongName].as<std::ssize_t>();
     }
 
-    if (vm.count(kInputLastOptionLongName.c_str())) {
+    if (vm.count(kInputLastOptionLongName)) {
         hasInputLast = true;
-        inputLast = vm[kInputLastOptionLongName.c_str()].as<std::ssize_t>();
+        inputLast = vm[kInputLastOptionLongName].as<std::ssize_t>();
     }
 
-    if (vm.count(kOutputFirstOptionLongName.c_str())) {
-        outputFirst = vm[kOutputFirstOptionLongName.c_str()].as<std::ssize_t>();
+    if (vm.count(kOutputFirstOptionLongName)) {
+        outputFirst = vm[kOutputFirstOptionLongName].as<std::ssize_t>();
         if (offsetMode != eOffsetModeNotSet) {
             TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std);
             return -1;
@@ -280,8 +280,8 @@ int sammvcp(int argc, char** argv) {
         offsetMode = eOffsetModeFirstTime;
     }
 
-    if (vm.count(kOutputLastOptionLongName.c_str())) {
-        outputLast = vm[kOutputLastOptionLongName.c_str()].as<std::ssize_t>();
+    if (vm.count(kOutputLastOptionLongName)) {
+        outputLast = vm[kOutputLastOptionLongName].as<std::ssize_t>();
         if (offsetMode != eOffsetModeNotSet) {
             TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std);
             return -1;
@@ -289,7 +289,7 @@ int sammvcp(int argc, char** argv) {
         offsetMode = eOffsetModeLastTime;
     }
 
-    if (vm.count(kVerboseOptionLongName.c_str())) {
+    if (vm.count(kVerboseOptionLongName)) {
         verbose = true;
     }
 

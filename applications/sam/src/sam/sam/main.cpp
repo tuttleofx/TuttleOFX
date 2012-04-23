@@ -104,13 +104,13 @@ int main(int argc, char** argv) {
 
         // Declare the supported options.
         bpo::options_description infoOptions;
-        infoOptions.add_options()(kHelpOptionString.c_str(), kHelpOptionMessage.c_str())(kVersionOptionString.c_str(), kVersionOptionMessage.c_str()) // which version?
-        (kCommandsOptionString.c_str(), kCommandsOptionMessage.c_str())(kColorOptionString.c_str(), kColorOptionMessage.c_str());
+        infoOptions.add_options()(kHelpOptionString, kHelpOptionMessage)(kVersionOptionString, kVersionOptionMessage) // which version?
+        (kCommandsOptionString, kCommandsOptionMessage)(kColorOptionString, kColorOptionMessage);
 
         // describe hidden options
         bpo::options_description hidden;
-        hidden.add_options()(kCommandsListOptionString.c_str(), kCommandsListOptionMessage.c_str())(kBinariesListOptionString.c_str(), kBinariesListOptionMessage.c_str())(
-                        kEnableColorOptionString.c_str(), bpo::value<std::string>(), kEnableColorOptionMessage.c_str());
+        hidden.add_options()(kCommandsListOptionString, kCommandsListOptionMessage)(kBinariesListOptionString, kBinariesListOptionMessage)(
+                        kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage);
 
         bpo::options_description all_options;
         all_options.add(infoOptions).add(hidden);
@@ -126,11 +126,11 @@ int main(int argc, char** argv) {
         }
         bpo::notify(sam_vm);
 
-        if (sam_vm.count(kColorOptionLongName.c_str())) {
+        if (sam_vm.count(kColorOptionLongName)) {
             enableColor = true;
         }
-        if (sam_vm.count(kEnableColorOptionLongName.c_str())) {
-            const std::string str = sam_vm[kEnableColorOptionLongName.c_str()].as<std::string>();
+        if (sam_vm.count(kEnableColorOptionLongName)) {
+            const std::string str = sam_vm[kEnableColorOptionLongName].as<std::string>();
             enableColor = string_to_boolean(str);
         }
 
@@ -142,8 +142,8 @@ int main(int argc, char** argv) {
         bfs::path samDirectory(fullsam.parent_path());
         const std::vector<bfs::path> searchPaths = retrieveSearchPaths(samDirectory);
 
-        if ((sam_vm.count(kHelpOptionLongName.c_str()) || (argc == 1))
-                        || (sam_vm.count(kColorOptionLongName.c_str()) && (argc == 2) && (strstr(argv[1], kColorOptionLongName.c_str()) != NULL))) {
+        if ((sam_vm.count(kHelpOptionLongName) || (argc == 1))
+                        || (sam_vm.count(kColorOptionLongName) && (argc == 2) && (strstr(argv[1], kColorOptionLongName) != NULL))) {
             TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
             TUTTLE_COUT( _color._blue << "NAME" << _color._std);
             TUTTLE_COUT( _color._green <<"\tsam - A set of command line tools." << _color._std << std::endl);
@@ -164,12 +164,12 @@ int main(int argc, char** argv) {
             exit(0);
         }
 
-        if (sam_vm.count(kVersionOptionLongName.c_str())) {
+        if (sam_vm.count(kVersionOptionLongName)) {
             TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR);
             exit(0);
         }
 
-        if (sam_vm.count(kCommandsOptionLongName.c_str())) {
+        if (sam_vm.count(kCommandsOptionLongName)) {
             TUTTLE_COUT( "");
             TUTTLE_COUT( _color._blue << "COMMANDS" << _color._std);
 
@@ -183,14 +183,14 @@ int main(int argc, char** argv) {
 
             exit(0);
         }
-        if (sam_vm.count(kBinariesListOptionLongName.c_str())) {
+        if (sam_vm.count(kBinariesListOptionLongName)) {
             const std::vector<bfs::path> cmds = retrieveAllSamCommands(searchPaths);
             BOOST_FOREACH( const bfs::path& c, cmds ) {
                 TUTTLE_COUT( c.string());
             }
             exit(0);
         }
-        if (sam_vm.count(kCommandsListOptionLongName.c_str())) {
+        if (sam_vm.count(kCommandsListOptionLongName)) {
             const std::vector<bfs::path> cmds = retrieveAllSamCommands(searchPaths);
             BOOST_FOREACH( const bfs::path& c, cmds ) {
                 TUTTLE_COUT( c.filename().string().substr(4));

@@ -64,32 +64,32 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		(kAllOptionString.c_str()            , kAllOptionMessage.c_str())
-		(kDirectoriesOptionString.c_str()    , kDirectoriesOptionMessage.c_str())
-		(kExpressionOptionString.c_str()     , bpo::value<std::string>(), kExpressionOptionMessage.c_str())
-		(kFilesOptionString.c_str()          , kFilesOptionMessage.c_str() )
-		(kHelpOptionString.c_str()           , kHelpOptionMessage.c_str())
-		(kLongListingOptionString.c_str()   , kLongListingOptionMessage.c_str())
-		(kIgnoreOptionString.c_str()           , kIgnoreOptionMessage.c_str())
-		(kRelativePathOptionString.c_str()  , kRelativePathOptionMessage.c_str())
-		(kRecursiveOptionString.c_str()      , kRecursiveOptionMessage.c_str())
-		(kPathOptionString.c_str()    , kPathOptionMessage.c_str())
-		(kColorOptionString.c_str()            , kColorOptionMessage.c_str())
-		(kFullDisplayOptionString.c_str()     , kFullDisplayOptionMessage.c_str() )
-		(kScriptOptionString.c_str()           , kScriptOptionMessage.c_str())
-		(kBriefOptionString.c_str()            , kBriefOptionMessage.c_str())
+		(kAllOptionString            , kAllOptionMessage)
+		(kDirectoriesOptionString    , kDirectoriesOptionMessage)
+		(kExpressionOptionString     , bpo::value<std::string>(), kExpressionOptionMessage)
+		(kFilesOptionString          , kFilesOptionMessage )
+		(kHelpOptionString           , kHelpOptionMessage)
+		(kLongListingOptionString   , kLongListingOptionMessage)
+		(kIgnoreOptionString           , kIgnoreOptionMessage)
+		(kRelativePathOptionString  , kRelativePathOptionMessage)
+		(kRecursiveOptionString      , kRecursiveOptionMessage)
+		(kPathOptionString    , kPathOptionMessage)
+		(kColorOptionString            , kColorOptionMessage)
+		(kFullDisplayOptionString     , kFullDisplayOptionMessage )
+		(kScriptOptionString           , kScriptOptionMessage)
+		(kBriefOptionString            , kBriefOptionMessage)
 	;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		(kInputDirOptionString.c_str(), bpo::value< std::vector<std::string> >(), kInputDirOptionMessage.c_str())
-		(kEnableColorOptionString.c_str(), bpo::value<std::string>(), kEnableColorOptionMessage.c_str())
+		(kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
+		(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage)
 	;
 	
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add(kInputDirOptionLongName.c_str(), -1);
+	pod.add(kInputDirOptionLongName, -1);
 	
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
@@ -128,18 +128,18 @@ int main( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if ( vm.count(kScriptOptionLongName.c_str()) )
+	if ( vm.count(kScriptOptionLongName) )
 	{
 		// disable color, disable directory printing and set relative path by default
 		script = true;
 		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 
-	if ( vm.count(kColorOptionLongName.c_str()) && !script )
+	if ( vm.count(kColorOptionLongName) && !script )
 	{
 		enableColor = true;
 	}
-	if ( vm.count(kEnableColorOptionLongName.c_str()) && !script )
+	if ( vm.count(kEnableColorOptionLongName) && !script )
 	{
 		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
 		enableColor = string_to_boolean( str );
@@ -151,7 +151,7 @@ int main( int argc, char** argv )
 		_color.enable();
 	}
 
-	if (vm.count(kHelpOptionLongName.c_str()))
+	if (vm.count(kHelpOptionLongName))
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -169,72 +169,72 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	if ( vm.count(kBriefOptionLongName.c_str()) )
+	if ( vm.count(kBriefOptionLongName) )
 	{
 		TUTTLE_COUT( _color._green << "list directory contents" << _color._std);
 		return 0;
 	}
 
-	if (vm.count(kExpressionOptionLongName.c_str()))
+	if (vm.count(kExpressionOptionLongName))
 	{
 		TUTTLE_COUT( _color._red << "Expression: " << vm["expression"].as<std::string>() << _color._std );
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if (vm.count(kDirectoriesOptionLongName.c_str()))
+	if (vm.count(kDirectoriesOptionLongName))
 	{
 		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
 	
-	if (vm.count(kFilesOptionLongName.c_str()))
+	if (vm.count(kFilesOptionLongName))
 	{
 		researchMask |= sequenceParser::eMaskTypeFile;
 	}
 	
-	if (vm.count(kIgnoreOptionLongName.c_str()))
+	if (vm.count(kIgnoreOptionLongName))
 	{
 		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 	
-	if (vm.count(kFullDisplayOptionLongName.c_str()))
+	if (vm.count(kFullDisplayOptionLongName))
 	{
 		researchMask |= sequenceParser::eMaskTypeDirectory;
 		researchMask |= sequenceParser::eMaskTypeFile;
 		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
-	if (vm.count(kAllOptionLongName.c_str()))
+	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
 		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 	
-	if (vm.count(kLongListingOptionLongName.c_str()))
+	if (vm.count(kLongListingOptionLongName))
 	{
 		descriptionMask |= sequenceParser::eMaskOptionsProperties;
 	}
 	
-	if (vm.count(kRelativePathOptionLongName.c_str()) )
+	if (vm.count(kRelativePathOptionLongName) )
 	{
 		descriptionMask |= sequenceParser::eMaskOptionsPath;
 	}
 
-	if(vm.count(kPathOptionLongName.c_str()))
+	if(vm.count(kPathOptionLongName))
 	{
 		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
-	if (vm.count(kInputDirOptionLongName.c_str()))
+	if (vm.count(kInputDirOptionLongName))
 	{
-		paths = vm[kInputDirOptionLongName.c_str()].as< std::vector<std::string> >();
+		paths = vm[kInputDirOptionLongName].as< std::vector<std::string> >();
 	}
 	else
 	{
 		paths.push_back( "./" );
 	}
 	
-	if (vm.count(kRecursiveOptionLongName.c_str()))
+	if (vm.count(kRecursiveOptionLongName))
 	{
 		recursiveListing = true;
 	}

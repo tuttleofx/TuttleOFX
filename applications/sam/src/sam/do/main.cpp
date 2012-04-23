@@ -62,29 +62,29 @@ int main( int argc, char** argv )
 				// Declare the supported options.
 				bpo::options_description infoOptions;
 				infoOptions.add_options()
-					( kHelpOptionString.c_str(), kHelpOptionMessage.c_str() )
-					( kVersionOptionString.c_str(), kVersionOptionMessage.c_str() )
-					( kNodesOptionString.c_str(), kNodesOptionMessage.c_str() )
-					( kColorOptionString.c_str(), kColorOptionMessage.c_str() )
-					( kScriptOptionString.c_str(),  kScriptOptionMessage.c_str() )
-					( kBriefOptionString.c_str(), kBriefOptionMessage.c_str() )
+					( kHelpOptionString, kHelpOptionMessage )
+					( kVersionOptionString, kVersionOptionMessage )
+					( kNodesOptionString, kNodesOptionMessage )
+					( kColorOptionString, kColorOptionMessage )
+					( kScriptOptionString,  kScriptOptionMessage )
+					( kBriefOptionString, kBriefOptionMessage )
 					;
 				bpo::options_description confOptions;
 				confOptions.add_options()
-					( kContinueOnErrorOptionString.c_str(), kContinueOnErrorOptionMessage.c_str() )
-					( kRangeOptionString.c_str(), bpo::value<std::string > (), kRangeOptionMessage.c_str() )
-					( kRenderScaleOptionString.c_str(), bpo::value<std::string > (), kRenderScaleOptionMessage.c_str() )
-					( kVerboseOptionString.c_str(), kVerboseOptionMessage.c_str() )
-					( kQuietOptionString.c_str(), kQuietOptionMessage.c_str() )
-					( kNbCoresOptionString.c_str(), bpo::value<std::size_t > (), kNbCoresOptionString.c_str() )
+					( kContinueOnErrorOptionString, kContinueOnErrorOptionMessage )
+					( kRangeOptionString, bpo::value<std::string > (), kRangeOptionMessage )
+					( kRenderScaleOptionString, bpo::value<std::string > (), kRenderScaleOptionMessage )
+					( kVerboseOptionString, kVerboseOptionMessage )
+					( kQuietOptionString, kQuietOptionMessage )
+					( kNbCoresOptionString, bpo::value<std::size_t > (), kNbCoresOptionString )
 					;
 
 				// describe hidden options
 				bpo::options_description hidden;
 				hidden.add_options()
-					( kEnableColorOptionString.c_str(), bpo::value<std::string > (), kEnableColorOptionMessage.c_str() )
+					( kEnableColorOptionString, bpo::value<std::string > (), kEnableColorOptionMessage )
 					// params for auto-completion
-					( kNodesOptionString.c_str(), kNodesOptionMessage.c_str() )
+					( kNodesOptionString, kNodesOptionMessage )
 					;
 
 				bpo::options_description all_options;
@@ -105,19 +105,19 @@ int main( int argc, char** argv )
 
 				bpo::notify( samdo_vm );
 
-				if( samdo_vm.count(kScriptOptionLongName.c_str() ) )
+				if( samdo_vm.count(kScriptOptionLongName ) )
 				{
 					// disable color, disable directory printing and set relative path by default
 					script = true;
 				}
 
-				if( samdo_vm.count( kColorOptionLongName.c_str() ) && !script )
+				if( samdo_vm.count( kColorOptionLongName ) && !script )
 				{
 					enableColor = true;
 				}
-				if( samdo_vm.count(kEnableColorOptionLongName.c_str() ) && !script )
+				if( samdo_vm.count(kEnableColorOptionLongName ) && !script )
 				{
-					const std::string str = samdo_vm[kEnableColorOptionLongName.c_str()].as<std::string > ();
+					const std::string str = samdo_vm[kEnableColorOptionLongName].as<std::string > ();
 					enableColor = string_to_boolean( str );
 				}
 
@@ -126,7 +126,7 @@ int main( int argc, char** argv )
 					_color.enable();
 				}
 
-				if( samdo_vm.count( kHelpOptionLongName.c_str() ) )
+				if( samdo_vm.count( kHelpOptionLongName ) )
 				{
 					TUTTLE_COUT( std::left << _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 
@@ -202,7 +202,7 @@ int main( int argc, char** argv )
 					exit( 0 );
 				}
 
-				if( samdo_vm.count( kBriefOptionLongName.c_str() ) )
+				if( samdo_vm.count( kBriefOptionLongName ) )
 				{
 					TUTTLE_COUT( _color._green << "A command line to execute a list of OpenFX nodes" << _color._std );
 					return 0;
@@ -222,7 +222,7 @@ int main( int argc, char** argv )
 				// plugins loading
 				ttl::Core::instance().preload();
 
-				if( samdo_vm.count( kNodesOptionLongName.c_str() )  )
+				if( samdo_vm.count( kNodesOptionLongName )  )
 				{
 						TUTTLE_COUT( _color._blue << "NODES" << _color._std );
 					std::vector< std::string > pluginNames;
@@ -237,7 +237,7 @@ int main( int argc, char** argv )
 					}
 					std::sort( pluginNames.begin(), pluginNames.end() );
 
-					const std::string indent = samdo_vm.count( kNodesOptionLongName.c_str() ) ? "\t" : "";
+					const std::string indent = samdo_vm.count( kNodesOptionLongName ) ? "\t" : "";
 
 					BOOST_FOREACH( const std::string& pluginName, pluginNames )
 					{
@@ -247,9 +247,9 @@ int main( int argc, char** argv )
 				}
 
 				{
-					if( samdo_vm.count( kRangeOptionLongName.c_str() ) )
+					if( samdo_vm.count( kRangeOptionLongName ) )
 					{
-						const std::string rangeStr = samdo_vm[ kRangeOptionLongName.c_str()].as<std::string > ();
+						const std::string rangeStr = samdo_vm[ kRangeOptionLongName].as<std::string > ();
 						std::vector< std::string > rangeVStr = boost::program_options::split_unix( rangeStr, " ," );
 						range.reserve( rangeVStr.size() );
 						TUTTLE_TCOUT( rangeVStr.size() );
@@ -269,9 +269,9 @@ int main( int argc, char** argv )
 						step = 1;
 				}
 				{
-					if( samdo_vm.count( kRenderScaleOptionLongName.c_str() ) )
+					if( samdo_vm.count( kRenderScaleOptionLongName ) )
 					{
-						const std::string renderscaleStr = samdo_vm[kRenderScaleOptionLongName.c_str()].as<std::string > ();
+						const std::string renderscaleStr = samdo_vm[kRenderScaleOptionLongName].as<std::string > ();
 						std::vector< std::string > renderscaleVStr = boost::program_options::split_unix( renderscaleStr, " ," );
 						renderscale.reserve( renderscaleVStr.size() );
 						TUTTLE_TCOUT( renderscaleVStr.size() );
@@ -287,7 +287,7 @@ int main( int argc, char** argv )
 					}
 				}
 				std::cerr.rdbuf( strm_buffer ); // restore old output buffer
-				continueOnError = samdo_vm.count(kContinueOnErrorOptionLongName.c_str()  );
+				continueOnError = samdo_vm.count(kContinueOnErrorOptionLongName  );
 			}
 			catch( const boost::program_options::error& e )
 			{
@@ -307,14 +307,14 @@ int main( int argc, char** argv )
 				// Declare the supported options.
 				bpo::options_description infoOptions;
 				infoOptions.add_options()
-					( kHelpOptionString.c_str(), kHelpOptionMessage.c_str() )
-					( kVersionOptionString.c_str(), kVersionOptionMessage.c_str() )
+					( kHelpOptionString, kHelpOptionMessage )
+					( kVersionOptionString, kVersionOptionMessage )
 					;
 				bpo::options_description confOptions;
 				confOptions.add_options()
-					( kVerboseOptionString.c_str(), kVerboseOptionMessage.c_str() )
-					( kIdOptionString.c_str(), bpo::value<std::string > (), kIdOptionMessage.c_str() )
-					( kNbCoresOptionString.c_str(), bpo::value<std::size_t > (), kNbCoresOptionMessage.c_str() )
+					( kVerboseOptionString, kVerboseOptionMessage )
+					( kIdOptionString, bpo::value<std::string > (), kIdOptionMessage )
+					( kNbCoresOptionString, bpo::value<std::size_t > (), kNbCoresOptionMessage )
 					;
 				// describe openFX options
 				bpo::options_description openfxOptions;

@@ -128,22 +128,22 @@ int main(int argc, char** argv) {
         bpo::options_description desc;
         bpo::options_description hidden;
 
-        desc.add_options()(kHelpOptionString.c_str(), kHelpOptionMessage.c_str()) //
-        (kReaderOptionString.c_str(), bpo::value(&readerId)/*->required()*/, kReaderOptionMessage.c_str()) //
-        (kInputOptionString.c_str(), bpo::value(&inputs)/*->required()*/, kInputOptionMessage.c_str()) //
-        (kRangeOptionString.c_str(), bpo::value(&range)->multitoken(), kRangeOptionMessage.c_str()) //
-        (kBriefOptionString.c_str(), kBriefOptionMessage.c_str()) //
-        (kColorOptionString.c_str(), kColorOptionMessage.c_str()) //
-        (kScriptOptionString.c_str(), kScriptOptionMessage.c_str());
+        desc.add_options()(kHelpOptionString, kHelpOptionMessage) //
+        (kReaderOptionString, bpo::value(&readerId)/*->required()*/, kReaderOptionMessage) //
+        (kInputOptionString, bpo::value(&inputs)/*->required()*/, kInputOptionMessage) //
+        (kRangeOptionString, bpo::value(&range)->multitoken(), kRangeOptionMessage) //
+        (kBriefOptionString, kBriefOptionMessage) //
+        (kColorOptionString, kColorOptionMessage) //
+        (kScriptOptionString, kScriptOptionMessage);
 
         // describe hidden options
-        hidden.add_options()(kEnableColorOptionString.c_str(), bpo::value<std::string>(), kEnableColorOptionMessage.c_str());
+        hidden.add_options()(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage);
 
         bpo::options_description cmdline_options;
         cmdline_options.add(desc).add(hidden);
 
         bpo::positional_options_description pod;
-        pod.add(kInputOptionLongName.c_str(), -1);
+        pod.add(kInputOptionLongName, -1);
 
         bpo::variables_map vm;
 
@@ -169,16 +169,16 @@ int main(int argc, char** argv) {
             exit(-2);
         }
 
-        if (vm.count(kScriptOptionLongName.c_str())) {
+        if (vm.count(kScriptOptionLongName)) {
             // disable color, disable directory printing and set relative path by default
             script = true;
         }
 
-        if (vm.count(kColorOptionLongName.c_str()) && !script) {
+        if (vm.count(kColorOptionLongName) && !script) {
             enableColor = true;
         }
-        if (vm.count(kEnableColorOptionLongName.c_str()) && !script) {
-            const std::string str = vm[kEnableColorOptionLongName.c_str()].as<std::string>();
+        if (vm.count(kEnableColorOptionLongName) && !script) {
+            const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
             enableColor = string_to_boolean(str);
         }
 
@@ -186,14 +186,14 @@ int main(int argc, char** argv) {
             _color.enable();
         }
 
-        if (vm.count(kBriefOptionLongName.c_str())) {
+        if (vm.count(kBriefOptionLongName)) {
             //std::cout.rdbuf(_stdCout);
             TUTTLE_COUT( _color._green << "diff image files" << _color._std);
             //std::cout.rdbuf(0);
             return 0;
         }
 
-        if (vm.count(kHelpOptionLongName.c_str())) {
+        if (vm.count(kHelpOptionLongName)) {
             //std::cout.rdbuf(_stdCout); // restore cout's original streambuf
             TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
             TUTTLE_COUT( _color._blue << "NAME" << _color._std);
@@ -211,25 +211,25 @@ int main(int argc, char** argv) {
             //std::cout.rdbuf(0); // remove cout's streambuf
             return 0;
         }
-        if (!vm.count(kReaderOptionLongName.c_str())) {
+        if (!vm.count(kReaderOptionLongName)) {
             TUTTLE_COUT( _color._red << "sam-diff : no reader specified." << _color._std);
             TUTTLE_COUT( _color._red << "           run sam-diff -h for more information." << _color._std);
             return 0;
         }
-        if (!vm.count(kInputOptionLongName.c_str())) {
+        if (!vm.count(kInputOptionLongName)) {
             TUTTLE_COUT( _color._red << "sam-diff : no input specified." << _color._std);
             TUTTLE_COUT( _color._red << "           run sam-diff -h for more information." << _color._std);
             return 0;
         }
-        readerId = vm[kReaderOptionLongName.c_str()].as<std::vector<std::string> >();
-        inputs = vm[kInputOptionLongName.c_str()].as<std::vector<std::string> >();
+        readerId = vm[kReaderOptionLongName].as<std::vector<std::string> >();
+        inputs = vm[kInputOptionLongName].as<std::vector<std::string> >();
         if (readerId.size() != 2 || inputs.size() != 2) {
             TUTTLE_COUT( _color._red << "sam-diff : number of input or reader is/are incorrect." << _color._std);
             TUTTLE_COUT( _color._red << "           run sam-diff -h for more information." << _color._std);
             return 0;
         }
-        if (vm.count(kRangeOptionLongName.c_str())) {
-            range = vm[kRangeOptionLongName.c_str()].as<std::vector<int> >();
+        if (vm.count(kRangeOptionLongName)) {
+            range = vm[kRangeOptionLongName].as<std::vector<int> >();
             hasRange = (range.size() == 2);
         }
 
