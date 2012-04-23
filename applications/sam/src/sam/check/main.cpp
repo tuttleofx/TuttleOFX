@@ -160,7 +160,7 @@ int main( int argc, char** argv )
 		cmdline_options.add(desc).add(hidden);
 
 		bpo::positional_options_description pod;
-		pod.add(kInputOptionString.c_str(), -1);
+		pod.add(kInputOptionLongName.c_str(), -1);
 
 		bpo::variables_map vm;
 

@@ -8,6 +8,7 @@
 #ifndef OPTIONS_HPP_
 #define OPTIONS_HPP_
 
+
 namespace sam {
 
 //-a, --all

@@ -142,7 +142,8 @@ int main(int argc, char** argv) {
         bfs::path samDirectory(fullsam.parent_path());
         const std::vector<bfs::path> searchPaths = retrieveSearchPaths(samDirectory);
 
-        if ((sam_vm.count(kHelpOptionLongName.c_str()) || (argc == 1)) || (sam_vm.count(kColorOptionLongName.c_str()) && (argc == 2))) {
+        if ((sam_vm.count(kHelpOptionLongName.c_str()) || (argc == 1))
+                        || (sam_vm.count(kColorOptionLongName.c_str()) && (argc == 2) && (strstr(argv[1], kColorOptionLongName.c_str()) != NULL))) {
             TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
             TUTTLE_COUT( _color._blue << "NAME" << _color._std);
             TUTTLE_COUT( _color._green <<"\tsam - A set of command line tools." << _color._std << std::endl);

@@ -36,6 +36,7 @@ namespace sam
 	Color _color;
 }
 
+
 void printImageProperties( std::string path )
 {
 	try
@@ -213,7 +214,7 @@ int main( int argc, char** argv )
 
 	// define default options
 	bpo::positional_options_description pod;
-	pod.add(kInputDirOptionString.c_str(), -1);
+	pod.add(kInputDirOptionLongName.c_str(), -1);
 
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
