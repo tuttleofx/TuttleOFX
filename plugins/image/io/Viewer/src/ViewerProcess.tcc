@@ -42,7 +42,7 @@ void ViewerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 	openGLWindow( src.width(), src.height() );
 
 	/// @todo copy into a new buffer or do something if offset between lines, etc.
-	loadNewTexture( src );
+	loadNewTexture( &src );
 
 	glutIdleFunc(idle);
 	glutMainLoop();

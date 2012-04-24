@@ -51,11 +51,13 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	using namespace boost;
 	using namespace OpenImageIO;
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filepath ) );
+	TUTTLE_COUT("in");
 	if( in.get() == NULL )
 	{
 		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
 	}
 	ImageSpec spec;
+	TUTTLE_COUT("open");
 	if( ! in->open( filepath, spec ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unknown()
@@ -74,6 +76,8 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	const stride_t ystride = dst.pixels().row_size(); // xstride * dst.width();
 //	const stride_t zstride = gil::is_planar<View>::value ? ystride * dst.height() : sizeof(Channel);
 	const stride_t zstride = ystride * dst.height();
+
+	TUTTLE_COUT("read");
 
 	in->read_image(
 			mpl::at<MapBits, Channel>::type::value,
