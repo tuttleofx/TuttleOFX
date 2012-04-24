@@ -62,7 +62,7 @@ static const char* const kLongListingOptionMessage = "use a long listing format"
 
 //-n, --nodes
 static const char* const kNodesOptionLongName = "nodes";
-static const char* const kNodesOptionString = "nodes,l";
+static const char* const kNodesOptionString = "nodes,n";
 static const char* const kNodesOptionMessage = "list all avalaible node";
 
 //-o, --offset
@@ -221,6 +221,11 @@ static const char* const kEnableColorOptionMessage = "enable =or disable color";
 static const char* const kInputDirOptionLongName = "input-dir";
 static const char* const kInputDirOptionString = kInputDirOptionLongName;
 static const char* const kInputDirOptionMessage = "input directories";
+
+//--nodes-list //FIXME is there a real purpose to have an hidden --nodes-list + --nodes ??
+static const char* const kNodesListOptionLongName = "nodes-list";
+static const char* const kNodesListOptionString = kNodesListOptionLongName;
+static const char* const kNodesListOptionMessage = "show list of all available nodes";
 
 }
 
