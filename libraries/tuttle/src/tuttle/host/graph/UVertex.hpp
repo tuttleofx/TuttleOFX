@@ -12,6 +12,9 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
+/**
+ * @brief Vertex of the user graph.
+ */
 class UVertex : public IVertex
 {
 public:

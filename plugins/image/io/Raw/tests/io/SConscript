@@ -2,7 +2,6 @@ Import( 'project', 'libs' )
 
 if project.env['mode'] != 'production':
 	project.UnitTest(
-		target = project.getDirs([-3,-1]),
 		dirs = ['.'],
 		libraries = [
 			libs.tuttleHost,

@@ -25,9 +25,6 @@ Graph::~Graph()
 InputBufferNode& Graph::createInputBuffer()
 {
 	InputBufferNode* node = new InputBufferNode();
-//	if( !node )
-//		BOOST_THROW_EXCEPTION( exception::Logic()
-//		    << exception::user( "Plugin not found (" + id + ")." ) );
 
 	std::stringstream uniqueName;
 	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
@@ -45,9 +42,11 @@ Graph::Node& Graph::createNode( const std::string& id )
 	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 
 	if( !plug )
+	{
 		BOOST_THROW_EXCEPTION( exception::Logic()
 		    << exception::user( "Plugin not found." )
 		    << exception::pluginIdentifier( id ) );
+	}
 
 	plug->loadAndDescribeActions();
 

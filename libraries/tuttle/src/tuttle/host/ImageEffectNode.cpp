@@ -69,6 +69,14 @@ void ImageEffectNode::connect( const INode& sourceEffect, attribute::Attribute& 
 	inputClip.setConnectedClip( outputClip );
 }
 
+bool ImageEffectNode::operator==( const INode& other ) const
+{
+	const ImageEffectNode* other_ptr = dynamic_cast<const ImageEffectNode*>( &other );
+	if( other_ptr == NULL )
+		return false;
+	return operator==( *other_ptr );
+}
+
 /**
  * @warning do a deep comparison
  */

@@ -12,17 +12,21 @@ namespace test {
 class DummyVertex
 {
 public:
+	typedef std::string Key;
+public:
 	DummyVertex() {}
 
 	DummyVertex( const std::string& name )
 		: _name( name ) {}
 
-	DummyVertex( DummyVertex& v )
+	DummyVertex( const DummyVertex& v )
 		: _name( v.getName() ) {}
 
 	virtual ~DummyVertex()
 	{}
 
+	Key getKey() const { return _name; }
+	
 	// operators
 	DummyVertex& operator=( const DummyVertex& v )
 	{

@@ -8,6 +8,7 @@
 //#include <boost/bind.hpp>
 
 #include <iostream>
+#include <vector>
 
 namespace tuttle {
 namespace host {
@@ -120,37 +121,33 @@ void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<Te
 }
 }
 
-#define BOOST_TEST_MODULE graph_tests
+#define BOOST_TEST_MODULE tuttle_boostgraph
 #include <boost/test/unit_test.hpp>
+
+BOOST_AUTO_TEST_SUITE( tuttle_boostgraph_suite )
 
 using namespace boost::unit_test;
 
-BOOST_AUTO_TEST_SUITE( internalgraph_tests_suite01 )
-
-BOOST_AUTO_TEST_CASE( create_internalGraph )
+BOOST_AUTO_TEST_CASE( test_export )
 {
-	using namespace std;
 	using namespace tuttle::host;
 
 	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
-	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge>::vertex_descriptor Descriptor;
+	typedef InternalGraph::vertex_descriptor Descriptor;
 	typedef std::map<std::string, int> InstanceCountMap;
 
 	std::string n1( "v1" );
 	std::string n2( "v2" );
 	std::string n3( "v3" );
 
-	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
 	InternalGraph graph;
 	std::map<std::string, Descriptor> nodesDescriptor;
 	nodesDescriptor[n1] = graph.addVertex( graph::TestVertex( n1 ) );
 	nodesDescriptor[n2] = graph.addVertex( graph::TestVertex( n2 ) );
 	nodesDescriptor[n3] = graph.addVertex( graph::TestVertex( n3 ) );
 
-	graph::TestEdge e1( n1, n2 );
-	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], e1 );
-	graph::TestEdge e2( n2, n3 );
-	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], e2 );
+	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], graph::TestEdge( n1, n2 ) );
+	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], graph::TestEdge( n2, n3 ) );
 
 	TUTTLE_TCOUT( "graph:" );
 	boost::print_graph( graph.getGraph() );
@@ -188,37 +185,153 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	//	boost::depth_first_search( graphT.getGraph(), boost::visitor(testVisitorB) );
 
 	graphT.depthFirstVisit( testVisitorB, mmap["v3"] );
-	/*
-	   graph_traits<graph_type>::out_edge_iterator ei, edge_end;
-	   for( boost::tie(ei, edge_end) = out_edges(*i, g); ei != edge_end; ++ei )
-	    std::cout << " --" << name[*ei] << "--> " << id[target(*ei, g)] << "  ";
-	 */
 
+//	   graph_traits<graph_type>::out_edge_iterator ei, edge_end;
+//	   for( boost::tie(ei, edge_end) = out_edges(*i, g); ei != edge_end; ++ei )
+//	    std::cout << " --" << name[*ei] << "--> " << id[target(*ei, g)] << "  ";
+}
+
+BOOST_AUTO_TEST_CASE( check_cycle )
+{
+	using namespace tuttle::host;
+
+	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
+	typedef InternalGraph::vertex_descriptor Descriptor;
+	typedef std::map<std::string, int> InstanceCountMap;
+
+	std::string n1( "v1" );
+	std::string n2( "v2" );
+	std::string n3( "v3" );
+
+	InternalGraph graph;
+	std::map<std::string, Descriptor> nodesDescriptor;
+	nodesDescriptor[n1] = graph.addVertex( graph::TestVertex( n1 ) );
+	nodesDescriptor[n2] = graph.addVertex( graph::TestVertex( n2 ) );
+	nodesDescriptor[n3] = graph.addVertex( graph::TestVertex( n3 ) );
+
+	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], graph::TestEdge( n1, n2 ) );
+	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], graph::TestEdge( n2, n3 ) );
+	
+	BOOST_CHECK_THROW(
+		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n2], graph::TestEdge( n3, n2 ) ),
+		exception::Logic );
+	BOOST_CHECK_THROW(
+		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n1], graph::TestEdge( n3, n1 ) ),
+		 exception::Logic );
+	
+	TUTTLE_TCOUT( "graph:" );
+	boost::print_graph( graph.getGraph() );
+}
+
+BOOST_AUTO_TEST_CASE( test_create_add_remove_simple )
+{
+	typedef boost::adjacency_list< boost::setS, boost::vecS, boost::bidirectionalS > TestGraph;
+	TestGraph graph;
+	
+	// add vertices
+	TestGraph::vertex_descriptor vd1 = boost::add_vertex( graph );
+	TestGraph::vertex_descriptor vd2 = boost::add_vertex( graph );
+	TestGraph::vertex_descriptor vd3 = boost::add_vertex( graph );
+	TestGraph::vertex_descriptor vd4 = boost::add_vertex( graph );
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 4 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 0 );
+	
+	boost::add_edge( vd1, vd2, graph );
+	boost::add_edge( vd2, vd3, graph );
+	boost::add_edge( vd3, vd4, graph );
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 4 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 3 );
+	
+	boost::clear_vertex( vd3, graph );
+	boost::remove_vertex( vd3, graph );
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 3 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 1 );
+	
+	boost::add_edge(
+		graph.vertex_set()[1],
+		graph.vertex_set()[2],
+		graph );
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 3 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 2 );
 }
 
 /*
-   BOOST_AUTO_TEST_CASE( create_boostGraph )
-   {
-    typedef boost::adjacency_list< boost::listS, boost::vecS, boost::undirectedS, graph::TestVertex, graph::TestEdge > Graph;
-    Graph g;
-
-    //add 100 vertices
-    for( int i=0; i<15; ++i )
-    {
-        Graph::vertex_descriptor v = add_vertex(g);
-        g[v]._name = "albert" + boost::lexical_cast<std::string>(i);
-    }
-
-	//zero some_property for all vertices
-	for( Graph::vertex_iterator i = vertices(g).first, iEnd = vertices(g).second;
-	                            i != iEnd;
-	                            ++i )
-    {
-        TUTTLE_TCOUT(": " << g[*i]._name);
-    }
-
-   }
+ * Stupid test to check insertion, remove of vertices and edges.
  */
+BOOST_AUTO_TEST_CASE( test_create_add_remove )
+{
+	using namespace tuttle::host;
+	typedef boost::adjacency_list< boost::listS, boost::vecS, boost::undirectedS, graph::TestVertex, graph::TestEdge > TestGraph;
+	TestGraph graph;
+
+	// add vertices
+	for( std::size_t i = 0; i < 20; ++i )
+	{
+		TestGraph::vertex_descriptor vd = boost::add_vertex( graph );
+		graph[vd]._name = "a" + boost::lexical_cast<std::string > ( i );
+	}
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 20 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 0 );
+	
+	// add edges
+	for( std::size_t i = 5; i < 8; ++i )
+	{
+		TestGraph::edge_descriptor ed = boost::add_edge(
+			graph.vertex_set()[i],
+			graph.vertex_set()[i+1],
+			graph ).first;
+	}
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 20 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 3 );
+	
+	// remove some vertices
+	for( std::size_t i = 0; i < 5; ++i )
+	{
+		TestGraph::vertex_descriptor vd = graph.vertex_set()[0];
+		boost::clear_vertex( vd, graph ); // remove in and out edges
+		boost::remove_vertex( vd, graph ); // finally remove the vertex from the boost graph
+	}
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 20-5 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 3 );
+	
+	// edges
+	for( std::size_t i = 9; i < 14; ++i )
+	{
+		TestGraph::edge_descriptor ed = boost::add_edge(
+			graph.vertex_set()[i],
+			graph.vertex_set()[i+1],
+			graph ).first;
+	}
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 20-5 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 8 );
+	
+	// add some vertices
+	for( std::size_t i = 0; i < 7; ++i )
+	{
+		TestGraph::vertex_descriptor vd = boost::add_vertex( graph );
+		graph[vd]._name = "b" + boost::lexical_cast<std::string > ( i );
+	}
+	
+	BOOST_CHECK_EQUAL( boost::num_vertices( graph ), 20 - 5 + 7 );
+	BOOST_CHECK_EQUAL( boost::num_edges( graph ), 8 );
+		
+//	//zero some_property for all vertices
+//	for( Graph::vertex_iterator i = vertices( graph ).first, iEnd = vertices( graph ).second;
+//		 i != iEnd;
+//		 ++i )
+//	{
+//		TUTTLE_TCOUT( ": " << graph[*i]._name );
+//	}
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

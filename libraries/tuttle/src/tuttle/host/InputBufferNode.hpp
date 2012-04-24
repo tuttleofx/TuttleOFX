@@ -128,8 +128,11 @@ public:
 
 	ofx::property::OfxhSet _emptyProps;
 	
-	const std::string& getLabel() const     { return _label; }
-	const std::string& getName() const     { return _name; }
+	bool operator==( const INode& other ) const;
+	bool operator==( const InputBufferNode& other ) const;
+	
+	const std::string& getLabel() const { return _label; }
+	const std::string& getName() const { return _name; }
 	void setName( const std::string& name ) { _name = name; }
 	const ENodeType    getNodeType() const { return eNodeTypeBuffer; }
 

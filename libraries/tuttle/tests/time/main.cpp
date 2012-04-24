@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE graph_tests
+#define BOOST_TEST_MODULE tuttle_time
 #include <boost/test/unit_test.hpp>
 //#include <boost/test/execution_monitor.hpp>
 //#include <boost/test/exception_safety.hpp>
@@ -11,15 +11,19 @@ using namespace boost::unit_test;
 
 BOOST_AUTO_TEST_SUITE( time_tests_suite01 )
 
+BOOST_AUTO_TEST_CASE( preload )
+{
+	using namespace tuttle::host;
+
+	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
+	Core::instance().preload();
+}
+
 BOOST_AUTO_TEST_CASE( time_shift )
 {
 	try
 	{
-		using namespace std;
 		using namespace tuttle::host;
-
-		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-		Core::instance().preload();
 //		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
 
 		TUTTLE_TCOUT( "__________________________________________________1" );
@@ -40,7 +44,6 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		g.connect( read1, invert1 );
 		g.connect( invert1, timeshift1 );
 		g.connect( timeshift1, write1 );
-//		g.connect( invert1, write1 );
 
 		TUTTLE_TCOUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
@@ -56,35 +59,6 @@ BOOST_AUTO_TEST_CASE( time_shift )
 
 	}
 }
-
-//BOOST_AUTO_TEST_CASE( graph_compute )
-//{
-//	using namespace std;
-//	using namespace tuttle::host;
-//
-//	//Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
-//	//Core::instance().getPluginCache().scanPluginFiles();
-//	Core::instance().preload();
-//
-//	Graph g;
-//	Graph::Node& read1  = g.createNode( "tuttle.pngreader" );
-////	Graph::Node& read2  = g.createNode( "tuttle.pngreader" );
-//	Graph::Node& invert1 = g.createNode( "tuttle.invert" );
-//	Graph::Node& invert2 = g.createNode( "tuttle.invert" );
-////	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
-//	Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
-//
-//	g.connect( read1, invert1 );
-//	g.connect( invert1, invert2 );
-//	g.connect( invert2, basic1 );
-//	g.connect( basic1, write1 );
-////	g.connect( read2, merge1, merge1.getClip("A") );
-////	g.connect( invert1, merge1, merge1.getClip("B") );
-////	g.connect( merge1, write1 );
-//
-//	BOOST_CHECK_NO_THROW( g.compute() );
-//}
 
 BOOST_AUTO_TEST_SUITE_END()
 

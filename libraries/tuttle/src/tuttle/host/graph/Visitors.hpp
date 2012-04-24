@@ -20,10 +20,13 @@ namespace visitor {
 class CycleDetector : public boost::default_dfs_visitor
 {
 public:
-	CycleDetector()
-		: _hasCycle( false )
-	{}
+	CycleDetector( bool& hasCycle )
+		: _hasCycle( hasCycle )
+	{
+		_hasCycle = false;
+	}
 
+public:
 	template<class EdgeDescriptor, class Graph>
 	void back_edge( EdgeDescriptor, const Graph& )
 	{
@@ -31,7 +34,7 @@ public:
 	}
 
 public:
-	bool _hasCycle;
+	bool& _hasCycle;
 };
 
 template<class TGraph>

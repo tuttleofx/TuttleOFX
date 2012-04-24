@@ -25,6 +25,22 @@ InputBufferNode::InputBufferNode( const InputBufferNode& other )
 
 InputBufferNode::~InputBufferNode( ) { }
 
+
+bool InputBufferNode::operator==( const INode& other ) const
+{
+	const InputBufferNode* other_ptr = dynamic_cast<const InputBufferNode*>( &other );
+	if( other_ptr == NULL )
+		return false;
+	return operator==( *other_ptr );
+}
+
+bool InputBufferNode::operator==( const InputBufferNode& other ) const
+{
+	return
+		( _name == other._name ) &&
+		( _rawBuffer == other._rawBuffer );
+}
+
 std::vector<int> InputBufferNode::getVersion() const
 {
 	std::vector<int> version;

@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE graph_tests
+#define BOOST_TEST_MODULE tuttle_memory
 #include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;

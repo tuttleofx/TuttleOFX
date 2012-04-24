@@ -126,6 +126,26 @@ private:
 	OfxTime _time;
 };
 
+template<class TGraph>
+struct IdentityNodeConnection
+{
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+	typedef typename Vertex::Key VertexKey;
+	typedef typename TGraph::vertex_descriptor vertex_descriptor;
+	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::edge_descriptor edge_descriptor;
+	
+	vertex_descriptor _identityVertex; ///< the identity node to remove
+	struct ClipConnection
+	{
+		vertex_descriptor _node;
+		std::string _clip;
+	};
+	ClipConnection _input;
+	std::vector< ClipConnection > _outputs;
+};
+
 /**
  * @warning in progress...
  */
@@ -140,21 +160,11 @@ public:
 	typedef typename TGraph::Edge Edge;
 	typedef typename TGraph::edge_descriptor edge_descriptor;
 
-	RemoveIdentityNodes( TGraph& graph )
+public:
+	RemoveIdentityNodes( TGraph& graph, std::vector<IdentityNodeConnection<TGraph> >& toRemove )
 		: _graph( graph )
+		, _toRemove( toRemove )
 	{}
-
-	struct ChangeConnection
-	{
-		vertex_descriptor _identityVertex; ///< the identity node to remove
-		struct ClipConnection
-		{
-			vertex_descriptor _node;
-			std::string _clip;
-		};
-		ClipConnection _input;
-		std::vector< ClipConnection > _outputs;
-	};
 	
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor vd, Graph& g )
@@ -176,7 +186,7 @@ public:
 					BOOST_THROW_EXCEPTION( exception::Logic()
 						<< exception::dev() + "There is an error in the plugin: The plugin declares to be identity but don't give the name of the input clip to use." );
 				}
-				ChangeConnection reconnect;
+				IdentityNodeConnection<TGraph> reconnect;
 				reconnect._identityVertex = vd;
 				reconnect._input._clip = inputClip;
 				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
@@ -194,12 +204,14 @@ public:
 				{
 					const Edge& e = _graph.instance( ed );
 					vertex_descriptor out = _graph.target( ed );
-					ChangeConnection c;
+					typename IdentityNodeConnection<TGraph>::ClipConnection c;
 					c._node = out;
 					c._clip = e.getInAttrName();
 					reconnect._outputs.push_back(c);
 				}
+				TUTTLE_TCOUT( "isIdentity => " << vertex.getName() << " - " << inputClip << " at time " << atTime );
 				_toRemove.push_back( reconnect );
+				TUTTLE_TCOUT_VAR( _toRemove.size() );
 			}
 			catch( boost::exception& e )
 			{
@@ -211,6 +223,25 @@ public:
 		}
 	}
 
+private:
+	TGraph& _graph;
+	std::vector<IdentityNodeConnection<TGraph> >& _toRemove;
+	
+};
+
+template<class TGraph>
+void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnection<TGraph> >& toRemove )
+{
+	TUTTLE_IF_DEBUG(
+		TUTTLE_TCOUT_X( 80, "_" );
+		TUTTLE_TCOUT_VAR( toRemove.size() );
+		BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, toRemove )
+		{
+			TUTTLE_TCOUT( graph.instance( connection._identityVertex ) );
+			TUTTLE_TCOUT( graph.instance( connection._input._node ) << "::" << connection._input._clip );
+		}
+		TUTTLE_TCOUT_X( 80, "_" );
+	);
 //				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
 //				{
 //					const Edge& e = _graph.instance( ed );
@@ -220,11 +251,7 @@ public:
 //					                e.getInAttrName() );
 //				}
 //				_graph.removeVertex( vd );
-	
-private:
-	TGraph& _graph;
-	std::vector<ChangeConnection> _toRemove;
-};
+}	
 
 template<class TGraph>
 class PreProcess1 : public boost::default_dfs_visitor
