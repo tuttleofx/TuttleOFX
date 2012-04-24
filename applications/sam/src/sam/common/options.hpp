@@ -222,10 +222,10 @@ static const char* const kInputDirOptionLongName = "input-dir";
 static const char* const kInputDirOptionString = kInputDirOptionLongName;
 static const char* const kInputDirOptionMessage = "input directories";
 
-//--nodes-list //FIXME is there a real purpose to have an hidden --nodes-list + --nodes ??
-static const char* const kNodesListOptionLongName = "nodes-list";
+//--nodes-list
+static const char* const kNodesListOptionLongName = "nodes-script";
 static const char* const kNodesListOptionString = kNodesListOptionLongName;
-static const char* const kNodesListOptionMessage = "show list of all available nodes";
+static const char* const kNodesListOptionMessage = "show list of all available nodes (formatted for scripting)";
 
 }
 

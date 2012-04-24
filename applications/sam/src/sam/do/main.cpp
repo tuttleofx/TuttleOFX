@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
                     _color.enable();
                 }
 
-                if (samdo_vm.count(kHelpOptionLongName)) {
+                if (samdo_vm.count(kHelpOptionLongName) || (((argc == 2) && (strstr(argv[1], kColorOptionLongName) != NULL)))) {
                     TUTTLE_COUT( std::left << _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
 
                     TUTTLE_COUT( _color._blue << "NAME" << _color._std);
@@ -263,6 +263,8 @@ int main(int argc, char** argv) {
 
             /// @todo Set all sam do options for rendering
 
+
+
             // Analyse options for each node
             {
                 // Declare the supported options.
@@ -294,7 +296,10 @@ int main(int argc, char** argv) {
 
                 const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 
+
                 BOOST_FOREACH( const std::vector<std::string>& command, cl_commands ) {
+
+
                     std::string userNodeName = command[0];
                     boost::algorithm::to_lower(userNodeName);
                     std::string nodeFullName = userNodeName;
@@ -329,6 +334,7 @@ int main(int argc, char** argv) {
 
                         bpo::notify(node_vm);
                         //TUTTLE_COUT( "[" << nodeFullName << "]" );
+
 
                         ttl::Graph::Node& currentNode = graph.createNode(nodeFullName);
 
@@ -475,6 +481,7 @@ int main(int argc, char** argv) {
                             const std::string nodeId = node_vm["id"].as<std::string>();
                             graph.renameNode(currentNode, nodeId);
                         }
+
 
                         // Analyse attributes: parameters / clips
                         typedef std::pair<ttl::ofx::attribute::OfxhClipImage*, std::string> ClipAndConnection;
@@ -653,6 +660,7 @@ int main(int argc, char** argv) {
         //			TUTTLE_COUT( "| " << option );
         //		}
 
+
         BOOST_FOREACH( const std::vector<std::string>& node, cl_commands ) {
             TUTTLE_COUT_DEBUG( "[" << node[0] << "]" );
             for (std::size_t i = 1; i < node.size(); ++i) {
@@ -676,8 +684,8 @@ int main(int argc, char** argv) {
         }
         options._continueOnError = continueOnError;
         options._returnBuffers = false;
-
-        graph.compute(*nodes.back(), options);
+        if(nodes.size()>0)
+            graph.compute(*nodes.back(), options);
     } catch (const tuttle::exception::Common& e) {
         TUTTLE_CERR( _color._red << "sam do - error");
 #ifdef TUTTLE_PRODUCTION
