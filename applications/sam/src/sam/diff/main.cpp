@@ -111,6 +111,26 @@ void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Gra
     }
 }
 
+void displayHelp(bpo::options_description &desc) {
+    using namespace sam;
+    //std::cout.rdbuf(_stdCout); // restore cout's original streambuf
+    TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
+    TUTTLE_COUT( _color._blue << "NAME" << _color._std);
+    TUTTLE_COUT( _color._green << "\tsam-diff - compute difference between 2 images/sequences" << _color._std << std::endl);
+    TUTTLE_COUT( _color._blue << "SYNOPSIS" << _color._std);
+    TUTTLE_COUT( _color._green << "\tsam-diff [reader] [input] [reader] [input] [options]" << _color._std << std::endl);
+    TUTTLE_COUT( _color._blue << "DESCRIPTION" << _color._std << std::endl);
+
+    TUTTLE_COUT( "diff if sequence have black images.");
+    TUTTLE_COUT( "This tools process the PSNR of an image, and if it's null, the image is considered black.");
+    TUTTLE_COUT( "Only compare RGB layout, not Alpha.");
+
+    TUTTLE_COUT( _color._blue << "OPTIONS" << _color._std << std::endl);
+    TUTTLE_COUT( desc);
+    //std::cout.rdbuf(0); // remove cout's streambuf
+
+}
+
 int main(int argc, char** argv) {
     using namespace sam;
 
@@ -194,38 +214,24 @@ int main(int argc, char** argv) {
         }
 
         if (vm.count(kHelpOptionLongName)) {
-            //std::cout.rdbuf(_stdCout); // restore cout's original streambuf
-            TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
-            TUTTLE_COUT( _color._blue << "NAME" << _color._std);
-            TUTTLE_COUT( _color._green << "\tsam-diff - compute difference between 2 images/sequences" << _color._std << std::endl);
-            TUTTLE_COUT( _color._blue << "SYNOPSIS" << _color._std);
-            TUTTLE_COUT( _color._green << "\tsam-diff [reader] [input] [reader] [input] [options]" << _color._std << std::endl);
-            TUTTLE_COUT( _color._blue << "DESCRIPTION" << _color._std << std::endl);
-
-            TUTTLE_COUT( "diff if sequence have black images.");
-            TUTTLE_COUT( "This tools process the PSNR of an image, and if it's null, the image is considered black.");
-            TUTTLE_COUT( "Only compare RGB layout, not Alpha.");
-
-            TUTTLE_COUT( _color._blue << "OPTIONS" << _color._std << std::endl);
-            TUTTLE_COUT( desc);
-            //std::cout.rdbuf(0); // remove cout's streambuf
+            displayHelp(desc);
             return 0;
         }
         if (!vm.count(kReaderOptionLongName)) {
             TUTTLE_COUT( _color._red << "sam-diff : no reader specified." << _color._std);
-            TUTTLE_COUT( _color._red << "           run sam-diff -h for more information." << _color._std);
+            displayHelp(desc);
             return 0;
         }
         if (!vm.count(kInputOptionLongName)) {
             TUTTLE_COUT( _color._red << "sam-diff : no input specified." << _color._std);
-            TUTTLE_COUT( _color._red << "           run sam-diff -h for more information." << _color._std);
+            displayHelp(desc);
             return 0;
         }
         readerId = vm[kReaderOptionLongName].as<std::vector<std::string> >();
         inputs = vm[kInputOptionLongName].as<std::vector<std::string> >();
         if (readerId.size() != 2 || inputs.size() != 2) {
             TUTTLE_COUT( _color._red << "sam-diff : number of input or reader is/are incorrect." << _color._std);
-            TUTTLE_COUT( _color._red << "           run sam-diff -h for more information." << _color._std);
+            displayHelp(desc);
             return 0;
         }
         if (vm.count(kRangeOptionLongName)) {

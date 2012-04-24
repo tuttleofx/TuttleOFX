@@ -34,6 +34,7 @@ int	lastImage	= 0;
 namespace sam
 {
 	Color _color;
+	bool wasSthgDumped = false;
 }
 
 
@@ -146,20 +147,22 @@ void printImageProperties( std::string path )
 	
 }
 
-void getImageProperties( const ttl::File& s )
+void dumpImageProperties( const ttl::File& s )
 {
 	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFilename() );
+	sam::wasSthgDumped = true;
 }
 
-void getImageProperties( const ttl::Sequence& s )
+void dumpImageProperties( const ttl::Sequence& s )
 {
 	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFirstFilename() );
+	sam::wasSthgDumped = true;
 }
 
 
-void getImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject> > &listing )
+void dumpImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject> > &listing )
 {
 	BOOST_FOREACH( boost::shared_ptr<tuttle::common::FileObject> sequence, listing )
 	{
@@ -167,8 +170,8 @@ void getImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject>
 
 		switch( sequence->getMaskType () )
 		{
-			case ttl::eMaskTypeSequence	: getImageProperties( (ttl::Sequence&) *sequence ); break;
-			case ttl::eMaskTypeFile		: getImageProperties( (ttl::File&) *sequence ); break;
+			case ttl::eMaskTypeSequence	: dumpImageProperties( (ttl::Sequence&) *sequence ); break;
+			case ttl::eMaskTypeFile		: dumpImageProperties( (ttl::File&) *sequence ); break;
 			case ttl::eMaskTypeDirectory	: break;
 			case ttl::eMaskTypeUndefined	: break;
 		}
@@ -362,6 +365,7 @@ int main( int argc, char** argv )
 // 	TUTTLE_COUT("research mask = " << researchMask);
 // 	TUTTLE_COUT("options  mask = " << descriptionMask);
 
+
 	try
 	{
 		std::vector<boost::filesystem::path> pathsNoRemoved;
@@ -381,12 +385,12 @@ int main( int argc, char** argv )
 							{
 //								TUTTLE_COUT( *dir );
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
-								getImageProperties( listing );
+								dumpImageProperties( listing );
 							}
 						}
 					}
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
-					getImageProperties( listing );
+					dumpImageProperties( listing );
 				}
 				else
 				{
@@ -395,7 +399,7 @@ int main( int argc, char** argv )
 					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
-					getImageProperties( listing );
+					dumpImageProperties( listing );
 					filters.pop_back( );
 				}
 			}
@@ -409,7 +413,7 @@ int main( int argc, char** argv )
 					if( s.getNbFiles() )
 					{
 						//TUTTLE_COUT(s);
-						getImageProperties( s );
+						dumpImageProperties( s );
 					}
 				}
 				catch(... )
@@ -427,6 +431,8 @@ int main( int argc, char** argv )
 	{
 		TUTTLE_CERR ( _color._error << boost::current_exception_diagnostic_information() << _color._std );
 	}
+	if(!wasSthgDumped)
+	    TUTTLE_CERR ( _color._error << "No sequence found here." << _color._std );
 	return 0;
 }
 

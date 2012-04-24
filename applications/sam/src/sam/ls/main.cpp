@@ -26,6 +26,7 @@ namespace bal = boost::algorithm;
 namespace sam
 {
 	Color _color;
+	bool wasSthgDumped = false;
 }
 
 // A helper function to simplify the main part.
@@ -42,6 +43,7 @@ void coutVec( const boost::ptr_vector<T>& v )
 	BOOST_FOREACH( const T& f, v )
 	{
 		std::cout << f << std::endl;
+		sam::wasSthgDumped = true;
 	}
 }
 
@@ -262,6 +264,7 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( "" );
 				}
 				TUTTLE_COUT( path.string() << ":");
+				wasSthgDumped = true;
 			}
 
 			coutVec( detector.fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask ) );
@@ -277,6 +280,7 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
 						coutVec( detector.fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
+
 					}
 				}
 			}
@@ -291,6 +295,7 @@ int main( int argc, char** argv )
 	{
 		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
 	}
-
+	if(!wasSthgDumped)
+	        TUTTLE_CERR ( _color._error << "No sequence found here." << _color._std );
 	return 0;
 }

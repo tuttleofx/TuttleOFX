@@ -157,9 +157,8 @@ int sammvcp(int argc, char** argv) {
 
     // describe hidden options
     bpo::options_description hidden;
-    hidden.add_options()(kInputOptionString, bpo::value<std::vector<std::string> >(), kInputOptionMessage)(kEnableColorOptionString,
-                                                                                                                           bpo::value<std::string>(),
-                                                                                                                           kEnableColorOptionMessage);
+    hidden.add_options()(kInputOptionString, bpo::value<std::vector<std::string> >(), kInputOptionMessage)(kEnableColorOptionString, bpo::value<std::string>(),
+                                                                                                           kEnableColorOptionMessage);
 
     // define default options
     bpo::positional_options_description pod;
@@ -204,7 +203,16 @@ int sammvcp(int argc, char** argv) {
         _color.enable();
     }
 
-    if (vm.count(kHelpOptionLongName)) {
+    // defines paths
+    if (vm.count(kInputOptionLongName)) {
+        paths = vm[kInputOptionLongName].as<std::vector<std::string> >();
+    }
+
+    bool isPathSizeTooSmall = (paths.size() < 2);
+    if (vm.count(kHelpOptionLongName) || isPathSizeTooSmall) {
+        if (isPathSizeTooSmall && !vm.count(kHelpOptionLongName))
+            TUTTLE_COUT( _color._error << "Two sequences and/or directories must be specified." << _color._std);
+
         TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
 #ifndef SAM_MOVEFILES
         TUTTLE_COUT( _color._blue <<"NAME" << _color._std);
@@ -244,16 +252,6 @@ int sammvcp(int argc, char** argv) {
     if (vm.count(kAllOptionLongName)) {
         // add .* files
         descriptionMask |= ttl::eMaskOptionsDotFile;
-    }
-
-    // defines paths
-    if (vm.count(kInputOptionLongName)) {
-        paths = vm[kInputOptionLongName].as<std::vector<std::string> >();
-    }
-
-    if (paths.size() < 2) {
-        TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std);
-        return 1;
     }
 
     if (vm.count(kOffsetOptionLongName)) {
