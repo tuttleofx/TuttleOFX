@@ -7,9 +7,9 @@
 #define BOOST_TEST_MODULE internalGraph_tests
 #include <boost/test/unit_test.hpp>
 
-using namespace boost::unit_test;
+BOOST_AUTO_TEST_SUITE( tuttle_internalGraph_suite )
 
-BOOST_AUTO_TEST_SUITE( internalGraph_tests_suite01 )
+using namespace boost::unit_test;
 
 BOOST_AUTO_TEST_CASE( internalGraph_add_one_vertex )
 {
@@ -90,9 +90,12 @@ BOOST_AUTO_TEST_CASE( delete_one_node )
 	BOOST_CHECK_EQUAL( graph.getVertexCount(), 3 );
 	BOOST_CHECK_EQUAL( graph.getEdgeCount(), 1 );
 
-	graph.addEdge( bDesc, dDesc, b_to_d ); // B -> D
+	graph.addEdge(
+		graph.getVertexDescriptor( b.getKey() ),
+		graph.getVertexDescriptor( d.getKey() ),
+		b_to_d ); // B -> D
 
-//	BOOST_CHECK_EQUAL( graph.getVertexCount(), 3 ); /// @todo bug
+	BOOST_CHECK_EQUAL( graph.getVertexCount(), 3 );
 	BOOST_CHECK_EQUAL( graph.getEdgeCount(), 2 );
 }
 

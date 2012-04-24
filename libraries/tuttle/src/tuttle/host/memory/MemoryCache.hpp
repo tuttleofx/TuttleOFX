@@ -18,7 +18,10 @@ class MemoryCache : public IMemoryCache
 typedef MemoryCache This;
 
 public:
-	MemoryCache( const MemoryCache& cache ) : _map(cache._map) {}
+	MemoryCache( const MemoryCache& other )
+	{
+		*this = other;
+	}
 	MemoryCache() {}
 	~MemoryCache() {}
 
