@@ -233,6 +233,37 @@ int sammvcp(int argc, char** argv) {
 #endif
         TUTTLE_COUT( _color._blue << "OPTIONS" <<_color._std);
         TUTTLE_COUT( mainOptions);
+/////Examples
+
+        TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
+        SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: ");
+        SAM_EXAMPLE_LINE_COUT("Auto-detect padding : ", "seq.@.jpg");
+        SAM_EXAMPLE_LINE_COUT("Padding of 8 (usual style): ", "seq.########.jpg");
+        SAM_EXAMPLE_LINE_COUT("Padding of 8 (printf style): ", "seq.%08d.jpg");
+#ifndef SAM_MOVEFILES
+        SAM_EXAMPLE_TITLE_COUT( "Copy a sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-cp /path/to/sequence/seq.@.jpg  /path/to/sequence_copy/");
+        SAM_EXAMPLE_LINE_COUT("", "sam-cp /path/to/sequence/seq.@.jpg  /path/to/sequences_copy/seq.@.jpg");
+        SAM_EXAMPLE_TITLE_COUT( "Copy and rename a sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-cp /path/to/sequence/seq.@.jpg  /path/to/sequence_copy/seq_copy.@.jpg ");
+        SAM_EXAMPLE_TITLE_COUT( "Copy a part of sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-cp /path/to/sequence/seq.@.jpg  /path/to/sequence_copy/ --input-first 677837 --input-last 677838");
+        SAM_EXAMPLE_TITLE_COUT( "Renumber a sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-cp /path/to/sequence/seq.@.jpg  /path/to/sequence_copy/ --output-first 0");
+
+
+#else
+        SAM_EXAMPLE_TITLE_COUT( "Move a sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-mv /path/to/sequence/seq.@.jpg  /path/to/sequence_move/");
+        SAM_EXAMPLE_LINE_COUT("", "sam-mv /path/to/sequence/seq.@.jpg  /path/to/sequences_move/seq.@.jpg");
+        SAM_EXAMPLE_TITLE_COUT( "Move and rename a sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-mv /path/to/sequence/seq.@.jpg  /path/to/sequence_move/seq_move.@.jpg ");
+        SAM_EXAMPLE_TITLE_COUT( "Move a part of sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-mv /path/to/sequence/seq.@.jpg  /path/to/sequence_move/ --input-first 677837 --input-last 677838");
+        SAM_EXAMPLE_TITLE_COUT( "Renumber a sequence: ");
+        SAM_EXAMPLE_LINE_COUT("", "sam-mv /path/to/sequence/seq.@.jpg  /path/to/sequence_move/ --output-first 0");
+
+#endif
         return 1;
     }
 

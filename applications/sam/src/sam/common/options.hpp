@@ -8,7 +8,13 @@
 #ifndef OPTIONS_HPP_
 #define OPTIONS_HPP_
 
+
+
 namespace sam {
+
+#define SAM_EXAMPLE_TITLE_COUT(x) TUTTLE_COUT( std::endl << _color._yellow << "  " << x << _color._std );
+#define SAM_EXAMPLE_LINE_COUT(x,y) TUTTLE_COUT( _color._green << "    " << std::setw(SAM_HELP_MARGING) << x << y << _color._std );
+#define SAM_HELP_MARGING 35
 
 //-a, --all
 static const char* const kAllOptionLongName = "all";

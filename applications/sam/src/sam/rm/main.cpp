@@ -252,6 +252,16 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( "Remove sequence of files, and could remove trees (folder, files and sequences)." << std::endl );
 		TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
 		TUTTLE_COUT( mainOptions );
+
+		  TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
+		           SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: ");
+		           SAM_EXAMPLE_LINE_COUT("Auto-detect padding : ", "seq.@.jpg");
+		           SAM_EXAMPLE_LINE_COUT("Padding of 8 (usual style): ", "seq.########.jpg");
+		           SAM_EXAMPLE_LINE_COUT("Padding of 8 (printf style): ", "seq.%08d.jpg");
+		           SAM_EXAMPLE_TITLE_COUT( "Delete: ");
+		                   SAM_EXAMPLE_LINE_COUT("A sequence:", "sam-rm /path/to/sequence/seq.@.jpg");
+		                   SAM_EXAMPLE_LINE_COUT("Sequences in a directory:", "sam-rm /path/to/sequence/");
+
 		return 0;
 	}
 

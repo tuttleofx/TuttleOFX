@@ -129,6 +129,12 @@ void displayHelp(bpo::options_description &desc) {
     TUTTLE_COUT( desc);
     //std::cout.rdbuf(0); // remove cout's streambuf
 
+//    TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
+//           SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: ");
+//           SAM_EXAMPLE_LINE_COUT("Auto-detect padding : ", "seq.@.jpg");
+//           SAM_EXAMPLE_LINE_COUT("Padding of 8 (usual style): ", "seq.########.jpg");
+//           SAM_EXAMPLE_LINE_COUT("Padding of 8 (printf style): ", "seq.%08d.jpg");
+
 }
 
 int main(int argc, char** argv) {
