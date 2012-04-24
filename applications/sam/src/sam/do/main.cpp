@@ -474,7 +474,6 @@ int main(int argc, char** argv) {
                             coutParameterValues(std::cout, param);
                             exit(0);
                         }
-
                         if (node_vm.count("parameter-default")) {
                             const std::string attributeName = node_vm["parameter-default"].as<std::string>();
                             ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName(attributeName);
@@ -670,11 +669,7 @@ int main(int argc, char** argv) {
             TUTTLE_COUT_DEBUG( "[" << node[0] << "]" );
             for (std::size_t i = 1; i < node.size(); ++i) {
                 const std::string& s = node[i];
-                if (s[0] == '-') {
-                    TUTTLE_COUT_DEBUG( s );
-                } else {
-                    TUTTLE_COUT_DEBUG( "* " << s );
-                }
+				TUTTLE_COUT_DEBUG( ( s[0] == '-') ? s : "* " << s );
             }
         }
 

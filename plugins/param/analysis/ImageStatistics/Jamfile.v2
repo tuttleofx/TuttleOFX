@@ -27,10 +27,11 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 plugin Average : 
 	[ glob src/*.cpp ]
-        /tuttleplugin/<link>static
+	/tuttleplugin/<link>static
+	/boostHack
 	/boost//system/<link>static
 	/boost//regex/<link>static
-        opengl
+	opengl
 	;
 
 ###############################################################################

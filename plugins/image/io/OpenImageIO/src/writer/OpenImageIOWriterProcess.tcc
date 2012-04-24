@@ -174,12 +174,13 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 {
 	using namespace boost;
 	using namespace OpenImageIO;
+
 	boost::scoped_ptr<ImageOutput> out( ImageOutput::create( filepath ) );
 	if( out.get() == NULL )
 	{
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
+		BOOST_THROW_EXCEPTION( exception::Bug()
+							   << exception::user( "error from writer while opening file." ) );
 	}
-
 	WImage img( src.width(), src.height() );
 
 	typename WImage::view_t vw( view( img ) );

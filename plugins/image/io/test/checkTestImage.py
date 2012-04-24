@@ -4,7 +4,6 @@
 import os
 import errno
 import sys
-#import urllib
 import subprocess
 import datetime
 now = datetime.datetime.now()
@@ -385,135 +384,185 @@ print( "***********************************************" )
 
 writeHtmlHeader()
 
-print( "****************       PNG      ***************" )
-startFormat( "PNG" )
-formatIsValid=0
-formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'gray',  '8bits', 'png' )
-formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'gray', '16bits', 'png' )
-formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgb',   '8bits', 'png' )
-formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgb',  '16bits', 'png' )
-formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgba',  '8bits', 'png' )
-formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgba', '16bits', 'png' )
-endFormat( "PNG", formatIsValid == 6 )
+def checkPNG():
+	print( "****************       PNG      ***************" )
+	startFormat( "PNG" )
+	formatIsValid=0
+	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'gray',  '8bits', 'png' )
+	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'gray', '16bits', 'png' )
+	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgb',   '8bits', 'png' )
+	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgb',  '16bits', 'png' )
+	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgba',  '8bits', 'png' )
+	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgba', '16bits', 'png' )
+	endFormat( "PNG", formatIsValid == 6 )
 
-print( "****************      JPEG      ***************" )
-startFormat( "Jpeg" )
-formatIsValid=0
-formatIsValid += check3r2w( 'imagemagick', 'jpeg', 'oiio', 'jpeg', 'oiio', 'rgb',  '8bits', 'jpg' )
-endFormat( "Jpeg", formatIsValid == 1 )
+def checkJPEG():
+	print( "****************      JPEG      ***************" )
+	startFormat( "JPEG" )
+	formatIsValid=0
+	formatIsValid += check3r2w( 'imagemagick', 'jpeg', 'oiio', 'jpeg', 'oiio', 'rgb',  '8bits', 'jpg' )
+	endFormat( "Jpeg", formatIsValid == 1 )
 
-print( "****************       DPX      ***************" )
-startFormat( "DPX" )
-formatIsValid=0
-formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray',  '8bits', 'dpx' )
-formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray', '10bits', 'dpx' )
-formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray', '12bits', 'dpx' )
-formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray', '16bits', 'dpx' )
+def checkDPX():
+	print( "****************       DPX      ***************" )
+	startFormat( "DPX" )
+	formatIsValid=0
+	formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray',  '8bits', 'dpx' )
+	formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray', '10bits', 'dpx' )
+	formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray', '12bits', 'dpx' )
+	formatIsValid += check1r1w( 'imagemagick', 'dpx', 'gray', '16bits', 'dpx' )
+	
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb',  '8bits', 'dpx' )
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb', '10bits', 'dpx' )
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb', '12bits', 'dpx' )
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb', '16bits', 'dpx' )
+	
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba',  '8bits', 'dpx' )
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba', '10bits', 'dpx' )
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba', '12bits', 'dpx' )
+	formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba', '16bits', 'dpx' )
+	
+	formatIsValid += check1r1w( 'oiio', 'dpx', 'abgr',  '8bits', 'dpx' )
+	formatIsValid += check1r1w( 'oiio', 'dpx', 'abgr', '10bits', 'dpx' )
+	formatIsValid += check1r1w( 'oiio', 'dpx', 'abgr', '12bits', 'dpx' )
+	formatIsValid += check1r1w( 'oiio', 'dpx', 'abgr', '16bits', 'dpx' )
+	endFormat( "DPX", formatIsValid == 16 )
 
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb',  '8bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb', '10bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb', '12bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgb', '16bits', 'dpx' )
+def checkEXR():
+	print( "****************       EXR      ***************" )
+	startFormat( "EXR" )
+	formatIsValid=0
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'gray', '16float', 'exr' )
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'gray', '32bits',  'exr' )
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'gray', '32float', 'exr' )
+	
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgb', '16float', 'exr' )
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgb', '32bits',  'exr' )
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgb', '32float', 'exr' )
+	
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgba', '16float', 'exr' )
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgba', '32bits',  'exr' )
+	formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgba', '32float', 'exr' )
+	endFormat( "EXR", formatIsValid == 9 )
 
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba', '8bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba', '10bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba', '12bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'rgba', '16bits', 'dpx' )
+def checkJPEG2000():
+	print( "****************   JPEG 2000    ***************" )
+	startFormat( "JPEG2000" )
+	formatIsValid=0
+	formatIsValid += check1r1w( 'jpeg2000', 'jpeg2000', 'rgb',  '8bits', 'j2k' )
+	formatIsValid += check1r1w( 'jpeg2000', 'jpeg2000', 'rgb', '12bits', 'j2k' )
+	formatIsValid += check1r1w( 'jpeg2000', 'jpeg2000', 'rgb', '16bits', 'j2k' )
+	endFormat( "JPEG2000", formatIsValid == 3 )
 
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'abgr', '8bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'abgr', '10bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'abgr', '12bits', 'dpx' )
-formatIsValid += check2r2w( 'imagemagick', 'oiio', 'dpx', 'oiio', 'abgr', '16bits', 'dpx' )
-endFormat( "DPX", formatIsValid == 16 )
+def checkTGA():
+	print( "****************      TGA      ***************" )
+	startFormat( "TGA" )
+	formatIsValid=0
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '8bits', 'tga' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'tga' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '8bits', 'tga' )
+	endFormat( "TGA", formatIsValid == 3 )
 
-print( "****************       EXR      ***************" )
-startFormat( "EXR" )
-formatIsValid=0
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'gray', '16float', 'exr' )
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'gray', '32bits',  'exr' )
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'gray', '32float', 'exr' )
+def checkTIF():
+	print( "****************      TIF      ***************" )
+	startFormat( "TIF" )
+	formatIsValid=0
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '8bits', 'tif' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '16bits', 'tif' )
+	
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'tif' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '16bits', 'tif' )
+	
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgba', '8bits', 'tif' )
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgba', '16bits', 'tif' )
+	endFormat( "TIF", formatIsValid == 6 )
 
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgb', '16float', 'exr' )
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgb', '32bits',  'exr' )
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgb', '32float', 'exr' )
+def checkPPM():
+	print( "****************      PPM      ***************" )
+	startFormat( "PPM" )
+	formatIsValid=0
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '8bits', 'ppm' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '16bits', 'ppm' )
+	
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'ppm' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '16bits', 'ppm' )
+	
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '8bits', 'ppm' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '16bits', 'ppm' )
+	endFormat( "PPM", formatIsValid == 6 )
 
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgba', '16float', 'exr' )
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgba', '32bits',  'exr' )
-formatIsValid += check2r2w( 'exr', 'oiio', 'exr', 'oiio', 'rgba', '32float', 'exr' )
-endFormat( "EXR", formatIsValid == 9 )
+def checkSGI():
+	print( "****************      SGI      ***************" )
+	startFormat( "SGI" )
+	formatIsValid=0
+	formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'gray', '8bits',  'sgi' )
+	formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'gray', '16bits', 'sgi' )
+	formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgb',  '8bits',  'sgi' )
+	formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgb',  '16bits', 'sgi' )
+	formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgba', '8bits',  'sgi' )
+	formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgba', '16bits', 'sgi' )
+	endFormat( "SGI", formatIsValid == 6 )
 
-print( "****************   JPEG 2000    ***************" )
-startFormat( "JPEG2000" )
-formatIsValid=0
-formatIsValid += check1r1w( 'jpeg2000', 'jpeg2000', 'rgb',  '8bits', 'j2k' )
-formatIsValid += check1r1w( 'jpeg2000', 'jpeg2000', 'rgb', '12bits', 'j2k' )
-formatIsValid += check1r1w( 'jpeg2000', 'jpeg2000', 'rgb', '16bits', 'j2k' )
-endFormat( "JPEG2000", formatIsValid == 3 )
+def checkHDR():
+	print( "****************      HDR      ***************" )
+	startFormat( "HDR" )
+	formatIsValid=0
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits',  'hdr' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb', '16bits',  'hdr' )
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '16float', 'hdr' )
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32bits',  'hdr' )
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32float', 'hdr' )
+	endFormat( "HDR", formatIsValid == 5 )
 
-print( "****************      TGA      ***************" )
-startFormat( "TGA" )
-formatIsValid=0
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '8bits', 'tga' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'tga' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '8bits', 'tga' )
-endFormat( "TGA", formatIsValid == 3 )
+def checkRGBE():
+	print( "****************      RGBE     ***************" )
+	startFormat( "RGBE" )
+	formatIsValid=0
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'rgbe' )
+	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb', '16bits', 'rgbe' )
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '16float', 'rgbe' )
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32bits',  'rgbe' )
+	formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32float', 'rgbe' )
+	endFormat( "RGBE", formatIsValid == 5 )
 
-print( "****************      TIF      ***************" )
-startFormat( "TIF" )
-formatIsValid=0
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '8bits', 'tif' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '16bits', 'tif' )
-
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'tif' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '16bits', 'tif' )
-
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '8bits', 'tif' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '16bits', 'tif' )
-endFormat( "TIF", formatIsValid == 6 )
-
-print( "****************      PPM      ***************" )
-startFormat( "PPM" )
-formatIsValid=0
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '8bits', 'ppm' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '16bits', 'ppm' )
-
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'ppm' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '16bits', 'ppm' )
-
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '8bits', 'ppm' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '16bits', 'ppm' )
-endFormat( "PPM", formatIsValid == 6 )
-
-print( "****************      SGI      ***************" )
-startFormat( "SGI" )
-formatIsValid=0
-formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'gray', '8bits',  'sgi' )
-formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'gray', '16bits', 'sgi' )
-formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgb',  '8bits',  'sgi' )
-formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgb',  '16bits', 'sgi' )
-formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgba', '8bits',  'sgi' )
-formatIsValid += check2r1w( 'imagemagick', 'oiio', 'oiio', 'rgba', '16bits', 'sgi' )
-endFormat( "SGI", formatIsValid == 6 )
-
-print( "****************      HDR      ***************" )
-startFormat( "HDR" )
-formatIsValid=0
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits',  'hdr' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb', '16bits',  'hdr' )
-formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '16float', 'hdr' )
-formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32bits',  'hdr' )
-formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32float', 'hdr' )
-endFormat( "HDR", formatIsValid == 5 )
-
-print( "****************      RGBE     ***************" )
-startFormat( "RGBE" )
-formatIsValid=0
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'rgbe' )
-formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb', '16bits', 'rgbe' )
-formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '16float', 'rgbe' )
-formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32bits',  'rgbe' )
-formatIsValid += check1r1w( 'oiio', 'oiio', 'rgb', '32float', 'rgbe' )
-endFormat( "RGBE", formatIsValid == 5 )
+if ( len(sys.argv) == 1 ):
+	checkPNG()
+	checkJPEG()
+	checkDPX()
+	checkEXR()
+	checkJPEG2000()
+	checkTGA()
+	checkTIF()
+	checkPPM()
+	checkSGI()
+	checkHDR()
+	checkRGBE()
+else:
+	for arg in range( len(sys.argv)-1) :
+		if( sys.argv[arg+1].lower() == "png" ) :
+			checkPNG()
+		if( sys.argv[arg+1].lower() == "jpg" ) :
+			checkJPEG()
+		if( sys.argv[arg+1].lower() == "jpeg" ) :
+			checkJPEG()
+		if( sys.argv[arg+1].lower() == "dpx" ) :
+			checkDPX()
+		if( sys.argv[arg+1].lower() == "exr" ) :
+			checkEXR()
+		if( sys.argv[arg+1].lower() == "jpeg2000" ) :
+			checkJPEG2000()
+		if( sys.argv[arg+1].lower() == "tga" ) :
+			checkTGA()
+		if( sys.argv[arg+1].lower() == "tif" ) :
+			checkTIF()
+		if( sys.argv[arg+1].lower() == "ppm" ) :
+			checkPPM()
+		if( sys.argv[arg+1].lower() == "sgi" ) :
+			checkSGI()
+		if( sys.argv[arg+1].lower() == "hdr" ) :
+			checkHDR()
+		if( sys.argv[arg+1].lower() == "rgbe" ) :
+			checkRGBE()
 
 writeHtmlFooter()
 htmlF.close()

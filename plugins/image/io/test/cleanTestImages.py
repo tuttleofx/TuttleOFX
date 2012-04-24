@@ -46,3 +46,5 @@ for filename in glob.glob('*.tif') :
 for filename in glob.glob('*.tiff') :
 	os.remove( filename )
 
+for filename in glob.glob('*.rgbe') :
+	os.remove( filename )
