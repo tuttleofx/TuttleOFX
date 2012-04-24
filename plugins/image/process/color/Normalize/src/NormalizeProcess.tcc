@@ -83,6 +83,37 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 //	TUTTLE_COUT("");
 }
 
+template< class View>
+template< class WorkView, typename LocalChannel >
+void NormalizeProcess<View>::processChannel( View& src, View& dst, bool process, Pixel& ratio, Pixel& sMin, Pixel& dMin )
+{
+	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
+	if( process )
+	{
+		typedef channel_view_type<LocalChannel,WorkView> LocalView;
+		typedef typename LocalView::type::value_type LocalPixel;
+		typename LocalView::type localSrcView( LocalView::make(src) );
+		typename LocalView::type localDstView( LocalView::make(dst) );
+
+		transform_pixels_progress(
+			localSrcView,
+			localDstView,
+			pixel_scale_t<LocalPixel,LocalPixel>(
+				LocalPixel( get_color( ratio, LocalChannel() ) ),
+				LocalPixel( get_color( sMin, LocalChannel() ) ),
+				LocalPixel( get_color( dMin, LocalChannel() ) )
+				),
+			*this );
+	}
+	else
+	{
+		copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
+	}
+}
+
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window
@@ -110,7 +141,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		transform_pixels_progress(
 			src,
 			dst,
-			pixel_scale_t<Pixel,Pixel>(_ratio, _sMin, _dMin),
+			pixel_scale_t<Pixel,Pixel>( _ratio, _sMin, _dMin ),
 			*this );
 	}
 	else
@@ -118,107 +149,153 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		// by channel:
 		// red
 		{
-			typedef red_t LocalChannel;
-			if( _params._processR )
-			{
-				typedef channel_view_type<LocalChannel,View> LocalView;
-				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localSrcView( LocalView::make(src) );
-				typename LocalView::type localDstView( LocalView::make(dst) );
-
-				transform_pixels_progress(
-					localSrcView,
-					localDstView,
-					pixel_scale_t<LocalPixel,LocalPixel>(
-						LocalPixel( get_color( _ratio, LocalChannel() ) ),
-						LocalPixel( get_color( _sMin, LocalChannel() ) ),
-						LocalPixel( get_color( _dMin, LocalChannel() ) )
-						),
-					*this );
-			}
-			else
-			{
-				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
-			}
+			processChannel<View, red_t>( src, dst, _params._processR, _ratio, _sMin, _dMin );
 		}
 		// green
 		{
-			typedef green_t LocalChannel;
-			if( _params._processG )
-			{
-				typedef channel_view_type<LocalChannel,View> LocalView;
-				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localSrcView( LocalView::make(src) );
-				typename LocalView::type localDstView( LocalView::make(dst) );
-
-				transform_pixels_progress(
-					localSrcView,
-					localDstView,
-					pixel_scale_t<LocalPixel>(
-						LocalPixel( get_color( _ratio, LocalChannel() ) ),
-						LocalPixel( get_color( _sMin, LocalChannel() ) ),
-						LocalPixel( get_color( _dMin, LocalChannel() ) )
-						),
-					*this );
-			}
-			else
-			{
-				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
-			}
+			processChannel<View, green_t>( src, dst, _params._processG, _ratio, _sMin, _dMin );
 		}
 		// blue
 		{
-			typedef blue_t LocalChannel;
-			if( _params._processB )
-			{
-				typedef channel_view_type<LocalChannel,View> LocalView;
-				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localSrcView( LocalView::make(src) );
-				typename LocalView::type localDstView( LocalView::make(dst) );
-
-				transform_pixels_progress(
-					localSrcView,
-					localDstView,
-					pixel_scale_t<LocalPixel>(
-						LocalPixel( get_color( _ratio, LocalChannel() ) ),
-						LocalPixel( get_color( _sMin, LocalChannel() ) ),
-						LocalPixel( get_color( _dMin, LocalChannel() ) )
-						),
-					*this );
-			}
-			else
-			{
-				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
-			}
+			processChannel<View, blue_t>( src, dst, _params._processB, _ratio, _sMin, _dMin );
 		}
 		// alpha
 		{
-			typedef alpha_t LocalChannel;
-			if( _params._processA )
-			{
-				typedef channel_view_type<LocalChannel,View> LocalView;
-				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localSrcView( LocalView::make(src) );
-				typename LocalView::type localDstView( LocalView::make(dst) );
-
-				transform_pixels_progress(
-					localSrcView,
-					localDstView,
-					pixel_scale_t<LocalPixel>(
-						LocalPixel( get_color( _ratio, LocalChannel() ) ),
-						LocalPixel( get_color( _sMin, LocalChannel() ) ),
-						LocalPixel( get_color( _dMin, LocalChannel() ) )
-						),
-					*this );
-			}
-			else
-			{
-				copy_pixels( channel_view<LocalChannel>(src), channel_view<LocalChannel>(dst) );
-			}
+			processChannel<View, alpha_t>( src, dst, _params._processA, _ratio, _sMin, _dMin );
 		}
-
 	}
+}
 
+template<>
+void NormalizeProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							           procWindowRoW.y2 - procWindowRoW.y1 };
+	rgb32f_view_t src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+							                  procWindowSize.x, procWindowSize.y );
+	rgb32f_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+	                                          procWindowSize.x, procWindowSize.y );
+
+	if( _params._processR &&
+	    _params._processG &&
+	    _params._processB )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			pixel_scale_t<rgb32f_view_t::value_type,rgb32f_view_t::value_type>( _ratio, _sMin, _dMin ),
+			*this );
+	}
+	else
+	{
+		// by channel:
+		// red
+		{
+			processChannel<rgb32f_view_t, red_t>( src, dst, _params._processR, _ratio, _sMin, _dMin );
+		}
+		// green
+		{
+			processChannel<rgb32f_view_t, green_t>( src, dst, _params._processG, _ratio, _sMin, _dMin );
+		}
+		// blue
+		{
+			processChannel<rgb32f_view_t, blue_t>( src, dst, _params._processB, _ratio, _sMin, _dMin );
+		}
+	}
+}
+
+template<>
+void NormalizeProcess<boost::gil::rgb16_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
+	
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							           procWindowRoW.y2 - procWindowRoW.y1 };
+	rgb16_view_t src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+							                  procWindowSize.x, procWindowSize.y );
+	rgb16_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+	                                          procWindowSize.x, procWindowSize.y );
+	typedef rgb32f_view_t::value_type float_t ;
+	
+	if( _params._processR &&
+	    _params._processG &&
+	    _params._processB )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			pixel_scale_t<float_t,float_t>( _ratio, _sMin, _dMin ),
+			*this );
+	}
+	else
+	{
+		// by channel:
+		// red
+		{
+			processChannel<rgb32f_view_t, red_t>( src, dst, _params._processR, _ratio, _sMin, _dMin );
+		}
+		// green
+		{
+			//processChannel<rgb32f_view_t, green_t>( src, dst, _params._processG, _ratio, _sMin, _dMin );
+		}
+		// blue
+		{
+			//processChannel<rgb32f_view_t, blue_t>( src, dst, _params._processB, _ratio, _sMin, _dMin );
+		}
+	}
+}
+
+template<>
+void NormalizeProcess<boost::gil::rgb8_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							           procWindowRoW.y2 - procWindowRoW.y1 };
+	rgb8_view_t src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+							                  procWindowSize.x, procWindowSize.y );
+	rgb8_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+	                                          procWindowSize.x, procWindowSize.y );
+	typedef rgb32f_view_t::value_type float_t ;
+	
+	if( _params._processR &&
+	    _params._processG &&
+	    _params._processB )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			pixel_scale_t<float_t, float_t>( _ratio, _sMin, _dMin ),
+			*this );
+	}
+	else
+	{
+		// by channel:
+		// red
+		{
+			//processChannel<red_t>( src, dst, _params._processR, _ratio, _sMin, _dMin );
+		}
+		// green
+		{
+			//processChannel<green_t>( src, dst, _params._processG, _ratio, _sMin, _dMin );
+		}
+		// blue
+		{
+			//processChannel<blue_t>( src, dst, _params._processB, _ratio, _sMin, _dMin );
+		}
+	}
 }
 
 }

@@ -9,18 +9,21 @@ import os ;
 project
 	: requirements
 		<include>src
+	: usage-requirements
+		<include>src
 	: build-dir $(BUILD)/Merge
 	;
 
 ###############################################################################
-# Product 
+# Product
 ###############################################################################
 plugin Merge :
 		[ glob src/*.cpp ]
+		/boostHack
 		/tuttleplugin/<link>static
 	;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Merge : $(DIST) ;
+#auto_install Merge : $(DIST) ;
