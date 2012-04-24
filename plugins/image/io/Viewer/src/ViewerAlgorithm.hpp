@@ -36,6 +36,22 @@ char loadedTexture = 0;
 
 float zoom = 1;
 
+const boost::gil::gray8_view_t*   viewGray8;
+const boost::gil::gray16_view_t*  viewGray16;
+const boost::gil::gray32_view_t*  viewGray32;
+const boost::gil::gray32f_view_t* viewGray32f;
+
+const boost::gil::rgb8_view_t*    viewRgb8;
+const boost::gil::rgb16_view_t*   viewRgb16;
+const boost::gil::rgb32_view_t*   viewRgb32;
+const boost::gil::rgb32f_view_t*  viewRgb32f;
+
+const boost::gil::rgba8_view_t*   viewRgba8;
+const boost::gil::rgba16_view_t*  viewRgba16;
+const boost::gil::rgba32_view_t*  viewRgba32;
+const boost::gil::rgba32f_view_t* viewRgba32f;
+
+
 void reshape(int width,int height)
 {
 	int w, h;
@@ -59,19 +75,20 @@ void reshape(int width,int height)
 	glutReshapeWindow(width, height);
 }
 
-template< typename Pixel_t>
-void loadNewTexture( const Pixel_t& view  )
+template< typename View>
+void loadNewTexture( const View* view )
 {
 	loadedTexture = 0;
 	TUTTLE_COUT("don't find template to load the texture.");
 }
 
 template<>
-void loadNewTexture( const boost::gil::gray8_view_t& src )
+void loadNewTexture( const boost::gil::gray8_view_t* src )
 {
 	loadedTexture = 1;
-	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE8, src.width(), src.height(), 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataPtr );
+	viewGray8 = src;
+	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( *src );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE8, src->width(), src->height(), 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -83,11 +100,12 @@ void loadNewTexture( const boost::gil::gray8_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgb8_view_t& src )
+void loadNewTexture( const boost::gil::rgb8_view_t* src )
 {
 	loadedTexture = 2;
-	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
-	glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, dataPtr );
+	viewRgb8 = src;
+	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( *src );
+	glTexImage2D( GL_TEXTURE_2D, 0, 3, src->width(), src->height(), 0, GL_RGB, GL_UNSIGNED_BYTE, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -99,11 +117,12 @@ void loadNewTexture( const boost::gil::rgb8_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgba8_view_t& src )
+void loadNewTexture( const boost::gil::rgba8_view_t* src )
 {
 	loadedTexture = 3;
-	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
-	glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, dataPtr );
+	viewRgba8 = src;
+	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( *src );
+	glTexImage2D( GL_TEXTURE_2D, 0, 4, src->width(), src->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -115,12 +134,13 @@ void loadNewTexture( const boost::gil::rgba8_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::gray16_view_t& src )
+void loadNewTexture( const boost::gil::gray16_view_t* src )
 {
 	loadedTexture = 4;
-	short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
+	viewGray16 = src;
+	short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE16, src.width(), src.height(), 0, GL_LUMINANCE, GL_UNSIGNED_SHORT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE16, src->width(), src->height(), 0, GL_LUMINANCE, GL_UNSIGNED_SHORT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -132,12 +152,13 @@ void loadNewTexture( const boost::gil::gray16_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgb16_view_t& src )
+void loadNewTexture( const boost::gil::rgb16_view_t* src )
 {
 	loadedTexture = 5;
-	short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
+	viewRgb16 = src;
+	short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_UNSIGNED_SHORT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, 3, src->width(), src->height(), 0, GL_RGB, GL_UNSIGNED_SHORT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -149,12 +170,13 @@ void loadNewTexture( const boost::gil::rgb16_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgba16_view_t& src )
+void loadNewTexture( const boost::gil::rgba16_view_t* src )
 {
 	loadedTexture = 6;
-	short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( src );
+	viewRgba16 = src;
+	short* dataPtr = (short*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_UNSIGNED_SHORT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, 4, src->width(), src->height(), 0, GL_RGBA, GL_UNSIGNED_SHORT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -166,12 +188,13 @@ void loadNewTexture( const boost::gil::rgba16_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::gray32_view_t& src )
+void loadNewTexture( const boost::gil::gray32_view_t* src )
 {
 	loadedTexture = 7;
-	float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
+	viewGray32 = src;
+	float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src.width(), src.height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src->width(), src->height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -183,12 +206,13 @@ void loadNewTexture( const boost::gil::gray32_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgb32_view_t& src )
+void loadNewTexture( const boost::gil::rgb32_view_t* src )
 {
 	loadedTexture = 8;
-	float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
+	viewRgb32 = src;
+	float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_FLOAT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, 3, src->width(), src->height(), 0, GL_RGB, GL_FLOAT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -200,12 +224,13 @@ void loadNewTexture( const boost::gil::rgb32_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgba32_view_t& src )
+void loadNewTexture( const boost::gil::rgba32_view_t* src )
 {
 	loadedTexture = 9;
-	float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( src );
+	viewRgba32 = src;
+	float* dataPtr = (float*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, 4, src->width(), src->height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -217,12 +242,13 @@ void loadNewTexture( const boost::gil::rgba32_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::gray32f_view_t& src )
+void loadNewTexture( const boost::gil::gray32f_view_t* src )
 {
 	loadedTexture = 10;
-	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+	viewGray32f = src;
+	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src.width(), src.height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, src->width(), src->height(), 0, GL_LUMINANCE, GL_FLOAT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -234,12 +260,13 @@ void loadNewTexture( const boost::gil::gray32f_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgb32f_view_t& src )
+void loadNewTexture( const boost::gil::rgb32f_view_t* src )
 {
 	loadedTexture = 11;
-	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+	viewRgb32f = src;
+	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, 3, src.width(), src.height(), 0, GL_RGB, GL_FLOAT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, 3, src->width(), src->height(), 0, GL_RGB, GL_FLOAT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -251,12 +278,13 @@ void loadNewTexture( const boost::gil::rgb32f_view_t& src )
 }
 
 template<>
-void loadNewTexture( const boost::gil::rgba32f_view_t& src )
+void loadNewTexture( const boost::gil::rgba32f_view_t* src )
 {
 	loadedTexture = 12;
-	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( src );
+	viewRgba32f = src;
+	unsigned char* dataPtr = (unsigned char*)boost::gil::interleaved_view_get_raw_data( *src );
 	
-	glTexImage2D( GL_TEXTURE_2D, 0, 4, src.width(), src.height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
+	glTexImage2D( GL_TEXTURE_2D, 0, 4, src->width(), src->height(), 0, GL_RGBA, GL_FLOAT, dataPtr );
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -364,11 +392,103 @@ void specialKeyboard( int k, int x, int y)
 
 void mouse  ( int button, int state, int x, int y )
 {
+	using namespace boost::gil;
 	if( state == 0 && button == 0)
 	{
 		float data[4];
-		glReadPixels( x, y, 1, 1, GL_RGBA, GL_FLOAT, &data);
-		std::cout << "at " << std::setw(4) << x << "," << std::setw(4) << y << ": " << std::setw(9) << data[0] << " " << std::setw(9) << data[1] << " " << std::setw(9) << data[2] << " " << std::setw(9) << data[3] << std::endl;
+		
+		switch( loadedTexture )
+		{
+			case 0 :
+				glReadPixels( x, y, 1, 1, GL_RGBA, GL_FLOAT, &data);
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(9) << data[0] << " " <<
+										std::setw(9) << data[1] << " " <<
+										std::setw(9) << data[2] << " " <<
+										std::setw(9) << data[3] << std::endl;
+				break;
+			case 1 : // gray 8
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(5) << (int) get_color( viewGray8[0](x,y), gray_color_t() ) << std::endl;
+				break;
+			case 2 : // rgb 8
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(5) << (int) get_color( viewRgb8[0](x,y), red_t() ) << " " <<
+										std::setw(5) << (int) get_color( viewRgb8[0](x,y), green_t() ) << " " <<
+										std::setw(5) << (int) get_color( viewRgb8[0](x,y), blue_t() ) << std::endl;
+				break;
+			case 3 : // rgba 8
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(5) << (int) get_color( viewRgba8[0](x,y), red_t() ) << " " <<
+										std::setw(5) << (int) get_color( viewRgba8[0](x,y), green_t() ) << " " <<
+										std::setw(5) << (int) get_color( viewRgba8[0](x,y), blue_t() ) << " " <<
+										std::setw(5) << (int) get_color( viewRgba8[0](x,y), alpha_t() ) << std::endl;
+				break;
+			case 4 :
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(7) << get_color( viewGray16[0](x,y), gray_color_t() ) << std::endl;
+				break;
+			case 5 :
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(7) << get_color( viewRgb16[0](x,y), red_t() ) << " " <<
+										std::setw(7) << get_color( viewRgb16[0](x,y), green_t() ) << " " <<
+										std::setw(7) << get_color( viewRgb16[0](x,y), blue_t() ) << std::endl;
+				break;
+			case 6 :
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(7) << get_color( viewRgba16[0](x,y), red_t() ) << " " <<
+										std::setw(7) << get_color( viewRgba16[0](x,y), green_t() ) << " " <<
+										std::setw(7) << get_color( viewRgba16[0](x,y), blue_t() ) << " " <<
+										std::setw(7) << get_color( viewRgba16[0](x,y), alpha_t() ) << std::endl;
+				break;
+			case 7 :
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(12) << get_color( viewGray32[0](x,y), gray_color_t() ) << std::endl;
+				break;
+			case 8 :
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(12) << get_color( viewRgb32[0](x,y), red_t() ) << " " <<
+										std::setw(12) << get_color( viewRgb32[0](x,y), green_t() ) << " " <<
+										std::setw(12) << get_color( viewRgb32[0](x,y), blue_t() ) << std::endl;
+				break;
+			case 9 :
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(12) << get_color( viewRgba32[0](x,y), red_t() ) << " " <<
+										std::setw(12) << get_color( viewRgba32[0](x,y), green_t() ) << " " <<
+										std::setw(12) << get_color( viewRgba32[0](x,y), blue_t() ) << " " <<
+										std::setw(12) << get_color( viewRgba32[0](x,y), alpha_t() ) << std::endl;
+				break;
+			case 10:
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(12) << get_color( viewGray32f[0](x,y), gray_color_t() ) << std::endl;
+				break;
+			case 11:
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(12) << get_color( viewRgb32f[0](x,y), red_t() ) << " " <<
+										std::setw(12) << get_color( viewRgb32f[0](x,y), green_t() ) << " " <<
+										std::setw(12) << get_color( viewRgb32f[0](x,y), blue_t() ) << std::endl;
+				break;
+			case 12:
+				std::cout << "at " <<	std::setw(4) << x << "," <<
+										std::setw(4) << y << ": " <<
+										std::setw(12) << get_color( viewRgba32f[0](x,y), red_t() ) << " " <<
+										std::setw(12) << get_color( viewRgba32f[0](x,y), green_t() ) << " " <<
+										std::setw(12) << get_color( viewRgba32f[0](x,y), blue_t() ) << " " <<
+										std::setw(12) << get_color( viewRgba32f[0](x,y), alpha_t() ) << std::endl;
+				break;
+		}
 	}
 	if( state == 0 && button == 3)
 	{
