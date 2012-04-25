@@ -208,6 +208,16 @@ int sammvcp(int argc, char** argv) {
         paths = vm[kInputOptionLongName].as<std::vector<std::string> >();
     }
 
+
+    if (vm.count(kBriefOptionLongName)) {
+#ifndef SAM_MOVEFILES
+        TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std);
+#else
+        TUTTLE_COUT( _color._green << "move sequence(s) in a directory" << _color._std );
+#endif
+        return 0;
+    }
+
     bool isPathSizeTooSmall = (paths.size() < 2);
     if (vm.count(kHelpOptionLongName) || isPathSizeTooSmall) {
         if (isPathSizeTooSmall && !vm.count(kHelpOptionLongName))
@@ -267,14 +277,7 @@ int sammvcp(int argc, char** argv) {
         return 1;
     }
 
-    if (vm.count(kBriefOptionLongName)) {
-#ifndef SAM_MOVEFILES
-        TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std);
-#else
-        TUTTLE_COUT( _color._green << "move sequence(s) in a directory" << _color._std );
-#endif
-        return 0;
-    }
+
 
     if (vm.count(kExpressionOptionLongName)) {
         bal::split(filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
