@@ -8,8 +8,6 @@ namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
-static const std::string kParamHelpButton = "Help";
-
 
 }
 }

@@ -58,9 +58,6 @@ void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );
-	helpButton->setLabel( "Help" );
 }
 
 /**
