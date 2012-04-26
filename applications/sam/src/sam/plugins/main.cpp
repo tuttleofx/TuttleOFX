@@ -233,7 +233,6 @@ int main( int argc, char** argv )
 		(kAllOptionString      , kAllOptionMessage)
 		(kFilterOptionString   , bpo::value<std::string>(), kFilterOptionMessage)
 		(kColorOptionString      , kColorOptionMessage)
-		(kVerboseOptionString  , kVerboseOptionMessage)
 		(kPropertiesOptionString , kPropertiesOptionMessage)
 		(kClipsOptionString      , kClipsOptionMessage)
 		(kParametersOptionString , kParametersOptionMessage)
@@ -337,7 +336,6 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	const bool verbose = vm.count(kVerboseOptionLongName);
 
 	if (vm.count(kPropertiesOptionLongName))
 	{

@@ -37,55 +37,55 @@ void displayHelp(bpo::options_description &infoOptions, bpo::options_description
     TUTTLE_COUT( _color._green << "\tUse the sperarator // to pipe images between nodes." << _color._std << std::endl);
 
     TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
-    SAM_EXAMPLE_TITLE_COUT( "Plugins options");
-    SAM_EXAMPLE_LINE_COUT( "Plugin list: ", "sam do --nodes");
-    SAM_EXAMPLE_LINE_COUT( "Plugin help: ", "sam do blur -h");
+    SAM_EXAMPLE_TITLE_COUT("Plugins options");
+    SAM_EXAMPLE_LINE_COUT("Plugin list: ", "sam do --nodes");
+    SAM_EXAMPLE_LINE_COUT("Plugin help: ", "sam do blur -h");
 
-    SAM_EXAMPLE_TITLE_COUT( "Generators and viewers");
-    SAM_EXAMPLE_LINE_COUT( "Viewer: ", "sam do reader in.@.dpx // viewer");
-    SAM_EXAMPLE_LINE_COUT( "Print: ", "sam do reader in.@.dpx // print color=full16ansi");
-    SAM_EXAMPLE_LINE_COUT( "Constant generator: ", "sam do constant                // viewer");
-    SAM_EXAMPLE_LINE_COUT( "White constant generator: ", "sam do constant color=1,1,1,1  // viewer");
-    SAM_EXAMPLE_LINE_COUT( "HD constant generator: ", "sam do constant size=1920,1080 // viewer");
-    SAM_EXAMPLE_LINE_COUT( "Checkerboard generator: ", "sam do checkerboard            // viewer");
-    SAM_EXAMPLE_LINE_COUT( "Checkerboard generator: ", "sam do checkerboard width=500  // viewer");
-    SAM_EXAMPLE_LINE_COUT( "Checkerboard generator: ", "sam do checkerboard width=1920 ratio=2.35 // viewer");
+    SAM_EXAMPLE_TITLE_COUT("Generators and viewers");
+    SAM_EXAMPLE_LINE_COUT("Viewer: ", "sam do reader in.@.dpx // viewer");
+    SAM_EXAMPLE_LINE_COUT("Print: ", "sam do reader in.@.dpx // print color=full16ansi");
+    SAM_EXAMPLE_LINE_COUT("Constant generator: ", "sam do constant                // viewer");
+    SAM_EXAMPLE_LINE_COUT("White constant generator: ", "sam do constant color=1,1,1,1  // viewer");
+    SAM_EXAMPLE_LINE_COUT("HD constant generator: ", "sam do constant size=1920,1080 // viewer");
+    SAM_EXAMPLE_LINE_COUT("Checkerboard generator: ", "sam do checkerboard            // viewer");
+    SAM_EXAMPLE_LINE_COUT("Checkerboard generator: ", "sam do checkerboard width=500  // viewer");
+    SAM_EXAMPLE_LINE_COUT("Checkerboard generator: ", "sam do checkerboard width=1920 ratio=2.35 // viewer");
     /*
      SAM_EXAMPLE_LINE_COUT ( "Colorgradient generator: "  , "sam do colorgradient point0=1190,424 color0=0.246,0.44,0.254,1 \\" );
      SAM_EXAMPLE_LINE_COUT ( " "                      , "                     point1=458,726  color1=0.396,0.193,0.444,1 format=HD // viewer" );
      */
-    SAM_EXAMPLE_LINE_COUT( "Text writing: ", "sam do constant // text text=\"hello\" size=80 // viewer");
+    SAM_EXAMPLE_LINE_COUT("Text writing: ", "sam do constant // text text=\"hello\" size=80 // viewer");
 
-    SAM_EXAMPLE_TITLE_COUT( "Image sequence conversion and creation");
-    SAM_EXAMPLE_LINE_COUT( "Convert Image: ", "sam do reader in.dpx // writer out.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Convert Sequence: ", "sam do reader in.####.dpx // writer out.####.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Select a range: ", "sam do reader in.####.dpx // writer out.####.jpg // --range=10,100");
-    SAM_EXAMPLE_LINE_COUT( "", "r and w are shortcuts for reader and writer");
+    SAM_EXAMPLE_TITLE_COUT("Image sequence conversion and creation");
+    SAM_EXAMPLE_LINE_COUT("Convert Image: ", "sam do reader in.dpx // writer out.jpg");
+    SAM_EXAMPLE_LINE_COUT("Convert Sequence: ", "sam do reader in.####.dpx // writer out.####.jpg");
+    SAM_EXAMPLE_LINE_COUT("Select a range: ", "sam do reader in.####.dpx // writer out.####.jpg // --range=10,100");
+    SAM_EXAMPLE_LINE_COUT("", "r and w are shortcuts for reader and writer");
 
-    SAM_EXAMPLE_TITLE_COUT( "Geometry processing during conversion");
-    SAM_EXAMPLE_LINE_COUT( "Crop: ", "sam do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Fill: ", "sam do reader in.####.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50 // writer out.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Resize: ", "sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Upscaling: ", "sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Downscaling: ", "sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg");
+    SAM_EXAMPLE_TITLE_COUT("Geometry processing during conversion");
+    SAM_EXAMPLE_LINE_COUT("Crop: ", "sam do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg");
+    SAM_EXAMPLE_LINE_COUT("Fill: ", "sam do reader in.####.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50 // writer out.jpg");
+    SAM_EXAMPLE_LINE_COUT("Resize: ", "sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg");
+    SAM_EXAMPLE_LINE_COUT("Upscaling: ", "sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg");
+    SAM_EXAMPLE_LINE_COUT("Downscaling: ", "sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg");
 
-    SAM_EXAMPLE_TITLE_COUT( "Color processing during conversion");
-    SAM_EXAMPLE_LINE_COUT( "Lut :", "sam do reader in.####.dpx // lut lutFile.3dl // writer out.jpg");
-    SAM_EXAMPLE_LINE_COUT( "CTL: ", "sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Gamma: ", "sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg");
+    SAM_EXAMPLE_TITLE_COUT("Color processing during conversion");
+    SAM_EXAMPLE_LINE_COUT("Lut :", "sam do reader in.####.dpx // lut lutFile.3dl // writer out.jpg");
+    SAM_EXAMPLE_LINE_COUT("CTL: ", "sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg");
+    SAM_EXAMPLE_LINE_COUT("Gamma: ", "sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg");
 
-    SAM_EXAMPLE_TITLE_COUT( "Image Sequence Numbering");
-    SAM_EXAMPLE_LINE_COUT( "Frames with or without padding: ", "image.@.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Frames 1 to 100 padding 4: ", "image.####.jpg -or- image.@.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Frames 1 to 100 padding 5: ", "image.#####.jpg");
-    SAM_EXAMPLE_LINE_COUT( "Printf style padding 4: ", "image.%04d.jpg");
-    SAM_EXAMPLE_LINE_COUT( "All Frames in Directory: ", "/path/to/directory");
+    SAM_EXAMPLE_TITLE_COUT("Image Sequence Numbering");
+    SAM_EXAMPLE_LINE_COUT("Frames with or without padding: ", "image.@.jpg");
+    SAM_EXAMPLE_LINE_COUT("Frames 1 to 100 padding 4: ", "image.####.jpg -or- image.@.jpg");
+    SAM_EXAMPLE_LINE_COUT("Frames 1 to 100 padding 5: ", "image.#####.jpg");
+    SAM_EXAMPLE_LINE_COUT("Printf style padding 4: ", "image.%04d.jpg");
+    SAM_EXAMPLE_LINE_COUT("All Frames in Directory: ", "/path/to/directory");
 
-    SAM_EXAMPLE_TITLE_COUT( "Processing options");
-    SAM_EXAMPLE_LINE_COUT( "Range process: ", "sam do reader in.@.dpx // writer out.@.exr // --range 50,100");
-    SAM_EXAMPLE_LINE_COUT( "Single process: ", "sam do reader in.@.dpx // writer out.@.exr // --range 59");
-    SAM_EXAMPLE_LINE_COUT( "Multiple CPUs: ", "sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4");
-    SAM_EXAMPLE_LINE_COUT( "Continues whatever happens: ", "sam do reader in.@.dpx // writer out.@.exr // --continueOnError");
+    SAM_EXAMPLE_TITLE_COUT("Processing options");
+    SAM_EXAMPLE_LINE_COUT("Range process: ", "sam do reader in.@.dpx // writer out.@.exr // --range 50,100");
+    SAM_EXAMPLE_LINE_COUT("Single process: ", "sam do reader in.@.dpx // writer out.@.exr // --range 59");
+    SAM_EXAMPLE_LINE_COUT("Multiple CPUs: ", "sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4");
+    SAM_EXAMPLE_LINE_COUT("Continues whatever happens: ", "sam do reader in.@.dpx // writer out.@.exr // --continueOnError");
 
     TUTTLE_COUT( std::endl << _color._blue << "DISPLAY OPTIONS (replace the process)" << _color._std);
     TUTTLE_COUT( infoOptions);
@@ -103,6 +103,8 @@ int main(int argc, char** argv) {
 
         bool continueOnError = false;
         bool enableColor = false;
+        bool enableVerbose = false;
+        bool enableQuiet = false;
         bool script = false;
         std::vector<std::string> cl_options;
         std::vector<std::vector<std::string> > cl_commands;
@@ -165,6 +167,12 @@ int main(int argc, char** argv) {
                 if (samdo_vm.count(kEnableColorOptionLongName) && !script) {
                     const std::string str = samdo_vm[kEnableColorOptionLongName].as<std::string>();
                     enableColor = string_to_boolean(str);
+                }
+                if (samdo_vm.count(kVerboseOptionLongName)) {
+                    enableVerbose = true;
+                }
+                if (samdo_vm.count(kQuietOptionLongName)) {
+                    enableQuiet = true;
                 }
 
                 if (enableColor) {
@@ -275,27 +283,31 @@ int main(int argc, char** argv) {
             {
                 // Declare the supported options.
                 bpo::options_description infoOptions;
-                infoOptions.add_options()(kHelpOptionString, kHelpOptionMessage)(kVersionOptionString, kVersionOptionMessage);
+                infoOptions.add_options()(kHelpOptionString, kHelpOptionMessage)//
+                                         (kVersionOptionString, kVersionOptionMessage);
                 bpo::options_description confOptions;
-                confOptions.add_options()(kVerboseOptionString, kVerboseOptionMessage)(kIdOptionString, bpo::value<std::string>(), kIdOptionMessage)(kNbCoresOptionString,
-                                                                                                                                                     bpo::value<std::size_t>(),
-                                                                                                                                                     kNbCoresOptionMessage);
+                confOptions.add_options()(kVerboseOptionString, kVerboseOptionMessage)//
+                                         (kIdOptionString, bpo::value<std::string>(), kIdOptionMessage)//
+                                         (kNbCoresOptionString,bpo::value<std::size_t>(),kNbCoresOptionMessage); //
                 // describe openFX options
                 bpo::options_description openfxOptions;
-                openfxOptions.add_options()("attributes,a", "show all attributes: parameters+clips")("properties", "list properties of the node")("clips,c",
-                                                                                                                                                  "list clips of the node")(
-                                "clip,C", bpo::value<std::string>(), "display clip informations")("parameters,p", "list parameters of the node")("param,P",
-                                                                                                                                                 bpo::value<std::string>(),
-                                                                                                                                                 "display parameter informations")(
-                                "param-values", bpo::value<std::vector<std::string> >(), "node parameters")
+                openfxOptions.add_options()//
+                                (kAttributesOptionString, kAttributesOptionMessage)//
+                                (kPropertiesOptionString, kPropertiesOptionMessage)//
+                                (kClipsOptionString,kClipsOptionMessage)//
+                                (kClipOptionString, bpo::value<std::string>(), kClipOptionMessage)//
+                                (kParametersOptionString, kParametersOptionMessage)//
+                                (kParamInfosOptionString,bpo::value<std::string>(),kParamInfosOptionMessage)//
+                                (kParamValuesOptionString, bpo::value<std::vector<std::string> >(), kParamValuesOptionMessage)//
                 // for auto completion
-                ("parameters-list", "list parameters of the node")("parameter-type", bpo::value<std::string>(), "parameter type")("parameter-values", bpo::value<std::string>(),
-                                                                                                                                  "possible parameter values")(
-                                "parameter-default", bpo::value<std::string>(), "parameter default value");
+                                (kParametersReduxOptionString, kParametersReduxOptionMessage)//
+                                (kParamTypeOptionString, bpo::value<std::string>(), kParamTypeOptionMessage)//
+                                (kParamValuesOptionString, bpo::value<std::string>(),kParamValuesOptionMessage)//
+                                (kParamDefaultOptionString, bpo::value<std::string>(), kParamDefaultOptionMessage);
 
                 // define default options
                 bpo::positional_options_description param_values;
-                param_values.add("param-values", -1);
+                param_values.add(kParamValuesOptionLongName, -1);
 
                 bpo::options_description all_options;
                 all_options.add(infoOptions).add(confOptions).add(openfxOptions);
@@ -346,7 +358,7 @@ int main(int argc, char** argv) {
                         // it replaces all the process.
                         // --help,h --version,v --verbose,V --params --clips --props
 
-                        if (node_vm.count("help")) {
+                        if (node_vm.count(kHelpOptionLongName)) {
                             TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std);
                             TUTTLE_COUT( "");
                             TUTTLE_COUT( _color._blue << "NODE" << _color._std);
@@ -384,13 +396,13 @@ int main(int argc, char** argv) {
                             TUTTLE_COUT( "");
                             exit(0);
                         }
-                        if (node_vm.count("version")) {
+                        if (node_vm.count(kVersionOptionLongName)) {
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( "Version " << currentNode.getVersionStr());
                             TUTTLE_COUT( "");
                             exit(0);
                         }
-                        if (node_vm.count("attributes")) {
+                        if (node_vm.count(kAttributesOptionLongName)) {
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( "");
                             TUTTLE_COUT( _color._blue << "ATTRIBUTES" << _color._std);
@@ -403,7 +415,7 @@ int main(int argc, char** argv) {
                             TUTTLE_COUT( "");
                             exit(0);
                         }
-                        if (node_vm.count("properties")) {
+                        if (node_vm.count(kPropertiesOptionLongName)) {
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( "");
                             TUTTLE_COUT( _color._blue << "PROPERTIES" << _color._std);
@@ -411,7 +423,7 @@ int main(int argc, char** argv) {
                             TUTTLE_COUT( "");
                             exit(0);
                         }
-                        if (node_vm.count("clips")) {
+                        if (node_vm.count(kClipsOptionLongName)) {
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( "");
                             TUTTLE_COUT( _color._blue << "CLIPS" << _color._std);
@@ -419,7 +431,7 @@ int main(int argc, char** argv) {
                             TUTTLE_COUT( "");
                             exit(0);
                         }
-                        if (node_vm.count("clip")) {
+                        if (node_vm.count(kClipOptionLongName)) {
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( "");
                             const std::string clipName = node_vm["clip"].as<std::string>();
@@ -429,7 +441,7 @@ int main(int argc, char** argv) {
                             TUTTLE_COUT( "");
                             exit(0);
                         }
-                        if (node_vm.count("parameters")) {
+                        if (node_vm.count(kParametersOptionLongName)) {
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( "");
                             TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std);
@@ -437,12 +449,12 @@ int main(int argc, char** argv) {
                             coutParametersWithDetails(currentNode);
                             exit(0);
                         }
-                        if (node_vm.count("parameters-list")) {
+                        if (node_vm.count(kParametersReduxOptionLongName)) {
                             coutParameters(currentNode);
                             exit(0);
                         }
-                        if (node_vm.count("param")) {
-                            const std::string attributeName = node_vm["param"].as<std::string>();
+                        if (node_vm.count(kParamInfosOptionLongName)) {
+                            const std::string attributeName = node_vm[kParamInfosOptionLongName].as<std::string>();
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( _color._blue << "PARAM: " << _color._green << attributeName << _color._std);
                             ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName(attributeName);
@@ -457,30 +469,28 @@ int main(int argc, char** argv) {
                             exit(0);
                         }
 
-                        if (node_vm.count("parameter-type")) {
-                            const std::string attributeName = node_vm["parameter-type"].as<std::string>();
+                        if (node_vm.count(kParamTypeOptionLongName)) {
+                            const std::string attributeName = node_vm[kParamTypeOptionLongName].as<std::string>();
                             ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName(attributeName);
                             TUTTLE_COUT( param.getParamTypeName());
                             exit(0);
                         }
 
-                        if (node_vm.count("parameter-values")) {
-                            const std::string attributeName = node_vm["parameter-values"].as<std::string>();
+                        if (node_vm.count(kParamPossibleValuesOptionLongName)) {
+                            const std::string attributeName = node_vm[kParamPossibleValuesOptionLongName].as<std::string>();
                             ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName(attributeName);
                             coutParameterValues(std::cout, param);
                             exit(0);
                         }
-                        if (node_vm.count("parameter-default")) {
-                            const std::string attributeName = node_vm["parameter-default"].as<std::string>();
+                        if (node_vm.count(kParamDefaultOptionLongName)) {
+                            const std::string attributeName = node_vm[kParamDefaultOptionLongName].as<std::string>();
                             ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName(attributeName);
-
-                            const ttl::ofx::property::OfxhProperty& prop = param.getProperties().fetchProperty(kOfxParamPropDefault);
-                            TUTTLE_TCOUT( getFormattedStringValue( prop ) );
+                            TUTTLE_TCOUT( getFormattedStringValue( param.getProperties().fetchProperty(kOfxParamPropDefault) ) );
                             exit(0);
                         }
 
-                        if (node_vm.count("id")) {
-                            const std::string nodeId = node_vm["id"].as<std::string>();
+                        if (node_vm.count(kIdOptionLongName)) {
+                            const std::string nodeId = node_vm[kIdOptionLongName].as<std::string>();
                             graph.renameNode(currentNode, nodeId);
                         }
 
@@ -489,10 +499,10 @@ int main(int argc, char** argv) {
                         std::vector<ClipAndConnection> clipsToConnect;
 
                         static const boost::regex re_param("(?:([a-zA-Z_][a-zA-Z0-9_]*)=)?(.*)");
-                        if (node_vm.count("param-values")) {
+                        if (node_vm.count(kParamValuesOptionLongName)) {
                             bool orderedParams = true;
                             std::size_t paramIdx = 0;
-                            const std::vector<std::string> params = node_vm["param-values"].as<std::vector<std::string> >();
+                            const std::vector<std::string> params = node_vm[kParamValuesOptionLongName].as<std::vector<std::string> >();
 
                             BOOST_FOREACH( const std::string& paramStr, params ) {
                                 boost::cmatch matches;
@@ -609,7 +619,7 @@ int main(int argc, char** argv) {
                                         // test if it's an index
                                         const int relativeIndex = std::abs(boost::lexical_cast<int>(clip.second));
                                         const int absIndex = nodes.size() - relativeIndex;
-                                        if (absIndex < 0 || absIndex >= nodes.size()) {
+                                        if (absIndex < 0 || absIndex >= (int) nodes.size()) {
                                             using namespace ttl;
                                             using tuttle::quotes;
                                             BOOST_THROW_EXCEPTION(
@@ -665,7 +675,7 @@ int main(int argc, char** argv) {
             TUTTLE_COUT_DEBUG( "[" << node[0] << "]" );
             for (std::size_t i = 1; i < node.size(); ++i) {
                 const std::string& s = node[i];
-				TUTTLE_COUT_DEBUG( ( s[0] == '-') ? s : "* " << s );
+                TUTTLE_COUT_DEBUG( ( s[0] == '-') ? s : "* " << s );
             }
         }
 

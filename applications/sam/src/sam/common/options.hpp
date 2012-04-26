@@ -21,6 +21,11 @@ static const char* const kAllOptionLongName = "all";
 static const char* const kAllOptionString = "all,a";
 static const char* const kAllOptionMessage = "do not ignore entries starting with .";
 
+//-A, --attributes
+static const char* const kAttributesOptionLongName = "attributes";
+static const char* const kAttributesOptionString = "attributes,A";
+static const char* const kAttributesOptionMessage = "show all attributes: parameters+clips";
+
 //-c, --commands
 static const char* const kCommandsOptionLongName = "commands";
 static const char* const kCommandsOptionString = "commands,c";
@@ -112,6 +117,11 @@ static const char* const kBriefOptionLongName = "brief";
 static const char* const kBriefOptionString = kBriefOptionLongName;
 static const char* const kBriefOptionMessage = "display a brief summary of the tool";
 
+//--clip
+static const char* const kClipOptionLongName = "clip";
+static const char* const kClipOptionString = kClipOptionLongName;
+static const char* const kClipOptionMessage = "display clip informations";
+
 //--clips
 static const char* const kClipsOptionLongName = "clips";
 static const char* const kClipsOptionString = kClipsOptionLongName;
@@ -172,10 +182,44 @@ static const char* const kOutputLastOptionLongName = "output-last";
 static const char* const kOutputLastOptionString = kOutputLastOptionLongName;
 static const char* const kOutputLastOptionMessage = "specify the last output image, in order to select a sub-range of the output sequence";
 
-//-parameters
-static const char* const kParametersOptionLongName = "parameters";
+//-parameters-list
+static const char* const kParametersOptionLongName = "parameters-list";
 static const char* const kParametersOptionString = kParametersOptionLongName;
 static const char* const kParametersOptionMessage = "list parameters of the OpenFX plugin";
+
+//-parameters-redux-list
+static const char* const kParametersReduxOptionLongName = "parameters-redux-list";
+static const char* const kParametersReduxOptionString = kParametersReduxOptionLongName;
+static const char* const kParametersReduxOptionMessage = "list parameters of the OpenFX plugin (redux informations)";
+
+//-param-default
+static const char* const kParamDefaultOptionLongName = "param-default";
+static const char* const kParamDefaultOptionString = kParamDefaultOptionLongName;
+static const char* const kParamDefaultOptionMessage = "parameter default value";
+
+//-param-infos
+static const char* const kParamInfosOptionLongName = "param-infos";
+static const char* const kParamInfosOptionString = kParamInfosOptionLongName;
+static const char* const kParamInfosOptionMessage = "display parameter informations";
+
+
+//-param-possible-values
+static const char* const kParamPossibleValuesOptionLongName = "param-possible-values";
+static const char* const kParamPossibleValuesOptionString = kParamPossibleValuesOptionLongName;
+static const char* const kParamPossibleValuesOptionMessage = "possible parameter values";
+
+//-param-type
+static const char* const kParamTypeOptionLongName = "param-type";
+static const char* const kParamTypeOptionString = kParamTypeOptionLongName;
+static const char* const kParamTypeOptionMessage = "parameter type";
+
+
+//-param-values
+static const char* const kParamValuesOptionLongName = "param-values";
+static const char* const kParamValuesOptionString = kParamValuesOptionLongName;
+static const char* const kParamValuesOptionMessage = "display parameter values";
+
+
 
 //--properties
 static const char* const kPropertiesOptionLongName = "properties";

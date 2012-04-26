@@ -23,6 +23,7 @@ static int _notNullImage = 0;
 static int _nullFileSize = 0;
 static int _corruptedImage = 0;
 static int _missingFiles = 0;
+static int _processedImages = 0;
 //static std::streambuf * const _stdCout = std::cout.rdbuf(); // back up cout's streambuf
 //static std::streambuf * const _stdCerr = std::cerr.rdbuf(); // back up cout's streambuf
 
@@ -38,6 +39,7 @@ enum EImageStatus {
  * @brief Diff the image status.
  */
 EImageStatus diffImageStatus(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const bfs::path& filename1, const bfs::path& filename2) {
+
     if (bfs::exists(filename1) == 0 || bfs::exists(filename2) == 0)
         return eImageStatusNoFile;
 
@@ -93,6 +95,7 @@ EImageStatus diffFile(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat,
             ++_corruptedImage;
             break;
     }
+    ++_processedImages;
     std::cout << filename1 << "  |  " << filename2 << std::endl;
     //std::cout.rdbuf(0); // remove cout's streambuf
     return s;
@@ -129,11 +132,15 @@ void displayHelp(bpo::options_description &desc) {
     TUTTLE_COUT( desc);
     //std::cout.rdbuf(0); // remove cout's streambuf
 
-//    TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
-//           SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: ");
-//           SAM_EXAMPLE_LINE_COUT("Auto-detect padding : ", "seq.@.jpg");
-//           SAM_EXAMPLE_LINE_COUT("Padding of 8 (usual style): ", "seq.########.jpg");
-//           SAM_EXAMPLE_LINE_COUT("Padding of 8 (printf style): ", "seq.%08d.jpg");
+    TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
+           SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: ");
+           SAM_EXAMPLE_LINE_COUT("Auto-detect padding : ", "seq.@.jpg");
+           SAM_EXAMPLE_LINE_COUT("Padding of 8 (usual style): ", "seq.########.jpg");
+           SAM_EXAMPLE_TITLE_COUT( "Compare two images: ");
+           SAM_EXAMPLE_LINE_COUT("", "sam-diff --reader tuttle.jpegreader --input path/image.jpg --reader tuttle.jpegreader --input anotherPath/image.jpg");
+           SAM_EXAMPLE_TITLE_COUT( "Compare two sequences: ");
+           SAM_EXAMPLE_LINE_COUT("", "sam-diff --reader tuttle.jpegreader --input path/seq.@.jpg --reader tuttle.jpegreader --input anotherPath/seq.@.jpg --range 677836 677839");
+
 
 }
 
@@ -260,6 +267,7 @@ int main(int argc, char** argv) {
         bfs::path path1 = inputs.at(0);
         bfs::path path2 = inputs.at(1);
 
+
         if (bfs::exists(path1)) {
             if (!bfs::exists(path2)) {
                 TUTTLE_COUT( "could not find file or directory 2 (first is not a sequence).");
@@ -318,7 +326,8 @@ int main(int argc, char** argv) {
     }
     //std::cout.rdbuf(_stdCerr); // restore cout's original streambuf
     TUTTLE_COUT( "________________________________________");
-    TUTTLE_COUT( "Not null images: " << _notNullImage);
+    TUTTLE_COUT( "Processed images: " << _processedImages);
+    TUTTLE_COUT( "Different images: " << _notNullImage);
     TUTTLE_COUT( "Null file size: " << _nullFileSize);
     TUTTLE_COUT( "Corrupted images: " << _corruptedImage);
     TUTTLE_COUT( "Holes in sequence: " << _missingFiles);
