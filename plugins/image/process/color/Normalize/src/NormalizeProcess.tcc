@@ -32,7 +32,7 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 	using namespace terry;
 	using namespace terry::numeric;
 	typedef rgba32f_pixel_t PixelParam;
-	typedef pixel<typename channel_type<View>::type, gray_layout_t> PixelGray;
+	typedef pixel<Channel, gray_layout_t> PixelGray;
 
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
@@ -41,6 +41,9 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 	Pixel smin;
 	Pixel smax;
 	pixel_zeros_t<Pixel>()(smax);
+	
+	rgba32f_pixel_t r;
+	
 	switch( _params._mode )
 	{
 		case eParamModeAnalyse:
@@ -62,50 +65,36 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 		if( (smax[n] - smin[n]) == 0 )
 			_ratio[n] = 0;
 		else
-			_ratio[n] = (_params._dstMaxColor[n] - _params._dstMinColor[n]) / (smax[n] - smin[n]);
+		{
+			typedef typename channel_type<PixelGray>::type tChannel;
+			_ratio[n] = channel_traits<tChannel>::max_value() * (_params._dstMaxColor[n] - _params._dstMinColor[n]) / (smax[n] - smin[n]);
+			r[n] = 1.f * channel_traits<tChannel>::max_value() * (_params._dstMaxColor[n] - _params._dstMinColor[n]) / (smax[n] - smin[n]);
+		}
 	}
-
-//	TUTTLE_COUT("");
-//	TUTTLE_COUT_VAR( get_color( _sMin, red_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _sMin, green_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _sMin, blue_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _sMin, alpha_t() ) );
-//	TUTTLE_COUT("");
-//	TUTTLE_COUT_VAR( get_color( _dMin, red_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _dMin, green_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _dMin, blue_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _dMin, alpha_t() ) );
-//	TUTTLE_COUT("");
-//	TUTTLE_COUT_VAR( get_color( _ratio, red_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _ratio, green_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _ratio, blue_t() ) );
-//	TUTTLE_COUT_VAR( get_color( _ratio, alpha_t() ) );
-//	TUTTLE_COUT("");
 }
 
 template< class View>
-template< class WorkView, typename LocalChannel >
-void NormalizeProcess<View>::processChannel( View& src, View& dst, bool process, Pixel& ratio, Pixel& sMin, Pixel& dMin )
+template< class WorkView, typename LocalChannel, typename P >
+void NormalizeProcess<View>::processChannel( View& src, View& dst, bool process, P& ratio, P& sMin, P& dMin )
 {
 	using namespace terry;
 	using namespace terry::numeric;
 	using namespace terry::algorithm;
 	if( process )
 	{
-		typedef channel_view_type<LocalChannel,WorkView> LocalView;
+		typedef channel_view_type<LocalChannel,View> LocalView;
 		typedef typename LocalView::type::value_type LocalPixel;
 		typename LocalView::type localSrcView( LocalView::make(src) );
 		typename LocalView::type localDstView( LocalView::make(dst) );
-
-		transform_pixels_progress(
-			localSrcView,
-			localDstView,
-			pixel_scale_t<LocalPixel,LocalPixel>(
+		
+		transform_pixels(
+				localSrcView,
+				localDstView,
+				pixel_scale_t<LocalPixel,LocalPixel>(
 				LocalPixel( get_color( ratio, LocalChannel() ) ),
 				LocalPixel( get_color( sMin, LocalChannel() ) ),
 				LocalPixel( get_color( dMin, LocalChannel() ) )
-				),
-			*this );
+				) );
 	}
 	else
 	{
@@ -141,7 +130,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		transform_pixels_progress(
 			src,
 			dst,
-			pixel_scale_t<Pixel,Pixel>( _ratio, _sMin, _dMin ),
+			pixel_scale_t<Pixel,rgba32f_pixel_t>( _ratio, _sMin, _dMin ),
 			*this );
 	}
 	else
@@ -181,6 +170,21 @@ void NormalizeProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( cons
 	rgb32f_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 	                                          procWindowSize.x, procWindowSize.y );
 
+	rgb32f_pixel_t ratio;
+	get_color( ratio, red_t()   ) = get_color( _ratio, red_t() );
+	get_color( ratio, green_t() ) = get_color( _ratio, green_t() );
+	get_color( ratio, blue_t()  ) = get_color( _ratio, blue_t() );
+	
+	rgb32f_pixel_t sMin;
+	get_color( sMin, red_t()   ) = get_color( _sMin, red_t() );
+	get_color( sMin, green_t() ) = get_color( _sMin, green_t() );
+	get_color( sMin, blue_t()  ) = get_color( _sMin, blue_t() );
+	
+	rgb32f_pixel_t dMin;
+	get_color( dMin, red_t()   ) = get_color( _dMin, red_t() );
+	get_color( dMin, green_t() ) = get_color( _dMin, green_t() );
+	get_color( dMin, blue_t()  ) = get_color( _dMin, blue_t() );
+	
 	if( _params._processR &&
 	    _params._processG &&
 	    _params._processB )
@@ -188,7 +192,7 @@ void NormalizeProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( cons
 		transform_pixels_progress(
 			src,
 			dst,
-			pixel_scale_t<rgb32f_view_t::value_type,rgb32f_view_t::value_type>( _ratio, _sMin, _dMin ),
+			pixel_scale_t<Pixel, Pixel>( ratio, sMin, dMin ),
 			*this );
 	}
 	else
@@ -196,15 +200,15 @@ void NormalizeProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( cons
 		// by channel:
 		// red
 		{
-			processChannel<rgb32f_view_t, red_t>( src, dst, _params._processR, _ratio, _sMin, _dMin );
+			processChannel<rgb32f_view_t, red_t>( src, dst, _params._processR, ratio, sMin, dMin );
 		}
 		// green
 		{
-			processChannel<rgb32f_view_t, green_t>( src, dst, _params._processG, _ratio, _sMin, _dMin );
+			processChannel<rgb32f_view_t, green_t>( src, dst, _params._processG, ratio, sMin, dMin );
 		}
 		// blue
 		{
-			processChannel<rgb32f_view_t, blue_t>( src, dst, _params._processB, _ratio, _sMin, _dMin );
+			processChannel<rgb32f_view_t, blue_t>( src, dst, _params._processB, ratio, sMin, dMin );
 		}
 	}
 }
@@ -224,7 +228,21 @@ void NormalizeProcess<boost::gil::rgb16_view_t>::multiThreadProcessImages( const
 							                  procWindowSize.x, procWindowSize.y );
 	rgb16_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 	                                          procWindowSize.x, procWindowSize.y );
-	typedef rgb32f_view_t::value_type float_t ;
+
+	rgb32f_pixel_t ratio;
+	get_color( ratio, red_t()   ) = get_color( _ratio, red_t() );
+	get_color( ratio, green_t() ) = get_color( _ratio, green_t() );
+	get_color( ratio, blue_t()  ) = get_color( _ratio, blue_t() );
+	
+	rgb32f_pixel_t sMin;
+	get_color( sMin, red_t()   ) = get_color( _sMin, red_t() );
+	get_color( sMin, green_t() ) = get_color( _sMin, green_t() );
+	get_color( sMin, blue_t()  ) = get_color( _sMin, blue_t() );
+	
+	rgb32f_pixel_t dMin;
+	get_color( dMin, red_t()   ) = get_color( _dMin, red_t() );
+	get_color( dMin, green_t() ) = get_color( _dMin, green_t() );
+	get_color( dMin, blue_t()  ) = get_color( _dMin, blue_t() );
 	
 	if( _params._processR &&
 	    _params._processG &&
@@ -233,7 +251,7 @@ void NormalizeProcess<boost::gil::rgb16_view_t>::multiThreadProcessImages( const
 		transform_pixels_progress(
 			src,
 			dst,
-			pixel_scale_t<float_t,float_t>( _ratio, _sMin, _dMin ),
+			pixel_scale_t<Pixel, rgb32f_pixel_t>( ratio, sMin, dMin ),
 			*this );
 	}
 	else
@@ -241,15 +259,15 @@ void NormalizeProcess<boost::gil::rgb16_view_t>::multiThreadProcessImages( const
 		// by channel:
 		// red
 		{
-			processChannel<rgb32f_view_t, red_t>( src, dst, _params._processR, _ratio, _sMin, _dMin );
+			processChannel<rgb16_view_t, red_t>( src, dst, _params._processR, ratio, sMin, dMin );
 		}
 		// green
 		{
-			//processChannel<rgb32f_view_t, green_t>( src, dst, _params._processG, _ratio, _sMin, _dMin );
+			processChannel<rgb16_view_t, green_t>( src, dst, _params._processG, ratio, sMin, dMin );
 		}
 		// blue
 		{
-			//processChannel<rgb32f_view_t, blue_t>( src, dst, _params._processB, _ratio, _sMin, _dMin );
+			processChannel<rgb16_view_t, blue_t>( src, dst, _params._processB, ratio, sMin, dMin );
 		}
 	}
 }
@@ -268,7 +286,21 @@ void NormalizeProcess<boost::gil::rgb8_view_t>::multiThreadProcessImages( const 
 							                  procWindowSize.x, procWindowSize.y );
 	rgb8_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 	                                          procWindowSize.x, procWindowSize.y );
-	typedef rgb32f_view_t::value_type float_t ;
+
+	rgb32f_pixel_t ratio;
+	get_color( ratio, red_t()   ) = get_color( _ratio, red_t() );
+	get_color( ratio, green_t() ) = get_color( _ratio, green_t() );
+	get_color( ratio, blue_t()  ) = get_color( _ratio, blue_t() );
+	
+	rgb32f_pixel_t sMin;
+	get_color( sMin, red_t()   ) = get_color( _sMin, red_t() );
+	get_color( sMin, green_t() ) = get_color( _sMin, green_t() );
+	get_color( sMin, blue_t()  ) = get_color( _sMin, blue_t() );
+	
+	rgb32f_pixel_t dMin;
+	get_color( dMin, red_t()   ) = get_color( _dMin, red_t() );
+	get_color( dMin, green_t() ) = get_color( _dMin, green_t() );
+	get_color( dMin, blue_t()  ) = get_color( _dMin, blue_t() );
 	
 	if( _params._processR &&
 	    _params._processG &&
@@ -277,7 +309,7 @@ void NormalizeProcess<boost::gil::rgb8_view_t>::multiThreadProcessImages( const 
 		transform_pixels_progress(
 			src,
 			dst,
-			pixel_scale_t<float_t, float_t>( _ratio, _sMin, _dMin ),
+			pixel_scale_t<Pixel, rgb32f_pixel_t>( ratio, sMin, dMin ),
 			*this );
 	}
 	else
@@ -285,18 +317,122 @@ void NormalizeProcess<boost::gil::rgb8_view_t>::multiThreadProcessImages( const 
 		// by channel:
 		// red
 		{
-			//processChannel<red_t>( src, dst, _params._processR, _ratio, _sMin, _dMin );
+			processChannel<rgb8_view_t, red_t>( src, dst, _params._processR, ratio, sMin, dMin );
 		}
 		// green
 		{
-			//processChannel<green_t>( src, dst, _params._processG, _ratio, _sMin, _dMin );
+			processChannel<rgb8_view_t, green_t>( src, dst, _params._processG, ratio, sMin, dMin );
 		}
 		// blue
 		{
-			//processChannel<blue_t>( src, dst, _params._processB, _ratio, _sMin, _dMin );
+			processChannel<rgb8_view_t, blue_t>( src, dst, _params._processB, ratio, sMin, dMin );
 		}
 	}
 }
+
+template<>
+void NormalizeProcess<boost::gil::gray32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							           procWindowRoW.y2 - procWindowRoW.y1 };
+	gray32f_view_t src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+							                  procWindowSize.x, procWindowSize.y );
+	gray32f_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+	                                          procWindowSize.x, procWindowSize.y );
+
+	gray32f_pixel_t ratio;
+	get_color( ratio, gray_color_t()  ) = get_color( _ratio, red_t() );
+	
+	gray32f_pixel_t sMin;
+	get_color( sMin, gray_color_t()   ) = get_color( _sMin, red_t() );
+	
+	gray32f_pixel_t dMin;
+	get_color( dMin, gray_color_t()   ) = get_color( _dMin, red_t() );
+	
+	if( _params._processA )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			pixel_scale_t<Pixel, Pixel>( ratio, sMin, dMin ),
+			*this );
+	}
+}
+
+template<>
+void NormalizeProcess<boost::gil::gray16_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
+	
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							           procWindowRoW.y2 - procWindowRoW.y1 };
+	gray16_view_t src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+							                  procWindowSize.x, procWindowSize.y );
+	gray16_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+	                                          procWindowSize.x, procWindowSize.y );
+
+	gray32f_pixel_t ratio;
+	get_color( ratio, gray_color_t()  ) = get_color( _ratio, red_t() );
+	
+	gray32f_pixel_t sMin;
+	get_color( sMin, gray_color_t()   ) = get_color( _sMin, red_t() );
+	
+	gray32f_pixel_t dMin;
+	get_color( dMin, gray_color_t()   ) = get_color( _dMin, red_t() );
+	
+	if( _params._processA )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			pixel_scale_t<Pixel, gray32f_pixel_t>( ratio, sMin, dMin ),
+			*this );
+	}
+}
+
+template<>
+void NormalizeProcess<boost::gil::gray8_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	using namespace terry;
+	using namespace terry::numeric;
+	using namespace terry::algorithm;
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							           procWindowRoW.y2 - procWindowRoW.y1 };
+	gray8_view_t src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+							                  procWindowSize.x, procWindowSize.y );
+	gray8_view_t dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+	                                          procWindowSize.x, procWindowSize.y );
+
+	gray32f_pixel_t ratio;
+	get_color( ratio, gray_color_t()  ) = get_color( _ratio, red_t() );
+	
+	gray32f_pixel_t sMin;
+	get_color( sMin, gray_color_t()   ) = get_color( _sMin, red_t() );
+	
+	gray32f_pixel_t dMin;
+	get_color( dMin, gray_color_t()   ) = get_color( _dMin, red_t() );
+	
+	if( _params._processA )
+	{
+		transform_pixels_progress(
+			src,
+			dst,
+			pixel_scale_t<Pixel, gray32f_pixel_t>( ratio, sMin, dMin ),
+			*this );
+	}
+}
+
 
 }
 }

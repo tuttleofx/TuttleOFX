@@ -19,7 +19,7 @@ namespace numeric {
 template<typename Pixel, typename CPixel = Pixel>
 struct pixel_scale_t
 {
-	typedef typename boost::gil::channel_type<Pixel>::type Channel;
+	typedef typename boost::gil::channel_type<CPixel>::type Channel;
 	typedef typename terry::channel_base_type<Channel>::type ChannelBaseType;
 
 	const CPixel _ratio;
