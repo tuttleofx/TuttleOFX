@@ -74,8 +74,8 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 }
 
 template< class View>
-template< class WorkView, typename LocalChannel, typename P >
-void NormalizeProcess<View>::processChannel( View& src, View& dst, bool process, P& ratio, P& sMin, P& dMin )
+template< class WorkView, typename LocalChannel, typename Pixel32f >
+void NormalizeProcess<View>::processChannel( View& src, View& dst, bool process, Pixel32f& ratio, Pixel32f& sMin, Pixel32f& dMin )
 {
 	using namespace terry;
 	using namespace terry::numeric;
@@ -90,10 +90,10 @@ void NormalizeProcess<View>::processChannel( View& src, View& dst, bool process,
 		transform_pixels(
 				localSrcView,
 				localDstView,
-				pixel_scale_t<LocalPixel,LocalPixel>(
-				LocalPixel( get_color( ratio, LocalChannel() ) ),
-				LocalPixel( get_color( sMin, LocalChannel() ) ),
-				LocalPixel( get_color( dMin, LocalChannel() ) )
+				pixel_scale_t< LocalPixel, gray32f_pixel_t >(
+				gray32f_pixel_t( get_color( ratio, LocalChannel() ) ),
+				gray32f_pixel_t( get_color( sMin, LocalChannel() ) ),
+				gray32f_pixel_t( get_color( dMin, LocalChannel() ) )
 				) );
 	}
 	else
