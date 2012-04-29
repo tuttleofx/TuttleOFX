@@ -1,28 +1,27 @@
-#include "%CLASSNAME%PluginFactory.hpp"
-#include "%CLASSNAME%Plugin.hpp"
-#include "%CLASSNAME%Definitions.hpp"
+#include "ComponentPluginFactory.hpp"
+#include "ComponentPlugin.hpp"
+#include "ComponentDefinitions.hpp"
 #include "ofxsImageEffect.h"
 
 #include <limits>
 
 namespace tuttle {
 namespace plugin {
-namespace %NAMESPACE% {
+namespace component {
 
 static const bool kSupportTiles = false;
-
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void ComponentPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "%PLUGIN_LABEL%", "%PLUGIN_LABEL%",
-		            "%PLUGIN_LONG_LABEL%" );
-	desc.setPluginGrouping( "%PLUGIN_GROUP%" );
+	desc.setLabels( "Component", "Component",
+		            "Component" );
+	desc.setPluginGrouping( "tuttle" );
 
-	desc.setDescription( "Plugin under early development." );
+	desc.setDescription( "Convert channels components." );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
@@ -43,7 +42,7 @@ void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void ComponentPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                   OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -58,6 +57,28 @@ void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
+
+	OFX::ChoiceParamDescriptor* outTo = desc.defineChoiceParam( kParamTo );
+	outTo->setLabel( kParamToLabel );
+	outTo->appendOption( kConvertToGray );
+	outTo->appendOption( kConvertToRGB );
+	outTo->appendOption( kConvertToRGBA );
+	outTo->setDefault( eConvertToRGBA );
+	
+	OFX::ChoiceParamDescriptor* outGray = desc.defineChoiceParam( kParamToGray );
+	outGray->setLabel( kParamToGrayLabel );
+	outGray->appendOption( kConvertToGrayMean );
+	outGray->appendOption( kConvertToGrayRec601 );
+	outGray->appendOption( kConvertToGrayRec709 );
+	outGray->appendOption( kConvertToGraySelectRed );
+	outGray->appendOption( kConvertToGraySelectGreen );
+	outGray->appendOption( kConvertToGraySelectBlue );
+	outGray->appendOption( kConvertToGraySelectAlpha );
+	outGray->setDefault( 3 ); // terry::color::components::eConvertToGrayRec709
+
+	OFX::BooleanParamDescriptor* outPremult = desc.defineBooleanParam( kParamPremutliplied );
+	outPremult->setLabel( kParamPremutlipliedLabel );
+	outPremult->setDefault( false );
 }
 
 /**
@@ -66,10 +87,10 @@ void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* %CLASSNAME%PluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* ComponentPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::EContext context )
 {
-	return new %CLASSNAME%Plugin( handle );
+	return new ComponentPlugin( handle );
 }
 
 }

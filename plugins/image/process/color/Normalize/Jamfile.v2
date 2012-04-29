@@ -19,6 +19,7 @@ project
 ###############################################################################
 plugin Normalize : 
     [ glob-tree *.cpp ]
+	/boostHack
     /tuttleplugin/<link>static
     ;
  
