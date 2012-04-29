@@ -114,9 +114,9 @@ class Tuttle( SConsProject ):
 		plugin = envLocal.SharedLibrary( target=pluginName, source=allSources )
 		pluginInstall = envLocal.InstallAs( self.getOutputOfxPlugin(pluginFilename), plugin[0] )
 
-		resources_dir =  self.getRealAbsoluteCwd() + os.sep + 'Resources'
-		if os.path.isdir( resources_dir ) :
-			plugin_resources = Command( self.getOutputOfxResources(pluginFilename), resources_dir, Copy("$TARGET", "$SOURCE"))
+		resources_dir =  os.path.join( self.getRealAbsoluteCwd(), 'Resources' )
+		if os.path.isdir( resources_dir ):
+			plugin_resources = envLocal.InstallAs( self.getOutputOfxResources(pluginFilename), resources_dir )
 			envLocal.Depends( plugin_resources, pluginInstall )
 			envLocal.Alias( pluginName,   plugin_resources )
 
