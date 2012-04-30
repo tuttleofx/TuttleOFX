@@ -53,8 +53,8 @@ struct AlexaLogC{};
 
 /// @brief change the color gradation
 template< typename Channel,
-          class IN,
-          class OUT >
+          class TIN,
+          class TOUT >
 struct channel_color_gradation_t : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
@@ -63,17 +63,17 @@ struct channel_color_gradation_t : public std::binary_function<Channel, Channel,
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 
 	// This class implementation must be used only:
-	// * with IN != OUT
-	BOOST_STATIC_ASSERT(( ! boost::is_same<IN, OUT>::value )); // Must use channel_color_gradation_t<Channel, INOUT> !
-	// * IN and OUT must be other gradation mode than Linear
+	// * with TIN != TOUT
+	BOOST_STATIC_ASSERT(( ! boost::is_same<TIN, TOUT>::value )); // Must use channel_color_gradation_t<Channel, INOUT> !
+	// * TIN and TOUT must be other gradation mode than Linear
 	//   For each gradation mode, you have to specialize: GradationMode -> Linear and Linear -> GradationMode
-	BOOST_STATIC_ASSERT(( ! boost::is_same<IN, gradation::Linear>::value )); // The conversion IN to Linear is not implemented !
-	BOOST_STATIC_ASSERT(( ! boost::is_same<OUT, gradation::Linear>::value )); // The conversion Linear to OUT is not implemented !
+	BOOST_STATIC_ASSERT(( ! boost::is_same<TIN, gradation::Linear>::value )); // The conversion IN to Linear is not implemented !
+	BOOST_STATIC_ASSERT(( ! boost::is_same<TOUT, gradation::Linear>::value )); // The conversion Linear to OUT is not implemented !
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -82,11 +82,12 @@ struct channel_color_gradation_t : public std::binary_function<Channel, Channel,
 	{
 		Channel inter;
 		// IN -> Linear
-		channel_color_gradation_t<Channel, IN, gradation::Linear>( _in, gradation::Linear() )( src, inter );
+		channel_color_gradation_t<Channel, TIN, gradation::Linear>( _in, gradation::Linear() )( src, inter );
 		// Linear -> OUT
-		return channel_color_gradation_t<Channel, gradation::Linear, OUT>( gradation::Linear(), _out )( inter, dst );
+		return channel_color_gradation_t<Channel, gradation::Linear, TOUT>( gradation::Linear(), _out )( inter, dst );
 	}
 };
+
 
 template< typename Channel,
           class INOUT >
@@ -125,13 +126,13 @@ struct channel_color_gradation_t<Channel, gradation::sRGB, gradation::Linear> : 
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::sRGB IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::sRGB TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -175,13 +176,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::sRGB> : 
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::sRGB OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::sRGB TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -193,7 +194,7 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::sRGB> : 
 
 		if( src > 0.0031308 )
 		{
-			fDst = 1.055 * pow( fSrc , 1.0 / 2.4 ) - 0.055;
+			fDst = 1.055 * std::pow( T(fSrc), T(1.0 / 2.4) ) - 0.055;
 		}
 		else
 		{
@@ -230,13 +231,13 @@ struct channel_color_gradation_t<Channel, gradation::Cineon, gradation::Linear> 
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Cineon IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::Cineon TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -263,13 +264,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Cineon> 
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::Cineon OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::Cineon TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -298,13 +299,13 @@ struct channel_color_gradation_t<Channel, gradation::Gamma, gradation::Linear> :
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Gamma IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::Gamma TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -343,13 +344,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Gamma> :
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::Gamma OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::Gamma TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -391,13 +392,13 @@ struct channel_color_gradation_t<Channel, gradation::Panalog, gradation::Linear>
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Panalog IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::Panalog TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -420,13 +421,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Panalog>
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::Panalog OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::Panalog TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -453,13 +454,13 @@ struct channel_color_gradation_t<Channel, gradation::REDLog, gradation::Linear> 
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::REDLog IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::REDLog TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -482,13 +483,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::REDLog> 
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::REDLog OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::REDLog TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -515,13 +516,13 @@ struct channel_color_gradation_t<Channel, gradation::ViperLog, gradation::Linear
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::ViperLog IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::ViperLog TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -544,13 +545,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::ViperLog
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::ViperLog OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::ViperLog TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -577,13 +578,13 @@ struct channel_color_gradation_t<Channel, gradation::REDSpace, gradation::Linear
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::REDSpace IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::REDSpace TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -604,13 +605,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::REDSpace
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::REDSpace OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::REDSpace TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -635,13 +636,13 @@ struct channel_color_gradation_t<Channel, gradation::AlexaLogC, gradation::Linea
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::AlexaLogC IN;
-	typedef typename gradation::Linear OUT;
+	typedef typename gradation::AlexaLogC TIN;
+	typedef typename gradation::Linear TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -662,13 +663,13 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::AlexaLog
 	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
-	typedef typename gradation::Linear IN;
-	typedef typename gradation::AlexaLogC OUT;
+	typedef typename gradation::Linear TIN;
+	typedef typename gradation::AlexaLogC TOUT;
 
-	const IN& _in;
-	const OUT& _out;
+	const TIN& _in;
+	const TOUT& _out;
 
-	channel_color_gradation_t( const IN& in, const OUT& out )
+	channel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -686,15 +687,15 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::AlexaLog
 
 
 template< typename Pixel,
-          class IN,
-          class OUT >
+          class TIN,
+          class TOUT >
 struct pixel_color_gradation_t
 {
 	typedef typename channel_type<Pixel>::type Channel;
-	const IN&  _in;
-	const OUT& _out;
+	const TIN&  _in;
+	const TOUT& _out;
 	
-	pixel_color_gradation_t( const IN& in, const OUT& out )
+	pixel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -704,20 +705,20 @@ struct pixel_color_gradation_t
 	{
 		static_for_each(
 				p1, p2,
-				channel_color_gradation_t< Channel, IN, OUT >( _in, _out )
+				channel_color_gradation_t< Channel, TIN, TOUT >( _in, _out )
 			);
 		return p2;
 	}
 };
 
-template< class IN,
-          class OUT >
+template< class TIN,
+          class TOUT >
 struct transform_pixel_color_gradation_t
 {
-	const IN&  _in;
-	const OUT& _out;
+	const TIN&  _in;
+	const TOUT& _out;
 
-	transform_pixel_color_gradation_t( const IN& in, const OUT& out )
+	transform_pixel_color_gradation_t( const TIN& in, const TOUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -726,7 +727,7 @@ struct transform_pixel_color_gradation_t
 	Pixel operator()( const Pixel& p1 ) const
 	{
 		Pixel p2;
-		pixel_color_gradation_t<Pixel, IN, OUT>( _in, _out )( p1, p2 );
+		pixel_color_gradation_t<Pixel, TIN, TOUT>( _in, _out )( p1, p2 );
 		return p2;
 	}
 };
@@ -754,3 +755,4 @@ void gradation_convert_pixel( const Pixel& src, Pixel& dst, const GradationIN& g
 }
 
 #endif
+
