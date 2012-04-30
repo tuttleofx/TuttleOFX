@@ -1,4 +1,5 @@
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 
@@ -224,30 +225,29 @@ int main( int argc, char** argv )
 	std::vector<std::string>	plugins;
 	std::vector<std::string>	foundPlugins;
 	std::vector<std::string>	filters;
-	
+	using namespace sam;
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("help,h"     , "show this help")
-		("all,a"      , "show list of all plugins available")
-		("filter,f"   , bpo::value<std::string>(), "filtering the output for research a plugin. ex: -f \"*blur,*tuttle*\"")
-		("color"      , "color the output")
-		("verbose,v"  , "explain what is being done")
-		("properties" , "list properties of the OpenFX plugin")
-		("clips"      , "list clips of the OpenFX plugin")
-		("parameters" , "list parameters of the OpenFX plugin")
-		("brief"            , "brief summary of the tool")
+		(kHelpOptionString   , kHelpOptionMessage)
+		(kAllOptionString      , kAllOptionMessage)
+		(kFilterOptionString   , bpo::value<std::string>(), kFilterOptionMessage)
+		(kColorOptionString      , kColorOptionMessage)
+		(kPropertiesOptionString , kPropertiesOptionMessage)
+		(kClipsOptionString      , kClipsOptionMessage)
+		(kParametersOptionString , kParametersOptionMessage)
+		(kBriefOptionString            , kBriefOptionMessage)
 	;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		("plugin", bpo::value< std::vector<std::string> >(), "input directories")
+		(kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
 	;
 	
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add("plugin", -1);
+	pod.add(kInputDirOptionLongName, -1);
 	
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
@@ -282,13 +282,13 @@ int main( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if (vm.count("color"))
+	if (vm.count(kColorOptionLongName))
 	{
 		color = true;
 		_color.enable();
 	}
 
-	if( vm.count("help") )
+	if( vm.count(kHelpOptionLongName) )
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -303,24 +303,24 @@ int main( int argc, char** argv )
 		return 0;
 	}
 	
-	if ( vm.count("brief") )
+	if ( vm.count(kBriefOptionLongName) )
 	{
 		TUTTLE_COUT( _color._green << "show informations about OpenFX plugins" << _color._std );
 		return 0;
 	}
 
 	// defines plugins
-	if( vm.count("plugin") )
+	if( vm.count(kInputDirOptionLongName) )
 	{
-		plugins = vm["plugin"].as< std::vector<std::string> >();
+		plugins = vm[kInputDirOptionLongName].as< std::vector<std::string> >();
 	}
 	
-	if( vm.count("filter") )
+	if( vm.count(kFilterOptionLongName) )
 	{
-		bal::split( filters, vm["filter"].as<std::string>(), bal::is_any_of(","));
+		bal::split( filters, vm[kFilterOptionLongName].as<std::string>(), bal::is_any_of(","));
 	}
 	
-	if( vm.count("all") | (plugins.size() == 0) )
+	if( vm.count(kAllOptionLongName) | (plugins.size() == 0) )
 	{
 		tth::Core::instance().preload();
 		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
@@ -336,19 +336,18 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	const bool verbose = vm.count("verbose");
 
-	if (vm.count("properties"))
+	if (vm.count(kPropertiesOptionLongName))
 	{
 		properties = true;
 	}
 
-	if (vm.count("clips"))
+	if (vm.count(kClipsOptionLongName))
 	{
 		clips = true;
 	}
 
-	if (vm.count("parameters"))
+	if (vm.count(kParametersOptionLongName))
 	{
 		parameters = true;
 	}

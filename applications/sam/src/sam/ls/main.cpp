@@ -1,5 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 
@@ -25,6 +26,7 @@ namespace bal = boost::algorithm;
 namespace sam
 {
 	Color _color;
+	bool wasSthgDumped = false;
 }
 
 // A helper function to simplify the main part.
@@ -41,6 +43,7 @@ void coutVec( const boost::ptr_vector<T>& v )
 	BOOST_FOREACH( const T& f, v )
 	{
 		std::cout << f << std::endl;
+		sam::wasSthgDumped = true;
 	}
 }
 
@@ -63,32 +66,32 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("all,a"            , "do not ignore entries starting with .")
-		("directories,d"    , "show directories in path(s)")
-		("expression,e"     , bpo::value<std::string>(), "list with a specific pattern, ex: *.jpg,*.png")
-		("files,f"          , "show files in path(s)")
-		("help,h"           , "show this help")
-		("long-listing,l"   , "use a long listing format")
-		("mask,m"           , "mask sequences in path(s)")
-		("relative-path,p"  , "show the root path for each objects")
-		("recursive,R"      , "list subdirectories recursively")
-		("absolute-path"    , "show the absolute path, not relative like path-root")
-		("color"            , "color the output")
-		("full-display"     , "show directories, files and sequences")
-		("script"           , "output is formated to using in script files")
-		("brief"            , "brief summary of the tool")
+		(kAllOptionString            , kAllOptionMessage)
+		(kDirectoriesOptionString    , kDirectoriesOptionMessage)
+		(kExpressionOptionString     , bpo::value<std::string>(), kExpressionOptionMessage)
+		(kFilesOptionString          , kFilesOptionMessage )
+		(kHelpOptionString           , kHelpOptionMessage)
+		(kLongListingOptionString   , kLongListingOptionMessage)
+		(kIgnoreOptionString           , kIgnoreOptionMessage)
+		(kRelativePathOptionString  , kRelativePathOptionMessage)
+		(kRecursiveOptionString      , kRecursiveOptionMessage)
+		(kPathOptionString    , kPathOptionMessage)
+		(kColorOptionString            , kColorOptionMessage)
+		(kFullDisplayOptionString     , kFullDisplayOptionMessage )
+		(kScriptOptionString           , kScriptOptionMessage)
+		(kBriefOptionString            , kBriefOptionMessage)
 	;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
-		("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+		(kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
+		(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage)
 	;
 	
 	// define default options 
 	bpo::positional_options_description pod;
-	pod.add("input-dir", -1);
+	pod.add(kInputDirOptionLongName, -1);
 	
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
@@ -127,20 +130,20 @@ int main( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if ( vm.count("script") )
+	if ( vm.count(kScriptOptionLongName) )
 	{
 		// disable color, disable directory printing and set relative path by default
 		script = true;
 		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 
-	if ( vm.count("color") && !script )
+	if ( vm.count(kColorOptionLongName) && !script )
 	{
 		enableColor = true;
 	}
-	if ( vm.count("enable-color") && !script )
+	if ( vm.count(kEnableColorOptionLongName) && !script )
 	{
-		const std::string str = vm["enable-color"].as<std::string>();
+		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
 		enableColor = string_to_boolean( str );
 	}
 
@@ -150,7 +153,7 @@ int main( int argc, char** argv )
 		_color.enable();
 	}
 
-	if (vm.count("help"))
+	if (vm.count(kHelpOptionLongName))
 	{
 		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -168,72 +171,72 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
-	if ( vm.count("brief") )
+	if ( vm.count(kBriefOptionLongName) )
 	{
 		TUTTLE_COUT( _color._green << "list directory contents" << _color._std);
 		return 0;
 	}
 
-	if (vm.count("expression"))
+	if (vm.count(kExpressionOptionLongName))
 	{
 		TUTTLE_COUT( _color._red << "Expression: " << vm["expression"].as<std::string>() << _color._std );
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if (vm.count("directories"))
+	if (vm.count(kDirectoriesOptionLongName))
 	{
 		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
 	
-	if (vm.count("files"))
+	if (vm.count(kFilesOptionLongName))
 	{
 		researchMask |= sequenceParser::eMaskTypeFile;
 	}
 	
-	if (vm.count("mask"))
+	if (vm.count(kIgnoreOptionLongName))
 	{
 		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 	
-	if (vm.count("full-display"))
+	if (vm.count(kFullDisplayOptionLongName))
 	{
 		researchMask |= sequenceParser::eMaskTypeDirectory;
 		researchMask |= sequenceParser::eMaskTypeFile;
 		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
-	if (vm.count("all"))
+	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
 		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 	
-	if (vm.count("long-listing"))
+	if (vm.count(kLongListingOptionLongName))
 	{
 		descriptionMask |= sequenceParser::eMaskOptionsProperties;
 	}
 	
-	if (vm.count("relative-path") )
+	if (vm.count(kRelativePathOptionLongName) )
 	{
 		descriptionMask |= sequenceParser::eMaskOptionsPath;
 	}
 
-	if(vm.count("absolute-path"))
+	if(vm.count(kPathOptionLongName))
 	{
 		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
-	if (vm.count("input-dir"))
+	if (vm.count(kInputDirOptionLongName))
 	{
-		paths = vm["input-dir"].as< std::vector<std::string> >();
+		paths = vm[kInputDirOptionLongName].as< std::vector<std::string> >();
 	}
 	else
 	{
 		paths.push_back( "./" );
 	}
 	
-	if (vm.count("recursive"))
+	if (vm.count(kRecursiveOptionLongName))
 	{
 		recursiveListing = true;
 	}
@@ -261,6 +264,7 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( "" );
 				}
 				TUTTLE_COUT( path.string() << ":");
+				wasSthgDumped = true;
 			}
 
 			coutVec( detector.fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask ) );
@@ -276,6 +280,7 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
 						coutVec( detector.fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
+
 					}
 				}
 			}
@@ -290,6 +295,7 @@ int main( int argc, char** argv )
 	{
 		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
 	}
-
+	if(!wasSthgDumped)
+	        TUTTLE_CERR ( _color._error << "No sequence found here." << _color._std );
 	return 0;
 }

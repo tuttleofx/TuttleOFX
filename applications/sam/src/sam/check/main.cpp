@@ -1,5 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
 #include <tuttle/common/clip/Sequence.hpp>
@@ -141,25 +142,25 @@ int main( int argc, char** argv )
 		bpo::options_description hidden;
 
 		desc.add_options()
-			("help,h",   "display help")
-			("reader,n", bpo::value(&readerId)/*->required()*/, "reader node identifier \"tuttle.XXXreader\".")
-			("input,i",  bpo::value(&inputs)/*->required()*/, "input pathname (directory, file or sequence pattern).")
-			("range,r",  bpo::value(&range)->multitoken(), "range (used only if input is a sequence pattern).")
-			("brief",    "brief summary of the tool")
-			("color",    "color the output")
-			("script",   "output is formated to using in script files")
+			(kHelpOptionString,   kHelpOptionMessage)
+			(kReaderOptionString, bpo::value(&readerId)/*->required()*/, kReaderOptionMessage)
+			(kInputOptionString,  bpo::value(&inputs)/*->required()*/,kInputOptionMessage)
+			(kRangeOptionString,  bpo::value(&range)->multitoken(), kRangeOptionMessage )
+			(kBriefOptionString,    kBriefOptionMessage)
+			(kColorOptionString,    kColorOptionMessage)
+			(kScriptOptionString,  kScriptOptionMessage)
 		;
 
 		// describe hidden options
 		hidden.add_options()
-			("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+			(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage)
 		;
 
 		bpo::options_description cmdline_options;
 		cmdline_options.add(desc).add(hidden);
 
 		bpo::positional_options_description pod;
-		pod.add("input", -1);
+		pod.add(kInputOptionLongName, -1);
 
 		bpo::variables_map vm;
 
@@ -192,19 +193,19 @@ int main( int argc, char** argv )
 			exit( -2 );
 		}
 
-		if ( vm.count("script") )
+		if ( vm.count(kScriptOptionLongName) )
 		{
 			// disable color, disable directory printing and set relative path by default
 			script = true;
 		}
 
-		if ( vm.count("color") && !script )
+		if ( vm.count(kColorOptionLongName) && !script )
 		{
 			enableColor = true;
 		}
-		if ( vm.count("enable-color") && !script )
+		if ( vm.count(kEnableColorOptionLongName) && !script )
 		{
-			const std::string str = vm["enable-color"].as<std::string>();
+			const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
 			enableColor = string_to_boolean( str );
 		}
 
@@ -213,7 +214,7 @@ int main( int argc, char** argv )
 			_color.enable();
 		}
 
-		if ( vm.count("brief") )
+		if ( vm.count(kBriefOptionLongName) )
 		{
 			std::cout.rdbuf(_stdCout);
 			TUTTLE_COUT( _color._green << "check image files" << _color._std );
@@ -221,7 +222,7 @@ int main( int argc, char** argv )
 			return 0;
 		}
 
-		if( vm.count("help") || vm.count("input") == 0 )
+		if( vm.count(kHelpOptionLongName) || vm.count(kInputDirOptionLongName) == 0 )
 		{
 			std::cout.rdbuf(_stdCout); // restore cout's original streambuf
 			TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
@@ -239,23 +240,23 @@ int main( int argc, char** argv )
 			std::cout.rdbuf(0); // remove cout's streambuf
 			return 0;
 		}
-		if( !vm.count("reader") )
+		if( !vm.count(kReaderOptionLongName) )
 		{
 			TUTTLE_COUT( _color._red  << "sam-check : no reader specified." << _color._std );
 			TUTTLE_COUT( _color._red  << "            run sam-check -h for more information." << _color._std );
 			return 0;
 		}
-		if( !vm.count("input") )
+		if( !vm.count(kInputOptionLongName) )
 		{
 			TUTTLE_COUT( _color._red  << "sam-check : no input specified." << _color._std );
 			TUTTLE_COUT( _color._red  << "            run sam-check -h for more information." << _color._std );
 			return 0;
 		}
-		readerId = vm["reader"].as<std::string>();
-		inputs   = vm["input"].as< std::vector<std::string> >();
-		if( vm.count("range") )
+		readerId = vm[kReaderOptionLongName].as<std::string>();
+		inputs   = vm[kInputOptionLongName].as< std::vector<std::string> >();
+		if( vm.count(kRangeOptionLongName) )
 		{
-			range = vm["range"].as< std::vector<int> >();
+			range = vm[kRangeOptionLongName].as< std::vector<int> >();
 			hasRange = ( range.size() == 2 );
 		}
 
