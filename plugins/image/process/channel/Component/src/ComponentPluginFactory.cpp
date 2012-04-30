@@ -17,9 +17,9 @@ static const bool kSupportTiles = false;
  */
 void ComponentPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Component", "Component",
-		            "Component" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setLabels( "TuttleComponent", "Component",
+		            "Component convertor" );
+	desc.setPluginGrouping( "tuttle/image/process/channel" );
 
 	desc.setDescription( "Convert channels components." );
 
