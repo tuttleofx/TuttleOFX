@@ -2,9 +2,10 @@
 ## Main BJam makefile for BoostHack library
 ###############################################################################
 
-project boostHack
-	: requirements
-		<include>.
-	: usage-requirements
-		<include>.
+alias boostHack
+	: # no sources
+	: # no build requirements
+	: # no default build
+	: <include>.
 	;
+
