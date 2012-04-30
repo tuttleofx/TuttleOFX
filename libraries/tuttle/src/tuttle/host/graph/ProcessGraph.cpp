@@ -332,7 +332,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				}
 				
 				{
-					TUTTLE_COUT( "---------------------------------------- remove identity nodes" );
+					TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
 					std::vector<graph::visitor::IdentityNodeConnection<InternalGraphAtTimeImpl> > toRemove;
 					
 					graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> vis( renderGraphAtTime, toRemove );
