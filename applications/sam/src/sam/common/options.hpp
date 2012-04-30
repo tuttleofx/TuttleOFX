@@ -117,6 +117,11 @@ static const char* const kVerboseOptionMessage = "enable verbose mode";
 
 /// options without short-cut
 
+//--binaries-list
+static const char* const kBinariesListOptionLongName = "binaries-list";
+static const char* const kBinariesListOptionString = kBinariesListOptionLongName;
+static const char* const kBinariesListOptionMessage = "show list of all available sam binaries";
+
 //--brief
 static const char* const kBriefOptionLongName = "brief";
 static const char* const kBriefOptionString = kBriefOptionLongName;
@@ -137,10 +142,20 @@ static const char* const kColorOptionLongName = "color";
 static const char* const kColorOptionString = kColorOptionLongName;
 static const char* const kColorOptionMessage = "display the output with colors";
 
+//--commands-list
+static const char* const kCommandsListOptionLongName = "commands-list";
+static const char* const kCommandsListOptionString = kCommandsListOptionLongName;
+static const char* const kCommandsListOptionMessage = "show list of all available sam commands";
+
 //--continue-on-error
 static const char* const kContinueOnErrorOptionLongName = "continue-on-error";
 static const char* const kContinueOnErrorOptionString = kContinueOnErrorOptionLongName;
 static const char* const kContinueOnErrorOptionMessage = "continue on error";
+
+//--enable-color
+static const char* const kEnableColorOptionLongName = "enable-color";
+static const char* const kEnableColorOptionString = kEnableColorOptionLongName;
+static const char* const kEnableColorOptionMessage = "enable or disable color";
 
 //--expert
 static const char* const kExpertOptionLongName = "expert";
@@ -167,6 +182,11 @@ static const char* const kIdOptionLongName = "id";
 static const char* const kIdOptionString = kIdOptionLongName;
 static const char* const kIdOptionMessage = "set a name/id to the node";
 
+//--input-dir
+static const char* const kInputDirOptionLongName = "input-dir";
+static const char* const kInputDirOptionString = kInputDirOptionLongName;
+static const char* const kInputDirOptionMessage = "input directories";
+
 //--input-first
 static const char* const kInputFirstOptionLongName = "input-first";
 static const char* const kInputFirstOptionString = kInputFirstOptionLongName;
@@ -181,6 +201,11 @@ static const char* const kInputLastOptionMessage = "specify the last input image
 static const char* const kLastImageOptionLongName = "last-image";
 static const char* const kLastImageOptionString = kLastImageOptionLongName;
 static const char* const kLastImageOptionMessage = "specify the last image";
+
+//--nodes-list
+static const char* const kNodesListOptionLongName = "nodes-script";
+static const char* const kNodesListOptionString = kNodesListOptionLongName;
+static const char* const kNodesListOptionMessage = "show list of all available nodes (formatted for scripting)";
 
 //--output-first
 static const char* const kOutputFirstOptionLongName = "output-first";
@@ -206,6 +231,11 @@ static const char* const kParametersReduxOptionMessage = "list parameters of the
 static const char* const kParamDefaultOptionLongName = "param-default";
 static const char* const kParamDefaultOptionString = kParamDefaultOptionLongName;
 static const char* const kParamDefaultOptionMessage = "parameter default value";
+
+//--param-group
+static const char* const kParamGroupOptionLongName = "param-group";
+static const char* const kParamGroupOptionString = kParamGroupOptionLongName;
+static const char* const kParamGroupOptionMessage = "group of the OpenFX plugin";
 
 //--param-infos
 static const char* const kParamInfosOptionLongName = "param-infos";
@@ -257,32 +287,6 @@ static const char* const kScriptOptionLongName = "script";
 static const char* const kScriptOptionString = kScriptOptionLongName;
 static const char* const kScriptOptionMessage = "format the output such as it could be dump in a file and be used as a script";
 
-/// expert options
-
-//--binaries-list
-static const char* const kBinariesListOptionLongName = "binaries-list";
-static const char* const kBinariesListOptionString = kBinariesListOptionLongName;
-static const char* const kBinariesListOptionMessage = "show list of all available sam binaries";
-
-//--commands-list
-static const char* const kCommandsListOptionLongName = "commands-list";
-static const char* const kCommandsListOptionString = kCommandsListOptionLongName;
-static const char* const kCommandsListOptionMessage = "show list of all available sam commands";
-
-//--enable-color
-static const char* const kEnableColorOptionLongName = "enable-color";
-static const char* const kEnableColorOptionString = kEnableColorOptionLongName;
-static const char* const kEnableColorOptionMessage = "enable or disable color";
-
-//--input-dir
-static const char* const kInputDirOptionLongName = "input-dir";
-static const char* const kInputDirOptionString = kInputDirOptionLongName;
-static const char* const kInputDirOptionMessage = "input directories";
-
-//--nodes-list
-static const char* const kNodesListOptionLongName = "nodes-script";
-static const char* const kNodesListOptionString = kNodesListOptionLongName;
-static const char* const kNodesListOptionMessage = "show list of all available nodes (formatted for scripting)";
 
 }
 

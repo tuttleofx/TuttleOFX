@@ -396,7 +396,8 @@ int main(int argc, char** argv)
 						(kParametersReduxOptionString, kParametersReduxOptionMessage)
 						(kParamTypeOptionString, bpo::value<std::string>(), kParamTypeOptionMessage)
 						(kParamPossibleValuesOptionString, bpo::value<std::string>(), kParamPossibleValuesOptionMessage)
-						(kParamDefaultOptionString, bpo::value<std::string>(), kParamDefaultOptionMessage);
+						(kParamDefaultOptionString, bpo::value<std::string>(), kParamDefaultOptionMessage)
+						(kParamGroupOptionString, kParamGroupOptionMessage) ;
 
 				// define default options
 				bpo::positional_options_description param_values;
@@ -554,6 +555,16 @@ int main(int argc, char** argv)
                             TUTTLE_TCOUT( getFormattedStringValue( param.getProperties().fetchProperty(kOfxParamPropDefault) ) );
                             exit(0);
                         }
+						if (node_vm.count(kParamGroupOptionLongName)) {
+							if (currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect)
+							{
+								if (currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty(kOfxImageEffectPluginPropGrouping))
+								{
+									TUTTLE_COUT( currentNode.asImageEffectNode().getPluginGrouping());
+								}
+							}
+							exit(0);
+						}
 
                         if (node_vm.count(kIdOptionLongName)) {
                             const std::string nodeId = node_vm[kIdOptionLongName].as<std::string>();
