@@ -16,6 +16,10 @@ namespace sam {
 #define SAM_EXAMPLE_LINE_COUT(x,y) TUTTLE_COUT( _color._green << "    " << std::setw(SAM_HELP_MARGING) << x << y << _color._std );
 #define SAM_HELP_MARGING 35
 
+static const char* const kUrlTuttleofxProject = "http://sites.google.com/site/tuttleofx";
+
+/// options with short-cut
+
 //-a, --all
 static const char* const kAllOptionLongName = "all";
 static const char* const kAllOptionString = "all,a";
@@ -94,7 +98,7 @@ static const char* const kQuietOptionMessage = "don't print commands";
 //-r, --range
 static const char* const kRangeOptionLongName = "range";
 static const char* const kRangeOptionString = "range,r";
-static const char* const kRangeOptionMessage = "range =used only if input is a sequence pattern";
+static const char* const kRangeOptionMessage = "processing range (used only if input is a sequence pattern)";
 
 //-R, --recursive
 static const char* const kRecursiveOptionLongName = "recursive";
@@ -111,7 +115,8 @@ static const char* const kVerboseOptionLongName = "verbose";
 static const char* const kVerboseOptionString =  "verbose,V";
 static const char* const kVerboseOptionMessage = "enable verbose mode";
 
-////////////
+/// options without short-cut
+
 //--brief
 static const char* const kBriefOptionLongName = "brief";
 static const char* const kBriefOptionString = kBriefOptionLongName;
@@ -136,6 +141,11 @@ static const char* const kColorOptionMessage = "display the output with colors";
 static const char* const kContinueOnErrorOptionLongName = "continue-on-error";
 static const char* const kContinueOnErrorOptionString = kContinueOnErrorOptionLongName;
 static const char* const kContinueOnErrorOptionMessage = "continue on error";
+
+//--expert
+static const char* const kExpertOptionLongName = "expert";
+static const char* const kExpertOptionString = kExpertOptionLongName;
+static const char* const kExpertOptionMessage = "show expert user options";
 
 //--first-image //TODO in sam-info and sam-ls, replace first-image and last-image by intput/output-first/last
 static const char* const kFirstImageOptionLongName = "first-image";
@@ -182,44 +192,40 @@ static const char* const kOutputLastOptionLongName = "output-last";
 static const char* const kOutputLastOptionString = kOutputLastOptionLongName;
 static const char* const kOutputLastOptionMessage = "specify the last output image, in order to select a sub-range of the output sequence";
 
-//-parameters-list
+//--parameters-list
 static const char* const kParametersOptionLongName = "parameters-list";
 static const char* const kParametersOptionString = kParametersOptionLongName;
 static const char* const kParametersOptionMessage = "list parameters of the OpenFX plugin";
 
-//-parameters-redux-list
+//--parameters-redux-list
 static const char* const kParametersReduxOptionLongName = "parameters-redux-list";
 static const char* const kParametersReduxOptionString = kParametersReduxOptionLongName;
 static const char* const kParametersReduxOptionMessage = "list parameters of the OpenFX plugin (redux informations)";
 
-//-param-default
+//--param-default
 static const char* const kParamDefaultOptionLongName = "param-default";
 static const char* const kParamDefaultOptionString = kParamDefaultOptionLongName;
 static const char* const kParamDefaultOptionMessage = "parameter default value";
 
-//-param-infos
+//--param-infos
 static const char* const kParamInfosOptionLongName = "param-infos";
 static const char* const kParamInfosOptionString = kParamInfosOptionLongName;
 static const char* const kParamInfosOptionMessage = "display parameter informations";
 
-
-//-param-possible-values
+//--param-possible-values
 static const char* const kParamPossibleValuesOptionLongName = "param-possible-values";
 static const char* const kParamPossibleValuesOptionString = kParamPossibleValuesOptionLongName;
 static const char* const kParamPossibleValuesOptionMessage = "possible parameter values";
 
-//-param-type
+//--param-type
 static const char* const kParamTypeOptionLongName = "param-type";
 static const char* const kParamTypeOptionString = kParamTypeOptionLongName;
 static const char* const kParamTypeOptionMessage = "parameter type";
 
-
-//-param-values
+//--param-values
 static const char* const kParamValuesOptionLongName = "param-values";
 static const char* const kParamValuesOptionString = kParamValuesOptionLongName;
 static const char* const kParamValuesOptionMessage = "display parameter values";
-
-
 
 //--properties
 static const char* const kPropertiesOptionLongName = "properties";
@@ -251,7 +257,8 @@ static const char* const kScriptOptionLongName = "script";
 static const char* const kScriptOptionString = kScriptOptionLongName;
 static const char* const kScriptOptionMessage = "format the output such as it could be dump in a file and be used as a script";
 
-///// hidden option
+/// expert options
+
 //--binaries-list
 static const char* const kBinariesListOptionLongName = "binaries-list";
 static const char* const kBinariesListOptionString = kBinariesListOptionLongName;
@@ -265,7 +272,7 @@ static const char* const kCommandsListOptionMessage = "show list of all availabl
 //--enable-color
 static const char* const kEnableColorOptionLongName = "enable-color";
 static const char* const kEnableColorOptionString = kEnableColorOptionLongName;
-static const char* const kEnableColorOptionMessage = "enable =or disable color";
+static const char* const kEnableColorOptionMessage = "enable or disable color";
 
 //--input-dir
 static const char* const kInputDirOptionLongName = "input-dir";

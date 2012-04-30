@@ -8,9 +8,10 @@
 #include <vector>
 #include <string>
 
+namespace ttl = ::tuttle::host;
+
 namespace sam {
 
-namespace ttl = tuttle::host;
 Color _color;
 
 /**

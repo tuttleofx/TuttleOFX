@@ -21,10 +21,12 @@
 #include <iostream>
 
 namespace bpo = boost::program_options;
+namespace ttl = tuttle::host;
 
-void displayHelp(bpo::options_description &infoOptions, bpo::options_description &confOptions) {
+void displayHelp( bpo::options_description &infoOptions, bpo::options_description &confOptions )
+{
     using namespace sam;
-    TUTTLE_COUT( std::left << _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
+    TUTTLE_COUT( std::left << _color._blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << _color._std << std::endl);
 
     TUTTLE_COUT( _color._blue << "NAME" << _color._std);
     TUTTLE_COUT( _color._green << "\tsam do - A command line to execute a list of OpenFX nodes." << _color._std << std::endl);
@@ -88,16 +90,78 @@ void displayHelp(bpo::options_description &infoOptions, bpo::options_description
     SAM_EXAMPLE_LINE_COUT("Continues whatever happens: ", "sam do reader in.@.dpx // writer out.@.exr // --continueOnError");
 
     TUTTLE_COUT( std::endl << _color._blue << "DISPLAY OPTIONS (replace the process)" << _color._std);
-    TUTTLE_COUT( infoOptions);
+    TUTTLE_COUT( infoOptions );
     TUTTLE_COUT( _color._blue << "CONFIGURE PROCESS" << _color._std);
-    TUTTLE_COUT( confOptions);
+    TUTTLE_COUT( confOptions );
 
 }
 
-int main(int argc, char** argv) {
+void displayHelp( bpo::options_description &infoOptions, bpo::options_description &confOptions, bpo::options_description &expertOptions )
+{
+	using namespace sam;
+	displayHelp( infoOptions, confOptions);
+	
+	TUTTLE_COUT( _color._blue << "EXPERT OPTIONS" << _color._std);
+	TUTTLE_COUT( expertOptions );
+}
+
+void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, bpo::options_description &infoOptions, bpo::options_description &confOptions )
+{
+	using namespace sam;
+	
+	TUTTLE_COUT( _color._blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << _color._std);
+	TUTTLE_COUT( "");
+	TUTTLE_COUT( _color._blue << "NODE" << _color._std);
+	TUTTLE_COUT( _color._green << "\tsam do " << nodeFullName << " - OpenFX node." << _color._std);
+	TUTTLE_COUT( "");
+	TUTTLE_COUT( _color._blue << "DESCRIPTION" << _color._std);
+	TUTTLE_COUT( _color._green << "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) << _color._std);
+	// internal node help
+	if (currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect)
+	{
+		if (currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty(kOfxImageEffectPluginPropGrouping))
+		{
+			TUTTLE_COUT( "\t" << _color._green << currentNode.asImageEffectNode().getPluginGrouping() << _color._std);
+		}
+	}
+	TUTTLE_COUT( "");
+	if (currentNode.getProperties().hasProperty(kOfxPropPluginDescription))
+	{
+		TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue( 0 ));
+	}
+	else
+	{
+		TUTTLE_COUT( "\tNo description.");
+	}
+	TUTTLE_COUT( "");
+	TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std);
+	coutParametersWithDetails(currentNode);
+	TUTTLE_COUT( "");
+	TUTTLE_COUT( _color._blue << "CLIPS" << _color._std);
+	coutClipsWithDetails(currentNode);
+	
+	TUTTLE_COUT( "");
+	TUTTLE_COUT( _color._blue << "DISPLAY OPTIONS (override the process)" << _color._std  );
+	TUTTLE_COUT( infoOptions );
+	TUTTLE_COUT( _color._blue << "CONFIGURE PROCESS" << _color._std );
+	TUTTLE_COUT( confOptions );
+	
+	TUTTLE_COUT( "" );
+}
+
+void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, bpo::options_description &infoOptions, bpo::options_description &confOptions, bpo::options_description &expertOptions )
+{
+	using namespace sam;
+	displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions);
+	
+	TUTTLE_COUT( _color._blue << "EXPERT OPTIONS" << _color._std);
+	TUTTLE_COUT( expertOptions );
+}
+
+int main(int argc, char** argv)
+{
     using namespace sam;
     using namespace sam::samdo;
-    namespace ttl = tuttle::host;
 
     try {
 
@@ -124,82 +188,108 @@ int main(int argc, char** argv) {
             // namespace bpo = boost::program_options;
             // Analyze sam do flags
             try {
-                // Declare the supported options.
-                bpo::options_description infoOptions;
-                infoOptions.add_options()(kHelpOptionString, kHelpOptionMessage)(kVersionOptionString, kVersionOptionMessage)(kNodesOptionString, kNodesOptionMessage)(
-                                kColorOptionString, kColorOptionMessage)(kScriptOptionString, kScriptOptionMessage)(kBriefOptionString, kBriefOptionMessage);
-                bpo::options_description confOptions;
-                confOptions.add_options()(kContinueOnErrorOptionString, kContinueOnErrorOptionMessage)(kRangeOptionString, bpo::value<std::string>(), kRangeOptionMessage)(
-                                kRenderScaleOptionString, bpo::value<std::string>(), kRenderScaleOptionMessage)(kVerboseOptionString, kVerboseOptionMessage)(kQuietOptionString,
-                                                                                                                                                             kQuietOptionMessage)(
-                                kNbCoresOptionString, bpo::value<std::size_t>(), kNbCoresOptionString);
+				// Declare the supported options.
+				bpo::options_description infoOptions;
+				infoOptions.add_options()
+						(kHelpOptionString, kHelpOptionMessage)
+						(kVersionOptionString, kVersionOptionMessage)
+						(kNodesOptionString, kNodesOptionMessage)
+						(kColorOptionString, kColorOptionMessage)
+						(kScriptOptionString, kScriptOptionMessage)
+						(kBriefOptionString, kBriefOptionMessage)
+						(kExpertOptionString, kExpertOptionMessage);
+				bpo::options_description confOptions;
+				confOptions.add_options()
+						(kContinueOnErrorOptionString, kContinueOnErrorOptionMessage)
+						(kRangeOptionString, bpo::value<std::string>(), kRangeOptionMessage)
+						(kRenderScaleOptionString, bpo::value<std::string>(), kRenderScaleOptionMessage)
+						(kVerboseOptionString, kVerboseOptionMessage)
+						(kQuietOptionString,kQuietOptionMessage)
+						(kNbCoresOptionString, bpo::value<std::size_t>(), kNbCoresOptionString);
 
-                // describe hidden options
-                bpo::options_description hidden;
-                hidden.add_options()(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage)
-                // params for auto-completion
-                (kNodesListOptionString, kNodesListOptionMessage);
+				// describe hidden options
+				bpo::options_description hidden;
+				hidden.add_options()(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage)
+				// params for auto-completion
+				(kNodesListOptionString, kNodesListOptionMessage);
 
-                bpo::options_description all_options;
-                all_options.add(infoOptions).add(confOptions).add(hidden);
+				bpo::options_description all_options;
+				all_options.add(infoOptions).add(confOptions).add(hidden);
 
-                bpo::variables_map samdo_vm;
-                bpo::store(bpo::command_line_parser(cl_options).options(all_options).run(), samdo_vm);
-                if (const char* env_do_options = std::getenv("SAM_DO_OPTIONS")) {
-                    const std::vector<std::string> vecOptions = bpo::split_unix(env_do_options, " ");
-                    bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
-                }
-                if (const char* env_do_options = std::getenv("SAM_OPTIONS")) {
-                    const std::vector<std::string> vecOptions = bpo::split_unix(env_do_options, " ");
-                    bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
-                }
+				bpo::variables_map samdo_vm;
+				bpo::store(bpo::command_line_parser(cl_options).options(all_options).run(), samdo_vm);
+				if (const char* env_do_options = std::getenv("SAM_DO_OPTIONS"))
+				{
+					const std::vector<std::string> vecOptions = bpo::split_unix(env_do_options, " ");
+					bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
+				}
+				if (const char* env_do_options = std::getenv("SAM_OPTIONS"))
+				{
+					const std::vector<std::string> vecOptions = bpo::split_unix(env_do_options, " ");
+					bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
+				}
 
-                bpo::notify(samdo_vm);
+				bpo::notify(samdo_vm);
 
                 if (samdo_vm.count(kScriptOptionLongName)) {
                     // disable color, disable directory printing and set relative path by default
                     script = true;
                 }
 
-                if (samdo_vm.count(kColorOptionLongName) && !script) {
-                    enableColor = true;
-                }
-                if (samdo_vm.count(kEnableColorOptionLongName) && !script) {
-                    const std::string str = samdo_vm[kEnableColorOptionLongName].as<std::string>();
-                    enableColor = string_to_boolean(str);
-                }
-                if (samdo_vm.count(kVerboseOptionLongName)) {
-                    enableVerbose = true;
-                }
-                if (samdo_vm.count(kQuietOptionLongName)) {
-                    enableQuiet = true;
-                }
+				if (samdo_vm.count(kColorOptionLongName) && !script) {
+					enableColor = true;
+				}
+				if (samdo_vm.count(kEnableColorOptionLongName) && !script) {
+					const std::string str = samdo_vm[kEnableColorOptionLongName].as<std::string>();
+					enableColor = string_to_boolean(str);
+				}
+				if (samdo_vm.count(kVerboseOptionLongName)) {
+					enableVerbose = true;
+				}
+				if (samdo_vm.count(kQuietOptionLongName)) {
+					enableQuiet = true;
+				}
 
-                if (enableColor) {
-                    _color.enable();
-                }
+				if (enableColor) {
+					_color.enable();
+				}
 
-                ////
+				////
 
-                if (argc <= 1) // no argument
-                                {
-                    TUTTLE_COUT( _color._red <<"sam do: missing operands."<< _color._std<<std::endl);
-                    displayHelp(infoOptions, confOptions);
-                    exit(-1);
-                }
-                ////
+				std::string colorOpt = "--";
+				colorOpt += kColorOptionLongName;
+				std::string scriptOpt = "--";
+				scriptOpt += kScriptOptionLongName;
+				
+				if ( argc < 2 ||
+					 (((argc == 2) && (strcmp(argv[1], colorOpt.c_str() ) == 0))) ||
+					 (((argc == 2) && (strcmp(argv[1], scriptOpt.c_str()) == 0))) ||
+					 (((argc == 3) && (strcmp(argv[1], colorOpt.c_str() ) == 0)) && (strcmp(argv[2], scriptOpt.c_str()) == 0)) ||
+					 (((argc == 3) && (strcmp(argv[2], colorOpt.c_str() ) == 0)) && (strcmp(argv[1], scriptOpt.c_str()) == 0)) ) 
+					 // no argument or --color or --script
+				{
+					TUTTLE_COUT( _color._red <<"sam do: missing operands."<< _color._std<<std::endl);
+					displayHelp(infoOptions, confOptions);
+					exit(-1);
+				}
+				////
 
-                if (samdo_vm.count(kHelpOptionLongName) || (((argc == 2) && (strstr(argv[1], kColorOptionLongName) != NULL)))) {
-                    displayHelp(infoOptions, confOptions);
-                    exit(0);
-                }
+				if ( samdo_vm.count(kHelpOptionLongName) ) {
+					displayHelp(infoOptions, confOptions);
+					exit(0);
+				}
 
+				if ( samdo_vm.count(kExpertOptionString) ) {
+					displayHelp(infoOptions, confOptions, hidden);
+					exit(0);
+				}
+				
                 if (samdo_vm.count(kBriefOptionLongName)) {
                     TUTTLE_COUT( _color._green << "A command line to execute a list of OpenFX nodes" << _color._std);
                     return 0;
                 }
 
-                if (samdo_vm.count("version")) {
+                if (samdo_vm.count(kVersionOptionLongName)) {
                     TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR);
                     exit(0);
                 }
@@ -279,40 +369,43 @@ int main(int argc, char** argv) {
 
             /// @todo Set all sam do options for rendering
 
-            // Analyse options for each node
-            {
-                // Declare the supported options.
-                bpo::options_description infoOptions;
-                infoOptions.add_options()(kHelpOptionString, kHelpOptionMessage)//
-                                         (kVersionOptionString, kVersionOptionMessage);
-                bpo::options_description confOptions;
-                confOptions.add_options()(kVerboseOptionString, kVerboseOptionMessage)//
-                                         (kIdOptionString, bpo::value<std::string>(), kIdOptionMessage)//
-                                         (kNbCoresOptionString,bpo::value<std::size_t>(),kNbCoresOptionMessage); //
-                // describe openFX options
-                bpo::options_description openfxOptions;
-                openfxOptions.add_options()//
-                                (kAttributesOptionString, kAttributesOptionMessage)//
-                                (kPropertiesOptionString, kPropertiesOptionMessage)//
-                                (kClipsOptionString,kClipsOptionMessage)//
-                                (kClipOptionString, bpo::value<std::string>(), kClipOptionMessage)//
-                                (kParametersOptionString, kParametersOptionMessage)//
-                                (kParamInfosOptionString,bpo::value<std::string>(),kParamInfosOptionMessage)//
-                                (kParamValuesOptionString, bpo::value<std::vector<std::string> >(), kParamValuesOptionMessage)//
-                // for auto completion
-                                (kParametersReduxOptionString, kParametersReduxOptionMessage)//
-                                (kParamTypeOptionString, bpo::value<std::string>(), kParamTypeOptionMessage)//
-                                (kParamValuesOptionString, bpo::value<std::string>(),kParamValuesOptionMessage)//
-                                (kParamDefaultOptionString, bpo::value<std::string>(), kParamDefaultOptionMessage);
+			// Analyse options for each node
+			{
+				// Declare the supported options.
+				bpo::options_description infoOptions;
+				infoOptions.add_options()
+						(kHelpOptionString, kHelpOptionMessage)
+						(kVersionOptionString, kVersionOptionMessage)
+						(kExpertOptionString, kExpertOptionMessage);
+				bpo::options_description confOptions;
+				confOptions.add_options()
+						(kVerboseOptionString, kVerboseOptionMessage)
+						(kIdOptionString, bpo::value<std::string>(), kIdOptionMessage)
+						(kNbCoresOptionString,bpo::value<std::size_t>(),kNbCoresOptionMessage);
+				// describe openFX options
+				bpo::options_description openfxOptions;
+				openfxOptions.add_options()
+						(kAttributesOptionString, kAttributesOptionMessage)
+						(kPropertiesOptionString, kPropertiesOptionMessage)
+						(kClipsOptionString,kClipsOptionMessage)
+						(kClipOptionString, bpo::value<std::string>(), kClipOptionMessage)
+						(kParametersOptionString, kParametersOptionMessage)
+						(kParamInfosOptionString,bpo::value<std::string>(),kParamInfosOptionMessage)
+						(kParamValuesOptionString, bpo::value<std::vector<std::string> >(), kParamValuesOptionMessage)
+				// for auto completion
+						(kParametersReduxOptionString, kParametersReduxOptionMessage)
+						(kParamTypeOptionString, bpo::value<std::string>(), kParamTypeOptionMessage)
+						(kParamPossibleValuesOptionString, bpo::value<std::string>(), kParamPossibleValuesOptionMessage)
+						(kParamDefaultOptionString, bpo::value<std::string>(), kParamDefaultOptionMessage);
 
-                // define default options
-                bpo::positional_options_description param_values;
-                param_values.add(kParamValuesOptionLongName, -1);
+				// define default options
+				bpo::positional_options_description param_values;
+				param_values.add(kParamValuesOptionLongName, -1);
 
-                bpo::options_description all_options;
-                all_options.add(infoOptions).add(confOptions).add(openfxOptions);
+				bpo::options_description all_options;
+				all_options.add(infoOptions).add(confOptions).add(openfxOptions);
 
-                const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 
                 BOOST_FOREACH( const std::vector<std::string>& command, cl_commands ) {
 
@@ -351,51 +444,24 @@ int main(int argc, char** argv) {
                         bpo::notify(node_vm);
                         //TUTTLE_COUT( "[" << nodeFullName << "]" );
 
-                        ttl::Graph::Node& currentNode = graph.createNode(nodeFullName);
-
                         // Check priority flags:
                         // If one flag to display informations is used in command line,
                         // it replaces all the process.
                         // --help,h --version,v --verbose,V --params --clips --props
 
-                        if (node_vm.count(kHelpOptionLongName)) {
-                            TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std);
-                            TUTTLE_COUT( "");
-                            TUTTLE_COUT( _color._blue << "NODE" << _color._std);
-                            TUTTLE_COUT( _color._green << "\tsam do " << nodeFullName << " - OpenFX node." << _color._std);
-                            TUTTLE_COUT( "");
-                            TUTTLE_COUT( _color._blue << "DESCRIPTION" << _color._std);
-                            TUTTLE_COUT( _color._green << "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) << _color._std);
-                            // internal node help
-                            if (currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect) {
-                                if (currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty(kOfxImageEffectPluginPropGrouping)) {
-                                    TUTTLE_COUT( "\t" << _color._green << currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxImageEffectPluginPropGrouping ).getValue() << _color._std);
-                                }
-                            }
-                            TUTTLE_COUT( "");
-                            if (currentNode.getProperties().hasProperty(kOfxPropPluginDescription)) {
-                                TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue( 0 ));
-                            } else {
-                                TUTTLE_COUT( "\tNo description.");
-                            }
-                            TUTTLE_COUT( "");
-                            TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std);
-                            coutParametersWithDetails(currentNode);
-                            TUTTLE_COUT( "");
-                            TUTTLE_COUT( _color._blue << "CLIPS" << _color._std);
-                            coutClipsWithDetails(currentNode);
-
-                            TUTTLE_COUT( "");
-                            TUTTLE_COUT( _color._blue << "DISPLAY OPTIONS (override the process)" << _color._std);
-                            TUTTLE_COUT( infoOptions);
-                            TUTTLE_COUT( _color._blue << "CONFIGURE PROCESS" << _color._std);
-                            TUTTLE_COUT( confOptions);
-//							TUTTLE_COUT( _color._blue << "OPENFX OPTIONS" << _color._std );
-//							TUTTLE_COUT( openfxOptions );
-
-                            TUTTLE_COUT( "");
-                            exit(0);
-                        }
+						ttl::Graph::Node& currentNode = graph.createNode(nodeFullName);
+						
+						if ( node_vm.count(kHelpOptionLongName) )
+						{
+							displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions );
+							exit(0);
+						}
+						if ( node_vm.count(kExpertOptionString) )
+						{
+							displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions, openfxOptions );
+							exit(0);
+						}
+						
                         if (node_vm.count(kVersionOptionLongName)) {
                             TUTTLE_COUT( "\tsam do " << nodeFullName);
                             TUTTLE_COUT( "Version " << currentNode.getVersionStr());
@@ -671,14 +737,17 @@ int main(int argc, char** argv) {
         //			TUTTLE_COUT( "| " << option );
         //		}
 
-        BOOST_FOREACH( const std::vector<std::string>& node, cl_commands ) {
-            TUTTLE_COUT_DEBUG( "[" << node[0] << "]" );
-            for (std::size_t i = 1; i < node.size(); ++i) {
-                const std::string& s = node[i];
-                TUTTLE_COUT_DEBUG( ( s[0] == '-') ? s : "* " << s );
-            }
-        }
-
+		if( enableVerbose )
+		{
+			BOOST_FOREACH( const std::vector<std::string>& node, cl_commands ) {
+				TUTTLE_COUT( "[" << node[0] << "]" );
+				for (std::size_t i = 1; i < node.size(); ++i) {
+					const std::string& s = node[i];
+					TUTTLE_COUT( (( s[0] == '-') ? "" : "* " ) << s );
+				}
+			}
+		}
+		
         // Execute the graph
         ttl::ComputeOptions options;
         if (range.size() >= 2) {
