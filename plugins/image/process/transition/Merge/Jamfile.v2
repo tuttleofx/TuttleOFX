@@ -9,6 +9,7 @@ import os ;
 project
 	: requirements
 		<include>src
+                <include>src/gil/toolbox
 	: usage-requirements
 		<include>src
 	: build-dir $(BUILD)/Merge
@@ -26,4 +27,4 @@ plugin Merge :
 ###############################################################################
 # Automatic install
 ###############################################################################
-#auto_install Merge : $(DIST) ;
+auto_install Merge : $(DIST) ;

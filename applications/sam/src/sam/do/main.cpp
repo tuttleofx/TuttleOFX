@@ -788,7 +788,7 @@ int main( int argc, char** argv )
 			for( std::size_t i = 1; i < node.size(); ++i )
 			{
 				const std::string& s = node[i];
-				TUTTLE_COUT_DEBUG( ( s[0] == '-') ? s : "* " << s );
+				TUTTLE_COUT_DEBUG( ( ( s[0] == '-' ) ? s : "* " ) << s );
 			}
 		}
 		
