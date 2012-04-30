@@ -28,6 +28,7 @@ else if [ os.name ] = MACOSX
 plugin HistogramKeyer : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
+	/boostHack
     opengl
     ;
  
