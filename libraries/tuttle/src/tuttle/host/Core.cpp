@@ -61,7 +61,7 @@ Core::Core()
 Core::~Core()
 {}
 
-void Core::preload()
+void Core::preload( const bool useCache )
 {
 #ifndef __WINDOWS__
 	//	typedef boost::archive::binary_oarchive OArchive;
@@ -70,31 +70,37 @@ void Core::preload()
 	//	typedef boost::archive::text_iarchive IArchive;
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
-
-	const std::string cacheFile( (getPreferences().getTuttleHomePath() / "tuttlePluginCacheSerialize.xml").string() );
-	//TUTTLE_TCOUT_VAR( cacheFile );
-
-	TUTTLE_COUT_DEBUG("plugin cache file = " << cacheFile );
-
-	try
+	
+	std::string cacheFile;
+	if( useCache )
 	{
-		std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
-		if( ifsb.is_open() )
+		cacheFile = (getPreferences().getTuttleHomePath() / "tuttlePluginCacheSerialize.xml").string();
+		
+
+		//TUTTLE_TCOUT_VAR( cacheFile );
+
+		TUTTLE_COUT_DEBUG("plugin cache file = " << cacheFile );
+
+		try
 		{
-			TUTTLE_COUT_DEBUG( "Read plugins cache." );
-			IArchive iArchive( ifsb );
-			iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
-			ifsb.close();
+			std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
+			if( ifsb.is_open() )
+			{
+				TUTTLE_COUT_DEBUG( "Read plugins cache." );
+				IArchive iArchive( ifsb );
+				iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
+				ifsb.close();
+			}
 		}
-	}
-	catch( std::exception& e )
-	{
-		TUTTLE_CERR( "Exception when reading cache file (" << e.what() << ")." );
+		catch( std::exception& e )
+		{
+			TUTTLE_CERR( "Exception when reading cache file (" << e.what() << ")." );
+		}
 	}
 #endif
 	_pluginCache.scanPluginFiles();
 #ifndef __WINDOWS__
-	if( _pluginCache.isDirty() )
+	if( useCache && _pluginCache.isDirty() )
 	{
 		// generate unique name for writing
 		boost::uuids::random_generator gen;
