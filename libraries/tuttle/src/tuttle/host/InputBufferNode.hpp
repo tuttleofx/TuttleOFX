@@ -327,7 +327,7 @@ public:
 	 * @brief Asks the plugin all times it needs for each of it's input clips.
 	 * @param[in] time
 	 */
-	InputsTimeMap getTimesNeeded( const OfxTime time ) const { return InputsTimeMap(); }
+	ClipTimesSetMap getTimesNeeded( const OfxTime time ) const { return ClipTimesSetMap(); }
 
 	/**
 	 * @brief Initialization pass to propagate informations from inputs to outputs.

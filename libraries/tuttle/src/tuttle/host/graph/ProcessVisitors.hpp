@@ -101,7 +101,7 @@ public:
 		BOOST_FOREACH( const OfxTime t, vertex._data._times )
 		{
 			TUTTLE_TCOUT( "-  time: "<< t );
-			INode::InputsTimeMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
+			INode::ClipTimesSetMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
 //				TUTTLE_TCOUT_VAR( v.first );
@@ -136,14 +136,19 @@ struct IdentityNodeConnection
 	typedef typename TGraph::Edge Edge;
 	typedef typename TGraph::edge_descriptor edge_descriptor;
 	
-	vertex_descriptor _identityVertex; ///< the identity node to remove
-	struct ClipConnection
+	VertexKey _identityVertex; ///< the identity node to remove
+	struct InputClipConnection
 	{
-		vertex_descriptor _node;
-		std::string _clip;
+		VertexKey _srcNode;
+		std::string _inputClip;
 	};
-	ClipConnection _input;
-	std::vector< ClipConnection > _outputs;
+	struct OutputClipConnection
+	{
+		VertexKey _dstNode;
+		std::string _dstNodeClip;
+	};
+	InputClipConnection _input;
+	std::vector< OutputClipConnection > _outputs;
 };
 
 /**
@@ -187,26 +192,26 @@ public:
 						<< exception::dev() + "There is an error in the plugin: The plugin declares to be identity but don't give the name of the input clip to use." );
 				}
 				IdentityNodeConnection<TGraph> reconnect;
-				reconnect._identityVertex = vd;
-				reconnect._input._clip = inputClip;
-				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
+				reconnect._identityVertex = _graph.instance(vd).getKey();
+				reconnect._input._inputClip = inputClip;
+				BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
 				{
 					const Edge& e = _graph.instance( ed );
 					if( ( e.getInAttrName() == inputClip ) &&
 					    ( e.getOutTime() == atTime )
 					  )
 					{
-						vertex_descriptor in = _graph.source( ed );
-						reconnect._input._node = in;
+						vertex_descriptor in = _graph.target( ed );
+						reconnect._input._srcNode = _graph.instance(in).getKey();
 					}
 				}
-				BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
 				{
 					const Edge& e = _graph.instance( ed );
-					vertex_descriptor out = _graph.target( ed );
-					typename IdentityNodeConnection<TGraph>::ClipConnection c;
-					c._node = out;
-					c._clip = e.getInAttrName();
+					vertex_descriptor out = _graph.source( ed );
+					typename IdentityNodeConnection<TGraph>::OutputClipConnection c;
+					c._dstNode = _graph.instance(out).getKey();
+					c._dstNodeClip = e.getInAttrName();
 					reconnect._outputs.push_back(c);
 				}
 				TUTTLE_TCOUT( "isIdentity => " << vertex.getName() << " - " << inputClip << " at time " << atTime );
@@ -233,14 +238,25 @@ template<class TGraph>
 void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnection<TGraph> >& toRemove )
 {
 	TUTTLE_IF_DEBUG(
-		TUTTLE_TCOUT_X( 80, "_" );
-		TUTTLE_TCOUT_VAR( toRemove.size() );
+		TUTTLE_COUT_X( 80, "_" );
+		TUTTLE_COUT_VAR( toRemove.size() );
 		BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, toRemove )
 		{
-			TUTTLE_TCOUT( graph.instance( connection._identityVertex ) );
-			TUTTLE_TCOUT( graph.instance( connection._input._node ) << "::" << connection._input._clip );
+			TUTTLE_COUT( connection._identityVertex );
+			TUTTLE_COUT( "IN: "
+				<< connection._identityVertex << "::" << connection._input._inputClip
+				<< " <<-- "
+				<< connection._input._srcNode << "::" kOfxOutputAttributeName );
+			
+			BOOST_FOREACH( const typename IdentityNodeConnection<TGraph>::OutputClipConnection& outputClipConnection, connection._outputs )
+			{
+				TUTTLE_COUT( "OUT: "
+					<< connection._identityVertex << "::" kOfxOutputAttributeName
+					<< " -->> "
+					<< outputClipConnection._dstNode << "::" << outputClipConnection._dstNodeClip );
+			}
 		}
-		TUTTLE_TCOUT_X( 80, "_" );
+		TUTTLE_COUT_X( 80, "_" );
 	);
 //				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
 //				{
@@ -451,7 +467,7 @@ public:
 		
 		if( _result && vertex.getProcessDataAtTime()._finalNode )
 		{
-			memory::CACHE_ELEMENT img = _cache.get( vertex._name + "." kOfxOutputAttributeName, vertex._data._time );
+			memory::CACHE_ELEMENT img = _cache.get( vertex._clipName + "." kOfxOutputAttributeName, vertex._data._time );
 			if( ! img.get() )
 			{
 				BOOST_THROW_EXCEPTION( exception::Logic()
@@ -459,7 +475,7 @@ public:
 					<< exception::nodeName( vertex._name )
 					<< exception::time( vertex._data._time ) );
 			}
-			_result->put( vertex._name, vertex._data._time, img );
+			_result->put( vertex._clipName, vertex._data._time, img );
 		}
 	}
 

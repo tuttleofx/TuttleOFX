@@ -7,6 +7,7 @@
 #include "ProcessVertexAtTimeData.hpp"
 
 #include <ostream>
+#include <string>
 
 namespace tuttle {
 namespace host {
@@ -15,10 +16,28 @@ namespace graph {
 class ProcessVertexAtTime : public IVertex
 {
 public:
-	struct Key : public std::pair<std::string, OfxTime>
+	class Key
 	{
-		typedef std::pair<std::string, OfxTime> Parent;
-		Key( const std::string& s, const OfxTime& t ):Parent(s, t){}
+	public:
+		Key()
+		{}
+		Key( const std::string& name, const OfxTime& time )
+		: _name(name)
+		, _time(time)
+		{}
+		
+		const std::string& getName() const { return _name; }
+		void setName( const std::string& name ) { _name = name; }
+		
+		OfxTime getTime() const { return _time; }
+		void setTime( const OfxTime time ) { _time = time; }
+		
+		bool operator==( const Key& v ) const;
+		std::size_t getHash() const;
+		
+	private:
+		std::string _name;
+		OfxTime _time;
 	};
 public:
 	ProcessVertexAtTime( );
@@ -44,6 +63,7 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const Key& v );
 
 public:
+	std::string _clipName;
 	ProcessVertexAtTimeData _data;
 
 };
@@ -53,6 +73,11 @@ std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime::Key& v );
 
 }
 }
+}
+
+namespace boost {
+inline std::size_t hash_value( const tuttle::host::graph::ProcessVertexAtTime::Key& k )
+{ return k.getHash(); }
 }
 
 #endif

@@ -137,6 +137,7 @@ public:
 	{
 		vertex_descriptor vd = boost::add_vertex( prop, _graph );
 
+		//TUTTLE_TCOUT( "addVertex, vd: " << vd << ", prop.getKey(): " << prop.getKey() );
 		_vertexDescriptorMap[prop.getKey()] = vd;
 		return vd;
 	}
@@ -154,28 +155,31 @@ public:
 	{
 		try
 		{
-			const vertex_descriptor& descOut = getVertexDescriptor( out );
-			const vertex_descriptor& descIn  = getVertexDescriptor( in );
+			const vertex_descriptor descOut = getVertexDescriptor( out );
+			const vertex_descriptor descIn  = getVertexDescriptor( in );
 
-			Edge e( out, in, inAttr );
+			const Edge e( out, in, inAttr );
 			addEdge( descOut, descIn, e );
 		}
 		catch( boost::exception& e )
 		{
-			e << exception::user() + "Error while connecting " + out + " <-- " + in + "." + inAttr;
+			e << exception::user() + "Error while connecting " + out + " --> " + in + "." + inAttr;
 			throw;
 		}
 	}
 
 	edge_descriptor addEdge( const vertex_descriptor& v1, const vertex_descriptor& v2, const Edge& prop )
 	{
-		edge_descriptor addedEdge = boost::add_edge( v1, v2, prop, _graph ).first;
+		//TUTTLE_TCOUT_VAR2( v1, instance(v1) );
+		//TUTTLE_TCOUT_VAR2( v2, instance(v2) );
+		
+		const edge_descriptor addedEdge = boost::add_edge( v1, v2, prop, _graph ).first;
 		
 		if( hasCycle() )
 		{
 			removeEdge( addedEdge );
 			BOOST_THROW_EXCEPTION( exception::Logic()
-			    << exception::user( "Connection error because the graph becomes cyclic." ) );
+			    << exception::user() + "Connection error: the graph becomes cyclic while connecting \"" + instance(v1) + "\" to \"" + instance(v2) + "\"" );
 		}
 		return addedEdge;
 	}

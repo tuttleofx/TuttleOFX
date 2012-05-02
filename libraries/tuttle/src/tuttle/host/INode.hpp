@@ -46,8 +46,10 @@ class INode : private boost::noncopyable
 {
 public:
 	typedef INode This;
+	
 	typedef std::set<OfxTime> TimesSet;
-	typedef std::map<std::string, TimesSet> InputsTimeMap;
+	typedef std::map<std::string, TimesSet> ClipTimesSetMap;
+	
 	enum ENodeType
 	{
 		eNodeTypeUnknown,
@@ -121,7 +123,7 @@ public:
 	 * @brief Asks the plugin all times it needs for each of it's input clips.
 	 * @param[in] time
 	 */
-	virtual InputsTimeMap getTimesNeeded( const OfxTime time ) const = 0;
+	virtual ClipTimesSetMap getTimesNeeded( const OfxTime time ) const = 0;
 
 	/**
 	 * @brief Initialization pass to propagate informations from inputs to outputs.
@@ -193,12 +195,12 @@ protected:
 	typedef graph::ProcessVertexAtTimeData DataAtTime;
 	typedef std::map<OfxTime,DataAtTime*> DataAtTimeMap;
 
-	Data* _data;
-	DataAtTimeMap _dataAtTime;
+	Data* _data; ///< link to external datas
+	DataAtTimeMap _dataAtTime; ///< link to external datas at each time
 
 public:
 	void setProcessData( Data* data );
-	void setProcessData( DataAtTime* dataAtTime );
+	void setProcessDataAtTime( DataAtTime* dataAtTime );
 	
 	Data& getData();
 	const Data& getData() const;
