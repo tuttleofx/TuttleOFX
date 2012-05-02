@@ -619,8 +619,12 @@ void ImageEffectDescriptor::addSupportedBitDepth( EBitDepth v )
 /** @brief Add a file extension to those supported */
 void ImageEffectDescriptor::addSupportedExtension( const std::string& ext )
 {
-    const int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
-    _effectProps.propSetString( kTuttleOfxImageEffectPropSupportedExtensions, ext, n );
+	// only Tuttle support this property ( out of standard )
+	if( OFX::Private::gHostDescription.hostName == "TuttleOfx" )
+	{
+		const int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
+		_effectProps.propSetString( kTuttleOfxImageEffectPropSupportedExtensions, ext, n );
+	}
 }
 
 /** @brief Is the plugin single instance only ? */
