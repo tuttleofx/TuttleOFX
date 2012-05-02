@@ -28,11 +28,17 @@ static int _processedImages = 0;
 //static std::streambuf * const _stdCerr = std::cerr.rdbuf(); // back up cout's streambuf
 
 enum EReturnCode {
-    eReturnCodeOK = 0, eReturnCodeErrorInImages = 1, eReturnCodeApplicationError = 2
+	eReturnCodeOK = 0,
+	eReturnCodeErrorInImages = 1,
+	eReturnCodeApplicationError = 2
 };
 
 enum EImageStatus {
-    eImageStatusDiffNull, eImageStatusDiffNotNull, eImageStatusFileSizeError, eImageStatusNoFile, eImageStatusImageError
+	eImageStatusDiffNull = 0,
+	eImageStatusDiffNotNull,
+	eImageStatusFileSizeError,
+	eImageStatusNoFile,
+	eImageStatusImageError
 };
 
 /**
@@ -58,10 +64,10 @@ EImageStatus diffImageStatus(Graph::Node& read1, Graph::Node& read2, Graph::Node
         std::cout << std::endl;
 
         for (unsigned int i = 0; i < 3; ++i) {
-            if (stat.getParam("quality").getDoubleValueAtIndex(i) != std::numeric_limits<double>::infinity())
+            if (stat.getParam("quality").getDoubleValueAtIndex(i) != 0.0 )
                 return eImageStatusDiffNotNull;
         }
-        std::cout << stat << std::endl;
+		//std::cout << stat << std::endl;
 
         return eImageStatusDiffNull;
     } catch (...) {
@@ -79,7 +85,7 @@ EImageStatus diffFile(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat,
         case eImageStatusDiffNull:
             break;
         case eImageStatusDiffNotNull:
-            std::cout << "diff not null: ";
+            std::cout << "Diff not null: ";
             ++_notNullImage;
             break;
         case eImageStatusFileSizeError:
