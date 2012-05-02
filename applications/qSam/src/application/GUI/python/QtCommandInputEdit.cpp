@@ -12,7 +12,6 @@
 QtCommandInputEdit::QtCommandInputEdit( QWidget* parent )
 	: QTextEdit( parent )
 	, m_completer( NULL )
-	, m_navigation_iterator( NULL )
 	, m_navigation( 0 )
 {
 	initCompleter();

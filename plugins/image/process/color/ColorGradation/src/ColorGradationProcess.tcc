@@ -35,19 +35,19 @@ void ColorGradationProcess<View>::setup( const OFX::RenderArguments& args )
 }
 
 template<class View>
-template<class IN, class OUT>
+template<class TIN, class TOUT>
 GIL_FORCEINLINE
-void ColorGradationProcess<View>::processSwitchAlpha( const bool processAlpha, const View& src, const View& dst, IN gradationIn, OUT gradationOut )
+void ColorGradationProcess<View>::processSwitchAlpha( const bool processAlpha, const View& src, const View& dst, TIN gradationIn, TOUT gradationOut )
 {
 	using namespace boost::gil;
 	if( processAlpha )
 	{
-		terry::algorithm::transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>( gradationIn, gradationOut ), *this );
+		terry::algorithm::transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<TIN, TOUT>( gradationIn, gradationOut ), *this );
 	}
 	else
 	{
 		/// @todo do not apply process on alpha directly inside transform, with a "channel_for_each_if_channel"
-		terry::algorithm::transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>( gradationIn, gradationOut ), *this );
+		terry::algorithm::transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<TIN, TOUT>( gradationIn, gradationOut ), *this );
 
 		// temporary solution copy alpha channel
 		terry::copy_channel_if_exist<alpha_t>( src, dst );
@@ -55,9 +55,9 @@ void ColorGradationProcess<View>::processSwitchAlpha( const bool processAlpha, c
 }
 
 template<class View>
-template<class IN>
+template<class TIN>
 GIL_FORCEINLINE
-void ColorGradationProcess<View>::processSwitchOut( const EParamGradation out, const bool processAlpha, const View& src, const View& dst, IN gradationIn )
+void ColorGradationProcess<View>::processSwitchOut( const EParamGradation out, const bool processAlpha, const View& src, const View& dst, TIN gradationIn )
 {
 	using namespace boost::gil;
 	terry::color::gradation::Gamma  gamma ( _params._GammaValueOut );
@@ -65,31 +65,31 @@ void ColorGradationProcess<View>::processSwitchOut( const EParamGradation out, c
 	switch( out )
 	{
 		case eParamGradation_linear:
-			processSwitchAlpha<IN, terry::color::gradation::Linear>   ( processAlpha, src, dst, gradationIn );
+			processSwitchAlpha<TIN, terry::color::gradation::Linear>   ( processAlpha, src, dst, gradationIn );
 			break;
 		case eParamGradation_sRGB:
-			processSwitchAlpha<IN, terry::color::gradation::sRGB>     ( processAlpha, src, dst, gradationIn );
+			processSwitchAlpha<TIN, terry::color::gradation::sRGB>     ( processAlpha, src, dst, gradationIn );
 			break;
 		case eParamGradation_cineon:
-			processSwitchAlpha<IN, terry::color::gradation::Cineon>   ( processAlpha, src, dst, gradationIn, cineon );
+			processSwitchAlpha<TIN, terry::color::gradation::Cineon>   ( processAlpha, src, dst, gradationIn, cineon );
 			break;
 		case eParamGradation_gamma:
-			processSwitchAlpha<IN, terry::color::gradation::Gamma>    ( processAlpha, src, dst, gradationIn, gamma );
+			processSwitchAlpha<TIN, terry::color::gradation::Gamma>    ( processAlpha, src, dst, gradationIn, gamma );
 			break;
 		case eParamGradation_panalog:
-			processSwitchAlpha<IN, terry::color::gradation::Panalog>  ( processAlpha, src, dst, gradationIn );
+			processSwitchAlpha<TIN, terry::color::gradation::Panalog>  ( processAlpha, src, dst, gradationIn );
 			break;
 		case eParamGradation_REDLog:
-			processSwitchAlpha<IN, terry::color::gradation::REDLog>   ( processAlpha, src, dst, gradationIn );
+			processSwitchAlpha<TIN, terry::color::gradation::REDLog>   ( processAlpha, src, dst, gradationIn );
 			break;
 		case eParamGradation_ViperLog:
-			processSwitchAlpha<IN, terry::color::gradation::ViperLog> ( processAlpha, src, dst, gradationIn );
+			processSwitchAlpha<TIN, terry::color::gradation::ViperLog> ( processAlpha, src, dst, gradationIn );
 			break;
 		case eParamGradation_REDSpace:
-			processSwitchAlpha<IN, terry::color::gradation::REDSpace> ( processAlpha, src, dst, gradationIn );
+			processSwitchAlpha<TIN, terry::color::gradation::REDSpace> ( processAlpha, src, dst, gradationIn );
 			break;
 		case eParamGradation_AlexaLogC:
-			processSwitchAlpha<IN, terry::color::gradation::AlexaLogC>( processAlpha, src, dst, gradationIn );
+			processSwitchAlpha<TIN, terry::color::gradation::AlexaLogC>( processAlpha, src, dst, gradationIn );
 			break;
 	}
 }
@@ -159,3 +159,5 @@ void ColorGradationProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 }
 }
 }
+
+
