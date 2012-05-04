@@ -14,12 +14,17 @@ namespace writer {
 struct DPXWriterProcessParams
 {
 	std::string               _filepath;       ///< filepath
+	std::string               _project;        ///< project metadata
+	std::string               _copyright;      ///< copyright metadata
 	ETuttlePluginBitDepth     _bitDepth;       ///< Output bit depth
+	size_t                    _iBitDepth;      ///< Int value of output bit depth
 	::dpx::Descriptor         _descriptor;     ///< Components type
 	::dpx::Characteristic     _transfer;
 	::dpx::Characteristic     _colorimetric;
 	::dpx::Packing            _packed;         ///< Bit streaming packing
 	::dpx::Encoding           _encoding;
+	::dpx::Orientation        _orientation;
+	bool                      _swapEndian;     ///< set endianness
 
 };
 
@@ -52,8 +57,6 @@ protected:
 #endif
 	OFX::StringParam*    _project;         ///< Dpx metadata Project
 	OFX::StringParam*    _copyright;       ///< Dpx metadata Copyright
-
-	DPXWriterProcessParams params;
 };
 
 }

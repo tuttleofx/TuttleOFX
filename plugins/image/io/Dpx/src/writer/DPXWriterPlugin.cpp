@@ -37,6 +37,92 @@ DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 
 DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 {
+	DPXWriterProcessParams params;
+	
+	params._filepath  = getAbsoluteFilenameAt( time );
+	params._project   = _project->getValue();
+	params._copyright = _copyright->getValue();
+	params._bitDepth  = static_cast< ETuttlePluginBitDepth >( _bitDepth->getValue() );
+
+	switch ( params._bitDepth )
+	{
+		case eTuttlePluginBitDepth8:
+			params._iBitDepth = 8;
+			break;
+		case eTuttlePluginBitDepth10:
+			params._iBitDepth = 10;
+			break;
+		case eTuttlePluginBitDepth12:
+			params._iBitDepth = 12;
+			break;
+		case eTuttlePluginBitDepth16:
+			params._iBitDepth = 16;
+			break;
+		case eTuttlePluginBitDepth32:
+			params._iBitDepth = 32;
+			break;
+		case eTuttlePluginBitDepth64:
+			params._iBitDepth = 64;
+			break;
+	}
+
+	switch( _descriptor->getValue() )
+	{
+		case  0: params._descriptor = ::dpx::kUserDefinedDescriptor; break;
+		case  1: params._descriptor = ::dpx::kRed; break;
+		case  2: params._descriptor = ::dpx::kGreen; break;
+		case  3: params._descriptor = ::dpx::kBlue; break;
+		case  4: params._descriptor = ::dpx::kAlpha; break;
+		case  5: params._descriptor = ::dpx::kLuma; break;
+		case  6: params._descriptor = ::dpx::kColorDifference; break;
+		case  7: params._descriptor = ::dpx::kDepth; break;
+		case  8: params._descriptor = ::dpx::kCompositeVideo; break;
+		case  9: params._descriptor = ::dpx::kRGB; break;
+		case 10: params._descriptor = ::dpx::kRGBA; break;
+		case 11: params._descriptor = ::dpx::kABGR; break;
+		case 12: params._descriptor = ::dpx::kCbYCrY; break;
+		case 13: params._descriptor = ::dpx::kCbYACrYA; break;
+		case 14: params._descriptor = ::dpx::kCbYCr; break;
+		case 15: params._descriptor = ::dpx::kCbYCrA; break;
+		case 16: params._descriptor = ::dpx::kUserDefined2Comp; break;
+		case 17: params._descriptor = ::dpx::kUserDefined3Comp; break;
+		case 18: params._descriptor = ::dpx::kUserDefined4Comp; break;
+		case 19: params._descriptor = ::dpx::kUserDefined5Comp; break;
+		case 20: params._descriptor = ::dpx::kUserDefined6Comp; break;
+		case 21: params._descriptor = ::dpx::kUserDefined7Comp; break;
+		case 22: params._descriptor = ::dpx::kUserDefined8Comp; break;
+		case 23: params._descriptor = ::dpx::kUndefinedDescriptor; break;
+		case 24:
+			switch( _clipSrc->getPixelComponents() )
+			{
+				case OFX::ePixelComponentAlpha: params._descriptor = ::dpx::kLuma; break;
+				case OFX::ePixelComponentRGB:   params._descriptor = ::dpx::kRGB; break;
+				case OFX::ePixelComponentRGBA:  params._descriptor = ::dpx::kRGBA;break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: unknown input channel type." ) );
+						break;
+			}
+			break;
+		default: break;
+	}
+	switch( _transfer->getValue() )
+	{
+		case 13 : params._transfer = ::dpx::kUndefinedCharacteristic; break;
+		default : params._transfer = static_cast< ::dpx::Characteristic >( _transfer->getValue() ); break;
+	}
+	switch( _colorimetric->getValue() )
+	{
+		case 13 : params._colorimetric = ::dpx::kUndefinedCharacteristic; break;
+		default : params._colorimetric = static_cast< ::dpx::Characteristic >( _colorimetric->getValue() ); break;
+	}
+
+	params._packed       = static_cast< ::dpx::Packing >( _packed->getValue() );
+	params._encoding     = static_cast< ::dpx::Encoding >( _encoding->getValue() );
+#ifndef TUTTLE_PRODUCTION
+	params._orientation  = static_cast< ::dpx::Orientation >( _orientation->getValue() );
+#endif
+	params._swapEndian   = _swapEndian->getValue();
+	
 	return params;
 }
 
@@ -47,23 +133,108 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
-
-	ETuttlePluginBitDepth eOutBitDepth = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
+	DPXWriterProcessParams params = getProcessParams( args.time );
+	
 	OFX::EBitDepth        eOfxBitDepth = _clipSrc->getPixelDepth();
 	OFX::EPixelComponent  components   = _clipSrc->getPixelComponents();
 	OfxPointI             size         = _clipSrc->getPixelRodSize( args.time );
-
-	::dpx::Descriptor     eDescriptor  = ::dpx::kUndefinedDescriptor;   ///< Components type
-	::dpx::Characteristic eTransfer;
-	::dpx::Characteristic eColorimetric;
-	::dpx::Packing        ePacked;       ///< Bit streaming packing
-	::dpx::Encoding       eEncoding;
+	
+	switch ( params._bitDepth )
+	{
+		case eTuttlePluginBitDepth8:
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthUShort:
+				case OFX::eBitDepthFloat:
+					switch( components )
+					{
+						case OFX::ePixelComponentAlpha: doGilRender<DPXWriterProcess, false, boost::gil::gray_layout_t>( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGB  : doGilRender<DPXWriterProcess, false, boost::gil::rgb_layout_t> ( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGBA : doGilRender<DPXWriterProcess, false, boost::gil::rgba_layout_t>( *this, args, eOfxBitDepth ); break;
+						default: BOOST_THROW_EXCEPTION( exception::InputMismatch()
+														<< exception::user( "Dpx: Unknown component." ) ); break;
+					}
+					return;
+				case OFX::eBitDepthUByte: break;
+			}
+			break;
+		case eTuttlePluginBitDepth10:
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthFloat:
+					switch( components )
+					{
+						case OFX::ePixelComponentAlpha: doGilRender<DPXWriterProcess, false, boost::gil::gray_layout_t>( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGB  : doGilRender<DPXWriterProcess, false, boost::gil::rgb_layout_t> ( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGBA : doGilRender<DPXWriterProcess, false, boost::gil::rgba_layout_t>( *this, args, eOfxBitDepth ); break;
+						default: BOOST_THROW_EXCEPTION( exception::InputMismatch()
+														<< exception::user( "Dpx: Unknown component." ) ); break;
+					}
+					return;
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort: break;
+			}
+			break;
+		case eTuttlePluginBitDepth12:
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthFloat:
+					switch( components )
+					{
+						case OFX::ePixelComponentAlpha: doGilRender<DPXWriterProcess, false, boost::gil::gray_layout_t>( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGB  : doGilRender<DPXWriterProcess, false, boost::gil::rgb_layout_t> ( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGBA : doGilRender<DPXWriterProcess, false, boost::gil::rgba_layout_t>( *this, args, eOfxBitDepth ); break;
+						default: BOOST_THROW_EXCEPTION( exception::InputMismatch()
+														<< exception::user( "Dpx: Unknown component." ) ); break;
+					}
+					return;
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort: break;
+			}
+			break;
+		case eTuttlePluginBitDepth16:
+			switch ( eOfxBitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
+					break;
+				case OFX::eBitDepthFloat:
+					switch( components )
+					{
+						case OFX::ePixelComponentAlpha: doGilRender<DPXWriterProcess, false, boost::gil::gray_layout_t>( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGB  : doGilRender<DPXWriterProcess, false, boost::gil::rgb_layout_t> ( *this, args, eOfxBitDepth ); break;
+						case OFX::ePixelComponentRGBA : doGilRender<DPXWriterProcess, false, boost::gil::rgba_layout_t>( *this, args, eOfxBitDepth ); break;
+						default: BOOST_THROW_EXCEPTION( exception::InputMismatch()
+														<< exception::user( "Dpx: Unknown component." ) ); break;
+					}
+					return;
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort: break;
+			}
+			break;
+		case eTuttlePluginBitDepth32:
+		case eTuttlePluginBitDepth64:
+			break;
+	}
 
 	std::string filename = getAbsoluteFilenameAt( args.time );
-
-#ifndef TUTTLE_PRODUCTION
-	::dpx::Orientation orientation = static_cast< ::dpx::Orientation >( _orientation->getValue() );
-#endif
 
 	::dpx::Writer   writer;
 	::dpx::DataSize dataSize = ::dpx::kByte;
@@ -80,7 +251,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 	writer.Start();
 
-	writer.SetFileInfo( filename.c_str(), 0, "TuttleOFX DPX Writer", _project->getValue().c_str(), _copyright->getValue().c_str(), ~0, _swapEndian->getValue() );
+	writer.SetFileInfo( filename.c_str(), 0, "TuttleOFX DPX Writer", params._project.c_str(), params._copyright.c_str(), ~0, params._swapEndian );
 
 	writer.SetImageInfo( size.x, size.y );
 
@@ -88,7 +259,6 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	writer.header.SetImageOrientation( orientation );
 #endif
 
-	int iBitDepth = 0;
 	int pixelSize = 0;
 	std::string inputComponentString = "unknown";
 
@@ -110,325 +280,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 		case OFX::ePixelComponentRGBA : inputComponentString = "RGBA"; pixelSize *= 4;  break;
 		default: break;
 	}
-	switch ( eOutBitDepth )
-	{
-		case eTuttlePluginBitDepth8:
-			iBitDepth = 8;
-			switch ( eOfxBitDepth )
-			{
-				case OFX::eBitDepthCustom:
-				case OFX::eBitDepthNone:
-				case OFX::eBitDepthUShort:
-				case OFX::eBitDepthFloat:
-					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
-						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
-					break;
-				case OFX::eBitDepthUByte: break;
-			}
-			break;
-		case eTuttlePluginBitDepth10:
-			iBitDepth = 10;
-			switch ( eOfxBitDepth )
-			{
-				case OFX::eBitDepthCustom:
-				case OFX::eBitDepthNone:
-				case OFX::eBitDepthFloat:
-					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
-						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
-					break;
-				case OFX::eBitDepthUByte:
-				case OFX::eBitDepthUShort: break;
-			}
-			break;
-		case eTuttlePluginBitDepth12:
-			iBitDepth = 12;
-			switch ( eOfxBitDepth )
-			{
-				case OFX::eBitDepthCustom:
-				case OFX::eBitDepthNone:
-				case OFX::eBitDepthFloat:
-					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
-						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
-					break;
-				case OFX::eBitDepthUByte:
-				case OFX::eBitDepthUShort: break;
-			}
-			break;
-		case eTuttlePluginBitDepth16:
-			iBitDepth = 16;
-			switch ( eOfxBitDepth )
-			{
-				case OFX::eBitDepthCustom:
-				case OFX::eBitDepthNone:
-				case OFX::eBitDepthFloat:
-					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
-						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
-					break;
-				case OFX::eBitDepthUByte:
-				case OFX::eBitDepthUShort: break;
-			}
-			break;
-		case eTuttlePluginBitDepth32:
-			iBitDepth = 32;
-			break;
-		case eTuttlePluginBitDepth64:
-			iBitDepth = 64;
-			break;
-	}
-
-	switch( _descriptor->getValue() )
-	{
-		case 0:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write user defined" ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefinedDescriptor; break;
-		case 1:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write Red channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kRed; break;
-		case 2:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write Green channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kGreen; break;
-		case 3:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write Blue channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kBlue; break;
-		case 4:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write Alpha channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kAlpha; break;
-		case 5:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write Luma channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kLuma; break;
-		case 6:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write ColorDifference channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kColorDifference; break;
-		case 7:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write Depth channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kDepth; break;
-		case 8:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kCompositeVideo; break;
-		case 9:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGB: break;
-						break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write RGB channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kRGB; break;
-		case 10:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGBA: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write RGBA channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kRGBA; break;
-		case 11:
-
-			switch( components )
-			{
-				case OFX::ePixelComponentRGBA: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write ABGR channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kABGR; break;
-		case 12:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGB: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write CbYCrY channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kCbYCrY; break;
-		case 13:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGBA: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write CbYCrYA channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kCbYACrYA; break;
-		case 14:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGB: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write CbYCr channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kCbYCr; break;
-		case 15:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGBA: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write CbYCrA channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kCbYCrA; break;
-		case 16:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write 2 channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefined2Comp; break;
-		case 17:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGB: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write 3 channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefined3Comp; break;
-		case 18:
-			switch( components )
-			{
-				case OFX::ePixelComponentRGBA: break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write 4 channel (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefined4Comp; break;
-		case 19:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write 5 channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefined5Comp; break;
-		case 20:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write 6 channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefined6Comp; break;
-		case 21:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write 7 channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefined7Comp; break;
-		case 22:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write 8 channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUserDefined8Comp; break;
-		case 23:
-			switch( components )
-			{
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write undefined descriptor (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			eDescriptor = ::dpx::kUndefinedDescriptor; break;
-		case 24:
-			switch( components )
-			{
-				case OFX::ePixelComponentAlpha: eDescriptor = ::dpx::kLuma; break;
-				case OFX::ePixelComponentRGB:  eDescriptor = ::dpx::kRGB; break;
-				case OFX::ePixelComponentRGBA: eDescriptor = ::dpx::kRGBA;break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
-						<< exception::user( "Dpx: Unable to write CbYCr channels (input is " + inputComponentString + ")." ) );
-						break;
-			}
-			break;
-	}
-
-	switch( _transfer->getValue() )
-	{
-		case 13 : eTransfer = ::dpx::kUndefinedCharacteristic; break;
-		default : eTransfer = static_cast< ::dpx::Characteristic >( _transfer->getValue() ); break;
-	}
-	switch( _colorimetric->getValue() )
-	{
-		case 13 : eColorimetric = ::dpx::kUndefinedCharacteristic; break;
-		default : eColorimetric = static_cast< ::dpx::Characteristic >( _colorimetric->getValue() ); break;
-	}
-	ePacked   = static_cast< ::dpx::Packing > ( _packed->getValue() );
-	eEncoding = static_cast< ::dpx::Encoding >( _encoding->getValue() );
 	
-	writer.SetElement( 0,
-			eDescriptor,
-			iBitDepth,
-			eTransfer,
-			eColorimetric,
-			ePacked,
-			eEncoding );
-
-	
-	if( ! writer.WriteHeader() )
-	{
-		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
-	}
-
 	typedef std::vector<char, OfxAllocator<char> > DataVector;
 	const std::size_t rowBytesToCopy = size.x * pixelSize;
 
@@ -443,6 +295,236 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 		memcpy( dataPtrIt, dataSrcPtr, rowBytesToCopy );
 
 		dataPtrIt += rowBytesToCopy;
+	}
+	
+	switch( params._descriptor )
+	{
+		case ::dpx::kUserDefinedDescriptor:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write user defined" ) );
+						break;
+			}
+			break;
+		case ::dpx::kRed:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write Red channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kGreen:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write Green channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kBlue:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write Blue channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kAlpha:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write Alpha channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kLuma:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write Luma channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kColorDifference:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write ColorDifference channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kDepth:
+			switch( components )
+			{
+				case OFX::ePixelComponentAlpha: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write Depth channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kCompositeVideo:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kRGB:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGB: break;
+						break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write RGB channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kRGBA:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGBA: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write RGBA channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kABGR:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGBA: 
+					convertRGBAToABGR( data, size.x, size.y, pixelSize );
+					break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write ABGR channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kCbYCrY:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGB: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write CbYCrY channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kCbYACrYA:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGBA: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write CbYCrYA channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kCbYCr:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGB: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write CbYCr channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kCbYCrA:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGBA: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write CbYCrA channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUserDefined2Comp:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write 2 channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUserDefined3Comp:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGB: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write 3 channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUserDefined4Comp:
+			switch( components )
+			{
+				case OFX::ePixelComponentRGBA: break;
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write 4 channel (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUserDefined5Comp:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write 5 channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUserDefined6Comp:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write 6 channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUserDefined7Comp:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write 7 channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUserDefined8Comp:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write 8 channels (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+		case ::dpx::kUndefinedDescriptor:
+			switch( components )
+			{
+				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+						<< exception::user( "Dpx: Unable to write undefined descriptor (input is " + inputComponentString + ")." ) );
+						break;
+			}
+			break;
+	}
+
+	writer.SetElement( 0,
+			params._descriptor,
+			params._iBitDepth,
+			params._transfer,
+			params._colorimetric,
+			params._packed,
+			params._encoding );
+
+	
+	if( ! writer.WriteHeader() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Data()
+			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
 	}
 
 	if( ! writer.WriteElement( 0, &data.front(), dataSize ) )
