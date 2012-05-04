@@ -180,7 +180,7 @@ allLibs = [
 		('openjpeg',    'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'                                       , '', False),
 		('ffmpeg',      'http://ffmpeg.org/releases/ffmpeg-0.8.2.tar.bz2'                                                           , '', False),
 		('openimageio', 'https://github.com/OpenImageIO/oiio/tarball/RB-1.0/OpenImageIO-oiio-Release-1.0.0-0-g5b37f1c.tar.gz'       , '', False),
-		('opencolorio', 'http://github.com/imageworks/OpenColorIO/tarball/v1.0.4/imageworks-OpenColorIO-v1.0.4-0-gc0a9a92.tar.gz'   , '', False),
+		('opencolorio', 'http://github.com/imageworks/OpenColorIO/tarball/v1.0.6/imageworks-OpenColorIO-v1.0.6-0-g0f89532.tar.gz'   , '' , False),
 		('imagemagick', 'http://www.imagemagick.org/download/ImageMagick.tar.gz'                                                    , '', False),
 		('webp',        'https://webp.googlecode.com/files/libwebp-0.1.3.tar.gz'                                                    , '', False),
 		('tinyxml',     'http://netcologne.dl.sourceforge.net/project/tinyxml/tinyxml/2.6.1/tinyxml_2_6_1.tar.gz'                   , '', False),

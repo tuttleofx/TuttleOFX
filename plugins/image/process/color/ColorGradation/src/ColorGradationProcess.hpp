@@ -29,13 +29,13 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 private:
-	template<class IN, class OUT>
+	template<class TIN, class TOUT>
 	GIL_FORCEINLINE
-	void processSwitchAlpha( const bool processAlpha, const View& src, const View& dst, IN gradationIn = IN(), OUT gradationOut = OUT() );
+	void processSwitchAlpha( const bool processAlpha, const View& src, const View& dst, TIN gradationIn = TIN(), TOUT gradationOut = TOUT() );
 
-	template <class IN>
+	template <class TIN>
 	GIL_FORCEINLINE
-	void processSwitchOut( const EParamGradation out, const bool processAlpha, const View& src, const View& dst, IN gradationIn = IN() );
+	void processSwitchOut( const EParamGradation out, const bool processAlpha, const View& src, const View& dst, TIN gradationIn = TIN() );
 
 	void processSwitchInOut( const EParamGradation in, const EParamGradation out, const bool processAlpha, const View& src, const View& dst );
 };
@@ -47,3 +47,4 @@ private:
 #include "ColorGradationProcess.tcc"
 
 #endif
+

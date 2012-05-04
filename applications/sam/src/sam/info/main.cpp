@@ -1,5 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
+#include <sam/common/options.hpp>
 
 #include <tuttle/common/clip/Sequence.hpp>
 
@@ -33,7 +34,9 @@ int	lastImage	= 0;
 namespace sam
 {
 	Color _color;
+	bool wasSthgDumped = false;
 }
+
 
 void printImageProperties( std::string path )
 {
@@ -47,7 +50,7 @@ void printImageProperties( std::string path )
 		image_info = AcquireImageInfo();
 		GetImageInfo( image_info );
 
-		strcpy( image_info -> filename, path.c_str() ); 
+		strcpy( image_info -> filename, path.c_str() );
 
 		ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
 		GetExceptionInfo( exceptionsInfo );
@@ -144,20 +147,22 @@ void printImageProperties( std::string path )
 	
 }
 
-void getImageProperties( const ttl::File& s )
+void dumpImageProperties( const ttl::File& s )
 {
 	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFilename() );
+	sam::wasSthgDumped = true;
 }
 
-void getImageProperties( const ttl::Sequence& s )
+void dumpImageProperties( const ttl::Sequence& s )
 {
 	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFirstFilename() );
+	sam::wasSthgDumped = true;
 }
 
 
-void getImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject> > &listing )
+void dumpImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject> > &listing )
 {
 	BOOST_FOREACH( boost::shared_ptr<tuttle::common::FileObject> sequence, listing )
 	{
@@ -165,8 +170,8 @@ void getImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject>
 
 		switch( sequence->getMaskType () )
 		{
-			case ttl::eMaskTypeSequence	: getImageProperties( (ttl::Sequence&) *sequence ); break;
-			case ttl::eMaskTypeFile		: getImageProperties( (ttl::File&) *sequence ); break;
+			case ttl::eMaskTypeSequence	: dumpImageProperties( (ttl::Sequence&) *sequence ); break;
+			case ttl::eMaskTypeFile		: dumpImageProperties( (ttl::File&) *sequence ); break;
 			case ttl::eMaskTypeDirectory	: break;
 			case ttl::eMaskTypeUndefined	: break;
 		}
@@ -190,29 +195,29 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("all,a"            , "do not ignore entries starting with .")
-		("expression,e"     , bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
-		("files,f"          , "informations about files in path(s)")
-		("help,h"           , "show this help")
-		("mask,m"           , "not remove sequences in path(s)")
-		("path-root,p"      , "show the root path for each objects")
-		("recursive,R"      , "remove subdirectories recursively")
-		("color"            , "color the outup")
-		("first-image"      , bpo::value<unsigned int>(), "specify the first image")
-		("last-image"       , bpo::value<unsigned int>(), "specify the last image")
-		("brief"            , "brief summary of the tool")
+		(kAllOptionString            , kAllOptionMessage)
+		(kExpressionOptionString     , bpo::value<std::string>(), kExpressionOptionMessage)
+		(kFilesOptionString          , kFilesOptionMessage)
+		(kHelpOptionString           , kHelpOptionMessage)
+		(kIgnoreOptionString          , kIgnoreOptionMessage)
+		(kPathOptionString     , kPathOptionMessage)
+		(kRecursiveOptionString      , kRecursiveOptionMessage)
+		(kColorOptionString           , kColorOptionMessage)
+		(kFirstImageOptionString     , bpo::value<unsigned int>(), kFirstImageOptionMessage)
+		(kLastImageOptionString      , bpo::value<unsigned int>(), kLastImageOptionMessage)
+		(kBriefOptionString            , kBriefOptionMessage)
 	;
 
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		("input-dir"        , bpo::value< std::vector<std::string> >(), "input directories")
-		("enable-color"     , bpo::value<std::string>(), "enable (or disable) color")
+		(kInputDirOptionString        , bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
+		(kEnableColorOptionString     , bpo::value<std::string>(), kEnableColorOptionMessage)
 	;
 
 	// define default options
 	bpo::positional_options_description pod;
-	pod.add("input-dir", -1);
+	pod.add(kInputDirOptionLongName, -1);
 
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
@@ -252,13 +257,13 @@ int main( int argc, char** argv )
 		exit( -2 );
 	}
 
-	if ( vm.count("color") )
+	if ( vm.count(kColorOptionLongName) )
 	{
 		enableColor = true;
 	}
-	if ( vm.count("enable-color") )
+	if ( vm.count(kEnableColorOptionLongName) )
 	{
-		const std::string str = vm["enable-color"].as<std::string>();
+		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
 		enableColor = string_to_boolean( str );
 	}
 
@@ -268,7 +273,7 @@ int main( int argc, char** argv )
 		_color.enable();
 	}
 
-	if (vm.count("help"))
+	if (vm.count(kHelpOptionLongName))
 	{
 	    TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 	    TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
@@ -282,76 +287,76 @@ int main( int argc, char** argv )
 	    return 0;
 	}
 
-	if ( vm.count("brief") )
+	if ( vm.count(kBriefOptionLongName) )
 	{
 		TUTTLE_COUT( _color._green << "get informations about a sequence" << _color._std);
 		return 0;
 	}
 
-	if (vm.count("expression"))
+	if (vm.count(kExpressionOptionLongName))
 	{
-	    bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
+	    bal::split( filters, vm[kExpressionOptionLongName].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if (vm.count("directories"))
+	if (vm.count(kDirectoriesOptionLongName))
 	{
 	    researchMask |= eMaskTypeDirectory;
 	}
 
-	if (vm.count("files"))
+	if (vm.count(kFilesOptionLongName))
 	{
 	    researchMask |= eMaskTypeFile;
 	}
 
-	if (vm.count("mask"))
+	if (vm.count(kIgnoreOptionLongName))
 	{
 		researchMask &= ~eMaskTypeSequence;
 	}
 
-	if (vm.count("verbose"))
+	if (vm.count(kVerboseOptionLongName))
 	{
 		verbose = true;
 	}
 
-	if (vm.count("first-image"))
+	if (vm.count(kFirstImageOptionLongName))
 	{
-		firstImage  = vm["first-image"].as< unsigned int >();
+		firstImage  = vm[kFirstImageOptionLongName].as< unsigned int >();
 	}
 
-	if (vm.count("last-image"))
+	if (vm.count(kLastImageOptionLongName))
 	{
-		lastImage  = vm["last-image"].as< unsigned int >();
+		lastImage  = vm[kLastImageOptionLongName].as< unsigned int >();
 	}
 
-	if (vm.count("full-rm"))
+	if (vm.count(kFullRMPathOptionLongName))
 	{
 		researchMask |= eMaskTypeDirectory;
 		researchMask |= eMaskTypeFile;
 		researchMask |= eMaskTypeSequence;
 	}
 
-	if (vm.count("all"))
+	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
 		descriptionMask |= eMaskOptionsDotFile;
 	}
 
-	if (vm.count("path-root"))
+	if (vm.count(kPathOptionLongName))
 	{
 		 descriptionMask |= eMaskOptionsPath;
 	}
 
 	// defines paths, but if no directory specify in command line, we add the current path
-	if (vm.count("input-dir"))
+	if (vm.count(kInputDirOptionLongName))
 	{
-		paths = vm["input-dir"].as< std::vector<std::string> >();
+		paths = vm[kInputDirOptionLongName].as< std::vector<std::string> >();
 	}
 	else
 	{
 		paths.push_back( "./" );
 	}
 
-	if (vm.count("recursive"))
+	if (vm.count(kRecursiveOptionLongName))
 	{
 		recursiveListing = true;
 	}
@@ -359,6 +364,7 @@ int main( int argc, char** argv )
 // 	  TUTTLE_COUT("filters = " << filters.at(i));
 // 	TUTTLE_COUT("research mask = " << researchMask);
 // 	TUTTLE_COUT("options  mask = " << descriptionMask);
+
 
 	try
 	{
@@ -379,12 +385,12 @@ int main( int argc, char** argv )
 							{
 //								TUTTLE_COUT( *dir );
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
-								getImageProperties( listing );
+								dumpImageProperties( listing );
 							}
 						}
 					}
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
-					getImageProperties( listing );
+					dumpImageProperties( listing );
 				}
 				else
 				{
@@ -393,7 +399,7 @@ int main( int argc, char** argv )
 					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
-					getImageProperties( listing );
+					dumpImageProperties( listing );
 					filters.pop_back( );
 				}
 			}
@@ -407,7 +413,7 @@ int main( int argc, char** argv )
 					if( s.getNbFiles() )
 					{
 						//TUTTLE_COUT(s);
-						getImageProperties( s );
+						dumpImageProperties( s );
 					}
 				}
 				catch(... )
@@ -425,6 +431,8 @@ int main( int argc, char** argv )
 	{
 		TUTTLE_CERR ( _color._error << boost::current_exception_diagnostic_information() << _color._std );
 	}
+	if(!wasSthgDumped)
+	    TUTTLE_CERR ( _color._error << "No sequence found here." << _color._std );
 	return 0;
 }
 

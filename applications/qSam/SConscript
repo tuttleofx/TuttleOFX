@@ -16,9 +16,6 @@ libraries = [
 	libs.m,
 	libs.pthread,
 	libs.python,
-	libs.tiff,
-	libs.jpeg,
-	libs.png,
 	]
 librariesGui = [
 	libs.qt4(modules=['QtCore', 'QtGui', 'QtOpenGL'], uiFiles=src_ui)

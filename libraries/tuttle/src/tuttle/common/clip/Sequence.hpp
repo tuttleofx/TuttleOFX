@@ -301,6 +301,7 @@ public:
 
 	/**
 	 * @todo check if we put a pattern with full path: /home/foo/images/foo.####.jpg
+	 * --> indeed it's not working (test with sam-diff) (mfe)
 	 */
 	Sequence( const boost::filesystem::path& directory, const EMaskOptions options = eMaskOptionsDefault, const EPattern accept = ePatternDefault );
 	

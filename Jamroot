@@ -57,17 +57,6 @@ include tools/bjamf/rules.jam ;
 # Environment variables
 ##############################################################################
 
-local HOSTNAME ;
-
-if [ os.name ] = NT
-    {   HOSTNAME = "windows" ; }
-else if [ os.name ] = LINUX
-    {   HOSTNAME = "linux" ; }
-else if [ os.name ] = MACOSX
-    {   HOSTNAME = "macos" ; }
-
-#print socket.gethostname()
-
 local               BOOST_ROOT  = [ modules.peek : BOOST_ROOT ] ;
 check-required-env  BOOST_ROOT ;
 
@@ -78,7 +67,9 @@ path-constant   BOOST_HACK      : $(LIBRARIES)/boostHack ;
 path-constant   TERRY           : $(LIBRARIES)/terry ;
 path-constant   SEQUENCE_PARSER : $(LIBRARIES)/sequenceParser ;
 
-path-constant   DIST            : ./dist/$(HOSTNAME) ;
+local DISTRIB = [ haveDistPath ] ;
+
+path-constant   DIST            : $(DISTRIB) ;
 path-constant   DIST_RELEASE    : $(DIST)/release ;
 path-constant   DIST_DEBUG      : $(DIST)/debug ;
 path-constant   DIST_PRODUCTION : $(DIST)/production ;
@@ -99,9 +90,9 @@ project
         #<variant>release:<warnings-as-errors>on
         <variant>release:<define>TUTTLE_PRODUCTION
         #<variant>release:<define>TUTTLE_NO_COUT
-        <variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
-        # or
-        #<variant>release:<toolset>gcc,<optimization>full
+
+		<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
+		<toolset>gcc:<cxxflags>-mssse3
 
         <define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
 

@@ -1,8 +1,10 @@
+#include <tuttle/common/system/windows/windows.h>
+
 #include <GL/glew.h>
+#include <tuttle/plugin/opengl/gl.h>
 
 
 #include "ColorSpaceKeyerOverlay.hpp"
-#include <tuttle/plugin/opengl/gl.h>
 
 
 namespace tuttle {
@@ -81,13 +83,13 @@ void ColorSpaceKeyerOverlay::prepareOpenGLScene(const OFX::DrawArgs& args)
 	glMatrixMode( GL_PROJECTION );                                                          // load standard mode
 	glLoadMatrixd( proj_matrix );                                                           // reload previous projection matrix
 			
-	const GLdouble left   = - 0.5;                                                          //frustrum left
-	const GLdouble right  =   1.5;                                                          //frustrum right
-	const GLdouble bottom = - 0.5;                                                          //frustrum bottom
-	const GLdouble top    =   1.5;                                                          //frustrum top
-	const GLdouble near   =  10.0;                                                          //frustrum near
-	const GLdouble far    = -10.0;                                                          //frustrum far
-	glOrtho( left, right, bottom, top, near, far);                                          //define new frustrum for overlay data
+	const GLdouble vleft   = - 0.5;                                                          //frustrum left
+	const GLdouble vright  =   1.5;                                                          //frustrum right
+	const GLdouble vbottom = - 0.5;                                                          //frustrum bottom
+	const GLdouble vtop    =   1.5;                                                          //frustrum top
+	const GLdouble vnear   =  10.0;                                                          //frustrum near
+	const GLdouble vfar    = -10.0;                                                          //frustrum far
+	glOrtho( vleft, vright, vbottom, vtop, vnear, vfar);                                          //define new frustrum for overlay data
 	
 	glMatrixMode( GL_MODELVIEW );                                                           //load standard mode
 	//initialize double* modelViewMatrix

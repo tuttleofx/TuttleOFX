@@ -9,10 +9,10 @@
 #include <vector>
 #include <string>
 
+namespace ttl = tuttle::host;
+
 namespace sam {
 namespace samdo {
-
-namespace ttl = tuttle::host;
 
 /*
 struct NodeCommand

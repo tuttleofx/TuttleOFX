@@ -10,8 +10,10 @@
 #include <terry/numeric/operations.hpp>
 #include <terry/numeric/assign.hpp>
 
-#include<vector>
-#include<set>
+#include <boost/foreach.hpp>
+
+#include <vector>
+#include <set>
 
 namespace tuttle {
 namespace plugin {
@@ -80,7 +82,6 @@ template< typename Pixel>
 struct Pixel_copy_discretization
 {
 	typedef std::set< SPixel, tuttle::plugin::colorSpaceKeyer::pixel_is_lesser_t<SPixel,SPixel> > PixelSet;
-	typedef std::set<SPixel>::iterator PixelSetIterator;
 	
 	//Arguments
     DataVector& _data; //buffer to fill up
@@ -141,9 +142,8 @@ struct Pixel_copy_discretization
 	void convertSetDataToVectorData()
 	{
 		//iterator creation
-		for(PixelSetIterator it=_setData.begin(); it != _setData.end(); it++ )	//iterator used to scan the set
+		BOOST_FOREACH( const SPixel& p, _setData )	//iterator used to scan the set
 		{
-			 Pixel p = *it;	//get set current data
 			 _data.push_back(p[0]);	//red channel copy into vector
 			 _data.push_back(p[1]);	//green channel copy into vector
 			 _data.push_back(p[2]);	//blue channel copy into vector
