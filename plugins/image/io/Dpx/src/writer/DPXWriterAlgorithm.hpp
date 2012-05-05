@@ -34,9 +34,9 @@ void convertRGBToABGR()
 
 }
 
-void convertRGBAToABGR( DataVector& data, size_t width, size_t height, int pixelSize )
+void convertRGBAToABGR( DataVector& dataVec, size_t width, size_t height, int pixelSize )
 {
-	float* dataPtrIt = (float*)&data.front();
+	float* dataPtrIt = (float*)&dataVec.front();
 	__m128i* dataCharIt;
 	__m128i data, mask;
 	
