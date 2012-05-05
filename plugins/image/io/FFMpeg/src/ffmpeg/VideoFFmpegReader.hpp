@@ -123,7 +123,7 @@ public:
 	{
 		if( !_videoCodec )
 			return "";
-		return codecID_toString( _videoCodec->id );
+		return _videoCodec->name;
 	}
 
 	std::string codecTypeString( ) const
