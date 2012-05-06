@@ -149,7 +149,7 @@ def writeRBadWUndef ( format, channel, bitDepth, plugin ) :
 # function to call diff node from TuttleOFX process
 # process the PSNR between 2 images
 def diff ( reader1, reader2, input1, input2 ) :
-	ret = subprocess.call( TT_EXE + ' --reader tuttle.' + reader1 + 'reader --reader tuttle.' + reader2 + 'reader --inputs ' + input1 + ' --inputs ' + input2 + TT_OUT_FILE, shell=True )
+	ret = subprocess.call( TT_EXE + ' --reader tuttle.' + reader1 + 'reader --reader tuttle.' + reader2 + 'reader --input ' + input1 + ' --input ' + input2 + TT_OUT_FILE, shell=True )
 	if( ret == 0 ) :
 		print( BLUE_COLOR + 'OK : '  + reader1 + ' | ' + reader2 + ' (' + input1 + ', ' + input2 + ')' + NC_COLOR )
 		return 1
@@ -392,8 +392,8 @@ def checkPNG():
 	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'gray', '16bits', 'png' )
 	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgb',   '8bits', 'png' )
 	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgb',  '16bits', 'png' )
-	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgba',  '8bits', 'png' )
-	formatIsValid += check3r2w( 'png', 'oiio', 'imagemagick', 'png', 'oiio', 'rgba', '16bits', 'png' )
+	formatIsValid += check2r2w( 'png', 'oiio', 'png', 'oiio', 'rgba',  '8bits', 'png' )
+	formatIsValid += check2r2w( 'png', 'oiio', 'png', 'oiio', 'rgba', '16bits', 'png' )
 	endFormat( "PNG", formatIsValid == 6 )
 
 def checkJPEG():

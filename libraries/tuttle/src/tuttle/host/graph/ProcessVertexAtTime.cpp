@@ -3,27 +3,52 @@
 
 #include <tuttle/host/ImageEffectNode.hpp>
 
+#include <boost/functional/hash.hpp>
+
+
 namespace tuttle {
 namespace host {
 namespace graph {
+
+
+bool ProcessVertexAtTime::Key::operator==( const Key& v ) const
+{
+	return
+		( v._name == _name ) &&
+		( v._time == _time );
+}
+
+std::size_t ProcessVertexAtTime::Key::getHash() const
+{
+	std::size_t seed = 0;
+	boost::hash_combine( seed, _name );
+	boost::hash_combine( seed, _time );
+	return seed;
+}
+
+
 
 ProcessVertexAtTime::ProcessVertexAtTime( )
 { }
 
 ProcessVertexAtTime::ProcessVertexAtTime( const ProcessVertex& v, const OfxTime t )
 : IVertex( v )
+, _clipName( v._name )
 , _data( v._data, t )
-{ }
+{
+	this->_name += "_at_" + boost::lexical_cast<std::string>(t);
+}
 
 ProcessVertexAtTime::ProcessVertexAtTime( const ProcessVertexAtTime& other )
 : IVertex( other )
+, _clipName( other._clipName )
 , _data( other._data )
-{ }
+{
+}
 
 ProcessVertexAtTime::~ProcessVertexAtTime( )
-{ }
-
-
+{
+}
 
 std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 {
@@ -57,13 +82,13 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 
 std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime& v )
 {
-	os << v.getName() << "_" << v._data._time;
+	os << v.getKey();
 	return os;
 }
 
 std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime::Key& v )
 {
-	os << v.first << "_" << v.second;
+	os << "\"" << v.getName() << "\"" << " at time " << v.getTime();
 	return os;
 }
 

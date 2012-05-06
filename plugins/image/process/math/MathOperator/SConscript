@@ -2,7 +2,7 @@ Import( 'project' )
 Import( 'libs' )
 
 project.createOfxPlugin( dirs = ['src'],
-                         libs = [
+                         libraries = [
                                  libs.tuttlePlugin,
                                  ] )
 

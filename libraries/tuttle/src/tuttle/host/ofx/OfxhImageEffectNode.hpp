@@ -72,6 +72,8 @@ public:
 	typedef OfxhImageEffectNode This;
 	/// a map used to specify needed frame ranges on set of clips
 	typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > ClipRangeMap;
+	typedef std::set<OfxTime> TimesSet;
+	typedef std::map<std::string, TimesSet > ClipTimesSetMap;
 
 	#ifndef SWIG
 
@@ -366,6 +368,8 @@ public:
 	virtual void getFramesNeededAction( OfxTime   time,
 	                                   ClipRangeMap& rangeMap ) const OFX_EXCEPTION_SPEC;
 
+	ClipTimesSetMap getFramesNeeded( const OfxTime time ) const;
+	
 	// is identity
 	virtual bool isIdentityAction( OfxTime&           time,
 	                               const std::string& field,
@@ -402,7 +406,7 @@ private:
 
 	/// Initialise the clip preferences arguments, override this to do
 	/// stuff with wierd components etc... Calls setDefaultClipPreferences
-	virtual void setupClipPreferencesArgs( property::OfxhSet& args );
+	virtual void setupClipPreferencesArgs( property::OfxhSet& outArgs, std::list<std::string>& keepPropNamesOwnership );
 
 	/**
 	 * @brief Check if the node is a leaf in the graph.

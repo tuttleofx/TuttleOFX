@@ -99,10 +99,10 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 	switch( spec.type )
 	{
 		case ePropTypeInt:
-			_props.insert( key, new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atoi( spec.defaultValue ) : 0 ) );
+			_props.insert( key, new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? std::atoi( spec.defaultValue ) : 0 ) );
 			break;
 		case ePropTypeDouble:
-			_props.insert( key, new Double( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atof( spec.defaultValue ) : 0 ) );
+			_props.insert( key, new Double( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? std::atof( spec.defaultValue ) : 0 ) );
 			break;
 		case ePropTypeString:
 			_props.insert( key, new String( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? spec.defaultValue : "" ) );

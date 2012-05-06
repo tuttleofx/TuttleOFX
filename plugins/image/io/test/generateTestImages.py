@@ -35,7 +35,7 @@ os.environ['SAM_PATH']=TUTTLE_ROOT+'/bin'
 
 SRC_IMAGE=" checkerboard width=1000 color1=0.2,0.3,0.5,1.0 "
 
-SRC_IMAGE=" colorgradient type=2d nbPoints=5 point0=0,0 color0=0,0,0,1 point1=1,1 color1=1,1,1,1 point2=0,1 color2=0,1,0,1 point3=1,0.1 color3=0,0,1,1 point4=0.5,0.5 color4=1,0,0,1 width=512 "
+SRC_IMAGE=" colorgradient type=2d nbPoints=5 point0=0,0 color0=0,0,0,0 point1=1,1 color1=1,1,1,1 point2=0,1 color2=0,1,0,1 point3=1,0.1 color3=0,0,1,1 point4=0.5,0.5 color4=1,0,0,1 width=512 "
 
 BITDEPTH8=  "// bitdepth byte "
 BITDEPTH10= "// bitdepth short "
@@ -44,6 +44,14 @@ BITDEPTH16= "// bitdepth short "
 BITDEPTH16f="// bitdepth float "
 BITDEPTH32= "// bitdepth float "
 BITDEPTH32f="// bitdepth float "
+
+BITDEPTH8=  ""
+BITDEPTH10= ""
+BITDEPTH12= ""
+BITDEPTH16= ""
+BITDEPTH16f=""
+BITDEPTH32= ""
+BITDEPTH32f=""
 
 COMPONENT_GRAY=" components=gray "
 COMPONENT_RGB=" components=rgb "
@@ -90,10 +98,10 @@ subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_GRAY + BITDEPTH10  + '// dpxwrit
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_GRAY + BITDEPTH10  + '// dpxwriter dpx.gray.10bits.003.dpx bitDepth=10i components=luma ' + TT_OUT_FILE, shell=True )
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGB  + BITDEPTH10  + '// dpxwriter dpx.rgb.10bits.001.dpx bitDepth=10i components=rgb ' + TT_OUT_FILE, shell=True )
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGB  + BITDEPTH10  + '// dpxwriter dpx.rgb.10bits.003.dpx bitDepth=10i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.rgba.10bits.001.dpx bitDepth=10i components=rgba packed=packed ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.rgba.10bits.003.dpx bitDepth=10i components=rgba packed=packed ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.abgr.10bits.001.dpx bitDepth=10i components=abgr packed=packed ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.abgr.10bits.003.dpx bitDepth=10i components=abgr packed=packed ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.rgba.10bits.001.dpx bitDepth=10i components=rgba ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.rgba.10bits.003.dpx bitDepth=10i components=rgba ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.abgr.10bits.001.dpx bitDepth=10i components=abgr ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH10  + '// dpxwriter dpx.abgr.10bits.003.dpx bitDepth=10i components=abgr ' + TT_OUT_FILE, shell=True )
 
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_GRAY + BITDEPTH12  + '// dpxwriter dpx.gray.12bits.001.dpx bitDepth=12i components=luma ' + TT_OUT_FILE, shell=True )
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_GRAY + BITDEPTH12  + '// dpxwriter dpx.gray.12bits.003.dpx bitDepth=12i components=luma ' + TT_OUT_FILE, shell=True )
@@ -112,6 +120,15 @@ subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH16  + '// dpxwrit
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH16  + '// dpxwriter dpx.rgba.16bits.003.dpx bitDepth=16i components=rgba packed=packed ' + TT_OUT_FILE, shell=True )
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH16  + '// dpxwriter dpx.abgr.16bits.001.dpx bitDepth=16i components=abgr packed=packed ' + TT_OUT_FILE, shell=True )
 subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH16  + '// dpxwriter dpx.abgr.16bits.003.dpx bitDepth=16i components=abgr packed=packed ' + TT_OUT_FILE, shell=True )
+
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_GRAY + BITDEPTH32  + '// dpxwriter dpx.gray.32bits.001.dpx bitDepth=32i components=luma ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_GRAY + BITDEPTH32  + '// dpxwriter dpx.gray.32bits.003.dpx bitDepth=32i components=luma ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGB  + BITDEPTH32  + '// dpxwriter dpx.rgb.32bits.001.dpx bitDepth=32i components=rgb ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGB  + BITDEPTH32  + '// dpxwriter dpx.rgb.32bits.003.dpx bitDepth=32i components=rgb ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH32  + '// dpxwriter dpx.rgba.32bits.001.dpx bitDepth=32i components=rgba ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH32  + '// dpxwriter dpx.rgba.32bits.003.dpx bitDepth=32i components=rgba ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH32  + '// dpxwriter dpx.abgr.32bits.001.dpx bitDepth=32i components=abgr ' + TT_OUT_FILE, shell=True )
+subprocess.call( TT_EXE + SRC_IMAGE + COMPONENT_RGBA + BITDEPTH32  + '// dpxwriter dpx.abgr.32bits.003.dpx bitDepth=32i components=abgr ' + TT_OUT_FILE, shell=True )
 
 print( "- exr" )
 subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16f + '// exrwriter exr.gray.16float.001.exr bitDepth=16f components=gray ' + TT_OUT_FILE, shell=True )
@@ -219,32 +236,32 @@ subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bi
 subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.003.dpx bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
 
 
-print( "- OIIO cin" )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgb.8bits.001.cin bitDepth=8i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgb.8bits.003.cin bitDepth=8i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgba.8bits.001.cin bitDepth=8i components=rgba ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgba.8bits.003.cin bitDepth=8i components=rgba ' + TT_OUT_FILE, shell=True )
+#print( "- OIIO cin" )
+#OIIO Writer: Cineon writer is not implemented yet, please poke Leszek in the mailing list
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgb.8bits.001.cin bitDepth=8i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgb.8bits.003.cin bitDepth=8i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgba.8bits.001.cin bitDepth=8i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgba.8bits.003.cin bitDepth=8i components=rgba ' + TT_OUT_FILE, shell=True )
 
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgb.10bits.001.cin bitDepth=10i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgb.10bits.003.cin bitDepth=10i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgba.10bits.001.cin bitDepth=10i components=rgba ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgba.10bits.003.cin bitDepth=10i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgb.10bits.001.cin bitDepth=10i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgb.10bits.003.cin bitDepth=10i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgba.10bits.001.cin bitDepth=10i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH10 + ' // oiiowriter oiio.rgba.10bits.003.cin bitDepth=10i components=rgba ' + TT_OUT_FILE, shell=True )
 
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgb.12bits.001.cin bitDepth=12i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgb.12bits.003.cin bitDepth=12i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgba.12bits.001.cin bitDepth=12i components=rgba ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgba.12bits.003.cin bitDepth=12i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgb.12bits.001.cin bitDepth=12i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgb.12bits.003.cin bitDepth=12i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgba.12bits.001.cin bitDepth=12i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH12 + ' // oiiowriter oiio.rgba.12bits.003.cin bitDepth=12i components=rgba ' + TT_OUT_FILE, shell=True )
 
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.001.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.003.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.001.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.003.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
 
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.001.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.003.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.001.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.003.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
-
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.001.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.003.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.001.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
-subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.003.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.001.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgb.16bits.003.cin bitDepth=16i components=rgb ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.001.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
+#subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH16 + '// oiiowriter oiio.rgba.16bits.003.cin bitDepth=16i components=rgba ' + TT_OUT_FILE, shell=True )
 
 print( "- OIIO jpeg" )
 subprocess.call( TT_EXE + SRC_IMAGE + BITDEPTH8  + '// oiiowriter oiio.rgb.8bits.001.jpg ' + TT_OUT_FILE, shell=True )

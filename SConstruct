@@ -92,7 +92,12 @@ class Tuttle( SConsProject ):
 			f.close()
 		return ( versionMajor, versionMinor )
 
-	def createOfxPlugin( self, sources=[], libs=[], dirs=[], mainFile='src/mainEntry.cpp', includes=[] ):
+	def createOfxPlugin( self,
+			sources=[], libraries=[], dirs=[],
+			mainFile='src/mainEntry.cpp', includes=[],
+			env=None, localEnvFlags={}, replaceLocalEnvFlags={}, externEnvFlags={}, globalEnvFlags={},
+			dependencies=[], install=True
+			):
 		'''
 		Create an openfx plugin from sources files and libraries dependencies.
 		'''
@@ -102,17 +107,14 @@ class Tuttle( SConsProject ):
 		if self.env['mode'] == 'production' and versions[0] <= 0:
 			print '''Don't create "''' + pluginFilename + '" in "production" mode.'
 			return None
-		allSources = []
-		if sources:
-			allSources = sources
-		if dirs:
-			allSources.extend( self.scanFiles( dirs ) )
+		
+		pluginInstall = self.SharedLibrary( pluginName,
+				sources=sources, dirs=dirs, libraries=libraries, includes=includes,
+				env=env, localEnvFlags=localEnvFlags, replaceLocalEnvFlags=replaceLocalEnvFlags, externEnvFlags=externEnvFlags, globalEnvFlags=globalEnvFlags,
+				dependencies=dependencies, installAs=self.getOutputOfxPlugin(pluginFilename), install=install,
+				public=False )
 
-		envLocal = self.createEnv( libs )
-		envLocal.Append( CPPPATH = dirs )
-		envLocal.Append( CPPPATH = includes )
-		plugin = envLocal.SharedLibrary( target=pluginName, source=allSources )
-		pluginInstall = envLocal.InstallAs( self.getOutputOfxPlugin(pluginFilename), plugin[0] )
+		envLocal = self.env
 
 		resources_dir =  os.path.join( self.getRealAbsoluteCwd(), 'Resources' )
 		if os.path.isdir( resources_dir ):
@@ -124,26 +126,6 @@ class Tuttle( SConsProject ):
 		envLocal.Alias( 'ofxplugins', pluginName )
 		envLocal.Alias( 'all', 'ofxplugins' )
 
-		if self.windows:
-			#print 'visualProject...'
-			mode = 'Release'
-			if envLocal['mode'] is "debug":
-				mode = 'Debug'
-			#visualProjectFile = os.path.join('visualc', pluginName + envLocal['MSVSPROJECTSUFFIX'])
-			visualProjectFile = pluginName + envLocal['MSVSPROJECTSUFFIX']
-			#print 'visualProjectFile:', visualProjectFile
-			#print '[plugin]:', [plugin]
-			visual_project = envLocal.MSVSProject(
-				target = visualProjectFile,
-				srcs = allSources,
-				#incs = barincs,
-				#localincs = barlocalincs,
-				#resources = barresources,
-				#misc = barmisc,
-				buildtarget = plugin,
-				variant = [mode, mode, mode]
-				)
-			envLocal.Alias( 'visualProject',   visual_project )
 		return pluginInstall
 
 
