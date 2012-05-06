@@ -1,14 +1,15 @@
 Import( 'project', 'libs' )
 
 project.createOfxPlugin(
-	dirs = ['src/writer', 'src/dpx-google-code'], # temporarily: do not compile the DPX reader
-	sources = ['src/mainEntry.cpp'],
-	includes = ['src/dpx-google-code/libdpx'],
-	libs = [
-		libs.tuttlePlugin,
-		libs.boost_gil,
-		libs.boost_filesystem,
-		libs.boost_regex,
-		]
+		dirs = ['src/writer', 'src/dpx-google-code'], # temporarily: do not compile the DPX reader
+		sources = ['src/mainEntry.cpp'],
+		includes = ['src/dpx-google-code/libdpx'],
+		libraries = [
+			libs.tuttlePlugin,
+			libs.boost_gil,
+			libs.boost_filesystem,
+			libs.boost_regex,
+			],
+		localEnvFlags = { 'CCFLAGS': project.CC['ssse3'] },
 	)
 
