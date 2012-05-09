@@ -482,30 +482,71 @@ int main(int argc, char** argv)
                             TUTTLE_COUT( "");
                             exit(0);
                         }
-                        if (node_vm.count(kPropertiesOptionLongName)) {
-                            TUTTLE_COUT( "\tsam do " << nodeFullName);
-                            TUTTLE_COUT( "");
-                            TUTTLE_COUT( _color._blue << "PROPERTIES" << _color._std);
-                            coutProperties(currentNode);
-                            TUTTLE_COUT( "");
-                            exit(0);
-                        }
-                        if (node_vm.count(kClipsOptionLongName)) {
-                            TUTTLE_COUT( "\tsam do " << nodeFullName);
-                            TUTTLE_COUT( "");
-                            TUTTLE_COUT( _color._blue << "CLIPS" << _color._std);
-                            coutClips(currentNode);
-                            TUTTLE_COUT( "");
-                            exit(0);
-                        }
-                        if (node_vm.count(kClipOptionLongName)) {
-                            TUTTLE_COUT( "\tsam do " << nodeFullName);
-                            TUTTLE_COUT( "");
-                            const std::string clipName = node_vm["clip"].as<std::string>();
-                            TUTTLE_COUT( _color._blue << "CLIP: " << _color._green << clipName << _color._std);
-                            ttl::attribute::ClipImage& clip = currentNode.getClip(clipName);
-                            TUTTLE_COUT( clip.getBitDepthString() << ", " << clip.getPixelAspectRatio() << ", " << clip.getNbComponents());
-                            TUTTLE_COUT( "");
+						if (node_vm.count(kPropertiesOptionLongName))
+						{
+							if( !script )
+							{
+								TUTTLE_COUT( "\tsam do " << nodeFullName);
+								TUTTLE_COUT( "");
+								TUTTLE_COUT( _color._blue << "PROPERTIES" << _color._std);
+							}
+							coutProperties(currentNode);
+							if( !script )
+								TUTTLE_COUT( "");
+							exit(0);
+						}
+						if (node_vm.count(kClipsOptionLongName))
+						{
+							if( !script )
+							{
+								TUTTLE_COUT( "\tsam do " << nodeFullName);
+								TUTTLE_COUT( "");
+								TUTTLE_COUT( _color._blue << "CLIPS" << _color._std);
+							}
+							coutClips(currentNode);
+							if( !script )
+								TUTTLE_COUT( "");
+							exit(0);
+						}
+						if (node_vm.count(kClipOptionLongName))
+						{
+							const std::string clipName = node_vm["clip"].as<std::string>();
+							ttl::attribute::ClipImage& clip = currentNode.getClip(clipName);
+							
+							//const String& prop = fetchStringProperty( kOfxImageEffectPropSupportedPixelDepths );
+							//std::vector<std::string>& bitDepths     = prop.getValues();
+							
+							/*std::vector<std::string> bitDepths = clip.getSupportedBitDepth();
+							BOOST_FOREACH( std::string& s, bitDepths )
+							{
+								s = s.substr( 11 ); // remove 'OfxBitDepth'
+							}*/
+							
+							std::vector<std::string> components = clip.getSupportedComponents();
+							BOOST_FOREACH( std::string& s, components )
+							{
+								s = s.substr( 17 ); // remove 'OfxImageComponent'
+							}
+							
+							if( !script )
+							{
+								TUTTLE_COUT( "\tsam do " << nodeFullName);
+								TUTTLE_COUT( "");
+								TUTTLE_COUT( _color._blue << "CLIP: " << _color._green << clipName << _color._std);
+								//TUTTLE_COUT( "supported bit depth: " << boost::algorithm::join( bitDepths, ", " ));
+								TUTTLE_COUT( "supported components: " << boost::algorithm::join( components, ", " ) );
+								TUTTLE_COUT( "pixel aspect ratio: " << clip.getPixelAspectRatio() );
+								TUTTLE_COUT( "number of components: " << clip.getNbComponents());
+	                            TUTTLE_COUT( "");
+							}
+							else
+							{
+								//TUTTLE_COUT( boost::algorithm::join( bitDepths, ", " ));
+								TUTTLE_COUT( boost::algorithm::join( components, ", " ) );
+								TUTTLE_COUT( clip.getPixelAspectRatio() );
+								TUTTLE_COUT( clip.getNbComponents());
+							}
+							
                             exit(0);
                         }
                         if (node_vm.count(kParametersOptionLongName)) {
