@@ -121,7 +121,8 @@ public:
 
 	void beginSequence( graph::ProcessVertexData& vData );
 
-	InputsTimeMap getTimesNeeded( const OfxTime time ) const;
+	INode::ClipTimesSetMap getTimesNeeded( const OfxTime time ) const { return OfxhImageEffectNode::getFramesNeeded(time); }
+
 	void preProcess1( graph::ProcessVertexAtTimeData& vData );
 	void preProcess2_reverse( graph::ProcessVertexAtTimeData& vData );
 	void preProcess3( graph::ProcessVertexAtTimeData& vData );

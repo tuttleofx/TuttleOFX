@@ -2094,6 +2094,24 @@ void StringParam::setValueAtTime( double t, const std::string& v )
     throwSuiteStatusException( stat );
 }
 
+
+StringTypeEnum StringParam::getStringType() const
+{
+	const std::string stringType = getProps().propGetString( kOfxParamPropStringMode );
+	
+	if( stringType == kOfxParamStringIsSingleLine )
+		return eStringTypeSingleLine;
+	else if( stringType == kOfxParamStringIsMultiLine )
+        return eStringTypeMultiLine;
+	else if( stringType == kOfxParamStringIsFilePath )
+        return eStringTypeFilePath;
+	else if( stringType == kOfxParamStringIsDirectoryPath )
+        return eStringTypeDirectoryPath;
+//	else if( stringType == kOfxParamStringIsLabel )
+	return eStringTypeLabel;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Wraps up a Boolean integer param */
 

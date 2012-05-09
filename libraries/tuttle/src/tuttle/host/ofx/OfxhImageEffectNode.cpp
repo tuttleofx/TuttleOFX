@@ -106,12 +106,12 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin&         p
 void OfxhImageEffectNode::initHook()
 {
 	int i = 0;
-
+	
 	while( effectInstanceStuff[i].name )
 	{
 		// don't set hooks for context or isinteractive
-		if( strcmp( effectInstanceStuff[i].name, kOfxImageEffectPropContext ) ||
-		    strcmp( effectInstanceStuff[i].name, kOfxPropIsInteractive ) ||
+		if( strcmp( effectInstanceStuff[i].name, kOfxImageEffectPropContext ) &&
+		    strcmp( effectInstanceStuff[i].name, kOfxPropIsInteractive ) &&
 		    strcmp( effectInstanceStuff[i].name, kOfxImageEffectInstancePropSequentialRender ) )
 		{
 			const property::OfxhPropSpec& spec = effectInstanceStuff[i];
@@ -707,6 +707,8 @@ void OfxhImageEffectNode::endSequenceRenderAction( OfxTime   startFrame,
 OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 							     OfxPointD renderScale ) const
 {
+	ClipTimesSetMap timesSetMap = getFramesNeeded( time ); /// @todo: do not recompute this here
+	
 	OfxRectD rod = { 0, 0, 0, 0 };
 	// figure out the default contexts
 	if( _context == kOfxImageEffectContextGenerator ||
@@ -758,22 +760,30 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 	}
 	else if( _context == kOfxImageEffectContextGeneral )
 	{
-		/// @todo tuttle: depending on framesNeeded !
-
 		// general context is the union of all the non optional clips
 		bool gotOne = false;
-		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
-		     it != itEnd;
-		     ++it )
+		BOOST_FOREACH( const ClipImageMap::value_type& clipPair, _clips )
 		{
-			attribute::OfxhClipImage* clip = it->second;
+			attribute::OfxhClipImage* clip = clipPair.second;
 			if( ! clip->isOutput() && clip->isConnected() )
 			{
-				if( !gotOne )
-					rod = clip->fetchRegionOfDefinition( time );
-				else
-					rod = rectUnion( rod, clip->fetchRegionOfDefinition( time ) );
-				gotOne = true;
+				// depending on framesNeeded !
+				const TimesSet& timesSet = timesSetMap[clip->getName()];
+				if( timesSet.size() == 0 )
+					continue; // the plugin don't use this input (is it allowed by the standard?)
+				BOOST_FOREACH( const TimesSet::value_type& inTime, timesSet )
+				{
+					const OfxRectD localRod = clip->fetchRegionOfDefinition( inTime );
+					if( !gotOne )
+					{
+						rod = localRod;
+						gotOne = true;
+					}
+					else
+					{
+						rod = rectUnion( rod, localRod );
+					}
+				}
 			}
 		}
 
@@ -863,22 +873,22 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 	// reset the map
 	rois.clear();
 
+	ClipTimesSetMap timesSetMap = getFramesNeeded( time );
+	
 	if( !supportsTiles() )
 	{
 		/// No tiling support on the effect at all. So set the roi of each input clip to be the RoD of that clip.
-		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
-		     it != itEnd;
-		     ++it )
+		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clips )
 		{
-			if( !it->second->isOutput() ||
+			if( ! clip.second->isOutput() ||
 			    getContext() == kOfxImageEffectContextGenerator ||
 			    getContext() == kOfxImageEffectContextReader )
 			{
-				if( it->second->isOutput() || it->second->isConnected() ) // needed to be able to fetch the RoD
+				if( clip.second->isOutput() || clip.second->isConnected() ) // needed to be able to fetch the RoD
 				{
 					/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
-					OfxRectD roi = it->second->fetchRegionOfDefinition( time );
-					rois[it->second] = roi;
+					OfxRectD roi = clip.second->fetchRegionOfDefinition( time );
+					rois[clip.second] = roi;
 				}
 			}
 		}
@@ -899,17 +909,18 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		inArgs.setDoublePropertyN( kOfxImageEffectPropRegionOfInterest, &roi.x1, 4 );
 
 		property::OfxhSet outArgs;
-		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
-		     it != itEnd;
-		     ++it )
+		std::list<std::string> keepPropNamesOwnership;
+		
+		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clips )
 		{
-			if( !it->second->isOutput() ||
+			if( ! clip.second->isOutput() ||
 			    getContext() == kOfxImageEffectContextGenerator ||
 			    getContext() == kOfxImageEffectContextReader )
 			{
-				property::OfxhPropSpec s;
-				std::string name = "OfxImageClipPropRoI_" + it->first;
+				keepPropNamesOwnership.push_back( "OfxImageClipPropRoI_" + clip.first );
+				const std::string& name = keepPropNamesOwnership.back();
 
+				property::OfxhPropSpec s;
 				s.name         = name.c_str();
 				s.type         = property::ePropTypeDouble;
 				s.dimension    = 4;
@@ -923,7 +934,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		}
 
 		/// call the action
-		OfxStatus status = mainEntry( kOfxImageEffectActionGetRegionsOfInterest,
+		const OfxStatus status = mainEntry( kOfxImageEffectActionGetRegionsOfInterest,
 					      this->getHandle(),
 					      &inArgs,
 					      &outArgs );
@@ -932,35 +943,42 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 			BOOST_THROW_EXCEPTION( OfxhException( status ) );
 
 		/// set the thing up
-		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
-		     it != itEnd;
-		     ++it )
+		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clips )
 		{
-			if( !it->second->isOutput() ||
+			if( ! clip.second->isOutput() ||
 			    getContext() == kOfxImageEffectContextGenerator ||
 			    getContext() == kOfxImageEffectContextReader )
 			{
-				if( it->second->isOutput() || it->second->isConnected() ) // needed to be able to fetch the RoD
+				if( clip.second->isOutput() || clip.second->isConnected() ) // needed to be able to fetch the RoD
 				{
-					/// @todo tuttle: depending on framesNeeded !
-					OfxRectD rod = it->second->fetchRegionOfDefinition( time );
-					if( it->second->supportsTiles() )
+					// depending on framesNeeded !
+					const TimesSet& timesSet = timesSetMap[clip.second->getName()];
+					if( timesSet.size() == 0 )
+						continue; // the plugin don't use this input (is it allowed by the standard?)
+					// use intersection?
+					OfxRectD inputsRodIntersection = clip.second->fetchRegionOfDefinition( *(timesSet.begin()) );
+					BOOST_FOREACH( const TimesSet::value_type& inTime, timesSet )
 					{
-						std::string name = "OfxImageClipPropRoI_" + it->first;
+						const OfxRectD timeRod = clip.second->fetchRegionOfDefinition( inTime );
+						inputsRodIntersection = clamp( timeRod, inputsRodIntersection );
+					}
+					if( clip.second->supportsTiles() )
+					{
+						const std::string name = "OfxImageClipPropRoI_" + clip.first;
 						OfxRectD thisRoi;
 						thisRoi.x1 = outArgs.getDoubleProperty( name, 0 );
 						thisRoi.y1 = outArgs.getDoubleProperty( name, 1 );
 						thisRoi.x2 = outArgs.getDoubleProperty( name, 2 );
 						thisRoi.y2 = outArgs.getDoubleProperty( name, 3 );
 
-						/// and clamp it to the clip's rod
-						thisRoi          = clamp( thisRoi, rod );
-						rois[it->second] = thisRoi;
+						// clamp it to the clip's rod
+						thisRoi          = clamp( thisRoi, inputsRodIntersection );
+						rois[clip.second] = thisRoi;
 					}
 					else
 					{
 						/// not supporting tiles on this input, so set it to the rod
-						rois[it->second] = rod;
+						rois[clip.second] = inputsRodIntersection;
 					}
 				}
 			}
@@ -976,6 +994,7 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 {
 	OfxStatus status = kOfxStatReplyDefault;
 	property::OfxhSet outArgs;
+	std::list<std::string> keepPropNamesOwnership;
 
 	if( temporalAccess() )
 	{
@@ -992,9 +1011,10 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 		{
 			if( !it->second->isOutput() )
 			{
-				property::OfxhPropSpec s;
-				std::string name = "OfxImageClipPropFrameRange_" + it->first;
+				keepPropNamesOwnership.push_back( "OfxImageClipPropFrameRange_" + it->first );
+				const std::string& name = keepPropNamesOwnership.back();
 
+				property::OfxhPropSpec s;
 				s.name         = name.c_str();
 				s.type         = property::ePropTypeDouble;
 				s.dimension    = 0;
@@ -1033,7 +1053,7 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 			}
 			else
 			{
-				std::string name = "OfxImageClipPropFrameRange_" + it->first;
+				const std::string name = "OfxImageClipPropFrameRange_" + it->first;
 
 				int nRanges = outArgs.getDimension( name );
 				if( nRanges % 2 != 0 )
@@ -1060,6 +1080,35 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 			}
 		}
 	}
+}
+
+OfxhImageEffectNode::ClipTimesSetMap OfxhImageEffectNode::getFramesNeeded( const OfxTime time ) const
+{
+	const bool temporalClipAccess = this->getProperties().fetchIntProperty( kOfxImageEffectPropTemporalClipAccess ).getValue();
+	ClipTimesSetMap result;
+	if( temporalClipAccess )
+	{
+		ClipRangeMap clipMap;
+		getFramesNeededAction( time, clipMap );
+		BOOST_FOREACH( const ClipRangeMap::value_type& v, clipMap )
+		{
+			BOOST_FOREACH( const ClipRangeMap::value_type::second_type::value_type& range, v.second )
+			{
+				for( OfxTime t = range.min; t <= range.max; t += 1.0 )
+				{
+					result[ v.first->getName() ].insert(t);
+				}
+			}
+		}
+	}
+	else
+	{
+		BOOST_FOREACH( ClipImageVector::const_reference v, _clipsByOrder )
+		{
+			result[v.getName()].insert(time);
+		}
+	}
+	return result;
 }
 
 bool OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
@@ -1246,7 +1295,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
  * Initialise the clip preferences arguments, override this to do
  * stuff with wierd components etc...
  */
-void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
+void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, std::list<std::string>& keepPropNamesOwnership )
 {
 	/// reset all the clip prefs stuff to their defaults
 	setDefaultClipPreferences();
@@ -1278,19 +1327,21 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 	{
 		attribute::OfxhClipImage* clip = it->second;
 
-		std::string componentParamName = "OfxImageClipPropComponents_" + it->first;
-		std::string depthParamName     = "OfxImageClipPropDepth_" + it->first;
-		std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
-
+		keepPropNamesOwnership.push_back( "OfxImageClipPropComponents_" + it->first );
+		const std::string& componentParamName = keepPropNamesOwnership.back();
 		property::OfxhPropSpec specComp = { componentParamName.c_str(), property::ePropTypeString, 0, false, "" }; // note the support for multi-planar clips
 		outArgs.createProperty( specComp );
 		// as it is variable dimension, there is no default value, so we have to set it explicitly
 		outArgs.setStringProperty( componentParamName, clip->getComponentsString() );
 
+		keepPropNamesOwnership.push_back( "OfxImageClipPropDepth_" + it->first );
+		const std::string& depthParamName = keepPropNamesOwnership.back();
 		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::ePropTypeString, 1, !multiBitDepth, clip->getBitDepthString().c_str() };
 		outArgs.createProperty( specDep );
 		outArgs.setStringProperty( depthParamName, clip->getBitDepthString() );
 
+		keepPropNamesOwnership.push_back( "OfxImageClipPropPAR_" + it->first );
+		const std::string& parParamName = keepPropNamesOwnership.back();
 		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::ePropTypeDouble, 1, false, "1" };
 		outArgs.createProperty( specPAR );
 		outArgs.setDoubleProperty( parParamName, 1.0 ); // Default pixel aspect ratio is set to 1.0
@@ -1365,17 +1416,22 @@ void OfxhImageEffectNode::getClipPreferencesAction() OFX_EXCEPTION_SPEC
 {
 	/// create the out args with the stuff that does not depend on individual clips
 	property::OfxhSet outArgs;
+	std::list<std::string> keepPropNamesOwnership;
 
-	setupClipPreferencesArgs( outArgs );
+	
+	setupClipPreferencesArgs( outArgs, keepPropNamesOwnership );
 
-	OfxStatus status = mainEntry( kOfxImageEffectActionGetClipPreferences,
+	const OfxStatus status = mainEntry( kOfxImageEffectActionGetClipPreferences,
 				      this->getHandle(),
 				      0,
 				      &outArgs );
 
-	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
+	if( status != kOfxStatOK &&
+	    status != kOfxStatReplyDefault )
+	{
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
-
+	}
+	
 	// Setup members data from loaded properties
 	setupClipInstancePreferences( outArgs );
 

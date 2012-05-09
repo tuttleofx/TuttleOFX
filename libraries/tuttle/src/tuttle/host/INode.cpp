@@ -51,8 +51,9 @@ void INode::setProcessData( Data* data )
 	_data = data;
 }
 
-void INode::setProcessData( DataAtTime* dataAtTime )
+void INode::setProcessDataAtTime( DataAtTime* dataAtTime )
 {
+//	TUTTLE_TCOUT( "setProcessDataAtTime \"" << getName() << "\" at " << dataAtTime->_time );
 	_dataAtTime[dataAtTime->_time] = dataAtTime;
 }
 

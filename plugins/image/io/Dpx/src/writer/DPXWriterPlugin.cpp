@@ -256,7 +256,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	writer.SetImageInfo( size.x, size.y );
 
 #ifndef TUTTLE_PRODUCTION
-	writer.header.SetImageOrientation( orientation );
+	writer.header.SetImageOrientation( params._orientation );
 #endif
 
 	int pixelSize = 0;

@@ -10,9 +10,9 @@ ProcessEdgeAtTime::ProcessEdgeAtTime()
 }
 
 ProcessEdgeAtTime::ProcessEdgeAtTime( const ProcessVertexAtTime::Key& out, const ProcessVertexAtTime::Key& in, const std::string& inAttrName )
-: IEdge( out.first, in.first, inAttrName )
-, _inTime( in.second )
-, _outTime( out.second )
+: IEdge( out.getName(), in.getName(), inAttrName )
+, _inTime( in.getTime() )
+, _outTime( out.getTime() )
 {
 }
 

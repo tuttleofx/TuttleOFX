@@ -69,7 +69,7 @@ public:
 	#endif
 
 public:
-	void preload();
+	void preload( const bool useCache = true );
 
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
 

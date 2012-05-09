@@ -12,7 +12,7 @@ if project.env['mode'] != 'production':
 
 project.StaticLibrary(
 		'tuttleCommon',
-		sources   = project.scanFiles( ['src/tuttle/common'] ),
+		dirs      = ['src/tuttle/common'],
 		includes  = ['src'],
 		libraries = commonLibs,
 		shared = True
@@ -20,13 +20,13 @@ project.StaticLibrary(
 
 project.StaticLibrary(
 		'tuttlePlugin',
-		sources   = project.scanFiles( ['src/tuttle/plugin'] ),
+		dirs      = ['src/tuttle/plugin'],
 		includes  = ['src','src/tuttle/host/core'],
 		libraries = [
 				libs.tuttleCommon,
 				libs.openfxPluginSupportHack,
 				libs.terry,
-                libs.gl,
+				libs.gl,
 			],
 		shared = True
 	)
@@ -52,7 +52,7 @@ if project.env['mode'] != 'production':
 
 project.StaticLibrary(
 		'tuttleHost',
-		sources   = project.scanFiles( ['src/tuttle/host'] ),
+		dirs      = ['src/tuttle/host'],
 		includes  = ['src'],
 		libraries = tuttleHostLibs,
 		globalEnvFlags = tuttleHostFlags,
@@ -89,3 +89,5 @@ pyTuttleEnv.Requires( pyTuttle, initFile )
 
 pyTuttleEnv.Alias( 'pyTuttle', pyTuttle )
 pyTuttleEnv.Alias( 'python', pyTuttle )
+
+

@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		TUTTLE_TCOUT( "__________________________________________________2" );
 		// Setup parameters
 		read1.getParam( "filename" ).setValue( "data/input-###.png" );
-		timeshift1.getParam("offset").setValue( 0 );
+		timeshift1.getParam("offset").setValue( 2 );
 		write1.getParam( "filename" ).setValue( "data/output_####.png" );
 
 		TUTTLE_TCOUT( "__________________________________________________3" );
