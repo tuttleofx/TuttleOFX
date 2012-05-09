@@ -431,6 +431,8 @@ int main( int argc, char** argv )
 				all_options.add( infoOptions ).add( confOptions ).add( openfxOptions );
 
 				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+				
+				std::vector<std::string> idNames; // list of id setted in the command line
 
 				BOOST_FOREACH( const std::vector<std::string>& command, cl_commands )
 				{
@@ -568,7 +570,7 @@ int main( int argc, char** argv )
 								TUTTLE_COUT( "supported components: " << boost::algorithm::join( components, ", " ) );
 								TUTTLE_COUT( "pixel aspect ratio: " << clip.getPixelAspectRatio() );
 								TUTTLE_COUT( "number of components: " << clip.getNbComponents() );
-	                                                        TUTTLE_COUT( "" );
+								TUTTLE_COUT( "" );
 							}
 							else
 							{
@@ -631,7 +633,7 @@ int main( int argc, char** argv )
 						{
 							const std::string attributeName = node_vm[kParamDefaultOptionLongName].as<std::string > ();
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
-							TUTTLE_TCOUT( getFormattedStringValue( param.getProperties().fetchProperty( kOfxParamPropDefault ) ) );
+							TUTTLE_COUT( getFormattedStringValue( param.getProperties().fetchProperty( kOfxParamPropDefault ) ) );
 							exit( 0 );
 						}
 						if( node_vm.count( kParamGroupOptionLongName ) )
@@ -649,9 +651,10 @@ int main( int argc, char** argv )
 						if( node_vm.count( kIdOptionLongName ) )
 						{
 							const std::string nodeId = node_vm[kIdOptionLongName].as<std::string > ();
+							idNames.push_back( nodeId );
 							graph.renameNode( currentNode, nodeId );
 						}
-
+						
 						// Analyse attributes: parameters / clips
 						typedef std::pair<ttl::ofx::attribute::OfxhClipImage*, std::string> ClipAndConnection;
 						std::vector<ClipAndConnection> clipsToConnect;
@@ -823,7 +826,18 @@ int main( int argc, char** argv )
 									{
 										// It's not an index so we assume, it's the name/id of the clip.
 										// If the node doesn't exist it will throw an exception.
-										graph.connect( graph.getNode( clip.second ), currentNode.getAttribute( clip.first->getName() ) );
+										try
+										{
+											graph.connect( graph.getNode( clip.second ), currentNode.getAttribute( clip.first->getName() ) );
+										}
+										catch( ... )
+										{
+											using namespace ttl;
+											using tuttle::quotes;
+											
+											BOOST_THROW_EXCEPTION( exception::Failed()
+																   << exception::user() + "unable to connect clip " + quotes( clip.first->getName() ) + ", with the id " + quotes( clip.second ) + ". Possible id's are: " + boost::algorithm::join( idNames, ", " ) );
+										}
 									}
 								}
 							}
