@@ -1438,9 +1438,11 @@ public:
 
     /** @brief get value */
     void getValue( double& r, double& g, double& b ) const;
+	OfxRGBColourD getValue() const { OfxRGBColourD c; getValue(c.r, c.g, c.b); return c; }
 
     /** @brief get the value at a time */
     void getValueAtTime( double t, double& r, double& g, double& b ) const;
+    OfxRGBColourD getValueAtTime( double t ) const { OfxRGBColourD c; getValueAtTime(t, c.r, c.g, c.b); return c; }
 
     /** @brief set value */
     void setValue( double r, double g, double b );
