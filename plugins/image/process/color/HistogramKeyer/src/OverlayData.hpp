@@ -81,7 +81,7 @@ struct Pixel_compute_histograms
 	//basic round function
     double round( const double x ) const
 	{
-		if(x>=0.5){return ceil(x);}else{return floor(x);}
+		if( x >= 0.5 ) { return ceil(x); } else { return floor(x); }
 	}
 	
 	template< typename Pixel>
@@ -92,9 +92,8 @@ struct Pixel_compute_histograms
 		
 		BOOST_ASSERT( _y >= 0 );
 		BOOST_ASSERT( _x >= 0 );
-		BOOST_ASSERT( _imgBool.shape()[0] > _y );
-		BOOST_ASSERT( _imgBool.shape()[1] > _x );
-		
+		BOOST_ASSERT( std::ssize_t(_imgBool.shape()[0]) > _y );
+		BOOST_ASSERT( std::ssize_t(_imgBool.shape()[1]) > _x );
 		
 		//int revert_y = (_height-1)-_y;
 		

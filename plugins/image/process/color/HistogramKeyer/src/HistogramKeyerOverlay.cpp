@@ -267,8 +267,8 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 		
 		BOOST_ASSERT( endY >= 0 );
 		BOOST_ASSERT( endX >= 0 );
-		BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] >= endY + step_y );
-		BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] >= endX + step_x );
+		BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] >= std::size_t(endY + step_y) );
+		BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] >= std::size_t(endX + step_x) );
 		
 		unsigned char fillValue;
 		if( _plugin->_paramSelectionMode->getValue() == 2 )	//selection mode is subtractive
@@ -276,9 +276,9 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 		else
 			fillValue = 255; //mark all of the selected pixel
 		
-		for( unsigned int val_y = 0; val_y < step_y; ++val_y )
+		for( int val_y = 0; val_y < step_y; ++val_y )
 		{
-			for( unsigned int val_x = 0; val_x < step_x; ++val_x )
+			for( int val_x = 0; val_x < step_x; ++val_x )
 			{
 				const int y = endY + val_y - pixelRegionOfDefinition.y1; // y in img bool size (reformat)
 				const int x = endX + val_x - pixelRegionOfDefinition.x1; // x in img bool size (reformat)
@@ -342,8 +342,8 @@ void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI& fullImgSize, 
 	GLuint Name;								//Texture name
 	glGenTextures(1,&Name);						//generate a texture number
 	glBindTexture(GL_TEXTURE_2D,Name);
-	BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] == imgSize.y );
-	BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] == imgSize.x );
+	BOOST_ASSERT( getOverlayData()._imgBool.shape()[0] == std::size_t(imgSize.y) );
+	BOOST_ASSERT( getOverlayData()._imgBool.shape()[1] == std::size_t(imgSize.x) );
 	glTexImage2D(
 		GL_TEXTURE_2D,		//Type : texture 2D
 		0,					//Mipmap : none
