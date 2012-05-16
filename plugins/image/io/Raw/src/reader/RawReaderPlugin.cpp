@@ -27,9 +27,20 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramGammaPower = fetchDoubleParam( kParamGammaPower );
 	_paramGammaToe   = fetchDoubleParam( kParamGammaToe );
 	_paramRedAbber   = fetchDoubleParam( kParamRedAbber );
-	_paramGreenAbber = fetchDoubleParam( kParamGreenAbber );
+	_paramBlueAbber = fetchDoubleParam( kParamBlueAbber );
 	
 	_paramBright     = fetchDoubleParam( kParamBright );
+	_paramThreshold  = fetchDoubleParam( kParamThreshold );
+	
+	_paramFourColorRgb = fetchBooleanParam( kParamFourColorRgb );
+	_paramDocumentMode = fetchChoiceParam( kParamDocumentMode );
+	
+	_paramExposure         = fetchDoubleParam( kParamExposure );
+	_paramExposurePreserve = fetchDoubleParam( kParamExposurePreserve );
+	
+	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
+	
+	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
 }
 
 RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParams( const OfxTime time )
@@ -43,9 +54,13 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._gammaPower = _paramGammaPower->getValue();
 	params._gammaToe   = _paramGammaToe->getValue();
 	params._redAbber   = _paramRedAbber->getValue();
-	params._greenAbber = _paramGreenAbber->getValue();
+	params._blueAbber = _paramBlueAbber->getValue();
 	
 	params._bright     = _paramBright->getValue();
+	params._threshold  = _paramThreshold->getValue();
+	
+	params._fourColorRgb = _paramFourColorRgb->getValue();
+	params._documentMode = static_cast<EDocumentMode>( _paramDocumentMode->getValue() );
 	
 	params._greyboxPoint.x = _paramGreyboxPoint->getValue().x;
 	params._greyboxPoint.y = _paramGreyboxPoint->getValue().y;
@@ -53,12 +68,18 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._greyboxSize.x = _paramGreyboxSize->getValue().x;
 	params._greyboxSize.y = _paramGreyboxSize->getValue().y;
 	
+	params._exposure         = _paramExposure->getValue();
+	params._exposurePreserve = _paramExposurePreserve->getValue();
+	
+	params._whiteBalance     = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
+	
+	params._hightlight = static_cast<EHighlight>( _paramHighlight->getValue() );
+	
 	return params;
 }
 
 void RawReaderPlugin::updateInfos( const OfxTime time )
 {
-	TUTTLE_COUT("update info");
 	RawReaderProcessParams<Scalar> params = getProcessParams( time );
 
 	LibRaw rawProcessor;
@@ -169,7 +190,6 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	TUTTLE_COUT("get rod");
 	updateInfos( args.time );
 
 	RawReaderProcessParams<Scalar> params = getProcessParams( args.time );
@@ -179,13 +199,13 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	//libraw_output_params_t& out = rawProcessor.imgdata.params;
 	//	out.half_size  = 1;
 
-	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
+	if( rawProcessor.open_file( params._filepath.c_str() ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 			<< exception::user( "RAW: Unable to open file" )
 			<< exception::filename( params._filepath ) );
 	}
-	if( const int ret = rawProcessor.adjust_sizes_info_only() )
+	if( rawProcessor.adjust_sizes_info_only() )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
 			<< exception::user( "RAW: Cannot decode infos" )
@@ -236,7 +256,6 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
  */
 void RawReaderPlugin::render( const OFX::RenderArguments& args )
 {
-	TUTTLE_COUT("renderer");
 	ReaderPlugin::render( args );
 	doGilRender<RawReaderProcess>( *this, args );
 }
