@@ -64,22 +64,28 @@ public:
 			return kOfxFlagInfiniteMax;
 	}
 
-	EParamReaderExplicitConversion getExplicitConversion() const
+	EParamReaderBitDepth getExplicitBitDepthConversion() const
 	{
-		return static_cast<EParamReaderExplicitConversion>( _paramExplicitConv->getValue() );
+		return static_cast<EParamReaderBitDepth>( _paramBitDepth->getValue() );
 	}
 
+	
+	EParamReaderChannel getExplicitChannelConversion() const
+	{
+		return static_cast<EParamReaderChannel>( _paramChannel->getValue() );
+	}
+	
 	OFX::EBitDepth getOfxExplicitConversion() const
 	{
-		switch( getExplicitConversion() )
+		switch( getExplicitBitDepthConversion() )
 		{
-			case eParamReaderExplicitConversionByte:
+			case eParamReaderBitDepthByte:
 				return OFX::eBitDepthUByte;
-			case eParamReaderExplicitConversionShort:
+			case eParamReaderBitDepthShort:
 				return OFX::eBitDepthUShort;
-			case eParamReaderExplicitConversionFloat:
+			case eParamReaderBitDepthFloat:
 				return OFX::eBitDepthFloat;
-			case eParamReaderExplicitConversionAuto:
+			case eParamReaderBitDepthAuto:
 				BOOST_THROW_EXCEPTION( exception::Value() );
 		}
 		return OFX::eBitDepthNone;
@@ -89,11 +95,12 @@ protected:
 	virtual inline bool varyOnTime() const { return _isSequence; }
 
 public:
-	OFX::Clip*           _clipDst;           ///< Destination image clip
+	OFX::Clip*           _clipDst;        ///< Destination image clip
 	/// @name user parameters
 	/// @{
-	OFX::StringParam*    _paramFilepath;     ///< File path
-	OFX::ChoiceParam*    _paramExplicitConv; ///< Explicit conversion
+	OFX::StringParam*    _paramFilepath;  ///< File path
+	OFX::ChoiceParam*    _paramBitDepth;  ///< Explicit bit depth conversion
+	OFX::ChoiceParam*    _paramChannel; ///< Explicit component conversion
 	/// @}
 
 private:
