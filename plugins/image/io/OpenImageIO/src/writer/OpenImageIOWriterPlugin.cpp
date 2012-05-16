@@ -12,7 +12,7 @@ namespace writer {
 OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_components  = fetchChoiceParam( kTuttlePluginComponents );
+	_components  = fetchChoiceParam( kTuttlePluginChannel );
 	_orientation = fetchChoiceParam( kParamOutputOrientation );
 	_quality     = fetchIntParam( kParamOutputQuality );
 }
@@ -27,6 +27,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams( const 
 	params._bitDepth    = static_cast<ETuttlePluginBitDepth>( this->_paramBitDepth->getValue() );
 	params._quality     = _quality->getValue();
 	params._orientation = static_cast<int>( _orientation->getValue() );
+	params._premultiply = this->_paramPremult->getValue();
 	return params;
 }
 

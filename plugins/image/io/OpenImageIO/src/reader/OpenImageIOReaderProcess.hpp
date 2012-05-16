@@ -8,6 +8,8 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
+#include <imageio.h>
+
 namespace tuttle {
 namespace plugin {
 namespace openImageIO {
@@ -35,7 +37,8 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	View& readImage( View& dst, const std::string& filepath );
+	template<typename bitDepth, typename layout, typename fileView>
+	View& readImage( View& dst, boost::scoped_ptr<OpenImageIO::ImageInput>& img, int pixelSize );
 
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{

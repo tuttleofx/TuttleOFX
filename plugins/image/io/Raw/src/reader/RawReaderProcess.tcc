@@ -24,7 +24,7 @@ static int progressCallback( void* data, LibRaw_progress p, int iteration, int e
 	PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
 	TUTTLE_COUT_DEBUG( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
 	if( process->progressUpdate( iteration / (double)expected ) )
-		return 1; // cancel processing immediately
+		return 0; // cancel processing immediately
 	return 0; // can continue
 }
 
@@ -58,6 +58,7 @@ RawReaderProcess<View>::RawReaderProcess( RawReaderPlugin& instance )
 template<class View>
 void RawReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
+		TUTTLE_COUT("setup");
 	ImageGilProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.time );
 }
@@ -75,6 +76,7 @@ void RawReaderProcess<View>::preProcess()
 template<class View>
 void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+		TUTTLE_COUT("processinggggg");
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 
@@ -85,7 +87,48 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//		_out.document_mode = 2;
 		//		_out.half_size  = 1;
 		//		_out.four_color_rgb = 1;
-		_out.gamm[0] = _out.gamm[1] =  _out.no_auto_bright    = 1;
+		/*
+		_out.greybox[0] = _params._greyboxPoint.x;
+		_out.greybox[1] = _params._greyboxPoint.y;
+		_out.greybox[2] = _params._greyboxSize.x;
+		_out.greybox[3] = _params._greyboxSize.y;
+		*/
+		_out.aber[0]   = _params._redAbber;
+		_out.aber[2]   = _params._greenAbber;
+		
+		_out.bright    = _params._bright;
+		_out.gamm[0]   = _params._gammaPower;
+		_out.gamm[1]   = _params._gammaToe;
+		_out.user_qual = _params._interpolation;
+		_out.no_auto_bright    = 0;
+		
+		/*
+#define greybox         (imgdata.params.greybox)
+#define cropbox         (imgdata.params.cropbox)
+#define aber            (imgdata.params.aber)
+#define gamm            (imgdata.params.gamm)
+#define user_mul        (imgdata.params.user_mul)
+#define shot_select     (imgdata.params.shot_select)
+#define bright          (imgdata.params.bright)
+#define threshold       (imgdata.params.threshold)
+#define half_size       (imgdata.params.half_size)
+#define four_color_rgb  (imgdata.params.four_color_rgb)
+#define document_mode   (imgdata.params.document_mode)
+#define highlight       (imgdata.params.highlight)
+//#define verbose         (imgdata.params.verbose)
+#define use_auto_wb     (imgdata.params.use_auto_wb)
+#define use_camera_wb   (imgdata.params.use_camera_wb)
+#define use_camera_matrix (imgdata.params.use_camera_matrix)
+#define output_color    (imgdata.params.output_color)
+#define output_bps      (imgdata.params.output_bps)
+#define gamma_16bit      (imgdata.params.gamma_16bit)
+#define output_tiff     (imgdata.params.output_tiff)
+#define med_passes      (imgdata.params.med_passes)
+#define no_auto_bright  (imgdata.params.no_auto_bright)
+#define use_fuji_rotate (imgdata.params.use_fuji_rotate)
+#define filtering_mode (imgdata.params.filtering_mode)
+*/
+		
 		/*switch( _params._filtering )
 		{
 			case eFilteringAuto:
@@ -109,13 +152,18 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				<< exception::user() + "Cannot unpack file: " + libraw_strerror( ret )
 				<< exception::filename( _params._filepath ) );
 		}
-
+		
 		// we should call dcraw_process before thumbnail extraction because for
 		// some cameras (i.e. Kodak ones) white balance for thumbnal should be set
 		// from main image settings
 
-		int ret = _rawProcessor.dcraw_process();
-
+		// Data unpacking
+		int ret = 0;
+		if( _out.document_mode )
+			ret = _rawProcessor.dcraw_document_mode_processing();
+		else
+			ret = _rawProcessor.dcraw_process();
+		
 		if( LIBRAW_SUCCESS != ret )
 		{
 			if( LIBRAW_FATAL_ERROR( ret ) )

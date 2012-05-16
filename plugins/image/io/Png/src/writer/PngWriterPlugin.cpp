@@ -14,7 +14,7 @@ using namespace boost::gil;
 PngWriterPlugin::PngWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_paramOutputComponents = fetchChoiceParam( kTuttlePluginComponents );
+	_paramOutputComponents = fetchChoiceParam( kTuttlePluginChannel );
 }
 
 PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )

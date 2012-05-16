@@ -52,9 +52,7 @@ protected:
 	OFX::ChoiceParam*    _packed;          ///< Dpx packed method
 	OFX::BooleanParam*   _swapEndian;      ///< Dpx swap endian
 	OFX::ChoiceParam*    _encoding;        ///< Dpx encoding
-#ifndef TUTTLE_PRODUCTION
 	OFX::ChoiceParam*    _orientation;     ///< Dpx orientation
-#endif
 	OFX::StringParam*    _project;         ///< Dpx metadata Project
 	OFX::StringParam*    _copyright;       ///< Dpx metadata Copyright
 };

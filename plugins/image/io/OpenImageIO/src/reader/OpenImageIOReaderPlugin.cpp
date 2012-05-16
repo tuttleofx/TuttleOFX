@@ -85,16 +85,24 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 		return;
 	}
 
-	boost::scoped_ptr<OpenImageIO::ImageInput> in( OpenImageIO::ImageInput::create( filename ) );
-	if( !in.get() )
+	OpenImageIO::ImageInput *in = OpenImageIO::ImageInput::create( filename );
+
+	if( !in )
 	{
-		BOOST_THROW_EXCEPTION( exception::Value() );
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::user( "OIIO Reader: " + in->geterror () )
+			<< exception::filename( filename ) );
 	}
 
 	OpenImageIO::ImageSpec spec;
-	in->open( filename, spec );
+	if( ! in->open( filename, spec ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::user( "OIIO Reader: " + in->geterror () )
+			<< exception::filename( filename ) );
+	}
 
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		OFX::EBitDepth bd = OFX::eBitDepthNone;
 		switch( spec.format.basetype )
@@ -130,25 +138,39 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 			case OpenImageIO::TypeDesc::UNKNOWN:
 			case OpenImageIO::TypeDesc::NONE:
 			default:
-				BOOST_THROW_EXCEPTION( exception::ImageFormat() );
+			{
+				in->close();
+				BOOST_THROW_EXCEPTION( exception::ImageFormat()
+									   << exception::user("bad input format") );
+			}
 		}
 		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 	}
 
-	switch( spec.nchannels )
+	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
-		case 1 :
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
-			break;
-		case 3 :
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
-			break;
-		case 4 :
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
-		default:
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
+		switch( spec.nchannels )
+		{
+			case 1 :
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+				break;
+			case 3 :
+				if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentRGB ) )
+				{
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+				}
+				else
+				{
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				}
+				break;
+			case 4 :
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			default:
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+		}
 	}
 
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
