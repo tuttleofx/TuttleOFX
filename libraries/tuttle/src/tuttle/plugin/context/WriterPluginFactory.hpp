@@ -43,7 +43,8 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
 	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( false );
+//	renderAlways->setDefault( false );
+	renderAlways->setDefault( true ); // because tuttle is not declared as a background renderer
 
 	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
 	forceNewRender->setLabel( "Force new render" );
