@@ -28,13 +28,13 @@ namespace tuttle
         OCIOColorSpacePluginFactory::describe(OFX::ImageEffectDescriptor& desc)
         {
           desc.setLabels("TuttleOcioColorSpace", "OCIOColorSpace",
-              "Color transformation through LUT file using OpenColorIO Transform");
+              "ColorSpace transformation using OpenColorIO configuration file");
           desc.setPluginGrouping("tuttle/image/process/color/ocio");
 
           desc.setDescription(
               "OCIO ColorSpace\n"
                   "\n"
-                  "Lut input filename (3dl, ccc, cc, csp, cub, cube, hdl, mga, m3d, spi1d, spi3d, spimtx, vf)");
+                  "Config filename ");
 
           // add the supported contexts
           desc.addSupportedContext(OFX::eContextGeneral);
