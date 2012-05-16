@@ -7,7 +7,8 @@ import stat
 import urllib
 import subprocess
 
-fileExec = "../bjam.sh"
+fileExecGcc   = "../bjam-gcc.sh"
+fileExecClang = "../bjam-clang.sh"
 fileExecWindows = "../bjam.bat"
 
 def detectCPUs():
@@ -38,21 +39,34 @@ linux		= not windows and not macos
 unix		= not windows
 is_64bits	= sys.maxsize > 2**32
 haveGcc		= False
+haveClang       = False
 
 if linux :
-  if os.system("gcc -v 2&> /dev/null")==0 :
+  if os.system("gcc -v ")==0 :
     haveGcc = True
-  if os.path.exists(fileExec)==False :
-    f = open(fileExec, "w")
-    f.write("$BOOST_ROOT/bjam --user-config=user-config.jam ")
+  if os.system("clang -v ")==0 :
+    haveClang = True
+  if os.path.exists(fileExecGcc)==False :
     if haveGcc :
+      f = open(fileExecGcc, "w")
+      f.write("$BOOST_ROOT/bjam --user-config=user-config.jam ")
       f.write("--toolset=gcc --disable-icu ")
-    if is_64bits :
-      f.write("cxxflags=-fPIC address-model=64 ")
-    f.write("-j%s $* " % detectCPUs())
-    f.close()
-    os.chmod(fileExec,stat.S_IXUSR+stat.S_IRUSR+stat.S_IWUSR)
+      if is_64bits :
+        f.write("cxxflags=-fPIC address-model=64 ")
+      f.write("-j%s $* " % detectCPUs())
+      f.close()
+      os.chmod(fileExecGcc,stat.S_IXUSR+stat.S_IRUSR+stat.S_IWUSR)
 
+  if os.path.exists(fileExecClang)==False :
+    if haveClang :
+      f = open(fileExecClang, "w")
+      f.write("$BOOST_ROOT/bjam --user-config=user-config.jam ")
+      f.write("--toolset=gcc --disable-icu ")
+      if is_64bits :
+        f.write("cxxflags=-fPIC address-model=64 ")
+      f.write("-j%s $* " % detectCPUs())
+      f.close()
+      os.chmod(fileExecClang,stat.S_IXUSR+stat.S_IRUSR+stat.S_IWUSR)
 
 if windows :
   if os.path.exists(fileExecWindows)==False :
