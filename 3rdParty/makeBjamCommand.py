@@ -61,7 +61,7 @@ if linux :
     if haveClang :
       f = open(fileExecClang, "w")
       f.write("$BOOST_ROOT/bjam --user-config=user-config.jam ")
-      f.write("--toolset=gcc --disable-icu ")
+      f.write("--toolset=clang --disable-icu ")
       if is_64bits :
         f.write("cxxflags=-fPIC address-model=64 ")
       f.write("-j%s $* " % detectCPUs())
