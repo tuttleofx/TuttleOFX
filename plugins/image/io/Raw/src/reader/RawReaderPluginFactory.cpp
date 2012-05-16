@@ -113,6 +113,62 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 
     describeReaderParamsInContext( desc, context );
 
+	OFX::Double2DParamDescriptor* greyboxPoint = desc.defineDouble2DParam( kParamGreyboxPoint);
+	greyboxPoint->setLabel( kParamGreyboxPointLabel );
+	greyboxPoint->setHint( kParamGreyboxPointHint );
+	greyboxPoint->setDisplayRange( 0, 0, 6000, 6000 );
+	
+	OFX::Double2DParamDescriptor* greyboxSize = desc.defineDouble2DParam( kParamGreyboxSize );
+	greyboxSize->setLabel( kParamGreyboxSizeLabel );
+	greyboxSize->setHint( kParamGreyboxSizeHint );
+	greyboxSize->setDisplayRange( 0, 0, 6000, 6000 );
+	
+	OFX::DoubleParamDescriptor* redAbber = desc.defineDoubleParam( kParamRedAbber );
+	redAbber->setLabel( kParamRedAbberLabel );
+	redAbber->setHint( kParamRedAbberHint );
+	redAbber->setDefault( 1.0 );
+	redAbber->setDisplayRange( 0.99, 1.01 );
+	
+	OFX::DoubleParamDescriptor* greenAbber = desc.defineDoubleParam( kParamGreenAbber );
+	greenAbber->setLabel( kParamGreenAbberLabel );
+	greenAbber->setHint( kParamGreenAbberHint );
+	greenAbber->setDefault( 1.0 );
+	greenAbber->setDisplayRange( 0.99, 1.01 );
+	
+	OFX::DoubleParamDescriptor* gammaPower = desc.defineDoubleParam( kParamGammaPower );
+	gammaPower->setLabel( kParamGammaPowerLabel );
+	gammaPower->setHint( kParamGammaPowerHint );
+	gammaPower->setDefault( 1.0 );
+	gammaPower->setDisplayRange( 0.0, 10.0 );
+
+	OFX::DoubleParamDescriptor* gammaToe = desc.defineDoubleParam( kParamGammaToe );
+	gammaToe->setLabel( kParamGammaToeLabel );
+	gammaToe->setHint( kParamGammaToeHint );
+	gammaToe->setDefault( 1.0 );
+	gammaToe->setDisplayRange( 0.0, 10.0 );
+	
+	OFX::DoubleParamDescriptor* bright = desc.defineDoubleParam( kParamBright );
+	bright->setLabel( kParamBrightLabel );
+	bright->setHint( kParamBrightHint );
+	bright->setDefault( 1.0 );
+	bright->setDisplayRange( 0.0, 1.0 );
+	
+	OFX::ChoiceParamDescriptor* interpolation = desc.defineChoiceParam( kParamInterpolation );
+	interpolation->setLabel( kParamInterpolationLabel );
+	interpolation->setLabel( kParamInterpolationHint );
+	interpolation->appendOption( kParamInterpolationLinear );
+	interpolation->appendOption( kParamInterpolationVng );
+	interpolation->appendOption( kParamInterpolationPpg );
+	interpolation->appendOption( kParamInterpolationAhd );
+	interpolation->appendOption( kParamInterpolationDcb );
+	interpolation->appendOption( kParamInterpolationModifiedAhd );
+	interpolation->appendOption( kParamInterpolationAfd );
+	interpolation->appendOption( kParamInterpolationVcd );
+	interpolation->appendOption( kParamInterpolationMixed );
+	interpolation->appendOption( kParamInterpolationLmmse );
+	interpolation->appendOption( kParamInterpolationAmaze );
+	interpolation->setDefault( 3 );
+	
     OFX::ChoiceParamDescriptor* filtering = desc.defineChoiceParam( kParamFiltering );
     filtering->setLabel( "Filtering" );
     filtering->appendOption( kParamFilteringAuto );

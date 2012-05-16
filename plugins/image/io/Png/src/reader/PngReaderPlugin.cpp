@@ -68,66 +68,54 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 
-	switch( getExplicitConversion() )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
-		case eParamReaderExplicitConversionAuto:
+		OFX::EBitDepth bd = OFX::eBitDepthNone;
+		if( ! boost::filesystem::exists( filename ) )
 		{
-			OFX::EBitDepth bd = OFX::eBitDepthNone;
-			if( ! boost::filesystem::exists( filename ) )
-			{
-				BOOST_THROW_EXCEPTION( exception::FileNotExist()
-					<< exception::user( "PNG: Unable to open file" )
-					<< exception::filename( filename ) );
-			}
-			int bitDepth;
-			bitDepth      = png_read_precision( filename );
+			BOOST_THROW_EXCEPTION( exception::FileNotExist()
+				<< exception::user( "PNG: Unable to open file" )
+				<< exception::filename( filename ) );
+		}
+		int bitDepth;
+		bitDepth      = png_read_precision( filename );
 
-			switch( bitDepth )
-			{
-				case 8:
-					bd = OFX::eBitDepthUByte;
-					break;
-				case 16:
-					bd = OFX::eBitDepthUShort;
-					break;
-				default:
-					BOOST_THROW_EXCEPTION( exception::ImageFormat() );
-			}
-			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
-			break;
-		}
-		case eParamReaderExplicitConversionByte:
+		switch( bitDepth )
 		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-			break;
+			case 8:
+				bd = OFX::eBitDepthUByte;
+				break;
+			case 16:
+				bd = OFX::eBitDepthUShort;
+				break;
+			default:
+				BOOST_THROW_EXCEPTION( exception::ImageFormat() );
 		}
-		case eParamReaderExplicitConversionShort:
+		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
+	}
+
+	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
+	{
+		switch( png_read_color_type( filename ) )
 		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-			break;
-		}
-		case eParamReaderExplicitConversionFloat:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-			break;
+			case 0 :
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+				break;
+			case 2 :
+				if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentRGB ) )
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+				else
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			case 6 :
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			default:
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
 		}
 	}
 
-	switch( png_read_color_type( filename ) )
-	{
-		case 0 :
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
-			break;
-		case 2 :
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
-			break;
-		case 6 :
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
-		default:
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
-	}
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 
 }

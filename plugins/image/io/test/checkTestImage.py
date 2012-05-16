@@ -51,6 +51,10 @@ BLUE_COLOR = '\033[1;34m'
 CYAN_COLOR = '\033[1;36m'
 NC_COLOR   = '\033[0m'  # No Color
 
+GENERATOR="colorgradient"
+GENERATOR_ARGS="type=2d nbPoints=5 point0=0,0 color0=0,0,0,0 point1=1,1 color1=1,1,1,1 point2=0,1 color2=0,1,0,1 point3=1,0.1 color3=0,0,1,1 point4=0.5,0.5 color4=1,0,0,1 width=512"
+
+
 def writeHtmlHeader() :
 	htmlF.write('<html>\n')
 	#HEAD
@@ -145,6 +149,17 @@ def writeRGoodWUndef ( format, channel, bitDepth, plugin ) :
 def writeRBadWUndef ( format, channel, bitDepth, plugin ) :
 	writeHtmlInsertLigne( format, channel, bitDepth, plugin, "bgcolor=" + COLOR_BAD, "BAD", "bgcolor" + COLOR_UNDEF, "")
 
+
+# function to call diff node from TuttleOFX process
+# process the PSNR between 1 image and 1 generator
+def diffReaderGenerator ( reader, input, generator, generatorArgs ) :
+	ret = subprocess.call( TT_EXE + ' --reader tuttle.' + reader + 'reader --input ' + input + ' --reader tuttle.' + generator + ' --generator-args ' + generatorArgs + TT_OUT_FILE, shell=True )
+	if( ret == 0 ) :
+		print( BLUE_COLOR + 'OK : '  + reader + ' | ' + generator + ' (' + input + ', ' + generatorArgs + ')' + NC_COLOR )
+		return 1
+	else :
+		print( RED_COLOR + 'not similar : ' + reader +'| ' + generator + '  (' + input + ', ' + generatorArgs + ')' + NC_COLOR )
+		return 0
 
 # function to call diff node from TuttleOFX process
 # process the PSNR between 2 images
@@ -301,6 +316,8 @@ def check2r2w( reader1, reader2, writer1, writer2, components, bitDepth, extensi
 		return 0
 
 def check3r2w( reader1, reader2, reader3, writer1, writer2, components, bitDepth, extension ) :
+	diffReaderGenerator( reader2, writer2+'.'+components+'.'+bitDepth+'.001.'+extension, GENERATOR, GENERATOR_ARGS )
+
 	countReadOK = diff( reader1, reader1, writer1+'.'+components+'.'+bitDepth+'.001.'+extension, writer1+'.'+components+'.'+bitDepth+'.003.'+extension )
 	countReadOK += diff( reader2, reader2, writer1+'.'+components+'.'+bitDepth+'.001.'+extension, writer1+'.'+components+'.'+bitDepth+'.003.'+extension )
 	countReadOK += diff( reader3, reader3, writer1+'.'+components+'.'+bitDepth+'.001.'+extension, writer1+'.'+components+'.'+bitDepth+'.003.'+extension )
@@ -321,7 +338,7 @@ def check3r2w( reader1, reader2, reader3, writer1, writer2, components, bitDepth
 	countReadOK += diff( reader3, reader1, writer2+'.'+components+'.'+bitDepth+'.001.'+extension, writer1+'.'+components+'.'+bitDepth+'.003.'+extension )
 	countReadOK += diff( reader2, reader1, writer2+'.'+components+'.'+bitDepth+'.001.'+extension, writer2+'.'+components+'.'+bitDepth+'.003.'+extension )
 	countReadOK += diff( reader2, reader3, writer2+'.'+components+'.'+bitDepth+'.001.'+extension, writer2+'.'+components+'.'+bitDepth+'.003.'+extension )
-	
+
 	if( countReadOK == 18 ) :
 		if( reader1 == writer1 ) :
 			writeRGoodWGood( extension, components, bitDepth, writer1 )

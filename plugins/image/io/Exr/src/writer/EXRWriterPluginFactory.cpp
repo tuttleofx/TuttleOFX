@@ -68,11 +68,11 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kTuttlePluginComponents );
-	componentsType->setLabel( kTuttlePluginComponentsLabel );
-	componentsType->appendOption( kTuttlePluginComponentsGray );
-	componentsType->appendOption( kTuttlePluginComponentsRGB );
-	componentsType->appendOption( kTuttlePluginComponentsRGBA );
+	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kTuttlePluginChannel );
+	componentsType->setLabel( kTuttlePluginChannelLabel );
+	componentsType->appendOption( kTuttlePluginChannelGray );
+	componentsType->appendOption( kTuttlePluginChannelRGB );
+	componentsType->appendOption( kTuttlePluginChannelRGBA );
 	componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	componentsType->setDefault( eTuttlePluginComponentsRGBA );
 

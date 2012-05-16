@@ -8,10 +8,11 @@ namespace bfs = boost::filesystem;
 ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 	: OFX::ImageEffect( handle )
 {
-	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
-	_paramFilepath     = fetchStringParam( kTuttlePluginFilename );
-	_isSequence        = _filePattern.initFromDetection( _paramFilepath->getValue() );
-	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
+	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
+	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
+	_isSequence    = _filePattern.initFromDetection( _paramFilepath->getValue() );
+	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
+	_paramChannel  = fetchChoiceParam( kTuttlePluginChannel );
 }
 
 ReaderPlugin::~ReaderPlugin()
@@ -36,26 +37,48 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 	// If pattern detected (frame varying on time)
 	clipPreferences.setOutputFrameVarying( varyOnTime() );
 
-	switch( getExplicitConversion() )
+	switch( getExplicitBitDepthConversion() )
 	{
-		case eParamReaderExplicitConversionByte:
+		case eParamReaderBitDepthByte:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 			break;
 		}
-		case eParamReaderExplicitConversionShort:
+		case eParamReaderBitDepthShort:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 			break;
 		}
-		case eParamReaderExplicitConversionAuto:
-		case eParamReaderExplicitConversionFloat:
+		case eParamReaderBitDepthAuto:
+		case eParamReaderBitDepthFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 			break;
 		}
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	switch( getExplicitChannelConversion() )
+	{
+		case eParamReaderChannelGray:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+			break;
+		}
+		case eParamReaderChannelRGB:
+		{
+			if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentRGB ) )
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+			else
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+		case eParamReaderChannelAuto:
+		case eParamReaderChannelRGBA:
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+	}
+
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 

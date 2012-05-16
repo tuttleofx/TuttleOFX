@@ -1,4 +1,5 @@
 #include "OpenImageIOWriterPluginFactory.hpp"
+#include "OpenImageIOWriterPluginFactory.hpp"
 #include "OpenImageIOWriterDefinitions.hpp"
 #include "OpenImageIOWriterPlugin.hpp"
 
@@ -114,12 +115,12 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     filename->setStringType( OFX::eStringTypeFilePath );
     desc.addClipPreferencesSlaveParam( *filename );
 
-    OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
-    components->setLabel( kTuttlePluginComponentsLabel );
-    components->appendOption( kTuttlePluginComponentsGray );
-    components->appendOption( kTuttlePluginComponentsRGB );
-    components->appendOption( kTuttlePluginComponentsRGBA );
-    components->setDefault( eTuttlePluginComponentsRGBA );
+    OFX::ChoiceParamDescriptor* channel = desc.defineChoiceParam( kTuttlePluginChannel );
+    channel->setLabel( kTuttlePluginChannelLabel );
+    channel->appendOption( kTuttlePluginChannelGray );
+    channel->appendOption( kTuttlePluginChannelRGB );
+    channel->appendOption( kTuttlePluginChannelRGBA );
+    channel->setDefault( 2 );
 
     OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
     bitDepth->setLabel( kTuttlePluginBitDepthLabel );

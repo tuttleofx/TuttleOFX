@@ -91,7 +91,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 			<< exception::user( "Unable to read file infos." ) );
 	}
 
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		clipPreferences.setClipBitDepth( *_clipDst, fileInfo._precisionType );
 	}
@@ -99,24 +99,29 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 	{
 		clipPreferences.setClipBitDepth( *_clipDst, getOfxExplicitConversion() );
 	}
-	clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
-	switch( fileInfo._components )
+	
+	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
-		case 1:
-			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentAlpha );
-			break;
-		case 3:
-			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
-			break;
-		case 4:
-			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-			break;
-		default:
+		switch( fileInfo._components )
 		{
-			BOOST_THROW_EXCEPTION( exception::ImageFormat()
-				<< exception::user() + "Unexpected number of channels (" + fileInfo._components + ")" );
+			case 1:
+				clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentAlpha );
+				break;
+			case 3:
+				clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
+				break;
+			case 4:
+				clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			default:
+			{
+				BOOST_THROW_EXCEPTION( exception::ImageFormat()
+					<< exception::user() + "Unexpected number of channels (" + fileInfo._components + ")" );
+			}
 		}
 	}
+	
+	clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
 }
 
 /**

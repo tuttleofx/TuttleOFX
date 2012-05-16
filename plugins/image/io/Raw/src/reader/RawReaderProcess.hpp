@@ -16,7 +16,7 @@ namespace reader {
 template<class View>
 class RawReaderProcess : public ImageGilProcessor<View>
 {
-
+	typedef float Scalar;
 public:
 	RawReaderProcess( RawReaderPlugin& instance );
 
@@ -28,7 +28,7 @@ public:
 
 private:
 	RawReaderPlugin&    _plugin;        ///< Rendering plugin
-	RawReaderProcessParams _params;
+	RawReaderProcessParams<Scalar> _params;
 
 	LibRaw _rawProcessor;
 	libraw_iparams_t& _p1;

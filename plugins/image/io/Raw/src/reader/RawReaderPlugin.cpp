@@ -18,24 +18,48 @@ using namespace boost::gil;
 RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 {
-	_paramFiltering = fetchChoiceParam( kParamFiltering );
+	_paramFiltering     = fetchChoiceParam( kParamFiltering );
+	_paramInterpolation = fetchChoiceParam( kParamInterpolation );
+	
+	_paramGreyboxPoint = fetchDouble2DParam( kParamGreyboxPoint );
+	_paramGreyboxSize  = fetchDouble2DParam( kParamGreyboxSize );
+	
+	_paramGammaPower = fetchDoubleParam( kParamGammaPower );
+	_paramGammaToe   = fetchDoubleParam( kParamGammaToe );
+	_paramRedAbber   = fetchDoubleParam( kParamRedAbber );
+	_paramGreenAbber = fetchDoubleParam( kParamGreenAbber );
+	
+	_paramBright     = fetchDoubleParam( kParamBright );
 }
 
-RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
+RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParams( const OfxTime time )
 {
-	RawReaderProcessParams params;
+	RawReaderProcessParams<Scalar> params;
 
-	params._filepath  = getAbsoluteFilenameAt( time );
-	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
-
-//	TUTTLE_COUT( time << "  " << getAbsoluteFilenameAt( time ) );
+	params._filepath      = getAbsoluteFilenameAt( time );
+	params._filtering     = static_cast<EFiltering>( _paramFiltering->getValue() );
+	params._interpolation = static_cast<EInterpolation>( _paramInterpolation->getValue() );
+	
+	params._gammaPower = _paramGammaPower->getValue();
+	params._gammaToe   = _paramGammaToe->getValue();
+	params._redAbber   = _paramRedAbber->getValue();
+	params._greenAbber = _paramGreenAbber->getValue();
+	
+	params._bright     = _paramBright->getValue();
+	
+	params._greyboxPoint.x = _paramGreyboxPoint->getValue().x;
+	params._greyboxPoint.y = _paramGreyboxPoint->getValue().y;
+	
+	params._greyboxSize.x = _paramGreyboxSize->getValue().x;
+	params._greyboxSize.y = _paramGreyboxSize->getValue().y;
+	
 	return params;
 }
 
 void RawReaderPlugin::updateInfos( const OfxTime time )
 {
-
-	RawReaderProcessParams params = getProcessParams( time );
+	TUTTLE_COUT("update info");
+	RawReaderProcessParams<Scalar> params = getProcessParams( time );
 
 	LibRaw rawProcessor;
 	libraw_iparams_t& p1          = rawProcessor.imgdata.idata;
@@ -145,9 +169,10 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
+	TUTTLE_COUT("get rod");
 	updateInfos( args.time );
 
-	RawReaderProcessParams params = getProcessParams( args.time );
+	RawReaderProcessParams<Scalar> params = getProcessParams( args.time );
 
 	LibRaw rawProcessor;
 	libraw_image_sizes_t& sizes = rawProcessor.imgdata.sizes;
@@ -181,7 +206,7 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 //	const std::string filename( getAbsoluteFirstFilename() );
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		OFX::EBitDepth bd = OFX::eBitDepthNone;
 		int bitDepth      = 32;    //raw_read_precision( filename );
@@ -211,6 +236,7 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
  */
 void RawReaderPlugin::render( const OFX::RenderArguments& args )
 {
+	TUTTLE_COUT("renderer");
 	ReaderPlugin::render( args );
 	doGilRender<RawReaderProcess>( *this, args );
 }

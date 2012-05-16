@@ -23,13 +23,14 @@ static const std::string kTuttlePluginBitDepth32f   = "32f   32 bits floating po
 static const std::string kTuttlePluginBitDepth64    = "64i   64 bits integer";
 static const std::string kTuttlePluginBitDepth64f   = "64f   64 bits floating point";
 
-static const std::string kTuttlePluginComponents      = "components";
-static const std::string kTuttlePluginComponentsLabel = "Components";
-static const std::string kTuttlePluginComponentsHint  = "Select components";
-static const std::string kTuttlePluginComponentsGray  = "gray";
-static const std::string kTuttlePluginComponentsRGB   = "rgb";
-static const std::string kTuttlePluginComponentsRGBA  = "rgba";
-static const std::string kTuttlePluginComponentsABGR  = "abgr";
+static const std::string kTuttlePluginChannel      = "channel";
+static const std::string kTuttlePluginChannelLabel = "Channel";
+static const std::string kTuttlePluginChannelHint  = "Select channel";
+static const std::string kTuttlePluginChannelAuto  = "auto";
+static const std::string kTuttlePluginChannelGray  = "gray";
+static const std::string kTuttlePluginChannelRGB   = "rgb";
+static const std::string kTuttlePluginChannelRGBA  = "rgba";
+static const std::string kTuttlePluginChannelABGR  = "abgr";
 
 }
 }

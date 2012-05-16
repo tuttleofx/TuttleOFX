@@ -22,9 +22,9 @@ FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
-	_paramFilepath     = fetchStringParam( kTuttlePluginFilename );
-	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
+	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
+	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
+	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
 }
 
 FFMpegReaderParams FFMpegReaderPlugin::getProcessParams() const
@@ -67,7 +67,7 @@ void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	clipPreferences.setOutputFrameVarying( true );
 	clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte ); /// @todo tuttle: some video format may need other bit depth (how we can detect this ?)
 	}
