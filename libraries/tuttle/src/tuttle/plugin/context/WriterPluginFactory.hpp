@@ -14,13 +14,37 @@ namespace plugin {
 void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 				    OFX::EContext               context )
 {
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
+	filename->setLabel( kTuttlePluginFilenameLabel );
+	filename->setStringType( OFX::eStringTypeFilePath );
+	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	desc.addClipPreferencesSlaveParam( *filename );
+
+	OFX::ChoiceParamDescriptor* channel = desc.defineChoiceParam( kTuttlePluginChannel );
+	channel->setLabel( kTuttlePluginChannelLabel );
+	channel->appendOption( kTuttlePluginChannelGray );
+	channel->appendOption( kTuttlePluginChannelRGB );
+	channel->appendOption( kTuttlePluginChannelRGBA );
+	channel->setDefault( 2 );
+
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
+	bitDepth->setLabel( kTuttlePluginBitDepthLabel );
+	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	bitDepth->appendOption( kTuttlePluginBitDepth16 );
+	bitDepth->setDefault( 0 );
+	
+	OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremultiplied );
+	premult->setLabel( kParamPremultipliedLabel );
+	premult->setDefault( false );
+	
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint("Force render (writing)");
 
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
 	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( false );
+//	renderAlways->setDefault( false );
+	renderAlways->setDefault( true ); // because tuttle is not declared as a background renderer
 
 	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
 	forceNewRender->setLabel( "Force new render" );

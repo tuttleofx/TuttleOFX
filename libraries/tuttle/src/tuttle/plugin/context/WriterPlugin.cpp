@@ -20,6 +20,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_paramRenderButton = fetchPushButtonParam( kParamWriterRender );
 	_paramRenderAlways = fetchBooleanParam( kParamWriterRenderAlways );
 	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
+	_paramPremult = fetchBooleanParam( kParamPremultiplied );
 	_paramForceNewRender = fetchIntParam( kParamWriterForceNewRender );
 	_isSequence = _filePattern.initFromDetection( _paramFilepath->getValue( ) );
 }

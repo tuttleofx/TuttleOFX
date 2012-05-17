@@ -6,14 +6,20 @@
 namespace tuttle {
 namespace plugin {
 
-static const std::string kParamReaderExplicitConversion = "explicitConversion";
-
-enum EParamReaderExplicitConversion
+enum EParamReaderBitDepth
 {
-	eParamReaderExplicitConversionAuto = 0,
-	eParamReaderExplicitConversionByte,
-	eParamReaderExplicitConversionShort,
-	eParamReaderExplicitConversionFloat
+	eParamReaderBitDepthAuto = 0,
+	eParamReaderBitDepthByte,
+	eParamReaderBitDepthShort,
+	eParamReaderBitDepthFloat
+};
+
+enum EParamReaderChannel
+{
+	eParamReaderChannelAuto = 0,
+	eParamReaderChannelGray,
+	eParamReaderChannelRGB,
+	eParamReaderChannelRGBA
 };
 
 }

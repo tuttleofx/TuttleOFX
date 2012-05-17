@@ -77,8 +77,8 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth64 );
 	bitDepth->setDefault( eTuttlePluginBitDepth10 );
 
-	OFX::ChoiceParamDescriptor* descriptor = desc.defineChoiceParam( kTuttlePluginComponents );
-	descriptor->setLabel( kTuttlePluginComponentsLabel );
+	OFX::ChoiceParamDescriptor* descriptor = desc.defineChoiceParam( kTuttlePluginChannel );
+	descriptor->setLabel( kTuttlePluginChannelLabel );
 	descriptor->setHint( kParamDescriptorHint );
 	descriptor->appendOption( kParamDescriptorUserDefinedDescriptor );
 	descriptor->appendOption( kParamDescriptorRed );
@@ -165,7 +165,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	encoding->appendOption( kParamEncodingRle );
 	encoding->setDefault( 0 );
 
-#ifndef TUTTLE_PRODUCTION
 	OFX::ChoiceParamDescriptor* orientation = desc.defineChoiceParam( kParamOrientation );
 	orientation->setLabel( kParamOrientationLabel );
 	orientation->setHint( kParamOrientationHint );
@@ -179,7 +178,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	orientation->appendOption( kParamOrientationBottomToTopRightToLeft );
 	orientation->appendOption( kParamOrientationUndefinedOrientation );
 	orientation->setDefault( 0 );
-#endif
 
 	OFX::StringParamDescriptor* project = desc.defineStringParam( kParamProject );
 	project->setDefault( "" );

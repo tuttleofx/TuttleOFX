@@ -4,6 +4,7 @@
 #include <tuttle/host/Graph.hpp>
 
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 #include <vector>
 #include <string>
@@ -215,12 +216,22 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 			if( choiceValues.size() ) // if it's a choice, we take the nth argument
 			{
 				stringDefaultValue = choiceValues[choiceDefaultIndexValue];
-				TUTTLE_COUT( "\t" << _color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " << _color._yellow << std::setw( 15 ) << stringDefaultValue << _color._std );
+				TUTTLE_COUT( "\t" << _color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " << _color._std );
 				for( std::size_t i = 0; i < choiceValues.size(); ++i )
 				{
-					TUTTLE_COUT( "\t\t\t\t\t" << sam::_color._red
-						<< (( (std::size_t)(choiceDefaultIndexValue) == i ) ? "--> " : " -  ")
-						<< choiceValues[i] << _color._std );
+					if( (std::size_t)(choiceDefaultIndexValue) == i )
+					{
+						TUTTLE_COUT( "\t\t\t\t\t"
+							<< _color._yellow << "--> "
+							<< choiceValues[i] << _color._std );
+					}
+					else
+					{
+						TUTTLE_COUT( "\t\t\t\t\t"
+							<< _color._red << " -  " 
+							<< choiceValues[i] << _color._std );
+					}
+					
 				}
 			}
 			else
@@ -246,9 +257,14 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 				const std::string& hint = param.getProperties().getStringProperty( kOfxParamPropHint );
 				if( hint.size() )
 				{
-					std::cout << _color._std << "\t"
-						<< std::left << std::setw( 27 ) << " " << hint
-						<< std::endl;
+					std::vector<std::string> hintSplitted;
+					boost::split( hintSplitted, hint, boost::is_any_of("\n"));
+					BOOST_FOREACH( const std::string hintString, hintSplitted )
+					{
+						std::cout << _color._std
+							<< std::left << std::setw( 10 ) << " " << hintString
+							<< std::endl;
+					}
 				}
 			}
 		}

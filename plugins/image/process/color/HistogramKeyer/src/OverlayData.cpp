@@ -32,10 +32,10 @@ void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& 
 {
 	data._step = _vNbStep;					//prepare HistogramBuffer structure
 	
-	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
-	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
-	BOOST_ASSERT( srcView.width() == _size.x );
-	BOOST_ASSERT( srcView.height() == _size.y );
+	BOOST_ASSERT( _imgBool.shape()[0] == std::size_t(_size.y) );
+	BOOST_ASSERT( _imgBool.shape()[1] == std::size_t(_size.x) );
+	BOOST_ASSERT( srcView.width()  == std::size_t(_size.x) );
+	BOOST_ASSERT( srcView.height() == std::size_t(_size.y) );
 	
 	Pixel_compute_histograms funct( _imgBool, data, isSelection );			//functor declaration
 	

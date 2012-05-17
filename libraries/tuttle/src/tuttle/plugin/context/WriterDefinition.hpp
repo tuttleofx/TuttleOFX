@@ -10,6 +10,9 @@ static const std::string kParamWriterRenderAlways   = "renderAlways";
 static const std::string kParamWriterRender         = "render";
 static const std::string kParamWriterForceNewRender = "forceNewRender";
 
+static const std::string kParamPremultiplied      = "premultiplied";
+static const std::string kParamPremultipliedLabel = "Premultiplied";
+
 }
 }
 

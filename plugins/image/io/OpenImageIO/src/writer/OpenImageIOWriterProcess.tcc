@@ -234,7 +234,9 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 	ImageSpec spec( src.width(), src.height(), gil::num_channels<WImage>::value, oiioBitDepth );
 
 	spec.attribute( "oiio:BitsPerSample", bitsPerSample );
+	spec.attribute( "oiio:UnassociatedAlpha", params._premultiply );
 	spec.attribute( "CompressionQuality", params._quality );
+	spec.attribute( "Orientation", params._orientation );
 	
 	if( ! out->open( filepath, spec ) )
 	{
@@ -242,9 +244,6 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 			<< exception::user( "OIIO Writer: " + out->geterror () )
 			<< exception::filename(params._filepath) );
 	}
-
-
-	spec.attribute( "Orientation", params._orientation );
 
 	const stride_t xstride = gil::is_planar<WImage>::value ? sizeOfChannel : vw.num_channels() * sizeOfChannel;
 	const stride_t ystride = vw.pixels().row_size();

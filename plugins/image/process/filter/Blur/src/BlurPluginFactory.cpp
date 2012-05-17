@@ -50,8 +50,8 @@ void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+//	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+//	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags

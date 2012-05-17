@@ -1,8 +1,8 @@
 Import( 'project', 'libs' )
 
 project.createOfxPlugin( dirs = ['src'],
-                         libs = [
+                         libraries = [
                                  libs.tuttlePlugin,
-                                 libs.glut,
+                                 libs.freeglut,
                                  ] )
 

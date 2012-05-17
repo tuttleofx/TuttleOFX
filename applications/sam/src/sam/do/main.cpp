@@ -431,6 +431,8 @@ int main( int argc, char** argv )
 				all_options.add( infoOptions ).add( confOptions ).add( openfxOptions );
 
 				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+				
+				std::vector<std::string> idNames; // list of id setted in the command line
 
 				BOOST_FOREACH( const std::vector<std::string>& command, cl_commands )
 				{
@@ -514,31 +516,70 @@ int main( int argc, char** argv )
 						}
 						if( node_vm.count( kPropertiesOptionLongName ) )
 						{
-							TUTTLE_COUT( "\tsam do " << nodeFullName );
-							TUTTLE_COUT( "" );
-							TUTTLE_COUT( _color._blue << "PROPERTIES" << _color._std );
+							if( !script )
+							{
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
+								TUTTLE_COUT( _color._blue << "PROPERTIES" << _color._std );
+							}
 							coutProperties( currentNode );
-							TUTTLE_COUT( "" );
+							if( !script )
+								TUTTLE_COUT( "" );
 							exit( 0 );
 						}
 						if( node_vm.count( kClipsOptionLongName ) )
 						{
-							TUTTLE_COUT( "\tsam do " << nodeFullName );
-							TUTTLE_COUT( "" );
-							TUTTLE_COUT( _color._blue << "CLIPS" << _color._std );
+							if( !script )
+							{
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
+								TUTTLE_COUT( _color._blue << "CLIPS" << _color._std );
+							}
 							coutClips( currentNode );
-							TUTTLE_COUT( "" );
+							if( !script )
+								TUTTLE_COUT( "" );
 							exit( 0 );
 						}
 						if( node_vm.count( kClipOptionLongName ) )
 						{
-							TUTTLE_COUT( "\tsam do " << nodeFullName );
-							TUTTLE_COUT( "" );
-							const std::string clipName = node_vm["clip"].as<std::string > ();
-							TUTTLE_COUT( _color._blue << "CLIP: " << _color._green << clipName << _color._std );
-							ttl::attribute::ClipImage& clip = currentNode.getClip( clipName );
-							TUTTLE_COUT( clip.getBitDepthString() << ", " << clip.getPixelAspectRatio() << ", " << clip.getNbComponents() );
-							TUTTLE_COUT( "" );
+							const std::string clipName = node_vm["clip"].as<std::string>();
+							ttl::attribute::ClipImage& clip = currentNode.getClip(clipName);
+							
+							//const String& prop = fetchStringProperty( kOfxImageEffectPropSupportedPixelDepths );
+							//std::vector<std::string>& bitDepths     = prop.getValues();
+							
+							/*std::vector<std::string> bitDepths = clip.getSupportedBitDepth();
+							BOOST_FOREACH( std::string& s, bitDepths )
+							{
+								s = s.substr( 11 ); // remove 'OfxBitDepth'
+							}*/
+							
+							std::vector<std::string> components = clip.getSupportedComponents();
+							BOOST_FOREACH( std::string& s, components )
+							{
+								s = s.substr( 17 ); // remove 'OfxImageComponent'
+							}
+							
+							if( !script )
+							{
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
+
+								TUTTLE_COUT( _color._blue << "CLIP: " << _color._green << clipName << _color._std );
+								//TUTTLE_COUT( "supported bit depth: " << boost::algorithm::join( bitDepths, ", " ) );
+								TUTTLE_COUT( "supported components: " << boost::algorithm::join( components, ", " ) );
+								TUTTLE_COUT( "pixel aspect ratio: " << clip.getPixelAspectRatio() );
+								TUTTLE_COUT( "number of components: " << clip.getNbComponents() );
+								TUTTLE_COUT( "" );
+							}
+							else
+							{
+								//TUTTLE_COUT( boost::algorithm::join( bitDepths, ", " ));
+								TUTTLE_COUT( boost::algorithm::join( components, ", " ) );
+								TUTTLE_COUT( clip.getPixelAspectRatio() );
+								TUTTLE_COUT( clip.getNbComponents());
+							}
+							
 							exit( 0 );
 						}
 						if( node_vm.count( kParametersOptionLongName ) )
@@ -592,7 +633,7 @@ int main( int argc, char** argv )
 						{
 							const std::string attributeName = node_vm[kParamDefaultOptionLongName].as<std::string > ();
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
-							TUTTLE_TCOUT( getFormattedStringValue( param.getProperties().fetchProperty( kOfxParamPropDefault ) ) );
+							TUTTLE_COUT( getFormattedStringValue( param.getProperties().fetchProperty( kOfxParamPropDefault ) ) );
 							exit( 0 );
 						}
 						if( node_vm.count( kParamGroupOptionLongName ) )
@@ -610,9 +651,10 @@ int main( int argc, char** argv )
 						if( node_vm.count( kIdOptionLongName ) )
 						{
 							const std::string nodeId = node_vm[kIdOptionLongName].as<std::string > ();
+							idNames.push_back( nodeId );
 							graph.renameNode( currentNode, nodeId );
 						}
-
+						
 						// Analyse attributes: parameters / clips
 						typedef std::pair<ttl::ofx::attribute::OfxhClipImage*, std::string> ClipAndConnection;
 						std::vector<ClipAndConnection> clipsToConnect;
@@ -784,7 +826,18 @@ int main( int argc, char** argv )
 									{
 										// It's not an index so we assume, it's the name/id of the clip.
 										// If the node doesn't exist it will throw an exception.
-										graph.connect( graph.getNode( clip.second ), currentNode.getAttribute( clip.first->getName() ) );
+										try
+										{
+											graph.connect( graph.getNode( clip.second ), currentNode.getAttribute( clip.first->getName() ) );
+										}
+										catch( ... )
+										{
+											using namespace ttl;
+											using tuttle::quotes;
+											
+											BOOST_THROW_EXCEPTION( exception::Failed()
+																   << exception::user() + "unable to connect clip " + quotes( clip.first->getName() ) + ", with the id " + quotes( clip.second ) + ". Possible id's are: " + boost::algorithm::join( idNames, ", " ) );
+										}
 									}
 								}
 							}

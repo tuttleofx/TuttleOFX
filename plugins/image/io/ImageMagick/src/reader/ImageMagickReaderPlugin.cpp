@@ -127,7 +127,7 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 			<< exception::user( "ImageMagick: " )
 			<< exception::filename( filename ) );
 
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); // by default
 		unsigned long bitDepth = GetImageDepth( image, exceptionsInfo ); // if image information use it
@@ -143,33 +143,43 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 
 	QuantumType colorType = GetQuantumType( image, exceptionsInfo );
 
-	switch( colorType )
+	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
-		case RGBQuantum:
+		switch( colorType )
 		{
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
-			break;
-		}
-		case RGBAQuantum:
-		{
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
-		}
-		case AlphaQuantum:
-		case GrayQuantum:
-		{
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
-			break;
-		}
-		default:
-		{
-			// convert in RGB colorspace
-			TUTTLE_COUT("convert to RGB colorspace");
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
+			case RGBQuantum:
+			{
+				if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentRGB ) )
+				{
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+				}
+				else
+				{
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				}
+				break;
+			}
+			case RGBAQuantum:
+			{
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			}
+			case AlphaQuantum:
+			case GrayQuantum:
+			{
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+				break;
+			}
+			default:
+			{
+				// convert in RGB colorspace
+				TUTTLE_COUT("convert to RGB colorspace");
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			}
 		}
 	}
-
+	
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info
 
 	image          = DestroyImage( image );

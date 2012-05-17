@@ -18,24 +18,69 @@ using namespace boost::gil;
 RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 {
-	_paramFiltering = fetchChoiceParam( kParamFiltering );
+	_paramFiltering     = fetchChoiceParam( kParamFiltering );
+	_paramInterpolation = fetchChoiceParam( kParamInterpolation );
+	
+	_paramGreyboxPoint = fetchDouble2DParam( kParamGreyboxPoint );
+	_paramGreyboxSize  = fetchDouble2DParam( kParamGreyboxSize );
+	
+	_paramGammaPower = fetchDoubleParam( kParamGammaPower );
+	_paramGammaToe   = fetchDoubleParam( kParamGammaToe );
+	_paramRedAbber   = fetchDoubleParam( kParamRedAbber );
+	_paramBlueAbber = fetchDoubleParam( kParamBlueAbber );
+	
+	_paramBright     = fetchDoubleParam( kParamBright );
+	_paramThreshold  = fetchDoubleParam( kParamThreshold );
+	
+	_paramFourColorRgb = fetchBooleanParam( kParamFourColorRgb );
+	_paramDocumentMode = fetchChoiceParam( kParamDocumentMode );
+	
+	_paramExposure         = fetchDoubleParam( kParamExposure );
+	_paramExposurePreserve = fetchDoubleParam( kParamExposurePreserve );
+	
+	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
+	
+	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
 }
 
-RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
+RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParams( const OfxTime time )
 {
-	RawReaderProcessParams params;
+	RawReaderProcessParams<Scalar> params;
 
-	params._filepath  = getAbsoluteFilenameAt( time );
-	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
-
-//	TUTTLE_COUT( time << "  " << getAbsoluteFilenameAt( time ) );
+	params._filepath      = getAbsoluteFilenameAt( time );
+	params._filtering     = static_cast<EFiltering>( _paramFiltering->getValue() );
+	params._interpolation = static_cast<EInterpolation>( _paramInterpolation->getValue() );
+	
+	params._gammaPower = _paramGammaPower->getValue();
+	params._gammaToe   = _paramGammaToe->getValue();
+	params._redAbber   = _paramRedAbber->getValue();
+	params._blueAbber = _paramBlueAbber->getValue();
+	
+	params._bright     = _paramBright->getValue();
+	params._threshold  = _paramThreshold->getValue();
+	
+	params._fourColorRgb = _paramFourColorRgb->getValue();
+	params._documentMode = static_cast<EDocumentMode>( _paramDocumentMode->getValue() );
+	
+	params._greyboxPoint.x = _paramGreyboxPoint->getValue().x;
+	params._greyboxPoint.y = _paramGreyboxPoint->getValue().y;
+	
+	params._greyboxSize.x = _paramGreyboxSize->getValue().x;
+	params._greyboxSize.y = _paramGreyboxSize->getValue().y;
+	
+	params._exposure         = _paramExposure->getValue();
+	params._exposurePreserve = _paramExposurePreserve->getValue();
+	
+	params._whiteBalance     = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
+	
+	params._hightlight = static_cast<EHighlight>( _paramHighlight->getValue() );
+	
 	return params;
 }
 
 void RawReaderPlugin::updateInfos( const OfxTime time )
 {
-
-	RawReaderProcessParams params = getProcessParams( time );
+	RawReaderProcessParams<Scalar> params = getProcessParams( time );
 
 	LibRaw rawProcessor;
 	libraw_iparams_t& p1          = rawProcessor.imgdata.idata;
@@ -147,20 +192,20 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 {
 	updateInfos( args.time );
 
-	RawReaderProcessParams params = getProcessParams( args.time );
+	RawReaderProcessParams<Scalar> params = getProcessParams( args.time );
 
 	LibRaw rawProcessor;
 	libraw_image_sizes_t& sizes = rawProcessor.imgdata.sizes;
 	//libraw_output_params_t& out = rawProcessor.imgdata.params;
 	//	out.half_size  = 1;
 
-	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
+	if( rawProcessor.open_file( params._filepath.c_str() ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 			<< exception::user( "RAW: Unable to open file" )
 			<< exception::filename( params._filepath ) );
 	}
-	if( const int ret = rawProcessor.adjust_sizes_info_only() )
+	if( rawProcessor.adjust_sizes_info_only() )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
 			<< exception::user( "RAW: Cannot decode infos" )
@@ -181,7 +226,7 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 //	const std::string filename( getAbsoluteFirstFilename() );
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		OFX::EBitDepth bd = OFX::eBitDepthNone;
 		int bitDepth      = 32;    //raw_read_precision( filename );

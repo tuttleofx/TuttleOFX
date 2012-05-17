@@ -493,6 +493,7 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 
 void ImageEffectNode::coutBitDepthConnections() const
 {
+#ifndef TUTTLE_PRODUCTION
 	// validation
 	for( ClipImageMap::const_iterator it = _clips.begin();
 	     it != _clips.end();
@@ -517,6 +518,7 @@ void ImageEffectNode::coutBitDepthConnections() const
 			TUTTLE_TCOUT( "  Connection between " << clip.getFullName() << " (" << clip.getBitDepth() << " bytes)" << " => " << linkClip.getFullName() << " (" << linkClip.getBitDepth() << " bytes)." );
 		}
 	}
+#endif
 }
 
 void ImageEffectNode::validBitDepthConnections() const

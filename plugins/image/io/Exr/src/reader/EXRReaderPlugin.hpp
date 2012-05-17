@@ -11,8 +11,13 @@ namespace reader {
 
 struct EXRReaderProcessParams
 {
-	std::string _filepath;      ///< filepath
-	int         _outComponents; ///< Components type
+	std::string _filepath;       ///< filepath
+	int         _fileComponents; ///< File Component type
+	int         _outComponents;  ///< Components type
+	int         _redChannelIndex;
+	int         _greenChannelIndex;
+	int         _blueChannelIndex;
+	int         _alphaChannelIndex;
 };
 
 /**
@@ -41,6 +46,10 @@ protected:
 	std::vector<OFX::ChoiceParam*> _vChannelChoice;  ///< Channel choice
 	std::vector<std::string>       _vChannelNames;   ///< Channel names
 	OFX::ChoiceParam*              _outComponents;   ///< Components list
+	OFX::ChoiceParam*              _redComponents;   ///< index of Red components
+	OFX::ChoiceParam*              _greenComponents; ///< index of Green components
+	OFX::ChoiceParam*              _blueComponents;  ///< index of Blue components
+	OFX::ChoiceParam*              _alphaComponents; ///< index of Alpha components
 	int                            _channels;        ///< number of channels in file
 };
 
