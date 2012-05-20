@@ -21,10 +21,10 @@ template<class View>
 static int progressCallback( void* data, LibRaw_progress p, int iteration, int expected )
 {
 	typedef RawReaderProcess<View> PluginProcess;
-	PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
+	//PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
 	TUTTLE_COUT_DEBUG( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
-	if( process->progressUpdate( iteration / (double)expected ) )
-		return 1; // cancel processing immediately
+	/*if( process->progressUpdate( iteration / (double)expected ) )
+		return 1; // cancel processing immediately*/
 	return 0; // can continue
 }
 
@@ -81,11 +81,100 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	try
 	{
 		_out.output_bps = 16;
-		//		_out.user_flip  = 1;
-		//		_out.document_mode = 2;
-		//		_out.half_size  = 1;
-		//		_out.four_color_rgb = 1;
-		_out.gamm[0] = _out.gamm[1] =  _out.no_auto_bright    = 1;
+
+		_out.greybox[0] = _params._greyboxPoint.x;
+		_out.greybox[1] = _params._greyboxPoint.y;
+		_out.greybox[2] = _params._greyboxSize.x;
+		_out.greybox[3] = _params._greyboxSize.y;
+
+		_out.aber[0]   = _params._redAbber;
+		_out.aber[2]   = _params._blueAbber;
+		
+		_out.bright    = _params._bright;
+		_out.threshold = _params._threshold;
+		_out.gamm[0]   = _params._gammaPower;
+		_out.gamm[1]   = _params._gammaToe;
+		_out.user_qual = _params._interpolation;
+		_out.no_auto_bright    = 0;
+		
+		_out.four_color_rgb = _params._fourColorRgb;
+		_out.document_mode = _params._documentMode;
+		
+		_out.exp_correc = 1; // every time correct exposure (use default parameters to don't change)
+		_out.exp_shift  = _params._exposure;
+		_out.exp_preser = _params._exposurePreserve;
+		
+		_out.highlight  = _params._hightlight;
+		_out.use_fuji_rotate = 0; // don't use
+		
+		_out.use_auto_wb = 0;
+		_out.use_camera_wb = 0;
+		
+		switch( _params._whiteBalance )
+		{
+			case eAutoWb: _out.use_auto_wb = 1; break;
+			case eCameraWb: _out.use_camera_wb = 1; break;
+			case eManualWb: break;
+			case e2500: break;
+			case e2550: break;
+			case e2650: break;
+			case e2700: break;
+			case e2800: break;
+			case e2850: break;
+			case e2950: break;
+			case e3000: break;
+			case e3100: break;
+			case e3200: break;
+			case e3300: break;
+			case e3400: break;
+			case e3600: break;
+			case e3700: break;
+			case e3800: break;
+			case e4000: break;
+			case e4200: break;
+			case e4300: break;
+			case e4500: break;
+			case e4800: break;
+			case e5000: break;
+			case e5300: break;
+			case e5600: break;
+			case e5900: break;
+			case e6300: break;
+			case e6700: break;
+			case e7100: break;
+			case e7700: break;
+			case e8300: break;
+			case e9100: break;
+			case e10000: break;
+		}
+		
+		/*
+#define greybox         (imgdata.params.greybox)
+#define cropbox         (imgdata.params.cropbox)
+#define aber            (imgdata.params.aber)
+#define gamm            (imgdata.params.gamm)
+#define user_mul        (imgdata.params.user_mul)
+#define shot_select     (imgdata.params.shot_select)
+#define bright          (imgdata.params.bright)
+#define threshold       (imgdata.params.threshold)
+#define half_size       (imgdata.params.half_size)
+#define four_color_rgb  (imgdata.params.four_color_rgb)
+#define document_mode   (imgdata.params.document_mode)
+#define highlight       (imgdata.params.highlight)
+//#define verbose         (imgdata.params.verbose)
+#define use_auto_wb     (imgdata.params.use_auto_wb)
+#define use_camera_wb   (imgdata.params.use_camera_wb)
+#define use_camera_matrix (imgdata.params.use_camera_matrix)
+#define output_color    (imgdata.params.output_color)
+#define output_bps      (imgdata.params.output_bps)
+#define gamma_16bit      (imgdata.params.gamma_16bit)
+#define output_tiff     (imgdata.params.output_tiff)
+#define med_passes      (imgdata.params.med_passes)
+#define no_auto_bright  (imgdata.params.no_auto_bright)
+#define use_fuji_rotate (imgdata.params.use_fuji_rotate)
+#define filtering_mode (imgdata.params.filtering_mode)
+*/
+		
 		/*switch( _params._filtering )
 		{
 			case eFilteringAuto:
@@ -109,13 +198,18 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				<< exception::user() + "Cannot unpack file: " + libraw_strerror( ret )
 				<< exception::filename( _params._filepath ) );
 		}
-
+		
 		// we should call dcraw_process before thumbnail extraction because for
 		// some cameras (i.e. Kodak ones) white balance for thumbnal should be set
 		// from main image settings
 
-		int ret = _rawProcessor.dcraw_process();
-
+		// Data unpacking
+		int ret = 0;
+		if( _out.document_mode )
+			ret = _rawProcessor.dcraw_document_mode_processing();
+		else
+			ret = _rawProcessor.dcraw_process();
+		
 		if( LIBRAW_SUCCESS != ret )
 		{
 			if( LIBRAW_FATAL_ERROR( ret ) )

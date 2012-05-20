@@ -11,7 +11,7 @@ GeneratorPlugin::GeneratorPlugin( OfxImageEffectHandle handle )
 {
 	_clipDst                = fetchClip         ( kOfxImageEffectOutputClipName );
 	_paramExplicitConv      = fetchChoiceParam  ( kParamGeneratorExplicitConversion );
-	_paramComponents        = fetchChoiceParam  ( kTuttlePluginComponents );
+	_paramComponents        = fetchChoiceParam  ( kTuttlePluginChannel );
 
 	_paramMode              = fetchChoiceParam  ( kParamMode );
 	_paramFormat            = fetchChoiceParam  ( kParamFormat );

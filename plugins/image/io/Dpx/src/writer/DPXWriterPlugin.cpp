@@ -22,15 +22,13 @@ DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
 	_bitDepth       = fetchChoiceParam( kTuttlePluginBitDepth );
-	_descriptor     = fetchChoiceParam( kTuttlePluginComponents );
+	_descriptor     = fetchChoiceParam( kTuttlePluginChannel );
 	_transfer       = fetchChoiceParam( kParamTransfer );
 	_colorimetric   = fetchChoiceParam( kParamColorimetric );
 	_packed         = fetchChoiceParam( kParamPacked );
 	_swapEndian     = fetchBooleanParam( kParamSwapEndian );
 	_encoding       = fetchChoiceParam( kParamEncoding );
-#ifndef TUTTLE_PRODUCTION
 	_orientation    = fetchChoiceParam( kParamOrientation );
-#endif
 	_project        = fetchStringParam( kParamProject );
 	_copyright      = fetchStringParam( kParamCopyright );
 }
@@ -118,9 +116,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 
 	params._packed       = static_cast< ::dpx::Packing >( _packed->getValue() );
 	params._encoding     = static_cast< ::dpx::Encoding >( _encoding->getValue() );
-#ifndef TUTTLE_PRODUCTION
 	params._orientation  = static_cast< ::dpx::Orientation >( _orientation->getValue() );
-#endif
 	params._swapEndian   = _swapEndian->getValue();
 	
 	return params;
@@ -255,9 +251,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 	writer.SetImageInfo( size.x, size.y );
 
-#ifndef TUTTLE_PRODUCTION
 	writer.header.SetImageOrientation( params._orientation );
-#endif
 
 	int pixelSize = 0;
 	std::string inputComponentString = "unknown";

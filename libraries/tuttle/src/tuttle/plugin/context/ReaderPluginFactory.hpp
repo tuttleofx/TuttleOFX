@@ -20,8 +20,18 @@ void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kParamReaderExplicitConversion );
-	explicitConversion->setLabel( "Explicit conversion" );
+	OFX::ChoiceParamDescriptor* component = desc.defineChoiceParam( kTuttlePluginChannel );
+	component->appendOption( kTuttlePluginChannelAuto );
+	component->appendOption( kTuttlePluginChannelGray );
+	component->appendOption( kTuttlePluginChannelRGB );
+	component->appendOption( kTuttlePluginChannelRGBA );
+
+	component->setLabel( kTuttlePluginChannelLabel );
+	component->setDefault( eParamReaderChannelAuto );
+
+
+	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kTuttlePluginBitDepth );
+	explicitConversion->setLabel( kTuttlePluginBitDepthLabel );
 	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
 	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
 	explicitConversion->appendOption( kTuttlePluginBitDepth16 );

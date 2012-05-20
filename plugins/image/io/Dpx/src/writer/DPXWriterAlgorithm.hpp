@@ -3,12 +3,6 @@
 
 #include <boost/gil/gil_all.hpp>
 
-// SSE2 header
-//#include <emmintrin.h>
-
-// SSE3
-//#include <pmmintrin.h>
-
 // SSSE3
 #include <tmmintrin.h>
 

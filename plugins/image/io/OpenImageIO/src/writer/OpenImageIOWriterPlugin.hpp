@@ -18,6 +18,7 @@ struct OpenImageIOWriterProcessParams
 	ETuttlePluginComponents _components;         ///< Force RGB
 	ETuttlePluginBitDepth   _bitDepth;           ///< Output bit depth (real bit depth, not the buffer passed to OpenImageIO)
 
+	bool                    _premultiply;        ///< Output premultiply
 	int                     _quality;            ///< Output quality
 	int                     _orientation;        ///< Output orientation
 };

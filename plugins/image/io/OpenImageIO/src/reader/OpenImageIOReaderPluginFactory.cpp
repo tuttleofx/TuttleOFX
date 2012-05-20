@@ -56,22 +56,22 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     extension.push_back( "tx" );
     extension.push_back( "webp" );
 
-    std::string listOfExt;
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	listOfExt += extension.at(i);
-	listOfExt += ", ";
-    }
-    listOfExt.erase( listOfExt.size()-2, 2 );
+	std::string listOfExt;
+	for( unsigned int i=0; i< extension.size(); i++ )
+	{
+		listOfExt += extension.at(i);
+		listOfExt += ", ";
+	}
+	listOfExt.erase( listOfExt.size()-2, 2 );
 
-    desc.setDescription(
-	"OpenImageIO Reader"
-	"\n\n"
-	"Compression is only available for Exr format."
-	"\n"
-	"supported extensions: \n" +
-	listOfExt
-    );
+	desc.setDescription(
+		"OpenImageIO Reader"
+		"\n\n"
+		"Compression is only available for Exr format."
+		"\n"
+		"supported extensions: \n" +
+		listOfExt
+	);
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextReader );
@@ -83,18 +83,18 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     desc.addSupportedBitDepth( OFX::eBitDepthUByte );
     desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
-    // add supported extensions
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	desc.addSupportedExtension( extension.at(i) );
-    }
+	// add supported extensions
+	for( unsigned int i=0; i< extension.size(); i++ )
+	{
+		desc.addSupportedExtension( extension.at(i) );
+	}
 
-    // plugin flags
-    desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-    desc.setHostFrameThreading( false );
-    desc.setSupportsMultiResolution( false );
-    desc.setSupportsMultipleClipDepths( true );
-    desc.setSupportsTiles( kSupportTiles );
+	// plugin flags
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
+	desc.setSupportsTiles( kSupportTiles );
 }
 
 /**

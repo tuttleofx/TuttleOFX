@@ -55,11 +55,23 @@ void JpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefe
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 
-	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 	}
-	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+
+	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
+	{
+		if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentRGB ) )
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+		}
+		else
+		{
+			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+		}
+	}
+	
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 

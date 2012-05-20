@@ -15,32 +15,32 @@ namespace writer {
  */
 void PngWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    desc.setLabels( "TuttlePngWriter", "PngWriter",
-		    "Png file writer" );
-    desc.setPluginGrouping( "tuttle/image/io" );
-    desc.setDescription( "PNG File writer\n"
-			 "Plugin is used to read png files.\n\n"
-			 "supported extensions:\n"
-			 "png" );
+	desc.setLabels( "TuttlePngWriter", "PngWriter",
+					"Png file writer" );
+	desc.setPluginGrouping( "tuttle/image/io" );
+	desc.setDescription( "PNG File writer\n"
+						 "Plugin is used to read png files.\n\n"
+						 "supported extensions:\n"
+						 "png" );
 
-    // add the supported contexts
-    desc.addSupportedContext( OFX::eContextWriter );
-    desc.addSupportedContext( OFX::eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextWriter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-    desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-    desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+	// add supported pixel depths
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-    // add supported extensions
-    desc.addSupportedExtension( "png" );
+	// add supported extensions
+	desc.addSupportedExtension( "png" );
 
-    // plugin flags
-    desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-    desc.setHostFrameThreading( false );
-    desc.setSupportsMultiResolution( false );
-    desc.setSupportsMultipleClipDepths( true );
-    desc.setSupportsTiles( kSupportTiles );
+	// plugin flags
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
+	desc.setSupportsTiles( kSupportTiles );
 }
 
 /**
@@ -51,41 +51,20 @@ void PngWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 						OFX::EContext               context )
 {
-    OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-    srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-    srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-    srcClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClip->setSupportsTiles( kSupportTiles );
 
-    OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-    dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-    dstClip->setSupportsTiles( kSupportTiles );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
 
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-    filename->setLabel( kTuttlePluginFilenameLabel );
-    filename->setStringType( OFX::eStringTypeFilePath );
-    filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    desc.addClipPreferencesSlaveParam( *filename );
-
-    OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kTuttlePluginComponents );
-    components->setLabel( kTuttlePluginComponentsLabel );
-    components->appendOption( kTuttlePluginComponentsGray );
-    components->appendOption( kTuttlePluginComponentsRGB );
-    components->appendOption( kTuttlePluginComponentsRGBA );
-    components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    components->setDefault( eTuttlePluginComponentsRGBA );
-
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
-    bitDepth->appendOption( kTuttlePluginBitDepth8 );
-    bitDepth->appendOption( kTuttlePluginBitDepth16 );
-    bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( eTuttlePluginBitDepth8 );
-
-    describeWriterParamsInContext( desc, context );
+	describeWriterParamsInContext( desc, context );
 }
 
 /**
@@ -97,7 +76,7 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 OFX::ImageEffect* PngWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
 							  OFX::EContext        context )
 {
-    return new PngWriterPlugin( handle );
+	return new PngWriterPlugin( handle );
 }
 
 }

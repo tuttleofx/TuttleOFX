@@ -14,7 +14,7 @@ using namespace boost::gil;
 EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_componentsType = fetchChoiceParam( kTuttlePluginComponents );
+	_componentsType = fetchChoiceParam( kTuttlePluginChannel );
 	_storageType    = fetchChoiceParam( kParamStorageType );
 }
 
