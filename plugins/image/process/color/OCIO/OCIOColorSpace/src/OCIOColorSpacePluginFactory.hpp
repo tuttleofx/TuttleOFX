@@ -10,6 +10,7 @@ namespace colorspace {
 static const bool kSupportTiles = true;
 mDeclarePluginFactory( OCIOColorSpacePluginFactory, {}, {}
                        );
+
 }
 }
 }

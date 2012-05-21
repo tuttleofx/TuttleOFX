@@ -54,6 +54,7 @@ namespace tuttle
          * @param[in, out]   desc       Effect descriptor
          * @param[in]        context    Application context
          */
+
         void
         OCIOColorSpacePluginFactory::describeInContext(
             OFX::ImageEffectDescriptor& desc, OFX::EContext context)
@@ -74,12 +75,16 @@ namespace tuttle
 
           // Controls
 
-          TUTTLE_COUT(
-              tuttle::common::kColorError << "------- Init controls -------"<< tuttle::common::kColorStd);
 
           OFX::StringParamDescriptor* filename = desc.defineStringParam(
               kTuttlePluginFilename);
           char* file = std::getenv("OCIO");
+
+          if(file == NULL){
+              BOOST_THROW_EXCEPTION(
+                                    exception::Unsupported() << exception::user() + "Tuttle.ocio.colorspace : an OCIO environnement variable must be set with a path to an OpenColorIO configuration file.\n ");
+          }
+
           filename->setEnabled(false);
           filename->setDefault(file);
           filename->setLabel(kTuttlePluginFilenameLabel);

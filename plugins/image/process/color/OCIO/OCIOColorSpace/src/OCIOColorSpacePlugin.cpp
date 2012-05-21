@@ -28,6 +28,7 @@ namespace tuttle
           _paramFilename = fetchStringParam(kTuttlePluginFilename);
           _paramInputSpace = fetchChoiceParam(kParamInputSpace);
           _paramOutputSpace = fetchChoiceParam(kParamOutputSpace);
+          _paramInputSpace->appendOption("pouet");
 
           TUTTLE_COUT(
                             tuttle::common::kColorError << "------- Create Plugin -------"<< tuttle::common::kColorStd);
@@ -119,8 +120,6 @@ namespace tuttle
                   exception::FileNotExist( ) << exception::filename( str ));
             }
 
-          TUTTLE_COUT(
-                     tuttle::common::kColorError << "------- GetProcess Params -------"<< tuttle::common::kColorStd);
           // Get the OCIO configuration processor.
           params._config = OCIO::Config::CreateFromFile(str.c_str());
 
@@ -129,8 +128,7 @@ namespace tuttle
           params._inputSpace = params._config->getColorSpaceNameByIndex(index);
           _paramOutputSpace->getValue(index);
           params._outputSpace = params._config->getColorSpaceNameByIndex(index);
-          TUTTLE_COUT(
-                             tuttle::common::kColorError << "------- spaces :"<<  params._inputSpace << " " <<params._outputSpace<< tuttle::common::kColorStd);
+
 
           return params;
         }

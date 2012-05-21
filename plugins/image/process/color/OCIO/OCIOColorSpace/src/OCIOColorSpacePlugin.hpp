@@ -43,7 +43,6 @@ namespace tuttle
           OCIOColorSpaceProcessParams
           getProcessParams(
               const OfxPointD& renderScale = OFX::kNoRenderScale) const;
-
         };
 
       }
