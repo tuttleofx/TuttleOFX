@@ -31,10 +31,9 @@ namespace tuttle
               "ColorSpace transformation using OpenColorIO configuration file");
           desc.setPluginGrouping("tuttle/image/process/color/ocio");
 
-          desc.setDescription(
-              "OCIO ColorSpace\n"
-                  "\n"
-                  "Config filename ");
+          desc.setDescription("OCIO ColorSpace\n"
+              "\n"
+              "Config filename ");
 
           // add the supported contexts
           desc.addSupportedContext(OFX::eContextGeneral);
@@ -76,16 +75,15 @@ namespace tuttle
           // Controls
 
           TUTTLE_COUT(
-                                          tuttle::common::kColorError << "------- Init controls -------"<< tuttle::common::kColorStd);
+              tuttle::common::kColorError << "------- Init controls -------"<< tuttle::common::kColorStd);
 
           OFX::StringParamDescriptor* filename = desc.defineStringParam(
               kTuttlePluginFilename);
           char* file = std::getenv("OCIO");
-          //filename->setValue(file);
           filename->setEnabled(false);
           filename->setDefault(file);
           filename->setLabel(kTuttlePluginFilenameLabel);
-          //filename->setStringType( OFX::eStringTypeFilePath ); // disable for test
+          filename->setStringType(OFX::eStringTypeFilePath); // disable for test
 
           OFX::ChoiceParamDescriptor* inputSpace = desc.defineChoiceParam(
               kParamInputSpace);
@@ -100,23 +98,8 @@ namespace tuttle
           for (int i = 0; i < config->getNumColorSpaces(); i++)
             {
               std::string csname = config->getColorSpaceNameByIndex(i);
-
-#ifdef OCIO_CASCADE
-              std::string family = config->getColorSpace(csname.c_str())->getFamily();
-              if(family.empty())
-                {
-                  inputSpace->appendOption(csname.c_str());
-                  outputSpace->appendOption(csname.c_str());
-                }
-              else
-                {
-                  inputSpace->appendOption(family + "/" + csname);
-                  outputSpace->appendOption(family + "/" + csname);
-                }
-#else
               inputSpace->appendOption(csname);
               outputSpace->appendOption(csname);
-#endif
             }
 
         }
