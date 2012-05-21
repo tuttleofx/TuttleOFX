@@ -5,7 +5,7 @@ Copyright &copy; 2009, 2010, 2011, 2012 TuttleOFX Project
 >- [Marc-Antoine ARNAUD](https://github.com/MarcAntoine-Arnaud),  
 >- [Marie FETIVEAU](https://github.com/mfe),  
 >- [Guillaume CHATELET](https://github.com/gchatelet),  
->- [Eloi DU BOIS](https://github.com/rdelillo),  
+>- [Eloi DU BOIS](https://github.com/edubois),  
 >- [Nicolas RONDAUD](https://github.com/nrondaud),  
 >- [Alexandre PARENT](https://github.com/barbak)  
 
