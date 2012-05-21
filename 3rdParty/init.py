@@ -267,6 +267,11 @@ headerToInsert = "#include <cstdlib>"
 atLine = 11
 makeModificationIfNecessaryInFile(filename, headerToInsert, atLine );
 
+filename = "yaml/src/ptr_vector.h"
+headerToInsert = "#include <cstdlib>"
+atLine = 11
+makeModificationIfNecessaryInFile(filename, headerToInsert, atLine );
+
 filename = "ctl/IlmCtlSimd/CtlSimdReg.h"
 headerToInsert = "#include <cstring>"
 atLine = 55
