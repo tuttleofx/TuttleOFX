@@ -113,6 +113,10 @@ project
         <toolset>gcc:<cxxflags>-Wno-deprecated
 
         <toolset-gcc:version>$(gcc-no-overflow):<cxxflags>"-ftemplate-depth=256"
+	#
+	# Clang specific flags
+	#
+	<toolset>clang:<cxxflags>-fcolor-diagnostics
 
         # default build
         #<variant>release
