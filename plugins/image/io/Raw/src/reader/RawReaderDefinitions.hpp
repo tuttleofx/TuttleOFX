@@ -9,6 +9,51 @@ namespace plugin {
 namespace raw {
 namespace reader {
 
+static const std::string kParamMetadata      = "metadata";
+static const std::string kGroupMetadataLabel = "Metadata";
+
+static const std::string kParamManufacturer      = "manufacturer";
+static const std::string kParamManufacturerLabel = "Camera Manufacturer";
+static const std::string kParamManufacturerHint  = "";
+
+static const std::string kParamModel      = "model";
+static const std::string kParamModelLabel = "Camera Model";
+static const std::string kParamModelHint  = "";
+
+static const std::string kParamIso      = "iso";
+static const std::string kParamIsoLabel = "ISO sensitivity";
+static const std::string kParamIsoHint  = "";
+
+static const std::string kParamShutter      = "shutter";
+static const std::string kParamShutterLabel = "Shutter speed";
+static const std::string kParamShutterHint  = "";
+
+static const std::string kParamAperture      = "aperture";
+static const std::string kParamApertureLabel = "Aperture";
+static const std::string kParamApertureHint  = "";
+
+static const std::string kParamFocal      = "focal";
+static const std::string kParamFocalLabel = "Focal Length";
+static const std::string kParamFocalHint  = "";
+
+static const std::string kParamDateOfShooting      = "timestamp";
+static const std::string kParamDateOfShootingLabel = "Date of shooting";
+static const std::string kParamDateOfShootingHint  = "";
+
+static const std::string kParamGPS      = "gps";
+static const std::string kParamGPSLabel = "GPS data";
+static const std::string kParamGPSHint  = "";
+
+static const std::string kParamDesc      = "desc";
+static const std::string kParamDescLabel = "Image description";
+static const std::string kParamDescHint  = "";
+
+static const std::string kParamArtist      = "artist";
+static const std::string kParamArtistLabel = "Author of image";
+static const std::string kParamArtistHint  = "";
+
+
+
 static const std::string kParamGreyboxPoint      = "greyboxpoint";
 static const std::string kParamGreyboxPointLabel = "GreyBox Point";
 static const std::string kParamGreyboxPointHint  = "Coordinates of the rectangle that is used to calculate the white balance. X and Y are coordinates of the left-top rectangle corner.";

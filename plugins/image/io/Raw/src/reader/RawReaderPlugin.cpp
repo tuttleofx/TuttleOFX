@@ -41,6 +41,17 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
 	
 	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
+	
+	// metadatas
+	_paramManufacturer   = fetchStringParam( kParamManufacturer );
+	_paramModel          = fetchStringParam( kParamModel );
+	_paramIso            = fetchIntParam   ( kParamIso );
+	_paramShutter        = fetchIntParam   ( kParamShutter );
+	_paramAperture       = fetchDoubleParam( kParamAperture );
+	_paramDateOfShooting = fetchStringParam( kParamDateOfShooting );
+	_paramGPS            = fetchStringParam( kParamGPS );
+	_paramDesc           = fetchStringParam( kParamDesc );
+	_paramArtist         = fetchStringParam( kParamArtist );
 }
 
 RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParams( const OfxTime time )
@@ -105,6 +116,23 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 			<< exception::filename( params._filepath ) );
 	}
 
+	_paramManufacturer->setValue( p1.make );
+	_paramModel->setValue( p1.model );
+	_paramIso->setValue( (int) p2.iso_speed );
+	
+	if( p2.shutter > 0 && p2.shutter < 1 )
+		p2.shutter = 1 / p2.shutter;
+	_paramShutter->setValue( p2.shutter );
+	_paramAperture->setValue( p2.aperture );
+	_paramDateOfShooting->setValue( ctime( &( p2.timestamp ) ) );
+	
+	if( p2.gpsdata[0] )
+		_paramGPS->setValue( (const char*)p2.gpsdata );
+	if( p2.desc[0] )
+		_paramDesc->setValue( p2.desc );
+	if( p2.artist[0] )
+		_paramArtist->setValue( p2.artist );
+	
 	std::ostringstream ss;
 
 	ss << "Filename: " << params._filepath << "\n";
@@ -122,8 +150,8 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 
 	ss << "ISO speed: " << (int) p2.iso_speed << "\n";
 	ss << "Shutter: ";
-	if( p2.shutter > 0 && p2.shutter < 1 )
-		p2.shutter = 1 / p2.shutter;
+	/*if( p2.shutter > 0 && p2.shutter < 1 )
+		p2.shutter = 1 / p2.shutter;*/
 	ss << p2.shutter << " sec" << "\n"; // %0.1f
 	ss << "Aperture: f/" << p2.aperture << "\n";
 	ss << "Focal length: " << p2.focal_len << " mm" << "\n";

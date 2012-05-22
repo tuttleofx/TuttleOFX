@@ -85,6 +85,17 @@ public:
 	
 	OFX::Double2DParam*  _paramGreyboxPoint;
 	OFX::Double2DParam*  _paramGreyboxSize;
+	
+	/// metadata
+	OFX::StringParam*    _paramManufacturer;
+	OFX::StringParam*    _paramModel;
+	OFX::IntParam*       _paramIso;
+	OFX::IntParam*       _paramShutter;
+	OFX::DoubleParam*    _paramAperture;
+	OFX::StringParam*    _paramDateOfShooting;
+	OFX::StringParam*    _paramGPS;
+	OFX::StringParam*    _paramDesc;
+	OFX::StringParam*    _paramArtist;
 	/// @}
 };
 

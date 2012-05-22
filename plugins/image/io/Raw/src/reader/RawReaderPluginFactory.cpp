@@ -221,6 +221,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	whitebalance->setHint( kParamWhiteBalanceHint );
 	whitebalance->appendOption( kParamWhiteBalanceAutoWb );
 	whitebalance->appendOption( kParamWhiteBalanceCameraWb );
+#ifndef TUTTLE_PRODUCTION
 	whitebalance->appendOption( kParamWhiteBalanceManualWb );
 	whitebalance->appendOption( kParamWhiteBalance2500 );
 	whitebalance->appendOption( kParamWhiteBalance2550 );
@@ -253,12 +254,70 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	whitebalance->appendOption( kParamWhiteBalance8300 );
 	whitebalance->appendOption( kParamWhiteBalance9100 );
 	whitebalance->appendOption( kParamWhiteBalance10000 );
+#endif
 	whitebalance->setDefault( eCameraWb );
 	
 	OFX::ChoiceParamDescriptor* filtering = desc.defineChoiceParam( kParamFiltering );
 	filtering->setLabel( "Filtering" );
 	filtering->appendOption( kParamFilteringAuto );
 	filtering->appendOption( kParamFilteringNone );
+	
+	OFX::GroupParamDescriptor* metadata = desc.defineGroupParam( kParamMetadata );
+	metadata->setLabel( kParamMetadata );
+	
+	OFX::StringParamDescriptor* manufacturer = desc.defineStringParam( kParamManufacturer );
+	manufacturer->setLabel( kParamManufacturerLabel );
+	manufacturer->setHint( kParamManufacturerHint );
+	manufacturer->setEnabled( false );
+	manufacturer->setParent( metadata );
+	
+	OFX::StringParamDescriptor* model = desc.defineStringParam( kParamModel );
+	model->setLabel( kParamModelLabel );
+	model->setHint( kParamModelHint );
+	model->setEnabled( false );
+	model->setParent( metadata );
+
+	OFX::IntParamDescriptor* iso = desc.defineIntParam( kParamIso );
+	iso->setLabel( kParamIsoLabel );
+	iso->setHint( kParamIsoHint );
+	iso->setEnabled( false );
+	iso->setParent( metadata );
+	
+	OFX::IntParamDescriptor* shutter = desc.defineIntParam( kParamShutter );
+	shutter->setLabel( kParamShutterLabel );
+	shutter->setHint( kParamShutterHint );
+	shutter->setEnabled( false );
+	shutter->setParent( metadata );
+	
+	OFX::DoubleParamDescriptor* aperture = desc.defineDoubleParam( kParamAperture );
+	aperture->setLabel( kParamApertureLabel );
+	aperture->setHint( kParamApertureHint );
+	aperture->setEnabled( false );
+	aperture->setParent( metadata );
+	
+	OFX::StringParamDescriptor* date = desc.defineStringParam( kParamDateOfShooting );
+	date->setLabel( kParamDateOfShootingLabel );
+	date->setHint( kParamDateOfShootingHint );
+	date->setEnabled( false );
+	date->setParent( metadata );
+	
+	OFX::StringParamDescriptor* gps = desc.defineStringParam( kParamGPS );
+	gps->setLabel( kParamGPSLabel );
+	gps->setHint( kParamGPSHint );
+	gps->setEnabled( false );
+	gps->setParent( metadata );
+	
+	OFX::StringParamDescriptor* description = desc.defineStringParam( kParamDesc );
+	description->setLabel( kParamDescLabel );
+	description->setHint( kParamDescHint );
+	description->setEnabled( false );
+	description->setParent( metadata );
+	
+	OFX::StringParamDescriptor* artist = desc.defineStringParam( kParamArtist );
+	artist->setLabel( kParamArtistLabel );
+	artist->setHint( kParamArtistHint );
+	artist->setEnabled( false );
+	artist->setParent( metadata );
 }
 
 /**
