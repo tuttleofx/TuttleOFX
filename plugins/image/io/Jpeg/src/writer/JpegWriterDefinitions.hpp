@@ -14,7 +14,6 @@ enum ETuttlePluginBitDepth
 	eTuttlePluginBitDepth8
 };
 
-static const std::string kParamPremult = "premult";
 static const std::string kParamQuality = "quality";
 
 }

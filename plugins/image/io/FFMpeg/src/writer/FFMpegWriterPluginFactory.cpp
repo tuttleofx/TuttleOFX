@@ -62,16 +62,15 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-	filename->setLabel( kTuttlePluginFilenameLabel );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-	bitDepth->setLabel( kTuttlePluginBitDepthLabel );
+	describeWriterParamsInContext( desc, context );
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
-	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( eTuttlePluginBitDepth8 );
+	bitDepth->setEnabled( false );
+
+	OFX::BooleanParamDescriptor* premult = static_cast<OFX::BooleanParamDescriptor*>( desc.getParamDescriptor( kParamPremultiplied ) );
+	premult->setDefault( true );
 
 
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
@@ -203,8 +202,6 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
     avAudioServiceType->appendOption( kParamAVASTKaraoke           );
     avAudioServiceType->appendOption( kParamAVASTNb                 );
     //avAudioServiceType->setDefault ( AV_AUDIO_SERVICE_TYPE_MAIN );
-
-	describeWriterParamsInContext( desc, context );
 }
 
 /**

@@ -67,23 +67,18 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-    filename->setLabel( kTuttlePluginFilenameLabel );
-    filename->setStringType( OFX::eStringTypeFilePath );
-    filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    desc.addClipPreferencesSlaveParam( *filename );
+	describeWriterParamsInContext( desc, context );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
-    bitDepth->appendOption( kTuttlePluginBitDepth8 );
-    bitDepth->appendOption( kTuttlePluginBitDepth12 );
-    bitDepth->appendOption( kTuttlePluginBitDepth16 );
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
+	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	bitDepth->appendOption( kTuttlePluginBitDepth12 );
+	bitDepth->appendOption( kTuttlePluginBitDepth16 );
 #ifndef TUTTLE_PRODUCTION
-    bitDepth->appendOption( kTuttlePluginBitDepth32 );
+	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 #endif
-    bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-    bitDepth->setDefault( eTuttlePluginBitDepth8 );
-    desc.addClipPreferencesSlaveParam( *bitDepth );
+	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	bitDepth->setDefault( eTuttlePluginBitDepth8 );
 
     OFX::BooleanParamDescriptor* lossless = desc.defineBooleanParam( kParamLossless );
     lossless->setLabel( "lossless" );
@@ -96,8 +91,6 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
     cineProfil->appendOption( kParamCinemaProfil2k48fps );
     cineProfil->appendOption( kParamCinemaProfil4k24fps );
     cineProfil->setDefault( 0 );
-
-    describeWriterParamsInContext( desc, context );
 }
 
 /**

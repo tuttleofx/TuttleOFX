@@ -110,20 +110,10 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-    filename->setLabel( kTuttlePluginFilenameLabel );
-    filename->setStringType( OFX::eStringTypeFilePath );
-    desc.addClipPreferencesSlaveParam( *filename );
+    describeWriterParamsInContext( desc, context );
 
-    OFX::ChoiceParamDescriptor* channel = desc.defineChoiceParam( kTuttlePluginChannel );
-    channel->setLabel( kTuttlePluginChannelLabel );
-    channel->appendOption( kTuttlePluginChannelGray );
-    channel->appendOption( kTuttlePluginChannelRGB );
-    channel->appendOption( kTuttlePluginChannelRGBA );
-    channel->setDefault( 2 );
-
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth10 );
     bitDepth->appendOption( kTuttlePluginBitDepth12 );
@@ -168,8 +158,6 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 #else
     compression->setDefault( 0 );
 #endif
-
-    describeWriterParamsInContext( desc, context );
 }
 
 /**

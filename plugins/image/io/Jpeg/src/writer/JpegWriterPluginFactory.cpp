@@ -84,28 +84,23 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
-    // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-    filename->setLabel( kTuttlePluginFilenameLabel );
-    filename->setStringType( OFX::eStringTypeFilePath );
-    desc.addClipPreferencesSlaveParam( *filename );
+	// Controls
+	describeWriterParamsInContext( desc, context );
+	
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
+	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	bitDepth->setDefault( eTuttlePluginBitDepth8 );
+	bitDepth->setEnabled( false );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
-    bitDepth->appendOption( kTuttlePluginBitDepth8 );
-    bitDepth->setDefault( eTuttlePluginBitDepth8 );
+	OFX::BooleanParamDescriptor* premult = static_cast<OFX::BooleanParamDescriptor*>( desc.getParamDescriptor( kParamPremultiplied ) );
+	premult->setDefault( true );
 
-    OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
-    premult->setLabel( "Premult" );
-    premult->setDefault( true );
-
-    OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamQuality );
-    quality->setLabel( "Quality" );
-    quality->setRange( 0, 100 );
-    quality->setDisplayRange( 0, 100 );
-    quality->setDefault( 80 );
-
-    describeWriterParamsInContext( desc, context );
+	OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamQuality );
+	quality->setLabel( "Quality" );
+	quality->setRange( 0, 100 );
+	quality->setDisplayRange( 0, 100 );
+	quality->setDefault( 80 );
 }
 
 /**
