@@ -63,7 +63,7 @@ static const char* const kHelpOptionMessage = "display help";
 //-i, --input
 static const char* const kInputOptionLongName = "input";
 static const char* const kInputOptionString = "input,i";
-static const char* const kInputOptionMessage = "input pathname =directory, file or sequence pattern";
+static const char* const kInputOptionMessage = "input pathname: directory, file or sequence pattern";
 //
 //-I, --ignore =was -m, --mask
 static const char* const kIgnoreOptionLongName = "ignore";
@@ -176,6 +176,11 @@ static const char* const kFullDisplayOptionMessage = "display everything =direct
 static const char* const kFullRMPathOptionLongName = "full-rm";
 static const char* const kFullRMPathOptionString = kFullRMPathOptionLongName;
 static const char* const kFullRMPathOptionMessage = "remove everything =directories, files, sequences";
+
+//--generator-args
+static const char* const kGeneratorArgsOptionLongName = "generator-args";
+static const char* const kGeneratorArgsOptionString = kGeneratorArgsOptionLongName;
+static const char* const kGeneratorArgsOptionMessage = "properties of generator plugin";
 
 //--id
 static const char* const kIdOptionLongName = "id";
