@@ -32,7 +32,6 @@ os.environ['SAM_PATH']=TUTTLE_ROOT+'/bin'
 process = subprocess.Popen("sam-plugins", shell=True, stdout=subprocess.PIPE)
 
 list = process.communicate()[0]
-
 splited = list.split('\n')
 
 for plugin in splited:
@@ -43,12 +42,33 @@ for plugin in splited:
 	processPlugin = subprocess.Popen("sam-do "+plugin+" -h // --color" , shell=True, stdout=subprocess.PIPE)
 	help = processPlugin.communicate()[0]
 
-	if not os.path.exists( "help/"+group ) :
-		os.makedirs( "help/"+group );
+	if not os.path.exists( "help/plugin/"+group ) :
+		os.makedirs( "help/plugin/"+group );
 	
-	pluginFile = open( "help/"+group+"/"+plugin+".html", 'w')
+	pluginFile = open( "help/plugin/"+group+"/"+plugin+".html", 'w')
 	htmlHelp = plaintext2html( help );
 	pluginFile.write( htmlHelp );
 	pluginFile.close()
 
+#### sam tools help ####
 
+if not os.path.exists( "help/bin/" ) :
+	os.makedirs( "help/bin/" );
+
+def helpSamTool(tool) :
+	process = subprocess.Popen(tool+" -h", shell=True, stdout=subprocess.PIPE)
+	help = process.communicate()[0]
+
+	helpFile = open( "help/bin/" + tool + ".html", 'w')
+	htmlHelp = plaintext2html( help );
+	helpFile.write( htmlHelp );
+	helpFile.close();
+
+helpSamTool("sam")
+helpSamTool("sam-ls")
+helpSamTool("sam-cp")
+helpSamTool("sam-mv")
+helpSamTool("sam-rm")
+helpSamTool("sam-do")
+helpSamTool("sam-info")
+helpSamTool("sam-plugins")

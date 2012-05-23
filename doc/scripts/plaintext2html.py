@@ -86,6 +86,9 @@ def plaintext2html(text, tabstop=4):
                 last = '<br>'
             return '%s<a href=%s>%s</a>%s' % (prefix, url, url, suffix)
     result = re.sub(re_string, do_sub, text)
+    result = result.replace(' ', '&nbsp;')
+    result = result.replace('\t', '&nbsp;'*tabstop)
+
     result = recolor('cyan', result)
     result = recolor('#8E4429', result)
     result = recolor('#0000B0', result)

@@ -155,7 +155,6 @@ pluginFile.write( '</head>\n' )
 
 pluginFile.write( '<body>\n' )
 pluginFile.write( '<br/>\n' )
-pluginFile.write( '<center><h1>TuttleOFX | OpenFX Plugins</h1><center>' )
 
 pluginFile.write( '<div id="main">' )
 pluginFile.write( '	<div id="menu">' )
