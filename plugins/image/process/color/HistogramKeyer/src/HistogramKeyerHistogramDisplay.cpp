@@ -256,7 +256,7 @@ void displayHueIndicator(const OfxPointI size, int precisionHueIndicator)
 	for( std::ssize_t i = 0; i < precisionHueIndicator; ++i )
 	{
 		boost::gil::hsv32f_pixel_t hsl_pix;			//declare a HSL pixel
-		boost::gil::rgb32f_pixel_t pix;				//declare a RGB pixel (don't need alpha)
+		boost::gil::rgb32f_pixel_t pix(0,0,0);			//declare a RGB pixel (don't need alpha)
 		hsl_pix[0] = (float)(hue/length);			//fill up HSL pixel
 		hsl_pix[1] = (float)(1.0);
 		hsl_pix[2] = (float)(1.0);
