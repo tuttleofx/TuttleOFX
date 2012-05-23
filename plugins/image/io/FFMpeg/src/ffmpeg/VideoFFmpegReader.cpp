@@ -11,7 +11,6 @@ namespace fs = boost::filesystem;
 VideoFFmpegReader::VideoFFmpegReader()
 	: _context( NULL )
 	, _format( NULL )
-	, _params( NULL )
 	, _avFrame( NULL )
 	, _videoCodec( NULL )
 	, _avformatOptions( NULL )
