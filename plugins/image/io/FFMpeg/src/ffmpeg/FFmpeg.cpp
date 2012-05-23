@@ -76,7 +76,7 @@ const std::string FFmpeg::codecType_toString( const AVMediaType codec_type )
 
 const std::string FFmpeg::pixelFormat_toString( const PixelFormat p )
 {
-        return avcodec_get_pix_fmt_name( p );
+        return av_get_pix_fmt_name( p );
         /*
            switch( p )
            {

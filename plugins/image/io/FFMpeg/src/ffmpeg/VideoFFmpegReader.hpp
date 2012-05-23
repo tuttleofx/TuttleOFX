@@ -148,7 +148,6 @@ public:
 public: // private:
 	AVFormatContext* _context;
 	AVInputFormat* _format;
-	AVFormatParameters* _params;
 	AVFrame* _avFrame;
 	AVCodec* _videoCodec;
 	AVPacket _pkt;
