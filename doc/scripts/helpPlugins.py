@@ -18,11 +18,7 @@ is_64bits       = sys.maxsize > 2**32
 
 currentDir      = os.getcwd()
 
-TUTTLE_ROOT     = currentDir+'/../../dist/linux/release'
-if( not os.path.exists( TUTTLE_ROOT+'/.tuttleofxTest' )):
-  os.mkdir( TUTTLE_ROOT+'/.tuttleofxTest' )
-
-os.environ['TUTTLE_ROOT']= TUTTLE_ROOT
+TUTTLE_ROOT=os.environ['TUTTLE_ROOT']
 os.environ['TUTTLE_HOME']=TUTTLE_ROOT+'/.tuttleofxTest'
 os.environ['OFX_PLUGIN_PATH']= TUTTLE_ROOT+'/plugin'
 os.environ['LD_LIBRARY_PATH']= TUTTLE_ROOT+'/lib'
