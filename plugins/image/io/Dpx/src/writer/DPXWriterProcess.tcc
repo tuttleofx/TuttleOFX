@@ -113,7 +113,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
 	}
 
-	TUTTLE_COUT(_params._descriptor);
+	//TUTTLE_COUT_VAR(_params._descriptor);
 	switch( _params._descriptor )
 	{
 		case ::dpx::kUserDefinedDescriptor:
@@ -192,16 +192,16 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			switch ( _params._bitDepth )
 			{
 				case eTuttlePluginBitDepth8:
-					writeImage<argb8_pixel_t>( writer, src, dataSize, 4 );
+					writeImage<abgr8_pixel_t>( writer, src, dataSize, 4 );
 					break;
 				case eTuttlePluginBitDepth10:
 				case eTuttlePluginBitDepth12:
 				case eTuttlePluginBitDepth16:
-					writeImage<argb16_pixel_t>( writer, src, dataSize, 8 );
+					writeImage<abgr16_pixel_t>( writer, src, dataSize, 8 );
 					break;
 				case eTuttlePluginBitDepth32:
 				case eTuttlePluginBitDepth64:
-					writeImage<argb32f_pixel_t>( writer, src, dataSize, 16 );
+					writeImage<abgr32f_pixel_t>( writer, src, dataSize, 16 );
 					break;
 			}
 			break;
