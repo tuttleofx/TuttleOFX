@@ -144,14 +144,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		if( !strcmp( _avformatOptions->oformat->name, "mp4" ) || !strcmp( _avformatOptions->oformat->name, "mov" ) || !strcmp( _avformatOptions->oformat->name, "3gp" ) || !strcmp( _avformatOptions->oformat->name, "flv" ) )
 			_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
 
-		if( av_set_parameters( _avformatOptions, NULL ) < 0 )
-		{
-			std::cout << "ffmpegWriter: unable to set parameters." << std::endl;
-			freeFormat();
-			return false;
-		}
-
-		dump_format( _avformatOptions, 0, filename().c_str(), 1 );
+		av_dump_format( _avformatOptions, 0, filename().c_str(), 1 );
 
 		AVCodec* videoCodec = avcodec_find_encoder( codecId );
 		if( !videoCodec )
@@ -170,14 +163,14 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 		if( !( fmt->flags & AVFMT_NOFILE ) )
 		{
-			if( url_fopen( &_avformatOptions->pb, filename().c_str(), URL_WRONLY ) < 0 )
+			if( avio_open( &_avformatOptions->pb, filename().c_str(), AVIO_FLAG_WRITE ) < 0 )
 			{
 				std::cout << "ffmpegWriter: unable to open file." << std::endl;
 				return false;
 			}
 		}
 
-		av_write_header( _avformatOptions );
+		avformat_write_header( _avformatOptions, NULL );
 	}
 
 	_error = CLEANUP;
@@ -268,7 +261,7 @@ void VideoFFmpegWriter::finish()
 	av_write_trailer( _avformatOptions );
 	avcodec_close( _stream->codec );
 	if( !( _avformatOptions->oformat->flags & AVFMT_NOFILE ) )
-		url_fclose( _avformatOptions->pb );
+		avio_close( _avformatOptions->pb );
 	freeFormat();
 }
 
