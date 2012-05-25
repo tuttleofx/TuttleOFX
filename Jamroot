@@ -92,8 +92,8 @@ project
         #<variant>release:<define>TUTTLE_NO_COUT
 
 		<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
-		<toolset>gcc:<cxxflags>-mssse3
-
+		#<toolset>gcc:<cxxflags>-mssse3
+		<toolset>gcc:<cxxflags>-msse2
         <define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
 
         <os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
