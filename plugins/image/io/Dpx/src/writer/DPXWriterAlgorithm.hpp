@@ -3,8 +3,12 @@
 
 #include <boost/gil/gil_all.hpp>
 
+#ifndef __SSSE3__
+#include <emmintrin.h>
+#else
 // SSSE3
 #include <tmmintrin.h>
+#endif
 
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 #include <vector>
