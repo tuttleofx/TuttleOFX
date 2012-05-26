@@ -4,6 +4,8 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
+#include <string>
+
 namespace tuttle {
 namespace plugin {
 namespace exr {
@@ -17,25 +19,14 @@ static const bool kSupportTiles = false;
  */
 void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleExrReader", "ExrReader",
-			"Exr file reader" );
+	desc.setLabels(
+		"TuttleExrReader",
+		"ExrReader",
+		"Exr file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	std::vector<std::string> extension;
-	extension.push_back( "exr" );
-	
-	std::string listOfExt;
-	for( unsigned int i=0; i< extension.size(); i++ )
-	{
-		listOfExt += extension.at(i);
-		listOfExt += ", ";
-	}
-	listOfExt.erase( listOfExt.size()-2, 2 );
-	
 	desc.setDescription( "EXR File reader\n"
-				 "Plugin is used to read exr files.\n\n"
-				 "supported extensions: \n" +
-				 listOfExt
+				 "Plugin is used to read exr files.\n"
 	);
 
 	// add the supported contexts
@@ -48,10 +39,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// add supported extensions
-	for( unsigned int i=0; i< extension.size(); i++ )
-	{
-		desc.addSupportedExtension( extension.at(i) );
-	}
+	desc.addSupportedExtension( "exr" );
 	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );

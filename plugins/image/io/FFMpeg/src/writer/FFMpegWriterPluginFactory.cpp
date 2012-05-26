@@ -3,7 +3,14 @@
 #include "FFMpegWriterDefinitions.hpp"
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
+
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
+
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
 
 namespace tuttle {
 namespace plugin {
@@ -16,10 +23,16 @@ namespace writer {
  */
 void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleFfmpegWriter", "FfmpegWriter",
-			"Ffmpeg video writer" );
+	desc.setLabels(
+		"TuttleFfmpegWriter",
+		"FfmpegWriter",
+		"Ffmpeg video writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
+	using namespace boost::assign;
+    std::vector<std::string> supportedExtensions;
+	supportedExtensions += "avi", "mov", "mp4", "mjpeg";
+	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -29,6 +42,9 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+    // add supported extensions
+	desc.addSupportedExtensions( supportedExtensions );
+	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	desc.setHostFrameThreading( false );

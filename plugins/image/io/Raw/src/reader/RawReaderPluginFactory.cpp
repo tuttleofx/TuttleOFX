@@ -4,6 +4,12 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace raw {
@@ -15,63 +21,26 @@ namespace reader {
  */
 void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    desc.setLabels( "TuttleRawReader", "RawReader",
-		    "Raw file reader" );
+    desc.setLabels(
+			"TuttleRawReader",
+			"RawReader",
+			"Raw file reader"
+		);
     desc.setPluginGrouping( "tuttle/image/io" );
 
-    std::vector<std::string> extension;
-    extension.push_back( "3fr" );
-    extension.push_back( "ari" );
-    extension.push_back( "arw" );
-    extension.push_back( "bay" );
-    extension.push_back( "crw" );
-    extension.push_back( "cr2" );
-    extension.push_back( "cap" );
-    extension.push_back( "dng" );
-    extension.push_back( "dcs" );
-    extension.push_back( "dcr" );
-    extension.push_back( "dng" );
-    extension.push_back( "drf" );
-    extension.push_back( "eip" );
-    extension.push_back( "erf" );
-    extension.push_back( "fff" );
-    extension.push_back( "iiq" );
-    extension.push_back( "k25" );
-    extension.push_back( "kdc" );
-    extension.push_back( "mef" );
-    extension.push_back( "mos" );
-    extension.push_back( "mrw" );
-    extension.push_back( "nef" );
-    extension.push_back( "nrw" );
-    extension.push_back( "obm" );
-    extension.push_back( "orf" );
-    extension.push_back( "pef" );
-    extension.push_back( "ptx" );
-    extension.push_back( "pxn" );
-    extension.push_back( "r3d" );
-    extension.push_back( "rad" );
-    extension.push_back( "raf" );
-    extension.push_back( "rw2" );
-    extension.push_back( "raw" );
-    extension.push_back( "rwl" );
-    extension.push_back( "rwz" );
-    extension.push_back( "srf" );
-    extension.push_back( "sr2" );
-    extension.push_back( "srw" );
-    extension.push_back( "x3f" );
+	using namespace boost::assign;
+    std::vector<std::string> supportedExtensions;
+	supportedExtensions += "3fr", "ari", "arw", "bay", "crw", "cr2", "cap", "dng", 
+	"dcs", "dcr", "dng", "drf", "eip", "erf", "fff", "iiq", 
+	"k25", "kdc", "mef", "mos", "mrw", "nef", "nrw", "obm", 
+	"orf", "pef", "ptx", "pxn", "r3d", "rad", "raf", "rw2", 
+	"raw", "rwl", "rwz", "srf", "sr2", "srw", "x3f";
 
-    std::string listOfExt;
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	listOfExt += extension.at(i);
-	listOfExt += ", ";
-    }
-    listOfExt.erase( listOfExt.size()-2, 2 );
     desc.setDescription( "Raw File reader\n"
-			 "Plugin is used to read raw files.\n\n"
-			 "supported extensions: \n" +
-			 listOfExt
-			 );
+			"Plugin is used to read raw files.\n\n"
+			"supported extensions: \n" +
+			boost::algorithm::join( supportedExtensions, ", " )
+		);
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextReader );
@@ -83,10 +52,7 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
     desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
     // add supported extensions
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	desc.addSupportedExtension( extension.at(i) );
-    }
+	desc.addSupportedExtensions( supportedExtensions );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );

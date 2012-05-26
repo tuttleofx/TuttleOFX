@@ -4,6 +4,12 @@
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace jpeg {
@@ -19,25 +25,14 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		    "Jpeg file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
-    std::vector<std::string> extension;
-    extension.push_back( "jpeg" );
-    extension.push_back( "jpg" );
-    extension.push_back( "jpe" );
-    extension.push_back( "jfif" );
-    extension.push_back( "jfi" );
+	using namespace boost::assign;
+	std::vector<std::string> supportedExtensions;
+	supportedExtensions += "jpeg", "jpg", "jpe", "jfif", "jfi";
 
-    std::string listOfExt;
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	listOfExt += extension.at(i);
-	listOfExt += ", ";
-    }
-    listOfExt.erase( listOfExt.size()-2, 2 );
-
-    desc.setDescription( "JPEG File reader\n"
+    desc.setDescription( "JPEG File writer\n"
 			 "Plugin is used to write jpeg files.\n\n"
 			 "supported extensions: \n" +
-			 listOfExt
+			 boost::algorithm::join( supportedExtensions, ", " )
     );
 
     // add the supported contexts
@@ -50,10 +45,7 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // add supported extensions
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	desc.addSupportedExtension( extension.at(i) );
-    }
+	desc.addSupportedExtensions( supportedExtensions );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );

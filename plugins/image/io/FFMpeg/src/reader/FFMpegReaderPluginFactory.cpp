@@ -4,6 +4,12 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
@@ -15,12 +21,18 @@ namespace reader {
  */
 void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleFfmpegReader", "FfmpegReader",
-	                "Ffmpeg video reader" );
+	desc.setLabels(
+		"TuttleFfmpegReader",
+		"FfmpegReader",
+		"Ffmpeg video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
 	desc.setDescription( "Video reader based on FFMpeg library" );
-
+	
+	using namespace boost::assign;
+    std::vector<std::string> supportedExtensions;
+	supportedExtensions += "avi", "mov", "mp4", "mjpeg";
+	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -30,6 +42,9 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+    // add supported extensions
+	desc.addSupportedExtensions( supportedExtensions );
+	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	desc.setHostFrameThreading( false );
