@@ -64,8 +64,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	// Controls
 	
 	describeWriterParamsInContext( desc, context );
-	
-	/*desc.addClipPreferencesSlaveParam( *filename );*/
 
 	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
 	bitDepth->resetOptions();
@@ -104,7 +102,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	descriptor->appendOption( kParamDescriptorUserDefined8Comp );
 	descriptor->appendOption( kParamDescriptorUndefinedDescriptor );
 	descriptor->appendOption( kParamDescriptorAuto );
-	descriptor->setDefault( 24 ); // Auto
+	descriptor->setDefault( 9 ); // rgb
 
 	OFX::ChoiceParamDescriptor* transfer = desc.defineChoiceParam( kParamTransfer );
 	transfer->setLabel( kParamTransferLabel );

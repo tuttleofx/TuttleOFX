@@ -164,10 +164,15 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			{
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
+				{
 					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
 						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
 					break;
+				}
+				case OFX::eBitDepthUShort:// break; // @TODO temporary use GIL, the conversion Gray => RGBA provide a segfault after writer.Finish() function.
+				case OFX::eBitDepthUByte:
 				case OFX::eBitDepthFloat:
+				{
 					switch( components )
 					{
 						case OFX::ePixelComponentAlpha: doGilRender<DPXWriterProcess, false, boost::gil::gray_layout_t>( *this, args, eOfxBitDepth ); break;
@@ -177,8 +182,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 														<< exception::user( "Dpx: Unknown component." ) ); break;
 					}
 					return;
-				case OFX::eBitDepthUByte:
-				case OFX::eBitDepthUShort: break;
+				}
 			}
 			break;
 		case eTuttlePluginBitDepth12:
@@ -186,10 +190,14 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			{
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
+				{
 					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
 						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
 					break;
+				}
+				case OFX::eBitDepthUByte:
 				case OFX::eBitDepthFloat:
+				{
 					switch( components )
 					{
 						case OFX::ePixelComponentAlpha: doGilRender<DPXWriterProcess, false, boost::gil::gray_layout_t>( *this, args, eOfxBitDepth ); break;
@@ -199,7 +207,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 														<< exception::user( "Dpx: Unknown component." ) ); break;
 					}
 					return;
-				case OFX::eBitDepthUByte:
+				}
 				case OFX::eBitDepthUShort: break;
 			}
 			break;
@@ -208,10 +216,14 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			{
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
+				{
 					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
 						<< exception::user( "Dpx: Unable to write upper bit depth" ) );
 					break;
+				}
+				case OFX::eBitDepthUByte:
 				case OFX::eBitDepthFloat:
+				{
 					switch( components )
 					{
 						case OFX::ePixelComponentAlpha: doGilRender<DPXWriterProcess, false, boost::gil::gray_layout_t>( *this, args, eOfxBitDepth ); break;
@@ -221,7 +233,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 														<< exception::user( "Dpx: Unknown component." ) ); break;
 					}
 					return;
-				case OFX::eBitDepthUByte:
+				}
 				case OFX::eBitDepthUShort: break;
 			}
 			break;
@@ -277,6 +289,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 	
 	typedef std::vector<char, OfxAllocator<char> > DataVector;
 	const std::size_t rowBytesToCopy = size.x * pixelSize;
+	//const std::size_t rowBytesToCopy = size.x * 4; // allocation of 4 channels, to allow conversion after on this buffer (Gray=>RGBA). Better option to do this ?
 
 	DataVector data( rowBytesToCopy * size.y );
 	char* dataPtrIt = &data.front();
@@ -375,11 +388,23 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 		case ::dpx::kRGB:
 			switch( components )
 			{
+				case OFX::ePixelComponentAlpha:
+				{
+					convertGrayToRGB( data, size.x, size.y, pixelSize );
+					break;
+				}
 				case OFX::ePixelComponentRGB: break;
-						break;
-				default: BOOST_THROW_EXCEPTION( exception::ImageFormat()
+				case OFX::ePixelComponentRGBA:
+				{
+					convertRGBAToRGB( data, size.x, size.y, pixelSize );
+					break;
+				}
+				default:
+				{
+					BOOST_THROW_EXCEPTION( exception::ImageFormat()
 						<< exception::user( "Dpx: Unable to write RGB channels (input is " + inputComponentString + ")." ) );
 						break;
+				}
 			}
 			break;
 		case ::dpx::kRGBA:
@@ -514,13 +539,11 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 			params._packed,
 			params._encoding );
 
-	
 	if( ! writer.WriteHeader() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
 	}
-
 	if( ! writer.WriteElement( 0, &data.front(), dataSize ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()

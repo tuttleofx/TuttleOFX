@@ -78,7 +78,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	try
 	{
 		View dst = this->_dstView;
-		TUTTLE_COUT_VAR( _params._fileComponents );
+		//TUTTLE_COUT_VAR( _params._fileComponents );
 		switch( _params._fileComponents )
 		{
 			case 1:

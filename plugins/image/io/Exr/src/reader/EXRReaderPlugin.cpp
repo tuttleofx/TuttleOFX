@@ -122,7 +122,7 @@ void EXRReaderPlugin::updateCombos()
 		for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
 		{
 			_vChannelNames.push_back( it.name() );
-			TUTTLE_COUT_VAR( it.name() );
+			//TUTTLE_COUT_VAR( it.name() );
 			for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
 			{
 				_vChannelChoice[j]->appendOption( it.name() );

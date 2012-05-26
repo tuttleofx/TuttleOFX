@@ -507,7 +507,7 @@ def checkPPM():
 	
 	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '8bits', 'ppm' )
 	#formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '16bits', 'ppm' )
-	endFormat( "PPM", formatIsValid == 6 )
+	endFormat( "PPM", formatIsValid == 3 )
 
 def checkSGI():
 	print( "****************      SGI      ***************" )
