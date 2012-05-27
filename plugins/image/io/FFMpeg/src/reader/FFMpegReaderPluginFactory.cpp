@@ -5,7 +5,8 @@
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 #include <boost/algorithm/string/join.hpp>
-#include <boost/assign/std/vector.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include <string>
 #include <vector>
@@ -27,11 +28,27 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"Ffmpeg video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "Video reader based on FFMpeg library" );
-	
-	using namespace boost::assign;
     std::vector<std::string> supportedExtensions;
-	supportedExtensions += "avi", "mov", "mp4", "mjpeg";
+	{
+		AVInputFormat* iFormat = av_iformat_next( NULL );
+		while( iFormat != NULL )
+		{
+			if( iFormat->extensions != NULL )
+			{
+				using namespace boost::algorithm;
+				const std::string extStr( iFormat->extensions );
+				std::vector<std::string> exts;
+				split( exts, extStr, is_any_of(",") );
+				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
+			}
+			iFormat = av_iformat_next( iFormat );
+		}
+	}
+	
+	desc.setDescription( "Video reader based on FFMpeg library\n\n"
+			"Supported extensions: \n" +
+			boost::algorithm::join( supportedExtensions, ", " )
+		);
 	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

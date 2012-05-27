@@ -7,7 +7,8 @@
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 #include <boost/algorithm/string/join.hpp>
-#include <boost/assign/std/vector.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include <string>
 #include <vector>
@@ -29,9 +30,36 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"Ffmpeg video writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	using namespace boost::assign;
     std::vector<std::string> supportedExtensions;
-	supportedExtensions += "avi", "mov", "mp4", "mjpeg";
+	{
+		AVOutputFormat* oFormat = av_oformat_next( NULL );
+		while( oFormat != NULL )
+		{
+			if( oFormat->extensions != NULL )
+			{
+				using namespace boost::algorithm;
+				const std::string extStr( oFormat->extensions );
+				std::vector<std::string> exts;
+				split( exts, extStr, is_any_of(",") );
+				
+				// remove empty extensions...
+				for( std::vector<std::string>::iterator it = exts.begin(); it != exts.end(); )
+				{
+					if( it->size() == 0 )
+						it = exts.erase( it );
+					else
+						++it;
+				}
+				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
+			}
+			oFormat = av_oformat_next( oFormat );
+		}
+	}
+	
+	desc.setDescription( "Video writer based on FFMpeg library\n\n"
+			"Supported extensions: \n" +
+			boost::algorithm::join( supportedExtensions, ", " )
+		);
 	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
