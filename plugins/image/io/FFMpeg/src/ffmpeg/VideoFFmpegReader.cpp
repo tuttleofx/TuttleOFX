@@ -75,7 +75,7 @@ bool VideoFFmpegReader::open( const std::string& filename )
 		return false;
 	}
 	// FIXME_GC: needs to know if it's streamable.
-	error = av_find_stream_info( _context );
+	error = avformat_find_stream_info( _context, NULL );
 	if( error < 0 )
 	{
 		std::cerr << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
@@ -297,7 +297,7 @@ void VideoFFmpegReader::openVideoCodec()
 	{
 		AVCodecContext* codecContext = stream->codec;
 		_videoCodec = avcodec_find_decoder( codecContext->codec_id );
-		if( _videoCodec == NULL || avcodec_open( codecContext, _videoCodec ) < 0 )
+		if( _videoCodec == NULL || avcodec_open2( codecContext, _videoCodec, NULL ) < 0 )
 		{
 			_currVideoIdx = -1;
 		}
