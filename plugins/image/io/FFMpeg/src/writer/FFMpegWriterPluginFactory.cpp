@@ -3,7 +3,15 @@
 #include "FFMpegWriterDefinitions.hpp"
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
+
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
+
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
+#include <string>
+#include <vector>
 
 namespace tuttle {
 namespace plugin {
@@ -16,10 +24,43 @@ namespace writer {
  */
 void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleFfmpegWriter", "FfmpegWriter",
-			"Ffmpeg video writer" );
+	desc.setLabels(
+		"TuttleFfmpegWriter",
+		"FfmpegWriter",
+		"Ffmpeg video writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
+    std::vector<std::string> supportedExtensions;
+	{
+		AVOutputFormat* oFormat = av_oformat_next( NULL );
+		while( oFormat != NULL )
+		{
+			if( oFormat->extensions != NULL )
+			{
+				using namespace boost::algorithm;
+				const std::string extStr( oFormat->extensions );
+				std::vector<std::string> exts;
+				split( exts, extStr, is_any_of(",") );
+				
+				// remove empty extensions...
+				for( std::vector<std::string>::iterator it = exts.begin(); it != exts.end(); )
+				{
+					if( it->size() == 0 )
+						it = exts.erase( it );
+					else
+						++it;
+				}
+				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
+			}
+			oFormat = av_oformat_next( oFormat );
+		}
+	}
+	
+	desc.setDescription( "Video writer based on FFMpeg library\n\n"
+			"Supported extensions: \n" +
+			boost::algorithm::join( supportedExtensions, ", " )
+		);
+	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -29,6 +70,9 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+    // add supported extensions
+	desc.addSupportedExtensions( supportedExtensions );
+	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	desc.setHostFrameThreading( false );
@@ -62,16 +106,15 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-	filename->setLabel( kTuttlePluginFilenameLabel );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-	bitDepth->setLabel( kTuttlePluginBitDepthLabel );
+	describeWriterParamsInContext( desc, context );
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
-	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( eTuttlePluginBitDepth8 );
+	bitDepth->setEnabled( false );
+
+	OFX::BooleanParamDescriptor* premult = static_cast<OFX::BooleanParamDescriptor*>( desc.getParamDescriptor( kParamPremultiplied ) );
+	premult->setDefault( true );
 
 
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
@@ -203,8 +246,6 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
     avAudioServiceType->appendOption( kParamAVASTKaraoke           );
     avAudioServiceType->appendOption( kParamAVASTNb                 );
     //avAudioServiceType->setDefault ( AV_AUDIO_SERVICE_TYPE_MAIN );
-
-	describeWriterParamsInContext( desc, context );
 }
 
 /**

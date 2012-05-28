@@ -11,8 +11,12 @@ project
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
+		<toolset>gcc:<cxxflags>-fopenmp
+		<toolset>gcc:<linkflags>-lgomp
 	: usage-requirements
 		<include>.
+		<toolset>gcc:<cxxflags>-fopenmp
+		<toolset>gcc:<linkflags>-lgomp
 	: build-dir $(BUILD)/3rdParty/raw
     ;
 

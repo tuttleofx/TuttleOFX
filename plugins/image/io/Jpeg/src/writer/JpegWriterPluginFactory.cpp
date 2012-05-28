@@ -4,6 +4,12 @@
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace jpeg {
@@ -19,25 +25,14 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		    "Jpeg file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
-    std::vector<std::string> extension;
-    extension.push_back( "jpeg" );
-    extension.push_back( "jpg" );
-    extension.push_back( "jpe" );
-    extension.push_back( "jfif" );
-    extension.push_back( "jfi" );
+	using namespace boost::assign;
+	std::vector<std::string> supportedExtensions;
+	supportedExtensions += "jpeg", "jpg", "jpe", "jfif", "jfi";
 
-    std::string listOfExt;
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	listOfExt += extension.at(i);
-	listOfExt += ", ";
-    }
-    listOfExt.erase( listOfExt.size()-2, 2 );
-
-    desc.setDescription( "JPEG File reader\n"
+    desc.setDescription( "JPEG File writer\n"
 			 "Plugin is used to write jpeg files.\n\n"
 			 "supported extensions: \n" +
-			 listOfExt
+			 boost::algorithm::join( supportedExtensions, ", " )
     );
 
     // add the supported contexts
@@ -50,10 +45,7 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // add supported extensions
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	desc.addSupportedExtension( extension.at(i) );
-    }
+	desc.addSupportedExtensions( supportedExtensions );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -84,28 +76,23 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
-    // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-    filename->setLabel( kTuttlePluginFilenameLabel );
-    filename->setStringType( OFX::eStringTypeFilePath );
-    desc.addClipPreferencesSlaveParam( *filename );
+	// Controls
+	describeWriterParamsInContext( desc, context );
+	
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
+	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	bitDepth->setDefault( eTuttlePluginBitDepth8 );
+	bitDepth->setEnabled( false );
 
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
-    bitDepth->appendOption( kTuttlePluginBitDepth8 );
-    bitDepth->setDefault( eTuttlePluginBitDepth8 );
+	OFX::BooleanParamDescriptor* premult = static_cast<OFX::BooleanParamDescriptor*>( desc.getParamDescriptor( kParamPremultiplied ) );
+	premult->setDefault( true );
 
-    OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
-    premult->setLabel( "Premult" );
-    premult->setDefault( true );
-
-    OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamQuality );
-    quality->setLabel( "Quality" );
-    quality->setRange( 0, 100 );
-    quality->setDisplayRange( 0, 100 );
-    quality->setDefault( 80 );
-
-    describeWriterParamsInContext( desc, context );
+	OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamQuality );
+	quality->setLabel( "Quality" );
+	quality->setRange( 0, 100 );
+	quality->setDisplayRange( 0, 100 );
+	quality->setDefault( 80 );
 }
 
 /**

@@ -316,7 +316,7 @@ def check2r2w( reader1, reader2, writer1, writer2, components, bitDepth, extensi
 		return 0
 
 def check3r2w( reader1, reader2, reader3, writer1, writer2, components, bitDepth, extension ) :
-	diffReaderGenerator( reader2, writer2+'.'+components+'.'+bitDepth+'.001.'+extension, GENERATOR, GENERATOR_ARGS )
+	#diffReaderGenerator( reader2, writer2+'.'+components+'.'+bitDepth+'.001.'+extension, GENERATOR, GENERATOR_ARGS )
 
 	countReadOK = diff( reader1, reader1, writer1+'.'+components+'.'+bitDepth+'.001.'+extension, writer1+'.'+components+'.'+bitDepth+'.003.'+extension )
 	countReadOK += diff( reader2, reader2, writer1+'.'+components+'.'+bitDepth+'.001.'+extension, writer1+'.'+components+'.'+bitDepth+'.003.'+extension )
@@ -417,7 +417,8 @@ def checkJPEG():
 	print( "****************      JPEG      ***************" )
 	startFormat( "JPEG" )
 	formatIsValid=0
-	formatIsValid += check3r2w( 'imagemagick', 'jpeg', 'oiio', 'jpeg', 'oiio', 'rgb',  '8bits', 'jpg' )
+	#formatIsValid += check3r2w( 'imagemagick', 'jpeg', 'oiio', 'jpeg', 'oiio', 'rgb',  '8bits', 'jpg' )
+	formatIsValid += check2r2w( 'jpeg', 'oiio', 'jpeg', 'oiio', 'rgb',  '8bits', 'jpg' )
 	endFormat( "Jpeg", formatIsValid == 1 )
 
 def checkDPX():
@@ -499,14 +500,14 @@ def checkPPM():
 	startFormat( "PPM" )
 	formatIsValid=0
 	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '8bits', 'ppm' )
-	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '16bits', 'ppm' )
+	#formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'gray', '16bits', 'ppm' )
 	
 	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '8bits', 'ppm' )
-	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '16bits', 'ppm' )
+	#formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgb',  '16bits', 'ppm' )
 	
 	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '8bits', 'ppm' )
-	formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '16bits', 'ppm' )
-	endFormat( "PPM", formatIsValid == 6 )
+	#formatIsValid += check2r1w( 'oiio', 'imagemagick', 'oiio', 'rgba', '16bits', 'ppm' )
+	endFormat( "PPM", formatIsValid == 3 )
 
 def checkSGI():
 	print( "****************      SGI      ***************" )

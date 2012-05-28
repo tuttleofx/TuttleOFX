@@ -100,7 +100,7 @@ public:
 	/// @{
 	OFX::StringParam*    _paramFilepath;  ///< File path
 	OFX::ChoiceParam*    _paramBitDepth;  ///< Explicit bit depth conversion
-	OFX::ChoiceParam*    _paramChannel; ///< Explicit component conversion
+	OFX::ChoiceParam*    _paramChannel;   ///< Explicit component conversion
 	/// @}
 
 private:

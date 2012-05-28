@@ -4,6 +4,13 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
@@ -15,12 +22,34 @@ namespace reader {
  */
 void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleFfmpegReader", "FfmpegReader",
-	                "Ffmpeg video reader" );
+	desc.setLabels(
+		"TuttleFfmpegReader",
+		"FfmpegReader",
+		"Ffmpeg video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "Video reader based on FFMpeg library" );
-
+    std::vector<std::string> supportedExtensions;
+	{
+		AVInputFormat* iFormat = av_iformat_next( NULL );
+		while( iFormat != NULL )
+		{
+			if( iFormat->extensions != NULL )
+			{
+				using namespace boost::algorithm;
+				const std::string extStr( iFormat->extensions );
+				std::vector<std::string> exts;
+				split( exts, extStr, is_any_of(",") );
+				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
+			}
+			iFormat = av_iformat_next( iFormat );
+		}
+	}
+	
+	desc.setDescription( "Video reader based on FFMpeg library\n\n"
+			"Supported extensions: \n" +
+			boost::algorithm::join( supportedExtensions, ", " )
+		);
+	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -30,6 +59,9 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+    // add supported extensions
+	desc.addSupportedExtensions( supportedExtensions );
+	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	desc.setHostFrameThreading( false );

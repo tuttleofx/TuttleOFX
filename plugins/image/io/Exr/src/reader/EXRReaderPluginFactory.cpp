@@ -4,6 +4,8 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
+#include <string>
+
 namespace tuttle {
 namespace plugin {
 namespace exr {
@@ -17,12 +19,15 @@ static const bool kSupportTiles = false;
  */
 void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleExrReader", "ExrReader",
-			"Exr file reader" );
+	desc.setLabels(
+		"TuttleExrReader",
+		"ExrReader",
+		"Exr file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
 	desc.setDescription( "EXR File reader\n"
-			     "Plugin is used to read exr files." );
+				 "Plugin is used to read exr files.\n"
+	);
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
@@ -33,6 +38,9 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+	// add supported extensions
+	desc.addSupportedExtension( "exr" );
+	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setHostFrameThreading( false );

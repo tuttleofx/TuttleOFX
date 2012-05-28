@@ -51,9 +51,11 @@ void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& a
 //	TUTTLE_COUT_VAR( "src - fetchImage " << time );
 	_src.reset( _clipSrc->fetchImage( args.time ) );
 	if( ! _src.get() )
-		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
+		BOOST_THROW_EXCEPTION( exception::ImageNotReady()
+				<< exception::dev() + "Error on clip " + quotes(_clipSrc->name()) );
 	if( _src->getRowBytes() == 0 )
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
+				<< exception::dev() + "Error on clip " + quotes(_clipSrc->name()) );
 	//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
 	_srcView = ImageGilProcessor<DView>::template getCustomView<SView>( _src.get(), _srcPixelRod );

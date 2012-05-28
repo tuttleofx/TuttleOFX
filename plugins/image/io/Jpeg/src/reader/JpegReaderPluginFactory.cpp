@@ -4,6 +4,12 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace jpeg {
@@ -19,25 +25,14 @@ void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		    "Jpeg file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	std::vector<std::string> extension;
-	extension.push_back( "jpeg" );
-	extension.push_back( "jpg" );
-	extension.push_back( "jpe" );
-	extension.push_back( "jfif" );
-	extension.push_back( "jfi" );
-
-	std::string listOfExt;
-	for( unsigned int i=0; i< extension.size(); i++ )
-	{
-		listOfExt += extension.at(i);
-		listOfExt += ", ";
-	}
-	listOfExt.erase( listOfExt.size()-2, 2 );
+	using namespace boost::assign;
+	std::vector<std::string> supportedExtensions;
+	supportedExtensions += "jpeg", "jpg", "jpe", "jfif", "jfi";
 
 	desc.setDescription( "JPEG File reader\n"
 			 "Plugin is used to read jpeg files.\n\n"
 			 "supported extensions: \n" +
-			 listOfExt
+			 boost::algorithm::join( supportedExtensions, ", " )
 	);
 
 	// add the supported contexts
@@ -51,11 +46,7 @@ void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
 	// add supported extensions
-	for( unsigned int i=0; i< extension.size(); i++ )
-	{
-		desc.addSupportedExtension( extension.at(i) );
-	}
-
+	desc.addSupportedExtensions( supportedExtensions );
 
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );

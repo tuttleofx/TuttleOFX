@@ -7,6 +7,12 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace imagemagick {
@@ -32,143 +38,28 @@ void ImageMagickWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // add supported extensions
-    desc.addSupportedExtension( "aai" );
-    desc.addSupportedExtension( "art" );
-    desc.addSupportedExtension( "arw" );
-    desc.addSupportedExtension( "avi" );
-    desc.addSupportedExtension( "avs" );
-    desc.addSupportedExtension( "bmp" );
-    desc.addSupportedExtension( "bmp2" );
-    desc.addSupportedExtension( "bmp3" );
-    desc.addSupportedExtension( "cals" );
-    desc.addSupportedExtension( "cgm" );
-    desc.addSupportedExtension( "cin" );
-    desc.addSupportedExtension( "cmyk" );
-    desc.addSupportedExtension( "cmyka" );
-    desc.addSupportedExtension( "cr2" );
-    desc.addSupportedExtension( "crw" );
-    desc.addSupportedExtension( "cur" );
-    desc.addSupportedExtension( "cut" );
-    desc.addSupportedExtension( "dcm" );
-    desc.addSupportedExtension( "dcr" );
-    desc.addSupportedExtension( "dcx" );
-    desc.addSupportedExtension( "dib" );
-    desc.addSupportedExtension( "djvu" );
-    desc.addSupportedExtension( "dng" );
-    desc.addSupportedExtension( "dot" );
-    desc.addSupportedExtension( "dpx" );
-    desc.addSupportedExtension( "emf" );
-    desc.addSupportedExtension( "epdf" );
-    desc.addSupportedExtension( "epi" );
-    desc.addSupportedExtension( "eps" );
-    desc.addSupportedExtension( "eps2" );
-    desc.addSupportedExtension( "eps3" );
-    desc.addSupportedExtension( "epsf" );
-    desc.addSupportedExtension( "epsi" );
-    desc.addSupportedExtension( "ept" );
-    desc.addSupportedExtension( "exr" );
-    desc.addSupportedExtension( "fax" );
-    desc.addSupportedExtension( "fig" );
-    desc.addSupportedExtension( "fits" );
-    desc.addSupportedExtension( "fpx" );
-    desc.addSupportedExtension( "gif" );
-    desc.addSupportedExtension( "gplt" );
-    desc.addSupportedExtension( "gray" );
-    desc.addSupportedExtension( "hdr" );
-    desc.addSupportedExtension( "hpgl" );
-    desc.addSupportedExtension( "hrz" );
-    desc.addSupportedExtension( "html" );
-    desc.addSupportedExtension( "ico" );
-    desc.addSupportedExtension( "info" );
-    desc.addSupportedExtension( "inline" );
-    desc.addSupportedExtension( "jbig" );
-    desc.addSupportedExtension( "jng" );
-    desc.addSupportedExtension( "jp2" );
-    desc.addSupportedExtension( "jpc" );
-    desc.addSupportedExtension( "jpg" );
-    desc.addSupportedExtension( "jpeg" );
-    desc.addSupportedExtension( "man" );
-    desc.addSupportedExtension( "mat" );
-    desc.addSupportedExtension( "miff" );
-    desc.addSupportedExtension( "mono" );
-    desc.addSupportedExtension( "mng" );
-    desc.addSupportedExtension( "m2v" );
-    desc.addSupportedExtension( "mpeg" );
-    desc.addSupportedExtension( "mpc" );
-    desc.addSupportedExtension( "mpr" );
-    desc.addSupportedExtension( "mrw" );
-    desc.addSupportedExtension( "msl" );
-    desc.addSupportedExtension( "mtv" );
-    desc.addSupportedExtension( "mvg" );
-    desc.addSupportedExtension( "nef" );
-    desc.addSupportedExtension( "orf" );
-    desc.addSupportedExtension( "otb" );
-    desc.addSupportedExtension( "p7" );
-    desc.addSupportedExtension( "palm" );
-    desc.addSupportedExtension( "pam" );
-    desc.addSupportedExtension( "pbm" );
-    desc.addSupportedExtension( "pcd" );
-    desc.addSupportedExtension( "pcds" );
-    desc.addSupportedExtension( "pcl" );
-    desc.addSupportedExtension( "pcx" );
-    desc.addSupportedExtension( "pdb" );
-    desc.addSupportedExtension( "pdf" );
-    desc.addSupportedExtension( "pef" );
-    desc.addSupportedExtension( "pfa" );
-    desc.addSupportedExtension( "pfb" );
-    desc.addSupportedExtension( "pfm" );
-    desc.addSupportedExtension( "pgm" );
-    desc.addSupportedExtension( "picon" );
-    desc.addSupportedExtension( "pict" );
-    desc.addSupportedExtension( "pix" );
-    desc.addSupportedExtension( "png" );
-    desc.addSupportedExtension( "png8" );
-    desc.addSupportedExtension( "png16" );
-    desc.addSupportedExtension( "png32" );
-    desc.addSupportedExtension( "pnm" );
-    desc.addSupportedExtension( "ppm" );
-    desc.addSupportedExtension( "ps" );
-    desc.addSupportedExtension( "ps2" );
-    desc.addSupportedExtension( "ps3" );
-    desc.addSupportedExtension( "psb" );
-    desc.addSupportedExtension( "psd" );
-    desc.addSupportedExtension( "ptif" );
-    desc.addSupportedExtension( "pwp" );
-    desc.addSupportedExtension( "rad" );
-    desc.addSupportedExtension( "rgb" );
-    desc.addSupportedExtension( "rgba" );
-    desc.addSupportedExtension( "rla" );
-    desc.addSupportedExtension( "rle" );
-    desc.addSupportedExtension( "sct" );
-    desc.addSupportedExtension( "sfw" );
-    desc.addSupportedExtension( "sgi" );
-    desc.addSupportedExtension( "shtml" );
-    desc.addSupportedExtension( "sid" );
-    desc.addSupportedExtension( "mrsid" );
-    desc.addSupportedExtension( "sun" );
-    desc.addSupportedExtension( "svg" );
-    desc.addSupportedExtension( "tga" );
-    desc.addSupportedExtension( "tiff" );
-    desc.addSupportedExtension( "tim" );
-    desc.addSupportedExtension( "tif" );
-    desc.addSupportedExtension( "txt" );
-    desc.addSupportedExtension( "uil" );
-    desc.addSupportedExtension( "uyvy" );
-    desc.addSupportedExtension( "vicar" );
-    desc.addSupportedExtension( "viff" );
-    desc.addSupportedExtension( "wbmp" );
-    desc.addSupportedExtension( "webp" );
-    desc.addSupportedExtension( "wmf" );
-    desc.addSupportedExtension( "wpg" );
-    desc.addSupportedExtension( "x" );
-    desc.addSupportedExtension( "xbm" );
-    desc.addSupportedExtension( "xcf" );
-    desc.addSupportedExtension( "xpm" );
-    desc.addSupportedExtension( "xwd" );
-    desc.addSupportedExtension( "x3f" );
-    desc.addSupportedExtension( "ycbcr" );
-    desc.addSupportedExtension( "ycbcra" );
-    desc.addSupportedExtension( "yuv" );
+	using namespace boost::assign;
+	std::vector<std::string> supportedExtensions;
+	supportedExtensions += "aai", "art", "arw", "avi", "avs", "bmp", "bmp2", "bmp3",
+	"cals", "cgm", "cin", "cmyk", "cmyka", "cr2", "crw", "cur", "cut", "dcm",
+	"dcr", "dcx", "dib", "djvu", "dng", "dot", "dpx", "emf", "epdf", "epi", "eps",
+	"eps2", "eps3", "epsf", "epsi", "ept", "exr", "fax", "fig",
+	"fits", "fpx", "gif", "gplt", "gray", "hdr", "hpgl", "hrz",
+	"html", "ico", "info", "inline", "jbig", "jng", "jp2", "jpc",
+	"jpg", "jpeg", "man", "mat", "miff", "mono", "mng", "m2v",
+	"mpeg", "mpc", "mpr", "mrw", "msl", "mtv", "mvg", "nef",
+	"orf", "otb", "p7", "palm", "pam", "pbm", "pcd", "pcds",
+	"pcl", "pcx", "pdb", "pdf", "pef", "pfa", "pfb", "pfm",
+	"pgm", "picon", "pict", "pix", "png", "png8", "png16", "png32",
+	"pnm", "ppm", "ps", "ps2", "ps3", "psb", "psd", "ptif",
+	"pwp", "rad", "rgb", "rgba", "rla", "rle", "sct", "sfw",
+	"sgi", "shtml", "sid", "mrsid", "sun", "svg", "tga", "tiff",
+	"tim", "tif", "txt", "uil", "uyvy", "vicar", "viff", "wbmp",
+	"webp", "wmf", "wpg", "x", "xbm", "xcf", "xpm", "xwd", "x3f",
+	"ycbcr", "ycbcra", "yuv";
+	
+	desc.addSupportedExtensions( supportedExtensions );
+	
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );

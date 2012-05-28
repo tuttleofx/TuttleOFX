@@ -12,7 +12,7 @@ namespace writer {
 JpegWriterPlugin::JpegWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_paramPremult = fetchBooleanParam( kParamPremult );
+	_paramPremult = fetchBooleanParam( kParamPremultiplied );
 	_paramQuality = fetchIntParam( kParamQuality );
 }
 

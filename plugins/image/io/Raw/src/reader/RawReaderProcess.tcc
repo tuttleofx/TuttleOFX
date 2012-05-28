@@ -21,10 +21,10 @@ template<class View>
 static int progressCallback( void* data, LibRaw_progress p, int iteration, int expected )
 {
 	typedef RawReaderProcess<View> PluginProcess;
-	PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
+	//PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
 	TUTTLE_COUT_DEBUG( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
-	if( process->progressUpdate( iteration / (double)expected ) )
-		return 0; // cancel processing immediately
+	/*if( process->progressUpdate( iteration / (double)expected ) )
+		return 1; // cancel processing immediately*/
 	return 0; // can continue
 }
 
@@ -58,7 +58,6 @@ RawReaderProcess<View>::RawReaderProcess( RawReaderPlugin& instance )
 template<class View>
 void RawReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-		TUTTLE_COUT("setup");
 	ImageGilProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.time );
 }
@@ -76,31 +75,78 @@ void RawReaderProcess<View>::preProcess()
 template<class View>
 void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-		TUTTLE_COUT("processinggggg");
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 
 	try
 	{
 		_out.output_bps = 16;
-		//		_out.user_flip  = 1;
-		//		_out.document_mode = 2;
-		//		_out.half_size  = 1;
-		//		_out.four_color_rgb = 1;
-		/*
+
 		_out.greybox[0] = _params._greyboxPoint.x;
 		_out.greybox[1] = _params._greyboxPoint.y;
 		_out.greybox[2] = _params._greyboxSize.x;
 		_out.greybox[3] = _params._greyboxSize.y;
-		*/
+
 		_out.aber[0]   = _params._redAbber;
-		_out.aber[2]   = _params._greenAbber;
+		_out.aber[2]   = _params._blueAbber;
 		
 		_out.bright    = _params._bright;
+		_out.threshold = _params._threshold;
 		_out.gamm[0]   = _params._gammaPower;
 		_out.gamm[1]   = _params._gammaToe;
 		_out.user_qual = _params._interpolation;
 		_out.no_auto_bright    = 0;
+		
+		_out.four_color_rgb = _params._fourColorRgb;
+		_out.document_mode = _params._documentMode;
+		
+		_out.exp_correc = 1; // every time correct exposure (use default parameters to don't change)
+		_out.exp_shift  = _params._exposure;
+		_out.exp_preser = _params._exposurePreserve;
+		
+		_out.highlight  = _params._hightlight;
+		_out.use_fuji_rotate = 0; // don't use
+		
+		_out.use_auto_wb = 0;
+		_out.use_camera_wb = 0;
+		
+		switch( _params._whiteBalance )
+		{
+			case eAutoWb: _out.use_auto_wb = 1; break;
+			case eCameraWb: _out.use_camera_wb = 1; break;
+			case eManualWb: break;
+			case e2500: break;
+			case e2550: break;
+			case e2650: break;
+			case e2700: break;
+			case e2800: break;
+			case e2850: break;
+			case e2950: break;
+			case e3000: break;
+			case e3100: break;
+			case e3200: break;
+			case e3300: break;
+			case e3400: break;
+			case e3600: break;
+			case e3700: break;
+			case e3800: break;
+			case e4000: break;
+			case e4200: break;
+			case e4300: break;
+			case e4500: break;
+			case e4800: break;
+			case e5000: break;
+			case e5300: break;
+			case e5600: break;
+			case e5900: break;
+			case e6300: break;
+			case e6700: break;
+			case e7100: break;
+			case e7700: break;
+			case e8300: break;
+			case e9100: break;
+			case e10000: break;
+		}
 		
 		/*
 #define greybox         (imgdata.params.greybox)

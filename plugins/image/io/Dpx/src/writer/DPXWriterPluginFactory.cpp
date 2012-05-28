@@ -62,13 +62,11 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-	filename->setLabel( kTuttlePluginFilenameLabel );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	desc.addClipPreferencesSlaveParam( *filename );
+	
+	describeWriterParamsInContext( desc, context );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-	bitDepth->setLabel( kTuttlePluginBitDepthLabel );
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth10 );
 	bitDepth->appendOption( kTuttlePluginBitDepth12 );
@@ -77,9 +75,8 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth64 );
 	bitDepth->setDefault( eTuttlePluginBitDepth10 );
 
-	OFX::ChoiceParamDescriptor* descriptor = desc.defineChoiceParam( kTuttlePluginChannel );
-	descriptor->setLabel( kTuttlePluginChannelLabel );
-	descriptor->setHint( kParamDescriptorHint );
+	OFX::ChoiceParamDescriptor* descriptor = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginChannel ) );
+	descriptor->resetOptions();
 	descriptor->appendOption( kParamDescriptorUserDefinedDescriptor );
 	descriptor->appendOption( kParamDescriptorRed );
 	descriptor->appendOption( kParamDescriptorGreen );
@@ -105,7 +102,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	descriptor->appendOption( kParamDescriptorUserDefined8Comp );
 	descriptor->appendOption( kParamDescriptorUndefinedDescriptor );
 	descriptor->appendOption( kParamDescriptorAuto );
-	descriptor->setDefault( 24 ); // Auto
+	descriptor->setDefault( 9 ); // rgb
 
 	OFX::ChoiceParamDescriptor* transfer = desc.defineChoiceParam( kParamTransfer );
 	transfer->setLabel( kParamTransferLabel );
@@ -183,8 +180,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	project->setDefault( "" );
 	OFX::StringParamDescriptor* copyright = desc.defineStringParam( kParamCopyright );
 	copyright->setDefault( "" );
-
-	describeWriterParamsInContext( desc, context );
 
 }
 

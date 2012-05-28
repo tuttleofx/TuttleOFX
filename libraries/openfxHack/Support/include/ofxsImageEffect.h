@@ -419,7 +419,8 @@ public:
     void addSupportedBitDepth( EBitDepth v );
 
     /** @brief Add a file extension to those supported, defaults to none */
-    void addSupportedExtension( const std::string& ext );
+    void addSupportedExtension( const std::string& extension );
+    void addSupportedExtensions( const std::vector<std::string>& extensions );
 
     /** @brief Is the plugin single instance only ? defaults to false */
     void setSingleInstance( bool v );

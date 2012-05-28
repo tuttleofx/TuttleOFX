@@ -18,12 +18,22 @@ struct RawReaderProcessParams
 	float          _gammaPower;
 	float          _gammaToe;
 	double         _redAbber;
-	double         _greenAbber;
-
+	double         _blueAbber;
+	
+	double         _bright;
+	double         _threshold;
+	bool           _fourColorRgb;
+	EDocumentMode  _documentMode;
+	
+	EHighlight     _hightlight;
+	
+	double         _exposure;
+	double         _exposurePreserve;
+	
+	EWhiteBalance  _whiteBalance;
+	
 	boost::gil::point2<Scalar> _greyboxPoint;
 	boost::gil::point2<Scalar> _greyboxSize;
-	
-	float                      _bright;
 };
 
 /**
@@ -58,13 +68,34 @@ public:
 	OFX::DoubleParam*    _paramGammaPower;
 	OFX::DoubleParam*    _paramGammaToe;
 	OFX::DoubleParam*    _paramRedAbber;
-	OFX::DoubleParam*    _paramGreenAbber;
+	OFX::DoubleParam*    _paramBlueAbber;
 	
 	
 	OFX::DoubleParam*    _paramBright;
+	OFX::DoubleParam*    _paramThreshold;
+	OFX::BooleanParam*   _paramFourColorRgb;
+	OFX::ChoiceParam*    _paramDocumentMode;
 	
-	OFX::Double2DParam*    _paramGreyboxPoint;
-	OFX::Double2DParam*    _paramGreyboxSize;
+	OFX::ChoiceParam*    _paramHighlight;
+	
+	OFX::DoubleParam*    _paramExposure;
+	OFX::DoubleParam*    _paramExposurePreserve;
+	
+	OFX::ChoiceParam*    _paramWhiteBalance;
+	
+	OFX::Double2DParam*  _paramGreyboxPoint;
+	OFX::Double2DParam*  _paramGreyboxSize;
+	
+	/// metadata
+	OFX::StringParam*    _paramManufacturer;
+	OFX::StringParam*    _paramModel;
+	OFX::IntParam*       _paramIso;
+	OFX::IntParam*       _paramShutter;
+	OFX::DoubleParam*    _paramAperture;
+	OFX::StringParam*    _paramDateOfShooting;
+	OFX::StringParam*    _paramGPS;
+	OFX::StringParam*    _paramDesc;
+	OFX::StringParam*    _paramArtist;
 	/// @}
 };
 

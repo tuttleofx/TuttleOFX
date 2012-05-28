@@ -32,7 +32,7 @@ private:
 
 	AVStream* getVideoStream()
 	{
-		return _context && _currVideoIdx >= 0 ? _context->streams[_currVideoIdx] : NULL;
+		return _context && _currVideoIdx >= 0 ? _context->streams[_videoIdx[_currVideoIdx]] : NULL;
 	}
 
 	void    openVideoCodec();
@@ -148,7 +148,6 @@ public:
 public: // private:
 	AVFormatContext* _context;
 	AVInputFormat* _format;
-	AVFormatParameters* _params;
 	AVFrame* _avFrame;
 	AVCodec* _videoCodec;
 	AVPacket _pkt;

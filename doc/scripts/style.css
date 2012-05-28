@@ -1,0 +1,180 @@
+body,h1,h2,h3,p,quote,small,form,input,ul,li,ol,label{
+	/* Simple page reset */
+	margin:0px;
+	padding:0px;
+}
+
+body{
+	/* Setting default text color, background and a font stack */
+	color:#000;
+	font-size:13px;
+	/*color:#cccccc;background: #302b23;*/
+	background: #fff;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+ul{
+	margin:0;
+	padding:0;
+}
+
+ul.container{
+	/* The topmost UL */
+	width:240px;
+	margin:0 auto;
+	padding:50px;
+}
+
+li{
+	list-style:none;
+	text-align:left;
+}
+
+li.menu{
+	/* The main list elements */
+	padding:5px 0;
+	width:100%;
+}
+
+li.button a{
+	/* The section titles */
+	display:block;
+	font-family:BPreplay,Arial,Helvetica,sans-serif;
+	font-size:21px;
+	height:34px;
+	overflow:hidden;
+	padding:5px 5px 0;
+	position:relative;
+	width:150px;
+}
+
+li.button a:hover{
+	/* Removing the inherited underline from the titles */
+	text-decoration:none;
+}
+
+li.button a span{
+	/* This span acts as the right part of the section's background */
+	height:44px;
+	position:absolute;
+	right:0;
+	top:0;
+	width:4px;
+	display:block;
+}
+
+/* Setting up different styles for each section color */
+
+a.blue{background:url(img/blue.png) repeat-x top left;color:#074384; border-radius: 5px;}
+a.blue span{ background:url(img/blue.png) repeat-x top right;}
+
+.plugin a{
+	display:block;
+	font-family:BPreplay,Arial,Helvetica,sans-serif;
+	font-size:18px;
+	height:28px;
+	overflow:hidden;
+	padding:5px 5px 0;
+	position:relative;
+	width:200px;
+}
+
+li.button a.green{background:url(img/green.png) repeat-x top left; color:#436800;}
+li.button a.green span{ background:url(img/green.png) repeat-x top right;}
+
+li.button a.orange{background:url(img/orange.png) repeat-x top left; color:#882e02;}
+li.button a.orange span{ background:url(img/orange.png) repeat-x top right;}
+
+li.button a.red{background:url(img/red.png) repeat-x top left; color:#641603;}
+li.button a.red span{ background:url(img/red.png) repeat-x top right;}
+
+/* The hover effects */
+
+li.button a:hover{ background-position:bottom left;}
+li.button a:hover span{ background-position:bottom right;}
+
+.dropdown{
+	/* The expandable lists */
+	display:none;
+	padding-top:5px;
+	width:100%;
+}
+
+.dropdown li{
+	/* Each element in the expandable list */
+	color:#CCCCCC;
+	margin:0 0;
+	padding:4px 18px;
+}
+
+
+/* The styles below are only necessary for the demo page */
+
+h1{
+	font-family:"Myriad Pro",Arial,Helvetica,sans-serif;
+	font-size:36px;
+	font-weight:normal;
+	margin-bottom:15px;
+}
+
+h2{
+	font-family:"Myriad Pro",Arial,Helvetica,sans-serif;
+	font-size:12px;
+	font-weight:normal;
+	padding-right:140px;
+	right:0;
+	text-align:right;
+	text-transform:uppercase;
+	top:15px;
+}
+
+.clear{
+	clear:both;
+}
+
+#main{
+	/* The main container */
+	margin:15px auto;
+	text-align:center;
+	position:absolute;
+	height:80%;
+	width:95%;
+}
+
+#menu{
+	position:absolute;
+	left:0;
+	width:20%;
+	height:100%;
+}
+
+#help{
+	position:absolute;
+	right:5%;
+	top:5%;
+	width:50%;
+	height:80%;
+	background: #fff;
+	color: #000;
+	text-align : left;
+	overflow: auto;
+	padding:20px 20px;
+	background:#ddd;
+	-moz-box-shadow: 10px 10px 5px #888;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+}
+
+a, a:visited {
+	text-decoration:none;
+	outline:none;
+}
+
+a:hover{
+}
+
+p{
+	/* The tut info on the bottom of the page */
+	padding:10px;
+	text-align:center;
+}

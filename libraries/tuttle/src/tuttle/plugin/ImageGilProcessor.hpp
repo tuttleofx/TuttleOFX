@@ -71,9 +71,12 @@ public:
 //		TUTTLE_COUT_VAR( "dst - fetchImage " << time );
 		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get() )
-			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
+			BOOST_THROW_EXCEPTION( exception::ImageNotReady()
+				<< exception::dev() + "Error on clip " + quotes(_clipDst->name()) );
 		if( _dst->getRowBytes() == 0 )
-			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+			BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
+				<< exception::dev() + "Error on clip " + quotes(_clipDst->name()) );
+		
 		//		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_dstPixelRod       = _clipDst->getPixelRod( args.time, args.renderScale );
 		_dstPixelRodSize.x = ( this->_dstPixelRod.x2 - this->_dstPixelRod.x1 );

@@ -62,20 +62,8 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-	filename->setLabel( kTuttlePluginFilenameLabel );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *filename );
-
-	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kTuttlePluginChannel );
-	componentsType->setLabel( kTuttlePluginChannelLabel );
-	componentsType->appendOption( kTuttlePluginChannelGray );
-	componentsType->appendOption( kTuttlePluginChannelRGB );
-	componentsType->appendOption( kTuttlePluginChannelRGBA );
-	componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	componentsType->setDefault( eTuttlePluginComponentsRGBA );
-
+	describeWriterParamsInContext( desc, context );
+	
 	OFX::ChoiceParamDescriptor* storageType = desc.defineChoiceParam( kParamStorageType );
 	storageType->setLabel( "Storage type" );
 	storageType->appendOption( kParamStorageScanLine );
@@ -85,15 +73,12 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	storageType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	storageType->setDefault( eParamStorageScanLine );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-	bitDepth->setLabel( kTuttlePluginBitDepthLabel );
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
 	bitDepth->appendOption( kTuttlePluginBitDepth16f );
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 	bitDepth->appendOption( kTuttlePluginBitDepth32f );
-	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( 2 );
-
-	describeWriterParamsInContext( desc, context );
 }
 
 /**

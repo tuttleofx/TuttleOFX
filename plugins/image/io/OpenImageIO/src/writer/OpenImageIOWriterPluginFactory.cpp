@@ -5,6 +5,12 @@
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/std/vector.hpp>
+
+#include <string>
+#include <vector>
+
 namespace tuttle {
 namespace plugin {
 namespace openImageIO {
@@ -20,50 +26,21 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 		    "OpenImageIO file writer" );
     desc.setPluginGrouping( "tuttle/image/io" );
 
-    std::vector<std::string> extension;
-    extension.push_back( "bmp" );
-    extension.push_back( "cin" );
-    extension.push_back( "dds" );
-    extension.push_back( "dpx" );
-    extension.push_back( "exr" );
-    extension.push_back( "fits" );
-    extension.push_back( "hdr" );
-    extension.push_back( "ico" );
-    extension.push_back( "j2k" );
-    extension.push_back( "j2c" );
-    extension.push_back( "jp2" );
-    extension.push_back( "jpeg" );
-    extension.push_back( "jpg" );
-    extension.push_back( "jpe" );
-    extension.push_back( "jfif" );
-    extension.push_back( "jfi" );
-    extension.push_back( "pbm" );
-    extension.push_back( "pgm" );
-    extension.push_back( "png" );
-    extension.push_back( "pnm" );
-    extension.push_back( "ppm" );
-    extension.push_back( "pic" );
-    extension.push_back( "rgbe" );
-    extension.push_back( "sgi" );
-    extension.push_back( "tga" );
-    extension.push_back( "tif" );
-    extension.push_back( "tiff" );
-    extension.push_back( "tpic" );
-    extension.push_back( "webp" );
-
-    std::string listOfExt;
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	listOfExt += extension.at(i);
-	listOfExt += ", ";
-    }
-    listOfExt.erase( listOfExt.size()-2, 2 );
+	using namespace boost::assign;
+    std::vector<std::string> supportedExtensions;
+	supportedExtensions += "bmp", "cin", "dds", "dpx", "exr", "fits", "hdr", "ico", 
+	"j2k", "j2c", "jp2", "jpeg", "jpg", "jpe", "jfif", "jfi", 
+	"pbm", "pgm", "png", "pnm", "ppm", "pic",
+	//"psd",
+	"rgbe", "sgi", "tga", "tif", "tiff", "tpic",
+	//"tx",
+	"webp";
 
     desc.setDescription(
-	"OpenImageIO Writer"
-	"\n\n"
-	"supported extensions: \n" +
-	listOfExt
+		"OpenImageIO Writer"
+		"\n\n"
+		"supported extensions: \n" +
+			boost::algorithm::join( supportedExtensions, ", " )
     );
 
     // add the supported contexts
@@ -76,10 +53,7 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // add supported extensions
-    for( unsigned int i=0; i< extension.size(); i++ )
-    {
-	desc.addSupportedExtension( extension.at(i) );
-    }
+	desc.addSupportedExtensions( supportedExtensions );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -110,20 +84,10 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Controls
-    OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-    filename->setLabel( kTuttlePluginFilenameLabel );
-    filename->setStringType( OFX::eStringTypeFilePath );
-    desc.addClipPreferencesSlaveParam( *filename );
+    describeWriterParamsInContext( desc, context );
 
-    OFX::ChoiceParamDescriptor* channel = desc.defineChoiceParam( kTuttlePluginChannel );
-    channel->setLabel( kTuttlePluginChannelLabel );
-    channel->appendOption( kTuttlePluginChannelGray );
-    channel->appendOption( kTuttlePluginChannelRGB );
-    channel->appendOption( kTuttlePluginChannelRGBA );
-    channel->setDefault( 2 );
-
-    OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
-    bitDepth->setLabel( kTuttlePluginBitDepthLabel );
+	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
+	bitDepth->resetOptions();
     bitDepth->appendOption( kTuttlePluginBitDepth8 );
     bitDepth->appendOption( kTuttlePluginBitDepth10 );
     bitDepth->appendOption( kTuttlePluginBitDepth12 );
@@ -168,8 +132,6 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 #else
     compression->setDefault( 0 );
 #endif
-
-    describeWriterParamsInContext( desc, context );
 }
 
 /**
