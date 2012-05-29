@@ -20,6 +20,7 @@ namespace tuttle
       namespace colorspace
       {
 
+        bool global_wasOCIOVarFund;
         /**
          * @brief Function called to describe the plugin main features.
          * @param[in, out]   desc     Effect descriptor
@@ -75,20 +76,12 @@ namespace tuttle
 
           // Controls
 
-
           OFX::StringParamDescriptor* filename = desc.defineStringParam(
               kTuttlePluginFilename);
           char* file = std::getenv("OCIO");
 
-          if(file == NULL){
-              BOOST_THROW_EXCEPTION(
-                                    exception::Unsupported() << exception::user() + "Tuttle.ocio.colorspace : an OCIO environnement variable must be set with a path to an OpenColorIO configuration file.\n ");
-          }
-
           filename->setEnabled(false);
-          filename->setDefault(file);
           filename->setLabel(kTuttlePluginFilenameLabel);
-          filename->setStringType(OFX::eStringTypeFilePath); // disable for test
 
           OFX::ChoiceParamDescriptor* inputSpace = desc.defineChoiceParam(
               kParamInputSpace);
@@ -98,6 +91,18 @@ namespace tuttle
               kParamOutputSpace);
           outputSpace->setLabel("Output Space");
 
+          if (file == NULL)
+            {
+              filename->setDefault(
+                  "WARNING : You must set an OCIO environnement variable");
+              inputSpace->setEnabled(false);
+              outputSpace->setEnabled(false);
+              global_wasOCIOVarFund = false;
+              return;
+            }
+          global_wasOCIOVarFund = true;
+          //filename->setStringType(OFX::eStringTypeFilePath);
+          filename->setDefault(file);
           //Add choices
           OCIO::ConstConfigRcPtr config = OCIO::Config::CreateFromFile(file);
           for (int i = 0; i < config->getNumColorSpaces(); i++)
@@ -119,7 +124,7 @@ namespace tuttle
         OCIOColorSpacePluginFactory::createInstance(OfxImageEffectHandle handle,
             OFX::EContext context)
         {
-          return new OCIOColorSpacePlugin(handle);
+          return new OCIOColorSpacePlugin(handle, global_wasOCIOVarFund);
         }
 
       }

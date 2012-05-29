@@ -29,7 +29,7 @@ namespace tuttle
         {
 
         public:
-          OCIOColorSpacePlugin(OfxImageEffectHandle handle);
+          OCIOColorSpacePlugin(OfxImageEffectHandle handle, bool wasOCIOVarFund);
 
         public:
           void
@@ -43,6 +43,8 @@ namespace tuttle
           OCIOColorSpaceProcessParams
           getProcessParams(
               const OfxPointD& renderScale = OFX::kNoRenderScale) const;
+        private:
+          const bool _wasOCIOVarFund;
         };
 
       }

@@ -22,16 +22,13 @@ namespace tuttle
 
         using namespace boost::gil;
 
-        OCIOColorSpacePlugin::OCIOColorSpacePlugin(OfxImageEffectHandle handle) :
-            ImageEffectGilPlugin(handle)
+        OCIOColorSpacePlugin::OCIOColorSpacePlugin(OfxImageEffectHandle handle,
+            bool wasOCIOVarFund) :
+            ImageEffectGilPlugin(handle), _wasOCIOVarFund(wasOCIOVarFund)
         {
           _paramFilename = fetchStringParam(kTuttlePluginFilename);
           _paramInputSpace = fetchChoiceParam(kParamInputSpace);
           _paramOutputSpace = fetchChoiceParam(kParamOutputSpace);
-          _paramInputSpace->appendOption("pouet");
-
-          TUTTLE_COUT(
-                            tuttle::common::kColorError << "------- Create Plugin -------"<< tuttle::common::kColorStd);
 
         }
 
@@ -42,6 +39,12 @@ namespace tuttle
         void
         OCIOColorSpacePlugin::render(const OFX::RenderArguments& args)
         {
+          if (!_wasOCIOVarFund)
+            {
+              BOOST_THROW_EXCEPTION(
+                  exception::Unsupported() << exception::user() + "Tuttle.ocio.colorspace : an OCIO environnement variable must be set with a path to an OpenColorIO configuration file.\n ");
+            }
+
           using namespace boost::gil;
           // instantiate the render code based on the pixel depth of the dst clip
           OFX::EBitDepth bitDepth = _clipDst->getPixelDepth();
@@ -128,7 +131,6 @@ namespace tuttle
           params._inputSpace = params._config->getColorSpaceNameByIndex(index);
           _paramOutputSpace->getValue(index);
           params._outputSpace = params._config->getColorSpaceNameByIndex(index);
-
 
           return params;
         }
