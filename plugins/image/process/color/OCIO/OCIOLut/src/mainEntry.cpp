@@ -3,7 +3,7 @@
 
 #include <tuttle/plugin/Plugin.hpp>
 
-#include "OCIOLut/OCIOLutPluginFactory.hpp"
+#include "OCIOLutPluginFactory.hpp"
 
 
 namespace OFX {

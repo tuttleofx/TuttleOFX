@@ -1,37 +1,9 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Lut Plugin
+# Build all plugins
 ###############################################################################
-import os ;
+path-constant BUILD : $(BUILD)/OCIO ;
 
-###############################################################################
-# Global project requirements
-###############################################################################
-project
-    : requirements	
-        <include>src
-    : build-dir $(BUILD)/OCIOLut
-    ;
-
-use-project	/opencolorio	: $(3RD_PARTY)/opencolorio ;
-
-###############################################################################
-# Dependencies
-###############################################################################
-
-###############################################################################
-# Product 
-###############################################################################
-plugin OCIOLut :
-	[ glob src/*.cpp ]
-	[ glob src/*/*.cpp ]
-	/boost/filesystem/<link>static
-	/boost/system/<link>static
-	/tuttleplugin/<link>static
-	/opencolorio/<link>static
-    ;
-
-###############################################################################
-# Automatic install
-###############################################################################
-auto_install OCIOLut : $(DIST) ;
-
+for local l in [ glob * ]
+{
+   build-project $(l) ;
+}
