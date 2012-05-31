@@ -298,8 +298,13 @@ bool sample( Sampler& sampler, const SrcView& src, const point2<F>& p, DstP& res
 		RESAMPLING_CORE_TYPE distancey = - frac.y - middlePosition + i ;
 		sampler( distancey, yWeights.at(i) );
 	}
-
-
+/*
+	for( int i=0; i<xWeights.size(); i++ )
+	{
+		std::cout << xWeights.at(i) << "\t" ;
+	}
+	std::cout << std::endl;
+	*/
 	// first process the middle point
 	// if it's mirrored, we need to copy the center point
 	if( (pTL.y < 0.0) || (pTL.y > (int) ( src.height( ) - 1.0 ) ) )
