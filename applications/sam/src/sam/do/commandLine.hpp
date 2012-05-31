@@ -74,8 +74,17 @@ void decomposeCommandLine( const int argc, char** const argv, std::vector<std::s
 		// Last node
 		// Is it a node or only flags?
 		const std::vector<std::string>& notNode = cl_commands.back();
-		if( notNode[0][0] == '-' )
+		if( notNode.size() == 0 )
 		{
+			// If the command line end with the split character "//",
+			// we detect an empty node... so ignore it.
+			// eg. "sam do reader foo.jpg // blur //"
+			cl_commands.erase( cl_commands.end()-1 );
+		}
+		else if( notNode[0][0] == '-' )
+		{
+			// if the last node is not a node but a list of options
+			// move content to command line options list.
 			std::copy( notNode.begin(), notNode.end(), std::back_inserter(cl_options) );
 			cl_commands.erase( cl_commands.end()-1 );
 		}
