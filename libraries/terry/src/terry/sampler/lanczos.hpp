@@ -46,26 +46,30 @@ struct lanczos_sampler{
 		_sharpen    ( sharpen )
 	{
 	}
-
+	
+	RESAMPLING_CORE_TYPE sinc( RESAMPLING_CORE_TYPE x )
+	{
+		if ( x > -std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon() &&
+		     x <  std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon() )
+		{
+			// Special case the discontinuity at the origin.
+			return 1.f;
+		}
+		RESAMPLING_CORE_TYPE xpi = x * TUTTLE_PI;
+		return sinf( xpi ) / ( xpi );
+	}
+	
 	template<typename Weight>
 	void operator()( const RESAMPLING_CORE_TYPE& distance, Weight& weight )
 	{
-		if (distance > -std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon() &&
-		    distance < std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon())
-		{
-			weight = 1.0f;  // Special case the discontinuity at the origin.
-			return;
-		}
-		RESAMPLING_CORE_TYPE xpi = distance * TUTTLE_PI;
-		weight =  ( sin( xpi) / xpi ) *  // sinc(x)
-			    sin( _sharpen * xpi / _windowSize ) / ( _sharpen * xpi / _windowSize );  // sinc(x/filter_size)
+		weight =  sinc( distance ) * sinc( _sharpen * distance / _windowSize );
 	}
 };
 
 struct lanczos3_sampler : public lanczos_sampler
 {
 	lanczos3_sampler() :
-		lanczos_sampler( 6.0, 1.0 )
+		lanczos_sampler( 3.0, 1.0 )
 	{
 	}
 };
@@ -73,7 +77,7 @@ struct lanczos3_sampler : public lanczos_sampler
 struct lanczos4_sampler : public lanczos_sampler
 {
 	lanczos4_sampler() :
-		lanczos_sampler( 8.0, 1.0 )
+		lanczos_sampler( 4.0, 1.0 )
 	{
 	}
 };
@@ -81,7 +85,7 @@ struct lanczos4_sampler : public lanczos_sampler
 struct lanczos6_sampler : public lanczos_sampler
 {
 	lanczos6_sampler() :
-		lanczos_sampler( 12.0, 1.0 )
+		lanczos_sampler( 6.0, 1.0 )
 	{
 	}
 };
@@ -89,7 +93,7 @@ struct lanczos6_sampler : public lanczos_sampler
 struct lanczos12_sampler : public lanczos_sampler
 {
 	lanczos12_sampler() :
-		lanczos_sampler( 24.0, 1.0 )
+		lanczos_sampler( 12.0, 1.0 )
 	{
 	}
 };
