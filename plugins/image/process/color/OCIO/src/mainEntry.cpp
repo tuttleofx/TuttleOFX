@@ -3,7 +3,8 @@
 
 #include <tuttle/plugin/Plugin.hpp>
 
-#include "OCIOLutPluginFactory.hpp"
+#include "OCIOLut/OCIOLutPluginFactory.hpp"
+#include "OCIOColorSpace/OCIOColorSpacePluginFactory.hpp"
 
 
 namespace OFX {
@@ -12,6 +13,7 @@ namespace Plugin {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
 	mAppendPluginFactory( ids, tuttle::plugin::ocio::lut::OCIOLutPluginFactory, "tuttle.ocio.lut" );
+	mAppendPluginFactory( ids, tuttle::plugin::ocio::colorspace::OCIOColorSpacePluginFactory, "tuttle.ocio.colorspace" );
 }
 
 }
