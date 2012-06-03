@@ -57,6 +57,7 @@ public:
 	
 private:
 	OFX::InstanceChangedArgs _changedArgs;
+	static int safeModulo(const int &cropValue, const int &rodValue);
 };
 
 template<class Pixel>
