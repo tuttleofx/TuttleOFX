@@ -18,8 +18,10 @@ static const bool kSupportTiles = false;
  */
 void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "%PLUGIN_LABEL%", "%PLUGIN_LABEL%",
-		            "%PLUGIN_LONG_LABEL%" );
+	desc.setLabels(
+		"%PLUGIN_LABEL%",
+		"%PLUGIN_LABEL%",
+		"%PLUGIN_LONG_LABEL%" );
 	desc.setPluginGrouping( "%PLUGIN_GROUP%" );
 
 	desc.setDescription( "Plugin under early development." );
