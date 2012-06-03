@@ -2,7 +2,7 @@
 #include "MergeProcess.hpp"
 #include "MergeDefinitions.hpp"
 
-#include "gil/toolbox/MergeFunctors.hpp"
+#include <terry/merge/MergeFunctors.hpp>
 
 #include <tuttle/plugin/numeric/rectOp.hpp>
 
@@ -191,6 +191,7 @@ template< class View >
 void MergePlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
+	using namespace terry;
 	typedef typename View::value_type Pixel;
 	EParamMerge merge = static_cast<EParamMerge>(_paramMerge->getValue());
 
@@ -424,7 +425,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 {
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::contains_color< typename View::value_type, boost::gil::alpha_t>::type has_alpha_t;
-	typedef typename boost::is_same<typename Functor<Pixel>::operating_mode_t, boost::gil::merge_per_channel_with_alpha>::type merge_need_alpha_t;
+	typedef typename boost::is_same<typename Functor<Pixel>::operating_mode_t, terry::merge_per_channel_with_alpha>::type merge_need_alpha_t;
 	typedef typename boost::mpl::if_<merge_need_alpha_t, has_alpha_t, boost::mpl::true_>::type render_condition_t;
 
 	render_if<View, Functor>( args, render_condition_t() );

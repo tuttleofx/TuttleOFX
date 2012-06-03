@@ -1,5 +1,5 @@
-#ifndef _BOOST_GIL_VIEWS_MERGING_HPP_
-#define _BOOST_GIL_VIEWS_MERGING_HPP_
+#ifndef _TERRY_VIEWS_MERGING_HPP_
+#define _TERRY_VIEWS_MERGING_HPP_
 
 #include "MergeAbstractFunctor.hpp"
 
@@ -7,8 +7,7 @@
 #include <boost/gil/typedefs.hpp>
 #include <boost/gil/utilities.hpp>
 
-namespace boost {
-namespace gil {
+namespace terry {
 
 namespace detail {
 template<class OPERATES>
@@ -60,7 +59,7 @@ struct merger<merge_per_channel>
  * @brief Merge two views by means of a given functor.
  **/
 template < class F, class View>
-void merge_pixels( const View& srcA, const View& srcB, View& dst, F fun )
+void merge_views( const View& srcA, const View& srcB, View& dst, F fun )
 {
 	detail::merger<typename F::operating_mode_t> merge_op;
 	// If merging functor needs alpha, check if destination contains alpha.
@@ -78,7 +77,6 @@ void merge_pixels( const View& srcA, const View& srcB, View& dst, F fun )
 	}
 }
 
-}
 }
 
 #endif

@@ -1,11 +1,10 @@
-#ifndef _BOOST_GIL_MERGEABSTRACTFUNCTOR_HPP_
-#define _BOOST_GIL_MERGEABSTRACTFUNCTOR_HPP_
+#ifndef _TERRY_MERGEABSTRACTFUNCTOR_HPP_
+#define _TERRY_MERGEABSTRACTFUNCTOR_HPP_
 
 #include <boost/gil/color_convert.hpp>
 #include <boost/gil/pixel.hpp>
 
-namespace boost {
-namespace gil {
+namespace terry {
 
 struct merge_per_channel {}; ///< standard per channel functor
 struct merge_per_channel_with_alpha {}; ///< standard per channel functor with the alpha values stored inside the functor
@@ -67,7 +66,6 @@ struct merge_functor<Pixel, merge_per_channel>
 	inline void operator()( const Channel& A, const Channel& B, Channel& d );
 };
 
-}
 }
 
 #endif

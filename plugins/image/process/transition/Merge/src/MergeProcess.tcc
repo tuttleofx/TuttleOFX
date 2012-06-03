@@ -1,7 +1,6 @@
-#include "gil/toolbox/ViewsMerging.hpp"
 #include "MergePlugin.hpp"
 #include "MergeDefinitions.hpp"
-#include "MergeProcess.hpp"
+#include <terry/merge/ViewsMerging.hpp>
 
 #include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -185,9 +184,7 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 						procIntersectSize.x,
 						procIntersectSize.y );
 
-	merge_pixels( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
-
-
+	merge_views( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
 }
 
 }

@@ -15,6 +15,7 @@ static const std::string kParamFunctionLabel = "Merging function";
 
 static const std::string kParamOffsetA       = "offsetA";
 static const std::string kParamOffsetB       = "offsetB";
+
 static const std::string kParamRod           = "rod";
 static const std::string kParamRodIntersect  = "intersection";
 static const std::string kParamRodUnion      = "union";
