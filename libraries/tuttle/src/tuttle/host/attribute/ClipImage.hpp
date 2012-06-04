@@ -56,11 +56,15 @@ public:
 			BOOST_THROW_EXCEPTION( exception::Logic()
 			    << exception::user( "You can't connect to an input Clip !" ) );
 		}
+		//TUTTLE_TCOUT( "== setConnectedClip: " );
+		//TUTTLE_TCOUT_VAR( getFullName() );
+		//TUTTLE_TCOUT_VAR( other.getFullName() );
+		
 		_connectedClip = &other;
 		setConnected();
 
 		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
-		getEditableProperties().setStringProperty( "TuttleIdentifier", getIdentifier() );
+		getEditableProperties().setStringProperty( "TuttleIdentifier", getClipIdentifier() );
 	}
 
 	void setUnconnected() { _connectedClip = NULL; setConnected( false ); }
@@ -77,7 +81,7 @@ public:
 		return _connectedClip->getFullName();
 	}
 
-	std::string getIdentifier() const
+	std::string getClipIdentifier() const
 	{
 		if( isOutput() || ! isConnected() )
 			return getFullName();

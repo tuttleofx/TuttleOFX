@@ -701,6 +701,27 @@ void OfxhImageEffectNode::endSequenceRenderAction( OfxTime   startFrame,
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
+OfxRectD OfxhImageEffectNode::computeClipRodUnionAtTimes( const attribute::OfxhClipImage& clip, const TimesSet& timesSet ) const
+{	
+	OfxRectD rod = { 0, 0, 0, 0 };
+	bool gotOne = false;
+	BOOST_FOREACH( const TimesSet::value_type& inTime, timesSet )
+	{
+		const OfxRectD localRod = clip.fetchRegionOfDefinition( inTime );
+		if( !gotOne )
+		{
+			rod = localRod;
+			gotOne = true;
+		}
+		else
+		{
+			rod = rectUnion( rod, localRod );
+		}
+	}
+	return rod;
+}
+
+
 /**
  * calculate the default rod for this effect instance
  */
@@ -709,108 +730,93 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 {
 	ClipTimesSetMap timesSetMap = getFramesNeeded( time ); /// @todo: do not recompute this here
 	
+//	TUTTLE_TCOUT( "calcDefaultRegionOfDefinition" );
+//	TUTTLE_TCOUT_VAR( _context );
 	OfxRectD rod = { 0, 0, 0, 0 };
-	// figure out the default contexts
-	if( _context == kOfxImageEffectContextGenerator ||
-	    _context == kOfxImageEffectContextReader )
+	try
 	{
-		// generator is the extent
-		rod.x1 = rod.y1 = 0;
-		getProjectExtent( rod.x2, rod.y2 );
-		const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectOutputClipName );
-		rod = clip.fetchRegionOfDefinition( time );
-		/// @todo tuttle: maybe RoD problems with Generator and Read here... to check !
-	}
-	else if( _context == kOfxImageEffectContextFilter ||
-		 _context == kOfxImageEffectContextPaint  ||
-		 _context == kOfxImageEffectContextWriter )
-	{
-		try
+		// figure out the default contexts
+		if( _context == kOfxImageEffectContextGenerator ||
+			_context == kOfxImageEffectContextReader )
+		{
+			// generator is the extent
+			rod.x1 = rod.y1 = 0;
+			getProjectExtent( rod.x2, rod.y2 );
+			const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectOutputClipName );
+			rod = clip.fetchRegionOfDefinition( time );
+			/// @todo tuttle: maybe RoD problems with Generator and Read here... to check !
+		}
+		else if( _context == kOfxImageEffectContextFilter ||
+			_context == kOfxImageEffectContextPaint  ||
+			_context == kOfxImageEffectContextWriter )
 		{
 			// filter and paint default to the input clip
 			const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
-			/// @todo tuttle: depending on framesNeeded !
-			rod = clip.fetchRegionOfDefinition( time );
+
+			// depending on framesNeeded
+			rod = computeClipRodUnionAtTimes( clip, timesSetMap[clip.getName()] );
 		}
-		catch( boost::exception& e )
-		{
-			if( ! boost::get_error_info<exception::dev>( e ) )
-				e << exception::dev() + "Error while computing the default ROD.";
-			e << exception::ofxContext( _context );
-			e << exception::pluginIdentifier( getPlugin().getIdentifier() );
-			throw;
-		}
-	}
-	else if( _context == kOfxImageEffectContextTransition )
-	{
-		try
+		else if( _context == kOfxImageEffectContextTransition )
 		{
 			// transition is the union of the two clips
 			const attribute::OfxhClipImage& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
 			const attribute::OfxhClipImage& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
-			/// @todo tuttle: depending on framesNeeded !
-			rod = clipFrom.fetchRegionOfDefinition( time );
-			rod = rectUnion( rod, clipTo.fetchRegionOfDefinition( time ) );
+
+			rod = computeClipRodUnionAtTimes( clipFrom, timesSetMap[clipFrom.getName()] );
+			rod = rectUnion( rod, computeClipRodUnionAtTimes( clipTo, timesSetMap[clipTo.getName()] ) );
 		}
-		catch( boost::exception& e )
+		else if( _context == kOfxImageEffectContextGeneral )
 		{
-			e << exception::ofxContext( _context );
-			throw;
-		}
-	}
-	else if( _context == kOfxImageEffectContextGeneral )
-	{
-		// general context is the union of all the non optional clips
-		bool gotOne = false;
-		BOOST_FOREACH( const ClipImageMap::value_type& clipPair, _clips )
-		{
-			attribute::OfxhClipImage* clip = clipPair.second;
-			if( ! clip->isOutput() && clip->isConnected() )
+			// general context is the union of all the non optional clips
+			bool gotOne = false;
+			BOOST_FOREACH( const ClipImageMap::value_type& clipPair, _clips )
 			{
-				// depending on framesNeeded !
-				const TimesSet& timesSet = timesSetMap[clip->getName()];
-				if( timesSet.size() == 0 )
-					continue; // the plugin don't use this input (is it allowed by the standard?)
-				BOOST_FOREACH( const TimesSet::value_type& inTime, timesSet )
+				attribute::OfxhClipImage* clip = clipPair.second;
+				if( ! clip->isOutput() && clip->isConnected() )
 				{
-					const OfxRectD localRod = clip->fetchRegionOfDefinition( inTime );
-					if( !gotOne )
+					// depending on framesNeeded
+					const TimesSet& timesSet = timesSetMap[clip->getName()];
+					if( timesSet.size() == 0 )
+						continue; // the plugin don't use this input (is it allowed by the standard?)
+					BOOST_FOREACH( const TimesSet::value_type& inTime, timesSet )
 					{
-						rod = localRod;
-						gotOne = true;
-					}
-					else
-					{
-						rod = rectUnion( rod, localRod );
+						const OfxRectD localRod = clip->fetchRegionOfDefinition( inTime );
+						if( !gotOne )
+						{
+							rod = localRod;
+							gotOne = true;
+						}
+						else
+						{
+							rod = rectUnion( rod, localRod );
+						}
 					}
 				}
 			}
-		}
 
-		if( !gotOne )
-		{
-			/// no non optionals? then be the extent
-			rod.x1 = rod.y1 = 0;
-			getProjectExtent( rod.x2, rod.y2 );
-		}
+			if( !gotOne )
+			{
+				// no non optionals? then be the extent
+				rod.x1 = rod.y1 = 0;
+				getProjectExtent( rod.x2, rod.y2 );
+			}
 
-	}
-	else if( _context == kOfxImageEffectContextRetimer )
-	{
-		// retimer
-		try
+		}
+		else if( _context == kOfxImageEffectContextRetimer )
 		{
-			/// @todo tuttle: depending on framesNeeded !
+			// retimer
 			const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
-			/*attribute::ParamDoubleInstance& param = */ dynamic_cast<const attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
-			rod = clip.fetchRegionOfDefinition( std::floor( time ) );
-			rod = rectUnion( rod, clip.fetchRegionOfDefinition( std::floor( time ) + 1 ) );
+			/*attribute::ParamDoubleInstance& retimerParam = */ dynamic_cast<const attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
+			rod = computeClipRodUnionAtTimes( clip, timesSetMap[clip.getName()] );
 		}
-		catch( boost::exception& e )
-		{
-			e << exception::ofxContext( _context );
-			throw;
-		}
+	}
+	catch( boost::exception& e )
+	{
+		if( ! boost::get_error_info<exception::dev>( e ) )
+			e << exception::dev() + "Error while computing the default ROD.";
+		e << exception::ofxContext( _context );
+		e << exception::pluginIdentifier( getPlugin().getIdentifier() );
+		throw;
 	}
 	return rod;
 }

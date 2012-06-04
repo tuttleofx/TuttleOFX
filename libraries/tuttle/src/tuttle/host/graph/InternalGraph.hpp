@@ -142,11 +142,22 @@ public:
 		return vd;
 	}
 
+	/**
+	 * @brief Remove in and out edges of a Vertex.
+	 */
+	void clearVertex( const vertex_descriptor& vd )
+	{
+		boost::clear_vertex( vd, _graph ); // remove in and out edges
+	}
+	
+	/**
+	 * @brief Remove a Vertex.
+	 */
 	void removeVertex( const vertex_descriptor& vd )
 	{
 		// clear_vertex is not called by boost graph itself.
 		// It may result in an undefined behaviour if not called before.
-		boost::clear_vertex( vd, _graph ); // remove in and out edges
+		clearVertex( vd );
 		boost::remove_vertex( vd, _graph ); // finally remove the vertex from the boost graph
 		rebuildVertexDescriptorMap();
 	}

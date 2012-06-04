@@ -264,6 +264,8 @@ protected:
 	/// The answer will depend on host, plugin and context
 	virtual bool canCurrentlyHandleMultipleClipDepths() const;
 
+	OfxRectD computeClipRodUnionAtTimes( const attribute::OfxhClipImage& clip, const TimesSet& timesSet ) const;
+	
 	/// calculate the default rod for this effect instance
 	virtual OfxRectD calcDefaultRegionOfDefinition( OfxTime   time,
 	                                                OfxPointD renderScale ) const;

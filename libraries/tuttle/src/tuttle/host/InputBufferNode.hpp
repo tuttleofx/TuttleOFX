@@ -371,7 +371,7 @@ public:
 	 * @param[in] vData
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	void preProcess_infos( const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const {}
+	void preProcess_infos( const graph::ProcessVertexAtTimeData& vData, const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const {}
 
 	/**
 	 * @brief Process this node. All inputs are compute.

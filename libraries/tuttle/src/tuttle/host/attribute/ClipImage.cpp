@@ -152,7 +152,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		bounds = fetchRegionOfDefinition( time );
 
 	//	TUTTLE_TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
-	boost::shared_ptr<Image> image = _memoryCache.get( getIdentifier(), time );
+	boost::shared_ptr<Image> image = _memoryCache.get( getClipIdentifier(), time );
 	//	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds...
 	/// if bounds != cache buffer bounds:

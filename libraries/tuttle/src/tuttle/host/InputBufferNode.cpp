@@ -165,7 +165,7 @@ void InputBufferNode::process( graph::ProcessVertexAtTimeData& vData )
 	attribute::Image* img = new attribute::Image( _outputClip, vData._apiImageEffect._renderRoI, vData._time );
 	img->setPoolData( new memory::LinkData( _rawBuffer, img->getMemlen() ) );
 	memory::CACHE_ELEMENT image( img );
-	memoryCache.put( _outputClip.getIdentifier(), vData._time, image );
+	memoryCache.put( _outputClip.getClipIdentifier(), vData._time, image );
 }
 
 

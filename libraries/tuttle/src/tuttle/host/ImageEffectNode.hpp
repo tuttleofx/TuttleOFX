@@ -127,7 +127,7 @@ public:
 	void preProcess2_reverse( graph::ProcessVertexAtTimeData& vData );
 	void preProcess3( graph::ProcessVertexAtTimeData& vData );
 	bool isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const;
-	void preProcess_infos( const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const;
+	void preProcess_infos( const graph::ProcessVertexAtTimeData& vData, const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const;
 	void process( graph::ProcessVertexAtTimeData& vData );
 	void postProcess( graph::ProcessVertexAtTimeData& vData );
 

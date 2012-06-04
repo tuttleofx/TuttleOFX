@@ -54,6 +54,8 @@ public:
 	memory::MemoryCache process( const ComputeOptions& options );
 
 private:
+	
+	void bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderGraphAtTime );
 	void relink();
 
 	InternalGraphImpl _graph;

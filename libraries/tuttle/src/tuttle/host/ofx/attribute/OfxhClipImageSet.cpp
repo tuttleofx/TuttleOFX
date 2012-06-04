@@ -118,7 +118,7 @@ OfxhClipImage& OfxhClipImageSet::getClip( const std::string& name, const bool ac
 		ss << "List of existing clips [";
 		BOOST_FOREACH( const ClipImageMap::value_type& c, _clips )
 		{
-			ss << "(\"" << c.first << "\":\"" << c.second->getIdentifier() << "\"), ";
+			ss << "(\"" << c.first << "\":\"" << c.second->getClipIdentifier() << "\"), ";
 		}
 		ss << "].\n";
 		BOOST_THROW_EXCEPTION( OfxhException( ss.str() ) );
