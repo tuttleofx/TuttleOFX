@@ -52,10 +52,24 @@ void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 
-	OFX::DoubleParamDescriptor* offset = desc.defineDoubleParam( kOffset );
-	offset->setLabel( "offset" );
-	offset->setDefault( 0.0 );
-	offset->setDisplayRange( -10, 10 );
+	switch( context )
+	{
+		case OFX::eContextRetimer:
+		{
+			OFX::DoubleParamDescriptor* retimerParam = desc.defineDoubleParam( kOfxImageEffectRetimerParamName );
+			retimerParam->setLabel( "Source Time" );
+			retimerParam->setDefault( 0.0 );
+			break;
+		}
+		default:
+		{
+			OFX::DoubleParamDescriptor* offset = desc.defineDoubleParam( kParamOffset );
+			offset->setLabel( "Offset" );
+			offset->setDefault( 0.0 );
+			offset->setDisplayRange( -10, 10 );
+			break;
+		}
+	}
 }
 
 /**

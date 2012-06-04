@@ -7,7 +7,7 @@ namespace tuttle {
 namespace plugin {
 namespace timeShift {
 
-static const std::string kOffset = "offset";
+static const std::string kParamOffset = "offset";
 
 }
 }

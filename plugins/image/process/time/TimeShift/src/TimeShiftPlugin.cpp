@@ -10,7 +10,16 @@ namespace timeShift {
 TimeShiftPlugin::TimeShiftPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-	_offset = fetchDoubleParam( kOffset );
+	switch( getContext() )
+	{
+		case OFX::eContextRetimer:
+			// @todo tuttle: do something else...
+			_offset = fetchDoubleParam( kOfxImageEffectRetimerParamName );
+			break;
+		default:
+			_offset = fetchDoubleParam( kParamOffset );
+			break;
+	}
 }
 
 TimeShiftProcessParams<TimeShiftPlugin::Scalar> TimeShiftPlugin::getProcessParams() const
