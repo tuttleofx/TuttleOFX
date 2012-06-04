@@ -239,7 +239,6 @@ int main( int argc, char** argv )
 					// disable color, disable directory printing and set relative path by default
 					script = true;
 				}
-
 				if( samdo_vm.count( kColorOptionLongName ) && !script )
 				{
 					enableColor = true;
@@ -257,32 +256,13 @@ int main( int argc, char** argv )
 				{
 					enableQuiet = true;
 				}
-
 				if( enableColor )
 				{
 					_color.enable();
 				}
 
-				////
-
-				std::string colorOpt = "--";
-				colorOpt += kColorOptionLongName;
-				std::string scriptOpt = "--";
-				scriptOpt += kScriptOptionLongName;
-
-				if( argc < 2 ||
-				 ( ( ( argc == 2 ) && ( strcmp( argv[1], colorOpt.c_str() ) == 0 ) ) ) ||
-				 ( ( ( argc == 2 ) && ( strcmp( argv[1], scriptOpt.c_str() ) == 0 ) ) ) ||
-				 ( ( ( argc == 3 ) && ( strcmp( argv[1], colorOpt.c_str() ) == 0 ) ) && ( strcmp( argv[2], scriptOpt.c_str() ) == 0 ) ) ||
-				 ( ( ( argc == 3 ) && ( strcmp( argv[2], colorOpt.c_str() ) == 0 ) ) && ( strcmp( argv[1], scriptOpt.c_str() ) == 0 ) ) )
-					// no argument or --color or --script
-				{
-					TUTTLE_COUT( _color._red << "sam do: missing operands." << _color._std << std::endl );
-					displayHelp( infoOptions, confOptions );
-					exit( -1 );
-				}
-				////
-
+				// Display options //
+				
 				if( samdo_vm.count( kHelpOptionLongName ) )
 				{
 					displayHelp( infoOptions, confOptions );
@@ -307,7 +287,20 @@ int main( int argc, char** argv )
 					exit( 0 );
 				}
 
-				const std::string logFilename = ( ttl::Core::instance().getPreferences().getTuttleHomePath() / "sam do.log" ).string();
+				// Missing operand check //
+				
+				if( cl_commands.size() == 0 )
+				{
+					// No display option and no sub-command to execute
+					TUTTLE_COUT( _color._red << "sam do: missing operand." << _color._std << std::endl );
+					displayHelp( infoOptions, confOptions );
+					exit( -1 );
+				}
+				
+				
+				// start to analyse and execute all sub-commands //
+				
+				const std::string logFilename = ( ttl::Core::instance().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();
 				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
 				std::cerr.rdbuf( logFile.rdbuf() ); // redirect output into the file
