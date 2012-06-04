@@ -67,7 +67,6 @@ struct ComputeOptions
 		setDefault();
 		_timeRanges.push_back( TimeRange( frame, frame ) );
 	}
-	explicit
 	ComputeOptions( const int begin, const int end, const int step = 1 )
 	{
 		setDefault();
@@ -82,12 +81,14 @@ struct ComputeOptions
 		_returnBuffers = false;
 		_verboseLevel = eVerboseLevelError;
 		_interactive = false;
+		_forceIdentityNodesProcess = false;
 	}
 	
 	std::list<TimeRange> _timeRanges;
 	
 	OfxPointD _renderScale;
 	bool _continueOnError;
+	bool _forceIdentityNodesProcess;
 	bool _returnBuffers;
 	EVerboseLevel _verboseLevel;
 	bool _interactive;

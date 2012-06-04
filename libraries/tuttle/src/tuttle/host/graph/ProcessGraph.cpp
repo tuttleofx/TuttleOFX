@@ -381,6 +381,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", renderGraphAtTime );
 		#endif
 
+				if( ! options._forceIdentityNodesProcess )
 				{
 					TUTTLE_COUT( "---------------------------------------- remove identity nodes" );
 					// The "Remove identity nodes" step need to be done after preprocess steps, because the RoI need to be computed.

@@ -167,6 +167,7 @@ int main( int argc, char** argv )
 	{
 
 		bool continueOnError = false;
+		bool forceIdentityNodesProcess = false;
 		bool enableColor = false;
 		bool enableVerbose = false;
 		bool enableQuiet = false;
@@ -202,11 +203,12 @@ int main( int argc, char** argv )
 				bpo::options_description confOptions;
 				confOptions.add_options()
 					( kContinueOnErrorOptionString, kContinueOnErrorOptionMessage )
+					( kForceIdentityNodesProcessOptionString, kForceIdentityNodesProcessOptionMessage )
 					( kRangeOptionString, bpo::value<std::string > (), kRangeOptionMessage )
 					( kRenderScaleOptionString, bpo::value<std::string > (), kRenderScaleOptionMessage )
 					( kVerboseOptionString, kVerboseOptionMessage )
 					( kQuietOptionString, kQuietOptionMessage )
-					( kNbCoresOptionString, bpo::value<std::size_t > (), kNbCoresOptionString );
+					( kNbCoresOptionString, bpo::value<std::size_t > (), kNbCoresOptionMessage );
 
 				// describe hidden options
 				bpo::options_description hidden;
@@ -287,7 +289,7 @@ int main( int argc, char** argv )
 					exit( 0 );
 				}
 
-				if( samdo_vm.count( kExpertOptionString ) )
+				if( samdo_vm.count( kExpertOptionLongName ) )
 				{
 					displayHelp( infoOptions, confOptions, hidden );
 					exit( 0 );
@@ -379,6 +381,7 @@ int main( int argc, char** argv )
 				}
 				std::cerr.rdbuf( strm_buffer ); // restore old output buffer
 				continueOnError = samdo_vm.count( kContinueOnErrorOptionLongName );
+				forceIdentityNodesProcess = samdo_vm.count( kForceIdentityNodesProcessOptionLongName );
 			}
 			catch( const boost::program_options::error& e )
 			{
@@ -897,8 +900,12 @@ int main( int argc, char** argv )
 				}
 			}
 		}
+		
+		if( nodes.size() == 0 )
+			// nothing to do!
+			exit( -1 );
 
-		// Execute the graph
+		// Setup compute options
 		ttl::ComputeOptions options;
 		if( range.size() >= 2 )
 		{
@@ -910,9 +917,11 @@ int main( int argc, char** argv )
 			options._renderScale.y = renderscale[1];
 		}
 		options._continueOnError = continueOnError;
+		options._forceIdentityNodesProcess = forceIdentityNodesProcess;
 		options._returnBuffers = false;
-		if( nodes.size() > 0 )
-			graph.compute( *nodes.back(), options );
+		
+		// Execute the graph
+		graph.compute( *nodes.back(), options );
 	}
 	catch( const tuttle::exception::Common& e )
 	{

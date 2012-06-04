@@ -152,6 +152,11 @@ static const char* const kContinueOnErrorOptionLongName = "continue-on-error";
 static const char* const kContinueOnErrorOptionString = kContinueOnErrorOptionLongName;
 static const char* const kContinueOnErrorOptionMessage = "continue on error";
 
+//--force-identity-nodes-process
+static const char* const kForceIdentityNodesProcessOptionLongName = "force-identity-nodes-process";
+static const char* const kForceIdentityNodesProcessOptionString = kForceIdentityNodesProcessOptionLongName;
+static const char* const kForceIdentityNodesProcessOptionMessage = "force identity nodes process (debug option for plugin developers only)";
+
 //--enable-color
 static const char* const kEnableColorOptionLongName = "enable-color";
 static const char* const kEnableColorOptionString = kEnableColorOptionLongName;
