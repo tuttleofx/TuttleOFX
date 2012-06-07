@@ -30,9 +30,6 @@ void ConstantProcess<View>::setup( const OFX::RenderArguments& args )
 	using namespace boost::gil;
 	ImageGilProcessor<View>::setup( args );
 
-	boost::function_requires<PixelLocatorConcept<Locator> >();
-	gil_function_requires < StepIteratorConcept<typename Locator::x_iterator> >();
-
 	// params
 	ConstantParams<View> params = getParams();
 
@@ -41,7 +38,7 @@ void ConstantProcess<View>::setup( const OFX::RenderArguments& args )
 	int yshift = boost::numeric_cast<int>( ( dims.x - dims.y ) * 0.5 );
 
 	// create a squared constant plane
-	ConstantVirtualView constant( Point( dims.x, dims.x ), Locator( Point( 0, 0 ), Point( 1, 1 ), ConstantFunctorT( params._color ) ) );
+	ConstantVirtualView constant( terry::generator::constantColorView<Pixel>( params._color ) );
 	// create a subview depending on the image ratio
 	_srcView = subimage_view<>( constant, 0, yshift, boost::numeric_cast<int>( dims.x ), boost::numeric_cast<int>( dims.y ) );
 }

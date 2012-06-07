@@ -37,6 +37,31 @@ struct ConstantFunctor
 
 };
 
+
+template <typename Pixel>
+struct ConstantColorViewFactory
+{
+	typedef terry::generator::ConstantFunctor<Pixel> ConstantFunctorT;
+	typedef typename ConstantFunctorT::point_t Point;
+	typedef boost::gil::virtual_2d_locator<ConstantFunctorT, false> Locator;
+	typedef boost::gil::image_view<Locator> ConstantVirtualView;
+	
+	static ConstantVirtualView getView( const Pixel& color )
+	{
+		boost::function_requires<PixelLocatorConcept<Locator> >();
+		gil_function_requires < StepIteratorConcept<typename Locator::x_iterator> >();
+
+		return ConstantVirtualView( Point( 1, 1 ), Locator( Point( 0, 0 ), Point( 1, 1 ), ConstantFunctorT( color ) ) );
+	}
+};
+
+template <typename Pixel>
+typename ConstantColorViewFactory<Pixel>::ConstantVirtualView constantColorView( const Pixel& color )
+{
+	return ConstantColorViewFactory<Pixel>::getView( color );
+}
+	
+
 }
 }
 
