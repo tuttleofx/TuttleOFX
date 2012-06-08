@@ -13,6 +13,7 @@ struct FadeProcessParams
 {
 	double _transition;
 	EParamRod _rod;
+	boost::gil::rgba32f_pixel_t _color;
 };
 
 /**
@@ -42,6 +43,7 @@ public:
 	
     OFX::DoubleParam* _paramTransition; ///< Source image clip
 	OFX::ChoiceParam* _paramRod;
+	OFX::RGBAParam* _paramColor;
 };
 
 }

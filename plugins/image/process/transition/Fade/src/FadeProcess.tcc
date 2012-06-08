@@ -2,6 +2,11 @@
 
 #include <terry/merge/ViewsMerging.hpp>
 #include <terry/numeric/init.hpp>
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/generator/constant.hpp>
+#include <terry/typedefs.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -23,6 +28,31 @@ struct FunctorFade
 	{
 		// (1-t)*A + t*B
 		dst = (Channel)( (1.0-_t)*A + _t*B );
+	}
+};
+
+template <typename Pixel>
+struct FunctorFadeToColor
+{
+	const Pixel _color;
+	const double _t;
+	const double _invt; // 1.0 - _t
+	
+	FunctorFadeToColor( const Pixel& color, const double t )
+	: _color( color )
+	, _t( t )
+	, _invt( 1.0-t )
+	{}
+	
+	GIL_FORCEINLINE
+	Pixel operator()( const Pixel& a ) const
+	{
+		using namespace terry::numeric;
+		// (1-t)*src + t*color
+		return pixel_plus_t<Pixel, Pixel, Pixel>()(
+			pixel_multiplies_scalar_t<Pixel, double>()( a, _invt ),
+			pixel_multiplies_scalar_t<Pixel, double>()( _color, _t )
+			);
 	}
 };
 
@@ -88,15 +118,20 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 {
 	using namespace terry;
 	using namespace terry::numeric;
+	
 	const OfxPointI procWindowSize = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
+	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+	const OfxRectI srcRodA = _srcPixelRodA; //translateRegion( _srcPixelRodA, _params._offsetA );
+	const OfxRectI srcRodB = _srcPixelRodB; //translateRegion( _srcPixelRodB, _params._offsetB );
 	
-	if( _plugin._clipSrcFrom->isConnected() && _plugin._clipSrcTo->isConnected() )
+	const bool fromConnected = _plugin._clipSrcFrom->isConnected();
+	const bool toConnected = _plugin._clipSrcTo->isConnected();
+	
+	if( fromConnected && toConnected )
 	{
-		const OfxRectI srcRodA = _srcPixelRodA; //translateRegion( _srcPixelRodA, _params._offsetA );
-		const OfxRectI srcRodB = _srcPixelRodB; //translateRegion( _srcPixelRodB, _params._offsetB );
 
 		const OfxRectI intersect = rectanglesIntersection( srcRodA, srcRodB );
 		const OfxRectI procIntersect = rectanglesIntersection( procWindowRoW, intersect );
@@ -124,7 +159,6 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 				{
 					// fill color
 					Pixel pixelZero; pixel_zeros_t<Pixel>()( pixelZero );
-					const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 					View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 															procWindowSize.x, procWindowSize.y );
 					fill_pixels( dst, pixelZero );
@@ -132,7 +166,6 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 				{
 					// fill with A
 					const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodA );
-					const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 
 					View src = subimage_view( this->_srcViewA, procWindowSrc.x1, procWindowSrc.y1,
 															procWindowSize.x, procWindowSize.y );
@@ -144,7 +177,6 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 				{
 					// fill with B
 					const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodB );
-					const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 
 					View src = subimage_view( this->_srcViewB, procWindowSrc.x1, procWindowSrc.y1,
 															procWindowSize.x, procWindowSize.y );
@@ -159,7 +191,6 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			{
 				// fill with A
 				const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodA );
-				const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 
 				View src = subimage_view( this->_srcViewA, procWindowSrc.x1, procWindowSrc.y1,
 														procWindowSize.x, procWindowSize.y );
@@ -173,7 +204,6 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			{
 				// fill with B
 				const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodB );
-				const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 
 				View src = subimage_view( this->_srcViewB, procWindowSrc.x1, procWindowSrc.y1,
 														procWindowSize.x, procWindowSize.y );
@@ -204,17 +234,43 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 
 		merge_views( srcViewA_inter, srcViewB_inter, dstView_inter, FunctorFade<Pixel>(_params._transition) );
 	}
-	else if( _plugin._clipSrcFrom->isConnected() )
+	else if( fromConnected || toConnected )
 	{
-		/// @todo
-	}
-	else if( _plugin._clipSrcTo->isConnected() )
-	{
-		/// @todo
+		// Only one input clip connected: fade to color
+		View connectedSrc = fromConnected ? this->_srcViewA : this->_srcViewB;
+		
+		const OfxRectI procWindowSrc = translateRegion( procWindowRoW, fromConnected ? srcRodA : srcRodB );
+
+		View src = subimage_view( connectedSrc, procWindowSrc.x1, procWindowSrc.y1,
+												procWindowSize.x, procWindowSize.y );
+		View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+												procWindowSize.x, procWindowSize.y );
+		
+		// Fade to color
+		Pixel c;
+		color_convert( _params._color, c );
+		
+		terry::algorithm::transform_pixels_progress(
+			src,
+			dst,
+			FunctorFadeToColor<Pixel>( c, _params._transition ),
+			this->getOfxProgress()
+			);
 	}
 	else
 	{
-		/// @todo
+		// No input clip, set a constant color
+		View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+												procWindowSize.x, procWindowSize.y );
+		
+		Pixel c;
+		color_convert( _params._color, c );
+		
+		terry::algorithm::transform_pixels_progress(
+			dst,
+			pixel_assigns_color_t<Pixel>( c ),
+			this->getOfxProgress()
+			);
 	}
 }
 

@@ -44,6 +44,28 @@ struct pixel_assigns_t
     }
 };
 
+template <typename PixelRef,  // models pixel concept
+          typename PixelRefR = PixelRef> // models pixel concept
+struct pixel_assigns_color_t
+{
+	PixelRefR _color;
+	
+	pixel_assigns_color_t( const PixelRef& color )
+	: _color( color )
+	{}
+	
+	GIL_FORCEINLINE
+    PixelRefR& operator()( PixelRefR& dst ) const
+	{
+        static_for_each(
+			_color, dst,
+			channel_assigns_t<typename channel_type<PixelRef>::type,
+							  typename channel_type<PixelRefR>::type>()
+			);
+        return dst;
+    }
+};
+
 template <typename Pixel,  // models pixel concept
           typename PixelR> // models pixel concept
 GIL_FORCEINLINE

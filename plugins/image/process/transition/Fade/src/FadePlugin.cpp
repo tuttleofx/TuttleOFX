@@ -18,6 +18,7 @@ FadePlugin::FadePlugin( OfxImageEffectHandle handle )
 	
 	_paramTransition = fetchDoubleParam( kOfxImageEffectTransitionParamName );
 	_paramRod = fetchChoiceParam( kParamRod );
+	_paramColor = fetchRGBAParam( kParamColor );
 }
 
 FadeProcessParams FadePlugin::getProcessParams() const
@@ -25,6 +26,7 @@ FadeProcessParams FadePlugin::getProcessParams() const
 	FadeProcessParams params;
 	params._transition = _paramTransition->getValue();
 	params._rod = static_cast<EParamRod>( _paramRod->getValue() );
+	params._color = ofxToGil( _paramColor->getValue() );
 	return params;
 }
 
