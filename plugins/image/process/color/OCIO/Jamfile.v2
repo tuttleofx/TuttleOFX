@@ -22,7 +22,7 @@ use-project	/opencolorio	: $(3RD_PARTY)/opencolorio ;
 # Product 
 ###############################################################################
 plugin OCIO :
-	[ glob src/**.cpp ]
+	[ glob-tree *.cpp ]
 	/boost/filesystem/<link>static
 	/boost/system/<link>static
 	/tuttleplugin/<link>static
