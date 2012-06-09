@@ -3,10 +3,15 @@
 #include <tuttle/plugin/global.hpp>
 
 #include <boost/cstdint.hpp>
+#include <cstdio>
 
 #if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT( 52, 40, 0 )
 // compatibility with previous versions of libavformat
 #define av_guess_format guess_format
+#endif
+
+#ifdef _MSC_VER
+#define snprintf _snprintf
 #endif
 
 
