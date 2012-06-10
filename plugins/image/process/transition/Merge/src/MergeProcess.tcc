@@ -63,6 +63,38 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	_params = _plugin.getProcessParams( args.renderScale );
 }
 
+template <typename View, typename Value> GIL_FORCEINLINE 
+void fill_pixels(const View& dstView, const Value& val, const OfxRectI& region )
+{
+	View dst = subimage_view( dstView,
+			region.x1, region.y1,
+			region.x2-region.x1, region.y2-region.y1 );
+	
+	fill_pixels( dst, val );
+}
+
+
+template <typename View> GIL_FORCEINLINE
+void copy_pixels( const View& src, const OfxRectI& srcRegion, const View& dst, const OfxRectI& dstRegion )
+{
+	const OfxPointI regionSize = {
+		srcRegion.x2 - srcRegion.x1,
+		srcRegion.y2 - srcRegion.y1
+	};
+	BOOST_ASSERT( regionSize.x == ( dstRegion.x2 - dstRegion.x1 ) );
+	BOOST_ASSERT( regionSize.y == ( dstRegion.y2 - dstRegion.y1 ) );
+	
+	View srcCrop = subimage_view( src,
+			srcRegion.x1, srcRegion.y1,
+			regionSize.x, regionSize.y );
+	View dstCrop = subimage_view( dst,
+			dstRegion.x1, dstRegion.y1,
+			regionSize.x, regionSize.y );
+
+	copy_pixels( srcCrop, dstCrop );
+	
+}
+
 template<class View>
 void fillAroundIntersection(
 		const View& viewA, const OfxRectI& srcAPixelRod,
@@ -74,70 +106,89 @@ void fillAroundIntersection(
 	using namespace terry;
 	using namespace terry::numeric;
 	using namespace boost::gil;
-	const OfxPointI procWindowSize = {
-		procWindowRoW.x2 - procWindowRoW.x1,
-		procWindowRoW.y2 - procWindowRoW.y1
-	};
 	/// @todo tuttle:
 	///  * fill only the good regions
 	///  * add color choice?
+	
+	////////////////////////////////////////////////////
+	// Schema of different cases:
+	// x: fill with a color
+	//
+	////////////////////////////////////////////////////
+	// _____________
+	// |            |xxxxxxxx
+	// |  copy A    |xxxxxxxx
+	// |      ______|_______
+	// |     |      |       |
+	// |     |Merge |       |
+	// |_____|______|       |
+	// xxxxxx|    copy B    |
+	// xxxxxx|______________|
+	// 
+	////////////////////////////////////////////////////
+	//       _______
+	// xxxxxx|      |xxxxxxxx
+	// xxxxxx|      |xxxxxxxx
+	// ______|______|_______
+	// |     |      |       |
+	// |     |Merge |       |
+	// |_____|______|_______|
+	// xxxxxx|      |xxxxxxxx
+	// xxxxxx|______|xxxxxxxx
+	//
+	////////////////////////////////////////////////////
+	// _____________
+	// |            |xxxxxxxx
+	// |  copy A    |xxxxxxxx
+	// |____________|xxxxxxxx
+	// xxxxxxxxxxxxxxxxxxxxxx
+	// xxxxxx________________
+	// xxxxxx|    copy B    |
+	// xxxxxx|______________|
+	//
+	////////////////////////////////////////////////////
+	// _____________________
+	// |                    |
+	// |_ _ _ ______ _ _ _ _|
+	// |     |      |       |
+	// |     |Merge |       |
+	// |_ _ _|______|_ _ _ _|
+	// |____________________|
+	// 
+	////////////////////////////////////////////////////
+	
+	if( ! rectangleContainsAnother( srcAPixelRod, srcBPixelRod ) )
 	{
 		// fill color
 		typedef typename View::value_type Pixel;
 		Pixel pixelZero; pixel_zeros_t<Pixel>()( pixelZero );
 		const OfxRectI procWindowOutput = translateRegion( procWindowRoW, dstPixelRod );
-		//TUTTLE_TCOUT_VAR( procWindowOutput );
-		View dst = subimage_view( dstView,
-				procWindowOutput.x1, procWindowOutput.y1,
-				procWindowSize.x, procWindowSize.y );
 		
-		fill_pixels( dst, pixelZero );
+		fill_pixels( dstView, pixelZero, procWindowOutput );
 	}
 	{
 		// fill with A
 		const OfxRectI intersectRegionA = rectanglesIntersection( procWindowRoW, srcAPixelRod );
-		const OfxPointI intersectRegionASize = {
-			intersectRegionA.x2 - intersectRegionA.x1,
-			intersectRegionA.y2 - intersectRegionA.y1
-		};
 		const OfxRectI procWindowSrcA = translateRegion( intersectRegionA, srcAPixelRod );
 		const OfxRectI procWindowOutputA = translateRegion( intersectRegionA, dstPixelRod );
 		//TUTTLE_TCOUT_VAR( intersectRegionA );
 		//TUTTLE_TCOUT_VAR( procWindowSrcA );
 		//TUTTLE_TCOUT_VAR( procWindowOutputA );
-
-		View src = subimage_view( viewA,
-				procWindowSrcA.x1, procWindowSrcA.y1,
-				intersectRegionASize.x, intersectRegionASize.y );
-		View dst = subimage_view( dstView,
-				procWindowOutputA.x1, procWindowOutputA.y1,
-				intersectRegionASize.x, intersectRegionASize.y );
 		
 		/// @todo tuttle: fill only the good regions
-		copy_pixels( src, dst );
+		copy_pixels( viewA, procWindowSrcA, dstView, procWindowOutputA );
 	}
 	{
 		// fill with B
 		const OfxRectI intersectRegionB = rectanglesIntersection( procWindowRoW, srcBPixelRod );
-		const OfxPointI intersectRegionBSize = {
-			intersectRegionB.x2 - intersectRegionB.x1,
-			intersectRegionB.y2 - intersectRegionB.y1
-		};
 		const OfxRectI procWindowSrcB = translateRegion( intersectRegionB, srcBPixelRod );
 		const OfxRectI procWindowOutputB = translateRegion( intersectRegionB, dstPixelRod );
 		//TUTTLE_TCOUT_VAR( intersectRegionB );
 		//TUTTLE_TCOUT_VAR( procWindowSrcB );
 		//TUTTLE_TCOUT_VAR( procWindowOutputB );
-
-		View src = subimage_view( viewB,
-				procWindowSrcB.x1, procWindowSrcB.y1,
-				intersectRegionBSize.x, intersectRegionBSize.y );
-		View dst = subimage_view( dstView,
-				procWindowOutputB.x1, procWindowOutputB.y1,
-				intersectRegionBSize.x, intersectRegionBSize.y );
 		
 		/// @todo tuttle: fill only the good regions
-		copy_pixels( src, dst );
+		copy_pixels( viewB, procWindowSrcB, dstView, procWindowOutputB );
 	}
 }
 
@@ -149,23 +200,12 @@ void fillAroundIntersection(
 		const OfxRectI& procWindowRoW
 	)
 {
-	const OfxPointI procWindowSize = {
-		procWindowRoW.x2 - procWindowRoW.x1,
-		procWindowRoW.y2 - procWindowRoW.y1
-	};
 	// fill with A
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcAPixelRod );
 	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, dstPixelRod );
 
-	View src = subimage_view( viewA,
-				procWindowSrc.x1, procWindowSrc.y1,
-				procWindowSize.x, procWindowSize.y );
-	View dst = subimage_view( dstView,
-				procWindowOutput.x1, procWindowOutput.y1,
-				procWindowSize.x, procWindowSize.y );
-	
 	/// @todo tuttle: fill only the good regions
-	copy_pixels( src, dst );
+	copy_pixels( viewA, procWindowSrc, dstView, procWindowOutput );
 }
 
 /**

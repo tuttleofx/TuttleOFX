@@ -157,6 +157,30 @@ inline R rectanglesIntersection( const R& a, const R& b )
 	return res;
 }
 
+template<class R>
+inline bool rectanglesIntersect( const R& a, const R& b )
+{
+	if( a.x2 > b.x1 | b.x2 > a.x1 )
+		return false;
+	if( a.y2 > b.y1 | b.y2 > a.y1 )
+		return false;
+	return true;
+}
+
+template<class R>
+inline bool rectangleAContainsB( const R& a, const R& b )
+{
+	return
+		b.x1 >= a.x1 && b.x2 <= a.x2 &&
+		b.y1 >= a.y1 && b.y2 <= a.y2;
+}
+
+template<class R>
+inline bool rectangleContainsAnother( const R& a, const R& b )
+{
+	return rectangleAContainsB( a, b ) || rectangleAContainsB( b, a );
+}
+
 template<class R, class V>
 inline R rectangleGrow( const R& rect, const V marge )
 {
