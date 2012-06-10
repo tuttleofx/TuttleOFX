@@ -55,7 +55,7 @@ void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& pr
 				   procWindowSize.x,
 				   procWindowSize.y );
 
-	copy_and_convert_pixels( terry::clamp_view(src), dst );
+	copy_and_convert_pixels( terry::clamp_view(src), dst ); /// @todo tuttle: the clamp should be directly done by the copy_and_convert_pixels if we need one.
 }
 
 }
