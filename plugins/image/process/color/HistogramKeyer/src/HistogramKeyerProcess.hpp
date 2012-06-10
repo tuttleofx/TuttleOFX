@@ -14,7 +14,7 @@ namespace histogramKeyer {
  */
     
 /**
- *Functor which compute alpha for each pixel
+ * Functor which compute alpha for each pixel
  */
 struct Compute_alpha_pixel
 { 
@@ -28,7 +28,7 @@ struct Compute_alpha_pixel
 
         rgb32f_pixel_t convert_to_rgb;
         color_convert( p, convert_to_rgb ); // first step : p to rgb_pixel
-        terry::default_clamp_converter<rgb32f_pixel_t>(0, 1)( convert_to_rgb, convert_to_rgb );
+        terry::clamp_converter<rgb32f_pixel_t>()( convert_to_rgb, convert_to_rgb );
         hsl32f_pixel_t hsl_pix;
         color_convert(convert_to_rgb,hsl_pix ); // second step : rgb_pixel to hsl_pixel
         

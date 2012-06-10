@@ -18,6 +18,18 @@ struct channel_base_type<boost::gil::scoped_channel_value<ChannelValue, MinV, Ma
 	typedef ChannelValue type;
 };
 
+template <typename ChannelValue>
+struct is_scoped_channel
+{
+	typedef boost::mpl::false_ type;
+};
+
+template <typename ChannelValue, typename MinV, typename MaxV>
+struct is_scoped_channel<boost::gil::scoped_channel_value<ChannelValue, MinV, MaxV> >
+{
+	typedef boost::mpl::true_ type;
+};
+
 
 
 template< class Pixel, class Channel, class HasChannel = typename boost::gil::contains_color<Pixel,Channel>::type >
