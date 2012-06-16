@@ -35,8 +35,9 @@ public:
 
 protected:
 	ConstantPlugin&     _plugin;        ///< Rendering plugin
-	ConstantVirtualView _srcView;       ///< Source view
-
+	
+	ConstantParams<View> _params;
+	
 public:
 	ConstantProcess( ConstantPlugin& instance );
 

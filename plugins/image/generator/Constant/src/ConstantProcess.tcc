@@ -1,6 +1,8 @@
 #include "ConstantProcess.hpp"
 
 #include <tuttle/plugin/ofxToGil/point.hpp>
+#include <terry/algorithm/transform_pixels_progress.hpp>
+#include <terry/numeric/assign.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
 
@@ -27,20 +29,10 @@ ConstantParams<View> ConstantProcess<View>::getParams()
 template<class View>
 void ConstantProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
 	ImageGilProcessor<View>::setup( args );
 
 	// params
-	ConstantParams<View> params = getParams();
-
-	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
-	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
-	int yshift = boost::numeric_cast<int>( ( dims.x - dims.y ) * 0.5 );
-
-	// create a squared constant plane
-	ConstantVirtualView constant( terry::generator::constantColorView<Pixel>( params._color ) );
-	// create a subview depending on the image ratio
-	_srcView = subimage_view<>( constant, 0, yshift, boost::numeric_cast<int>( dims.x ), boost::numeric_cast<int>( dims.y ) );
+	_params = getParams();
 }
 
 /**
@@ -51,26 +43,20 @@ template<class View>
 void ConstantProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	const OfxPointI procWindowSize = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1 };
 
-	for( int y = procWindowOutput.y1;
-	     y < procWindowOutput.y2;
-	     ++y )
-	{
-		typename ConstantVirtualView::x_iterator src_it     = this->_srcView.x_at( procWindowOutput.x1, y );
-		typename View::x_iterator dst_it                    = this->_dstView.x_at( procWindowOutput.x1, y );
-		for( int x = procWindowOutput.x1;
-		     x < procWindowOutput.x2;
-		     ++x, ++src_it, ++dst_it )
-		{
-			*dst_it = *src_it;
-		}
-		if( this->progressForward( procWindowSize.x ) )
-			return;
-	}
+	View dst = subimage_view( this->_dstView,
+			procWindowOutput.x1, procWindowOutput.y1,
+			procWindowSize.x, procWindowSize.y );	
+
+	terry::algorithm::transform_pixels_progress(
+		dst,
+		terry::numeric::pixel_assigns_color_t<Pixel>( _params._color ),
+		this->getOfxProgress()
+		);
 }
 
 }
