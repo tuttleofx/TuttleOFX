@@ -33,7 +33,7 @@ int main( int argc, char** argv )
 		Graph g;
 		//		Graph::Node& read1   = g.createNode( "tuttle.ffmpegreader" );
 		Graph::Node& read1    = g.createNode( "tuttle.pngreader" );
-		Graph::Node& read2    = g.createNode( "tuttle.dpxreader" );
+		Graph::Node& read2    = g.createNode( "tuttle.oiioreader" );
 		Graph::Node& read3    = g.createNode( "tuttle.exrreader" );
 		Graph::Node& bitdepth = g.createNode( "tuttle.bitdepth" );
 		Graph::Node& invert1  = g.createNode( "tuttle.invert" );
@@ -67,15 +67,17 @@ int main( int argc, char** argv )
 		g.connect( invert1, invert4 );
 
 		g.connect( invert1, bitdepth1 );
-		g.connect( bitdepth1, merge1.getAttribute( "SourceA" ) );
-		g.connect( read3, merge1.getAttribute( "SourceB" ) );
+		g.connect( bitdepth1, merge1.getAttribute( "A" ) );
+		g.connect( read3, merge1.getAttribute( "B" ) );
 
 		TUTTLE_COUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( merge1.getName() );
 		outputs.push_back( invert1.getName() );
 		
-		memory::MemoryCache values = g.compute( outputs );
+		ComputeOptions options;
+		options._returnBuffers = true;
+		memory::MemoryCache values = g.compute( outputs, options );
 		TUTTLE_COUT( "__________________________________________________5" );
 		TUTTLE_COUT_VAR( invert1.getName() );
 		memory::CACHE_ELEMENT img = values.get( invert1.getName(), 0 );
