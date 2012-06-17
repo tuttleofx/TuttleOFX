@@ -289,7 +289,11 @@ int main( int argc, char** argv )
 
 				// Missing operand check //
 				
-				if( cl_commands.size() == 0 )
+				// If it's not the last display option
+				// and if there is no command argument
+				// an argument is missing.
+				if( !( samdo_vm.count( kNodesOptionLongName ) || samdo_vm.count( kNodesListOptionLongName ) ) &&
+				    cl_commands.size() == 0 )
 				{
 					// No display option and no sub-command to execute
 					TUTTLE_COUT( _color._red << "sam do: missing operand." << _color._std << std::endl );
