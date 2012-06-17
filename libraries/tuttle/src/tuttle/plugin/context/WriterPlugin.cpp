@@ -83,16 +83,13 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 {
 	_oneRender = false;
 
-	OfxPointI size = _clipSrc->getPixelRodSize( args.time );
+	TUTTLE_TCOUT( "        --> " << getAbsoluteFilenameAt( args.time ) );
 
-	int pixelSize = 0;
-
-	std::string filename = getAbsoluteFilenameAt( args.time );
-	std::cout << "        --> " << filename;
-
-	OFX::EBitDepth eOfxBitDepth = _clipSrc->getPixelDepth( );
-	OFX::EPixelComponent components = _clipDst->getPixelComponents( );
-
+	const OFX::EBitDepth eOfxBitDepth = _clipDst->getPixelDepth( );
+	const OFX::EPixelComponent components = _clipDst->getPixelComponents( );
+	
+	int pixelBytes = 0;
+	
 	switch( eOfxBitDepth )
 	{
 		case OFX::eBitDepthCustom:
@@ -100,31 +97,34 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch( )
 								 << exception::user( "Writer: Unable to compute custom or non bit depth" ) );
 			break;
-		case OFX::eBitDepthUByte: pixelSize = 1;
+		case OFX::eBitDepthUByte: pixelBytes = 1;
 			break;
-		case OFX::eBitDepthUShort: pixelSize = 2;
+		case OFX::eBitDepthUShort: pixelBytes = 2;
 			break;
-		case OFX::eBitDepthFloat: pixelSize = 4;
+		case OFX::eBitDepthFloat: pixelBytes = 4;
 			break;
 	}
-
+	
 	switch( components )
 	{
 		case OFX::ePixelComponentAlpha: break; // pixelSize * 1
-		case OFX::ePixelComponentRGB: pixelSize *= 3;
+		case OFX::ePixelComponentRGB: pixelBytes *= 3;
 			break;
-		case OFX::ePixelComponentRGBA: pixelSize *= 4;
+		case OFX::ePixelComponentRGBA: pixelBytes *= 4;
 			break;
 		default: break;
 	}
 
 	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
 	boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
-	const std::size_t rowBytesToCopy = size.x * pixelSize;
-	for( int y = 0; y < size.y; ++y )
+	
+	const OfxRectI rod = _clipDst->getPixelRod( args.time, args.renderScale );
+	const OfxPointI rodSize = _clipDst->getPixelRodSize( args.time, args.renderScale );
+	const std::size_t rowBytesToCopy = rodSize.x * pixelBytes;
+	for( int y = rod.y1; y < rod.y2; ++y )
 	{
-		void* dataSrcPtr = src->getPixelAddress( 0, y );
-		void* dataDstPtr = dst->getPixelAddress( 0, y );
+		void* dataSrcPtr = src->getPixelAddress( rod.x1, y );
+		void* dataDstPtr = dst->getPixelAddress( rod.x1, y );
 		memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
 	}
 }
