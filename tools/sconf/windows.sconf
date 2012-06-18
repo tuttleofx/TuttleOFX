@@ -1,18 +1,16 @@
 #check_libs= False
 
-#dir_boost = '$PROGRAMFILES/boost/boost_1_47'
-dir_boost = '#3rdParty/boost_1_47_0'
+dir_boost = '$PROGRAMFILES/boost/boost_1_47'
 incdir_boost = dir_boost
-libdir_boost = join(dir_boost,'stage/lib')
+libdir_boost = join(dir_boost,'lib')
 
-boost_postfix = '-vc100-mt-1_47'
-boost_prefix = 'libboost_'
-lib_boost_system = boost_prefix+'system'+boost_postfix
-lib_boost_filesystem = boost_prefix+'filesystem'+boost_postfix
-lib_boost_regex = boost_prefix+'regex'+boost_postfix
-lib_boost_program_options = boost_prefix+'program_options'+boost_postfix
-lib_boost_thread = boost_prefix+'thread'+boost_postfix
-lib_boost_serialization = boost_prefix+'serialization'+boost_postfix
+lib_boost_system = ''
+lib_boost_filesystem = ''
+lib_boost_regex = ''
+lib_boost_program_options = ''
+lib_boost_thread = ''
+lib_boost_serialization = ''
+
 
 gnuwin = '$PROGRAMFILES/GnuWin32'
 
@@ -27,15 +25,39 @@ lib_png = 'libpng'
 dir_png  = gnuwin
 dir_jpeg = gnuwin
 dir_tiff = gnuwin
+dir_bz2 = gnuwin
+lib_bz2 = 'bzip2'
+
+dir_ilmbase = 'C:\Program Files\ilmbase-1.0.1'
+incdir_ilmbase = dir_ilmbase
+libdir_ilmbase = dir_ilmbase
+dir_openexr = 'C:\Program Files\openexr-1.6.1'
+incdir_openexr = dir_openexr
+libdir_openexr = dir_openexr
+
 
 dir_glew = '$PROGRAMFILES/glew-1.7.0'
 
 lib_pthread = ['pthreadVC2']
 dir_pthread = '$PROGRAMFILES/pthread/Pre-built.2'
 
-incdir_openjpeg = libdir_openjpeg = '$PROGRAMFILES/openjpeg_v1_4_win32'
+dir_imagemagick = '$PROGRAMFILES/ImageMagick-6.7.6-Q16'
+lib_imagemagick = ['CORE_RL_magick_']
 
-dir_python = 'C:/Python27'
+dir_openjpeg = '$PROGRAMFILES/OpenJPEG 1.5'
+incdir_openjpeg = join(dir_openjpeg, 'include/openjpeg-1.5')
+
+lib_python = 'Python27'
+dir_python = 'C:/usr/Python27'
 libdir_python = os.path.join( dir_python, 'libs')
 
+dir_qt4 = 'C:/QtSDK/Desktop/Qt/4.8.1/msvc2010'
+
+dir_ffmpeg = '$PROGRAMFILES/ffmpeg-win32-dev'
+incdir_ffmpeg = [
+	'$PROGRAMFILES/msinttypes-r26',
+	join(dir_ffmpeg, 'include'),
+	]
+
+dir_freeglut = '$PROGRAMFILES/freeglut'
 
