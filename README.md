@@ -79,9 +79,13 @@ OpenFX plugin standard.
 
 Contact
 -------
-Public mailing-list
+Developers mailing-list (public)
 > [tuttleofx-dev@googlegroups.com](mailto:tuttleofx-dev@googlegroups.com)  
 > [http://groups.google.com/group/tuttleofx-dev](http://groups.google.com/group/tuttleofx-dev)
+
+Users mailing-list (public)
+> [tuttleofx-user@googlegroups.com](mailto:tuttleofx-user@googlegroups.com)  
+> [http://groups.google.com/group/tuttleofx-user](http://groups.google.com/group/tuttleofx-user)
 
 Contact the team in private
 > [tuttleofx-team@googlegroups.com](mailto:tuttleofx-team@googlegroups.com)
