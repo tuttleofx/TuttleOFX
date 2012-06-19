@@ -62,7 +62,11 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	AVCodec* c = av_codec_next( NULL );
 	while( c )
 	{
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT( 53, 34, 0 )
+		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode2 )
+#else
 		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode )
+#endif
 		{
 			if( c->long_name )
 			{
