@@ -82,6 +82,7 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
  */
 void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
+	_writer.filename( getAbsoluteFilenameAt( args.time ) );
 	WriterPlugin::render( args );
 
 	doGilRender<FFMpegWriterProcess>( *this, args );
