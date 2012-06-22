@@ -196,8 +196,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 	_sws_context = sws_getCachedContext( _sws_context, in_width, in_height, in_pixelFormat, width(), height(), _out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
 
-	std::cout << "ffmpegWriter: input format: " << pixelFormat_toString( in_pixelFormat ) << std::endl;
-	std::cout << "ffmpegWriter: output format: " << pixelFormat_toString( _out_pixelFormat ) << std::endl;
+	std::cout << "ffmpegWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) << std::endl;
+	std::cout << "ffmpegWriter: output format: " << av_get_pix_fmt_name( _out_pixelFormat ) << std::endl;
 
 	if( !_sws_context )
 	{
