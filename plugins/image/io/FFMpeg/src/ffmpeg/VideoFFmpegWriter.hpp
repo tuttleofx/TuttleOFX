@@ -20,7 +20,6 @@ private:
 
 public:
 	explicit VideoFFmpegWriter();
-	~VideoFFmpegWriter();
 
 	bool movie() const
 	{
@@ -171,7 +170,6 @@ public:
 	}
 
 private:
-//	AVCodecContext*                _avctxOptions[AVMEDIA_TYPE_NB];
 	AVFormatContext*               _avformatOptions;
 	struct SwsContext*             _sws_context;         ///< contexte de transformation swscale
 	AVStream*                      _stream;
