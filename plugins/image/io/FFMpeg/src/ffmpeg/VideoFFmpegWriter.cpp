@@ -16,9 +16,9 @@
 
 
 VideoFFmpegWriter::VideoFFmpegWriter()
-	: _avformatOptions   ( 0 )
+	: _avformatOptions   ( NULL )
 	, _sws_context       ( NULL )
-	, _stream            ( 0 )
+	, _stream            ( NULL )
 	, _error             ( IGNORE_FINISH )
 	, _filename          ( "" )
 	, _width             ( 0 )
