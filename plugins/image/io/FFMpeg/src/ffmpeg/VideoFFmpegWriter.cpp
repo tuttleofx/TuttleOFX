@@ -19,6 +19,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	: _avformatOptions   ( NULL )
 	, _sws_context       ( NULL )
 	, _stream            ( NULL )
+	, _codec             ( NULL )
+	, _ofmt              ( NULL )
 	, _error             ( IGNORE_FINISH )
 	, _filename          ( "" )
 	, _width             ( 0 )
@@ -79,12 +81,11 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 {
 	_error = IGNORE_FINISH;
 
-	AVOutputFormat* fmt = 0;
-	fmt = av_guess_format( _formatName.c_str(), NULL, NULL );
-	if( !fmt )
+	_ofmt = av_guess_format( _formatName.c_str(), NULL, NULL );
+	if( !_ofmt )
 	{
-		fmt = av_guess_format( NULL, filename().c_str(), NULL );
-		if( !fmt )
+		_ofmt = av_guess_format( NULL, filename().c_str(), NULL );
+		if( !_ofmt )
 		{
 			std::cerr << "ffmpegWriter: could not deduce output format from file extension." << std::endl;
 			return false;
@@ -96,12 +97,12 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		_avformatOptions = avformat_alloc_context();
 	}
 
-	_avformatOptions->oformat = fmt;
+	_avformatOptions->oformat = _ofmt;
 	snprintf( _avformatOptions->filename, sizeof( _avformatOptions->filename ), "%s", filename().c_str() );
 
 	if( !_stream )
 	{
-		CodecID codecId    = fmt->video_codec;
+		CodecID codecId    = _ofmt->video_codec;
 		AVCodec* userCodec = avcodec_find_encoder_by_name( _codecName.c_str() );
 		if( userCodec )
 			codecId = userCodec->id;
@@ -161,7 +162,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			return false;
 		}
 
-		if( !( fmt->flags & AVFMT_NOFILE ) )
+		if( !( _ofmt->flags & AVFMT_NOFILE ) )
 		{
 			if( avio_open( &_avformatOptions->pb, filename().c_str(), AVIO_FLAG_WRITE ) < 0 )
 			{

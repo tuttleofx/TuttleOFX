@@ -173,6 +173,8 @@ private:
 	AVFormatContext*               _avformatOptions;
 	struct SwsContext*             _sws_context;         ///< contexte de transformation swscale
 	AVStream*                      _stream;
+	AVCodec*                       _codec;
+        AVOutputFormat*                _ofmt;
 	std::vector<std::string>       _formatsLongNames;
 	std::vector<std::string>       _formatsShortNames;
 	std::vector<std::string>       _codecsLongNames;
