@@ -28,8 +28,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	, _aspectRatio       ( 1 )
 	, _out_pixelFormat   ( PIX_FMT_YUV420P )
 	, _fps               ( 25.0f )
-	, _formatName        ( "default" )
-	, _codecName         ( "default" )
+	, _formatName        ( "" )
+	, _codecName         ( "" )
 	, _bitRate           ( 400000 )
 	, _bitRateTolerance  ( 4000 * 10000 )
 	, _gopSize           ( 12 )
@@ -40,8 +40,6 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	av_log_set_level( AV_LOG_WARNING );
 	av_register_all();
 
-	_formatsLongNames.push_back( std::string( "default" ) );
-	_formatsShortNames.push_back( std::string(  "default" ) );
 	AVOutputFormat* fmt = av_oformat_next( NULL );
 	while( fmt )
 	{
@@ -56,8 +54,6 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 		fmt = av_oformat_next( fmt );
 	}
 
-	_codecsLongNames.push_back( std::string( "default" ) );
-	_codecsShortNames.push_back( std::string( "default" ) );
 	AVCodec* c = av_codec_next( NULL );
 	while( c )
 	{
