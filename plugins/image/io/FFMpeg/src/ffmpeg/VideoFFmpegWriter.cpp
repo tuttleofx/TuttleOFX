@@ -92,20 +92,22 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 	if( !_stream )
 	{
-		CodecID codecId    = _ofmt->video_codec;
-		AVCodec* userCodec = avcodec_find_encoder_by_name( _codecName.c_str() );
-		if( userCodec )
-			codecId = userCodec->id;
+		_codec = avcodec_find_encoder_by_name( _codecName.c_str() );
+		if (!_codec)
+		{
+			std::cerr << "ffmpegWriter: codec not found" << std::endl;
+			return false;
+		}
+		std::cerr << "ffmpegWriter: " << std::string(_codec->name) << " codec selected" << std::endl;
 
-		_stream = avformat_new_stream( _avformatOptions, userCodec );
+		_stream = avformat_new_stream( _avformatOptions, _codec );
 		if( !_stream )
 		{
 			std::cout << "ffmpegWriter: out of memory." << std::endl;
 			return false;
 		}
+		avcodec_get_context_defaults3(_stream->codec, _codec);
 
-		_stream->codec->codec_id           = codecId;
-		_stream->codec->codec_type         = AVMEDIA_TYPE_VIDEO;
 		_stream->codec->bit_rate           = _bitRate;
 		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = width();
@@ -137,15 +139,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 		av_dump_format( _avformatOptions, 0, filename().c_str(), 1 );
 
-		AVCodec* videoCodec = avcodec_find_encoder( codecId );
-		if( !videoCodec )
-		{
-			std::cout << "ffmpegWriter: unable to find codec." << std::endl;
-			freeFormat();
-			return false;
-		}
-
-		if( avcodec_open2( _stream->codec, videoCodec, NULL ) < 0 )
+		if( avcodec_open2( _stream->codec, _codec, NULL ) < 0 )
 		{
 			std::cout << "ffmpegWriter: unable to open codec." << std::endl;
 			freeFormat();
