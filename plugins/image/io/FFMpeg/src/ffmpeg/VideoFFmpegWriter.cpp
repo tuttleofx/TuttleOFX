@@ -202,28 +202,25 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	}
 	else
 	{
-		boost::uint8_t* out_buffer = (boost::uint8_t*) av_malloc( out_picSize );
+		AVPacket pkt;
+		int hasFrame = 0;
+		av_init_packet( &pkt );
+		pkt.size = 0;
+		pkt.data = NULL;
+		pkt.stream_index = _stream->index;
 
-		ret = avcodec_encode_video( _stream->codec, out_buffer, out_picSize, out_frame );
+		if( _stream->codec->coded_frame && _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) // static_cast<unsigned long> (
+			pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
 
-		if( ret > 0 )
-		{
-			AVPacket pkt;
-			av_init_packet( &pkt );
+		if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
+			pkt.flags |= AV_PKT_FLAG_KEY;
 
-			if( _stream->codec->coded_frame && _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) // static_cast<unsigned long> (
-				pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
+		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame,  &hasFrame );
+		if ( ret < 0 )
+			return false;
 
-			if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
-				pkt.flags |= AV_PKT_FLAG_KEY;
-
-			pkt.stream_index = _stream->index;
-			pkt.data         = out_buffer;
-			pkt.size         = ret;
-			ret              = av_interleaved_write_frame( _avformatOptions, &pkt );
-		}
-
-		av_free( out_buffer );
+		if ( hasFrame )
+			ret = av_interleaved_write_frame( _avformatOptions, &pkt );
 	}
 
 	av_free( out_buffer );
