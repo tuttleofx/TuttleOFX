@@ -23,10 +23,10 @@ public:
 		, _outDegree( 0 )
 		, _inDegree( 0 )
 	{
-		_timeDomain.x = kOfxFlagInfiniteMin;
-		_timeDomain.y = kOfxFlagInfiniteMax;
-		_renderTimeRange.x = kOfxFlagInfiniteMin;
-		_renderTimeRange.y = kOfxFlagInfiniteMax;
+		_timeDomain.min = kOfxFlagInfiniteMin;
+		_timeDomain.max = kOfxFlagInfiniteMax;
+		_renderTimeRange.min = kOfxFlagInfiniteMin;
+		_renderTimeRange.max = kOfxFlagInfiniteMax;
 		_renderScale.x = 1.0;
 		_renderScale.y = 1.0;
 	}
@@ -42,8 +42,8 @@ public:
 	OfxPointD _renderScale;
 
 	INode::ENodeType _apiType;
-	OfxPointD _renderTimeRange;
-	OfxPointD _timeDomain;
+	OfxRangeD _renderTimeRange;
+	OfxRangeD _timeDomain;
 	OfxTime _step;
 	bool _interactive;
 

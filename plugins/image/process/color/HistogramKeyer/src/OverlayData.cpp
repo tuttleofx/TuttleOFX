@@ -177,7 +177,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 //	TUTTLE_TCOUT_VAR( src->getBounds() );
 //	TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
 
-	if( src->getRowBytes() == 0 )//if source is wrong
+	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	}
@@ -340,7 +340,7 @@ void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTi
 		return;
 	}
 
-	if( src->getRowBytes() == 0 )//if source is wrong
+	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	}

@@ -85,47 +85,33 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 
 	TUTTLE_TCOUT( "        --> " << getAbsoluteFilenameAt( args.time ) );
 
-	const OFX::EBitDepth eOfxBitDepth = _clipDst->getPixelDepth( );
-	const OFX::EPixelComponent components = _clipDst->getPixelComponents( );
-	
-	int pixelBytes = 0;
-	
-	switch( eOfxBitDepth )
-	{
-		case OFX::eBitDepthCustom:
-		case OFX::eBitDepthNone:
-			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch( )
-								 << exception::user( "Writer: Unable to compute custom or non bit depth" ) );
-			break;
-		case OFX::eBitDepthUByte: pixelBytes = 1;
-			break;
-		case OFX::eBitDepthUShort: pixelBytes = 2;
-			break;
-		case OFX::eBitDepthFloat: pixelBytes = 4;
-			break;
-	}
-	
-	switch( components )
-	{
-		case OFX::ePixelComponentAlpha: break; // pixelSize * 1
-		case OFX::ePixelComponentRGB: pixelBytes *= 3;
-			break;
-		case OFX::ePixelComponentRGBA: pixelBytes *= 4;
-			break;
-		default: break;
-	}
-
 	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
 	boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
 	
-	const OfxRectI rod = _clipDst->getPixelRod( args.time, args.renderScale );
-	const OfxPointI rodSize = _clipDst->getPixelRodSize( args.time, args.renderScale );
-	const std::size_t rowBytesToCopy = rodSize.x * pixelBytes;
-	for( int y = rod.y1; y < rod.y2; ++y )
+	// Copy buffer
+	const OfxRectI bounds = dst->getBounds();
+	TUTTLE_TCOUT_VAR( bounds );
+	if( src->isLinearBuffer() && dst->isLinearBuffer() )
 	{
-		void* dataSrcPtr = src->getPixelAddress( rod.x1, y );
-		void* dataDstPtr = dst->getPixelAddress( rod.x1, y );
-		memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
+		TUTTLE_TCOUT( "isLinearBuffer" );
+		const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
+		TUTTLE_TCOUT_VAR( imageDataBytes );
+		if( imageDataBytes )
+		{
+			void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );
+			void* dataDstPtr = dst->getPixelAddress( bounds.x1, bounds.y1 );
+			memcpy( dataDstPtr, dataSrcPtr, imageDataBytes );
+		}
+	}
+	else
+	{
+		const std::size_t rowBytesToCopy = dst->getBoundsRowDataBytes();
+		for( int y = bounds.y1; y < bounds.y2; ++y )
+		{
+			void* dataSrcPtr = src->getPixelAddress( bounds.x1, y );
+			void* dataDstPtr = dst->getPixelAddress( bounds.x1, y );
+			memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
+		}
 	}
 }
 

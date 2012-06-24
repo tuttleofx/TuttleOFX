@@ -16,9 +16,8 @@ class LinkData : public IPoolData
 	LinkData( const LinkData& );
 	
 public:
-	LinkData( char* dataLink, const std::size_t size )
+	LinkData( char* dataLink )
 	: _dataLink(dataLink)
-	, _size(size)
 	{}
 
 	~LinkData ()
@@ -29,7 +28,7 @@ public:
 	char*        data() { return _dataLink; }
 	const char*  data() const { return _dataLink; }
 
-	const size_t size() const { return _size; }
+	const size_t size() const { return 0; }
 	const size_t reservedSize() const { return 0; }
 
 	void addRef() {}
@@ -37,7 +36,6 @@ public:
 
 private:
 	char* const _dataLink;
-	const std::size_t _size;
 };
 
 }

@@ -27,7 +27,7 @@ void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 	_src.reset( _clipSrc->fetchImage( args.time ) );
 	if( ! _src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( _src->getRowBytes() == 0 )
+	if( _src->getRowDistanceBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	_srcView = ImageGilProcessor<DView>::template getCustomView<SView>( _src.get(), _clipSrc->getPixelRod( args.time ) );
 	//	this->_srcPixelRod = this->_src->getRegionOfDefinition(); // bug in nuke, returns bounds

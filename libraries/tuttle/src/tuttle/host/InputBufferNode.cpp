@@ -36,9 +36,7 @@ bool InputBufferNode::operator==( const INode& other ) const
 
 bool InputBufferNode::operator==( const InputBufferNode& other ) const
 {
-	return
-		( _name == other._name ) &&
-		( _rawBuffer == other._rawBuffer );
+	return ( _name == other._name );
 }
 
 std::vector<int> InputBufferNode::getVersion() const
@@ -148,6 +146,25 @@ const ofx::attribute::OfxhClipImageSet& InputBufferNode::getClipImageSet() const
 		<< exception::dev( "No ClipImageSet on getClipImageSet." ) );
 }
 
+void InputBufferNode::setRawImageBuffer(
+		char* rawBuffer,
+		const OfxRectD& rod,
+		const ofx::imageEffect::EPixelComponent components,
+		const ofx::imageEffect::EBitDepth bitDepth,
+		const int rowDistanceBytes,
+		const attribute::Image::EImageOrientation orientation )
+{
+	_outputClip.setComponents( components );
+	_outputClip.setBitDepth( bitDepth );
+	_imageCache.reset( new attribute::Image(
+			_outputClip,
+			0, // no time information
+			rod,
+			orientation,
+			rowDistanceBytes
+		) );
+	_imageCache->setPoolData( new memory::LinkData( rawBuffer ) );
+}
 
 std::ostream& InputBufferNode::print( std::ostream& os ) const
 {
@@ -161,11 +178,11 @@ std::ostream& InputBufferNode::print( std::ostream& os ) const
 
 void InputBufferNode::process( graph::ProcessVertexAtTimeData& vData )
 {
-	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
-	attribute::Image* img = new attribute::Image( _outputClip, vData._apiImageEffect._renderRoI, vData._time );
-	img->setPoolData( new memory::LinkData( _rawBuffer, img->getMemlen() ) );
-	memory::CACHE_ELEMENT image( img );
-	memoryCache.put( _outputClip.getClipIdentifier(), vData._time, image );
+	Core::instance().getMemoryCache().put( _outputClip.getClipIdentifier(), vData._time, _imageCache );
+	if( vData._outDegree > 0 )
+	{
+		_imageCache->addReference( vData._outDegree ); // add a reference on this node for each future usages
+	}
 }
 
 

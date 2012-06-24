@@ -61,6 +61,7 @@ protected:
 	std::ptrdiff_t _id; ///< temp.... for check
 	std::ptrdiff_t _referenceCount; ///< reference count on this image
 	std::string _clipName; ///< for debug
+	OfxTime _time; ///< for debug
 
 public:
 	// default constructor
@@ -71,7 +72,7 @@ public:
 
 	/// construct from a clip instance, but leave the
 	/// filling it to the calling code via the propery set
-	explicit OfxhImage( attribute::OfxhClip& instance );
+	explicit OfxhImage( attribute::OfxhClip& instance, const OfxTime time );
 
 	// Render Scale (renderScaleX,renderScaleY) -
 	//
@@ -114,14 +115,15 @@ public:
 
 	// construction based on clip instance
 	OfxhImage( attribute::OfxhClip& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
+			   OfxTime              time,
 	           double               renderScaleX,
 	           double               renderScaleY,
 	           void*                data,
 	           const OfxRectI&      bounds,
 	           const OfxRectI&      rod,
 	           int                  rowBytes,
-	           std::string          field,
-	           std::string          uniqueIdentifier );
+	           const std::string&   field,
+	           const std::string&   uniqueIdentifier );
 
 	// OfxImageClipHandle getHandle();
 
@@ -130,7 +132,8 @@ public:
 		return property::OfxhSet::getHandle();
 	}
 
-	std::string getClipName() const { return _clipName; }
+	const std::string& getClipName() const { return _clipName; }
+	OfxTime getTime() const { return _time; }
 	std::ptrdiff_t getId() const { return _id; }
 	
 	/// get the bounds of the pixels in memory
@@ -145,19 +148,12 @@ public:
 
 	EPixelComponent getComponentsType() const;
 
-	int getReference() const {  return _referenceCount; }
+	int getReferenceCount() const {  return _referenceCount; }
 
-	void addReference( const std::size_t n = 1 ) {  _referenceCount += n; TUTTLE_TCOUT( "+"<<n<<"  Image::addReference, id:" << _id << ", ref:" << getReference() ); }
+	void addReference( const std::size_t n = 1 );
+	
 	/// release the reference count, which, if zero, deletes this
-	bool releaseReference()
-	{
-		--_referenceCount;
-		TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() << ", ref:" << getReference() << ", name:" << getClipName() );
-		if( _referenceCount < 0 )
-			BOOST_THROW_EXCEPTION( std::logic_error( "Try to release an undeclared reference to an Image." ) );
-		return _referenceCount <= 0;
-	}
-
+	bool releaseReference();
 };
 
 }

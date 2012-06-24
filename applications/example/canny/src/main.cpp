@@ -32,6 +32,13 @@ int main( int argc, char** argv )
 {
 	std::set_terminate( &sam_terminate );
 	std::set_unexpected( &sam_unexpected );
+	
+	if( argc < 3 )
+	{
+		std::cerr << "canny: missing operand." << std::endl;
+		std::cerr << "Usage: ./canny image.png 0.01" << std::endl;
+		return 1;
+	}
 	try
 	{
 		using namespace tuttle::host;
@@ -81,13 +88,15 @@ int main( int argc, char** argv )
 
 		TUTTLE_TCOUT( "__________________________________________________3" );
 
-		OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
-		inputBuffer1.setClipRod( ibRod );
-		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthUByte );
-//		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthFloat );
-//		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentRGBA );
-		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentAlpha );
-		inputBuffer1.setClipRawBuffer( /*static_cast<char*>*/(char*)(boost::gil::interleaved_view_get_raw_data( imgView )) );
+		const OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
+		inputBuffer1.setRawImageBuffer(
+				reinterpret_cast<char*>( boost::gil::interleaved_view_get_raw_data( imgView ) ),
+				ibRod,
+				ofx::imageEffect::ePixelComponentAlpha,
+				ofx::imageEffect::eBitDepthUByte,
+				imgView.pixels().row_size(),
+				attribute::Image::eImageOrientationFromTopToBottom
+			);
 
 		// Setup parameters
 		/*
@@ -152,13 +161,13 @@ int main( int argc, char** argv )
 		floodfill.getParam( "upperThres" ).setValue( 0.1 );
 		floodfill.getParam( "lowerThres" ).setValue( 0.025 );
 
-		write00.getParam( "components" ).setValue( "rgba" );
-		write0.getParam( "components" ).setValue( "rgba" );
-		write1a.getParam( "components" ).setValue( "rgba" );
-		write1b.getParam( "components" ).setValue( "rgba" );
-		write2.getParam( "components" ).setValue( "rgba" );
-		write2.getParam( "components" ).setValue( "rgba" );
-		write3.getParam( "components" ).setValue( "rgba" );
+		write00.getParam( "channel" ).setValue( "rgba" );
+		write0.getParam( "channel" ).setValue( "rgba" );
+		write1a.getParam( "channel" ).setValue( "rgba" );
+		write1b.getParam( "channel" ).setValue( "rgba" );
+		write2.getParam( "channel" ).setValue( "rgba" );
+		write3.getParam( "channel" ).setValue( "rgba" );
+		write4.getParam( "channel" ).setValue( "rgba" );
 
 		write00.getParam( "filename" ).setValue( "data/canny/0_input.png" );
 		write0.getParam( "filename" ).setValue( "data/canny/0_blur.png" );
@@ -199,14 +208,17 @@ int main( int argc, char** argv )
 		outputs.push_back( write1a.getName() );
 //		outputs.push_back( write1b.getName() );
 		outputs.push_back( write2.getName() );
-		outputs.push_back( write2.getName() );
+//		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
 		outputs.push_back( bitdepth2.getName() );
 
 		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
 //		memory::MemoryCache res0 = g.compute( bitdepth2 );
-		memory::MemoryCache res0 = g.compute( outputs );
+		ComputeOptions options;
+		options._returnBuffers = true;
+		options._forceIdentityNodesProcess = true;
+		memory::MemoryCache res0 = g.compute( outputs, options );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
 		TUTTLE_COUT( "Process took: " << t2 - t1 );
@@ -218,7 +230,7 @@ int main( int argc, char** argv )
 		TUTTLE_COUT_VAR( imgRes->getBounds() );
 //		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
 //		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
-		boost::gil::gray8_view_t imgResView = imgRes->getGilView<boost::gil::gray8_view_t>();
+		boost::gil::gray8_view_t imgResView = imgRes->getGilView<boost::gil::gray8_view_t>( tuttle::host::attribute::Image::eImageOrientationFromTopToBottom );
 		boost::gil::png_write_view( "data/canny/manual_output.png", boost::gil::color_converted_view<boost::gil::rgb8_pixel_t>( imgResView ) );
 	}
 	catch( tuttle::exception::Common& e )

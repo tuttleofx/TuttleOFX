@@ -107,6 +107,8 @@ bool FFMpegReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 	range.min = 0.0;
 	range.max = (double)_reader.nbFrames();
+	TUTTLE_TCOUT( "FFMpegReaderPlugin::getTimeDomain" );
+	TUTTLE_TCOUT_VAR2( range.min, range.max );
 	return true;
 }
 

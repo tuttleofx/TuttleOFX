@@ -86,6 +86,8 @@ bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	range.min = getFirstTime();
 	range.max = getLastTime();
+	TUTTLE_TCOUT( "ReaderPlugin::getTimeDomain" );
+	TUTTLE_TCOUT_VAR2( range.min, range.max );
 	return true;
 }
 

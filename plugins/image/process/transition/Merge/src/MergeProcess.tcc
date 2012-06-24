@@ -35,7 +35,7 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	_srcA.reset( _plugin._clipSrcA->fetchImage( args.time ) );
 	if( !_srcA.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( _srcA->getRowBytes() == 0 )
+	if( _srcA->getRowDistanceBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcA->getPixelRod( args.time, args.renderScale ) );
 	//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
@@ -45,7 +45,7 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	_srcB.reset( _plugin._clipSrcB->fetchImage( args.time ) );
 	if( !_srcB.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( _srcB->getRowBytes() == 0 )
+	if( _srcB->getRowDistanceBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin._clipSrcB->getPixelRod( args.time, args.renderScale ) );
 	//	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds

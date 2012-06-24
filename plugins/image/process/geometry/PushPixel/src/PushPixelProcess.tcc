@@ -41,7 +41,7 @@ void PushPixelProcess<View>::setup( const OFX::RenderArguments& args )
 		this->_mask.reset( _clipMask->fetchImage( args.time ) );
 		if( !this->_mask.get( ) )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-		if( this->_mask->getRowBytes( ) <= 0 )
+		if( this->_mask->getRowDistanceBytes( ) <= 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		this->_maskView = this->getView( this->_mask.get(), _clipMask->getPixelRod(args.time, args.renderScale) );
 	//	_maskPixelRod = _mask->getRegionOfDefinition(); // bug in nuke, returns bounds

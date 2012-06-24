@@ -51,7 +51,7 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 		std::cout << "src is not accessible (cloud point)" << std::endl;
 		return false;
 	}
-	if( src->getRowBytes() == 0 )//if source is wrong
+	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		return false;
@@ -155,7 +155,7 @@ bool CloudPointData::generateColorSelectionVBO(OFX::Clip* clipColor, const OfxPo
 		std::cout << "src is not accessible (color clip)" << std::endl;
 		return false;
 	}
-	if( src->getRowBytes() == 0 )//if source is wrong
+	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		return false;
@@ -228,7 +228,7 @@ bool CloudPointData::generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPo
 		std::cout << "src is not accessible (spill clip)" << std::endl;
 		return false;
 	}
-	if( src->getRowBytes() == 0 )//if source is wrong
+	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		return false;
