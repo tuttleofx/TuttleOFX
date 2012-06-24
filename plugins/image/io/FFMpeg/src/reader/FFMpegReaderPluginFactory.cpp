@@ -66,7 +66,6 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
-	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 
