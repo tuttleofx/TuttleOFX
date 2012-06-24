@@ -222,7 +222,14 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			return false;
 
 		if ( hasFrame )
+		{
 			ret = av_interleaved_write_frame( _avformatOptions, &pkt );
+			if ( ret < 0 )
+			{
+				std::cerr << "ffmpegWriter: error writing packet to file" << std::endl;
+				return false;
+			}
+		}
 	}
 
 	av_free( out_buffer );
