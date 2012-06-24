@@ -148,7 +148,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 		if( !( _ofmt->flags & AVFMT_NOFILE ) )
 		{
-			if( avio_open( &_avformatOptions->pb, filename().c_str(), AVIO_FLAG_WRITE ) < 0 )
+			if( avio_open2( &_avformatOptions->pb, filename().c_str(),
+                                        AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
 			{
 				std::cout << "ffmpegWriter: unable to open file." << std::endl;
 				freeFormat();
