@@ -14,6 +14,7 @@
 #define snprintf _snprintf
 #endif
 
+static boost::int64_t pts = 0;
 
 VideoFFmpegWriter::VideoFFmpegWriter()
 	: _avformatOptions   ( NULL )
@@ -215,6 +216,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
 			pkt.flags |= AV_PKT_FLAG_KEY;
 
+		out_frame->pts = pts++;
 		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame,  &hasFrame );
 		if ( ret < 0 )
 			return false;
