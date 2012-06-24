@@ -11,6 +11,17 @@ namespace tuttle {
 namespace plugin {
 namespace nlmDenoiser {
 
+
+template<class T>
+inline T clamp( const T& v, const T& min, const T& max )
+{
+	if( v < min )
+		return min;
+	if( v > max )
+		return max;
+	return v;
+}
+
 NLMDenoiserPlugin::NLMDenoiserPlugin( OfxImageEffectHandle handle ) :
 OFX::ImageEffect( handle )
 , _clipDst( 0 )
@@ -18,6 +29,9 @@ OFX::ImageEffect( handle )
 {
 	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_paramDepth = fetchIntParam( kParamDepth );
+	_paramRegionRadius = fetchIntParam( kParamRegionRadius );
+	_paramPatchRadius = fetchIntParam( kParamPatchRadius );
 }
 
 /**
@@ -26,39 +40,34 @@ OFX::ImageEffect( handle )
  */
 void NLMDenoiserPlugin::getFramesNeeded( const OFX::FramesNeededArguments &args, OFX::FramesNeededSetter &frames )
 {
-    OfxRangeD reqRange;
-    OfxRangeD range = _clipSrc->getFrameRange( );
-    const int depth = (int) fetchIntParam( kDepth )->getValue( );
-    reqRange.min = args.time - depth / 2 - 1;
-    reqRange.max = args.time + depth / 2 + 1;
-	if( reqRange.max > range.max )
-	{
-		const double sub = reqRange.max - args.time;
-		reqRange.min -= sub;
-		reqRange.max -= sub;
-	}
-	if( reqRange.min < range.min )
-    {
-		const double add = range.min - args.time;
-        reqRange.min += add;
-        reqRange.max += add;
-    }
-    frames.setFramesNeeded( *_clipSrc, reqRange );
+    const int depth = _paramDepth->getValue();
+	
+    const OfxRangeD clipFullRange = _clipSrc->getFrameRange( );
+//	TUTTLE_TCOUT_VAR2( clipFullRange.min, clipFullRange.max );
+	OfxRangeD requestedRange;
+	requestedRange.min = args.time - depth;
+	requestedRange.max = args.time + depth;
+//	TUTTLE_TCOUT_VAR2( requestedRange.min, requestedRange.max );
+	OfxRangeD realRange;
+	realRange.min = clamp( requestedRange.min, clipFullRange.min, clipFullRange.max );
+	realRange.max = clamp( requestedRange.max, clipFullRange.min, clipFullRange.max );
+//	TUTTLE_TCOUT_VAR2( realRange.min, realRange.max );
+	
+    frames.setFramesNeeded( *_clipSrc, realRange );
+//	TUTTLE_TCOUT( "NLMDenoiserPlugin::getFramesNeeded timerange min:" << realRange.min << ", max:" << realRange.max << " for time:" << args.time );
 }
 
 
 void NLMDenoiserPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	OFX::IntParam *regionRadius = fetchIntParam( kRegionRadius );
-	OFX::IntParam *patchRadius = fetchIntParam( kPatchRadius );
+	const double margin = ( _paramRegionRadius->getValue() + _paramPatchRadius->getValue() ) * _clipSrc->getPixelAspectRatio();
 
-	double margin = (regionRadius->getValue() + patchRadius->getValue()) * _clipSrc->getPixelAspectRatio();
-
-	const OfxRectD roi = { double(args.regionOfInterest.x1 - margin),
-                               double(args.regionOfInterest.y1 - margin),
-                               double(args.regionOfInterest.x2 + margin + 1),
-                               double(args.regionOfInterest.y2 + margin + 1)
-                             };
+	const OfxRectD roi = {
+			double(args.regionOfInterest.x1 - margin),
+			double(args.regionOfInterest.y1 - margin),
+			double(args.regionOfInterest.x2 + margin + 1),
+			double(args.regionOfInterest.y2 + margin + 1)
+		};
 
 	rois.setRegionOfInterest( *_clipSrc, roi );
 }
