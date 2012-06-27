@@ -1,5 +1,7 @@
 #include "OfxhParamDescriptor.hpp"
 
+#include <extensions/tuttle/ofxParam.h>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -158,6 +160,7 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 	{
 		static const property::OfxhPropSpec allChoice[] = {
 			{ kOfxParamPropChoiceOption, property::ePropTypeString, 0, false, "" },
+			{ kOfxParamPropChoiceLabelOption, property::ePropTypeString, 0, false, "" },
 			{ 0 }
 		};
 

@@ -601,7 +601,7 @@ public:
     void setDefault( int v );
 
     /** @brief append an option, default is to have not there */
-    void appendOption( const std::string& v );
+    void appendOption( const std::string& scriptName, const std::string& label = "" );
 
     /** @brief how many options do we have */
     int getNOptions( void ) const;
@@ -1552,7 +1552,7 @@ public:
     int getNOptions( void ) const;
 
     /** @brief append an option, default is to have not there */
-    void appendOption( const std::string& v );
+    void appendOption( const std::string& shortName, const std::string& label = "" );
 
     /** @brief clear all the options so as to add some new ones in */
     void resetOptions( void );

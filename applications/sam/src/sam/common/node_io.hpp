@@ -6,6 +6,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 
+#include <extensions/tuttle/ofxParam.h>
+
 #include <vector>
 #include <string>
 
@@ -184,15 +186,18 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 {
 	using namespace tuttle::host::ofx::property;
 	
-	std::vector<std::string> choiceValues;
+	const std::string type = param.getParamType();
+	const std::string typeName = param.getParamTypeName();
+	
+	// don't print: group, button, page parameters
+	if( ( type == kOfxParamTypeGroup ) ||
+		( type == kOfxParamTypePushButton ) ||
+		( type == kOfxParamTypePage ) )
+		return;
+	
 	std::vector<std::string> defaultValues;
 	int choiceDefaultIndexValue = 0;
 	
-	if( param.getProperties().hasProperty( kOfxParamPropChoiceOption ) )
-	{
-		const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropChoiceOption );
-		choiceValues = getStringValues( prop );
-	}
 	if( param.getProperties().hasProperty( kOfxParamPropDefault ) )
 	{
 		const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropDefault );
@@ -203,69 +208,82 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 		}
 	}
 	
+	if( type == kOfxParamTypeChoice )
 	{
-		const std::string type = param.getParamTypeName();
-		
-		// if it isn't a group or a button parameter, we print the parameter.
-		if( ( type != "Group" ) &&
-			( type != "PushButton" ) &&
-			( type != "Page" ) )
+		std::vector<std::string> choiceValues;
+		std::vector<std::string> choiceLabelValues;
+		bool hasLabel = false;
+		if( param.getProperties().hasProperty( kOfxParamPropChoiceOption ) )
 		{
-			std::string stringDefaultValue;
+			const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropChoiceOption );
+			choiceValues = getStringValues( prop );
+		}
+		if( param.getProperties().hasProperty( kOfxParamPropChoiceLabelOption ) )
+		{
+			const OfxhProperty& prop = param.getProperties().fetchProperty( kOfxParamPropChoiceLabelOption );
+			choiceLabelValues = getStringValues( prop );
+			hasLabel = ( choiceValues.size() == choiceLabelValues.size() );
+		}
+		if( choiceValues.size() ) // if it's a choice, we take the nth argument
+		{
+			static const std::string standardItem = " -  ";
+			static const std::string defaultItem  = "--> ";
+			std::cout << "\t" <<
+				_color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
+				_color._std << std::setw( 15 ) << typeName <<
+				_color._std << "\n";
+			for( std::size_t i = 0; i < choiceValues.size(); ++i )
+			{
+				std::cout << "\t\t\t\t\t";
+				if( (std::size_t)(choiceDefaultIndexValue) == i )
+				{
+					std::cout << _color._yellow << defaultItem;
+				}
+				else
+				{
+					std::cout << _color._red << standardItem;
+				}
+				std::cout << std::left << std::setw( 20 ) << choiceValues[i];
+				if( hasLabel && ! choiceLabelValues[i].empty() )
+				{
+					std::cout << "\"" << choiceLabelValues[i] << "\"";
+				}
+				std::cout << _color._std << "\n";
+			}
+		}
+	}
+	else
+	{
+		const std::string stringDefaultValue = boost::algorithm::join( defaultValues, "," );
+		std::cout << "\t" <<
+			_color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
+			_color._std << std::setw( 15 ) << typeName << _color._yellow << stringDefaultValue <<
+			_color._std;
 
-			if( choiceValues.size() ) // if it's a choice, we take the nth argument
+		if( param.getProperties().hasProperty( kOfxParamPropDisplayMin ) )
+		{
+			const OfxhProperty& propDisplayMin = param.getProperties().fetchProperty( kOfxParamPropDisplayMin );
+			const std::string minDisplayValue = getFormattedStringValue( propDisplayMin );
+			const OfxhProperty& propDisplayMax = param.getProperties().fetchProperty( kOfxParamPropDisplayMax );
+			const std::string maxDisplayValue = getFormattedStringValue( propDisplayMax );
+
+			std::cout << "  [" << minDisplayValue << " --> " << maxDisplayValue << "]";
+		}
+		std::cout << std::endl;
+	}
+	
+	if( param.getProperties().hasProperty( kOfxParamPropHint ) )
+	{
+		const std::string& hint = param.getProperties().getStringProperty( kOfxParamPropHint );
+		if( hint.size() )
+		{
+			std::vector<std::string> hintSplitted;
+			boost::split( hintSplitted, hint, boost::is_any_of("\n"));
+			BOOST_FOREACH( const std::string hintString, hintSplitted )
 			{
-				stringDefaultValue = choiceValues[choiceDefaultIndexValue];
-				TUTTLE_COUT( "\t" << _color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " << _color._std );
-				for( std::size_t i = 0; i < choiceValues.size(); ++i )
-				{
-					if( (std::size_t)(choiceDefaultIndexValue) == i )
-					{
-						TUTTLE_COUT( "\t\t\t\t\t"
-							<< _color._yellow << "--> "
-							<< choiceValues[i] << _color._std );
-					}
-					else
-					{
-						TUTTLE_COUT( "\t\t\t\t\t"
-							<< _color._red << " -  " 
-							<< choiceValues[i] << _color._std );
-					}
-					
-				}
-			}
-			else
-			{
-				stringDefaultValue = boost::algorithm::join( defaultValues, "," );
-				std::cout << "\t" <<
-					_color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
-					_color._std << std::setw( 15 ) << type << sam::_color._yellow << stringDefaultValue << _color._std;
-				
-				if( param.getProperties().hasProperty( kOfxParamPropDisplayMin ) )
-				{
-					const OfxhProperty& propDisplayMin = param.getProperties().fetchProperty( kOfxParamPropDisplayMin );
-					const std::string minDisplayValue = getFormattedStringValue( propDisplayMin );
-					const OfxhProperty& propDisplayMax = param.getProperties().fetchProperty( kOfxParamPropDisplayMax );
-					const std::string maxDisplayValue = getFormattedStringValue( propDisplayMax );
-					
-					std::cout << "  [" << minDisplayValue << " --> " << maxDisplayValue << "]";
-				}
-				std::cout << std::endl;
-			}
-			if( param.getProperties().hasProperty( kOfxParamPropHint ) )
-			{
-				const std::string& hint = param.getProperties().getStringProperty( kOfxParamPropHint );
-				if( hint.size() )
-				{
-					std::vector<std::string> hintSplitted;
-					boost::split( hintSplitted, hint, boost::is_any_of("\n"));
-					BOOST_FOREACH( const std::string hintString, hintSplitted )
-					{
-						std::cout << _color._std
-							<< std::left << std::setw( 10 ) << " " << hintString
-							<< std::endl;
-					}
-				}
+				std::cout << _color._std
+					<< std::left << std::setw( 10 ) << " " << hintString
+					<< std::endl;
 			}
 		}
 	}

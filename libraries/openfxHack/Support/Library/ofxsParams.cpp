@@ -40,6 +40,8 @@
 #include "ofxsUtilities.h"
 #include "ofxParametricParam.h"
 #include "extensions/nuke/camera.h"
+#include "extensions/tuttle/ofxParam.h"
+
 #include <cstring>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
@@ -607,11 +609,12 @@ int ChoiceParamDescriptor::getNOptions( void ) const
 }
 
 /** @brief set the default value */
-void ChoiceParamDescriptor::appendOption( const std::string& v )
+void ChoiceParamDescriptor::appendOption( const std::string& shortName, const std::string& label )
 {
-    int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
+    const int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
 
-    getProps().propSetString( kOfxParamPropChoiceOption, v, nCurrentValues );
+    getProps().propSetString( kOfxParamPropChoiceOption, shortName, nCurrentValues );
+    getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues, false ); // this option is optional extension, don't throw if not present.
 }
 
 /** @brief set the default value */
@@ -2202,7 +2205,7 @@ void ChoiceParam::getValue( int& v ) const
 /** @brief get the value at a time */
 void ChoiceParam::getValueAtTime( double t, int& v ) const
 {
-    OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &v );
+    const OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &v );
 
     throwSuiteStatusException( stat );
 }
@@ -2210,7 +2213,7 @@ void ChoiceParam::getValueAtTime( double t, int& v ) const
 /** @brief set value */
 void ChoiceParam::setValue( int v )
 {
-    OfxStatus stat = OFX::Private::gParamSuite->paramSetValue( _paramHandle, v );
+    const OfxStatus stat = OFX::Private::gParamSuite->paramSetValue( _paramHandle, v );
 
     throwSuiteStatusException( stat );
 }
@@ -2227,17 +2230,17 @@ void ChoiceParam::setValueAtTime( double t, int v )
 /** @brief how many options do we have */
 int ChoiceParam::getNOptions( void ) const
 {
-    int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
-
+    const int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
     return nCurrentValues;
 }
 
 /** @brief set the default value */
-void ChoiceParam::appendOption( const std::string& v )
+void ChoiceParam::appendOption( const std::string& shortName, const std::string& label )
 {
-    int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
+    const int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
 
-    getProps().propSetString( kOfxParamPropChoiceOption, v, nCurrentValues );
+    getProps().propSetString( kOfxParamPropChoiceOption, shortName, nCurrentValues );
+    getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues, false ); // this option is optional extension, don't throw if not present.
 }
 
 /** @brief set the default value */
