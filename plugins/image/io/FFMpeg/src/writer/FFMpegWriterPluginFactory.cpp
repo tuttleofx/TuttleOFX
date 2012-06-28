@@ -126,10 +126,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		std::string name = *itShort;
-		name.resize ( 20,' ');
-		name += *itLong ;
-		format->appendOption( name );
+		format->appendOption( *itShort, *itLong );
 	}
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( 25 );
@@ -142,10 +139,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		std::string name = *itShort;
-		name.resize ( 20,' ');
-		name += *itLong ;
-		codec->appendOption( name );
+		codec->appendOption( *itShort, *itLong );
 	}
 	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	codec->setDefault( CODEC_ID_HUFFYUV );
