@@ -14,37 +14,18 @@
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-void sam_terminate( void )
-{
-	std::cerr << "Sorry, Sam has encountered a fatal error." << std::endl;
-	std::cerr << "Please report this bug." << std::endl;
-	exit( -1 );
-}
-
-void sam_unexpected( void )
-{
-	std::cerr << "Sorry, Sam has encountered an unexpected exception." << std::endl;
-	std::cerr << "Please report this bug." << std::endl;
-	BOOST_THROW_EXCEPTION( std::runtime_error( "Sorry, Sam has encountered an unexpected exception.\nPlease report this bug." ) );
-}
-
 int main( int argc, char** argv )
 {
-	std::set_terminate( &sam_terminate );
-	std::set_unexpected( &sam_unexpected );
-	
-	if( argc < 3 )
+	if( argc < 2 )
 	{
 		std::cerr << "canny: missing operand." << std::endl;
-		std::cerr << "Usage: ./canny image.png 0.01" << std::endl;
+		std::cerr << "Usage: ./canny image.png" << std::endl;
 		return 1;
 	}
 	try
 	{
 		using namespace tuttle::host;
 		TUTTLE_TCOUT( "__________________________________________________0" );
-//		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-		// Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
 
 		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
@@ -54,8 +35,7 @@ int main( int argc, char** argv )
 //		boost::gil::rgba32f_image_t imgRead;
 //		boost::gil::rgba8_image_t imgRead;
 		boost::gil::gray8_image_t imgRead;
-		boost::gil::png_read_and_convert_image( argv[1], //"data/input.png",
-												imgRead );
+		boost::gil::png_read_and_convert_image( argv[1], imgRead );
 //		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
 //		boost::gil::rgba8_view_t imgView( view( imgRead ) );
 		boost::gil::gray8_view_t imgView( view( imgRead ) );
@@ -63,9 +43,6 @@ int main( int argc, char** argv )
 		TUTTLE_TCOUT( "__________________________________________________2" );
 
 		Graph g;
-//		Graph::Node& inputBuffer1 = g.createNode( "tuttle.inputbuffer" );
-//		Graph::Node& read        = g.createNode( "tuttle.pngreader" );
-//		Graph::Node& bitdepth    = g.createNode( "tuttle.bitdepth" );
 		InputBufferNode& inputBuffer1 = g.createInputBuffer();
 		Graph::Node& bitdepth1    = g.createNode( "tuttle.bitdepth" );
 		Graph::Node& bitdepth2    = g.createNode( "tuttle.bitdepth" );
@@ -99,12 +76,7 @@ int main( int argc, char** argv )
 			);
 
 		// Setup parameters
-		/*
-		read1.getParam( "filename" ).setValue( "data/input1.avi" );
-		read1.getParam( "filename" ).setValue( "data/input.png" );
-		bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
-		*/
-		static const double kernelEpsilon = boost::lexical_cast<double>( argv[2] );
+		static const double kernelEpsilon = 0.01;
 
 		TUTTLE_COUT_VAR( kernelEpsilon );
 
