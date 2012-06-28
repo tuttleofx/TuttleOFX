@@ -7,36 +7,35 @@ namespace tuttle {
 namespace plugin {
 namespace nlmDenoiser {
 
-const std::string kRedStrengthLabel( "Red strength" );
-const std::string kRedStrength( "redStrength" );
-const std::string kGreenStrengthLabel( "Green strength" );
-const std::string kGreenStrength( "greenStrength" );
-const std::string kBlueStrengthLabel( "Blue strength" );
-const std::string kBlueStrength( "blueStrength" );
-const std::string kRedGrainSizeLabel( "Red grain size" );
-const std::string kRedGrainSize( "redGrainSize" );
-const std::string kGreenGrainSizeLabel( "Green grain size" );
-const std::string kGreenGrainSize( "greenGrainSize" );
-const std::string kBlueGrainSizeLabel( "Blue grain size" );
-const std::string kBlueGrainSize( "blueGrainSize" );
-const std::string kPatchRadiusLabel( "Patch radius" );
-const std::string kPatchRadius( "patchRadius" );
-const std::string kRegionRadiusLabel( "Region radius" );
-const std::string kRegionRadius( "regionRadius" );
-const std::string kDepthLabel( "Depth" );
-const std::string kDepth( "depth" );
-const std::string kOptimizationLabel( "Optimization activated" );
-const std::string kOptimization( "optimization" );
-const std::string kPreBlurring( "preBlurring" );
-const std::string kPreBlurringLabel( "Pre-blurring for patch research" );
+const std::string kParamRedStrengthLabel( "Red strength" );
+const std::string kParamRedStrength( "redStrength" );
+const std::string kParamGreenStrengthLabel( "Green strength" );
+const std::string kParamGreenStrength( "greenStrength" );
+const std::string kParamBlueStrengthLabel( "Blue strength" );
+const std::string kParamBlueStrength( "blueStrength" );
+const std::string kParamRedGrainSizeLabel( "Red grain size" );
+const std::string kParamRedGrainSize( "redGrainSize" );
+const std::string kParamGreenGrainSizeLabel( "Green grain size" );
+const std::string kParamGreenGrainSize( "greenGrainSize" );
+const std::string kParamBlueGrainSizeLabel( "Blue grain size" );
+const std::string kParamBlueGrainSize( "blueGrainSize" );
+const std::string kParamPatchRadiusLabel( "Patch radius" );
+const std::string kParamPatchRadius( "patchRadius" );
+const std::string kParamRegionRadiusLabel( "Region radius" );
+const std::string kParamRegionRadius( "regionRadius" );
+const std::string kParamDepthLabel( "Depth" );
+const std::string kParamDepth( "depth" );
+const std::string kParamOptimizationLabel( "Optimization activated" );
+const std::string kParamOptimization( "optimization" );
+const std::string kParamPreBlurring( "preBlurring" );
+const std::string kParamPreBlurringLabel( "Pre-blurring for patch research" );
 
-const bool kSupportTiles = true;
-const int kDefaultPatchSizeValue = 2;
-const int kDefaultBandwidthValueR = 3;
-const int kDefaultBandwidthValueG = 4;
-const int kDefaultBandwidthValueB = 10;
-const int kDefaultRegionValue = 15;
-const int kDefaultDepth = 1;
+const int kParamDefaultPatchSizeValue = 2;
+const int kParamDefaultBandwidthValueR = 3;
+const int kParamDefaultBandwidthValueG = 4;
+const int kParamDefaultBandwidthValueB = 10;
+const int kParamDefaultRegionValue = 15;
+const int kParamDefaultDepth = 1;
 
 }
 }

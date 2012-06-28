@@ -64,20 +64,22 @@ OfxhImage::OfxhImage()
 	, _id( _count++ )
 	, _referenceCount( 1 )
 	, _clipName( "No clip !" )
+	, _time( 0 )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
 }
 
 /**
  * make an image from a clip instance
  */
-OfxhImage::OfxhImage( attribute::OfxhClip& instance )
+OfxhImage::OfxhImage( attribute::OfxhClip& instance, const OfxTime time )
 	: property::OfxhSet( imageStuffs )
 	, _id( _count++ )
 	, _referenceCount( 1 )
 	, _clipName( instance.getName() )
+	, _time( time )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
 	initClipBits( instance );
 }
 
@@ -85,20 +87,22 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance )
  * construction based on clip instance
  */
 OfxhImage::OfxhImage( attribute::OfxhClip& instance,
+					  OfxTime              time,
                       double               renderScaleX,
                       double               renderScaleY,
                       void*                data,
                       const OfxRectI&      bounds,
                       const OfxRectI&      rod,
                       int                  rowBytes,
-                      std::string          field,
-                      std::string          uniqueIdentifier )
+                      const std::string&   field,
+                      const std::string&   uniqueIdentifier )
 	: property::OfxhSet( imageStuffs )
 	, _id( _count++ )
 	, _referenceCount( 1 )
 	, _clipName( instance.getName() )
+	, _time( time )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReferenceCount() );
 	initClipBits( instance );
 
 	// set other data
@@ -122,7 +126,8 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 
 OfxhImage::~OfxhImage()
 {
-	TUTTLE_TCOUT( "-- ~OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TUTTLE_TCOUT( "-- ~OfxhImage, clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
+	BOOST_ASSERT( getReferenceCount() == 1 );
 }
 
 /// called during ctor to get bits from the clip props into ours
@@ -204,6 +209,21 @@ EPixelComponent OfxhImage::getComponentsType() const
 int OfxhImage::getRowBytes() const
 {
 	return getIntProperty( kOfxImagePropRowBytes );
+}
+
+void OfxhImage::addReference( const std::size_t n )
+{
+	_referenceCount += n;
+	TUTTLE_TCOUT( "+"<<n<<"  Image::addReference, id:" << getId() << ", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
+}
+
+bool OfxhImage::releaseReference()
+{
+	--_referenceCount;
+	TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() <<", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
+	if( _referenceCount < 0 )
+		BOOST_THROW_EXCEPTION( std::logic_error( "Try to release an undeclared reference to an Image." ) );
+	return _referenceCount <= 0;
 }
 
 }

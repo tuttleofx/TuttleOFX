@@ -73,7 +73,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			<< exception::dev( boost::current_exception_diagnostic_information() )
 			<< exception::filename( _params._filepath ) );
 	}
-	copy_pixels( this->_srcView, this->_dstView );
+	copy_pixels( this->_srcView, this->_dstView ); /// @todo ?
 }
 
 /**

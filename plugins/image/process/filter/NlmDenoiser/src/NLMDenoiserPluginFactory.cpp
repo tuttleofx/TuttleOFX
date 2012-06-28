@@ -59,7 +59,7 @@ void NLMDenoiserPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
     // set a few flags
     desc.setHostFrameThreading( true );
     desc.setSupportsMultiResolution( true );
-    desc.setSupportsTiles( kSupportTiles );
+    desc.setSupportsTiles( false );
     desc.setTemporalClipAccess( true );
     desc.setRenderTwiceAlways( false );
     desc.setSupportsMultipleClipPARs( false );
@@ -79,58 +79,62 @@ void NLMDenoiserPluginFactory::describeInContext( OFX::ImageEffectDescriptor &de
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     srcClip->setTemporalClipAccess( true );
-    srcClip->setSupportsTiles( kSupportTiles );
+    srcClip->setSupportsTiles( false );
     srcClip->setIsMask( false );
 
     // Create the mandated output clip
     OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-    dstClip->setSupportsTiles( kSupportTiles );
+    dstClip->setSupportsTiles( true );
     dstClip->setTemporalClipAccess( true );
 
     // Controls
     // Define NLMeans Based algorithm controls.
     OFX::GroupParamDescriptor *groupChGrSize = desc.defineGroupParam( "Per channel grain size" );
-    OFX::DoubleParamDescriptor *redGrainSize = desc.defineDoubleParam( kRedGrainSize );
-    redGrainSize->setLabels( kRedGrainSizeLabel, kRedGrainSizeLabel, kRedGrainSizeLabel );
+    OFX::DoubleParamDescriptor *redGrainSize = desc.defineDoubleParam( kParamRedGrainSize );
+    redGrainSize->setLabels( kParamRedGrainSizeLabel, kParamRedGrainSizeLabel, kParamRedGrainSizeLabel );
     redGrainSize->setParent( *groupChGrSize );
-    redGrainSize->setDefault( kDefaultBandwidthValueR );
+    redGrainSize->setDefault( kParamDefaultBandwidthValueR );
     redGrainSize->setRange( -1.0, 100000.0 );
     redGrainSize->setDisplayRange( -1.0, 500.0 );
     redGrainSize->setHint( "Red grain size (strength of the smoothing, -1 = automatic)" );
-    OFX::DoubleParamDescriptor *greenGrainSize = desc.defineDoubleParam( kGreenGrainSize );
-    greenGrainSize->setLabels( kGreenGrainSizeLabel, kGreenGrainSizeLabel, kGreenGrainSizeLabel );
+	
+    OFX::DoubleParamDescriptor *greenGrainSize = desc.defineDoubleParam( kParamGreenGrainSize );
+    greenGrainSize->setLabels( kParamGreenGrainSizeLabel, kParamGreenGrainSizeLabel, kParamGreenGrainSizeLabel );
     greenGrainSize->setParent( *groupChGrSize );
-    greenGrainSize->setDefault( kDefaultBandwidthValueG );
+    greenGrainSize->setDefault( kParamDefaultBandwidthValueG );
     greenGrainSize->setRange( -1.0, 100000.0 );
     greenGrainSize->setDisplayRange( -1.0, 500.0 );
     greenGrainSize->setHint( "Green grain size (strength of the smoothing, -1 = automatic)" );
-    OFX::DoubleParamDescriptor *blueGrainSize = desc.defineDoubleParam( kBlueGrainSize );
-    blueGrainSize->setLabels( kBlueGrainSizeLabel, kBlueGrainSizeLabel, kBlueGrainSizeLabel );
+	
+    OFX::DoubleParamDescriptor *blueGrainSize = desc.defineDoubleParam( kParamBlueGrainSize );
+    blueGrainSize->setLabels( kParamBlueGrainSizeLabel, kParamBlueGrainSizeLabel, kParamBlueGrainSizeLabel );
     blueGrainSize->setParent( *groupChGrSize );
-    blueGrainSize->setDefault( kDefaultBandwidthValueB );
+    blueGrainSize->setDefault( kParamDefaultBandwidthValueB );
     blueGrainSize->setRange( -1.0, 100000.0 );
     blueGrainSize->setDisplayRange( -1.0, 500.0 );
     blueGrainSize->setHint( "Blue grain size (strength of the smoothing, -1 = automatic)" );
 
     OFX::GroupParamDescriptor *groupChStrength = desc.defineGroupParam( "Per channel strength" );
-    OFX::DoubleParamDescriptor *redStrength = desc.defineDoubleParam( kRedStrength );
+    OFX::DoubleParamDescriptor *redStrength = desc.defineDoubleParam( kParamRedStrength );
     redStrength->setParent( *groupChStrength );
-    redStrength->setLabels( kRedStrengthLabel, kRedStrengthLabel, kRedStrengthLabel );
+    redStrength->setLabels( kParamRedStrengthLabel, kParamRedStrengthLabel, kParamRedStrengthLabel );
     redStrength->setDefault( 1.0 );
     redStrength->setRange( 0.0, 1.0 );
     redStrength->setDisplayRange( 0.0, 1.0 );
     redStrength->setHint( "Red effect strength (in percent)" );
-    OFX::DoubleParamDescriptor *greenStrength = desc.defineDoubleParam( kGreenStrength );
-    greenStrength->setLabels( kGreenStrengthLabel, kGreenStrengthLabel, kGreenStrengthLabel );
+	
+    OFX::DoubleParamDescriptor *greenStrength = desc.defineDoubleParam( kParamGreenStrength );
+    greenStrength->setLabels( kParamGreenStrengthLabel, kParamGreenStrengthLabel, kParamGreenStrengthLabel );
     greenStrength->setParent( *groupChStrength );
     greenStrength->setDefault( 1.0 );
     greenStrength->setRange( 0.0, 1.0 );
     greenStrength->setDisplayRange( 0.0, 1.0 );
     greenStrength->setHint( "Green effect strength (in percent)" );
-    OFX::DoubleParamDescriptor *blueStrength = desc.defineDoubleParam( kBlueStrength );
-    blueStrength->setLabels( kBlueStrengthLabel, kBlueStrengthLabel, kBlueStrengthLabel );
+	
+    OFX::DoubleParamDescriptor *blueStrength = desc.defineDoubleParam( kParamBlueStrength );
+    blueStrength->setLabels( kParamBlueStrengthLabel, kParamBlueStrengthLabel, kParamBlueStrengthLabel );
     blueStrength->setParent( *groupChStrength );
     blueStrength->setDefault( 1.0 );
     blueStrength->setRange( 0.0, 1.0 );
@@ -138,13 +142,14 @@ void NLMDenoiserPluginFactory::describeInContext( OFX::ImageEffectDescriptor &de
     blueStrength->setHint( "Blue effect strength (in percent)" );
 
     OFX::GroupParamDescriptor *groupParams = desc.defineGroupParam( "NL-Means common parameters" );
-    OFX::BooleanParamDescriptor *optimized = desc.defineBooleanParam( kOptimization );
-	optimized->setLabels( kOptimizationLabel, kOptimizationLabel, kOptimizationLabel );
+    OFX::BooleanParamDescriptor *optimized = desc.defineBooleanParam( kParamOptimization );
+	optimized->setLabels( kParamOptimizationLabel, kParamOptimizationLabel, kParamOptimizationLabel );
     optimized->setParent( *groupParams );
     optimized->setDefault( true );
     optimized->setIsSecret( true );
-    OFX::DoubleParamDescriptor *preBlurring = desc.defineDoubleParam( kPreBlurring );
-    preBlurring->setLabels( kPreBlurringLabel, kPreBlurringLabel, kPreBlurringLabel );
+	
+    OFX::DoubleParamDescriptor *preBlurring = desc.defineDoubleParam( kParamPreBlurring );
+    preBlurring->setLabels( kParamPreBlurringLabel, kParamPreBlurringLabel, kParamPreBlurringLabel );
     preBlurring->setParent( *groupParams );
     preBlurring->setRange( 0.0, 10.0 );
     preBlurring->setDisplayRange( 0.0, 1.0 );
@@ -152,26 +157,28 @@ void NLMDenoiserPluginFactory::describeInContext( OFX::ImageEffectDescriptor &de
     preBlurring->setDefault( 0.0 );
     preBlurring->setIsSecret( true );
 
-    OFX::IntParamDescriptor *patchRadius = desc.defineIntParam( kPatchRadius );
-    patchRadius->setLabels( kPatchRadiusLabel, kPatchRadiusLabel, kPatchRadiusLabel );
+    OFX::IntParamDescriptor *patchRadius = desc.defineIntParam( kParamPatchRadius );
+    patchRadius->setLabels( kParamPatchRadiusLabel, kParamPatchRadiusLabel, kParamPatchRadiusLabel );
     patchRadius->setParent( *groupParams );
-    patchRadius->setDefault( kDefaultPatchSizeValue );
+    patchRadius->setDefault( kParamDefaultPatchSizeValue );
     patchRadius->setRange( 1, 8 );
     patchRadius->setDisplayRange( 1, 8 );
     patchRadius->setHint( "Patch radius for nl-means algorithm" );
-    OFX::IntParamDescriptor *regionRadius = desc.defineIntParam( kRegionRadius );
-    regionRadius->setLabels( kRegionRadiusLabel, kRegionRadiusLabel, kRegionRadiusLabel );
+	
+    OFX::IntParamDescriptor *regionRadius = desc.defineIntParam( kParamRegionRadius );
+    regionRadius->setLabels( kParamRegionRadiusLabel, kParamRegionRadiusLabel, kParamRegionRadiusLabel );
     regionRadius->setParent( *groupParams );
-    regionRadius->setDefault( kDefaultRegionValue );
+    regionRadius->setDefault( kParamDefaultRegionValue );
 	regionRadius->setRange( 1, 150 );
     regionRadius->setDisplayRange( 2, 15 );
     regionRadius->setHint( "Radius of the region where similar patchs are searched" );
-    OFX::IntParamDescriptor *depth = desc.defineIntParam( kDepth );
-    depth->setLabels( kDepthLabel, kDepthLabel, kDepthLabel );
+	
+    OFX::IntParamDescriptor *depth = desc.defineIntParam( kParamDepth );
+    depth->setLabels( kParamDepthLabel, kParamDepthLabel, kParamDepthLabel );
     depth->setParent( *groupParams );
-    depth->setDefault( kDefaultDepth );
-    depth->setRange( 1, 150 );
-    depth->setDisplayRange( 1, 15 );
+    depth->setDefault( kParamDefaultDepth );
+    depth->setRange( 0, 20 );
+    depth->setDisplayRange( 0, 4 );
     depth->setHint( "Searching depth (3D version) for the nl-means algorithm" );
 }
 

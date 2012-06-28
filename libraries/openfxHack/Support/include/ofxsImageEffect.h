@@ -484,7 +484,7 @@ protected:
 
     void* _pixelData;                   /**< @brief the base address of the image */
     EPixelComponent _pixelComponents;     /**< @brief get the components in the image */
-    int _rowBytes;                    /**< @brief the number of bytes per scanline */
+    int _rowDistanceBytes;                    /**< @brief the number of bytes per scanline */
 
     int _pixelBytes;                  /**< @brief the number of bytes per pixel */
     EBitDepth _pixelDepth;                 /**< @brief get the pixel depth */
@@ -508,37 +508,50 @@ public:
     PropertySet& getPropertySet() { return _imageProps; }
 
     /** @brief get the pixel depth */
-    EBitDepth getPixelDepth( void ) const { return _pixelDepth; }
+    EBitDepth getPixelDepth() const { return _pixelDepth; }
 
     /** @brief get the components in the image */
-    EPixelComponent getPixelComponents( void ) const { return _pixelComponents; }
+    EPixelComponent getPixelComponents() const { return _pixelComponents; }
 
     /** @brief get the string representing the pixel components */
-    std::string getPixelComponentsProperty( void ) const { return _imageProps.propGetString( kOfxImageEffectPropComponents ); }
+    std::string getPixelComponentsProperty() const { return _imageProps.propGetString( kOfxImageEffectPropComponents ); }
 
     /** @brief premultiplication on the image */
-    EPreMultiplication getPreMultiplication( void ) const { return _preMultiplication; }
+    EPreMultiplication getPreMultiplication() const { return _preMultiplication; }
 
     /** @brief get the scale factor that has been applied to this image */
-    OfxPointD getRenderScale( void ) const { return _renderScale; }
+    OfxPointD getRenderScale() const { return _renderScale; }
 
     /** @brief get the scale factor that has been applied to this image */
-    double getPixelAspectRatio( void ) const { return _pixelAspectRatio; }
+    double getPixelAspectRatio() const { return _pixelAspectRatio; }
 
     /** @brief get the pixel data for this image */
-    void* getPixelData( void ) const { return _pixelData; }
+    void* getPixelData() const { return _pixelData; }
 
     /** @brief get the region of definition (in pixel coordinates) of this image */
-    OfxRectI getRegionOfDefinition( void ) const { return _regionOfDefinition; }
+    OfxRectI getRegionOfDefinition() const { return _regionOfDefinition; }
 
     /** @brief get the bounds on the image data (in pixel coordinates) of this image */
-    OfxRectI getBounds( void ) const { return _bounds; }
+    OfxRectI getBounds() const { return _bounds; }
+	
+    OfxPointI getBoundsSize() const { const OfxPointI res = { _bounds.x2 - _bounds.x1, _bounds.y2 - _bounds.y1 }; return res; }
 
-    /** @brief get the row bytes, may be negative */
-    int getRowBytes( void ) const { return _rowBytes; }
+	std::size_t getPixelBytes() const;
+	
+    /** @brief get the distance between 2 rows in bytes, may be negative */
+    int getRowDistanceBytes() const { return _rowDistanceBytes; }
+	
+    /** @brief get the data row size in bytes, by definition >= 0 */
+    std::size_t getBoundsRowDataBytes() const;
+	
+	std::size_t getBoundsNbPixels() const;
+	
+    std::size_t getBoundsImageDataBytes() const;
+	
+    bool isLinearBuffer() const { return (int)(getBoundsRowDataBytes()) == getRowDistanceBytes(); }
 
     /** @brief get the fielding of this image */
-    EField getField( void ) const { return _field; }
+    EField getField() const { return _field; }
 
     /** @brief the unique ID of this image */
     std::string getUniqueIdentifier( void ) const { return _uniqueID; }

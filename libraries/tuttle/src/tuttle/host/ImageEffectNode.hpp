@@ -284,7 +284,7 @@ public:
 	/// get the first and last times available on the effect's timeline
 	void timelineGetBounds( double& t1, double& t2 );
 
-	const OfxPointD& getEffectFrameRange() const
+	const OfxRangeD& getEffectFrameRange() const
 	{
 		return getData()._renderTimeRange;
 	}

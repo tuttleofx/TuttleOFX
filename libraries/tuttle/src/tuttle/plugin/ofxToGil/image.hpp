@@ -56,12 +56,12 @@ View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation o
 	 */
 	View tileView = interleaved_view( tileSize.x, tileSize.y,
 										static_cast<Pixel*>( img->getPixelData() ),
-										img->getRowBytes() );
+										img->getRowDistanceBytes() );
 	switch( orientation )
 	{
 		case eImageOrientationIndependant: // use memory order
 		{
-			if( img->getRowBytes() < 0 ) // if the host use from top to bottom
+			if( img->getRowDistanceBytes() < 0 ) // if the host use from top to bottom
 			{
 				tileView = flipped_up_down_view( tileView );
 			}

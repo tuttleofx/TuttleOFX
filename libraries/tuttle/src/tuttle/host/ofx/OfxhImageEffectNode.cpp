@@ -1277,7 +1277,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 				std::string depth = deepestBitDepth;
 				std::string comp  = clip->findSupportedComp( mostComponents );
 				clip->setBitDepthString( depth );
-				clip->setComponents( comp );
+				clip->setComponentsString( comp );
 			}
 			else
 			{
@@ -1285,14 +1285,14 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 				std::string depth = multiBitDepth ? bestSupportedBitDepth( rawDepth ) : deepestBitDepth;
 
 				clip->setBitDepthString( depth );
-				clip->setComponents( comp );
+				clip->setComponentsString( comp );
 			}
 		}
 		else
 		{
 			/// hmm custom component type, don't touch it and pass it through
 			clip->setBitDepthString( rawDepth );
-			clip->setComponents( rawComp );
+			clip->setComponentsString( rawComp );
 		}
 	}
 }
@@ -1387,7 +1387,7 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 		clip->setBitDepthString( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
 
 		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
-		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
+		clip->setComponentsString( propComponent.getValue(), propComponent.getModifiedBy() );
 
 		const property::Double& propPixelAspectRatio = outArgs.fetchDoubleProperty( parParamName );
 		clip->setPixelAspectRatio( propPixelAspectRatio.getValue(), propPixelAspectRatio.getModifiedBy() );

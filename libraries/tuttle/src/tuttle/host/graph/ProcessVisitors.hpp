@@ -46,6 +46,37 @@ inline void connectClips( TGraph& graph )
 
 namespace visitor {
 
+
+
+template<class TGraph>
+class TimeDomain : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+
+	TimeDomain( TGraph& graph )
+		: _graph( graph )
+	{}
+
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TUTTLE_TCOUT( "[TimeDomain] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode().getTimeDomain( vertex.getProcessData()._timeDomain );
+		TUTTLE_TCOUT_VAR2( vertex.getProcessData()._timeDomain.min, vertex.getProcessData()._timeDomain.max );
+	}
+
+private:
+	TGraph& _graph;
+};
+
+
 /**
  * @brief Create a new version of a graph with nodes deployed over time.
  *
@@ -381,11 +412,11 @@ public:
 	{}
 
 	template<class VertexDescriptor, class Graph>
-	void finish_vertex( VertexDescriptor v, Graph& g )
+	void discover_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
+		TUTTLE_TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -515,7 +546,8 @@ public:
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
-//		TUTTLE_COUT( "[PROCESS] finish_vertex " << vertex );
+		TUTTLE_TCOUT_X( 80, "_" );
+		TUTTLE_COUT( "[PROCESS] finish_vertex " << vertex );
 
 		// do nothing on the empty output node
 		// it's just a link to final nodes
@@ -537,7 +569,7 @@ public:
 		//std::cout << " " << quotes(vertex._name) << std::flush;
 #endif
 		
-		if( _result && vertex.getProcessDataAtTime()._finalNode )
+		if( _result && vertex.getProcessDataAtTime()._isFinalNode )
 		{
 			memory::CACHE_ELEMENT img = _cache.get( vertex._clipName + "." kOfxOutputAttributeName, vertex._data._time );
 			if( ! img.get() )
@@ -549,6 +581,8 @@ public:
 			}
 			_result->put( vertex._clipName, vertex._data._time, img );
 		}
+		
+		TUTTLE_TCOUT_X( 40, "_-" );
 	}
 
 private:

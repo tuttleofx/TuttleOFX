@@ -143,7 +143,7 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 		{
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady( ) );
 		}
-		if( this->_srcRef->getRowBytes( ) == 0 )
+		if( this->_srcRef->getRowDistanceBytes( ) == 0 )
 		{
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
 		}
@@ -163,7 +163,7 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady( ) );
 	}
-	if( this->_dstRef->getRowBytes( ) == 0 )
+	if( this->_dstRef->getRowDistanceBytes( ) == 0 )
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
 	}

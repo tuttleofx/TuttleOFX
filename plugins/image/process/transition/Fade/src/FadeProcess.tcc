@@ -76,7 +76,7 @@ void FadeProcess<View>::setup( const OFX::RenderArguments& args )
 		_srcA.reset( _plugin._clipSrcFrom->fetchImage( args.time ) );
 		if( !_srcA.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-		if( _srcA->getRowBytes() == 0 )
+		if( _srcA->getRowDistanceBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcFrom->getPixelRod( args.time, args.renderScale ) );
 		//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
@@ -88,7 +88,7 @@ void FadeProcess<View>::setup( const OFX::RenderArguments& args )
 		_srcB.reset( _plugin._clipSrcTo->fetchImage( args.time ) );
 		if( !_srcB.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-		if( _srcB->getRowBytes() == 0 )
+		if( _srcB->getRowDistanceBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		this->_srcViewB = this->getView( _srcB.get(), _plugin._clipSrcTo->getPixelRod( args.time, args.renderScale ) );
 		//	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
@@ -260,8 +260,9 @@ void FadeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	else
 	{
 		// No input clip, set a constant color
-		View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-												procWindowSize.x, procWindowSize.y );
+		View dst = subimage_view( this->_dstView,
+				procWindowOutput.x1, procWindowOutput.y1,
+				procWindowSize.x, procWindowSize.y );
 		
 		Pixel c;
 		color_convert( _params._color, c );

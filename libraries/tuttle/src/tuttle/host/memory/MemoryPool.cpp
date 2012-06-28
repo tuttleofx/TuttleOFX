@@ -167,6 +167,7 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 
 boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 {
+	TUTTLE_TCOUT( "MemoryPool::allocate: " << size );
 	PoolData* pData = NULL;
 
 	{
