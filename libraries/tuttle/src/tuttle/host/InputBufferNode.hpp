@@ -71,6 +71,49 @@ public:
 			const ofx::imageEffect::EBitDepth bitDepth,
 			const int rowDistanceBytes,
 			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom );
+	
+	void setRawImageBuffer(
+			unsigned char* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthUByte,
+			rowDistanceBytes,
+			orientation );
+	}
+	void setRawImageBuffer(
+			unsigned short* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthUShort,
+			rowDistanceBytes,
+			orientation );
+	}
+	void setRawImageBuffer(
+			float* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthFloat,
+			rowDistanceBytes,
+			orientation );
+	}
 
 #if 0
 	std::size_t getClipNbComponents() const
