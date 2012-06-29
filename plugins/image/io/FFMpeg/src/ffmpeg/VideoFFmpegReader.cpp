@@ -286,6 +286,18 @@ bool VideoFFmpegReader::setupStreamInfo()
 		_nbFrames = maxPts;
 	}
 
+	// nb_frames will be set if that information is present in the container,
+	// otherwise it will be zero.
+	if ( stream->nb_frames )
+	{
+		if ( (int64_t)_nbFrames != stream->nb_frames )
+		{
+			std::cerr << "Warning: calculated number of frames ("   <<
+			_nbFrames << ") does not match container information (" <<
+			stream->nb_frames << ")" << std::endl;
+		}
+	}
+
 	return true;
 }
 
