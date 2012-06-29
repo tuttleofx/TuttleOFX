@@ -257,7 +257,7 @@ bool VideoFFmpegReader::setupStreamInfo()
 	openVideoCodec();
 
 	// Set the duration
-	if( boost::numeric_cast<boost::uint64_t>( _context->duration ) != AV_NOPTS_VALUE )
+	if( _context->duration > 0 )
 	{
 		_nbFrames = boost::numeric_cast<boost::uint64_t>( ( fps() * (double) _context->duration / (double) AV_TIME_BASE ) );
 	}
@@ -332,7 +332,7 @@ boost::int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
 {
 	boost::int64_t timestamp = boost::numeric_cast<boost::int64_t>( ( (double) pos / fps() ) * AV_TIME_BASE );
 
-	if( boost::numeric_cast<boost::uint64_t>( _context->start_time ) != AV_NOPTS_VALUE )
+	if( _context->start_time != AV_NOPTS_VALUE )
 		timestamp += _context->start_time;
 	return timestamp;
 }
@@ -371,7 +371,7 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	// search for our picture.
 	double pts = 0;
 
-	if( boost::numeric_cast<boost::uint64_t>(_pkt.dts) != AV_NOPTS_VALUE )
+	if( _pkt.dts != AV_NOPTS_VALUE )
 	{
 		AVStream* stream = getVideoStream();
 		if( stream )
@@ -385,7 +385,7 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 		curPos = _lastSearchPos + 1;
 	_lastSearchPos = curPos;
 
-	if( boost::numeric_cast<boost::uint64_t>(_context->start_time) != AV_NOPTS_VALUE )
+	if( _context->start_time != AV_NOPTS_VALUE )
 		curPos -= int(_context->start_time * fps() / AV_TIME_BASE);
 
 	int hasPicture   = 0;
