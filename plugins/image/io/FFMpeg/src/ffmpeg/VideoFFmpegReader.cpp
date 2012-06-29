@@ -337,11 +337,6 @@ boost::int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
 	return timestamp;
 }
 
-int VideoFFmpegReader::getFrame( const boost::int64_t timestamp ) const
-{
-	return boost::numeric_cast<boost::uint64_t>( ( timestamp - _context->start_time ) * fps() / AV_TIME_BASE );
-}
-
 bool VideoFFmpegReader::seek( const std::size_t pos )
 {
 	boost::int64_t offset = getTimeStamp( pos );
