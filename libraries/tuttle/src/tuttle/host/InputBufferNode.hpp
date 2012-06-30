@@ -16,20 +16,25 @@ class InputBufferNode : public INode
 {
 public:
 	InputBufferNode( );
-	InputBufferNode( const InputBufferNode& orig );
 	~InputBufferNode( );
 
+private:
+	InputBufferNode( const InputBufferNode& orig );
+	
+public:
 	InputBufferNode* clone() const
 	{
 		return new InputBufferNode( *this );
 	}
+	
 public:
 	static const std::string _label;
 	std::string _name;
+#ifndef SWIG
 	attribute::ClipImage _outputClip;
-
-	memory::CACHE_ELEMENT _imageCache;
 	
+	memory::CACHE_ELEMENT _imageCache;
+#endif
 	ofx::property::OfxhSet _emptyProps;
 	
 	bool operator==( const INode& other ) const;
@@ -114,7 +119,7 @@ public:
 			rowDistanceBytes,
 			orientation );
 	}
-
+	
 #if 0
 	std::size_t getClipNbComponents() const
 	{
