@@ -171,6 +171,29 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderG
 
 }
 
+void ProcessGraph::beginSequenceRender( ProcessVertexData& procOptions )
+{
+	TUTTLE_TCOUT( "process begin sequence" );
+	//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
+	for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
+		it != itEnd;
+		++it )
+	{
+		NodeMap::value_type& p = *it;
+		p.second->beginSequence( procOptions );
+	}
+}
+
+void ProcessGraph::endSequenceRender( ProcessVertexData& procOptions )
+{
+	TUTTLE_TCOUT( "process end sequence" );
+	//--- END sequence render
+	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
+	{
+		p.second->endSequence( procOptions ); // node option... or no option here ?
+	}
+}
+
 memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 {
 	using namespace boost;
@@ -184,12 +207,12 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
-	ProcessVertexData defaultOptions;
-	defaultOptions._interactive = options._interactive;
+	ProcessVertexData procOptions;
+	procOptions._interactive = options._interactive;
 	// imageEffect specific...
-//	defaultOptions._field       = kOfxImageFieldBoth;
-	defaultOptions._renderScale = options._renderScale;
-//	defaultOptions._renderRoI   = renderWindow;
+//	procOptions._field       = kOfxImageFieldBoth;
+	procOptions._renderScale = options._renderScale;
+//	procOptions._renderRoI   = renderWindow;
 
 	///@todo tuttle: exception if there is non-optional clips unconnected.
 	/// It's already checked in the beginSequence of the imageEffectNode.
@@ -217,7 +240,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		Vertex& v = renderGraph.instance(vd);
 		if( ! v.isFake() )
 		{
-			v.setProcessData( defaultOptions );
+			v.setProcessData( procOptions );
 			v.getProcessNode().setProcessData( &v._data );
 		}
 	}
@@ -264,20 +287,12 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 	// at each frame
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
-		defaultOptions._renderTimeRange.min = timeRange._begin;
-		defaultOptions._renderTimeRange.max = timeRange._end;
-		defaultOptions._step                = timeRange._step;
+		procOptions._renderTimeRange.min = timeRange._begin;
+		procOptions._renderTimeRange.max = timeRange._end;
+		procOptions._step                = timeRange._step;
 
-		TUTTLE_TCOUT( "process begin sequence" );
-		//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
-		for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
-			 it != itEnd;
-			 ++it )
-		{
-			NodeMap::value_type& p = *it;
-			p.second->beginSequence( defaultOptions );
-		}
-
+		beginSequenceRender( procOptions );
+		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
 			try
@@ -348,7 +363,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )
 				{
 					VertexAtTime& v = renderGraphAtTime.targetInstance( ed );
-					v.getProcessDataAtTime()._isFinalNode = true;
+					v.getProcessDataAtTime()._isFinalNode = true; /// @todo: this is maybe better to move this into the ProcessData? Doesn't depend on time?
 				}
 				
 				TUTTLE_TCOUT( "---------------------------------------- set data at time" );
@@ -397,7 +412,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 
 				if( ! options._forceIdentityNodesProcess )
 				{
-					TUTTLE_COUT( "---------------------------------------- remove identity nodes" );
+					TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
 					// The "Remove identity nodes" step need to be done after preprocess steps, because the RoI need to be computed.
 					std::vector<graph::visitor::IdentityNodeConnection<InternalGraphAtTimeImpl> > toRemove;
 					
@@ -413,7 +428,6 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 					}
 				}
 
-				
 				/*
 				TUTTLE_TCOUT( "---------------------------------------- optimize graph" );
 				graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( renderGraphAtTime );
@@ -492,14 +506,21 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				TUTTLE_TCOUT_VAR( result );
 
 				TUTTLE_COUT( " " );
-
 			}
 			catch( tuttle::exception::FileNotExist& e ) // @todo tuttle: change that.
 			{
-				TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
-#ifndef TUTTLE_PRODUCTION
-				TUTTLE_COUT_ERROR( boost::diagnostic_information(e) );
-#endif
+				if( options._continueOnError )
+				{
+					TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
+	#ifndef TUTTLE_PRODUCTION
+					TUTTLE_COUT_ERROR( boost::diagnostic_information(e) );
+	#endif
+				}
+				else
+				{
+					endSequenceRender( procOptions );
+					throw;
+				}
 			}
 			catch( ... )
 			{
@@ -513,19 +534,14 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				}
 				else
 				{
+					endSequenceRender( procOptions );
 					throw;
 				}
 			}
 		}
-
-		TUTTLE_TCOUT( "process end sequence" );
-		//--- END sequence render
-		BOOST_FOREACH( NodeMap::value_type& p, _nodes )
-		{
-			p.second->endSequence( defaultOptions ); // node option... or no option here ?
-		}
+		
+		endSequenceRender( procOptions );
 	}
-
 
 	return result;
 }
