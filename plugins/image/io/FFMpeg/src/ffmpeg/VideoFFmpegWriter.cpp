@@ -133,6 +133,33 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			_stream->codec->b_quant_factor   = 2.0;
 		}
 		_stream->codec->mb_decision = _mbDecision;
+
+		int pixfmt_allowed = 0, k;
+		if ( _codec->pix_fmts )
+		{
+			for ( k = 0; _codec->pix_fmts[k] != PIX_FMT_NONE; k++ )
+			{
+				if ( _codec->pix_fmts[k] == _out_pixelFormat )
+				{
+					pixfmt_allowed = 1;
+					break;
+				}
+			}
+		}
+		else
+		{
+			// If a codec does not contain a list of supported pixel
+			// formats, just assume that _out_PixelFormat is valid
+			pixfmt_allowed = 1;
+		}
+
+		if ( !pixfmt_allowed )
+		{
+			// av_get_pix_fmt_name requires lavu 51.3.0 or higher
+			std::cerr << "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" << std::endl;
+			_out_pixelFormat = _codec->pix_fmts[0];
+			std::cerr << "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) << std::endl;
+		}
 		_stream->codec->pix_fmt     = _out_pixelFormat;
 
 		if( !strcmp( _avformatOptions->oformat->name, "mp4" ) || !strcmp( _avformatOptions->oformat->name, "mov" ) || !strcmp( _avformatOptions->oformat->name, "3gp" ) || !strcmp( _avformatOptions->oformat->name, "flv" ) )
