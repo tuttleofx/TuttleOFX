@@ -17,9 +17,21 @@
 //%include <tuttle/host/ofx/OfxhImageEffectPluginCache.i>
 %include <tuttle/host/ofx/OfxhImageEffectNodeBase.i>
 
+
 %{
+#define SWIG_FILE_WITH_INIT
 #include <tuttle/host/InputBufferNode.hpp>
 %}
+
+%include "wrappers/numpy.i"
+
+%init %{
+import_array();
+%}
+
+%apply (float* INPLACE_ARRAY2, int DIM1, int DIM2) {(float* rawBuffer, int width, int height)};
+%apply (unsigned short* INPLACE_ARRAY2, int DIM1, int DIM2) {(unsigned short* rawBuffer, int width, int height)};
+%apply (unsigned char* INPLACE_ARRAY2, int DIM1, int DIM2) {(unsigned char* rawBuffer, int width, int height)};
 
 namespace std {
 %template(UByteVector) vector<unsigned char>;
@@ -28,3 +40,10 @@ namespace std {
 }
 
 %include <tuttle/host/InputBufferNode.hpp>
+
+
+%clear (float* rawBuffer, int width, int height);
+%clear (unsigned short* rawBuffer, int width, int height);
+%clear (unsigned char* rawBuffer, int width, int height);
+
+

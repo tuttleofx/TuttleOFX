@@ -120,6 +120,47 @@ public:
 			orientation );
 	}
 	
+	
+	void setGrayImage(
+		float* rawBuffer,
+		int width,
+		int height )
+	{
+		const OfxRectD rod = { 0, 0, width, height };
+		setRawImageBuffer(
+			rawBuffer,
+			rod,
+			ofx::imageEffect::ePixelComponentAlpha,
+			0,
+			attribute::Image::eImageOrientationFromTopToBottom );
+	}
+	void setGrayImage(
+		unsigned short* rawBuffer,
+		int width,
+		int height )
+	{
+		const OfxRectD rod = { 0, 0, width, height };
+		setRawImageBuffer(
+			rawBuffer,
+			rod,
+			ofx::imageEffect::ePixelComponentAlpha,
+			0,
+			attribute::Image::eImageOrientationFromTopToBottom );
+	}
+	void setGrayImage(
+		unsigned char* rawBuffer,
+		int width,
+		int height )
+	{
+		const OfxRectD rod = { 0, 0, width, height };
+		setRawImageBuffer(
+			rawBuffer,
+			rod,
+			ofx::imageEffect::ePixelComponentAlpha,
+			0,
+			attribute::Image::eImageOrientationFromTopToBottom );
+	}
+	
 #if 0
 	std::size_t getClipNbComponents() const
 	{
