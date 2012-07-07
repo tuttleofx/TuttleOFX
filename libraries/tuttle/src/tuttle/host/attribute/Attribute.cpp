@@ -17,7 +17,9 @@ Attribute::Attribute( const Attribute& other )
 Attribute::~Attribute() {}
 
 Attribute& Attribute::operator=( const Attribute& other )
-{}
+{
+	return * this;
+}
 
 const INode& Attribute::getNode() const
 {
