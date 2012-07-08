@@ -26,8 +26,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	, _aspectRatio       ( 1 )
 	, _out_pixelFormat   ( PIX_FMT_YUV420P )
 	, _fps               ( 25.0f )
-	, _format            ( "default" )
-	, _codec             ( "default" )
+	, _formatName        ( "default" )
+	, _codecName         ( "default" )
 	, _bitRate           ( 400000 )
 	, _bitRateTolerance  ( 4000 * 10000 )
 	, _gopSize           ( 12 )
@@ -89,7 +89,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	_error = IGNORE_FINISH;
 
 	AVOutputFormat* fmt = 0;
-	fmt = av_guess_format( _format.c_str(), NULL, NULL );
+	fmt = av_guess_format( _formatName.c_str(), NULL, NULL );
 	if( !fmt )
 	{
 		fmt = av_guess_format( NULL, filename().c_str(), NULL );
@@ -111,7 +111,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	if( !_stream )
 	{
 		CodecID codecId    = fmt->video_codec;
-		AVCodec* userCodec = avcodec_find_encoder_by_name( _codec.c_str() );
+		AVCodec* userCodec = avcodec_find_encoder_by_name( _codecName.c_str() );
 		if( userCodec )
 			codecId = userCodec->id;
 
