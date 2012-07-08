@@ -20,7 +20,6 @@ private:
 
 public:
 	explicit VideoFFmpegWriter();
-	~VideoFFmpegWriter();
 
 	bool movie() const
 	{
@@ -86,7 +85,7 @@ public:
 
 	const std::string& getFormat() const
 	{
-		return _format;
+		return _formatName;
 	}
 
 	const std::vector<std::string>& getFormatsShort() const
@@ -106,17 +105,17 @@ public:
 
 	void setFormat( const unsigned int id )
 	{
-		_format = _formatsShortNames[id];
+		_formatName = _formatsShortNames[id];
 	}
 
 	void setFormat( const std::string& format )
 	{
-		_format = format;
+		_formatName = format;
 	}
 
 	const std::string& getCodec() const
 	{
-		return _codec;
+		return _codecName;
 	}
 
 	const std::vector<std::string>& getCodecsShort() const
@@ -131,12 +130,12 @@ public:
 
 	void setCodec( const unsigned int id )
 	{
-		_codec = _codecsShortNames[id];
+		_codecName = _codecsShortNames[id];
 	}
 
 	void setCodec( const std::string& codec )
 	{
-		_codec = codec;
+		_codecName = codec;
 	}
 
 	void setMotionEstimation( const int me )
@@ -171,10 +170,11 @@ public:
 	}
 
 private:
-//	AVCodecContext*                _avctxOptions[AVMEDIA_TYPE_NB];
 	AVFormatContext*               _avformatOptions;
 	struct SwsContext*             _sws_context;         ///< contexte de transformation swscale
 	AVStream*                      _stream;
+	AVCodec*                       _codec;
+        AVOutputFormat*                _ofmt;
 	std::vector<std::string>       _formatsLongNames;
 	std::vector<std::string>       _formatsShortNames;
 	std::vector<std::string>       _codecsLongNames;
@@ -188,8 +188,8 @@ private:
 	PixelFormat                    _out_pixelFormat;
 	// knobs variables
 	float                          _fps;
-	std::string                    _format;
-	std::string                    _codec;
+	std::string                    _formatName;
+	std::string                    _codecName;
 	int                            _bitRate;
 	int                            _bitRateTolerance;
 	int                            _gopSize;

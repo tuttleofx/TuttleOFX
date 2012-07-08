@@ -28,7 +28,6 @@ protected:
 public:
 	static const std::string ffmpegError_toString( int error );
 	static const std::string codecType_toString( const AVMediaType codec_type );
-	static const std::string pixelFormat_toString( const PixelFormat p );
 
 private:
 	static bool _hasBeenInit;
