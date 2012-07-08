@@ -70,7 +70,7 @@ bool SelectionAverage::computeAverageSelection(OFX::Clip* clipColor, const OfxPo
 		return false;
 	}
 
-	if( src->getRowBytes() == 0 )//if source is wrong
+	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		return false;
@@ -129,7 +129,7 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 		return;
 	}
 
-	if( src->getRowBytes() == 0 )//if source is wrong
+	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		return;

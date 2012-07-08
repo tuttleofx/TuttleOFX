@@ -34,7 +34,7 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 	params._format                         = _paramFormat            ->getValue();
 	params._codec                          = _paramCodec             ->getValue();
 	params._bitrate                        = _paramBitRate           ->getValue();
-	params._motionEstimation               = _paramMotionEstimation  ->getValue();
+	params._motionEstimation               = _paramMotionEstimation  ->getValue() + 1; // Motion_Est_ID start a 1
 	params._colorspace                     = (AVColorSpace)                  _paramColorspace                  ->getValue();
 	params._colorPrimaries                 = (AVColorPrimaries)              _paramColorPrimaries              ->getValue();
 	params._colorTransferCharacteristic    = (AVColorTransferCharacteristic) _paramColorTransferCharacteristic ->getValue();

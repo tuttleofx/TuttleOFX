@@ -73,7 +73,7 @@ public:
 		if( !_dst.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady()
 				<< exception::dev() + "Error on clip " + quotes(_clipDst->name()) );
-		if( _dst->getRowBytes() == 0 )
+		if( _dst->getRowDistanceBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
 				<< exception::dev() + "Error on clip " + quotes(_clipDst->name()) );
 		

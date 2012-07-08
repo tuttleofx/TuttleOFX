@@ -89,6 +89,16 @@ public:
 
 		return imageEffect::mapBitDepthStringToEnum( s );
 	}
+	
+	std::size_t getBitDepthMemorySize() const
+	{
+		return imageEffect::bitDepthMemorySize( getBitDepth() );
+	}
+	
+	std::size_t getPixelMemorySize() const
+	{
+		return getBitDepthMemorySize() * getNbComponents();
+	}
 
 	/** set the current pixel depth
 	 * called by clip preferences action
@@ -178,14 +188,18 @@ public:
 	 * set the current set of components
 	 * called by clip preferences action
 	 */
-	void setComponents( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
+	void setComponentsString( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
 
 		prop.setValue( s, 0, modifiedBy );
 	}
-
-	void setComponentsIfNotModifiedByPlugin( const std::string& s )
+	void setComponents( const imageEffect::EPixelComponent& comp, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
+	{
+		setComponentsString( imageEffect::mapPixelComponentEnumToString( comp ), modifiedBy );
+	}
+	
+	void setComponentsStringIfNotModifiedByPlugin( const std::string& s )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
 

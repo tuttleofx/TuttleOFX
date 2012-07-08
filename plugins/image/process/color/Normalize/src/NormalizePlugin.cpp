@@ -93,7 +93,7 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 		boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
 		if( ! src.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-		if( src->getRowBytes() == 0 )
+		if( src->getRowDistanceBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		OfxRectI srcPixelRod = _clipSrc->getPixelRod( args.time, args.renderScale );
 

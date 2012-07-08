@@ -22,31 +22,52 @@ class ClipImage;
  */
 class Image : public tuttle::host::ofx::imageEffect::OfxhImage
 {
+public:
+	enum EImageOrientation
+	{
+		eImageOrientationFromTopToBottom, //< Use image orientation from top to bottom
+		eImageOrientationFromBottomToTop //< Use image orientation from bottom to top
+	};
+	
 protected:
-	std::size_t _ncomp; ///< number of components
-	std::size_t _memlen; ///< memory size
-	std::size_t _rowlen; ///< memory size for 1 row
+	std::size_t _nbComponents; ///< number of components
+	std::size_t _memorySize; ///< memory size
+	std::size_t _pixelBytes; ///< pixel memory size
+	int _rowAbsDistanceBytes; ///< positive memory size for the distance between rows
+	OfxRectI _bounds;
+	EImageOrientation _orientation;
 	std::string _fullname;
 	memory::IPoolDataPtr _data; ///< where we are keeping our image data
 
 public:
-	explicit Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime t );
+	Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const EImageOrientation orientation, const int rowDistanceBytes );
 	virtual ~Image();
 
 	void setPoolData( const memory::IPoolDataPtr& pData )
 	{
 		_data = pData;
-		setPointerProperty( kOfxImagePropData, getPixelData() );
+		setPointerProperty( kOfxImagePropData, getOrientedPixelData( eImageOrientationFromBottomToTop ) ); // OpenFX standard use BottomToTop
 	}
 
 	std::string getFullName() const { return _fullname; }
 
-	std::size_t getMemlen() const { return _memlen; }
-	std::size_t getRowlen() const { return _rowlen; }
+	std::size_t getMemorySize() const { return _memorySize; }
+	/**
+	 * @brief Positive/Absolute distance rows.
+	 */
+	int getRowAbsDistanceBytes() const { return _rowAbsDistanceBytes; }
 	
-	boost::uint8_t* getPixelData() { return reinterpret_cast<boost::uint8_t*>( _data->data() ); }
+	EImageOrientation getOrientation() const { return _orientation; }
+	
+	/**
+	 * @brief Get distance between rows depending on the requested orientation.
+	 */
+	int getOrientedRowDistanceBytes( const EImageOrientation orientation ) { return _rowAbsDistanceBytes * ( _orientation != orientation ? -1 : 1); }
+	
+	boost::uint8_t* getPixelData();
+	boost::uint8_t* getOrientedPixelData( const EImageOrientation orientation );
 
-	boost::uint8_t* pixel( int x, int y );
+	boost::uint8_t* pixel( const int x, const int y );
 	
 	/**
 	 * @todo clean this!
@@ -56,6 +77,9 @@ public:
 	static void     copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	                      const OfxPointI& srcCorner, const OfxPointI& count );
 
+	template < class VIEW_T >
+	VIEW_T getGilView( const EImageOrientation orientation );
+	
 	template < class VIEW_T >
 	VIEW_T getGilView();
 
@@ -77,7 +101,7 @@ private:
 
 
 template < class VIEW_T >
-VIEW_T Image::getGilView()
+VIEW_T Image::getGilView( const EImageOrientation orientation )
 {
 	//const OfxRectI rod = this->getROD();
 	const OfxRectI bounds = this->getBounds();
@@ -91,10 +115,22 @@ VIEW_T Image::getGilView()
 	typedef typename VIEW_T::value_type Pixel;
 	return boost::gil::interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
 	                         std::abs( bounds.y2 - bounds.y1 ),
-	                         ( Pixel* )( this->getPixelData() ),
-	                         this->getRowBytes() );
+	                         ( Pixel* )( this->getOrientedPixelData( orientation ) ),
+	                         this->getOrientedRowDistanceBytes( orientation ) );
 }
 
+template < class VIEW_T >
+VIEW_T Image::getGilView()
+{
+	//const OfxRectI rod = this->getROD();
+	const OfxRectI bounds = this->getBounds();
+
+	typedef typename VIEW_T::value_type Pixel;
+	return boost::gil::interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
+	                         std::abs( bounds.y2 - bounds.y1 ),
+	                         ( Pixel* )( this->getPixelData() ),
+	                         this->getRowAbsDistanceBytes() );
+}
 
 }
 }

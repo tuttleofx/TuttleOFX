@@ -74,69 +74,6 @@ const std::string FFmpeg::codecType_toString( const AVMediaType codec_type )
         return "CODEC_TYPE not handle.";
 }
 
-const std::string FFmpeg::pixelFormat_toString( const PixelFormat p )
-{
-        return av_get_pix_fmt_name( p );
-        /*
-           switch( p )
-           {
-                CASE_RETURN_STRING( PIX_FMT_NONE );
-                CASE_RETURN_STRING( PIX_FMT_YUV420P );
-                CASE_RETURN_STRING( PIX_FMT_YUYV422 );
-                CASE_RETURN_STRING( PIX_FMT_RGB24 );
-                CASE_RETURN_STRING( PIX_FMT_BGR24 );
-                CASE_RETURN_STRING( PIX_FMT_YUV422P );
-                CASE_RETURN_STRING( PIX_FMT_YUV444P );
-                CASE_RETURN_STRING( PIX_FMT_RGB32 );
-                CASE_RETURN_STRING( PIX_FMT_YUV410P );
-                CASE_RETURN_STRING( PIX_FMT_YUV411P );
-                CASE_RETURN_STRING( PIX_FMT_RGB565 );
-                CASE_RETURN_STRING( PIX_FMT_RGB555 );
-                CASE_RETURN_STRING( PIX_FMT_GRAY8 );
-                CASE_RETURN_STRING( PIX_FMT_MONOWHITE );
-                CASE_RETURN_STRING( PIX_FMT_MONOBLACK );
-                CASE_RETURN_STRING( PIX_FMT_PAL8 );
-                CASE_RETURN_STRING( PIX_FMT_YUVJ420P );
-                CASE_RETURN_STRING( PIX_FMT_YUVJ422P );
-                CASE_RETURN_STRING( PIX_FMT_YUVJ444P );
-                CASE_RETURN_STRING( PIX_FMT_XVMC_MPEG2_MC );
-                CASE_RETURN_STRING( PIX_FMT_XVMC_MPEG2_IDCT );
-                CASE_RETURN_STRING( PIX_FMT_UYVY422 );
-                CASE_RETURN_STRING( PIX_FMT_UYYVYY411 );
-                CASE_RETURN_STRING( PIX_FMT_BGR32 );
-                CASE_RETURN_STRING( PIX_FMT_BGR565 );
-                CASE_RETURN_STRING( PIX_FMT_BGR555 );
-                CASE_RETURN_STRING( PIX_FMT_BGR8 );
-                CASE_RETURN_STRING( PIX_FMT_BGR4 );
-                CASE_RETURN_STRING( PIX_FMT_BGR4_BYTE );
-                CASE_RETURN_STRING( PIX_FMT_RGB8 );
-                CASE_RETURN_STRING( PIX_FMT_RGB4 );
-                CASE_RETURN_STRING( PIX_FMT_RGB4_BYTE );
-                CASE_RETURN_STRING( PIX_FMT_NV12 );
-                CASE_RETURN_STRING( PIX_FMT_NV21 );
-                CASE_RETURN_STRING( PIX_FMT_RGB32_1 );
-                CASE_RETURN_STRING( PIX_FMT_BGR32_1 );
-                CASE_RETURN_STRING( PIX_FMT_GRAY16BE );
-                CASE_RETURN_STRING( PIX_FMT_GRAY16LE );
-                CASE_RETURN_STRING( PIX_FMT_YUV440P );
-                CASE_RETURN_STRING( PIX_FMT_YUVJ440P );
-                CASE_RETURN_STRING( PIX_FMT_YUVA420P );
-                CASE_RETURN_STRING( PIX_FMT_VDPAU_H264 );
-                CASE_RETURN_STRING( PIX_FMT_VDPAU_MPEG1 );
-                CASE_RETURN_STRING( PIX_FMT_VDPAU_MPEG2 );
-                CASE_RETURN_STRING( PIX_FMT_VDPAU_WMV3 );
-                CASE_RETURN_STRING( PIX_FMT_VDPAU_VC1 );
-                CASE_RETURN_STRING( PIX_FMT_RGB48BE );
-                CASE_RETURN_STRING( PIX_FMT_RGB48LE );
-                CASE_RETURN_STRING( PIX_FMT_VAAPI_MOCO );
-                CASE_RETURN_STRING( PIX_FMT_VAAPI_IDCT );
-                CASE_RETURN_STRING( PIX_FMT_VAAPI_VLD );
-                CASE_RETURN_STRING( PIX_FMT_NB );
-           }
-           return "Error PixelFormat not handle.";
-         */
-}
-
 
 /*
  #define VALUE_AND_NAME(e) e, #e

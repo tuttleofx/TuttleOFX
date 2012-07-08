@@ -36,7 +36,10 @@
 #ifndef SWIG
 namespace OFX {
 typedef ::boost::error_info<struct tag_ofxStatus, ::OfxStatus> ofxStatus;
-inline std::string to_string( const ofxStatus& e ) { return ::tuttle::ofx::mapStatusToString( e.value() ); }
+inline std::string to_string( const ofxStatus& e )
+{
+	return ::tuttle::ofx::mapStatusToString( e.value() );
+}
 }
 #endif
 

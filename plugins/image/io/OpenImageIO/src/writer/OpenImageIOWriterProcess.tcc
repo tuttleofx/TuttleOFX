@@ -162,7 +162,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 			<< exception::dev( boost::current_exception_diagnostic_information() )
 			<< exception::filename(params._filepath) );
 	}
-	copy_pixels( this->_srcView, this->_dstView );
+	copy_pixels( this->_srcView, this->_dstView ); // @todo ?
 }
 
 /**

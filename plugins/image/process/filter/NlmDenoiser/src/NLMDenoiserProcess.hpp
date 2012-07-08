@@ -12,7 +12,11 @@
 #include <vector>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
+
+#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/array.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/scoped_array.hpp>
 
@@ -22,9 +26,8 @@ namespace nlmDenoiser {
 
 struct NlmParams
 {
-
-	float mix[3];
-	float bws[3];
+	boost::array<float,4> mix;
+	boost::array<float,4> bws;
 	int patchRadius;
 	int regionRadius;
 	double preBlurring;
@@ -35,11 +38,11 @@ struct NlmParams
  */
 template<class View>
 class NLMDenoiserProcess
-: public ImageGilProcessor<View>
+	: public ImageGilProcessor<View>
 {
-
 public:
 	typedef typename View::value_type Pixel;
+	typedef typename boost::gil::channel_type<View>::type Channel;
 
 protected:
 	OFX::BooleanParam* _paramOptimized; ///< Perform optimization (quality++, speed+++)
@@ -54,8 +57,8 @@ protected:
 	OFX::DoubleParam* _paramGreenGrainSize; ///< Green color effect bandwidth
 	OFX::DoubleParam* _paramBlueGrainSize; ///< Blue color effect bandwidth
 
-	std::vector< View > _srcView; ///< Array of source image view (3D-NLMeans)
-	boost::scoped_array< boost::scoped_ptr<OFX::Image> > _srcImg; ///< @todo use boost::ptr_vector
+	std::vector< View > _srcViews; ///< Array of source image view (3D-NLMeans)
+	boost::ptr_vector< OFX::Image > _srcImgs;
 
 	NLMDenoiserPlugin & _plugin; ///< Rendering plugin
 
@@ -63,7 +66,6 @@ protected:
 	OfxRectI _upScaledBounds; ///< Upscaled source bounds (margin upscaling)
 
 protected:
-	void setSrcView( View & v, const int n );
 	void addFrame( const OfxRectI & dBounds, const int dstBitDepth,
 				 const int dstComponents, const double time, const int z );
 
@@ -76,9 +78,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	double computeBandwidth( );
-	// Blur anisotopric
-	template<class D_VIEW>
-	void nlMeans( D_VIEW &dst, const OfxRectI& procWindow, const NlmParams & params );
+	void nlMeans( View& dst, const OfxRectI& procWindow, const NlmParams& params );
 
 	void computeWeights( const std::vector< View > & srcViews,
 						 const OfxRectI & procWindow,

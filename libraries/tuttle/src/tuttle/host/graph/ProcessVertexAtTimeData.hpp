@@ -46,7 +46,7 @@ public:
 	ProcessVertexAtTimeData()
 		: _nodeData( NULL )
 		, _time( 0 )
-		, _finalNode( false )
+		, _isFinalNode( false )
 		, _outDegree( 0 )
 		, _inDegree( 0 )
 	{
@@ -56,7 +56,7 @@ public:
 	ProcessVertexAtTimeData( const ProcessVertexData& nodeData, const OfxTime time )
 		: _nodeData( &nodeData )
 		, _time( time )
-		, _finalNode( false )
+		, _isFinalNode( false )
 		, _outDegree( 0 )
 		, _inDegree( 0 )
 	{
@@ -73,7 +73,7 @@ public:
 	This& operator=( const This& v )
 	{
 		_time = v._time;
-		_finalNode = v._finalNode;
+		_isFinalNode = v._isFinalNode;
 		_outDegree = v._outDegree;
 		_inDegree = v._inDegree;
 		_localInfos = v._localInfos;
@@ -92,7 +92,7 @@ public:
 	const ProcessVertexData* _nodeData;
 
 	OfxTime _time;
-	bool _finalNode;
+	bool _isFinalNode;
 
 	std::vector<const ProcessEdgeAtTime*> _inEdges;
 	std::vector<const ProcessEdgeAtTime*> _outEdges;

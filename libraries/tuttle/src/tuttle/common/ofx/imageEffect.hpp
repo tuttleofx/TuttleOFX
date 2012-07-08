@@ -3,6 +3,8 @@
 
 #include <tuttle/common/exceptions.hpp>
 
+#include <boost/cstdint.hpp>
+
 #include <string>
 
 namespace tuttle {
@@ -38,6 +40,24 @@ enum EBitDepth
 const std::string mapBitDepthEnumToString( const EBitDepth e );
 EBitDepth         mapBitDepthStringToEnum( const std::string& str );
 
+inline std::size_t bitDepthMemorySize( const EBitDepth e )
+{
+	switch( e )
+	{
+		case eBitDepthUByte:
+			return sizeof( boost::uint8_t );
+		case eBitDepthUShort:
+			return sizeof( boost::uint16_t );
+		case eBitDepthFloat:
+			return sizeof( float );
+		case eBitDepthNone:
+		case eBitDepthCustom:
+			return 0;
+	}
+	BOOST_ASSERT( false );
+	return 0;
+}
+
 /** @brief Enumerates the component types supported */
 enum EPixelComponent
 {
@@ -67,6 +87,7 @@ inline std::size_t numberOfComponents( const EPixelComponent c )
 			BOOST_THROW_EXCEPTION( exception::Value()
 			    << exception::user() + "Can't retrieve the number of values inside a custom pixel component." );
 	}
+	BOOST_ASSERT( false );
 	return 0;
 }
 

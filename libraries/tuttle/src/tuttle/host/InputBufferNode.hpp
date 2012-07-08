@@ -15,117 +15,26 @@ namespace host {
 class InputBufferNode : public INode
 {
 public:
-	/** @brief Enumerates the pixel depths supported */
-	enum EBitDepth
-	{
-		eBitDepthCustom = -1, ///< some non standard bit depth
-		eBitDepthNone = 0, ///< bit depth that indicates no data is present
-		eBitDepthUByte = 1,
-		eBitDepthUShort = 2,
-		eBitDepthFloat = 3
-	};
-
-	/** @brief Enumerates the component types supported */
-	enum EPixelComponent
-	{
-		ePixelComponentNone,
-		ePixelComponentRGB,
-		ePixelComponentRGBA,
-		ePixelComponentAlpha,
-		ePixelComponentCustom ///< some non standard pixel type
-	};
-
-	/** @brief Enumerates the ways a fielded image can be extracted from a clip */
-	enum EFieldExtraction
-	{
-		eFieldExtractBoth,   /**< @brief extract both fields */
-		eFieldExtractSingle, /**< @brief extracts a single field, so you have a half height image */
-		eFieldExtractDoubled /**< @brief extracts a single field, but doubles up the field, so you have a full height image */
-	};
-
-	const std::string mapBitDepthEnumToString( const EBitDepth e )
-	{
-		switch(e)
-		{
-			case eBitDepthUByte:
-				return kOfxBitDepthByte;
-			case eBitDepthUShort:
-				return kOfxBitDepthShort;
-			case eBitDepthFloat:
-				return kOfxBitDepthFloat;
-			case eBitDepthNone:
-				return kOfxBitDepthNone;
-			case eBitDepthCustom:
-				return "eBitDepthCustom";
-		}
-		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev( "EBitDepth: " + boost::lexical_cast<std::string>(e) ) );
-		return kOfxBitDepthNone;
-	}
-
-	/** @brief turns a pixel component string into and enum */
-	EPixelComponent mapPixelComponentStringToEnum( const std::string& str )
-	{
-		if( str == kOfxImageComponentRGBA )
-		{
-			return ePixelComponentRGBA;
-		}
-		else if( str == kOfxImageComponentRGB )
-		{
-			return ePixelComponentRGB;
-		}
-		else if( str == kOfxImageComponentAlpha )
-		{
-			return ePixelComponentAlpha;
-		}
-		else if( str == kOfxImageComponentNone )
-		{
-			return ePixelComponentNone;
-		}
-		else
-		{
-			return ePixelComponentCustom;
-		}
-	}
-
-	std::string mapPixelComponentEnumToString( const EPixelComponent e )
-	{
-		switch(e)
-		{
-			case ePixelComponentRGBA:
-				return kOfxImageComponentRGBA;
-			case ePixelComponentRGB:
-				return kOfxImageComponentRGB;
-			case ePixelComponentAlpha:
-				return kOfxImageComponentAlpha;
-			case ePixelComponentNone:
-				return kOfxImageComponentNone;
-			case ePixelComponentCustom:
-				return "ePixelComponentCustom";
-		}
-		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev( "EPixelComponent: " + boost::lexical_cast<std::string>(e) ) );
-	}
-
-public:
 	InputBufferNode( );
-	InputBufferNode( const InputBufferNode& orig );
 	~InputBufferNode( );
 
+private:
+	InputBufferNode( const InputBufferNode& orig );
+	
+public:
 	InputBufferNode* clone() const
 	{
 		return new InputBufferNode( *this );
 	}
+	
 public:
 	static const std::string _label;
 	std::string _name;
+#ifndef SWIG
 	attribute::ClipImage _outputClip;
-
-	OfxRectD _rod;
-	EPixelComponent _pixelComponent;
-	EBitDepth _bitDepth;
-	char* _rawBuffer;
-
+	
+	memory::CACHE_ELEMENT _imageCache;
+#endif
 	ofx::property::OfxhSet _emptyProps;
 	
 	bool operator==( const INode& other ) const;
@@ -160,14 +69,95 @@ public:
 	ofx::attribute::OfxhClipImageSet& getClipImageSet();
 	const ofx::attribute::OfxhClipImageSet& getClipImageSet() const;
 
-
-
-
-
-	void setClipRawBuffer( char* rawBuffer )
+	void setRawImageBuffer(
+			char* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const ofx::imageEffect::EBitDepth bitDepth,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom );
+	
+	void setRawImageBuffer(
+			unsigned char* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
 	{
-		_rawBuffer = rawBuffer;
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthUByte,
+			rowDistanceBytes,
+			orientation );
 	}
+	void setRawImageBuffer(
+			unsigned short* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthUShort,
+			rowDistanceBytes,
+			orientation );
+	}
+	void setRawImageBuffer(
+			float* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthFloat,
+			rowDistanceBytes,
+			orientation );
+	}
+	
+#if 0
+	std::size_t getClipNbComponents() const
+	{
+		switch( _pixelComponent )
+		{
+			case ePixelComponentRGBA:
+				return 4;
+			case ePixelComponentRGB:
+				return 3;
+			case ePixelComponentAlpha:
+				return 1;
+			case ePixelComponentCustom:
+			case ePixelComponentNone:
+				break;
+		}
+		return 0;
+	}
+
+	std::size_t getClipBitDepthSize() const
+	{
+		using namespace ofx::imageEffect;
+		switch( _bitDepth )
+		{
+			case eBitDepthFloat:
+				return 4;
+			case eBitDepthUShort:
+				return 2;
+			case eBitDepthUByte:
+				return 1;
+			case eBitDepthCustom:
+			case eBitDepthNone:
+				break;
+		}
+		return 0;
+	}
+
+
+private:
 
 	/** @brief set how fielded images are extracted from the clip defaults to eFieldExtractDoubled */
 	void setClipFieldExtraction( EFieldExtraction v )
@@ -189,7 +179,7 @@ public:
 	}
 
 	/** @brief set which components  is used, defaults to none set, this must be called at least once! */
-	void setClipComponent( const EPixelComponent v )
+	void setPixelComponent( const ofx::imageEffect::EPixelComponent v )
 	{
 		_pixelComponent = v;
 		switch( v )
@@ -211,25 +201,8 @@ public:
 		}
 	}
 
-	std::size_t getClipNbComponents() const
-	{
-		switch( _pixelComponent )
-		{
-			case ePixelComponentRGBA:
-				return 4;
-			case ePixelComponentRGB:
-				return 3;
-			case ePixelComponentAlpha:
-				return 1;
-			case ePixelComponentCustom:
-			case ePixelComponentNone:
-				break;
-		}
-		return 0;
-	}
-
-	/** @brief set which component is used, defaults to none set, this must be called at least once! */
-	void setClipBitDepth( const EBitDepth v )
+	/** @brief set pixels bit depth */
+	void setBitDepth( const ofx::imageEffect::EBitDepth v )
 	{
 		_bitDepth = v;
 		switch( v )
@@ -249,35 +222,18 @@ public:
 				break;
 		}
 	}
-
-	std::size_t getClipBitDepthSize() const
-	{
-		switch( _bitDepth )
-		{
-			case eBitDepthFloat:
-				return 4;
-			case eBitDepthUShort:
-				return 2;
-			case eBitDepthUByte:
-				return 1;
-			case eBitDepthCustom:
-			case eBitDepthNone:
-				break;
-		}
-		return 0;
-	}
-
-	void setClipRod( const OfxRectD rod )
+	
+	void setRod( const OfxRectD& rod )
 	{
 		_rod = rod;
 	}
-
-	void updateClipInfos()
+	
+	void setRowBytes( const int rowDistanceBytes )
 	{
-//		_outputClip.getEditableProperties().setDoubleProperty( kOfxImagePropRowBytes, (_rod.x2 - _rod.x1) * getClipNbComponents() * getClipBitDepthSize() );
+		_rowAbsDistanceBytes = rowDistanceBytes;
+		_outputClip.getEditableProperties().setDoubleProperty( kOfxImagePropRowBytes, rowDistanceBytes );
 	}
-
-private:
+	
 	/** @brief set which components is used, defaults to none set, this must be called at least once! */
 	void setClipComponent( const std::string& v )
 	{
@@ -293,13 +249,7 @@ private:
 		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropPixelDepth, v );
 		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedPixelDepth, v );
 	}
-
-
-
-
-
-
-
+#endif
 
 
 public:
@@ -311,7 +261,7 @@ public:
 		return getData(time)._apiImageEffect._renderRoD;
 	}
 
-	void getTimeDomain( OfxRangeD& range ) const { range.min=0; range.max=0; }
+	void getTimeDomain( OfxRangeD& range ) const { range.min=kOfxFlagInfiniteMin; range.max=kOfxFlagInfiniteMax; }
 
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.
@@ -319,9 +269,7 @@ public:
 	 * @remark called on each node without predefined order.
 	 */
 	void beginSequence( graph::ProcessVertexData& vData )
-	{
-		updateClipInfos();
-	}
+	{}
 
 	/**
 	 * @brief Asks the plugin all times it needs for each of it's input clips.
@@ -336,8 +284,12 @@ public:
 	 */
 	void preProcess1( graph::ProcessVertexAtTimeData& vData )
 	{
-		vData._apiImageEffect._renderRoD = _rod;
-		vData._apiImageEffect._renderRoI = _rod;
+		const OfxRectI rod = _imageCache->getROD();
+		vData._apiImageEffect._renderRoD.x1 = rod.x1;
+		vData._apiImageEffect._renderRoD.x2 = rod.x2;
+		vData._apiImageEffect._renderRoD.y1 = rod.y1;
+		vData._apiImageEffect._renderRoD.y2 = rod.y2;
+		vData._apiImageEffect._renderRoI = vData._apiImageEffect._renderRoD;
 	}
 
 	/**

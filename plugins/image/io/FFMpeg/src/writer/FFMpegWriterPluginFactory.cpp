@@ -117,6 +117,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	premult->setDefault( true );
 
 
+	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
 	std::vector<std::string>::const_iterator itLong;
 	for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
@@ -126,14 +127,14 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		std::string name = *itShort;
-		name.resize ( 20,' ');
-		name += *itLong ;
-		format->appendOption( name );
+		format->appendOption( *itShort, *itLong );
+		if (!strcmp(itShort->c_str(), "mp4"))
+			default_format = format->getNOptions() - 1;
 	}
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	format->setDefault( 25 );
+	format->setDefault( default_format );
 
+	int default_codec = 0;
 	OFX::ChoiceParamDescriptor* codec = desc.defineChoiceParam( kParamCodec );
 	for( std::vector<std::string>::const_iterator itShort = writer.getCodecsShort().begin(),
 		itLong  = writer.getCodecsLong().begin(),
@@ -142,13 +143,12 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		std::string name = *itShort;
-		name.resize ( 20,' ');
-		name += *itLong ;
-		codec->appendOption( name );
+		codec->appendOption( *itShort, *itLong );
+		if (!strcmp(itShort->c_str(), "mpeg4"))
+			default_codec = codec->getNOptions() - 1;
 	}
 	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	codec->setDefault( CODEC_ID_HUFFYUV );
+	codec->setDefault( default_codec );
 
 	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kParamBitrate );
 	bitrate->setLabel( "Bitrate" );

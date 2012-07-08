@@ -19,81 +19,47 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
-	: ofx::imageEffect::OfxhImage( clip ) ///< this ctor will set basic props on the image
-	, _memlen(0)
-	, _rowlen(0)
-	, _fullname(clip.getFullName())
+Image::Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const EImageOrientation orientation, const int rowDistanceBytes )
+	: ofx::imageEffect::OfxhImage( clip, time ) ///< this ctor will set basic props on the image
+	, _nbComponents( clip.getNbComponents() )
+	, _memorySize( 0 )
+	, _pixelBytes( clip.getPixelMemorySize() )
+	, _rowAbsDistanceBytes( 0 )
+	, _orientation( orientation )
+	, _fullname( clip.getFullName() )
 {
-	_ncomp = 0;
 	// Set rod in canonical & pixel coord.
-	OfxRectI ibounds;
-	double par = clip.getPixelAspectRatio();
-	ibounds.x1 = int(bounds.x1 / par);
-	ibounds.x2 = int(bounds.x2 / par);
-	ibounds.y1 = int(bounds.y1);
-	ibounds.y2 = int(bounds.y2);
+	const double par = clip.getPixelAspectRatio();
+	_bounds.x1 = std::floor(bounds.x1 / par);
+	_bounds.x2 = std::ceil(bounds.x2 / par);
+	_bounds.y1 = std::floor(bounds.y1);
+	_bounds.y2 = std::ceil(bounds.y2);
 
-	OfxPointI dimensions = { ibounds.x2 - ibounds.x1, ibounds.y2 - ibounds.y1 };
-
-	if( clip.getComponentsString() == kOfxImageComponentRGBA )
-	{
-		_ncomp = 4;
-	}
-	else if( clip.getComponentsString() == kOfxImageComponentRGB )
-	{
-		_ncomp = 3;
-	}
-	else if( clip.getComponentsString() == kOfxImageComponentAlpha )
-	{
-		_ncomp = 1;
-	}
-	else
-	{
-		BOOST_THROW_EXCEPTION( exception::Unsupported()
-		    << exception::user() + "Unsupported component type: " + quotes( clip.getComponentsString() ) );
-	}
+	const OfxPointI dimensions = { _bounds.x2 - _bounds.x1, _bounds.y2 - _bounds.y1 };
 
 	// make some memory according to the bit depth
-	if( clip.getBitDepthString() == kOfxBitDepthByte )
-	{
-		_memlen = _ncomp * dimensions.x * dimensions.y;
-		_rowlen = _ncomp * dimensions.x;
-	}
-	else if( clip.getBitDepthString() == kOfxBitDepthShort )
-	{
-		_memlen = _ncomp * dimensions.x * dimensions.y * sizeof( boost::uint16_t );
-		_rowlen = _ncomp * dimensions.x * sizeof( boost::uint16_t );
-	}
-	else if( clip.getBitDepthString() == kOfxBitDepthFloat )
-	{
-		_memlen = int(_ncomp * dimensions.x * dimensions.y * sizeof( float ) );
-		_rowlen = int(_ncomp * dimensions.x * sizeof( float ) );
-	}
-	else
-	{
-		BOOST_THROW_EXCEPTION( exception::Unsupported()
-		    << exception::user() + "Unsupported pixel depth: " + quotes( clip.getBitDepthString() ) );
-	}
+	const std::size_t automaticRowSize = dimensions.x * _pixelBytes;
+	_memorySize = automaticRowSize * dimensions.y;
 
 	// render scale x and y of 1.0
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 0 );
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 1 );
 
 	// bounds and rod
-	setIntProperty( kOfxImagePropBounds, ibounds.x1, 0 );
-	setIntProperty( kOfxImagePropBounds, ibounds.y1, 1 );
-	setIntProperty( kOfxImagePropBounds, ibounds.x2, 2 );
-	setIntProperty( kOfxImagePropBounds, ibounds.y2, 3 );
+	setIntProperty( kOfxImagePropBounds, _bounds.x1, 0 );
+	setIntProperty( kOfxImagePropBounds, _bounds.y1, 1 );
+	setIntProperty( kOfxImagePropBounds, _bounds.x2, 2 );
+	setIntProperty( kOfxImagePropBounds, _bounds.y2, 3 );
 
 	/// @todo the same for bounds and rod, no tiles for the moment !
-	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.x1, 0 );
-	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.y1, 1 );
-	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.x2, 2 );
-	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.y2, 3 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, _bounds.x1, 0 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, _bounds.y1, 1 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, _bounds.x2, 2 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, _bounds.y2, 3 );
 
 	// row bytes
-	setIntProperty( kOfxImagePropRowBytes, _rowlen );
+	_rowAbsDistanceBytes = rowDistanceBytes != 0 ? rowDistanceBytes : automaticRowSize;
+	setIntProperty( kOfxImagePropRowBytes, getOrientedRowDistanceBytes( eImageOrientationFromBottomToTop ) );
 }
 
 Image::~Image()
@@ -101,15 +67,35 @@ Image::~Image()
 	TUTTLE_TCOUT_VAR( getFullName() );
 }
 
-boost::uint8_t* Image::pixel( int x, int y )
+
+boost::uint8_t* Image::getPixelData()
 {
-	OfxRectI bounds = getBounds();
+	return reinterpret_cast<boost::uint8_t*>( _data->data() );
+}
+
+boost::uint8_t* Image::getOrientedPixelData( const EImageOrientation orientation )
+{
+	if( _orientation == orientation )
+	{
+		return getPixelData();
+	}
+	else
+	{
+		const std::ssize_t distance = getRowAbsDistanceBytes() * (_bounds.y2 - _bounds.y1 - 1);
+		return reinterpret_cast<boost::uint8_t*>( getPixelData() + distance );
+	}
+}
+
+
+boost::uint8_t* Image::pixel( const int x, const int y )
+{
+	const OfxRectI bounds = getBounds();
 
 	if( ( x >= bounds.x1 ) && ( x < bounds.x2 ) && ( y >= bounds.y1 ) && ( y < bounds.y2 ) )
 	{
-		int rowBytes = getIntProperty( kOfxImagePropRowBytes );
-		int offset   = ( y = bounds.y1 ) * rowBytes + ( x - bounds.x1 ) * _ncomp;
-		return &( getPixelData()[offset] );
+		const int yOffset = ( _orientation == eImageOrientationFromTopToBottom ) ? ( y - bounds.y1 ) : ( y - bounds.y2 );
+		const int offset = yOffset * getRowAbsDistanceBytes() + ( x - bounds.x1 ) * _pixelBytes;
+		return reinterpret_cast<boost::uint8_t*>( getPixelData() + offset );
 	}
 	return NULL;
 }

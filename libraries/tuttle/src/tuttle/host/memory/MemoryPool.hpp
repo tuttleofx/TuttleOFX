@@ -57,7 +57,7 @@ public:
 private:
 	typedef boost::unordered_set<PoolData*> DataList;
 	boost::ptr_list<PoolData> _allDatas; // the owner
-	std::map<char*, PoolData*> _dataMap; // the owner
+	std::map<char*, PoolData*> _dataMap;
 	DataList _dataUsed;
 	DataList _dataUnused;
 	std::size_t _memoryAuthorized;

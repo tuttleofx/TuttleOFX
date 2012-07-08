@@ -16,8 +16,13 @@ class NLMDenoiserPlugin : public OFX::ImageEffect
 {
 public:
     // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip *_clipDst; ///< Destination image clip
-    OFX::Clip *_clipSrc; ///< Source image clip
+    OFX::Clip* _clipDst; ///< Destination image clip
+    OFX::Clip* _clipSrc; ///< Source image clip
+	
+	OFX::IntParam* _paramDepth;
+	OFX::IntParam* _paramRegionRadius;
+	OFX::IntParam* _paramPatchRadius;
+	
 public:
 	NLMDenoiserPlugin( OfxImageEffectHandle handle );
 

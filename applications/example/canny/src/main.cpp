@@ -14,30 +14,18 @@
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-void sam_terminate( void )
-{
-	std::cerr << "Sorry, Sam has encountered a fatal error." << std::endl;
-	std::cerr << "Please report this bug." << std::endl;
-	exit( -1 );
-}
-
-void sam_unexpected( void )
-{
-	std::cerr << "Sorry, Sam has encountered an unexpected exception." << std::endl;
-	std::cerr << "Please report this bug." << std::endl;
-	BOOST_THROW_EXCEPTION( std::runtime_error( "Sorry, Sam has encountered an unexpected exception.\nPlease report this bug." ) );
-}
-
 int main( int argc, char** argv )
 {
-	std::set_terminate( &sam_terminate );
-	std::set_unexpected( &sam_unexpected );
+	if( argc < 2 )
+	{
+		std::cerr << "canny: missing operand." << std::endl;
+		std::cerr << "Usage: ./canny image.png" << std::endl;
+		return 1;
+	}
 	try
 	{
 		using namespace tuttle::host;
 		TUTTLE_TCOUT( "__________________________________________________0" );
-//		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-		// Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
 
 		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
@@ -47,8 +35,7 @@ int main( int argc, char** argv )
 //		boost::gil::rgba32f_image_t imgRead;
 //		boost::gil::rgba8_image_t imgRead;
 		boost::gil::gray8_image_t imgRead;
-		boost::gil::png_read_and_convert_image( argv[1], //"data/input.png",
-												imgRead );
+		boost::gil::png_read_and_convert_image( argv[1], imgRead );
 //		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
 //		boost::gil::rgba8_view_t imgView( view( imgRead ) );
 		boost::gil::gray8_view_t imgView( view( imgRead ) );
@@ -56,9 +43,6 @@ int main( int argc, char** argv )
 		TUTTLE_TCOUT( "__________________________________________________2" );
 
 		Graph g;
-//		Graph::Node& inputBuffer1 = g.createNode( "tuttle.inputbuffer" );
-//		Graph::Node& read        = g.createNode( "tuttle.pngreader" );
-//		Graph::Node& bitdepth    = g.createNode( "tuttle.bitdepth" );
 		InputBufferNode& inputBuffer1 = g.createInputBuffer();
 		Graph::Node& bitdepth1    = g.createNode( "tuttle.bitdepth" );
 		Graph::Node& bitdepth2    = g.createNode( "tuttle.bitdepth" );
@@ -81,21 +65,18 @@ int main( int argc, char** argv )
 
 		TUTTLE_TCOUT( "__________________________________________________3" );
 
-		OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
-		inputBuffer1.setClipRod( ibRod );
-		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthUByte );
-//		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthFloat );
-//		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentRGBA );
-		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentAlpha );
-		inputBuffer1.setClipRawBuffer( /*static_cast<char*>*/(char*)(boost::gil::interleaved_view_get_raw_data( imgView )) );
+		const OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
+		inputBuffer1.setRawImageBuffer(
+				reinterpret_cast<char*>( boost::gil::interleaved_view_get_raw_data( imgView ) ),
+				ibRod,
+				ofx::imageEffect::ePixelComponentAlpha,
+				ofx::imageEffect::eBitDepthUByte,
+				imgView.pixels().row_size(),
+				attribute::Image::eImageOrientationFromTopToBottom
+			);
 
 		// Setup parameters
-		/*
-		read1.getParam( "filename" ).setValue( "data/input1.avi" );
-		read1.getParam( "filename" ).setValue( "data/input.png" );
-		bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
-		*/
-		static const double kernelEpsilon = boost::lexical_cast<double>( argv[2] );
+		static const double kernelEpsilon = 0.01;
 
 		TUTTLE_COUT_VAR( kernelEpsilon );
 
@@ -152,13 +133,13 @@ int main( int argc, char** argv )
 		floodfill.getParam( "upperThres" ).setValue( 0.1 );
 		floodfill.getParam( "lowerThres" ).setValue( 0.025 );
 
-		write00.getParam( "components" ).setValue( "rgba" );
-		write0.getParam( "components" ).setValue( "rgba" );
-		write1a.getParam( "components" ).setValue( "rgba" );
-		write1b.getParam( "components" ).setValue( "rgba" );
-		write2.getParam( "components" ).setValue( "rgba" );
-		write2.getParam( "components" ).setValue( "rgba" );
-		write3.getParam( "components" ).setValue( "rgba" );
+		write00.getParam( "channel" ).setValue( "rgba" );
+		write0.getParam( "channel" ).setValue( "rgba" );
+		write1a.getParam( "channel" ).setValue( "rgba" );
+		write1b.getParam( "channel" ).setValue( "rgba" );
+		write2.getParam( "channel" ).setValue( "rgba" );
+		write3.getParam( "channel" ).setValue( "rgba" );
+		write4.getParam( "channel" ).setValue( "rgba" );
 
 		write00.getParam( "filename" ).setValue( "data/canny/0_input.png" );
 		write0.getParam( "filename" ).setValue( "data/canny/0_blur.png" );
@@ -199,14 +180,17 @@ int main( int argc, char** argv )
 		outputs.push_back( write1a.getName() );
 //		outputs.push_back( write1b.getName() );
 		outputs.push_back( write2.getName() );
-		outputs.push_back( write2.getName() );
+//		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
 		outputs.push_back( bitdepth2.getName() );
 
 		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
 //		memory::MemoryCache res0 = g.compute( bitdepth2 );
-		memory::MemoryCache res0 = g.compute( outputs );
+		ComputeOptions options;
+		options._returnBuffers = true;
+		options._forceIdentityNodesProcess = true;
+		memory::MemoryCache res0 = g.compute( outputs, options );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
 		TUTTLE_COUT( "Process took: " << t2 - t1 );
@@ -218,7 +202,7 @@ int main( int argc, char** argv )
 		TUTTLE_COUT_VAR( imgRes->getBounds() );
 //		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
 //		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
-		boost::gil::gray8_view_t imgResView = imgRes->getGilView<boost::gil::gray8_view_t>();
+		boost::gil::gray8_view_t imgResView = imgRes->getGilView<boost::gil::gray8_view_t>( tuttle::host::attribute::Image::eImageOrientationFromTopToBottom );
 		boost::gil::png_write_view( "data/canny/manual_output.png", boost::gil::color_converted_view<boost::gil::rgb8_pixel_t>( imgResView ) );
 	}
 	catch( tuttle::exception::Common& e )

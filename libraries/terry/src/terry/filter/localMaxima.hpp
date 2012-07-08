@@ -85,6 +85,10 @@ struct pixel_locator_gradientLocalMaxima_t
 		SType g1;
 		SType g2;
 
+		if( (*src)[vecX] == 0 && (*src)[vecY] == 0 )
+		{
+			return _black;
+		}
 		// A
 		if( ((*src)[vecY] <= 0 && (*src)[vecX] > -(*src)[vecY]) ||
 			((*src)[vecY] >= 0 && (*src)[vecX] < -(*src)[vecY]) )
@@ -141,8 +145,9 @@ struct pixel_locator_gradientLocalMaxima_t
 //		         ((*src)[vecY] > 0 && (*src)[vecX] >= (*src)[vecY]) )
 		else
 		{
-			BOOST_ASSERT( ((*src)[vecY] < 0 && (*src)[vecX] <= (*src)[vecY]) ||
-			              ((*src)[vecY] > 0 && (*src)[vecX] >= (*src)[vecY]) );
+			BOOST_ASSERT(
+				( (*src)[vecY] < 0 && (*src)[vecX] <= (*src)[vecY] ) ||
+				( (*src)[vecY] > 0 && (*src)[vecX] >= (*src)[vecY] ) );
 			SType d = 0.0;
 			if( (*src)[vecX] )
 			{
@@ -156,12 +161,15 @@ struct pixel_locator_gradientLocalMaxima_t
 			g1 = src[LC][norm] * invd + src[LT][norm] * d;
 			g2 = src[RC][norm] * invd + src[RB][norm] * d;
 		}
-		DPixel dst = _black;
+		
 		if( (*src)[norm] >= g1 && (*src)[norm] >= g2 )
 		{
-			static_fill( dst, (*src)[norm] ); // wins !
+			// wins !
+			DPixel dst;
+			static_fill( dst, (*src)[norm] );
+			return dst;
 		}
-		return dst;
+		return _black;
 	}
 };
 

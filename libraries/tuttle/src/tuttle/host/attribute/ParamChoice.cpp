@@ -68,18 +68,17 @@ void ParamChoice::setValueFromExpression( const std::string& value, const ofx::a
 		return;
 	}
 	catch(...)
-	{}
-	try
 	{
-		const int id = extractValueFromExpression<int>( value );
-		this->setValue( id, change );
-		return;
+		try
+		{
+			const int id = extractValueFromExpression<int>( value );
+			this->setValue( id, change );
+			return;
+		}
+		catch(...)
+		{}
+		throw;
 	}
-	catch(...)
-	{}
-	BOOST_THROW_EXCEPTION( exception::Value()
-			<< exception::user() + "Choice expression is not recognized: " + quotes(value) + " (Param: " + quotes(this->getName()) + ")."
-		);
 }
 
 void ParamChoice::copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC

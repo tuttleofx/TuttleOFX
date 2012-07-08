@@ -2,6 +2,7 @@
 #include "GraphExporter.hpp"
 
 #include <tuttle/host/ImageEffectNode.hpp>
+#include <tuttle/host/InputBufferNode.hpp>
 
 #include <boost/functional/hash.hpp>
 
@@ -57,16 +58,30 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 	if( ! isFake() )
 	{
 		/// @todo remove this. Temporary solution
-		const ImageEffectNode& ieNode = dynamic_cast<const ImageEffectNode&>( getProcessNode() );
-		s << subDotEntry( "bitdepth",  ieNode.getOutputClip().getBitDepthString()   );
-		s << subDotEntry( "component", ieNode.getOutputClip().getComponentsString() );
+		if( const ImageEffectNode* ieNode = dynamic_cast<const ImageEffectNode*>( & getProcessNode() ) )
 		{
-			double startFrame, endFrame;
-			ieNode.getOutputClip().getFrameRange( startFrame, endFrame );
-			s << subDotEntry( "startFrame", startFrame );
-			s << subDotEntry( "endFrame", endFrame );
+			s << subDotEntry( "bitdepth",  ieNode->getOutputClip().getBitDepthString()   );
+			s << subDotEntry( "component", ieNode->getOutputClip().getComponentsString() );
+			{
+				double startFrame, endFrame;
+				ieNode->getOutputClip().getFrameRange( startFrame, endFrame );
+				s << subDotEntry( "startFrame", startFrame );
+				s << subDotEntry( "endFrame", endFrame );
+			}
+			s << subDotEntry( "output RoD", ieNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
 		}
-		s << subDotEntry( "output RoD", ieNode.getOutputClip().fetchRegionOfDefinition(_data._time) );
+		else if( const InputBufferNode* ibNode = dynamic_cast<const InputBufferNode*>( & getProcessNode() ) )
+		{
+			s << subDotEntry( "bitdepth",  ibNode->getOutputClip().getBitDepthString()   );
+			s << subDotEntry( "component", ibNode->getOutputClip().getComponentsString() );
+			{
+				double startFrame, endFrame;
+				ibNode->getOutputClip().getFrameRange( startFrame, endFrame );
+				s << subDotEntry( "startFrame", startFrame );
+				s << subDotEntry( "endFrame", endFrame );
+			}
+			s << subDotEntry( "output RoD", ibNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
+		}
 	}
 	s << subDotEntry( "localMemory", _data._localInfos._memory );
 	s << subDotEntry( "globalMemory", _data._globalInfos._memory );

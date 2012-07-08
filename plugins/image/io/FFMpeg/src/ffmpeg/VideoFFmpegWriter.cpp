@@ -14,11 +14,14 @@
 #define snprintf _snprintf
 #endif
 
+static boost::int64_t pts = 0;
 
 VideoFFmpegWriter::VideoFFmpegWriter()
-	: _avformatOptions   ( 0 )
+	: _avformatOptions   ( NULL )
 	, _sws_context       ( NULL )
-	, _stream            ( 0 )
+	, _stream            ( NULL )
+	, _codec             ( NULL )
+	, _ofmt              ( NULL )
 	, _error             ( IGNORE_FINISH )
 	, _filename          ( "" )
 	, _width             ( 0 )
@@ -26,8 +29,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	, _aspectRatio       ( 1 )
 	, _out_pixelFormat   ( PIX_FMT_YUV420P )
 	, _fps               ( 25.0f )
-	, _format            ( "default" )
-	, _codec             ( "default" )
+	, _formatName        ( "" )
+	, _codecName         ( "" )
 	, _bitRate           ( 400000 )
 	, _bitRateTolerance  ( 4000 * 10000 )
 	, _gopSize           ( 12 )
@@ -38,11 +41,6 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	av_log_set_level( AV_LOG_WARNING );
 	av_register_all();
 
-//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
-//		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
-
-	_formatsLongNames.push_back( std::string( "default" ) );
-	_formatsShortNames.push_back( std::string(  "default" ) );
 	AVOutputFormat* fmt = av_oformat_next( NULL );
 	while( fmt )
 	{
@@ -57,12 +55,14 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 		fmt = av_oformat_next( fmt );
 	}
 
-	_codecsLongNames.push_back( std::string( "default" ) );
-	_codecsShortNames.push_back( std::string( "default" ) );
 	AVCodec* c = av_codec_next( NULL );
 	while( c )
 	{
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT( 53, 34, 0 )
+		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode2 )
+#else
 		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode )
+#endif
 		{
 			if( c->long_name )
 			{
@@ -74,52 +74,41 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	}
 }
 
-VideoFFmpegWriter::~VideoFFmpegWriter()
-{
-//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
-//		av_free( _avctxOptions[i] );
-}
-
 int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_height, PixelFormat in_pixelFormat )
 {
 	_error = IGNORE_FINISH;
 
-	AVOutputFormat* fmt = 0;
-	fmt = av_guess_format( _format.c_str(), NULL, NULL );
-	if( !fmt )
-	{
-		fmt = av_guess_format( NULL, filename().c_str(), NULL );
-		if( !fmt )
-		{
-			std::cerr << "ffmpegWriter: could not deduce output format from file extension." << std::endl;
-			return false;
-		}
-	}
-
 	if( !_avformatOptions )
 	{
-		_avformatOptions = avformat_alloc_context();
+		// TODO avformat_alloc_context2 can guess format from filename
+		// if format name is NULL, find a way to expose the feature
+		if (avformat_alloc_output_context2(&_avformatOptions, NULL, _formatName.c_str(), filename().c_str()) < 0)
+		{
+			std::cerr << "ffmpegWriter: output context allocation failed" << std::endl;
+			return false;
+		}
+		_ofmt = _avformatOptions->oformat;
+		std::cerr << "ffmpegWriter: " << std::string(_ofmt->name) << " format selected" << std::endl;
 	}
-
-	_avformatOptions->oformat = fmt;
-	snprintf( _avformatOptions->filename, sizeof( _avformatOptions->filename ), "%s", filename().c_str() );
 
 	if( !_stream )
 	{
-		CodecID codecId    = fmt->video_codec;
-		AVCodec* userCodec = avcodec_find_encoder_by_name( _codec.c_str() );
-		if( userCodec )
-			codecId = userCodec->id;
+		_codec = avcodec_find_encoder_by_name( _codecName.c_str() );
+		if (!_codec)
+		{
+			std::cerr << "ffmpegWriter: codec not found" << std::endl;
+			return false;
+		}
+		std::cerr << "ffmpegWriter: " << std::string(_codec->name) << " codec selected" << std::endl;
 
-		_stream = avformat_new_stream( _avformatOptions, userCodec );
+		_stream = avformat_new_stream( _avformatOptions, _codec );
 		if( !_stream )
 		{
 			std::cout << "ffmpegWriter: out of memory." << std::endl;
 			return false;
 		}
+		avcodec_get_context_defaults3(_stream->codec, _codec);
 
-		_stream->codec->codec_id           = codecId;
-		_stream->codec->codec_type         = AVMEDIA_TYPE_VIDEO;
 		_stream->codec->bit_rate           = _bitRate;
 		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = width();
@@ -144,6 +133,33 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			_stream->codec->b_quant_factor   = 2.0;
 		}
 		_stream->codec->mb_decision = _mbDecision;
+
+		int pixfmt_allowed = 0, k;
+		if ( _codec->pix_fmts )
+		{
+			for ( k = 0; _codec->pix_fmts[k] != PIX_FMT_NONE; k++ )
+			{
+				if ( _codec->pix_fmts[k] == _out_pixelFormat )
+				{
+					pixfmt_allowed = 1;
+					break;
+				}
+			}
+		}
+		else
+		{
+			// If a codec does not contain a list of supported pixel
+			// formats, just assume that _out_PixelFormat is valid
+			pixfmt_allowed = 1;
+		}
+
+		if ( !pixfmt_allowed )
+		{
+			// av_get_pix_fmt_name requires lavu 51.3.0 or higher
+			std::cerr << "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" << std::endl;
+			_out_pixelFormat = _codec->pix_fmts[0];
+			std::cerr << "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) << std::endl;
+		}
 		_stream->codec->pix_fmt     = _out_pixelFormat;
 
 		if( !strcmp( _avformatOptions->oformat->name, "mp4" ) || !strcmp( _avformatOptions->oformat->name, "mov" ) || !strcmp( _avformatOptions->oformat->name, "3gp" ) || !strcmp( _avformatOptions->oformat->name, "flv" ) )
@@ -151,26 +167,20 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 		av_dump_format( _avformatOptions, 0, filename().c_str(), 1 );
 
-		AVCodec* videoCodec = avcodec_find_encoder( codecId );
-		if( !videoCodec )
-		{
-			std::cout << "ffmpegWriter: unable to find codec." << std::endl;
-			freeFormat();
-			return false;
-		}
-
-		if( avcodec_open2( _stream->codec, videoCodec, NULL ) < 0 )
+		if( avcodec_open2( _stream->codec, _codec, NULL ) < 0 )
 		{
 			std::cout << "ffmpegWriter: unable to open codec." << std::endl;
 			freeFormat();
 			return false;
 		}
 
-		if( !( fmt->flags & AVFMT_NOFILE ) )
+		if( !( _ofmt->flags & AVFMT_NOFILE ) )
 		{
-			if( avio_open( &_avformatOptions->pb, filename().c_str(), AVIO_FLAG_WRITE ) < 0 )
+			if( avio_open2( &_avformatOptions->pb, filename().c_str(),
+                                        AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
 			{
 				std::cout << "ffmpegWriter: unable to open file." << std::endl;
+				freeFormat();
 				return false;
 			}
 		}
@@ -192,8 +202,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 	_sws_context = sws_getCachedContext( _sws_context, in_width, in_height, in_pixelFormat, width(), height(), _out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
 
-	std::cout << "ffmpegWriter: input format: " << pixelFormat_toString( in_pixelFormat ) << std::endl;
-	std::cout << "ffmpegWriter: output format: " << pixelFormat_toString( _out_pixelFormat ) << std::endl;
+	std::cout << "ffmpegWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) << std::endl;
+	std::cout << "ffmpegWriter: output format: " << av_get_pix_fmt_name( _out_pixelFormat ) << std::endl;
 
 	if( !_sws_context )
 	{
@@ -220,28 +230,33 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	}
 	else
 	{
-		boost::uint8_t* out_buffer = (boost::uint8_t*) av_malloc( out_picSize );
+		AVPacket pkt;
+		int hasFrame = 0;
+		av_init_packet( &pkt );
+		pkt.size = 0;
+		pkt.data = NULL;
+		pkt.stream_index = _stream->index;
 
-		ret = avcodec_encode_video( _stream->codec, out_buffer, out_picSize, out_frame );
+		if( _stream->codec->coded_frame && _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) // static_cast<unsigned long> (
+			pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
 
-		if( ret > 0 )
+		if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
+			pkt.flags |= AV_PKT_FLAG_KEY;
+
+		out_frame->pts = pts++;
+		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame,  &hasFrame );
+		if ( ret < 0 )
+			return false;
+
+		if ( hasFrame )
 		{
-			AVPacket pkt;
-			av_init_packet( &pkt );
-
-			if( _stream->codec->coded_frame && _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) // static_cast<unsigned long> (
-				pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
-
-			if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
-				pkt.flags |= AV_PKT_FLAG_KEY;
-
-			pkt.stream_index = _stream->index;
-			pkt.data         = out_buffer;
-			pkt.size         = ret;
-			ret              = av_interleaved_write_frame( _avformatOptions, &pkt );
+			ret = av_interleaved_write_frame( _avformatOptions, &pkt );
+			if ( ret < 0 )
+			{
+				std::cerr << "ffmpegWriter: error writing packet to file" << std::endl;
+				return false;
+			}
 		}
-
-		av_free( out_buffer );
 	}
 
 	av_free( out_buffer );
@@ -272,6 +287,7 @@ void VideoFFmpegWriter::finish()
 
 void VideoFFmpegWriter::freeFormat()
 {
+	avcodec_close( _stream->codec );
 	for( int i = 0; i < static_cast<int>( _avformatOptions->nb_streams ); ++i )
 		av_freep( &_avformatOptions->streams[i] );
 	av_free( _avformatOptions );

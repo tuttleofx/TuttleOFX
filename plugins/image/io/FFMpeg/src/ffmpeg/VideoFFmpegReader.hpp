@@ -38,7 +38,6 @@ private:
 	void    openVideoCodec();
 	void    closeVideoCodec();
 	boost::int64_t getTimeStamp( const int pos ) const;
-	int     getFrame( const boost::int64_t timestamp ) const;
 
 	/**
 	 * @brief Seek to the nearest previous keyframe from pos.

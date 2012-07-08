@@ -3,6 +3,8 @@
 
 #include <tuttle/host/ImageEffectNode.hpp>
 
+#include <boost/format.hpp>
+
 namespace tuttle {
 namespace host {
 namespace graph {
@@ -36,6 +38,7 @@ std::ostream& ProcessVertex::exportDotDebug( std::ostream& os ) const
 		/// @todo remove this. Temporary solution
 		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode&>( getProcessNode() ).getOutputClip().getBitDepthString() );
 	}
+	s << subDotEntry( "timeDomain", ( boost::format("[%1%:%2%]") % _data._timeDomain.min % _data._timeDomain.max ).str() );
 	s << subDotEntry( "allTimes", _data._times.size() );
 	std::ostringstream times;
 	std::copy(
