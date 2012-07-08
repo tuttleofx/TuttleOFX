@@ -6,11 +6,77 @@
 #include <tuttle/host/attribute/ClipImage.hpp>
 #include <tuttle/host/attribute/ClipImage.hpp>
 #include <tuttle/host/ofx/attribute/OfxhClipImageDescriptor.hpp>
+#include <tuttle/common/ofx/imageEffect.hpp>
 #include <tuttle/host/graph/ProcessVertexData.hpp>
 #include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
 
 namespace tuttle {
 namespace host {
+
+template<typename T>
+class ImageBuffer
+{
+public:
+	enum EPixelComponent
+	{
+		ePixelComponentRGBA = ofx::imageEffect::ePixelComponentRGBA,
+		ePixelComponentRGB = ofx::imageEffect::ePixelComponentRGB,
+		ePixelComponentAlpha = ofx::imageEffect::ePixelComponentAlpha
+	};
+	
+	enum EImageOrientation
+	{
+		eImageOrientationFromTopToBottom = attribute::Image::eImageOrientationFromTopToBottom,
+		eImageOrientationFromBottomToTop = attribute::Image::eImageOrientationFromBottomToTop
+	};
+	
+//private:
+public:
+	T* _rawBuffer;
+	OfxRectD _rod;
+	EPixelComponent _component;
+	EImageOrientation _orientation;
+	std::ptrdiff_t _rowBytes;
+	
+public:
+	ImageBuffer(
+		T* rawBuffer,
+		const std::size_t width,
+		const std::size_t height,
+		const EPixelComponent component,
+		const EImageOrientation orientation = eImageOrientationFromTopToBottom,
+		const std::ptrdiff_t rowBytes = 0
+		)
+	: _rawBuffer( rawBuffer )
+	, _component( component )
+	, _orientation( orientation )
+	, _rowBytes( rowBytes )
+	{
+		_rod.x1 = 0;
+		_rod.y1 = 0;
+		_rod.x2 = width;
+		_rod.y2 = height;
+	}
+	~ImageBuffer()
+	{}
+	
+	template <typename TT>
+	friend std::ostream& operator<<( std::ostream& os, const ImageBuffer<TT>& imageBuffer );
+};
+
+template <typename T>
+std::ostream& operator<<( std::ostream& os, const ImageBuffer<T>& imageBuffer )
+{
+	os << "ImageBuffer {" << std::endl;
+	os << "  ptr: " << (void*)imageBuffer._rawBuffer << std::endl;
+	os << "  rod: " << imageBuffer._rod << std::endl;
+	os << "  component: " << ofx::imageEffect::mapPixelComponentEnumToString( static_cast<ofx::imageEffect::EPixelComponent>(imageBuffer._component) ) << std::endl;
+	os << "  orientation: " << ( imageBuffer._orientation == ImageBuffer<T>::eImageOrientationFromTopToBottom ? "Top to Bottom" : "Bottom to Top" ) << std::endl;
+	os << "  rowBytes: " << imageBuffer._rowBytes << std::endl;
+	os << "}" << std::endl;
+	return os;
+}
+
 
 class InputBufferNode : public INode
 {
@@ -43,7 +109,7 @@ public:
 	const std::string& getLabel() const { return _label; }
 	const std::string& getName() const { return _name; }
 	void setName( const std::string& name ) { _name = name; }
-	const ENodeType    getNodeType() const { return eNodeTypeBuffer; }
+	const INode::ENodeType    getNodeType() const { return INode::eNodeTypeBuffer; }
 
 	std::vector<int> getVersion() const;
 
@@ -120,45 +186,15 @@ public:
 			orientation );
 	}
 	
-	
-	void setGrayImage(
-		float* rawBuffer,
-		int width,
-		int height )
+	template<typename T>
+	void setImage( ImageBuffer<T>& image )
 	{
-		const OfxRectD rod = { 0, 0, width, height };
 		setRawImageBuffer(
-			rawBuffer,
-			rod,
-			ofx::imageEffect::ePixelComponentAlpha,
-			0,
-			attribute::Image::eImageOrientationFromTopToBottom );
-	}
-	void setGrayImage(
-		unsigned short* rawBuffer,
-		int width,
-		int height )
-	{
-		const OfxRectD rod = { 0, 0, width, height };
-		setRawImageBuffer(
-			rawBuffer,
-			rod,
-			ofx::imageEffect::ePixelComponentAlpha,
-			0,
-			attribute::Image::eImageOrientationFromTopToBottom );
-	}
-	void setGrayImage(
-		unsigned char* rawBuffer,
-		int width,
-		int height )
-	{
-		const OfxRectD rod = { 0, 0, width, height };
-		setRawImageBuffer(
-			rawBuffer,
-			rod,
-			ofx::imageEffect::ePixelComponentAlpha,
-			0,
-			attribute::Image::eImageOrientationFromTopToBottom );
+			image._rawBuffer,
+			image._rod,
+			static_cast<ofx::imageEffect::EPixelComponent>(image._component),
+			image._rowBytes,
+			static_cast<attribute::Image::EImageOrientation>(image._orientation) );
 	}
 	
 #if 0
