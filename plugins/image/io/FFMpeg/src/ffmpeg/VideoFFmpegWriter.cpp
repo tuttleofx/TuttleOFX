@@ -77,24 +77,18 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 {
 	_error = IGNORE_FINISH;
 
-	_ofmt = av_guess_format( _formatName.c_str(), NULL, NULL );
-	if( !_ofmt )
-	{
-		_ofmt = av_guess_format( NULL, filename().c_str(), NULL );
-		if( !_ofmt )
-		{
-			std::cerr << "ffmpegWriter: could not deduce output format from file extension." << std::endl;
-			return false;
-		}
-	}
-
 	if( !_avformatOptions )
 	{
-		_avformatOptions = avformat_alloc_context();
+		// TODO avformat_alloc_context2 can guess format from filename
+		// if format name is NULL, find a way to expose the feature
+		if (avformat_alloc_output_context2(&_avformatOptions, NULL, _formatName.c_str(), filename().c_str()) < 0)
+		{
+			std::cerr << "ffmpegWriter: output context allocation failed" << std::endl;
+			return false;
+		}
+		_ofmt = _avformatOptions->oformat;
+		std::cerr << "ffmpegWriter: " << std::string(_ofmt->name) << " format selected" << std::endl;
 	}
-
-	_avformatOptions->oformat = _ofmt;
-	snprintf( _avformatOptions->filename, sizeof( _avformatOptions->filename ), "%s", filename().c_str() );
 
 	if( !_stream )
 	{
