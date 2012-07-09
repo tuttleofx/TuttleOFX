@@ -163,7 +163,7 @@ allLibs = [
 		('ilmbase',     'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz'                                 , '', False),
 		('openexr',     'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz'                                 , '', False),
 		('ctl',         'http://sourceforge.net/projects/ampasctl/files/ctl/ctl-1.4.1/ctl-1.4.1.tar.gz/download'                    , '', False),
-		('boost',       'http://prdownloads.sourceforge.net/boost/boost_1_49_0.tar.bz2'                                             , '', False), #if not windows else ('boost'   , 'http://sourceforge.net/projects/boost/files/boost/1.47.0/boost_1_47_0.zip'                   , '', False),
+		('boost',       'http://prdownloads.sourceforge.net/boost/boost_1_50_0.tar.bz2'                                             , '', False), #if not windows else ('boost'   , 'http://sourceforge.net/projects/boost/files/boost/1.47.0/boost_1_50_0.zip'                   , '', False),
 		('freetype',    'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz'                                         , '', False), #if not windows else ('freetype', 'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz'                           , '', False),
 		('libraw',      'http://www.libraw.org/data/LibRaw-0.14.5.tar.gz'                                                           , '', False), #if not windows else ('libraw'  , 'http://www.libraw.org/data/LibRaw-0.13.5.zip'                                                , '', False),
 		('libcaca',     'http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz'                                              , '', False),
