@@ -19,6 +19,10 @@ if $(3RDPARTY_FREETYPE) = 1
      { alias freetype : $(3RD_PARTY)/freetype ; }
 else { alias freetype : /user-config//freetype ; }
 
+if $(3RDPARTY_FFMPEG) = 1
+     { alias ffmpeg : $(3RD_PARTY)/ffmpeg ; }
+else { alias ffmpeg : /user-config//ffmpeg ; }
+
 if $(3RDPARTY_GVC) = 1
      { alias gvc : $(3RD_PARTY)/gvc ; }
 else { alias gvc : /user-config//gvc ; }
@@ -43,9 +47,25 @@ if $(3RDPARTY_LCMS2) = 1
      { alias lcms2 : $(3RD_PARTY)/lcms2 ; }
 else { alias lcms2 : /user-config//lcms2 ; }
 
+if $(3RDPARTY_LIBAVCODEC) = 1
+     { alias libavcodec : $(3RD_PARTY)/libavcodec ; }
+else { alias libavcodec : /user-config//libavcodec ; }
+
+if $(3RDPARTY_LIBAVUTIL) = 1
+     { alias libavutil : $(3RD_PARTY)/libavutil ; }
+else { alias libavutil : /user-config//libavutil ; }
+
+if $(3RDPARTY_LIBAVFORMAT) = 1
+     { alias libavformat : $(3RD_PARTY)/libavformat ; }
+else { alias libavformat : /user-config//libavformat ; }
+
 if $(3RDPARTY_LIBCACA) = 1
      { alias libcaca : $(3RD_PARTY)/libcaca ; }
 else { alias libcaca : /user-config//libcaca ; }
+
+if $(3RDPARTY_LIBLAME) = 1
+     { alias liblame : $(3RD_PARTY)/liblame ; }
+else { alias liblame : /user-config//liblame ; }
 
 if $(3RDPARTY_LIBPNG) = 1
      { alias libpng : $(3RD_PARTY)/libpng ; }
@@ -55,6 +75,10 @@ if $(3RDPARTY_LIBRAW) = 1
      { alias libraw : $(3RD_PARTY)/libraw ; }
 else { alias libraw : /user-config//libraw ; }
 
+if $(3RDPARTY_LIBSWSCALE) = 1
+     { alias libswscale : $(3RD_PARTY)/libswscale ; }
+else { alias libswscale : /user-config//libswscale ; }
+
 if $(3RDPARTY_LIBTIFF) = 1
      { alias libtiff : $(3RD_PARTY)/libtiff ; }
 else { alias libtiff : /user-config//libtiff ; }
@@ -63,9 +87,17 @@ if $(3RDPARTY_LIBTOOL) = 1
      { alias libtool : $(3RD_PARTY)/libtool ; }
 else { alias libtool : /user-config//libtool ; }
 
+if $(3RDPARTY_LIBVPX) = 1
+     { alias libvpx : $(3RD_PARTY)/libvpx ; }
+else { alias libvpx : /user-config//libvpx ; }
+
 if $(3RDPARTY_LIBXML) = 1
      { alias libxml : $(3RD_PARTY)/libxml ; }
 else { alias libxml : /user-config//libxml ; }
+
+if $(3RDPARTY_LIBX264) = 1
+     { alias libx264 : $(3RD_PARTY)/libx264 ; }
+else { alias libx264 : /user-config//libx264 ; }
 
 if $(3RDPARTY_OPENCOLORIO) = 1
      { alias opencolorio : $(3RD_PARTY)/opencolorio ; }
@@ -95,7 +127,7 @@ if $(3RDPARTY_WEBP) = 1
      { alias webp : $(3RD_PARTY)/webp ; }
 else { alias webp : /user-config//webp ; }
 
-if $(3RDPARTY_xz) = 1
+if $(3RDPARTY_XZ) = 1
      { alias xz : $(3RD_PARTY)/xz ; }
 else { alias xz : /user-config//xz ; }
 
