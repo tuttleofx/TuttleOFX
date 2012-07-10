@@ -21,7 +21,7 @@ plugin FFMpeg :
 		/project-config//libavcodec/<link>shared
 		/project-config//libavutil/<link>shared
 		/project-config//libavformat/<link>shared
-		#/project-config//libswscale
+		/project-config//libswscale/<link>shared
 	:
 		<os>LINUX:<find-shared-library>dl
 	;
