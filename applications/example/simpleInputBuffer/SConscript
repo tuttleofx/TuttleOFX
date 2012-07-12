@@ -10,6 +10,7 @@ project.Program(
 		libs.boost_filesystem,
 		libs.dl,
 		libs.boost_gil,
+		libs.png,
 		],
 	installDir = os.path.join(project.inOutputBin(),'example')
 	)
