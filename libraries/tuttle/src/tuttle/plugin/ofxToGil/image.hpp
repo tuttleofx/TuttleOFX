@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_OFXTOGIL_IMAGE_HPP_
 #define	_TUTTLE_OFXTOGIL_IMAGE_HPP_
 
+#include <tuttle/plugin/image.hpp>
+
 #include <ofxsImageEffect.h>
 
 #include <boost/gil/utilities.hpp>
@@ -11,13 +13,6 @@
 
 namespace tuttle {
 namespace plugin {
-
-enum EImageOrientation
-{
-	eImageOrientationIndependant, //< Use memory order if your process is idenpendant image order
-	eImageOrientationFromTopToBottom, //< Use image orientation from top to bottom
-	eImageOrientationFromBottomToTop //< Use image orientation from bottom to top
-};
 
 /**
  * @brief Return a full gil view of an image.
