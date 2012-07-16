@@ -9,12 +9,6 @@ import os ;
 project
 	: requirements
 		<include>src
-		<os>LINUX:<include>/usr/include/ffmpeg
-		<os>LINUX:<linkflags>-L/usr/lib64
-		<linkflags>-lavcodec
-		<linkflags>-lavutil
-		<linkflags>-lavformat
-		<linkflags>-lswscale
 	: build-dir $(BUILD)/FFMpeg
 	;
 
@@ -24,6 +18,10 @@ project
 plugin FFMpeg : 
 		[ glob-tree *.cpp ]
 		/tuttleplugin/<link>static
+		/project-config//libavcodec/<link>shared
+		/project-config//libavutil/<link>shared
+		/project-config//libavformat/<link>shared
+		/project-config//libswscale/<link>shared
 	:
 		<os>LINUX:<find-shared-library>dl
 	;

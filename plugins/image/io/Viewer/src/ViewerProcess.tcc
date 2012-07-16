@@ -31,21 +31,6 @@ void ViewerProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void ViewerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
-	//const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
-
-	View src = this->_srcView;
-	View dst = this->_dstView;
-
-	copy_pixels( src, dst );
-
-	openGLWindow( src.width(), src.height() );
-
-	/// @todo copy into a new buffer or do something if offset between lines, etc.
-	loadNewTexture( &src );
-
-	glutIdleFunc(idle);
-	glutMainLoop();
 }
 
 }

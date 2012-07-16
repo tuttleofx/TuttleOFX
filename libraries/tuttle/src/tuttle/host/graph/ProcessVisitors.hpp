@@ -547,7 +547,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 		TUTTLE_TCOUT_X( 80, "_" );
-		TUTTLE_COUT( "[PROCESS] finish_vertex " << vertex );
+		TUTTLE_TCOUT( "[PROCESS] finish_vertex " << vertex );
 
 		// do nothing on the empty output node
 		// it's just a link to final nodes

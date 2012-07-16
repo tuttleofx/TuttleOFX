@@ -5,19 +5,27 @@
 
 constant 3RDPARTY_BZLIB : 1 ;
 constant 3RDPARTY_CTL : 1 ;
+constant 3RDPARTY_FFMPEG : 0 ;
 constant 3RDPARTY_FREETYPE : 1 ;
 constant 3RDPARTY_GVC : 1 ;
 constant 3RDPARTY_ILMBASE : 1 ;
-constant 3RDPARTY_IMAGEMAGICK : 1 ;
+constant 3RDPARTY_IMAGEMAGICK : 0 ;
 constant 3RDPARTY_JASPER : 1 ;
 constant 3RDPARTY_JPEG : 1 ;
 constant 3RDPARTY_LCMS2 : 1 ;
+constant 3RDPARTY_LIBAVCODEC : 0 ;
+constant 3RDPARTY_LIBAVUTIL : 0 ;
+constant 3RDPARTY_LIBAVFORMAT : 0 ;
 constant 3RDPARTY_LIBCACA : 1 ;
+constant 3RDPARTY_LIBLAME : 1 ;
 constant 3RDPARTY_LIBPNG : 1 ;
 constant 3RDPARTY_LIBRAW : 1 ;
+constant 3RDPARTY_LIBSWSCALE : 0 ;
 constant 3RDPARTY_LIBTIFF : 1 ;
 constant 3RDPARTY_LIBTOOL : 1 ;
+constant 3RDPARTY_LIBVPX : 0 ;
 constant 3RDPARTY_LIBXML : 1 ;
+constant 3RDPARTY_LIBX264 : 0 ;
 constant 3RDPARTY_OPENCOLORIO : 1 ;
 constant 3RDPARTY_OPENEXR : 1 ;
 constant 3RDPARTY_OPENIMAGEIO : 1 ;
@@ -28,3 +36,6 @@ constant 3RDPARTY_WEBP : 1 ;
 constant 3RDPARTY_XZ : 1 ; # contains lzma library
 constant 3RDPARTY_YAML : 1 ;
 constant 3RDPARTY_ZLIB : 1 ;
+constant 3RDPARTY_IMAGEMAGICK : 0 ;
+constant 3RDPARTY_TURBOJPEG : 0 ;
+
