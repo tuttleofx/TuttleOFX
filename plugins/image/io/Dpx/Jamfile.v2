@@ -19,9 +19,7 @@ project
 # Product
 ###############################################################################
 plugin Dpx :
-		# [ glob-tree *.cpp : tests ]
 		[ glob src/dpx-google-code/libdpx/*.cpp ]
-		#[ glob src/reader/*.cpp ]
 		[ glob src/writer/*.cpp ]
 		[ glob src/mainEntry.cpp ]
 		/tuttleplugin/<link>static
@@ -29,12 +27,15 @@ plugin Dpx :
 		<os>LINUX:<find-shared-library>dl
 	;
 
-#exe dpxheader :
-#		[ glob src/dpx-google-code/tools/dpxheader/dpxheader.cpp ]
-#		[ glob src/dpx-google-code/libdpx/*.cpp ]
-#	;
-
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install    Dpx : $(DIST) ;
+auto_install Dpx : $(DIST) ;
+
+###############################################################################
+# Test plugin
+###############################################################################
+alias io-tests
+	:
+		tests
+	;
