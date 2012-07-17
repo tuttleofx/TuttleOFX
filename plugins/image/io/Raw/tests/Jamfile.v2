@@ -1,7 +1,26 @@
 ###############################################################################
-# Collect all buildable tests
+## Tests for TuttleOFX Jpeg Plugin
 ###############################################################################
-for local l in [ glob * ]
-{
-    build-project $(l) ;
-}
+import testing ;
+
+###############################################################################
+# compile the test and run it
+###############################################################################
+project 
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
+
+alias dependencies
+	:
+		/boost//unit_test_framework
+		/boost//python
+		/tuttlehost
+		/python
+	;
+	
+run
+		read.cpp
+		dependencies
+	;
