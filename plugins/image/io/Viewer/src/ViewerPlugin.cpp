@@ -93,8 +93,8 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 	size_t components = 0;
 	size_t bitDepth = 0;
 
-	GLenum format;
-	GLenum type;
+	GLenum format = GL_RGB;
+	GLenum type = GL_FLOAT;
 
 	switch( dst->getPixelDepth() )
 	{
