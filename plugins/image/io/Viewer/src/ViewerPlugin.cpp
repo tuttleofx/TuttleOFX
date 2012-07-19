@@ -93,8 +93,8 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 	size_t components = 0;
 	size_t bitDepth = 0;
 
-	GLenum format;
-	GLenum type;
+	GLenum format = GL_RGB;
+	GLenum type = GL_FLOAT;
 
 	switch( dst->getPixelDepth() )
 	{
@@ -112,7 +112,10 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 		case OFX::ePixelComponentAlpha: components = 1; format = GL_LUMINANCE; break;
 		case OFX::ePixelComponentRGB  : components = 3; format = GL_RGB; break;
 		case OFX::ePixelComponentRGBA : components = 4; format = GL_RGBA; break;
-		default: break;
+		default:
+			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+				<< exception::user( "Dpx: Unable to compute unknown component." ) );
+			break;
 	}
 
 	size_t imgSizeBytes = width * height * components * bitDepth ;

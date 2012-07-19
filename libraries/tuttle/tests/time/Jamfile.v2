@@ -7,18 +7,24 @@ import testing ;
 # compile the test and run it
 ###############################################################################
 
-project 
-    : requirements	<define>BOOST_TEST_MAIN
-    ;
+project
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
 
 alias dependencies
-    : 
+	:
 		/boost//unit_test_framework
-		/tuttlecommon
+		/boost//python
 		/tuttlehost
-    :
-    <include>$(BOOST_ROOT) <define>BOOST_GIL_NO_IO
-    <os>LINUX:<find-shared-library>dl
-    ; 
+		/python
+	:
+		<include>$(BOOST_ROOT) <define>BOOST_GIL_NO_IO
+		<os>LINUX:<find-shared-library>dl
+	;
 
-run main.cpp dependencies ;
+run
+		main.cpp
+		dependencies
+	;

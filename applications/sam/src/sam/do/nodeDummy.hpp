@@ -16,6 +16,7 @@
 //#include <boost/algorithm/string/split.hpp>
 //#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <iostream>
 
@@ -59,6 +60,7 @@ void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string&
 		}
 		boost::filesystem::path p( nodeArgs.at( 0 ) );
 		std::string inputExtension = p.extension().string();
+		boost::algorithm::to_lower( inputExtension );
 		if( inputExtension.size() == 0 )
 		{
 			BOOST_THROW_EXCEPTION( tuttle::exception::Value()

@@ -21,7 +21,11 @@ use-project	/tuttlehost	: src/tuttle/host ;
 use-project	/tuttleplugin	: src/tuttle/plugin ;
 use-project	/tuttlecommon	: src/tuttle/common ;
 
-
+alias
+		tuttle-tests
+	:
+		tests
+	;
 
 ###############################################################################
 # Automatic install

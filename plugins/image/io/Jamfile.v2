@@ -5,5 +5,5 @@ path-constant BUILD : $(BUILD)/io ;
 
 for local l in [ glob * : test ]
 {
-   build-project $(l) ;
+	build-project $(l) ;
 }

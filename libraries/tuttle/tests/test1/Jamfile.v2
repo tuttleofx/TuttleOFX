@@ -7,13 +7,18 @@ import testing ;
 # compile the test and run it
 ###############################################################################
 
-project 
-    : requirements	<define>BOOST_TEST_MAIN
-    ;
-    
-alias dependencies
-    : 
-		/boost//unit_test_framework
-    ; 
+project
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
 
-run   main.cpp dependencies ;
+alias dependencies
+	: 
+		/boost//unit_test_framework
+	; 
+
+run
+		main.cpp
+		dependencies
+	;
