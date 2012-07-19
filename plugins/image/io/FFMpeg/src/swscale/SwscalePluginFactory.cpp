@@ -136,6 +136,7 @@ void SwscalePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
 	filter->appendOption( kParamFilterSinc );
 	filter->appendOption( kParamFilterLanczos );
 	filter->appendOption( kParamFilterSpline );
+	filter->setDefault( eParamFilterBicubic );
 }
 
 /**
