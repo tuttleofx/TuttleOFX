@@ -6,6 +6,7 @@
 
 #include <tuttle/plugin/ofxToGil/point.hpp>
 #include <terry/point/operations.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 
 namespace tuttle {
