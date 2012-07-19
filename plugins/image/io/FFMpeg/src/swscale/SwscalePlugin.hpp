@@ -4,6 +4,7 @@
 #include "SwscaleDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+#include <ffmpeg/FFmpeg.hpp>
 
 namespace tuttle {
 namespace plugin {

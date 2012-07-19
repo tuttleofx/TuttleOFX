@@ -1,7 +1,5 @@
 #include "SwscaleProcess.hpp"
 
-#include <ffmpeg/FFmpeg.hpp>
-
 namespace tuttle {
 namespace plugin {
 namespace swscale {
@@ -9,6 +7,7 @@ namespace swscale {
 SwscaleProcess::SwscaleProcess( SwscalePlugin &effect )
 : ImageFilterProcessor( effect, eImageOrientationFromTopToBottom )
 , _plugin( effect )
+, _context( NULL )
 {
 	this->setNoMultiThreading();
 }
@@ -44,20 +43,22 @@ PixelFormat ofxPixelComponentToSwsPixelFormat( const OFX::EPixelComponent compon
 void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	OFX::EPixelComponent component = this->_src->getPixelComponents();
+	PixelFormat pixFmt = ofxPixelComponentToSwsPixelFormat( component );
 	OFX::EBitDepth bitDepth = this->_src->getPixelDepth();
 	
-	struct SwsContext* context =
-		sws_getContext(
+	_context = sws_getCachedContext( _context,
 			this->_src->getBoundsSize().x, this->_src->getBoundsSize().y, 
-			PIX_FMT_RGBA, ///@todo depending on the data
+			pixFmt, ///@todo depending on the data
 			this->_dst->getBoundsSize().x, this->_dst->getBoundsSize().y,
-			PIX_FMT_RGBA, ///@todo depending on the data
+			pixFmt, ///@todo depending on the data
 			_params._sws_filter, 
 			NULL, NULL, NULL );
-	
-//	struct SwsContext* context = sws_alloc_context();
-//	sws_init_context( context, NULL, NULL );
-	
+	if ( !_context )
+	{
+		std::cerr << "swscale: Could not get swscale context" << std::endl;
+		return;
+	}
+
 	// set filtering mode
 	// @todo: sws set filtermode( _params._sws_filter )
 	
@@ -67,7 +68,12 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 	
 	// for simple buffer access
 	uint8_t* srcPtr = (uint8_t*)this->_src->getPixelData();
-	uint8_t* dstPtr = (uint8_t*)this->_src->getPixelData();
+	uint8_t* dstPtr = (uint8_t*)this->_dst->getPixelData();
+	if ( !srcPtr || !dstPtr )
+	{
+		std::cerr << "swscale: Pixel data pointer invalid" << std::endl;
+		return;
+	}
 	
 	// "this->_src->getRowDistanceBytes()" is not the same than "this->_src->getBoundsSize().x * pixelBytes"
 	// The buffer could contain a padding between lines.
@@ -77,9 +83,12 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 //	uint8_t *src[4]     = { data, data + W * H, data + W * H * 2, data + W * H * 3 };
 //	int stride[4]       = { W, W, W, W };
 	
-//	sws_scale( context,
-//		srcPtr, this->_src->getRowDistanceBytes(), 0, this->_src->getBoundsSize().y,
-//		dstPtr, this->_dst->getRowDistanceBytes() );
+	int srcStride = this->_src->getRowDistanceBytes();
+	int dstStride = this->_dst->getRowDistanceBytes();
+	int ret = sws_scale( _context, &srcPtr, &srcStride, 0,
+			this->_src->getBoundsSize().y, &dstPtr, &dstStride );
+	if ( ret < 0 )
+		std::cerr << "swscale: Scaling failed (" << ret << ")" << std::endl;
 }
 
 }
