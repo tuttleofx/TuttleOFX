@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( loading_openfx_plugins )
 	TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
 	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 	Core::instance().preload();
-	TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
+	//TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
 	TUTTLE_COUT( "----------------- DONE -----------------" );
 }
 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( process_reader )
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
 
-	read.getParam( "filename" ).setValue( "BOOST_PP_STRINGIZE(TUTTLE_DATA_PATH)/images/file.raw" );
+	read.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/raw/RAW_CANON_10D.CRW" );
 	
 	TUTTLE_COUT( "--> GRAPH PROCESSING" );
 	boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
@@ -68,11 +68,11 @@ BOOST_AUTO_TEST_CASE( process_reader )
 
 BOOST_AUTO_TEST_CASE( process_nofile )
 {
-	TUTTLE_COUT( "******** PROCESS READER JPEG NO FILE ********" );
+	TUTTLE_COUT( "******** PROCESS READER RAW NO FILE ********" );
 	Graph g;
 
 	TUTTLE_COUT( "--> PLUGINS CREATION" );
-	Graph::Node& read = g.createNode( "tuttle.exrreader" );
+	Graph::Node& read = g.createNode( "tuttle.rawreader" );
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
 	read.getParam( "filename" ).setValue( "data/no-such-file.raw" );
