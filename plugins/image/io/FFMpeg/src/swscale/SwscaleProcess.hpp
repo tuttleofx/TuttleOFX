@@ -18,6 +18,7 @@ class SwscaleProcess : public ImageFilterProcessor
 protected:
 	SwscalePlugin&       _plugin; ///< Rendering plugin
 	SwscaleProcessParams _params; ///< parameters
+	struct SwsContext*   _context;
 
 public:
 	SwscaleProcess( SwscalePlugin& effect );
