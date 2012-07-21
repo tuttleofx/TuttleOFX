@@ -1253,6 +1253,10 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 		}
 	}
 
+	// default value if the generator don't set the framerate
+	if( frameRate == 0 )
+		frameRate = 25;
+	
 	/// set some stuff up
 	_outputFrameRate         = frameRate;
 	_outputFielding          = getDefaultOutputFielding();
