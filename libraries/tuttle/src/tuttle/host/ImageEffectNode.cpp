@@ -739,7 +739,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 					clip,
 					vData._time,
 					vData._apiImageEffect._renderRoI,
-					attribute::Image::eImageOrientationFromTopToBottom,
+					attribute::Image::eImageOrientationFromBottomToTop,
 					0 )
 				);
 			imageCache->setPoolData( Core::instance().getMemoryPool().allocate( imageCache->getMemorySize() ) );

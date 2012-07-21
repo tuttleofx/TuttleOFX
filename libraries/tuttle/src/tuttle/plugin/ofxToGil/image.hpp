@@ -32,6 +32,8 @@ View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation o
 {
 	using namespace boost::gil;
 	typedef typename View::value_type Pixel;
+	TUTTLE_TCOUT_X( 50, "-" );
+	TUTTLE_TCOUT( "getGilView" );
 
 	//	OfxRectI imgrod = img->getRegionOfDefinition(); // bug in nuke returns bounds... not the clip rod with renderscale...
 	const OfxRectI bounds = img->getBounds();
@@ -57,36 +59,66 @@ View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation o
 	View tileView = interleaved_view( tileSize.x, tileSize.y,
 										static_cast<Pixel*>( img->getPixelData() ),
 										img->getRowDistanceBytes() );
+	
+	TUTTLE_TCOUT_VAR( img->getRowDistanceBytes() );
+	TUTTLE_TCOUT_VAR( tileView.pixels().row_size() );
+	
+	View fullView;
+	const bool isTile = (
+		bounds.x1 != rod.x1 || bounds.y1 != rod.y1 ||
+	    bounds.x2 != rod.x2 || bounds.y2 != rod.y2 );
+	// if the tile is equals to the full image
+	// directly return the tile
+	if( ! isTile )
+	{
+		TUTTLE_TCOUT( "Tile is equal to the full view" );
+		fullView = tileView;
+	}
+	else
+	{
+		// view the tile as a full image
+		TUTTLE_TCOUT( "Tile to full view" );
+		fullView = subimage_view( tileView, rod.x1 - bounds.x1, rod.y1 - bounds.y1, rod.x2 - rod.x1, rod.y2 - rod.y1 );
+	}
+	
+	TUTTLE_TCOUT_VAR( fullView.pixels().row_size() );
+	
+	View resView = fullView;
 	switch( orientation )
 	{
 		case eImageOrientationIndependant: // use memory order
 		{
-			if( img->getRowDistanceBytes() < 0 ) // if the host use from top to bottom
+			TUTTLE_TCOUT( "eImageOrientationIndependant" );
+			if( isTile ) // can't manage ordering
+				break;
+
+			if( img->getRowDistanceBytes() < 0 ) // if the host use buffer ordered from top to bottom
 			{
-				tileView = flipped_up_down_view( tileView );
+				resView = flipped_up_down_view( fullView );
 			}
 			break;
 		}
 		case eImageOrientationFromTopToBottom:
 		{
-			tileView = flipped_up_down_view( tileView );
+			TUTTLE_TCOUT( "eImageOrientationFromTopToBottom" );
+			BOOST_ASSERT( ! isTile ); // can't manage ordering with tiles currently (no RoW information in OpenFX)
+
+			resView = flipped_up_down_view( fullView );
 			break;
 		}
 		case eImageOrientationFromBottomToTop:
 		{
+			TUTTLE_TCOUT( "eImageOrientationFromBottomToTop => do nothing" );
 			// by default in OpenFX we are in this order
 			break;
 		}
 	}
 	
-	// if the tile is equals to the full image
-	// directly return the tile
-	if( bounds.x1 == rod.x1 && bounds.y1 == rod.y1 &&
-	    bounds.x2 == rod.x2 && bounds.y2 == rod.y2 )
-		return tileView;
+	
+	TUTTLE_TCOUT_VAR( resView.pixels().row_size() );
 
-	// view the tile as a full image
-	return subimage_view( tileView, rod.x1 - bounds.x1, rod.y1 - bounds.y1, rod.x2 - rod.x1, rod.y2 - rod.y1 );
+	TUTTLE_TCOUT_X( 50, "-" );
+	return resView;
 }
 
 

@@ -8,7 +8,7 @@ namespace resize {
 
 template<class View>
 ResizeProcess<View>::ResizeProcess( ResizePlugin &effect )
-: ImageGilFilterProcessor<View>( effect, eImageOrientationFromTopToBottom )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationFromBottomToTop )
 , _plugin( effect )
 {
 	this->setNoMultiThreading();
