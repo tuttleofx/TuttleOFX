@@ -106,7 +106,13 @@ const std::string& ClipImage::getUnmappedComponents() const
  */
 double ClipImage::getFrameRate() const
 {
-	return getNode().asImageEffectNode().getFrameRate();
+	if( isOutput() )
+		return getNode().asImageEffectNode().getFrameRate();
+	else if( isConnected() )
+		return this->getConnectedClip().getFrameRate();
+	
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "Can't ask the frame rate on an unconnected input clip." ) );
 }
 
 // Frame Range (startFrame, endFrame) -

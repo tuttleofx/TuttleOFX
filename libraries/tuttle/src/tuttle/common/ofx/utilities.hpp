@@ -39,7 +39,7 @@ inline T minimum( const T& a, const T& b )
 	return a < b ? a : b;
 }
 
-/// get the min value
+/// get the max value
 template<class T>
 inline T maximum( const T& a, const T& b )
 {

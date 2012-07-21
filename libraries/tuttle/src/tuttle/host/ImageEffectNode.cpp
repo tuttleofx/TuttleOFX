@@ -160,10 +160,9 @@ double ImageEffectNode::getEffectDuration() const
 	return 25.0;
 }
 
-// get frame rate, so progressive PAL SD return 25
 double ImageEffectNode::getFrameRate() const
 {
-	return 25.0;
+	return this->_outputFrameRate;
 }
 
 /// This is called whenever a param is changed by the plugin so that

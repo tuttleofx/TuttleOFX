@@ -87,7 +87,7 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin&         p
 	, _created( false )
 	, _continuousSamples( false )
 	, _frameVarying( false )
-	, _outputFrameRate( 24 )
+	, _outputFrameRate( 0 )
 {
 	_properties.setChainedSet( &descriptor.getProperties() );
 
@@ -1230,7 +1230,10 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 		// If input clip
 		if( !clip->isOutput() )
 		{
-			frameRate = maximum( frameRate, clip->getFrameRate() );
+			if( clip->isConnected() )
+			{
+				frameRate = maximum( frameRate, clip->getFrameRate() );
+			}
 
 			std::string rawComp = clip->getUnmappedComponents();
 			rawComp = clip->findSupportedComp( rawComp ); // turn that into a comp the plugin expects on that clip

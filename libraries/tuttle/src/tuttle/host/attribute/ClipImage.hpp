@@ -174,7 +174,6 @@ public:
 
 	/**
 	 * @brief Unmapped Frame Rate
-	 * The unmaped frame range over which an output clip has images.
 	 */
 	const double getUnmappedFrameRate() const;
 
