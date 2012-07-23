@@ -315,6 +315,14 @@ bool SwscalePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& id
  */
 void SwscalePlugin::render( const OFX::RenderArguments &args )
 {
+	OFX::ImageEffectHostDescription* desc = OFX::getImageEffectHostDescription();
+	
+	if( desc->_supportedPixelDepths.size() == 1 && OFX::eBitDepthFloat == desc->_supportedPixelDepths.at(0) )
+	{
+		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+			<< exception::user( "SwScale: unsupported plugin on this host." ) );
+	}
+	
 	SwscaleProcess procObj( *this );
 	procObj.setupAndProcess( args );
 }
