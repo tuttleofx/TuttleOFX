@@ -88,8 +88,8 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 	const OfxRectI bounds = dst->getBounds();
 	TUTTLE_TCOUT_VAR( bounds );
 
-	size_t width = bounds.x2 - bounds.x1;
-	size_t height = bounds.y2 - bounds.y1;
+	size_t width = dst->getBoundsSize().x;
+	size_t height = dst->getBoundsSize().y;
 	size_t components = 0;
 	size_t bitDepth = 0;
 
@@ -118,7 +118,7 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 			break;
 	}
 
-	size_t imgSizeBytes = width * height * components * bitDepth ;
+	size_t imgSizeBytes = width * height * dst->getPixelBytes() ;
 
 	char* data = new char[ imgSizeBytes ];
 	char* tmpData = data;
