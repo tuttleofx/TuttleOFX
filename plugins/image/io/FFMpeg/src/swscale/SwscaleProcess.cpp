@@ -79,6 +79,12 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 	OFX::EBitDepth bitDepth = this->_src->getPixelDepth();
 	PixelFormat pixFmt = ofxPixelComponentToSwsPixelFormat( component, bitDepth );
 
+	if( pixFmt == PIX_FMT_NONE )
+	{
+		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+			<< exception::user( "SwScale: unsupported bit depth / channel input." ) );
+	}
+	
 	_context = sws_getCachedContext( _context,
 			this->_src->getBoundsSize().x, this->_src->getBoundsSize().y,
 			pixFmt,
