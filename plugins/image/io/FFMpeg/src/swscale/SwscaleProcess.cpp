@@ -19,16 +19,49 @@ void SwscaleProcess::setup( const OFX::RenderArguments& args )
 	_params = _plugin.getProcessParams( args.renderScale );
 }
 
-PixelFormat ofxPixelComponentToSwsPixelFormat( const OFX::EPixelComponent component )
+PixelFormat ofxPixelComponentToSwsPixelFormat( const OFX::EPixelComponent component, const OFX::EBitDepth bitDepth )
 {
 	switch( component )
 	{
 		case OFX::ePixelComponentRGBA:
-			return PIX_FMT_RGBA;
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unkown bit depth" ) );
+					break;
+				case OFX::eBitDepthUByte:  return PIX_FMT_RGBA;
+				case OFX::eBitDepthUShort: return PIX_FMT_NONE;
+				case OFX::eBitDepthFloat:  return PIX_FMT_NONE;
+			}
+			break;
 		case OFX::ePixelComponentRGB:
-			return PIX_FMT_RGB24;
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unkown bit depth" ) );
+					break;
+				case OFX::eBitDepthUByte:  return PIX_FMT_RGB24;
+				case OFX::eBitDepthUShort: return PIX_FMT_RGB48;
+				case OFX::eBitDepthFloat:  return PIX_FMT_NONE;
+			}
+			break;
 		case OFX::ePixelComponentAlpha:
-			return PIX_FMT_GRAY8;
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+						<< exception::user( "Dpx: Unkown bit depth" ) );
+					break;
+				case OFX::eBitDepthUByte:  return PIX_FMT_GRAY8;
+				case OFX::eBitDepthUShort: return PIX_FMT_GRAY16;
+				case OFX::eBitDepthFloat:  return PIX_FMT_NONE;
+			}
+			break;
 		case OFX::ePixelComponentNone:
 		case OFX::ePixelComponentCustom:
 			break;
@@ -43,8 +76,8 @@ PixelFormat ofxPixelComponentToSwsPixelFormat( const OFX::EPixelComponent compon
 void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	OFX::EPixelComponent component = this->_src->getPixelComponents();
-	PixelFormat pixFmt = ofxPixelComponentToSwsPixelFormat( component );
 	OFX::EBitDepth bitDepth = this->_src->getPixelDepth();
+	PixelFormat pixFmt = ofxPixelComponentToSwsPixelFormat( component, bitDepth );
 
 	_context = sws_getCachedContext( _context,
 			this->_src->getBoundsSize().x, this->_src->getBoundsSize().y,
@@ -84,7 +117,8 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 			this->_src->getBoundsSize().y, &dstPtr, &dstStride );
 	if ( ret < 0 )
 		BOOST_THROW_EXCEPTION( exception::Failed()
-			<< exception::user( ( "swscale: Scaling failed (" + ret + ")" ) ) );
+			<< exception::user( "swscale: Scaling failed." )
+			<< exception::dev( ret ) );
 }
 
 }
