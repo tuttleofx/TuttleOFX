@@ -22,6 +22,12 @@ void SwscalePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleSwscale", "Swscale", "Swscale" );
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
+	
+	desc.setDescription( "SwScale: fast resizing plugin\n"
+				"Plugin using swscale library from FFMpeg.\n"
+				"Warning: Could not run with floating point images and\n"
+				"			RGBA data different of 8 bit (32bpp).\n"
+	);
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
