@@ -55,7 +55,7 @@ static const std::string kParamFilterArea         = "area";
 static const std::string kParamFilterBicublin     = "bicublin";
 static const std::string kParamFilterGauss        = "gauss";
 static const std::string kParamFilterSinc         = "sinc";
-static const std::string kParamFilterLanczos      = "lancszos";
+static const std::string kParamFilterLanczos      = "lanczos";
 static const std::string kParamFilterSpline       = "spline";
 
 enum EParamFilter
@@ -70,7 +70,7 @@ enum EParamFilter
 	eParamFilterGauss,
 	eParamFilterSinc,
 	eParamFilterLanczos,
-	eParamFilterSpline,
+	eParamFilterSpline
 };
 
 }
