@@ -72,6 +72,8 @@ public:
 
 	This& operator=( const This& v )
 	{
+		_nodeData = v._nodeData;
+		
 		_time = v._time;
 		_isFinalNode = v._isFinalNode;
 		_outDegree = v._outDegree;

@@ -16,7 +16,7 @@ namespace crop {
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromBottomToTop )
 	, _plugin( instance )
 {
 }

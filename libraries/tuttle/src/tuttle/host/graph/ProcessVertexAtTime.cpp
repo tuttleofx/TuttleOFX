@@ -6,6 +6,8 @@
 
 #include <boost/functional/hash.hpp>
 
+#include <boost/format.hpp>
+
 
 namespace tuttle {
 namespace host {
@@ -69,6 +71,7 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 				s << subDotEntry( "endFrame", endFrame );
 			}
 			s << subDotEntry( "output RoD", ieNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
+			s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
 		}
 		else if( const InputBufferNode* ibNode = dynamic_cast<const InputBufferNode*>( & getProcessNode() ) )
 		{
@@ -81,8 +84,11 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 				s << subDotEntry( "endFrame", endFrame );
 			}
 			s << subDotEntry( "output RoD", ibNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
+			s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
 		}
 	}
+	s << subDotEntry( "timeDomain", ( boost::format("[%1%:%2%]") % _data._nodeData->_timeDomain.min % _data._nodeData->_timeDomain.max ).str() );
+	
 	s << subDotEntry( "localMemory", _data._localInfos._memory );
 	s << subDotEntry( "globalMemory", _data._globalInfos._memory );
 	s << subDotEntry( "time", _data._time );
