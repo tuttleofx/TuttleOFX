@@ -7,22 +7,31 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-    : build-dir $(BUILD)/%CLASSNAME%
-    ;
+	:
+		requirements
+		<include>src
+	:
+		build-dir $(BUILD)/%CLASSNAME%
+	;
 
  
 ###############################################################################
 # Product 
 ###############################################################################
 plugin %CLASSNAME% : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    ;
+		[ glob-tree *.cpp ]
+		/tuttleplugin/<link>static
+	;
  
 ###############################################################################
 # Automatic install
 ###############################################################################
 auto_install %CLASSNAME% : $(DIST) ;
- 
+
+###############################################################################
+# Test plugin
+###############################################################################
+#alias io-tests
+#	:
+#		tests
+#	;
