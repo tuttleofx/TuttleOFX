@@ -55,8 +55,8 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 			NULL, NULL, NULL );
 	if ( !_context )
 	{
-		std::cerr << "swscale: Could not get swscale context" << std::endl;
-		return;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user( "swscale: Could not get swscale context." ) );
 	}
 
 	// set filtering mode
@@ -71,8 +71,8 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 	uint8_t* dstPtr = (uint8_t*)this->_dst->getPixelData();
 	if ( !srcPtr || !dstPtr )
 	{
-		std::cerr << "swscale: Pixel data pointer invalid" << std::endl;
-		return;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user( "swscale: Pixel data pointer invalid." ) );
 	}
 
 	// "this->_src->getRowDistanceBytes()" is not the same than "this->_src->getBoundsSize().x * pixelBytes"
@@ -83,7 +83,8 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 	int ret = sws_scale( _context, &srcPtr, &srcStride, 0,
 			this->_src->getBoundsSize().y, &dstPtr, &dstStride );
 	if ( ret < 0 )
-		std::cerr << "swscale: Scaling failed (" << ret << ")" << std::endl;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user( ( "swscale: Scaling failed (" + ret + ")" ) ) );
 }
 
 }
