@@ -83,7 +83,7 @@ SwscaleProcessParams SwscalePlugin::getProcessParams( const OfxPointD& renderSca
 {
 	SwscaleProcessParams params;
 	
-	params._filter = (EParamFilter)_paramFilter-> getValue();
+	params._filter = static_cast<EParamFilter>( _paramFilter-> getValue() );
 	params._sws_filter = filterParamToSwscaleFlag( params._filter );
 	
 	return params;
@@ -201,8 +201,6 @@ void SwscalePlugin::changedParam( const OFX::InstanceChangedArgs &args, const st
 bool SwscalePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	using namespace boost::gil;
-
-	SwscaleProcessParams params = getProcessParams();
 
 	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 	const Point2   srcRodSize( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );
