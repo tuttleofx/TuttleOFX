@@ -1,6 +1,6 @@
-#include "ResizePluginFactory.hpp"
-#include "ResizePlugin.hpp"
-#include "ResizeDefinitions.hpp"
+#include "SwscalePluginFactory.hpp"
+#include "SwscalePlugin.hpp"
+#include "SwscaleDefinitions.hpp"
 
 #include <tuttle/plugin/context/SamplerPluginFactory.hpp>
 
@@ -9,7 +9,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace resize {
+namespace swscale {
 
 static const bool kSupportTiles = false;
 
@@ -18,9 +18,9 @@ static const bool kSupportTiles = false;
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void ResizePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void SwscalePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleResize", "Resize", "Resize" );
+	desc.setLabels( "TuttleSwscale", "Swscale", "Swscale" );
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
 	// add the supported contexts, only filter at the moment
@@ -42,7 +42,7 @@ void ResizePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::EContext context )
+void SwscalePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -122,20 +122,21 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 	height->setDisplayRange( 0, 3000 );
 	height->setHint( "Set the height in pixels and keep the input image ratio." );
 
-#ifndef TUTTLE_PRODUCTION
-	OFX::BooleanParamDescriptor* center = desc.defineBooleanParam( kParamCenter );
-	center->setLabel( "Center resizing" );
-	center->setDefault( false );
-	center->setHint( "Resize around the center point." );
-
-	OFX::Double2DParamDescriptor* centerPoint = desc.defineDouble2DParam( kParamCenterPoint );
-	centerPoint->setDefault( 100, 100 );
-	centerPoint->setLabel( "Center point at" );
-	centerPoint->setHint( "Position of the center point." );
-#endif
-
 	// sampler parameters //
-	describeSamplerParamsInContext( desc, context );
+	OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
+	filter->setLabel( "Filter" );
+	filter->appendOption( kParamFilterFastBilinear );
+	filter->appendOption( kParamFilterBilinear );
+	filter->appendOption( kParamFilterBicubic );
+	filter->appendOption( kParamFilterX );
+	filter->appendOption( kParamFilterPoint );
+	filter->appendOption( kParamFilterArea );
+	filter->appendOption( kParamFilterBicublin );
+	filter->appendOption( kParamFilterGauss );
+	filter->appendOption( kParamFilterSinc );
+	filter->appendOption( kParamFilterLanczos );
+	filter->appendOption( kParamFilterSpline );
+	filter->setDefault( eParamFilterBicubic );
 }
 
 /**
@@ -144,10 +145,10 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* ResizePluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+OFX::ImageEffect* SwscalePluginFactory::createInstance( OfxImageEffectHandle handle,
+														OFX::EContext context )
 {
-	return new ResizePlugin( handle );
+	return new SwscalePlugin( handle );
 }
 
 }
