@@ -127,6 +127,12 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 			<< exception::dev( ret ) );
 }
 
+void SwscaleProcess::postProcess()
+{
+	sws_freeContext( _context );
+}
+
+
 }
 }
 }
