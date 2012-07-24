@@ -9,12 +9,15 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace bfs = boost::filesystem;
 
 class FFmpegPreset : public FFmpeg
 {
+public:
 	typedef std::vector<std::string> Presets;
+	typedef std::map<std::string, std::string> PresetsOptions;
 
 public:
 	FFmpegPreset();
@@ -22,7 +25,9 @@ public:
 	std::string getCodecName ( const std::string& path );
 	std::string getConfigName( const std::string& path );
 	
-	std::vector<std::string> getConfigList( const std::string& codec );
+	Presets getConfigList( const std::string& codec );
+	
+	PresetsOptions getOptionsForPresetFilename( const std::string& presetFile );
 	
 private:
 	void researchPresets();

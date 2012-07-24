@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 
 #include <boost/algorithm/string.hpp>
 
@@ -32,11 +33,11 @@ std::string FFmpegPreset::getConfigName( const std::string& path )
 	std::vector<std::string> splitFilename;
 	boost::split( splitPath, path, boost::is_any_of("/") );
 	
-	boost::split( splitFilename, splitPath.at( splitPath.size() - 1 ), boost::is_any_of("-,.") );
+	boost::split( splitFilename, splitPath.at( splitPath.size() - 1 ), boost::is_any_of("-.") );
 	return splitFilename.at( 1 );
 }
 
-std::vector<std::string> FFmpegPreset::getConfigList( const std::string& codec )
+FFmpegPreset::Presets FFmpegPreset::getConfigList( const std::string& codec )
 {
 	std::vector<std::string> list;
 	Presets::iterator config;
@@ -126,5 +127,49 @@ std::vector<std::string> FFmpegPreset::getPresetConfigurations( std::string envi
 		}
 	}
 	return configs;
+}
+
+FFmpegPreset::PresetsOptions FFmpegPreset::getOptionsForPresetFilename( const std::string& presetFile )
+{
+	PresetsOptions opts;
+	std::ifstream inPreset;
+	
+	inPreset.open( presetFile.c_str(), std::ifstream::in ); 
+	if( ! inPreset.is_open() )
+	{
+		std::cerr << "ffmpegPreset: Unable to open preset file" << presetFile << std::endl;
+		return opts;
+	}
+	while( ! inPreset.eof() )
+	{
+#define LINE_SIZE 256
+		char line[LINE_SIZE];
+		
+		inPreset.getline( line, LINE_SIZE );
+		
+		std::vector<std::string> opt;
+		boost::split( opt, line, boost::is_any_of("= ") );
+		
+		if( opt.size() > 1 )
+		{
+			if( !( opt.at(0)[0] == '#' || opt.at(0)[0] == '\n' || opt.at(0)[0] == '\r' ) )
+			{
+				if( opt.size() == 2 || opt.at(2)[0] == '#' )
+				{
+					//TUTTLE_COUT( "option: " << opt.at(0) << " => " << opt.at(1) );
+					opts[ opt.at(0) ] = opt.at(1);
+				}
+				else
+				{
+					TUTTLE_CERR( "ffmpegPreset: Unable to parse option : " << line );
+				}
+			}
+			else
+			{
+				//TUTTLE_TCOUT("comment : " << line );
+			}
+		}
+	}
+	return opts;
 }
 
