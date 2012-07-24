@@ -43,6 +43,24 @@ FFmpegPreset::Presets FFmpegPreset::getCodecListWithConfig( )
 	return list;
 }
 
+std::string FFmpegPreset::getFilename( const std::string& codec, const std::string& preset )
+{
+	std::string filename;
+	Presets::iterator config;
+	for ( config = presets.begin() ; config != presets.end(); config++ )
+	{
+		std::string c = getCodecName( *config );
+		std::string p = getConfigName( *config );
+		
+		if( std::strcmp( c.c_str(), codec.c_str() ) == 0
+			&& std::strcmp( p.c_str(), preset.c_str() ) == 0 )
+		{
+			filename = *config;
+		}
+	}
+	return filename;
+}
+
 std::string FFmpegPreset::getCodecName( const std::string& path )
 {
 	std::vector<std::string> splitPath;

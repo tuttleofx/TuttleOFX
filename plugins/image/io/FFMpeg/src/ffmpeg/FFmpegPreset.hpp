@@ -24,6 +24,7 @@ public:
 
 	Presets getCodecListWithConfig( );
 	
+	std::string getFilename  ( const std::string& codec, const std::string& preset );
 	std::string getCodecName ( const std::string& path );
 	std::string getConfigName( const std::string& path );
 	
