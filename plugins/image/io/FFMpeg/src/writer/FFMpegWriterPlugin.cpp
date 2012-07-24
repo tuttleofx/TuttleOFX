@@ -20,9 +20,17 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	_paramFormat                      = fetchChoiceParam( kParamFormat           );
 	_paramCodec                       = fetchChoiceParam( kParamCodec            );
 	_paramBitRate                     = fetchIntParam   ( kParamBitrate          );
+	
+	codecListWithPreset = _writer.getCodecListWithConfig();
+	std::vector<std::string>::iterator it;
+	for( it = codecListWithPreset.begin(); it < codecListWithPreset.end(); it++ )
+	{
+		OFX::ChoiceParam* paramPreset = fetchChoiceParam( *it );
+		videoCodecPresets.push_back( paramPreset );
+	}
 }
 
-FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
+FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
 {
 	FFMpegProcessParams params;
 
@@ -30,7 +38,20 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 	params._format                         = _paramFormat            ->getValue();
 	params._codec                          = _paramCodec             ->getValue();
 	params._bitrate                        = _paramBitRate           ->getValue();
-
+	
+	_writer.setCodec            ( params._codec );
+	const std::string codecName = _writer.getCodec();
+	
+	std::vector<std::string>::iterator it;
+	size_t pos = 0;
+	for( it = codecListWithPreset.begin(); it < codecListWithPreset.end(); it++, pos++ )
+	{
+		if( strcmp( codecName.c_str(), (*it).c_str() ) == 0 )
+		{
+			int presetIdx = videoCodecPresets.at( pos )->getValue();
+			params._videoPreset = presetIdx;
+		}
+	}
 	return params;
 }
 
@@ -62,6 +83,7 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	_writer.setBitRate          ( params._bitrate );
 	_writer.fps                 ( _clipSrc->getFrameRate() );
 	_writer.aspectRatio         ( _clipSrc->getPixelAspectRatio() );
+	_writer.setVideoPreset      ( params._videoPreset );
 }
 
 /**
@@ -71,7 +93,7 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
-
+	
 	doGilRender<FFMpegWriterProcess>( *this, args );
 	
 //	// instantiate the render code based on the pixel depth of the dst clip

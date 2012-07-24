@@ -33,6 +33,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	, _fps               ( 25.0f )
 	, _formatName        ( "" )
 	, _codecName         ( "" )
+	, _videoPresetName   ( "" )
 	, _bitRate           ( 400000 )
 	, _bitRateTolerance  ( 4000 * 10000 )
 	, _gopSize           ( 12 )
@@ -110,6 +111,11 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		}
 		avcodec_get_context_defaults3(_stream->codec, _codec);
 
+		if( _videoPresetName.length() !=0 )
+		{
+			TUTTLE_CERR( "ffmpegWriter: " << _videoPresetName << " preset selected" );
+		}
+		
 		_stream->codec->bit_rate           = _bitRate;
 		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = width();
@@ -287,3 +293,10 @@ void VideoFFmpegWriter::freeFormat()
 	_stream          = 0;
 }
 
+void VideoFFmpegWriter::setVideoPreset( const unsigned int id )
+{
+	FFmpegPreset::Presets p;
+	p = getConfigList( _codecName );
+	
+	_videoPresetName = p.at( id );
+}

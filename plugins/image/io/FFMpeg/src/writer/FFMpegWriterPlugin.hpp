@@ -8,6 +8,7 @@
 #include <boost/scoped_ptr.hpp>
 
 #include <string>
+#include <vector>
 
 namespace tuttle {
 namespace plugin {
@@ -16,10 +17,12 @@ namespace writer {
 
 struct FFMpegProcessParams
 {
-	std::string                    _filepath;                        ///< Ffmpeg filepath
-	int                            _format;                          ///< Format
-	int                            _codec;                           ///< Codec
-	int                            _bitrate;                         ///< Bit rate
+	std::string _filepath;    ///< FFmpeg filepath
+	int         _format;      ///< Format
+	int         _codec;       ///< Codec
+	int         _bitrate;     ///< Bit rate
+	
+	int         _videoPreset; ///< video configuration (based on the video codec)
 };
 
 /**
@@ -31,7 +34,7 @@ public:
 	FFMpegWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	FFMpegProcessParams getProcessParams() const;
+	FFMpegProcessParams getProcessParams();
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
@@ -45,6 +48,9 @@ public:
 	OFX::ChoiceParam*   _paramFormat;
 	OFX::ChoiceParam*   _paramCodec;
 	OFX::IntParam*      _paramBitRate;
+	
+	std::vector<OFX::ChoiceParam*> videoCodecPresets;
+	std::vector<std::string>       codecListWithPreset;
 	
 	VideoFFmpegWriter   _writer;
 };
