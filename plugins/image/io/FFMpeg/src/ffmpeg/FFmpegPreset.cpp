@@ -170,6 +170,7 @@ FFmpegPreset::PresetsOptions FFmpegPreset::getOptionsForPresetFilename( const st
 			}
 		}
 	}
+	inPreset.close();
 	return opts;
 }
 
