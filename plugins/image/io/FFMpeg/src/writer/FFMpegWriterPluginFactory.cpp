@@ -127,7 +127,8 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		format->appendOption( *itShort, *itLong );
+		std::string formatName = *itShort;
+		format->appendOption( formatName, *itLong );
 		if (!strcmp(itShort->c_str(), "mp4"))
 			default_format = format->getNOptions() - 1;
 	}
@@ -143,9 +144,28 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		codec->appendOption( *itShort, *itLong );
+		std::string codecName = *itShort;
+		codec->appendOption( codecName, *itLong );
 		if (!strcmp(itShort->c_str(), "mpeg4"))
 			default_codec = codec->getNOptions() - 1;
+		
+		std::vector<std::string> codecList = writer.getConfigList( codecName );
+		OFX::ChoiceParamDescriptor* choiceConfig;
+		
+		if( codecList.size() != 0 )
+		{
+			choiceConfig = desc.defineChoiceParam( codecName );
+			choiceConfig->setLabel( codecName );
+			choiceConfig->setDefault( 0 );
+		}
+		
+		for( std::vector<std::string>::const_iterator itCodec = codecList.begin(),
+			itCodecEnd = codecList.end();
+			itCodec != itCodecEnd;
+			++itCodec )
+		{
+			choiceConfig->appendOption( *itCodec );
+		}
 	}
 	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	codec->setDefault( default_codec );
@@ -246,6 +266,15 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
     avAudioServiceType->appendOption( kParamAVASTKaraoke           );
     avAudioServiceType->appendOption( kParamAVASTNb                 );
     //avAudioServiceType->setDefault ( AV_AUDIO_SERVICE_TYPE_MAIN );
+	/*
+	OFX::ChoiceParamDescriptor* preset = desc.defineChoiceParam( kParamPreset );
+	preset->setLabel( "Preset" );
+	preset->appendOption( "baseline" );
+	preset->appendOption( "fast" );
+	preset->appendOption( "ipod320" );
+	preset->appendOption( "ipod640" );
+	preset->appendOption( "lossless_fast" );
+	*/
 }
 
 /**

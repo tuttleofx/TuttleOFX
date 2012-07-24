@@ -117,6 +117,8 @@ static const std::string kParamAVASTNb                   = "nb                  
 
 // enum => AVChromaLocation in avcodec.h
 
+static const std::string kParamPreset        = "preset";
+
 
 }
 }
