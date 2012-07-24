@@ -139,26 +139,6 @@ public:
 		_codecName = codec;
 	}
 
-	void setMotionEstimation( const int me )
-	{
-		_motionEstimation = me;
-	}
-
-	void setColorspace( const AVColorSpace colorspace )
-	{
-		_colorspace = colorspace;
-	}
-
-	void setColorPrimaries( const AVColorPrimaries colorPrimaries )
-	{
-		_colorPrimaries = colorPrimaries;
-	}
-
-	void setColorTransferCharateristic( const AVColorTransferCharacteristic colorTransferCharacteristic )
-	{
-		_colorTransferCharacteristic = colorTransferCharacteristic;
-	}
-
 	void configureFromRead( const VideoFFmpegReader& reader )
 	{
 		width       ( reader.width() );
@@ -196,11 +176,6 @@ private:
 	int                            _gopSize;
 	int                            _bFrames;
 	int                            _mbDecision;
-
-	int                            _motionEstimation;
-	AVColorSpace                   _colorspace;
-	AVColorPrimaries               _colorPrimaries;
-	AVColorTransferCharacteristic  _colorTransferCharacteristic;
 };
 
 #endif

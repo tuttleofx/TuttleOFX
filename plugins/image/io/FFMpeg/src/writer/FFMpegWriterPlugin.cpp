@@ -20,10 +20,6 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	_paramFormat                      = fetchChoiceParam( kParamFormat           );
 	_paramCodec                       = fetchChoiceParam( kParamCodec            );
 	_paramBitRate                     = fetchIntParam   ( kParamBitrate          );
-	_paramMotionEstimation            = fetchChoiceParam( kParamMotionEstimation );
-	_paramColorspace                  = fetchChoiceParam( kParamColorSpace       );
-	_paramColorPrimaries              = fetchChoiceParam( kParamColorPrimaries   );
-	_paramColorTransferCharacteristic = fetchChoiceParam( kParamColorTRC         );
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
@@ -34,10 +30,6 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 	params._format                         = _paramFormat            ->getValue();
 	params._codec                          = _paramCodec             ->getValue();
 	params._bitrate                        = _paramBitRate           ->getValue();
-	params._motionEstimation               = _paramMotionEstimation  ->getValue() + 1; // Motion_Est_ID start a 1
-	params._colorspace                     = (AVColorSpace)                  _paramColorspace                  ->getValue();
-	params._colorPrimaries                 = (AVColorPrimaries)              _paramColorPrimaries              ->getValue();
-	params._colorTransferCharacteristic    = (AVColorTransferCharacteristic) _paramColorTransferCharacteristic ->getValue();
 
 	return params;
 }
@@ -68,10 +60,6 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	_writer.setFormat           ( params._format );
 	_writer.setCodec            ( params._codec );
 	_writer.setBitRate          ( params._bitrate );
-	_writer.setColorspace       ( params._colorspace );
-	_writer.setColorPrimaries   ( params._colorPrimaries );
-	_writer.setColorPrimaries   ( params._colorPrimaries );
-	_writer.setMotionEstimation ( params._motionEstimation );
 	_writer.fps                 ( _clipSrc->getFrameRate() );
 	_writer.aspectRatio         ( _clipSrc->getPixelAspectRatio() );
 }
