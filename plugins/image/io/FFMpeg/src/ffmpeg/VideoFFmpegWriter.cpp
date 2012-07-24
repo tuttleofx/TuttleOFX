@@ -85,11 +85,11 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		// if format name is NULL, find a way to expose the feature
 		if (avformat_alloc_output_context2(&_avformatOptions, NULL, _formatName.c_str(), filename().c_str()) < 0)
 		{
-			std::cerr << "ffmpegWriter: output context allocation failed" << std::endl;
+			TUTTLE_CERR( "ffmpegWriter: output context allocation failed" );
 			return false;
 		}
 		_ofmt = _avformatOptions->oformat;
-		std::cerr << "ffmpegWriter: " << std::string(_ofmt->name) << " format selected" << std::endl;
+		TUTTLE_CERR( "ffmpegWriter: " << std::string(_ofmt->name) << " format selected" );
 	}
 
 	if( !_stream )
@@ -97,15 +97,15 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		_codec = avcodec_find_encoder_by_name( _codecName.c_str() );
 		if (!_codec)
 		{
-			std::cerr << "ffmpegWriter: codec not found" << std::endl;
+			TUTTLE_CERR( "ffmpegWriter: codec not found" );
 			return false;
 		}
-		std::cerr << "ffmpegWriter: " << std::string(_codec->name) << " codec selected" << std::endl;
+		TUTTLE_CERR( "ffmpegWriter: " << std::string(_codec->name) << " codec selected" );
 
 		_stream = avformat_new_stream( _avformatOptions, _codec );
 		if( !_stream )
 		{
-			std::cout << "ffmpegWriter: out of memory." << std::endl;
+			TUTTLE_CERR( "ffmpegWriter: out of memory." );
 			return false;
 		}
 		avcodec_get_context_defaults3(_stream->codec, _codec);
@@ -148,9 +148,9 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 		if ( !pixfmt_allowed )
 		{
 			// av_get_pix_fmt_name requires lavu 51.3.0 or higher
-			std::cerr << "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" << std::endl;
+			TUTTLE_CERR( "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" );
 			_out_pixelFormat = _codec->pix_fmts[0];
-			std::cerr << "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) << std::endl;
+			TUTTLE_CERR( "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) );
 		}
 		_stream->codec->pix_fmt     = _out_pixelFormat;
 
@@ -161,7 +161,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 		if( avcodec_open2( _stream->codec, _codec, NULL ) < 0 )
 		{
-			std::cout << "ffmpegWriter: unable to open codec." << std::endl;
+			TUTTLE_CERR( "ffmpegWriter: unable to open codec." );
 			freeFormat();
 			return false;
 		}
@@ -171,7 +171,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			if( avio_open2( &_avformatOptions->pb, filename().c_str(),
                                         AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
 			{
-				std::cout << "ffmpegWriter: unable to open file." << std::endl;
+				TUTTLE_CERR( "ffmpegWriter: unable to open file." );
 				freeFormat();
 				return false;
 			}
@@ -194,18 +194,18 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 	_sws_context = sws_getCachedContext( _sws_context, in_width, in_height, in_pixelFormat, width(), height(), _out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
 
-	std::cout << "ffmpegWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) << std::endl;
-	std::cout << "ffmpegWriter: output format: " << av_get_pix_fmt_name( _out_pixelFormat ) << std::endl;
+	TUTTLE_COUT( "ffmpegWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) );
+	TUTTLE_COUT( "ffmpegWriter: output format: " << av_get_pix_fmt_name( _out_pixelFormat ) );
 
 	if( !_sws_context )
 	{
-		std::cout << "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." << std::endl;
+		TUTTLE_CERR( "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." );
 		return false;
 	}
 	int error = sws_scale( _sws_context, in_frame->data, in_frame->linesize, 0, height(), out_frame->data, out_frame->linesize );
 	if( error < 0 )
 	{
-		std::cout << "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." << std::endl;
+		TUTTLE_CERR( "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." );
 		return false;
 	}
 
@@ -245,7 +245,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			ret = av_interleaved_write_frame( _avformatOptions, &pkt );
 			if ( ret < 0 )
 			{
-				std::cerr << "ffmpegWriter: error writing packet to file" << std::endl;
+				TUTTLE_CERR( "ffmpegWriter: error writing packet to file" );
 				return false;
 			}
 		}
@@ -258,7 +258,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 	if( ret )
 	{
-		std::cout << "ffmpegWriter: error writing frame to file." << std::endl;
+		TUTTLE_CERR( "ffmpegWriter: error writing frame to file." );
 		return false;
 	}
 
