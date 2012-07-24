@@ -22,6 +22,8 @@ public:
 public:
 	FFmpegPreset();
 
+	Presets getCodecListWithConfig( );
+	
 	std::string getCodecName ( const std::string& path );
 	std::string getConfigName( const std::string& path );
 	
@@ -32,7 +34,7 @@ public:
 private:
 	void researchPresets();
 	
-	std::vector<std::string> getPresetConfigurations( std::string environementVariable );
+	Presets getPresetConfigurations( std::string environementVariable );
 	
 	/**
 	  * map of codec - absolute filename

@@ -17,6 +17,32 @@ FFmpegPreset::FFmpegPreset()
 	researchPresets();
 }
 
+FFmpegPreset::Presets FFmpegPreset::getCodecListWithConfig( )
+{
+	Presets list;
+	Presets::iterator config;
+	for ( config = presets.begin() ; config != presets.end(); config++ )
+	{
+		std::string codec = getCodecName( *config );
+		
+		Presets::iterator fileIt;
+		bool exist = false;
+		for( fileIt = list.begin(); fileIt < list.end(); fileIt++ )
+		{
+			if( std::strcmp( (*fileIt).c_str(), codec.c_str() ) == 0 )
+			{
+				exist = true;
+				break;
+			}
+		}
+		if( !exist )
+		{
+			list.push_back( codec );
+		}
+	}
+	return list;
+}
+
 std::string FFmpegPreset::getCodecName( const std::string& path )
 {
 	std::vector<std::string> splitPath;
@@ -39,7 +65,7 @@ std::string FFmpegPreset::getConfigName( const std::string& path )
 
 FFmpegPreset::Presets FFmpegPreset::getConfigList( const std::string& codec )
 {
-	std::vector<std::string> list;
+	Presets list;
 	Presets::iterator config;
 	for ( config = presets.begin() ; config != presets.end(); config++ )
 	{
@@ -55,11 +81,11 @@ FFmpegPreset::Presets FFmpegPreset::getConfigList( const std::string& codec )
 
 void FFmpegPreset::researchPresets()
 {
-	std::vector<std::string> files;
+	Presets files;
 	
 	files = getPresetConfigurations( "FFMPEG_DATADIR" );
 	
-	std::vector<std::string>::iterator fileIt;
+	Presets::iterator fileIt;
 	for( fileIt = files.begin(); fileIt < files.end(); fileIt++ )
 	{
 		std::string preset = (*fileIt);
@@ -88,17 +114,17 @@ void FFmpegPreset::researchPresets()
 #endif
 }
 
-std::vector<std::string> FFmpegPreset::getPresetConfigurations( std::string environementVariable )
+FFmpegPreset::Presets FFmpegPreset::getPresetConfigurations( std::string environementVariable )
 {
-	std::vector<std::string> paths;
-	std::vector<std::string> configs;
+	Presets paths;
+	Presets configs;
 	
 	if( const char* dataDir = std::getenv( environementVariable.c_str() ) )
 	{
 		boost::split( paths, dataDir, boost::is_any_of(":") );
 	}
 	
-	std::vector<std::string>::iterator basePath;
+	Presets::iterator basePath;
 	int i = 0;
 	for( basePath = paths.begin(); basePath < paths.end(); basePath++, i++ )
 	{
@@ -137,7 +163,7 @@ FFmpegPreset::PresetsOptions FFmpegPreset::getOptionsForPresetFilename( const st
 	inPreset.open( presetFile.c_str(), std::ifstream::in ); 
 	if( ! inPreset.is_open() )
 	{
-		std::cerr << "ffmpegPreset: Unable to open preset file" << presetFile << std::endl;
+		TUTTLE_CERR( "ffmpegPreset: Unable to open preset file" << presetFile );
 		return opts;
 	}
 	while( ! inPreset.eof() )
