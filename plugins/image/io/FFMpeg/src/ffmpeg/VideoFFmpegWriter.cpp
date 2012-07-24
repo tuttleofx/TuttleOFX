@@ -17,7 +17,9 @@
 static boost::int64_t pts = 0;
 
 VideoFFmpegWriter::VideoFFmpegWriter()
-	: _avformatOptions   ( NULL )
+	: FFmpeg             ( )
+	, FFmpegPreset       ( )
+	, _avformatOptions   ( NULL )
 	, _sws_context       ( NULL )
 	, _stream            ( NULL )
 	, _codec             ( NULL )

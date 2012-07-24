@@ -2,6 +2,7 @@
 #define __VIDEOFFMPEGWRITER_HPP__
 
 #include "FFmpeg.hpp"
+#include "FFmpegPreset.hpp"
 #include "VideoFFmpegReader.hpp"
 
 #include <tuttle/plugin/global.hpp>
@@ -10,7 +11,7 @@
 #include <string>
 #include <vector>
 
-class VideoFFmpegWriter : public FFmpeg
+class VideoFFmpegWriter : public FFmpeg, public FFmpegPreset
 {
 private:
 	enum WriterError
