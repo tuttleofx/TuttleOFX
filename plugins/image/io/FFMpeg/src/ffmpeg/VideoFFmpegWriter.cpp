@@ -113,7 +113,15 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 		if( _videoPresetName.length() !=0 )
 		{
-			TUTTLE_CERR( "ffmpegWriter: " << _videoPresetName << " preset selected" );
+			TUTTLE_COUT( "ffmpegWriter: " << _videoPresetName << " preset selected" );
+			std::string presetFilename = getFilename( std::string(_codec->name), _videoPresetName );
+			
+			PresetsOptions opts = getOptionsForPresetFilename( presetFilename );
+			PresetsOptions::iterator itOpt;
+			for ( itOpt = opts.begin() ; itOpt != opts.end(); itOpt++ )
+			{
+				//TUTTLE_TCOUT( (*itOpt).first << "   =>  " << (*itOpt).second );
+			}
 		}
 		
 		_stream->codec->bit_rate           = _bitRate;
