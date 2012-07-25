@@ -1,0 +1,31 @@
+###############################################################################
+## Tests for TuttleOFX Jpeg2000 Plugin
+###############################################################################
+import testing ;
+
+###############################################################################
+# compile the test and run it
+###############################################################################
+project 
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
+
+alias dependencies
+	:
+		/boost//unit_test_framework
+		/boost//python
+		/tuttlehost
+		/python
+	;
+
+run
+		write.cpp
+		dependencies
+	;
+	
+run
+		read.cpp
+		dependencies
+	;

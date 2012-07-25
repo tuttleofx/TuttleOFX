@@ -301,7 +301,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				TUTTLE_TCOUT( "________________________________________ frame: " << time );
 	
 				TUTTLE_TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
-
+				
 				TUTTLE_TCOUT( "---------------------------------------- deploy time" );
 				graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, time );
 				renderGraph.depthFirstSearchReverse( deployTimeVisitor );

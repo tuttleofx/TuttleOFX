@@ -8,16 +8,22 @@ import testing ;
 ###############################################################################
 
 project 
-    : requirements	<define>BOOST_TEST_MAIN
-    ;
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
 
 alias dependencies
-    : 
+	: 
 		/boost//unit_test_framework
-		/tuttlecommon
+		/boost//python
 		/tuttlehost
-    :
-    <os>LINUX:<find-shared-library>dl
-    ; 
+		/python
+	:
+		<os>LINUX:<find-shared-library>dl
+	; 
 
-run   main.cpp dependencies ;
+run
+		main.cpp
+		dependencies
+	;

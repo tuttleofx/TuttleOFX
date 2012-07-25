@@ -50,7 +50,7 @@ Host::Host()
 	_properties.setStringProperty( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthByte, 2 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths, true );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipPARs, true );
-	_properties.setIntProperty( kOfxImageEffectPropSetableFrameRate, false );
+	_properties.setIntProperty( kOfxImageEffectPropSetableFrameRate, true );
 	_properties.setIntProperty( kOfxImageEffectPropSetableFielding, false );
 	_properties.setIntProperty( kOfxParamHostPropSupportsStringAnimation, false );
 	_properties.setIntProperty( kOfxParamHostPropSupportsCustomInteract, true );

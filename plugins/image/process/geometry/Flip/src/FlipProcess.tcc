@@ -9,7 +9,7 @@ namespace flip {
 
 template<class View>
 FlipProcess<View>::FlipProcess( FlipPlugin& instance )
-: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
+: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
 , _plugin( instance ) { }
 
 template<class View>

@@ -29,11 +29,11 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	std::vector<std::string> supportedExtensions;
 	supportedExtensions += "jpeg", "jpg", "jpe", "jfif", "jfi";
 
-    desc.setDescription( "JPEG File writer\n"
+	desc.setDescription( "JPEG File writer\n"
 			 "Plugin is used to write jpeg files.\n\n"
 			 "supported extensions: \n" +
 			 boost::algorithm::join( supportedExtensions, ", " )
-    );
+	);
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextWriter );

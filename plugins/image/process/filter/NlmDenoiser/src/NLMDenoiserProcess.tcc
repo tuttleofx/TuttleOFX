@@ -34,6 +34,8 @@ NLMDenoiserProcess<View>::NLMDenoiserProcess( NLMDenoiserPlugin & instance )
 : ImageGilProcessor<View>( instance, eImageOrientationIndependant )
 , _plugin( instance )
 {
+	TUTTLE_TCOUT_X( 50, "_" );
+	
 	_paramRedStrength = instance.fetchDoubleParam( kParamRedStrength );
 	_paramGreenStrength = instance.fetchDoubleParam( kParamGreenStrength );
 	_paramBlueStrength = instance.fetchDoubleParam( kParamBlueStrength );
@@ -51,7 +53,10 @@ NLMDenoiserProcess<View>::NLMDenoiserProcess( NLMDenoiserPlugin & instance )
 }
 
 template<class View>
-NLMDenoiserProcess<View>::~NLMDenoiserProcess() { }
+NLMDenoiserProcess<View>::~NLMDenoiserProcess()
+{
+	TUTTLE_TCOUT_X( 50, "_" );
+}
 
 template<class View>
 void NLMDenoiserProcess<View>::addFrame( const OfxRectI & dBounds, const int dstBitDepth, const int dstComponents, const double time, const int z )
@@ -116,20 +121,16 @@ void NLMDenoiserProcess<View>::setup( const OFX::RenderArguments &args )
 	int i = 0;
 	addFrame( dBounds, dstBitDepth, dstComponents, (int) ( args.time ), i++ );
 
-	for( OfxTime t = args.time; t > realRange.min; --t )
+	for( OfxTime t = args.time - 1; t >= realRange.min; --t )
 	{
-		TUTTLE_TCOUT( "AAAAA 1" );
 		TUTTLE_TCOUT_VAR2( args.time, t );
 		addFrame( dBounds, dstBitDepth, dstComponents, t, i++ );
-		TUTTLE_TCOUT( "AAAAA 2" );
 	}
 
-	for( OfxTime t = args.time; t < realRange.max; ++t )
+	for( OfxTime t = args.time + 1; t <= realRange.max; ++t )
 	{
-		TUTTLE_TCOUT( "BBBBB 1" );
 		TUTTLE_TCOUT_VAR2( args.time, t );
 		addFrame( dBounds, dstBitDepth, dstComponents, t, i++ );
-		TUTTLE_TCOUT( "BBBBB 2" );
 	}
 }
 

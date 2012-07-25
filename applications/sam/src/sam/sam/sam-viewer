@@ -8,7 +8,7 @@ green='\e[0;32m'
 GREEN='\e[1;32m'
 cyan='\e[0;36m'
 CYAN='\e[1;36m'
-NC='\e[0m'              # No Color
+NC='\e[0;0m'  # No Color
 
 if [[ $# == 0 ]] ; then
    echo -e "$BLUE""TuttleOFX project [http://sites.google.com/site/tuttleofx]$NC
@@ -33,7 +33,7 @@ if [[ $1 == "--brief" ]] ; then
 fi
 
 
-export TUTTLE_ROOT=/datas/mrn/dev/TuttleOFX/dist/linux/release
+#export TUTTLE_ROOT=/datas/mrn/dev/TuttleOFX/dist/linux/release
 export OFX_PLUGIN_PATH=$TUTTLE_ROOT/plugin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUTTLE_ROOT/lib
 export PATH=$PATH:$TUTTLE_ROOT/bin

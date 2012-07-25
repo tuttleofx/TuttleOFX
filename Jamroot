@@ -29,6 +29,7 @@
 ##                                                                           #
 ##      /pyTuttle                                                            #
 ##      /tests                                                               #
+##      /tests-io                                                            #
 ##                                                                           #
 ##                                                                           #
 ##      to build static plugins and or application, add:                     #
@@ -79,59 +80,59 @@ path-constant   BUILD           : ./.build ;
 # Global project requirements
 ##############################################################################
 project
-    :
-    requirements
-        # multithreading on
-        <threading>multi
-        <define>BOOST_ALL_NO_LIB
-        #disable detailed boost exception
-        <define>BOOST_EXCEPTION_DISABLE
+	:
+		requirements
+		# multithreading on
+		<threading>multi
+		<define>BOOST_ALL_NO_LIB
+		#disable detailed boost exception
+		<define>BOOST_EXCEPTION_DISABLE
 
-        #<variant>release:<warnings-as-errors>on
-        <variant>release:<define>TUTTLE_PRODUCTION
-        #<variant>release:<define>TUTTLE_NO_COUT
+		#<variant>release:<warnings-as-errors>on
+		<variant>release:<define>TUTTLE_PRODUCTION
+		#<variant>release:<define>TUTTLE_NO_COUT
 
 		<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
 		#<toolset>gcc:<cxxflags>-mssse3
 		<toolset>gcc:<cxxflags>-msse2
-        <define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
+		<define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
 
-        <os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
-        <os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
-        <os>LINUX:<cxxflags>-fPIC
-        <os>LINUX:<cflags>-fPIC
+		<os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
+		<os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
+		<os>LINUX:<cxxflags>-fPIC
+		<os>LINUX:<cflags>-fPIC
 
-        <os>NT:<define>_WINDOWS
+		<os>NT:<define>_WINDOWS
 
-        # icu library off
-        #<define>BOOST_HAS_ICU=0
+		# icu library off
+		#<define>BOOST_HAS_ICU=0
 
-        #
-        # GCC specific flags
-        #
-        # removes deprecated header used by boost
-        <toolset>gcc:<cxxflags>-Wno-deprecated
+		#
+		# GCC specific flags
+		#
+		# removes deprecated header used by boost
+		<toolset>gcc:<cxxflags>-Wno-deprecated
 
-        <toolset-gcc:version>$(gcc-no-overflow):<cxxflags>"-ftemplate-depth=256"
-	#
-	# Clang specific flags
-	#
-	<toolset>clang:<cxxflags>-fcolor-diagnostics
+		<toolset-gcc:version>$(gcc-no-overflow):<cxxflags>"-ftemplate-depth=256"
+		#
+		# Clang specific flags
+		#
+		<toolset>clang:<cxxflags>-fcolor-diagnostics
 
-        # default build
-        #<variant>release
+		# default build
+		#<variant>release
 
-        #
-        # MSVC specific flags
-        #
-        <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
-        <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+		#
+		# MSVC specific flags
+		#
+		<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
 
-        <os>LINUX:<define>__LINUX__
+		<os>LINUX:<define>__LINUX__
 
-        <define>MAGICKCORE_QUANTUM_DEPTH=16
-        <define>QUANTUM_DEPTH=16
-    ;
+		<define>MAGICKCORE_QUANTUM_DEPTH=16
+		<define>QUANTUM_DEPTH=16
+	;
 
 ##############################################################################
 # libraries
@@ -147,7 +148,6 @@ use-project     /terry      : $(TERRY) ;
 # TUTTLE LIBRARY & TESTS
 #
 use-project     /tuttle         : libraries/tuttle ;
-use-project     /tuttletests    : libraries/tuttle/tests ;
 
 #
 # SAM COMMAND LINE TOOL & TESTS
@@ -155,33 +155,39 @@ use-project     /tuttletests    : libraries/tuttle/tests ;
 use-project     /sam-tools      : applications/sam/ ;
 alias           /sam            : /sam-tools ;
 
-#use-project    /pyTuttle       : applications/pyTuttle ;
-#use-project    /samtests       : applications/sam-ls/tests ;
-
-
 #
 # TUTTLEOFX PLUGINS
 #
 use-project     /plugins        : plugins ;
 
-alias           /tests          : /plugins
-                                  /tuttletests
-                                  /samtests
-                                ;
+alias /tests-io
+	:
+		plugins/image/io/Dpx//io-tests
+		plugins/image/io/Exr//io-tests
+		#plugins/image/io/FFMpeg//io-tests
+		plugins/image/io/ImageMagick//io-tests
+		plugins/image/io/Jpeg//io-tests
+		plugins/image/io/Jpeg2000//io-tests
+		plugins/image/io/OpenImageIO//io-tests
+		plugins/image/io/Png//io-tests
+		plugins/image/io/Raw//io-tests
+	;
 
-#
-# SAM INTERFACE IN QT4
-#
-use-project /qsam               : applications/qSam/ ;
+alias /tests
+	:
+		/tuttle//tuttle-tests
+		/terry//terry-tests
+		#$(SEQUENCE_PARSER)//test
+	;
 
 # all targets have to be marked as explicit
-explicit        /tuttle
-                /tuttletests
+explicit
+		/tuttle
+		/tuttletests
 
-                /sam-tools
-                /qsam
-#		/samtests
-                /plugins
-                /pyTuttle
-                /tests
-                ;
+		/sam-tools
+		/plugins
+		/pyTuttle
+		/io-tests
+		/tests
+	;
