@@ -120,7 +120,13 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			PresetsOptions::iterator itOpt;
 			for ( itOpt = opts.begin() ; itOpt != opts.end(); itOpt++ )
 			{
-				//TUTTLE_TCOUT( (*itOpt).first << "   =>  " << (*itOpt).second );
+				int ret = av_opt_set( (void*)_stream->codec, (*itOpt).first.c_str(), (*itOpt).second.c_str(), 0);
+				switch( ret )
+				{
+					case AVERROR_OPTION_NOT_FOUND: TUTTLE_CERR( "ffmpegPreset: unable to find " << (*itOpt).first ); break;
+					case AVERROR(EINVAL): TUTTLE_CERR( "ffmpegPreset: invalid value " << (*itOpt).second.c_str() << " for option " << (*itOpt).first ); break;
+					case AVERROR(ERANGE): TUTTLE_CERR( "ffmpegPreset: invalid range for parameter " << (*itOpt).first << " : " << (*itOpt).second.c_str() ); break;
+				}
 			}
 		}
 		
