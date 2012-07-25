@@ -30,7 +30,7 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"Ffmpeg video writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-    std::vector<std::string> supportedExtensions;
+	std::vector<std::string> supportedExtensions;
 	{
 		AVOutputFormat* oFormat = av_oformat_next( NULL );
 		while( oFormat != NULL )
@@ -148,7 +148,16 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		codec->appendOption( codecName, *itLong );
 		if (!strcmp(itShort->c_str(), "mpeg4"))
 			default_codec = codec->getNOptions() - 1;
-		
+	}
+	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	codec->setDefault( default_codec );
+
+	
+	std::vector<std::string> codecListWithPreset = writer.getCodecListWithConfig();
+	std::vector<std::string>::iterator it;
+	for( it = codecListWithPreset.begin(); it < codecListWithPreset.end(); it++ )
+	{
+		std::string codecName = *it;
 		std::vector<std::string> codecList = writer.getConfigList( codecName );
 		OFX::ChoiceParamDescriptor* choiceConfig;
 		
@@ -167,9 +176,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 			choiceConfig->appendOption( *itCodec );
 		}
 	}
-	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	codec->setDefault( default_codec );
-
+	
 	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kParamBitrate );
 	bitrate->setLabel( "Bitrate" );
 	bitrate->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
