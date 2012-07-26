@@ -236,6 +236,8 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX finish)" ) );
 	}
+	
+	stream.Close();
 }
 
 template<class View>

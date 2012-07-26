@@ -555,6 +555,8 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX finish)" ) );
 	}
+	
+	stream.Close();
 }
 
 void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
