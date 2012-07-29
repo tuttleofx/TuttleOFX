@@ -44,14 +44,15 @@ BOOST_AUTO_TEST_CASE( process_reader )
 	boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
 	ComputeOptions options;
 	options._returnBuffers = true;
-	memory::MemoryCache res0 = g.compute( read, options );
+	memory::MemoryCache outputCache;
+	g.compute( outputCache, read, options );
 	boost::posix_time::ptime t2a(boost::posix_time::microsec_clock::local_time());
 
 	TUTTLE_COUT( "Process took: " << t2a - t1a );
 
-	std::cout << res0 << std::endl;
+	std::cout << outputCache << std::endl;
 
-	memory::CACHE_ELEMENT imgRes = res0.get( read.getName(), 0 );
+	memory::CACHE_ELEMENT imgRes = outputCache.get( read.getName(), 0 );
 
 	TUTTLE_TCOUT_VAR( imgRes->getROD() );
 	BOOST_CHECK_EQUAL( imgRes->getROD().x1, 0 );

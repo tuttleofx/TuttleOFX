@@ -190,13 +190,14 @@ int main( int argc, char** argv )
 		ComputeOptions options;
 		options._returnBuffers = true;
 		options._forceIdentityNodesProcess = true;
-		memory::MemoryCache res0 = g.compute( outputs, options );
+		memory::MemoryCache outputCache;
+		g.compute( outputCache, outputs, options );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
 		TUTTLE_COUT( "Process took: " << t2 - t1 );
 
-		std::cout << res0 << std::endl;
-		memory::CACHE_ELEMENT imgRes = res0.get( bitdepth2.getName(), 0 );
+		std::cout << outputCache << std::endl;
+		memory::CACHE_ELEMENT imgRes = outputCache.get( bitdepth2.getName(), 0 );
 
 		TUTTLE_COUT_VAR( imgRes->getROD() );
 		TUTTLE_COUT_VAR( imgRes->getBounds() );

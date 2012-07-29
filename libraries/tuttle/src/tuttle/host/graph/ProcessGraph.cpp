@@ -19,11 +19,24 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 	Vertex outputVertex( _outputId );
 	_graph.addVertex( outputVertex );
 
-	BOOST_FOREACH( const std::string & s, outputNodes )
+	if( outputNodes.size() )
 	{
-		_graph.connect( _outputId, s, "Output" );
-		TUTTLE_COUT_DEBUG( "MY OUTPUT: " << s );
+		BOOST_FOREACH( const std::string & s, outputNodes )
+		{
+			_graph.connect( _outputId, s, "Output" );
+			TUTTLE_COUT_DEBUG( "MY OUTPUT: " << s );
+		}
 	}
+	else
+	{
+		// Detect root nodes and add them to the list of nodes to process
+		BOOST_FOREACH( const InternalGraphImpl::vertex_descriptor vd, _graph.rootVertices() )
+		{
+			InternalGraphImpl::VertexKey vk = _graph.instance( vd ).getKey();
+			_graph.connect( _outputId, vk, "Output" );
+		}
+	}
+	
 	relink();
 }
 
@@ -194,7 +207,7 @@ void ProcessGraph::endSequenceRender( ProcessVertexData& procOptions )
 	}
 }
 
-memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
+void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& options )
 {
 	using namespace boost;
 	using namespace boost::graph;
@@ -253,7 +266,6 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 	renderGraph.depthFirstVisit( timeDomainPropagationVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 
 	TUTTLE_TCOUT_INFOS;
-	memory::MemoryCache result;
 	std::list<TimeRange> timeRanges = options._timeRanges;
 
 	TUTTLE_TCOUT_INFOS;
@@ -282,6 +294,9 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 	}
 	TUTTLE_TCOUT_INFOS;
 
+	/// @todo Bug: need to use a map 'OutputNode': 'timeRanges'
+	/// And check if all Output nodes share a common timeRange
+	
 	TUTTLE_TCOUT( "process render..." );
 	//--- RENDER
 	// at each frame
@@ -295,6 +310,12 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
+			if( options._abort )
+			{
+				endSequenceRender( procOptions );
+				return;
+			}
+			
 			try
 			{
 				TUTTLE_COUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
@@ -509,7 +530,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			}
 			catch( tuttle::exception::FileNotExist& e ) // @todo tuttle: change that.
 			{
-				if( options._continueOnError )
+				if( options._continueOnError && ! options._abort )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
 	#ifndef TUTTLE_PRODUCTION
@@ -524,7 +545,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 			}
 			catch( ... )
 			{
-				if( options._continueOnError )
+				if( options._continueOnError && ! options._abort )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Skip frame " << time << "." << tuttle::common::kColorStd );
 #ifndef TUTTLE_PRODUCTION
@@ -542,8 +563,6 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		
 		endSequenceRender( procOptions );
 	}
-
-	return result;
 }
 
 }
