@@ -75,10 +75,8 @@ int main( int argc, char** argv )
 		outputs.push_back( merge1.getName() );
 		outputs.push_back( invert1.getName() );
 		
-		ComputeOptions options;
-		options._returnBuffers = true;
 		memory::MemoryCache outputCache;
-		g.compute( outputCache, outputs, options );
+		g.compute( outputCache, outputs );
 		
 		TUTTLE_COUT( "__________________________________________________5" );
 		TUTTLE_COUT_VAR( invert1.getName() );

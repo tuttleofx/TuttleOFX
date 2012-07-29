@@ -187,11 +187,8 @@ int main( int argc, char** argv )
 
 		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
 //		memory::MemoryCache res0 = g.compute( bitdepth2 );
-		ComputeOptions options;
-		options._returnBuffers = true;
-		options._forceIdentityNodesProcess = true;
 		memory::MemoryCache outputCache;
-		g.compute( outputCache, outputs, options );
+		g.compute( outputCache, outputs );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
 		TUTTLE_COUT( "Process took: " << t2 - t1 );
