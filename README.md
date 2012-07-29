@@ -1,4 +1,6 @@
-TuttleOFX - version beta
+
+
+![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX - version beta
 ========================
 **Project under early development.**
   
