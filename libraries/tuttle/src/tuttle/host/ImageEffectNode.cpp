@@ -320,8 +320,8 @@ void ImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
 
 void ImageEffectNode::checkClipsConnections() const
 {
-	for( ClipImageMap::const_iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		const attribute::ClipImage& clip = dynamic_cast<const attribute::ClipImage&>( *( it->second ) );
@@ -339,8 +339,8 @@ void ImageEffectNode::initComponents()
 	//bool inputClipsFound                = false;
 	std::string mostChromaticComponents = kOfxImageComponentNone;
 
-	for( ClipImageMap::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -352,8 +352,8 @@ void ImageEffectNode::initComponents()
 		}
 	}
 	// components
-	for( ClipImageMap::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -384,8 +384,8 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 	bool inputClipsFound             = false;
 
 	// init variables
-	for( ClipImageMap::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -403,8 +403,8 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 	{
 		// check if we support the bit depth of each input
 		// and fill input clip with connected clips bit depth
-		for( ClipImageMap::iterator it = _clips.begin();
-		     it != _clips.end();
+		for( ClipImageMap::iterator it = _clipImages.begin();
+		     it != _clipImages.end();
 		     ++it )
 		{
 			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -427,8 +427,8 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 			BOOST_THROW_EXCEPTION( exception::Logic()
 			    << exception::user( "Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
 		}
-		for( ClipImageMap::iterator it = _clips.begin();
-		     it != _clips.end();
+		for( ClipImageMap::iterator it = _clipImages.begin();
+		     it != _clipImages.end();
 		     ++it )
 		{
 			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -456,8 +456,8 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 	{
 		attribute::ClipImage& outputClip         = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
 		const std::string& outputClipBitDepthStr = outputClip.getBitDepthString();
-		for( ClipImageMap::iterator it = _clips.begin();
-		     it != _clips.end();
+		for( ClipImageMap::iterator it = _clipImages.begin();
+		     it != _clipImages.end();
 		     ++it )
 		{
 			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -495,8 +495,8 @@ void ImageEffectNode::coutBitDepthConnections() const
 {
 #ifndef TUTTLE_PRODUCTION
 	// validation
-	for( ClipImageMap::const_iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -524,8 +524,8 @@ void ImageEffectNode::coutBitDepthConnections() const
 void ImageEffectNode::validBitDepthConnections() const
 {
 	// validation
-	for( ClipImageMap::const_iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
@@ -544,45 +544,49 @@ void ImageEffectNode::validBitDepthConnections() const
 	}
 }
 
-void ImageEffectNode::getTimeDomain( OfxRangeD& range ) const
+OfxRangeD ImageEffectNode::computeTimeDomain()
 {
+	OfxRangeD range;
+	range.min = kOfxFlagInfiniteMin;
+	range.max = kOfxFlagInfiniteMax;
 	// ask to the plugin
 	if( getTimeDomainAction( range ) )
 	{
 		TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the plugin." );
-		return;
 	}
-
-//	TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
-	// if no answer, compute it from input clips
-	bool first = true;
-	OfxRangeD mergeRange;
-	mergeRange.min = kOfxFlagInfiniteMin;
-	mergeRange.max = kOfxFlagInfiniteMax;
-	for( ClipImageMap::const_iterator it = _clips.begin();
-	     it != _clips.end();
-	     ++it )
+	else
 	{
-		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
-		if( !clip.isOutput() && clip.isConnected() )
+		TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
+		range.min = kOfxFlagInfiniteMin;
+		range.max = kOfxFlagInfiniteMax;
+		// if no answer, compute it from input clips
+		bool first = true;
+		for( ClipImageMap::const_iterator it = _clipImages.begin();
+			it != _clipImages.end();
+			++it )
 		{
-			const attribute::ClipImage& linkClip = clip.getConnectedClip();
-			OfxRangeD clipRange;
-			linkClip.getNode().getTimeDomain( clipRange ); /// @todo tuttle: how to not recompute all timeDomain of all previousNodes? Need vData?
-			if( first )
+			const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+			if( !clip.isOutput() && clip.isConnected() )
 			{
-				first = false;
-				mergeRange = clipRange;
-			}
-			else
-			{
-				mergeRange.min = std::min( mergeRange.min, clipRange.min );
-				mergeRange.max = std::max( mergeRange.max, clipRange.max );
+				const attribute::ClipImage& linkClip = clip.getConnectedClip();
+				OfxRangeD clipRange = linkClip.getNode().getTimeDomain();
+				if( first )
+				{
+					first = false;
+					range = clipRange;
+				}
+				else
+				{
+					// maybe better to use intersection instead of union
+					range.min = std::min( range.min, clipRange.min );
+					range.max = std::max( range.max, clipRange.max );
+				}
 			}
 		}
 	}
-	range = mergeRange;
-//	TUTTLE_TCOUT_VAR( range );
+	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setFrameRange( range.min, range.max );
+	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setUnmappedFrameRange( range.min, range.max );
+	return range;
 }
 
 
@@ -729,7 +733,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	}
 	
 	TUTTLE_TCOUT( "acquire needed output clip images" );
-	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
+	BOOST_FOREACH( ClipImageMap::value_type& i, _clipImages )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
 		if( clip.isOutput() )
@@ -801,7 +805,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	}
 	
 	// declare future usages of the output
-	BOOST_FOREACH( ClipImageMap::value_type& item, _clips )
+	BOOST_FOREACH( ClipImageMap::value_type& item, _clipImages )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( item.second ) );
 		if( ! clip.isOutput() && ! clip.isConnected() )
@@ -869,7 +873,7 @@ std::ostream& ImageEffectNode::print( std::ostream& os ) const
 	os << "Description:" << v.getLongLabel() << std::endl;
 	os << "Context:" << v._context << std::endl;
 	os << "Clips:" << std::endl;
-	for( ImageEffectNode::ClipImageMap::const_iterator it = v._clips.begin(), itEnd = v._clips.end();
+	for( ImageEffectNode::ClipImageMap::const_iterator it = v._clipImages.begin(), itEnd = v._clipImages.end();
 	     it != itEnd;
 	     ++it )
 	{

@@ -118,11 +118,10 @@ double ClipImage::getFrameRate() const
 // Frame Range (startFrame, endFrame) -
 //
 //  The frame range over which a clip has images.
-
-void ClipImage::getFrameRange( double& startFrame, double& endFrame ) const
+void ClipImage::setFrameRange( const double startFrame, const double endFrame )
 {
-	startFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
-	endFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropFrameRange, startFrame, 0 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropFrameRange, endFrame, 1 );
 }
 
 /**
@@ -138,11 +137,10 @@ const double ClipImage::getUnmappedFrameRate() const
 //
 //  The unmaped frame range over which an output clip has images.
 // this is applicable only to hosts and plugins that allow a plugin to change frame rates
-
-void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const
+void ClipImage::setUnmappedFrameRange( const double unmappedStartFrame, const double unmappedEndFrame )
 {
-	unmappedStartFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 0 );
-	unmappedEndFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 1 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, unmappedStartFrame, 0 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, unmappedEndFrame, 1 );
 }
 
 /// override this to fill in the image at the given time.
