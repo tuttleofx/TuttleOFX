@@ -24,6 +24,7 @@ public:
 	
 	ThreadEnv( const bool asynchronous = true )
 	: _asynchronous( asynchronous )
+	, _result(false)
 	{}
 	
 	ComputeOptions& getComputeOptions() { return _options; }
