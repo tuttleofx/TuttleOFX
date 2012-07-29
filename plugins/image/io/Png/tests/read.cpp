@@ -19,15 +19,6 @@ using namespace tuttle::host;
 
 BOOST_AUTO_TEST_SUITE( plugin_Png_reader )
 
-BOOST_AUTO_TEST_CASE( loading_openfx_plugins )
-{
-	TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
-	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	Core::instance().preload();
-	//TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
-	TUTTLE_COUT( "----------------- DONE -----------------" );
-}
-
 BOOST_AUTO_TEST_CASE( process_reader )
 {
 	TUTTLE_COUT( "******** PROCESS READER PNG ********" );

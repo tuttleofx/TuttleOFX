@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( time_shift_offset_null )
 		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
 
 		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
-		read1.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/MARS@.JPG" );
+		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
 		timeshift1.getParam("offset").setValue( 0 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( time_shift_positive_offset )
 		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
 
 		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
-		read1.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/MARS@.JPG" );
+		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
 		timeshift1.getParam("offset").setValue( 1 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( time_shift_negative_offset )
 		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
 
 		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
-		read1.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/MARS@.JPG" );
+		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
 		timeshift1.getParam("offset").setValue( -3 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 

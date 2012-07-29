@@ -69,8 +69,8 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
 	// Setup parameters
-	read1.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/GRN.JPG" );
-	read2.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/RED.JPG" );
+	read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/GRN.JPG" );
+	read2.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/RED.JPG" );
 	//bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
 	//	crop1.getParam( "Down" ).setValue( 400 );
 	write1.getParam( "filename" ).setValue( ".tests/processGraph/output1.png" );
@@ -125,8 +125,8 @@ BOOST_AUTO_TEST_CASE( graph_compute )
 	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
-	read1.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/RGB16Million.png" );
-	read2.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/RGB16Million.png" );
+	read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/png/RGB16Million.png" );
+	read2.getParam( "filename" ).setValue( "TuttleOFX-data/image/png/RGB16Million.png" );
 	write1.getParam( "filename" ).setValue( ".tests/computeGraph/output.png" );
 	
 	TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );

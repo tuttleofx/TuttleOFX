@@ -19,15 +19,6 @@ using namespace tuttle::host;
 
 BOOST_AUTO_TEST_SUITE( plugin_Raw_reader )
 
-BOOST_AUTO_TEST_CASE( loading_openfx_plugins )
-{
-	TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
-	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	Core::instance().preload();
-	//TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
-	TUTTLE_COUT( "----------------- DONE -----------------" );
-}
-
 BOOST_AUTO_TEST_CASE( process_reader )
 {
 	TUTTLE_COUT( "******** PROCESS READER RAW ********" );
@@ -38,7 +29,7 @@ BOOST_AUTO_TEST_CASE( process_reader )
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
 
-	read.getParam( "filename" ).setValue( "/datas/TuttleOFX-data/images/raw/RAW_CANON_10D.CRW" );
+	read.getParam( "filename" ).setValue( "TuttleOFX-data/image/raw/RAW_CANON_10D.CRW" );
 	
 	TUTTLE_COUT( "--> GRAPH PROCESSING" );
 	boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
