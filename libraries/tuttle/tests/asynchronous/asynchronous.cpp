@@ -1,56 +1,16 @@
+#include <boost/test/unit_test.hpp>
+
+#include <tuttle/host/ThreadEnv.hpp>
 #include <tuttle/host/Graph.hpp>
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE tuttle_graph
-#include <boost/test/unit_test.hpp>
-
 using namespace boost::unit_test;
 using namespace tuttle::host;
 
-BOOST_AUTO_TEST_SUITE( tuttle_graph_suite01 )
+BOOST_AUTO_TEST_SUITE( asynchronous_suite )
 
-BOOST_AUTO_TEST_CASE( common_preload_plugins )
-{
-	TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
-	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	Core::instance().preload();
-//	TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
-	TUTTLE_COUT( "----------------- DONE -----------------" );
-}
-
-BOOST_AUTO_TEST_CASE( create_node )
-{
-	TUTTLE_COUT( "--> PLUGINS CREATION" );
-	Graph g;
-	BOOST_CHECK_NO_THROW( g.createNode( "tuttle.invert" ) );
-	TUTTLE_COUT( "----------------- DONE -----------------" );
-}
-
-BOOST_AUTO_TEST_CASE( graph_copy )
-{
-	TUTTLE_COUT( "--> PLUGINS CREATION" );
-	Graph g;
-	Graph::Node& read1  = g.createNode( "tuttle.pngreader" );
-	Graph::Node& invert1 = g.createNode( "tuttle.invert" );
-	Graph::Node& invert2 = g.createNode( "tuttle.invert" );
-	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
-
-	TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
-	g.connect( read1, invert1 );
-	g.connect( invert1, invert2 );
-	g.connect( invert2, write1 );
-
-	TUTTLE_COUT( "-------- GRAPH COPY --------" );
-	Graph g2(g);
-	
-	BOOST_CHECK_NE( &g2.getNode( read1.getName() ), &read1 );
-	BOOST_CHECK( strcmp( g2.getNode( read1.getName() ).getName().c_str(), read1.getName().c_str() ) == 0 );
-	//BOOST_CHECK( g2.getNode( read1.getName() ) == read1 );
-	TUTTLE_COUT( "----------------- DONE -----------------" );
-}
-
-BOOST_AUTO_TEST_CASE( create_processGraph )
+BOOST_AUTO_TEST_CASE( computeAsynchronous )
 {
 	TUTTLE_COUT( "--> PLUGINS CREATION" );
 	Graph g;
@@ -60,8 +20,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	Graph::Node& invert2 = g.createNode( "tuttle.invert" );
 	Graph::Node& invert3 = g.createNode( "tuttle.invert" );
 	Graph::Node& invert4 = g.createNode( "tuttle.invert" );
-	/*Graph::Node& crop1   = */ g.createNode( "tuttle.crop" ); // add unused node
-	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
+//	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
 	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
 	Graph::Node& write4 = g.createNode( "tuttle.pngwriter" );
 	Graph::Node& write2 = g.createNode( "tuttle.jpegwriter" );
@@ -71,7 +30,8 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	// Setup parameters
 	read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/GRN.JPG" );
 	read2.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/RED.JPG" );
-	//bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
+	read1.getParam( "bitDepth" ).setValue( 3 );
+	read2.getParam( "bitDepth" ).setValue( 3 );
 	//	crop1.getParam( "Down" ).setValue( 400 );
 	write1.getParam( "filename" ).setValue( ".tests/processGraph/output1.png" );
 	write2.getParam( "filename" ).setValue( ".tests/processGraph/output2.jpg" );
@@ -97,9 +57,10 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	g.connect( invert1, write3 );
 
 	TUTTLE_COUT( "-------- GRAPH CONNECT CLIPS --------" );
-	g.connect( invert1, merge1.getAttribute( "A" ) );
-	g.connect( read2, merge1.getAttribute( "B" ) );
-	g.connect( merge1, write4 );
+//	g.connect( invert1, merge1.getAttribute( "A" ) );
+//	g.connect( read2, merge1.getAttribute( "B" ) );
+//	g.connect( merge1, write4 );
+	g.connect( invert1, write4 );
 
 	TUTTLE_COUT( "-------- SET GRAPH OUTPUTS --------" );
 	std::list<std::string> outputs;
@@ -109,35 +70,18 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	outputs.push_back( write4.getName() );
 	
 	TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
-	BOOST_CHECK_NO_THROW( g.compute( outputs ) );
+	ThreadEnv env;
+	env.compute( g, outputs );
+	env.abort();
 
-	TUTTLE_COUT( "----------------- DONE -----------------" );
-}
-
-BOOST_AUTO_TEST_CASE( graph_compute )
-{
-	TUTTLE_COUT( "--> PLUGINS CREATION" );
-	Graph g;
-	Graph::Node& read1  = g.createNode( "tuttle.pngreader" );
-	Graph::Node& read2  = g.createNode( "tuttle.pngreader" );
-	Graph::Node& invert1 = g.createNode( "tuttle.invert" );
-	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
-	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
-
-	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
-	read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/png/RGB16Million.png" );
-	read2.getParam( "filename" ).setValue( "TuttleOFX-data/image/png/RGB16Million.png" );
-	write1.getParam( "filename" ).setValue( ".tests/computeGraph/output.png" );
+	env.join();
 	
-	TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
-	g.connect( read1, invert1 );
-	g.connect( read2, merge1.getClip("A") );
-	g.connect( invert1, merge1.getClip("B") );
-	g.connect( merge1, write1 );
-
-//	BOOST_CHECK_NO_THROW( g.compute( write1 ) ); /// @toto
+	// the process result is not successful, because it has been aborted.
+	BOOST_CHECK( env.getResult() == false );
+	
 	TUTTLE_COUT( "----------------- DONE -----------------" );
 }
+
 
 BOOST_AUTO_TEST_SUITE_END()
 
