@@ -210,6 +210,7 @@ public:
 
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
+		TUTTLE_TCOUT_INFOS;
 		return getData(time)._apiImageEffect._renderRoD;
 	}
 

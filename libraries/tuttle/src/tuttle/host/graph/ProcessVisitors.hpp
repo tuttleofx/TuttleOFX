@@ -97,7 +97,7 @@ public:
 	{}
 
 	template<class VertexDescriptor, class Graph>
-	void finish_vertex( VertexDescriptor v, Graph& g )
+	void discover_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
 
@@ -365,7 +365,7 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 			const typename TGraph::Edge e( in, out, inAttr );
 			graph.addEdge( descOut, descIn, e );
 		}
-		// Warning: We don't remove the vertex itself to not invalidate vertex_descriptors but only modify edges.
+		// Warning: We don't remove the vertex itself to not invalidate vertex_descriptors but only remove edges.
 //		graph.removeVertex( graph.getVertexDescriptor(connection._identityVertex) );
 		// remove all node connections
 		graph.clearVertex( graph.getVertexDescriptor(connection._identityVertex) );

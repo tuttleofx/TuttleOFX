@@ -110,6 +110,8 @@ public:
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
+//	virtual OfxTime mapInputTime( const OfxTime time ) const = 0;
+	
 	virtual void getTimeDomain( OfxRangeD& range ) const = 0;
 
 	/**

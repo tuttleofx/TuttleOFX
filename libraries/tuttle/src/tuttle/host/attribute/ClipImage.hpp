@@ -31,7 +31,7 @@ protected:
 	bool _continuousSamples;
 	memory::IMemoryCache& _memoryCache;
 
-	const ClipImage* _connectedClip; ///< @warning HACK ! to force connection (only for test) @todo remove this !!!!
+	const ClipImage* _connectedClip; ///< @warning HACK ! to keep the connection @todo remove this !!!!
 
 public:
 	ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescriptor& desc );
@@ -42,7 +42,7 @@ public:
 
 	const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
 
-	/// @warning HACK ! to force connection (only for test)
+	/// @warning HACK ! to keep the connection
 	/// @todo remove this !!!!
 	void setConnectedClip( const ClipImage& other )
 	{
