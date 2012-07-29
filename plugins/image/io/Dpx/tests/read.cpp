@@ -1,5 +1,3 @@
-#include <iostream>
-#define BOOST_TEST_MODULE plugin_Dpx
 #include <boost/test/unit_test.hpp>
 
 #include <tuttle/host/Graph.hpp>
@@ -10,6 +8,8 @@
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <iostream>
+
 /**
  * Simple functional test, to read and write an image.
  */
@@ -18,15 +18,6 @@ using namespace boost::unit_test;
 using namespace tuttle::host;
 
 BOOST_AUTO_TEST_SUITE( plugin_Dpx_reader )
-
-BOOST_AUTO_TEST_CASE( loading_openfx_plugins )
-{
-	TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
-	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	Core::instance().preload();
-	//TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
-	TUTTLE_COUT( "----------------- DONE -----------------" );
-}
 
 BOOST_AUTO_TEST_CASE( process_reader )
 {

@@ -1,5 +1,3 @@
-#include <iostream>
-#define BOOST_TEST_MODULE plugin_Png
 #include <boost/test/unit_test.hpp>
 
 #include <tuttle/host/Graph.hpp>
@@ -9,6 +7,8 @@
 
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <iostream>
 
 /**
  * Simple functional test, to read and write an image.

@@ -3,8 +3,7 @@ Import( 'project', 'libs' )
 project.UnitTest(
 	dirs = ['.'],
 	libraries = [
-		libs.tuttleHost,
-		libs.boost_unit_test_framework,
+		libs.tuttleTest,
 		]
 	)
 
