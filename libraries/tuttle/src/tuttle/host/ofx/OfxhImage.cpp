@@ -62,11 +62,14 @@ static property::OfxhPropSpec imageStuffs[] = {
 OfxhImage::OfxhImage()
 	: property::OfxhSet( imageStuffs )
 	, _id( _count++ )
-	, _referenceCount( 1 )
 	, _clipName( "No clip !" )
 	, _time( 0 )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
+	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName()
+		<< ", time:" << getTime()
+		<< ", id:" << getId()
+		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
+		<< ", ref plugins:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerPlugin ) );
 }
 
 /**
@@ -75,11 +78,14 @@ OfxhImage::OfxhImage()
 OfxhImage::OfxhImage( attribute::OfxhClip& instance, const OfxTime time )
 	: property::OfxhSet( imageStuffs )
 	, _id( _count++ )
-	, _referenceCount( 1 )
 	, _clipName( instance.getName() )
 	, _time( time )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
+	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName()
+		<< ", time:" << getTime()
+		<< ", id:" << getId()
+		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
+		<< ", ref plugins:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerPlugin ) );
 	initClipBits( instance );
 }
 
@@ -98,11 +104,14 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
                       const std::string&   uniqueIdentifier )
 	: property::OfxhSet( imageStuffs )
 	, _id( _count++ )
-	, _referenceCount( 1 )
 	, _clipName( instance.getName() )
 	, _time( time )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReferenceCount() );
+	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName()
+		<< ", time:" << getTime()
+		<< ", id:" << getId()
+		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
+		<< ", ref plugins:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerPlugin ) );
 	initClipBits( instance );
 
 	// set other data
@@ -126,8 +135,12 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 
 OfxhImage::~OfxhImage()
 {
-	TUTTLE_TCOUT( "-- ~OfxhImage, clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
-	BOOST_ASSERT( getReferenceCount() == 1 );
+	TUTTLE_TCOUT( "-- ~OfxhImage, clipName:" << getClipName()
+		<< ", time:" << getTime()
+		<< ", id:" << getId()
+		<< ", ref host:" << getReferenceCount( eReferenceOwnerHost )
+		<< ", ref plugins:" << getReferenceCount( eReferenceOwnerPlugin ) );
+	BOOST_ASSERT( getReferenceCount(eReferenceOwnerHost) == 1 );
 }
 
 /// called during ctor to get bits from the clip props into ours
@@ -211,19 +224,27 @@ int OfxhImage::getRowBytes() const
 	return getIntProperty( kOfxImagePropRowBytes );
 }
 
-void OfxhImage::addReference( const std::size_t n )
+int OfxhImage::getReferenceCount( const EReferenceOwner from ) const
 {
-	_referenceCount += n;
-	TUTTLE_TCOUT( "+"<<n<<"  Image::addReference, id:" << getId() << ", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
+	RefMap::const_iterator it = _referenceCount.find(from);
+	if( it == _referenceCount.end() )
+		return 0;
+	return it->second;
 }
 
-bool OfxhImage::releaseReference()
+void OfxhImage::addReference( const EReferenceOwner from, const std::size_t n )
 {
-	--_referenceCount;
-	TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() <<", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << getReferenceCount() );
-	if( _referenceCount < 0 )
+	const std::ptrdiff_t refC = _referenceCount[from] = getReferenceCount(from) + 1;
+	TUTTLE_TCOUT( "+"<<n<<"  Image::addReference, id:" << getId() << ", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << refC );
+}
+
+bool OfxhImage::releaseReference( const EReferenceOwner from )
+{
+	const std::ptrdiff_t refC = _referenceCount[from] = getReferenceCount(from) - 1;
+	TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() <<", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << refC );
+	if( refC < 0 )
 		BOOST_THROW_EXCEPTION( std::logic_error( "Try to release an undeclared reference to an Image." ) );
-	return _referenceCount <= 0;
+	return refC <= 0;
 }
 
 }

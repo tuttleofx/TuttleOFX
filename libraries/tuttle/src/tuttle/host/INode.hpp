@@ -111,6 +111,8 @@ public:
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
 	virtual OfxRangeD computeTimeDomain() = 0;
+
+//	virtual OfxTime mapInputTime( const OfxTime time ) const = 0;
 	
 	virtual OfxRangeD getTimeDomain() const = 0;
 	

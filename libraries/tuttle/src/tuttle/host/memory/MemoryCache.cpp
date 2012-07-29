@@ -118,7 +118,7 @@ void MemoryCache::clearUnused()
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
 	for( MAP::iterator it = _map.begin(); it != _map.end(); )
 	{
-		if( it->second->getReferenceCount() <= 1 )
+		if( it->second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1 )
 		{
 			_map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
 		}
@@ -141,7 +141,10 @@ std::ostream& operator<<( std::ostream& os, const MemoryCache& v )
 	os << "size:" << v.size() << std::endl;
 	BOOST_FOREACH( const MemoryCache::MAP::value_type& i, v._map )
 	{
-		os << i.first << " id:" << i.second->getId() << " ref:" << i.second->getReferenceCount() << std::endl;
+		os << i.first
+			<< " id:" << i.second->getId()
+			<< " ref host:" << i.second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
+			<< " ref plugins:" << i.second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerPlugin ) << std::endl;
 	}
 	return os;
 }

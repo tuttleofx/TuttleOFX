@@ -801,7 +801,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 			BOOST_THROW_EXCEPTION( exception::Memory()
 				<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier: " + quotes( clip.getClipIdentifier() ) + ", time: " + outTime + ")." );
 		}
-		imageCache->releaseReference();
+		imageCache->releaseReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost );
 	}
 	
 	// declare future usages of the output
@@ -824,7 +824,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 			TUTTLE_TCOUT( "++ image->addReference: " << vData._outDegree );
 			if( vData._outDegree > 0 )
 			{
-				imageCache->addReference( vData._outDegree ); // add a reference on this node for each future usages
+				imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a reference on this node for each future usages
 			}
 		}
 //		else
