@@ -1,9 +1,0 @@
-Import( 'project', 'libs' )
-
-project.UnitTest(
-	dirs = ['.'],
-	libraries = [
-		libs.boost_unit_test_framework,
-		]
-	)
-

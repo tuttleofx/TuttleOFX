@@ -11,6 +11,8 @@ project
 		<include>src
 		<toolset>gcc:<linkflags>-lGL
 		<toolset>gcc:<linkflags>-lglut
+		<toolset>clang:<linkflags>-lGL
+		<toolset>clang:<linkflags>-lglut
 		<toolset>msvc:<linkflags>/GL
 		<toolset>msvc:<linkflags>/glut
 	: build-dir $(BUILD)/Viewer

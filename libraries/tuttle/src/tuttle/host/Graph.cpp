@@ -262,14 +262,34 @@ void Graph::init()
 //void Graph::unconnectNode( const Node& node )
 //{}
 
-memory::MemoryCache Graph::compute( const std::list<std::string>& nodes, const ComputeOptions& options )
+// shortcut
+void Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
+{
+	ComputeOptions realOptions( options );
+	realOptions.setReturnBuffers( false );
+	
+	memory::MemoryCache emptyMemoryCache;
+	privateCompute( emptyMemoryCache, nodes, options );
+}
+
+void Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
+{
+	privateCompute( memoryCache, nodes, options );
+}
+
+void Graph::privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
+	
+	graph::ProcessGraph process( *this, nodes.getNodes() );
+	process.process( memoryCache, options );
+}
 
-	graph::ProcessGraph process( *this, nodes );
-	return process.process( options );
+void Graph::privateStaticCompute( Graph& graph, memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
+{
+	graph.privateCompute( memoryCache, nodes, options );
 }
 
 std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )

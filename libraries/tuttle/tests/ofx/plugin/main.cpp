@@ -14,6 +14,7 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/extended_type_info.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -44,12 +45,15 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	TUTTLE_TCOUT_VAR( testfile );
 	BOOST_REQUIRE( testfile.size() );
 
+	
 	{
 		std::ofstream ofsb( testfile.c_str() );
 		OArchive oArchive( ofsb );
 		oArchive << BOOST_SERIALIZATION_NVP( plugin );
 		ofsb.close();
 	}
+
+	BOOST_CHECK( boost::filesystem::exists( testfile ) );
 
 	// new datas
 	OfxhImageEffectPlugin* plugin2 = NULL;
@@ -60,6 +64,8 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 		iArchive >> BOOST_SERIALIZATION_NVP( plugin2 );
 		ifsb.close();
 	}
+
+	BOOST_CHECK( boost::filesystem::exists( testfile ) );
 
 	const std::string testfile2 = ( Core::instance().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization2.xml" ).string();
 	TUTTLE_TCOUT_VAR( testfile2 );

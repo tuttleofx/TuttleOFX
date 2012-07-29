@@ -16,20 +16,25 @@ class InputBufferNode : public INode
 {
 public:
 	InputBufferNode( );
-	InputBufferNode( const InputBufferNode& orig );
 	~InputBufferNode( );
 
+private:
+	InputBufferNode( const InputBufferNode& orig );
+	
+public:
 	InputBufferNode* clone() const
 	{
 		return new InputBufferNode( *this );
 	}
+	
 public:
 	static const std::string _label;
 	std::string _name;
+#ifndef SWIG
 	attribute::ClipImage _outputClip;
-
-	memory::CACHE_ELEMENT _imageCache;
 	
+	memory::CACHE_ELEMENT _imageCache;
+#endif
 	ofx::property::OfxhSet _emptyProps;
 	
 	bool operator==( const INode& other ) const;
@@ -71,7 +76,50 @@ public:
 			const ofx::imageEffect::EBitDepth bitDepth,
 			const int rowDistanceBytes,
 			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom );
-
+	
+	void setRawImageBuffer(
+			unsigned char* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthUByte,
+			rowDistanceBytes,
+			orientation );
+	}
+	void setRawImageBuffer(
+			unsigned short* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthUShort,
+			rowDistanceBytes,
+			orientation );
+	}
+	void setRawImageBuffer(
+			float* rawBuffer,
+			const OfxRectD& rod,
+			const ofx::imageEffect::EPixelComponent components,
+			const int rowDistanceBytes,
+			const attribute::Image::EImageOrientation orientation = attribute::Image::eImageOrientationFromTopToBottom )
+	{
+		setRawImageBuffer( reinterpret_cast<char*>(rawBuffer),
+			rod,
+			components,
+			ofx::imageEffect::eBitDepthFloat,
+			rowDistanceBytes,
+			orientation );
+	}
+	
 #if 0
 	std::size_t getClipNbComponents() const
 	{

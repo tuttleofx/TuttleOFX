@@ -18,13 +18,13 @@ InputBufferNode::InputBufferNode( )
 {
 }
 
+
+InputBufferNode::~InputBufferNode( ) { }
+
 InputBufferNode::InputBufferNode( const InputBufferNode& other )
 : _name(other._name)
 , _outputClip( other._outputClip )
 { }
-
-InputBufferNode::~InputBufferNode( ) { }
-
 
 bool InputBufferNode::operator==( const INode& other ) const
 {

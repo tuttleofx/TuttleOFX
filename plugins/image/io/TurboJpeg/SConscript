@@ -1,0 +1,11 @@
+Import( 'project', 'libs' )
+
+project.createOfxPlugin(
+		dirs = ['src'],
+		libraries = [
+			libs.tuttlePlugin,
+			libs.turbojpeg,
+			libs.boost_filesystem,
+			libs.boost_regex,
+	] )
+

@@ -2,6 +2,7 @@
 #include "GraphExporter.hpp"
 
 #include <tuttle/host/ImageEffectNode.hpp>
+#include <tuttle/host/InputBufferNode.hpp>
 
 #include <boost/format.hpp>
 
@@ -36,7 +37,30 @@ std::ostream& ProcessVertex::exportDotDebug( std::ostream& os ) const
 	if( ! isFake() )
 	{
 		/// @todo remove this. Temporary solution
-		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode&>( getProcessNode() ).getOutputClip().getBitDepthString() );
+		if( const ImageEffectNode* ieNode = dynamic_cast<const ImageEffectNode*>( & getProcessNode() ) )
+		{
+			s << subDotEntry( "bitdepth",  ieNode->getOutputClip().getBitDepthString()   );
+			s << subDotEntry( "component", ieNode->getOutputClip().getComponentsString() );
+			{
+				double startFrame, endFrame;
+				ieNode->getOutputClip().getFrameRange( startFrame, endFrame );
+				s << subDotEntry( "startFrame", startFrame );
+				s << subDotEntry( "endFrame", endFrame );
+			}
+			s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
+		}
+		else if( const InputBufferNode* ibNode = dynamic_cast<const InputBufferNode*>( & getProcessNode() ) )
+		{
+			s << subDotEntry( "bitdepth",  ibNode->getOutputClip().getBitDepthString()   );
+			s << subDotEntry( "component", ibNode->getOutputClip().getComponentsString() );
+			{
+				double startFrame, endFrame;
+				ibNode->getOutputClip().getFrameRange( startFrame, endFrame );
+				s << subDotEntry( "startFrame", startFrame );
+				s << subDotEntry( "endFrame", endFrame );
+			}
+			s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
+		}
 	}
 	s << subDotEntry( "timeDomain", ( boost::format("[%1%:%2%]") % _data._timeDomain.min % _data._timeDomain.max ).str() );
 	s << subDotEntry( "allTimes", _data._times.size() );

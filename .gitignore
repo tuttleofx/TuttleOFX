@@ -20,6 +20,10 @@ Thumbs.db # Windows
 /scripts
 /*.sh
 
+# tests
+/TuttleOFX-data
+/.tests
+
 # in case uncrustify.sh script fails, do not commit the temporary file
 /files_to_uncrustify_delete_me.txt
 
@@ -59,5 +63,4 @@ Production
 /plugins/image/io/test/*.tif
 /plugins/image/io/test/*.rgbe
 /plugins/image/io/test/*.hdr
-
 

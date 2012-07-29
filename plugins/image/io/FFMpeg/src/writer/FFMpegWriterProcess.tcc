@@ -33,14 +33,14 @@ void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 	rgb8_view_t  vw  ( view( img ) );
 
 	// Convert pixels in PIX_FMT_RGB24
-	copy_and_convert_pixels( this->_srcView, flipped_up_down_view( vw ) );
+	copy_and_convert_pixels( this->_srcView, vw );
 
 	// Convert pixels to destination
 	copy_and_convert_pixels( this->_srcView, this->_dstView );
 	uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 
 	// Execute writing
-	_plugin._writer.execute             ( pixels, this->_srcView.width(), this->_srcView.height(), PIX_FMT_RGB24 );
+	_plugin._writer.execute( pixels, this->_srcView.width(), this->_srcView.height(), PIX_FMT_RGB24 );
 }
 
 }

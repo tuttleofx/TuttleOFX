@@ -35,9 +35,15 @@ protected:
 
 public:
 	ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescriptor& desc );
-
+	
+	ClipImage( const ClipImage& other );
+	
 	~ClipImage();
 
+private:
+	ClipImage& operator=( const ClipImage& other );
+	
+public:
 	ClipImage* clone() const { return new ClipImage( *this ); }
 
 	const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
@@ -168,7 +174,6 @@ public:
 
 	/**
 	 * @brief Unmapped Frame Rate
-	 * The unmaped frame range over which an output clip has images.
 	 */
 	const double getUnmappedFrameRate() const;
 

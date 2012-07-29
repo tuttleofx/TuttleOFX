@@ -22,8 +22,8 @@ inline T clamp( const T& v, const T& min, const T& max )
 	return v;
 }
 
-NLMDenoiserPlugin::NLMDenoiserPlugin( OfxImageEffectHandle handle ) :
-OFX::ImageEffect( handle )
+NLMDenoiserPlugin::NLMDenoiserPlugin( OfxImageEffectHandle handle )
+: OFX::ImageEffect( handle )
 , _clipDst( 0 )
 , _clipSrc( 0 )
 {

@@ -160,10 +160,9 @@ double ImageEffectNode::getEffectDuration() const
 	return 25.0;
 }
 
-// get frame rate, so progressive PAL SD return 25
 double ImageEffectNode::getFrameRate() const
 {
-	return 25.0;
+	return this->_outputFrameRate;
 }
 
 /// This is called whenever a param is changed by the plugin so that
@@ -740,7 +739,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 					clip,
 					vData._time,
 					vData._apiImageEffect._renderRoI,
-					attribute::Image::eImageOrientationFromTopToBottom,
+					attribute::Image::eImageOrientationFromBottomToTop,
 					0 )
 				);
 			imageCache->setPoolData( Core::instance().getMemoryPool().allocate( imageCache->getMemorySize() ) );

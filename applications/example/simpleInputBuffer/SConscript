@@ -1,0 +1,17 @@
+Import( 'project', 'libs' )
+import os.path
+
+project.Program(
+	project.getName(),
+	dirs = ['src'],
+	libraries = [
+		libs.openfxHack,
+		libs.tuttleHost,
+		libs.boost_filesystem,
+		libs.dl,
+		libs.boost_gil,
+		libs.png,
+		],
+	installDir = os.path.join(project.inOutputBin(),'example')
+	)
+

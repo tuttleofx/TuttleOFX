@@ -7,18 +7,21 @@ import testing ;
 # compile the test and run it
 ###############################################################################
 
-path-constant TUTTLE_INCLUDE : ../../src ;
-path-constant SRC : $(TUTTLE_INCLUDE)/tuttle/host/core/memory ;
-
 project 
-    : requirements	<define>BOOST_TEST_MAIN
- 	   		<include>$(TUTTLE_INCLUDE)
-    ;
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
 
 alias dependencies
-    : 
+	:
 		/boost//unit_test_framework
-		[ glob $(SRC)/*.cpp ]
-    ; 
+		/boost//python
+		/tuttlehost
+		/python
+	; 
 
-run   main.cpp dependencies ;
+run
+		main.cpp
+		dependencies
+	;

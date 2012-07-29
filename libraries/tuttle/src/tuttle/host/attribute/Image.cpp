@@ -24,7 +24,7 @@ Image::Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const
 	, _nbComponents( clip.getNbComponents() )
 	, _memorySize( 0 )
 	, _pixelBytes( clip.getPixelMemorySize() )
-	, _rowDistanceBytes( 0 )
+	, _rowAbsDistanceBytes( 0 )
 	, _orientation( orientation )
 	, _fullname( clip.getFullName() )
 {
@@ -58,7 +58,7 @@ Image::Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const
 	setIntProperty( kOfxImagePropRegionOfDefinition, _bounds.y2, 3 );
 
 	// row bytes
-	_rowDistanceBytes = rowDistanceBytes != 0 ? rowDistanceBytes : automaticRowSize;
+	_rowAbsDistanceBytes = rowDistanceBytes != 0 ? rowDistanceBytes : automaticRowSize;
 	setIntProperty( kOfxImagePropRowBytes, getOrientedRowDistanceBytes( eImageOrientationFromBottomToTop ) );
 }
 
@@ -81,7 +81,7 @@ boost::uint8_t* Image::getOrientedPixelData( const EImageOrientation orientation
 	}
 	else
 	{
-		const std::ssize_t distance = getRowDistanceBytes() * (_bounds.y2 - _bounds.y1 - 1);
+		const std::ssize_t distance = getRowAbsDistanceBytes() * (_bounds.y2 - _bounds.y1 - 1);
 		return reinterpret_cast<boost::uint8_t*>( getPixelData() + distance );
 	}
 }
@@ -94,7 +94,7 @@ boost::uint8_t* Image::pixel( const int x, const int y )
 	if( ( x >= bounds.x1 ) && ( x < bounds.x2 ) && ( y >= bounds.y1 ) && ( y < bounds.y2 ) )
 	{
 		const int yOffset = ( _orientation == eImageOrientationFromTopToBottom ) ? ( y - bounds.y1 ) : ( y - bounds.y2 );
-		const int offset = yOffset * getRowDistanceBytes() + ( x - bounds.x1 ) * _pixelBytes;
+		const int offset = yOffset * getRowAbsDistanceBytes() + ( x - bounds.x1 ) * _pixelBytes;
 		return reinterpret_cast<boost::uint8_t*>( getPixelData() + offset );
 	}
 	return NULL;

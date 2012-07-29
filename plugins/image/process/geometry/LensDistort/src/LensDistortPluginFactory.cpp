@@ -21,26 +21,29 @@ namespace lens {
  */
 void LensDistortPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-        desc.setLabels( "TuttleLensDistort", "LensDistort",
-                        "Create or correct lens distortion." );
-        desc.setPluginGrouping( "tuttle/image/process/geometry" );
+	desc.setLabels(
+		"TuttleLensDistort",
+		"LensDistort",
+		"Create or correct lens distortion." );
+	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
-        desc.setDescription( "Apply or correct a lens distortion on an image." );
+	desc.setDescription( "Apply or correct a lens distortion on an image." );
 
-        // add the supported contexts
-        desc.addSupportedContext( OFX::eContextFilter );
-        desc.addSupportedContext( OFX::eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
-        // add supported pixel depths
-        desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-        desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-        desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+	// add supported pixel depths
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-        // set a few flags
-        desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-        desc.setSupportsTiles( true );
+	// set a few flags
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false ); // The plugin is able to manage threading per frame
+	desc.setSupportsTiles( true );
 
-        desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<LensDistortOverlayDescriptor>() );
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<LensDistortOverlayDescriptor>() );
 }
 
 /**
@@ -78,7 +81,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 
         // Controls
         OFX::BooleanParamDescriptor* displaySource = desc.defineBooleanParam( kParamDisplaySource );
-        displaySource->setLabel( "displaySource" );
+        displaySource->setLabel( "Display Source" );
         displaySource->setDefault( false );
         displaySource->setHint( "Display the image source (usefull to parameter the distortion with lines overlays on the source image)." );
 
@@ -88,12 +91,13 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         #ifndef TUTTLE_PRODUCTION
         lensType->appendOption( kParamLensTypeFishEye ); // not implemented yet...
         lensType->appendOption( kParamLensTypeAdvanced ); // not implemented yet...
+		#else
         lensType->setIsSecret( true );
         #endif
         lensType->setDefault( 0 );
 
         OFX::DoubleParamDescriptor* coef1 = desc.defineDoubleParam( kParamCoef1 );
-        coef1->setScriptName( "Main" );
+        coef1->setLabel( "Main" );
         coef1->setDefault( 0.1 );
         coef1->setDisplayRange( -1.0, 1.0 );
         coef1->setHint( "Main distortion coeffecient\n"

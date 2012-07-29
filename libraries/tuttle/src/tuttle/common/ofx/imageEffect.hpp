@@ -3,6 +3,8 @@
 
 #include <tuttle/common/exceptions.hpp>
 
+#include <boost/cstdint.hpp>
+
 #include <string>
 
 namespace tuttle {

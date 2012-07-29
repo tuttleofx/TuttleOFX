@@ -33,7 +33,7 @@ protected:
 	std::size_t _nbComponents; ///< number of components
 	std::size_t _memorySize; ///< memory size
 	std::size_t _pixelBytes; ///< pixel memory size
-	int _rowDistanceBytes; ///< positive memory size for the distance between rows
+	int _rowAbsDistanceBytes; ///< positive memory size for the distance between rows
 	OfxRectI _bounds;
 	EImageOrientation _orientation;
 	std::string _fullname;
@@ -55,14 +55,14 @@ public:
 	/**
 	 * @brief Positive/Absolute distance rows.
 	 */
-	int getRowDistanceBytes() const { return _rowDistanceBytes; }
+	int getRowAbsDistanceBytes() const { return _rowAbsDistanceBytes; }
 	
 	EImageOrientation getOrientation() const { return _orientation; }
 	
 	/**
 	 * @brief Get distance between rows depending on the requested orientation.
 	 */
-	int getOrientedRowDistanceBytes( const EImageOrientation orientation ) { return _rowDistanceBytes * ( _orientation != orientation ? -1 : 1); }
+	int getOrientedRowDistanceBytes( const EImageOrientation orientation ) { return _rowAbsDistanceBytes * ( _orientation != orientation ? -1 : 1); }
 	
 	boost::uint8_t* getPixelData();
 	boost::uint8_t* getOrientedPixelData( const EImageOrientation orientation );
@@ -129,7 +129,7 @@ VIEW_T Image::getGilView()
 	return boost::gil::interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
 	                         std::abs( bounds.y2 - bounds.y1 ),
 	                         ( Pixel* )( this->getPixelData() ),
-	                         this->getRowDistanceBytes() );
+	                         this->getRowAbsDistanceBytes() );
 }
 
 }

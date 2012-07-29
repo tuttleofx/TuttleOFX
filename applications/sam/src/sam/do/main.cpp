@@ -906,16 +906,14 @@ int main( int argc, char** argv )
 		ttl::ComputeOptions options;
 		if( range.size() >= 2 )
 		{
-			options._timeRanges.push_back( ttl::TimeRange( range[0], range[1], step ) );
+			options.addTimeRange( range[0], range[1], step );
 		}
 		if( renderscale.size() == 2 )
 		{
-			options._renderScale.x = renderscale[0];
-			options._renderScale.y = renderscale[1];
+			options.setRenderScale( renderscale[0], renderscale[1] );
 		}
-		options._continueOnError = continueOnError;
-		options._forceIdentityNodesProcess = forceIdentityNodesProcess;
-		options._returnBuffers = false;
+		options.setContinueOnError( continueOnError );
+		options.setForceIdentityNodesProcess( forceIdentityNodesProcess );
 		
 		// Execute the graph
 		graph.compute( *nodes.back(), options );

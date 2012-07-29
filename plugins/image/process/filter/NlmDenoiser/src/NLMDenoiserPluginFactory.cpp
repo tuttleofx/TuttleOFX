@@ -57,7 +57,8 @@ void NLMDenoiserPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
     desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
     // set a few flags
-    desc.setHostFrameThreading( true );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+    desc.setHostFrameThreading( false ); // The plugin is able to manage per frame threading
     desc.setSupportsMultiResolution( true );
     desc.setSupportsTiles( false );
     desc.setTemporalClipAccess( true );
@@ -79,7 +80,7 @@ void NLMDenoiserPluginFactory::describeInContext( OFX::ImageEffectDescriptor &de
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     srcClip->setTemporalClipAccess( true );
-    srcClip->setSupportsTiles( false );
+    srcClip->setSupportsTiles( true );
     srcClip->setIsMask( false );
 
     // Create the mandated output clip
@@ -87,7 +88,6 @@ void NLMDenoiserPluginFactory::describeInContext( OFX::ImageEffectDescriptor &de
     dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( true );
-    dstClip->setTemporalClipAccess( true );
 
     // Controls
     // Define NLMeans Based algorithm controls.

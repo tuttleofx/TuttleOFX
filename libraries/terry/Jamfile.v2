@@ -9,3 +9,13 @@ project terry
 		<include>src
 	;
 
+alias terry-tests
+	:
+		tests/colorspace
+		tests/filter
+		tests/rect
+	;
+
+explicit
+	terry-tests
+	;

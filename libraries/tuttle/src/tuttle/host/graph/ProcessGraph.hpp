@@ -51,13 +51,16 @@ public:
 	ProcessGraph( Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
 	~ProcessGraph();
 
-	memory::MemoryCache process( const ComputeOptions& options );
+private:
+	void relink();
+	void bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderGraphAtTime );
+	void beginSequenceRender( ProcessVertexData& procOptions );
+	void endSequenceRender( ProcessVertexData& procOptions );
+
+public:
+	void process( memory::MemoryCache& result, const ComputeOptions& options );
 
 private:
-	
-	void bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderGraphAtTime );
-	void relink();
-
 	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount;

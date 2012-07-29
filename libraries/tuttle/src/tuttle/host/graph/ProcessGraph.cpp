@@ -19,11 +19,24 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 	Vertex outputVertex( _outputId );
 	_graph.addVertex( outputVertex );
 
-	BOOST_FOREACH( const std::string & s, outputNodes )
+	if( outputNodes.size() )
 	{
-		_graph.connect( _outputId, s, "Output" );
-		TUTTLE_COUT_DEBUG( "MY OUTPUT: " << s );
+		BOOST_FOREACH( const std::string & s, outputNodes )
+		{
+			_graph.connect( _outputId, s, "Output" );
+			TUTTLE_COUT_DEBUG( "MY OUTPUT: " << s );
+		}
 	}
+	else
+	{
+		// Detect root nodes and add them to the list of nodes to process
+		BOOST_FOREACH( const InternalGraphImpl::vertex_descriptor vd, _graph.rootVertices() )
+		{
+			InternalGraphImpl::VertexKey vk = _graph.instance( vd ).getKey();
+			_graph.connect( _outputId, vk, "Output" );
+		}
+	}
+	
 	relink();
 }
 
@@ -171,7 +184,30 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderG
 
 }
 
-memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
+void ProcessGraph::beginSequenceRender( ProcessVertexData& procOptions )
+{
+	TUTTLE_TCOUT( "process begin sequence" );
+	//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
+	for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
+		it != itEnd;
+		++it )
+	{
+		NodeMap::value_type& p = *it;
+		p.second->beginSequence( procOptions );
+	}
+}
+
+void ProcessGraph::endSequenceRender( ProcessVertexData& procOptions )
+{
+	TUTTLE_TCOUT( "process end sequence" );
+	//--- END sequence render
+	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
+	{
+		p.second->endSequence( procOptions ); // node option... or no option here ?
+	}
+}
+
+void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& options )
 {
 	using namespace boost;
 	using namespace boost::graph;
@@ -184,12 +220,12 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
-	ProcessVertexData defaultOptions;
-	defaultOptions._interactive = options._interactive;
+	ProcessVertexData procOptions;
+	procOptions._interactive = options.getIsInteractive();
 	// imageEffect specific...
-//	defaultOptions._field       = kOfxImageFieldBoth;
-	defaultOptions._renderScale = options._renderScale;
-//	defaultOptions._renderRoI   = renderWindow;
+//	procOptions._field       = kOfxImageFieldBoth;
+	procOptions._renderScale = options.getRenderScale();
+//	procOptions._renderRoI   = renderWindow;
 
 	///@todo tuttle: exception if there is non-optional clips unconnected.
 	/// It's already checked in the beginSequence of the imageEffectNode.
@@ -217,7 +253,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 		Vertex& v = renderGraph.instance(vd);
 		if( ! v.isFake() )
 		{
-			v.setProcessData( defaultOptions );
+			v.setProcessData( procOptions );
 			v.getProcessNode().setProcessData( &v._data );
 		}
 	}
@@ -230,8 +266,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 	renderGraph.depthFirstVisit( timeDomainPropagationVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 
 	TUTTLE_TCOUT_INFOS;
-	memory::MemoryCache result;
-	std::list<TimeRange> timeRanges = options._timeRanges;
+	std::list<TimeRange> timeRanges = options.getTimeRanges();
 
 	TUTTLE_TCOUT_INFOS;
 	if( timeRanges.empty() )
@@ -259,34 +294,35 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 	}
 	TUTTLE_TCOUT_INFOS;
 
+	/// @todo Bug: need to use a map 'OutputNode': 'timeRanges'
+	/// And check if all Output nodes share a common timeRange
+	
 	TUTTLE_TCOUT( "process render..." );
 	//--- RENDER
 	// at each frame
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
-		defaultOptions._renderTimeRange.min = timeRange._begin;
-		defaultOptions._renderTimeRange.max = timeRange._end;
-		defaultOptions._step                = timeRange._step;
+		procOptions._renderTimeRange.min = timeRange._begin;
+		procOptions._renderTimeRange.max = timeRange._end;
+		procOptions._step                = timeRange._step;
 
-		TUTTLE_TCOUT( "process begin sequence" );
-		//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
-		for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
-			 it != itEnd;
-			 ++it )
-		{
-			NodeMap::value_type& p = *it;
-			p.second->beginSequence( defaultOptions );
-		}
-
+		beginSequenceRender( procOptions );
+		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
+			if( options.getAbort() )
+			{
+				endSequenceRender( procOptions );
+				return;
+			}
+			
 			try
 			{
 				TUTTLE_COUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
 				TUTTLE_TCOUT( "________________________________________ frame: " << time );
 	
 				TUTTLE_TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
-
+				
 				TUTTLE_TCOUT( "---------------------------------------- deploy time" );
 				graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, time );
 				renderGraph.depthFirstVisit( deployTimeVisitor, renderGraph.getVertexDescriptor( _outputId ) );
@@ -348,7 +384,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )
 				{
 					VertexAtTime& v = renderGraphAtTime.targetInstance( ed );
-					v.getProcessDataAtTime()._isFinalNode = true;
+					v.getProcessDataAtTime()._isFinalNode = true; /// @todo: this is maybe better to move this into the ProcessData? Doesn't depend on time?
 				}
 				
 				TUTTLE_TCOUT( "---------------------------------------- set data at time" );
@@ -395,9 +431,9 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", renderGraphAtTime );
 		#endif
 
-				if( ! options._forceIdentityNodesProcess )
+				if( ! options.getForceIdentityNodesProcess() )
 				{
-					TUTTLE_COUT( "---------------------------------------- remove identity nodes" );
+					TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
 					// The "Remove identity nodes" step need to be done after preprocess steps, because the RoI need to be computed.
 					std::vector<graph::visitor::IdentityNodeConnection<InternalGraphAtTimeImpl> > toRemove;
 					
@@ -413,7 +449,6 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 					}
 				}
 
-				
 				/*
 				TUTTLE_TCOUT( "---------------------------------------- optimize graph" );
 				graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( renderGraphAtTime );
@@ -471,7 +506,7 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				TUTTLE_TCOUT( "---------------------------------------- process" );
 				// do the process
 				graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache() );
-				if( options._returnBuffers )
+				if( options.getReturnBuffers() )
 				{
 					// accumulate output nodes buffers into the @p result MemoryCache
 					processVisitor.setOutputMemoryCache( result );
@@ -492,18 +527,25 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				TUTTLE_TCOUT_VAR( result );
 
 				TUTTLE_COUT( " " );
-
 			}
 			catch( tuttle::exception::FileNotExist& e ) // @todo tuttle: change that.
 			{
-				TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
-#ifndef TUTTLE_PRODUCTION
-				TUTTLE_COUT_ERROR( boost::diagnostic_information(e) );
-#endif
+				if( options.getContinueOnError() && ! options.getAbort() )
+				{
+					TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
+	#ifndef TUTTLE_PRODUCTION
+					TUTTLE_COUT_ERROR( boost::diagnostic_information(e) );
+	#endif
+				}
+				else
+				{
+					endSequenceRender( procOptions );
+					throw;
+				}
 			}
 			catch( ... )
 			{
-				if( options._continueOnError )
+				if( options.getContinueOnError() && ! options.getAbort() )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Skip frame " << time << "." << tuttle::common::kColorStd );
 #ifndef TUTTLE_PRODUCTION
@@ -513,21 +555,14 @@ memory::MemoryCache ProcessGraph::process( const ComputeOptions& options )
 				}
 				else
 				{
+					endSequenceRender( procOptions );
 					throw;
 				}
 			}
 		}
-
-		TUTTLE_TCOUT( "process end sequence" );
-		//--- END sequence render
-		BOOST_FOREACH( NodeMap::value_type& p, _nodes )
-		{
-			p.second->endSequence( defaultOptions ); // node option... or no option here ?
-		}
+		
+		endSequenceRender( procOptions );
 	}
-
-
-	return result;
 }
 
 }
