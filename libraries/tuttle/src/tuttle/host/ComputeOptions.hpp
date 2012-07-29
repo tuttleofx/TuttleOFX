@@ -3,8 +3,9 @@
 
 #include <ofxCore.h>
 
+#include <boost/atomic.hpp>
+
 #include <list>
-//#include <atomic>
 
 namespace tuttle {
 namespace host {
@@ -47,19 +48,43 @@ public:
 	typedef ComputeOptions This;
 	
 	ComputeOptions()
+	: _abort( false )
 	{
 		init();
 	}
 	explicit
 	ComputeOptions( const int frame )
+	: _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( frame, frame ) );
 	}
 	ComputeOptions( const int begin, const int end, const int step = 1 )
+	: _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
+	}
+	ComputeOptions( const ComputeOptions& options )
+	: _abort( false )
+	{
+		*this = options;
+	}
+	ComputeOptions& operator=( const ComputeOptions& other )
+	{
+		_timeRanges = other._timeRanges;
+
+		_renderScale = other._renderScale;
+		_continueOnError = other._continueOnError;
+		_forceIdentityNodesProcess = other._forceIdentityNodesProcess;
+		_returnBuffers = other._returnBuffers;
+		_verboseLevel = other._verboseLevel;
+		_isInteractive = other._isInteractive;
+
+		// don't modify the abort status?
+		//_abort.store( false, boost::memory_order_relaxed );
+		
+		return *this;
 	}
 	
 private:
@@ -71,12 +96,23 @@ private:
 		setVerboseLevel( eVerboseLevelError );
 		setIsInteractive( false );
 		setForceIdentityNodesProcess( false );
-		_abort = false;
 	}
 	
 public:
 	const std::list<TimeRange>& getTimeRanges() const { return _timeRanges; }
 	
+	This& setTimeRange( const int begin, const int end, const int step = 1 )
+	{
+		_timeRanges.clear();
+		addTimeRange( begin, end, step );
+		return *this;
+	}
+	This& setTimeRange( const TimeRange& timeRange )
+	{
+		_timeRanges.clear();
+		_timeRanges.push_back( timeRange );
+		return *this;
+	}
 	This& addTimeRange( const int begin, const int end, const int step = 1 )
 	{
 		addTimeRange( TimeRange(begin, end, step) );
@@ -152,17 +188,17 @@ public:
 	bool getForceIdentityNodesProcess() const { return _forceIdentityNodesProcess; }
 	
 	/**
-	 * @brief Has someone asked to abort the process?
+	 * @brief The application would like to abort the process (from another thread).
 	 */
 	This& abort()
 	{
-		_abort = true;
+		_abort.store( true, boost::memory_order_relaxed );
 		return *this;
 	}
 	/**
-	 * @brief The application ask to abort the process (from another thread)
+	 * @brief Has someone asked to abort the process?
 	 */
-	bool getAbort() const { return _abort; }
+	bool getAbort() const { return _abort.load( boost::memory_order_relaxed ); }
 	
 private:
 	std::list<TimeRange> _timeRanges;
@@ -174,8 +210,7 @@ private:
 	EVerboseLevel _verboseLevel;
 	bool _isInteractive;
 	
-//	std::atomic_bool _abort; /// @todo
-	bool _abort;
+	boost::atomic_bool _abort;
 };
 
 }
