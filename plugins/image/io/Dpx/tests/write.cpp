@@ -31,7 +31,8 @@ BOOST_AUTO_TEST_CASE( process_writer )
 	TUTTLE_COUT( "-------- PLUGINS CONFIGURATION --------" );
 
 	constant.getParam( "width" ).setValue( 500 );
-	writer.getParam( "filename" ).setValue( "data/file.dpx" );
+	constant.getParam( "height" ).setValue( 500 );
+	writer.getParam( "filename" ).setValue( ".tests/file.dpx" );
 
 	TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
 	g.connect( constant, writer );
@@ -51,19 +52,19 @@ BOOST_AUTO_TEST_CASE( process_writer )
 	TUTTLE_TCOUT_VAR( imgRes->getROD() );
 	BOOST_CHECK_EQUAL( imgRes->getROD().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getROD().y1, 0 );
-	BOOST_CHECK_NE( imgRes->getROD().x2, 0 );
-	BOOST_CHECK_NE( imgRes->getROD().y2, 0 );
+	BOOST_CHECK_NE( imgRes->getROD().x2, 500 );
+	BOOST_CHECK_NE( imgRes->getROD().y2, 500 );
 
 	TUTTLE_TCOUT_VAR( imgRes->getBounds() );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().y1, 0 );
-	BOOST_CHECK_NE( imgRes->getBounds().x2, 0 );
-	BOOST_CHECK_NE( imgRes->getBounds().y2, 0 );
+	BOOST_CHECK_NE( imgRes->getBounds().x2, 500 );
+	BOOST_CHECK_NE( imgRes->getBounds().y2, 500 );
 }
 
-BOOST_AUTO_TEST_CASE( process_nofile )
+BOOST_AUTO_TEST_CASE( process_unconnected )
 {
-	TUTTLE_COUT( "******** PROCESS WRITER DPX NO FILE ********" );
+	TUTTLE_COUT( "******** PROCESS WRITER DPX UNCONNECTED ********" );
 	Graph g;
 
 	TUTTLE_COUT( "--> PLUGINS CREATION" );
