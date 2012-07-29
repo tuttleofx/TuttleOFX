@@ -221,10 +221,10 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 
 	//--- BEGIN RENDER
 	ProcessVertexData procOptions;
-	procOptions._interactive = options._interactive;
+	procOptions._interactive = options.getIsInteractive();
 	// imageEffect specific...
 //	procOptions._field       = kOfxImageFieldBoth;
-	procOptions._renderScale = options._renderScale;
+	procOptions._renderScale = options.getRenderScale();
 //	procOptions._renderRoI   = renderWindow;
 
 	///@todo tuttle: exception if there is non-optional clips unconnected.
@@ -266,7 +266,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 	renderGraph.depthFirstVisit( timeDomainPropagationVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 
 	TUTTLE_TCOUT_INFOS;
-	std::list<TimeRange> timeRanges = options._timeRanges;
+	std::list<TimeRange> timeRanges = options.getTimeRanges();
 
 	TUTTLE_TCOUT_INFOS;
 	if( timeRanges.empty() )
@@ -310,7 +310,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
-			if( options._abort )
+			if( options.getAbort() )
 			{
 				endSequenceRender( procOptions );
 				return;
@@ -431,7 +431,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", renderGraphAtTime );
 		#endif
 
-				if( ! options._forceIdentityNodesProcess )
+				if( ! options.getForceIdentityNodesProcess() )
 				{
 					TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
 					// The "Remove identity nodes" step need to be done after preprocess steps, because the RoI need to be computed.
@@ -506,7 +506,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				TUTTLE_TCOUT( "---------------------------------------- process" );
 				// do the process
 				graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache() );
-				if( options._returnBuffers )
+				if( options.getReturnBuffers() )
 				{
 					// accumulate output nodes buffers into the @p result MemoryCache
 					processVisitor.setOutputMemoryCache( result );
@@ -530,7 +530,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 			}
 			catch( tuttle::exception::FileNotExist& e ) // @todo tuttle: change that.
 			{
-				if( options._continueOnError && ! options._abort )
+				if( options.getContinueOnError() && ! options.getAbort() )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
 	#ifndef TUTTLE_PRODUCTION
@@ -545,7 +545,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 			}
 			catch( ... )
 			{
-				if( options._continueOnError && ! options._abort )
+				if( options.getContinueOnError() && ! options.getAbort() )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Skip frame " << time << "." << tuttle::common::kColorStd );
 #ifndef TUTTLE_PRODUCTION

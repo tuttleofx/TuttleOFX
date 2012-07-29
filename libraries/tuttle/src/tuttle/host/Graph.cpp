@@ -266,7 +266,7 @@ void Graph::init()
 void Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
 {
 	ComputeOptions realOptions( options );
-	realOptions._returnBuffers = false;
+	realOptions.setReturnBuffers( false );
 	
 	memory::MemoryCache emptyMemoryCache;
 	privateCompute( emptyMemoryCache, nodes, options );
