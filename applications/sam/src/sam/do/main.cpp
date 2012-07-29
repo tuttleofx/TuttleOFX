@@ -914,7 +914,6 @@ int main( int argc, char** argv )
 		}
 		options.setContinueOnError( continueOnError );
 		options.setForceIdentityNodesProcess( forceIdentityNodesProcess );
-		options.setReturnBuffers( false );
 		
 		// Execute the graph
 		graph.compute( *nodes.back(), options );

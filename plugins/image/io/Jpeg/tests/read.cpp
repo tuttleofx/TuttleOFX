@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( process_reader )
 	TUTTLE_COUT( "--> GRAPH PROCESSING" );
 	boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
 	memory::MemoryCache outputCache;
-	g.compute( outputCache, read, ComputeOptions().setReturnBuffers() );
+	g.compute( outputCache, read );
 	boost::posix_time::ptime t2a(boost::posix_time::microsec_clock::local_time());
 
 	TUTTLE_COUT( "Process took: " << t2a - t1a );

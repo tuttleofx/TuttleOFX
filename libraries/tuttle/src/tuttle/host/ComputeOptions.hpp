@@ -92,7 +92,7 @@ private:
 	{
 		setRenderScale( 1.0, 1.0 );
 		setContinueOnError( false );
-		setReturnBuffers( false );
+		setReturnBuffers( true );
 		setVerboseLevel( eVerboseLevelError );
 		setIsInteractive( false );
 		setForceIdentityNodesProcess( false );
