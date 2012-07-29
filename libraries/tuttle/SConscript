@@ -60,6 +60,16 @@ project.StaticLibrary(
 		shared = True
 	)
 
+project.ObjectLibrary(
+		'tuttleTest',
+		includes  = ['src'],
+		libraries = [
+			libs.tuttleHost,
+			libs.boost_unit_test_framework,
+			]
+	)
+
+
 pythonOutputDir = project.inOutputDir('python/pyTuttle')
 
 pyTuttleEnv = project.createEnv( [
