@@ -1,0 +1,11 @@
+Import( 'project', 'libs' )
+
+project.UnitTest(
+	target = project.getDirs([-3,-1]),
+	dirs = ['.'],
+	libraries = [
+		libs.tuttleHost,
+		libs.boost_unit_test_framework,
+		]
+	)
+

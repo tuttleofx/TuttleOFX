@@ -207,7 +207,7 @@ void ProcessGraph::endSequenceRender( ProcessVertexData& procOptions )
 	}
 }
 
-void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& options )
+bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& options )
 {
 	using namespace boost;
 	using namespace boost::graph;
@@ -312,8 +312,9 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 		{
 			if( options.getAbort() )
 			{
+				TUTTLE_COUT( tuttle::common::kColorRed << "PROCESS ABORTED at time " << time << "." << tuttle::common::kColorStd );
 				endSequenceRender( procOptions );
-				return;
+				return false;
 			}
 			
 			try
@@ -563,6 +564,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 		
 		endSequenceRender( procOptions );
 	}
+	return true;
 }
 
 }

@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_HOST_CORE_GRAPH_HPP_
 #define _TUTTLE_HOST_CORE_GRAPH_HPP_
 
+#include "NodeListArg.hpp"
 #include "ComputeOptions.hpp"
 #include "Core.hpp"
 #include "INode.hpp"
@@ -25,44 +26,6 @@
 
 namespace tuttle {
 namespace host {
-
-/**
- * @brief An utility class to use as function argument. It allows to create a list of nodes from multiple inputs.
- * 
- * All constructors are not "explicit", so we could automatically convert the
- * input inside when we use it as a function argument.
- */
-class NodeListArg
-{
-public:
-	NodeListArg()
-	{}
-	NodeListArg( const std::list<std::string>& nodes )
-	: _nodes( nodes )
-	{}
-	NodeListArg( const std::list<INode*>& nodes )
-	{
-		BOOST_FOREACH( INode * n, nodes )
-		{
-			_nodes.push_back( n->getName() );
-		}
-	}
-	NodeListArg( const std::string& node )
-	{
-		_nodes.push_back( node );
-	}
-	NodeListArg( const INode& node )
-	{
-		_nodes.push_back( node.getName() );
-	}
-
-public:
-	const std::list<std::string>& getNodes() const { return _nodes; }
-
-private:
-	std::list<std::string> _nodes;
-};
-
 
 /**
  * @brief A user graph to manipulate OpenFX nodes.
@@ -135,13 +98,12 @@ public:
 	/**
 	 * @brief Shortcut without buffer results.
 	 */
-	void compute( const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
+	bool compute( const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
 	
-	void compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
+	bool compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
 	
 private:
-	void privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options = ComputeOptions() );
-	static void privateStaticCompute( Graph& graph, memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options );
+	bool privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options = ComputeOptions() );
 	
 public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }
