@@ -68,7 +68,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode().getTimeDomain( vertex.getProcessData()._timeDomain );
+		vertex.getProcessData()._timeDomain = vertex.getProcessNode().computeTimeDomain();
 		TUTTLE_TCOUT_VAR2( vertex.getProcessData()._timeDomain.min, vertex.getProcessData()._timeDomain.max );
 	}
 

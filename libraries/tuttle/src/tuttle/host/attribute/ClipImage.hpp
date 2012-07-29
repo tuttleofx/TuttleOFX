@@ -164,7 +164,7 @@ public:
 	 * @brief Frame Range (startFrame, endFrame)
 	 * The frame range over which a clip has images.
 	 */
-	void getFrameRange( double& startFrame, double& endFrame ) const;
+	void setFrameRange( const double startFrame, const double endFrame );
 
 	/**
 	 * @brief Unmapped Frame Rate
@@ -176,7 +176,7 @@ public:
 	 * @brief Unmapped Frame Range -
 	 * The unmaped frame range over which an output clip has images.
 	 */
-	void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const;
+	void setUnmappedFrameRange( const double unmappedStartFrame, const double unmappedEndFrame );
 
 	/**
 	 * @brief override this to fill in the image at the given time.
