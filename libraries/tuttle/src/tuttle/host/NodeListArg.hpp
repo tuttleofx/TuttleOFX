@@ -1,13 +1,13 @@
 #ifndef _TUTTLE_HOST_CORE_NODELISTARG_HPP_
 #define _TUTTLE_HOST_CORE_NODELISTARG_HPP_
 
-#include "INode.hpp"
-
 #include <string>
 #include <list>
 
 namespace tuttle {
 namespace host {
+
+class INode;
 
 /**
  * @brief An utility class to use as function argument. It allows to create a list of nodes from multiple inputs.
@@ -24,14 +24,12 @@ public:
 	: _nodes( nodes )
 	{}
 	NodeListArg( const std::list<INode*>& nodes );
+	
 	NodeListArg( const std::string& node )
 	{
 		_nodes.push_back( node );
 	}
-	NodeListArg( const INode& node )
-	{
-		_nodes.push_back( node.getName() );
-	}
+	NodeListArg( const INode& node );
 
 public:
 	const std::list<std::string>& getNodes() const { return _nodes; }

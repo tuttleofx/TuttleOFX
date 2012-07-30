@@ -9,4 +9,3 @@
 %include "Graph.i"
 %include "ThreadEnv.i"
 
-

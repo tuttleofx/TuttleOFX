@@ -1,7 +1,10 @@
 %include <tuttle/host/global.i>
 %include <tuttle/host/memory/MemoryCache.i>
+%include <tuttle/host/InputBufferNode.i>
 %include <tuttle/host/ComputeOptions.i>
 %include <tuttle/host/NodeListArg.i>
+%include <tuttle/host/INode.i>
+
 
 %{
 #include <tuttle/host/Graph.hpp>

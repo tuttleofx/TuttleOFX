@@ -5,6 +5,7 @@
 #include "ComputeOptions.hpp"
 #include "Core.hpp"
 #include "INode.hpp"
+#include "InputBufferNode.hpp"
 #include "exceptions.hpp"
 
 #include <tuttle/host/graph/InternalGraph.hpp>

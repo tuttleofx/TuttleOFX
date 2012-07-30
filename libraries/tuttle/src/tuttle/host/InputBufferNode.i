@@ -5,7 +5,7 @@
 
 %include <tuttle/host/global.i>
 %include <tuttle/host/HostDescriptor.i>
-%include <tuttle/host/Node.i>
+%include <tuttle/host/INode.i>
 %include <tuttle/host/ofx/OfxhException.i>
 %include <tuttle/host/ofx/property/OfxhPropertyTemplate.i>
 %include <tuttle/host/ofx/property/OfxhSet.i>

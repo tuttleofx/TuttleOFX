@@ -1,4 +1,5 @@
 #include "NodeListArg.hpp"
+#include "INode.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -11,6 +12,11 @@ NodeListArg::NodeListArg( const std::list<INode*>& nodes )
 	{
 		_nodes.push_back( n->getName() );
 	}
+}
+
+NodeListArg::NodeListArg( const INode& node )
+{
+	_nodes.push_back( node.getName() );
 }
 
 }
