@@ -137,9 +137,10 @@ project
 ##############################################################################
 # libraries
 ##############################################################################
-use-project     /boost      : $(BOOST_LIBS) ;
-use-project     /boostHack  : $(BOOST_HACK) ;
-use-project     /terry      : $(TERRY) ;
+use-project     /boost        : $(BOOST_LIBS) ;
+use-project     /boost_atomic : $(3RD_PARTY)/boost_atomic ;
+use-project     /boostHack    : $(BOOST_HACK) ;
+use-project     /terry        : $(TERRY) ;
 
 ##############################################################################
 # Main targets
