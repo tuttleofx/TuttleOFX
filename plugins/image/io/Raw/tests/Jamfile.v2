@@ -21,6 +21,6 @@ alias dependencies
 	;
 	
 run
-		read.cpp
+		main.cpp
 		dependencies
 	;

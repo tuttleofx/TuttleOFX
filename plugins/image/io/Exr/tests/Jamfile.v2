@@ -21,11 +21,7 @@ alias dependencies
 	;
 
 run
-		write.cpp
+		main.cpp
 		dependencies
 	;
 
-run
-		read.cpp
-		dependencies
-	;

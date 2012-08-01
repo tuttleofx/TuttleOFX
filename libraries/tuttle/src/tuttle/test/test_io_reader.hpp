@@ -1,35 +1,26 @@
-#include <boost/test/unit_test.hpp>
-
-#include <tuttle/host/Graph.hpp>
-#include <tuttle/host/InputBufferNode.hpp>
-
-#include <boost/preprocessor/stringize.hpp>
-
-#include <boost/timer.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include <iostream>
-
-/**
- * Simple functional test, to read and write an image.
- */
 
 using namespace boost::unit_test;
 using namespace tuttle::host;
 
-BOOST_AUTO_TEST_SUITE( plugin_Dpx_reader )
-
 BOOST_AUTO_TEST_CASE( process_reader )
 {
-	TUTTLE_COUT( "******** PROCESS READER DPX ********" );
+	TUTTLE_COUT( "******** PROCESS READER " << pluginName << " ********" );
 	Graph g;
 
-	TUTTLE_COUT( "--> PLUGINS CREATION" );
-	Graph::Node& read = g.createNode( "tuttle.dpxreader" );
+	TUTTLE_COUT( "--> PLUGINS CREATION " );
+	Graph::Node& read = g.createNode( pluginName );
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
 
-	read.getParam( "filename" ).setValue( "data/file.dpx" );
+	std::string tuttleOFXData = "";
+	if( const char* env_ls_options = std::getenv("TUTTLE_TEST_DATA") )
+	{
+		tuttleOFXData = env_ls_options;
+	}
+	
+	std::string pluginFilename = tuttleOFXData + "image/" + filename;
+	read.getParam( "filename" ).setValue( pluginFilename );
 	
 	TUTTLE_COUT( "--> GRAPH PROCESSING" );
 	boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
@@ -58,18 +49,16 @@ BOOST_AUTO_TEST_CASE( process_reader )
 
 BOOST_AUTO_TEST_CASE( process_nofile )
 {
-	TUTTLE_COUT( "******** PROCESS READER DPX NO FILE ********" );
+	TUTTLE_COUT( "******** PROCESS READER " << pluginName << " NO FILE ********" );
 	Graph g;
 
 	TUTTLE_COUT( "--> PLUGINS CREATION" );
-	Graph::Node& read = g.createNode( "tuttle.dpxreader" );
+	Graph::Node& read = g.createNode( pluginName );
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
-	read.getParam( "filename" ).setValue( "data/no-such-file.dpx" );
+	std::string filename = "data/no-such-file";
+	read.getParam( "filename" ).setValue( filename );
 
 	TUTTLE_COUT( "---> GRAPH PROCESSING" );
 	BOOST_REQUIRE_THROW( g.compute( read ), boost::exception );
 }
-
-BOOST_AUTO_TEST_SUITE_END()
-
