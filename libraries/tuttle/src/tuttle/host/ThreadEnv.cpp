@@ -9,6 +9,7 @@ namespace host {
 void ThreadEnv::runProcessFunc( ThreadEnv* threadEnv, Graph* graph, const std::list<std::string>& nodes, const ComputeOptions* const options )
 {
 	threadEnv->setResult( graph->compute( nodes, *options ) );
+	threadEnv->getSignalEnd()();
 }
 
 void ThreadEnv::compute( Graph& graph, const NodeListArg& nodes )

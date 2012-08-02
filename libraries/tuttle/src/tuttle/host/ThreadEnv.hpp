@@ -11,6 +11,8 @@
 #include <boost/atomic.hpp>
 #include <boost/bind.hpp>
 
+#include <boost/signals2.hpp>
+
 
 namespace tuttle {
 namespace host {
@@ -21,6 +23,7 @@ class ThreadEnv
 {
 public:
 	typedef ThreadEnv This;
+	typedef boost::signals2::signal<void ()> SignalType;
 	
 	ThreadEnv( const bool asynchronous = true )
 	: _asynchronous( asynchronous )
@@ -53,6 +56,7 @@ public:
 	
 	bool getResult() const { return _result.load( boost::memory_order_relaxed ); }
 	
+	SignalType& getSignalEnd() { return _signalEnd; }
 	/// @}
 	
 private:
@@ -62,11 +66,15 @@ private:
 	
 private:
 	boost::thread _thread;
+	
+	
 	bool _asynchronous;
 	memory::MemoryCache _memoryCache;
 	ComputeOptions _options;
 	
 	boost::atomic_bool _result;
+	
+	SignalType _signalEnd;
 };
 
 }
