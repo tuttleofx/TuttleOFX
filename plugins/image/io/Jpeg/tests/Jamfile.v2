@@ -17,15 +17,11 @@ alias dependencies
 		/boost//unit_test_framework
 		/boost//python
 		/tuttlehost
+		/tuttletest
 		/python
 	;
 
 run
-		write.cpp
-		dependencies
-	;
-	
-run
-		read.cpp
+		main.cpp
 		dependencies
 	;

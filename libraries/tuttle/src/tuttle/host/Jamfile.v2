@@ -12,7 +12,7 @@ lib tuttlehost :
 		/boost//program_options/<link>static
 
 		/boost//python/<link>shared
-
+		/boost_atomic/<link>static
 	:
 		<os>NT:<find-shared-library>shell32
 		<os>LINUX:<find-shared-library>dl

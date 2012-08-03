@@ -33,9 +33,8 @@ private:
 	Core();
 	~Core();
 
-	#ifndef SWIG
-
 private:
+#ifndef SWIG
 	Host _host;
 	ofx::imageEffect::OfxhImageEffectPluginCache _imageEffectPluginCache;
 	ofx::OfxhPluginCache _pluginCache;
@@ -43,18 +42,20 @@ private:
 	memory::IMemoryCache& _memoryCache;
 	
 	Preferences _preferences;
+#endif
 
 public:
 	      ofx::OfxhPluginCache& getPluginCache()       { return _pluginCache; }
 	const ofx::OfxhPluginCache& getPluginCache() const { return _pluginCache; }
+#ifndef SWIG
 	const Host&                 getHost() const        { return _host; }
-	#endif
+#endif
 	      Preferences& getPreferences()       { return _preferences; }
 	const Preferences& getPreferences() const { return _preferences; }
 
 public:
 	const ofx::imageEffect::OfxhImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
-	#ifndef SWIG
+#ifndef SWIG
 	memory::IMemoryPool&        getMemoryPool()        { return _memoryPool; }
 	const memory::IMemoryPool&  getMemoryPool() const  { return _memoryPool; }
 	memory::IMemoryCache&       getMemoryCache()       { return _memoryCache; }
@@ -66,7 +67,7 @@ public:
 		return _imageEffectPluginCache.getPluginById( id, vermaj, vermin );
 	}
 
-	#endif
+#endif
 
 public:
 	void preload( const bool useCache = true );

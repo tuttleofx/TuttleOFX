@@ -314,6 +314,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 			{
 				TUTTLE_COUT( tuttle::common::kColorRed << "PROCESS ABORTED at time " << time << "." << tuttle::common::kColorStd );
 				endSequenceRender( procOptions );
+				Core::instance().getMemoryCache().clearUnused();
 				return false;
 			}
 			
@@ -541,6 +542,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
+					Core::instance().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
@@ -557,6 +559,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
+					Core::instance().getMemoryCache().clearUnused();
 					throw;
 				}
 			}

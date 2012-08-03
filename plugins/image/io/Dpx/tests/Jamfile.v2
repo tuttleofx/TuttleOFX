@@ -20,12 +20,7 @@ alias dependencies
 		/python
 	;
 
-#run
-#		read.cpp
-#		dependencies
-#	;
-
 run
-		write.cpp
+		main.cpp
 		dependencies
 	;

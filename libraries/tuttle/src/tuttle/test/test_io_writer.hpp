@@ -1,38 +1,30 @@
-#include <boost/test/unit_test.hpp>
-
-#include <tuttle/host/Graph.hpp>
-#include <tuttle/host/InputBufferNode.hpp>
-
-#include <boost/preprocessor/stringize.hpp>
-
-#include <boost/timer.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include <iostream>
-
-/**
- * Simple functional test, to read and write an image.
- */
 
 using namespace boost::unit_test;
 using namespace tuttle::host;
 
-BOOST_AUTO_TEST_SUITE( plugin_OIIO_writer )
-
-BOOST_AUTO_TEST_CASE( process_reader )
+BOOST_AUTO_TEST_CASE( process_writer )
 {
-	TUTTLE_COUT( "******** PROCESS WRITER OIIO ********" );
-
+	TUTTLE_COUT( "******** PROCESS WRITER " << pluginName << " ********" );
 	Graph g;
 
 	TUTTLE_COUT( "-------- PLUGINS CREATION --------" );
 	Graph::Node& constant = g.createNode( "tuttle.constant" );
-	Graph::Node& writer   = g.createNode( "tuttle.oiiowriter" );
+	Graph::Node& writer   = g.createNode( pluginName );
 
 	TUTTLE_COUT( "-------- PLUGINS CONFIGURATION --------" );
 
 	constant.getParam( "width" ).setValue( 500 );
-	writer.getParam( "filename" ).setValue( "data/file.jpg" );
+	constant.getParam( "height" ).setValue( 500 );
+	
+	std::string tuttleOFXData = "";
+	if( const char* env_ls_options = std::getenv("TUTTLE_TEST_DATA") )
+	{
+		tuttleOFXData = env_ls_options;
+	}
+	
+	std::string pluginFilename = tuttleOFXData + ".image/" + filename;
+	writer.getParam( "filename" ).setValue( pluginFilename );
 
 	TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
 	g.connect( constant, writer );
@@ -52,30 +44,28 @@ BOOST_AUTO_TEST_CASE( process_reader )
 	TUTTLE_TCOUT_VAR( imgRes->getROD() );
 	BOOST_CHECK_EQUAL( imgRes->getROD().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getROD().y1, 0 );
-	BOOST_CHECK_NE( imgRes->getROD().x2, 0 );
-	BOOST_CHECK_NE( imgRes->getROD().y2, 0 );
+	BOOST_CHECK_EQUAL( imgRes->getROD().x2, 500 );
+	BOOST_CHECK_EQUAL( imgRes->getROD().y2, 500 );
 
 	TUTTLE_TCOUT_VAR( imgRes->getBounds() );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().y1, 0 );
-	BOOST_CHECK_NE( imgRes->getBounds().x2, 0 );
-	BOOST_CHECK_NE( imgRes->getBounds().y2, 0 );
+	BOOST_CHECK_EQUAL( imgRes->getBounds().x2, 500 );
+	BOOST_CHECK_EQUAL( imgRes->getBounds().y2, 500 );
 }
 
-BOOST_AUTO_TEST_CASE( process_nofile )
+BOOST_AUTO_TEST_CASE( process_unconnected )
 {
-	TUTTLE_COUT( "******** PROCESS WRITER OIIO NO FILE ********" );
+	TUTTLE_COUT( "******** PROCESS WRITER " << pluginName << " UNCONNECTED ********" );
 	Graph g;
 
 	TUTTLE_COUT( "--> PLUGINS CREATION" );
-	Graph::Node& read = g.createNode( "tuttle.oiiowriter" );
+	Graph::Node& write = g.createNode( pluginName );
 
 	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
-	read.getParam( "filename" ).setValue( "data/no-such-file.jpg" );
+	std::string filename = "data/no-such-file";
+	write.getParam( "filename" ).setValue( filename );
 
 	TUTTLE_COUT( "---> GRAPH PROCESSING" );
-	BOOST_REQUIRE_THROW( g.compute( read ), boost::exception );
+	BOOST_REQUIRE_THROW( g.compute( write ), boost::exception );
 }
-
-BOOST_AUTO_TEST_SUITE_END()
-

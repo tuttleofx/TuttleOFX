@@ -17,7 +17,7 @@ lib IlmThread
 		IlmThreadMutex.cpp
 		IlmThreadPool.cpp
 		IlmThreadSemaphore.cpp
-		$(plateformFiles)
+		plateformFiles
 		../Iex//Iex
 	:
 		<link>static

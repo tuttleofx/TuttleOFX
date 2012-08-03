@@ -87,6 +87,8 @@ project
 		<define>BOOST_ALL_NO_LIB
 		#disable detailed boost exception
 		<define>BOOST_EXCEPTION_DISABLE
+		<toolset>gcc:<cxxflags>-isystem$(3RD_PARTY) # will prevent warnings within 3rdParty
+		<toolset>clang:<cxxflags>-isystem$(3RD_PARTY) # will prevent warnings within 3rdParty
 
 		#<variant>release:<warnings-as-errors>on
 		<variant>release:<define>TUTTLE_PRODUCTION
@@ -137,9 +139,10 @@ project
 ##############################################################################
 # libraries
 ##############################################################################
-use-project     /boost      : $(BOOST_LIBS) ;
-use-project     /boostHack  : $(BOOST_HACK) ;
-use-project     /terry      : $(TERRY) ;
+use-project     /boost        : $(BOOST_LIBS) ;
+use-project     /boost_atomic : $(3RD_PARTY)/boost_atomic ;
+use-project     /boostHack    : $(BOOST_HACK) ;
+use-project     /terry        : $(TERRY) ;
 
 ##############################################################################
 # Main targets
