@@ -313,6 +313,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 			if( options.getAbort() )
 			{
 				endSequenceRender( procOptions );
+				Core::instance().getMemoryCache().clearUnused();
 				return;
 			}
 			
@@ -540,6 +541,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
+					Core::instance().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
@@ -556,6 +558,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
+					Core::instance().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
