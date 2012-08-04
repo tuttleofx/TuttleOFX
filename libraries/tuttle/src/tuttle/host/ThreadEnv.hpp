@@ -28,7 +28,9 @@ public:
 	ThreadEnv( const bool asynchronous = true )
 	: _asynchronous( asynchronous )
 	, _result(false)
-	{}
+	{
+		_options.setReturnBuffers(false);
+	}
 	
 	ComputeOptions& getComputeOptions() { return _options; }
 	const ComputeOptions& getComputeOptions() const { return _options; }
