@@ -59,7 +59,7 @@ std::ostream& ProcessVertex::exportDotDebug( std::ostream& os ) const
 				s << subDotEntry( "startFrame", startFrame );
 				s << subDotEntry( "endFrame", endFrame );
 			}
-			s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
+			s << subDotEntry( "fps", ibNode->getOutputClip().getFrameRate() );
 		}
 	}
 	s << subDotEntry( "timeDomain", ( boost::format("[%1%:%2%]") % _data._timeDomain.min % _data._timeDomain.max ).str() );
