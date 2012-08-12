@@ -98,8 +98,8 @@ public:
 	virtual attribute::ClipImage&       getClip( const std::string& name, const bool acceptPartialName = false ) = 0;
 	virtual const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const = 0;
 
-	attribute::ClipImage&       getOutputClip()       { return getClip( kOfxOutputAttributeName ); }
-	const attribute::ClipImage& getOutputClip() const { return getClip( kOfxOutputAttributeName ); }
+	attribute::ClipImage&       getOutputClip()       { return getClip( kOfxImageEffectOutputClipName ); }
+	const attribute::ClipImage& getOutputClip() const { return getClip( kOfxImageEffectOutputClipName ); }
 
 	virtual ofx::attribute::OfxhParamSet& getParamSet() = 0;
 	virtual const ofx::attribute::OfxhParamSet& getParamSet() const = 0;

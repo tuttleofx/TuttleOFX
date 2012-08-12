@@ -107,7 +107,13 @@ const std::string& ClipImage::getUnmappedComponents() const
 double ClipImage::getFrameRate() const
 {
 	if( isOutput() )
-		return getNode().asImageEffectNode().getFrameRate();
+		switch( getNode().getNodeType() )
+		{
+			case INode::eNodeTypeImageEffect:
+				return getNode().asImageEffectNode().getFrameRate();
+			default:
+				return 0.0;
+		}
 	else if( isConnected() )
 		return this->getConnectedClip().getFrameRate();
 	

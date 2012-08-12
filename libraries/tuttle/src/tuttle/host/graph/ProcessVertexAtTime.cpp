@@ -60,31 +60,40 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 	if( ! isFake() )
 	{
 		/// @todo remove this. Temporary solution
-		if( const ImageEffectNode* ieNode = dynamic_cast<const ImageEffectNode*>( & getProcessNode() ) )
+		switch( getProcessNode().getNodeType() )
 		{
-			s << subDotEntry( "bitdepth",  ieNode->getOutputClip().getBitDepthString()   );
-			s << subDotEntry( "component", ieNode->getOutputClip().getComponentsString() );
+			case INode::eNodeTypeImageEffect:
 			{
-				double startFrame, endFrame;
-				ieNode->getOutputClip().getFrameRange( startFrame, endFrame );
-				s << subDotEntry( "startFrame", startFrame );
-				s << subDotEntry( "endFrame", endFrame );
+				const ImageEffectNode* ieNode = dynamic_cast<const ImageEffectNode*>( & getProcessNode() );
+				s << subDotEntry( "bitdepth",  ieNode->getOutputClip().getBitDepthString()   );
+				s << subDotEntry( "component", ieNode->getOutputClip().getComponentsString() );
+				{
+					double startFrame, endFrame;
+					ieNode->getOutputClip().getFrameRange( startFrame, endFrame );
+					s << subDotEntry( "startFrame", startFrame );
+					s << subDotEntry( "endFrame", endFrame );
+				}
+				s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
+				s << subDotEntry( "output RoD", ieNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
+				break;
 			}
-			s << subDotEntry( "output RoD", ieNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
-			s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
-		}
-		else if( const InputBufferNode* ibNode = dynamic_cast<const InputBufferNode*>( & getProcessNode() ) )
-		{
-			s << subDotEntry( "bitdepth",  ibNode->getOutputClip().getBitDepthString()   );
-			s << subDotEntry( "component", ibNode->getOutputClip().getComponentsString() );
+			case INode::eNodeTypeBuffer:
 			{
-				double startFrame, endFrame;
-				ibNode->getOutputClip().getFrameRange( startFrame, endFrame );
-				s << subDotEntry( "startFrame", startFrame );
-				s << subDotEntry( "endFrame", endFrame );
+				const InputBufferNode* ibNode = dynamic_cast<const InputBufferNode*>( & getProcessNode() );
+				s << subDotEntry( "bitdepth",  ibNode->getOutputClip().getBitDepthString()   );
+				s << subDotEntry( "component", ibNode->getOutputClip().getComponentsString() );
+				{
+					double startFrame, endFrame;
+					ibNode->getOutputClip().getFrameRange( startFrame, endFrame );
+					s << subDotEntry( "startFrame", startFrame );
+					s << subDotEntry( "endFrame", endFrame );
+				}
+				s << subDotEntry( "fps", ibNode->getOutputClip().getFrameRate() );
+				s << subDotEntry( "output RoD", ibNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
+				break;
 			}
-			s << subDotEntry( "output RoD", ibNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
-			s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
+			default:
+				break;
 		}
 	}
 	s << subDotEntry( "timeDomain", ( boost::format("[%1%:%2%]") % _data._nodeData->_timeDomain.min % _data._nodeData->_timeDomain.max ).str() );
