@@ -154,8 +154,8 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderG
 		vData._outDegree  = renderGraphAtTime.getInDegree( vd ) - vData._isFinalNode;
 		vData._inDegree = renderGraphAtTime.getOutDegree( vd );
 
-		vData._outEdges.reserve( vData._outDegree );
 		vData._outEdges.clear();
+		vData._outEdges.reserve( vData._outDegree );
 		BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, renderGraphAtTime.getInEdges( vd ) )
 		{
 			TUTTLE_TCOUT( " - a" );
@@ -326,7 +326,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				
 				TUTTLE_TCOUT( "---------------------------------------- deploy time" );
 				graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, time );
-				renderGraph.depthFirstSearchReverse( deployTimeVisitor );
+				renderGraph.depthFirstVisit( deployTimeVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 		#ifndef TUTTLE_PRODUCTION
 				graph::exportDebugAsDOT( "graphProcess_b.dot", renderGraph );
 		#endif

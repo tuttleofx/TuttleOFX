@@ -124,11 +124,10 @@ double ClipImage::getFrameRate() const
 // Frame Range (startFrame, endFrame) -
 //
 //  The frame range over which a clip has images.
-
-void ClipImage::getFrameRange( double& startFrame, double& endFrame ) const
+void ClipImage::setFrameRange( const double startFrame, const double endFrame )
 {
-	startFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
-	endFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropFrameRange, startFrame, 0 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropFrameRange, endFrame, 1 );
 }
 
 /**
@@ -144,11 +143,10 @@ const double ClipImage::getUnmappedFrameRate() const
 //
 //  The unmaped frame range over which an output clip has images.
 // this is applicable only to hosts and plugins that allow a plugin to change frame rates
-
-void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const
+void ClipImage::setUnmappedFrameRange( const double unmappedStartFrame, const double unmappedEndFrame )
 {
-	unmappedStartFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 0 );
-	unmappedEndFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 1 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, unmappedStartFrame, 0 );
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, unmappedEndFrame, 1 );
 }
 
 /// override this to fill in the image at the given time.
@@ -159,6 +157,10 @@ void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmap
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
 tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime time, const OfxRectD* optionalBounds )
 {
+	TUTTLE_TCOUT_INFOS;
+//	const OfxTime realTime = isConnected() ? getNode().mapInputTime( time ) : time;
+	const OfxTime realTime = time;
+	
 	OfxRectD bounds;
 
 	if( optionalBounds )
@@ -172,16 +174,21 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		//		TUTTLE_TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
 	}
 	else
-		bounds = fetchRegionOfDefinition( time );
-
+	{
+		TUTTLE_TCOUT_INFOS;
+		bounds = fetchRegionOfDefinition( realTime );
+	}
+	
+	TUTTLE_TCOUT_INFOS;
 	//	TUTTLE_TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
-	boost::shared_ptr<Image> image = _memoryCache.get( getClipIdentifier(), time );
+	boost::shared_ptr<Image> image = _memoryCache.get( getClipIdentifier(), realTime );
 	//	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds...
 	/// if bounds != cache buffer bounds:
 	///  * bounds < cache buffer: use rowSize to adjust, and modify pointer
 	///  * bounds > cache buffer: recompute / exception ?
 
+	TUTTLE_TCOUT_INFOS;
 	return image.get();
 }
 

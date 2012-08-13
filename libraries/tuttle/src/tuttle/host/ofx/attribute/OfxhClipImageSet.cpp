@@ -26,7 +26,7 @@ void OfxhClipImageSet::initMapFromList()
 	     it != itEnd;
 	     ++it )
 	{
-		_clips[it->getName()] = &( *it );
+		_clipImages[it->getName()] = &( *it );
 	}
 }
 
@@ -80,22 +80,22 @@ void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDesc
 			    << exception::dev( "Error on ClipImage creation." ) );
 
 		_clipsByOrder.push_back( instance );
-		_clips[name] = instance;
+		_clipImages[name] = instance;
 	}
 }
 
 OfxhClipImage& OfxhClipImageSet::getClip( const std::string& name, const bool acceptPartialName )
 {
-	ClipImageMap::const_iterator it = _clips.find( name );
+	ClipImageMap::const_iterator it = _clipImages.find( name );
 
-	if( it != _clips.end() )
+	if( it != _clipImages.end() )
 		return *it->second;
 
 	std::vector<std::string> matches;
 	OfxhClipImage* res = NULL;
 	if( acceptPartialName )
 	{
-		BOOST_FOREACH( ClipImageMap::value_type& p, _clips )
+		BOOST_FOREACH( ClipImageMap::value_type& p, _clipImages )
 		{
 			if( boost::algorithm::starts_with( p.first, name ) )
 			{
@@ -116,7 +116,7 @@ OfxhClipImage& OfxhClipImageSet::getClip( const std::string& name, const bool ac
 		std::ostringstream ss;
 		ss << "Clip not found (" << name << ").\n";
 		ss << "List of existing clips [";
-		BOOST_FOREACH( const ClipImageMap::value_type& c, _clips )
+		BOOST_FOREACH( const ClipImageMap::value_type& c, _clipImages )
 		{
 			ss << "(\"" << c.first << "\":\"" << c.second->getClipIdentifier() << "\"), ";
 		}
