@@ -17,13 +17,13 @@ using namespace tuttle::host;
 BOOST_AUTO_TEST_SUITE( plugin_TurboJpeg_reader )
 std::string pluginName = "tuttle.turbojpegreader";
 std::string filename = "jpeg/BLU.JPG";
-#include <tuttle/test/test_io_reader.hpp>
+#include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
 
 BOOST_AUTO_TEST_SUITE( plugin_TurboJpeg_writer )
 std::string pluginName = "tuttle.turbojpegwriter";
 std::string filename = "test-jpeg.jpg";
-#include <tuttle/test/test_io_writer.hpp>
+#include <tuttle/test/io/writer.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 

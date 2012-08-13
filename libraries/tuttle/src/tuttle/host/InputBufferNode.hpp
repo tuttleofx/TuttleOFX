@@ -258,10 +258,12 @@ public:
 
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
+		TUTTLE_TCOUT_INFOS;
 		return getData(time)._apiImageEffect._renderRoD;
 	}
 
-	void getTimeDomain( OfxRangeD& range ) const { range.min=kOfxFlagInfiniteMin; range.max=kOfxFlagInfiniteMax; }
+	OfxRangeD computeTimeDomain() { return computeTimeDomain(); }
+	OfxRangeD getTimeDomain() const { OfxRangeD range; range.min=kOfxFlagInfiniteMin; range.max=kOfxFlagInfiniteMax; return range; }
 
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.

@@ -15,5 +15,7 @@ namespace std {
 %template(NodePtrList) list<tuttle::host::INode*>;
 }
 
+%implicitconv tuttle::host::NodeListArg;
+
 %include <tuttle/host/NodeListArg.hpp>
 

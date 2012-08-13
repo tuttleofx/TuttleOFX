@@ -27,7 +27,7 @@ public:
 	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
 
 protected:
-	ClipImageMap _clips; ///< clips by name
+	ClipImageMap _clipImages; ///< clips by name
 	ClipImageVector _clipsByOrder; ///< clips list
 	bool _clipPrefsDirty; ///< do we need to re-run the clip prefs action
 
@@ -52,12 +52,12 @@ public:
 
 	const ClipImageMap& getClips() const
 	{
-		return _clips;
+		return _clipImages;
 	}
 
 	ClipImageMap& getClips()
 	{
-		return _clips;
+		return _clipImages;
 	}
 
 	const ClipImageVector& getClipsByOrder() const
@@ -90,9 +90,9 @@ public:
 	 */
 	void addClip( const std::string& name, OfxhClipImage* instance ) OFX_EXCEPTION_SPEC
 	{
-		if( _clips.find( name ) != _clips.end() )
+		if( _clipImages.find( name ) != _clipImages.end() )
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists ) );
-		_clips[name] = instance;
+		_clipImages[name] = instance;
 		_clipsByOrder.push_back( instance );
 	}
 
@@ -116,7 +116,7 @@ public:
 	 */
 	int getNClips() const
 	{
-		return int(_clips.size() );
+		return int(_clipImages.size() );
 	}
 
 	/**

@@ -31,7 +31,7 @@ protected:
 	bool _continuousSamples;
 	memory::IMemoryCache& _memoryCache;
 
-	const ClipImage* _connectedClip; ///< @warning HACK ! to force connection (only for test) @todo remove this !!!!
+	const ClipImage* _connectedClip; ///< @warning HACK ! to keep the connection @todo remove this !!!!
 
 public:
 	ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescriptor& desc );
@@ -48,7 +48,7 @@ public:
 
 	const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
 
-	/// @warning HACK ! to force connection (only for test)
+	/// @warning HACK ! to keep the connection
 	/// @todo remove this !!!!
 	void setConnectedClip( const ClipImage& other )
 	{
@@ -170,7 +170,7 @@ public:
 	 * @brief Frame Range (startFrame, endFrame)
 	 * The frame range over which a clip has images.
 	 */
-	void getFrameRange( double& startFrame, double& endFrame ) const;
+	void setFrameRange( const double startFrame, const double endFrame );
 
 	/**
 	 * @brief Unmapped Frame Rate
@@ -181,7 +181,7 @@ public:
 	 * @brief Unmapped Frame Range -
 	 * The unmaped frame range over which an output clip has images.
 	 */
-	void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const;
+	void setUnmappedFrameRange( const double unmappedStartFrame, const double unmappedEndFrame );
 
 	/**
 	 * @brief override this to fill in the image at the given time.

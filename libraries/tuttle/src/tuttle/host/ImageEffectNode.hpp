@@ -112,12 +112,17 @@ public:
 	{
 		return getData(time)._apiImageEffect._renderRoD;
 	}
+	
+	OfxRangeD getTimeDomain() const
+	{
+		return getData()._timeDomain;
+	}
 
 	void debugOutputImage( const OfxTime time ) const;
 
 	/// @group Implementation of INode virtual functions
 	/// @{
-	void getTimeDomain( OfxRangeD& range ) const;
+	OfxRangeD computeTimeDomain();
 
 	void beginSequence( graph::ProcessVertexData& vData );
 
