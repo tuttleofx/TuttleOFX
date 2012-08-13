@@ -140,7 +140,7 @@ OfxhImage::~OfxhImage()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( eReferenceOwnerHost )
 		<< ", ref plugins:" << getReferenceCount( eReferenceOwnerPlugin ) );
-	BOOST_ASSERT( getReferenceCount(eReferenceOwnerHost) == 1 );
+	BOOST_ASSERT( getReferenceCount(eReferenceOwnerHost) == 0 );
 }
 
 /// called during ctor to get bits from the clip props into ours
