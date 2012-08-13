@@ -17,12 +17,12 @@ using namespace tuttle::host;
 BOOST_AUTO_TEST_SUITE( plugin_Dpx_reader )
 std::string pluginName = "tuttle.dpxreader";
 std::string filename = "dpx/flowers-1920x1080-RGB-10.dpx";
-//#include <tuttle/test/test_io_reader.hpp>
+//#include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
 
 BOOST_AUTO_TEST_SUITE( plugin_Dpx_writer )
 std::string pluginName = "tuttle.dpxwriter";
 std::string filename = "test-png.png";
-#include <tuttle/test/test_io_writer.hpp>
+#include <tuttle/test/io/writer.hpp>
 BOOST_AUTO_TEST_SUITE_END()
