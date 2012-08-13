@@ -17,6 +17,8 @@ namespace std {
 %template(NodePtrList) list<tuttle::host::Graph::Node*>;
 }
 
+%implicitconv tuttle::host::NodeListArg;
+
 // rename the original "connect" function to reimplement it in python
 %rename(private_connect) connect;
 
