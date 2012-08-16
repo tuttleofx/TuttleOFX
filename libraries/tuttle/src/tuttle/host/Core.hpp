@@ -34,7 +34,6 @@ private:
 	~Core();
 
 private:
-#ifndef SWIG
 	Host _host;
 	ofx::imageEffect::OfxhImageEffectPluginCache _imageEffectPluginCache;
 	ofx::OfxhPluginCache _pluginCache;
@@ -42,14 +41,15 @@ private:
 	memory::IMemoryCache& _memoryCache;
 	
 	Preferences _preferences;
-#endif
 
 public:
 	      ofx::OfxhPluginCache& getPluginCache()       { return _pluginCache; }
 	const ofx::OfxhPluginCache& getPluginCache() const { return _pluginCache; }
-#ifndef SWIG
+	
+	const std::list<ofx::OfxhPlugin*>& getPlugins() const { return getPluginCache().getPlugins(); }
+
 	const Host&                 getHost() const        { return _host; }
-#endif
+
 	      Preferences& getPreferences()       { return _preferences; }
 	const Preferences& getPreferences() const { return _preferences; }
 

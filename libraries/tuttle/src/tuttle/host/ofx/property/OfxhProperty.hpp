@@ -173,7 +173,7 @@ public:
 	{
 		return _type;
 	}
-
+#ifndef SWIG
 	/// add a notify hook
 	void addNotifyHook( OfxhNotifyHook* hook )
 	{
@@ -185,9 +185,9 @@ public:
 	{
 		_getHook = hook;
 	}
-
 	/// call notify on the contained notify hooks
 	void notify( bool single, int indexOrN );
+#endif
 
 	// get the current dimension of this property
 	virtual std::size_t getDimension() const = 0;

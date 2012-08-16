@@ -3,12 +3,5 @@ from pyTuttle import tuttle
 core = tuttle.Core.instance()
 core.preload()
 
-pluginCache = core.getPluginCache()
-print pluginCache
-
-# TODO
-#pluginsPaths = pluginCache.getPluginPath()
-#print pluginsPaths
-
-#plugins = pluginCache.getPlugins()
-#print plugins
+print [p for p in core.getPluginCache().getPluginPath()]
+print [p.getIdentifier() for p in core.getPluginCache().getPlugins()]

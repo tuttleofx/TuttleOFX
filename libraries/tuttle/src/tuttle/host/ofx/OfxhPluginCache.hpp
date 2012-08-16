@@ -161,6 +161,7 @@ public:
 	}
 	#endif
 
+public:
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
 	/// pick the highest found version.
 	OfxhPlugin*       getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
@@ -220,9 +221,6 @@ public:
 
 	/// scan for plugins
 	void scanPluginFiles();
-
-	// write the plugin cache output file to the given stream
-	void writePluginCache( std::ostream& os ) const;
 
 	/// register an API cache handler
 	void registerAPICache( APICache::OfxhPluginAPICacheI& apiCache )
