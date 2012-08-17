@@ -269,7 +269,7 @@ bool Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
 	realOptions.setReturnBuffers( false );
 	
 	memory::MemoryCache emptyMemoryCache;
-	return privateCompute( emptyMemoryCache, nodes, options );
+	return privateCompute( emptyMemoryCache, nodes, realOptions );
 }
 
 bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
