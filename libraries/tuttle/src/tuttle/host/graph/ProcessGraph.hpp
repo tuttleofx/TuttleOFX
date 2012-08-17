@@ -58,7 +58,7 @@ private:
 	void endSequenceRender( ProcessVertexData& procOptions );
 
 public:
-	void process( memory::MemoryCache& result, const ComputeOptions& options );
+	bool process( memory::MemoryCache& result, const ComputeOptions& options );
 
 private:
 	InternalGraphImpl _graph;

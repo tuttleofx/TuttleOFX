@@ -1,0 +1,29 @@
+###############################################################################
+## Tests for Tuttle library
+###############################################################################
+import testing ;
+
+###############################################################################
+# compile the test and run it
+###############################################################################
+
+project 
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
+
+alias dependencies
+	: 
+		/boost//unit_test_framework
+		/boost//python
+		/tuttlehost
+		/python
+	:
+		<os>LINUX:<find-shared-library>dl
+	; 
+
+run
+		main.cpp
+		dependencies
+	;
