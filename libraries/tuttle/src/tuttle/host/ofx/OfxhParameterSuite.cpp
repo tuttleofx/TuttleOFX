@@ -473,12 +473,15 @@ OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
 {
 	try
 	{
+		if( index == NULL )
+			return kOfxStatErrBadHandle;
+		
 		attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
-		if( !pInstance || !pInstance->verifyMagic() )
+		if( pInstance == NULL || !pInstance->verifyMagic() )
 			return kOfxStatErrBadHandle;
 
 		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
-		if( !paramInstance )
+		if( paramInstance == NULL )
 			return kOfxStatErrBadHandle;
 
 		paramInstance->getKeyIndex( time, direction, *index );
