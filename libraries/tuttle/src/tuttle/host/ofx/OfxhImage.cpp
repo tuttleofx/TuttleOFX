@@ -234,7 +234,7 @@ int OfxhImage::getReferenceCount( const EReferenceOwner from ) const
 
 void OfxhImage::addReference( const EReferenceOwner from, const std::size_t n )
 {
-	const std::ptrdiff_t refC = _referenceCount[from] = getReferenceCount(from) + 1;
+	const std::ptrdiff_t refC = _referenceCount[from] = getReferenceCount(from) + n;
 	TUTTLE_TCOUT( "+"<<n<<"  Image::addReference, id:" << getId() << ", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << refC );
 }
 
