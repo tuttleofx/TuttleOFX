@@ -4,6 +4,8 @@
 #include "Param.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhParamDouble.hpp>
+#include <tuttle/host/attribute/ValueInterpolator.hpp>
+
 
 namespace tuttle {
 namespace host {
@@ -13,10 +15,22 @@ class ParamDouble : public Param
 	, public ofx::attribute::OfxhParamDouble
 {
 protected:
-	double _value;
+  double _value;
+
+  /* An unordered list of key frames. Used when this param is
+     animated.  If we expected a lot of key frames, a sorted container
+     might be more efficient. */
+  std::vector< TimeValue<double> > _key_frames;
+
+  /* The class that interpolates key frames when animating this param
+     All transitions are animated with the same interpolator. A more
+     advanced version of this class might allow any of the interpolators
+     in ValueInterpolator.hpp to be used between any adjacent key frames. */
+  Interpolator<double> *_interpolator;
 
 public:
 	ParamDouble( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor, const std::size_t index = 0 );
+        ~ParamDouble();
 	ParamDouble* clone() const { return new ParamDouble( *this ); }
 
 	double getDefault() const;
