@@ -22,7 +22,7 @@ void FadePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"TuttleFade",
 		"Fade",
 		"Fade" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/transition" );
 
 	desc.setDescription( "Plugin under early development." );
 
