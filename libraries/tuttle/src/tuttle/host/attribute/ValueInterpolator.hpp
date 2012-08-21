@@ -3,20 +3,32 @@
 
 /* Helper classes for animated parameters */
 
-#include <vector>
-
 #include <ofxCore.h>
 
 namespace tuttle {
 namespace host {
 namespace attribute {
 
+/* Specify the type of interpolator to use */
+enum EInterpolatorType
+{
+  eLinearInterpolator,
+  eSmoothInterpolator,
+  eFastInterpolator,
+  eSlowInterpolator,
+};
+
   /* A "key frame" for an animated param */
 template<typename T>
-struct TimeValue
+class TimeValue
 {
+public:
         OfxTime time;
         T value;
+
+        bool operator<(const TimeValue<T> &t) const {
+           return time < t.time;
+        }
 };
 
   /* An Interpolator determines the shape of the curve between key frames in an animation */
@@ -32,7 +44,7 @@ public:
 
 
   /* Reduces interpolation to a value between 0 and 1 */
-  /* Override with a custom interpolate() function to provide different behaviors.*/
+  /* Extend with a custom interpolate() function to provide different behaviors.*/
 template<typename T>
 class GenericInterpolator : public Interpolator<T>
 {
