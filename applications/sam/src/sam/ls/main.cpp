@@ -53,7 +53,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 
-	sequenceParser::EMaskType                 researchMask        = sequenceParser::eMaskTypeSequence;  // by default show sequences
+	sequenceParser::EMaskType                 researchMask        = sequenceParser::eMaskTypeDirectory | sequenceParser::eMaskTypeFile | sequenceParser::eMaskTypeSequence ; // by default show directories, files and sequences
 	sequenceParser::EMaskOptions              descriptionMask     = sequenceParser::eMaskOptionsNone;   // by default show nothing
 	bool                                      recursiveListing    = false;
 	bool                                      script              = false;
@@ -72,10 +72,10 @@ int main( int argc, char** argv )
 		(kFilesOptionString          , kFilesOptionMessage )
 		(kHelpOptionString           , kHelpOptionMessage)
 		(kLongListingOptionString   , kLongListingOptionMessage)
-		(kIgnoreOptionString           , kIgnoreOptionMessage)
 		(kRelativePathOptionString  , kRelativePathOptionMessage)
 		(kRecursiveOptionString      , kRecursiveOptionMessage)
 		(kPathOptionString    , kPathOptionMessage)
+		(kSequencesOptionString           , kSequencesOptionMessage)
 		(kColorOptionString            , kColorOptionMessage)
 		(kFullDisplayOptionString     , kFullDisplayOptionMessage )
 		(kScriptOptionString           , kScriptOptionMessage)
@@ -183,19 +183,24 @@ int main( int argc, char** argv )
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if (vm.count(kDirectoriesOptionLongName))
+	if( vm.count(kDirectoriesOptionLongName ) | vm.count(kFilesOptionLongName) | vm.count(kSequencesOptionLongName) )
+	{
+		researchMask &= ~sequenceParser::eMaskTypeDirectory;
+		researchMask &= ~sequenceParser::eMaskTypeFile;
+		researchMask &= ~sequenceParser::eMaskTypeSequence;
+	}
+		
+	if( vm.count(kDirectoriesOptionLongName ) )
 	{
 		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
-	
 	if (vm.count(kFilesOptionLongName))
 	{
 		researchMask |= sequenceParser::eMaskTypeFile;
 	}
-	
-	if (vm.count(kIgnoreOptionLongName))
+	if (vm.count(kSequencesOptionLongName))
 	{
-		researchMask &= ~sequenceParser::eMaskTypeSequence;
+		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
 	if (vm.count(kFullDisplayOptionLongName))
