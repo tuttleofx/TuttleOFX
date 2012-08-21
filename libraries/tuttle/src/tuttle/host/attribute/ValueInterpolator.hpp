@@ -9,15 +9,6 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-/* Specify the type of interpolator to use */
-enum EInterpolatorType
-{
-  eLinearInterpolator,
-  eSmoothInterpolator,
-  eFastInterpolator,
-  eSlowInterpolator,
-};
-
   /* A "key frame" for an animated param */
 template<typename T>
 class TimeValue

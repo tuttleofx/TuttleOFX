@@ -49,27 +49,24 @@ public:
     delete _interpolator;
   }
 
-  /* This interface isn't ideal because it requires casting the
-     OfxhParam to a ParamDouble or ParamInteger. However, I'm not sure
-     it's a sane idea to alter the OfxhParam base class. */
-void setInterpolator(const enum EInterpolatorType etype) {
-  delete _interpolator;
-  switch (etype) {
-  case eSmoothInterpolator:
-    _interpolator = new SmoothInterpolator<T>();
-    break;
-  case eFastInterpolator:
-    _interpolator = new FastInterpolator<T>();
-    break;
-  case eSlowInterpolator:
-    _interpolator = new SlowInterpolator<T>();
-    break;
-  case eLinearInterpolator:
-  default:
-    _interpolator = new LinearInterpolator<T>();
-    break;
+  void setInterpolator(const enum ofx::attribute::EInterpolatorType etype) OFX_EXCEPTION_SPEC {
+     delete _interpolator;
+    switch (etype) {
+    case ofx::attribute::eSmoothInterpolator:
+      _interpolator = new SmoothInterpolator<T>();
+      break;
+    case ofx::attribute::eFastInterpolator:
+      _interpolator = new FastInterpolator<T>();
+      break;
+    case ofx::attribute::eSlowInterpolator:
+      _interpolator = new SlowInterpolator<T>();
+      break;
+    case ofx::attribute::eLinearInterpolator:
+    default:
+      _interpolator = new LinearInterpolator<T>();
+      break;
+    }
   }
-}
 
 void getValue( T& v ) const OFX_EXCEPTION_SPEC
 {
