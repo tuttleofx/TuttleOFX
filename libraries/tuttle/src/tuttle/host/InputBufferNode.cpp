@@ -181,7 +181,7 @@ void InputBufferNode::process( graph::ProcessVertexAtTimeData& vData )
 	Core::instance().getMemoryCache().put( _outputClip.getClipIdentifier(), vData._time, _imageCache );
 	if( vData._outDegree > 0 )
 	{
-		_imageCache->addReference( vData._outDegree ); // add a reference on this node for each future usages
+		_imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a reference on this node for each future usages
 	}
 }
 

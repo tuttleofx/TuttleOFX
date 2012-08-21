@@ -145,7 +145,9 @@ private:
 }
 }
 
+#ifndef SWIG
 BOOST_SERIALIZATION_ASSUME_ABSTRACT( tuttle::host::ofx::OfxhPluginDesc )
+#endif
 
 #endif
 

@@ -154,8 +154,8 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderG
 		vData._outDegree  = renderGraphAtTime.getInDegree( vd ) - vData._isFinalNode;
 		vData._inDegree = renderGraphAtTime.getOutDegree( vd );
 
-		vData._outEdges.reserve( vData._outDegree );
 		vData._outEdges.clear();
+		vData._outEdges.reserve( vData._outDegree );
 		BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, renderGraphAtTime.getInEdges( vd ) )
 		{
 			TUTTLE_TCOUT( " - a" );
@@ -207,7 +207,7 @@ void ProcessGraph::endSequenceRender( ProcessVertexData& procOptions )
 	}
 }
 
-void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& options )
+bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& options )
 {
 	using namespace boost;
 	using namespace boost::graph;
@@ -312,8 +312,10 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 		{
 			if( options.getAbort() )
 			{
+				TUTTLE_COUT( tuttle::common::kColorRed << "PROCESS ABORTED at time " << time << "." << tuttle::common::kColorStd );
 				endSequenceRender( procOptions );
-				return;
+				Core::instance().getMemoryCache().clearUnused();
+				return false;
 			}
 			
 			try
@@ -325,7 +327,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				
 				TUTTLE_TCOUT( "---------------------------------------- deploy time" );
 				graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, time );
-				renderGraph.depthFirstSearchReverse( deployTimeVisitor );
+				renderGraph.depthFirstVisit( deployTimeVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 		#ifndef TUTTLE_PRODUCTION
 				graph::exportDebugAsDOT( "graphProcess_b.dot", renderGraph );
 		#endif
@@ -540,6 +542,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
+					Core::instance().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
@@ -556,6 +559,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
+					Core::instance().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
@@ -563,6 +567,7 @@ void ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 		
 		endSequenceRender( procOptions );
 	}
+	return true;
 }
 
 }

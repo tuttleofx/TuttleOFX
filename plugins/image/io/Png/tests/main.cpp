@@ -17,12 +17,12 @@ using namespace tuttle::host;
 BOOST_AUTO_TEST_SUITE( plugin_Png_reader )
 std::string pluginName = "tuttle.pngreader";
 std::string filename = "png/Gradient-8bit.png";
-#include <tuttle/test/test_io_reader.hpp>
+#include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
 
 BOOST_AUTO_TEST_SUITE( plugin_Png_writer )
 std::string pluginName = "tuttle.pngwriter";
 std::string filename = "test-png.png";
-#include <tuttle/test/test_io_writer.hpp>
+#include <tuttle/test/io/writer.hpp>
 BOOST_AUTO_TEST_SUITE_END()

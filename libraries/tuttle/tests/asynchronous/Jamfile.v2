@@ -1,5 +1,5 @@
 ###############################################################################
-## Tests for Sam Command line tool
+## Tests for Tuttle library
 ###############################################################################
 import testing ;
 
@@ -8,12 +8,22 @@ import testing ;
 ###############################################################################
 
 project 
-    : requirements	<define>BOOST_TEST_MAIN
-    ;
-    
-alias dependencies
-    : 
-		/boost//unit_test_framework
-    ; 
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+	;
 
-run   main.cpp dependencies ;
+alias dependencies
+	: 
+		/boost//unit_test_framework
+		/boost//python
+		/tuttlehost
+		/python
+	:
+		<os>LINUX:<find-shared-library>dl
+	; 
+
+run
+		main.cpp
+		dependencies
+	;

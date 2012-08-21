@@ -65,6 +65,7 @@ public:
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
 	}
+	explicit
 	ComputeOptions( const ComputeOptions& options )
 	: _abort( false )
 	{
@@ -190,10 +191,9 @@ public:
 	/**
 	 * @brief The application would like to abort the process (from another thread).
 	 */
-	This& abort()
+	void abort()
 	{
 		_abort.store( true, boost::memory_order_relaxed );
-		return *this;
 	}
 	/**
 	 * @brief Has someone asked to abort the process?

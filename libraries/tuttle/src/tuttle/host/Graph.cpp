@@ -263,33 +263,28 @@ void Graph::init()
 //{}
 
 // shortcut
-void Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
+bool Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
 {
 	ComputeOptions realOptions( options );
 	realOptions.setReturnBuffers( false );
 	
 	memory::MemoryCache emptyMemoryCache;
-	privateCompute( emptyMemoryCache, nodes, options );
+	return privateCompute( emptyMemoryCache, nodes, realOptions );
 }
 
-void Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
+bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
 {
-	privateCompute( memoryCache, nodes, options );
+	return privateCompute( memoryCache, nodes, options );
 }
 
-void Graph::privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
+bool Graph::privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
 	graph::ProcessGraph process( *this, nodes.getNodes() );
-	process.process( memoryCache, options );
-}
-
-void Graph::privateStaticCompute( Graph& graph, memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
-{
-	graph.privateCompute( memoryCache, nodes, options );
+	return process.process( memoryCache, options );
 }
 
 std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )

@@ -7,17 +7,17 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-void OfxhKeyframeParam::getNumKeys( unsigned int& nKeys ) const OFX_EXCEPTION_SPEC
+void OfxhKeyframeParam::getNumKeys( unsigned int& outNumKeys ) const OFX_EXCEPTION_SPEC
 {
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
-void OfxhKeyframeParam::getKeyTime( int nth, OfxTime& time ) const OFX_EXCEPTION_SPEC
+void OfxhKeyframeParam::getKeyTime( const int nth, OfxTime& outTime ) const OFX_EXCEPTION_SPEC
 {
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
-void OfxhKeyframeParam::getKeyIndex( const OfxTime time, int direction, const std::size_t index ) const OFX_EXCEPTION_SPEC
+void OfxhKeyframeParam::getKeyIndex( const OfxTime time, const int direction, int& outIndex ) const OFX_EXCEPTION_SPEC
 {
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 }

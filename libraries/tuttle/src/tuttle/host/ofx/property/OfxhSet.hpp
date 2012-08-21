@@ -218,7 +218,7 @@ public:
 	{
 		return const_cast<OfxhSet*>( this )->fetchLocalTypedProperty<T>( name );
 	}
-
+#ifndef SWIG
 	const String& fetchStringProperty( const std::string& name ) const
 	{
 		return fetchTypedProperty<String>( name );
@@ -266,7 +266,8 @@ public:
 	}
 
 	const Double& fetchLocalDoubleProperty( const std::string& name ) const { return const_cast<OfxhSet*>( this )->fetchLocalDoubleProperty( name ); }
-
+#endif
+	
 	/// get a particular int property without fetching via a get hook, useful for notifies
 	int getIntPropertyRaw( const std::string& property, int index = 0 ) const;
 

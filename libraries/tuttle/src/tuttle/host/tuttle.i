@@ -7,5 +7,5 @@
 %include "InputBufferNode.i"
 %include "attribute/allParams.i"
 %include "Graph.i"
-
+%include "ThreadEnv.i"
 

@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	outputs.push_back( write4.getName() );
 	
 	TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
-//	BOOST_CHECK_NO_THROW( g.compute( outputs ) ); /// @todo error with merge
+//	BOOST_CHECK_NO_THROW( g.compute( outputs ) ); /// @todo Bug: error with merge
 
 	TUTTLE_COUT( "----------------- DONE -----------------" );
 }

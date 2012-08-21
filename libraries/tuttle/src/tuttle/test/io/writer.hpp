@@ -1,7 +1,10 @@
 #include <iostream>
 
+#include <boost/filesystem/path.hpp>
+
 using namespace boost::unit_test;
 using namespace tuttle::host;
+namespace bfs = boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( process_writer )
 {
@@ -17,13 +20,13 @@ BOOST_AUTO_TEST_CASE( process_writer )
 	constant.getParam( "width" ).setValue( 500 );
 	constant.getParam( "height" ).setValue( 500 );
 	
-	std::string tuttleOFXData = "";
-	if( const char* env_ls_options = std::getenv("TUTTLE_TEST_DATA") )
+	std::string tuttleOFXData = "TuttleOFX-data";
+	if( const char* env_test_data = std::getenv("TUTTLE_TEST_DATA") )
 	{
-		tuttleOFXData = env_ls_options;
+		tuttleOFXData = env_test_data;
 	}
 	
-	std::string pluginFilename = tuttleOFXData + ".image/" + filename;
+	const std::string pluginFilename = ( bfs::path(tuttleOFXData) / "image" / filename ).string();
 	writer.getParam( "filename" ).setValue( pluginFilename );
 
 	TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );

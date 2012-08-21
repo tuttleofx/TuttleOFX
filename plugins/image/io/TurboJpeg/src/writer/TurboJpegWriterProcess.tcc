@@ -17,6 +17,7 @@ TurboJpegWriterProcess<View>::TurboJpegWriterProcess( TurboJpegWriterPlugin &eff
 : ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
+	this->setNoMultiThreading();
 }
 
 template<class View>

@@ -112,7 +112,7 @@ OfxStatus clipGetImage( OfxImageClipHandle    h1,
 		return kOfxStatFailed;
 	}
 
-	image->addReference();
+	image->addReference( OfxhImage::eReferenceOwnerPlugin );
 	*h3 = image->getPropHandle(); // a pointer to the base class cast into OfxPropertySetHandle
 
 	return kOfxStatOK;
@@ -133,7 +133,7 @@ OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
 		return kOfxStatErrBadHandle;
 	}
 	// clip::image has a virtual destructor for derived classes
-	image->releaseReference();
+	image->releaseReference( OfxhImage::eReferenceOwnerPlugin );
 	return kOfxStatOK;
 }
 
