@@ -44,6 +44,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	av_register_all();
 
 	AVOutputFormat* fmt = av_oformat_next( NULL );
+	const AVOption *o = NULL;
 	while( fmt )
 	{
 		if( fmt->video_codec != CODEC_ID_NONE )
@@ -54,9 +55,20 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 				_formatsShortNames.push_back( std::string( fmt->name ) );
 			}
 		}
+		if (fmt->priv_class)
+		{
+			while ((o = av_next_option(&fmt->priv_class, o)))
+			{
+				AVPrivOption avprivopt;
+				avprivopt.o = *o;
+				avprivopt.class_name = std::string(fmt->name);
+				_formatPrivOpts.push_back(avprivopt);
+			}
+		}
 		fmt = av_oformat_next( fmt );
 	}
-
+	
+	o = NULL;
 	AVCodec* c = av_codec_next( NULL );
 	while( c )
 	{
@@ -72,6 +84,18 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 				_codecsShortNames.push_back( std::string( c->name ) );
 			}
 		}
+		
+		if (c->priv_class)
+		{
+			while ((o = av_next_option(&c->priv_class, o)))
+			{
+				AVPrivOption avprivopt;
+				avprivopt.o = *o;
+				avprivopt.class_name = std::string( c->name );
+				_codecPrivOpts.push_back(avprivopt);
+			}
+		}
+		
 		c = av_codec_next( c );
 	}
 }

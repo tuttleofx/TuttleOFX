@@ -11,6 +11,12 @@
 #include <string>
 #include <vector>
 
+typedef struct AVPrivOption
+{
+	AVOption    o;
+	std::string class_name;
+} AVPrivOption;
+
 class VideoFFmpegWriter : public FFmpeg, public FFmpegPreset
 {
 private:
@@ -157,6 +163,16 @@ public:
 		setCodec    ( reader.codecName() );
 	}
 
+	const std::vector<AVPrivOption>& getFormatPrivOpts() const
+	{
+		return _formatPrivOpts;
+	}
+	
+	const std::vector<AVPrivOption>& getCodecPrivOpts() const
+	{
+		return _codecPrivOpts;
+	}
+
 private:
 	AVFormatContext*               _avformatOptions;
 	struct SwsContext*             _sws_context;         ///< contexte de transformation swscale
@@ -167,6 +183,9 @@ private:
 	std::vector<std::string>       _formatsShortNames;
 	std::vector<std::string>       _codecsLongNames;
 	std::vector<std::string>       _codecsShortNames;
+
+	std::vector<AVPrivOption>      _formatPrivOpts;
+	std::vector<AVPrivOption>      _codecPrivOpts;
 
 	WriterError                    _error;
 	std::string                    _filename;

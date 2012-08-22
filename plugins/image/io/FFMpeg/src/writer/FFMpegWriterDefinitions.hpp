@@ -15,7 +15,9 @@ enum ETuttlePluginBitDepth
 };
 
 static const std::string kParamFormat                    = "format";
+static const std::string kParamGroupFormatParams         = "formatParams";
 static const std::string kParamCodec                     = "codec";
+static const std::string kParamGroupCodecParams          = "codecParams";
 static const std::string kParamBitrate                   = "bitrate";
 
 }

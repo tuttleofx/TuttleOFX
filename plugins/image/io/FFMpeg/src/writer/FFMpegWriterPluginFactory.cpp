@@ -9,6 +9,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/foreach.hpp>
 
 #include <string>
 #include <vector>
@@ -17,6 +18,71 @@ namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
 namespace writer {
+
+namespace {
+
+void declareAVPrivOptions( OFX::ImageEffectDescriptor& desc, const std::vector<AVPrivOption>& avPrivOpts, OFX::GroupParamDescriptor* groupParams )
+{
+	BOOST_FOREACH( const AVPrivOption& opt, avPrivOpts )
+	{
+		if( opt.o.name == NULL )
+			continue;
+		
+		OFX::ValueParamDescriptor* curOpt;
+		switch( opt.o.type )
+		{
+			case AV_OPT_TYPE_FLAGS:
+			{
+				OFX::BooleanParamDescriptor* curOptBoolean = desc.defineBooleanParam( opt.class_name + "_" + opt.o.name );
+				curOpt = curOptBoolean;
+				curOptBoolean->setLabel( opt.o.name );
+				curOptBoolean->setDefault( opt.o.default_val.dbl );
+				break;
+			}
+			case AV_OPT_TYPE_INT:
+			{
+				OFX::IntParamDescriptor* curOptInt = desc.defineIntParam( opt.class_name + "_" + opt.o.name );
+				curOpt = curOptInt;
+				curOptInt->setLabel( opt.o.name );
+				curOptInt->setRange( opt.o.min, opt.o.max );
+				curOptInt->setDisplayRange( opt.o.min, opt.o.max );
+				curOptInt->setDefault( opt.o.default_val.dbl );
+				break;
+			}
+			case AV_OPT_TYPE_FLOAT:
+			case AV_OPT_TYPE_DOUBLE:
+			{
+				OFX::DoubleParamDescriptor* curOptDouble = desc.defineDoubleParam( opt.class_name + "_" + opt.o.name );
+				curOpt = curOptDouble;
+				curOptDouble->setLabel( opt.o.name );
+				curOptDouble->setRange( opt.o.min, opt.o.max );
+				curOptDouble->setDisplayRange( opt.o.min, opt.o.max );
+				curOptDouble->setDefault( opt.o.default_val.dbl );
+				break;
+			}
+			case AV_OPT_TYPE_STRING:
+			{
+				OFX::StringParamDescriptor* curOptString = desc.defineStringParam( opt.class_name + "_" + opt.o.name );
+				curOpt = curOptString;
+				curOptString->setLabel( opt.o.name );
+				break;
+			}
+			default: //< or list all cases to avoid those warnings:
+				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_INT64' not handled in switch [-Wswitch]
+				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_RATIONAL' not handled in switch [-Wswitch]
+				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_BINARY' not handled in switch [-Wswitch]
+				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_CONST' not handled in switch [-Wswitch]
+				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_IMAGE_SIZE' not handled in switch [-Wswitch]
+				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_PIXEL_FMT' not handled in switch [-Wswitch]
+				break;
+		}
+		if( opt.o.help )
+			curOpt->setHint( opt.o.help );
+		curOpt->setParent( groupParams );
+	}
+}
+
+}
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -135,6 +201,11 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( default_format );
 
+	OFX::GroupParamDescriptor* groupFormatParams = desc.defineGroupParam( kParamGroupFormatParams );
+	groupFormatParams->setLabel( "Format Advanced Parameters" );
+	
+	declareAVPrivOptions( desc, writer.getFormatPrivOpts(), groupFormatParams );
+	
 	int default_codec = 0;
 	OFX::ChoiceParamDescriptor* codec = desc.defineChoiceParam( kParamCodec );
 	for( std::vector<std::string>::const_iterator itShort = writer.getCodecsShort().begin(),
@@ -152,6 +223,10 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	codec->setDefault( default_codec );
 
+	OFX::GroupParamDescriptor* groupCodecParams = desc.defineGroupParam( kParamGroupCodecParams );
+	groupCodecParams->setLabel( "Codec Advanced Parameters" );
+	
+	declareAVPrivOptions( desc, writer.getCodecPrivOpts(), groupCodecParams );
 	
 	std::vector<std::string> codecListWithPreset = writer.getCodecListWithConfig();
 	std::vector<std::string>::iterator it;
