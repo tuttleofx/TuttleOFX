@@ -57,22 +57,19 @@ if( showBrief ):
 	exit();
 
 TUTTLE_ROOT = os.getenv('TUTTLE_ROOT')
-
 if( TUTTLE_ROOT == None ):
 	print( RED + 'error : TUTTLE_ROOT is not set.' + NC );
 	exit();
 
-if( not os.path.exists( TUTTLE_ROOT+'/.tuttleofx' )):
-	os.mkdir( TUTTLE_ROOT+'/.tuttleofx' )
+TUTTLE_HOME = os.path.join( TUTTLE_ROOT, '.tuttleofx')
+if( not os.path.exists( TUTTLE_HOME ) ):
+	os.mkdir( TUTTLE_HOME )
 
-os.environ['TUTTLE_HOME']=TUTTLE_ROOT+'/.tuttleofx'
-os.environ['LD_LIBRARY_PATH']= TUTTLE_ROOT+'/lib'
-os.environ['PATH']= TUTTLE_ROOT+'/bin'
-os.environ['SAM_PATH']=TUTTLE_ROOT+'/bin'
-os.environ['OFX_PLUGIN_PATH']=TUTTLE_ROOT+'/plugin'
-
-TUTTLE_ROOT  = currentDir+'/dist/linux/release'
-
+os.environ['TUTTLE_ROOT']= TUTTLE_ROOT 
+os.environ['TUTTLE_HOME']= TUTTLE_HOME
+os.environ['LD_LIBRARY_PATH']= os.path.join( TUTTLE_ROOT, 'lib')
+os.environ['PATH']= os.path.join( TUTTLE_ROOT, 'bin')
+os.environ['SAM_PATH']= os.path.join( TUTTLE_ROOT, 'bin')
 
 if( len(args) == 1 ):
 	subprocess.call( 'sam-do reader ' + " ".join(args) + ' // viewer' , shell=True )
