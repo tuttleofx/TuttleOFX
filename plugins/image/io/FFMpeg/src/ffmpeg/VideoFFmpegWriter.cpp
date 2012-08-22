@@ -83,16 +83,15 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 				_codecsLongNames.push_back( std::string( c->long_name ) );
 				_codecsShortNames.push_back( std::string( c->name ) );
 			}
-		}
-		
-		if (c->priv_class)
-		{
-			while ((o = av_next_option(&c->priv_class, o)))
+			if (c->priv_class)
 			{
-				AVPrivOption avprivopt;
-				avprivopt.o = *o;
-				avprivopt.class_name = std::string( c->name );
-				_codecPrivOpts.push_back(avprivopt);
+				while ((o = av_next_option(&c->priv_class, o)))
+				{
+					AVPrivOption avprivopt;
+					avprivopt.o = *o;
+					avprivopt.class_name = std::string( c->name );
+					_codecPrivOpts.push_back(avprivopt);
+				}
 			}
 		}
 		
