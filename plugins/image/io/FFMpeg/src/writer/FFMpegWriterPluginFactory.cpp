@@ -228,6 +228,9 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	
 	declareAVPrivOptions( desc, writer.getCodecPrivOpts(), groupCodecParams );
 	
+	OFX::GroupParamDescriptor* groupVideoCodecPreset = desc.defineGroupParam( kParamGroupVideoCodecPreset );
+	groupVideoCodecPreset->setLabel( "Codec Video Preset" );
+	
 	std::vector<std::string> codecListWithPreset = writer.getCodecListWithConfig();
 	std::vector<std::string>::iterator it;
 	for( it = codecListWithPreset.begin(); it < codecListWithPreset.end(); it++ )
@@ -241,6 +244,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 			choiceConfig = desc.defineChoiceParam( codecName );
 			choiceConfig->setLabel( codecName );
 			choiceConfig->setDefault( 0 );
+			choiceConfig->setParent( groupVideoCodecPreset );
 		}
 		
 		for( std::vector<std::string>::const_iterator itCodec = codecList.begin(),
