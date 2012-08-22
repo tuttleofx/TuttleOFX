@@ -20,6 +20,9 @@ public:
         bool operator<(const TimeValue<T> &t) const {
            return time < t.time;
         }
+        bool operator==(const TimeValue<T> &t) const {
+           return time == t.time;
+        }
 };
 
   /* An Interpolator determines the shape of the curve between key frames in an animation */
