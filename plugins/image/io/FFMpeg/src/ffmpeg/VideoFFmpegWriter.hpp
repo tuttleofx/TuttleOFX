@@ -2,6 +2,7 @@
 #define __VIDEOFFMPEGWRITER_HPP__
 
 #include "FFmpeg.hpp"
+#include "FFmpegPreset.hpp"
 #include "VideoFFmpegReader.hpp"
 
 #include <tuttle/plugin/global.hpp>
@@ -10,7 +11,7 @@
 #include <string>
 #include <vector>
 
-class VideoFFmpegWriter : public FFmpeg
+class VideoFFmpegWriter : public FFmpeg, public FFmpegPreset
 {
 private:
 	enum WriterError
@@ -137,25 +138,12 @@ public:
 	{
 		_codecName = codec;
 	}
-
-	void setMotionEstimation( const int me )
+	
+	void setVideoPreset( const unsigned int id );
+	
+	void setVideoPreset( const std::string& preset )
 	{
-		_motionEstimation = me;
-	}
-
-	void setColorspace( const AVColorSpace colorspace )
-	{
-		_colorspace = colorspace;
-	}
-
-	void setColorPrimaries( const AVColorPrimaries colorPrimaries )
-	{
-		_colorPrimaries = colorPrimaries;
-	}
-
-	void setColorTransferCharateristic( const AVColorTransferCharacteristic colorTransferCharacteristic )
-	{
-		_colorTransferCharacteristic = colorTransferCharacteristic;
+		_videoPresetName = preset;
 	}
 
 	void configureFromRead( const VideoFFmpegReader& reader )
@@ -174,7 +162,7 @@ private:
 	struct SwsContext*             _sws_context;         ///< contexte de transformation swscale
 	AVStream*                      _stream;
 	AVCodec*                       _codec;
-        AVOutputFormat*                _ofmt;
+	AVOutputFormat*                _ofmt;
 	std::vector<std::string>       _formatsLongNames;
 	std::vector<std::string>       _formatsShortNames;
 	std::vector<std::string>       _codecsLongNames;
@@ -190,16 +178,12 @@ private:
 	float                          _fps;
 	std::string                    _formatName;
 	std::string                    _codecName;
+	std::string                    _videoPresetName;
 	int                            _bitRate;
 	int                            _bitRateTolerance;
 	int                            _gopSize;
 	int                            _bFrames;
 	int                            _mbDecision;
-
-	int                            _motionEstimation;
-	AVColorSpace                   _colorspace;
-	AVColorPrimaries               _colorPrimaries;
-	AVColorTransferCharacteristic  _colorTransferCharacteristic;
 };
 
 #endif
