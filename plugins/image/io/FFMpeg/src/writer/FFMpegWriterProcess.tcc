@@ -33,7 +33,7 @@ void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 	rgb8_view_t  vw  ( view( img ) );
 
 	// Convert pixels in PIX_FMT_RGB24
-	copy_and_convert_pixels( this->_srcView, vw );
+	copy_and_convert_pixels( clamp_view( this->_srcView ), vw );
 
 	// Convert pixels to destination
 	copy_and_convert_pixels( this->_srcView, this->_dstView );
