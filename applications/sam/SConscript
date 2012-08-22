@@ -22,6 +22,10 @@ ls = project.Program(
 		libraries=libraries,
 	)
 
+ll  = project.env.Install( project.inOutputBin(), 'src/sam/sam/sam-ll' )
+lss = project.env.Install( project.inOutputBin(), 'src/sam/sam/sam-lss' )
+lls = project.env.Install( project.inOutputBin(), 'src/sam/sam/sam-lls' )
+
 cp = project.Program(
 		target='sam-cp',
 		dirs=['src/sam/cp'],
@@ -71,10 +75,15 @@ check = project.Program(
 		libraries=libraries+[libs.tuttleHost],
 	)
 
+viewer = project.env.Install( project.inOutputBin(), 'src/sam/sam/sam-viewer' )
+
 Alias( 'sam-all',
 	[
 		sam,
 		ls,
+		ll,
+		lss,
+		lls,
 		cp,
 		mv,
 		rm,
@@ -82,6 +91,7 @@ Alias( 'sam-all',
 		info,
 		plugins,
 		check,
+		viewer,
 	]
 )
 
