@@ -1,11 +1,8 @@
 #include <sam/common/color.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/clip/Sequence.hpp>
-
 #include <tuttle/host/Core.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
-
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>

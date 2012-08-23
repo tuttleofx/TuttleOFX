@@ -5,7 +5,7 @@
 
 #include "global.hpp"
 
-#include <tuttle/common/clip/Sequence.hpp>
+#include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 //#include <tuttle/host/attribute/expression.hpp>
