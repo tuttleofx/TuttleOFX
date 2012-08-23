@@ -54,6 +54,13 @@ do = project.Program(
 		libraries=libraries+[libs.tuttleHost],
 	)
 
+diff = project.Program(
+		target='sam-diff',
+		dirs=['src/sam/diff'],
+		includes=['src'],
+		libraries=libraries+[libs.tuttleHost],
+	)
+
 info = project.Program(
 		target='sam-info',
 		dirs=['src/sam/info'],
@@ -88,6 +95,7 @@ Alias( 'sam-all',
 		mv,
 		rm,
 		do,
+		diff,
 		info,
 		plugins,
 		check,
