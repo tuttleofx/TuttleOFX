@@ -5,7 +5,7 @@
 #include "ComputeOptions.hpp"
 #include "Core.hpp"
 #include "INode.hpp"
-#include "InputBufferNode.hpp"
+#include "InputBufferWrapper.hpp"
 #include "exceptions.hpp"
 
 #include <tuttle/host/graph/InternalGraph.hpp>
@@ -56,7 +56,7 @@ public:
 	 * @brief Create a new input node in the current graph,
 	 *        to give an input buffer.
 	 */
-	InputBufferNode& createInputBuffer();
+	InputBufferWrapper createInputBuffer();
 
 	/**
 	 * @brief Create a new node in the current graph.

@@ -39,7 +39,6 @@ class ProcessVertexAtTimeInfo;
 }
 
 class ImageEffectNode;
-class InputBufferNode;
 
 
 class INode : private boost::noncopyable
@@ -73,9 +72,6 @@ public:
 
 	ImageEffectNode& asImageEffectNode();
 	const ImageEffectNode& asImageEffectNode() const;
-
-	InputBufferNode& asInputBufferNode();
-	const InputBufferNode& asInputBufferNode() const;
 
 	virtual std::vector<int> getVersion() const = 0;
 	std::string getVersionStr() const;

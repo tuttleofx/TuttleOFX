@@ -1511,6 +1511,8 @@ public:
     void setDefault( const std::string& v );
 
     /** @brief get value */
+	void getPointerValue( char** cStr ) const;
+
     void getValue( std::string& v ) const;
     std::string getValue() const { std::string s; getValue(s); return s; }
 
@@ -1518,11 +1520,14 @@ public:
     void setValue( const std::string& v );
 
     /** @brief get the value at a time */
-    void getValueAtTime( double t, std::string& v ) const;
-    std::string getValueAtTime( double t ) const { std::string s; getValueAtTime( t, s ); return s; }
+	void getPointerValueAtTime( OfxTime time, char** cStr ) const;
+	
+    /** @brief get the value at a time */
+    void getValueAtTime( OfxTime time, std::string& v ) const;
+    std::string getValueAtTime( OfxTime time ) const { std::string s; getValueAtTime( time, s ); return s; }
 
     /** @brief set the value at a time, implicitly adds a keyframe */
-    void setValueAtTime( double t, const std::string& v );
+    void setValueAtTime( OfxTime time, const std::string& v );
 	
 	StringTypeEnum getStringType() const;
 };

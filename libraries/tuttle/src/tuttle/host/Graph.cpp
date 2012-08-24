@@ -1,5 +1,4 @@
 #include "Graph.hpp"
-#include "InputBufferNode.hpp"
 #include "graph/ProcessGraph.hpp"
 
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
@@ -22,19 +21,12 @@ Graph::Graph()
 Graph::~Graph()
 {}
 
-InputBufferNode& Graph::createInputBuffer()
+InputBufferWrapper Graph::createInputBuffer()
 {
-	InputBufferNode* node = new InputBufferNode();
-
-	std::stringstream uniqueName;
-	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
-	node->setName( uniqueName.str() );
-
-	std::string key( node->getName() ); // for constness
-	_nodes.insert( key, node );
-	addToInternalGraph( *node );
-
-	return *node;
+	Node& node = createNode( "tuttle.inputbuffer" );
+	InputBufferWrapper nodeWrapper( node );
+	
+	return nodeWrapper;
 }
 
 Graph::Node& Graph::createNode( const std::string& id )

@@ -3,7 +3,7 @@
 #include <tuttle/host/HostDescriptor.hpp>
 #include <tuttle/host/Core.hpp>
 #include <tuttle/host/ImageEffectNode.hpp>
-#include <tuttle/host/InputBufferNode.hpp>
+#include <tuttle/host/InputBufferWrapper.hpp>
 
 #include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhBinary.hpp>
@@ -79,8 +79,6 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 	{
 		case INode::eNodeTypeImageEffect:
 			return getNode().asImageEffectNode().getRegionOfDefinition( time );
-		case INode::eNodeTypeBuffer:
-			return getNode().asInputBufferNode().getRegionOfDefinition( time );
 		default:
 			BOOST_THROW_EXCEPTION( exception::Bug()
 			    << exception::dev( "fetchRegionOfDefinition unsupported on " + mapNodeTypeEnumToString(getNode().getNodeType()) + " node." ) );
