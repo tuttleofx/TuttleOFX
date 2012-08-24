@@ -2,6 +2,8 @@
 
 #include <ofxCore.h>
 
+#include <boost/scoped_ptr.hpp>
+
 #include <cstdio>
 
 namespace tuttle {

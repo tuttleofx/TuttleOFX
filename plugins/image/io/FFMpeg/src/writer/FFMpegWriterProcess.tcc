@@ -2,6 +2,8 @@
 #include "FFMpegWriterProcess.hpp"
 #include <boost/filesystem.hpp>
 
+#include <terry/clamp.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
@@ -23,7 +25,7 @@ FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin& instance )
 template<class View>
 void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 
 	_plugin._writer.width ( this->_srcView.width () );
@@ -33,7 +35,7 @@ void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 	rgb8_view_t  vw  ( view( img ) );
 
 	// Convert pixels in PIX_FMT_RGB24
-	copy_and_convert_pixels( this->_srcView, vw );
+	copy_and_convert_pixels( clamp_view( this->_srcView ), vw );
 
 	// Convert pixels to destination
 	copy_and_convert_pixels( this->_srcView, this->_dstView );

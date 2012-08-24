@@ -4,8 +4,10 @@
 #include "ReaderDefinition.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <tuttle/common/clip/Sequence.hpp>
+#include <Sequence.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+namespace sp = sequenceParser;
 
 namespace tuttle {
 namespace plugin {
@@ -105,7 +107,7 @@ public:
 
 private:
 	bool _isSequence;
-	common::Sequence _filePattern;            ///< Filename pattern manager
+	sp::Sequence _filePattern;            ///< Filename pattern manager
 };
 
 }

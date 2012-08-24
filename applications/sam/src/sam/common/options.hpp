@@ -104,7 +104,12 @@ static const char* const kRangeOptionMessage = "processing range (used only if i
 static const char* const kRecursiveOptionLongName = "recursive";
 static const char* const kRecursiveOptionString = "recursive,R";
 static const char* const kRecursiveOptionMessage = "handle directories and their content recursively";
-//
+
+//-s, --sequences
+static const char* const kSequencesOptionLongName = "sequences";
+static const char* const kSequencesOptionString = "sequences,s";
+static const char* const kSequencesOptionMessage = "handle sequences";
+
 //-v, --version
 static const char* const kVersionOptionLongName = "version";
 static const char* const kVersionOptionString =  "version,v";

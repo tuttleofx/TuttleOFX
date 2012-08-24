@@ -47,7 +47,8 @@ exe sam-cp :
 		[ glob src/sam/cp/*.cpp ]
 
 		/boost//program_options/<link>static
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -60,7 +61,8 @@ exe sam-mv :
 		[ glob src/sam/mv/*.cpp ]
 
 		/boost//program_options/<link>static
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -73,7 +75,8 @@ exe sam-rm :
 		[ glob src/sam/rm/*.cpp ]
 
 		/boost//program_options/<link>static
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -88,7 +91,8 @@ exe sam-do :
 
 		/boost//program_options/<link>static
 		/boost//python/<link>shared
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 		/tuttlehost/<link>static
 	:
@@ -104,7 +108,8 @@ exe sam-info :
 		[ glob src/sam/info/*.cpp ]
 
 		/boost//program_options/<link>static
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 		/project-config//imagemagick
 	:
@@ -120,7 +125,8 @@ exe sam-plugins :
 
 		/boost//program_options/<link>static
 		/boost//python/<link>shared
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 		/tuttlehost/<link>static
 	:
@@ -137,7 +143,8 @@ exe sam-check :
 
 		/boost//program_options/<link>static
 		/boost//python/<link>shared
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 		/tuttlehost/<link>static
 	:
@@ -154,7 +161,8 @@ exe sam-diff :
 
 		/boost//program_options/<link>static
 		/boost//python/<link>shared
-
+		$(SEQUENCE_PARSER)//sequence/<link>static
+		
 		/tuttlecommon/<link>static
 		/tuttlehost/<link>static
 	:
@@ -177,6 +185,21 @@ alias sam-script : [ glob
 						src/sam/sam/cleanTuttleOFX
 					] ;
 
+###############################################################################
+# lss
+###############################################################################
+alias sam-lss : [ glob src/sam/sam/sam-lss ] ;
+
+
+###############################################################################
+# ll
+###############################################################################
+alias sam-ll : [ glob src/sam/sam/sam-ll ] ;
+
+###############################################################################
+# lls
+###############################################################################
+alias sam-lls : [ glob src/sam/sam/sam-lls ] ;
 
 ###############################################################################
 # install
@@ -190,6 +213,9 @@ install sam-install-bins
 		sam-mv
 		sam-rm
 		sam-ls
+		sam-lss
+		sam-ll
+		sam-lls
 		sam-do
 		sam-info
 		sam-check

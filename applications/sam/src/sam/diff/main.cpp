@@ -3,18 +3,20 @@
 #include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
-#include <tuttle/common/clip/Sequence.hpp>
+#include <tuttle/common/utils/global.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <Sequence.hpp>
+
 #include <limits>
 
-using namespace tuttle::common;
 using namespace tuttle::host;
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
+namespace sp  = sequenceParser;
 
 namespace sam {
 Color _color;
@@ -270,15 +272,15 @@ EImageStatus diffFile(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat,
 	return s;
 }
 
-void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const Sequence& seq1, const Sequence& seq2) {
-    for (Sequence::Time t = seq1.getFirstTime(); t <= seq1.getLastTime(); ++t) {
+void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const sp::Sequence& seq1, const sp::Sequence& seq2) {
+    for (sp::Time t = seq1.getFirstTime(); t <= seq1.getLastTime(); ++t) {
         diffFile(read1, read2, stat, graph, seq1.getAbsoluteFilenameAt(t), seq2.getAbsoluteFilenameAt(t));
     }
 }
 
-void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const Sequence& seq1, const Sequence& seq2, const Sequence::Time first,
-                  const Sequence::Time last) {
-    for (Sequence::Time t = first; t <= last; ++t) {
+void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const sp::Sequence& seq1, const sp::Sequence& seq2, const sp::Time first,
+                  const sp::Time last) {
+    for (sp::Time t = first; t <= last; ++t) {
         diffFile(read1, read2, stat, graph, seq1.getAbsoluteFilenameAt(t), seq2.getAbsoluteFilenameAt(t));
     }
 }
@@ -529,8 +531,8 @@ int main(int argc, char** argv) {
 				 //}
 				} else {
 					try {
-						Sequence s1(path1);
-						Sequence s2(path2);
+						sp::Sequence s1(path1);
+						sp::Sequence s2(path2);
 						if (hasRange) {
 							diffSequence(read1, read2, stat, graph, s1, s2, range[0], range[1]);
 						} else {

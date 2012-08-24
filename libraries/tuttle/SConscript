@@ -24,6 +24,7 @@ project.StaticLibrary(
 		includes  = ['src','src/tuttle/host/core'],
 		libraries = [
 				libs.tuttleCommon,
+				libs.sequenceParser,
 				libs.openfxPluginSupportHack,
 				libs.terry,
 				libs.gl,
