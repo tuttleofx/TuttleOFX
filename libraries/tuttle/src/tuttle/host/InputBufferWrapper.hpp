@@ -55,8 +55,44 @@ public:
 
 	void setMode( const EMode mode );
 	void setBuffer( void* rawBuffer );
+private:
 	void setArrayBuffer( void* rawBuffer, const int width, const int height );
 	void setArrayBuffer( void* rawBuffer, const int width, const int height, const int nbComponents );
+	
+public:
+	void setArrayBuffer( unsigned char* rawBuffer, int height, int width )
+	{
+		setArrayBuffer( (void*)rawBuffer, width, height, 1 );
+		setBitDepth( eBitDepthUByte );
+	}
+	void setArrayBuffer( unsigned char* rawBuffer, int height, int width, int nbComponents )
+	{
+		setArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
+		setBitDepth( eBitDepthUByte );
+	}
+	
+	void setArrayBuffer( unsigned short* rawBuffer, int height, int width )
+	{
+		setArrayBuffer( (void*)rawBuffer, width, height, 1 );
+		setBitDepth( eBitDepthUShort );
+	}
+	void setArrayBuffer( unsigned short* rawBuffer, int height, int width, int nbComponents )
+	{
+		setArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
+		setBitDepth( eBitDepthUShort );
+	}
+	
+	void setArrayBuffer( float* rawBuffer, int height, int width )
+	{
+		setArrayBuffer( (void*)rawBuffer, width, height, 1 );
+		setBitDepth( eBitDepthUShort );
+	}
+	void setArrayBuffer( float* rawBuffer, int height, int width, int nbComponents )
+	{
+		setArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
+		setBitDepth( eBitDepthUShort );
+	}
+	
 	void setSize( const int width, const int height );
 	void setComponents( const EPixelComponent components );
 	void setBitDepth( const EBitDepth bitDepth );
