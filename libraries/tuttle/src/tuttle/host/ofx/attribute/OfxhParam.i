@@ -1,7 +1,7 @@
 %include <tuttle/host/global.i>
 %include <tuttle/host/ofx/attribute/OfxhAttribute.i>
 
-%apply int { OfxTime };
+typedef double OfxTime;
 %{
 #include <tuttle/host/ofx/attribute/OfxhParam.hpp>
 %}
