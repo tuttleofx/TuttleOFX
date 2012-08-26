@@ -235,6 +235,8 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 			param = new attribute::ParamGroup( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypePage )
 			param = new attribute::ParamPage( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeCustom )
+			param = new attribute::ParamCustom( *this, name,  descriptor );
 		else
 		{
 			BOOST_THROW_EXCEPTION( exception::Failed()
