@@ -75,12 +75,12 @@ int main( int argc, char** argv )
 		outputs.push_back( merge1.getName() );
 		outputs.push_back( invert1.getName() );
 		
-		ComputeOptions options;
-		options._returnBuffers = true;
-		memory::MemoryCache values = g.compute( outputs, options );
+		memory::MemoryCache outputCache;
+		g.compute( outputCache, outputs );
+		
 		TUTTLE_COUT( "__________________________________________________5" );
 		TUTTLE_COUT_VAR( invert1.getName() );
-		memory::CACHE_ELEMENT img = values.get( invert1.getName(), 0 );
+		memory::CACHE_ELEMENT img = outputCache.get( invert1.getName(), 0 );
 
 		if( ! img.get() )
 		{

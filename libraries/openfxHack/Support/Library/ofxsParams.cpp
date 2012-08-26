@@ -2061,12 +2061,16 @@ void StringParam::setDefault( const std::string& v )
 }
 
 /** @brief get value */
+void StringParam::getPointerValue( char** cStr ) const
+{
+    OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, cStr );
+    throwSuiteStatusException( stat );
+}
+
 void StringParam::getValue( std::string& v ) const
 {
-    char* cStr;
-    OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &cStr );
-
-    throwSuiteStatusException( stat );
+    char* cStr = NULL;
+    getPointerValue( &cStr );
     v = cStr;
 }
 
@@ -2079,21 +2083,26 @@ void StringParam::setValue( const std::string& v )
 }
 
 /** @brief get the value at a time */
-void StringParam::getValueAtTime( double t, std::string& v ) const
+void StringParam::getPointerValueAtTime( OfxTime time, char** cStr ) const
 {
-    char* cStr;
-    OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &cStr );
-
+    OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, time, cStr );
     throwSuiteStatusException( stat );
+}
+
+/** @brief get the value at a time */
+void StringParam::getValueAtTime( OfxTime time, std::string& v ) const
+{
+    char* cStr = NULL;
+	getPointerValueAtTime( time, &cStr );
     v = cStr;
 }
 
 /** @brief set the value at a time, implicitly adds a keyframe */
-void StringParam::setValueAtTime( double t, const std::string& v )
+void StringParam::setValueAtTime( OfxTime time, const std::string& v )
 {
     if( !OFX::Private::gParamSuite->paramSetValueAtTime )
         throwHostMissingSuiteException( "paramSetValueAtTime" );
-    OfxStatus stat = OFX::Private::gParamSuite->paramSetValueAtTime( _paramHandle, t, v.c_str() );
+    OfxStatus stat = OFX::Private::gParamSuite->paramSetValueAtTime( _paramHandle, time, v.c_str() );
     throwSuiteStatusException( stat );
 }
 

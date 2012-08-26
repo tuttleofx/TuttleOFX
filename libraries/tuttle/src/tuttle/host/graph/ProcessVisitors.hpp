@@ -68,7 +68,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode().getTimeDomain( vertex.getProcessData()._timeDomain );
+		vertex.getProcessData()._timeDomain = vertex.getProcessNode().computeTimeDomain();
 		TUTTLE_TCOUT_VAR2( vertex.getProcessData()._timeDomain.min, vertex.getProcessData()._timeDomain.max );
 	}
 
@@ -89,18 +89,31 @@ public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
 	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::vertex_descriptor vertex_descriptor;
 	typedef typename TGraph::edge_descriptor edge_descriptor;
 
 	DeployTime( TGraph& graph, const OfxTime time )
 		: _graph( graph )
 		, _time( time )
-	{}
+	{
+		// clear all time informations before to fill with new values
+		BOOST_FOREACH( const vertex_descriptor vd, graph.getVertices() )
+		{
+			Vertex& v = graph.instance( vd );
+			v.clearTimeInfo();
+		}
+		BOOST_FOREACH( const edge_descriptor ed, graph.getEdges() )
+		{
+			Edge& e = graph.instance( ed );
+			e.clearTimeInfo();
+		}
+	}
 
 	template<class VertexDescriptor, class Graph>
-	void finish_vertex( VertexDescriptor v, Graph& g )
+	void discover_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
-
+		
 		TUTTLE_TCOUT( "[DEPLOY TIME] " << vertex );
 		if( vertex.isFake() )
 		{
@@ -365,7 +378,7 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 			const typename TGraph::Edge e( in, out, inAttr );
 			graph.addEdge( descOut, descIn, e );
 		}
-		// Warning: We don't remove the vertex itself to not invalidate vertex_descriptors but only modify edges.
+		// Warning: We don't remove the vertex itself to not invalidate vertex_descriptors but only remove edges.
 //		graph.removeVertex( graph.getVertexDescriptor(connection._identityVertex) );
 		// remove all node connections
 		graph.clearVertex( graph.getVertexDescriptor(connection._identityVertex) );

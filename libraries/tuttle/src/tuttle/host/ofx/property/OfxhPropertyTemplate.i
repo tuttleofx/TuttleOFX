@@ -5,10 +5,19 @@
 #include <tuttle/host/ofx/property/OfxhPropertyTemplate.hpp>
 %}
 
+/*
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace property {
+%template(OfxhPropertyInt) OfxhPropertyTemplate<OfxhIntValue>;
+%template(OfxhPropertyDouble) OfxhPropertyTemplate<OfxhDoubleValue>;
+%template(OfxhPropertyString) OfxhPropertyTemplate<OfxhStringValue>;
+%template(OfxhPropertyPointer) OfxhPropertyTemplate<OfxhPointerValue>;
+}
+}
+}
+}
+*/
+
 %include <tuttle/host/ofx/property/OfxhPropertyTemplate.hpp>
-
-
-%template(OfxPropertyInt) tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhIntValue>;
-%template(OfxPropertyDouble) tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhDoubleValue>;
-%template(OfxPropertyString) tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhStringValue>;
-%template(OfxPropertyPointer) tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhPointerValue>;

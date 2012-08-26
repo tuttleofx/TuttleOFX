@@ -6,22 +6,38 @@
 namespace tuttle {
 namespace plugin {
 
-static const std::string kParamFormatPCVideo        = "PC-Video            640x480";
-static const std::string kParamFormatNTSC           = "NTSC                720x486";
-static const std::string kParamFormatPAL            = "PAL                 720x576";
-static const std::string kParamFormatHD             = "HD                  1920x1080";
-static const std::string kParamFormatNTSC169        = "NTSC-16:9           720x486";
-static const std::string kParamFormatPAL169         = "PAL-16:9            720x576";
-static const std::string kParamFormat1kSuper35      = "1K-Super35-full-ap  1024x778";
-static const std::string kParamFormat1kCinemascope  = "1K-Cinemascope      914x778";
-static const std::string kParamFormat2kSuper35      = "2K-Super35-full-ap  2048x1556";
-static const std::string kParamFormat2kCinemascope  = "2K-Cinemascope      1828x1556";
-static const std::string kParamFormat4kSuper35      = "4K-Super35-full-ap  4096x3112";
-static const std::string kParamFormat4kCinemascope  = "4K-Cinemascope      3656x3112";
-static const std::string kParamFormatSquare256      = "Square-256          256x256";
-static const std::string kParamFormatSquare512      = "Square-512          512x512";
-static const std::string kParamFormatSquare1k       = "Square-1k           1024x1024";
-static const std::string kParamFormatSquare2k       = "Square-2k           2048x2048";
+static const std::string kParamFormatPCVideo        = "PC-Video";
+static const std::string kParamFormatPCVideoLabel   = "PC-Video            640x480";
+static const std::string kParamFormatNTSC           = "NTSC";
+static const std::string kParamFormatNTSCLabel      = "NTSC                720x486";
+static const std::string kParamFormatPAL            = "PAL";
+static const std::string kParamFormatPALLabel       = "PAL                 720x576";
+static const std::string kParamFormatHD             = "HD";
+static const std::string kParamFormatHDLabel        = "HD                  1920x1080";
+static const std::string kParamFormatNTSC169        = "NTSC-16:9";
+static const std::string kParamFormatNTSC169Label   = "NTSC-16:9           720x486";
+static const std::string kParamFormatPAL169         = "PAL-16:9";
+static const std::string kParamFormatPAL169Label    = "PAL-16:9            720x576";
+static const std::string kParamFormat1kSuper35      = "1K-Super35-full-ap";
+static const std::string kParamFormat1kSuper35Label = "1K-Super35-full-ap  1024x778";
+static const std::string kParamFormat1kCinemascope  = "1K-Cinemascope";
+static const std::string kParamFormat1kCinemascopeLabel = "1K-Cinemascope      914x778";
+static const std::string kParamFormat2kSuper35      = "2K-Super35-full-ap";
+static const std::string kParamFormat2kSuper35Label = "2K-Super35-full-ap  2048x1556";
+static const std::string kParamFormat2kCinemascope  = "2K-Cinemascope";
+static const std::string kParamFormat2kCinemascopeLabel = "2K-Cinemascope      1828x1556";
+static const std::string kParamFormat4kSuper35      = "4K-Super35-full-ap";
+static const std::string kParamFormat4kSuper35Label = "4K-Super35-full-ap  4096x3112";
+static const std::string kParamFormat4kCinemascope  = "4K-Cinemascope";
+static const std::string kParamFormat4kCinemascopeLabel = "4K-Cinemascope      3656x3112";
+static const std::string kParamFormatSquare256      = "Square-256";
+static const std::string kParamFormatSquare256Label = "Square-256          256x256";
+static const std::string kParamFormatSquare512      = "Square-512";
+static const std::string kParamFormatSquare512Label = "Square-512          512x512";
+static const std::string kParamFormatSquare1k       = "Square-1k";
+static const std::string kParamFormatSquare1kLabel  = "Square-1k           1024x1024";
+static const std::string kParamFormatSquare2k       = "Square-2k";
+static const std::string kParamFormatSquare2kLabel  = "Square-2k           2048x2048";
 
 enum EParamFormat
 {

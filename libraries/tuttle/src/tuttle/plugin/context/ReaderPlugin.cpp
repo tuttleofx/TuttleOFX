@@ -30,10 +30,6 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 {
 	const std::string filename( getAbsoluteFirstFilename() );
 
-	if( !bfs::exists( filename ) )
-	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist( filename ) );
-	}
 	// If pattern detected (frame varying on time)
 	clipPreferences.setOutputFrameVarying( varyOnTime() );
 

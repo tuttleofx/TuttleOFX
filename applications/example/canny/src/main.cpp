@@ -1,5 +1,4 @@
 #include <tuttle/host/Graph.hpp>
-#include <tuttle/host/InputBufferNode.hpp>
 
 #include <boost/gil/gil_all.hpp>
 
@@ -43,7 +42,7 @@ int main( int argc, char** argv )
 		TUTTLE_TCOUT( "__________________________________________________2" );
 
 		Graph g;
-		InputBufferNode& inputBuffer1 = g.createInputBuffer();
+		InputBufferWrapper inputBuffer1 = g.createInputBuffer();
 		Graph::Node& bitdepth1    = g.createNode( "tuttle.bitdepth" );
 		Graph::Node& bitdepth2    = g.createNode( "tuttle.bitdepth" );
 		Graph::Node& blur         = g.createNode( "tuttle.blur" );
@@ -65,14 +64,15 @@ int main( int argc, char** argv )
 
 		TUTTLE_TCOUT( "__________________________________________________3" );
 
-		const OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
+		TUTTLE_COUT_VAR( (void*)boost::gil::interleaved_view_get_raw_data( imgView ) );
+		
 		inputBuffer1.setRawImageBuffer(
-				reinterpret_cast<char*>( boost::gil::interleaved_view_get_raw_data( imgView ) ),
-				ibRod,
-				ofx::imageEffect::ePixelComponentAlpha,
-				ofx::imageEffect::eBitDepthUByte,
+				(void*)boost::gil::interleaved_view_get_raw_data( imgView ),
+				imgView.width(), imgView.height(),
+				InputBufferWrapper::ePixelComponentAlpha,
+				InputBufferWrapper::eBitDepthUByte,
 				imgView.pixels().row_size(),
-				attribute::Image::eImageOrientationFromTopToBottom
+				InputBufferWrapper::eImageOrientationFromTopToBottom
 			);
 
 		// Setup parameters
@@ -153,7 +153,7 @@ int main( int argc, char** argv )
 //		g.connect( read1, bitdepth );
 //		g.connect( bitdepth, sobel1 );
 
-		g.connect( inputBuffer1, bitdepth1 );
+		g.connect( inputBuffer1.getNode(), bitdepth1 );
 		g.connect( bitdepth1, blur1 );
 		g.connect( blur1, blur2 );
 		g.connect( blur2, sobel1 );
@@ -187,16 +187,14 @@ int main( int argc, char** argv )
 
 		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
 //		memory::MemoryCache res0 = g.compute( bitdepth2 );
-		ComputeOptions options;
-		options._returnBuffers = true;
-		options._forceIdentityNodesProcess = true;
-		memory::MemoryCache res0 = g.compute( outputs, options );
+		memory::MemoryCache outputCache;
+		g.compute( outputCache, outputs );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
 		TUTTLE_COUT( "Process took: " << t2 - t1 );
 
-		std::cout << res0 << std::endl;
-		memory::CACHE_ELEMENT imgRes = res0.get( bitdepth2.getName(), 0 );
+		std::cout << outputCache << std::endl;
+		memory::CACHE_ELEMENT imgRes = outputCache.get( bitdepth2.getName(), 0 );
 
 		TUTTLE_COUT_VAR( imgRes->getROD() );
 		TUTTLE_COUT_VAR( imgRes->getBounds() );

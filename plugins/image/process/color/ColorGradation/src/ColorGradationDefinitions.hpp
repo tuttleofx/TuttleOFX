@@ -43,6 +43,10 @@ static const std::string kColorSpaceInBlackPoint	= "inBlackPoint";
 static const std::string kColorSpaceInWhitePoint	= "inWhitePoint";
 static const std::string kColorSpaceInGammaSensito	= "inGammaSensito";
 
+static const double kColorSpaceInBlackPointDefaultValue	= 95;
+static const double kColorSpaceInWhitePointDefaultValue	= 685;
+static const double kColorSpaceInGammaSensitoDefaultValue	= 0.6;
+
 static const std::string kColorSpaceOutGammaValue	= "outGammaValue";
 static const std::string kColorSpaceOutBlackPoint	= "outBlackPoint";
 static const std::string kColorSpaceOutWhitePoint	= "outWhitePoint";

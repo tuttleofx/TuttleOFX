@@ -1,9 +1,13 @@
 #ifndef _TUTTLE_HOST_CORE_GRAPH_HPP_
 #define _TUTTLE_HOST_CORE_GRAPH_HPP_
 
+#include "NodeListArg.hpp"
+#include "ComputeOptions.hpp"
 #include "Core.hpp"
 #include "INode.hpp"
+#include "InputBufferWrapper.hpp"
 #include "exceptions.hpp"
+
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/UVertex.hpp>
 #include <tuttle/host/graph/UEdge.hpp>
@@ -24,77 +28,9 @@
 namespace tuttle {
 namespace host {
 
-struct TimeRange
-{
-	TimeRange( const int frame )
-		: _begin( frame )
-		, _end( frame )
-		, _step( 1 )
-	{}
-	TimeRange( const int begin, const int end, const int step = 1 )
-		: _begin( begin )
-		, _end( end )
-		, _step( step )
-	{}
-	TimeRange( const OfxRangeD& range, const int step = 1 )
-		: _begin( boost::lexical_cast<int>(range.min) )
-		, _end( boost::lexical_cast<int>(range.max) )
-		, _step( step )
-	{}
-	
-	int _begin;
-	int _end;
-	int _step;
-};
-
-enum EVerboseLevel
-{
-	eVerboseLevelNone,
-	eVerboseLevelError,
-	eVerboseLevelWarning,
-	eVerboseLevelDebug
-};
-
-struct ComputeOptions
-{
-	ComputeOptions()
-	{
-		setDefault();
-	}
-	explicit
-	ComputeOptions( const int frame )
-	{
-		setDefault();
-		_timeRanges.push_back( TimeRange( frame, frame ) );
-	}
-	ComputeOptions( const int begin, const int end, const int step = 1 )
-	{
-		setDefault();
-		_timeRanges.push_back( TimeRange( begin, end, step ) );
-	}
-	
-	void setDefault()
-	{
-		_renderScale.x = 1.0;
-		_renderScale.y = 1.0;
-		_continueOnError = false;
-		_returnBuffers = false;
-		_verboseLevel = eVerboseLevelError;
-		_interactive = false;
-		_forceIdentityNodesProcess = false;
-	}
-	
-	std::list<TimeRange> _timeRanges;
-	
-	OfxPointD _renderScale;
-	bool _continueOnError;
-	bool _forceIdentityNodesProcess;
-	bool _returnBuffers;
-	EVerboseLevel _verboseLevel;
-	bool _interactive;
-};
-
-
+/**
+ * @brief A user graph to manipulate OpenFX nodes.
+ */
 class Graph
 {
 public:
@@ -109,6 +45,8 @@ public:
 	typedef std::map<std::string, int> InstanceCountMap;
 	typedef boost::ptr_map<std::string, Node> NodeMap;
 	
+
+	
 public:
 	Graph();
 	//Graph( const Graph& other );
@@ -118,7 +56,7 @@ public:
 	 * @brief Create a new input node in the current graph,
 	 *        to give an input buffer.
 	 */
-	InputBufferNode& createInputBuffer();
+	InputBufferWrapper createInputBuffer();
 
 	/**
 	 * @brief Create a new node in the current graph.
@@ -158,31 +96,17 @@ public:
 	 */
 	void init();
 	
-	memory::MemoryCache compute( const std::list<std::string>& nodes, const ComputeOptions& options = ComputeOptions() );
-
-	inline memory::MemoryCache compute( const std::list<Node*>& nodes, const ComputeOptions& options = ComputeOptions() )
-	{
-		std::list<std::string> nodesStr;
-		//nodesStr.reserve(nodes.size());
-		BOOST_FOREACH( Node * n, nodes )
-		{
-			nodesStr.push_back( n->getName() );
-		}
-		return compute( nodesStr, options );
-	}
-
-	inline memory::MemoryCache compute( const std::string& node, const ComputeOptions& options = ComputeOptions() )
-	{
-		std::list<std::string> outputs;
-		outputs.push_back( node );
-		return compute( outputs, options );
-	}
-
-	inline memory::MemoryCache compute( const Node& node, const ComputeOptions& options = ComputeOptions() )
-	{
-		return compute( node.getName(), options );
-	}
-
+	/**
+	 * @brief Shortcut without buffer results.
+	 */
+	bool compute( const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
+	
+	bool compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
+	
+private:
+	bool privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options = ComputeOptions() );
+	
+public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }
 	inline const NodeMap&           getNodes() const { return _nodes; }
 	inline NodeMap&                 getNodes()       { return _nodes; }

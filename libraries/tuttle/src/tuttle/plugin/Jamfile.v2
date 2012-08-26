@@ -14,5 +14,6 @@ project		: requirements
 lib tuttleplugin :
 	[ glob-tree *.cpp ]
 	/tuttlecommon # link static
+	$(SEQUENCE_PARSER)//sequence/<link>static
 	;
 

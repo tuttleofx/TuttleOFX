@@ -1,54 +1,77 @@
-#!/bin/bash
+#!/usr/bin/python
+import os
+import sys
+import subprocess
 
-red='\e[0;31m'
-RED='\e[1;31m'
-blue='\e[0;34m'
-BLUE='\e[1;34m'
-green='\e[0;32m'
-GREEN='\e[1;32m'
-cyan='\e[0;36m'
-CYAN='\e[1;36m'
-NC='\e[0;0m'  # No Color
+currentDir  = os.getcwd()
 
-if [[ $# == 0 ]] ; then
-   echo -e "$BLUE""TuttleOFX project [http://sites.google.com/site/tuttleofx]$NC
+red='\033[0;31m'
+RED='\033[1;31m'
+blue='\033[0;34m'
+BLUE='\033[1;34m'
+green='\033[0;32m'
+GREEN='\033[1;32m'
+cyan='\033[0;36m'
+CYAN='\033[1;36m'
+NC='\033[0;0m'  # No Color
 
-$BLUE""NAME$NC
- $GREEN""sam-viewer - view images or sequences$NC
+args = sys.argv
+args.pop(0)
 
-$BLUE""SYNOPSIS$NC
- sam-viewer [directory - file - sequence]
- sam-viewer specificReader [directory - file - sequence]
+showHelp = False;
+showBrief = False;
+verbose = False;
 
-$BLUE""DESCRIPTION$NC
+if( len( args ) == 0 ):
+	showHelp = True;
 
-Viewer for sequences and files.
-"
-exit
-fi
+for arg in args:
+	if( arg == "-h" or arg == "--help" ):
+		showHelp=True;
+	if( arg == "--brief"):
+		showBrief=True;
 
-if [[ $1 == "--brief" ]] ; then
-	echo -e "$GREEN""viewer of file/sequence$NC"
-	exit
-fi
+if( showHelp ):
+	print( BLUE + 'TuttleOFX project [http:/ / sites.google.com/site/tuttleofx]' + NC );
+	print( '' );
+	print( BLUE + 'NAME' + NC );
+	print( GREEN + '\tsam-viewer - view images or sequences' + NC );
+	print( '' );
+	print( BLUE + 'SYNOPSIS' + NC );
+	print( GREEN + '\tsam-viewer [directory - file - sequence]' );
+	print( GREEN + '\tsam-viewer specificReader [directory - file - sequence]' );
+	print( '' );
+	print( BLUE + 'DESCRIPTION' + NC );
+	print( '' );
+	print( 'Viewer for sequences and files.' + NC );
+	print( '' );
+	print( BLUE + 'OPTIONS' + NC );
+	print( '' );
+	print( '  -h [ --help ]           display help' );
+	print( '  --brief                 display a brief summary of the tool' );
+	print( '' );
+	exit();
 
+if( showBrief ):
+	print( GREEN + 'viewer of file/sequence' + NC );
+	exit();
 
-#export TUTTLE_ROOT=/datas/mrn/dev/TuttleOFX/dist/linux/release
-export OFX_PLUGIN_PATH=$TUTTLE_ROOT/plugin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUTTLE_ROOT/lib
-export PATH=$PATH:$TUTTLE_ROOT/bin
-export SAM_PATH=$TUTTLE_ROOT/bin
+TUTTLE_ROOT = os.getenv('TUTTLE_ROOT')
+if( TUTTLE_ROOT == None ):
+	print( RED + 'error : TUTTLE_ROOT is not set.' + NC );
+	exit();
 
-if [ ! -d "$HOME/.tuttleofx" ]; then
-   mkdir $HOME/.tuttleofx           
-fi
+TUTTLE_HOME = os.path.join( TUTTLE_ROOT, '.tuttleofx')
+if( not os.path.exists( TUTTLE_HOME ) ):
+	os.mkdir( TUTTLE_HOME )
 
-export TUTTLE_HOME=$HOME/.tuttleofx
+os.environ['TUTTLE_ROOT']= TUTTLE_ROOT 
+os.environ['TUTTLE_HOME']= TUTTLE_HOME
+os.environ['LD_LIBRARY_PATH']= os.path.join( TUTTLE_ROOT, 'lib')
+os.environ['PATH']= os.path.join( TUTTLE_ROOT, 'bin')
+os.environ['SAM_PATH']= os.path.join( TUTTLE_ROOT, 'bin')
 
-if [[ $# == 1 ]] ; then
-	sam-do reader $* // viewer #> /dev/null
-else
-	sam-do $* // viewer #> /dev/null
-fi
-
-echo -e "$NC"
+if( len(args) == 1 ):
+	subprocess.call( 'sam-do reader ' + " ".join(args) + ' // viewer' , shell=True )
+else:
+	subprocess.call( 'sam-do ' + " ".join(args) + ' // viewer' , shell=True )

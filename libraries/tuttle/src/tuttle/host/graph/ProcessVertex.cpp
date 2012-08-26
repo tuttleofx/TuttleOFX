@@ -2,6 +2,7 @@
 #include "GraphExporter.hpp"
 
 #include <tuttle/host/ImageEffectNode.hpp>
+#include <tuttle/host/InputBufferWrapper.hpp>
 
 #include <boost/format.hpp>
 
@@ -36,7 +37,25 @@ std::ostream& ProcessVertex::exportDotDebug( std::ostream& os ) const
 	if( ! isFake() )
 	{
 		/// @todo remove this. Temporary solution
-		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode&>( getProcessNode() ).getOutputClip().getBitDepthString() );
+		switch( getProcessNode().getNodeType() )
+		{
+			case INode::eNodeTypeImageEffect:
+			{
+				const ImageEffectNode* ieNode = dynamic_cast<const ImageEffectNode*>( & getProcessNode() );
+				s << subDotEntry( "bitdepth",  ieNode->getOutputClip().getBitDepthString()   );
+				s << subDotEntry( "component", ieNode->getOutputClip().getComponentsString() );
+				{
+					double startFrame, endFrame;
+					ieNode->getOutputClip().getFrameRange( startFrame, endFrame );
+					s << subDotEntry( "startFrame", startFrame );
+					s << subDotEntry( "endFrame", endFrame );
+				}
+				s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
+				break;
+			}
+			default:
+				break;
+		}
 	}
 	s << subDotEntry( "timeDomain", ( boost::format("[%1%:%2%]") % _data._timeDomain.min % _data._timeDomain.max ).str() );
 	s << subDotEntry( "allTimes", _data._times.size() );

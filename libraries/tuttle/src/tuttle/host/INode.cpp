@@ -1,7 +1,6 @@
 #include "INode.hpp"
 
 #include "ImageEffectNode.hpp"
-#include "InputBufferNode.hpp"
 
 #include <tuttle/host/graph/ProcessVertexData.hpp>
 #include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
@@ -23,16 +22,6 @@ ImageEffectNode& INode::asImageEffectNode( )
 const ImageEffectNode& INode::asImageEffectNode( ) const
 {
 	return dynamic_cast<const ImageEffectNode&> ( *this );
-}
-
-InputBufferNode& INode::asInputBufferNode( )
-{
-	return dynamic_cast<InputBufferNode&> ( *this );
-}
-
-const InputBufferNode& INode::asInputBufferNode( ) const
-{
-	return dynamic_cast<const InputBufferNode&> ( *this );
 }
 
 std::string INode::getVersionStr() const

@@ -17,11 +17,16 @@ project
 ###############################################################################
 # tuttle library
 ###############################################################################
-use-project	/tuttlehost	: src/tuttle/host ;
-use-project	/tuttleplugin	: src/tuttle/plugin ;
-use-project	/tuttlecommon	: src/tuttle/common ;
+use-project	/tuttlehost    : src/tuttle/host ;
+use-project	/tuttleplugin  : src/tuttle/plugin ;
+use-project	/tuttlecommon  : src/tuttle/common ;
+use-project	/tuttletest    : src/tuttle/test ;
 
-
+alias
+		tuttle-tests
+	:
+		tests
+	;
 
 ###############################################################################
 # Automatic install

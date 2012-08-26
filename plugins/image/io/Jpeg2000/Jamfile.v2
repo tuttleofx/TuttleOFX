@@ -17,22 +17,11 @@ project
 use-project /libopenjpeg : $(3RD_PARTY)/openjpeg ;
 
 ###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
-
-###############################################################################
 # Product 
 ###############################################################################
 plugin Jpeg2000 :
-		[ glob-tree *.cpp ]
+		[ glob-tree *.cpp : tests ]
 		/tuttleplugin/<link>static
-		opengl
 		/libopenjpeg/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
@@ -42,4 +31,12 @@ plugin Jpeg2000 :
 # Automatic install
 ###############################################################################
 auto_install Jpeg2000 : $(DIST) ;
+
+###############################################################################
+# Test plugin
+###############################################################################
+alias io-tests
+	:
+		tests
+	;
 

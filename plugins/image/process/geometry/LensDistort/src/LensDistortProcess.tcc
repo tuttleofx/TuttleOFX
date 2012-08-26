@@ -12,7 +12,7 @@ namespace lens {
 
 template<class View>
 LensDistortProcess<View>::LensDistortProcess( LensDistortPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
+	: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
 	, _plugin( instance )
 {}
 

@@ -236,6 +236,8 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		BOOST_THROW_EXCEPTION( exception::Data()
 			<< exception::user( "Dpx: Unable to write data (DPX finish)" ) );
 	}
+	
+	stream.Close();
 }
 
 template<class View>
@@ -247,7 +249,7 @@ void DPXWriterProcess<View>::writeImage( ::dpx::Writer& writer, View& src, ::dpx
 	typedef typename image_t::view_t view_t;
 	image_t img( src.width(), src.height() );
 	view_t  dvw( view( img ) );
-	copy_and_convert_pixels( src, dvw );
+	copy_and_convert_pixels( clamp_view( src ), dvw );
 	
 	typedef std::vector<char, OfxAllocator<char> > DataVector;
 	const size_t rowBytesToCopy = src.width() * pixelSize;

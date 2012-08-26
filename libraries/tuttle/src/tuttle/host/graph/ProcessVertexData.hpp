@@ -33,6 +33,14 @@ public:
 
 	ProcessVertexData( const ProcessVertexData& other ) { operator=( other ); }
 	~ProcessVertexData() {}
+	
+	/**
+	 * Clear all time dependant datas.
+	 */
+	void clearTimeInfo()
+	{
+		_times.clear();
+	}
 
 public:
 	friend std::ostream& operator<<( std::ostream& os, const This& vData );
@@ -50,8 +58,11 @@ public:
 	std::size_t _outDegree; ///< number of connected input clips
 	std::size_t _inDegree; ///< number of nodes using the output of this node
 
+	///@brief All time dependant datas.
+	///@{
 	typedef std::set<OfxTime> TimesSet;
-	TimesSet _times;
+	TimesSet _times; ///< times needed for a specific time
+	///@}
 };
 
 }

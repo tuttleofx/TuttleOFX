@@ -39,7 +39,6 @@ class ProcessVertexAtTimeInfo;
 }
 
 class ImageEffectNode;
-class InputBufferNode;
 
 
 class INode : private boost::noncopyable
@@ -74,9 +73,6 @@ public:
 	ImageEffectNode& asImageEffectNode();
 	const ImageEffectNode& asImageEffectNode() const;
 
-	InputBufferNode& asInputBufferNode();
-	const InputBufferNode& asInputBufferNode() const;
-
 	virtual std::vector<int> getVersion() const = 0;
 	std::string getVersionStr() const;
 
@@ -98,8 +94,8 @@ public:
 	virtual attribute::ClipImage&       getClip( const std::string& name, const bool acceptPartialName = false ) = 0;
 	virtual const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const = 0;
 
-	attribute::ClipImage&       getOutputClip()       { return getClip( kOfxOutputAttributeName ); }
-	const attribute::ClipImage& getOutputClip() const { return getClip( kOfxOutputAttributeName ); }
+	attribute::ClipImage&       getOutputClip()       { return getClip( kOfxImageEffectOutputClipName ); }
+	const attribute::ClipImage& getOutputClip() const { return getClip( kOfxImageEffectOutputClipName ); }
 
 	virtual ofx::attribute::OfxhParamSet& getParamSet() = 0;
 	virtual const ofx::attribute::OfxhParamSet& getParamSet() const = 0;
@@ -110,8 +106,12 @@ public:
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
-	virtual void getTimeDomain( OfxRangeD& range ) const = 0;
+	virtual OfxRangeD computeTimeDomain() = 0;
 
+//	virtual OfxTime mapInputTime( const OfxTime time ) const = 0;
+	
+	virtual OfxRangeD getTimeDomain() const = 0;
+	
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.
 	 * @param[in] processData

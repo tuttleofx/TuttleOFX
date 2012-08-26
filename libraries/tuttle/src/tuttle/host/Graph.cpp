@@ -1,5 +1,4 @@
 #include "Graph.hpp"
-#include "InputBufferNode.hpp"
 #include "graph/ProcessGraph.hpp"
 
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
@@ -22,19 +21,12 @@ Graph::Graph()
 Graph::~Graph()
 {}
 
-InputBufferNode& Graph::createInputBuffer()
+InputBufferWrapper Graph::createInputBuffer()
 {
-	InputBufferNode* node = new InputBufferNode();
-
-	std::stringstream uniqueName;
-	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
-	node->setName( uniqueName.str() );
-
-	std::string key( node->getName() ); // for constness
-	_nodes.insert( key, node );
-	addToInternalGraph( *node );
-
-	return *node;
+	Node& node = createNode( "tuttle.inputbuffer" );
+	InputBufferWrapper nodeWrapper( node );
+	
+	return nodeWrapper;
 }
 
 Graph::Node& Graph::createNode( const std::string& id )
@@ -262,14 +254,29 @@ void Graph::init()
 //void Graph::unconnectNode( const Node& node )
 //{}
 
-memory::MemoryCache Graph::compute( const std::list<std::string>& nodes, const ComputeOptions& options )
+// shortcut
+bool Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
+{
+	ComputeOptions realOptions( options );
+	realOptions.setReturnBuffers( false );
+	
+	memory::MemoryCache emptyMemoryCache;
+	return privateCompute( emptyMemoryCache, nodes, realOptions );
+}
+
+bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
+{
+	return privateCompute( memoryCache, nodes, options );
+}
+
+bool Graph::privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
-
-	graph::ProcessGraph process( *this, nodes );
-	return process.process( options );
+	
+	graph::ProcessGraph process( *this, nodes.getNodes() );
+	return process.process( memoryCache, options );
 }
 
 std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )

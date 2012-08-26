@@ -5,7 +5,7 @@ namespace move2D {
 
 template<class View>
 Move2DProcess<View>::Move2DProcess( Move2DPlugin &effect )
-: ImageGilFilterProcessor<View>( effect, eImageOrientationFromTopToBottom )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationFromBottomToTop )
 , _plugin( effect )
 {
 }

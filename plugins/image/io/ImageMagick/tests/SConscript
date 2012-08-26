@@ -1,0 +1,9 @@
+Import( 'project', 'libs' )
+
+project.UnitTest(
+	dirs = ['.'],
+	libraries = [
+		libs.tuttleTest,
+		]
+	)
+

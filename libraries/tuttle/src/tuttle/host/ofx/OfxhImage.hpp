@@ -54,12 +54,20 @@ class OfxhImageEffectNode;
  */
 class OfxhImage : public property::OfxhSet
 {
+public:
+	enum EReferenceOwner
+	{
+		eReferenceOwnerHost,
+		eReferenceOwnerPlugin
+	};
+	
 protected:
 	/// called during ctors to get bits from the clip props into ours
 	void initClipBits( attribute::OfxhClip& instance );
 	static std::ptrdiff_t _count; ///< temp.... for check
 	std::ptrdiff_t _id; ///< temp.... for check
-	std::ptrdiff_t _referenceCount; ///< reference count on this image
+	typedef std::map<EReferenceOwner, std::ptrdiff_t> RefMap;
+	RefMap _referenceCount; ///< reference count on this image
 	std::string _clipName; ///< for debug
 	OfxTime _time; ///< for debug
 
@@ -148,12 +156,12 @@ public:
 
 	EPixelComponent getComponentsType() const;
 
-	int getReferenceCount() const {  return _referenceCount; }
+	int getReferenceCount( const EReferenceOwner from ) const;
 
-	void addReference( const std::size_t n = 1 );
+	void addReference( const EReferenceOwner from, const std::size_t n = 1 );
 	
 	/// release the reference count, which, if zero, deletes this
-	bool releaseReference();
+	bool releaseReference( const EReferenceOwner from );
 };
 
 }

@@ -85,8 +85,8 @@ lib imagemagick : : <file>$(3RD_PARTY)/imagemagick/magick/.libs/libMagickCore.so
 # website  : http://www.libjpeg-turbo.org/
 # download : http://sourceforge.net/projects/libjpeg-turbo/
 ##############################################################################
-lib turbojpeg	: : <file>$(PATH_LIBS)/libjpeg.so.62.0.0
-		: : <include>$(PATH_INCLUDE) <link>shared ;
+lib turbojpeg	: : <file>$(PATH_LIBS)/libturbojpeg.so
+		: : <include>$(PATH_INCLUDE) ;
 
 ##############################################################################
 # name     : FFMpeg and 3rdParty

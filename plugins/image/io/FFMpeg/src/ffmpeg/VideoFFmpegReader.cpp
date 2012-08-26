@@ -58,11 +58,6 @@ bool VideoFFmpegReader::open( const std::string& filename )
 
 	_isOpen = 0;
 
-	if( !fs::exists( filename ) )
-	{
-		std::cerr << "ffmpegReader: the file doesn't exist (\"" << filename << "\")" << std::endl;
-		return false;
-	}
 #if LIBAVCODEC_VERSION_MAJOR <= 52
 	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, _params );
 #else

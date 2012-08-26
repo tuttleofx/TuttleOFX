@@ -87,7 +87,7 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin&         p
 	, _created( false )
 	, _continuousSamples( false )
 	, _frameVarying( false )
-	, _outputFrameRate( 24 )
+	, _outputFrameRate( 0 )
 {
 	_properties.setChainedSet( &descriptor.getProperties() );
 
@@ -369,7 +369,7 @@ void OfxhImageEffectNode::examineOutArgs( const std::string& action, OfxStatus, 
 bool OfxhImageEffectNode::checkClipConnectionStatus() const
 {
 	std::map<std::string, attribute::OfxhClipImage*>::const_iterator i;
-	for( i = _clips.begin(); i != _clips.end(); ++i )
+	for( i = _clipImages.begin(); i != _clipImages.end(); ++i )
 	{
 		if( !i->second->isOptional() && !i->second->isConnected() )
 		{
@@ -528,8 +528,8 @@ void OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName
 						     OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
 	_clipPrefsDirty = true;
-	ClipImageMap::iterator it = _clips.find( clipName );
-	if( it == _clips.end() )
+	ClipImageMap::iterator it = _clipImages.find( clipName );
+	if( it == _clipImages.end() )
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatFailed ) );
 
 	property::OfxhPropSpec stuff[] = {
@@ -769,7 +769,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		{
 			// general context is the union of all the non optional clips
 			bool gotOne = false;
-			BOOST_FOREACH( const ClipImageMap::value_type& clipPair, _clips )
+			BOOST_FOREACH( const ClipImageMap::value_type& clipPair, _clipImages )
 			{
 				attribute::OfxhClipImage* clip = clipPair.second;
 				if( ! clip->isOutput() && clip->isConnected() )
@@ -884,7 +884,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 	if( !supportsTiles() )
 	{
 		/// No tiling support on the effect at all. So set the roi of each input clip to be the RoD of that clip.
-		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clips )
+		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clipImages )
 		{
 			if( ! clip.second->isOutput() ||
 			    getContext() == kOfxImageEffectContextGenerator ||
@@ -917,7 +917,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		property::OfxhSet outArgs;
 		std::list<std::string> keepPropNamesOwnership;
 		
-		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clips )
+		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clipImages )
 		{
 			if( ! clip.second->isOutput() ||
 			    getContext() == kOfxImageEffectContextGenerator ||
@@ -949,7 +949,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 			BOOST_THROW_EXCEPTION( OfxhException( status ) );
 
 		/// set the thing up
-		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clips )
+		BOOST_FOREACH( const ClipImageMap::value_type& clip, _clipImages )
 		{
 			if( ! clip.second->isOutput() ||
 			    getContext() == kOfxImageEffectContextGenerator ||
@@ -1011,7 +1011,7 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 		property::OfxhSet inArgs( inStuff );
 		inArgs.setDoubleProperty( kOfxPropTime, time );
 
-		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
+		for( ClipImageMap::const_iterator it = _clipImages.begin(), itEnd = _clipImages.end();
 		     it != itEnd;
 		     ++it )
 		{
@@ -1045,7 +1045,7 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 	OfxRangeD defaultRange;
 	defaultRange.min = defaultRange.max = time;
 
-	for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
+	for( ClipImageMap::const_iterator it = _clipImages.begin(), itEnd = _clipImages.end();
 	     it != itEnd;
 	     ++it )
 	{
@@ -1221,8 +1221,8 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	double frameRate            = 0;
 	std::string premult         = kOfxImageOpaque;
 
-	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     it++ )
 	{
 		attribute::OfxhClipImage* clip = it->second;
@@ -1230,7 +1230,10 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 		// If input clip
 		if( !clip->isOutput() )
 		{
-			frameRate = maximum( frameRate, clip->getFrameRate() );
+			if( clip->isConnected() )
+			{
+				frameRate = maximum( frameRate, clip->getFrameRate() );
+			}
 
 			std::string rawComp = clip->getUnmappedComponents();
 			rawComp = clip->findSupportedComp( rawComp ); // turn that into a comp the plugin expects on that clip
@@ -1250,6 +1253,10 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 		}
 	}
 
+	// default value if the generator don't set the framerate
+	if( frameRate == 0 )
+		frameRate = 25;
+	
 	/// set some stuff up
 	_outputFrameRate         = frameRate;
 	_outputFielding          = getDefaultOutputFielding();
@@ -1261,8 +1268,8 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	deepestBitDepth = bestSupportedBitDepth( deepestBitDepth );
 
 	/// now add the clip gubbins to the out args
-	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;
@@ -1327,8 +1334,8 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, 
 	outArgs.setDoubleProperty( kOfxImageEffectPropFrameRate, _outputFrameRate );
 
 	/// now add the clip gubbins to the out args
-	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;
@@ -1356,8 +1363,8 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, 
 
 bool OfxhImageEffectNode::isLeafNode() const
 {
-	for( ClipImageMap::const_iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;
@@ -1372,8 +1379,8 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 {
 	const bool isLeaf = isLeafNode();
 
-	for( ClipImageMap::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
 	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;

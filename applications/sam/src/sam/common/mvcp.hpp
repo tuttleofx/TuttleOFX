@@ -2,7 +2,7 @@
 #include <sam/common/color.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/clip/Sequence.hpp>
+#include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -12,6 +12,8 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
+
+#include <Sequence.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -27,13 +29,12 @@
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace bal = boost::algorithm;
-namespace ttl = tuttle::common;
-
+namespace sp  = sequenceParser;
 sam::Color _color;
 
 bool enableColor = false;
 
-void copy_sequence(const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage, const ttl::Sequence& d, int offset = 0) {
+void copy_sequence(const sp::Sequence& s, const sp::Time firstImage, const sp::Time lastImage, const sp::Sequence& d, int offset = 0) {
     // accept negative values in sequence
     //	if( ( offset <0 ) & ( s.getFirstTime()+offset <0 ) )
     //	{
@@ -47,9 +48,9 @@ void copy_sequence(const ttl::Sequence& s, const ttl::Sequence::Time firstImage,
     //		TUTTLE_COUT("error in index of first-image and/or last image");
     //		return;
     //	}
-    ttl::Sequence::Time begin;
-    ttl::Sequence::Time end;
-    ttl::Sequence::Time step;
+    sp::Time begin;
+    sp::Time end;
+    sp::Time step;
     if (offset > 0) {
         begin = lastImage;
         end = firstImage;
@@ -60,7 +61,7 @@ void copy_sequence(const ttl::Sequence& s, const ttl::Sequence::Time firstImage,
         step = s.getStep();
     }
 
-    for (ttl::Sequence::Time t = begin; (offset > 0) ? (t >= end) : (t <= end); t += step) {
+    for( sp::Time t = begin; (offset > 0) ? (t >= end) : (t <= end); t += step) {
         bfs::path sFile = s.getAbsoluteFilenameAt(t);
         //TUTTLE_TCOUT_VAR( sFile );
         if (bfs::exists(sFile)) {
@@ -105,24 +106,24 @@ void copy_sequence(const ttl::Sequence& s, const ttl::Sequence::Time firstImage,
     }
 }
 
-void copy_sequence(const ttl::Sequence& s, const ttl::Sequence& d, const ttl::Sequence::Time offset = 0) {
+void copy_sequence(const sp::Sequence& s, const sp::Sequence& d, const sp::Time offset = 0) {
     copy_sequence(s, s.getFirstTime(), s.getLastTime(), d, offset);
 }
 
-void copy_sequence(const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage, const bfs::path& d, const ttl::Sequence::Time offset = 0) {
-    ttl::Sequence dSeq(s); // create dst from src
+void copy_sequence(const sp::Sequence& s, const sp::Time firstImage, const sp::Time lastImage, const bfs::path& d, const sp::Time offset = 0) {
+    sp::Sequence dSeq(s); // create dst from src
     dSeq.setDirectory(d); // modify path
     copy_sequence(s, firstImage, lastImage, dSeq, offset);
 }
 
-void copy_sequence(const ttl::Sequence& s, const bfs::path& d, const ttl::Sequence::Time offset = 0) {
+void copy_sequence(const sp::Sequence& s, const bfs::path& d, const sp::Time offset = 0) {
     copy_sequence(s, s.getFirstTime(), s.getLastTime(), d, offset);
 }
 
 int sammvcp(int argc, char** argv) {
 
     using namespace sam;
-    ttl::EMaskOptions descriptionMask = ttl::eMaskOptionsNone; // by default show nothing
+    sp::EMaskOptions descriptionMask = sp::eMaskOptionsNone; // by default show nothing
     std::string availableExtensions;
     std::vector<std::string> paths;
     std::vector<std::string> filters;
@@ -285,7 +286,7 @@ int sammvcp(int argc, char** argv) {
 
     if (vm.count(kAllOptionLongName)) {
         // add .* files
-        descriptionMask |= ttl::eMaskOptionsDotFile;
+        descriptionMask |= sp::eMaskOptionsDotFile;
     }
 
     if (vm.count(kOffsetOptionLongName)) {
@@ -345,10 +346,10 @@ int sammvcp(int argc, char** argv) {
         sequencePattern = "";
     }
 
-    ttl::Sequence dstSeq(dstPath, descriptionMask);
+    sp::Sequence dstSeq(dstPath, descriptionMask);
 
     if (sequencePattern.size() > 0) {
-        dstIsSeq = dstSeq.initFromPattern(dstPath, sequencePattern, 0, 0, 1, descriptionMask, ttl::Sequence::ePatternAll);
+        dstIsSeq = dstSeq.initFromPattern(dstPath, sequencePattern, 0, 0, 1, descriptionMask, sp::Sequence::ePatternAll);
         if (!dstIsSeq) // there is a pattern, but it's not valid.
         {
             TUTTLE_CERR( _color._error << "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." << _color._std);
@@ -358,8 +359,8 @@ int sammvcp(int argc, char** argv) {
 
     try {
         BOOST_FOREACH( const bfs::path& srcPath, paths ) {
-            ttl::Sequence srcSeq(srcPath.branch_path(), descriptionMask);
-            const bool srcIsSeq = srcSeq.initFromDetection(srcPath.string(), ttl::Sequence::ePatternDefault);
+            sp::Sequence srcSeq(srcPath.branch_path(), descriptionMask);
+            const bool srcIsSeq = srcSeq.initFromDetection(srcPath.string(), sp::Sequence::ePatternDefault);
             if (!srcIsSeq) {
                 TUTTLE_CERR( _color._error << "Input is not a sequence: " << tuttle::quotes(srcPath.string()) << "." << _color._std);
                 return -1;
@@ -369,8 +370,8 @@ int sammvcp(int argc, char** argv) {
                 return -1;
             }
 
-            ttl::Sequence::Time first = hasInputFirst ? inputFirst : srcSeq.getFirstTime();
-            ttl::Sequence::Time last = hasInputLast ? inputLast : srcSeq.getLastTime();
+            sp::Time first = hasInputFirst ? inputFirst : srcSeq.getFirstTime();
+            sp::Time last = hasInputLast ? inputLast : srcSeq.getLastTime();
             switch (offsetMode) {
                 case eOffsetModeNotSet: {
                     offset = 0;

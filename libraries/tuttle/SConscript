@@ -24,6 +24,7 @@ project.StaticLibrary(
 		includes  = ['src','src/tuttle/host/core'],
 		libraries = [
 				libs.tuttleCommon,
+				libs.sequenceParser,
 				libs.openfxPluginSupportHack,
 				libs.terry,
 				libs.gl,
@@ -38,6 +39,7 @@ tuttleHostLibs = [
 		libs.boost_filesystem,
 		libs.boost_serialization,
 		libs.boost_thread,
+		libs.boost_atomic,
 		libs.boost_gil,
 		libs.boost_program_options,
 	]
@@ -58,6 +60,16 @@ project.StaticLibrary(
 		globalEnvFlags = tuttleHostFlags,
 		shared = True
 	)
+
+project.ObjectLibrary(
+		'tuttleTest',
+		includes  = ['src'],
+		libraries = [
+			libs.tuttleHost,
+			libs.boost_unit_test_framework,
+			]
+	)
+
 
 pythonOutputDir = project.inOutputDir('python/pyTuttle')
 

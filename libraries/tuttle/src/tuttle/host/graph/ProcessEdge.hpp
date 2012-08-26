@@ -32,6 +32,8 @@ public:
 		IEdge::operator=( e );
 		return *this;
 	}
+	
+	void clearTimeInfo() { _timesNeeded.clear(); }
 
 	std::ostream& exportDotDebug( std::ostream& os ) const;
 

@@ -8,15 +8,25 @@ import testing ;
 ###############################################################################
 
 project 
-    : requirements	<define>BOOST_TEST_MAIN
-    			<include>.
-    ;
-    
-alias dependencies
-    : 
-	/boost//unit_test_framework
-	/tuttlecommon
-	/tuttlehost
-    ; 
+	:
+		requirements
+		<define>BOOST_TEST_MAIN
+		<include>.
+		<include>dummy
+	;
 
-run   main.cpp dependencies ;
+alias dependencies
+	:
+		/boost//unit_test_framework
+		/boost//python
+		/tuttlehost
+		/python
+	; 
+
+run
+		main.cpp
+		dummy/DummyAttribute.cpp
+		dummy/DummyEdge.cpp
+		dummy/DummyVertex.cpp
+		dependencies
+	;
