@@ -40,7 +40,7 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 
 	if( !bfs::exists( filename ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 			<< exception::user( "OpenImageIO: Unable to open file" )
 			<< exception::filename( filename ) );
 	}
