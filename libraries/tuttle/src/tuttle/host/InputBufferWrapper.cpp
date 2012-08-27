@@ -32,15 +32,17 @@ void InputBufferWrapper::setBuffer( void* rawBuffer )
 		);
 }
 
-void InputBufferWrapper::setArrayBuffer( void* rawBuffer, const int width, const int height )
+void InputBufferWrapper::set2DArrayBuffer( void* rawBuffer, const int width, const int height )
 {
 	setBuffer( rawBuffer );
 	setSize( width, height );
 	setComponents( ePixelComponentAlpha );
 }
 
-void InputBufferWrapper::setArrayBuffer( void* rawBuffer, const int width, const int height, const int nbComponents )
+void InputBufferWrapper::set3DArrayBuffer( void* rawBuffer, const int width, const int height, const int nbComponents )
 {
+	TUTTLE_TCOUT_INFOS;
+	TUTTLE_TCOUT_VAR3( width, height, nbComponents );
 	setBuffer( rawBuffer );
 	setSize( width, height );
 	switch( nbComponents )

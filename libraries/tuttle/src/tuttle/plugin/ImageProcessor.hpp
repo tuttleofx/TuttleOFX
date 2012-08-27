@@ -37,18 +37,18 @@ protected:
 	OfxRectI _dstPixelRod;
 	OfxPointI _dstPixelRodSize;
 	OfxPointI _renderWindowSize;
+	EImageOrientation _imageOrientation;
 
 private:
 	unsigned int _nbThreads;
-	EImageOrientation _imageOrientation;
 
 public:
 	/** @brief ctor */
 	ImageProcessor( OFX::ImageEffect& effect, const EImageOrientation imageOrientation )
 		: OfxProgress( effect )
 		, _effect( effect )
-		, _nbThreads( 0 ) // auto, maximum allowable number of CPUs will be used
 		, _imageOrientation( imageOrientation )
+		, _nbThreads( 0 ) // auto, maximum allowable number of CPUs will be used
 	{
 		_renderArgs.renderWindow.x1 = _renderArgs.renderWindow.y1 = _renderArgs.renderWindow.x2 = _renderArgs.renderWindow.y2 = 0;
 		_renderArgs.renderScale.x   = _renderArgs.renderScale.y = 0;

@@ -56,40 +56,40 @@ public:
 	void setMode( const EMode mode );
 	void setBuffer( void* rawBuffer );
 private:
-	void setArrayBuffer( void* rawBuffer, const int width, const int height );
-	void setArrayBuffer( void* rawBuffer, const int width, const int height, const int nbComponents );
+	void set2DArrayBuffer( void* rawBuffer, const int width, const int height );
+	void set3DArrayBuffer( void* rawBuffer, const int width, const int height, const int nbComponents );
 	
 public:
-	void setArrayBuffer( unsigned char* rawBuffer, int height, int width )
+	void set2DArrayBuffer( unsigned char* rawBuffer, int height, int width )
 	{
-		setArrayBuffer( (void*)rawBuffer, width, height, 1 );
+		set2DArrayBuffer( (void*)rawBuffer, width, height );
 		setBitDepth( eBitDepthUByte );
 	}
-	void setArrayBuffer( unsigned char* rawBuffer, int height, int width, int nbComponents )
+	void set3DArrayBuffer( unsigned char* rawBuffer, int height, int width, int nbComponents )
 	{
-		setArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
+		set3DArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
 		setBitDepth( eBitDepthUByte );
 	}
 	
-	void setArrayBuffer( unsigned short* rawBuffer, int height, int width )
+	void set2DArrayBuffer( unsigned short* rawBuffer, int height, int width )
 	{
-		setArrayBuffer( (void*)rawBuffer, width, height, 1 );
+		set2DArrayBuffer( (void*)rawBuffer, width, height );
 		setBitDepth( eBitDepthUShort );
 	}
-	void setArrayBuffer( unsigned short* rawBuffer, int height, int width, int nbComponents )
+	void set3DArrayBuffer( unsigned short* rawBuffer, int height, int width, int nbComponents )
 	{
-		setArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
+		set3DArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
 		setBitDepth( eBitDepthUShort );
 	}
 	
-	void setArrayBuffer( float* rawBuffer, int height, int width )
+	void set2DArrayBuffer( float* rawBuffer, int height, int width )
 	{
-		setArrayBuffer( (void*)rawBuffer, width, height, 1 );
+		set2DArrayBuffer( (void*)rawBuffer, width, height );
 		setBitDepth( eBitDepthUShort );
 	}
-	void setArrayBuffer( float* rawBuffer, int height, int width, int nbComponents )
+	void set3DArrayBuffer( float* rawBuffer, int height, int width, int nbComponents )
 	{
-		setArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
+		set3DArrayBuffer( (void*)rawBuffer, width, height, nbComponents );
 		setBitDepth( eBitDepthUShort );
 	}
 	

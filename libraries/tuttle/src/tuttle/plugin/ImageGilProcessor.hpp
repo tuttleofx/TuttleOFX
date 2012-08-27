@@ -22,10 +22,6 @@ public:
 protected:
 	View _dstView; ///< image to process into
 
-private:
-	unsigned int _nbThreads;
-	EImageOrientation _imageOrientation;
-
 public:
 	ImageGilProcessor( OFX::ImageEffect& effect, const EImageOrientation imageOrientation )
 		: ImageProcessor( effect, imageOrientation )

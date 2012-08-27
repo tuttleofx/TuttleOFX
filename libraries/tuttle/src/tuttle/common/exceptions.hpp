@@ -356,6 +356,9 @@ struct Data : virtual public Value {};
 /** @brief Something that could work, but is not implemeted. */
 struct NotImplemented : virtual public Unsupported {};
 
+/** @brief The parameter doesn't make sense. */
+struct WrongParameter : virtual public Value {};
+
 /**
  * @brief File manipulation error.
  * eg. read only, file doesn't exists, etc.

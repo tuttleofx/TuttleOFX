@@ -109,7 +109,6 @@ View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation o
 		}
 	}
 	
-	
 	TUTTLE_TCOUT_VAR( resView.pixels().row_size() );
 
 	TUTTLE_TCOUT_X( 50, "-" );
