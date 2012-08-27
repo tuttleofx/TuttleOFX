@@ -530,14 +530,14 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 
 				TUTTLE_COUT( " " );
 			}
-			catch( tuttle::exception::FileNotExist& e ) // @todo tuttle: change that.
+			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{
-				if( options.getContinueOnError() && ! options.getAbort() )
+				if( ! options.getAbort() )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
-	#ifndef TUTTLE_PRODUCTION
+#ifndef TUTTLE_PRODUCTION
 					TUTTLE_COUT_ERROR( boost::diagnostic_information(e) );
-	#endif
+#endif
 				}
 				else
 				{

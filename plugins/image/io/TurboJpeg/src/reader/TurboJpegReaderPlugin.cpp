@@ -87,7 +87,7 @@ bool TurboJpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinition
 	}
 	catch( std::exception& e )
 	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 			<< exception::user( "TurboJpeg: Unable to open file" )
 			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}

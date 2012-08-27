@@ -90,7 +90,7 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 	{
 		imageInfo      = DestroyImageInfo( imageInfo );
 		exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 			<< exception::user( "ImageMagick: Unable to open file" )
 			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}
