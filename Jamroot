@@ -131,6 +131,7 @@ project
 		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
 
 		<os>LINUX:<define>__LINUX__
+		<os>LINUX:<define>__UNIX__
 
 		<define>MAGICKCORE_QUANTUM_DEPTH=16
 		<define>QUANTUM_DEPTH=16
