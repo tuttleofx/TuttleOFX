@@ -389,6 +389,20 @@ struct FileNotExist : virtual public File
 };
 
 /**
+ * @brief File In a sequence doesn't exists.
+ */
+struct FileInSequenceNotExist : virtual public File
+{
+	FileInSequenceNotExist()
+	{}
+	FileInSequenceNotExist( const std::string path )
+	{
+		*this << user("No such file.");
+		*this << filename(path);
+	}
+};
+
+/**
  * @brief Directory doesn't exists.
  */
 struct NoDirectory : virtual public File

@@ -43,11 +43,17 @@ bool JpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgum
 	}
 	catch( std::exception& e )
 	{
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
+			<< exception::user( "Jpeg: Unable to open file" )
+			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
+	}
+	catch( ... )
+	{
 		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 			<< exception::user( "Jpeg: Unable to open file" )
 			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}
-
+	
 	return true;
 }
 

@@ -177,6 +177,11 @@ static const char* const kFirstImageOptionLongName = "first-image";
 static const char* const kFirstImageOptionString = kFirstImageOptionLongName;
 static const char* const kFirstImageOptionMessage = "specify the first image";
 
+//--format
+static const char* const kFormatOptionLongName = "format";
+static const char* const kFormatOptionString = kFormatOptionLongName;
+static const char* const kFormatOptionMessage = "display supported formats";
+
 //--full-display
 static const char* const kFullDisplayOptionLongName = "full-display";
 static const char* const kFullDisplayOptionString = kFullDisplayOptionLongName;
@@ -276,6 +281,11 @@ static const char* const kParamValuesOptionMessage = "display parameter values";
 static const char* const kPropertiesOptionLongName = "properties";
 static const char* const kPropertiesOptionString = kPropertiesOptionLongName;
 static const char* const kPropertiesOptionMessage = "list properties of the OpenFX plugin";
+
+//--plugins
+static const char* const kPluginsOptionLongName = "plugins";
+static const char* const kPluginsOptionString = kPropertiesOptionLongName;
+static const char* const kPluginsOptionMessage = "list of associated plugins for this dummy node";
 
 //--reader
 static const char* const kReaderOptionLongName = "reader";

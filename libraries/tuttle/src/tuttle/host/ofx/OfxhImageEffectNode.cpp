@@ -863,7 +863,9 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 	{
 		// defined to process sequences with hole
 		// find a best way to do this ??
-		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist() );
+		if( _context == kOfxImageEffectContextReader )
+			BOOST_THROW_EXCEPTION( tuttle::exception::FileInSequenceNotExist() );
+		
 		BOOST_THROW_EXCEPTION( OfxhException( stat, "getRegionOfDefinitionAction error." ) );
 	}
 }

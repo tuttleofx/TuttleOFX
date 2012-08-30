@@ -90,6 +90,9 @@ exe sam-do :
 		[ glob src/sam/do/*.cpp ]
 
 		/boost//program_options/<link>static
+		/boost//system/<link>static
+		/boost//filesystem/<link>static
+		/boost//regex/<link>static
 		/boost//python/<link>shared
 		$(SEQUENCE_PARSER)//sequence/<link>static
 		

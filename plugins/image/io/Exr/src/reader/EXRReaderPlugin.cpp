@@ -209,7 +209,7 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	}
 	catch( ... )
 	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 		<< exception::user( "EXR: Unable to open file." )
 		<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}

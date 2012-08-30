@@ -110,7 +110,7 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 	}
 	if( const int ret = rawProcessor.adjust_sizes_info_only() )
 	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 			<< exception::user( "RAW: Cannot decode infos for file" )
 			<< exception::dev( libraw_strerror( ret ) )
 			<< exception::filename( params._filepath ) );
