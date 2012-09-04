@@ -29,6 +29,14 @@ InputBufferWrapper Graph::createInputBuffer()
 	return nodeWrapper;
 }
 
+OutputBufferWrapper Graph::createOutputBuffer()
+{
+	Node& node = createNode( "tuttle.outputbuffer" );
+	OutputBufferWrapper nodeWrapper( node );
+	
+	return nodeWrapper;
+}
+
 Graph::Node& Graph::createNode( const std::string& id )
 {
 	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );

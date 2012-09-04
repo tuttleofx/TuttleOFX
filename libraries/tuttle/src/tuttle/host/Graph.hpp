@@ -6,6 +6,7 @@
 #include "Core.hpp"
 #include "INode.hpp"
 #include "InputBufferWrapper.hpp"
+#include "OutputBufferWrapper.hpp"
 #include "exceptions.hpp"
 
 #include <tuttle/host/graph/InternalGraph.hpp>
@@ -57,6 +58,12 @@ public:
 	 *        to give an input buffer.
 	 */
 	InputBufferWrapper createInputBuffer();
+
+	/**
+	 * @brief Create a new output buffer node in the current graph,
+	          wrapped up for easy use
+	 */
+	OutputBufferWrapper createOutputBuffer();
 
 	/**
 	 * @brief Create a new node in the current graph.
