@@ -1,11 +1,10 @@
 
-
 ![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX - version beta
 ========================
 **Project under early development.**
   
 TuttleOFX project is an image processing framework based on [OpenFX plugin format](http://openfx.sourceforge.net/).  
-You can going to official website for more informations :[https://sites.google.com/site/tuttleofx/](https://sites.google.com/site/tuttleofx/).
+More informations on official website :[https://sites.google.com/site/tuttleofx/](https://sites.google.com/site/tuttleofx/).
 
 The project is composed of 4 main parts:  
 > - **Tuttle Host Library**, an OpenFX host that allows you to manipulate a graph of OpenFX nodes.  
