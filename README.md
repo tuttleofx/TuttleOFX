@@ -31,13 +31,16 @@ Compilation
 >    `git submodule update -i`  
 
 - External libraries  
-> 1. You can get all external libraries using a python script:  
->>    `cd 3rdParty`  
->>    `python init.py`  
->
-> 2. Use libraries installed on your computer.  
-In this case, you need to use the scons build system.
-	
+> 1. Build from source code
+> You can get all external libraries source code using a python script:
+>>    `cd 3rdParty`
+>>    `python init.py`
+> And follow build instructions for each library.
+
+> 2. Use packaging tools or installers
+See the website instructions to install all dependencies. There are command lines (apt-get, macports, ...) to install all dependencies for some standard distributions, and links to windows installers.
+[Extern libraries](https://sites.google.com/site/tuttleofx/development/build/libraries)
+
 - Compilation
 > see [**INSTALL.scons**](https://github.com/tuttleofx/TuttleOFX/blob/master/INSTALL.scons)
 
@@ -48,7 +51,7 @@ Plugin creation
 There is a script to help you making new plugins.
 > `python $TUTTLE_ROOT/plugins/_scripts/newPlugin.py`  
 
-This script asks you informations about your plugin and create a new plugin source tree in your current directory.
+This script asks you information about your plugin and create a new plugin source tree in your current directory.
 
 
 Tested compilers
