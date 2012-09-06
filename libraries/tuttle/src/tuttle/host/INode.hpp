@@ -205,7 +205,9 @@ public:
 	Data& getData();
 	const Data& getData() const;
 	const DataAtTime& getData( const OfxTime time ) const;
+	const DataAtTime& getFirstData() const; 
 	DataAtTime& getData( const OfxTime time );
+	DataAtTime& getFirstData();
 
 	#endif
 };

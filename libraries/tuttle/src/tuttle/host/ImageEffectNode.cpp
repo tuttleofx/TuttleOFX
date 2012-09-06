@@ -130,8 +130,14 @@ void ImageEffectNode::vmessage( const char* type,
 // get the project size in CANONICAL pixels, so PAL SD return 768, 576
 void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 {
-	xSize = 720;
-	ySize = 576;
+	OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+	xSize = rod.x2 - rod.x1;
+	ySize = rod.y2 - rod.y1;
+	if (xSize < 1 || ySize < 1)
+	  {
+	    xSize = 720;
+	    ySize = 576;
+	  }
 }
 
 // get the project offset in CANONICAL pixels, we are at 0,0
@@ -144,8 +150,14 @@ void ImageEffectNode::getProjectOffset( double& xOffset, double& yOffset ) const
 // get the project extent in CANONICAL pixels, so PAL SD return 768, 576
 void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 {
-	xSize = 720.0;
-	ySize = 576.0;
+	OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+	xSize = rod.x2 - rod.x1;
+	ySize = rod.y2 - rod.y1;
+	if (xSize < 1 || ySize < 1)
+	  {
+	    xSize = 720;
+	    ySize = 576;
+	  }
 }
 
 // get the PAR, SD PAL is 768/720=1.0666
