@@ -532,7 +532,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{
-				if( ! options.getAbort() )
+				if( options.getContinueOnMissingFile() && ! options.getAbort() )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
 #ifndef TUTTLE_PRODUCTION
