@@ -39,9 +39,7 @@ Compilation
 In this case, you need to use the scons build system.
 	
 - Compilation
-> 2 building mode can be used:
-> - [**Boost BJam V2**](http://www.boost.org/boost-build2/) : see INSTALL.bjam
-> - [**Scons**](http://www.scons.org/) : see INSTALL.scons
+> see [**INSTALL.scons**](https://github.com/tuttleofx/TuttleOFX/blob/master/INSTALL.scons)
 
 ___
 Plugin creation
@@ -72,7 +70,7 @@ More information
 Check TuttleOFX website for more information. 
 >[http://sites.google.com/site/tuttleofx](http://sites.google.com/site/tuttleofx)
 
-TuttleOfx public repository.
+TuttleOFX public repository.
 >[http://github.com/tuttleofx/TuttleOFX](http://github.com/tuttleofx/TuttleOFX)
 	
 OpenFX plugin standard.
