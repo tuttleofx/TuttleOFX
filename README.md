@@ -1,18 +1,16 @@
 
-
 ![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX - version beta
 ========================
 **Project under early development.**
   
 TuttleOFX project is an image processing framework based on [OpenFX plugin format](http://openfx.sourceforge.net/).  
-You can going to official website for more informations :[https://sites.google.com/site/tuttleofx/](https://sites.google.com/site/tuttleofx/).
+You can going to official website for more informations : [https://sites.google.com/site/tuttleofx/](https://sites.google.com/site/tuttleofx/).
 
-The project is composed of 4 main parts:  
+The project is composed of 4 main parts:
 > - **Tuttle Host Library**, an OpenFX host that allows you to manipulate a graph of OpenFX nodes.  
 > - **Tuttle Plugin Library**, a library to facilitate the creation of OpenFX plugins.  
 > - **Tuttle plugins**, a set of OpenFX plugins for image processing and image/video IO.  
 > - **Sam**, a set of command line tools.  
-
 
 
 
@@ -30,19 +28,21 @@ Compilation
 >    `cd TuttleOFX`  
 >    `git submodule update -i`  
 
-- External libraries  
-> 1. Build from source code
-> You can get all external libraries source code using a python script:
->>    `cd 3rdParty`
->>    `python init.py`
-> And follow build instructions for each library.
-
-> 2. Use packaging tools or installers
-See the website instructions to install all dependencies. There are command lines (apt-get, macports, ...) to install all dependencies for some standard distributions, and links to windows installers.
-[Extern libraries](https://sites.google.com/site/tuttleofx/development/build/libraries)
+- External libraries
+>
+>    1. Build from source code  
+>       You can get all external libraries source code using a python script:  
+>       `cd 3rdParty`  
+>       `python init.py`  
+>       And follow build instructions for each library.
+>
+>    2. Use packaging tools or installers
+>    See the website instructions to install all dependencies. There are command lines (apt-get, macports, ...) to install all dependencies for some standard distributions, and links to windows installers.  
+>    [Extern libraries](https://sites.google.com/site/tuttleofx/development/build/libraries)
 
 - Compilation
-> see [**INSTALL.scons**](https://github.com/tuttleofx/TuttleOFX/blob/master/INSTALL.scons)
+
+See [**INSTALL.md**](https://github.com/tuttleofx/TuttleOFX/blob/master/INSTALL.md)
 
 ___
 Plugin creation
