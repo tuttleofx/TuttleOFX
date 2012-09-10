@@ -1,6 +1,7 @@
 %include <tuttle/host/global.i>
 %include <tuttle/host/memory/MemoryCache.i>
 %include <tuttle/host/InputBufferWrapper.i>
+%include <tuttle/host/OutputBufferWrapper.i>
 %include <tuttle/host/ComputeOptions.i>
 %include <tuttle/host/NodeListArg.i>
 %include <tuttle/host/INode.i>
