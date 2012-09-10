@@ -257,11 +257,10 @@ void Graph::init()
 // shortcut
 bool Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
 {
-	ComputeOptions realOptions( options );
-	realOptions.setReturnBuffers( false );
+	const_cast<ComputeOptions&>(options).setReturnBuffers( false );
 	
 	memory::MemoryCache emptyMemoryCache;
-	return privateCompute( emptyMemoryCache, nodes, realOptions );
+	return privateCompute( emptyMemoryCache, nodes, options );
 }
 
 bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
