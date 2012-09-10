@@ -1,5 +1,5 @@
-#ifndef __VIDEOFFMPEGWRITER_HPP__
-#define __VIDEOFFMPEGWRITER_HPP__
+#ifndef _TUTTLE_PLUGIN_FFMPEG_VIDEOFFMPEGWRITER_HPP_
+#define _TUTTLE_PLUGIN_FFMPEG_VIDEOFFMPEGWRITER_HPP_
 
 #include "FFmpeg.hpp"
 #include "FFmpegPreset.hpp"
@@ -7,16 +7,24 @@
 
 #include <tuttle/plugin/global.hpp>
 
+#include <boost/cstdint.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
 
-class VideoFFmpegWriter : public FFmpeg, public FFmpegPreset
+namespace tuttle {
+namespace plugin {
+namespace ffmpeg {
+
+class VideoFFmpegWriter : public FFmpeg
 {
 private:
-	enum WriterError
+	enum EWriterStatus
 	{
-		SUCCESS = 0, IGNORE_FINISH, CLEANUP
+		eWriterStatusSuccess = 0,
+		eWriterStatusIgnoreFinish,
+		eWriterStatusCleanup
 	};
 
 public:
@@ -27,59 +35,59 @@ public:
 		return true;
 	}
 
-	int  execute( uint8_t* in_buffer, int in_width, int height, PixelFormat in_fmt = PIX_FMT_RGB24 );
+	int  execute( boost::uint8_t* const in_buffer, const int in_width, const int height, const PixelFormat in_fmt = PIX_FMT_RGB24 );
 	void finish();
 
 private:
 	void freeFormat();
 
 public:
-	void filename( std::string filename )
+	void setFilename( const std::string& filename )
 	{
 		_filename = filename;
 	}
 
-	std::string filename() const
+	std::string getFilename() const
 	{
 		return _filename;
 	}
 
-	void width( const int width )
+	void setWidth( const int width )
 	{
 		_width = width;
 	}
 
-	int width() const
+	int getWidth() const
 	{
 		return _width;
 	}
 
-	void height( const int height )
+	void setHeight( const int height )
 	{
 		_height = height;
 	}
 
-	int height() const
+	int getHeight() const
 	{
 		return _height;
 	}
 
-	void aspectRatio( double aspectRatio )
+	void setAspectRatio( const double aspectRatio )
 	{
 		_aspectRatio = aspectRatio;
 	}
 
-	double aspectRatio() const
+	double getAspectRatio() const
 	{
 		return _aspectRatio;
 	}
 
-	void fps( const double fps )
+	void setFps( const double fps )
 	{
 		_fps = fps;
 	}
 
-	double fps() const
+	double getFps() const
 	{
 		return _fps;
 	}
@@ -139,7 +147,7 @@ public:
 		_codecName = codec;
 	}
 	
-	void setVideoPreset( const unsigned int id );
+	void setVideoPreset( const int id );
 	
 	void setVideoPreset( const std::string& preset )
 	{
@@ -148,18 +156,21 @@ public:
 
 	void configureFromRead( const VideoFFmpegReader& reader )
 	{
-		width       ( reader.width() );
-		height      ( reader.height() );
-		aspectRatio ( reader.aspectRatio() );
-		fps         ( reader.fps() );
+		setWidth       ( reader.width() );
+		setHeight      ( reader.height() );
+		setAspectRatio ( reader.aspectRatio() );
+		setFps         ( reader.fps() );
 		setBitRate  ( reader.bitRate() );
 		setFormat   ( reader.formatName() );
 		setCodec    ( reader.codecName() );
 	}
 
+	FFmpegPreset& getPresets() { return _preset; }
+	const FFmpegPreset& getPresets() const { return _preset; }
+
 private:
 	AVFormatContext*               _avformatOptions;
-	struct SwsContext*             _sws_context;         ///< contexte de transformation swscale
+	struct SwsContext*             _sws_context; ///< swscale: transformation context
 	AVStream*                      _stream;
 	AVCodec*                       _codec;
 	AVOutputFormat*                _ofmt;
@@ -168,13 +179,15 @@ private:
 	std::vector<std::string>       _codecsLongNames;
 	std::vector<std::string>       _codecsShortNames;
 
-	WriterError                    _error;
+	FFmpegPreset                   _preset;
+	
+	EWriterStatus                    _statusCode;
 	std::string                    _filename;
 	int                            _width;
 	int                            _height;
 	double                         _aspectRatio;
 	PixelFormat                    _out_pixelFormat;
-	// knobs variables
+	
 	float                          _fps;
 	std::string                    _formatName;
 	std::string                    _codecName;
@@ -185,6 +198,10 @@ private:
 	int                            _bFrames;
 	int                            _mbDecision;
 };
+
+}
+}
+}
 
 #endif
 
