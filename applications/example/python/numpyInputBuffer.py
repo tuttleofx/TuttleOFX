@@ -1,14 +1,15 @@
 
 from pyTuttle import tuttle
 import numpy
+import Image
 
-tuttle.Core.instance().preload()
+tuttle.core().preload()
 g = tuttle.Graph()
 
 ib = g.createInputBuffer()
 # numpy array from an image
 img = numpy.asarray(Image.open('data/input.jpg'))
-ii.set2DArrayBuffer( img )
+ib.set3DArrayBuffer( img )
 # generated numpy array
 #x = numpy.array([[.9, .1, .9], [.8, .2, .9]], numpy.float32)
 #ib.set2DArrayBuffer( x )
@@ -16,6 +17,6 @@ ii.set2DArrayBuffer( img )
 w = g.createNode("tuttle.pngwriter")
 w.getParam("filename").setValue("foo.png")
 
-g.connect( ib.node(), w )
+g.connect( ib.getNode(), w )
 g.compute( w )
 
