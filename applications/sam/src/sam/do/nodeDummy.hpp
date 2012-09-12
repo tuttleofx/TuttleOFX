@@ -59,25 +59,32 @@ void addShortNameDummyNodeInList( std::vector<std::string>& list )
 
 void printAllSupportedNodes( const std::string& context )
 {
-	const NodeList& nodeList = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+	const NodeList& nodeList = ttl::core().getImageEffectPluginCache().getPlugins();
 	std::vector<std::string> listOfPlugins;
 	
 	BOOST_FOREACH( ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, nodeList )
 	{
-		const std::string pluginName = node->getRawIdentifier();
-		node->loadAndDescribeActions();
-		if( node->supportsContext( context ) )
+		try
 		{
-			listOfPlugins.push_back( pluginName );
+			const std::string pluginName = node->getRawIdentifier();
+			node->loadAndDescribeActions();
+			if( node->supportsContext( context ) )
+			{
+				listOfPlugins.push_back( pluginName );
+			}
+		}
+		catch(...)
+		{
+			/// @todo Create a list of loading errors?
 		}
 	}
 	
 	// sort results
 	std::sort( listOfPlugins.begin(), listOfPlugins.end() );
 	
-	BOOST_FOREACH( std::string plugin, listOfPlugins )
+	BOOST_FOREACH( const std::string& pluginName, listOfPlugins )
 	{
-		TUTTLE_COUT( plugin );
+		TUTTLE_COUT( pluginName );
 	}
 }
 
@@ -88,21 +95,27 @@ void printAllSupportedExtensions( const std::string& context )
 	
 	BOOST_FOREACH( ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, nodeList )
 	{
-		const std::string pluginName = node->getRawIdentifier();
-		node->loadAndDescribeActions();
-		
-		if( node->supportsContext( context ) )
+		try
 		{
-			//TUTTLE_COUT( pluginName );
-			if( node->getDescriptorInContext( context ).getProperties().hasProperty( kTuttleOfxImageEffectPropSupportedExtensions ) )
+			const std::string pluginName = node->getRawIdentifier();
+			node->loadAndDescribeActions();
+
+			if( node->supportsContext( context ) )
 			{
-				const std::vector<std::string> extensions = getStringValues( node->getDescriptorInContext( context ).getProperties().fetchStringProperty( kTuttleOfxImageEffectPropSupportedExtensions ) );
-				BOOST_FOREACH( std::string ext, extensions )
+				//TUTTLE_COUT( pluginName );
+				if( node->getDescriptorInContext( context ).getProperties().hasProperty( kTuttleOfxImageEffectPropSupportedExtensions ) )
 				{
-					listOfExtensions.push_back( ext );
+					const std::vector<std::string> extensions = getStringValues( node->getDescriptorInContext( context ).getProperties().fetchStringProperty( kTuttleOfxImageEffectPropSupportedExtensions ) );
+					BOOST_FOREACH( std::string ext, extensions )
+					{
+						listOfExtensions.push_back( ext );
+					}
 				}
 			}
+		
 		}
+		catch(...)
+		{}
 	}
 	
 	// sort results
@@ -219,7 +232,7 @@ void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string&
 			displayDummyNodeHelp( dummyNodeName, infoOptions, confOptions, openfxOptions );
 			exit( 0 );
 		}
-		if( kPluginsOptionLongName )
+		if( node_vm.count( kPluginsOptionLongName ) )
 		{
 			if( strcmp( dummyNodeName.c_str(), READER_DUMMY_NAME ) == 0 )
 				printAllSupportedNodes( kOfxImageEffectContextReader );
