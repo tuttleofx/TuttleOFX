@@ -3,7 +3,7 @@ from pyTuttle import tuttle
 import numpy
 import Image
 
-tuttle.Core.instance().preload()
+tuttle.core().preload()
 g = tuttle.Graph()
 
 ii = g.createInputBuffer()

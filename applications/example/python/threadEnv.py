@@ -1,6 +1,6 @@
 from pyTuttle import tuttle
 
-tuttle.Core.instance().preload()
+tuttle.core().preload()
 
 g = tuttle.Graph()
 pngRead = g.createNode('tuttle.pngreader')

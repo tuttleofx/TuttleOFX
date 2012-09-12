@@ -1,7 +1,7 @@
 from pyTuttle import tuttle
 
-core = tuttle.Core.instance()
-core.preload()
+tuttle.core().preload()
 
-print [p for p in core.getPluginCache().getPluginPath()]
-print [p.getIdentifier() for p in core.getPluginCache().getPlugins()]
+print [p for p in tuttle.core().getPluginCache().getPluginPath()]
+print [p.getIdentifier() for p in tuttle.core().getPluginCache().getPlugins()]
+
