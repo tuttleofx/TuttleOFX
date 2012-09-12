@@ -262,7 +262,7 @@ int main( int argc, char** argv )
 			hasRange = ( range.size() == 2 );
 		}
 
-		Core::instance().preload();
+		core().preload();
 		Graph graph;
 		Graph::Node& read = graph.createNode( readerId );
 		Graph::Node& stat = graph.createNode( "tuttle.imagestatistics" );

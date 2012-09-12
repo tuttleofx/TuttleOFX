@@ -304,20 +304,20 @@ int main( int argc, char** argv )
 				
 				// start to analyse and execute all sub-commands //
 				
-				const std::string logFilename = ( ttl::Core::instance().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();
+				const std::string logFilename = ( ttl::core().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();
 				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
 				std::cerr.rdbuf( logFile.rdbuf() ); // redirect output into the file
 
 				// plugins loading
-				ttl::Core::instance().preload();
+				ttl::core().preload();
 
 				if( samdo_vm.count( kNodesOptionLongName ) || samdo_vm.count( kNodesListOptionLongName ) )
 				{
 					TUTTLE_COUT( _color._blue << "NODES" << _color._std );
 					std::vector<std::string> pluginNames;
 					addDummyNodeInList( pluginNames );
-					const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+					const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 
 					BOOST_FOREACH( const ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, allNodes )
 					{
@@ -430,7 +430,7 @@ int main( int argc, char** argv )
 				bpo::options_description all_options;
 				all_options.add( infoOptions ).add( confOptions ).add( openfxOptions );
 
-				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 				
 				std::vector<std::string> idNames; // list of id setted in the command line
 
@@ -886,7 +886,6 @@ int main( int argc, char** argv )
 
 		if( enableVerbose )
 		{
-
 			BOOST_FOREACH( const std::vector<std::string>& node, cl_commands )
 			{
 				TUTTLE_COUT( "[" << node[0] << "]" );

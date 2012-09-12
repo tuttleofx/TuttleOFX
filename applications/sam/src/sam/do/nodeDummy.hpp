@@ -90,7 +90,7 @@ void printAllSupportedNodes( const std::string& context )
 
 void printAllSupportedExtensions( const std::string& context )
 {
-	const NodeList& nodeList = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+	const NodeList& nodeList = ttl::core().getImageEffectPluginCache().getPlugins();
 	std::vector<std::string> listOfExtensions;
 	
 	BOOST_FOREACH( ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, nodeList )
@@ -278,7 +278,7 @@ void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string&
 			const std::string pluginName = node->getRawIdentifier();
 			if( boost::algorithm::find_first( pluginName, dummyNodeName ) )
 			{
-				tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::Core::instance().getImageEffectPluginById( pluginName );
+				tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::core().getImageEffectPluginById( pluginName );
 				plugin->loadAndDescribeActions();
 				const tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet contexts = plugin->getContexts();
 				const tuttle::host::ofx::property::OfxhSet& properties = plugin->getDescriptorInContext( *contexts.begin() ).getProperties();

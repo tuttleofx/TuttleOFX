@@ -1186,7 +1186,7 @@ bool OfxhImageEffectNode::isChromaticComponent( const std::string& str ) const
 bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 {
 	/// does the host support 'em
-	bool hostSupports = tuttle::host::Core::instance().getHost().getProperties().getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
+	bool hostSupports = tuttle::host::core().getHost().getProperties().getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
 
 	/// does the plug-in support 'em
 	bool pluginSupports = supportsMultipleClipDepths();

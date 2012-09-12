@@ -19,7 +19,7 @@ inline std::string retrieveNodeFullname( const std::string& userId )
 	std::vector<std::string> ambiguousResults;
 
 	typedef std::map<std::string, tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin*> PluginMap;
-	const PluginMap& pluginsById = tuttle::host::Core::instance().getImageEffectPluginCache().getPluginsByID();
+	const PluginMap& pluginsById = tuttle::host::core().getImageEffectPluginCache().getPluginsByID();
 
 	if( pluginsById.find(userIdLower) != pluginsById.end() )
 	{

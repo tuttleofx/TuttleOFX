@@ -2,7 +2,7 @@
 #include "HostDescriptor.hpp"
 
 // ofx host
-#include <tuttle/host/Core.hpp> // for Core::instance().getMemoryCache()
+#include <tuttle/host/Core.hpp> // for core().getMemoryCache()
 #include <tuttle/host/attribute/ClipImage.hpp>
 #include <tuttle/host/attribute/allParams.hpp>
 #include <tuttle/host/graph/ProcessEdgeAtTime.hpp>
@@ -692,7 +692,7 @@ void ImageEffectNode::preProcess_infos( const graph::ProcessVertexAtTimeData& vD
 void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 {
 //	TUTTLE_TCOUT( "process: " << getName() );
-	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
+	memory::IMemoryCache& memoryCache( core().getMemoryCache() );
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
 
@@ -760,7 +760,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 					attribute::Image::eImageOrientationFromBottomToTop,
 					0 )
 				);
-			imageCache->setPoolData( Core::instance().getMemoryPool().allocate( imageCache->getMemorySize() ) );
+			imageCache->setPoolData( core().getMemoryPool().allocate( imageCache->getMemorySize() ) );
 			memoryCache.put( clip.getClipIdentifier(), vData._time, imageCache );
 			
 			allNeededDatas.push_back( imageCache );
@@ -912,7 +912,7 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
 	#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
-	IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
+	IMemoryCache& memoryCache( core().getMemoryCache() );
 
 	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + "." kOfxOutputAttributeName, time );
 

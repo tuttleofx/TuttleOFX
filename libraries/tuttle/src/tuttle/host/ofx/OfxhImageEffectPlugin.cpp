@@ -74,7 +74,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, Of
 	: OfxhPlugin( pb, pi, pl )
 	, _pc( &pc )
 	, _pluginHandle( 0 )
-	, _baseDescriptor( Core::instance().getHost().makeDescriptor( *this ) )
+	, _baseDescriptor( core().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
 }
@@ -91,7 +91,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
 	, _pc( &pc )
 	, _pluginHandle( NULL )
-	, _baseDescriptor( Core::instance().getHost().makeDescriptor( *this ) )
+	, _baseDescriptor( core().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
 }
@@ -262,7 +262,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 
 	OfxhPluginHandle* ph = getPluginHandle();
 
-	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor> newContext( Core::instance().getHost().makeDescriptor( getDescriptor(), *this ) );
+	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor> newContext( core().getHost().makeDescriptor( getDescriptor(), *this ) );
 	int rval = kOfxStatFailed;
 	if( ph->getOfxPlugin() )
 		rval = ph->getOfxPlugin()->mainEntry( kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0 );
@@ -289,7 +289,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 		BOOST_THROW_EXCEPTION( exception::BadHandle() );
 	}
 	OfxhImageEffectNodeDescriptor& desc        = getDescriptorInContext( context );
-	imageEffect::OfxhImageEffectNode* instance = Core::instance().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
+	imageEffect::OfxhImageEffectNode* instance = core().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
 	instance->createInstanceAction(); // Is it not possible to move this in a constructor ? In some cases it's interesting to initialize host side values before creation of plugin side objets (eg. node duplication or creation from file).
 	return instance;
 }

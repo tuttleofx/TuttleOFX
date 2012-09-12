@@ -133,7 +133,7 @@ void InputBufferWrapper::setRawImageBuffer(
 
 //void InputBufferWrapper::process( graph::ProcessVertexAtTimeData& vData )
 //{
-//	Core::instance().getMemoryCache().put( _outputClip.getClipIdentifier(), vData._time, _imageCache );
+//	core().getMemoryCache().put( _outputClip.getClipIdentifier(), vData._time, _imageCache );
 //	if( vData._outDegree > 0 )
 //	{
 //		_imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a reference on this _node for each future usages

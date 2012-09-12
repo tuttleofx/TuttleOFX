@@ -30,9 +30,9 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	using namespace tuttle::host::ofx;
 	using namespace tuttle::host::ofx::imageEffect;
 
-	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	Core::instance().preload();
-	OfxhImageEffectPlugin* plugin = Core::instance().getImageEffectPluginById( "tuttle.invert" );
+	core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
+	core().preload();
+	OfxhImageEffectPlugin* plugin = core().getImageEffectPluginById( "tuttle.invert" );
 
 	//	typedef boost::archive::binary_oarchive OArchive;
 	//	typedef boost::archive::binary_iarchive IArchive;
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	const std::string testfile = ( Core::instance().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization.xml" ).string();
+	const std::string testfile = ( core().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization.xml" ).string();
 	TUTTLE_TCOUT_VAR( testfile );
 	BOOST_REQUIRE( testfile.size() );
 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 
 	BOOST_CHECK( boost::filesystem::exists( testfile ) );
 
-	const std::string testfile2 = ( Core::instance().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization2.xml" ).string();
+	const std::string testfile2 = ( core().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization2.xml" ).string();
 	TUTTLE_TCOUT_VAR( testfile2 );
 	BOOST_REQUIRE( testfile2.size() );
 

@@ -314,7 +314,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 			{
 				TUTTLE_COUT( tuttle::common::kColorRed << "PROCESS ABORTED at time " << time << "." << tuttle::common::kColorStd );
 				endSequenceRender( procOptions );
-				Core::instance().getMemoryCache().clearUnused();
+				core().getMemoryCache().clearUnused();
 				return false;
 			}
 			
@@ -507,7 +507,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 
 				TUTTLE_TCOUT( "---------------------------------------- process" );
 				// do the process
-				graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache() );
+				graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, core().getMemoryCache() );
 				if( options.getReturnBuffers() )
 				{
 					// accumulate output nodes buffers into the @p result MemoryCache
@@ -523,9 +523,9 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				// end of one frame
 				// do some clean: memory clean, as temporary solution...
 				TUTTLE_TCOUT( "---------------------------------------- clearUnused" );
-				Core::instance().getMemoryCache().clearUnused();
-				TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache().size() );
-				TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache() );
+				core().getMemoryCache().clearUnused();
+				TUTTLE_TCOUT_VAR( core().getMemoryCache().size() );
+				TUTTLE_TCOUT_VAR( core().getMemoryCache() );
 				TUTTLE_TCOUT_VAR( result );
 
 				TUTTLE_COUT( " " );
@@ -542,7 +542,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
-					Core::instance().getMemoryCache().clearUnused();
+					core().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
@@ -559,7 +559,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
-					Core::instance().getMemoryCache().clearUnused();
+					core().getMemoryCache().clearUnused();
 					throw;
 				}
 			}

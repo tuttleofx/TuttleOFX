@@ -21,7 +21,7 @@ int main( int argc, char** argv )
 	{
 		using namespace tuttle::host;
 
-		Core::instance().preload();
+		core().preload();
 
 		boost::gil::rgba8_image_t imgRead;
 		boost::gil::png_read_and_convert_image( "in.png", imgRead );

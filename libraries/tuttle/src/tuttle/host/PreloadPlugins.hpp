@@ -15,9 +15,9 @@ struct PreloadPlugins
 		using namespace tuttle::host;
 		// std::cout << "PreloadOpenFXPlugins: global setup\n";
 		TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
-		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-		Core::instance().preload();
-		// TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
+		core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
+		core().preload();
+		// TUTTLE_COUT( core().getImageEffectPluginCache() );
 		TUTTLE_COUT( "------ LOADING OPENFX PLUGINS DONE -----" );
 	}
     ~PreloadPlugins()

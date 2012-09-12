@@ -35,7 +35,7 @@ ClipImage::ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescript
 	, tuttle::host::ofx::attribute::OfxhClipImage( desc )
 	, _isConnected( false )
 	, _continuousSamples( false )
-	, _memoryCache( Core::instance().getMemoryCache() )
+	, _memoryCache( core().getMemoryCache() )
 {
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleIdentifier", 1, 1, "" ) );
@@ -44,7 +44,7 @@ ClipImage::ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescript
 ClipImage::ClipImage( const ClipImage& other )
 	: Attribute( other )
 	, ofx::attribute::OfxhClipImage( other )
-	, _memoryCache( Core::instance().getMemoryCache() )
+	, _memoryCache( core().getMemoryCache() )
 {
 	_name = other._name;
 	_isConnected = other._isConnected;
