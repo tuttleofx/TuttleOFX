@@ -50,11 +50,11 @@ class Tuttle( SConsProject ):
 		raise "Unknown Platform (%s,%s)" % (osname,sysplatform)
 
 	def getOutputOfxResources( self, pluginFilename ):
-		return self.dir_output_bin + os.sep + pluginFilename + '.ofx.bundle/Contents/Resources'
+		return self.dir_output_plugin + os.sep + pluginFilename + '.ofx.bundle/Contents/Resources'
 
 	def getOutputOfxPlugin( self, pluginFilename ):
 		'''Return plugin name in the output directory "xxx/bin/pluginname.ofx.bundle/Contents/ofxplatformname/pluginname.ofx" .'''
-		return os.path.join( self.dir_output_bin, pluginFilename + '.ofx.bundle/Contents', self.getOfxPlatformName(), pluginFilename + '.ofx' )
+		return os.path.join( self.dir_output_plugin, pluginFilename + '.ofx.bundle/Contents', self.getOfxPlatformName(), pluginFilename + '.ofx' )
 
 	def retrieveOfxPluginVersions( self, filename ):
 		'''
