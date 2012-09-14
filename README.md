@@ -1,5 +1,4 @@
-
-![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX - version beta
+![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX
 ========================
 **Project under early development.**
   
@@ -17,7 +16,7 @@ The project is composed of 4 main parts:
 ___
 License
 -------
->see COPYING file
+>see [**COPYING.md**](COPYING.md)
 
 ___
 Compilation
@@ -42,7 +41,7 @@ Compilation
 
 - Compilation
 
-See [**INSTALL.md**](https://github.com/tuttleofx/TuttleOFX/blob/master/INSTALL.md)
+See [**INSTALL.md**](INSTALL.md)
 
 ___
 Plugin creation
