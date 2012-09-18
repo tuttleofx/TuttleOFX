@@ -30,10 +30,10 @@ class CFTypeContainer
 {
 public:
 	inline CFTypeContainer( const T &t = 0 )
-		: type( t ) { }
+		: _type( t ) { }
 
 	inline CFTypeContainer( const CFTypeContainer& helper )
-		: type( helper._type )
+		: _type( helper._type )
 	{
 		if( _type )
 			CFRetain( _type );
@@ -78,7 +78,7 @@ protected:
 class CFStringContainer : public CFTypeContainer<CFStringRef>
 {
 public:
-	inline CFStringContainer( const std::string& str ) : CFTypeContainer<CFStringRef>( 0 ), string( str ) { }
+	inline CFStringContainer( const std::string& str ) : CFTypeContainer<CFStringRef>( 0 ), _string( str ) { }
 
 	inline CFStringContainer( const CFStringRef cfstr = NULL ) : CFTypeContainer<CFStringRef>( cfstr ) { }
 
@@ -86,7 +86,9 @@ public:
 	operator std::string() const;
 	operator CFStringRef() const;
 	
-	static std::string str( CFStringRef cfstr );
+	const std::string& str() const;
+	
+	static std::string toString( CFStringRef cfstr );
 	static CFStringRef toCFStringRef( const std::string& str );
 	
 private:
