@@ -44,7 +44,7 @@ public:
 		    const std::size_t                          index )
 
   :Param( effect )
-    ,OFX_PARAM( descriptor, name, effect.getParamSet() )
+    ,OFX_PARAM( descriptor, name, effect.getParamSet(), index )
 {
 	_interpolator = new LinearInterpolator<T>();
 }
