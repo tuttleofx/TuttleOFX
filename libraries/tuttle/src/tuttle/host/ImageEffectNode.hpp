@@ -30,8 +30,10 @@ public:
 
 	~ImageEffectNode();
 
+	std::string getLabel() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getLabel(); }
 	const std::string&               getName() const                           { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 	void                             setName( const std::string& name )        { return ofx::imageEffect::OfxhImageEffectNodeBase::setName(name); }
+	std::size_t                      getNbParams() const { return ofx::attribute::OfxhParamSet::getNbParams(); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name, const bool acceptPartialName = false ) const { return ofx::attribute::OfxhParamSet::getParamByScriptName( name, acceptPartialName ); }

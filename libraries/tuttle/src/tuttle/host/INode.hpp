@@ -75,6 +75,8 @@ public:
 
 	virtual std::vector<int> getVersion() const = 0;
 	std::string getVersionStr() const;
+	
+	virtual std::string getLabel() const = 0;
 
 	virtual const ofx::property::OfxhSet& getProperties() const = 0;
 	virtual ofx::property::OfxhSet&       getEditableProperties() = 0;
@@ -84,6 +86,7 @@ public:
 	virtual attribute::Attribute&       getSingleInputAttribute()       = 0;
 	virtual const attribute::Attribute& getSingleInputAttribute() const = 0;
 	
+	virtual std::size_t getNbParams() const = 0;
 	virtual const ofx::attribute::OfxhParam& getParam( const std::string& name ) const = 0;
 	virtual ofx::attribute::OfxhParam&       getParam( const std::string& name ) = 0;
 	virtual const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name, const bool acceptPartialName = false ) const = 0;
