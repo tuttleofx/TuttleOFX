@@ -59,7 +59,7 @@ bool VideoFFmpegReader::open( const std::string& filename )
 	_isOpen = 0;
 
 #if LIBAVCODEC_VERSION_MAJOR <= 52
-	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, _params );
+	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, 0 );
 #else
 	int error = avformat_open_input( &_context, filename.c_str(), NULL, NULL );
 #endif
@@ -132,8 +132,12 @@ void VideoFFmpegReader::close()
 	_isOpen = false;
 	closeVideoCodec();
 	if( _context )
-	{
-		avformat_close_input( &_context );
+        {
+#if LIBAVCODEC_VERSION_MAJOR <= 52
+                av_close_input_file( _context );
+#else
+                avformat_close_input( &_context );
+#endif
 		_context = NULL;
 	}
 }
