@@ -14,8 +14,7 @@ ib.set3DArrayBuffer( img )
 #x = numpy.array([[.9, .1, .9], [.8, .2, .9]], numpy.float32)
 #ib.set2DArrayBuffer( x )
 
-w = g.createNode("tuttle.pngwriter")
-w.getParam("filename").setValue("foo.png")
+w = g.createNode("tuttle.pngwriter", filename="foo.png")
 
 g.connect( ib.getNode(), w )
 g.compute( w )

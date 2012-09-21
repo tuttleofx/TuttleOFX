@@ -65,6 +65,8 @@ public:
 	const ParamVector& getParamVector() const { return _paramVector; }
 	ParamVector&       getParamVector()       { return _paramVector; }
 
+	std::size_t getNbParams() const { return _params.size(); }
+	
 	OfxhParam& getParam( const std::string& name );
 	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>( this )->getParam( name ); }
 

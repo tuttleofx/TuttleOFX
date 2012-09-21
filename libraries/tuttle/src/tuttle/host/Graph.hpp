@@ -29,6 +29,8 @@
 namespace tuttle {
 namespace host {
 
+class NodeInit;
+
 /**
  * @brief A user graph to manipulate OpenFX nodes.
  */
@@ -66,11 +68,33 @@ public:
 	OutputBufferWrapper createOutputBuffer();
 
 	/**
-	 * @brief Create a new node in the current graph.
+	 * @brief Create a new node in the graph.
 	 * @param id is the plugin unique string identification (e.g. "tuttle.blur").
 	 */
 	Node& createNode( const std::string& id );
-
+	
+	/**
+	 * @brief Add a node to the graph.
+	 *        It takes the ownership of the node object.
+	 */
+	Node& addNode( const NodeInit& node );
+	
+	/**
+	 * @brief Add a node to the graph.
+	 *        It takes the ownership of the node object.
+	 */
+	Node& addNode( INode& node );
+	
+	/**
+	 * @brief Add nodes to the graph.
+	 */
+	void addNodes( const std::vector<NodeInit>& nodes );
+	
+	/**
+	 * @brief Add nodes to the graph and connect them linearly.
+	 */
+	void addConnectedNodes( const std::vector<NodeInit>& nodes );
+	
 	/**
 	 * @brief Rename a node in the current graph.
 	 * @param newUniqueName is the new unique node name.
@@ -104,14 +128,17 @@ public:
 	void init();
 	
 	/**
-	 * @brief Shortcut without buffer results.
+	 * @brief Shortcut
 	 */
-	bool compute( const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
+	bool compute( const ComputeOptions& options = ComputeOptions() );
+	/**
+	 * @brief Shortcut
+	 */
+	bool compute( const NodeListArg& nodes, const ComputeOptions& options = ComputeOptions() );
+	
+	bool compute( memory::MemoryCache& memoryCache, const ComputeOptions& options );
 	
 	bool compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
-	
-private:
-	bool privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options = ComputeOptions() );
 	
 public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }

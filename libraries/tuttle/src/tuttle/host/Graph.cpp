@@ -1,4 +1,5 @@
 #include "Graph.hpp"
+#include "Node.hpp"
 #include "graph/ProcessGraph.hpp"
 
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
@@ -37,67 +38,46 @@ OutputBufferWrapper Graph::createOutputBuffer()
 	return nodeWrapper;
 }
 
-Graph::Node& Graph::createNode( const std::string& id )
+Graph::Node& Graph::createNode( const std::string& pluginName )
 {
-	ofx::imageEffect::OfxhImageEffectPlugin* plug = core().getImageEffectPluginById( id );
+	INode* node = tuttle::host::createNode( pluginName );
+	return addNode( *node );
+}
 
-	if( !plug )
-	{
-		BOOST_THROW_EXCEPTION( exception::Logic()
-		    << exception::user( "Plugin not found." )
-		    << exception::pluginIdentifier( id ) );
-	}
+Graph::Node& Graph::addNode( const NodeInit& node )
+{
+	return addNode( node.release() ); // transfer ownership
+}
 
-	plug->loadAndDescribeActions();
-
-	ofx::imageEffect::OfxhImageEffectNode* plugInst = NULL;
-	if( plug->supportsContext( kOfxImageEffectContextReader ) )
-	{
-		plugInst = plug->createInstance( kOfxImageEffectContextReader );
-	}
-	else if( plug->supportsContext( kOfxImageEffectContextWriter ) )
-	{
-		plugInst = plug->createInstance( kOfxImageEffectContextWriter );
-	}
-	else if( plug->supportsContext( kOfxImageEffectContextGeneral ) )
-	{
-		plugInst = plug->createInstance( kOfxImageEffectContextGeneral );
-	}
-	else if( plug->supportsContext( kOfxImageEffectContextGenerator ) )
-	{
-		plugInst = plug->createInstance( kOfxImageEffectContextGenerator );
-	}
-	else if( plug->supportsContext( kOfxImageEffectContextFilter ) )
-	{
-		plugInst = plug->createInstance( kOfxImageEffectContextFilter );
-	}
-	else
-	{
-		BOOST_THROW_EXCEPTION( exception::Logic()
-		    << exception::user( "Plugin contexts not supported by the host. (" + id + ")" ) );
-	}
-
-	if( !plugInst )
-	{
-		BOOST_THROW_EXCEPTION( exception::Logic()
-		    << exception::user( "Plugin not found. plugInst (" + id + ")" ) );
-	}
-	ImageEffectNode* node = dynamic_cast<ImageEffectNode*>( plugInst );
-	if( !node )
-	{
-		BOOST_THROW_EXCEPTION( exception::Logic()
-		    << exception::user( "Plugin not found (" + id + ")." ) );
-	}
-
+Graph::Node& Graph::addNode( INode& node )
+{
 	std::stringstream uniqueName;
-	uniqueName << node->getLabel() << "_" << ++_instanceCount[node->getLabel()];
-	node->setName( uniqueName.str() );
+	uniqueName << node.getLabel() << "_" << ++_instanceCount[node.getLabel()];
+	node.setName( uniqueName.str() );
 
-	std::string key( node->getName() ); // for constness
-	_nodes.insert( key, node );
-	addToInternalGraph( *node );
+	std::string key( node.getName() ); // for constness
+	_nodes.insert( key, &node ); // acquire the ownership
+	addToInternalGraph( node );
+	
+	return node;
+}
 
-	return *node;
+void Graph::addNodes( const std::vector<NodeInit>& nodes )
+{
+	BOOST_FOREACH( const NodeInit& node, nodes )
+	{
+		addNode( node ); // tranfer nodes ownership to the graph
+	}
+}
+
+void Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
+{
+	std::vector<INode*> nodePtrs;
+	BOOST_FOREACH( const NodeInit& node, nodes )
+	{
+		nodePtrs.push_back( &addNode( node ) ); // tranfer nodes ownership to the graph
+	}
+	connect( nodePtrs );
 }
 
 void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
@@ -223,6 +203,9 @@ void Graph::connect( const std::vector<Node*>& nodes )
 	     itB != itEnd;
 	     ++itA, ++itB )
 	{
+		BOOST_ASSERT( *itA != NULL );
+		BOOST_ASSERT( *itB != NULL );
+		
 		this->connect( **itA, **itB );
 	}
 }
@@ -262,21 +245,25 @@ void Graph::init()
 //void Graph::unconnectNode( const Node& node )
 //{}
 
-// shortcut
+bool Graph::compute( const ComputeOptions& options )
+{
+	return compute( NodeListArg(), options );
+}
+
 bool Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
 {
 	const_cast<ComputeOptions&>(options).setReturnBuffers( false );
 	
 	memory::MemoryCache emptyMemoryCache;
-	return privateCompute( emptyMemoryCache, nodes, options );
+	return compute( emptyMemoryCache, nodes, options );
+}
+
+bool Graph::compute( memory::MemoryCache& memoryCache, const ComputeOptions& options )
+{
+	return compute( memoryCache, NodeListArg(), options );
 }
 
 bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
-{
-	return privateCompute( memoryCache, nodes, options );
-}
-
-bool Graph::privateCompute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );

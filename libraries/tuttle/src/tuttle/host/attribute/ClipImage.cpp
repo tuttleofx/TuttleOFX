@@ -155,7 +155,6 @@ void ClipImage::setUnmappedFrameRange( const double unmappedStartFrame, const do
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
 tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime time, const OfxRectD* optionalBounds )
 {
-	TUTTLE_TCOUT_INFOS;
 //	const OfxTime realTime = isConnected() ? getNode().mapInputTime( time ) : time;
 	const OfxTime realTime = time;
 	
@@ -173,11 +172,9 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	}
 	else
 	{
-		TUTTLE_TCOUT_INFOS;
 		bounds = fetchRegionOfDefinition( realTime );
 	}
 	
-	TUTTLE_TCOUT_INFOS;
 	//	TUTTLE_TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
 	boost::shared_ptr<Image> image = _memoryCache.get( getClipIdentifier(), realTime );
 	//	std::cout << "got image : " << image.get() << std::endl;
@@ -186,7 +183,6 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	///  * bounds < cache buffer: use rowSize to adjust, and modify pointer
 	///  * bounds > cache buffer: recompute / exception ?
 
-	TUTTLE_TCOUT_INFOS;
 	return image.get();
 }
 

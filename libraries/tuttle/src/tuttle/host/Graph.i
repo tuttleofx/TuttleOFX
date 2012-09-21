@@ -13,6 +13,7 @@
 
 // rename the original "connect" function to reimplement it in python
 %rename(private_connect) connect;
+%rename(private_createNode) createNode;
 
 %include <tuttle/host/Graph.hpp>
 
@@ -20,6 +21,16 @@
 {
 	%pythoncode
 	{
+		def createNode(self, pluginName, *orderedParams, **namedParams):
+			node = self.private_createNode(pluginName)
+			for index, paramValue in enumerate(orderedParams):
+				print index, paramValue
+				node.getParam(index).setValue(paramValue)
+			for paramName, paramValue in namedParams.iteritems():
+				print paramName, paramValue
+				node.getParam(paramName).setValue(paramValue)
+			return node
+		
 		def connect(self, *args):
 			if not args:
 				raise RuntimeException("Nothing in list of nodes to connect.")
