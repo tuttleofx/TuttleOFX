@@ -98,6 +98,24 @@ public:
 
 		copy( param );
 	}
+	
+	inline void setValue( const BaseType& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+	{
+		for( std::size_t i = 0; i < getSize(); ++i )
+		{
+			_controls[i].setValue( value, eChangeNone );
+		}
+		this->paramChanged( change );
+	}
+	
+	inline void setValueAtTime( const OfxTime time, const BaseType& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+	{
+		for( std::size_t i = 0; i < getSize(); ++i )
+		{
+			_controls[i].setValueAtTime( time, value, eChangeNone );
+		}
+		this->paramChanged( change );
+	}
 
 	inline virtual void setValueAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
