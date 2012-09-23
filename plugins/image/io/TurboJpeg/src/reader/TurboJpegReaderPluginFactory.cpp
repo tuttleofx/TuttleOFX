@@ -23,8 +23,8 @@ static const bool kSupportTiles = false;
 void TurboJpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels(
-		"TuttleTurboJpeg",
-		"TurboJpeg",
+		"TuttleTurboJpegReader",
+		"TurboJpegReader",
 		"Turbo Jpeg file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
