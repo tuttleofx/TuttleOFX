@@ -145,7 +145,7 @@ void Graph::deleteNode( Node& node )
 
 void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr )
 {
-	_graph.connect( outNode, inNode, kOfxSimpleSourceAttributeName );
+	connect( getNode(outNode), getNode(inNode).getAttribute(inAttr) );
 }
 
 void Graph::connect( const std::list<std::string>& nodes )
@@ -214,6 +214,7 @@ void Graph::connect( const Node& outNode, const Attribute& inAttr )
 {
 	_graph.connect( outNode.getName(), inAttr.getNode().getName(), inAttr.getName() );
 }
+
 namespace {
 template<class TGraph>
 inline void graphConnectClips( TGraph& graph )
