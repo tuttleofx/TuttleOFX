@@ -82,7 +82,7 @@ public:
 	virtual ofx::property::OfxhSet&       getEditableProperties() = 0;
 
 	virtual attribute::Attribute& getAttribute( const std::string& name ) = 0;
-	//	const attribute::Attribute& getAttribute( const std::string& name ) const { return const_cast<ProcessNode*>(this)->getAttribute( name ); }
+	const attribute::Attribute& getAttribute( const std::string& name ) const { return const_cast<INode*>(this)->getAttribute( name ); }
 	virtual attribute::Attribute&       getSingleInputAttribute()       = 0;
 	virtual const attribute::Attribute& getSingleInputAttribute() const = 0;
 	

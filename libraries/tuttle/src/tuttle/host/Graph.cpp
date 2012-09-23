@@ -243,8 +243,50 @@ void Graph::init()
 	graphConnectClips<InternalGraphImpl>( _graph );
 }
 
-//void Graph::unconnectNode( const Node& node )
-//{}
+void Graph::unconnect( const Node& node )
+{
+	_graph.clearVertex( _graph.getVertexDescriptor(node.getName()) );
+}
+
+void Graph::replaceNodeConnections( const Node& fromNode, const Node& toNode )
+{
+	BOOST_FOREACH( edge_descriptor e, _graph.getInEdges( _graph.getVertexDescriptor( fromNode.getName() ) ) )
+	{
+#ifdef DEBUG
+		// The current node should have the declared input attribute.
+		_graph.targetInstance(e).getProcessNode().getAttribute( _graph.instance(e).getInAttrName() );
+#endif
+		// Check that the new node has all needed attributes, before to start to modify the graph.
+		toNode.getAttribute( _graph.instance(e).getInAttrName() );
+	}
+	BOOST_FOREACH( edge_descriptor e, _graph.getInEdges( _graph.getVertexDescriptor( fromNode.getName() ) ) )
+	{
+		// fromNode == targetInstance
+		// So replace targetInstance with toNode
+		connect(
+			_graph.sourceInstance(e).getProcessNode(),
+			toNode.getAttribute( _graph.instance(e).getInAttrName() ) );
+	}
+	BOOST_FOREACH( edge_descriptor e, _graph.getOutEdges( _graph.getVertexDescriptor( fromNode.getName() ) ) )
+	{
+		// fromNode == sourceInstance
+		// So replace sourceInstance with toNode
+		connect(
+			toNode,
+			_graph.targetInstance(e).getProcessNode().getAttribute( _graph.instance(e).getInAttrName() ) );
+	}
+	unconnect( fromNode );
+}
+
+std::size_t Graph::getNbInputConnections( const Node& node ) const
+{
+	return _graph.getInDegree( _graph.getVertexDescriptor( node.getName() ) );
+}
+
+std::size_t Graph::getNbOutputConnections( const Node& node ) const
+{
+	return _graph.getOutDegree( _graph.getVertexDescriptor( node.getName() ) );
+}
 
 bool Graph::compute( const ComputeOptions& options )
 {
@@ -274,16 +316,18 @@ bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes,
 	return process.process( memoryCache, options );
 }
 
-std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )
+std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
 {
-	std::list<Node*> selectedNodes;
+	std::vector<Node*> selectedNodes;
 	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
 	     it != itEnd;
 	     ++it )
 	{
 		try
 		{
-			ImageEffectNode& ie = dynamic_cast<ImageEffectNode&>(*it->second);
+			/// @todo tuttle: use INode here !
+			ImageEffectNode& ie = it->second->asImageEffectNode();
+			
 			if( ie.getContext() == context )
 				selectedNodes.push_back( &ie );
 		}
@@ -294,18 +338,24 @@ std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )
 	return selectedNodes;
 }
 
-std::list<Graph::Node*> Graph::getNodesByPlugin( const std::string& pluginId )
+std::vector<Graph::Node*> Graph::getNodesByPlugin( const std::string& pluginId )
 {
-	std::list<Node*> selectedNodes;
+	std::vector<Node*> selectedNodes;
 	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
 	     it != itEnd;
 	     ++it )
 	{
-		/// @todo tuttle: use INode here !
-		ImageEffectNode& ie = dynamic_cast<ImageEffectNode&>(*it->second);
+		try
+		{
+			/// @todo tuttle: use INode here !
+			ImageEffectNode& ie = it->second->asImageEffectNode();
 
-		if( boost::iequals( ie.getPlugin().getIdentifier(), pluginId ) )
-			selectedNodes.push_back( &ie );
+			if( boost::iequals( ie.getPlugin().getIdentifier(), pluginId ) )
+				selectedNodes.push_back( &ie );
+		}
+		catch(...)
+		{
+		}
 	}
 	return selectedNodes;
 }

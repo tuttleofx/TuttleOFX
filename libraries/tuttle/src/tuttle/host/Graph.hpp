@@ -76,22 +76,30 @@ public:
 	/**
 	 * @brief Add a node to the graph.
 	 *        It takes the ownership of the node object.
+	 * 
+	 * @warning: The node will be renamed.
 	 */
 	Node& addNode( const NodeInit& node );
 	
 	/**
 	 * @brief Add a node to the graph.
 	 *        It takes the ownership of the node object.
+	 * 
+	 * @warning: The node will be renamed.
 	 */
 	Node& addNode( INode& node );
 	
 	/**
 	 * @brief Add nodes to the graph.
+	 * 
+	 * @warning: Nodes will be renamed.
 	 */
 	void addNodes( const std::vector<NodeInit>& nodes );
 	
 	/**
 	 * @brief Add nodes to the graph and connect them linearly.
+	 * 
+	 * @warning: Nodes will be renamed.
 	 */
 	void addConnectedNodes( const std::vector<NodeInit>& nodes );
 	
@@ -120,7 +128,13 @@ public:
 	void connect( const std::list<Node*>& nodes );
 	void connect( const std::vector<Node*>& nodes );
 	void connect( const Node& outNode, const Attribute& inAttr );
-	//	void unconnectNode( const Node& node );
+	
+	void unconnect( const Node& node );
+	
+	void replaceNodeConnections( const Node& fromNode, const Node& toNode );
+	
+	std::size_t getNbInputConnections( const Node& node ) const;
+	std::size_t getNbOutputConnections( const Node& node ) const;
 
 	/**
 	 * @brief Temporary solution ! Prepare the user graph, so we can call getTimeDomain (and maybe others functions) on nodes.
@@ -144,8 +158,8 @@ public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }
 	inline const NodeMap&           getNodes() const { return _nodes; }
 	inline NodeMap&                 getNodes()       { return _nodes; }
-	std::list<Node*>         getNodesByContext( const std::string& type );
-	std::list<Node*>         getNodesByPlugin( const std::string& pluginId );
+	std::vector<Node*>         getNodesByContext( const std::string& type );
+	std::vector<Node*>         getNodesByPlugin( const std::string& pluginId );
 	//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
 	inline const Node&             getNode( const std::string& name ) const { return _nodes.at( name ); }
 	inline Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }

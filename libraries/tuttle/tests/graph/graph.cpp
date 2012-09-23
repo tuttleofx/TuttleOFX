@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <tuttle/host/Graph.hpp>
+#include <tuttle/host/Node.hpp>
 
 #include <iostream>
 
@@ -35,8 +36,100 @@ BOOST_AUTO_TEST_CASE( graph_copy )
 	Graph g2(g);
 	
 	BOOST_CHECK_NE( &g2.getNode( read1.getName() ), &read1 );
-	BOOST_CHECK( strcmp( g2.getNode( read1.getName() ).getName().c_str(), read1.getName().c_str() ) == 0 );
-	//BOOST_CHECK( g2.getNode( read1.getName() ) == read1 );
+	BOOST_CHECK_EQUAL( g2.getNode( read1.getName() ).getName(), read1.getName() );
+	TUTTLE_COUT( "----------------- DONE -----------------" );
+}
+
+BOOST_AUTO_TEST_CASE( graph_NodeInit )
+{
+	TUTTLE_COUT( "--> PLUGINS NodeInit" );
+	
+	BOOST_CHECK(
+		compute(
+			list_of
+			( NodeInit("tuttle.pngreader")
+				.setParam("filename", "TuttleOFX-data/image/png/color-chart.png")
+				.setParamExp("bitDepth", "32f") )
+			( NodeInit("tuttle.pngwriter")
+				.setParam("filename", ".tests/graph/output.png") )
+			) );
+	
+	TUTTLE_COUT( "----------------- DONE -----------------" );
+}
+
+BOOST_AUTO_TEST_CASE( graph_unconnect )
+{
+	TUTTLE_COUT( "--> PLUGINS unconnect" );
+	Graph g;
+	g.addConnectedNodes(
+		list_of
+		( NodeInit("tuttle.pngreader")
+			.setParam("filename", "TuttleOFX-data/image/png/color-chart.png")
+			.setParamExp("bitDepth", "32f") )
+		( NodeInit("tuttle.invert") )
+		( NodeInit("tuttle.invert") )
+		( NodeInit("tuttle.invert") )
+		( NodeInit("tuttle.pngwriter")
+			.setParam("filename", ".tests/graph/output.png") )
+		);
+	
+	std::vector<Graph::Node*> invNodes = g.getNodesByPlugin( "tuttle.invert" );
+	
+	BOOST_FOREACH( Graph::Node* n, invNodes )
+	{
+		BOOST_CHECK_EQUAL( g.getNbInputConnections(*n), 1 );
+		BOOST_CHECK_EQUAL( g.getNbOutputConnections(*n), 1 );
+	}
+	g.unconnect( *invNodes[1] );
+	
+	BOOST_CHECK_EQUAL( g.getNbInputConnections(*invNodes[0]), 1 );
+	BOOST_CHECK_EQUAL( g.getNbOutputConnections(*invNodes[0]), 0 );
+	
+	BOOST_CHECK_EQUAL( g.getNbInputConnections(*invNodes[1]), 0 );
+	BOOST_CHECK_EQUAL( g.getNbOutputConnections(*invNodes[1]), 0 );
+	
+	BOOST_CHECK_EQUAL( g.getNbInputConnections(*invNodes[2]), 0 );
+	BOOST_CHECK_EQUAL( g.getNbOutputConnections(*invNodes[2]), 1 );
+	
+	TUTTLE_COUT( "----------------- DONE -----------------" );
+}
+
+BOOST_AUTO_TEST_CASE( graph_replaceNodeConnections )
+{
+	TUTTLE_COUT( "--> PLUGINS replace node connections" );
+	Graph g;
+	g.addConnectedNodes(
+		list_of
+		( NodeInit("tuttle.pngreader")
+			.setParam("filename", "TuttleOFX-data/image/png/color-chart.png")
+			.setParamExp("bitDepth", "32f") )
+		( NodeInit("tuttle.invert") )
+		( NodeInit("tuttle.pngwriter")
+			.setParam("filename", ".tests/graph/output.png") )
+		);
+	
+	Graph::Node& inv = *g.getNodesByPlugin( "tuttle.invert" ).front();
+	
+	Graph::Node& blur = g.addNode( NodeInit("tuttle.blur").setParam( "size", 0.01, 0.02 ) );
+	
+	BOOST_CHECK_EQUAL( blur.getParam( "size" ).getDoubleValueAtIndex(0), 0.01 );
+	BOOST_CHECK_EQUAL( blur.getParam( "size" ).getDoubleValueAtIndex(1), 0.02 );
+	
+	BOOST_CHECK_EQUAL( g.getNbInputConnections(inv), 1 );
+	BOOST_CHECK_EQUAL( g.getNbOutputConnections(inv), 1 );
+	
+	BOOST_CHECK_EQUAL( g.getNbInputConnections(blur), 0 );
+	BOOST_CHECK_EQUAL( g.getNbOutputConnections(blur), 0 );
+	
+	g.replaceNodeConnections( inv, blur );
+	
+	BOOST_CHECK_EQUAL( g.getNbInputConnections(inv), 0 );
+	BOOST_CHECK_EQUAL( g.getNbOutputConnections(inv), 0 );
+	
+	BOOST_CHECK_EQUAL( g.getNbInputConnections(blur), 1 );
+	BOOST_CHECK_EQUAL( g.getNbOutputConnections(blur), 1 );
+	
+	BOOST_CHECK( g.compute( *g.getNodesByPlugin( "tuttle.pngwriter" ).front() ) );
 	TUTTLE_COUT( "----------------- DONE -----------------" );
 }
 
