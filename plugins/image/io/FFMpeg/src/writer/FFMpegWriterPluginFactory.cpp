@@ -37,6 +37,8 @@ void declareAVPrivOptions( OFX::ImageEffectDescriptor& desc, const std::vector<A
 				curOpt = curOptBoolean;
 				curOptBoolean->setLabel( opt.o.name );
 				curOptBoolean->setDefault( opt.o.default_val.dbl );
+				if( opt.o.help )
+					curOptBoolean->setHint( opt.o.help );
 				break;
 			}
 			case AV_OPT_TYPE_INT:
@@ -47,6 +49,8 @@ void declareAVPrivOptions( OFX::ImageEffectDescriptor& desc, const std::vector<A
 				curOptInt->setRange( opt.o.min, opt.o.max );
 				curOptInt->setDisplayRange( opt.o.min, opt.o.max );
 				curOptInt->setDefault( opt.o.default_val.dbl );
+				if( opt.o.help )
+					curOptInt->setHint( opt.o.help );
 				break;
 			}
 			case AV_OPT_TYPE_FLOAT:
@@ -58,6 +62,8 @@ void declareAVPrivOptions( OFX::ImageEffectDescriptor& desc, const std::vector<A
 				curOptDouble->setRange( opt.o.min, opt.o.max );
 				curOptDouble->setDisplayRange( opt.o.min, opt.o.max );
 				curOptDouble->setDefault( opt.o.default_val.dbl );
+				if( opt.o.help )
+					curOptDouble->setHint( opt.o.help );
 				break;
 			}
 			case AV_OPT_TYPE_STRING:
@@ -65,19 +71,66 @@ void declareAVPrivOptions( OFX::ImageEffectDescriptor& desc, const std::vector<A
 				OFX::StringParamDescriptor* curOptString = desc.defineStringParam( opt.class_name + "_" + opt.o.name );
 				curOpt = curOptString;
 				curOptString->setLabel( opt.o.name );
+				if( opt.o.help )
+					curOptString->setHint( opt.o.help );
+				break;
+			}
+			case AV_OPT_TYPE_IMAGE_SIZE:
+			case AV_OPT_TYPE_RATIONAL:
+			{
+				OFX::Int2DParamDescriptor* curOptInt2D = desc.defineInt2DParam( opt.class_name + "_" + opt.o.name );
+				curOpt = curOptInt2D;
+				curOptInt2D->setLabel( opt.o.name );
+				curOptInt2D->setRange( opt.o.min, opt.o.max, opt.o.min, opt.o.max );
+				curOptInt2D->setDisplayRange( opt.o.min, opt.o.max, opt.o.min, opt.o.max );
+				curOptInt2D->setDefault( opt.o.default_val.dbl, opt.o.default_val.dbl );
+				if( opt.o.help )
+					curOptInt2D->setHint( opt.o.help );
+				break;
+			}
+			case AV_OPT_TYPE_CONST:
+			{
+				OFX::ChoiceParamDescriptor* param = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( opt.class_name + "_" + opt.o.unit + "_preset" ) );
+				if( param != 0 )
+				{
+					param->appendOption( opt.o.name );
+					if( opt.o.help )
+					{
+						OFX::PropertySet& p = param->getProps( );
+						std::string help = p.propGetString( kOfxParamPropHint, false );
+						if( help.length() )
+							help += "\n";
+						help += opt.o.name;
+						help += ": ";
+						help += opt.o.help;
+						param->setHint( help );
+					}
+				}
+				else
+				{
+					OFX::ChoiceParamDescriptor* curOptChoice = desc.defineChoiceParam( opt.class_name + "_" + opt.o.unit + "_preset" );
+					curOpt = curOptChoice;
+					curOptChoice->setLabel( opt.o.unit );
+					curOptChoice->appendOption( opt.o.name );
+					curOptChoice->setDefault( 0 );
+					if( opt.o.help )
+					{
+						std::string help = opt.o.name;
+						help += ": ";
+						help += opt.o.help;
+						curOptChoice->setHint( help );
+					}
+				}
 				break;
 			}
 			default: //< or list all cases to avoid those warnings:
-				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_INT64' not handled in switch [-Wswitch]
-				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_RATIONAL' not handled in switch [-Wswitch]
-				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_BINARY' not handled in switch [-Wswitch]
-				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_CONST' not handled in switch [-Wswitch]
-				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_IMAGE_SIZE' not handled in switch [-Wswitch]
-				// plugins/image/io/FFMpeg/src/writer/FFMpegWriterPluginFactory.cpp:31:9: warning: enumeration value 'AV_OPT_TYPE_PIXEL_FMT' not handled in switch [-Wswitch]
+			{
+				TUTTLE_CERR( "FFMpeg: options not added : " << opt.o.name << "   " << opt.class_name << " ** " << opt.o.unit << " ** " << opt.o.help );
+				//case AV_OPT_TYPE_INT64:
+				//case AV_OPT_TYPE_BINARY:
 				break;
+			}
 		}
-		if( opt.o.help )
-			curOpt->setHint( opt.o.help );
 		curOpt->setParent( groupParams );
 	}
 }
@@ -203,6 +256,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 
 	OFX::GroupParamDescriptor* groupFormatParams = desc.defineGroupParam( kParamGroupFormatParams );
 	groupFormatParams->setLabel( "Format Advanced Parameters" );
+	groupFormatParams->setOpen( false );
 	
 	declareAVPrivOptions( desc, writer.getFormatPrivOpts(), groupFormatParams );
 	
@@ -225,11 +279,13 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 
 	OFX::GroupParamDescriptor* groupCodecParams = desc.defineGroupParam( kParamGroupCodecParams );
 	groupCodecParams->setLabel( "Codec Advanced Parameters" );
+	groupCodecParams->setOpen( false );
 	
 	declareAVPrivOptions( desc, writer.getCodecPrivOpts(), groupCodecParams );
 	
 	OFX::GroupParamDescriptor* groupVideoCodecPreset = desc.defineGroupParam( kParamGroupVideoCodecPreset );
 	groupVideoCodecPreset->setLabel( "Codec Video Preset" );
+	groupVideoCodecPreset->setOpen( false );
 	
 	std::vector<std::string> codecListWithPreset = writer.getCodecListWithConfig();
 	std::vector<std::string>::iterator it;
