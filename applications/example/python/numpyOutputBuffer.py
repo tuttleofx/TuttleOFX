@@ -5,18 +5,16 @@ import numpy as np
 
 # This is called by Tuttle with the output image data
 def getImage(time, data, width, height, rowSizeBytes, bitDepth, components, field):
-    # FIXME this assumes 8bit RGB image. Check bitDepth, components, field
-    flatarray = np.fromstring(data, np.uint8, rowSizeBytes*height)
-    outImage = np.array(np.flipud(np.reshape(flatarray, (height, width, 3))))
-    misc.imsave("foo.jpg", outImage)    
+	# FIXME this assumes 8bit RGB image. Check bitDepth, components, field
+	flatarray = np.fromstring(data, np.uint8, rowSizeBytes*height)
+	outImage = np.array(np.flipud(np.reshape(flatarray, (height, width, 3))))
+	misc.imsave("foo.jpg", outImage)    
 
 tuttle.Core.instance().preload()
 g = tuttle.Graph()
 
 # Input node
-input_node = g.createNode("tuttle.jpegreader")
-in_param = input_node.getParamByScriptName( "filename" )
-in_param.setValue("data/input.jpg")
+input_node = g.createNode("tuttle.jpegreader", filename="data/input.jpg", channel="rgb", bitDepth="8i")
 
 # Output node
 output_buffer = g.createOutputBuffer()
