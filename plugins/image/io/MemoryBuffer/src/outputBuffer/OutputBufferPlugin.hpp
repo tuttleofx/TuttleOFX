@@ -5,19 +5,15 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-extern "C" {
-  typedef void (*OutCallbackPtr)(OfxTime time, void* outputCustomData, void *rawdata, int width, int height, int rowSizeBytes, OFX::EBitDepth bitDepth, OFX::EPixelComponent components, OFX::EField field);
-  typedef void* CallbackCustomDataPtr;
-}
-
 namespace tuttle {
 namespace plugin {
 namespace outputBuffer {
 
 struct OutputBufferProcessParams
 {
-  OutCallbackPtr _callbackPtr;
-  CallbackCustomDataPtr _callbackCustomDataPtr;
+	CallbackOutputImagePtr _callbackPtr;
+	CustomDataPtr _customDataPtr;
+	CallbackDestroyCustomDataPtr _callbackDestroyPtr;
 };
 
 /**
@@ -26,9 +22,12 @@ struct OutputBufferProcessParams
 class OutputBufferPlugin : public OFX::ImageEffect
 {
 public:
-        OutputBufferPlugin( OfxImageEffectHandle handle );
+	OutputBufferPlugin( OfxImageEffectHandle handle );
+	~OutputBufferPlugin();
 
-        OutputBufferProcessParams getProcessParams( const OfxTime time ) const;
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+
+	OutputBufferProcessParams getProcessParams() const;
 
 	void render( const OFX::RenderArguments& args );
 
@@ -36,11 +35,14 @@ public:
 	/// @group Attributes
 	/// @{
 	OFX::Clip* _clipSrc;       ///< Input image clip
-  	OFX::Clip* _clipDst;       ///< Ouput image clip
+	OFX::Clip* _clipDst;       ///< Ouput image clip
 
-        OFX::StringParam* _paramOutputCallbackPointer;
-	OFX::StringParam* _paramOutputCallbackCustomData;
+	OFX::StringParam* _paramCallbackOutputPointer;
+	OFX::StringParam* _paramCustomData;
+	OFX::StringParam* _paramCallbackDestroyCustomData;
 	/// @}
+	
+	CustomDataPtr _tempStoreCustomDataPtr; //< keep track of the previous value
 };
 
 }
