@@ -14,7 +14,7 @@ static const std::string kColorGreen    ( "\E[32m" );
 static const std::string kColorRed      ( "\E[1;31m" );
 static const std::string kColorCyan     ( "\E[1;36m" );
 static const std::string kColorMagenta  ( "\E[1;35m" );
-static const std::string kColorYellow   ( "\E[33m" );
+static const std::string kColorYellow   ( "\E[33m" );//yellow isn't visible on light background, that's why a darker color is used here
 
 static const std::string kColorStd      ( "\E[0;0m"   );
 static const std::string kColorFolder   ( kColorBlue  );
