@@ -88,8 +88,8 @@ void ColorGradationProcess<View>::processSwitchOut( const EParamGradation out, c
 		case eParamGradation_REDSpace:
 			processSwitchAlpha<TIN, terry::color::gradation::REDSpace> ( processAlpha, src, dst, gradationIn );
 			break;
-		case eParamGradation_AlexaLogC:
-			processSwitchAlpha<TIN, terry::color::gradation::AlexaLogC>( processAlpha, src, dst, gradationIn );
+		case eParamGradation_AlexaV3LogC:
+			processSwitchAlpha<TIN, terry::color::gradation::AlexaV3LogC>( processAlpha, src, dst, gradationIn );
 			break;
 	}
 }
@@ -126,8 +126,8 @@ void ColorGradationProcess<View>::processSwitchInOut( const EParamGradation in, 
 		case eParamGradation_REDSpace:
 			processSwitchOut<terry::color::gradation::REDSpace> ( out, processAlpha, src, dst );
 			break;
-		case eParamGradation_AlexaLogC:
-			processSwitchOut<terry::color::gradation::AlexaLogC>( out, processAlpha, src, dst );
+		case eParamGradation_AlexaV3LogC:
+			processSwitchOut<terry::color::gradation::AlexaV3LogC>( out, processAlpha, src, dst );
 			break;
 	}
 }

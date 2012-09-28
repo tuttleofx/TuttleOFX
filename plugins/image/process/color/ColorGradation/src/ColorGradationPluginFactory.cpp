@@ -74,7 +74,7 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	in->appendOption( kParamGradation_REDLog );
 	in->appendOption( kParamGradation_ViperLog );
 	in->appendOption( kParamGradation_REDSpace );
-	in->appendOption( kParamGradation_AlexaLogC );
+	in->appendOption( kParamGradation_AlexaV3LogC );
 
 	//	in->appendOption( kParamGradation_rec709 );
 	//	in->appendOption( kParamGradation_rec601 );
@@ -120,7 +120,7 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	out->appendOption( kParamGradation_REDLog );
 	out->appendOption( kParamGradation_ViperLog );
 	out->appendOption( kParamGradation_REDSpace );
-	out->appendOption( kParamGradation_AlexaLogC );
+	out->appendOption( kParamGradation_AlexaV3LogC );
 
 	//	out->appendOption( kParamGradation_rec709 );
 	//	out->appendOption( kParamGradation_rec601 );

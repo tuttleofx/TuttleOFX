@@ -18,7 +18,7 @@ const std::string kParamGradation_panalog   = "Panalog";
 const std::string kParamGradation_REDLog    = "REDLog";
 const std::string kParamGradation_ViperLog  = "ViperLog";
 const std::string kParamGradation_REDSpace  = "REDSpace";
-const std::string kParamGradation_AlexaLogC = "AlexaLogC";
+const std::string kParamGradation_AlexaV3LogC = "AlexaV3LogC";
 
 //const std::string kParamGradation_rec709  = "rec709";
 //const std::string kParamGradation_rec601  = "rec601";
@@ -33,7 +33,7 @@ enum EParamGradation
 	eParamGradation_REDLog,
 	eParamGradation_ViperLog,
 	eParamGradation_REDSpace,
-	eParamGradation_AlexaLogC
+	eParamGradation_AlexaV3LogC
 	//	eParamGradation_rec709,
 	//	eParamGradation_rec601
 };

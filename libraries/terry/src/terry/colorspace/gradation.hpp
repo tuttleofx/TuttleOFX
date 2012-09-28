@@ -65,7 +65,7 @@ namespace terry
       struct REDSpace
       {
       };
-      struct AlexaLogC
+      struct AlexaV3LogC
       {
       };
     }
@@ -691,13 +691,13 @@ namespace terry
       };
 
 ////////////////////////////////////////////////////////////////////////////////
-// AlexaLogC
+// AlexaV3LogC
 
     /**
-     * @brief AlexaLogC to Lin
+     * @brief AlexaV3LogC to Lin
      */
     template<typename Channel>
-      struct channel_color_gradation_t<Channel, gradation::AlexaLogC,
+      struct channel_color_gradation_t<Channel, gradation::AlexaV3LogC,
           gradation::Linear> : public std::binary_function<Channel, Channel,
           Channel>
       {
@@ -705,7 +705,7 @@ namespace terry
         typedef typename channel_base_type<Channel>::type TBase;
         typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
         typedef typename channel_traits<Channel>::reference ChannelRef;
-        typedef typename gradation::AlexaLogC TIN;
+        typedef typename gradation::AlexaV3LogC TIN;
         typedef typename gradation::Linear TOUT;
 
         const TIN& _in;
@@ -719,16 +719,28 @@ namespace terry
         ChannelRef
         operator()(ChannelConstRef src, ChannelRef dst) const
         {
-          return dst = Channel(src); // the equation wasn't found actually
+        	 const T fSrc = channel_convert<T>(src);
+        	 T fDst;
+
+        	 if (fSrc > 0.1496582)
+        	 {
+        	     fDst = std::pow(10.0,(fSrc - 0.385537)/0.2471896) * 0.18 - 0.00937677;
+        	 }
+        	 else
+        	 {
+        	     fDst = (fSrc/ 0.9661776 - 0.04378604)* 0.18 - 0.00937677;
+        	 }
+
+             return dst = channel_convert<Channel>(fDst);
         }
       };
 
     /**
-     * @brief Lin to AlexaLogC
+     * @brief Lin to AlexaV3LogC
      */
     template<typename Channel>
       struct channel_color_gradation_t<Channel, gradation::Linear,
-          gradation::AlexaLogC> : public std::binary_function<Channel, Channel,
+          gradation::AlexaV3LogC> : public std::binary_function<Channel, Channel,
           Channel>
       {
         typedef typename floating_channel_type_t<Channel>::type T;
@@ -736,7 +748,7 @@ namespace terry
         typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
         typedef typename channel_traits<Channel>::reference ChannelRef;
         typedef typename gradation::Linear TIN;
-        typedef typename gradation::AlexaLogC TOUT;
+        typedef typename gradation::AlexaV3LogC TOUT;
 
         const TIN& _in;
         const TOUT& _out;
@@ -749,7 +761,19 @@ namespace terry
         ChannelRef
         operator()(ChannelConstRef src, ChannelRef dst) const
         {
-          return dst = Channel(src); // the equation wasn't found actually
+        	const T fSrc = channel_convert<T>(src);
+        	T fDst;
+
+        	if (fSrc > 0.010591)
+        	{
+        	   fDst = 0.247190 * std::log10(5.555556 * fSrc + 0.052272) + 0.385537;
+        	}
+        	else
+        	{
+        	   fDst = fSrc* 5.367655 + 0.092809;
+        	}
+
+        	return dst = channel_convert<Channel>(fDst);
         }
       };
 
