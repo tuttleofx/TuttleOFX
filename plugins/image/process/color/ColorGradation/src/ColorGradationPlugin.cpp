@@ -57,12 +57,12 @@ void ColorGradationPlugin::updateParameters()
 	_paramOutBlackPoint  ->setIsSecretAndDisabled( true );
 	_paramOutWhitePoint  ->setIsSecretAndDisabled( true );
 	_paramOutGammaSensito->setIsSecretAndDisabled( true );
-	switch( _paramIn->getValue( ) )
+	switch(  (EParamGradation)_paramIn->getValue( ) )
 	{
-		case 4: // gamma
+		case eParamGradation_gamma: // gamma
 			_paramInGamma->setIsSecretAndDisabled( false );
 			break;
-		case 3: // cineon
+		case eParamGradation_cineon: // cineon
 			_paramInBlackPoint->setIsSecretAndDisabled  ( false );
 			_paramInWhitePoint->setIsSecretAndDisabled  ( false );
 			_paramInGammaSensito->setIsSecretAndDisabled( false );
@@ -70,12 +70,12 @@ void ColorGradationPlugin::updateParameters()
 		default:
 			break;
 	}
-	switch( _paramOut->getValue( ) )
+	switch( (EParamGradation)_paramOut->getValue( ) )
 	{
-		case 4: // gamma
+		case eParamGradation_gamma: // gamma
 			_paramOutGamma->setIsSecretAndDisabled( false );
 			break;
-		case 3: // cineon
+		case eParamGradation_cineon: // cineon
 			_paramOutBlackPoint->setIsSecretAndDisabled  ( false );
 			_paramOutWhitePoint->setIsSecretAndDisabled  ( false );
 			_paramOutGammaSensito->setIsSecretAndDisabled( false );
