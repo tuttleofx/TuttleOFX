@@ -68,6 +68,7 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	in->setHint( "Input color gradation." );
 	in->appendOption( kParamGradation_linear );
 	in->appendOption( kParamGradation_sRGB );
+	in->appendOption( kParamGradation_Rec709 );
 	in->appendOption( kParamGradation_cineon );
 	in->appendOption( kParamGradation_gamma );
 	in->appendOption( kParamGradation_panalog );
@@ -76,7 +77,6 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	in->appendOption( kParamGradation_REDSpace );
 	in->appendOption( kParamGradation_AlexaV3LogC );
 
-	//	in->appendOption( kParamGradation_rec709 );
 	//	in->appendOption( kParamGradation_rec601 );
 	in->setDefault( eParamGradation_linear );
 
@@ -114,6 +114,7 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	out->setHint( "Output color gradation." );
 	out->appendOption( kParamGradation_linear );
 	out->appendOption( kParamGradation_sRGB );
+	out->appendOption( kParamGradation_Rec709 );
 	out->appendOption( kParamGradation_cineon );
 	out->appendOption( kParamGradation_gamma );
 	out->appendOption( kParamGradation_panalog );
@@ -122,7 +123,6 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	out->appendOption( kParamGradation_REDSpace );
 	out->appendOption( kParamGradation_AlexaV3LogC );
 
-	//	out->appendOption( kParamGradation_rec709 );
 	//	out->appendOption( kParamGradation_rec601 );
 	out->setDefault( eParamGradation_linear );
 

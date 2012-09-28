@@ -25,6 +25,9 @@ namespace terry
       struct sRGB
       {
       };
+      struct Rec709
+      {
+      };
       struct Cineon
       {
         Cineon() :
@@ -68,6 +71,7 @@ namespace terry
       struct AlexaV3LogC
       {
       };
+
     }
 
 /// @brief change the color gradation
@@ -239,6 +243,83 @@ namespace terry
            fDst = 12.92 * fSrc;
            }
            */
+          return dst = channel_convert<Channel>(fDst);
+        }
+
+      };
+////////////////////////////////////////////////////////////////////////////////
+// Rec709 //
+
+    /**
+     * @brief Rec709 to Lin
+     *
+     */
+    template<typename Channel>
+      struct channel_color_gradation_t<Channel, gradation::Rec709,
+          gradation::Linear> : public std::binary_function<Channel, Channel,
+          Channel>
+      {
+        typedef typename floating_channel_type_t<Channel>::type T;
+        typedef typename channel_base_type<Channel>::type TBase;
+        typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
+        typedef typename channel_traits<Channel>::reference ChannelRef;
+        typedef typename gradation::Rec709 TIN;
+        typedef typename gradation::Linear TOUT;
+
+        const TIN& _in;
+        const TOUT& _out;
+
+        channel_color_gradation_t(const TIN& in, const TOUT& out) :
+            _in(in), _out(out)
+        {
+        }
+
+        ChannelRef
+        operator()(ChannelConstRef src, ChannelRef dst) const
+        {
+          const T fSrc = channel_convert<T>(src);
+          T fDst;
+          if (fSrc < 0.081)
+                 fDst = fSrc * (1.0/4.5);
+             else
+            	 fDst = std::pow ((fSrc + 0.099) * (1.0/1.099), (1.0/0.45));
+          return dst = channel_convert<Channel>(fDst);
+        }
+
+      };
+
+    /**
+     * @brief Lin to Rec709
+     */
+    template<typename Channel>
+      struct channel_color_gradation_t<Channel, gradation::Linear,
+          gradation::Rec709> : public std::binary_function<Channel, Channel,
+          Channel>
+      {
+        typedef typename floating_channel_type_t<Channel>::type T;
+        typedef typename channel_base_type<Channel>::type TBase;
+        typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
+        typedef typename channel_traits<Channel>::reference ChannelRef;
+        typedef typename gradation::Linear TIN;
+        typedef typename gradation::Rec709 TOUT;
+
+        const TIN& _in;
+        const TOUT& _out;
+
+        channel_color_gradation_t(const TIN& in, const TOUT& out) :
+            _in(in), _out(out)
+        {
+        }
+
+        ChannelRef
+        operator()(ChannelConstRef src, ChannelRef dst) const
+        {
+          const T fSrc = channel_convert<T>(src);
+          T fDst;
+          if (fSrc < 0.018)
+        	  fDst = fSrc * 4.5;
+          else
+        	  fDst = 1.099 * std::pow(T(fSrc), T(0.45)) - 0.099;
           return dst = channel_convert<Channel>(fDst);
         }
 

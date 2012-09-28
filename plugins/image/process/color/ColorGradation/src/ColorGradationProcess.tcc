@@ -70,6 +70,9 @@ void ColorGradationProcess<View>::processSwitchOut( const EParamGradation out, c
 		case eParamGradation_sRGB:
 			processSwitchAlpha<TIN, terry::color::gradation::sRGB>     ( processAlpha, src, dst, gradationIn );
 			break;
+		case eParamGradation_Rec709:
+			processSwitchAlpha<TIN, terry::color::gradation::Rec709>( processAlpha, src, dst, gradationIn );
+			break;
 		case eParamGradation_cineon:
 			processSwitchAlpha<TIN, terry::color::gradation::Cineon>   ( processAlpha, src, dst, gradationIn, cineon );
 			break;
@@ -107,6 +110,9 @@ void ColorGradationProcess<View>::processSwitchInOut( const EParamGradation in, 
 			break;
 		case eParamGradation_sRGB:
 			processSwitchOut<terry::color::gradation::sRGB>     ( out, processAlpha, src, dst );
+			break;
+		case eParamGradation_Rec709:
+			processSwitchOut<terry::color::gradation::Rec709>   ( out, processAlpha, src, dst );
 			break;
 		case eParamGradation_cineon:
 			processSwitchOut<terry::color::gradation::Cineon>   ( out, processAlpha, src, dst, cineon );
