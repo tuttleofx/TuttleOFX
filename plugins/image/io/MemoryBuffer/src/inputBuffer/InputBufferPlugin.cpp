@@ -63,11 +63,11 @@ InputBufferPlugin::InputBufferPlugin( OfxImageEffectHandle handle )
 {
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
-	
 	_paramInputMode = fetchChoiceParam( kParamInputMode );
 	_paramInputBufferPointer = fetchStringParam( kParamInputBufferPointer );
 	_paramInputCallbackPointer = fetchStringParam( kParamInputCallbackPointer );
 	_paramInputCallbackCustomData = fetchStringParam( kParamInputCustomData );
+	_paramInputCallbackDestroyCustomData = fetchStringParam( kParamInputCallbackDestroyCustomData );
 	
 	_paramSize = fetchInt2DParam( kParamSize );
 	_paramRowByteSize = fetchIntParam( kParamRowBytesSize );
@@ -82,14 +82,22 @@ InputBufferPlugin::InputBufferPlugin( OfxImageEffectHandle handle )
 	changedParam( OFX::InstanceChangedArgs(), kParamInputMode );
 }
 
+InputBufferPlugin::~InputBufferPlugin()
+{
+	InputBufferProcessParams params = getProcessParams(0.0);
+	if( params._callbackDestroyPtr != NULL )
+		params._callbackDestroyPtr( params._customDataPtr );
+}
+
 InputBufferProcessParams InputBufferPlugin::getProcessParams( const OfxTime time ) const
 {
 	InputBufferProcessParams params;
 	params._mode = static_cast<EParamInputMode>( _paramInputMode->getValue() );
 	
 	params._inputBuffer = static_cast<unsigned char*>( stringToPointer( _paramInputBufferPointer->getValueAtTime( time ) ) );
-	params._callbackPtr = reinterpret_cast<CallbackPtr>( stringToPointer( _paramInputCallbackPointer->getValue() ) );
-	params._callbackCustomDataPtr = static_cast<CallbackCustomDataPtr>( stringToPointer( _paramInputCallbackCustomData->getValue() ) );
+	params._callbackPtr = reinterpret_cast<CallbackInputImagePtr>( stringToPointer( _paramInputCallbackPointer->getValue() ) );
+	params._customDataPtr = static_cast<CustomDataPtr>( stringToPointer( _paramInputCallbackCustomData->getValue() ) );
+	params._callbackDestroyPtr = reinterpret_cast<CallbackDestroyCustomDataPtr>( stringToPointer( _paramInputCallbackDestroyCustomData->getValue() ) );
 	
 	const OfxPointI imgSize = _paramSize->getValueAtTime( time );
 	params._width = imgSize.x;
@@ -161,6 +169,13 @@ void InputBufferPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 	{
 		_paramInputMode->setValue( eParamInputModeCallbackPointer );
 	}
+	else if( paramName == kParamInputCustomData )
+	{
+		InputBufferProcessParams params = getProcessParams(args.time);
+		if( params._callbackDestroyPtr != NULL && _tempStoreCustomDataPtr != NULL )
+			params._callbackDestroyPtr( _tempStoreCustomDataPtr );
+		_tempStoreCustomDataPtr = static_cast<CustomDataPtr>( stringToPointer( _paramInputCallbackCustomData->getValue() ) );
+	}
 }
 
 bool InputBufferPlugin::getTimeDomain( OfxRangeD& range )
@@ -204,7 +219,11 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 	//        from the plugin.
 	// If the host support this extension, we only need to set the pointer,
 	// else we need to do a buffer copy.
+
+	// User parameters
+	InputBufferProcessParams params = getProcessParams( args.time );
 	
+
 //	if()
 //	{
 //		// Set the buffer pointer
@@ -212,7 +231,7 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 //	else
 	{
 		// Buffer Copy
-		
+
 		// fetch the destination image
 		boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
 		if( !dst.get() )
@@ -228,9 +247,6 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 		dstPixelRodSize.x = ( dstPixelRod.x2 - dstPixelRod.x1 );
 		dstPixelRodSize.y = ( dstPixelRod.y2 - dstPixelRod.y1 );
 
-		// User parameters
-		InputBufferProcessParams params = getProcessParams( args.time );
-		
 		unsigned char* inputImageBufferPtr = NULL;
 		TUTTLE_TCOUT_INFOS;
 		switch( params._mode )
@@ -248,22 +264,37 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 				{
 					TUTTLE_TCOUT_INFOS;
 					TUTTLE_TCOUT_VAR( (void*)params._callbackPtr );
-					TUTTLE_TCOUT_VAR( (void*)params._callbackCustomDataPtr );
-					inputImageBufferPtr = static_cast<unsigned char*>( params._callbackPtr( args.time, params._callbackCustomDataPtr ) );
+					TUTTLE_TCOUT_VAR( (void*)params._customDataPtr );
+					void* outRawdata;
+					int outWidth;
+					int outHeight;
+					int outRowSizeBytes;
+					
+					TUTTLE_TCOUT_INFOS;
+					params._callbackPtr(
+							args.time, params._customDataPtr,
+							&outRawdata,
+							&outWidth,
+							&outHeight,
+							&outRowSizeBytes
+						);
+					TUTTLE_TCOUT_INFOS;
+					inputImageBufferPtr = (unsigned char*)outRawdata;
+					TUTTLE_TCOUT_INFOS;
 				}
 				break;
 			}
 		}
 		TUTTLE_TCOUT_INFOS;
 		TUTTLE_TCOUT_VAR( (void*)inputImageBufferPtr );
-		
+
 		int rowBytesDistanceSize = params._rowByteSize;
 		const std::size_t nbComponents = numberOfComponents( params._pixelComponents );
 		const std::size_t bitDepthMemSize = bitDepthMemorySize( params._bitDepth );
 		int widthBytesSize = dstPixelRodSize.x * nbComponents * bitDepthMemSize;
 		if( rowBytesDistanceSize == 0 )
 			rowBytesDistanceSize = widthBytesSize;
-		
+
 		// Copy the image
 		for( int y = 0; y < dstPixelRodSize.y; ++y )
 		{

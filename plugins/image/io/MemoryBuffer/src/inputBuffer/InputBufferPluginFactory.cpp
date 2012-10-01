@@ -179,6 +179,18 @@ void InputBufferPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	timeDomain->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	timeDomain->setDefault( kOfxFlagInfiniteMin, kOfxFlagInfiniteMax );
 	timeDomain->setAnimates( false );
+	
+	OFX::StringParamDescriptor* callbackDestroyCustomData = desc.defineStringParam( kParamInputCallbackDestroyCustomData );
+	callbackDestroyCustomData->setLabel( "Callback Destroy Custom Data" );
+	callbackDestroyCustomData->setHint(
+		"This parameter represents a pointer to a function.\n"
+		"WARNING:\n"
+		" - Your application could crash if you set an invalid value here.\n"
+		);
+	callbackDestroyCustomData->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	callbackDestroyCustomData->setIsPersistant( false );
+	callbackDestroyCustomData->setAnimates( false );
+	callbackDestroyCustomData->setDefault( "" );
 }
 
 /**

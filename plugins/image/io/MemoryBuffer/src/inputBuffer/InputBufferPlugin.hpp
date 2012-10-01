@@ -5,10 +5,6 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-extern "C" {
-typedef void* (*CallbackPtr)(OfxTime time, void* inputCustomData);
-typedef void* CallbackCustomDataPtr;
-}
 
 namespace tuttle {
 namespace plugin {
@@ -20,8 +16,9 @@ struct InputBufferProcessParams
 	EParamInputMode _mode;
 	
 	unsigned char* _inputBuffer;
-	CallbackPtr _callbackPtr;
-	CallbackCustomDataPtr _callbackCustomDataPtr;
+	CallbackInputImagePtr _callbackPtr;
+	CustomDataPtr _customDataPtr;
+	CallbackDestroyCustomDataPtr _callbackDestroyPtr;
 	
 	int _width;
 	int _height;
@@ -42,6 +39,7 @@ public:
 	typedef float Scalar;
 public:
     InputBufferPlugin( OfxImageEffectHandle handle );
+    ~InputBufferPlugin();
 
 public:
 	InputBufferProcessParams getProcessParams( const OfxTime time ) const;
@@ -61,6 +59,7 @@ public:
 	OFX::StringParam* _paramInputBufferPointer;
 	OFX::StringParam* _paramInputCallbackPointer;
 	OFX::StringParam* _paramInputCallbackCustomData;
+	OFX::StringParam* _paramInputCallbackDestroyCustomData;
 	
 	OFX::Int2DParam* _paramSize;
 	OFX::IntParam* _paramRowByteSize;
@@ -71,6 +70,8 @@ public:
 	OFX::ChoiceParam* _paramField;
 	
 	OFX::Double2DParam* _paramTimeDomain;
+	
+	CustomDataPtr _tempStoreCustomDataPtr; //< keep track of the previous value
 };
 
 }
