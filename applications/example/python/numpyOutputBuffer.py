@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 from pyTuttle import tuttle
-from scipy import misc
-import numpy as np
+import Image
+import numpy
 
 # This is called by Tuttle with the output image data
-def getImage(time, data, width, height, rowSizeBytes, bitDepth, components, field):
+def writeImage(time, data, width, height, rowSizeBytes, bitDepth, components, field):
 	# FIXME this assumes 8bit RGB image. Check bitDepth, components, field
-	flatarray = np.fromstring(data, np.uint8, rowSizeBytes*height)
-	outImage = np.array(np.flipud(np.reshape(flatarray, (height, width, 3))))
-	misc.imsave("foo.jpg", outImage)    
+	flatarray = numpy.fromstring(data, numpy.uint8, rowSizeBytes*height)
+	outImage = numpy.array(numpy.flipud(numpy.reshape(flatarray, (height, width, 3))))
+	Image.fromarray(outImage).save("foo.jpg")
 
 tuttle.Core.instance().preload()
 g = tuttle.Graph()
@@ -18,7 +18,7 @@ input_node = g.createNode("tuttle.jpegreader", filename="data/input.jpg", channe
 
 # Output node
 output_buffer = g.createOutputBuffer()
-output_buffer.setPyCallback(getImage)
+output_buffer.setPyCallback(writeImage)
 
 # Connect nodes and compute
 g.connect( input_node, output_buffer.getNode() )
