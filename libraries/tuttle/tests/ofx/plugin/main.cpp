@@ -41,11 +41,11 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	const std::string testfile = ( core().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization.xml" ).string();
+	//// Write "tuttle.invert" plugin into a cache file
+	const std::string testfile = ( core().getPreferences().buildTuttleTestPath() / "test_imageEffectPlugin_serialization.xml" ).string();
 	TUTTLE_TCOUT_VAR( testfile );
 	BOOST_REQUIRE( testfile.size() );
 
-	
 	{
 		std::ofstream ofsb( testfile.c_str() );
 		OArchive oArchive( ofsb );
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 
 	BOOST_CHECK( boost::filesystem::exists( testfile ) );
 
-	// new datas
+	//// Read "tuttle.invert" plugin from the cache file
 	OfxhImageEffectPlugin* plugin2 = NULL;
 
 	{
@@ -64,10 +64,16 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 		iArchive >> BOOST_SERIALIZATION_NVP( plugin2 );
 		ifsb.close();
 	}
-
 	BOOST_CHECK( boost::filesystem::exists( testfile ) );
+	boost::filesystem::remove( testfile );
 
-	const std::string testfile2 = ( core().getPreferences().getTuttleTempPath() / "test_imageEffectPlugin_serialization2.xml" ).string();
+	
+	//// The new plugin re-created from the cache file is the same than the original
+	BOOST_CHECK( ( *plugin ) == ( *plugin2 ) );
+
+	
+	// Rewrite "tuttle.invert" plugin into another cache file
+	const std::string testfile2 = ( core().getPreferences().buildTuttleTestPath() / "test_imageEffectPlugin_serialization2.xml" ).string();
 	TUTTLE_TCOUT_VAR( testfile2 );
 	BOOST_REQUIRE( testfile2.size() );
 
@@ -78,8 +84,8 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 		ofsb2.close();
 	}
 
-	BOOST_CHECK( ( *plugin ) == ( *plugin2 ) );
-
+	BOOST_CHECK( boost::filesystem::exists( testfile ) );
+	boost::filesystem::remove( testfile2 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
