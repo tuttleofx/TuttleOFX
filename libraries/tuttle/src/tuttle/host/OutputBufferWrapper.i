@@ -10,9 +10,56 @@
 
 %include "wrappers/numpy.i"
 
-%init %{
+%init
+%{
 import_array();
 %}
+
+%inline
+%{
+	typedef void *PyFunc;
+	void outputbuffer_python_callback( OfxTime time, void* object, void* rawdata, int width, int height, int rowSizeBytes, tuttle::host::OutputBufferWrapper::EBitDepth bitDepth, tuttle::host::OutputBufferWrapper::EPixelComponent components, tuttle::host::OutputBufferWrapper::EField field )
+	{
+		//std::cout << "outputbuffer_python_callback: " << (void*)object << ", time: " << time << ", width: " << width << ", height: " << height << std::endl;
+		PyObject* ret = PyObject_CallFunction( (PyObject *)object, (char *)"ds#iiiiii", time, rawdata, height*rowSizeBytes, width, height, rowSizeBytes, bitDepth, components, field );
+		if( (void *)ret == NULL )
+		{
+			PyErr_SetString( PyExc_RuntimeError, "TuttleOFX OutputBuffer Python callback failed" );
+		}
+	}
+	
+	void outputbuffer_destroy_callback( void* object )
+	{
+		//std::cout << "outputbuffer_destroy_callback, Py_DECREF: " << (void*)object << std::endl;
+		if( object != NULL )
+			Py_DECREF( (PyObject*)object );
+	}
+%}
+
+%typemap(in) PyFunc
+{
+  $1 = $input;
+}
+
+%extend tuttle::host::OutputBufferWrapper
+{
+	void setPyCallback( PyFunc object )
+	{
+		if( PyCallable_Check((PyObject *)object) )
+		{
+			//std::cout << "outputbuffer, Py_INCREF: " << (void*)object << std::endl;
+			Py_INCREF( (PyObject *)object );
+			$self->setCallback( outputbuffer_python_callback, object, outputbuffer_destroy_callback );
+		}
+		else
+		{
+			PyErr_SetString(PyExc_RuntimeError, "Callback function must be a callable");
+		}
+	}
+	
+}
+
+%ignore setCallback;
 
 %apply (unsigned char* INPLACE_ARRAY2, int DIM1, int DIM2) {(unsigned char* rawBuffer, int height, int width)};
 %apply (unsigned short* INPLACE_ARRAY2, int DIM1, int DIM2) {(unsigned short* rawBuffer, int height, int width)};

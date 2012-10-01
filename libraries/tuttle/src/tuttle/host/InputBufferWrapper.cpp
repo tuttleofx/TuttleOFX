@@ -141,12 +141,12 @@ void InputBufferWrapper::setRawImageBuffer(
 //}
 
 
-void InputBufferWrapper::setCallback( CallbackPtr callback, CallbackCustomDataPtr customData )
+void InputBufferWrapper::setCallback( CallbackPtr callback, CustomDataPtr customData )
 {
 	_node.getParam( "callbackPointer" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( callback ) )
 		);
-	_node.getParam( "callbackCustomData" ).setValue(
+	_node.getParam( "customData" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( customData ) )
 		);
 }
