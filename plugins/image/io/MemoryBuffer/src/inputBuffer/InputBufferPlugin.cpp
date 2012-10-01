@@ -1,6 +1,8 @@
 #include "InputBufferPlugin.hpp"
 #include "InputBufferDefinitions.hpp"
 
+#include <pointerParam.hpp>
+
 #include <tuttle/common/ofx/imageEffect.hpp>
 
 #include <boost/assert.hpp>
@@ -12,15 +14,9 @@ namespace tuttle {
 namespace plugin {
 namespace inputBuffer {
 
-namespace {
-void* stringToPointer( const std::string& value )
-{
-	if( value.empty() )
-		return NULL;
-	std::ptrdiff_t p = boost::lexical_cast<std::ptrdiff_t>( value );
-	return reinterpret_cast<void*>( p );
-}
+using namespace memoryBuffer;
 
+namespace {
 inline std::size_t bitDepthMemorySize( const OFX::EBitDepth e )
 {
 	switch( e )
@@ -71,7 +67,7 @@ InputBufferPlugin::InputBufferPlugin( OfxImageEffectHandle handle )
 	_paramInputMode = fetchChoiceParam( kParamInputMode );
 	_paramInputBufferPointer = fetchStringParam( kParamInputBufferPointer );
 	_paramInputCallbackPointer = fetchStringParam( kParamInputCallbackPointer );
-	_paramInputCallbackCustomData = fetchStringParam( kParamInputCallbackCustomData );
+	_paramInputCallbackCustomData = fetchStringParam( kParamInputCustomData );
 	
 	_paramSize = fetchInt2DParam( kParamSize );
 	_paramRowByteSize = fetchIntParam( kParamRowBytesSize );
@@ -161,7 +157,7 @@ void InputBufferPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 		_paramInputMode->setValue( eParamInputModeBufferPointer );
 	}
 	else if( ( paramName == kParamInputCallbackPointer ) ||
-		     ( paramName == kParamInputCallbackCustomData ) )
+		     ( paramName == kParamInputCustomData ) )
 	{
 		_paramInputMode->setValue( eParamInputModeCallbackPointer );
 	}

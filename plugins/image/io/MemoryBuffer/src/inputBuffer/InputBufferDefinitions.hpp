@@ -20,7 +20,7 @@ enum EParamInputMode
 
 static const std::string kParamInputBufferPointer = "bufferPointer";
 static const std::string kParamInputCallbackPointer = "callbackPointer";
-static const std::string kParamInputCallbackCustomData = "callbackCustomData";
+static const std::string kParamInputCustomData = "customData";
 
 static const std::string kParamSize = "size";
 static const std::string kParamRowBytesSize = "rowBytesSize";

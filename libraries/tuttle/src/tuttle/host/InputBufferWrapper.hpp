@@ -16,7 +16,7 @@ class InputBufferWrapper
 {
 public:
 	typedef void* (*CallbackPtr)(OfxTime time, void* inputCustomData);
-	typedef void* CallbackCustomDataPtr;
+	typedef void* CustomDataPtr;
 	
 	enum EMode
 	{
@@ -152,7 +152,7 @@ public:
 			orientation );
 	}
 	
-	void setCallback( CallbackPtr callback, CallbackCustomDataPtr customData = NULL );
+	void setCallback( CallbackPtr callback, CustomDataPtr customData = NULL );
 	
 };
 
