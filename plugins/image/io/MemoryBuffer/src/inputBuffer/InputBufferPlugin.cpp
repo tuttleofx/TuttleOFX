@@ -79,14 +79,18 @@ InputBufferPlugin::InputBufferPlugin( OfxImageEffectHandle handle )
 	
 	_paramTimeDomain = fetchDouble2DParam( kParamTimeDomain );
 	
+	// init temporary values
+	_callbackMode_time = 0;
+	_callbackMode_imgSize.x = 0;
+	_callbackMode_imgSize.y = 0;
+	_callbackMode_rowSizeBytes = 0;
+	_callbackMode_imgPointer = NULL;
+	
 	changedParam( OFX::InstanceChangedArgs(), kParamInputMode );
 }
 
 InputBufferPlugin::~InputBufferPlugin()
 {
-	InputBufferProcessParams params = getProcessParams(0.0);
-	if( params._callbackDestroyPtr != NULL )
-		params._callbackDestroyPtr( params._customDataPtr );
 }
 
 InputBufferProcessParams InputBufferPlugin::getProcessParams( const OfxTime time ) const
@@ -200,12 +204,47 @@ void InputBufferPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPref
 
 bool InputBufferPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	rod.x1 = 0;
-	rod.y1 = 0;
-	OfxPointI imgSize = _paramSize->getValueAtTime( args.time );
-	rod.x2 = imgSize.x;
-	rod.y2 = imgSize.y;
+	InputBufferProcessParams params = getProcessParams( args.time );
+	switch( params._mode )
+	{
+		case eParamInputModeBufferPointer:
+		{
+			rod.x1 = 0;
+			rod.y1 = 0;
+			OfxPointI imgSize = _paramSize->getValueAtTime( args.time );
+			rod.x2 = imgSize.x;
+			rod.y2 = imgSize.y;
+			break;
+		}
+		case eParamInputModeCallbackPointer:
+		{
+			callbackMode_updateImage( args.time, params );
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = _callbackMode_imgSize.x;
+			rod.y2 = _callbackMode_imgSize.y;
+			break;
+		}
+	}
 	return true;
+}
+
+void InputBufferPlugin::callbackMode_updateImage( const OfxTime time, const InputBufferProcessParams& params )
+{
+	if( _callbackMode_time == time && _callbackMode_imgPointer != NULL )
+		return;
+	
+	if( ! params._callbackPtr )
+		return;
+	
+	_callbackMode_time = time;
+	params._callbackPtr(
+			time, params._customDataPtr,
+			(void**)&(_callbackMode_imgPointer),
+			&_callbackMode_imgSize.x,
+			&_callbackMode_imgSize.y,
+			&_callbackMode_rowSizeBytes
+		);
 }
 
 /**
@@ -214,10 +253,9 @@ bool InputBufferPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgu
  */
 void InputBufferPlugin::render( const OFX::RenderArguments &args )
 {
-	
 	// @todo: add an OpenFX extension to setup the image buffer pointer
 	//        from the plugin.
-	// If the host support this extension, we only need to set the pointer,
+	// If the host supports this extension, we only need to set the pointer,
 	// else we need to do a buffer copy.
 
 	// User parameters
@@ -248,47 +286,25 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 		dstPixelRodSize.y = ( dstPixelRod.y2 - dstPixelRod.y1 );
 
 		unsigned char* inputImageBufferPtr = NULL;
-		TUTTLE_TCOUT_INFOS;
+		int rowBytesDistanceSize = 0;
 		switch( params._mode )
 		{
 			case eParamInputModeBufferPointer:
 			{
 				inputImageBufferPtr = params._inputBuffer;
-				TUTTLE_TCOUT_INFOS;
+				rowBytesDistanceSize = params._rowByteSize;
 				break;
 			}
 			case eParamInputModeCallbackPointer:
 			{
-				TUTTLE_TCOUT_INFOS;
-				if( params._callbackPtr )
-				{
-					TUTTLE_TCOUT_INFOS;
-					TUTTLE_TCOUT_VAR( (void*)params._callbackPtr );
-					TUTTLE_TCOUT_VAR( (void*)params._customDataPtr );
-					void* outRawdata;
-					int outWidth;
-					int outHeight;
-					int outRowSizeBytes;
-					
-					TUTTLE_TCOUT_INFOS;
-					params._callbackPtr(
-							args.time, params._customDataPtr,
-							&outRawdata,
-							&outWidth,
-							&outHeight,
-							&outRowSizeBytes
-						);
-					TUTTLE_TCOUT_INFOS;
-					inputImageBufferPtr = (unsigned char*)outRawdata;
-					TUTTLE_TCOUT_INFOS;
-				}
+				callbackMode_updateImage( args.time, params );
+				inputImageBufferPtr = _callbackMode_imgPointer;
+				rowBytesDistanceSize = _callbackMode_rowSizeBytes;
 				break;
 			}
 		}
-		TUTTLE_TCOUT_INFOS;
-		TUTTLE_TCOUT_VAR( (void*)inputImageBufferPtr );
+//		TUTTLE_TCOUT_VAR( (void*)inputImageBufferPtr );
 
-		int rowBytesDistanceSize = params._rowByteSize;
 		const std::size_t nbComponents = numberOfComponents( params._pixelComponents );
 		const std::size_t bitDepthMemSize = bitDepthMemorySize( params._bitDepth );
 		int widthBytesSize = dstPixelRodSize.x * nbComponents * bitDepthMemSize;
@@ -299,6 +315,21 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 		for( int y = 0; y < dstPixelRodSize.y; ++y )
 		{
 			memcpy( dst->getPixelAddress( 0, y ), inputImageBufferPtr + y * rowBytesDistanceSize, widthBytesSize );
+		}
+		
+		switch( params._mode )
+		{
+			case eParamInputModeCallbackPointer:
+			{
+				// We duplicated the image buffer to a buffer allocated by the host.
+				// Now we can destroy the customData.
+				if( params._callbackDestroyPtr != NULL )
+					params._callbackDestroyPtr( params._customDataPtr );
+				_callbackMode_imgPointer = NULL;
+				break;
+			}
+			case eParamInputModeBufferPointer:
+				break;
 		}
 	}
 }

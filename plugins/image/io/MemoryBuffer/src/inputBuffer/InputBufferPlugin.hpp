@@ -61,8 +61,8 @@ public:
 	OFX::StringParam* _paramInputCallbackCustomData;
 	OFX::StringParam* _paramInputCallbackDestroyCustomData;
 	
-	OFX::Int2DParam* _paramSize;
-	OFX::IntParam* _paramRowByteSize;
+	OFX::Int2DParam*  _paramSize;
+	OFX::IntParam*    _paramRowByteSize;
 	OFX::DoubleParam* _paramPixelAspectRatio;
 	OFX::DoubleParam* _paramFramerate;
 	OFX::ChoiceParam* _paramPixelComponents;
@@ -71,7 +71,25 @@ public:
 	
 	OFX::Double2DParam* _paramTimeDomain;
 	
+private:
 	CustomDataPtr _tempStoreCustomDataPtr; //< keep track of the previous value
+	
+	/// @brief Store temporary values (between actions).
+	///        We ensure that we call the get image callback only once,
+	///        but we need the values multiple times.
+	/// @{
+	OfxTime _callbackMode_time;
+	OfxPointI _callbackMode_imgSize;
+	int _callbackMode_rowSizeBytes;
+	unsigned char* _callbackMode_imgPointer;
+	/// @}
+	
+	/**
+	 * @brief We call this function each time we need to know something about the image,
+	 *        the size, the buffer, etc. And this function ensures to get valid values,
+	 *        and is responsible to call the callback only once for a given input time.
+	 */
+	void callbackMode_updateImage( const OfxTime time, const InputBufferProcessParams& params );
 };
 
 }
