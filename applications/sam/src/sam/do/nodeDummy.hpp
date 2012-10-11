@@ -25,6 +25,10 @@ typedef ttl::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet   NodeContext;
 
 struct Dummy
 {
+	bool isDummyReaderNode( const std::string& nodeName );
+	bool isDummyWriterNode( const std::string& nodeName );
+	bool isDummyNode      ( const std::string& nodeName );
+	
 	void getFullName( std::string& inputNode );
 	
 	bpo::options_description getInfoOptions();

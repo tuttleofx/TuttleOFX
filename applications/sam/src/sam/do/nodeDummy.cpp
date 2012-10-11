@@ -21,14 +21,29 @@ Color color;
 
 namespace samdo {
 
+bool Dummy::isDummyReaderNode( const std::string& nodeName )
+{
+	return ( ( nodeName == READER_DUMMY_FULLNAME ) || ( nodeName == READER_DUMMY_NAME ) || ( nodeName == READER_DUMMY_SHORTNAME ) );
+}
+
+bool Dummy::isDummyWriterNode( const std::string& nodeName )
+{
+	return ( ( nodeName == WRITER_DUMMY_FULLNAME ) || ( nodeName == WRITER_DUMMY_NAME ) || ( nodeName == WRITER_DUMMY_SHORTNAME ) );
+}
+
+bool Dummy::isDummyNode( const std::string& nodeName )
+{
+	return ( isDummyReaderNode( nodeName ) || isDummyWriterNode( nodeName ) );
+}
+
 void Dummy::getFullName( std::string& inputNode )
 {
-	if( !std::strcmp( inputNode.c_str(), READER_DUMMY_FULLNAME ) || !std::strcmp( inputNode.c_str(), READER_DUMMY_NAME ) || !std::strcmp( inputNode.c_str(), READER_DUMMY_SHORTNAME ) )
+	if( isDummyReaderNode( inputNode ) )
 	{
 		inputNode = READER_DUMMY_NAME;
 		return;
 	}
-	if( !std::strcmp( inputNode.c_str(), WRITER_DUMMY_FULLNAME ) || !std::strcmp( inputNode.c_str(), WRITER_DUMMY_NAME ) || !std::strcmp( inputNode.c_str(), WRITER_DUMMY_SHORTNAME ) )
+	if( isDummyWriterNode( inputNode ) )
 	{
 		inputNode = WRITER_DUMMY_NAME;
 		return;
