@@ -182,6 +182,9 @@ int main( int argc, char** argv )
 		ttl::Graph graph;
 		std::vector<ttl::Graph::Node*> nodes;
 		nodes.reserve( 50 );
+		
+		std::vector<ttl::Graph::Node*> facticesNodes;
+		
 		std::vector<std::ssize_t> range;
 		std::vector<double> renderscale;
 		std::size_t step;
@@ -789,6 +792,14 @@ int main( int argc, char** argv )
 							}
 						}
 
+						// if it's a dummy, keeping parameters in node
+						if( dummy.isDummyNode( userNodeName ) )
+						{
+							currentNode.getParamByScriptName( "originalnode" ).setValue( command.at(0) );
+							currentNode.getParamByScriptName( "expression" ).setValue( boost::algorithm::join( nodeArgs, " " ) );
+							facticesNodes.push_back( &currentNode );
+						}
+						
 						// connect current node to previous node(s)
 						if( nodes.size() > 0 ) // if not the first node
 						{
@@ -890,14 +901,9 @@ int main( int argc, char** argv )
 			}
 		}
 
-		// display nodes
-		//		BOOST_FOREACH( const std::string& option, cl_options )
-		//		{
-		//			TUTTLE_COUT( "| " << option );
-		//		}
-
 		if( enableVerbose )
 		{
+			TUTTLE_COUT( _color._blue << "********** graph composition **********" << _color._std );
 			BOOST_FOREACH( const std::vector<std::string>& node, cl_commands )
 			{
 				TUTTLE_COUT( "[" << node[0] << "]" );
@@ -907,6 +913,7 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( ( ( s[0] == '-' ) ? "" : "* " ) << s );
 				}
 			}
+			TUTTLE_COUT( _color._blue << "***************************************" << _color._std );
 		}
 		
 		if( nodes.size() == 0 )
@@ -926,7 +933,15 @@ int main( int argc, char** argv )
 		options.setContinueOnError( continueOnError );
 		options.setForceIdentityNodesProcess( forceIdentityNodesProcess );
 		
+		BOOST_FOREACH( const ttl::Graph::Node* node, nodes )
+		{
+			TUTTLE_COUT( node->getName() );
+		}
+		
 		// Execute the graph
+		if( enableVerbose )
+			TUTTLE_COUT( _color._red << "********** graph processing  **********" << _color._std );
+		
 		graph.compute( *nodes.back(), options );
 	}
 	catch( const tuttle::exception::Common& e )
