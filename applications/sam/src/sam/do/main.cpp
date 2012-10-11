@@ -185,6 +185,10 @@ int main( int argc, char** argv )
 		std::vector<std::ssize_t> range;
 		std::vector<double> renderscale;
 		std::size_t step;
+		
+		// plugins loading
+		ttl::core().preload();
+		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 
 		// Analyze each part of the command line
 		{
@@ -309,18 +313,14 @@ int main( int argc, char** argv )
 				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
 				std::cerr.rdbuf( logFile.rdbuf() ); // redirect output into the file
-
-				// plugins loading
-				ttl::core().preload();
-				Dummy dummy;
 				
 				if( samdo_vm.count( kNodesOptionLongName ) || samdo_vm.count( kNodesListOptionLongName ) )
 				{
 					TUTTLE_COUT( _color._blue << "NODES" << _color._std );
 					std::vector<std::string> pluginNames;
 					
+					Dummy dummy;
 					dummy.addDummyNodeInList( pluginNames );
-					const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 
 					BOOST_FOREACH( const ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, allNodes )
 					{
@@ -432,13 +432,9 @@ int main( int argc, char** argv )
 
 				bpo::options_description all_options;
 				all_options.add( infoOptions ).add( confOptions ).add( openfxOptions );
-
-				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 				
 				std::vector<std::string> idNames; // list of id setted in the command line
 
-				Dummy dummy;
-				
 				BOOST_FOREACH( const std::vector<std::string>& command, cl_commands )
 				{
 
@@ -450,10 +446,12 @@ int main( int argc, char** argv )
 
 					try
 					{
-						dummy.foundAssociateDummyNode( userNodeName, allNodes, nodeArgs );
-						nodeFullName = userNodeName;
-						
-						dummy.getFullName( nodeFullName );
+						Dummy dummy;
+						if( dummy.isDummyNode( userNodeName ) )
+						{
+							nodeFullName = "tuttle.dummy";
+						}
+						nodeFullName = retrieveNodeFullname( nodeFullName );
 
 						// parse the command line, and put the result in node_vm
 						bpo::variables_map node_vm;
@@ -488,15 +486,22 @@ int main( int argc, char** argv )
 						// --help,h --version,v --verbose,V --params --clips --props
 
 						ttl::Graph::Node& currentNode = graph.createNode( nodeFullName );
+						//if( dummy.isDummyNode( userNodeName ) )
 
 						if( node_vm.count( kHelpOptionLongName ) )
 						{
-							displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions );
+							if( dummy.isDummyNode( userNodeName ) )
+								dummy.displayHelp( userNodeName, _color );
+							else
+								displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions );
 							exit( 0 );
 						}
 						if( node_vm.count( kExpertOptionString ) )
 						{
-							displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions, openfxOptions );
+							if( dummy.isDummyNode( userNodeName ) )
+								dummy.displayExpertHelp( userNodeName, _color );
+							else
+								displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions, openfxOptions );
 							exit( 0 );
 						}
 

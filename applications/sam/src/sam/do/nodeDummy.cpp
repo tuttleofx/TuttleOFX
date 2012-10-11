@@ -17,8 +17,6 @@
 #include "nodeDummy.hpp"
 
 namespace sam {
-Color color;
-
 namespace samdo {
 
 bool Dummy::isDummyReaderNode( const std::string& nodeName )
@@ -79,7 +77,7 @@ bpo::options_description Dummy::getOpenFXOptions()
 		( kAttributesOptionString, kAttributesOptionMessage )
 		( kPropertiesOptionString, kPropertiesOptionMessage )
 		( kClipsOptionString, kClipsOptionMessage )
-			( kClipOptionString, bpo::value<std::string > (), kClipOptionMessage )
+		( kClipOptionString, bpo::value<std::string > (), kClipOptionMessage )
 		( kParametersOptionString, kParametersOptionMessage )
 		( kParamInfosOptionString, bpo::value<std::string > (), kParamInfosOptionMessage )
 		( kParamValuesOptionString, bpo::value<std::vector<std::string> >(), kParamValuesOptionMessage )
@@ -253,7 +251,7 @@ void Dummy::printAllSupportedExtensions( const std::string& context )
 	TUTTLE_COUT( boost::algorithm::join( getSupportedExtensions( context ), "," ) );
 }
 
-void Dummy::displayHelp( const std::string& nodeFullName, const bpo::options_description &infoOptions, const bpo::options_description &confOptions )
+void Dummy::displayHelp( const std::string& nodeFullName, const Color& color )
 {
 	using namespace sam;
 
@@ -269,15 +267,15 @@ void Dummy::displayHelp( const std::string& nodeFullName, const bpo::options_des
 	TUTTLE_COUT( "Dummy reader call specific reader detected by the extension of the sequence name." );
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color._blue << "ASSOCIATED PLUGINS" << color._std );
-	if( strcmp( nodeFullName.c_str(), READER_DUMMY_NAME ) == 0 )
+	if( isDummyReaderNode( nodeFullName ) )
 		printAllSupportedNodes( kOfxImageEffectContextReader );
-	if( strcmp( nodeFullName.c_str(), WRITER_DUMMY_NAME ) == 0 )
+	if( isDummyWriterNode( nodeFullName ) )
 		printAllSupportedNodes( kOfxImageEffectContextWriter );
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color._blue << "SUPPORTED FORMATS" << color._std );
-	if( strcmp( nodeFullName.c_str(), READER_DUMMY_NAME ) == 0 )
+	if( isDummyReaderNode( nodeFullName ) )
 		printAllSupportedExtensions( kOfxImageEffectContextReader );
-	if( strcmp( nodeFullName.c_str(), WRITER_DUMMY_NAME ) == 0 )
+	if( isDummyWriterNode( nodeFullName ) )
 		printAllSupportedExtensions( kOfxImageEffectContextWriter );
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color._blue << "PARAMETERS" << color._std );
@@ -288,58 +286,54 @@ void Dummy::displayHelp( const std::string& nodeFullName, const bpo::options_des
 
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color._blue << "DISPLAY OPTIONS (override the process)" << color._std );
-	TUTTLE_COUT( infoOptions );
+	TUTTLE_COUT( getInfoOptions() );
 	TUTTLE_COUT( color._blue << "CONFIGURE PROCESS" << color._std );
-	TUTTLE_COUT( confOptions );
+	TUTTLE_COUT( getConfOptions() );
 
 	TUTTLE_COUT( "" );
 }
 
-void Dummy::displayHelp( const std::string& nodeFullName, const bpo::options_description &infoOptions, const bpo::options_description &confOptions, const bpo::options_description &expertOptions )
+void Dummy::displayExpertHelp( const std::string& nodeFullName, const Color& color )
 {
 	using namespace sam;
-	displayHelp( nodeFullName, infoOptions, confOptions );
+	displayHelp( nodeFullName, color );
 
 	TUTTLE_COUT( color._blue << "EXPERT OPTIONS" << color._std );
-	TUTTLE_COUT( expertOptions );
+	TUTTLE_COUT( getOpenFXOptions() );
 }
 
-void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const NodeList& nodeList, const std::vector<std::string>& nodeArgs )
+void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const NodeList& nodeList, const std::vector<std::string>& nodeArgs, const Color& color )
 {
 	if( std::strcmp( inputNode.c_str(), dummyNodeName.c_str() ) )
 		return;
-	
-	bpo::options_description infoOptions = getInfoOptions();
-	bpo::options_description confOptions = getConfOptions();
-	bpo::options_description openfxOptions = getOpenFXOptions();
 	
 	bpo::variables_map node_vm;
 	getCommandLineParameters( node_vm, nodeArgs );
 	
 	if( node_vm.count( kHelpOptionLongName ) )
 	{
-		displayHelp( dummyNodeName, infoOptions, confOptions );
+		displayHelp( dummyNodeName, color );
 		exit( 0 );
 	}
 	if( node_vm.count( kExpertOptionLongName ) )
 	{
-		displayHelp( dummyNodeName, infoOptions, confOptions, openfxOptions );
+		displayExpertHelp( dummyNodeName, color );
 		exit( 0 );
 	}
 	if( node_vm.count( kPluginsOptionLongName ) )
 	{
-		if( strcmp( dummyNodeName.c_str(), READER_DUMMY_NAME ) == 0 )
+		if( isDummyReaderNode( dummyNodeName ) )
 			printAllSupportedNodes( kOfxImageEffectContextReader );
-		if( strcmp( dummyNodeName.c_str(), WRITER_DUMMY_NAME ) == 0 )
+		if( isDummyWriterNode( dummyNodeName ) )
 			printAllSupportedNodes( kOfxImageEffectContextWriter );
 		exit( 0 );
 	}
 	
 	if( node_vm.count( kFormatOptionLongName ) )
 	{
-		if( strcmp( dummyNodeName.c_str(), READER_DUMMY_NAME ) == 0 )
+		if( isDummyReaderNode( dummyNodeName ) )
 			printAllSupportedExtensions( kOfxImageEffectContextReader );
-		if( strcmp( dummyNodeName.c_str(), WRITER_DUMMY_NAME ) == 0 )
+		if( isDummyWriterNode( dummyNodeName ) )
 			printAllSupportedExtensions( kOfxImageEffectContextWriter );
 		exit( 0 );
 	}
@@ -354,7 +348,7 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 	
 	if( nodeArgs.size() == 0 )
 	{
-		if( strcmp( dummyNodeName.c_str(), WRITER_DUMMY_NAME ) == 0 )
+		if( isDummyWriterNode( dummyNodeName ) )
 		{
 			inputNode = "tuttle.dummy";
 			return;
@@ -436,11 +430,11 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 	TUTTLE_COUT( color._yellow << "Replace " << dummyNodeName << " with: " << inputNode << color._std );
 }
 
-void Dummy::foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs )
+void Dummy::foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs, const Color& color )
 {
 	getFullName( inputNode );
-	foundAssociateSpecificDummyNode( inputNode, READER_DUMMY_NAME, nodeList, nodeArgs );
-	foundAssociateSpecificDummyNode( inputNode, WRITER_DUMMY_NAME, nodeList, nodeArgs );
+	foundAssociateSpecificDummyNode( inputNode, READER_DUMMY_NAME, nodeList, nodeArgs, color );
+	foundAssociateSpecificDummyNode( inputNode, WRITER_DUMMY_NAME, nodeList, nodeArgs, color );
 }
 
 }
