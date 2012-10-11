@@ -5,6 +5,7 @@
 #include <sam/common/node.hpp>
 #include <sam/common/node_io.hpp>
 #include <sam/common/options.hpp>
+#include <sam/common/utility.hpp>
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
@@ -311,12 +312,14 @@ int main( int argc, char** argv )
 
 				// plugins loading
 				ttl::core().preload();
-
+				Dummy dummy;
+				
 				if( samdo_vm.count( kNodesOptionLongName ) || samdo_vm.count( kNodesListOptionLongName ) )
 				{
 					TUTTLE_COUT( _color._blue << "NODES" << _color._std );
 					std::vector<std::string> pluginNames;
-					addDummyNodeInList( pluginNames );
+					
+					dummy.addDummyNodeInList( pluginNames );
 					const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 
 					BOOST_FOREACH( const ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, allNodes )
@@ -434,6 +437,8 @@ int main( int argc, char** argv )
 				
 				std::vector<std::string> idNames; // list of id setted in the command line
 
+				Dummy dummy;
+				
 				BOOST_FOREACH( const std::vector<std::string>& command, cl_commands )
 				{
 
@@ -445,8 +450,10 @@ int main( int argc, char** argv )
 
 					try
 					{
-						foundAssociateDummyNode( userNodeName, allNodes, nodeArgs );
-						nodeFullName = retrieveNodeFullname( userNodeName );
+						dummy.foundAssociateDummyNode( userNodeName, allNodes, nodeArgs );
+						nodeFullName = userNodeName;
+						
+						dummy.getFullName( nodeFullName );
 
 						// parse the command line, and put the result in node_vm
 						bpo::variables_map node_vm;
