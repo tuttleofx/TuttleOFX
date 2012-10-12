@@ -245,6 +245,7 @@ int main( int argc, char** argv )
 	{
 
 		bool continueOnError = false;
+		bool disableProcess = false;
 		bool forceIdentityNodesProcess = false;
 		bool enableColor = false;
 		bool enableVerbose = false;
@@ -288,6 +289,7 @@ int main( int argc, char** argv )
 				bpo::options_description confOptions;
 				confOptions.add_options()
 					( kContinueOnErrorOptionString, kContinueOnErrorOptionMessage )
+					( kDisableProcessOptionString, kDisableProcessOptionMessage )
 					( kForceIdentityNodesProcessOptionString, kForceIdentityNodesProcessOptionMessage )
 					( kRangeOptionString, bpo::value<std::string > (), kRangeOptionMessage )
 					( kRenderScaleOptionString, bpo::value<std::string > (), kRenderScaleOptionMessage )
@@ -332,6 +334,11 @@ int main( int argc, char** argv )
 				{
 					const std::string str = samdo_vm[kEnableColorOptionLongName].as<std::string > ();
 					enableColor = string_to_boolean( str );
+				}
+				if( samdo_vm.count( kDisableProcessOptionLongName ) )
+				{
+					disableProcess = true;
+					enableVerbose = true;
 				}
 				if( samdo_vm.count( kVerboseOptionLongName ) )
 				{
@@ -1266,7 +1273,8 @@ int main( int argc, char** argv )
 			{
 				if( enableVerbose )
 					TUTTLE_COUT( "graph processing" );
-				graph.compute( *nodes.back(), options );
+				if( !disableProcess )
+					graph.compute( *nodes.back(), options );
 			}
 		}
 		
