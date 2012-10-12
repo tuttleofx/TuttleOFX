@@ -1123,8 +1123,8 @@ int main( int argc, char** argv )
 		}
 		
 		// Execute the graph
-		TUTTLE_COUT_VAR2( numberOfLoop, listOfSequencesPerWriterNode.size() );
-		TUTTLE_COUT_VAR2( listOfSequencesPerReaderNode.size(), listOfSequencesPerWriterNode.size() );
+		TUTTLE_TCOUT_VAR2( numberOfLoop, listOfSequencesPerWriterNode.size() );
+		TUTTLE_TCOUT_VAR2( listOfSequencesPerReaderNode.size(), listOfSequencesPerWriterNode.size() );
 		
 		Dummy dummy;
 		
@@ -1171,6 +1171,7 @@ int main( int argc, char** argv )
 					}
 					else
 					{
+						TUTTLE_COUT( "combine" );
 						// need to combine filename:
 						// get root from dummy writer, and add sequence pattern from reader
 						
@@ -1179,7 +1180,7 @@ int main( int argc, char** argv )
 						{
 							if( ! filenames.size() )
 								BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-													   << tuttle::exception::user() + "no pattern was found to set the outpu filename." );
+													   << tuttle::exception::user() + "no pattern was found to set the output filename." );
 							baseSrcPath = filenames.at(0);
 						}
 						else
@@ -1206,8 +1207,17 @@ int main( int argc, char** argv )
 						{
 							sp::FileObject& fo = listOfSequencesPerReaderNode.at(0).at( loop );
 							filename = getAbsoluteFilename( fo );
-							filename.erase( 0, srcPaths.at(0).length() );
+							bfs::path filepath( filename );
+							if( filepath.extension().string().size() )
+							{
+								filename = filepath.filename().string();
+							}
+							else
+							{
+								filename.erase( 0, srcPaths.at(0).length() );
+							}
 						}
+						TUTTLE_COUT_VAR2( filename, srcPaths.at(0) );
 						// change extension if necessary
 						std::string ext;
 						if( extensions.size() > 0 )
