@@ -1,54 +1,66 @@
 #include "OutputBufferPlugin.hpp"
 #include "OutputBufferDefinitions.hpp"
 
-#include <tuttle/common/ofx/imageEffect.hpp>
-#include <tuttle/host/ofx/OfxhImage.hpp>
+#include <pointerParam.hpp>
+
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+#include <ofxImageEffect.h>
 
 #include <boost/assert.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/cstdint.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace outputBuffer {
 
-  /* @fixme duplicated in inputbuffer */
-void* stringToPointer( const std::string& value )
-{
-	if( value.empty() )
-		return NULL;
-	std::ptrdiff_t p = boost::lexical_cast<std::ptrdiff_t>( value );
-	return reinterpret_cast<void*>( p );
-}
+using namespace memoryBuffer;
 
 OutputBufferPlugin::OutputBufferPlugin( OfxImageEffectHandle handle )
 : OFX::ImageEffect( handle )
+, _tempStoreCustomDataPtr(NULL)
 {
 	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
-	_paramOutputCallbackPointer = fetchStringParam( kParamOutputCallbackPointer );
-	_paramOutputCallbackCustomData = fetchStringParam( kParamOutputCallbackCustomData );
+	_paramCallbackOutputPointer = fetchStringParam( kParamOutputCallbackPointer );
+	_paramCustomData = fetchStringParam( kParamOutputCustomData );
+	_paramCallbackDestroyCustomData = fetchStringParam( kParamOutputCallbackDestroyCustomData );
 }
 
-OutputBufferProcessParams OutputBufferPlugin::getProcessParams( const OfxTime time ) const
+OutputBufferPlugin::~OutputBufferPlugin()
+{
+	OutputBufferProcessParams params = getProcessParams();
+	if( params._callbackDestroyPtr != NULL )
+		params._callbackDestroyPtr( params._customDataPtr );
+}
+
+void OutputBufferPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
+{
+	if( paramName == kParamOutputCustomData )
+	{
+		OutputBufferProcessParams params = getProcessParams();
+		if( params._callbackDestroyPtr != NULL && _tempStoreCustomDataPtr != NULL )
+			params._callbackDestroyPtr( _tempStoreCustomDataPtr );
+		_tempStoreCustomDataPtr = static_cast<CustomDataPtr>( stringToPointer( _paramCustomData->getValue() ) );
+	}
+}
+
+OutputBufferProcessParams OutputBufferPlugin::getProcessParams() const
 {
 	OutputBufferProcessParams params;
-	params._callbackPtr = reinterpret_cast<OutCallbackPtr>( stringToPointer( _paramOutputCallbackPointer->getValue() ) );
-	params._callbackCustomDataPtr = static_cast<CallbackCustomDataPtr>( stringToPointer( _paramOutputCallbackCustomData->getValue() ) );
+	params._callbackPtr = reinterpret_cast<CallbackOutputImagePtr>( stringToPointer( _paramCallbackOutputPointer->getValue() ) );
+	params._customDataPtr = static_cast<CustomDataPtr>( stringToPointer( _paramCustomData->getValue() ) );
+	params._callbackDestroyPtr = reinterpret_cast<CallbackDestroyCustomDataPtr>( stringToPointer( _paramCallbackDestroyCustomData->getValue() ) );
 	return params;
 }
 
 void OutputBufferPlugin::render( const OFX::RenderArguments& args )
 {
 	TUTTLE_TCOUT( "        --> Output Buffer ");
-	char* rawImage;
-	void* dataSrcPtr;
-	void* dataDstPtr;
-
-	std::size_t imageDataBytes;
-	std::size_t pixelSize = 0;
+	typedef std::vector<char, OfxAllocator<char> > DataVector;
+	DataVector rawImage;
+	char* rawImagePtrLink;
 
 	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
 	boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
@@ -59,72 +71,55 @@ void OutputBufferPlugin::render( const OFX::RenderArguments& args )
 	const OFX::EPixelComponent components = dst->getPixelComponents();
 	const OFX::EField field = dst->getField();
 
-	// Find pixel size in bytes based on image info
-	switch (depth) {
-	case OFX::eBitDepthUByte:
-	  pixelSize = 1;
-	  break;
-	case OFX::eBitDepthUShort:
-	  pixelSize = 2;
-	  break;
-	case OFX::eBitDepthFloat:
-	  pixelSize = 4;
-	  break;
-	default:
-	  break;
-	}
-	switch (components) {
-	case OFX::ePixelComponentRGBA:
-	  pixelSize *= 4;
-	  break;
-	case OFX::ePixelComponentRGB:
-	  pixelSize *= 3;
-	  break;
-	default:
-	  break;
-	}
 	// User parameters
-	OutputBufferProcessParams params = getProcessParams( args.time );
+	OutputBufferProcessParams params = getProcessParams();
 
-
-
+	const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
+	const std::size_t rowBytesToCopy = dst->getBoundsRowDataBytes();
+	
 	if( src->isLinearBuffer() && dst->isLinearBuffer() )
 	{
-	  // Two linear buffers. No copy needed.
-		imageDataBytes = dst->getBoundsImageDataBytes();
+		// Two linear buffers. No copy needed.
 		if( imageDataBytes )
 		{
-		        rawImage = new char[imageDataBytes];
-			TUTTLE_TCOUT( (long int)rawImage << std::endl);
-			dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );
-			dataDstPtr = dst->getPixelAddress( bounds.x1, bounds.y1 );
+			void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );
+			void* dataDstPtr = dst->getPixelAddress( bounds.x1, bounds.y1 );
 			memcpy( dataDstPtr, dataSrcPtr, imageDataBytes );
-			rawImage = (char *)dataDstPtr;
+			
+			// No image copy
+			rawImagePtrLink = (char *)dataDstPtr;
 		}
 	}
 	else
 	{
-	  // Non-linear buffer. Copy to linear buffer
-		const std::size_t rowBytesToCopy = dst->getBoundsRowDataBytes();
-		imageDataBytes = rowBytesToCopy*(bounds.y2-bounds.y1);
-		rawImage = new char[imageDataBytes];
+		// Non-linear buffer. Line by line copy.
 		for( int y = bounds.y1; y < bounds.y2; ++y )
 		{
-			dataSrcPtr = src->getPixelAddress( bounds.x1, y );
-			dataDstPtr = dst->getPixelAddress( bounds.x1, y );
+			void* dataSrcPtr = src->getPixelAddress( bounds.x1, y );
+			void* dataDstPtr = dst->getPixelAddress( bounds.x1, y );
 			memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
-			memcpy( rawImage + rowBytesToCopy*(y-bounds.y1),
-				dataSrcPtr, rowBytesToCopy);
+		}
+		if( params._callbackPtr != NULL )
+		{
+			// need a temporary buffer copy to give a linear buffer to the callback
+			rawImage.resize( imageDataBytes );
+			rawImagePtrLink = &rawImage.front();
+			for( int y = bounds.y1; y < bounds.y2; ++y )
+			{
+				void* dataSrcPtr = src->getPixelAddress( bounds.x1, y );
+				void* dataDstPtr = rawImagePtrLink + rowBytesToCopy*(y-bounds.y1);
+				memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
+			}
 		}
 	}
 
-	if (params._callbackPtr != NULL) {
-	  params._callbackPtr(args.time, params._callbackCustomDataPtr,rawImage,
-			      bounds.x2-bounds.x1, bounds.y2-bounds.y1, pixelSize*(bounds.x2-bounds.x1),
-			      depth, components, field);
+	if( params._callbackPtr != NULL )
+	{
+		params._callbackPtr(
+			args.time, params._customDataPtr, rawImagePtrLink,
+			bounds.x2-bounds.x1, bounds.y2-bounds.y1, rowBytesToCopy,
+			depth, components, field );
 	}
-	if ((void *)rawImage != dataDstPtr)
-	  delete rawImage;
 }
 
 

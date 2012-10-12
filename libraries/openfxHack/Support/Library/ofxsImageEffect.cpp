@@ -877,7 +877,6 @@ std::size_t Image::getBoundsNbPixels() const
 
 std::size_t Image::getBoundsImageDataBytes() const
 {
-	BOOST_ASSERT( isLinearBuffer() );
 	return getPixelBytes() * getBoundsNbPixels();
 }
 
@@ -1693,28 +1692,44 @@ void ClipPreferencesSetter::setOutputFielding( EField v )
 ////////////////////////////////////////////////////////////////////////////////
 /** @brief Class that skins image memory allocation */
 
-/** @brief ctor */
+ImageMemory::ImageMemory()
+	: _handle( 0 )
+	, _alloc(false)
+{
+}
+
 ImageMemory::ImageMemory( size_t nBytes, ImageEffect* associatedEffect )
 	: _handle( 0 )
+	, _alloc(false)
 {
-	OfxImageEffectHandle effectHandle = 0;
-
-	if( associatedEffect != 0 )
-	{
-	effectHandle = associatedEffect->_effectHandle;
-	}
-
-	OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryAlloc( effectHandle, nBytes, &_handle );
-	if( stat == kOfxStatErrMemory )
-	BOOST_THROW_EXCEPTION( std::bad_alloc() );
-	throwSuiteStatusException( stat );
+	alloc( nBytes, associatedEffect );
 }
 
 /** @brief dtor */
 ImageMemory::~ImageMemory()
 {
-	/*OfxStatus stat = */ OFX::Private::gEffectSuite->imageMemoryFree( _handle );
+	if( _alloc )
+	{
+		/*OfxStatus stat = */ OFX::Private::gEffectSuite->imageMemoryFree( _handle );
+	}
 	// ignore status code for exception purposes
+}
+
+void ImageMemory::alloc( size_t nBytes, ImageEffect* associatedEffect )
+{
+	BOOST_ASSERT( ! _alloc );
+	_alloc = true;
+	OfxImageEffectHandle effectHandle = 0;
+
+	if( associatedEffect != 0 )
+	{
+		effectHandle = associatedEffect->_effectHandle;
+	}
+
+	OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryAlloc( effectHandle, nBytes, &_handle );
+	if( stat == kOfxStatErrMemory )
+		BOOST_THROW_EXCEPTION( std::bad_alloc() );
+	throwSuiteStatusException( stat );
 }
 
 /** @brief lock the memory and return a pointer to it */

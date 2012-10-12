@@ -15,9 +15,6 @@ namespace host {
 class InputBufferWrapper
 {
 public:
-	typedef void* (*CallbackPtr)(OfxTime time, void* inputCustomData);
-	typedef void* CallbackCustomDataPtr;
-	
 	enum EMode
 	{
 		eModeBuffer,
@@ -40,7 +37,16 @@ public:
 		eImageOrientationFromTopToBottom,
 		eImageOrientationFromBottomToTop
 	};
+	enum EField
+	{
+		eFieldBoth,  //< @brief fielded image with both fields present
+		eFieldLower, //< @brief only the spatially lower field is present
+		eFieldUpper  //< @brief only the spatially upper field is present
+	};
 	
+	typedef void* CustomDataPtr;
+	typedef void (*CallbackInputImagePtr)( OfxTime time, CustomDataPtr outputCustomData, void** rawdata, int* width, int* height, int* rowSizeBytes );
+	typedef void (*CallbackDestroyCustomDataPtr)( CustomDataPtr outputCustomData );
 
 private:
 	INode& _node;
@@ -152,7 +158,7 @@ public:
 			orientation );
 	}
 	
-	void setCallback( CallbackPtr callback, CallbackCustomDataPtr customData = NULL );
+	void setCallback( CallbackInputImagePtr callback, CustomDataPtr customData = NULL, CallbackDestroyCustomDataPtr destroyCustomData = NULL );
 	
 };
 

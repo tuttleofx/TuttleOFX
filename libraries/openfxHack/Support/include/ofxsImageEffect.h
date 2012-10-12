@@ -733,14 +733,15 @@ class ImageMemory
 {
 protected:
     OfxImageMemoryHandle _handle;
-
+	bool _alloc;
+	
 public:
-    /** @brief ctor */
+    ImageMemory();
     ImageMemory( size_t nBytes, ImageEffect* associatedEffect = 0 );
-
-    /** @brief dtor */
     ~ImageMemory();
 
+	void alloc( size_t nBytes, ImageEffect* associatedEffect );
+	
     /** @brief lock the memory and return a pointer to it */
     void* lock( void );
 
