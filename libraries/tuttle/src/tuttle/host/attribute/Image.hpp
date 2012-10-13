@@ -43,12 +43,14 @@ public:
 	Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const EImageOrientation orientation, const int rowDistanceBytes );
 	virtual ~Image();
 
+#ifndef SWIG
 	void setPoolData( const memory::IPoolDataPtr& pData )
 	{
 		_data = pData;
 		setPointerProperty( kOfxImagePropData, getOrientedPixelData( eImageOrientationFromBottomToTop ) ); // OpenFX standard use BottomToTop
 	}
-
+#endif
+	
 	std::string getFullName() const { return _fullname; }
 
 	std::size_t getMemorySize() const { return _memorySize; }
