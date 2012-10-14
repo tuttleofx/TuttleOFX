@@ -6,6 +6,7 @@
 #include <tuttle/host/memory/IMemoryPool.hpp>
 
 /// @tuttle: remove include dependencies to gil
+#include <boost/gil/channel_algorithm.hpp> // force include boostHack first
 #include <boost/gil/image_view.hpp>
 #include <boost/gil/image_view_factory.hpp>
 
