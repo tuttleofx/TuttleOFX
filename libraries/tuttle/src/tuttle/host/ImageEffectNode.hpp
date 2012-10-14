@@ -126,13 +126,17 @@ public:
 	/// @{
 	OfxRangeD computeTimeDomain();
 
+	void setup1();
+	void setup2_reverse();
+	void setup3();
+	
 	void beginSequence( graph::ProcessVertexData& vData );
 
 	INode::ClipTimesSetMap getTimesNeeded( const OfxTime time ) const { return OfxhImageEffectNode::getFramesNeeded(time); }
 
 	void preProcess1( graph::ProcessVertexAtTimeData& vData );
 	void preProcess2_reverse( graph::ProcessVertexAtTimeData& vData );
-	void preProcess3( graph::ProcessVertexAtTimeData& vData );
+	
 	bool isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const;
 	void preProcess_infos( const graph::ProcessVertexAtTimeData& vData, const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const;
 	void process( graph::ProcessVertexAtTimeData& vData );
@@ -307,6 +311,9 @@ private:
 
 	void initComponents();
 	void initPixelAspectRatio();
+	void initInputClipsFps();
+	void initFps();
+	
 	void maximizeBitDepthFromReadsToWrites();
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;
