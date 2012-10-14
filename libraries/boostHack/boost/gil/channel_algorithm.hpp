@@ -23,8 +23,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#include "gil_config.hpp"
-#include "channel.hpp"
+#include <boost/gil/gil_config.hpp>
+#include <boost/gil/channel.hpp>
 #include <boost/mpl/less.hpp>
 #include <boost/mpl/integral_c.hpp>
 #include <boost/mpl/greater.hpp>
@@ -272,7 +272,13 @@ template <typename DstChannelV> struct channel_converter_unsigned<bits32f,DstCha
     DstChannelV operator()(bits32f x) const
     {
         typedef typename detail::unsigned_integral_max_value< DstChannelV >::value_type dst_integer_t;
-        return DstChannelV( static_cast< dst_integer_t >(x*channel_traits<DstChannelV>::max_value()+0.5f ));
+        
+        const bits32f convertedValue = x * channel_traits<DstChannelV>::max_value() + 0.5f;
+        const bits32f clampedValue = std::min(
+                (bits32f)channel_traits<DstChannelV>::max_value(),
+                std::max( (bits32f)channel_traits<DstChannelV>::min_value(), convertedValue ) );
+        
+        return DstChannelV( static_cast< dst_integer_t >(clampedValue) );
     }
 };
 
