@@ -7,13 +7,13 @@ namespace host {
 
 void OutputBufferWrapper::setCallback( CallbackOutputImagePtr callback, CustomDataPtr customData, CallbackDestroyCustomDataPtr destroyCustomData )
 {
-	_node.getParam( "callbackPointer" ).setValue(
+	getNode().getParam( "callbackPointer" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( callback ) )
 		);
-	_node.getParam( "customData" ).setValue(
+	getNode().getParam( "customData" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( customData ) )
 		);
-	_node.getParam( "callbackDestroyCustomData" ).setValue(
+	getNode().getParam( "callbackDestroyCustomData" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( destroyCustomData ) )
 		);
 }

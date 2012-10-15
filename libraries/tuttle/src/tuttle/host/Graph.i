@@ -23,12 +23,7 @@
 	{
 		def createNode(self, pluginName, *orderedParams, **namedParams):
 			node = self.private_createNode(pluginName)
-			for index, paramValue in enumerate(orderedParams):
-				print index, paramValue
-				node.getParam(index).setValue(paramValue)
-			for paramName, paramValue in namedParams.iteritems():
-				print paramName, paramValue
-				node.getParam(paramName).setValue(paramValue)
+			node.setParamValues(*orderedParams, **namedParams)
 			return node
 		
 		def connect(self, *args):
