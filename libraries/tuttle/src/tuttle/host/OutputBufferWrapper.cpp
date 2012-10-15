@@ -5,13 +5,16 @@
 namespace tuttle {
 namespace host {
 
-void OutputBufferWrapper::setCallback( OutCallbackPtr callback, CallbackCustomDataPtr customData )
+void OutputBufferWrapper::setCallback( CallbackOutputImagePtr callback, CustomDataPtr customData, CallbackDestroyCustomDataPtr destroyCustomData )
 {
-	_node.getParam( "callbackPointer" ).setValue(
+	getNode().getParam( "callbackPointer" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( callback ) )
 		);
-	_node.getParam( "callbackCustomData" ).setValue(
+	getNode().getParam( "customData" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( customData ) )
+		);
+	getNode().getParam( "callbackDestroyCustomData" ).setValue(
+			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( destroyCustomData ) )
 		);
 }
 

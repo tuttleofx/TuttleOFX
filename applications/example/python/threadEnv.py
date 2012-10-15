@@ -9,5 +9,5 @@ pngW = g.createNode('tuttle.pngwriter', "data/output-###.png")
 g.connect( [pngRead, blur, pngW] )
 
 env = tuttle.ThreadEnv()
-env.compute( g, tuttle.NodeListArg(pngW) )
+env.compute( g, pngW )
 env.join()

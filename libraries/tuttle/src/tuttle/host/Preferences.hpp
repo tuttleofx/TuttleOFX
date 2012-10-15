@@ -22,6 +22,8 @@ public:
 	
 	boost::filesystem::path getTuttleTempPath() const { return _temp; }
 	
+	boost::filesystem::path buildTuttleTestPath();
+	
 private:
 	boost::filesystem::path buildTuttleHome();
 	boost::filesystem::path buildTuttleTemp();

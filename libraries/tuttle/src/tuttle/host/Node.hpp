@@ -31,16 +31,25 @@ class NodeInit
 public:
 	NodeInit(){}
 	NodeInit( const std::string& pluginName );
+	NodeInit( INode& node );
 	/**
 	 * @brief Non-standard copy contructor that steals the data.
 	 */
 	NodeInit( const NodeInit& other )
 	{
-		_node.reset( &other.release() );
+		setNode( other.release() );
 	}
 
+	NodeInit& operator=( const NodeInit& other )
+	{
+		setNode( other.release() );
+		return *this;
+	}
+	
+#ifndef SWIG
 	INode& operator->() { return *_node.get(); }
 	const INode& operator->() const { return *_node.get(); }
+#endif
 	
 	/**
 	 * @brief Set parameter values. If it's a multi-dimensional parameter,
@@ -57,6 +66,7 @@ public:
 	const INode& get() const { return *_node; }
 	INode& get() { return *_node; }
 	
+	void setNode( INode& node ) { _node.reset(&node); }
 	INode& release() const { return *_node.release(); }
 	
 private:

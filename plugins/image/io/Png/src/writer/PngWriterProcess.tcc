@@ -2,7 +2,6 @@
 #include "PngWriterPlugin.hpp"
 
 #include <terry/globals.hpp>
-#include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/gil_all.hpp>
@@ -90,27 +89,25 @@ void PngWriterProcess<View>::writeImage( View& src )
 	{
 		case eTuttlePluginComponentsRGBA:
 		{
-			typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
-			break;
+			typedef pixel<Bits, rgba_layout_t> OutPixelType;
+			png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
+			return;
 		}
 		case eTuttlePluginComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
-			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
-			break;
+			png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
+			return;
 		}
 		case eTuttlePluginComponentsGray:
 		{
 			typedef pixel<Bits, gray_layout_t> OutPixelType;
-			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
-			break;
+			png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
+			return;
 		}
-		default:
-			BOOST_THROW_EXCEPTION( exception::ImageFormat()
-			    << exception::user( "PNG Writer: Unrecognized component choice." ) );
-			break;
 	}
+	BOOST_THROW_EXCEPTION( exception::ImageFormat()
+		<< exception::user( "PNG Writer: Unrecognized component choice." ) );
 }
 
 }

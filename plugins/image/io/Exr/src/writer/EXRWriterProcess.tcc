@@ -3,7 +3,6 @@
 
 
 #include <terry/globals.hpp>
-#include <terry/clamp.hpp>
 #include <terry/openexr/half.hpp>
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -161,7 +160,7 @@ void EXRWriterProcess<View>::writeGrayImage( View& src, std::string& filepath, I
 	typedef typename image_t::view_t view_t;
 	image_t img( src.width(), src.height() );
 	view_t  dvw( view( img ) );
-	copy_and_convert_pixels( clamp_view( src ), dvw );
+	copy_and_convert_pixels( src, dvw );
 	Imf::Header header( src.width(), src.height() );
 	switch( pixType )
 	{
@@ -231,7 +230,7 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 	typedef typename image_t::view_t view_t;
 	image_t img( src.width(), src.height() );
 	view_t  dvw( view( img ) );
-	copy_and_convert_pixels( clamp_view( src ), dvw );
+	copy_and_convert_pixels( src, dvw );
 	Imf::Header header( src.width(), src.height() );
 	switch( pixType )
 	{
