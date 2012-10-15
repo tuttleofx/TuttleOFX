@@ -1225,10 +1225,10 @@ int main( int argc, char** argv )
 							}
 							else
 							{
-								filename.erase( 0, baseSrcPath.length() );
+								filename.erase( 0, srcPaths.at(0).length() );
 							}
 						}
-						TUTTLE_COUT_VAR2( filename, srcPaths.at(0) );
+						TUTTLE_TCOUT_VAR3( baseSrcPath, filename, srcPaths.at(0) );
 						// change extension if necessary
 						std::string ext;
 						if( extensions.size() > 0 )
