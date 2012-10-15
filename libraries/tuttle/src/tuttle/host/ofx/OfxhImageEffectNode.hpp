@@ -408,7 +408,7 @@ private:
 
 	/// Initialise the clip preferences arguments, override this to do
 	/// stuff with wierd components etc... Calls setDefaultClipPreferences
-	virtual void setupClipPreferencesArgs( property::OfxhSet& outArgs, std::list<std::string>& keepPropNamesOwnership );
+	virtual void setupClipPreferencesArgs( property::OfxhSet& outArgs, std::list<std::string>& outKeepPropNamesOwnership );
 
 	/**
 	 * @brief Check if the node is a leaf in the graph.

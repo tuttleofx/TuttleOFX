@@ -6,6 +6,7 @@
 #include <tuttle/host/memory/IMemoryPool.hpp>
 
 /// @tuttle: remove include dependencies to gil
+#include <boost/gil/channel_algorithm.hpp> // force include boostHack first
 #include <boost/gil/image_view.hpp>
 #include <boost/gil/image_view_factory.hpp>
 
@@ -43,12 +44,14 @@ public:
 	Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const EImageOrientation orientation, const int rowDistanceBytes );
 	virtual ~Image();
 
+#ifndef SWIG
 	void setPoolData( const memory::IPoolDataPtr& pData )
 	{
 		_data = pData;
 		setPointerProperty( kOfxImagePropData, getOrientedPixelData( eImageOrientationFromBottomToTop ) ); // OpenFX standard use BottomToTop
 	}
-
+#endif
+	
 	std::string getFullName() const { return _fullname; }
 
 	std::size_t getMemorySize() const { return _memorySize; }

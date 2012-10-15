@@ -391,6 +391,27 @@ void ImageEffectNode::initPixelAspectRatio()
 	{}
 }
 
+void ImageEffectNode::initInputClipsFps()
+{
+	for( ClipImageMap::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
+	     ++it )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			clip.setFrameRate( linkClip.getFrameRate() );
+		}
+	}
+}
+
+void ImageEffectNode::initFps()
+{
+	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+	outputClip.setFrameRate( getFrameRate() );
+}
+
 void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 {
 	std::string biggestBitDepth      = kOfxBitDepthNone;
@@ -604,6 +625,31 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 }
 
 
+void ImageEffectNode::setup1()
+{
+	initInputClipsFps();
+
+	getClipPreferencesAction();
+	
+	initComponents();
+	initPixelAspectRatio();
+	initFps();
+	
+	maximizeBitDepthFromReadsToWrites();
+}
+
+void ImageEffectNode::setup2_reverse()
+{
+	maximizeBitDepthFromWritesToReads();
+}
+
+void ImageEffectNode::setup3()
+{
+	maximizeBitDepthFromReadsToWrites();
+//	coutBitDepthConnections();
+	validBitDepthConnections();
+}
+
 void ImageEffectNode::beginSequence( graph::ProcessVertexData& vData )
 {
 //	TUTTLE_TCOUT( "begin: " << getName() );
@@ -623,11 +669,6 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 
 	checkClipsConnections();
 
-	getClipPreferencesAction();
-	initComponents();
-	initPixelAspectRatio();
-	maximizeBitDepthFromReadsToWrites();
-
 	OfxRectD rod;
 	getRegionOfDefinitionAction(
 			vData._time,
@@ -642,28 +683,16 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 	TUTTLE_TCOUT_VAR( rod );
 }
 
-
 void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData )
 {
 //	TUTTLE_TCOUT( "preProcess2_finish: " << getName() << " at time: " << vData._time );
 
-	maximizeBitDepthFromWritesToReads();
-	
 	getRegionOfInterestAction( vData._time,
 				   vData._nodeData->_renderScale,
 				   vData._apiImageEffect._renderRoI,
 				   vData._apiImageEffect._inputsRoI );
 //	TUTTLE_TCOUT_VAR( vData._renderRoD );
 //	TUTTLE_TCOUT_VAR( vData._renderRoI );
-}
-
-
-void ImageEffectNode::preProcess3( graph::ProcessVertexAtTimeData& vData )
-{
-//	TUTTLE_TCOUT( "preProcess3_finish: " << getName() << " at time: " << vData._time );
-	maximizeBitDepthFromReadsToWrites();
-//	coutBitDepthConnections();
-	validBitDepthConnections();
 }
 
 

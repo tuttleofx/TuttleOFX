@@ -1,7 +1,6 @@
 #include "TurboJpegWriterAlgorithm.hpp"
 
 #include <terry/globals.hpp>
-#include <terry/clamp.hpp>
 
 #include <cstdio>
 
@@ -108,7 +107,7 @@ void TurboJpegWriterProcess<View>::writeImage( View& src )
 	rgb8_image_t tmpImg ( src.width(), src.height() );
 	rgb8_view_t tmpVw( view( tmpImg ) );
 	
-	boost::gil::copy_and_convert_pixels( clamp_view( src ), tmpVw );
+	boost::gil::copy_and_convert_pixels( src, tmpVw );
 	
 	unsigned char * data = ( unsigned char * ) boost::gil::interleaved_view_get_raw_data( tmpVw );
 	
