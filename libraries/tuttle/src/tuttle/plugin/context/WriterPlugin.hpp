@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
 #define _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
 
+#include <boost/gil/channel_algorithm.hpp> // force to use the boostHack version first
+
 #include "WriterDefinition.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
@@ -15,10 +17,10 @@
 
 #include <Sequence.hpp>
 
-namespace sp = sequenceParser;
-
 namespace tuttle {
 namespace plugin {
+
+namespace sp = sequenceParser;
 
 class WriterPlugin : public ImageEffectGilPlugin
 {

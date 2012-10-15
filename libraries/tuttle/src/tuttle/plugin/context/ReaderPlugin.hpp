@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_CONTEXT_READERPLUGIN_HPP_
 #define _TUTTLE_PLUGIN_CONTEXT_READERPLUGIN_HPP_
 
+#include <boost/gil/channel_algorithm.hpp> // force to use the boostHack version first
+
 #include "ReaderDefinition.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>

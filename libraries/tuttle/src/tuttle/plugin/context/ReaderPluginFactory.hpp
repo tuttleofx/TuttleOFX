@@ -28,8 +28,9 @@ void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 
 	component->setLabel( kTuttlePluginChannelLabel );
 	component->setDefault( eParamReaderChannelAuto );
+	desc.addClipPreferencesSlaveParam( *component );
 
-
+	
 	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kTuttlePluginBitDepth );
 	explicitConversion->setLabel( kTuttlePluginBitDepthLabel );
 	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );

@@ -263,11 +263,23 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 	
 	TUTTLE_TCOUT( "---------------------------------------- Connect clips" );
 	connectClips<InternalGraphImpl>( renderGraph );
-	
-	TUTTLE_TCOUT( "---------------------------------------- Time Domain propagation" );
-	graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( renderGraph );
-	renderGraph.depthFirstVisit( timeDomainPropagationVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 
+	{	
+		TUTTLE_TCOUT( "---------------------------------------- Setup" );
+		graph::visitor::Setup1<InternalGraphImpl> setup1Visitor( renderGraph );
+		renderGraph.depthFirstVisit( setup1Visitor, renderGraph.getVertexDescriptor( _outputId ) );
+		graph::visitor::Setup2<InternalGraphImpl> setup2Visitor( renderGraph );
+		renderGraph.depthFirstVisit( setup2Visitor, renderGraph.getVertexDescriptor( _outputId ) );
+		graph::visitor::Setup3<InternalGraphImpl> setup3Visitor( renderGraph );
+		renderGraph.depthFirstVisit( setup3Visitor, renderGraph.getVertexDescriptor( _outputId ) );
+	}
+	
+	{
+		TUTTLE_TCOUT( "---------------------------------------- Time Domain propagation" );
+		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( renderGraph );
+		renderGraph.depthFirstVisit( timeDomainPropagationVisitor, renderGraph.getVertexDescriptor( _outputId ) );
+	}
+	
 	TUTTLE_TCOUT_INFOS;
 	std::list<TimeRange> timeRanges = options.getTimeRanges();
 
@@ -429,12 +441,6 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 					TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
 					graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
 					renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
-				}
-
-				{
-					TUTTLE_TCOUT( "---------------------------------------- preprocess 3" );
-					graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
-					renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
 				}
 				
 		#ifndef TUTTLE_PRODUCTION

@@ -80,7 +80,12 @@ bool compute( memory::MemoryCache& memoryCache, const std::vector<NodeInit>& nod
 
 NodeInit::NodeInit( const std::string& pluginName )
 {
-	_node.reset( createNode( pluginName ) );
+	setNode( *createNode( pluginName ) );
+}
+
+NodeInit::NodeInit( INode& node )
+{
+	setNode( node );
 }
 
 NodeInit& NodeInit::setParam( const std::string& paramName, ... )

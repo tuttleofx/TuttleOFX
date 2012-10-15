@@ -49,6 +49,87 @@ namespace visitor {
 
 
 template<class TGraph>
+class Setup1 : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+
+	Setup1( TGraph& graph )
+		: _graph( graph )
+	{}
+
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TUTTLE_TCOUT( "[Setup] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode().setup1();
+	}
+
+private:
+	TGraph& _graph;
+};
+
+template<class TGraph>
+class Setup2 : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+
+	Setup2( TGraph& graph )
+		: _graph( graph )
+	{}
+
+	template<class VertexDescriptor, class Graph>
+	void discover_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TUTTLE_TCOUT( "[Setup 2] discover_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode().setup2_reverse();
+	}
+
+private:
+	TGraph& _graph;
+};
+
+
+template<class TGraph>
+class Setup3 : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+
+	Setup3( TGraph& graph )
+		: _graph( graph )
+	{}
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TUTTLE_TCOUT( "[setup 3] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode().setup3();
+	}
+
+private:
+	TGraph& _graph;
+};
+
+template<class TGraph>
 class TimeDomain : public boost::default_dfs_visitor
 {
 public:
@@ -434,32 +515,6 @@ public:
 			return;
 
 		vertex.getProcessNode().preProcess2_reverse( vertex.getProcessDataAtTime() );
-	}
-
-private:
-	TGraph& _graph;
-};
-
-template<class TGraph>
-class PreProcess3 : public boost::default_dfs_visitor
-{
-public:
-	typedef typename TGraph::GraphContainer GraphContainer;
-	typedef typename TGraph::Vertex Vertex;
-
-	PreProcess3( TGraph& graph )
-		: _graph( graph )
-	{}
-	template<class VertexDescriptor, class Graph>
-	void finish_vertex( VertexDescriptor v, Graph& g )
-	{
-		Vertex& vertex = _graph.instance( v );
-
-		TUTTLE_TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
-		if( vertex.isFake() )
-			return;
-
-		vertex.getProcessNode().preProcess3( vertex.getProcessDataAtTime() );
 	}
 
 private:

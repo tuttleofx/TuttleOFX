@@ -32,8 +32,6 @@ void ColorGradationPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
@@ -68,15 +66,15 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	in->setHint( "Input color gradation." );
 	in->appendOption( kParamGradation_linear );
 	in->appendOption( kParamGradation_sRGB );
+	in->appendOption( kParamGradation_Rec709 );
 	in->appendOption( kParamGradation_cineon );
 	in->appendOption( kParamGradation_gamma );
 	in->appendOption( kParamGradation_panalog );
 	in->appendOption( kParamGradation_REDLog );
 	in->appendOption( kParamGradation_ViperLog );
 	in->appendOption( kParamGradation_REDSpace );
-	in->appendOption( kParamGradation_AlexaLogC );
+	in->appendOption( kParamGradation_AlexaV3LogC );
 
-	//	in->appendOption( kParamGradation_rec709 );
 	//	in->appendOption( kParamGradation_rec601 );
 	in->setDefault( eParamGradation_linear );
 
@@ -114,15 +112,15 @@ void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	out->setHint( "Output color gradation." );
 	out->appendOption( kParamGradation_linear );
 	out->appendOption( kParamGradation_sRGB );
+	out->appendOption( kParamGradation_Rec709 );
 	out->appendOption( kParamGradation_cineon );
 	out->appendOption( kParamGradation_gamma );
 	out->appendOption( kParamGradation_panalog );
 	out->appendOption( kParamGradation_REDLog );
 	out->appendOption( kParamGradation_ViperLog );
 	out->appendOption( kParamGradation_REDSpace );
-	out->appendOption( kParamGradation_AlexaLogC );
+	out->appendOption( kParamGradation_AlexaV3LogC );
 
-	//	out->appendOption( kParamGradation_rec709 );
 	//	out->appendOption( kParamGradation_rec601 );
 	out->setDefault( eParamGradation_linear );
 
