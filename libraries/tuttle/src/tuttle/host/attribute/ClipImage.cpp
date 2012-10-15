@@ -104,19 +104,12 @@ const std::string& ClipImage::getUnmappedComponents() const
  */
 double ClipImage::getFrameRate() const
 {
-	if( isOutput() )
-		switch( getNode().getNodeType() )
-		{
-			case INode::eNodeTypeImageEffect:
-				return getNode().asImageEffectNode().getFrameRate();
-			default:
-				return 0.0;
-		}
-	else if( isConnected() )
-		return this->getConnectedClip().getFrameRate();
-	
-	BOOST_THROW_EXCEPTION( exception::Bug()
-		<< exception::dev( "Can't ask the frame rate on an unconnected input clip." ) );
+	return getProperties().getDoubleProperty( kOfxImageEffectPropFrameRate );
+}
+
+void ClipImage::setFrameRate( const double fps )
+{
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropFrameRate, fps );
 }
 
 // Frame Range (startFrame, endFrame) -

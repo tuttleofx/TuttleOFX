@@ -15,7 +15,7 @@ namespace host {
 class OutputBufferWrapper
 {
 private:
-	INode& _node;
+	INode* _node;
 
 public:
 
@@ -50,12 +50,14 @@ public:
 	typedef void (*CallbackDestroyCustomDataPtr)( CustomDataPtr outputCustomData );
 
 	OutputBufferWrapper( INode& node )
-	: _node(node)
+	: _node(&node)
 	{}
-	
+	OutputBufferWrapper()
+	: _node(NULL)
+	{}
 	~OutputBufferWrapper() {}
 
-	INode& getNode() { return _node; }
+	INode& getNode() { return *_node; }
 
 	void setCallback( CallbackOutputImagePtr callback, CustomDataPtr customData = NULL, CallbackDestroyCustomDataPtr destroyCustomData = NULL );
 };

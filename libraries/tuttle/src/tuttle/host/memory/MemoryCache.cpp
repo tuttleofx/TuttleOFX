@@ -35,6 +35,18 @@ CACHE_ELEMENT MemoryCache::get( const std::string& identifier, const double time
 	return itr->second;
 }
 
+CACHE_ELEMENT MemoryCache::get( const std::size_t& i ) const
+{
+	boost::mutex::scoped_lock lockerMap( _mutexMap );
+	MAP::const_iterator itr = _map.begin();
+	for( int j = 0; j < i && itr != _map.end(); ++j )
+		++itr;
+
+	if( itr == _map.end() )
+		return CACHE_ELEMENT();
+	return itr->second;
+}
+
 std::size_t MemoryCache::size() const
 {
 	boost::mutex::scoped_lock lockerMap( _mutexMap );

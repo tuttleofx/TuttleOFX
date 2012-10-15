@@ -109,6 +109,10 @@ public:
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
+	virtual void setup1() = 0;
+	virtual void setup2_reverse() = 0;
+	virtual void setup3() = 0;
+	
 	virtual OfxRangeD computeTimeDomain() = 0;
 
 //	virtual OfxTime mapInputTime( const OfxTime time ) const = 0;
@@ -141,13 +145,6 @@ public:
 	 * @remark Called on each node in a REVERSE depth first search order. So you have the guarantee that it has been called on each output nodes before. Output nodes are those who used the result of the current node.
 	 */
 	virtual void preProcess2_reverse( graph::ProcessVertexAtTimeData& processData ) {}
-
-	/**
-	 * @brief Initialization pass to propagate informations from inputs to outputs.
-	 * @param[in] processData
-	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
-	 */
-	virtual void preProcess3( graph::ProcessVertexAtTimeData& processData ) {}
 
 	/**
 	 * @brief The node can declare to be an identity operation.

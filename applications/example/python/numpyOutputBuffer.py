@@ -22,6 +22,6 @@ output_buffer.setPyCallback(writeImage)
 
 # Connect nodes and compute
 g.connect( input_node, output_buffer.getNode() )
-g.compute( tuttle.NodeListArg(output_buffer.getNode()) )
+g.compute( output_buffer.getNode() )
 
 

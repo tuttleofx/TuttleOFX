@@ -49,15 +49,19 @@ public:
 	typedef void (*CallbackDestroyCustomDataPtr)( CustomDataPtr outputCustomData );
 
 private:
-	INode& _node;
+	INode* _node;
 	
 public:
 	InputBufferWrapper( INode& node )
-	: _node(node)
+	: _node(&node)
 	{}
-	~InputBufferWrapper(){}
+	InputBufferWrapper()
+	: _node(NULL)
+	{}
+	~InputBufferWrapper()
+	{}
 
-	INode& getNode() { return _node; }
+	INode& getNode() { return *_node; }
 
 	void setMode( const EMode mode );
 	void setBuffer( void* rawBuffer );

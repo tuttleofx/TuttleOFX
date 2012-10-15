@@ -1,4 +1,3 @@
-#include "PngWriterDefinitions.hpp"
 #include "PngWriterPlugin.hpp"
 #include "PngWriterProcess.hpp"
 
@@ -8,6 +7,8 @@ namespace tuttle {
 namespace plugin {
 namespace png {
 namespace writer {
+
+
 
 using namespace boost::gil;
 
