@@ -795,7 +795,7 @@ int main( int argc, char** argv )
 								//								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
 
 								// setup the node with parameter value in tuttle.
-								if( attributeName.size() )
+								if( attributeName.size() && !dummy.isDummyNode( userNodeName ) )
 								{
 									// set a value to a named parameter or clip
 									using namespace ttl::ofx::attribute;
