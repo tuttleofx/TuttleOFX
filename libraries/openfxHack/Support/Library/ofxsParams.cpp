@@ -701,7 +701,6 @@ void GroupParamDescriptor::setAsTab()
         getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
     }
 }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // page param descriptor
