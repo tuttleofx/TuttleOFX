@@ -1,7 +1,5 @@
 #include "Jpeg2000WriterPlugin.hpp"
 
-#include <terry/clamp.hpp>
-
 #include <boost/assert.hpp>
 
 namespace tuttle {
@@ -58,7 +56,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			rgb8_view_t vw( view(img) );
 
 			// Convert pixels in PIX_FMT_RGB24
-			copy_and_convert_pixels( clamp_view(srcView), vw );
+			copy_and_convert_pixels(srcView, vw );
 
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 
@@ -75,7 +73,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 
 //			TUTTLE_COUT_VAR( vw.dimensions() );
 
-			copy_and_convert_pixels( clamp_view(srcView), vw );
+			copy_and_convert_pixels( srcView, vw );
 
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 
@@ -90,7 +88,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			rgb32_view_t vw( view(img) );
 
 			// Convert pixels in PIX_FMT_RGB24
-			copy_and_convert_pixels( clamp_view(srcView), vw );
+			copy_and_convert_pixels(srcView, vw );
 
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 

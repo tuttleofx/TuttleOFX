@@ -2,7 +2,6 @@
 #include "PngWriterPlugin.hpp"
 
 #include <terry/globals.hpp>
-#include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/gil_all.hpp>
