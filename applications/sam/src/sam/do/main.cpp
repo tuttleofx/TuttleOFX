@@ -1128,7 +1128,7 @@ int main( int argc, char** argv )
 			}
 		}
 		
-		if( writerHaveExtensionInParameter && numberOfLoop > 1 )
+		if( ( writerHaveExtensionInParameter || !haveWriter || !haveReader ) && numberOfLoop > 1 )
 		{
 			BOOST_THROW_EXCEPTION( tuttle::exception::Value()
 								   << tuttle::exception::user() + "several sequences can’t be transformed into a single sequence or a movie for the moment." );
