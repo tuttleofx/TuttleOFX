@@ -1020,6 +1020,7 @@ int main( int argc, char** argv )
 		size_t numberOfLoop = std::numeric_limits<size_t>::max();
 		boost::ptr_vector< boost::ptr_vector< sp::FileObject > > listOfSequencesPerReaderNode;
 		std::vector< std::string > listOfSequencesPerWriterNode;
+		bool writerHaveExtensionInParameter = false;
 		
 		if( facticesNodes.size() )
 		{
@@ -1088,7 +1089,12 @@ int main( int argc, char** argv )
 											   << tuttle::exception::user() + "unalble to set mutli path in writer." );
 					
 					if( paths.size() )
+					{
 						listOfSequencesPerWriterNode.push_back( paths.at(0) ); // push only the first path
+						bfs::path p( paths.at(0) );
+						if( p.extension().string().size() )
+							writerHaveExtensionInParameter = true;
+					}
 					else
 						listOfSequencesPerWriterNode.push_back( "" );
 				}
@@ -1122,8 +1128,14 @@ int main( int argc, char** argv )
 			}
 		}
 		
+		if( writerHaveExtensionInParameter && numberOfLoop > 1 )
+		{
+			BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+								   << tuttle::exception::user() + "several sequences can’t be transformed into a single sequence or a movie for the moment." );
+		}
+		
 		// Execute the graph
-		TUTTLE_TCOUT_VAR2( numberOfLoop, listOfSequencesPerWriterNode.size() );
+		TUTTLE_TCOUT_VAR2( numberOfLoop, writerHaveExtensionInParameter );
 		TUTTLE_TCOUT_VAR2( listOfSequencesPerReaderNode.size(), listOfSequencesPerWriterNode.size() );
 		
 		Dummy dummy;
@@ -1171,7 +1183,6 @@ int main( int argc, char** argv )
 					}
 					else
 					{
-						TUTTLE_COUT( "combine" );
 						// need to combine filename:
 						// get root from dummy writer, and add sequence pattern from reader
 						
@@ -1207,14 +1218,14 @@ int main( int argc, char** argv )
 						{
 							sp::FileObject& fo = listOfSequencesPerReaderNode.at(0).at( loop );
 							filename = getAbsoluteFilename( fo );
-							bfs::path filepath( filename );
+							bfs::path filepath( baseSrcPath );
 							if( filepath.extension().string().size() )
 							{
 								filename = filepath.filename().string();
 							}
 							else
 							{
-								filename.erase( 0, srcPaths.at(0).length() );
+								filename.erase( 0, baseSrcPath.length() );
 							}
 						}
 						TUTTLE_COUT_VAR2( filename, srcPaths.at(0) );
@@ -1284,7 +1295,7 @@ int main( int argc, char** argv )
 				if( enableVerbose )
 					TUTTLE_COUT( "graph processing" );
 				if( !disableProcess )
-					graph.compute( *nodes.back(), options );
+					graphTmp.compute( *nodesTmp.back(), options );
 			}
 		}
 		
