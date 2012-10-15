@@ -125,7 +125,7 @@ void Dummy::getPathsFromCommandLine( std::vector<std::string>& paths, const std:
 	std::vector<std::string>::iterator it = paths.begin();
 	for( ; it < paths.end(); it++ )
 	{
-		if( std::strncmp( (*it).c_str() , "ext=" , 4 ) == 0 )
+		if( (*it).find("=") != std::string::npos )
 		{
 			paths.erase( it );
 			it--;
