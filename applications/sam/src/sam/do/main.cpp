@@ -794,8 +794,14 @@ int main( int argc, char** argv )
 								//								TUTTLE_COUT( "* " << paramStr );
 								//								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
 
+								if( dummy.isDummyNode( userNodeName ) )
+								{
+									++paramIdx;
+									continue;
+								}
+								
 								// setup the node with parameter value in tuttle.
-								if( attributeName.size() && !dummy.isDummyNode( userNodeName ) )
+								if( attributeName.size() )
 								{
 									// set a value to a named parameter or clip
 									using namespace ttl::ofx::attribute;
@@ -875,7 +881,7 @@ int main( int argc, char** argv )
 								++paramIdx;
 							}
 						}
-
+						
 						// if it's a dummy, keeping parameters in node
 						if( dummy.isDummyNode( userNodeName ) )
 						{
@@ -883,7 +889,7 @@ int main( int argc, char** argv )
 							currentNode.getParamByScriptName( "expression" ).setValue( boost::algorithm::join( nodeArgs, " " ) );
 							facticesNodes.push_back( &currentNode );
 						}
-						
+
 						// connect current node to previous node(s)
 						if( nodes.size() > 0 ) // if not the first node
 						{
@@ -949,7 +955,6 @@ int main( int argc, char** argv )
 								}
 							}
 						}
-
 						nodes.push_back( &currentNode );
 					}
 					catch( const boost::program_options::error& e )
@@ -1086,7 +1091,7 @@ int main( int argc, char** argv )
 					// in case of dummy writer, only add the first path, else throw an exception
 					if( paths.size() > 1 )
 						BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-											   << tuttle::exception::user() + "unalble to set mutli path in writer." );
+											   << tuttle::exception::user() + "unable to set mutli path in writer." );
 					
 					if( paths.size() )
 					{
@@ -1122,22 +1127,24 @@ int main( int argc, char** argv )
 				filenames.push_back( n->getParamByScriptName( "filename" ).getStringValue() );
 				haveReader = true;
 			}
-			if( isContextSupported( n, kOfxImageEffectContextReader ) )
+			if( isContextSupported( n, kOfxImageEffectContextWriter ) )
 			{
 				haveWriter = true;
 			}
 		}
 		
-		if( writerHaveExtensionInParameter && numberOfLoop > 1 )
+		TUTTLE_TCOUT_VAR2( numberOfLoop, writerHaveExtensionInParameter );
+		TUTTLE_TCOUT_VAR2( haveReader, haveWriter );
+		TUTTLE_TCOUT_VAR2( listOfSequencesPerReaderNode.size(), listOfSequencesPerWriterNode.size() );
+		
+		if( ( writerHaveExtensionInParameter || haveWriter || haveReader ) && numberOfLoop > 1 )
 		{
 			BOOST_THROW_EXCEPTION( tuttle::exception::Value()
 								   << tuttle::exception::user() + "several sequences can’t be transformed into a single sequence or a movie for the moment." );
 		}
 		
 		// Execute the graph
-		TUTTLE_TCOUT_VAR2( numberOfLoop, writerHaveExtensionInParameter );
-		TUTTLE_TCOUT_VAR2( listOfSequencesPerReaderNode.size(), listOfSequencesPerWriterNode.size() );
-		
+
 		Dummy dummy;
 		
 		for( size_t loop = 0; loop < numberOfLoop; ++loop )
