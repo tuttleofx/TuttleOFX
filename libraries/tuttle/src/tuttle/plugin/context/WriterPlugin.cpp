@@ -85,7 +85,7 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 {
 	_oneRender = false;
 
-	TUTTLE_TCOUT( "        --> " << getAbsoluteFilenameAt( args.time ) );
+	TUTTLE_COUT( "        --> " << getAbsoluteFilenameAt( args.time ) );
 
 	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
 	boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
