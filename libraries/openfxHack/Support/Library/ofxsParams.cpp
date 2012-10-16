@@ -695,7 +695,11 @@ void GroupParamDescriptor::setOpen( const bool open )
 
 void GroupParamDescriptor::setAsTab()
 {
-    getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
+    // only anable on supported Nuke
+    if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+    {
+        getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
