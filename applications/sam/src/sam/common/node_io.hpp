@@ -11,6 +11,8 @@
 #include <vector>
 #include <string>
 
+#include "color.hpp"
+
 namespace ttl = ::tuttle::host;
 
 namespace sam {
