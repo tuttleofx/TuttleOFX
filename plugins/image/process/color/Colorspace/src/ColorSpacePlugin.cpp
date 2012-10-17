@@ -1,6 +1,4 @@
 
-//#include <tuttle/plugin/color/colorSpaceAPI.hpp>
-
 #include "ColorSpacePlugin.hpp"
 #include "ColorSpaceProcess.hpp"
 #include "ColorSpaceDefinitions.hpp"

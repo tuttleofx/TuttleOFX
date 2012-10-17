@@ -4,18 +4,18 @@ tuttle.core().preload()
 
 g = tuttle.Graph()
 read = g.createNode( "tuttle.pngreader", "data/input.png" )
-blur = g.createNode( "tuttle.blur", size=[0.003, 0.005] )
+invert = g.createNode( "tuttle.invert" )
 
-g.connect( [read,blur] )
+g.connect( [read,invert] )
 
 outputCache = tuttle.MemoryCache()
-g.compute( outputCache, blur )
+g.compute( outputCache, invert )
 
 
-print 'blur name:', blur.getName()
+print 'blur name:', invert.getName()
 
-imgRes = outputCache.get( blur.getName(), 0 );
+imgRes = outputCache.get( invert.getName(), 0 );
 
+print 'type imgRes:', type( imgRes )
 print 'imgRes:', dir( imgRes )
-print 'MemorySize:', imgRes.get().getMemorySize()
-
+print 'MemorySize:', imgRes.getMemorySize()

@@ -16,23 +16,19 @@ typedef double OfxTime;
 {
 	%pythoncode
 	{
-		def setValueAtTime(self, time, value, change = eChangeUserEdited):
+		def setValueAtTime(self, time, value):
 			if isinstance(value, list) or isinstance(value, tuple):
-				args = value[:]
-				args.append(change)
-				self.private_setValueAtTime(time, *args)
+				self.private_setValueAtTime(time, *value)
 			else:
-				self.private_setValueAtTime(time, value, change)
+				self.private_setValueAtTime(time, value)
 			
-		def setValue(self, value, change = eChangeUserEdited):
+		def setValue(self, value):
 			if isinstance(value, list) or isinstance(value, tuple):
-				args = value[:]
-				args.append(change)
-				self.private_setValue(*args)
+				self.private_setValue(*value)
 			elif isinstance(value, dict):
 				for time, v in value.iteritems():
-					self.setValueAtTime(time, v, change)
+					self.setValueAtTime(time, v)
 			else:
-				self.private_setValue(value, change)
+				self.private_setValue(value)
 	}
 }
