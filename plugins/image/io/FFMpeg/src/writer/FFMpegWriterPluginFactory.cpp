@@ -9,6 +9,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/foreach.hpp>
 
 #include <string>
 #include <vector>
@@ -108,8 +109,8 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	// Controls
 	describeWriterParamsInContext( desc, context );
 	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
-	bitDepth->resetOptions();
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	/// @todo: 16 bits
 	bitDepth->setDefault( eTuttlePluginBitDepth8 );
 	bitDepth->setEnabled( false );
 
@@ -119,7 +120,6 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-	std::vector<std::string>::const_iterator itLong;
 	for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
 		itLong = writer.getFormatsLong().begin(),
 		itEnd = writer.getFormatsShort().end();
@@ -127,9 +127,8 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		std::string formatName = *itShort;
-		format->appendOption( formatName, *itLong );
-		if (!strcmp(itShort->c_str(), "mp4"))
+		format->appendOption( *itShort, *itLong );
+		if( (*itShort) == "mp4" )
 			default_format = format->getNOptions() - 1;
 	}
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
@@ -144,36 +143,28 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		++itShort,
 		++itLong )
 	{
-		std::string codecName = *itShort;
-		codec->appendOption( codecName, *itLong );
-		if (!strcmp(itShort->c_str(), "mpeg4"))
+		codec->appendOption( *itShort, *itLong );
+		if( (*itShort) == "mpeg4" )
 			default_codec = codec->getNOptions() - 1;
 	}
 	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	codec->setDefault( default_codec );
 
 	
-	std::vector<std::string> codecListWithPreset = writer.getCodecListWithConfig();
-	std::vector<std::string>::iterator it;
-	for( it = codecListWithPreset.begin(); it < codecListWithPreset.end(); it++ )
+	const std::vector<std::string> codecListWithPreset = writer.getPresets().getCodecListWithConfig();
+	BOOST_FOREACH( const std::string& codecName, codecListWithPreset )
 	{
-		std::string codecName = *it;
-		std::vector<std::string> codecList = writer.getConfigList( codecName );
-		OFX::ChoiceParamDescriptor* choiceConfig;
+		const std::vector<std::string> codecList = writer.getPresets().getConfigList( codecName );
+		if( codecList.empty() )
+			continue;
 		
-		if( codecList.size() != 0 )
-		{
-			choiceConfig = desc.defineChoiceParam( codecName );
-			choiceConfig->setLabel( codecName );
-			choiceConfig->setDefault( 0 );
-		}
+		OFX::ChoiceParamDescriptor* choiceConfig = desc.defineChoiceParam( codecName + kParamPresetPostfix );
+		choiceConfig->setLabel( codecName + " Preset" );
+		choiceConfig->setDefault( 0 );
 		
-		for( std::vector<std::string>::const_iterator itCodec = codecList.begin(),
-			itCodecEnd = codecList.end();
-			itCodec != itCodecEnd;
-			++itCodec )
+		BOOST_FOREACH( const std::string& codec, codecList )
 		{
-			choiceConfig->appendOption( *itCodec );
+			choiceConfig->appendOption( codec );
 		}
 	}
 	
@@ -181,7 +172,6 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	bitrate->setLabel( "Bitrate" );
 	bitrate->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitrate->setDefault( 400000 );
-
 }
 
 /**

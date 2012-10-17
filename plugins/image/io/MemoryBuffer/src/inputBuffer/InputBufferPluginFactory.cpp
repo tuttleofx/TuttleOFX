@@ -96,17 +96,17 @@ void InputBufferPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	callbackPointer->setAnimates( false );
 	callbackPointer->setDefault( "" );
 	
-	OFX::StringParamDescriptor* callbackCustomData = desc.defineStringParam( kParamInputCallbackCustomData );
-	callbackCustomData->setLabel( "Callback Custom Data Pointer" );
-	callbackCustomData->setHint(
+	OFX::StringParamDescriptor* customData = desc.defineStringParam( kParamInputCustomData );
+	customData->setLabel( "Callback Custom Data Pointer" );
+	customData->setHint(
 		"This parameter represent a pointer to a custom data which is given to the callback function.\n"
 		"WARNING:\n"
 		" - Your application could crash if you set an invalid value here.\n"
 		);
-	callbackCustomData->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	callbackCustomData->setIsPersistant( false );
-	callbackCustomData->setAnimates( false );
-	callbackCustomData->setDefault( "" );
+	customData->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	customData->setIsPersistant( false );
+	customData->setAnimates( false );
+	customData->setDefault( "" );
 	
 	
 	OFX::Int2DParamDescriptor* imgSize = desc.defineInt2DParam( kParamSize );
@@ -179,6 +179,18 @@ void InputBufferPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	timeDomain->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	timeDomain->setDefault( kOfxFlagInfiniteMin, kOfxFlagInfiniteMax );
 	timeDomain->setAnimates( false );
+	
+	OFX::StringParamDescriptor* callbackDestroyCustomData = desc.defineStringParam( kParamInputCallbackDestroyCustomData );
+	callbackDestroyCustomData->setLabel( "Callback Destroy Custom Data" );
+	callbackDestroyCustomData->setHint(
+		"This parameter represents a pointer to a function.\n"
+		"WARNING:\n"
+		" - Your application could crash if you set an invalid value here.\n"
+		);
+	callbackDestroyCustomData->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	callbackDestroyCustomData->setIsPersistant( false );
+	callbackDestroyCustomData->setAnimates( false );
+	callbackDestroyCustomData->setDefault( "" );
 }
 
 /**

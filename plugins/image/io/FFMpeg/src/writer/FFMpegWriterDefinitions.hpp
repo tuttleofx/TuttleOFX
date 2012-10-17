@@ -18,6 +18,8 @@ static const std::string kParamFormat                    = "format";
 static const std::string kParamCodec                     = "codec";
 static const std::string kParamBitrate                   = "bitrate";
 
+static const std::string kParamPresetPostfix             = "_preset";
+
 }
 }
 }

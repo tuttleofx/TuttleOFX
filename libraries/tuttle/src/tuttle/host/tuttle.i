@@ -8,4 +8,5 @@
 %include "attribute/allParams.i"
 %include "Graph.i"
 %include "ThreadEnv.i"
+%include "Node.i"
 

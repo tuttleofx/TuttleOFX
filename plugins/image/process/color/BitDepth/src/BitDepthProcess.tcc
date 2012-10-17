@@ -4,7 +4,6 @@
 #include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <terry/clamp.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -55,7 +54,7 @@ void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& pr
 				   procWindowSize.x,
 				   procWindowSize.y );
 
-	copy_and_convert_pixels( terry::clamp_view(src), dst ); /// @todo tuttle: the clamp should be directly done by the copy_and_convert_pixels if we need one.
+	copy_and_convert_pixels( src, dst );
 }
 
 }

@@ -13,7 +13,7 @@ using namespace boost::gil;
 
 template<class View>
 TurboJpegReaderProcess<View>::TurboJpegReaderProcess( TurboJpegReaderPlugin &effect )
-: ImageGilProcessor<View>( effect, eImageOrientationIndependant )
+: ImageGilProcessor<View>( effect, eImageOrientationFromTopToBottom )
 , _plugin( effect )
 {
 	this->setNoMultiThreading();

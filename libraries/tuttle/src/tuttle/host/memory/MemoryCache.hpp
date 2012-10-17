@@ -39,6 +39,7 @@ private:
 public:
 	void               put( const std::string& identifier, const double time, CACHE_ELEMENT pData );
 	CACHE_ELEMENT      get( const std::string& identifier, const double time ) const;
+	CACHE_ELEMENT      get( const std::size_t& i ) const;
 	std::size_t        size() const;
 	bool               empty() const;
 	bool               inCache( const CACHE_ELEMENT& ) const;

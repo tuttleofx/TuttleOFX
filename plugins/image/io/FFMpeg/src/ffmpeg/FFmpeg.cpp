@@ -1,6 +1,10 @@
 #include "FFmpeg.hpp"
 
 
+namespace tuttle {
+namespace plugin {
+namespace ffmpeg {
+
 bool FFmpeg::_hasBeenInit = globalInit();
 
 bool FFmpeg::globalInit()
@@ -134,4 +138,8 @@ const std::string FFmpeg::codecType_toString( const AVMediaType codec_type )
    ( VALUE_AND_NAME( PIX_FMT_VAAPI_VLD ) )
    ( VALUE_AND_NAME( PIX_FMT_NB ) );
  */
+
+}
+}
+}
 

@@ -441,7 +441,7 @@ int main(int argc, char** argv) {
 			hasRange = (range.size() == 2);
 		}
 
-		Core::instance().preload();
+		core().preload();
 		Graph graph;
 		if( verbose )
 		{

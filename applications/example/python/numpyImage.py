@@ -3,26 +3,20 @@ from pyTuttle import tuttle
 import numpy
 import Image
 
-tuttle.Core.instance().preload()
+tuttle.core().preload()
 g = tuttle.Graph()
 
-ii = g.createInputBuffer()
 img = numpy.asarray(Image.open('data/input.jpg'))
+ii = g.createInputBuffer()
 ii.set3DArrayBuffer( img )
 
-ib = g.createInputBuffer()
 array = numpy.array([[.9, .1, .9], [.8, .2, .9]], numpy.float32)
+ib = g.createInputBuffer()
 ib.set2DArrayBuffer( array )
 
-c = g.createNode("tuttle.component")
-c.getParam("to").setValue("rgb")
-
-m = g.createNode("tuttle.merge")
-m.getParam("mergingFunction").setValue("average")
-m.getParam("rod").setValue("union")
-
-w = g.createNode("tuttle.pngwriter")
-w.getParam("filename").setValue("foo.png")
+c = g.createNode("tuttle.component", to="rgb")
+m = g.createNode("tuttle.merge", mergingFunction="average", rod="union")
+w = g.createNode("tuttle.pngwriter", "foo.png")
 
 g.connect( ib.getNode(), c )
 g.connect( c, m.getAttribute("A") )

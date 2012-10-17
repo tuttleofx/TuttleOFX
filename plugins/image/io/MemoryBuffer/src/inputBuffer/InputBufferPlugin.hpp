@@ -5,10 +5,6 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-extern "C" {
-typedef void* (*CallbackPtr)(OfxTime time, void* inputCustomData);
-typedef void* CallbackCustomDataPtr;
-}
 
 namespace tuttle {
 namespace plugin {
@@ -20,8 +16,9 @@ struct InputBufferProcessParams
 	EParamInputMode _mode;
 	
 	unsigned char* _inputBuffer;
-	CallbackPtr _callbackPtr;
-	CallbackCustomDataPtr _callbackCustomDataPtr;
+	CallbackInputImagePtr _callbackPtr;
+	CustomDataPtr _customDataPtr;
+	CallbackDestroyCustomDataPtr _callbackDestroyPtr;
 	
 	int _width;
 	int _height;
@@ -42,6 +39,7 @@ public:
 	typedef float Scalar;
 public:
     InputBufferPlugin( OfxImageEffectHandle handle );
+    ~InputBufferPlugin();
 
 public:
 	InputBufferProcessParams getProcessParams( const OfxTime time ) const;
@@ -61,9 +59,10 @@ public:
 	OFX::StringParam* _paramInputBufferPointer;
 	OFX::StringParam* _paramInputCallbackPointer;
 	OFX::StringParam* _paramInputCallbackCustomData;
+	OFX::StringParam* _paramInputCallbackDestroyCustomData;
 	
-	OFX::Int2DParam* _paramSize;
-	OFX::IntParam* _paramRowByteSize;
+	OFX::Int2DParam*  _paramSize;
+	OFX::IntParam*    _paramRowByteSize;
 	OFX::DoubleParam* _paramPixelAspectRatio;
 	OFX::DoubleParam* _paramFramerate;
 	OFX::ChoiceParam* _paramPixelComponents;
@@ -71,6 +70,26 @@ public:
 	OFX::ChoiceParam* _paramField;
 	
 	OFX::Double2DParam* _paramTimeDomain;
+	
+private:
+	CustomDataPtr _tempStoreCustomDataPtr; //< keep track of the previous value
+	
+	/// @brief Store temporary values (between actions).
+	///        We ensure that we call the get image callback only once,
+	///        but we need the values multiple times.
+	/// @{
+	OfxTime _callbackMode_time;
+	OfxPointI _callbackMode_imgSize;
+	int _callbackMode_rowSizeBytes;
+	unsigned char* _callbackMode_imgPointer;
+	/// @}
+	
+	/**
+	 * @brief We call this function each time we need to know something about the image,
+	 *        the size, the buffer, etc. And this function ensures to get valid values,
+	 *        and is responsible to call the callback only once for a given input time.
+	 */
+	void callbackMode_updateImage( const OfxTime time, const InputBufferProcessParams& params );
 };
 
 }

@@ -78,7 +78,7 @@ void printProperties( const tth::ofx::property::OfxhSet properties, std::string 
 
 void getPluginProperties( const std::string& plugName )
 {
-	tth::ofx::imageEffect::OfxhImageEffectPlugin* plug = tth::Core::instance().getImageEffectPluginById( plugName );
+	tth::ofx::imageEffect::OfxhImageEffectPlugin* plug = tth::core().getImageEffectPluginById( plugName );
 	
 	if( !plug )
 	{
@@ -319,8 +319,8 @@ int main( int argc, char** argv )
 	
 	if( vm.count(kAllOptionLongName) | (plugins.size() == 0) )
 	{
-		tth::Core::instance().preload();
-		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
+		tth::core().preload();
+		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::core().getImageEffectPluginCache().getPlugins();
 		
 		for( std::size_t i = 0; i < plugs.size(); ++i )
 		{
@@ -353,9 +353,9 @@ int main( int argc, char** argv )
 	
 	try
 	{
-		tth::Core::instance().preload();
+		tth::core().preload();
 		// get the plugins names for research partials names (rawreader need to make reference to the plug tuttle.reader)
-		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
+		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::core().getImageEffectPluginCache().getPlugins();
 
 		unsigned int founded;
 		BOOST_FOREACH( const std::string& plugin, plugins )

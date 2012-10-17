@@ -5,9 +5,9 @@
 int main( int argc, char** argv )
 {
 	using namespace tuttle::host;
-	Core::instance().preload();
+	core().preload();
 
-	BOOST_FOREACH( ofx::OfxhPlugin* plugin, Core::instance().getPluginCache().getPlugins() )
+	BOOST_FOREACH( ofx::OfxhPlugin* plugin, core().getPluginCache().getPlugins() )
 	{
 		std::cout << " - plugin: " << plugin->getIdentifier() << std::endl;
 	}

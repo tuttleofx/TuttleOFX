@@ -4,6 +4,7 @@ project.UnitTest(
 	dirs = ['.'],
 	libraries = [
 		libs.tuttleTest,
-		]
+		libs.openimageio,
+		],
 	)
 

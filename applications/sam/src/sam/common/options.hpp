@@ -157,6 +157,11 @@ static const char* const kContinueOnErrorOptionLongName = "continue-on-error";
 static const char* const kContinueOnErrorOptionString = kContinueOnErrorOptionLongName;
 static const char* const kContinueOnErrorOptionMessage = "continue on error";
 
+//--disable-process
+static const char* const kDisableProcessOptionLongName = "disable-process";
+static const char* const kDisableProcessOptionString = kDisableProcessOptionLongName;
+static const char* const kDisableProcessOptionMessage = "run the command line without computing images (verbose enable).";
+
 //--force-identity-nodes-process
 static const char* const kForceIdentityNodesProcessOptionLongName = "force-identity-nodes-process";
 static const char* const kForceIdentityNodesProcessOptionString = kForceIdentityNodesProcessOptionLongName;
@@ -176,6 +181,11 @@ static const char* const kExpertOptionMessage = "show expert user options";
 static const char* const kFirstImageOptionLongName = "first-image";
 static const char* const kFirstImageOptionString = kFirstImageOptionLongName;
 static const char* const kFirstImageOptionMessage = "specify the first image";
+
+//--format
+static const char* const kFormatOptionLongName = "format";
+static const char* const kFormatOptionString = kFormatOptionLongName;
+static const char* const kFormatOptionMessage = "display supported formats";
 
 //--full-display
 static const char* const kFullDisplayOptionLongName = "full-display";
@@ -277,6 +287,11 @@ static const char* const kPropertiesOptionLongName = "properties";
 static const char* const kPropertiesOptionString = kPropertiesOptionLongName;
 static const char* const kPropertiesOptionMessage = "list properties of the OpenFX plugin";
 
+//--plugins
+static const char* const kPluginsOptionLongName = "plugins";
+static const char* const kPluginsOptionString = kPropertiesOptionLongName;
+static const char* const kPluginsOptionMessage = "list of associated plugins for this dummy node";
+
 //--reader
 static const char* const kReaderOptionLongName = "reader";
 static const char* const kReaderOptionString = kReaderOptionLongName;
@@ -286,6 +301,11 @@ static const char* const kReaderOptionMessage = "specify reader node with identi
 static const char* const kRelativePathOptionLongName = "relative-path";
 static const char* const kRelativePathOptionString = kRelativePathOptionLongName;
 static const char* const kRelativePathOptionMessage = "display the relative path of each object";
+
+//--stop-on-missing-file
+static const char* const kStopOnMissingFileOptionLongName = "stop-on-missing-file";
+static const char* const kStopOnMissingFileOptionString = kStopOnMissingFileOptionLongName;
+static const char* const kStopOnMissingFileOptionMessage = "stop on missing file";
 
 //--nb-cores
 static const char* const kNbCoresOptionLongName = "nb-cores";
