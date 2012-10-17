@@ -247,7 +247,6 @@ int main( int argc, char** argv )
 		bool continueOnError = false;
 		bool stopOnMissingFile = false;
 		bool disableProcess = false;
-		bool stopOnMissingFile = false;
 		bool forceIdentityNodesProcess = false;
 		bool enableColor = false;
 		bool enableVerbose = false;
