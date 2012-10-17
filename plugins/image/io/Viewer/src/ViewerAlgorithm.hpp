@@ -229,8 +229,6 @@ void display()
 	{
 		x1 = -x1;
 		x2 = -x2;
-		y1 = -y1;
-		y2 = -y2;
 	}
 	
 	glTexCoord2f( 0, 0 );
@@ -325,6 +323,7 @@ void keyboard(unsigned char k, int x, int y)
 				flop = !flop;
 				glutPostRedisplay();
 			}
+			break;
 		case 'V':
 			if( shift )
 			{
@@ -350,15 +349,27 @@ void specialKeyboard( int k, int x, int y)
 }
 
 void mouse  ( int button, int state, int x, int y )
-{
+{    
 	using namespace boost::gil;
-	if( state == 0 && button == 0)
+	if( state == 0 && button == 0 )
 	{
-		std::cout << "at " <<	std::setw(4) << x << "," << std::setw(4) << y << ": ";
+	        int itX = x, itY = y;
+
+		if( !flip )
+		{
+		        itY = img.height - y;
+	        }
+	    
+	        if( flop )
+	        {
+		        itX = img.width - x;
+	        }
+	    
+		std::cout << "at " << std::setw(4) << x << "," << std::setw(4) << y << ": ";
 
 		for( size_t i = 0; i < img.component; i++ )
 		{
-			size_t idx = ( x + y* img.width ) * img.component + i;
+		        size_t idx = ( itX + itY * img.width ) * img.component + i;
 			switch( img.type )
 			{
 				case GL_UNSIGNED_BYTE:

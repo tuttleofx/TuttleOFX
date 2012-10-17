@@ -245,7 +245,9 @@ int main( int argc, char** argv )
 	{
 
 		bool continueOnError = false;
+		bool stopOnMissingFile = false;
 		bool disableProcess = false;
+		bool stopOnMissingFile = false;
 		bool forceIdentityNodesProcess = false;
 		bool enableColor = false;
 		bool enableVerbose = false;
@@ -288,7 +290,8 @@ int main( int argc, char** argv )
 					( kExpertOptionString, kExpertOptionMessage );
 				bpo::options_description confOptions;
 				confOptions.add_options()
-					( kContinueOnErrorOptionString, kContinueOnErrorOptionMessage )
+					( kContinueOnErrorOptionString, bpo::value<bool>(), kContinueOnErrorOptionMessage )
+					( kStopOnMissingFileOptionString, bpo::value<bool>(), kStopOnMissingFileOptionMessage )
 					( kDisableProcessOptionString, kDisableProcessOptionMessage )
 					( kForceIdentityNodesProcessOptionString, kForceIdentityNodesProcessOptionMessage )
 					( kRangeOptionString, bpo::value<std::string > (), kRangeOptionMessage )
@@ -467,7 +470,15 @@ int main( int argc, char** argv )
 					}
 				}
 				std::cerr.rdbuf( strm_buffer ); // restore old output buffer
-				continueOnError = samdo_vm.count( kContinueOnErrorOptionLongName );
+				if( samdo_vm.count( kContinueOnErrorOptionLongName ) )
+				{
+					continueOnError = samdo_vm[kContinueOnErrorOptionLongName].as< bool > ();
+				}
+				if( samdo_vm.count( kStopOnMissingFileOptionLongName ) )
+				{
+					stopOnMissingFile = samdo_vm[kStopOnMissingFileOptionLongName].as< bool > ();
+				}
+
 				forceIdentityNodesProcess = samdo_vm.count( kForceIdentityNodesProcessOptionLongName );
 			}
 			catch( const boost::program_options::error& e )
@@ -1020,6 +1031,7 @@ int main( int argc, char** argv )
 			options.setRenderScale( renderscale[0], renderscale[1] );
 		}
 		options.setContinueOnError( continueOnError );
+		options.setContinueOnMissingFile( !stopOnMissingFile );
 		options.setForceIdentityNodesProcess( forceIdentityNodesProcess );
 		
 		size_t numberOfLoop = std::numeric_limits<size_t>::max();

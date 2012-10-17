@@ -302,6 +302,11 @@ static const char* const kRelativePathOptionLongName = "relative-path";
 static const char* const kRelativePathOptionString = kRelativePathOptionLongName;
 static const char* const kRelativePathOptionMessage = "display the relative path of each object";
 
+//--stop-on-missing-file
+static const char* const kStopOnMissingFileOptionLongName = "stop-on-missing-file";
+static const char* const kStopOnMissingFileOptionString = kStopOnMissingFileOptionLongName;
+static const char* const kStopOnMissingFileOptionMessage = "stop on missing file";
+
 //--nb-cores
 static const char* const kNbCoresOptionLongName = "nb-cores";
 static const char* const kNbCoresOptionString = kNbCoresOptionLongName;
