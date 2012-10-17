@@ -203,7 +203,7 @@ int main( int argc, char** argv )
 					( kExpertOptionString, kExpertOptionMessage );
 				bpo::options_description confOptions;
 				confOptions.add_options()
-					( kContinueOnErrorOptionString, kContinueOnErrorOptionMessage )
+					( kContinueOnErrorOptionString, bpo::value<bool>(), kContinueOnErrorOptionMessage )
 					( kStopOnMissingFileOptionString, bpo::value<bool>(), kStopOnMissingFileOptionMessage )
 					( kForceIdentityNodesProcessOptionString, kForceIdentityNodesProcessOptionMessage )
 					( kRangeOptionString, bpo::value<std::string > (), kRangeOptionMessage )
@@ -379,7 +379,10 @@ int main( int argc, char** argv )
 					}
 				}
 				std::cerr.rdbuf( strm_buffer ); // restore old output buffer
-				continueOnError = samdo_vm.count( kContinueOnErrorOptionLongName );
+				if( samdo_vm.count( kContinueOnErrorOptionLongName ) )
+				{
+					continueOnError = samdo_vm[kContinueOnErrorOptionLongName].as< bool > ();
+				}
 				if( samdo_vm.count( kStopOnMissingFileOptionLongName ) )
 				{
 					stopOnMissingFile = samdo_vm[kStopOnMissingFileOptionLongName].as< bool > ();
