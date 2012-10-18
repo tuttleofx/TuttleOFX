@@ -1,16 +1,17 @@
-#define OFXPLUGIN_VERSION_MAJOR 0
+#define OFXPLUGIN_VERSION_MAJOR 1
 #define OFXPLUGIN_VERSION_MINOR 0
 
+#include "DummyPluginFactory.hpp"
 #include <tuttle/plugin/Plugin.hpp>
-#include "LutPluginFactory.hpp"
 
 namespace OFX {
 namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::lut::LutPluginFactory, "tuttle.lut" );
+	mAppendPluginFactory( ids, tuttle::plugin::dummy::DummyPluginFactory, "tuttle.dummy" );
 }
 
 }
 }
+

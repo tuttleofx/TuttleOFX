@@ -157,6 +157,11 @@ static const char* const kContinueOnErrorOptionLongName = "continue-on-error";
 static const char* const kContinueOnErrorOptionString = kContinueOnErrorOptionLongName;
 static const char* const kContinueOnErrorOptionMessage = "continue on error";
 
+//--disable-process
+static const char* const kDisableProcessOptionLongName = "disable-process";
+static const char* const kDisableProcessOptionString = kDisableProcessOptionLongName;
+static const char* const kDisableProcessOptionMessage = "run the command line without computing images (verbose enable).";
+
 //--force-identity-nodes-process
 static const char* const kForceIdentityNodesProcessOptionLongName = "force-identity-nodes-process";
 static const char* const kForceIdentityNodesProcessOptionString = kForceIdentityNodesProcessOptionLongName;
