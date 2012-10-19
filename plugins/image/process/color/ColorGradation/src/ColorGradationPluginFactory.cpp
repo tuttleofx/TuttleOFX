@@ -32,8 +32,9 @@ void ColorGradationPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+    // desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+    // desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	// For the moment, this node is float only to handle clamping pb. TODO fix correctly this
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags

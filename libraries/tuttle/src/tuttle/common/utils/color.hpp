@@ -6,7 +6,7 @@
 namespace tuttle {
 namespace common {
 
-#ifdef __UNIX__
+#if (defined __UNIX__ || defined UNIX || defined __LINUX__ || defined LINUX )
 static const std::string kColorBlack    ( "\E[1;30m" );
 static const std::string kColorWhite    ( "\E[1;37m" );
 static const std::string kColorBlue     ( "\E[1;34m" );
