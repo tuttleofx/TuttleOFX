@@ -63,7 +63,7 @@ void OCIOLutProcess<View>::setup(const OFX::RenderArguments& args)
 	}
 	catch(OCIO::Exception & exception)
 	{
-		BOOST_THROW_EXCEPTION( exception::File() << exception::user( "OCIO Error: " << exception.what() ) );
+		BOOST_THROW_EXCEPTION( exception::File() << exception::user() + "OCIO Error: " + exception.what() );
 	}
 	
 }
@@ -123,7 +123,7 @@ void OCIOLutProcess<View>::applyLut(View& dst, View& src) {
 	}
 	catch (OCIO::Exception & exception)
 	{
-		BOOST_THROW_EXCEPTION( exception::Failed() << exception::user( "OCIO Error: " << exception.what() ) );
+		BOOST_THROW_EXCEPTION( exception::Failed() << exception::user() + "OCIO Error: " + exception.what() );
 	}
 }
 
