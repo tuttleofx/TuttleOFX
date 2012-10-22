@@ -7,6 +7,7 @@
 
 #include <terry/math/Rect.hpp>
 
+#include <boost/gil/channel_algorithm.hpp> // force to use the boostHack version first
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/typedefs.hpp>
 #include <boost/gil/image.hpp>

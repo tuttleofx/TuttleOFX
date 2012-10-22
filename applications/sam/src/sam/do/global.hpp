@@ -1,7 +1,6 @@
 #ifndef _SAM_DO_NODE_GLOBAL_HPP_
 #define	_SAM_DO_NODE_GLOBAL_HPP_
 
-#include <sam/common/utility.hpp>
 #include <sam/common/color.hpp>
 
 #include <tuttle/host/Graph.hpp>

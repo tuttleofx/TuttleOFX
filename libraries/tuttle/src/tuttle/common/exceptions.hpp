@@ -356,6 +356,9 @@ struct Data : virtual public Value {};
 /** @brief Something that could work, but is not implemeted. */
 struct NotImplemented : virtual public Unsupported {};
 
+/** @brief The parameter doesn't make sense. */
+struct WrongParameter : virtual public Value {};
+
 /**
  * @brief File manipulation error.
  * eg. read only, file doesn't exists, etc.
@@ -379,6 +382,20 @@ struct FileNotExist : virtual public File
 	FileNotExist()
 	{}
 	FileNotExist( const std::string path )
+	{
+		*this << user("No such file.");
+		*this << filename(path);
+	}
+};
+
+/**
+ * @brief File In a sequence doesn't exists.
+ */
+struct FileInSequenceNotExist : virtual public File
+{
+	FileInSequenceNotExist()
+	{}
+	FileInSequenceNotExist( const std::string path )
 	{
 		*this << user("No such file.");
 		*this << filename(path);

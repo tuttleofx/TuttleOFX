@@ -165,6 +165,8 @@ public:
 	 * The frame rate of a clip or instance's project.
 	 */
 	double getFrameRate() const;
+	
+	void setFrameRate( const double fps );
 
 	/**
 	 * @brief Frame Range (startFrame, endFrame)

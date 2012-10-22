@@ -4,7 +4,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <tuttle/host/Graph.hpp>
-#include <tuttle/host/InputBufferNode.hpp>
 
 #include <boost/preprocessor/stringize.hpp>
 

@@ -1,10 +1,11 @@
 #ifndef _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
 #define _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
 
+#include <boost/gil/channel_algorithm.hpp> // force to use the boostHack version first
+
 #include "WriterDefinition.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <tuttle/common/clip/Sequence.hpp>
 
 #include <ofxsImageEffect.h>
 
@@ -14,8 +15,12 @@
 
 #include <boost/gil/gil_all.hpp>
 
+#include <Sequence.hpp>
+
 namespace tuttle {
 namespace plugin {
+
+namespace sp = sequenceParser;
 
 class WriterPlugin : public ImageEffectGilPlugin
 {
@@ -36,7 +41,7 @@ protected:
 
 private:
 	bool _isSequence;                            ///<
-	common::Sequence _filePattern;               ///< Filename pattern manager
+	sp::Sequence _filePattern;               ///< Filename pattern manager
 
 	bool _oneRender;                            ///<
 	OfxTime _oneRenderAtTime;                         ///<
@@ -45,7 +50,7 @@ public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
 		if( _isSequence )
-			return _filePattern.getAbsoluteFilenameAt( boost::numeric_cast<common::Sequence::Time>(time) );
+			return _filePattern.getAbsoluteFilenameAt( boost::numeric_cast<sp::Time>(time) );
 		else
 			return _paramFilepath->getValue();
 	}

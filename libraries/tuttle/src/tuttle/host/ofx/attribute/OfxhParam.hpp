@@ -4,6 +4,10 @@
 #include "OfxhAttribute.hpp"
 #include "OfxhParamAccessor.hpp"
 
+/* Definitions used by setInterpolator() for animated params
+   These are TuttleOFX specific */
+#include <tuttle/host/attribute/ValueInterpolator.hpp>
+
 #include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhException.hpp>
 #include <tuttle/host/ofx/OfxhIObject.hpp>
@@ -77,6 +81,16 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 namespace attribute {
+
+
+/* Specify the type of interpolator to use with animated params */
+enum EInterpolatorType
+{
+  eLinearInterpolator,
+  eSmoothInterpolator,
+  eFastInterpolator,
+  eSlowInterpolator,
+};
 
 class OfxhParamDescriptor;
 class OfxhParamSet;
@@ -210,6 +224,13 @@ public:
 	inline void setValue( const char* value ) OFX_EXCEPTION_SPEC                                                            { setValue( value, eChangeUserEdited ); }
 	inline void setValueAtTime( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { setValueAtTime( time, std::string( value ), change ); }
 	inline void setValueAtTime( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC                                  { setValueAtTime( time, value, eChangeUserEdited ); }
+
+        /* TuttleOFX specific. This is not part of OFX.
+
+	   It must be in the OfxhParam base class in order to be exposed by the API. */
+        virtual void setInterpolator(const enum EInterpolatorType etype) OFX_EXCEPTION_SPEC {
+	    BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrMissingHostFeature ) );
+	}
 
 	#ifndef SWIG
 	/// get a value, implemented by instances to deconstruct var args

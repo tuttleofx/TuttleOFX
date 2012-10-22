@@ -3,7 +3,6 @@
 
 #include "DPXWriterAlgorithm.hpp"
 
-#include <terry/clamp.hpp>
 #include <terry/typedefs.hpp>
 
 #include <tuttle/plugin/memory/OfxAllocator.hpp>

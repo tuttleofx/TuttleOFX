@@ -62,7 +62,7 @@ bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionA
 	if ( fileInfo._failed )
 	{
 		//TUTTLE_COUT_DEBUG("Input not found => Rod is unvailable");
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 			<< exception::user( "Jpeg2000: Unable to open file" )
 			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}

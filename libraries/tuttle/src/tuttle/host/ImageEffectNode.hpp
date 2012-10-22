@@ -30,8 +30,10 @@ public:
 
 	~ImageEffectNode();
 
+	std::string getLabel() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getLabel(); }
 	const std::string&               getName() const                           { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 	void                             setName( const std::string& name )        { return ofx::imageEffect::OfxhImageEffectNodeBase::setName(name); }
+	std::size_t                      getNbParams() const { return ofx::attribute::OfxhParamSet::getNbParams(); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name, const bool acceptPartialName = false ) const { return ofx::attribute::OfxhParamSet::getParamByScriptName( name, acceptPartialName ); }
@@ -124,13 +126,17 @@ public:
 	/// @{
 	OfxRangeD computeTimeDomain();
 
+	void setup1();
+	void setup2_reverse();
+	void setup3();
+	
 	void beginSequence( graph::ProcessVertexData& vData );
 
 	INode::ClipTimesSetMap getTimesNeeded( const OfxTime time ) const { return OfxhImageEffectNode::getFramesNeeded(time); }
 
 	void preProcess1( graph::ProcessVertexAtTimeData& vData );
 	void preProcess2_reverse( graph::ProcessVertexAtTimeData& vData );
-	void preProcess3( graph::ProcessVertexAtTimeData& vData );
+	
 	bool isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const;
 	void preProcess_infos( const graph::ProcessVertexAtTimeData& vData, const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const;
 	void process( graph::ProcessVertexAtTimeData& vData );
@@ -305,6 +311,9 @@ private:
 
 	void initComponents();
 	void initPixelAspectRatio();
+	void initInputClipsFps();
+	void initFps();
+	
 	void maximizeBitDepthFromReadsToWrites();
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;

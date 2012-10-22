@@ -17,7 +17,7 @@ namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
 
-class VideoFFmpegWriter : public FFmpeg, public FFmpegPreset
+class VideoFFmpegWriter : public FFmpeg
 {
 private:
 	enum EWriterStatus

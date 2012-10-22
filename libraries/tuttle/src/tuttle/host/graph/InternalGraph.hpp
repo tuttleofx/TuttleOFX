@@ -207,7 +207,7 @@ public:
 
 	const vertex_descriptor& getVertexDescriptor( const VertexKey& vertexKey ) const
 	{
-		return _vertexDescriptorMap[vertexKey];
+		return _vertexDescriptorMap.find(vertexKey)->second;
 	}
 
 	Vertex& getVertex( const VertexKey& vertexKey )

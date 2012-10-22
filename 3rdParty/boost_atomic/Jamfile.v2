@@ -1,7 +1,0 @@
-
-alias boost_atomic 
-    : # no sources
-    : # no build requirements
-    : # no default build
-    : <include>.
-    ;

@@ -25,6 +25,8 @@ static const std::string kParamMetaGroup                 = "metaGroup";
 
 static const std::string kParamPresetPostfix             = "_preset";
 
+static const std::string kParamPresetPostfix             = "_preset";
+
 }
 }
 }

@@ -102,6 +102,17 @@ boost::filesystem::path Preferences::buildTuttleTemp()
 	return tuttleTmp;
 }
 
+boost::filesystem::path Preferences::buildTuttleTestPath()
+{
+	const boost::filesystem::path tuttleTest = boost::filesystem::current_path() / ".tests";
+	if( ! boost::filesystem::exists( tuttleTest ) )
+	{
+		boost::filesystem::create_directories( tuttleTest );
+	}
+	
+	return tuttleTest;
+}
+
 
 }
 }

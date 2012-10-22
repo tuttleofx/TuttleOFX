@@ -15,6 +15,7 @@
 #include "ParamRGB.hpp"
 #include "ParamRGBA.hpp"
 #include "ParamString.hpp"
+#include "ParamCustom.hpp"
 
 #endif
 

@@ -1,24 +1,11 @@
 #ifndef _SAM_DO_NODE_DUMMY_HPP_
 #define	_SAM_DO_NODE_DUMMY_HPP_
 
-#include <sam/common/node_io.hpp>
+#include <sam/common/options.hpp>
+
+#include <boost/program_options.hpp>
 
 #include "global.hpp"
-
-#include <tuttle/common/clip/Sequence.hpp>
-#include <tuttle/common/exceptions.hpp>
-
-//#include <tuttle/host/attribute/expression.hpp>
-//#include <tuttle/host/Graph.hpp>
-
-//#include <boost/program_options.hpp>
-//#include <boost/regex.hpp>
-//#include <boost/algorithm/string/split.hpp>
-//#include <boost/foreach.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
-
-#include <iostream>
 
 #define READER_DUMMY_SHORTNAME "r"
 #define READER_DUMMY_NAME      "reader"
@@ -28,94 +15,47 @@
 #define WRITER_DUMMY_NAME      "writer"
 #define WRITER_DUMMY_FULLNAME  "dummy.writer"
 
+namespace bpo = boost::program_options;
+
 namespace sam {
 namespace samdo {
 
-void addDummyNodeInList( std::vector<std::string>& list )
-{
-	list.push_back( READER_DUMMY_NAME );
-	list.push_back( WRITER_DUMMY_NAME );
-}
+typedef std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> NodeList;
+typedef ttl::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet   NodeContext;
 
-void addFullNameDummyNodeInList( std::vector<std::string>& list )
+struct Dummy
 {
-	list.push_back( READER_DUMMY_FULLNAME );
-	list.push_back( WRITER_DUMMY_FULLNAME );
-}
-
-void addShortNameDummyNodeInList( std::vector<std::string>& list )
-{
-	list.push_back( READER_DUMMY_SHORTNAME );
-	list.push_back( WRITER_DUMMY_SHORTNAME );
-}
-
-void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const std::string& dummyNodeFullName, const std::string& dummyNodeShortName, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs )
-{
-	if( !std::strcmp( inputNode.c_str(), dummyNodeFullName.c_str() ) || !std::strcmp( inputNode.c_str(), dummyNodeName.c_str() ) || !std::strcmp( inputNode.c_str(), dummyNodeShortName.c_str() ) )
-	{
-		if( nodeArgs.size() == 0 )
-		{
-			BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-								   << tuttle::exception::user() + "specify and input name (file or sequence)." );
-		}
-		boost::filesystem::path p( nodeArgs.at( 0 ) );
-		std::string inputExtension = p.extension().string();
-		boost::algorithm::to_lower( inputExtension );
-		if( inputExtension.size() == 0 )
-		{
-			BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-								   << tuttle::exception::user() + "invalid extension of input file/sequence." );
-		}
-		inputExtension = inputExtension.substr( 1 ); // remove '.' at begining
-		unsigned int numberOfSupportedExtension = std::numeric_limits<unsigned int>::max();
-		BOOST_FOREACH( ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, nodeList )
-		{
-			const std::string pluginName = node->getRawIdentifier();
-			if( boost::algorithm::find_first( pluginName, dummyNodeName ) )
-			{
-				tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::Core::instance().getImageEffectPluginById( pluginName );
-				plugin->loadAndDescribeActions();
-				const tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet contexts = plugin->getContexts();
-				const tuttle::host::ofx::property::OfxhSet& properties = plugin->getDescriptorInContext( *contexts.begin() ).getProperties();
-				if( properties.hasProperty( kTuttleOfxImageEffectPropSupportedExtensions ) )
-				{
-					const tuttle::host::ofx::property::OfxhProperty& prop = properties.fetchProperty( kTuttleOfxImageEffectPropSupportedExtensions );
-					const std::vector<std::string> supportedExtensions = getStringValues( prop );
-					BOOST_FOREACH( const std::string& ext, supportedExtensions )
-					{
-//						TUTTLE_TCOUT_VAR2( ext, inputExtension );
-						if( ext == inputExtension )
-						{
-//							TUTTLE_TCOUT( pluginName << " [" << supportedExtensions.size() << "] can read " << ext );
-							if( supportedExtensions.size() < numberOfSupportedExtension )
-							{
-								// Arbitrary solution...
-								// If we found multiple plugins that support the requested format,
-								// we select the plugin which supports the lowest number of formats.
-								// So by defaut, we select specialized plugin before
-								// plugin using generic libraries with all formats.
-								numberOfSupportedExtension = supportedExtensions.size();
-								inputNode = pluginName;
-							}
-						}
-					}
-				}
-			}
-		}
-		if( numberOfSupportedExtension == std::numeric_limits<unsigned int>::max() )
-		{
-			BOOST_THROW_EXCEPTION( tuttle::exception::Value()
-								   << tuttle::exception::user() + "Unsupported extension \"" + inputExtension + "\"." );
-		}
-		TUTTLE_COUT( _color._yellow << "Replace " << dummyNodeName << " with: " << inputNode << _color._std );
-	}
-}
-
-void foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs )
-{
-	foundAssociateSpecificDummyNode( inputNode, READER_DUMMY_NAME, READER_DUMMY_FULLNAME, READER_DUMMY_SHORTNAME, nodeList, nodeArgs );
-	foundAssociateSpecificDummyNode( inputNode, WRITER_DUMMY_NAME, WRITER_DUMMY_FULLNAME, WRITER_DUMMY_SHORTNAME, nodeList, nodeArgs );
-}
+	bool isDummyReaderNode( const std::string& nodeName );
+	bool isDummyWriterNode( const std::string& nodeName );
+	bool isDummyNode      ( const std::string& nodeName );
+	
+	void getFullName( std::string& inputNode );
+	
+	bpo::options_description getInfoOptions();
+	bpo::options_description getConfOptions();
+	bpo::options_description getOpenFXOptions();
+	
+	void getCommandLineParameters    ( bpo::variables_map& node_vm, const std::vector<std::string>& nodeArgs );
+	void getParametersFromCommandLine( std::vector<std::string>& parameters, const std::vector<std::string>& nodeArgs );
+	void getPathsFromCommandLine     ( std::vector<std::string>& paths, const std::vector<std::string>& nodeArgs );
+	void getExtensionsFromCommandLine( std::vector<std::string>& extensions, const std::vector<std::string>& nodeArgs );
+	
+	void addDummyNodeInList( std::vector<std::string>& list );
+	void addFullNameDummyNodeInList( std::vector<std::string>& list );
+	void addShortNameDummyNodeInList( std::vector<std::string>& list );
+	
+	std::vector<std::string> getAllSupportedNodes( const std::string& context );
+	std::vector<std::string> getSupportedExtensions( const std::string& context );
+	
+	void printAllSupportedNodes( const std::string& context );
+	void printAllSupportedExtensions( const std::string& context );
+	
+	void displayHelp( const std::string& nodeFullName, const Color &color );
+	void displayExpertHelp( const std::string& nodeFullName, const Color &color );
+	
+	void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const NodeList& nodeList, const std::vector<std::string>& nodeArgs, const Color& color  );
+	void foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs, const Color& color );
+};
 
 }
 }

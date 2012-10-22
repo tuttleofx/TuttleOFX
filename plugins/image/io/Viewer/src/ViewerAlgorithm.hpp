@@ -47,6 +47,8 @@ int windowID;
 int w_out, h_out;
 int angle_cam = 60;
 float zoom = 1;
+bool flip = false;
+bool flop = false;
 
 // channel properties
 bool showRedChannel = false;
@@ -212,17 +214,34 @@ void display()
 	
 	glBegin (GL_QUADS);
 	
+	int x1 = -1;
+	int x2 =  1;
+	
+	int y1 = -1;
+	int y2 =  1;
+	
+	if( flip )
+	{
+		y1 = -y1;
+		y2 = -y2;
+	}
+	if( flop )
+	{
+		x1 = -x1;
+		x2 = -x2;
+	}
+	
 	glTexCoord2f( 0, 0 );
-	glVertex2f  ( -1, 1 );
+	glVertex2f  ( x1, y1 );
 	
 	glTexCoord2f( 0, 1 );
-	glVertex2f  ( -1, -1 );
+	glVertex2f  ( x1, y2 );
 	
 	glTexCoord2f( 1, 1 );
-	glVertex2f  ( 1, -1 );
+	glVertex2f  ( x2, y2 );
 	
 	glTexCoord2f( 1, 0 );
-	glVertex2f  ( 1, 1 );
+	glVertex2f  ( x2, y1 );
 	
 	glEnd();
 	glutSwapBuffers();
@@ -257,6 +276,12 @@ void displayHelp()
 
 void keyboard(unsigned char k, int x, int y)
 {
+	bool shift= false;
+	if( glutGetModifiers() == GLUT_ACTIVE_SHIFT )
+	{
+		shift = true;
+	}
+	
 	switch( k )
 	{
 		case '\r':
@@ -270,7 +295,7 @@ void keyboard(unsigned char k, int x, int y)
 			break;
 		case 'z':
 			glutReshapeWindow( w_out, h_out );
-			glutPostRedisplay ();
+			glutPostRedisplay();
 			break;
 		case 'h':
 			displayHelp();
@@ -291,6 +316,22 @@ void keyboard(unsigned char k, int x, int y)
 		case 'a':
 			showAlphaChannelTexture();
 			break;
+			
+		case 'H':
+			if( shift )
+			{
+				flop = !flop;
+				glutPostRedisplay();
+			}
+			break;
+		case 'V':
+			if( shift )
+			{
+				flip = !flip;
+				glutPostRedisplay();
+			}
+			break;
+
 	}
 }
 
@@ -308,15 +349,27 @@ void specialKeyboard( int k, int x, int y)
 }
 
 void mouse  ( int button, int state, int x, int y )
-{
+{    
 	using namespace boost::gil;
-	if( state == 0 && button == 0)
+	if( state == 0 && button == 0 )
 	{
-		std::cout << "at " <<	std::setw(4) << x << "," << std::setw(4) << y << ": ";
+	        int itX = x, itY = y;
+
+		if( !flip )
+		{
+		        itY = img.height - y;
+	        }
+	    
+	        if( flop )
+	        {
+		        itX = img.width - x;
+	        }
+	    
+		std::cout << "at " << std::setw(4) << x << "," << std::setw(4) << y << ": ";
 
 		for( size_t i = 0; i < img.component; i++ )
 		{
-			size_t idx = ( x + y* img.width ) * img.component + i;
+		        size_t idx = ( itX + itY * img.width ) * img.component + i;
 			switch( img.type )
 			{
 				case GL_UNSIGNED_BYTE:

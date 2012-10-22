@@ -52,7 +52,7 @@ InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::rootVertices()
 	std::vector<vertex_descriptor> vroots;
 	vertex_range_t vrange = getVertices();
 	for( vertex_iterator it = vrange.first; it != vrange.second; ++it )
-		if( out_degree( *it, _graph ) == 0 )
+		if( in_degree( *it, _graph ) == 0 )
 			vroots.push_back( *it );
 
 	return vroots;
@@ -65,7 +65,7 @@ InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::leafVertices()
 	std::vector<vertex_descriptor> vleafs;
 	vertex_range_t vrange = getVertices();
 	for( vertex_iterator it = vrange.first; it != vrange.second; ++it )
-		if( in_degree( *it, _graph ) == 0 )
+		if( out_degree( *it, _graph ) == 0 )
 			vleafs.push_back( *it );
 
 	return vleafs;

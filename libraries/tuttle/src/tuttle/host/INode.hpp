@@ -39,7 +39,6 @@ class ProcessVertexAtTimeInfo;
 }
 
 class ImageEffectNode;
-class InputBufferNode;
 
 
 class INode : private boost::noncopyable
@@ -74,20 +73,20 @@ public:
 	ImageEffectNode& asImageEffectNode();
 	const ImageEffectNode& asImageEffectNode() const;
 
-	InputBufferNode& asInputBufferNode();
-	const InputBufferNode& asInputBufferNode() const;
-
 	virtual std::vector<int> getVersion() const = 0;
 	std::string getVersionStr() const;
+	
+	virtual std::string getLabel() const = 0;
 
 	virtual const ofx::property::OfxhSet& getProperties() const = 0;
 	virtual ofx::property::OfxhSet&       getEditableProperties() = 0;
 
 	virtual attribute::Attribute& getAttribute( const std::string& name ) = 0;
-	//	const attribute::Attribute& getAttribute( const std::string& name ) const { return const_cast<ProcessNode*>(this)->getAttribute( name ); }
+	const attribute::Attribute& getAttribute( const std::string& name ) const { return const_cast<INode*>(this)->getAttribute( name ); }
 	virtual attribute::Attribute&       getSingleInputAttribute()       = 0;
 	virtual const attribute::Attribute& getSingleInputAttribute() const = 0;
 	
+	virtual std::size_t getNbParams() const = 0;
 	virtual const ofx::attribute::OfxhParam& getParam( const std::string& name ) const = 0;
 	virtual ofx::attribute::OfxhParam&       getParam( const std::string& name ) = 0;
 	virtual const ofx::attribute::OfxhParam& getParamByScriptName( const std::string& name, const bool acceptPartialName = false ) const = 0;
@@ -110,6 +109,10 @@ public:
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
+	virtual void setup1() = 0;
+	virtual void setup2_reverse() = 0;
+	virtual void setup3() = 0;
+	
 	virtual OfxRangeD computeTimeDomain() = 0;
 
 //	virtual OfxTime mapInputTime( const OfxTime time ) const = 0;
@@ -142,13 +145,6 @@ public:
 	 * @remark Called on each node in a REVERSE depth first search order. So you have the guarantee that it has been called on each output nodes before. Output nodes are those who used the result of the current node.
 	 */
 	virtual void preProcess2_reverse( graph::ProcessVertexAtTimeData& processData ) {}
-
-	/**
-	 * @brief Initialization pass to propagate informations from inputs to outputs.
-	 * @param[in] processData
-	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
-	 */
-	virtual void preProcess3( graph::ProcessVertexAtTimeData& processData ) {}
 
 	/**
 	 * @brief The node can declare to be an identity operation.
@@ -209,7 +205,9 @@ public:
 	Data& getData();
 	const Data& getData() const;
 	const DataAtTime& getData( const OfxTime time ) const;
+	const DataAtTime& getFirstData() const; 
 	DataAtTime& getData( const OfxTime time );
+	DataAtTime& getFirstData();
 
 	#endif
 };

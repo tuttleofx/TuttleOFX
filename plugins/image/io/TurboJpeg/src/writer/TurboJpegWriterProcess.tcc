@@ -1,7 +1,6 @@
 #include "TurboJpegWriterAlgorithm.hpp"
 
 #include <terry/globals.hpp>
-#include <terry/clamp.hpp>
 
 #include <cstdio>
 
@@ -14,7 +13,7 @@ namespace writer {
 
 template<class View>
 TurboJpegWriterProcess<View>::TurboJpegWriterProcess( TurboJpegWriterPlugin &effect )
-: ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
+: ImageGilFilterProcessor<View>( effect, eImageOrientationFromTopToBottom )
 , _plugin( effect )
 {
 	this->setNoMultiThreading();
@@ -71,7 +70,6 @@ void TurboJpegWriterProcess<View>::writeImage( View& src )
 	int width       = src.width();
 	int height      = src.height();
 	unsigned long jpegSize    = 0;
-	int ret         = 0;
 	int ps          = TJPF_RGB;
 	int flags       = 0;
 	int pitch       = 0;
@@ -109,11 +107,12 @@ void TurboJpegWriterProcess<View>::writeImage( View& src )
 	rgb8_image_t tmpImg ( src.width(), src.height() );
 	rgb8_view_t tmpVw( view( tmpImg ) );
 	
-	boost::gil::copy_and_convert_pixels( clamp_view( src ), tmpVw );
+	boost::gil::copy_and_convert_pixels( src, tmpVw );
 	
 	unsigned char * data = ( unsigned char * ) boost::gil::interleaved_view_get_raw_data( tmpVw );
 	
-	ret = tjCompress2( jpeghandle, data, width, pitch, height, ps, &jpegBuf, &jpegSize, subsampling, _params.quality, flags );
+	//int ret =
+	tjCompress2( jpeghandle, data, width, pitch, height, ps, &jpegBuf, &jpegSize, subsampling, _params.quality, flags );
 	
 	fwrite( (void *)jpegBuf, 1, jpegSize, file );
 	

@@ -292,6 +292,15 @@ public:
     {
         return std::find( _supportedComponents.begin(), _supportedComponents.end(), component ) != _supportedComponents.end();
     }
+    bool supportsBitDepth( const OFX::EBitDepth bitDepth ) const
+    {
+        return std::find( _supportedPixelDepths.begin(), _supportedPixelDepths.end(), bitDepth ) != _supportedPixelDepths.end();
+    }
+    bool supportsContext( const OFX::EContext context ) const
+    {
+        return std::find( _supportedContexts.begin(), _supportedContexts.end(), context ) != _supportedContexts.end();
+    }
+	
     /** @return the pixel depth used by host application, if it doesn't support multiple clip depth. */
     EBitDepth getPixelDepth() const
     {
@@ -301,7 +310,7 @@ public:
         }
         else
         {
-            OFXS_COUT_WARNING("The host doesn't support multiple clip depths, but didn't define supported pixel depth. (size: " << _supportedPixelDepths.size() << ")" );
+            OFXS_COUT_WARNING("The host doesn't support multiple clip depths, but doesn't define supported pixel depth. (size: " << _supportedPixelDepths.size() << ")" );
             return eBitDepthFloat;
         }
     }
@@ -724,14 +733,15 @@ class ImageMemory
 {
 protected:
     OfxImageMemoryHandle _handle;
-
+	bool _alloc;
+	
 public:
-    /** @brief ctor */
+    ImageMemory();
     ImageMemory( size_t nBytes, ImageEffect* associatedEffect = 0 );
-
-    /** @brief dtor */
     ~ImageMemory();
 
+	void alloc( size_t nBytes, ImageEffect* associatedEffect );
+	
     /** @brief lock the memory and return a pointer to it */
     void* lock( void );
 

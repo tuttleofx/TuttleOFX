@@ -863,7 +863,9 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 	{
 		// defined to process sequences with hole
 		// find a best way to do this ??
-		BOOST_THROW_EXCEPTION( tuttle::exception::FileNotExist() );
+		if( _context == kOfxImageEffectContextReader )
+			BOOST_THROW_EXCEPTION( tuttle::exception::FileInSequenceNotExist() );
+		
 		BOOST_THROW_EXCEPTION( OfxhException( stat, "getRegionOfDefinitionAction error." ) );
 	}
 }
@@ -1184,7 +1186,7 @@ bool OfxhImageEffectNode::isChromaticComponent( const std::string& str ) const
 bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 {
 	/// does the host support 'em
-	bool hostSupports = tuttle::host::Core::instance().getHost().getProperties().getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
+	bool hostSupports = tuttle::host::core().getHost().getProperties().getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
 
 	/// does the plug-in support 'em
 	bool pluginSupports = supportsMultipleClipDepths();
@@ -1308,7 +1310,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
  * Initialise the clip preferences arguments, override this to do
  * stuff with wierd components etc...
  */
-void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, std::list<std::string>& keepPropNamesOwnership )
+void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, std::list<std::string>& outKeepPropNamesOwnership )
 {
 	/// reset all the clip prefs stuff to their defaults
 	setDefaultClipPreferences();
@@ -1340,21 +1342,21 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, 
 	{
 		attribute::OfxhClipImage* clip = it->second;
 
-		keepPropNamesOwnership.push_back( "OfxImageClipPropComponents_" + it->first );
-		const std::string& componentParamName = keepPropNamesOwnership.back();
+		outKeepPropNamesOwnership.push_back( "OfxImageClipPropComponents_" + it->first );
+		const std::string& componentParamName = outKeepPropNamesOwnership.back();
 		property::OfxhPropSpec specComp = { componentParamName.c_str(), property::ePropTypeString, 0, false, "" }; // note the support for multi-planar clips
 		outArgs.createProperty( specComp );
 		// as it is variable dimension, there is no default value, so we have to set it explicitly
 		outArgs.setStringProperty( componentParamName, clip->getComponentsString() );
 
-		keepPropNamesOwnership.push_back( "OfxImageClipPropDepth_" + it->first );
-		const std::string& depthParamName = keepPropNamesOwnership.back();
+		outKeepPropNamesOwnership.push_back( "OfxImageClipPropDepth_" + it->first );
+		const std::string& depthParamName = outKeepPropNamesOwnership.back();
 		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::ePropTypeString, 1, !multiBitDepth, clip->getBitDepthString().c_str() };
 		outArgs.createProperty( specDep );
 		outArgs.setStringProperty( depthParamName, clip->getBitDepthString() );
 
-		keepPropNamesOwnership.push_back( "OfxImageClipPropPAR_" + it->first );
-		const std::string& parParamName = keepPropNamesOwnership.back();
+		outKeepPropNamesOwnership.push_back( "OfxImageClipPropPAR_" + it->first );
+		const std::string& parParamName = outKeepPropNamesOwnership.back();
 		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::ePropTypeDouble, 1, false, "1" };
 		outArgs.createProperty( specPAR );
 		outArgs.setDoubleProperty( parParamName, 1.0 ); // Default pixel aspect ratio is set to 1.0

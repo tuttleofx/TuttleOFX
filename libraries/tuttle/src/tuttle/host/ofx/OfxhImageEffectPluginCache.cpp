@@ -206,7 +206,7 @@ bool OfxhImageEffectPluginCache::pluginSupported( const tuttle::host::ofx::OfxhP
 
 	if( !imageEffectPlugin )
 		return false;
-	return Core::instance().getHost().pluginSupported( *imageEffectPlugin, reason );
+	return core().getHost().pluginSupported( *imageEffectPlugin, reason );
 }
 
 OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary& pb,

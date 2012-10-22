@@ -88,7 +88,7 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_paramFormat                      = fetchChoiceParam( kParamFormat           );
+	_paramFormat                      = fetchChoiceParam( kParamFormat );
 	_paramVideoCodec                  = fetchChoiceParam( kParamVideoCodec       );
 	_paramAudioCodec                  = fetchChoiceParam( kParamAudioCodec       );
 	
@@ -131,23 +131,24 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
 {
 	FFMpegProcessParams params;
 
-	params._filepath                       = _paramFilepath          ->getValue();
-	params._format                         = _paramFormat            ->getValue();
+	params._filepath = _paramFilepath->getValue();
+	params._format = _paramFormat->getValue();
 	params._videoCodec                     = _paramVideoCodec        ->getValue();
 	params._audioCodec                     = _paramAudioCodec        ->getValue();
 	
 	_writer.setVideoCodec( params._videoCodec );
 	const std::string codecName = _writer.getVideoCodec();
 	
-	std::vector<std::string>::iterator it;
-	size_t pos = 0;
+	params._videoPreset = -1;
+	std::vector<OFX::ChoiceParam*>::const_iterator choiceParamIt = _videoCodecPresetParams.begin();
 	for( it = _videoCodecListWithPreset.begin(); it < _videoCodecListWithPreset.end(); it++, pos++ )
 	{
-		if( strcmp( codecName.c_str(), (*it).c_str() ) == 0 )
+		if( codecPreset == codecName )
 		{
 			int presetIdx = _videoCodecPresetParams.at( pos )->getValue();
 			params._videoPreset = presetIdx;
 		}
+		++choiceParamIt;
 	}
 	return params;
 }

@@ -1,0 +1,12 @@
+Import( 'project', 'libs' )
+import os.path
+
+project.Program(
+	project.getName(),
+	dirs = ['src'],
+	libraries = [
+		libs.tuttleHost,
+		],
+	installDir = os.path.join(project.inOutputBin(),'example')
+	)
+

@@ -39,7 +39,7 @@ bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	const std::string filename( getAbsoluteFilenameAt( args.time ) );
 	if( ! boost::filesystem::exists( filename ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 			<< exception::user( "PNG: Unable to open file" )
 			<< exception::filename( filename ) );
 	}

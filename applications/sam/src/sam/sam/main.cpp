@@ -2,7 +2,6 @@
 #include <sam/common/color.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 #include <tuttle/common/utils/applicationPath.hpp>
 

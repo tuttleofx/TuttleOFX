@@ -17,10 +17,10 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 	_graph.copyTransposed( graph.getGraph() );
 
 	Vertex outputVertex( _outputId );
-	_graph.addVertex( outputVertex );
 
 	if( outputNodes.size() )
 	{
+		_graph.addVertex( outputVertex );
 		BOOST_FOREACH( const std::string & s, outputNodes )
 		{
 			_graph.connect( _outputId, s, "Output" );
@@ -30,7 +30,9 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 	else
 	{
 		// Detect root nodes and add them to the list of nodes to process
-		BOOST_FOREACH( const InternalGraphImpl::vertex_descriptor vd, _graph.rootVertices() )
+		std::vector<InternalGraphImpl::vertex_descriptor> rootVertices = _graph.rootVertices();
+		_graph.addVertex( outputVertex );
+		BOOST_FOREACH( const InternalGraphImpl::vertex_descriptor vd, rootVertices )
 		{
 			InternalGraphImpl::VertexKey vk = _graph.instance( vd ).getKey();
 			_graph.connect( _outputId, vk, "Output" );
@@ -211,11 +213,12 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 {
 	using namespace boost;
 	using namespace boost::graph;
-#ifndef TUTTLE_PRODUCTION
 	TUTTLE_TCOUT( "process" );
+	
+#ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graphProcess_a.dot", _graph );
 #endif
-
+	
 	// Initialize variables
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
@@ -260,11 +263,23 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 	
 	TUTTLE_TCOUT( "---------------------------------------- Connect clips" );
 	connectClips<InternalGraphImpl>( renderGraph );
-	
-	TUTTLE_TCOUT( "---------------------------------------- Time Domain propagation" );
-	graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( renderGraph );
-	renderGraph.depthFirstVisit( timeDomainPropagationVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 
+	{	
+		TUTTLE_TCOUT( "---------------------------------------- Setup" );
+		graph::visitor::Setup1<InternalGraphImpl> setup1Visitor( renderGraph );
+		renderGraph.depthFirstVisit( setup1Visitor, renderGraph.getVertexDescriptor( _outputId ) );
+		graph::visitor::Setup2<InternalGraphImpl> setup2Visitor( renderGraph );
+		renderGraph.depthFirstVisit( setup2Visitor, renderGraph.getVertexDescriptor( _outputId ) );
+		graph::visitor::Setup3<InternalGraphImpl> setup3Visitor( renderGraph );
+		renderGraph.depthFirstVisit( setup3Visitor, renderGraph.getVertexDescriptor( _outputId ) );
+	}
+	
+	{
+		TUTTLE_TCOUT( "---------------------------------------- Time Domain propagation" );
+		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( renderGraph );
+		renderGraph.depthFirstVisit( timeDomainPropagationVisitor, renderGraph.getVertexDescriptor( _outputId ) );
+	}
+	
 	TUTTLE_TCOUT_INFOS;
 	std::list<TimeRange> timeRanges = options.getTimeRanges();
 
@@ -294,6 +309,10 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 	}
 	TUTTLE_TCOUT_INFOS;
 
+#ifndef TUTTLE_PRODUCTION
+	graph::exportDebugAsDOT( "graphProcess_b.dot", renderGraph );
+#endif
+
 	/// @todo Bug: need to use a map 'OutputNode': 'timeRanges'
 	/// And check if all Output nodes share a common timeRange
 	
@@ -302,6 +321,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 	// at each frame
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
+		TUTTLE_TCOUT( "timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
 		procOptions._renderTimeRange.min = timeRange._begin;
 		procOptions._renderTimeRange.max = timeRange._end;
 		procOptions._step                = timeRange._step;
@@ -314,7 +334,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 			{
 				TUTTLE_COUT( tuttle::common::kColorRed << "PROCESS ABORTED at time " << time << "." << tuttle::common::kColorStd );
 				endSequenceRender( procOptions );
-				Core::instance().getMemoryCache().clearUnused();
+				core().getMemoryCache().clearUnused();
 				return false;
 			}
 			
@@ -329,7 +349,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, time );
 				renderGraph.depthFirstVisit( deployTimeVisitor, renderGraph.getVertexDescriptor( _outputId ) );
 		#ifndef TUTTLE_PRODUCTION
-				graph::exportDebugAsDOT( "graphProcess_b.dot", renderGraph );
+				graph::exportDebugAsDOT( "graphProcess_c.dot", renderGraph );
 		#endif
 
 				TUTTLE_TCOUT( "---------------------------------------- build renderGraphAtTime" );
@@ -422,12 +442,6 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 					graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
 					renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
 				}
-
-				{
-					TUTTLE_TCOUT( "---------------------------------------- preprocess 3" );
-					graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
-					renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
-				}
 				
 		#ifndef TUTTLE_PRODUCTION
 				graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", renderGraphAtTime );
@@ -507,7 +521,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 
 				TUTTLE_TCOUT( "---------------------------------------- process" );
 				// do the process
-				graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache() );
+				graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, core().getMemoryCache() );
 				if( options.getReturnBuffers() )
 				{
 					// accumulate output nodes buffers into the @p result MemoryCache
@@ -523,26 +537,26 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				// end of one frame
 				// do some clean: memory clean, as temporary solution...
 				TUTTLE_TCOUT( "---------------------------------------- clearUnused" );
-				Core::instance().getMemoryCache().clearUnused();
-				TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache().size() );
-				TUTTLE_TCOUT_VAR( Core::instance().getMemoryCache() );
+				core().getMemoryCache().clearUnused();
+				TUTTLE_TCOUT_VAR( core().getMemoryCache().size() );
+				TUTTLE_TCOUT_VAR( core().getMemoryCache() );
 				TUTTLE_TCOUT_VAR( result );
 
 				TUTTLE_COUT( " " );
 			}
-			catch( tuttle::exception::FileNotExist& e ) // @todo tuttle: change that.
+			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{
-				if( options.getContinueOnError() && ! options.getAbort() )
+				if( options.getContinueOnMissingFile() && ! options.getAbort() )
 				{
 					TUTTLE_COUT( tuttle::common::kColorError << "Undefined input at time " << time << "." << tuttle::common::kColorStd << "\n" );
-	#ifndef TUTTLE_PRODUCTION
+#ifndef TUTTLE_PRODUCTION
 					TUTTLE_COUT_ERROR( boost::diagnostic_information(e) );
-	#endif
+#endif
 				}
 				else
 				{
 					endSequenceRender( procOptions );
-					Core::instance().getMemoryCache().clearUnused();
+					core().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
@@ -559,7 +573,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				else
 				{
 					endSequenceRender( procOptions );
-					Core::instance().getMemoryCache().clearUnused();
+					core().getMemoryCache().clearUnused();
 					throw;
 				}
 			}

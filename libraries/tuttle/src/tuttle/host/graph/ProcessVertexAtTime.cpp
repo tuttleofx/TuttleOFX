@@ -2,7 +2,7 @@
 #include "GraphExporter.hpp"
 
 #include <tuttle/host/ImageEffectNode.hpp>
-#include <tuttle/host/InputBufferNode.hpp>
+#include <tuttle/host/InputBufferWrapper.hpp>
 
 #include <boost/functional/hash.hpp>
 
@@ -75,21 +75,6 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 				}
 				s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
 				s << subDotEntry( "output RoD", ieNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
-				break;
-			}
-			case INode::eNodeTypeBuffer:
-			{
-				const InputBufferNode* ibNode = dynamic_cast<const InputBufferNode*>( & getProcessNode() );
-				s << subDotEntry( "bitdepth",  ibNode->getOutputClip().getBitDepthString()   );
-				s << subDotEntry( "component", ibNode->getOutputClip().getComponentsString() );
-				{
-					double startFrame, endFrame;
-					ibNode->getOutputClip().getFrameRange( startFrame, endFrame );
-					s << subDotEntry( "startFrame", startFrame );
-					s << subDotEntry( "endFrame", endFrame );
-				}
-				s << subDotEntry( "fps", ibNode->getOutputClip().getFrameRate() );
-				s << subDotEntry( "output RoD", ibNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
 				break;
 			}
 			default:

@@ -1,7 +1,6 @@
 #include "INode.hpp"
 
 #include "ImageEffectNode.hpp"
-#include "InputBufferNode.hpp"
 
 #include <tuttle/host/graph/ProcessVertexData.hpp>
 #include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
@@ -23,16 +22,6 @@ ImageEffectNode& INode::asImageEffectNode( )
 const ImageEffectNode& INode::asImageEffectNode( ) const
 {
 	return dynamic_cast<const ImageEffectNode&> ( *this );
-}
-
-InputBufferNode& INode::asInputBufferNode( )
-{
-	return dynamic_cast<InputBufferNode&> ( *this );
-}
-
-const InputBufferNode& INode::asInputBufferNode( ) const
-{
-	return dynamic_cast<const InputBufferNode&> ( *this );
 }
 
 std::string INode::getVersionStr() const
@@ -103,6 +92,24 @@ const INode::DataAtTime& INode::getData( const OfxTime time ) const
 INode::DataAtTime& INode::getData( const OfxTime time )
 {
 	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getData(time) );
+}
+
+const INode::DataAtTime& INode::getFirstData() const
+{
+	DataAtTimeMap::const_iterator it = _dataAtTime.begin();
+	if( it == _dataAtTime.end() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev() + "Process data empty.\n"
+				       << exception::nodeName( getName() ) );
+	}
+	
+	return *it->second;
+}
+
+INode::DataAtTime& INode::getFirstData()
+{
+	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getFirstData() );
 }
 
 std::ostream& operator<<( std::ostream& os, const INode& v )

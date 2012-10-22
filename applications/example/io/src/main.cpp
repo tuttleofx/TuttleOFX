@@ -22,9 +22,9 @@ int main( int argc, char** argv )
 	{
 		using namespace tuttle::host;
 		TUTTLE_COUT( "__________________________________________________0" );
-		Core::instance().preload();
+		core().preload();
 
-		TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
+		TUTTLE_COUT( core().getImageEffectPluginCache() );
 
 		TUTTLE_COUT( "__________________________________________________1" );
 
