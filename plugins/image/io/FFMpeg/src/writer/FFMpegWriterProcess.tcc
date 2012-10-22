@@ -23,11 +23,11 @@ FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin& instance )
 template<class View>
 void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 
-	_plugin._writer.width ( this->_srcView.width () );
-	_plugin._writer.height( this->_srcView.height() );
+	_plugin._writer.setWidth ( this->_srcView.width () );
+	_plugin._writer.setHeight( this->_srcView.height() );
 
 	rgb8_image_t img ( this->_srcView.dimensions() );
 	rgb8_view_t  vw  ( view( img ) );

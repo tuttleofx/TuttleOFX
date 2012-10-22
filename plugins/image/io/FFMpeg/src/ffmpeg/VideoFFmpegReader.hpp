@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_VIDEOFFMPEGREADER_HPP_
-#define _TUTTLE_PLUGIN_VIDEOFFMPEGREADER_HPP_
+#ifndef _TUTTLE_PLUGIN_FFMPEG_VIDEOFFMPEGREADER_HPP_
+#define _TUTTLE_PLUGIN_FFMPEG_VIDEOFFMPEGREADER_HPP_
 
 #include "FFmpeg.hpp"
 
@@ -9,6 +9,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+namespace tuttle {
+namespace plugin {
+namespace ffmpeg {
 
 enum EIntrelacment { eInterlacmentNone, eInterlacmentUpper, eInterlacmentLower };
 
@@ -169,5 +173,9 @@ public: // private:
 	bool _isOpen;
 	EIntrelacment _interlacment;
 };
+
+}
+}
+}
 
 #endif

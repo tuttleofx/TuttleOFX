@@ -19,10 +19,11 @@ struct FFMpegProcessParams
 {
 	std::string _filepath;    ///< FFmpeg filepath
 	int         _format;      ///< Format
-	int         _codec;       ///< Codec
-	int         _bitrate;     ///< Bit rate
+	int         _videoCodec;  ///< Video codec
+	int         _audioCodec;  ///< Audio codec
 	
 	int         _videoPreset; ///< video configuration (based on the video codec)
+	int         _audioPreset; ///< video configuration (based on the video codec)
 };
 
 /**
@@ -46,11 +47,14 @@ public:
 
 public:
 	OFX::ChoiceParam*   _paramFormat;
-	OFX::ChoiceParam*   _paramCodec;
+	OFX::ChoiceParam*   _paramVideoCodec;
+	OFX::ChoiceParam*   _paramAudioCodec;
 	OFX::IntParam*      _paramBitRate;
 	
-	std::vector<OFX::ChoiceParam*> videoCodecPresets;
-	std::vector<std::string>       codecListWithPreset;
+	std::vector<OFX::ChoiceParam*> _videoCodecPresetParams;
+	std::vector<OFX::ChoiceParam*> _audioCodecPresetParams;
+	std::vector<std::string>       _videoCodecListWithPreset;
+	std::vector<std::string>       _audioCodecListWithPreset;
 	
 	VideoFFmpegWriter   _writer;
 };
