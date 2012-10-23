@@ -2,7 +2,6 @@
 #include "ImageMagickWriterPlugin.hpp"
 
 #include <terry/globals.hpp>
-#include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/gil_all.hpp>
@@ -64,12 +63,12 @@ void ImageMagickWriterProcess<View>::writeImage( View& src, const std::string& f
 	//	if( params._premult )
 	//	{
 	//		typedef pixel<Bits, rgb_layout_t> OutPixelType;
-	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ), params._quality );
+	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( src ) ), params._quality );
 	//	}
 	//	else
 	//	{
 	//		typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
+	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( src ) ) );
 	//	}
 }
 

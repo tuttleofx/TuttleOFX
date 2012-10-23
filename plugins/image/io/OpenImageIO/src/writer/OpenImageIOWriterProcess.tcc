@@ -2,7 +2,6 @@
 #include "OpenImageIOWriterPlugin.hpp"
 
 #include <terry/globals.hpp>
-#include <terry/clamp.hpp>
 #include <terry/openexr/half.hpp>
 
 #include <tuttle/plugin/exceptions.hpp>
@@ -184,7 +183,7 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 	WImage img( src.width(), src.height() );
 
 	typename WImage::view_t vw( view( img ) );
-	copy_and_convert_pixels( terry::clamp_view( src ), vw );
+	copy_and_convert_pixels( src, vw );
 
 	OpenImageIO::TypeDesc oiioBitDepth;
 	size_t sizeOfChannel = 0;

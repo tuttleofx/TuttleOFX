@@ -2,6 +2,7 @@
 #define _GIL_EXTENSION_TYPEDEFS_HPP_
 
 #include <boost/integer.hpp>  // for boost::uint_t
+#include <boost/gil/channel_algorithm.hpp> // force to use the boostHack version first
 #include <boost/gil/gil_all.hpp>
 #include <boost/type_traits.hpp>
 

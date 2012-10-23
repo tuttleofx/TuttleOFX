@@ -22,12 +22,12 @@ void InputBufferWrapper::setMode( const EMode mode )
 		( eModeBuffer,  "bufferPointer" )
 		( eModeCallback, "callbackPointer" );
 	
-	_node.getParam( "mode" ).setValue( toString.find(mode)->second );
+	getNode().getParam( "mode" ).setValue( toString.find(mode)->second );
 }
 
 void InputBufferWrapper::setBuffer( void* rawBuffer )
 {
-	_node.getParam( "bufferPointer" ).setValue(
+	getNode().getParam( "bufferPointer" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>(rawBuffer) )
 		);
 }
@@ -65,7 +65,7 @@ void InputBufferWrapper::set3DArrayBuffer( void* rawBuffer, const int width, con
 
 void InputBufferWrapper::setSize( const int width, const int height )
 {
-	_node.getParam( "size" ).setValue( width, height );
+	getNode().getParam( "size" ).setValue( width, height );
 }
 
 void InputBufferWrapper::setComponents( const EPixelComponent components )
@@ -75,7 +75,7 @@ void InputBufferWrapper::setComponents( const EPixelComponent components )
 		( ePixelComponentRGB,  "RGB" )
 		( ePixelComponentAlpha, "Gray" );
 	
-	_node.getParam( "components" ).setValue( toString.find(components)->second );
+	getNode().getParam( "components" ).setValue( toString.find(components)->second );
 }
 
 void InputBufferWrapper::setBitDepth( const EBitDepth bitDepth )
@@ -85,12 +85,12 @@ void InputBufferWrapper::setBitDepth( const EBitDepth bitDepth )
 		( eBitDepthUShort, "UShort" )
 		( eBitDepthUByte,  "UByte" );
 	
-	_node.getParam( "bitDepth" ).setValue( toString.find(bitDepth)->second );
+	getNode().getParam( "bitDepth" ).setValue( toString.find(bitDepth)->second );
 }
 
 void InputBufferWrapper::setRowDistanceSize( const int rowDistanceBytes )
 {
-	_node.getParam( "rowBytesSize" ).setValue( rowDistanceBytes );
+	getNode().getParam( "rowBytesSize" ).setValue( rowDistanceBytes );
 }
 
 void InputBufferWrapper::setOrientation( const EImageOrientation orientation )
@@ -99,7 +99,7 @@ void InputBufferWrapper::setOrientation( const EImageOrientation orientation )
 		( eImageOrientationFromBottomToTop,  "bottomToTop" )
 		( eImageOrientationFromTopToBottom, "topToBottom" );
 	
-	_node.getParam( "orientation" ).setValue( toString.find(orientation)->second );
+	getNode().getParam( "orientation" ).setValue( toString.find(orientation)->second );
 }
 
 void InputBufferWrapper::setRawImageBuffer(
@@ -133,21 +133,24 @@ void InputBufferWrapper::setRawImageBuffer(
 
 //void InputBufferWrapper::process( graph::ProcessVertexAtTimeData& vData )
 //{
-//	Core::instance().getMemoryCache().put( _outputClip.getClipIdentifier(), vData._time, _imageCache );
+//	core().getMemoryCache().put( _outputClip.getClipIdentifier(), vData._time, _imageCache );
 //	if( vData._outDegree > 0 )
 //	{
-//		_imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a reference on this _node for each future usages
+//		_imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a reference on this getNode() for each future usages
 //	}
 //}
 
 
-void InputBufferWrapper::setCallback( CallbackPtr callback, CallbackCustomDataPtr customData )
+void InputBufferWrapper::setCallback( CallbackInputImagePtr callback, CustomDataPtr customData, CallbackDestroyCustomDataPtr destroyCustomData )
 {
-	_node.getParam( "callbackPointer" ).setValue(
+	getNode().getParam( "callbackPointer" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( callback ) )
 		);
-	_node.getParam( "callbackCustomData" ).setValue(
+	getNode().getParam( "customData" ).setValue(
 			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( customData ) )
+		);
+	getNode().getParam( "callbackDestroyCustomData" ).setValue(
+			boost::lexical_cast<std::string>( reinterpret_cast<std::ptrdiff_t>( destroyCustomData ) )
 		);
 }
 

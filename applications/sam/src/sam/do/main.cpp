@@ -5,6 +5,7 @@
 #include <sam/common/node.hpp>
 #include <sam/common/node_io.hpp>
 #include <sam/common/options.hpp>
+#include <sam/common/utility.hpp>
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
@@ -18,10 +19,15 @@
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 
+#include <Detector.hpp>
+
 #include <iostream>
 
 namespace bpo = boost::program_options;
 namespace ttl = tuttle::host;
+
+namespace bfs = boost::filesystem;
+namespace sp  = sequenceParser;
 
 void displayHelp( bpo::options_description &infoOptions, bpo::options_description &confOptions )
 {
@@ -158,6 +164,78 @@ void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, 
 	TUTTLE_COUT( expertOptions );
 }
 
+int addListOfSequencesInListOfProcess( boost::ptr_vector<sp::FileObject>& inputList, boost::ptr_vector<sp::FileObject>& outputList, const std::vector<std::string>& extensions )
+{
+	sam::samdo::Dummy dummy;
+	std::vector<std::string> exts = dummy.getSupportedExtensions( kOfxImageEffectContextReader );
+	int count = 0;
+	BOOST_FOREACH( sp::FileObject& fo, inputList )
+	{
+		bool isSupportedExtension = false;
+		std::string filename;
+		std::string ext;
+		if( fo.getMaskType() == sp::eMaskTypeSequence )
+		{
+			filename = static_cast<const sp::Sequence&>(fo).getAbsoluteStandardPattern();
+		}
+		if( fo.getMaskType() == sp::eMaskTypeFile )
+		{
+			filename = static_cast<const sp::File&>(fo).getAbsoluteFilename();
+		}
+		ext = bfs::path( filename ).extension().string();
+		ext.erase( 0, 1 ); // erase the dot
+
+		BOOST_FOREACH( std::string& e, exts )
+		{
+			if( e == ext )
+			{
+				if( extensions.size() )
+				{
+					BOOST_FOREACH( const std::string& filterExt, extensions )
+					{
+						if( filterExt == ext )
+						{
+							isSupportedExtension = true;
+						}
+					}
+				}
+				else
+				{
+					isSupportedExtension = true;
+				}
+			}
+		}
+		if( isSupportedExtension )
+		{
+			count++;
+			outputList.push_back( new_clone( fo ) );
+		}
+	}
+	return count;
+}
+
+std::string getAbsoluteFilename( const sp::FileObject& fo )
+{
+	if( fo.getMaskType() == sp::eMaskTypeSequence )
+		return static_cast<const sp::Sequence&>(fo).getAbsoluteStandardPattern();
+	if( fo.getMaskType() == sp::eMaskTypeFile )
+		return static_cast<const sp::File&>(fo).getAbsoluteFilename();
+	return "";
+}
+
+bool isContextSupported( const ttl::Graph::Node* node , const std::string& context )
+{
+	const ttl::ofx::property::OfxhProperty& prop = node->getProperties().fetchProperty( kOfxImageEffectPropSupportedContexts );
+	std::vector<std::string> contexts = sam::getStringValues( prop );
+
+	BOOST_FOREACH( std::string c, contexts )
+	{
+		if( c == context )
+			return true;
+	}
+	return false;
+}
+
 int main( int argc, char** argv )
 {
 	using namespace sam;
@@ -167,6 +245,8 @@ int main( int argc, char** argv )
 	{
 
 		bool continueOnError = false;
+		bool stopOnMissingFile = false;
+		bool disableProcess = false;
 		bool forceIdentityNodesProcess = false;
 		bool enableColor = false;
 		bool enableVerbose = false;
@@ -181,9 +261,16 @@ int main( int argc, char** argv )
 		ttl::Graph graph;
 		std::vector<ttl::Graph::Node*> nodes;
 		nodes.reserve( 50 );
+		
+		std::vector<ttl::Graph::Node*> facticesNodes;
+		
 		std::vector<std::ssize_t> range;
 		std::vector<double> renderscale;
 		std::size_t step;
+		
+		// plugins loading
+		ttl::core().preload();
+		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 
 		// Analyze each part of the command line
 		{
@@ -202,7 +289,9 @@ int main( int argc, char** argv )
 					( kExpertOptionString, kExpertOptionMessage );
 				bpo::options_description confOptions;
 				confOptions.add_options()
-					( kContinueOnErrorOptionString, kContinueOnErrorOptionMessage )
+					( kContinueOnErrorOptionString, bpo::value<bool>(), kContinueOnErrorOptionMessage )
+					( kStopOnMissingFileOptionString, bpo::value<bool>(), kStopOnMissingFileOptionMessage )
+					( kDisableProcessOptionString, kDisableProcessOptionMessage )
 					( kForceIdentityNodesProcessOptionString, kForceIdentityNodesProcessOptionMessage )
 					( kRangeOptionString, bpo::value<std::string > (), kRangeOptionMessage )
 					( kRenderScaleOptionString, bpo::value<std::string > (), kRenderScaleOptionMessage )
@@ -247,6 +336,11 @@ int main( int argc, char** argv )
 				{
 					const std::string str = samdo_vm[kEnableColorOptionLongName].as<std::string > ();
 					enableColor = string_to_boolean( str );
+				}
+				if( samdo_vm.count( kDisableProcessOptionLongName ) )
+				{
+					disableProcess = true;
+					enableVerbose = true;
 				}
 				if( samdo_vm.count( kVerboseOptionLongName ) )
 				{
@@ -304,20 +398,18 @@ int main( int argc, char** argv )
 				
 				// start to analyse and execute all sub-commands //
 				
-				const std::string logFilename = ( ttl::Core::instance().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();
+				const std::string logFilename = ( ttl::core().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();
 				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
 				std::cerr.rdbuf( logFile.rdbuf() ); // redirect output into the file
-
-				// plugins loading
-				ttl::Core::instance().preload();
-
+				
 				if( samdo_vm.count( kNodesOptionLongName ) || samdo_vm.count( kNodesListOptionLongName ) )
 				{
 					TUTTLE_COUT( _color._blue << "NODES" << _color._std );
 					std::vector<std::string> pluginNames;
-					addDummyNodeInList( pluginNames );
-					const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+					
+					Dummy dummy;
+					dummy.addDummyNodeInList( pluginNames );
 
 					BOOST_FOREACH( const ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, allNodes )
 					{
@@ -377,7 +469,15 @@ int main( int argc, char** argv )
 					}
 				}
 				std::cerr.rdbuf( strm_buffer ); // restore old output buffer
-				continueOnError = samdo_vm.count( kContinueOnErrorOptionLongName );
+				if( samdo_vm.count( kContinueOnErrorOptionLongName ) )
+				{
+					continueOnError = samdo_vm[kContinueOnErrorOptionLongName].as< bool > ();
+				}
+				if( samdo_vm.count( kStopOnMissingFileOptionLongName ) )
+				{
+					stopOnMissingFile = samdo_vm[kStopOnMissingFileOptionLongName].as< bool > ();
+				}
+
 				forceIdentityNodesProcess = samdo_vm.count( kForceIdentityNodesProcessOptionLongName );
 			}
 			catch( const boost::program_options::error& e )
@@ -429,8 +529,6 @@ int main( int argc, char** argv )
 
 				bpo::options_description all_options;
 				all_options.add( infoOptions ).add( confOptions ).add( openfxOptions );
-
-				const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 				
 				std::vector<std::string> idNames; // list of id setted in the command line
 
@@ -445,8 +543,12 @@ int main( int argc, char** argv )
 
 					try
 					{
-						foundAssociateDummyNode( userNodeName, allNodes, nodeArgs );
-						nodeFullName = retrieveNodeFullname( userNodeName );
+						Dummy dummy;
+						if( dummy.isDummyNode( userNodeName ) )
+						{
+							nodeFullName = "tuttle.dummy";
+						}
+						nodeFullName = retrieveNodeFullname( nodeFullName );
 
 						// parse the command line, and put the result in node_vm
 						bpo::variables_map node_vm;
@@ -481,15 +583,22 @@ int main( int argc, char** argv )
 						// --help,h --version,v --verbose,V --params --clips --props
 
 						ttl::Graph::Node& currentNode = graph.createNode( nodeFullName );
+						//if( dummy.isDummyNode( userNodeName ) )
 
 						if( node_vm.count( kHelpOptionLongName ) )
 						{
-							displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions );
+							if( dummy.isDummyNode( userNodeName ) )
+								dummy.displayHelp( userNodeName, _color );
+							else
+								displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions );
 							exit( 0 );
 						}
 						if( node_vm.count( kExpertOptionString ) )
 						{
-							displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions, openfxOptions );
+							if( dummy.isDummyNode( userNodeName ) )
+								dummy.displayExpertHelp( userNodeName, _color );
+							else
+								displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions, openfxOptions );
 							exit( 0 );
 						}
 
@@ -695,6 +804,12 @@ int main( int argc, char** argv )
 								//								TUTTLE_COUT( "* " << paramStr );
 								//								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
 
+								if( dummy.isDummyNode( userNodeName ) )
+								{
+									++paramIdx;
+									continue;
+								}
+								
 								// setup the node with parameter value in tuttle.
 								if( attributeName.size() )
 								{
@@ -776,6 +891,14 @@ int main( int argc, char** argv )
 								++paramIdx;
 							}
 						}
+						
+						// if it's a dummy, keeping parameters in node
+						if( dummy.isDummyNode( userNodeName ) )
+						{
+							currentNode.getParamByScriptName( "originalnode" ).setValue( command.at(0) );
+							currentNode.getParamByScriptName( "expression" ).setValue( boost::algorithm::join( nodeArgs, " " ) );
+							facticesNodes.push_back( &currentNode );
+						}
 
 						// connect current node to previous node(s)
 						if( nodes.size() > 0 ) // if not the first node
@@ -842,7 +965,6 @@ int main( int argc, char** argv )
 								}
 							}
 						}
-
 						nodes.push_back( &currentNode );
 					}
 					catch( const boost::program_options::error& e )
@@ -878,15 +1000,9 @@ int main( int argc, char** argv )
 			}
 		}
 
-		// display nodes
-		//		BOOST_FOREACH( const std::string& option, cl_options )
-		//		{
-		//			TUTTLE_COUT( "| " << option );
-		//		}
-
 		if( enableVerbose )
 		{
-
+			TUTTLE_COUT( _color._blue << "********** graph composition **********" << _color._std );
 			BOOST_FOREACH( const std::vector<std::string>& node, cl_commands )
 			{
 				TUTTLE_COUT( "[" << node[0] << "]" );
@@ -896,6 +1012,7 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( ( ( s[0] == '-' ) ? "" : "* " ) << s );
 				}
 			}
+			TUTTLE_COUT( _color._blue << "***************************************" << _color._std );
 		}
 		
 		if( nodes.size() == 0 )
@@ -913,10 +1030,294 @@ int main( int argc, char** argv )
 			options.setRenderScale( renderscale[0], renderscale[1] );
 		}
 		options.setContinueOnError( continueOnError );
+		options.setContinueOnMissingFile( !stopOnMissingFile );
 		options.setForceIdentityNodesProcess( forceIdentityNodesProcess );
 		
+		size_t numberOfLoop = std::numeric_limits<size_t>::max();
+		boost::ptr_vector< boost::ptr_vector< sp::FileObject > > listOfSequencesPerReaderNode;
+		std::vector< std::string > listOfSequencesPerWriterNode;
+		bool writerHaveExtensionInParameter = false;
+		
+		if( facticesNodes.size() )
+		{
+			// create a detector from the sequence parsing library
+			sp::Detector detector;
+			sp::EMaskType    researchMask    = sp::eMaskTypeSequence | sp::eMaskTypeFile ;
+			sp::EMaskOptions descriptionMask = sp::eMaskOptionsAbsolutePath | sp::eMaskOptionsRecursive;
+			
+			std::vector<std::string> filters;
+			
+			Dummy dummy;
+			
+			BOOST_FOREACH( ttl::Graph::Node* n, facticesNodes )
+			{
+				std::string name = n->getParamByScriptName( "originalnode" ).getStringValue();
+				dummy.getFullName( name );
+				
+				// get base paths from dummy parameters
+				std::string command = n->getParam("expression").getStringValue();
+				std::vector<std::string> paths;
+				const std::vector<std::string> nodeArgs = bpo::split_unix( command, " " );
+				dummy.getPathsFromCommandLine( paths, nodeArgs );
+				
+				if( dummy.isDummyReaderNode( name ) )
+				{
+					std::vector<std::string> extensions;
+					dummy.getExtensionsFromCommandLine( extensions, nodeArgs );
+					
+					boost::ptr_vector<sp::FileObject> listOfSequencesForThisNode;
+					
+					// browse all paths in parameters
+					BOOST_FOREACH( std::string& inputPath, paths )
+					{
+						size_t count = 0;
+						if( enableVerbose )
+							TUTTLE_COUT( n->getName() << " browse: " << inputPath );
+					
+						// get filenames adn sequences
+						boost::ptr_vector<sp::FileObject> listOfSequences = detector.fileObjectInDirectory( inputPath, filters, researchMask, descriptionMask );
+						count += addListOfSequencesInListOfProcess( listOfSequences, listOfSequencesForThisNode, extensions );
+					
+						bfs::path p( inputPath );
+						if( ! p.extension().string().size() )
+						{
+							for ( bfs::recursive_directory_iterator end, dir( inputPath ); dir != end; ++dir )
+							{
+								if( bfs::is_directory( *dir ) )
+								{
+									bfs::path currentPath = (bfs::path)*dir;
+									boost::ptr_vector<sp::FileObject> listOfSequences = detector.fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask );
+									count += addListOfSequencesInListOfProcess( listOfSequences, listOfSequencesForThisNode, extensions );
+								}
+							}
+						}
+					}
+					// found the minimum number of sequence in each dummy reader
+					numberOfLoop = std::min( numberOfLoop, listOfSequencesForThisNode.size() );
+					
+					listOfSequencesPerReaderNode.push_back( new_clone( listOfSequencesForThisNode ) );
+				}
+				if( dummy.isDummyWriterNode( name ) )
+				{
+					// in case of dummy writer, only add the first path, else throw an exception
+					if( paths.size() > 1 )
+						BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+											   << tuttle::exception::user() + "unable to set mutli path in writer." );
+					
+					if( paths.size() )
+					{
+						listOfSequencesPerWriterNode.push_back( paths.at(0) ); // push only the first path
+						bfs::path p( paths.at(0) );
+						if( p.extension().string().size() )
+							writerHaveExtensionInParameter = true;
+					}
+					else
+						listOfSequencesPerWriterNode.push_back( "" );
+				}
+			}
+			
+			
+		}
+		
+		// if graph not have dummy reader
+		// or no dummy node, process only 1 graph
+		if( ! listOfSequencesPerReaderNode.size() || ! facticesNodes.size() )
+		{
+			numberOfLoop = 1;
+		}
+		
+		// check if the graph haave real readers or writers
+		// and get filenames list
+		std::vector<std::string> filenames;
+		bool haveReader = false;
+		bool haveWriter = false;
+		BOOST_FOREACH( ttl::Graph::Node* n, nodes )
+		{
+			if( isContextSupported( n, kOfxImageEffectContextReader ) )
+			{
+				filenames.push_back( n->getParamByScriptName( "filename" ).getStringValue() );
+				haveReader = true;
+			}
+			if( isContextSupported( n, kOfxImageEffectContextWriter ) )
+			{
+				haveWriter = true;
+			}
+		}
+		
+		TUTTLE_TCOUT_VAR2( numberOfLoop, writerHaveExtensionInParameter );
+		TUTTLE_TCOUT_VAR2( haveReader, haveWriter );
+		TUTTLE_TCOUT_VAR2( listOfSequencesPerReaderNode.size(), listOfSequencesPerWriterNode.size() );
+		
+		if( ( writerHaveExtensionInParameter || haveWriter || haveReader ) && numberOfLoop > 1 )
+		{
+			BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+								   << tuttle::exception::user() + "several sequences can’t be transformed into a single sequence or a movie for the moment." );
+		}
+		
 		// Execute the graph
-		graph.compute( *nodes.back(), options );
+
+		Dummy dummy;
+		
+		for( size_t loop = 0; loop < numberOfLoop; ++loop )
+		{
+			if( enableVerbose )
+				TUTTLE_COUT( _color._red << "********** graph processing " << loop << " **********" << _color._std );
+			
+			// copy graph and node for each iteration
+			ttl::Graph graphTmp( graph );
+			std::vector<ttl::Graph::Node*> nodesTmp = nodes;
+			
+			bool processGraph = true;
+			size_t countDummyReader = 0;
+			size_t countDummyWriter = 0;
+			
+			// replace each dummy node per real reader or writer node on graph
+			for( size_t nNode = 0; nNode < facticesNodes.size(); ++nNode )
+			{
+				ttl::Graph::Node* readerToReplace = facticesNodes.at( nNode );
+			
+				std::string filename;
+			
+				std::string name = readerToReplace->getParamByScriptName( "originalnode" ).getStringValue();
+				dummy.getFullName( name );
+			
+				// get sequence name (or filename)
+				if( dummy.isDummyReaderNode( name ) )
+				{
+					// get filename from browsing
+					sp::FileObject& fo = listOfSequencesPerReaderNode.at( countDummyReader ).at( loop );
+					filename = getAbsoluteFilename( fo );
+					countDummyReader++;
+				}
+				else // writer dummy
+				{
+					std::string baseDstPath = readerToReplace->getParam("expression").getStringValue();
+					bfs::path refPath( baseDstPath );
+					
+					if( refPath.extension().string().size() )
+					{
+						// if writer have an extension in the parameter, keep this filename
+						filename = baseDstPath;
+					}
+					else
+					{
+						// need to combine filename:
+						// get root from dummy writer, and add sequence pattern from reader
+						
+						std::string baseSrcPath;
+						if( ! listOfSequencesPerReaderNode.size() )
+						{
+							if( ! filenames.size() )
+								BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+													   << tuttle::exception::user() + "no pattern was found to set the output filename." );
+							baseSrcPath = filenames.at(0);
+						}
+						else
+						{
+							baseSrcPath = facticesNodes.at(0)->getParam("expression").getStringValue();
+						}
+						std::vector<std::string> srcPaths;
+						const std::vector<std::string> srcNodeArgs = bpo::split_unix( baseSrcPath, " " );
+						dummy.getPathsFromCommandLine( srcPaths, srcNodeArgs );
+						
+						std::vector<std::string> extensions;
+						const std::vector<std::string> dstNodeArgs = bpo::split_unix( baseDstPath, " " );
+						
+						dummy.getExtensionsFromCommandLine( extensions, dstNodeArgs );
+						if( extensions.size() > 1 )
+							BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+												   << tuttle::exception::user() + "many ext parameter are specified." );
+						
+						if( ! listOfSequencesPerReaderNode.size() )
+						{
+							filename = bfs::path(baseSrcPath).filename().string();
+						}
+						else
+						{
+							sp::FileObject& fo = listOfSequencesPerReaderNode.at(0).at( loop );
+							filename = getAbsoluteFilename( fo );
+							bfs::path filepath( baseSrcPath );
+							if( filepath.extension().string().size() )
+							{
+								filename = filepath.filename().string();
+							}
+							else
+							{
+								filename.erase( 0, srcPaths.at(0).length() );
+							}
+						}
+						TUTTLE_TCOUT_VAR3( baseSrcPath, filename, srcPaths.at(0) );
+						// change extension if necessary
+						std::string ext;
+						if( extensions.size() > 0 )
+						{
+							bool isSupportedExtension = false;
+							ext = extensions.at(0);
+							std::vector<std::string> exts = dummy.getSupportedExtensions( kOfxImageEffectContextWriter );
+							
+							BOOST_FOREACH( std::string& e, exts )
+							{
+								if( e == ext )
+								{
+									isSupportedExtension = true;
+								}
+							}
+							if( !isSupportedExtension )
+								BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+													   << tuttle::exception::user() + "unknown extension." );
+						}
+						
+						bfs::path path = listOfSequencesPerWriterNode.at( countDummyWriter );
+						path /= filename;
+						
+						if( ext.length() )
+							path.replace_extension( ext );
+						
+						filename = path.string();
+					}
+					
+					countDummyWriter++;
+				}
+
+				// replace dummy node with the correct reader or writer node
+				try
+				{
+					std::vector<std::string> args;
+					args.push_back( filename );
+					dummy.foundAssociateDummyNode( name, allNodes, args, _color );
+					dummy.getFullName( name );
+					
+					if( enableVerbose )
+						TUTTLE_COUT( readerToReplace->getName() << " => " << name << " : " << filename );
+					
+					ttl::Graph::Node& currentNode = graphTmp.createNode( name );
+					
+					currentNode.getParam("filename").setValueFromExpression( filename );
+					graphTmp.replaceNodeConnections( *readerToReplace, currentNode );
+					
+					if( isContextSupported( &currentNode, kOfxImageEffectContextReader ) )
+					{
+						nodesTmp.insert( nodesTmp.begin(), &currentNode );
+					}
+					else
+						nodesTmp.push_back( &currentNode );
+				}
+				catch( ... )
+				{
+					TUTTLE_CERR( _color._red << "Unsupported: " << filename << _color._std );
+					processGraph = false;
+				}
+			}
+			if( processGraph )
+			{
+				if( enableVerbose )
+					TUTTLE_COUT( "graph processing" );
+				if( !disableProcess )
+					graphTmp.compute( *nodesTmp.back(), options );
+			}
+		}
+		
+		
 	}
 	catch( const tuttle::exception::Common& e )
 	{

@@ -2,7 +2,7 @@
 #include "HostDescriptor.hpp"
 
 // ofx host
-#include <tuttle/host/Core.hpp> // for Core::instance().getMemoryCache()
+#include <tuttle/host/Core.hpp> // for core().getMemoryCache()
 #include <tuttle/host/attribute/ClipImage.hpp>
 #include <tuttle/host/attribute/allParams.hpp>
 #include <tuttle/host/graph/ProcessEdgeAtTime.hpp>
@@ -130,8 +130,14 @@ void ImageEffectNode::vmessage( const char* type,
 // get the project size in CANONICAL pixels, so PAL SD return 768, 576
 void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 {
-	xSize = 720;
-	ySize = 576;
+	OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+	xSize = rod.x2 - rod.x1;
+	ySize = rod.y2 - rod.y1;
+	if (xSize < 1 || ySize < 1)
+	  {
+	    xSize = 720;
+	    ySize = 576;
+	  }
 }
 
 // get the project offset in CANONICAL pixels, we are at 0,0
@@ -144,8 +150,14 @@ void ImageEffectNode::getProjectOffset( double& xOffset, double& yOffset ) const
 // get the project extent in CANONICAL pixels, so PAL SD return 768, 576
 void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 {
-	xSize = 720.0;
-	ySize = 576.0;
+	OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+	xSize = rod.x2 - rod.x1;
+	ySize = rod.y2 - rod.y1;
+	if (xSize < 1 || ySize < 1)
+	  {
+	    xSize = 720;
+	    ySize = 576;
+	  }
 }
 
 // get the PAR, SD PAL is 768/720=1.0666
@@ -379,6 +391,27 @@ void ImageEffectNode::initPixelAspectRatio()
 	{}
 }
 
+void ImageEffectNode::initInputClipsFps()
+{
+	for( ClipImageMap::iterator it = _clipImages.begin();
+	     it != _clipImages.end();
+	     ++it )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			clip.setFrameRate( linkClip.getFrameRate() );
+		}
+	}
+}
+
+void ImageEffectNode::initFps()
+{
+	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+	outputClip.setFrameRate( getFrameRate() );
+}
+
 void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 {
 	std::string biggestBitDepth      = kOfxBitDepthNone;
@@ -592,6 +625,31 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 }
 
 
+void ImageEffectNode::setup1()
+{
+	initInputClipsFps();
+
+	getClipPreferencesAction();
+	
+	initComponents();
+	initPixelAspectRatio();
+	initFps();
+	
+	maximizeBitDepthFromReadsToWrites();
+}
+
+void ImageEffectNode::setup2_reverse()
+{
+	maximizeBitDepthFromWritesToReads();
+}
+
+void ImageEffectNode::setup3()
+{
+	maximizeBitDepthFromReadsToWrites();
+//	coutBitDepthConnections();
+	validBitDepthConnections();
+}
+
 void ImageEffectNode::beginSequence( graph::ProcessVertexData& vData )
 {
 //	TUTTLE_TCOUT( "begin: " << getName() );
@@ -611,11 +669,6 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 
 	checkClipsConnections();
 
-	getClipPreferencesAction();
-	initComponents();
-	initPixelAspectRatio();
-	maximizeBitDepthFromReadsToWrites();
-
 	OfxRectD rod;
 	getRegionOfDefinitionAction(
 			vData._time,
@@ -630,28 +683,16 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 	TUTTLE_TCOUT_VAR( rod );
 }
 
-
 void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData )
 {
 //	TUTTLE_TCOUT( "preProcess2_finish: " << getName() << " at time: " << vData._time );
 
-	maximizeBitDepthFromWritesToReads();
-	
 	getRegionOfInterestAction( vData._time,
 				   vData._nodeData->_renderScale,
 				   vData._apiImageEffect._renderRoI,
 				   vData._apiImageEffect._inputsRoI );
 //	TUTTLE_TCOUT_VAR( vData._renderRoD );
 //	TUTTLE_TCOUT_VAR( vData._renderRoI );
-}
-
-
-void ImageEffectNode::preProcess3( graph::ProcessVertexAtTimeData& vData )
-{
-//	TUTTLE_TCOUT( "preProcess3_finish: " << getName() << " at time: " << vData._time );
-	maximizeBitDepthFromReadsToWrites();
-//	coutBitDepthConnections();
-	validBitDepthConnections();
 }
 
 
@@ -680,7 +721,7 @@ void ImageEffectNode::preProcess_infos( const graph::ProcessVertexAtTimeData& vD
 void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 {
 //	TUTTLE_TCOUT( "process: " << getName() );
-	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
+	memory::IMemoryCache& memoryCache( core().getMemoryCache() );
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
 
@@ -748,7 +789,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 					attribute::Image::eImageOrientationFromBottomToTop,
 					0 )
 				);
-			imageCache->setPoolData( Core::instance().getMemoryPool().allocate( imageCache->getMemorySize() ) );
+			imageCache->setPoolData( core().getMemoryPool().allocate( imageCache->getMemorySize() ) );
 			memoryCache.put( clip.getClipIdentifier(), vData._time, imageCache );
 			
 			allNeededDatas.push_back( imageCache );
@@ -900,7 +941,7 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
 	#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
-	IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
+	IMemoryCache& memoryCache( core().getMemoryCache() );
 
 	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + "." kOfxOutputAttributeName, time );
 

@@ -1,5 +1,5 @@
-#ifndef __FFMPEG_PRESET_HPP__
-#define __FFMPEG_PRESET_HPP__
+#ifndef _TUTTLE_PLUGIN_FFMPEG_PRESET_HPP_
+#define _TUTTLE_PLUGIN_FFMPEG_PRESET_HPP_
 
 #include "FFmpeg.hpp"
 #include <tuttle/plugin/global.hpp>
@@ -11,9 +11,11 @@
 #include <vector>
 #include <map>
 
-namespace bfs = boost::filesystem;
+namespace tuttle {
+namespace plugin {
+namespace ffmpeg {
 
-class FFmpegPreset : public FFmpeg
+class FFmpegPreset
 {
 public:
 	typedef std::vector<std::string> Presets;
@@ -22,26 +24,30 @@ public:
 public:
 	FFmpegPreset();
 
-	Presets getCodecListWithConfig( );
+	Presets getCodecListWithConfig() const;
 	
-	std::string getFilename  ( const std::string& codec, const std::string& preset );
-	std::string getCodecName ( const std::string& path );
-	std::string getConfigName( const std::string& path );
+	std::string getFilename  ( const std::string& codec, const std::string& preset ) const;
+	std::string getCodecName ( const std::string& path ) const;
+	std::string getConfigName( const std::string& path ) const;
 	
-	Presets getConfigList( const std::string& codec );
+	Presets getConfigList( const std::string& codec ) const;
 	
 	PresetsOptions getOptionsForPresetFilename( const std::string& presetFile );
 	
 private:
 	void researchPresets();
 	
-	Presets getPresetConfigurations( std::string environementVariable );
+	static Presets getPresetConfigurations( const std::string& envVar );
 	
 	/**
 	  * map of codec - absolute filename
 	  */
-	Presets presets;
+	Presets _presets;
 };
+
+}
+}
+}
 
 #endif
 

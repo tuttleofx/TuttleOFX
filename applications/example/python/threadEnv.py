@@ -1,15 +1,13 @@
 from pyTuttle import tuttle
 
-tuttle.Core.instance().preload()
+tuttle.core().preload()
 
 g = tuttle.Graph()
-pngRead = g.createNode('tuttle.pngreader')
-pngRead.getParam("filename").setValue("data/input-###.png")
+pngRead = g.createNode('tuttle.pngreader', "data/input-###.png")
 blur = g.createNode('tuttle.blur')
-pngW = g.createNode('tuttle.pngwriter')
-pngW.getParam("filename").setValue("data/output-###.png")
+pngW = g.createNode('tuttle.pngwriter', "data/output-###.png")
 g.connect( [pngRead, blur, pngW] )
 
 env = tuttle.ThreadEnv()
-env.compute( g, tuttle.NodeListArg(pngW) )
+env.compute( g, pngW )
 env.join()

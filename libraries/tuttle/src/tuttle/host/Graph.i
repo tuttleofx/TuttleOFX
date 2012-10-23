@@ -1,6 +1,7 @@
 %include <tuttle/host/global.i>
 %include <tuttle/host/memory/MemoryCache.i>
 %include <tuttle/host/InputBufferWrapper.i>
+%include <tuttle/host/OutputBufferWrapper.i>
 %include <tuttle/host/ComputeOptions.i>
 %include <tuttle/host/NodeListArg.i>
 %include <tuttle/host/INode.i>
@@ -12,6 +13,7 @@
 
 // rename the original "connect" function to reimplement it in python
 %rename(private_connect) connect;
+%rename(private_createNode) createNode;
 
 %include <tuttle/host/Graph.hpp>
 
@@ -19,6 +21,11 @@
 {
 	%pythoncode
 	{
+		def createNode(self, pluginName, *orderedParams, **namedParams):
+			node = self.private_createNode(pluginName)
+			node.setParamValues(*orderedParams, **namedParams)
+			return node
+		
 		def connect(self, *args):
 			if not args:
 				raise RuntimeException("Nothing in list of nodes to connect.")

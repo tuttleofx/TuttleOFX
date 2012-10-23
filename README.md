@@ -1,13 +1,11 @@
-
-
-![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX - version beta
+![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX
 ========================
 **Project under early development.**
   
 TuttleOFX project is an image processing framework based on [OpenFX plugin format](http://openfx.sourceforge.net/).  
-You can going to official website for more informations :[https://sites.google.com/site/tuttleofx/](https://sites.google.com/site/tuttleofx/).
+More informations on the official website :[https://sites.google.com/site/tuttleofx/](https://sites.google.com/site/tuttleofx/).
 
-The project is composed of 4 main parts:  
+The project is composed of 4 main parts:
 > - **Tuttle Host Library**, an OpenFX host that allows you to manipulate a graph of OpenFX nodes.  
 > - **Tuttle Plugin Library**, a library to facilitate the creation of OpenFX plugins.  
 > - **Tuttle plugins**, a set of OpenFX plugins for image processing and image/video IO.  
@@ -15,11 +13,10 @@ The project is composed of 4 main parts:
 
 
 
-
 ___
 License
 -------
->see COPYING file
+>see [**COPYING.md**](COPYING.md)
 
 ___
 Compilation
@@ -30,16 +27,21 @@ Compilation
 >    `cd TuttleOFX`  
 >    `git submodule update -i`  
 
-- External libraries  
-> 1. You can get all external libraries using a python script:  
->>    `cd 3rdParty`  
->>    `python init.py`  
+- External libraries
 >
-> 2. Use libraries installed on your computer.  
-In this case, you need to use the scons build system.
-	
+>    1. Build from source code  
+>       You can get all external libraries source code using a python script:  
+>       `cd 3rdParty`  
+>       `python init.py`  
+>       And follow build instructions for each library.
+>
+>    2. Use packaging tools or installers
+>    See the website instructions to install all dependencies. There are command lines (apt-get, macports, ...) to install all dependencies for some standard distributions, and links to windows installers.  
+>    [Extern libraries](https://sites.google.com/site/tuttleofx/development/build/libraries)
+
 - Compilation
-> see [**INSTALL.scons**](https://github.com/tuttleofx/TuttleOFX/blob/master/INSTALL.scons)
+
+See [**INSTALL.md**](INSTALL.md)
 
 ___
 Plugin creation
@@ -48,7 +50,7 @@ Plugin creation
 There is a script to help you making new plugins.
 > `python $TUTTLE_ROOT/plugins/_scripts/newPlugin.py`  
 
-This script asks you informations about your plugin and create a new plugin source tree in your current directory.
+This script asks you information about your plugin and create a new plugin source tree in your current directory.
 
 
 Tested compilers

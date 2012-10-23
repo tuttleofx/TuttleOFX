@@ -3,6 +3,7 @@
 
 #include <tuttle/plugin/global.hpp>
 
+#include <ofxsImageEffect.h>
 
 namespace tuttle {
 namespace plugin {
@@ -20,7 +21,14 @@ enum EParamInputMode
 
 static const std::string kParamInputBufferPointer = "bufferPointer";
 static const std::string kParamInputCallbackPointer = "callbackPointer";
-static const std::string kParamInputCallbackCustomData = "callbackCustomData";
+static const std::string kParamInputCustomData = "customData";
+static const std::string kParamInputCallbackDestroyCustomData = "callbackDestroyCustomData";
+
+extern "C" {
+	typedef void* CustomDataPtr;
+	typedef void (*CallbackInputImagePtr)( OfxTime time, CustomDataPtr customData, void** outRawdata, int* outWidth, int* outHeight, int* outRowSizeBytes );
+	typedef void (*CallbackDestroyCustomDataPtr)( CustomDataPtr customData );
+}
 
 static const std::string kParamSize = "size";
 static const std::string kParamRowBytesSize = "rowBytesSize";

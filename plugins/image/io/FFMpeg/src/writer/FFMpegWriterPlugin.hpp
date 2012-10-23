@@ -49,8 +49,8 @@ public:
 	OFX::ChoiceParam*   _paramCodec;
 	OFX::IntParam*      _paramBitRate;
 	
-	std::vector<OFX::ChoiceParam*> videoCodecPresets;
-	std::vector<std::string>       codecListWithPreset;
+	std::vector<OFX::ChoiceParam*> _videoCodecPresetParams;
+	std::vector<std::string>       _codecListWithPreset;
 	
 	VideoFFmpegWriter   _writer;
 };

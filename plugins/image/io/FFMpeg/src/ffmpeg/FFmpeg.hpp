@@ -1,5 +1,5 @@
-#ifndef _FFMPEG_HPP
-#define _FFMPEG_HPP
+#ifndef _TUTTLE_PLUGIN_FFMPEG_FFMPEG_HPP_
+#define _TUTTLE_PLUGIN_FFMPEG_FFMPEG_HPP_
 
 extern "C" {
 #ifndef __STDC_CONSTANT_MACROS
@@ -15,6 +15,10 @@ extern "C" {
 }
 
 #include <string>
+
+namespace tuttle {
+namespace plugin {
+namespace ffmpeg {
 
 /**
  * @brief This is a base class for ffmpeg, don't use it directly.
@@ -35,6 +39,10 @@ private:
 	static bool globalInit();
 
 };
+
+}
+}
+}
 
 #endif
 

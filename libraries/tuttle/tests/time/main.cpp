@@ -15,9 +15,9 @@ BOOST_AUTO_TEST_SUITE( time_tests_suite01 )
 BOOST_AUTO_TEST_CASE( preload )
 {
 	TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
-	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	Core::instance().preload();
-//	TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
+	core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
+	core().preload();
+//	TUTTLE_TCOUT( core().getImageEffectPluginCache() );
 	TUTTLE_COUT( "----------------- DONE -----------------" );
 }
 

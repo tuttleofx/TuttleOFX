@@ -77,6 +77,7 @@ public:
 
 		_renderScale = other._renderScale;
 		_continueOnError = other._continueOnError;
+		_continueOnMissingFile = other._continueOnMissingFile;
 		_forceIdentityNodesProcess = other._forceIdentityNodesProcess;
 		_returnBuffers = other._returnBuffers;
 		_verboseLevel = other._verboseLevel;
@@ -93,6 +94,7 @@ private:
 	{
 		setRenderScale( 1.0, 1.0 );
 		setContinueOnError( false );
+		setContinueOnMissingFile( false );
 		setReturnBuffers( true );
 		setVerboseLevel( eVerboseLevelError );
 		setIsInteractive( false );
@@ -146,6 +148,17 @@ public:
 		return *this;
 	}
 	bool getContinueOnError() const { return _continueOnError; }
+	
+	/**
+	 * @brief Continue as much as possible after an error.
+	 * If an image file inside an image sequence failed to be loaded, we continue to process other images of the sequence.
+	 */
+	This& setContinueOnMissingFile( const bool v = true )
+	{
+		_continueOnMissingFile = v;
+		return *this;
+	}
+	bool getContinueOnMissingFile() const { return _continueOnMissingFile; }
 	
 	/**
 	 * @brief To get output buffer of all output nodes.
@@ -205,6 +218,7 @@ private:
 	
 	OfxPointD _renderScale;
 	bool _continueOnError;
+	bool _continueOnMissingFile;
 	bool _forceIdentityNodesProcess;
 	bool _returnBuffers;
 	EVerboseLevel _verboseLevel;

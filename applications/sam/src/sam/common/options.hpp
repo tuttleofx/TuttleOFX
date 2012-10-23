@@ -157,6 +157,11 @@ static const char* const kContinueOnErrorOptionLongName = "continue-on-error";
 static const char* const kContinueOnErrorOptionString = kContinueOnErrorOptionLongName;
 static const char* const kContinueOnErrorOptionMessage = "continue on error";
 
+//--disable-process
+static const char* const kDisableProcessOptionLongName = "disable-process";
+static const char* const kDisableProcessOptionString = kDisableProcessOptionLongName;
+static const char* const kDisableProcessOptionMessage = "run the command line without computing images (verbose enable).";
+
 //--force-identity-nodes-process
 static const char* const kForceIdentityNodesProcessOptionLongName = "force-identity-nodes-process";
 static const char* const kForceIdentityNodesProcessOptionString = kForceIdentityNodesProcessOptionLongName;
@@ -296,6 +301,11 @@ static const char* const kReaderOptionMessage = "specify reader node with identi
 static const char* const kRelativePathOptionLongName = "relative-path";
 static const char* const kRelativePathOptionString = kRelativePathOptionLongName;
 static const char* const kRelativePathOptionMessage = "display the relative path of each object";
+
+//--stop-on-missing-file
+static const char* const kStopOnMissingFileOptionLongName = "stop-on-missing-file";
+static const char* const kStopOnMissingFileOptionString = kStopOnMissingFileOptionLongName;
+static const char* const kStopOnMissingFileOptionMessage = "stop on missing file";
 
 //--nb-cores
 static const char* const kNbCoresOptionLongName = "nb-cores";

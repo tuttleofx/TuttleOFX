@@ -14,7 +14,7 @@
 
 
 #define TUTTLE_HOST_VERSION_MAJOR 0
-#define TUTTLE_HOST_VERSION_MINOR 4
+#define TUTTLE_HOST_VERSION_MINOR 5
 #define TUTTLE_HOST_VERSION_MICRO 0
 
 #define TUTTLE_HOST_VERSION_STR BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MAJOR) "." BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MINOR) "." BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MICRO)
@@ -55,7 +55,7 @@ public:
 
 public:
 	const ofx::imageEffect::OfxhImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
-#ifndef SWIG
+
 	memory::IMemoryPool&        getMemoryPool()        { return _memoryPool; }
 	const memory::IMemoryPool&  getMemoryPool() const  { return _memoryPool; }
 	memory::IMemoryCache&       getMemoryCache()       { return _memoryCache; }
@@ -67,33 +67,19 @@ public:
 		return _imageEffectPluginCache.getPluginById( id, vermaj, vermin );
 	}
 
-#endif
 
 public:
 	void preload( const bool useCache = true );
 
-	friend std::ostream& operator<<( std::ostream& os, const This& v );
-
-	#ifdef SWIG
-	%extend
+	const ofx::OfxhPlugin& operator[]( const std::string& name ) const
 	{
-		const ofx::OfxhPlugin& __getitem__( const std::string& name ) const
-		{
-			return *self->getPluginCache().getPluginById( name );
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
+		return *( this->getPluginCache().getPluginById( name ) );
 	}
-	#endif
 
+	friend std::ostream& operator<<( std::ostream& os, const This& v );
 };
+
+inline Core& core() { return Core::instance(); }
 
 }
 }

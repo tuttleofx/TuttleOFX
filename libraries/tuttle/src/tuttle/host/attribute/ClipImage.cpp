@@ -35,7 +35,7 @@ ClipImage::ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescript
 	, tuttle::host::ofx::attribute::OfxhClipImage( desc )
 	, _isConnected( false )
 	, _continuousSamples( false )
-	, _memoryCache( Core::instance().getMemoryCache() )
+	, _memoryCache( core().getMemoryCache() )
 {
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleIdentifier", 1, 1, "" ) );
@@ -44,7 +44,7 @@ ClipImage::ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescript
 ClipImage::ClipImage( const ClipImage& other )
 	: Attribute( other )
 	, ofx::attribute::OfxhClipImage( other )
-	, _memoryCache( Core::instance().getMemoryCache() )
+	, _memoryCache( core().getMemoryCache() )
 {
 	_name = other._name;
 	_isConnected = other._isConnected;
@@ -104,19 +104,12 @@ const std::string& ClipImage::getUnmappedComponents() const
  */
 double ClipImage::getFrameRate() const
 {
-	if( isOutput() )
-		switch( getNode().getNodeType() )
-		{
-			case INode::eNodeTypeImageEffect:
-				return getNode().asImageEffectNode().getFrameRate();
-			default:
-				return 0.0;
-		}
-	else if( isConnected() )
-		return this->getConnectedClip().getFrameRate();
-	
-	BOOST_THROW_EXCEPTION( exception::Bug()
-		<< exception::dev( "Can't ask the frame rate on an unconnected input clip." ) );
+	return getProperties().getDoubleProperty( kOfxImageEffectPropFrameRate );
+}
+
+void ClipImage::setFrameRate( const double fps )
+{
+	getEditableProperties().setDoubleProperty( kOfxImageEffectPropFrameRate, fps );
 }
 
 // Frame Range (startFrame, endFrame) -
@@ -155,7 +148,6 @@ void ClipImage::setUnmappedFrameRange( const double unmappedStartFrame, const do
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
 tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime time, const OfxRectD* optionalBounds )
 {
-	TUTTLE_TCOUT_INFOS;
 //	const OfxTime realTime = isConnected() ? getNode().mapInputTime( time ) : time;
 	const OfxTime realTime = time;
 	
@@ -173,11 +165,9 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	}
 	else
 	{
-		TUTTLE_TCOUT_INFOS;
 		bounds = fetchRegionOfDefinition( realTime );
 	}
 	
-	TUTTLE_TCOUT_INFOS;
 	//	TUTTLE_TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
 	boost::shared_ptr<Image> image = _memoryCache.get( getClipIdentifier(), realTime );
 	//	std::cout << "got image : " << image.get() << std::endl;
@@ -186,7 +176,6 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	///  * bounds < cache buffer: use rowSize to adjust, and modify pointer
 	///  * bounds > cache buffer: recompute / exception ?
 
-	TUTTLE_TCOUT_INFOS;
 	return image.get();
 }
 

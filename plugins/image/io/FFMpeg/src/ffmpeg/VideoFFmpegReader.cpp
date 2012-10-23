@@ -6,6 +6,10 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
 
+namespace tuttle {
+namespace plugin {
+namespace ffmpeg {
+
 namespace fs = boost::filesystem;
 
 VideoFFmpegReader::VideoFFmpegReader()
@@ -438,3 +442,6 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	return true;
 }
 
+}
+}
+}
