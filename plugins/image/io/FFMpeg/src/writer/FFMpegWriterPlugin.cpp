@@ -65,6 +65,7 @@ void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 {
 	// If pattern detected (frame varying on time)
 	clipPreferences.setOutputFrameVarying( true );
+	_writer.setFps( this->getFrameRate() );
 }
 
 bool FFMpegWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, OfxTime& identityTime )
@@ -82,7 +83,6 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	_writer.setFormat( params._format );
 	_writer.setCodec( params._codec );
 	_writer.setBitRate( params._bitrate );
-	_writer.setFps( _clipSrc->getFrameRate() );
 	_writer.setAspectRatio( _clipSrc->getPixelAspectRatio() );
 	_writer.setVideoPreset( params._videoPreset );
 }
