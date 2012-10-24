@@ -17,7 +17,8 @@ enum ETuttlePluginBitDepth
 	eTuttlePluginBitDepth16,
 	eTuttlePluginBitDepth16f,
 	eTuttlePluginBitDepth32,
-	eTuttlePluginBitDepth32f
+	eTuttlePluginBitDepth32f,
+	eTuttlePluginBitDepthUnset
 };
 
 enum ETuttlePluginComponents

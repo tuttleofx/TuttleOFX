@@ -7,6 +7,7 @@
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <imageio.h>
+#include <filesystem.h>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
@@ -31,6 +32,21 @@ OpenImageIOWriterProcess<View>::OpenImageIOWriterProcess( OpenImageIOWriterPlugi
 }
 
 /**
+ * Deduce the best bitdepth when it hasn't been set by the user
+ */
+template<class View>
+ETuttlePluginBitDepth OpenImageIOWriterProcess<View>::getDefaultBitDepth(const std::string& filepath, const ETuttlePluginBitDepth &bitDepth){
+	if (bitDepth == eTuttlePluginBitDepthUnset) {
+			std::string format = OpenImageIO::Filesystem::extension ( filepath);
+			if(format.find("exr") != std::string::npos)
+				return eTuttlePluginBitDepth32f;
+			else
+				return eTuttlePluginBitDepth16;
+	}
+	return bitDepth;
+}
+
+/**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
  * @warning no multithread here !
@@ -43,9 +59,11 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	using namespace terry;
 	params = _plugin.getProcessParams( this->_renderArgs.time );
 
+	ETuttlePluginBitDepth finalBitDepth = getDefaultBitDepth(params._filepath,params._bitDepth);
+
 	try
 	{
-		switch( (int) params._bitDepth )
+		switch( finalBitDepth )
 		{
 			case eTuttlePluginBitDepth8:
 			{
@@ -188,7 +206,10 @@ void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& f
 	OpenImageIO::TypeDesc oiioBitDepth;
 	size_t sizeOfChannel = 0;
 	int    bitsPerSample  = 0;
-	switch( bitDepth )
+
+	ETuttlePluginBitDepth finalBitDepth = getDefaultBitDepth(filepath,bitDepth);
+
+	switch( finalBitDepth )
 	{
 		case eTuttlePluginBitDepth8:
 			oiioBitDepth = TypeDesc::UINT8;

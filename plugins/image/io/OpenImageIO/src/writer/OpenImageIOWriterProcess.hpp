@@ -22,6 +22,8 @@ class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 
 	OpenImageIOWriterProcessParams params;
 
+	ETuttlePluginBitDepth getDefaultBitDepth(const std::string& filepath, const ETuttlePluginBitDepth &bitDepth);
+
 public:
 	typedef typename terry::image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
