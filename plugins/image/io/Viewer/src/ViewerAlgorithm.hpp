@@ -46,9 +46,14 @@ int windowID;
 // viewing properties
 int w_out, h_out;
 int angle_cam = 60;
-float zoom = 1;
+float zoom = 1.25;
 bool flip = false;
 bool flop = false;
+
+float scale = 1.0;
+int xmin_viewport, ymin_viewport;
+float x1_quad, x2_quad, y1_quad, y2_quad;
+float cur_zoom = 1.0;
 
 // channel properties
 bool showRedChannel = false;
@@ -74,6 +79,11 @@ void reshape(int width,int height)
 		xPos = 0.5f * (width - w );
 		yPos = 0.0;
 	}
+
+	xmin_viewport = xPos;
+	ymin_viewport = yPos;
+
+	scale = (float)w/w_out;
 	
 	glViewport( xPos, yPos , (GLsizei)w, (GLsizei)h );
 	glutReshapeWindow(width, height);
@@ -214,11 +224,11 @@ void display()
 	
 	glBegin (GL_QUADS);
 	
-	int x1 = -1;
-	int x2 =  1;
+	float x1 = x1_quad;
+	float x2 = x2_quad;
 	
-	int y1 = -1;
-	int y2 =  1;
+	float y1 = y1_quad;
+	float y2 = y2_quad;
 	
 	if( flip )
 	{
@@ -231,7 +241,7 @@ void display()
 		x2 = -x2;
 	}
 	
-	glTexCoord2f( 0, 0 );
+	glTexCoord2f( 0 , 0 );
 	glVertex2f  ( x1, y1 );
 	
 	glTexCoord2f( 0, 1 );
@@ -339,13 +349,27 @@ void specialKeyboard( int k, int x, int y)
 {
 	switch (k)
 	{
+		case GLUT_KEY_UP:
+		        y1_quad += cur_zoom / img.height * 2;
+			y2_quad += cur_zoom / img.height * 2;
+			break;
+		case GLUT_KEY_DOWN:
+		        y1_quad -= cur_zoom / img.height * 2;
+		        y2_quad -= cur_zoom / img.height * 2;
+			break;
+		case GLUT_KEY_LEFT:
+		        x1_quad -= cur_zoom / img.width * 2;
+			x2_quad -= cur_zoom / img.width * 2;
+			break;
 		case GLUT_KEY_RIGHT:
+		        x1_quad += cur_zoom / img.width * 2;
+			x2_quad += cur_zoom / img.width * 2;
+			break;
+	        case GLUT_KEY_F1:
 			glutDestroyWindow(windowID);
-			return;
-		case GLUT_KEY_F1:
-			displayHelp();
-			return;
-	}
+			break;
+	}	
+	glutPostRedisplay ();
 }
 
 void mouse  ( int button, int state, int x, int y )
@@ -353,19 +377,27 @@ void mouse  ( int button, int state, int x, int y )
 	using namespace boost::gil;
 	if( state == 0 && button == 0 )
 	{
-	        int itX = x, itY = y;
+	        int mapX = (x - xmin_viewport)/scale, mapY = (y - ymin_viewport)/scale;
+	        int itX, itY;
+		float mx, my;
 
-		if( !flip )
+		if( flip )
 		{
-		        itY = img.height - y;
+		        mapY = img.height - mapY;
 	        }
 	    
 	        if( flop )
 	        {
-		        itX = img.width - x;
+		        mapX = img.width - mapX;
 	        }
-	    
-		std::cout << "at " << std::setw(4) << x << "," << std::setw(4) << y << ": ";
+
+		mx = (float)mapX / (float)img.width * 2.0 - 1.0;
+		itX = (x1_quad - mx) / (cur_zoom * 2.0) * (float)img.width * -1.0;
+
+		my = ((float)mapY / (float)img.height * 2.0 - 1.0) * -1.0;
+		itY = (y1_quad - my) / (cur_zoom * 2.0) * (float)img.height * -1.0;
+		
+		std::cout << "at " << std::setw(4) << itX << "," << std::setw(4) << img.width - itY << ": ";
 
 		for( size_t i = 0; i < img.component; i++ )
 		{
@@ -392,18 +424,24 @@ void mouse  ( int button, int state, int x, int y )
 				}
 			}
 		}
-		std::cout << std::endl;
+		std::cout << std::endl;		
 	}
 	if( state == 0 && button == 3)
 	{
-		zoom *= 1.25;
-		glutReshapeWindow( w_out * zoom, h_out * zoom );
+	        cur_zoom *= zoom;
+		x1_quad *= zoom;
+		x2_quad *= zoom;
+		y1_quad *= zoom;
+		y2_quad *= zoom;
 		glutPostRedisplay ();
 	}
 	if( state == 0 && button == 4)
 	{
-		zoom /= 1.25;
-		glutReshapeWindow( w_out * zoom, h_out * zoom );
+	        cur_zoom /= zoom;
+	        x1_quad /= zoom;
+		x2_quad /= zoom;
+		y1_quad /= zoom;
+		y2_quad /= zoom;
 		glutPostRedisplay ();
 	}
 }
@@ -423,6 +461,11 @@ void openGLWindow( const size_t& width, const size_t& height )
 	
 	w_out = width;
 	h_out = height;
+
+	x1_quad = -1.0;
+	x2_quad = 1.0;
+	y1_quad = -1.0;
+	y2_quad = 1.0;
 	
 	glutDisplayFunc (display);
 	
