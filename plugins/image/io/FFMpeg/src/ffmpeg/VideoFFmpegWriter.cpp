@@ -138,7 +138,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
-		_stream->codec->time_base          = av_d2q( 1.0 / _fps, 100 );
+		_stream->codec->time_base = av_d2q( 1.0 / _fps, INT_MAX );
 		_stream->codec->gop_size           = _gopSize;
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
