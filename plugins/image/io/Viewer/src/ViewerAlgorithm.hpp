@@ -52,7 +52,7 @@ float scale = 1.0;
 int xmin_viewport, ymin_viewport;
 
 // viewing properties - zoom
-float zoom = 1.25;
+float fac_zoom = 1.25;
 float cur_zoom = 1.0;
 
 // viewing properties - transformations
@@ -90,7 +90,7 @@ void reshape(int width,int height)
 	xmin_viewport = xPos;
 	ymin_viewport = yPos;
 
-	scale = (float)w/w_out;
+	scale = w/w_out;
 	
 	glViewport((GLsizei)xPos, (GLsizei)yPos, (GLsizei)w, (GLsizei)h);
 	glutReshapeWindow(width, height);
@@ -291,6 +291,22 @@ void displayHelp()
 	std::cout << kViewerHelp << std::endl;
 }
 
+void move(float x, float y)
+{
+        x1_quad += x;
+	x2_quad += x;
+	y1_quad += y;
+	y2_quad += y;
+}
+
+void zoom(float factor)
+{  
+	x1_quad *= factor;
+	x2_quad *= factor;
+	y1_quad *= factor;
+	y2_quad *= factor;
+}     
+
 void keyboard(unsigned char k, int x, int y)
 {
 	bool shift= false;
@@ -433,24 +449,18 @@ void mouse ( int button, int state, int x, int y )
 				}
 			}
 		}
-		std::cout << std::endl;		
+		std::cout << std::endl;
 	}
 	if( state == 0 && button == 3)
 	{
-	        cur_zoom *= zoom;
-		x1_quad *= zoom;
-		x2_quad *= zoom;
-		y1_quad *= zoom;
-		y2_quad *= zoom;
+	        cur_zoom *= fac_zoom;
+		zoom(fac_zoom);
 		glutPostRedisplay ();
 	}
 	if( state == 0 && button == 4)
 	{
-	        cur_zoom /= zoom;
-	        x1_quad /= zoom;
-		x2_quad /= zoom;
-		y1_quad /= zoom;
-		y2_quad /= zoom;
+	        cur_zoom /= fac_zoom;
+		zoom(1.0/fac_zoom);
 		glutPostRedisplay ();
 	}
 
@@ -475,11 +485,9 @@ void motion ( int x, int y )
 	{
 	        x_diff *= -1.0;
 	}
-	
-	x1_quad += cur_zoom / img.width * 2 * x_diff;
-	x2_quad += cur_zoom / img.width * 2 * x_diff;	
-	y1_quad += cur_zoom / img.height * 2 * y_diff;
-	y2_quad += cur_zoom / img.height * 2 * y_diff;
+
+	move(cur_zoom / img.width * 2 * x_diff,
+	     cur_zoom / img.height * 2 * y_diff);
 			
 	x_mouse_ref = x;	
 	y_mouse_ref = y;
