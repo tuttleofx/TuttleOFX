@@ -91,7 +91,7 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	_paramFormat                      = fetchChoiceParam( kParamFormat );
 	_paramVideoCodec                  = fetchChoiceParam( kParamVideoCodec       );
 	_paramAudioCodec                  = fetchChoiceParam( kParamAudioCodec       );
-	
+	/*
 	_videoCodecListWithPreset = _writer.getCodecListWithConfig();
 	std::vector<std::string>::iterator it;
 	for( it = _videoCodecListWithPreset.begin(); it < _videoCodecListWithPreset.end(); it++ )
@@ -115,7 +115,7 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 				_audioCodecPresetParams.push_back( paramPreset );
 			}
 		}
-	}
+	}*/
 	
 	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
 	//disableAVOptionsForCodecOrFormat( _writer.getSpecificFormatPrivOpts(), formatName );
@@ -138,18 +138,18 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
 	
 	_writer.setVideoCodec( params._videoCodec );
 	const std::string codecName = _writer.getVideoCodec();
-	
+/*
 	params._videoPreset = -1;
+	size_t pos = 0;
 	std::vector<OFX::ChoiceParam*>::const_iterator choiceParamIt = _videoCodecPresetParams.begin();
-	for( it = _videoCodecListWithPreset.begin(); it < _videoCodecListWithPreset.end(); it++, pos++ )
+	for( choiceParamIt = _videoCodecListWithPreset.begin(); choiceParamIt < _videoCodecListWithPreset.end(); choiceParamIt++, pos++ )
 	{
-		if( codecPreset == codecName )
+		if( *choiceParamIt->getLabel() == codecName )
 		{
 			int presetIdx = _videoCodecPresetParams.at( pos )->getValue();
 			params._videoPreset = presetIdx;
 		}
-		++choiceParamIt;
-	}
+	}*/
 	return params;
 }
 

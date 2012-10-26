@@ -15,10 +15,17 @@ extern "C" {
 }
 
 #include <string>
+#include <vector>
 
 namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
+
+typedef struct AVPrivOption
+{
+	AVOption o;
+	std::string class_name;
+} AVPrivOption;
 
 /**
  * @brief This is a base class for ffmpeg, don't use it directly.
@@ -34,6 +41,7 @@ public:
 	static const std::string ffmpegError_toString( int error );
 	static const std::string codecType_toString( const AVMediaType codec_type );
 
+	std::vector<AVPrivOption> getAVOptions(const AVClass *av_class);
 private:
 	static bool _hasBeenInit;
 	static bool globalInit();

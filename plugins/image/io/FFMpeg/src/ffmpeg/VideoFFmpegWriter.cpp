@@ -48,6 +48,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	AVOutputFormat* fmt = av_oformat_next( NULL );
 	while( fmt )
 	{
+		// add only format with video track
 		if( fmt->video_codec != CODEC_ID_NONE )
 		{
 			if( fmt->long_name )
@@ -59,23 +60,41 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 		fmt = av_oformat_next( fmt );
 	}
 
-	AVCodec* c = av_codec_next( NULL );
-	while( c )
+	AVCodec* c = NULL;
+	while( c = av_codec_next( c ) )
 	{
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT( 53, 34, 0 )
-		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode2 )
+		if( c->encode2 )
 #else
-		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode )
+		if( c->encode )
 #endif
 		{
-			if( c->long_name )
+			switch( c->type )
 			{
-				_videoCodecsLongNames.push_back( std::string( c->long_name ) );
-				_videoCodecsShortNames.push_back( std::string( c->name ) );
+				case AVMEDIA_TYPE_VIDEO:
+				{
+					if( c->long_name )
+					{
+						_videoCodecsLongNames.push_back( std::string( c->long_name ) );
+						_videoCodecsShortNames.push_back( std::string( c->name ) );
+					}
+					break;
+				}
+				case AVMEDIA_TYPE_AUDIO:
+				{
+					if( c->long_name )
+					{
+						_audioCodecsLongNames.push_back( std::string( c->long_name ) );
+						_audioCodecsShortNames.push_back( std::string( c->name ) );
+					}
+					break;
+				}
+				default:
+					break;
 			}
 		}
-		c = av_codec_next( c );
 	}
+
 }
 
 int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_width, const int in_height, const PixelFormat in_pixelFormat )
@@ -315,6 +334,18 @@ void VideoFFmpegWriter::setVideoPreset( const int id )
 	
 	FFmpegPreset::Presets p = getPresets().getConfigList( _videoCodecName );
 	_videoPresetName = p[id];
+}
+
+void VideoFFmpegWriter::setAudioPreset( const int id )
+{
+	if( id == -1 )
+	{
+		_audioPresetName = "";
+		return;
+	}
+	
+	FFmpegPreset::Presets p = getPresets().getConfigList( _audioCodecName );
+	_audioPresetName = p[id];
 }
 
 }

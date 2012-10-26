@@ -23,9 +23,9 @@ static const std::string kParamVideoGroup                = "videoGroup";
 static const std::string kParamAudioGroup                = "audioGroup";
 static const std::string kParamMetaGroup                 = "metaGroup";
 
-static const std::string kParamPresetPostfix             = "_preset";
-
-static const std::string kParamPresetPostfix             = "_preset";
+static const std::string kParamFormatPreset              = "formatPreset";
+static const std::string kParamVideoPreset               = "videoPreset";
+static const std::string kParamAudioPreset               = "audioPreset";
 
 }
 }

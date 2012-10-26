@@ -17,7 +17,7 @@ namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
 
-class VideoFFmpegWriter : public FFmpeg
+class VideoFFmpegWriter : public FFmpeg, public FFmpegPreset
 {
 private:
 	enum EWriterStatus
@@ -139,12 +139,12 @@ public:
 
 	const std::vector<std::string>& getAudioCodecsShort() const
 	{
-		return _videoCodecsShortNames;
+		return _audioCodecsShortNames;
 	}
 
 	const std::vector<std::string>& getAudioCodecsLong() const
 	{
-		return _videoCodecsLongNames;
+		return _audioCodecsLongNames;
 	}
 	
 	void setVideoCodec( const unsigned int id )
@@ -174,6 +174,13 @@ public:
 		_videoPresetName = preset;
 	}
 
+	void setAudioPreset( const int id );
+	
+	void setAudioPreset( const std::string& preset )
+	{
+		_audioPresetName = preset;
+	}
+	
 	void configureFromRead( const VideoFFmpegReader& reader )
 	{
 		setWidth       ( reader.width() );
@@ -182,6 +189,7 @@ public:
 		setFps         ( reader.fps() );
 		setFormat      ( reader.formatName() );
 		setVideoCodec  ( reader.codecName() );
+		//setAudioCodec  ( reader.codecName() );
 	}
 
 	FFmpegPreset& getPresets() { return _preset; }

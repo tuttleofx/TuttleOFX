@@ -19,6 +19,211 @@ namespace plugin {
 namespace ffmpeg {
 namespace writer {
 
+void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, void* av_class, int req_flags, int rej_flags )
+{
+	std::vector<OFX::ChoiceParamDescriptor*> choices;
+	std::vector<std::string> unit;
+	std::vector<int> defaultEnumChoices;
+	std::vector<int> defaultChoices;
+	std::vector<OFX::GroupParamDescriptor*> groups;
+	const AVOption *opt = NULL;
+
+	while( (opt = av_opt_next( av_class, opt)  ) != NULL )
+	{
+		if( !opt ||
+			!opt->name ||
+			(opt->flags & req_flags) != req_flags ||
+			(opt->flags & rej_flags) )
+		{
+			continue;
+		}
+		
+		if( opt->unit && opt->type == AV_OPT_TYPE_FLAGS )
+		{
+			std::string name = "g_";
+			name += opt->unit;
+			OFX::GroupParamDescriptor* param = desc.defineGroupParam( name );
+			if( opt->help )
+				param->setHint( opt->help );
+			param->setParent( group );
+			param->setAsTab( );
+			groups.push_back( param );
+			continue;
+		}
+		if( opt->unit && opt->type == AV_OPT_TYPE_INT )
+		{
+			OFX::ChoiceParamDescriptor* param = desc.defineChoiceParam( opt->name );
+			if( opt->help )
+				param->setHint( opt->help );
+			param->setParent( group );
+			choices.push_back( param );
+			unit.push_back( opt->unit );
+			defaultEnumChoices.push_back( opt->default_val.dbl );
+			//TUTTLE_COUT( opt->unit << " = " << opt->default_val.dbl );
+			continue;
+		}
+		
+		switch( opt->type )
+		{
+			case AV_OPT_TYPE_FLAGS:
+			{
+				OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( opt->name );
+				param->setDefault( opt->default_val.i64 );
+				if( opt->help )
+					param->setHint( opt->help );
+				param->setParent( group );
+				break;
+			}
+			case AV_OPT_TYPE_INT:
+			case AV_OPT_TYPE_INT64:
+			{
+				OFX::IntParamDescriptor* param = desc.defineIntParam( opt->name );
+				param->setDefault( opt->default_val.dbl );
+				param->setRange( opt->min, opt->max );
+				param->setDisplayRange( opt->min, opt->max );
+				if( opt->help )
+					param->setHint( opt->help );
+				param->setParent( group );
+				break;
+			}
+			case AV_OPT_TYPE_DOUBLE:
+			case AV_OPT_TYPE_FLOAT:
+			{
+				OFX::DoubleParamDescriptor* param = desc.defineDoubleParam( opt->name );
+				param->setDefault( opt->default_val.dbl );
+				param->setRange( opt->min, opt->max );
+				param->setDisplayRange( opt->min, opt->max );
+				if( opt->help )
+					param->setHint( opt->help );
+				param->setParent( group );
+				break;
+			}
+			case AV_OPT_TYPE_STRING:
+			{
+				OFX::StringParamDescriptor* param = desc.defineStringParam( opt->name );
+				if( opt->default_val.str )
+					param->setDefault( opt->default_val.str );
+				if( opt->help )
+					param->setHint( opt->help );
+				param->setParent( group );
+				break;
+			}
+			case AV_OPT_TYPE_RATIONAL:
+			{
+				OFX::Int2DParamDescriptor* param = desc.defineInt2DParam( opt->name );
+				param->setDefault( opt->default_val.q.num, opt->default_val.q.den );
+				if( opt->help )
+					param->setHint( opt->help );
+				param->setParent( group );
+				break;
+			}
+			case AV_OPT_TYPE_IMAGE_SIZE:
+			{
+				OFX::Int2DParamDescriptor* param = desc.defineInt2DParam( opt->name );
+				if( opt->help )
+					param->setHint( opt->help );
+				param->setParent( group );
+				break;
+			}
+			case AV_OPT_TYPE_BINARY:
+			{
+				OFX::StringParamDescriptor* param = desc.defineStringParam( opt->name );
+				if( opt->help )
+					param->setHint( opt->help );
+				param->setParent( group );
+				break;
+			}
+			case AV_OPT_TYPE_CONST:
+			{
+				break;
+			}
+		}
+	}
+
+	defaultChoices.resize( defaultEnumChoices.size() );
+	
+	// adding enum values and flags in groups
+	opt = NULL;
+	while( (opt = av_opt_next( av_class, opt)  ) != NULL )
+	{
+		if( !opt ||
+			!opt->name ||
+			( opt->flags & req_flags ) != req_flags ||
+			( opt->flags & rej_flags ) ||
+			( opt->unit && opt->type == AV_OPT_TYPE_FLAGS ) ||
+			( opt->unit && opt->type == AV_OPT_TYPE_INT ) )
+		{
+			continue;
+		}
+		
+		switch( opt->type )
+		{
+			case AV_OPT_TYPE_CONST:
+			{
+				for( size_t i = 0; i < unit.size(); i++ )
+				{
+					if( opt->unit == unit.at( i ) )
+					{
+						//TUTTLE_COUT( "add " << opt->name << " to " << choices.at(i)->getName() );
+						if( opt->help )
+							choices.at(i)->appendOption( opt->name, opt->help );
+						else
+							choices.at(i)->appendOption( opt->name );
+						if( opt->default_val.dbl == defaultEnumChoices.at(i) )
+						{
+							defaultChoices.at(i) = choices.at(i)->getNOptions() - 1;
+						}
+						
+					}
+				}
+				
+				BOOST_FOREACH( OFX::GroupParamDescriptor* g, groups )
+				{
+					std::string name = "g_";
+					name += opt->unit;
+					if( name == g->getName() )
+					{
+						OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( opt->name );
+						param->setDefault( opt->default_val.i64 );
+						if( opt->help )
+							param->setHint( opt->help );
+						param->setParent( g );
+						break;
+					}
+				}
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+	}
+	
+	// set default value for enums
+	opt = NULL;
+	while( (opt = av_opt_next( av_class, opt)  ) != NULL )
+	{
+		if( !opt ||
+			!opt->name ||
+			( opt->flags & req_flags ) != req_flags ||
+			( opt->flags & rej_flags ) ||
+			( opt->unit && opt->type == AV_OPT_TYPE_FLAGS ) )
+		{
+			continue;
+		}
+		
+		if( opt->unit && opt->type == AV_OPT_TYPE_INT )
+		{
+			for( size_t i = 0; i < defaultChoices.size(); i++ )
+			{
+				choices.at(i)->setDefault( defaultChoices.at(i) );
+			}
+			
+		}
+	}
+}
+
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -123,11 +328,18 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	OFX::GroupParamDescriptor* audioGroup  = desc.defineGroupParam( kParamAudioGroup );
 	OFX::GroupParamDescriptor* metaGroup   = desc.defineGroupParam( kParamMetaGroup );
 	
+	formatGroup->setLabel( "Format" );
+	videoGroup->setLabel( "Video" );
+	audioGroup->setLabel( "Audio" );
+	metaGroup->setLabel( "Metadata" );
+	
 	formatGroup->setAsTab( );
 	videoGroup->setAsTab( );
 	audioGroup->setAsTab( );
 	metaGroup->setAsTab( );
 
+	
+	/// FORMAT PARAMETERS
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
 	for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
@@ -145,6 +357,14 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	format->setDefault( default_format );
 	format->setParent( formatGroup );
 
+	AVFormatContext* avFormatContext;
+	avFormatContext = avformat_alloc_context();
+	
+	addOptionsFromAVOption( desc, formatGroup, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
+
+	avformat_free_context( avFormatContext );
+	
+	/// VIDEO PARAMETERS
 	int default_codec = 0;
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
 	for( std::vector<std::string>::const_iterator itShort = writer.getVideoCodecsShort().begin(),
@@ -160,7 +380,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	}
 	videoCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	videoCodec->setDefault( default_codec );
-
+	videoCodec->setParent( videoGroup );
 	
 	const std::vector<std::string> codecListWithPreset = writer.getPresets().getCodecListWithConfig();
 	BOOST_FOREACH( const std::string& codecName, codecListWithPreset )
@@ -169,7 +389,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		if( codecList.empty() )
 			continue;
 		
-		OFX::ChoiceParamDescriptor* choiceConfig = desc.defineChoiceParam( codecName + kParamPresetPostfix );
+		OFX::ChoiceParamDescriptor* choiceConfig = desc.defineChoiceParam( codecName + kParamVideoPreset );
 		choiceConfig->setLabel( codecName + " Preset" );
 		choiceConfig->setDefault( 0 );
 		
@@ -177,7 +397,37 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		{
 			choiceConfig->appendOption( codec );
 		}
+		choiceConfig->setParent( videoGroup );
 	}
+	
+	AVCodecContext* avCodecContext;
+/*#if FF_API_ALLOC_CONTEXT
+	avCodecContext = avcodec_alloc_context3();
+#else*/
+	avCodecContext = avcodec_alloc_context();
+//#endif
+	
+	addOptionsFromAVOption( desc, videoGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	
+	/// AUDIO PARAMETERS
+	int default_audio_codec = 0;
+	OFX::ChoiceParamDescriptor* audioCodec = desc.defineChoiceParam( kParamAudioCodec );
+	for( std::vector<std::string>::const_iterator itShort = writer.getAudioCodecsShort().begin(),
+		itLong  = writer.getAudioCodecsLong().begin(),
+		itEnd = writer.getAudioCodecsShort().end();
+		itShort != itEnd;
+		++itShort,
+		++itLong )
+	{
+		audioCodec->appendOption( *itShort, *itLong );
+		if( (*itShort) == "pcm_s24be" )
+			default_audio_codec = audioCodec->getNOptions() - 1;
+	}
+	audioCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	audioCodec->setDefault( default_audio_codec );
+	audioCodec->setParent( audioGroup );
+	
+	addOptionsFromAVOption( desc, audioGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, AV_OPT_FLAG_VIDEO_PARAM );
 }
 
 /**

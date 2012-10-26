@@ -1,5 +1,5 @@
 #include "FFmpeg.hpp"
-
+#include <iostream>
 
 namespace tuttle {
 namespace plugin {
@@ -78,6 +78,37 @@ const std::string FFmpeg::codecType_toString( const AVMediaType codec_type )
         return "CODEC_TYPE not handle.";
 }
 
+std::vector<AVPrivOption> FFmpeg::getAVOptions( const AVClass* av_class )
+{
+	std::vector<AVPrivOption> list;
+	
+	const AVOption *opt= av_class->option;
+
+	while( opt )
+	{
+		if( opt->help )
+			std::cout << opt->name << ": " << opt->help <<  std::endl;
+		else
+			std::cout << opt->name << std::endl;
+
+		opt = av_opt_next( (void*)av_class, opt );
+	}
+
+	/*
+	AV_OPT_TYPE_FLAGS,
+	AV_OPT_TYPE_INT,
+	AV_OPT_TYPE_INT64,
+	AV_OPT_TYPE_DOUBLE,
+	AV_OPT_TYPE_FLOAT,
+	AV_OPT_TYPE_STRING,
+	AV_OPT_TYPE_RATIONAL,
+	AV_OPT_TYPE_BINARY,  ///< offset must point to a pointer immediately followed by an int for the length
+	AV_OPT_TYPE_CONST = 128,
+	AV_OPT_TYPE_IMAGE_SIZE = MKBETAG('S','I','Z','E'), ///< offset must point to two consecutive integers
+	*/
+	
+	return list;
+}
 
 /*
  #define VALUE_AND_NAME(e) e, #e
