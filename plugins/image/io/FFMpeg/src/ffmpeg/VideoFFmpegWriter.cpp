@@ -259,7 +259,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
 			pkt.flags |= AV_PKT_FLAG_KEY;
 
-		out_frame->pts = pts++;
+		out_frame->pts = pts;
+		pts += _stream->codec->time_base.num;
 		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame,  &hasFrame );
 		if ( ret < 0 )
 			return false;
