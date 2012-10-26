@@ -49,14 +49,14 @@ int angle_cam = 60;
 // viewing properties - viewport
 int w_out, h_out;
 float scale = 1.0;
-int xmin_viewport, ymin_viewport;
+int xMinViewport, yMinViewport;
 
 // viewing properties - zoom
-float fac_zoom = 1.25;
-float cur_zoom = 1.0;
+float factorZoom = 1.25;
+float currentZoom = 1.0;
 
 // viewing properties - transformations
-float x1_quad, x2_quad, y1_quad, y2_quad;
+float x1Quad, x2Quad, y1Quad, y2Quad;
 bool flip = false;
 bool flop = false;
 
@@ -87,8 +87,8 @@ void reshape(int width,int height)
 		yPos = 0.0;
 	}
 
-	xmin_viewport = xPos;
-	ymin_viewport = yPos;
+	xMinViewport = xPos;
+	yMinViewport = yPos;
 
 	scale = w/w_out;
 	
@@ -231,11 +231,11 @@ void display()
 	
 	glBegin (GL_QUADS);
 	
-	float x1 = x1_quad;
-	float x2 = x2_quad;
+	float x1 = x1Quad;
+	float x2 = x2Quad;
 	
-	float y1 = y1_quad;
-	float y2 = y2_quad;
+	float y1 = y1Quad;
+	float y2 = y2Quad;
 	
 	if( flip )
 	{
@@ -293,18 +293,18 @@ void displayHelp()
 
 void move(float x, float y)
 {
-        x1_quad += x;
-	x2_quad += x;
-	y1_quad += y;
-	y2_quad += y;
+        x1Quad += x;
+	x2Quad += x;
+	y1Quad += y;
+	y2Quad += y;
 }
 
 void zoom(float factor)
 {  
-	x1_quad *= factor;
-	x2_quad *= factor;
-	y1_quad *= factor;
-	y2_quad *= factor;
+	x1Quad *= factor;
+	x2Quad *= factor;
+	y1Quad *= factor;
+	y2Quad *= factor;
 }     
 
 void keyboard(unsigned char k, int x, int y)
@@ -328,11 +328,11 @@ void keyboard(unsigned char k, int x, int y)
 			break;
 		case 'z':
 			glutReshapeWindow( w_out, h_out );
-			cur_zoom = 1.0;
-			x1_quad = -1.0;
-			x2_quad = 1.0;
-			y1_quad = -1.0;
-			y2_quad = 1.0;
+			currentZoom = 1.0;
+			x1Quad = -1.0;
+			x2Quad = 1.0;
+			y1Quad = -1.0;
+			y2Quad = 1.0;
 			glutPostRedisplay();
 			break;
 		case 'h':
@@ -403,8 +403,8 @@ void mouse ( int button, int state, int x, int y )
 	        int mapX, mapY, itX, itY;
 		float mx, my;
 
-		mapX = (x - xmin_viewport)/scale;
-		mapY = (y - ymin_viewport)/scale;
+		mapX = (x - xMinViewport)/scale;
+		mapY = (y - yMinViewport)/scale;
 
 		if( !flip )
 		{
@@ -417,10 +417,10 @@ void mouse ( int button, int state, int x, int y )
 	        }
 
 		mx = (float)mapX / (float)img.width * 2.0 - 1.0;
-		itX = ((x1_quad - mx) / (cur_zoom * 2.0) * (float)img.width * -1.0) + 0.5;
+		itX = ((x1Quad - mx) / (currentZoom * 2.0) * (float)img.width * -1.0) + 0.5;
 
 		my = (float)mapY / (float)img.height * 2.0 - 1.0;
-		itY = ((y1_quad - my) / (cur_zoom * 2.0) * (float)img.height * -1.0) + 0.5;
+		itY = ((y1Quad - my) / (currentZoom * 2.0) * (float)img.height * -1.0) + 0.5;
 		
 		std::cout << "at " << std::setw(4) << itX << "," << std::setw(4) << (int)img.height - itY << ": ";
 
@@ -453,14 +453,14 @@ void mouse ( int button, int state, int x, int y )
 	}
 	if( state == 0 && button == 3)
 	{
-	        cur_zoom *= fac_zoom;
-		zoom(fac_zoom);
+	        currentZoom *= factorZoom;
+		zoom(factorZoom);
 		glutPostRedisplay ();
 	}
 	if( state == 0 && button == 4)
 	{
-	        cur_zoom /= fac_zoom;
-		zoom(1.0/fac_zoom);
+	        currentZoom /= factorZoom;
+		zoom(1.0/factorZoom);
 		glutPostRedisplay ();
 	}
 
@@ -472,8 +472,8 @@ void motion ( int x, int y )
 {
         float x_diff, y_diff;
 
-	x_diff = (x - x_mouse_ref) / cur_zoom;
-	y_diff = (y_mouse_ref - y) / cur_zoom;
+	x_diff = (x - x_mouse_ref) / currentZoom;
+	y_diff = (y_mouse_ref - y) / currentZoom;
 
 	
 	if( flip )
@@ -486,8 +486,8 @@ void motion ( int x, int y )
 	        x_diff *= -1.0;
 	}
 
-	move(cur_zoom / img.width * 2 * x_diff,
-	     cur_zoom / img.height * 2 * y_diff);
+	move(currentZoom / img.width * 2 * x_diff,
+	     currentZoom / img.height * 2 * y_diff);
 			
 	x_mouse_ref = x;	
 	y_mouse_ref = y;
@@ -510,10 +510,10 @@ void openGLWindow( const size_t& width, const size_t& height )
 	w_out = width;
 	h_out = height;
 
-	x1_quad = -1.0;
-	x2_quad = 1.0;
-	y1_quad = -1.0;
-	y2_quad = 1.0;
+	x1Quad = -1.0;
+	x2Quad = 1.0;
+	y1Quad = -1.0;
+	y2Quad = 1.0;
 	
 	glutDisplayFunc (display);
 	
