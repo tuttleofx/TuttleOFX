@@ -9,7 +9,7 @@ namespace tuttle {
 namespace plugin {
 namespace outputBuffer {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**
@@ -45,7 +45,6 @@ void OutputBufferPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsMultiResolution( false );
-	desc.setSupportsTiles( false );
 }
 
 /**
@@ -105,7 +104,16 @@ void OutputBufferPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	callbackDestroyCustomData->setAnimates( false );
 	callbackDestroyCustomData->setDefault( "" );
 
-
+	OFX::Int2DParamDescriptor* size = desc.defineInt2DParam( kParamMaxImageSize );
+	size->setLabel( "Maximum Output Image Size" );
+	size->setHint("This is the expected size of the image\n"
+		"The output will never exceed this size.\n"
+		"This param is ignored if either dimension is 0.\n"
+		);
+	size->setRange( 0, 0, std::numeric_limits<int>::max(), std::numeric_limits<int>::max() );
+	size->setIsPersistant( false );
+	size->setAnimates( false );
+	size->setDefault( 0, 0 );
 }
 
 /**
