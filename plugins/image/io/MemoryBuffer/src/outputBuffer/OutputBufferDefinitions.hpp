@@ -12,6 +12,7 @@ namespace outputBuffer {
 static const std::string kParamOutputCallbackPointer = "callbackPointer";
 static const std::string kParamOutputCustomData = "customData";
 static const std::string kParamOutputCallbackDestroyCustomData = "callbackDestroyCustomData";
+static const std::string kParamMaxImageSize = "max_image_size";
 
 extern "C" {
 	typedef void* CustomDataPtr;
