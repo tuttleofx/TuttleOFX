@@ -876,7 +876,7 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 						     OfxPointD renderScale,
 						     const OfxRectD& roi,
-						     std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC
+						     std::map<std::string, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC
 {
 	// reset the map
 	rois.clear();
@@ -896,7 +896,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 				{
 					/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
 					OfxRectD roi = clip.second->fetchRegionOfDefinition( time );
-					rois[clip.second] = roi;
+					rois[clip.second->getName()] = roi;
 				}
 			}
 		}
@@ -981,12 +981,12 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 
 						// clamp it to the clip's rod
 						thisRoi          = clamp( thisRoi, inputsRodIntersection );
-						rois[clip.second] = thisRoi;
+						rois[clip.second->getName()] = thisRoi;
 					}
 					else
 					{
 						/// not supporting tiles on this input, so set it to the rod
-						rois[clip.second] = inputsRodIntersection;
+                                                rois[clip.second->getName()] = inputsRodIntersection;
 					}
 				}
 			}
