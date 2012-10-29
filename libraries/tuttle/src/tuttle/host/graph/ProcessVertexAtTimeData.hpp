@@ -117,8 +117,8 @@ public:
 		OfxRectD _renderRoD; // is it a good thing to store this here ?
 		OfxRectD _renderRoI;
 
-		typedef std::map<tuttle::host::ofx::attribute::OfxhClipImage*, OfxRectD> MapClipImageRod;
-		MapClipImageRod _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
+	        typedef std::map<std::string, OfxRectD> MapClipImageRoI;
+		MapClipImageRoI _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
 
 	} _apiImageEffect;
 	/// @}

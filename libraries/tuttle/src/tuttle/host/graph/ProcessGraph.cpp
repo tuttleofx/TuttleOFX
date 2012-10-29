@@ -5,6 +5,8 @@
 
 #include <boost/foreach.hpp>
 
+#include <map>
+
 namespace tuttle {
 namespace host {
 namespace graph {
@@ -441,6 +443,45 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 					TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
 					graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
 					renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
+				}
+
+                                // Set the RoI of each node based on the values calculated in preprocess 2 step
+				{
+                                  TUTTLE_TCOUT("---------------------------------------- setting render RoIs" );
+				  BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor &ed, renderGraphAtTime.getEdges() ) {
+				    const EdgeAtTime& e = renderGraphAtTime.instance( ed );
+
+				    // These are backwards from what you might expect:
+				    //   the "Source" vertex gets the output images of the "Target"
+				    const VertexAtTime& outputV = renderGraphAtTime.sourceInstance( ed );
+				    VertexAtTime& inputV = renderGraphAtTime.targetInstance( ed );
+				    ProcessVertexAtTimeData& inData = inputV.getProcessDataAtTime();
+				    const ProcessVertexAtTimeData& outData = outputV.getProcessDataAtTime();
+
+                                    typedef ProcessVertexAtTimeData::ImageEffect::MapClipImageRoI MapClipImageRoI;
+                                    MapClipImageRoI::const_iterator newRoI;
+
+                                    // Vertexes contain references to the INode base class of the process node
+                                    // so we can't access the supportsTiles() function
+                                    //
+                                    // if (inputV.supportsTiles()) {
+                                    if (inputV.getProcessNode().getProperties().getIntProperty( kOfxImageEffectPropSupportsTiles ) != 0) {
+
+                                      newRoI = outData._apiImageEffect._inputsRoI.find(e.getInAttrName());
+                                      if (outData._apiImageEffect._inputsRoI.end() != newRoI) {
+                                        TUTTLE_TCOUT("Setting renderRoI for " << inputV << " to (" << 
+                                                newRoI->second.x1 << "," << newRoI->second.y1 << ") -> (" <<
+                                                newRoI->second.x2 << "," << newRoI->second.y2 << ")");
+
+                                        inData._apiImageEffect._renderRoI.x1 = newRoI->second.x1;
+                                        inData._apiImageEffect._renderRoI.x2 = newRoI->second.x2;
+                                        inData._apiImageEffect._renderRoI.y1 = newRoI->second.y1;
+                                        inData._apiImageEffect._renderRoI.y2 = newRoI->second.y2;
+                                        
+                                      }
+                                    }
+
+				  }
 				}
 				
 		#ifndef TUTTLE_PRODUCTION

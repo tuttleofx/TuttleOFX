@@ -364,7 +364,7 @@ public:
 	virtual void getRegionOfInterestAction( OfxTime time,
 	                                        OfxPointD renderScale,
 	                                        const OfxRectD& roi,
-	                                        std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC;
+	                                        std::map<std::string, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC;
 
 	// get frames needed to render the given frame
 	virtual void getFramesNeededAction( OfxTime   time,

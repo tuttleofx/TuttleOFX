@@ -44,13 +44,10 @@ std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTimeData& vData
 			os << "renderScale:" << vData._nodeData->_renderScale << std::endl;
 
 			os << "clips:" << vData._apiImageEffect._inputsRoI.size() << std::endl;
-			BOOST_FOREACH( const ProcessVertexAtTimeData::ImageEffect::MapClipImageRod::value_type & item, vData._apiImageEffect._inputsRoI )
+			BOOST_FOREACH( const ProcessVertexAtTimeData::ImageEffect::MapClipImageRoI::value_type & item, vData._apiImageEffect._inputsRoI )
 			{
-				if( item.first )
-				{
-					os << "  clip:" << item.first->getName() << std::endl;
-					os << "  roi:" << item.second << std::endl;
-				}
+                          os << "  clip:" << item.first << std::endl;
+                          os << "  roi:" << item.second << std::endl;
 			}
 			break;
 		case INode::eNodeTypeGraph:
