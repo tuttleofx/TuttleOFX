@@ -337,8 +337,8 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	videoGroup->setAsTab( );
 	audioGroup->setAsTab( );
 	metaGroup->setAsTab( );
-
 	
+
 	/// FORMAT PARAMETERS
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
@@ -359,10 +359,23 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 
 	AVFormatContext* avFormatContext;
 	avFormatContext = avformat_alloc_context();
-	
 	addOptionsFromAVOption( desc, formatGroup, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
-
 	avformat_free_context( avFormatContext );
+	
+	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
+	formatDetailledGroup->setLabel( "Detailled" );
+	formatDetailledGroup->setAsTab( );
+	formatDetailledGroup->setParent( formatGroup );
+	
+	std::vector<AVPrivOption> privOptions = writer.getFormatPrivOpts();
+	
+	BOOST_FOREACH( AVPrivOption& opt, privOptions )
+	{
+		if(opt.o.name)
+		{
+			TUTTLE_COUT( opt.class_name << "\t" << opt.o.name );
+		}
+	}
 	
 	/// VIDEO PARAMETERS
 	int default_codec = 0;
@@ -401,13 +414,22 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	}
 	
 	AVCodecContext* avCodecContext;
-/*#if FF_API_ALLOC_CONTEXT
-	avCodecContext = avcodec_alloc_context3();
-#else*/
+#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT( 53, 8, 0 )
 	avCodecContext = avcodec_alloc_context();
-//#endif
+	// deprecated in the same version
+	//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
+#else
+	AVCodec* avCodec = NULL;
+	avCodecContext = avcodec_alloc_context3( avCodec );
+#endif
 	
 	addOptionsFromAVOption( desc, videoGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	
+	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
+	videoDetailledGroup->setLabel( "Detailled" );
+	videoDetailledGroup->setAsTab( );
+	videoDetailledGroup->setParent( videoGroup );
+	
 	
 	/// AUDIO PARAMETERS
 	int default_audio_codec = 0;
@@ -428,6 +450,19 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	audioCodec->setParent( audioGroup );
 	
 	addOptionsFromAVOption( desc, audioGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, AV_OPT_FLAG_VIDEO_PARAM );
+	
+	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
+	audioDetailledGroup->setLabel( "Detailled" );
+	audioDetailledGroup->setAsTab( );
+	audioDetailledGroup->setParent( audioGroup );
+	
+	av_free( avCodecContext );
+	
+	/// METADATA PARAMETERS
+	OFX::GroupParamDescriptor* metaDetailledGroup   = desc.defineGroupParam( kParamMetaDetailledGroup );
+	metaDetailledGroup->setLabel( "Detailled" );
+	metaDetailledGroup->setAsTab( );
+	metaDetailledGroup->setParent( metaGroup );
 }
 
 /**

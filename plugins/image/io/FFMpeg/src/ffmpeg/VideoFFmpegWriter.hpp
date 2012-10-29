@@ -147,6 +147,21 @@ public:
 		return _audioCodecsLongNames;
 	}
 	
+	const std::vector<AVPrivOption>& getFormatPrivOpts() const
+	{
+		return _formatPrivOpts;
+	}
+
+	const std::vector<AVPrivOption>& getVideoCodecPrivOpts() const
+	{
+		return _videoCodecPrivOpts;
+	}
+	
+	const std::vector<AVPrivOption>& getAudioCodecPrivOpts() const
+	{
+		return _audioCodecPrivOpts;
+	}
+	
 	void setVideoCodec( const unsigned int id )
 	{
 		_videoCodecName = _videoCodecsShortNames[id];
@@ -202,6 +217,10 @@ private:
 	AVCodec*                       _videoCodec;
 	AVCodec*                       _audioCodec;
 	AVOutputFormat*                _ofmt;
+	
+	std::vector<AVPrivOption>      _formatPrivOpts;
+	std::vector<AVPrivOption>      _videoCodecPrivOpts;
+	std::vector<AVPrivOption>      _audioCodecPrivOpts;
 	
 	std::vector<std::string>       _formatsLongNames;
 	std::vector<std::string>       _formatsShortNames;

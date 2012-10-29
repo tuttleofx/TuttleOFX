@@ -46,6 +46,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	av_register_all();
 
 	AVOutputFormat* fmt = av_oformat_next( NULL );
+	
 	while( fmt )
 	{
 		// add only format with video track
@@ -56,12 +57,27 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 				_formatsLongNames.push_back( std::string( fmt->long_name ) + std::string( " (" ) + std::string( fmt->name ) + std::string( ")" ) );
 				_formatsShortNames.push_back( std::string( fmt->name ) );
 			}
+			if( fmt->priv_class )
+			{
+				const AVOption *o = NULL;
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 51, 12, 0 )
+				while( ( o = av_next_option( &fmt->priv_class, o ) ) )
+#else
+				while( ( o = av_opt_next( &fmt->priv_class, o ) ) )
+#endif
+				{
+					AVPrivOption avprivopt;
+					avprivopt.o = *o;
+					avprivopt.class_name = std::string( fmt->name );
+					_formatPrivOpts.push_back( avprivopt );
+				}
+			}
 		}
 		fmt = av_oformat_next( fmt );
 	}
 
 	AVCodec* c = NULL;
-	while( c = av_codec_next( c ) )
+	while( ( c = av_codec_next( c ) ) )
 	{
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT( 53, 34, 0 )
 		if( c->encode2 )
@@ -78,6 +94,21 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 						_videoCodecsLongNames.push_back( std::string( c->long_name ) );
 						_videoCodecsShortNames.push_back( std::string( c->name ) );
 					}
+					if( c->priv_class )
+					{
+						const AVOption *o = NULL;
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 51, 12, 0 )
+						while( ( o = av_next_option( &c->priv_class, o ) ) )
+#else
+						while( ( o = av_opt_next( &c->priv_class, o ) ) )
+#endif
+						{
+							AVPrivOption avprivopt;
+							avprivopt.o = *o;
+							avprivopt.class_name = std::string( c->name );
+							_videoCodecPrivOpts.push_back( avprivopt );
+						}
+					}
 					break;
 				}
 				case AVMEDIA_TYPE_AUDIO:
@@ -86,6 +117,21 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 					{
 						_audioCodecsLongNames.push_back( std::string( c->long_name ) );
 						_audioCodecsShortNames.push_back( std::string( c->name ) );
+					}
+					if( c->priv_class )
+					{
+						const AVOption *o = NULL;
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 51, 12, 0 )
+						while( ( o = av_next_option( &c->priv_class, o ) ) )
+#else
+						while( ( o = av_opt_next( &c->priv_class, o ) ) )
+#endif
+						{
+							AVPrivOption avprivopt;
+							avprivopt.o = *o;
+							avprivopt.class_name = std::string( c->name );
+							_audioCodecPrivOpts.push_back( avprivopt );
+						}
 					}
 					break;
 				}
