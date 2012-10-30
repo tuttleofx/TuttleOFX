@@ -88,7 +88,7 @@ struct matrices_lab_to_rgb_t
 		_LAB_2_LMS(1, 1) =  sqrt6_6;
 		_LAB_2_LMS(1, 2) = -sqrt2_2;
 		_LAB_2_LMS(2, 0) =  sqrt3_3;
-		_LAB_2_LMS(2, 1) = -2.0 * sqrt3_3;
+		_LAB_2_LMS(2, 1) = -2.0 * sqrt6_6;
 		_LAB_2_LMS(2, 2) =  0.0;
 
 		_LMS_2_RGB(0, 0) =  4.4679;
