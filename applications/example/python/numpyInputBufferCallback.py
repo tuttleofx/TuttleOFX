@@ -9,17 +9,20 @@ def getImage(time):
 	img = numpy.flipud(img)
 	return (img.tostring(), img.shape[1], img.shape[0], img.strides[0])
 
-tuttle.core().preload()
-g = tuttle.Graph()
 
-ib = g.createInputBuffer()
-ib.setComponents( tuttle.InputBufferWrapper.ePixelComponentRGB );
-ib.setBitDepth( tuttle.InputBufferWrapper.eBitDepthUByte );
-ib.setOrientation( tuttle.InputBufferWrapper.eImageOrientationFromTopToBottom );
-ib.setPyCallback( getImage )
+if __name__ == "__main__":
 
-w = g.createNode("tuttle.pngwriter", filename="foo.png")
+	tuttle.core().preload()
 
-g.connect( ib.getNode(), w )
-g.compute( w )
+	g = tuttle.Graph()
 
+	ib = g.createInputBuffer()
+	ib.setComponents( tuttle.InputBufferWrapper.ePixelComponentRGB );
+	ib.setBitDepth( tuttle.InputBufferWrapper.eBitDepthUByte );
+	ib.setOrientation( tuttle.InputBufferWrapper.eImageOrientationFromTopToBottom );
+	ib.setPyCallback( getImage )
+
+	w = g.createNode("tuttle.pngwriter", filename="foo.png")
+
+	g.connect( ib.getNode(), w )
+	g.compute( w )

@@ -1,21 +1,25 @@
-from pyTuttle import tuttle
+from pyTuttle.tuttle import *
 
-tuttle.core().preload()
+if __name__ == "__main__":
+	core().preload()
 
-g = tuttle.Graph()
-read = g.createNode( "tuttle.pngreader", "data/input.png" )
-invert = g.createNode( "tuttle.invert" )
+	outputCache = MemoryCache()
+	compute(
+		outputCache,
+		[
+			NodeInit( "tuttle.checkerboard", format="PAL" ),
+			NodeInit( "tuttle.colortransform", offsetGlobal=.2 ),
+			NodeInit( "tuttle.invert" ),
+		] )
 
-g.connect( [read,invert] )
 
-outputCache = tuttle.MemoryCache()
-g.compute( outputCache, invert )
+	#print 'invert name:', invert.getName()
 
+	imgRes = outputCache.get(0);
 
-print 'blur name:', invert.getName()
+	print 'type imgRes:', type( imgRes )
+	print 'imgRes:', dir( imgRes )
+	print 'FullName:', imgRes.getFullName()
+	print 'MemorySize:', imgRes.getMemorySize()
 
-imgRes = outputCache.get( invert.getName(), 0 );
-
-print 'type imgRes:', type( imgRes )
-print 'imgRes:', dir( imgRes )
-print 'MemorySize:', imgRes.getMemorySize()
+	img = imgRes.getNumpyImage()
