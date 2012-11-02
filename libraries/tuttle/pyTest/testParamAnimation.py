@@ -1,12 +1,13 @@
 from pyTuttle import tuttle
 
-if __name__ == "__main__":
+def setUp():
 	tuttle.core().preload()
 
+def testDoubleParamAnimation():
 	g = tuttle.Graph()
-	read = g.createNode( "tuttle.checkerboard", size=[100,100] )
+	read = g.createNode( "tuttle.checkerboard", size=[50,50] )
 	blur = g.createNode( "tuttle.blur", size={1.0:[80.0, 40.0], 9.0:0.0} )
-	write = g.createNode( "tuttle.pngwriter", filename="data/output_####.png" )
+	write = g.createNode( "tuttle.pngwriter", filename=".tests/output_####.png" )
 
 	# Read arbitrary blur values, to see the interpolation
 	s = blur.getParam("size")
@@ -17,4 +18,4 @@ if __name__ == "__main__":
 		         s.getDoubleValueAtTimeAndIndex(t, 1), ")"
 
 	g.connect( [read,blur,write] )
-	g.compute( write, tuttle.ComputeOptions( 1, 9, 3 ) )
+	g.compute( write, tuttle.ComputeOptions( 9, 9, 3 ) )

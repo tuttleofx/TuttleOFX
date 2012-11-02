@@ -3,6 +3,10 @@ from pyTuttle import tuttle
 import numpy
 import Image
 
+def setUp():
+	tuttle.core().preload()
+
+
 # This is called by Tuttle as an input of the graph
 def getImage(time):
 	img = numpy.asarray( Image.open("data/input.jpg") )
@@ -10,9 +14,7 @@ def getImage(time):
 	return (img.tostring(), img.shape[1], img.shape[0], img.strides[0])
 
 
-if __name__ == "__main__":
-
-	tuttle.core().preload()
+def testInputBufferCallback():
 
 	g = tuttle.Graph()
 
@@ -22,7 +24,7 @@ if __name__ == "__main__":
 	ib.setOrientation( tuttle.InputBufferWrapper.eImageOrientationFromTopToBottom );
 	ib.setPyCallback( getImage )
 
-	w = g.createNode("tuttle.pngwriter", filename="foo.png")
+	w = g.createNode("tuttle.pngwriter", filename=".tests/foo.png")
 
 	g.connect( ib.getNode(), w )
 	g.compute( w )

@@ -1,8 +1,9 @@
 from pyTuttle import tuttle
 
-if __name__ == "__main__":
+def setUp():
 	tuttle.core().preload()
 
+def testBrowsePlugins():
 	pluginCache = tuttle.core().getPluginCache()
 
 	print [p for p in pluginCache.getPluginPath()]

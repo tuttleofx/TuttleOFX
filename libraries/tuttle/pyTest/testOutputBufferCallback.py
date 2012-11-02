@@ -1,7 +1,9 @@
-#!/usr/bin/env python
 from pyTuttle import tuttle
 import Image
 import numpy
+
+def setUp():
+	tuttle.core().preload()
 
 # This is called by Tuttle with the output image data
 def writeImage(time, data, width, height, rowSizeBytes, bitDepth, components, field):
@@ -11,9 +13,7 @@ def writeImage(time, data, width, height, rowSizeBytes, bitDepth, components, fi
 	Image.fromarray(outImage).save("foo.jpg")
 
 
-if __name__ == "__main__":
-
-	tuttle.Core.instance().preload()
+def testOutputBufferCallback():
 
 	g = tuttle.Graph()
 

@@ -1,7 +1,9 @@
 from pyTuttle.tuttle import *
 
-if __name__ == "__main__":
+def setUp():
 	core().preload()
+
+def testMemoryCache():
 
 	outputCache = MemoryCache()
 	compute(
