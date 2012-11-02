@@ -36,12 +36,23 @@ OpenImageIOWriterProcess<View>::OpenImageIOWriterProcess( OpenImageIOWriterPlugi
  */
 template<class View>
 ETuttlePluginBitDepth OpenImageIOWriterProcess<View>::getDefaultBitDepth(const std::string& filepath, const ETuttlePluginBitDepth &bitDepth){
-	if (bitDepth == eTuttlePluginBitDepthUnset) {
-			std::string format = OpenImageIO::Filesystem::extension ( filepath);
-			if(format.find("exr") != std::string::npos)
-				return eTuttlePluginBitDepth32f;
-			else
+	if (bitDepth == eTuttlePluginBitDepthAuto) {
+			std::string format = OpenImageIO::Filesystem::extension (filepath);
+			if(format.find("exr") != std::string::npos || format.find("hdr") != std::string::npos || format.find("rgbe") != std::string::npos){							
+				return eTuttlePluginBitDepth32f;		
+			}else if(format.find("jpg") != std::string::npos || format.find("jpeg") != std::string::npos || 
+					 format.find("bmp") != std::string::npos || format.find("dds") != std::string::npos  || 
+					 format.find("ico") != std::string::npos || format.find("jfi") != std::string::npos  ||
+					 format.find("pgm") != std::string::npos || format.find("pnm") != std::string::npos  ||
+					 format.find("ppm") != std::string::npos || format.find("pnm") != std::string::npos  ||
+					 format.find("pic") != std::string::npos
+					 ) {				
+				return eTuttlePluginBitDepth8;
+			}else{
+				//bmp, cin, dpx, fits, j2k, j2c, jp2, jpe, png, sgi, tga, tif, tiff, tpic, webp 
 				return eTuttlePluginBitDepth16;
+			}
+
 	}
 	return bitDepth;
 }

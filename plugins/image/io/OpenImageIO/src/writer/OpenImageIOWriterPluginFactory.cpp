@@ -95,7 +95,7 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
     bitDepth->appendOption( kTuttlePluginBitDepth16f );
     bitDepth->appendOption( kTuttlePluginBitDepth32 );
     bitDepth->appendOption( kTuttlePluginBitDepth32f );
-    bitDepth->setDefault( eTuttlePluginBitDepthUnset );/// default value
+    bitDepth->setDefault( eTuttlePluginBitDepthAuto );
 
     OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamOutputQuality );
     quality->setLabel( kParamOutputQualityLabel );
