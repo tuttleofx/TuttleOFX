@@ -39,6 +39,7 @@ private:
 	ofx::OfxhPluginCache _pluginCache;
 	memory::IMemoryPool& _memoryPool;
 	memory::IMemoryCache& _memoryCache;
+	bool _isPreloaded;
 	
 	Preferences _preferences;
 

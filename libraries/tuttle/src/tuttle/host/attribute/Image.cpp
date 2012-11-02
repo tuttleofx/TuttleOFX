@@ -67,10 +67,19 @@ Image::~Image()
 	TUTTLE_TCOUT_VAR( getFullName() );
 }
 
-
 boost::uint8_t* Image::getPixelData()
 {
 	return reinterpret_cast<boost::uint8_t*>( _data->data() );
+}
+
+void* Image::getVoidPixelData()
+{
+	return reinterpret_cast<void*>( _data->data() );
+}
+
+char* Image::getCharPixelData()
+{
+	return reinterpret_cast<char*>( _data->data() );
 }
 
 boost::uint8_t* Image::getOrientedPixelData( const EImageOrientation orientation )
