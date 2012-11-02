@@ -33,17 +33,59 @@ using namespace terry::color;
 using namespace terry::color::transfer;
 using namespace terry::numeric;
 
+template< typename Pixel, typename CPixel >
+CPixel getPixel( const Pixel p, const EColorspace eColorspace )
+{
+	switch( eColorspace )
+	{
+		case eColorspaceNone:
+		{
+			return p;
+		}
+		case eColorspaceLMS:
+		{
+			return pixel_rgb_to_lms_t<Pixel, CPixel>()( p );
+		}
+		case eColorspaceLab:
+		{
+			return pixel_rgb_to_lab_t<Pixel, CPixel>()( p );
+		}
+	}
+}
+
+template< typename Pixel, typename CPixel >
+CPixel setPixel( const Pixel p, const EColorspace eColorspace )
+{
+	switch( eColorspace )
+	{
+		case eColorspaceNone:
+		{
+			return p;
+		}
+		case eColorspaceLMS:
+		{
+			return pixel_lms_to_rgb_t<Pixel, CPixel>()( p );
+		}
+		case eColorspaceLab:
+		{
+			return pixel_lab_to_rgb_t<Pixel, CPixel>()( p );
+		}
+	}
+}
+
 template<class View>
 struct ColorParams
 {
 	typedef typename View::value_type Pixel;
 	Pixel _srcAverage, _dstAverage, _deviationRatio;
-
-	ColorParams( const Pixel& srcAverage, const Pixel& dstAverage, const Pixel& deviationRatio )
+	EColorspace _eColorspace;
+	
+	ColorParams( const Pixel& srcAverage, const Pixel& dstAverage, const Pixel& deviationRatio, const EColorspace eColorspace )
 	{
 		pixel_assigns_t<Pixel, Pixel>()( deviationRatio, _deviationRatio );
 		pixel_assigns_t<Pixel, Pixel>()( srcAverage, _srcAverage );
 		pixel_assigns_t<Pixel, Pixel>()( dstAverage, _dstAverage );
+		_eColorspace = eColorspace;
 
 //		TUTTLE_TCOUT_VAR(( get_color( _deviationRatio, red_t() ) ));
 //		TUTTLE_TCOUT_VAR(( get_color( _srcAverage, red_t() ) ));
@@ -54,14 +96,14 @@ struct ColorParams
 	{
 //		Pixel p2; pixel_assigns_t<Pixel, Pixel > ( )( p, p2 );
 		// RGB to LAB
-		Pixel p2 = pixel_rgb_to_lab_t<Pixel, Pixel>()( p );
+		Pixel p2 = getPixel<Pixel, Pixel>( p, _eColorspace );
 
 		pixel_minus_assign_t<Pixel, Pixel > ( )( _srcAverage, p2 );
 		p2 = pixel_multiplies_t<Pixel, Pixel, Pixel > ( )( _deviationRatio, p2 );
 		pixel_plus_assign_t<Pixel, Pixel > ( )( _dstAverage, p2 );
 
 		// LAB to RGB
-		return pixel_lab_to_rgb_t<Pixel, Pixel>()( p2 );
+		return setPixel<Pixel, Pixel>( p2, _eColorspace );
 	}
 };
 
@@ -74,7 +116,7 @@ ColorTransferProcess<View>::ColorTransferProcess( ColorTransferPlugin &effect )
 }
 
 template<class View>
-void ColorTransferProcess<View>::computeAverage( const View& image, Pixel& average, Pixel& deviation )
+void ColorTransferProcess<View>::computeAverage( const View& image, Pixel& average, Pixel& deviation, const EColorspace& eColorspace )
 {
 	typedef typename color_space_type<View>::type Colorspace;
 	typedef pixel<boost::gil::bits64f, layout<Colorspace> > CPixel;
@@ -94,7 +136,7 @@ void ColorTransferProcess<View>::computeAverage( const View& image, Pixel& avera
 		for( std::ssize_t x = 0; x < image.width( ); ++x, ++src_it )
 		{
 //			CPixel pix; pixel_assigns_t<Pixel, CPixel>()( * src_it, pix );
-			CPixel pix = pixel_rgb_to_lab_t<Pixel, CPixel>()( *src_it );
+			CPixel pix = getPixel<Pixel, CPixel>( *src_it, eColorspace );
 			pixel_plus_assign_t<CPixel, CPixel>()( pix, sumAverageLine );
 		}
 		pixel_divides_scalar_assign_t<double, CPixel>()( image.width(), sumAverageLine );
@@ -115,7 +157,7 @@ void ColorTransferProcess<View>::computeAverage( const View& image, Pixel& avera
 		for( std::ssize_t x = 0; x < image.width(); ++x, ++src_it )
 		{
 //			CPixel pix; pixel_assigns_t<Pixel, CPixel>()( *src_it, pix );
-			CPixel pix = pixel_rgb_to_lab_t<Pixel, CPixel>()( *src_it );
+			CPixel pix = getPixel<Pixel, CPixel>( *src_it, eColorspace );
 			pixel_minus_assign_t<CPixel>()( cAverage, pix );
 			pix = pixel_pow_t<CPixel, 2>()( pix );
 			pixel_plus_assign_t<CPixel>()( pix, sumDeviationLine );
@@ -173,12 +215,16 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 
 	// analyse srcRef and dstRef
 	Pixel srcRefDeviation, dstRefDeviation;
-	computeAverage( this->_srcRefView, _srcRefAverage, srcRefDeviation );
-	computeAverage( this->_dstRefView, _dstRefAverage, dstRefDeviation );
+	computeAverage( this->_srcRefView, _srcRefAverage, srcRefDeviation, _params._colorspace );
+	computeAverage( this->_dstRefView, _dstRefAverage, dstRefDeviation, _params._colorspace );
 	//TUTTLE_COUT_VAR4(_srcRefAverage[0], _srcRefDeviation[0], _dstRefAverage[0], _dstRefDeviation[0]);
 	
-//	TUTTLE_TCOUT_VAR(( get_color( dstRefDeviation, red_t() ) ));
-//	TUTTLE_TCOUT_VAR(( get_color( srcRefDeviation, red_t() ) ));
+	TUTTLE_TCOUT_VAR(( get_color( dstRefDeviation, red_t() ) ));
+	TUTTLE_TCOUT_VAR(( get_color( dstRefDeviation, green_t() ) ));
+	TUTTLE_TCOUT_VAR(( get_color( dstRefDeviation, blue_t() ) ));
+	TUTTLE_TCOUT_VAR(( get_color( srcRefDeviation, red_t() ) ));
+	TUTTLE_TCOUT_VAR(( get_color( srcRefDeviation, green_t() ) ));
+	TUTTLE_TCOUT_VAR(( get_color( srcRefDeviation, blue_t() ) ));
 
 	// now analyse the differences
 	pixel_zeros_t<Pixel>()( _deviationRatio );
@@ -223,7 +269,7 @@ void ColorTransferProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 							  procWindowSize.x, procWindowSize.y );
 
 	// fill dst: modify src using analyse of srcRef and dstRef differences
-	terry::algorithm::transform_pixels_progress( src, dst, ColorParams<View>( _srcRefAverage, _dstRefAverage, _deviationRatio ), *this );
+	terry::algorithm::transform_pixels_progress( src, dst, ColorParams<View>( _srcRefAverage, _dstRefAverage, _deviationRatio, _params._colorspace ), *this );
 }
 
 }

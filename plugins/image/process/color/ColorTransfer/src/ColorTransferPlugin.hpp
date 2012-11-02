@@ -12,8 +12,9 @@ namespace colorTransfer {
 template<typename Scalar>
 struct ColorTransferProcessParams
 {
-	Scalar _averageCoef;
-	Scalar _dynamicCoef;
+	EColorspace _colorspace;
+	Scalar      _averageCoef;
+	Scalar      _dynamicCoef;
 };
 
 /**
@@ -24,29 +25,24 @@ class ColorTransferPlugin : public ImageEffectGilPlugin
 public:
 	typedef double Scalar;
 public:
-    ColorTransferPlugin( OfxImageEffectHandle handle );
+	ColorTransferPlugin( OfxImageEffectHandle handle );
 
 public:
 	ColorTransferProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 
 	void render( const OFX::RenderArguments &args );
 	
 public:
-        OFX::Clip* _clipSrcRef; ///< Source reference
-        OFX::Clip* _clipDstRef; ///< Dest reference
+	OFX::Clip* _clipSrcRef; ///< Source reference
+	OFX::Clip* _clipDstRef; ///< Dest reference
 
-        OFX::DoubleParam* _paramAverageCoef;
-        OFX::DoubleParam* _paramDynamicCoef;
-
-//        OFX::Double2DParam* _paramRegionA;
-//        OFX::Double2DParam* _paramRegionB;
-//        OFX::BooleanParam* _paramSameRegion;
-//        OFX::Double2DParam* _paramInputRegionA;
-//        OFX::Double2DParam* _paramInputRegionB;
+	OFX::ChoiceParam* _paramColospace;
+	OFX::DoubleParam* _paramAverageCoef;
+	OFX::DoubleParam* _paramDynamicCoef;
 
 };
 

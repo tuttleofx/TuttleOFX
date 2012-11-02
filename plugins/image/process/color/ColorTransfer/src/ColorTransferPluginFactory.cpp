@@ -86,6 +86,14 @@ void ColorTransferPluginFactory::describeInContext( OFX::ImageEffectDescriptor& 
 //	dstRefClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstRefClip->setSupportsTiles( false );
 
+	OFX::ChoiceParamDescriptor* colorspace = desc.defineChoiceParam( kParamColorspace );
+	colorspace->setLabel( "Transformation colorspace" );
+	colorspace->setHint( "Apply the correction in the source / original colorspace" );
+	colorspace->appendOption( kParamColorspaceNone, "without color transformation" );
+	colorspace->appendOption( kParamColorspaceLMS, "apply correction in LMS colorspace" );
+	colorspace->appendOption( kParamColorspaceLab, "apply correction in L(alpha)(beta) colorspace" );
+	colorspace->setDefault( eColorspaceLab );
+	
 	OFX::DoubleParamDescriptor* averageCoef = desc.defineDoubleParam( kParamAverageCoef );
 	averageCoef->setLabel( "Average color coef" );
 	averageCoef->setDisplayRange( 0.0, 1.0 );
