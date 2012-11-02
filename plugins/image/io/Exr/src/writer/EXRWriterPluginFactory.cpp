@@ -78,7 +78,7 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth16f );
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 	bitDepth->appendOption( kTuttlePluginBitDepth32f );
-	bitDepth->setDefault( 2 );
+	bitDepth->setDefault( eTuttlePluginBitDepth32f );
 }
 
 /**
