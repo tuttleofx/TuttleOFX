@@ -4,6 +4,7 @@
 
 %include <boost_shared_ptr.i>
 %include <typemaps.i>
+%include <cdata.i>
 
 %shared_ptr(tuttle::host::attribute::Image)
 
@@ -27,7 +28,7 @@ namespace attribute {
 		def getImage(self):
 			bounds = self.getBounds()
 			return (
-					self.getCharPixelData(),
+					self.getVoidPixelData(),
 					bounds.x2 - bounds.x1,
 					bounds.y2 - bounds.y1,
 					self.getRowBytes(),
@@ -50,10 +51,18 @@ namespace attribute {
 			else:
 				raise LogicError('Unrecognized bit depth')
 			
-			print 'len(data):', len(data)
-			print 'rowSizeBytes*height:', rowSizeBytes*height
+			d = cdata(data, rowSizeBytes*height)
+			arraySize = width*height*self.getNbComponents()
+
+			print 'numpyBitDepth:', numpyBitDepth
+			print 'len(data):', len(d)
+			print 'rowSizeBytes:', rowSizeBytes
+			print 'height:', height
+			print 'arraySize:', arraySize
 			
-			flatarray = numpy.fromstring( data, numpyBitDepth, rowSizeBytes*height )
+			flatarray = numpy.fromstring( d, numpyBitDepth, arraySize )
+
+			print 'flatarray:', flatarray
 			outImage = numpy.array( numpy.flipud( numpy.reshape( flatarray, ( height, width, self.getNbComponents() ) ) ) )
 			return Image.fromarray(outImage)
 	}

@@ -9,7 +9,7 @@ def testMemoryCache():
 	compute(
 		outputCache,
 		[
-			NodeInit( "tuttle.checkerboard", format="PAL" ),
+			NodeInit( "tuttle.checkerboard", format="PAL", explicitConversion="8i" ),
 			NodeInit( "tuttle.colortransform", offsetGlobal=.2 ),
 			NodeInit( "tuttle.invert" ),
 		] )
