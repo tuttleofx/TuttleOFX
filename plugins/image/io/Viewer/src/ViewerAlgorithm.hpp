@@ -69,10 +69,11 @@ bool showGreenChannel = false;
 bool showBlueChannel = false;
 bool showAlphaChannel = false;
 
-void reshape(int width,int height)
+void reshape(int width, int height)
 {
         float w, h, xPos, yPos;
-	if( width < height )
+
+	if( (float)w_out/h_out > (float)width/height )
 	{
 		w = width;
 		h = 1.0f * h_out / w_out * (float)width;
