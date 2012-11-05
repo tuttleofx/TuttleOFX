@@ -422,13 +422,16 @@ void specialKeyboard( int k, int x, int y)
 }
 
 void mouse ( int button, int state, int x, int y )
-{    
+{
 	using namespace boost::gil;
 	if( state == 0 && button == 0 )
 	{
 		int iX, iY;
 
 		mapToImage(x, y, iX, iY);
+		
+		if( iX < 0 || iY < 0 || iX >= (int)img.width || iY >= (int)img.height )
+			return;
 		
 		std::cout << "at " << std::setw(4) << iX << "," << std::setw(4) << (int)img.height - iY << ": ";
 
