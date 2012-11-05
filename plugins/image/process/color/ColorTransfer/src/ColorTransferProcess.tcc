@@ -34,7 +34,7 @@ using namespace terry::color::transfer;
 using namespace terry::numeric;
 
 template< typename Pixel, typename CPixel >
-CPixel getPixel( const Pixel p, const EColorspace eColorspace )
+CPixel getPixel( const Pixel& p, const EColorspace eColorspace )
 {
 	switch( eColorspace )
 	{
@@ -54,7 +54,7 @@ CPixel getPixel( const Pixel p, const EColorspace eColorspace )
 }
 
 template< typename Pixel, typename CPixel >
-CPixel setPixel( const Pixel p, const EColorspace eColorspace )
+CPixel setPixel( const Pixel& p, const EColorspace eColorspace )
 {
 	switch( eColorspace )
 	{
@@ -92,7 +92,7 @@ struct ColorParams
 //		TUTTLE_TCOUT_VAR(( get_color( _dstAverage, red_t() ) ));
 	}
 
-	Pixel operator( )(const Pixel & p ) const
+	Pixel operator( )(const Pixel& p ) const
 	{
 //		Pixel p2; pixel_assigns_t<Pixel, Pixel > ( )( p, p2 );
 		// RGB to LAB
