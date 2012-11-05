@@ -69,10 +69,11 @@ bool showGreenChannel = false;
 bool showBlueChannel = false;
 bool showAlphaChannel = false;
 
-void reshape(int width,int height)
+void reshape(int width, int height)
 {
         float w, h, xPos, yPos;
-	if( width < height )
+
+	if( (float)w_out/h_out > (float)width/height )
 	{
 		w = width;
 		h = 1.0f * h_out / w_out * (float)width;
@@ -305,7 +306,32 @@ void zoom(float factor)
 	x2Quad *= factor;
 	y1Quad *= factor;
 	y2Quad *= factor;
-}     
+}    
+
+void mapToImage(int x, int y, int &iX, int &iY)
+{  
+        int mapX, mapY;
+	float mx, my;
+
+	mapX = (x - xMinViewport)/scale;
+	mapY = (y - yMinViewport)/scale;
+
+	if( !flip )
+	  {
+	    mapY = img.height - mapY;
+	  }
+	    
+	if( flop )
+	  {
+	    mapX = img.width - mapX;
+	  }
+
+	mx = (float)mapX / (float)img.width * 2.0 - 1.0;
+	iX = ((x1Quad - mx) / (currentZoom * 2.0) * (float)img.width * -1.0) + 0.5;
+
+	my = (float)mapY / (float)img.height * 2.0 - 1.0;
+	iY = ((y1Quad - my) / (currentZoom * 2.0) * (float)img.height * -1.0) + 0.5;	
+}    
 
 void keyboard(unsigned char k, int x, int y)
 {
@@ -400,33 +426,15 @@ void mouse ( int button, int state, int x, int y )
 	using namespace boost::gil;
 	if( state == 0 && button == 0 )
 	{
-	        int mapX, mapY, itX, itY;
-		float mx, my;
+	        int iX, iY;
 
-		mapX = (x - xMinViewport)/scale;
-		mapY = (y - yMinViewport)/scale;
-
-		if( !flip )
-		{
-		        mapY = img.height - mapY;
-	        }
-	    
-	        if( flop )
-	        {
-		        mapX = img.width - mapX;
-	        }
-
-		mx = (float)mapX / (float)img.width * 2.0 - 1.0;
-		itX = ((x1Quad - mx) / (currentZoom * 2.0) * (float)img.width * -1.0) + 0.5;
-
-		my = (float)mapY / (float)img.height * 2.0 - 1.0;
-		itY = ((y1Quad - my) / (currentZoom * 2.0) * (float)img.height * -1.0) + 0.5;
+		mapToImage(x, y, iX, iY);
 		
-		std::cout << "at " << std::setw(4) << itX << "," << std::setw(4) << (int)img.height - itY << ": ";
+		std::cout << "at " << std::setw(4) << iX << "," << std::setw(4) << (int)img.height - iY << ": ";
 
 		for( size_t i = 0; i < img.component; i++ )
 		{
-		        size_t idx = ( itX + itY * img.width ) * img.component + i;
+		        size_t idx = ( iX + iY * img.width ) * img.component + i;
 			switch( img.type )
 			{
 				case GL_UNSIGNED_BYTE:
@@ -451,16 +459,28 @@ void mouse ( int button, int state, int x, int y )
 		}
 		std::cout << std::endl;
 	}
-	if( state == 0 && button == 3)
+	if( state == 0 && ( button == 3 || button == 4 ) )
 	{
-	        currentZoom *= factorZoom;
-		zoom(factorZoom);
-		glutPostRedisplay ();
-	}
-	if( state == 0 && button == 4)
-	{
-	        currentZoom /= factorZoom;
-		zoom(1.0/factorZoom);
+	        int iX, iY, iX2, iY2;
+
+		mapToImage(x, y, iX, iY);
+
+		if(button == 3)
+		{
+		        currentZoom *= factorZoom;
+			zoom(factorZoom);
+		}
+		else
+		{
+		        currentZoom /= factorZoom;
+			zoom(1.0/factorZoom);
+		}
+
+		mapToImage(x, y, iX2, iY2);
+		
+		move((currentZoom / img.width * 2) * (iX2 - iX),
+		     (currentZoom / img.height * 2) * (iY2 - iY));		
+	
 		glutPostRedisplay ();
 	}
 
