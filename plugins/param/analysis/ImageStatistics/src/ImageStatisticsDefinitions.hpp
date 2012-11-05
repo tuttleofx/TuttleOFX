@@ -23,6 +23,7 @@ static const std::string kParamOutputGroup = "outputGroup";
 
 static const std::string kParamOutputGroupRGBA     = "outputGroupRGBA";
 static const std::string kParamOutputAverage       = "outputAverage";
+static const std::string kParamOutputVariance      = "outputVariance";
 static const std::string kParamOutputChannelMin    = "outputChannelMin";
 static const std::string kParamOutputChannelMax    = "outputChannelMax";
 static const std::string kParamOutputLuminosityMin = "outputLuminosityMin";
@@ -42,15 +43,17 @@ static const std::string kParamOutputSkewnessHSL      = "outputSkewnessHSL";
 static const std::string kParamChooseOutput              = "chooseOutput";
 static const std::string kParamChooseOutputSource        = "source";
 static const std::string kParamChooseOutputAverage       = "average";
-static const std::string kParamChooseOutputChannelMin    = "min values";
-static const std::string kParamChooseOutputChannelMax    = "max values";
-static const std::string kParamChooseOutputLuminosityMin = "min luminosity";
-static const std::string kParamChooseOutputLuminosityMax = "max luminosity";
+static const std::string kParamChooseOutputVariance      = "variance";
+static const std::string kParamChooseOutputChannelMin    = "minValues";
+static const std::string kParamChooseOutputChannelMax    = "maxValues";
+static const std::string kParamChooseOutputLuminosityMin = "minLuminosity";
+static const std::string kParamChooseOutputLuminosityMax = "maxLuminosity";
 
 enum EParamChooseOutput
 {
 	eParamChooseOutputSource = 0,
 	eParamChooseOutputAverage,
+	eParamChooseOutputVariance,
 	eParamChooseOutputChannelMin,
 	eParamChooseOutputChannelMax,
 	eParamChooseOutputLuminosityMin,

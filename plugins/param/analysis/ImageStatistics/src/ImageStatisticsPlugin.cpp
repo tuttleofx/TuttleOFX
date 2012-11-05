@@ -22,6 +22,7 @@ ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 	_paramChooseOutput     = fetchChoiceParam( kParamChooseOutput );
 
 	_paramOutputAverage       = fetchRGBAParam( kParamOutputAverage );
+	_paramOutputVariance      = fetchRGBAParam( kParamOutputVariance );
 	_paramOutputChannelMin    = fetchRGBAParam( kParamOutputChannelMin );
 	_paramOutputChannelMax    = fetchRGBAParam( kParamOutputChannelMax );
 	_paramOutputLuminosityMin = fetchRGBAParam( kParamOutputLuminosityMin );
