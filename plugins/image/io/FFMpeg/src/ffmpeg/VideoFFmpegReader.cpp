@@ -166,12 +166,12 @@ bool VideoFFmpegReader::read( const int frame )
 	{
 		error = av_read_frame( _context, &_pkt );
 		// on error or end of file
-		if( error < 0 )
+		if( error < 0 && error != AVERROR_EOF )
 		{
 			return false;
 		}
 
-		if( error >= 0 && _videoIdx.size() && _currVideoIdx != -1 && _pkt.stream_index == _videoIdx[_currVideoIdx] )
+		if( _videoIdx.size() && _currVideoIdx != -1 && _pkt.stream_index == _videoIdx[_currVideoIdx] )
 		{
 			hasPicture = decodeImage( frameNumber );
 		}
