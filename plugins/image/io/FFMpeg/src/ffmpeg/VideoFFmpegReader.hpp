@@ -170,6 +170,7 @@ public: // private:
 	bool _offsetTime;
 	int _lastSearchPos;
 	int _lastDecodedPos;
+	int _lastDecodedFrame;
 	bool _isOpen;
 	EIntrelacment _interlacment;
 };

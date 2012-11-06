@@ -29,6 +29,7 @@ VideoFFmpegReader::VideoFFmpegReader()
 	, _offsetTime( true )
 	, _lastSearchPos( -1 )
 	, _lastDecodedPos( -1 )
+	, _lastDecodedFrame( -1 )
 	, _isOpen( false )
 {
 //	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
@@ -150,7 +151,7 @@ bool VideoFFmpegReader::read( const int frame )
 	{
 		std::cerr << "Read outside the video range (time:" << frame << ", video size:" << _nbFrames << std::endl;
 	}
-	if( _lastDecodedPos + 1 != frameNumber )
+	if( _lastDecodedFrame + 1 != frameNumber )
 	{
 		seek( 0 );
 		seek( frameNumber );
@@ -177,6 +178,9 @@ bool VideoFFmpegReader::read( const int frame )
 
 		av_free_packet( &_pkt );
 	}
+
+	_lastDecodedFrame = frameNumber;
+
 	return true;
 }
 
