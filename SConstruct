@@ -129,6 +129,56 @@ class Tuttle( SConsProject ):
 		return pluginInstall
 
 
+	def pySwigBinding( self,
+			packageName,
+			moduleName,
+			sources=[], libraries=[],
+			swigFlags=[],
+			defaultSwigFlags=["-Wall"], # "-shadow", "-docstring"
+			sourceLanguage = "c++"
+			):
+		'''
+		Declare a Swig binding module.
+
+		packageName: name of the containing package
+		moduleName: name of the module itself
+		sources: ".i" files. Generally one file for a package.
+		libraries: lib dependencies
+		swigFlags: add flags to swig
+		defaultSwigFlags: to overide the default swig flags
+		sourceLanguage: by default "c++".
+		'''
+		packageOutputDir = self.inOutputDir( os.path.join('python', packageName))
+
+		pyBindingEnv = self.createEnv( [
+			self.libs.python,
+			self.libs.pthread,
+			] + libraries, name=packageName )
+
+		pyBindingEnv.AppendUnique( SWIGFLAGS = ['-python','-'+sourceLanguage] + defaultSwigFlags + swigFlags )
+		pyBindingEnv.AppendUnique( SWIGPATH = pyBindingEnv['CPPPATH'] ) # todo: it's specific to the sourceLanguage
+		pyBindingEnv.AppendUnique( SWIGOUTDIR = packageOutputDir )
+		pyBindingEnv.Replace( SHLIBPREFIX = '' )
+		if self.macos:
+			pyBindingEnv.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
+
+		pyBindingModule = self.SharedLibrary(
+				target = '_' + moduleName,
+				sources = sources,
+				env = pyBindingEnv,
+				installDir = packageOutputDir,
+			)
+
+		initFile = pyBindingEnv.Command( os.path.join( packageOutputDir, '__init__.py' ), '',
+									[ Mkdir('${TARGET.dir}'),
+									  Touch('$TARGET'),
+									])
+		pyBindingEnv.Requires( pyBindingModule, initFile )
+
+		pyBindingEnv.Alias( packageName, pyBindingModule )
+		pyBindingEnv.Alias( 'python', pyBindingModule )
+
+
 #______________________________________________________________________________#
 
 # Create the object available in all SConscripts

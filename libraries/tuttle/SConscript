@@ -61,6 +61,8 @@ project.StaticLibrary(
 		shared = True
 	)
 
+# "tuttleTest" is not a build target, but centralize denpendencies needed
+# for all tuttle unittest.
 project.ObjectLibrary(
 		'tuttleTest',
 		includes  = ['src'],
@@ -71,35 +73,10 @@ project.ObjectLibrary(
 	)
 
 
-pythonOutputDir = project.inOutputDir('python/pyTuttle')
-
-pyTuttleEnv = project.createEnv( [
-	libs.python,
-	libs.pthread,
-	libs.tuttleHost,
-	], name='pyTuttle' )
-
-pyTuttleEnv.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] ) # ,'-shadow','-docstring'] )
-pyTuttleEnv.AppendUnique( SWIGPATH = pyTuttleEnv['CPPPATH'] )
-pyTuttleEnv.AppendUnique( SWIGOUTDIR = pythonOutputDir )
-pyTuttleEnv.Replace( SHLIBPREFIX = '' )
-if project.macos:
-	pyTuttleEnv.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
-
-pyTuttle = project.SharedLibrary(
-		target = '_tuttle',
+project.pySwigBinding(
+		packageName = "pyTuttle",
+		moduleName = "tuttle",
 		sources = ['src/tuttle/host/tuttle.i'],
-		env = pyTuttleEnv,
-		installDir = pythonOutputDir,
+		libraries = [libs.tuttleHost],
 	)
-
-initFile = pyTuttleEnv.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
-                            [ Mkdir('${TARGET.dir}'),
-                              Touch('$TARGET'),
-                            ])
-pyTuttleEnv.Requires( pyTuttle, initFile )
-
-pyTuttleEnv.Alias( 'pyTuttle', pyTuttle )
-pyTuttleEnv.Alias( 'python', pyTuttle )
-
 
