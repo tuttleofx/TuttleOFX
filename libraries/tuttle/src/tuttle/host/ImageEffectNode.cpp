@@ -627,6 +627,8 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 
 void ImageEffectNode::setup1()
 {
+	checkClipsConnections();
+	
 	initInputClipsFps();
 
 	getClipPreferencesAction();
@@ -666,8 +668,6 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 {
 	TUTTLE_TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
 //	setCurrentTime( vData._time );
-
-	checkClipsConnections();
 
 	OfxRectD rod;
 	getRegionOfDefinitionAction(
