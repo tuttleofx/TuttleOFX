@@ -1,0 +1,93 @@
+##
+## Sconf configuration for macosx with macports
+## Status Wip
+##
+
+##
+## Specific site directories
+##
+
+import os
+
+usrlocal = '/usr/local' # todo Get rid of it
+macports_base = '/opt/local'
+macports_include = os.path.join(macports_base, 'include')
+
+##
+## Customizing default values 
+##
+
+dir_boost = macports_base
+incdir_boost_atomic = '/Users/alx/dev/repos/git/TuttleOFX/3rdParty/boost_atomic'
+lib_boost_filesystem = 'boost_filesystem-mt'
+lib_boost_program_options = 'boost_program_options-mt'
+lib_boost_python = 'boost_python-mt'
+lib_boost_regex = 'boost_regex-mt'
+lib_boost_system = 'boost_system-mt'
+lib_boost_serialization = 'boost_serialization-mt'
+lib_boost_unit_test_framework = 'boost_unit_test_framework-mt'
+lib_boost_thread = 'boost_thread-mt'
+
+dir_caca = macports_base
+
+# Todo macports of ctl
+dir_ctl = usrlocal
+incdir_ctl = [ os.path.join(dir_ctl, 'include'),
+               os.path.join(dir_ctl, 'include', 'CTL') ]
+
+dir_ffmpeg = macports_base
+
+dir_freetype = macports_base
+incdir_freetype = [ macports_include,
+                    os.path.join(macports_include, 'freetype2') ]
+
+dir_gl = macports_base
+lib_gl = 'GL'
+
+dir_glut = macports_base
+
+dir_glew = macports_base
+
+dir_half = macports_base
+incdir_half = [ macports_include, os.path.join(macports_include, 'OpenExr') ]
+
+dir_ilmbase = macports_base
+
+incdir_imagemagick = os.path.join(macports_include, "ImageMagick")
+
+dir_jpeg = macports_base
+
+dir_littlecms = macports_base
+dir_lcms = macports_base
+
+dir_numpy = os.path.join(macports_base,
+                         'Library/Frameworks/Python.framework/Versions',
+                         '2.7/lib/python2.7/site-packages/numpy/core')
+
+# todo opencolorio macport
+dir_opencolorio = usrlocal
+
+incdir_openexr = os.path.join(macports_include, 'OpenEXR/')
+
+# todo openimageio macport
+dir_openimageio = usrlocal
+incdir_openimageio = [ os.path.join(dir_openimageio, 'include'),
+                       os.path.join(dir_openimageio, 'include', 'OpenImageIO') ]
+
+dir_openjpeg = macports_base
+
+dir_png = macports_base
+
+incdir_python = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers'
+
+##incdir_qt4 = "$QTDIR/include"
+##libdir_qt4 = "$QTDIR/lib"
+##fwkdir_qt4 = "$QTDIR/lib"
+
+dir_raw = macports_base
+
+dir_tiff = macports_base
+
+dir_turbojpeg = '/opt/libjpeg-turbo'
+
+dir_xlibs = macports_base
