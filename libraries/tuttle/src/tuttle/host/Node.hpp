@@ -7,15 +7,12 @@
 
 #include <boost/assign/list_of.hpp>
 
-#include <auto_ptr.h>
-
 namespace tuttle {
 namespace host {
 
 class NodeInit;
 
 using boost::assign::list_of;
-
 
 INode* createNode( const std::string& pluginName );
 
