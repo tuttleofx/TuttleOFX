@@ -17,6 +17,10 @@ macports_include = os.path.join(macports_base, 'include')
 ## Customizing default values 
 ##
 
+#todo make the incdir specification worthless for frameworks
+incdir_corefoundation = '/System/Library/Frameworks/CoreFoundation.framework/Headers'
+fwkdir_corefoundation = True
+
 dir_boost = macports_base
 incdir_boost_atomic = '/Users/alx/dev/repos/git/TuttleOFX/3rdParty/boost_atomic'
 lib_boost_filesystem = 'boost_filesystem-mt'
