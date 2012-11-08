@@ -31,9 +31,12 @@ void ColorTransferPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 			"Warning: pixel values <= 0.0001 will be clamp, because these values "
 			"are undefined in the colorspace used for the transformation.\n"
 			"\n"
-			"Technically, the node modify the statistics of the image in a particular colorspace lambda-alpha-beta. "
+			"Technically, the node modify the statistics of the image in a particular colorspace lambda-alpha-beta.\n"
 			"This colorspace, created by Rederman and al., is closed to the human perception and minimizes "
 			"the correlation between channels for many natural scenes.\n"
+			"However, a choice parameter allows the user to choose in which colorspace the color transfer should be processed: "
+			"LMS, lambda-alpha-beta or original/source colorspace.  \n"
+			"According to the chosen colorspace, result varies (more or less colorfull, or dense...).\n\n"
 			"For more details see the article:\n"
 			"'Color Transfert between images' by Erik Reinhard, Michael Ashikhmin, Bruce Gooch and Peter Shirley. University of Utah.\n"
 		);
@@ -86,6 +89,14 @@ void ColorTransferPluginFactory::describeInContext( OFX::ImageEffectDescriptor& 
 //	dstRefClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstRefClip->setSupportsTiles( false );
 
+	OFX::ChoiceParamDescriptor* colorspace = desc.defineChoiceParam( kParamColorspace );
+	colorspace->setLabel( "Transformation colorspace" );
+	colorspace->setHint( "Select colorspace in which to apply the transformation" );
+	colorspace->appendOption( kParamColorspaceNone, "without colorspace transformation" );
+	colorspace->appendOption( kParamColorspaceLMS, "apply correction in LMS colorspace" );
+	colorspace->appendOption( kParamColorspaceLab, "apply correction in L(alpha)(beta) colorspace" );
+	colorspace->setDefault( eColorspaceLab );
+	
 	OFX::DoubleParamDescriptor* averageCoef = desc.defineDoubleParam( kParamAverageCoef );
 	averageCoef->setLabel( "Average color coef" );
 	averageCoef->setDisplayRange( 0.0, 1.0 );

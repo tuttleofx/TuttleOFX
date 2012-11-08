@@ -48,10 +48,10 @@ public:
 
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
+#ifndef SWIG
 	void initHook( const property::OfxhPropSpec* propSpec );
 
 	/// notify override properties
-
 	void notify( const std::string& name, bool isSingle, int indexOrN ) OFX_EXCEPTION_SPEC
 	{
 		TUTTLE_COUT_WITHINFOS( "What we should do here?" );
@@ -59,12 +59,12 @@ public:
 	}
 
 	// don't know what to do
-
 	void reset( const std::string& name ) OFX_EXCEPTION_SPEC
 	{
 		TUTTLE_COUT_WITHINFOS( "What we should do here?" );
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	}
+#endif
 
 private:
 	friend class boost::serialization::access;

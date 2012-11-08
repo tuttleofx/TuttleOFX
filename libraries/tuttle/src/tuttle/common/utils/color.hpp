@@ -1,12 +1,13 @@
 #ifndef _TUTTLE_COMMON_COLOR_HPP_
 #define	_TUTTLE_COMMON_COLOR_HPP_
 
+#include <tuttle/common/system/system.hpp>
 #include <string>
 
 namespace tuttle {
 namespace common {
 
-#ifdef __UNIX__
+#if defined __LINUX__ || defined __MACOS__
 static const std::string kColorBlack    ( "\E[1;30m" );
 static const std::string kColorWhite    ( "\E[1;37m" );
 static const std::string kColorBlue     ( "\E[1;34m" );

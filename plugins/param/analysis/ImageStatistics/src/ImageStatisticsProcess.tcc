@@ -12,6 +12,7 @@
 #include <terry/numeric/minmax.hpp>
 #include <terry/numeric/init.hpp>
 #include <terry/numeric/pow.hpp>
+#include <terry/numeric/sqrt.hpp>
 #include <boost/gil/extension/color/hsl.hpp>
 
 #include <boost/units/pow.hpp>
@@ -174,6 +175,7 @@ struct OutputParams
 	{
 		using namespace terry::numeric;
 		pixel_zeros_t<Pixel>( )( _average );
+		pixel_zeros_t<Pixel>( )( _variance );
 		pixel_zeros_t<Pixel>( )( _channelMin );
 		pixel_zeros_t<Pixel>( )( _channelMax );
 		pixel_zeros_t<Pixel>( )( _luminosityMin );
@@ -183,6 +185,7 @@ struct OutputParams
 	}
 
 	Pixel _average;
+	Pixel _variance;
 	Pixel _channelMin;
 	Pixel _channelMax;
 	Pixel _luminosityMin;
@@ -222,6 +225,7 @@ struct ComputeOutputParams
 		PixelGray luminosityMaxGray = firstPixelGray;
 
 		CPixel sum;
+		CPixel varianceSum;
 		CPixel sum_p2;
 		CPixel sum_p3;
 		CPixel sum_p4;
@@ -230,17 +234,13 @@ struct ComputeOutputParams
 		pixel_zeros_t<CPixel>( )( sum_p3 );
 		pixel_zeros_t<CPixel>( )( sum_p4 );
 
-		for( int y = 0;
-		     y < image.height();
-		     ++y )
+		for( int y = 0; y < image.height(); ++y )
 		{
 			typename View::x_iterator src_it = image.x_at( 0, y );
 			CPixel lineAverage;
 			pixel_zeros_t<CPixel>( )( lineAverage );
 
-			for( int x = 0;
-			     x < image.width();
-			     ++x, ++src_it )
+			for( int x = 0; x < image.width(); ++x, ++src_it )
 			{
 				CPixel pix;
 				pixel_assigns_t<Pixel, CPixel>( )( * src_it, pix ); // pix = src_it;
@@ -288,6 +288,28 @@ struct ComputeOutputParams
 
 		CPixel stdDeriv = pixel_standard_deviation( sum, sum_p2, nbPixels );
 		output._average  = pixel_divides_scalar_t<CPixel, double>() ( sum, nbPixels );
+		
+		for( int y = 0; y < image.height(); ++y )
+		{
+			typename View::x_iterator src_it = image.x_at( 0, y );
+			
+			for( int x = 0; x < image.width(); ++x, ++src_it )
+			{
+				CPixel pix;
+				pixel_assigns_t<Pixel, CPixel>( )( * src_it, pix ); // pix = src_it;
+
+				CPixel pix_diff = pix;
+				CPixel pix_diff2;
+
+				pix_diff = pixel_minus_t<CPixel, CPixel, CPixel>( )( pix, output._average ); // pix_diff = (pix - mean)
+				pix_diff2 = pixel_multiplies_t<CPixel, CPixel, CPixel>( )( pix_diff, pix_diff ); // pix_diff2 = (x - mean)*(x - mean)
+				
+				pixel_plus_assign_t<CPixel, CPixel>( )( pix_diff2, varianceSum ); // varianceSum += pix_diff2;
+			}
+		}
+		
+		CPixel varianceSquare = pixel_divides_scalar_t<CPixel, double>() ( varianceSum, nbPixels );
+		output._variance = pixel_sqrt_t<CPixel, Pixel>()( varianceSquare );
 		output._kurtosis = pixel_kurtosis( output._average, stdDeriv, sum, sum_p2, sum_p3, sum_p4, nbPixels );
 		output._skewness = pixel_skewness( output._average, stdDeriv, sum, sum_p2, sum_p3, nbPixels );
 
@@ -301,6 +323,7 @@ template <typename OutputParamsRGBA, typename OutputParamsHSL>
 void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputParamsHSL& outputParamsHSL, const OfxTime time, ImageStatisticsPlugin& plugin )
 {
 	setRGBAParamValuesAtTime( *plugin._paramOutputAverage, time, outputParamsRGBA._average );
+	setRGBAParamValuesAtTime( *plugin._paramOutputVariance, time, outputParamsRGBA._variance );
 	//	TUTTLE_COUT_VAR4( outputParamsRGBA._average[0], outputParamsRGBA._average[1], outputParamsRGBA._average[2], outputParamsRGBA._average[3] );
 	setRGBAParamValuesAtTime( *plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
 	//	TUTTLE_COUT_VAR4( outputParamsRGBA._channelMin[0], outputParamsRGBA._channelMin[1], outputParamsRGBA._channelMin[2], outputParamsRGBA._channelMin[3] );
@@ -359,6 +382,9 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments& args )
 			break;
 		case eParamChooseOutputAverage:
 			color_convert( outputRGBA._average, _outputPixel );
+			break;
+		case eParamChooseOutputVariance:
+			color_convert( outputRGBA._variance, _outputPixel );
 			break;
 		case eParamChooseOutputChannelMin:
 			color_convert( outputRGBA._channelMin, _outputPixel );

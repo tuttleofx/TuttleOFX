@@ -61,6 +61,8 @@ project.StaticLibrary(
 		shared = True
 	)
 
+# "tuttleTest" is not a build target, but centralize denpendencies needed
+# for all tuttle unittest.
 project.ObjectLibrary(
 		'tuttleTest',
 		includes  = ['src'],
@@ -71,36 +73,37 @@ project.ObjectLibrary(
 	)
 
 
-pythonOutputDir = project.inOutputDir('python/pyTuttle')
-
-pyTuttleEnv = project.createEnv( [
-	libs.python,
-	libs.pthread,
-	libs.tuttleHost,
-	libs.numpy,
-	], name='pyTuttle' )
-
-pyTuttleEnv.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] ) # ,'-shadow','-docstring'] )
-pyTuttleEnv.AppendUnique( SWIGPATH = pyTuttleEnv['CPPPATH'] )
-pyTuttleEnv.AppendUnique( SWIGOUTDIR = pythonOutputDir )
-pyTuttleEnv.Replace( SHLIBPREFIX = '' )
-if project.macos:
-	pyTuttleEnv.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
-
-pyTuttle = project.SharedLibrary(
-		target = '_tuttle',
-		sources = ['src/tuttle/host/tuttle.i'],
-		env = pyTuttleEnv,
-		installDir = pythonOutputDir,
-	)
-
-initFile = pyTuttleEnv.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
-                            [ Mkdir('${TARGET.dir}'),
-                              Touch('$TARGET'),
-                            ])
-pyTuttleEnv.Requires( pyTuttle, initFile )
-
-pyTuttleEnv.Alias( 'pyTuttle', pyTuttle )
-pyTuttleEnv.Alias( 'python', pyTuttle )
-
-
+# <<<<<<< HEAD
+# pythonOutputDir = project.inOutputDir('python/pyTuttle')
+# 
+# pyTuttleEnv = project.createEnv( [
+# 	libs.python,
+# 	libs.pthread,
+# 	libs.tuttleHost,
+# 	libs.numpy,
+# 	], name='pyTuttle' )
+# 
+# pyTuttleEnv.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] ) # ,'-shadow','-docstring'] )
+# pyTuttleEnv.AppendUnique( SWIGPATH = pyTuttleEnv['CPPPATH'] )
+# pyTuttleEnv.AppendUnique( SWIGOUTDIR = pythonOutputDir )
+# pyTuttleEnv.Replace( SHLIBPREFIX = '' )
+# if project.macos:
+# 	pyTuttleEnv.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
+# 
+# pyTuttle = project.SharedLibrary(
+# 		target = '_tuttle',
+# =======
+# project.pySwigBinding(
+# 		packageName = "pyTuttle",
+# 		moduleName = "tuttle",
+# >>>>>>> 8e9ad0b0737d025f19f32034b82d8d7d9e22208b
+# 		sources = ['src/tuttle/host/tuttle.i'],
+# 		libraries = [libs.tuttleHost],
+# 	)
+# 
+project.pySwigBinding(
+	packageName = "pyTuttle",
+	moduleName = "tuttle",
+	sources = ['src/tuttle/host/tuttle.i'],
+	libraries = [libs.tuttleHost, libs.numpy],
+        )

@@ -16,6 +16,7 @@ namespace color {
 namespace transfer {
 
 namespace detail {
+
 template<typename T>
 struct matrices_rgb_to_lab_t
 {
@@ -59,6 +60,7 @@ struct matrices_rgb_to_lab_t
 		_LMS_2_LAB(2, 2) =  0.0;
 	}
 };
+
 template<typename T>
 struct matrices_lab_to_rgb_t
 {
@@ -88,7 +90,7 @@ struct matrices_lab_to_rgb_t
 		_LAB_2_LMS(1, 1) =  sqrt6_6;
 		_LAB_2_LMS(1, 2) = -sqrt2_2;
 		_LAB_2_LMS(2, 0) =  sqrt3_3;
-		_LAB_2_LMS(2, 1) = -2.0 * sqrt3_3;
+		_LAB_2_LMS(2, 1) = -2.0 * sqrt6_6;
 		_LAB_2_LMS(2, 2) =  0.0;
 
 		_LMS_2_RGB(0, 0) =  4.4679;
@@ -104,6 +106,28 @@ struct matrices_lab_to_rgb_t
 	}
 };
 }
+
+template <typename PixelRef, typename PixelR = PixelRef> // models pixel concept
+struct pixel_rgb_to_lms_t
+{
+	typedef typename channel_type<PixelR>::type ChannelR;
+	typedef typename floating_channel_type_t<ChannelR>::type T;
+	typedef typename detail::matrices_rgb_to_lab_t<T> MatrixContants;
+	typedef typename MatrixContants::Matrix33 Matrix;
+
+	static const MatrixContants _matrices;
+
+	GIL_FORCEINLINE
+	PixelR operator()( const PixelRef & rgb ) const
+	{
+		using namespace terry::numeric;
+		// RGB to LMS
+		return pixel_matrix33_multiply_t<PixelRef, Matrix, PixelR>( _matrices._RGB_2_LMS )( rgb );
+	}
+};
+
+template <typename PixelRef, typename PixelR>
+const typename pixel_rgb_to_lms_t<PixelRef, PixelR>::MatrixContants pixel_rgb_to_lms_t<PixelRef, PixelR>::_matrices; // init static variable.
 
 template <typename PixelRef, typename PixelR = PixelRef> // models pixel concept
 struct pixel_rgb_to_lab_t
@@ -139,6 +163,27 @@ struct pixel_rgb_to_lab_t
 template <typename PixelRef, typename PixelR>
 const typename pixel_rgb_to_lab_t<PixelRef, PixelR>::MatrixContants pixel_rgb_to_lab_t<PixelRef, PixelR>::_matrices; // init static variable.
 
+template <typename PixelRef, typename PixelR = PixelRef> // models pixel concept
+struct pixel_lms_to_rgb_t
+{
+	typedef typename channel_type<PixelR>::type ChannelR;
+	typedef typename floating_channel_type_t<ChannelR>::type T;
+	typedef typename detail::matrices_lab_to_rgb_t<T> MatrixContants;
+	typedef typename MatrixContants::Matrix33 Matrix;
+
+	static const MatrixContants _matrices;
+
+	GIL_FORCEINLINE
+	PixelR operator()( const PixelRef & lms ) const
+	{
+		using namespace terry::numeric;
+		// LMS to RGB
+		return pixel_matrix33_multiply_t<PixelR, Matrix, PixelR>( _matrices._LMS_2_RGB )( lms );
+	}
+};
+
+template <typename PixelRef, typename PixelR>
+const typename pixel_lms_to_rgb_t<PixelRef, PixelR>::MatrixContants pixel_lms_to_rgb_t<PixelRef, PixelR>::_matrices; // init static variable.
 
 template <typename PixelRef, typename PixelR = PixelRef> // models pixel concept
 struct pixel_lab_to_rgb_t

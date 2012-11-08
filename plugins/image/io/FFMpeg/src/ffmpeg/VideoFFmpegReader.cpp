@@ -29,6 +29,7 @@ VideoFFmpegReader::VideoFFmpegReader()
 	, _offsetTime( true )
 	, _lastSearchPos( -1 )
 	, _lastDecodedPos( -1 )
+	, _lastDecodedFrame( -1 )
 	, _isOpen( false )
 {
 //	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
@@ -154,7 +155,7 @@ bool VideoFFmpegReader::read( const int frame )
 	{
 		std::cerr << "Read outside the video range (time:" << frame << ", video size:" << _nbFrames << std::endl;
 	}
-	if( _lastDecodedPos + 1 != frameNumber )
+	if( _lastDecodedFrame + 1 != frameNumber )
 	{
 		seek( 0 );
 		seek( frameNumber );
@@ -169,18 +170,21 @@ bool VideoFFmpegReader::read( const int frame )
 	{
 		error = av_read_frame( _context, &_pkt );
 		// on error or end of file
-		if( error < 0 )
+		if( error < 0 && error != AVERROR_EOF )
 		{
 			return false;
 		}
 
-		if( error >= 0 && _videoIdx.size() && _currVideoIdx != -1 && _pkt.stream_index == _videoIdx[_currVideoIdx] )
+		if( _videoIdx.size() && _currVideoIdx != -1 && _pkt.stream_index == _videoIdx[_currVideoIdx] )
 		{
 			hasPicture = decodeImage( frameNumber );
 		}
 
 		av_free_packet( &_pkt );
 	}
+
+	_lastDecodedFrame = frameNumber;
+
 	return true;
 }
 

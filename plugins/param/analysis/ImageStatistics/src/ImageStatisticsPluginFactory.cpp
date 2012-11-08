@@ -77,6 +77,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	chooseOutput->setLabel( "Choose output" );
 	chooseOutput->appendOption( kParamChooseOutputSource );
 	chooseOutput->appendOption( kParamChooseOutputAverage );
+	chooseOutput->appendOption( kParamChooseOutputVariance );
 	chooseOutput->appendOption( kParamChooseOutputChannelMin );
 	chooseOutput->appendOption( kParamChooseOutputChannelMax );
 	chooseOutput->appendOption( kParamChooseOutputLuminosityMin );
@@ -85,18 +86,25 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 
 	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kParamOutputGroup );
 	outputGroup->setLabel( "Output" );
-
+	outputGroup->setAsTab();
+	
 	// -----------------------------------------------------------------------------
 
 	OFX::GroupParamDescriptor* rgbaGroup = desc.defineGroupParam( kParamOutputGroupRGBA );
 	rgbaGroup->setLabel( "RGBA" );
 	rgbaGroup->setParent( outputGroup );
+	rgbaGroup->setAsTab();
 
 	OFX::RGBAParamDescriptor* outputAverage = desc.defineRGBAParam( kParamOutputAverage );
 	outputAverage->setLabel( "Average" );
 	outputAverage->setParent( rgbaGroup );
 	outputAverage->setEvaluateOnChange( false );
-
+	
+	OFX::RGBAParamDescriptor* outputVariance = desc.defineRGBAParam( kParamOutputVariance );
+	outputVariance->setLabel( "Variance" );
+	outputVariance->setParent( rgbaGroup );
+	outputVariance->setEvaluateOnChange( false );
+	
 	OFX::RGBAParamDescriptor* outputChannelMin = desc.defineRGBAParam( kParamOutputChannelMin );
 	outputChannelMin->setLabel( "Channels' min" );
 	outputChannelMin->setHint( "Minimum value per channel" );
@@ -133,6 +141,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	OFX::GroupParamDescriptor* hslGroup = desc.defineGroupParam( kParamOutputGroupHSL );
 	hslGroup->setLabel( "HSL" );
 	hslGroup->setParent( outputGroup );
+	hslGroup->setAsTab();
 
 	OFX::Double3DParamDescriptor* outputAverageHSL = desc.defineDouble3DParam( kParamOutputAverageHSL );
 	outputAverageHSL->setLabel( "Average" );

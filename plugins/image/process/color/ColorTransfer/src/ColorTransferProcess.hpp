@@ -62,7 +62,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 private:
-	void computeAverage( const View& image, Pixel& average, Pixel& deviation );
+	void computeAverage( const View& image, Pixel& average, Pixel& deviation, const EColorspace& eColorspace );
 
 };
 

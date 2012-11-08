@@ -5,6 +5,8 @@
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <OpenColorIO/OpenColorIO.h>
 
+namespace OCIO = OCIO_NAMESPACE;
+
 namespace tuttle {
 namespace plugin {
 namespace ocio {
@@ -12,9 +14,9 @@ namespace lut {
 
 struct OCIOLutProcessParams
 {
-	OCIO_NAMESPACE::FileTransformRcPtr _fileTransform;
-	OCIO_NAMESPACE::GroupTransformRcPtr _groupTransform;
-	OCIO_NAMESPACE::ConfigRcPtr _config;
+	std::string _filename;
+	OCIO::Interpolation _interpolationType;
+
 };
 
 /**
@@ -50,7 +52,6 @@ public:
 			case eInterpolationTypeTetrahedral:
 				return OCIO_NAMESPACE::INTERP_TETRAHEDRAL;
 			case eInterpolationTypeLinear:
-			default:
 				return OCIO_NAMESPACE::INTERP_LINEAR;
 		}
 

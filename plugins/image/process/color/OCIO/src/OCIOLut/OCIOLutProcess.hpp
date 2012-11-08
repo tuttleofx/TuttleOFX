@@ -31,7 +31,9 @@ private:
 	OCIOLutPlugin&  _plugin;        ///< Rendering plugin
 	OCIOLutProcessParams _params; ///< parameters
 
-	OCIO::ConstConfigRcPtr config;
+	OCIO::FileTransformRcPtr  fileTransform;
+	OCIO::GroupTransformRcPtr groupTransform;
+	OCIO::ConfigRcPtr         config;
 
 public:
 	OCIOLutProcess<View>( OCIOLutPlugin & instance );

@@ -45,6 +45,7 @@ Core::Core()
 	: _imageEffectPluginCache( _host )
 	, _memoryPool( pool )
 	, _memoryCache( cache )
+	, _isPreloaded( false )
 {
 #ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	Py_Initialize( );
@@ -63,6 +64,11 @@ Core::~Core()
 
 void Core::preload( const bool useCache )
 {
+	if( _isPreloaded )
+		return;
+	
+	_isPreloaded = true;
+	
 #ifndef __WINDOWS__
 	//	typedef boost::archive::binary_oarchive OArchive;
 	//	typedef boost::archive::binary_iarchive IArchive;
