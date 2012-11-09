@@ -2,6 +2,7 @@
 #define TUTTLE_HOST_CORE_IMAGE_HPP
 
 #include <tuttle/host/ofx/OfxhImage.hpp>
+#include <tuttle/common/ofx/imageEffect.hpp>
 
 #include <tuttle/host/memory/IMemoryPool.hpp>
 
@@ -62,12 +63,16 @@ public:
 	
 	EImageOrientation getOrientation() const { return _orientation; }
 	
+	std::size_t getNbComponents() const { return _nbComponents; }
+	
 	/**
 	 * @brief Get distance between rows depending on the requested orientation.
 	 */
 	int getOrientedRowDistanceBytes( const EImageOrientation orientation ) { return _rowAbsDistanceBytes * ( _orientation != orientation ? -1 : 1); }
 	
 	boost::uint8_t* getPixelData();
+	void* getVoidPixelData();
+	char* getCharPixelData();
 	boost::uint8_t* getOrientedPixelData( const EImageOrientation orientation );
 
 	boost::uint8_t* pixel( const int x, const int y );
@@ -80,6 +85,18 @@ public:
 	static void     copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	                      const OfxPointI& srcCorner, const OfxPointI& count );
 
+	void getImage( boost::uint8_t*& outData, int& outWidth, int& outHeight, int& outRowSizeBytes, ofx::imageEffect::EBitDepth& outBitDepth, ofx::imageEffect::EPixelComponent& outComponents )
+	{
+		outData = getPixelData();
+		const OfxRectI bounds = getBounds();
+		outWidth = bounds.x2 - bounds.x1;
+		outHeight = bounds.y2 - bounds.y1;
+		outRowSizeBytes = getRowBytes();
+		outBitDepth = getBitDepth();
+		outComponents = getComponentsType();
+	}
+
+	
 	template < class VIEW_T >
 	VIEW_T getGilView( const EImageOrientation orientation );
 	

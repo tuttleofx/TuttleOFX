@@ -130,13 +130,21 @@ void ImageEffectNode::vmessage( const char* type,
 // get the project size in CANONICAL pixels, so PAL SD return 768, 576
 void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 {
-	OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
-	xSize = rod.x2 - rod.x1;
-	ySize = rod.y2 - rod.y1;
-	if (xSize < 1 || ySize < 1)
+	if (_dataAtTime.size() == 0 )
 	  {
-	    xSize = 720;
-	    ySize = 576;
+	       	xSize = 720;
+       		ySize = 576;		
+	  }
+	else
+	  {
+		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+		xSize = rod.x2 - rod.x1;
+		ySize = rod.y2 - rod.y1;
+		if (xSize < 1 || ySize < 1)
+		  {
+	    		xSize = 720;
+	    		ySize = 576;
+		  }
 	  }
 }
 
@@ -150,13 +158,21 @@ void ImageEffectNode::getProjectOffset( double& xOffset, double& yOffset ) const
 // get the project extent in CANONICAL pixels, so PAL SD return 768, 576
 void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 {
-	OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
-	xSize = rod.x2 - rod.x1;
-	ySize = rod.y2 - rod.y1;
-	if (xSize < 1 || ySize < 1)
+	if (_dataAtTime.size() == 0 )
 	  {
-	    xSize = 720;
-	    ySize = 576;
+	       	xSize = 720;
+       		ySize = 576;		
+	  }
+	else
+	  {
+		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+		xSize = rod.x2 - rod.x1;
+		ySize = rod.y2 - rod.y1;
+		if (xSize < 1 || ySize < 1)
+		  {
+	    		xSize = 720;
+	    		ySize = 576;
+		  }
 	  }
 }
 
@@ -627,6 +643,8 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 
 void ImageEffectNode::setup1()
 {
+	checkClipsConnections();
+	
 	initInputClipsFps();
 
 	getClipPreferencesAction();
@@ -666,8 +684,6 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 {
 	TUTTLE_TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
 //	setCurrentTime( vData._time );
-
-	checkClipsConnections();
 
 	OfxRectD rod;
 	getRegionOfDefinitionAction(

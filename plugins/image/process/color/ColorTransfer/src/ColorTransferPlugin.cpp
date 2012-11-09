@@ -17,6 +17,7 @@ ColorTransferPlugin::ColorTransferPlugin( OfxImageEffectHandle handle )
 	_clipSrcRef = this->fetchClip( kClipSrcRef );
 	_clipDstRef = this->fetchClip( kClipDstRef );
 
+	_paramColospace   = this->fetchChoiceParam( kParamColorspace );
 	_paramAverageCoef = this->fetchDoubleParam( kParamAverageCoef );
 	_paramDynamicCoef = this->fetchDoubleParam( kParamDynamicCoef );
 
@@ -32,6 +33,7 @@ ColorTransferPlugin::ColorTransferPlugin( OfxImageEffectHandle handle )
 ColorTransferProcessParams<ColorTransferPlugin::Scalar> ColorTransferPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	ColorTransferProcessParams<Scalar> params;
+	params._colorspace  = static_cast<EColorspace>( _paramColospace->getValue() );
 	params._averageCoef = _paramAverageCoef->getValue();
 	params._dynamicCoef = _paramDynamicCoef->getValue();
 	return params;

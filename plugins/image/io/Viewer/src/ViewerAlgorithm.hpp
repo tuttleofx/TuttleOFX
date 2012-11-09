@@ -44,11 +44,24 @@ ImgProperties img;
 int windowID;
 
 // viewing properties
-int w_out, h_out;
 int angle_cam = 60;
-float zoom = 1;
+
+// viewing properties - viewport
+int w_out, h_out;
+float scale = 1.0;
+int xMinViewport, yMinViewport;
+
+// viewing properties - zoom
+float factorZoom = 1.25;
+float currentZoom = 1.0;
+
+// viewing properties - transformations
+float x1Quad, x2Quad, y1Quad, y2Quad;
 bool flip = false;
 bool flop = false;
+
+// mouse moves properties
+int x_mouse_ref, y_mouse_ref;
 
 // channel properties
 bool showRedChannel = false;
@@ -56,26 +69,31 @@ bool showGreenChannel = false;
 bool showBlueChannel = false;
 bool showAlphaChannel = false;
 
-void reshape(int width,int height)
+void reshape(int width, int height)
 {
-	int w, h;
-	int xPos, yPos;
-	if( width < height )
+	float w, h, xPos, yPos;
+
+	if( (float)w_out/h_out > (float)width/height )
 	{
 		w = width;
-		h = 1.0f * w_out / h_out * width;
+		h = 1.0f * h_out / w_out * (float)width;
 		xPos = 0.0;
 		yPos = 0.5f * (height - h);
 	}
 	else
 	{
-		w = 1.0f * w_out / h_out * height;
+		w = 1.0f * w_out / h_out * (float)height;
 		h = height;
-		xPos = 0.5f * (width - w );
+		xPos = 0.5f * (width - w);
 		yPos = 0.0;
 	}
+
+	xMinViewport = xPos;
+	yMinViewport = yPos;
+
+	scale = w/w_out;
 	
-	glViewport( xPos, yPos , (GLsizei)w, (GLsizei)h );
+	glViewport((GLsizei)xPos, (GLsizei)yPos, (GLsizei)w, (GLsizei)h);
 	glutReshapeWindow(width, height);
 }
 
@@ -214,11 +232,11 @@ void display()
 	
 	glBegin (GL_QUADS);
 	
-	int x1 = -1;
-	int x2 =  1;
+	float x1 = x1Quad;
+	float x2 = x2Quad;
 	
-	int y1 = -1;
-	int y2 =  1;
+	float y1 = y1Quad;
+	float y2 = y2Quad;
 	
 	if( flip )
 	{
@@ -231,7 +249,7 @@ void display()
 		x2 = -x2;
 	}
 	
-	glTexCoord2f( 0, 0 );
+	glTexCoord2f( 0 , 0 );
 	glVertex2f  ( x1, y1 );
 	
 	glTexCoord2f( 0, 1 );
@@ -274,6 +292,47 @@ void displayHelp()
 	std::cout << kViewerHelp << std::endl;
 }
 
+void move(float x, float y)
+{
+	x1Quad += x;
+	x2Quad += x;
+	y1Quad += y;
+	y2Quad += y;
+}
+
+void zoom(float factor)
+{
+	x1Quad *= factor;
+	x2Quad *= factor;
+	y1Quad *= factor;
+	y2Quad *= factor;
+}    
+
+void mapToImage(int x, int y, int &iX, int &iY)
+{
+	int mapX, mapY;
+	float mx, my;
+
+	mapX = (x - xMinViewport)/scale;
+	mapY = (y - yMinViewport)/scale;
+
+	if( !flip )
+	{
+		mapY = img.height - mapY;
+	}
+	
+	if( flop )
+	{
+		mapX = img.width - mapX;
+	}
+
+	mx = (float)mapX / (float)img.width * 2.0 - 1.0;
+	iX = ((x1Quad - mx) / (currentZoom * 2.0) * (float)img.width * -1.0) + 0.5;
+
+	my = (float)mapY / (float)img.height * 2.0 - 1.0;
+	iY = ((y1Quad - my) / (currentZoom * 2.0) * (float)img.height * -1.0) + 0.5;	
+}
+
 void keyboard(unsigned char k, int x, int y)
 {
 	bool shift= false;
@@ -295,6 +354,11 @@ void keyboard(unsigned char k, int x, int y)
 			break;
 		case 'z':
 			glutReshapeWindow( w_out, h_out );
+			currentZoom = 1.0;
+			x1Quad = -1.0;
+			x2Quad = 1.0;
+			y1Quad = -1.0;
+			y2Quad = 1.0;
 			glutPostRedisplay();
 			break;
 		case 'h':
@@ -336,40 +400,44 @@ void keyboard(unsigned char k, int x, int y)
 }
 
 void specialKeyboard( int k, int x, int y)
-{
+{	
 	switch (k)
 	{
+		case GLUT_KEY_UP:
+			// cursor move
+			break;
+		case GLUT_KEY_DOWN:
+			// cursor move
+			break;
+		case GLUT_KEY_LEFT:
+			// cursor move
+			break;
 		case GLUT_KEY_RIGHT:
-			glutDestroyWindow(windowID);
-			return;
+			// cursor move
+			break;
 		case GLUT_KEY_F1:
 			displayHelp();
-			return;
-	}
+			break;
+	}		
 }
 
-void mouse  ( int button, int state, int x, int y )
-{    
+void mouse ( int button, int state, int x, int y )
+{
 	using namespace boost::gil;
 	if( state == 0 && button == 0 )
 	{
-	        int itX = x, itY = y;
+		int iX, iY;
 
-		if( !flip )
-		{
-		        itY = img.height - y;
-	        }
-	    
-	        if( flop )
-	        {
-		        itX = img.width - x;
-	        }
-	    
-		std::cout << "at " << std::setw(4) << x << "," << std::setw(4) << y << ": ";
+		mapToImage(x, y, iX, iY);
+		
+		if( iX < 0 || iY < 0 || iX >= (int)img.width || iY >= (int)img.height )
+			return;
+		
+		std::cout << "at " << std::setw(4) << iX << "," << std::setw(4) << (int)img.height - iY << ": ";
 
 		for( size_t i = 0; i < img.component; i++ )
 		{
-		        size_t idx = ( itX + itY * img.width ) * img.component + i;
+			size_t idx = ( iX + iY * img.width ) * img.component + i;
 			switch( img.type )
 			{
 				case GL_UNSIGNED_BYTE:
@@ -394,20 +462,61 @@ void mouse  ( int button, int state, int x, int y )
 		}
 		std::cout << std::endl;
 	}
-	if( state == 0 && button == 3)
+	if( state == 0 && ( button == 3 || button == 4 ) )
 	{
-		zoom *= 1.25;
-		glutReshapeWindow( w_out * zoom, h_out * zoom );
+		int iX, iY, iX2, iY2;
+
+		mapToImage(x, y, iX, iY);
+
+		if(button == 3)
+		{
+			currentZoom *= factorZoom;
+			zoom(factorZoom);
+		}
+		else
+		{
+			currentZoom /= factorZoom;
+			zoom(1.0/factorZoom);
+		}
+
+		mapToImage(x, y, iX2, iY2);
+		
+		move((currentZoom / img.width * 2) * (iX2 - iX),
+		     (currentZoom / img.height * 2) * (iY2 - iY));
+	
 		glutPostRedisplay ();
 	}
-	if( state == 0 && button == 4)
-	{
-		zoom /= 1.25;
-		glutReshapeWindow( w_out * zoom, h_out * zoom );
-		glutPostRedisplay ();
-	}
+
+	x_mouse_ref = x;
+	y_mouse_ref = y;
 }
 
+void motion ( int x, int y )
+{
+	float x_diff, y_diff;
+
+	x_diff = (x - x_mouse_ref) / currentZoom;
+	y_diff = (y_mouse_ref - y) / currentZoom;
+
+	
+	if( flip )
+	{
+		y_diff *= -1.0;
+	}
+	
+	if( flop )
+	{
+		x_diff *= -1.0;
+	}
+
+	move(currentZoom / img.width * 2 * x_diff,
+	     currentZoom / img.height * 2 * y_diff);
+			
+	x_mouse_ref = x;
+	y_mouse_ref = y;
+
+	glutPostRedisplay ();
+}
 
 void openGLWindow( const size_t& width, const size_t& height )
 {
@@ -423,12 +532,18 @@ void openGLWindow( const size_t& width, const size_t& height )
 	
 	w_out = width;
 	h_out = height;
+
+	x1Quad = -1.0;
+	x2Quad = 1.0;
+	y1Quad = -1.0;
+	y2Quad = 1.0;
 	
 	glutDisplayFunc (display);
 	
 	glutKeyboardFunc( keyboard );
 	glutSpecialFunc ( specialKeyboard );
 	glutMouseFunc   ( mouse );
+	glutMotionFunc  ( motion );
 	
 	glutReshapeFunc(reshape);
 }

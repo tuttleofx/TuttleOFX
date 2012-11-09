@@ -151,7 +151,12 @@ public:
 	OfxRectI getROD() const;
 
 	EBitDepth getBitDepth() const;
-
+	
+	inline std::size_t getBitDepthMemorySize() const
+	{
+		return bitDepthMemorySize( getBitDepth() );
+	}
+	
 	int getRowBytes() const;
 
 	EPixelComponent getComponentsType() const;

@@ -37,6 +37,7 @@ public:
 	OFX::ChoiceParam* _paramChooseOutput;
 
 	OFX::RGBAParam* _paramOutputAverage;
+	OFX::RGBAParam* _paramOutputVariance;
 	OFX::RGBAParam* _paramOutputChannelMin;
 	OFX::RGBAParam* _paramOutputChannelMax;
 	OFX::RGBAParam* _paramOutputLuminosityMin;
