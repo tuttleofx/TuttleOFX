@@ -1121,7 +1121,9 @@ int main( int argc, char** argv )
 		
 		// if graph not have dummy reader
 		// or no dummy node, process only 1 graph
-		if( ! listOfSequencesPerReaderNode.size() || ! facticesNodes.size() )
+		if( ! listOfSequencesPerReaderNode.size() ||
+			! facticesNodes.size() ||
+			( listOfSequencesPerReaderNode.size() || listOfSequencesPerWriterNode.size() ) && !numberOfLoop )
 		{
 			numberOfLoop = 1;
 		}
@@ -1171,6 +1173,7 @@ int main( int argc, char** argv )
 			size_t countDummyReader = 0;
 			size_t countDummyWriter = 0;
 			
+			
 			// replace each dummy node per real reader or writer node on graph
 			for( size_t nNode = 0; nNode < facticesNodes.size(); ++nNode )
 			{
@@ -1185,9 +1188,16 @@ int main( int argc, char** argv )
 				if( dummy.isDummyReaderNode( name ) )
 				{
 					// get filename from browsing
-					sp::FileObject& fo = listOfSequencesPerReaderNode.at( countDummyReader ).at( loop );
-					filename = getAbsoluteFilename( fo );
-					countDummyReader++;
+					if( listOfSequencesPerReaderNode.size() && numberOfLoop == 1 )
+					{
+						filename = readerToReplace->getParamByScriptName( "expression" ).getStringValue();
+					}
+					else
+					{
+						sp::FileObject& fo = listOfSequencesPerReaderNode.at( countDummyReader ).at( loop );
+						filename = getAbsoluteFilename( fo );
+						countDummyReader++;
+					}
 				}
 				else // writer dummy
 				{
@@ -1234,8 +1244,16 @@ int main( int argc, char** argv )
 						}
 						else
 						{
-							sp::FileObject& fo = listOfSequencesPerReaderNode.at(0).at( loop );
-							filename = getAbsoluteFilename( fo );
+							if( listOfSequencesPerReaderNode.size() && numberOfLoop == 1 )
+							{
+								filename = readerToReplace->getParamByScriptName( "expression" ).getStringValue();
+							}
+							else
+							{
+								sp::FileObject& fo = listOfSequencesPerReaderNode.at( 0 ).at( loop );
+								filename = getAbsoluteFilename( fo );
+							}
+
 							bfs::path filepath( baseSrcPath );
 							if( filepath.extension().string().size() )
 							{
@@ -1278,7 +1296,8 @@ int main( int argc, char** argv )
 					
 					countDummyWriter++;
 				}
-
+				
+				
 				// replace dummy node with the correct reader or writer node
 				try
 				{
