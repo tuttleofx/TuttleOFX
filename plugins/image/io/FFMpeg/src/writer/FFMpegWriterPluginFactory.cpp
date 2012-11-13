@@ -600,7 +600,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 		if( codecList.empty() )
 			continue;
 		
-		OFX::ChoiceParamDescriptor* choiceConfig = desc.defineChoiceParam( codecName + kParamVideoPreset );
+		OFX::ChoiceParamDescriptor* choiceConfig = desc.defineChoiceParam( codecName );
 		choiceConfig->setLabel( codecName + " Preset" );
 		choiceConfig->setDefault( 0 );
 		

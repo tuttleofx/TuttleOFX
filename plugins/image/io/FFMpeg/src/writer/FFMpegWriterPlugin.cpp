@@ -11,76 +11,126 @@ namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
 namespace writer {
-/*
+
 void FFMpegWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec )
 {
-	BOOST_FOREACH( const AVPrivOption& opt, avPrivOpts )
+	std::vector<OFX::GroupParam*> groups;
+
+	BOOST_FOREACH( AVPrivOption opt, avPrivOpts )
 	{
-		if( opt.o.name == NULL )
+		if( opt.o.unit && opt.o.type == AV_OPT_TYPE_FLAGS )
+		{
+			std::string name = "g_";
+			name += opt.class_name;
+			name += "_";
+			name += opt.o.unit;
+			
+			OFX::GroupParam* curOpt = fetchGroupParam( name );
+			curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
+			
+			groups.push_back( curOpt );
 			continue;
+		}
+		if( opt.o.unit && opt.o.type == AV_OPT_TYPE_INT )
+		{
+			std::string name = opt.class_name;
+			name += "_";
+			name += opt.o.name;
+			
+			OFX::ChoiceParam* curOpt = fetchChoiceParam( name );
+			curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
+			continue;
+		}
+		
+		std::string name = opt.class_name;
+		name += "_";
+		name += opt.o.name;
 		
 		switch( opt.o.type )
 		{
 			case AV_OPT_TYPE_FLAGS:
 			{
-				if( opt.o.name == opt.o.unit )
-					continue;
-				OFX::BooleanParam* curOpt = fetchBooleanParam( opt.class_name + "_" + opt.o.name );
-				curOpt->setIsSecretAndDisabled( strcmp( opt.class_name.c_str(), codec.c_str() ) != 0 );
+				OFX::BooleanParam* curOpt = fetchBooleanParam( name );
+				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
 			case AV_OPT_TYPE_INT:
+			case AV_OPT_TYPE_INT64:
 			{
-				if( opt.o.name == opt.o.unit )
-					continue;
-				OFX::IntParam* curOpt = fetchIntParam( opt.class_name + "_" + opt.o.name );
-				curOpt->setIsSecretAndDisabled( strcmp( opt.class_name.c_str(), codec.c_str() ) != 0 );
+				OFX::IntParam* curOpt = fetchIntParam( name );
+				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
-			case AV_OPT_TYPE_FLOAT:
 			case AV_OPT_TYPE_DOUBLE:
+			case AV_OPT_TYPE_FLOAT:
 			{
-				if( opt.o.name == opt.o.unit )
-					continue;
-				OFX::DoubleParam* curOpt = fetchDoubleParam( opt.class_name + "_" + opt.o.name );
-				curOpt->setIsSecretAndDisabled( strcmp( opt.class_name.c_str(), codec.c_str() ) != 0 );
+				OFX::DoubleParam* curOpt = fetchDoubleParam( name );
+				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
 			case AV_OPT_TYPE_STRING:
 			{
-				if( opt.o.name == opt.o.unit )
-					continue;
-				OFX::StringParam* curOpt = fetchStringParam( opt.class_name + "_" + opt.o.name );
-				curOpt->setIsSecretAndDisabled( strcmp( opt.class_name.c_str(), codec.c_str() ) != 0 );
+				OFX::StringParam* curOpt = fetchStringParam( name );
+				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
+				break;
+			}
+			case AV_OPT_TYPE_RATIONAL:
+			{
+				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
+				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
 			case AV_OPT_TYPE_IMAGE_SIZE:
-			case AV_OPT_TYPE_RATIONAL:
 			{
-				if( opt.o.name == opt.o.unit )
-					continue;
-				OFX::Int2DParam* curOpt = fetchInt2DParam( opt.class_name + "_" + opt.o.name );
-				curOpt->setIsSecretAndDisabled( strcmp( opt.class_name.c_str(), codec.c_str() ) != 0 );
+				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
+				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
+				break;
+			}
+			case AV_OPT_TYPE_BINARY:
+			{
+				OFX::StringParam* curOpt = fetchStringParam( name );
+				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
 			case AV_OPT_TYPE_CONST:
 			{
-				if( opt.o.name == opt.o.unit )
-					continue;
-				OFX::ChoiceParam* curOpt = fetchChoiceParam( opt.class_name + "_" + opt.o.unit + "_preset" );
-				curOpt->setIsSecretAndDisabled( strcmp( opt.class_name.c_str(), codec.c_str() ) != 0 );
-				break;
-			}
-			default: //< or list all cases to avoid those warnings:
-			{
-				//TUTTLE_CERR( "FFMpeg: options not added : " << opt.o.name << "   " << opt.class_name << " ** " << opt.o.unit << " ** " << opt.o.help );
-				//case AV_OPT_TYPE_INT64:
-				//case AV_OPT_TYPE_BINARY:
 				break;
 			}
 		}
 	}
-}*/
+	
+	BOOST_FOREACH( AVPrivOption opt, avPrivOpts )
+	{
+		switch( opt.o.type )
+		{
+			case AV_OPT_TYPE_CONST:
+			{
+				BOOST_FOREACH( OFX::GroupParam* g, groups )
+				{
+					std::string name = "g_";
+					name += opt.class_name;
+					name += "_";
+					name += opt.o.unit;
+					if( name == g->getName() )
+					{
+						std::string name = opt.class_name;
+						name += "_";
+						name += opt.o.name;
+						
+						OFX::BooleanParam* curOpt = fetchBooleanParam( name );
+						curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
+						break;
+					}
+				}
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+	}
+}
 
 FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
@@ -91,7 +141,7 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	_paramFormat                      = fetchChoiceParam( kParamFormat );
 	_paramVideoCodec                  = fetchChoiceParam( kParamVideoCodec       );
 	_paramAudioCodec                  = fetchChoiceParam( kParamAudioCodec       );
-	/*
+	
 	_videoCodecListWithPreset = _writer.getCodecListWithConfig();
 	std::vector<std::string>::iterator it;
 	for( it = _videoCodecListWithPreset.begin(); it < _videoCodecListWithPreset.end(); it++ )
@@ -99,7 +149,7 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 		std::vector<std::string> videoList = _writer.getVideoCodecsShort();
 		BOOST_FOREACH( const std::string& videoCodec, videoList )
 		{
-			if( strcmp( videoCodec.c_str(), (*it).c_str() ) == 0 )
+			if( videoCodec == (*it) )
 			{
 				OFX::ChoiceParam* paramPreset = fetchChoiceParam( *it );
 				_videoCodecPresetParams.push_back( paramPreset );
@@ -109,22 +159,22 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 		std::vector<std::string> audioList = _writer.getAudioCodecsShort();
 		BOOST_FOREACH( const std::string& audioCodec, audioList )
 		{
-			if( strcmp( audioCodec.c_str(), (*it).c_str() ) == 0 )
+			if( audioCodec == (*it) )
 			{
 				OFX::ChoiceParam* paramPreset = fetchChoiceParam( *it );
 				_audioCodecPresetParams.push_back( paramPreset );
 			}
 		}
-	}*/
+	}
 	
 	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
-	//disableAVOptionsForCodecOrFormat( _writer.getSpecificFormatPrivOpts(), formatName );
+	disableAVOptionsForCodecOrFormat( _writer.getFormatPrivOpts(), formatName );
 	
 	std::string videoCodecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-	//disableAVOptionsForCodecOrFormat( _writer.getSpecificVideoCodecPrivOpts(), videoCodecName );
+	disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), videoCodecName );
 	
 	std::string audioCodecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
-	//disableAVOptionsForCodecOrFormat( _writer.getSpecificAudioCodecPrivOpts(), audioCodecName );
+	disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), audioCodecName );
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
@@ -165,17 +215,17 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 	if( paramName == kParamFormat )
 	{
 		std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
-		//disableAVOptionsForCodecOrFormat( _writer.getSpecificFormatPrivOpts(), formatName );
+		disableAVOptionsForCodecOrFormat( _writer.getFormatPrivOpts(), formatName );
 	}
 	if( paramName == kParamVideoCodec )
 	{
 		std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-		//disableAVOptionsForCodecOrFormat( _writer.getSpecificVideoCodecPrivOpts(), codecName );
+		disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), codecName );
 	}
 	if( paramName == kParamAudioCodec )
 	{
 		std::string codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
-		//disableAVOptionsForCodecOrFormat( _writer.getSpecificAudioCodecPrivOpts(), codecName );
+		disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), codecName );
 	}
 	/*
 	if( paramName == kParamVideoCodecPreset )
