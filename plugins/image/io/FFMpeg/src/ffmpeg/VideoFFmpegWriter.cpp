@@ -138,7 +138,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
-		_stream->codec->time_base          = av_d2q( 1.0 / _fps, 100 );
+		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
 		_stream->codec->gop_size           = _gopSize;
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
@@ -259,7 +259,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
 			pkt.flags |= AV_PKT_FLAG_KEY;
 
-		out_frame->pts = pts++;
+		out_frame->pts = pts;
+		pts += _stream->codec->time_base.num;
 		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame,  &hasFrame );
 		if ( ret < 0 )
 			return false;
