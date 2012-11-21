@@ -188,7 +188,7 @@ private:
 	double                         _aspectRatio;
 	PixelFormat                    _out_pixelFormat;
 	
-	float                          _fps;
+	double                          _fps;
 	std::string                    _formatName;
 	std::string                    _codecName;
 	std::string                    _videoPresetName;
