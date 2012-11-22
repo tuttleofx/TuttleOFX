@@ -46,7 +46,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			if( opt->help )
 				param->setHint( opt->help );
 			param->setParent( group );
-			param->setAsTab( );
+			//param->setAsTab( );
 			groups.push_back( param );
 			continue;
 		}
@@ -245,7 +245,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			if( opt.o.help )
 				param->setHint( opt.o.help );
 			param->setParent( group );
-			param->setAsTab( );
+			//param->setAsTab( );
 			groups.push_back( param );
 			continue;
 		}
