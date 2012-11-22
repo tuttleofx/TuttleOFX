@@ -1,6 +1,7 @@
 #include "VideoFFmpegWriter.hpp"
 
 #include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -165,19 +166,21 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		_videoCodec = avcodec_find_encoder_by_name( _videoCodecName.c_str() );
 		if (!_videoCodec)
 		{
-			TUTTLE_CERR( "ffmpegWriter: codec not found" );
-			return false;
+			BOOST_THROW_EXCEPTION( exception::Format()
+				<< exception::user( "ffmpegWriter: codec not found." ) );
 		}
 		TUTTLE_CERR( "ffmpegWriter: " << std::string(_videoCodec->name) << " codec selected" );
 
 		_stream = avformat_new_stream( _avformatOptions, _videoCodec );
 		if( !_stream )
 		{
-			TUTTLE_CERR( "ffmpegWriter: out of memory." );
-			return false;
+			BOOST_THROW_EXCEPTION( exception::File()
+				<< exception::user( "ffmpegWriter: out of memory." ) );
 		}
 		avcodec_get_context_defaults3(_stream->codec, _videoCodec);
 
+		TUTTLE_COUT_VAR2( _videoCodecName, _videoPresetName );
+		
 		if( _videoPresetName.length() !=0 )
 		{
 			TUTTLE_COUT( "ffmpegWriter: " << _videoPresetName << " preset selected" );
@@ -244,19 +247,20 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 
 		if( avcodec_open2( _stream->codec, _videoCodec, NULL ) < 0 )
 		{
-			TUTTLE_CERR( "ffmpegWriter: unable to open codec." );
 			freeFormat();
+			BOOST_THROW_EXCEPTION( exception::Format()
+				<< exception::user( "ffmpegWriter: unable to open codec." ) );
 			return false;
 		}
 
 		if( !( _ofmt->flags & AVFMT_NOFILE ) )
 		{
 			if( avio_open2( &_avformatOptions->pb, getFilename().c_str(),
-                                        AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
+							AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
 			{
-				TUTTLE_CERR( "ffmpegWriter: unable to open file." );
 				freeFormat();
-				return false;
+				BOOST_THROW_EXCEPTION( exception::FileNotExist()
+					<< exception::user( "ffmpegWriter: unable to open file." ) );
 			}
 		}
 
@@ -282,14 +286,14 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 
 	if( !_sws_context )
 	{
-		TUTTLE_CERR( "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." );
-		return false;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user() + "ffmpeg-conversion failed (" + in_pixelFormat + "->" + _out_pixelFormat + ")." );
 	}
 	const int error = sws_scale( _sws_context, in_frame->data, in_frame->linesize, 0, getHeight(), out_frame->data, out_frame->linesize );
 	if( error < 0 )
 	{
-		TUTTLE_CERR( "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." );
-		return false;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user() + "ffmpeg-conversion failed (" + in_pixelFormat + "->" + _out_pixelFormat + ")." );
 	}
 
 	int ret = 0;
@@ -328,8 +332,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 			ret = av_interleaved_write_frame( _avformatOptions, &pkt );
 			if ( ret < 0 )
 			{
-				TUTTLE_CERR( "ffmpegWriter: error writing packet to file" );
-				return false;
+				BOOST_THROW_EXCEPTION( exception::File()
+					<< exception::user( "ffmpegWriter: error writing packet to file" ) );
 			}
 		}
 	}
@@ -341,8 +345,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 
 	if( ret )
 	{
-		TUTTLE_CERR( "ffmpegWriter: error writing frame to file." );
-		return false;
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "ffmpegWriter: error writing frame to file." ) );
 	}
 
 	_statusCode = eWriterStatusSuccess;
