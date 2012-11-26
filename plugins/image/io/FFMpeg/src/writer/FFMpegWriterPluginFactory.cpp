@@ -125,6 +125,10 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 				param->setParent( group );
 				break;
 			}
+			case AV_OPT_TYPE_PIXEL_FMT:
+			{
+				TUTTLE_COUT( "add pixel fmt " << opt->name );
+			}
 			case AV_OPT_TYPE_BINARY:
 			{
 				OFX::StringParamDescriptor* param = desc.defineStringParam( opt->name );
@@ -240,6 +244,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			name += opt.class_name;
 			name += "_";
 			name += opt.o.unit;
+			//TUTTLE_COUT( "add " << name );
 			OFX::GroupParamDescriptor* param = desc.defineGroupParam( name );
 			param->setLabel( opt.o.name );
 			if( opt.o.help )
@@ -254,6 +259,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			std::string name = opt.class_name;
 			name += "_";
 			name += opt.o.name;
+			//TUTTLE_COUT( "add " << name );
 			OFX::ChoiceParamDescriptor* param = desc.defineChoiceParam( name );
 			param->setLabel( opt.o.name );
 			if( opt.o.help )
@@ -272,7 +278,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 		std::string name = opt.class_name;
 		name += "_";
 		name += opt.o.name;
-		
+		//TUTTLE_COUT( "+add " << name );
 		switch( opt.o.type )
 		{
 			case AV_OPT_TYPE_FLAGS:
@@ -332,6 +338,10 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 				param->setParent( group );
 				break;
 			}
+			case AV_OPT_TYPE_PIXEL_FMT:
+			{
+				TUTTLE_COUT( "add pixel fmt " << opt.class_name << " * " << opt.o.name );
+			}
 			case AV_OPT_TYPE_IMAGE_SIZE:
 			{
 				OFX::Int2DParamDescriptor* param = desc.defineInt2DParam( name );
@@ -385,7 +395,6 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 						
 					}
 				}
-				
 				BOOST_FOREACH( OFX::GroupParamDescriptor* g, groups )
 				{
 					std::string name = "g_";
@@ -394,7 +403,8 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 					name += opt.o.unit;
 					if( name == g->getName() )
 					{
-						std::string name = opt.class_name;
+						std::string name = "flags_";
+						name += opt.class_name;
 						name += "_";
 						name += opt.o.name;
 						OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( name );
