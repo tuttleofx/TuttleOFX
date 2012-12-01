@@ -71,16 +71,16 @@ public:
 
 protected:
 	// Deriving implementatation needs to overide these
-	inline virtual void getValueAtIndex( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void getValueAtIndex( const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
 	{
 		BOOST_ASSERT( _controls.size() > index );
-		_controls[index].getValue( dst );
+		_controls[index].getValue( outDst );
 	}
 
-	inline virtual void getValueAtTimeAndIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void getValueAtTimeAndIndex( const OfxTime time, const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
 	{
 		BOOST_ASSERT( _controls.size() > index );
-		_controls[index].getValueAtTime( time, dst );
+		_controls[index].getValueAtTime( time, outDst );
 	}
 
 public:
@@ -117,31 +117,51 @@ public:
 		this->paramChanged( change );
 	}
 
-	inline virtual void setValueAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setValueAtIndex( const std::size_t index, const BaseType& value, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
+		BOOST_ASSERT( _controls.size() > index );
 		_controls[index].setValue( value, eChangeNone );
 		this->paramChanged( change );
 	}
 
-	inline virtual void setValueAtTimeAndIndex( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setValueAtTimeAndIndex( const OfxTime time, const std::size_t index, const BaseType& value, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
+		BOOST_ASSERT( _controls.size() > index );
 		_controls[index].setValueAtTime( time, value, eChangeNone );
 		this->paramChanged( change );
 	}
 
-	// derived class does not need to implement, default is an approximation
-	inline virtual void deriveAtIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void setValue( const std::vector<BaseType>& values, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
-		_controls[index].derive( time, dst );
+		BOOST_ASSERT( _controls.size() == values.size() );
+		for( std::size_t i = 0; i < getSize(); ++i )
+		{
+			_controls[i].setValue( values[i], eChangeNone );
+		}
+		this->paramChanged( change );
 	}
 
-	inline virtual void integrateAtIndex( const OfxTime time1, const OfxTime time2, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void setValueAtTime( const OfxTime time, const std::vector<BaseType>& values, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
-		_controls[index].integrate( time1, time2, dst );
+		BOOST_ASSERT( _controls.size() == values.size() );
+		for( std::size_t i = 0; i < getSize(); ++i )
+		{
+			_controls[i].setValueAtTime( time, values[i], eChangeNone );
+		}
+		this->paramChanged( change );
+	}
+	
+	// derived class does not need to implement, default is an approximation
+	inline virtual void deriveAtIndex( const OfxTime time, const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
+	{
+		BOOST_ASSERT( _controls.size() > index );
+		_controls[index].derive( time, outDst );
+	}
+
+	inline virtual void integrateAtIndex( const OfxTime time1, const OfxTime time2, const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
+	{
+		BOOST_ASSERT( _controls.size() > index );
+		_controls[index].integrate( time1, time2, outDst );
 	}
 
 	/// implementation of var args function
@@ -150,7 +170,7 @@ public:
 		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			assert( v );
+			BOOST_ASSERT( v );
 			_controls[index].getValue( *v );
 		}
 	}
@@ -203,7 +223,7 @@ public:
 		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			assert( v );
+			BOOST_ASSERT( v );
 			_controls[index].integrate( time1, time2, *v );
 		}
 	}
