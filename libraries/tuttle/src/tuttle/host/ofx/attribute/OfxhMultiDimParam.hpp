@@ -30,7 +30,8 @@ protected:
 	boost::ptr_array<T, DIM> _controls; // owns the sub-parameters
 
 public:
-	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance )
+	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
+	: OfxhParam( descriptor, name, setInstance )
 	{}
 
 	virtual ~OfxhMultiDimParam()

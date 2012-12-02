@@ -3,7 +3,15 @@
 
 %include <ofxCore.i>
 
+%include <std_string.i>
 %include <std_vector.i>
+
+namespace std {
+%template(BoolVector) vector<bool>;
+%template(IntVector) vector<int>;
+%template(DoubleVector) vector<double>;
+%template(StringVector) vector<string>;
+}
 
 %{
 #include <tuttle/host/ofx/attribute/OfxhParam.hpp>
@@ -20,24 +28,39 @@
 {
 	%pythoncode
 	{
-		def setValueAtTime(self, time, value):
+		def setValueAtTime(self, time, value, change = eChangeUserEdited):
 			if isinstance(value, list) or isinstance(value, tuple):
-				self.private_setValueAtTime(time, *value)
+				if len(value) != self.getSize():
+					raise ValueError( ("The number of values (%d) doesn't match with the parameter size (%d).") % (len(value), self.getSize()) )
+				for i, v in enumerate(value):
+					self.setValueAtTimeAndIndex(time, i, v, eChangeNone)
+				if change != eChangeNone:
+					self.paramChanged(change)
 			else:
-				self.private_setValueAtTime(time, value)
+				self.private_setValueAtTime(time, value, change)
 		
-		def setValueAtIndex(self, index, value):
-			if isinstance(value, list) or isinstance(value, tuple):
-				self.private_setValueAtIndex(index, *value)
+		def setValueAtIndex(self, index, value, change = eChangeUserEdited):
+			if isinstance(value, dict):
+				for time, v in value.iteritems():
+					self.setValueAtTimeAndIndex(time, index, v, eChangeNone)
+				if change != eChangeNone:
+					self.paramChanged(change)
 			else:
-				self.private_setValueAtIndex(index, value)
+				self.private_setValueAtIndex(index, value, change)
 		
-		def setValue(self, value):
+		def setValue(self, value, change = eChangeUserEdited):
 			if isinstance(value, list) or isinstance(value, tuple):
-				self.private_setValue(*value)
+				if len(value) != self.getSize():
+					raise ValueError( ("The number of values (%d) doesn't match with the parameter size (%d).") % (len(value), self.getSize()) )
+				for i, v in enumerate(value):
+					self.setValueAtIndex(i, v, eChangeNone)
+				if change != eChangeNone:
+					self.paramChanged(change)
 			elif isinstance(value, dict):
 				for time, v in value.iteritems():
-					self.setValueAtTime(time, v)
+					self.setValueAtTime(time, v, eChangeNone)
+				if change != eChangeNone:
+					self.paramChanged(change)
 			else:
 				self.private_setValue(value)
 	}

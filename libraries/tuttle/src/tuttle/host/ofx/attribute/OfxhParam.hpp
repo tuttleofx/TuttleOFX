@@ -76,7 +76,10 @@
 		inline virtual void setValueAtTime( const OfxTime time, const std::vector<TYPE>& values, const EChange change ) OFX_EXCEPTION_SPEC \
 		{ BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # NAME " parameter (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
 		inline virtual void setValueAtTime( const OfxTime time, const std::vector<TYPE>& values ) OFX_EXCEPTION_SPEC { setValueAtTime( time, values, eChangeUserEdited ); } \
-		\
+//
+
+
+#define TUTTLE_DEFINE_OFXHPARAM_MULTIDIM_ACCESSORS( NAME, TYPE ) \
 		inline virtual void setValue( const TYPE& value1, const TYPE& value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # NAME " parameter (2) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
 		inline virtual void setValue( const TYPE& value1, const TYPE& value2 ) OFX_EXCEPTION_SPEC { setValue( value1, value2, eChangeUserEdited ); } \
 		inline virtual void setValueAtTime( const OfxTime time, const TYPE& value1, const TYPE& value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( "\"" + this->getName() + "\"" + " is not a multi-" # NAME " parameter (2) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
@@ -232,6 +235,13 @@ public:
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Double, double );
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Int, int );
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Bool, bool );
+
+#ifndef SWIG
+	TUTTLE_DEFINE_OFXHPARAM_MULTIDIM_ACCESSORS( String, std::string );
+	TUTTLE_DEFINE_OFXHPARAM_MULTIDIM_ACCESSORS( Double, double );
+	TUTTLE_DEFINE_OFXHPARAM_MULTIDIM_ACCESSORS( Int, int );
+	TUTTLE_DEFINE_OFXHPARAM_MULTIDIM_ACCESSORS( Bool, bool );
+#endif
 
 	virtual void setValueFromExpression( const std::string& value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature, "\"" + this->getName() + "Can't set value from expression on parameter \"" + this->getName() + "\", it's not supported for " + this->getParamType() + " parameters (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); }
 	inline void setValueFromExpression( const std::string& value ) OFX_EXCEPTION_SPEC { setValueFromExpression( value, eChangeUserEdited ); }
