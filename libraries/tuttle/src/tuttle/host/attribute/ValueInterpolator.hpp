@@ -32,11 +32,14 @@ public:
 template<typename T>
 class Interpolator
 {
+	typedef Interpolator<T> This;
 	typedef TimeValue<T> TimeValueT;
 
 public:
 	virtual ~Interpolator( ) = 0;
 
+    virtual This* clone() const = 0;
+	
 	/* Given two key frames and a time between them, get the appropriate value for that time */
 	virtual OfxStatus getValue( const TimeValueT& prev, const TimeValueT& next, const OfxTime t, T& v ) = 0;
 };
@@ -82,7 +85,7 @@ public:
 protected:
 	/* given a position on the timeline between 0.0 and 1.0 return the
 	   interpolated value. */
-	virtual double interpolate( double pos ) = 0;
+	virtual double interpolate( const double pos ) const = 0;
 };
 
 template<typename T>
@@ -92,9 +95,12 @@ GenericInterpolator<T>::~GenericInterpolator( ) { }
 template<typename T>
 class LinearInterpolator : public GenericInterpolator<T>
 {
-protected:
+public:
+	typedef LinearInterpolator<T> This;
+    This* clone() const { return new This(*this); };
 
-	double interpolate( double pos )
+protected:
+	double interpolate( const double pos ) const
 	{
 		return pos;
 	}
@@ -104,9 +110,12 @@ protected:
 template<typename T>
 class SmoothInterpolator : public GenericInterpolator<T>
 {
-protected:
+public:
+	typedef SmoothInterpolator<T> This;
+    This* clone() const { return new This(*this); };
 
-	double interpolate( double pos )
+protected:
+	double interpolate( const double pos ) const
 	{
 		return -2 * pos * pos * pos + 3 * pos*pos;
 	}
@@ -116,9 +125,12 @@ protected:
 template<typename T>
 class FastInterpolator : public GenericInterpolator<T>
 {
-protected:
+public:
+	typedef FastInterpolator<T> This;
+    This* clone() const { return new This(*this); };
 
-	double interpolate( double pos )
+protected:
+	double interpolate( const double pos ) const
 	{
 		return -1 * pos * pos + 2 * pos;
 	}
@@ -128,9 +140,12 @@ protected:
 template<typename T>
 class SlowInterpolator : public GenericInterpolator<T>
 {
-protected:
+public:
+	typedef SlowInterpolator<T> This;
+    This* clone() const { return new This(*this); };
 
-	double interpolate( double pos )
+protected:
+	double interpolate( const double pos ) const
 	{
 		return pos*pos;
 	}
