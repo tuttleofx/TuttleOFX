@@ -6,11 +6,15 @@ import cgi
 
 colorcodes =   {'bold':{True:'\033[1m',False:'\033[22m'},
                 'cyan':{True:'\033[1;36m',False:'\033[0;0m'},
-                '#8E4429':{True:'\033[1;33m',False:'\033[0;0m'},
+                #'#8E4429':{True:'\033[1;33m',False:'\033[0;0m'},
+		'#8E4429':{True:'\033[0;33m',False:'\033[0;0m'},
+		#'#8E4429':{True:'\033[33m',False:'\033[0;0m'},
                 '#0000B0':{True:'\033[1;34m',False:'\033[0;0m'},
                 '#B63A11':{True:'\033[1;31m',False:'\033[0;0m'},
                 'magenta':{True:'\033[1;35m',False:'\033[0;0m'},
-                'green':{True:'\033[1;32m',False:'\033[0;0m'},
+                #'green':{True:'\033[1;32m',False:'\033[0;0m'},
+		'green':{True:'\033[0;32m',False:'\033[0;0m'},
+		#'green':{True:'\033[32m',False:'\033[0;0m'},
                 'underline':{True:'\033[1;4m',False:'\033[0;0m'}}
 
 def recolor(color, text):

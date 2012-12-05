@@ -69,7 +69,7 @@ void coutClipsWithDetails( const ttl::Graph::Node& node )
 	const ttl::ofx::attribute::OfxhClipImageSet& clips = node.getClipImageSet();
 	BOOST_FOREACH( const ttl::ofx::attribute::OfxhClipImage& clip, clips.getClipsByOrder() )
 	{
-		std::cout << "\t" << _color._green << std::left << std::setw( 25 ) << clip.getName() << ": ";
+		std::cout << "\t" << _color._green << std::left << std::setw( 25 ) << clip.getName() << ": " << _color._std;
 		
 		std::cout << _color._yellow;
 		{
