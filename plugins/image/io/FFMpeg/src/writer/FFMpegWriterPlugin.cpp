@@ -80,6 +80,11 @@ void FFMpegWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVP
 				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
+			case AV_OPT_TYPE_PIXEL_FMT:
+			{
+				TUTTLE_COUT( "unsupported pixel fmt parameter" );
+				break;
+			}
 			case AV_OPT_TYPE_IMAGE_SIZE:
 			{
 				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
@@ -204,9 +209,143 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
 	return params;
 }
 
-void updatePreset()
+void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec )
 {
+	std::vector<OFX::GroupParam*> groups;
+
+	BOOST_FOREACH( AVPrivOption opt, avPrivOpts )
+	{
+		if( opt.class_name != codec )
+			continue;
+		
+		if( opt.o.unit && opt.o.type == AV_OPT_TYPE_FLAGS )
+		{
+			std::string name = "g_";
+			name += opt.class_name;
+			name += "_";
+			name += opt.o.unit;
+			
+			OFX::GroupParam* curOpt = fetchGroupParam( name );
+			groups.push_back( curOpt );
+			continue;
+		}
+		if( opt.o.unit && opt.o.type == AV_OPT_TYPE_INT )
+		{
+			std::string name = opt.class_name;
+			name += "_";
+			name += opt.o.name;
+			
+			OFX::ChoiceParam* curOpt = fetchChoiceParam( name );
+			int v = curOpt->getValue();
+			_writer.optionSet( type, opt.o, v );
+			continue;
+		}
+		
+		std::string name = opt.class_name;
+		name += "_";
+		name += opt.o.name;
+		
+		switch( opt.o.type )
+		{
+			case AV_OPT_TYPE_FLAGS:
+			{
+				OFX::BooleanParam* curOpt = fetchBooleanParam( name );
+				bool v = curOpt->getValue();
+				_writer.optionSet( type, opt.o, v );
+				break;
+			}
+			case AV_OPT_TYPE_INT:
+			case AV_OPT_TYPE_INT64:
+			{
+				OFX::IntParam* curOpt = fetchIntParam( name );
+				
+				int v = curOpt->getValue();
+				_writer.optionSet( type, opt.o, v );
+				break;
+			}
+			case AV_OPT_TYPE_DOUBLE:
+			case AV_OPT_TYPE_FLOAT:
+			{
+				OFX::DoubleParam* curOpt = fetchDoubleParam( name );
+				double v = curOpt->getValue();
+				_writer.optionSet( type, opt.o, v );
+				break;
+			}
+			case AV_OPT_TYPE_STRING:
+			{
+				OFX::StringParam* curOpt = fetchStringParam( name );
+				std::string v = curOpt->getValue();
+				_writer.optionSet( type, opt.o, v );
+				break;
+			}
+			case AV_OPT_TYPE_RATIONAL:
+			{
+				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
+				int vn = curOpt->getValue().x;
+				int vd = curOpt->getValue().y;
+				_writer.optionSet( type, opt.o, vn, vd );
+				break;
+			}
+			case AV_OPT_TYPE_PIXEL_FMT:
+			{
+				TUTTLE_COUT( "unsupported pixel fmt parameter" );
+				break;
+			}
+			case AV_OPT_TYPE_IMAGE_SIZE:
+			{
+				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
+				int vn = curOpt->getValue().x;
+				int vd = curOpt->getValue().y;
+				_writer.optionSetImageSize( type, opt.o, vn, vd );
+				break;
+			}
+			case AV_OPT_TYPE_BINARY:
+			{
+				OFX::StringParam* curOpt = fetchStringParam( name );
+				std::string v = curOpt->getValue();
+				_writer.optionSet( type, opt.o, v );
+				break;
+			}
+			case AV_OPT_TYPE_CONST:
+			{
+				break;
+			}
+		}
+	}
 	
+	BOOST_FOREACH( AVPrivOption opt, avPrivOpts )
+	{
+		switch( opt.o.type )
+		{
+			case AV_OPT_TYPE_CONST:
+			{
+				BOOST_FOREACH( OFX::GroupParam* g, groups )
+				{
+					std::string name = "g_";
+					name += opt.class_name;
+					name += "_";
+					name += opt.o.unit;
+					if( name == g->getName() )
+					{
+						std::string name = "flags_";
+						name += opt.class_name;
+						name += "_";
+						name += opt.o.name;
+						
+						OFX::BooleanParam* curOpt = fetchBooleanParam( name );
+						bool v = curOpt->getValue();
+						_writer.optionSet( type, opt.o, v );
+						break;
+					}
+				}
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+	}
 }
 
 void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -238,8 +377,6 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 			
 		}
 	}
-	
-	
 	
 	if( paramName == kParamVideoPreset )
 	{
@@ -288,15 +425,20 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 {
 	WriterPlugin::beginSequenceRender( args );
 
+	TUTTLE_COUT("begin sequence");
+	
 	FFMpegProcessParams params = getProcessParams();
-
+	
 	_writer.setFilename    ( params._filepath );
 	_writer.setFormat      ( params._format );
 	_writer.setVideoCodec  ( params._videoCodec );
 	_writer.setFps         ( _clipSrc->getFrameRate() );
 	_writer.setAspectRatio ( _clipSrc->getPixelAspectRatio() );
-	TUTTLE_COUT( params._videoPreset );
-	_writer.setVideoPreset ( params._videoPreset );
+
+	//TUTTLE_COUT( params._videoPreset );
+	//_writer.setVideoPreset ( params._videoPreset );
+	
+	TUTTLE_COUT("begin sequence ok");
 }
 
 /**
@@ -305,8 +447,23 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
  */
 void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	WriterPlugin::render( args );
+	//OfxRangeD range = args.frameRange;
+	const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
+	_writer.setWidth ( bounds.x2 - bounds.x1 );
+	_writer.setHeight( bounds.y2 - bounds.y1 );
 	
+	_writer.start( );
+	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
+	setParameters( eAVParamFormat, _writer.getFormatPrivOpts(), formatName );
+	
+	std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
+	setParameters( eAVParamVideo, _writer.getVideoCodecPrivOpts(), codecName );
+
+	codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
+	setParameters( eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
+	
+	WriterPlugin::render( args );
+	TUTTLE_COUT("begin render");
 	doGilRender<FFMpegWriterProcess>( *this, args );
 }
 

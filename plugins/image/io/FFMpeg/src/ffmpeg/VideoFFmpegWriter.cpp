@@ -26,7 +26,9 @@ static boost::int64_t pts = 0;
 VideoFFmpegWriter::VideoFFmpegWriter()
 	: FFmpeg()
 	, FFmpegPreset()
-	, _avformatOptions   ( NULL )
+	, _avFormatOptions   ( NULL )
+	, _avVideoOptions    ( NULL )
+	, _avAudioOptions    ( NULL )
 	, _sws_context       ( NULL )
 	, _stream            ( NULL )
 	, _videoCodec        ( NULL )
@@ -144,20 +146,18 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 
 }
 
-int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_width, const int in_height, const PixelFormat in_pixelFormat )
+int VideoFFmpegWriter::start( )
 {
-	_statusCode = eWriterStatusIgnoreFinish;
-
-	if( !_avformatOptions )
+	if( !_avFormatOptions )
 	{
 		// TODO avformat_alloc_context2 can guess format from filename
 		// if format name is NULL, find a way to expose the feature
-		if (avformat_alloc_output_context2(&_avformatOptions, NULL, _formatName.c_str(), getFilename().c_str()) < 0)
+		if( avformat_alloc_output_context2(&_avFormatOptions, NULL, _formatName.c_str(), getFilename().c_str()) < 0 )
 		{
 			TUTTLE_CERR( "ffmpegWriter: output context allocation failed" );
 			return false;
 		}
-		_ofmt = _avformatOptions->oformat;
+		_ofmt = _avFormatOptions->oformat;
 		TUTTLE_CERR( "ffmpegWriter: " << std::string(_ofmt->name) << " format selected" );
 	}
 
@@ -171,7 +171,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		}
 		TUTTLE_CERR( "ffmpegWriter: " << std::string(_videoCodec->name) << " codec selected" );
 
-		_stream = avformat_new_stream( _avformatOptions, _videoCodec );
+		_stream = avformat_new_stream( _avFormatOptions, _videoCodec );
 		if( !_stream )
 		{
 			BOOST_THROW_EXCEPTION( exception::File()
@@ -180,24 +180,6 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		avcodec_get_context_defaults3(_stream->codec, _videoCodec);
 
 		TUTTLE_COUT_VAR2( _videoCodecName, _videoPresetName );
-		
-		if( _videoPresetName.length() !=0 )
-		{
-			TUTTLE_COUT( "ffmpegWriter: " << _videoPresetName << " preset selected" );
-			const std::string presetFilename = _preset.getFilename( std::string(_videoCodec->name), _videoPresetName );
-			
-			FFmpegPreset::PresetsOptions opts = _preset.getOptionsForPresetFilename( presetFilename );
-			BOOST_FOREACH( FFmpegPreset::PresetsOptions::value_type& itOpt, opts )
-			{
-				int ret = av_opt_set( (void*)_stream->codec, itOpt.first.c_str(), itOpt.second.c_str(), 0);
-				switch( ret )
-				{
-					case AVERROR_OPTION_NOT_FOUND: TUTTLE_CERR( "ffmpegPreset: unable to find " << itOpt.first ); break;
-					case AVERROR(EINVAL): TUTTLE_CERR( "ffmpegPreset: invalid value " << itOpt.second.c_str() << " for option " << itOpt.first ); break;
-					case AVERROR(ERANGE): TUTTLE_CERR( "ffmpegPreset: invalid range for parameter " << itOpt.first << " : " << itOpt.second.c_str() ); break;
-				}
-			}
-		}
 		
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
@@ -240,10 +222,10 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		}
 		_stream->codec->pix_fmt     = _out_pixelFormat;
 
-		if( !strcmp( _avformatOptions->oformat->name, "mp4" ) || !strcmp( _avformatOptions->oformat->name, "mov" ) || !strcmp( _avformatOptions->oformat->name, "3gp" ) || !strcmp( _avformatOptions->oformat->name, "flv" ) )
+		if( !strcmp( _avFormatOptions->oformat->name, "mp4" ) || !strcmp( _avFormatOptions->oformat->name, "mov" ) || !strcmp( _avFormatOptions->oformat->name, "3gp" ) || !strcmp( _avFormatOptions->oformat->name, "flv" ) )
 			_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
 
-		av_dump_format( _avformatOptions, 0, getFilename().c_str(), 1 );
+		av_dump_format( _avFormatOptions, 0, getFilename().c_str(), 1 );
 
 		if( avcodec_open2( _stream->codec, _videoCodec, NULL ) < 0 )
 		{
@@ -255,7 +237,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 
 		if( !( _ofmt->flags & AVFMT_NOFILE ) )
 		{
-			if( avio_open2( &_avformatOptions->pb, getFilename().c_str(),
+			if( avio_open2( &_avFormatOptions->pb, getFilename().c_str(),
 							AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
 			{
 				freeFormat();
@@ -264,9 +246,137 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 			}
 		}
 
-		avformat_write_header( _avformatOptions, NULL );
+		avformat_write_header( _avFormatOptions, NULL );
+	}
+	return true;
+}
+
+int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_width, const int in_height, const PixelFormat in_pixelFormat )
+{
+	_statusCode = eWriterStatusIgnoreFinish;
+	
+	//start();
+	
+/*
+	if( !_avFormatOptions )
+	{
+		// TODO avformat_alloc_context2 can guess format from filename
+		// if format name is NULL, find a way to expose the feature
+		if( avformat_alloc_output_context2(&_avFormatOptions, NULL, _formatName.c_str(), getFilename().c_str()) < 0 )
+		{
+			TUTTLE_CERR( "ffmpegWriter: output context allocation failed" );
+			return false;
+		}
+		_ofmt = _avFormatOptions->oformat;
+		TUTTLE_CERR( "ffmpegWriter: " << std::string(_ofmt->name) << " format selected" );
 	}
 
+	if( !_stream )
+	{
+		_videoCodec = avcodec_find_encoder_by_name( _videoCodecName.c_str() );
+		if (!_videoCodec)
+		{
+			BOOST_THROW_EXCEPTION( exception::Format()
+				<< exception::user( "ffmpegWriter: codec not found." ) );
+		}
+		TUTTLE_CERR( "ffmpegWriter: " << std::string(_videoCodec->name) << " codec selected" );
+
+		_stream = avformat_new_stream( _avFormatOptions, _videoCodec );
+		if( !_stream )
+		{
+			BOOST_THROW_EXCEPTION( exception::File()
+				<< exception::user( "ffmpegWriter: out of memory." ) );
+		}
+		avcodec_get_context_defaults3(_stream->codec, _videoCodec);
+
+		TUTTLE_COUT_VAR2( _videoCodecName, _videoPresetName );
+		
+//		if( _videoPresetName.length() !=0 )
+//		{
+//			TUTTLE_COUT( "ffmpegWriter: " << _videoPresetName << " preset selected" );
+//			const std::string presetFilename = _preset.getFilename( std::string(_videoCodec->name), _videoPresetName );
+//			
+//			FFmpegPreset::PresetsOptions opts = _preset.getOptionsForPresetFilename( presetFilename );
+//			BOOST_FOREACH( FFmpegPreset::PresetsOptions::value_type& itOpt, opts )
+//			{
+//				int ret = av_opt_set( (void*)_stream->codec, itOpt.first.c_str(), itOpt.second.c_str(), 0);
+//				switch( ret )
+//				{
+//					case AVERROR_OPTION_NOT_FOUND: TUTTLE_CERR( "ffmpegPreset: unable to find " << itOpt.first ); break;
+//					case AVERROR(EINVAL): TUTTLE_CERR( "ffmpegPreset: invalid value " << itOpt.second.c_str() << " for option " << itOpt.first ); break;
+//					case AVERROR(ERANGE): TUTTLE_CERR( "ffmpegPreset: invalid range for parameter " << itOpt.first << " : " << itOpt.second.c_str() ); break;
+//				}
+//			}
+//		}
+		
+		_stream->codec->width              = getWidth();
+		_stream->codec->height             = getHeight();
+		_stream->codec->time_base          = av_d2q( 1.0 / _fps, 100 );
+		//_stream->codec->gop_size           = _gopSize;
+		_stream->codec->sample_rate        = 48000; ///< samples per second
+		_stream->codec->channels           = 0;     ///< number of audio channels
+//		if( _bFrames )
+//		{
+//			_stream->codec->max_b_frames     = _bFrames;
+//			_stream->codec->b_frame_strategy = 0;
+//			_stream->codec->b_quant_factor   = 2.0;
+//		}
+
+		int pixfmt_allowed = 0, k;
+		if ( _videoCodec->pix_fmts )
+		{
+			for ( k = 0; _videoCodec->pix_fmts[k] != PIX_FMT_NONE; k++ )
+			{
+				if ( _videoCodec->pix_fmts[k] == _out_pixelFormat )
+				{
+					pixfmt_allowed = 1;
+					break;
+				}
+			}
+		}
+		else
+		{
+			// If a codec does not contain a list of supported pixel
+			// formats, just assume that _out_PixelFormat is valid
+			pixfmt_allowed = 1;
+		}
+
+		if ( !pixfmt_allowed )
+		{
+			// av_get_pix_fmt_name requires lavu 51.3.0 or higher
+			TUTTLE_CERR( "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" );
+			_out_pixelFormat = _videoCodec->pix_fmts[0];
+			TUTTLE_CERR( "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) );
+		}
+		_stream->codec->pix_fmt     = _out_pixelFormat;
+
+		if( !strcmp( _avFormatOptions->oformat->name, "mp4" ) || !strcmp( _avFormatOptions->oformat->name, "mov" ) || !strcmp( _avFormatOptions->oformat->name, "3gp" ) || !strcmp( _avFormatOptions->oformat->name, "flv" ) )
+			_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
+
+		av_dump_format( _avFormatOptions, 0, getFilename().c_str(), 1 );
+
+		if( avcodec_open2( _stream->codec, _videoCodec, NULL ) < 0 )
+		{
+			freeFormat();
+			BOOST_THROW_EXCEPTION( exception::Format()
+				<< exception::user( "ffmpegWriter: unable to open codec." ) );
+			return false;
+		}
+
+		if( !( _ofmt->flags & AVFMT_NOFILE ) )
+		{
+			if( avio_open2( &_avFormatOptions->pb, getFilename().c_str(),
+							AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
+			{
+				freeFormat();
+				BOOST_THROW_EXCEPTION( exception::FileNotExist()
+					<< exception::user( "ffmpegWriter: unable to open file." ) );
+			}
+		}
+
+		avformat_write_header( _avFormatOptions, NULL );
+	}*/
+	
 	_statusCode = eWriterStatusCleanup;
 
 	AVFrame* in_frame = avcodec_alloc_frame();
@@ -297,7 +407,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 	}
 
 	int ret = 0;
-	if( ( _avformatOptions->oformat->flags & AVFMT_RAWPICTURE ) != 0 )
+	if( ( _avFormatOptions->oformat->flags & AVFMT_RAWPICTURE ) != 0 )
 	{
 		AVPacket pkt;
 		av_init_packet( &pkt );
@@ -305,7 +415,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		pkt.stream_index = _stream->index;
 		pkt.data         = (boost::uint8_t*) out_frame;
 		pkt.size         = sizeof( AVPicture );
-		ret              = av_interleaved_write_frame( _avformatOptions, &pkt );
+		ret              = av_interleaved_write_frame( _avFormatOptions, &pkt );
 	}
 	else
 	{
@@ -329,7 +439,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 
 		if ( hasFrame )
 		{
-			ret = av_interleaved_write_frame( _avformatOptions, &pkt );
+			ret = av_interleaved_write_frame( _avFormatOptions, &pkt );
 			if ( ret < 0 )
 			{
 				BOOST_THROW_EXCEPTION( exception::File()
@@ -357,20 +467,20 @@ void VideoFFmpegWriter::finish()
 {
 	if( _statusCode == eWriterStatusIgnoreFinish )
 		return;
-	av_write_trailer( _avformatOptions );
+	av_write_trailer( _avFormatOptions );
 	avcodec_close( _stream->codec );
-	if( !( _avformatOptions->oformat->flags & AVFMT_NOFILE ) )
-		avio_close( _avformatOptions->pb );
+	if( !( _avFormatOptions->oformat->flags & AVFMT_NOFILE ) )
+		avio_close( _avFormatOptions->pb );
 	freeFormat();
 }
 
 void VideoFFmpegWriter::freeFormat()
 {
 	avcodec_close( _stream->codec );
-	for( int i = 0; i < static_cast<int>( _avformatOptions->nb_streams ); ++i )
-		av_freep( &_avformatOptions->streams[i] );
-	av_free( _avformatOptions );
-	_avformatOptions = 0;
+	for( int i = 0; i < static_cast<int>( _avFormatOptions->nb_streams ); ++i )
+		av_freep( &_avFormatOptions->streams[i] );
+	av_free( _avFormatOptions );
+	_avFormatOptions = 0;
 	_stream          = 0;
 }
 
@@ -396,6 +506,145 @@ void VideoFFmpegWriter::setAudioPreset( const int id )
 	
 	FFmpegPreset::Presets p = getPresets().getConfigList( _audioCodecName );
 	_audioPresetName = p[id];
+}
+
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool& value )
+{
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			av_opt_set_int( (void*)_stream->codec, opt.name, value, 0 );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+	}
+}
+
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, int& value )
+{
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			av_opt_set_int( (void*)_stream->codec, opt.name, value, 0 );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+	}
+}
+
+
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, double &value )
+{
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			av_opt_set_double( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			av_opt_set_double( (void*)_stream->codec, opt.name, value, 0 );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			//av_opt_set_double( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+	}
+}
+
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, int &valueNum, int& valueDen )
+{
+	AVRational q;
+	q.num = valueNum;
+	q.den = valueDen;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			av_opt_set_q( _avFormatOptions, opt.name, q, 0 );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			av_opt_set_q( (void*)_stream->codec, opt.name, q, 0 );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			//av_opt_set_q( _avFormatOptions, opt.name, q, 0 );
+			break;
+		}
+	}
+}
+
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, std::string &value )
+{
+	if( ! value.length() )
+		return;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			av_opt_set( _avFormatOptions, opt.name, value.c_str(), 0 );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			av_opt_set( (void*)_stream->codec, opt.name, value.c_str(), 0 );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			//av_opt_set( _avFormatOptions, opt.name, value.c_str(), 0 );
+			break;
+		}
+	}
+}
+
+void VideoFFmpegWriter::optionSetImageSize( const EAVParamType &type, AVOption &opt, int &width, int& height)
+{
+	/*
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			av_opt_set_image_size( _avFormatOptions, opt.name, width, height, 0 );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			av_opt_set_image_size( _avFormatOptions, opt.name, width, height, 0 );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			av_opt_set_image_size( _avFormatOptions, opt.name, width, height, 0 );
+			break;
+		}
+	}*/
 }
 
 }

@@ -27,6 +27,13 @@ typedef struct AVPrivOption
 	std::string class_name;
 } AVPrivOption;
 
+enum EAVParamType
+{
+	eAVParamFormat = 0,
+	eAVParamVideo,
+	eAVParamAudio
+};
+
 /**
  * @brief This is a base class for ffmpeg, don't use it directly.
  * It contains only utilities functions.

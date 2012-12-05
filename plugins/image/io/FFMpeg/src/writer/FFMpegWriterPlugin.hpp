@@ -47,6 +47,9 @@ public:
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
+private:
+	void setParameters( const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
+	
 public:
 	OFX::ChoiceParam*   _paramFormat;
 	OFX::ChoiceParam*   _paramVideoCodec;

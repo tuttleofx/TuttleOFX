@@ -35,6 +35,7 @@ public:
 		return true;
 	}
 
+	int start( );
 	int  execute( boost::uint8_t* const in_buffer, const int in_width, const int height, const PixelFormat in_fmt = PIX_FMT_RGB24 );
 	void finish();
 
@@ -210,8 +211,18 @@ public:
 	FFmpegPreset& getPresets() { return _preset; }
 	const FFmpegPreset& getPresets() const { return _preset; }
 
+	void optionSet( const EAVParamType& type, AVOption &opt, bool &value );
+	void optionSet( const EAVParamType& type, AVOption &opt, int &value );
+	void optionSet( const EAVParamType& type, AVOption &opt, double &value );
+	void optionSet( const EAVParamType& type, AVOption &opt, int &valueNum, int& valueDen );
+	void optionSet( const EAVParamType& type, AVOption &opt, std::string &value );
+	void optionSetImageSize( const EAVParamType& type, AVOption &opt, int &width, int& height );
+	
+	
 private:
-	AVFormatContext*               _avformatOptions;
+	AVFormatContext*               _avFormatOptions;
+	AVCodecContext*                _avVideoOptions;
+	AVCodecContext*                _avAudioOptions;
 	struct SwsContext*             _sws_context; ///< swscale: transformation context
 	AVStream*                      _stream;
 	AVCodec*                       _videoCodec;
