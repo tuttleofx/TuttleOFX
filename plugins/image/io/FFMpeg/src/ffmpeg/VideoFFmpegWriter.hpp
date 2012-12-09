@@ -40,6 +40,7 @@ public:
 
 private:
 	void freeFormat();
+    std::string getErrorStr( const int errnum ) const;
 
 public:
 	void setFilename( const std::string& filename )
