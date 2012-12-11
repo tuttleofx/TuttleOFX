@@ -35,15 +35,15 @@ if( showHelp ):
 	print( BLUE + 'TuttleOFX project [http:/ / sites.google.com/site/tuttleofx]' + NC );
 	print( '' );
 	print( BLUE + 'NAME' + NC );
-	print( GREEN + '\tsam-viewer - view images or sequences' + NC );
+	print( green + '\tsam-viewer - view images or sequences' + NC );
 	print( '' );
 	print( BLUE + 'SYNOPSIS' + NC );
-	print( GREEN + '\tsam-viewer [directory - file - sequence]' );
-	print( GREEN + '\tsam-viewer specificReader [directory - file - sequence]' );
+	print( green + '\tsam-viewer [directory - file - sequence]' + NC );
+	print( green + '\tsam-viewer specificReader [directory - file - sequence]' + NC );
 	print( '' );
 	print( BLUE + 'DESCRIPTION' + NC );
 	print( '' );
-	print( 'Viewer for sequences and files.' + NC );
+	print( 'Viewer for sequences and files.' );
 	print( '' );
 	print( BLUE + 'OPTIONS' + NC );
 	print( '' );
@@ -53,7 +53,7 @@ if( showHelp ):
 	exit();
 
 if( showBrief ):
-	print( GREEN + 'viewer of file/sequence' + NC );
+	print( green + 'viewer of file/sequence' + NC );
 	exit();
 
 TUTTLE_ROOT = os.getenv('TUTTLE_ROOT')

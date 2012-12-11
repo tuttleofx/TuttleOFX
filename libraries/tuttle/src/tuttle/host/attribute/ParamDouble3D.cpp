@@ -10,7 +10,7 @@ ParamDouble3D::ParamDouble3D( INode&                           effect,
                               const std::string&                         name,
                               const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
-	, ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, name, effect.getParamSet() )
+	, ParamDoubleMultiDim<3>( descriptor, name, effect.getParamSet() )
 {
 	_controls.replace<0>( new ParamDouble( effect, name + ".x", descriptor, 0 ) );
 	_controls.replace<1>( new ParamDouble( effect, name + ".y", descriptor, 1 ) );

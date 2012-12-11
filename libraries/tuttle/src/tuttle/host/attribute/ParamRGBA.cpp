@@ -10,7 +10,7 @@ ParamRGBA::ParamRGBA( INode&                           effect,
                       const std::string&                         name,
                       const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
-	, ofx::attribute::OfxhMultiDimParam<ParamDouble, 4>( descriptor, name, effect.getParamSet() )
+	, ParamDoubleMultiDim<4>( descriptor, name, effect.getParamSet() )
 {
 	_controls.replace<0>( new ParamDouble( effect, name + ".r", descriptor, 0 ) );
 	_controls.replace<1>( new ParamDouble( effect, name + ".g", descriptor, 1 ) );
