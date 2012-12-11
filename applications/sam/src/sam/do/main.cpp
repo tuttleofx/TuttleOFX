@@ -1123,7 +1123,7 @@ int main( int argc, char** argv )
 		// or no dummy node, process only 1 graph
 		if( ! listOfSequencesPerReaderNode.size() ||
 			! facticesNodes.size() ||
-			( listOfSequencesPerReaderNode.size() || listOfSequencesPerWriterNode.size() ) && !numberOfLoop )
+			( ( listOfSequencesPerReaderNode.size() || listOfSequencesPerWriterNode.size() ) && !numberOfLoop ) )
 		{
 			numberOfLoop = 1;
 		}
@@ -1187,10 +1187,13 @@ int main( int argc, char** argv )
 				// get sequence name (or filename)
 				if( dummy.isDummyReaderNode( name ) )
 				{
-					// get filename from browsing
-					if( listOfSequencesPerReaderNode.size() && numberOfLoop == 1 )
+					std::string baseSrcPath = readerToReplace->getParam("expression").getStringValue();
+					bfs::path refPath( baseSrcPath );
+					
+					if( refPath.extension().string().size() )
 					{
-						filename = readerToReplace->getParamByScriptName( "expression" ).getStringValue();
+						// if writer have an extension in the parameter, keep this filename
+						filename = baseSrcPath;
 					}
 					else
 					{
@@ -1198,6 +1201,7 @@ int main( int argc, char** argv )
 						filename = getAbsoluteFilename( fo );
 						countDummyReader++;
 					}
+					TUTTLE_TCOUT_VAR( filename );
 				}
 				else // writer dummy
 				{
@@ -1253,7 +1257,7 @@ int main( int argc, char** argv )
 								sp::FileObject& fo = listOfSequencesPerReaderNode.at( 0 ).at( loop );
 								filename = getAbsoluteFilename( fo );
 							}
-
+							
 							bfs::path filepath( baseSrcPath );
 							if( filepath.extension().string().size() )
 							{
