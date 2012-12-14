@@ -31,6 +31,8 @@ static const std::string kParamFormatPreset              = "formatPreset";
 static const std::string kParamVideoPreset               = "videoPreset";
 static const std::string kParamAudioPreset               = "audioPreset";
 
+static const std::string kParamVideoCodecPixelFmt        = "videoPixelFormat";
+
 }
 }
 }

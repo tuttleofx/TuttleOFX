@@ -179,7 +179,7 @@ int VideoFFmpegWriter::start( )
 		}
 		avcodec_get_context_defaults3(_stream->codec, _videoCodec);
 
-		TUTTLE_COUT_VAR2( _videoCodecName, _videoPresetName );
+//		TUTTLE_COUT_VAR2( _videoCodecName, _videoPresetName );
 		
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
@@ -510,73 +510,86 @@ void VideoFFmpegWriter::setAudioPreset( const int id )
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool& value )
 {
+	int ret;
 	switch( type )
 	{
 		case eAVParamFormat:
 		{
-			av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			ret = av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			av_opt_set_int( (void*)_stream->codec, opt.name, value, 0 );
+			ret = av_opt_set_int( (void*)_stream->codec->av_class, opt.name, value, 0 );
 			break;
 		}
 		case eAVParamAudio:
 		{
+			ret = 0;
 			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
 			break;
 		}
 	}
+	if( !ret )
+		TUTTLE_CERR( "FFMpeg writer: option not found: " << opt.name );
 }
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, int& value )
 {
+	int ret;
 	switch( type )
 	{
 		case eAVParamFormat:
 		{
-			av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			ret = av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			av_opt_set_int( (void*)_stream->codec, opt.name, value, 0 );
+			ret = av_opt_set_int( (void*)_stream->codec->av_class, opt.name, value, 0 );
 			break;
 		}
 		case eAVParamAudio:
 		{
+			ret = 0;
 			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
 			break;
 		}
 	}
+	if( !ret )
+		TUTTLE_CERR( "FFMpeg writer: option not found: " << opt.name );
 }
 
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, double &value )
 {
+	int ret;
 	switch( type )
 	{
 		case eAVParamFormat:
 		{
-			av_opt_set_double( _avFormatOptions, opt.name, value, 0 );
+			ret = av_opt_set_double( _avFormatOptions, opt.name, value, 0 );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			av_opt_set_double( (void*)_stream->codec, opt.name, value, 0 );
+			ret = av_opt_set_double( (void*)_stream->codec->av_class, opt.name, value, 0 );
 			break;
 		}
 		case eAVParamAudio:
 		{
+			ret = 0;
 			//av_opt_set_double( _avFormatOptions, opt.name, value, 0 );
 			break;
 		}
 	}
+	if( !ret )
+		TUTTLE_CERR( "FFMpeg writer: option not found: " << opt.name );
 }
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, int &valueNum, int& valueDen )
 {
+	int ret;
 	AVRational q;
 	q.num = valueNum;
 	q.den = valueDen;
@@ -584,44 +597,51 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, int 
 	{
 		case eAVParamFormat:
 		{
-			av_opt_set_q( _avFormatOptions, opt.name, q, 0 );
+			ret = av_opt_set_q( _avFormatOptions, opt.name, q, 0 );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			av_opt_set_q( (void*)_stream->codec, opt.name, q, 0 );
+			ret = av_opt_set_q( (void*)_stream->codec->av_class, opt.name, q, 0 );
 			break;
 		}
 		case eAVParamAudio:
 		{
+			ret = 0;
 			//av_opt_set_q( _avFormatOptions, opt.name, q, 0 );
 			break;
 		}
 	}
+	if( !ret )
+		TUTTLE_CERR( "FFMpeg writer: option not found: " << opt.name );
 }
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, std::string &value )
 {
+	int ret;
 	if( ! value.length() )
 		return;
 	switch( type )
 	{
 		case eAVParamFormat:
 		{
-			av_opt_set( _avFormatOptions, opt.name, value.c_str(), 0 );
+			ret = av_opt_set( _avFormatOptions, opt.name, value.c_str(), 0 );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			av_opt_set( (void*)_stream->codec, opt.name, value.c_str(), 0 );
+			ret = av_opt_set( (void*)_stream->codec->av_class, opt.name, value.c_str(), 0 );
 			break;
 		}
 		case eAVParamAudio:
 		{
+			ret = 0;
 			//av_opt_set( _avFormatOptions, opt.name, value.c_str(), 0 );
 			break;
 		}
 	}
+	if( !ret )
+		TUTTLE_CERR( "FFMpeg writer: option not found: " << opt.name );
 }
 
 void VideoFFmpegWriter::optionSetImageSize( const EAVParamType &type, AVOption &opt, int &width, int& height)

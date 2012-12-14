@@ -93,6 +93,16 @@ public:
 		return _fps;
 	}
 
+	void setPixelFormat( const PixelFormat pxlFmt )
+	{
+		_out_pixelFormat = pxlFmt;
+	}
+
+	PixelFormat getPixelFormat() const
+	{
+		return _out_pixelFormat;
+	}
+	
 	const std::string& getFormat() const
 	{
 		return _formatName;

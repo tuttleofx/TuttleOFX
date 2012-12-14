@@ -603,6 +603,23 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	videoCodec->setDefault( default_codec );
 	videoCodec->setParent( videoGroup );
 	
+	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
+	videoCodecPixelFmt->setLabel( kParamVideoCodecPixelFmt );
+	videoCodecPixelFmt->setLabel( "Select the output video pixel type." );
+	
+	enum PixelFormat pix_fmt;
+	int i = 0;
+	for (pix_fmt = (PixelFormat)0; pix_fmt < PIX_FMT_NB; pix_fmt++)
+	{
+		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
+		if(!pix_desc->name)
+			continue;
+		videoCodecPixelFmt->appendOption( pix_desc->name );
+		i++;
+	}
+	videoCodecPixelFmt->setParent( videoGroup );
+	
+	
 	const std::vector<std::string> codecListWithPreset = writer.getPresets().getCodecListWithConfig();
 	BOOST_FOREACH( const std::string& codecName, codecListWithPreset )
 	{

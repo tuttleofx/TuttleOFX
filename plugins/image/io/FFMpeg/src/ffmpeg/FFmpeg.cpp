@@ -110,6 +110,26 @@ std::vector<AVPrivOption> FFmpeg::getAVOptions( const AVClass* av_class )
 	return list;
 }
 
+void FFmpeg::getPixelsFormatList( )
+{
+	enum PixelFormat pix_fmt;
+	for (pix_fmt = static_cast<PixelFormat>(0); pix_fmt < PIX_FMT_NB; pix_fmt++)
+	{
+		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
+		if(!pix_desc->name)
+			continue;
+		/*printf("%c%c%c%c%c %-16s       %d            %2d\n",
+			   sws_isSupportedInput (pix_fmt)      ? 'I' : '.',
+			   sws_isSupportedOutput(pix_fmt)      ? 'O' : '.',
+			   pix_desc->flags & PIX_FMT_HWACCEL   ? 'H' : '.',
+			   pix_desc->flags & PIX_FMT_PAL       ? 'P' : '.',
+			   pix_desc->flags & PIX_FMT_BITSTREAM ? 'B' : '.',
+			   pix_desc->name,
+			   pix_desc->nb_components,
+			   av_get_bits_per_pixel(pix_desc));*/
+	}
+}
+
 /*
  #define VALUE_AND_NAME(e) e, #e
 

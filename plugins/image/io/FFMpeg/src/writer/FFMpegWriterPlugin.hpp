@@ -24,6 +24,8 @@ struct FFMpegProcessParams
 	
 	int         _videoPreset; ///< video configuration (based on the video codec)
 	int         _audioPreset; ///< video configuration (based on the video codec)
+	
+	PixelFormat _videoPixelFormat; /// videoPixelFormat
 };
 
 /**
@@ -38,7 +40,8 @@ public:
 	FFMpegProcessParams getProcessParams();
 
 	void disableAVOptionsForCodecOrFormat( const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
-	
+	void updatePixelFormat( const std::string& videoCodecName );
+
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
@@ -55,6 +58,7 @@ public:
 	OFX::ChoiceParam*   _paramVideoCodec;
 	OFX::ChoiceParam*   _paramAudioCodec;
 	OFX::IntParam*      _paramBitRate;
+	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
 	std::vector<OFX::ChoiceParam*> _videoCodecPresetParams;
 	std::vector<OFX::ChoiceParam*> _audioCodecPresetParams;

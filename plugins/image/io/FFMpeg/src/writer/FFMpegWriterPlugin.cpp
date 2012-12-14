@@ -138,6 +138,21 @@ void FFMpegWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVP
 	}
 }
 
+void FFMpegWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
+{
+	AVCodec* _videoCodec = avcodec_find_encoder_by_name( videoCodecName.c_str() );
+	
+	_paramVideoPixelFormat->resetOptions();
+	
+	int i = 0;
+	while( _videoCodec->pix_fmts[i] != -1 )
+	{
+		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[ _videoCodec->pix_fmts[i] ];
+		_paramVideoPixelFormat->appendOption( pix_desc->name );
+		i++;
+	}
+}
+
 FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
@@ -147,6 +162,7 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	_paramFormat                      = fetchChoiceParam( kParamFormat );
 	_paramVideoCodec                  = fetchChoiceParam( kParamVideoCodec );
 	_paramAudioCodec                  = fetchChoiceParam( kParamAudioCodec );
+	_paramVideoPixelFormat            = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	
 	_videoCodecListWithPreset = _writer.getCodecListWithConfig();
 	std::vector<std::string>::iterator it;
@@ -179,6 +195,8 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	std::string videoCodecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), videoCodecName );
 	
+	updatePixelFormat( videoCodecName );
+	
 	std::string audioCodecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), audioCodecName );
 }
@@ -191,6 +209,7 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
 	params._format = _paramFormat->getValue();
 	params._videoCodec                     = _paramVideoCodec        ->getValue();
 	params._audioCodec                     = _paramAudioCodec        ->getValue();
+	params._videoPixelFormat               = static_cast<PixelFormat>( _paramVideoPixelFormat->getValue() );
 	
 	_writer.setVideoCodec( params._videoCodec );
 	const std::string codecName = _writer.getVideoCodec();
@@ -359,8 +378,9 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 	}
 	if( paramName == kParamVideoCodec )
 	{
-		std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-		disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), codecName );
+		std::string videoCodecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
+		disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), videoCodecName );
+		updatePixelFormat( videoCodecName );
 	}
 	if( paramName == kParamAudioCodec )
 	{
@@ -434,7 +454,7 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	_writer.setVideoCodec  ( params._videoCodec );
 	_writer.setFps         ( _clipSrc->getFrameRate() );
 	_writer.setAspectRatio ( _clipSrc->getPixelAspectRatio() );
-
+	_writer.setPixelFormat ( params._videoPixelFormat );
 	//TUTTLE_COUT( params._videoPreset );
 	//_writer.setVideoPreset ( params._videoPreset );
 	
