@@ -1,3 +1,5 @@
+# scons: Checkerboard Blur Png
+
 from pyTuttle import tuttle
 
 def setUp():

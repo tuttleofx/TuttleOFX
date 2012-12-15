@@ -1,3 +1,5 @@
+# scons: Checkerboard ColorTransform Invert
+
 from pyTuttle.tuttle import *
 
 def setUp():
