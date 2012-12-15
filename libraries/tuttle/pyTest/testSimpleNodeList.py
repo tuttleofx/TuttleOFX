@@ -1,3 +1,5 @@
+# scons: Checkerboard Invert FFMpeg Png
+
 from pyTuttle.tuttle import *
 
 def setUp():

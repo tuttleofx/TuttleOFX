@@ -595,11 +595,44 @@ void ImageEffectNode::validBitDepthConnections() const
 	}
 }
 
-OfxRangeD ImageEffectNode::computeTimeDomain()
+OfxRangeD ImageEffectNode::getDefaultTimeDomain() const
 {
 	OfxRangeD range;
 	range.min = kOfxFlagInfiniteMin;
 	range.max = kOfxFlagInfiniteMax;
+	// if no answer, compute it from input clips
+	bool first = true;
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+		it != _clipImages.end();
+		++it )
+	{
+		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			OfxRangeD clipRange = linkClip.getNode().getTimeDomain();
+			if( first )
+			{
+				first = false;
+				range = clipRange;
+			}
+			else
+			{
+				// maybe better to use intersection instead of union
+				range.min = std::min( range.min, clipRange.min );
+				range.max = std::max( range.max, clipRange.max );
+			}
+		}
+	}
+	return range;
+}
+
+OfxRangeD ImageEffectNode::computeTimeDomain()
+{
+	TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
+	OfxRangeD defaultRange = getDefaultTimeDomain();
+	OfxRangeD range = defaultRange;
+
 	// ask to the plugin
 	if( getTimeDomainAction( range ) )
 	{
@@ -607,33 +640,7 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 	}
 	else
 	{
-		TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
-		range.min = kOfxFlagInfiniteMin;
-		range.max = kOfxFlagInfiniteMax;
-		// if no answer, compute it from input clips
-		bool first = true;
-		for( ClipImageMap::const_iterator it = _clipImages.begin();
-			it != _clipImages.end();
-			++it )
-		{
-			const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
-			if( !clip.isOutput() && clip.isConnected() )
-			{
-				const attribute::ClipImage& linkClip = clip.getConnectedClip();
-				OfxRangeD clipRange = linkClip.getNode().getTimeDomain();
-				if( first )
-				{
-					first = false;
-					range = clipRange;
-				}
-				else
-				{
-					// maybe better to use intersection instead of union
-					range.min = std::min( range.min, clipRange.min );
-					range.max = std::max( range.max, clipRange.max );
-				}
-			}
-		}
+		range = defaultRange;
 	}
 	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setFrameRange( range.min, range.max );
 	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setUnmappedFrameRange( range.min, range.max );

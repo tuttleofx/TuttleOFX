@@ -1,3 +1,5 @@
+# scons: Jpeg
+
 from pyTuttle import tuttle
 import Image
 import numpy
