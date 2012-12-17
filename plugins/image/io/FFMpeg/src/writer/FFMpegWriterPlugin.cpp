@@ -467,6 +467,8 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
  */
 void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
+	WriterPlugin::render( args );
+	
 	//OfxRangeD range = args.frameRange;
 	const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
 	_writer.setWidth ( bounds.x2 - bounds.x1 );
@@ -482,7 +484,6 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 	codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
 	setParameters( eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
 	
-	WriterPlugin::render( args );
 	TUTTLE_COUT("begin render");
 	doGilRender<FFMpegWriterProcess>( *this, args );
 }
