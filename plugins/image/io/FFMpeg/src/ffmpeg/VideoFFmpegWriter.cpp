@@ -526,7 +526,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool
 		}
 		case eAVParamVideo:
 		{
-			error = ( (void*)_stream->codec->av_class, opt.name, value, 0 );
+			error = av_opt_set_int( _stream->codec, opt.name, value, 0 );
 			break;
 		}
 		case eAVParamAudio:
@@ -553,7 +553,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, int&
 		case eAVParamVideo:
 		{
 			//error = av_opt_set_int( (void*)_stream->codec->av_class, opt.name, value, AV_OPT_SEARCH_CHILDREN );
-			error = av_opt_set_int( _avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			error = av_opt_set_int( _stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamAudio:
@@ -581,7 +581,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, doub
 		case eAVParamVideo:
 		{
 			//error = av_opt_set_double( (void*)_stream->codec->av_class, opt.name, value, 0 );
-			error = av_opt_set_double( _avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			error = av_opt_set_double( _stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamAudio:
@@ -611,7 +611,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, int 
 		case eAVParamVideo:
 		{
 			//error = av_opt_set_q( (void*)_stream->codec->av_class, opt.name, q, 0 );
-			error = av_opt_set_q( _avFormatOptions, opt.name, q, AV_OPT_SEARCH_CHILDREN );
+			error = av_opt_set_q( _stream->codec, opt.name, q, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamAudio:
@@ -640,7 +640,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, std:
 		case eAVParamVideo:
 		{
 			//error = av_opt_set( (void*)_stream->codec->av_class, opt.name, value.c_str(), 0 );
-			error = av_opt_set( _avFormatOptions, opt.name, value.c_str(), AV_OPT_SEARCH_CHILDREN );
+			error = av_opt_set( _stream->codec, opt.name, value.c_str(), AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamAudio:
