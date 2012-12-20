@@ -222,6 +222,7 @@ public:
 	const FFmpegPreset& getPresets() const { return _preset; }
 
 	void optionSet( const EAVParamType& type, AVOption &opt, bool &value );
+	void optionSet( const EAVParamType& type, AVOption& opt, bool& value, std::string& valueToSetFlag );
 	void optionSet( const EAVParamType& type, AVOption &opt, int &value );
 	void optionSet( const EAVParamType& type, AVOption &opt, double &value );
 	void optionSet( const EAVParamType& type, AVOption &opt, int &valueNum, int& valueDen );

@@ -521,12 +521,12 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool
 	{
 		case eAVParamFormat:
 		{
-			error = av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			error = av_opt_set_int( _avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			error = av_opt_set_int( _stream->codec, opt.name, value, 0 );
+			error = av_opt_set_int( _stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamAudio:
@@ -540,6 +540,48 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool
 		TUTTLE_CERR( "FFMpeg writer: " << ffmpegError_toString( error ) << " : " << opt.name << " ( " << ( value ? "True" : "False" ) << " )" );
 }
 
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool& value, std::string& valueToSetFlag )
+{
+	int error;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			error = 0;
+			int value = 0;
+			error = av_opt_set_int( _avFormatOptions, valueToSetFlag.c_str(), AV_OPT_SEARCH_CHILDREN, value );
+			if( value )
+				value = opt.default_val.i64 | value;
+			else
+				value = ( ! opt.default_val.i64 ) & value;
+			
+			error = av_opt_set_int( _avFormatOptions, valueToSetFlag.c_str(), value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			error = 0;
+			int value = 0;
+			error = av_opt_set_int( _stream->codec, valueToSetFlag.c_str(), AV_OPT_SEARCH_CHILDREN, value );
+			if( value )
+				value = opt.default_val.i64 | value;
+			else
+				value = ( ! opt.default_val.i64 ) & value;
+			
+			error = av_opt_set_int( _stream->codec, valueToSetFlag.c_str(), value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			error = 0;
+			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+	}
+	if( error )
+		TUTTLE_CERR( "FFMpeg writer: " << ffmpegError_toString( error ) << " : " << valueToSetFlag << " ( " <<  opt.name << " = " << ( value ? "True" : "False" ) << " )" );
+}
+
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, int& value )
 {
 	int error;
@@ -547,12 +589,11 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, int&
 	{
 		case eAVParamFormat:
 		{
-			error = av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			error = av_opt_set_int( _avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			//error = av_opt_set_int( (void*)_stream->codec->av_class, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			error = av_opt_set_int( _stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
@@ -575,12 +616,11 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, doub
 	{
 		case eAVParamFormat:
 		{
-			error = av_opt_set_double( _avFormatOptions, opt.name, value, 0 );
+			error = av_opt_set_double( _avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			//error = av_opt_set_double( (void*)_stream->codec->av_class, opt.name, value, 0 );
 			error = av_opt_set_double( _stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
@@ -605,12 +645,11 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, int 
 	{
 		case eAVParamFormat:
 		{
-			error = av_opt_set_q( _avFormatOptions, opt.name, q, 0 );
+			error = av_opt_set_q( _avFormatOptions, opt.name, q, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			//error = av_opt_set_q( (void*)_stream->codec->av_class, opt.name, q, 0 );
 			error = av_opt_set_q( _stream->codec, opt.name, q, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
@@ -634,12 +673,11 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, std:
 	{
 		case eAVParamFormat:
 		{
-			error = av_opt_set( _avFormatOptions, opt.name, value.c_str(), 0 );
+			error = av_opt_set( _avFormatOptions, opt.name, value.c_str(), AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
 		case eAVParamVideo:
 		{
-			//error = av_opt_set( (void*)_stream->codec->av_class, opt.name, value.c_str(), 0 );
 			error = av_opt_set( _stream->codec, opt.name, value.c_str(), AV_OPT_SEARCH_CHILDREN );
 			break;
 		}

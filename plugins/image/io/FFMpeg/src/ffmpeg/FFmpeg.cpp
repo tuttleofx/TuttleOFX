@@ -112,8 +112,7 @@ std::vector<AVPrivOption> FFmpeg::getAVOptions( const AVClass* av_class )
 
 void FFmpeg::getPixelsFormatList( )
 {
-	enum PixelFormat pix_fmt;
-	for (pix_fmt = static_cast<PixelFormat>(0); pix_fmt < PIX_FMT_NB; pix_fmt++)
+	for( int pix_fmt = 0; pix_fmt < PIX_FMT_NB; pix_fmt++ )
 	{
 		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
 		if(!pix_desc->name)

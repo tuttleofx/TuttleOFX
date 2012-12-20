@@ -78,7 +78,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			case AV_OPT_TYPE_INT64:
 			{
 				OFX::IntParamDescriptor* param = desc.defineIntParam( opt->name );
-				param->setDefault( opt->default_val.dbl );
+				param->setDefault( opt->default_val.i64 );
 				param->setRange( opt->min, opt->max );
 				param->setDisplayRange( opt->min, opt->max );
 				if( opt->help )
@@ -296,7 +296,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			{
 				OFX::IntParamDescriptor* param = desc.defineIntParam( name );
 				param->setLabel( opt.o.name );
-				param->setDefault( opt.o.default_val.dbl );
+				param->setDefault( opt.o.default_val.i64 );
 				param->setRange( opt.o.min, opt.o.max );
 				param->setDisplayRange( opt.o.min, opt.o.max );
 				if( opt.o.help )
@@ -607,15 +607,12 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	videoCodecPixelFmt->setLabel( kParamVideoCodecPixelFmt );
 	videoCodecPixelFmt->setLabel( "Select the output video pixel type." );
 	
-	enum PixelFormat pix_fmt;
-	int i = 0;
-	for (pix_fmt = (PixelFormat)0; pix_fmt < PIX_FMT_NB; pix_fmt++)
+	for( int pix_fmt = 0; pix_fmt < PIX_FMT_NB; pix_fmt++ )
 	{
 		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
 		if(!pix_desc->name)
 			continue;
 		videoCodecPixelFmt->appendOption( pix_desc->name );
-		i++;
 	}
 	videoCodecPixelFmt->setParent( videoGroup );
 	

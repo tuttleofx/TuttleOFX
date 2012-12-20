@@ -353,7 +353,7 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vec
 						
 						OFX::BooleanParam* curOpt = fetchBooleanParam( name );
 						bool v = curOpt->getValue();
-						_writer.optionSet( type, opt.o, v );
+						_writer.optionSet( type, opt.o, v, opt.class_name );
 						break;
 					}
 				}
