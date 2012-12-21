@@ -1,3 +1,5 @@
+# scons: Png Component Merge
+
 from pyTuttle import tuttle
 import numpy
 import Image

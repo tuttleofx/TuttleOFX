@@ -1,3 +1,5 @@
+# scons: Checkerboard Blur Png Constant Gamma ImageStatistics Pinning Constant
+
 from pyTuttle import tuttle
 
 from nose.tools import *

@@ -45,6 +45,7 @@ void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClip->setTemporalClipAccess( true );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );

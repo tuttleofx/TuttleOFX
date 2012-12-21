@@ -1,3 +1,5 @@
+# scons: FFMpeg Invert
+
 from pyTuttle.tuttle import *
 
 def setUp():

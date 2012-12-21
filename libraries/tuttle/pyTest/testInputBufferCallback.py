@@ -1,3 +1,4 @@
+# scons: Png
 
 from pyTuttle import tuttle
 import numpy

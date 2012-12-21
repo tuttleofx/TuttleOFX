@@ -1,3 +1,5 @@
+# scons: Png MathOperator Diff
+
 from pyTuttle import tuttle
 
 def setUp():
