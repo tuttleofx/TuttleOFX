@@ -37,7 +37,7 @@ public:
 	typedef boost::gil::image_view<Locator> CheckerboardVirtualView;
 
 protected:
-	CheckerboardPlugin&    _plugin;        ///< Rendering plugin
+	CheckerboardPlugin&     _plugin;        ///< Rendering plugin
 	CheckerboardVirtualView _srcView;       ///< Source view
 
 public:
