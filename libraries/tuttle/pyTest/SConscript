@@ -3,7 +3,7 @@ Import( 'project', 'libs' )
 project.ScriptTests(
 		target = project.getDirs(2),
 		dirs = ['.'],
-		libraries = [libs._tuttle],
+		libraries = [libs.pyTuttle],
 		procEnvFlags = {
 			'PYTHONPATH': project.inOutputDir('python'),
 			'OFX_PLUGIN_PATH': project.inOutputPlugin(),

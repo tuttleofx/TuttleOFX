@@ -3,7 +3,7 @@
 from pyTuttle.tuttle import *
 
 def setUp():
-	core().preload()
+	core().preload(False)
 
 
 def testFpsPropagation():

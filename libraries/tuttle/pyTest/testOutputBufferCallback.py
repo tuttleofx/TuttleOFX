@@ -5,7 +5,7 @@ import Image
 import numpy
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 # This is called by Tuttle with the output image data
 def writeImage(time, data, width, height, rowSizeBytes, bitDepth, components, field):
