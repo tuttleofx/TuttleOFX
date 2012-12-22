@@ -28,7 +28,7 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setTemporalClipAccess( true );
+	desc.setTemporalClipAccess( true ); // The identity state change the time
 	desc.setSupportsTiles( true );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }

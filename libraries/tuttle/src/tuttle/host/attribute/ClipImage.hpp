@@ -77,6 +77,8 @@ public:
 
 	std::string getFullName() const;
 
+	OfxTime getRemappedTime( const OfxTime time ) const;
+
 	std::string getConnectedClipFullName() const
 	{
 		if( isOutput() || !isConnected() || _connectedClip->getFullName().size() == 0 )
