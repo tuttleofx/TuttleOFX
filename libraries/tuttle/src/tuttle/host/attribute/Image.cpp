@@ -21,7 +21,6 @@ namespace attribute {
 
 Image::Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const EImageOrientation orientation, const int rowDistanceBytes )
 	: ofx::imageEffect::OfxhImage( clip, time ) ///< this ctor will set basic props on the image
-	, _nbComponents( clip.getNbComponents() )
 	, _memorySize( 0 )
 	, _pixelBytes( clip.getPixelMemorySize() )
 	, _rowAbsDistanceBytes( 0 )
