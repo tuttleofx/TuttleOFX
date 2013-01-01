@@ -91,7 +91,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance, const OfxTime time )
 
 /**
  * construction based on clip instance
- */
+ *
 OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 					  OfxTime              time,
                       double               renderScaleX,
@@ -132,6 +132,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 	setStringProperty( kOfxImageClipPropFieldOrder, field );
 	setStringProperty( kOfxImagePropUniqueIdentifier, uniqueIdentifier );
 }
+*/
 
 OfxhImage::~OfxhImage()
 {
