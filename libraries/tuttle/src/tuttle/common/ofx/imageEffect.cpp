@@ -181,7 +181,7 @@ EPixelComponent mapPixelComponentStringToEnum( const std::string& str )
 	}
 	else if( str == kOfxImageComponentRGB )
 	{
-		return ePixelComponentRGBA;
+		return ePixelComponentRGB;
 	}
 	else if( str == kOfxImageComponentAlpha )
 	{
