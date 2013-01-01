@@ -77,7 +77,8 @@ void Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
 	{
 		nodePtrs.push_back( &addNode( node ) ); // tranfer nodes ownership to the graph
 	}
-	connect( nodePtrs );
+	if( nodePtrs.size() > 1 )
+		connect( nodePtrs );
 }
 
 void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
