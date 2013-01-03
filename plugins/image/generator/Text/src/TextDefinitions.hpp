@@ -13,6 +13,7 @@ static const std::string kParamFont          = "font";
 static const std::string kParamSize          = "size";
 static const std::string kParamRatio         = "ratio";
 static const std::string kParamColor         = "color";
+static const std::string kParamBackgroundColor  = "backgroundColor";
 static const std::string kParamPosition      = "position";
 static const std::string kParamLetterSpacing = "letterSpacing";
 
@@ -38,7 +39,8 @@ enum EParamHAlign
 };
 
 static const std::string kParamVerticalFlip  = "verticalFlip";
-
+static const std::string kParamItalic        = "italic";
+static const std::string kParamBold          = "bold";
 }
 }
 }

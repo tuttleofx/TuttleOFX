@@ -12,7 +12,8 @@
 #include <boost/python.hpp>
 
 #include <sstream>
-
+#include <string>
+#include <iostream>
 
 namespace tuttle {
 namespace plugin {
@@ -106,11 +107,11 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 1. Create terry image -----------
 	if( !this->_clipSrc->isConnected() )
 	{
-		//		rgba32f_pixel_t backgroundColor( params._backgroundColor.r,
-		//									     params._backgroundColor.g,
-		//									     params._backgroundColor.b,
-		//									     params._backgroundColor.a );
-		rgba32f_pixel_t backgroundColor( 0, 0, 0, 0 );
+		rgba32f_pixel_t backgroundColor( _params._backgroundColor.r,
+	       				         _params._backgroundColor.g,
+				        	 _params._backgroundColor.b,
+			                         _params._backgroundColor.a );
+		
 		fill_pixels( this->_dstView, backgroundColor );
 	}
 
@@ -119,8 +120,29 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	FT_Init_FreeType( &library );
 
 	FT_Face face;
+
+//
+	if(_params._bold)
+		_params._font.replace(_params._font.find("."), 1, "_Bold.");	
+ 	if(_params._italic)
+		_params._font.replace(_params._font.find("."), 1, "_Italic.");		
+	
+	FILE * myF = fopen(_params._font.c_str(), "r");
+
+	if (myF == NULL)
+	{
+		BOOST_THROW_EXCEPTION( exception::FileNotExist(_params._font)
+				       << exception::user("Text: FontFile not found")
+				       << exception::filename(_params._font) 
+				       );
+	}
+	else
+		fclose(myF);
+//
+
 	FT_New_Face( library, _params._font.c_str(), 0, &face );
-	FT_Set_Pixel_Sizes( face, _params._fontX, _params._fontY );
+
+	FT_Set_Pixel_Sizes( face, _params._fontX, _params._fontY );	
 
 	//Step 3. Make Glyphs Array ------------------
 	rgba32f_pixel_t rgba32f_foregroundColor( _params._fontColor.r,
@@ -139,7 +161,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 6. Get Coordinates (x,y) ----------------
 	_textSize.x   = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), terry::make_width() );
 	_textSize.y   = std::for_each( _metrics.begin(), _metrics.end(), terry::make_height() );
-	
+
 	if( _metrics.size() > 1 )
 		_textSize.x   += _params._letterSpacing * (_metrics.size() - 1);
 
@@ -157,7 +179,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		}
 		case eParamVAlignBottom:
 		{
-			_textCorner.y = this->_dstView.height() - _textSize.y - 1;
+			_textCorner.y = this->_dstView.height() - (_textSize.y + _textSize.y / 3);
 			break;
 		}
 	}
@@ -191,7 +213,6 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		_textCorner.y    += _params._position.y;
 	}
 	_textCorner.x += _params._position.x;
-	
 }
 
 /**
@@ -232,7 +253,7 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	// if outside dstRod
 	// ...
 	// else
-	const OfxRectI textRod = { _textCorner.x, _textCorner.y, _textCorner.x + _textSize.x, _textCorner.y + _textSize.y };
+	const OfxRectI textRod = { _textCorner.x, _textCorner.y, _textCorner.x + _textSize.x, _textCorner.y + _textSize.y + _textSize.y / 3};
 	const OfxRectI textRoi = rectanglesIntersection( textRod, procWindowRoW );
 	const OfxRectI textLocalRoi = translateRegion( textRoi, - _textCorner );
 	
@@ -245,7 +266,7 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	//TUTTLE_TCOUT_VAR( textLocalRoi );
 	//TUTTLE_TCOUT_VAR2( _dstViewForGlyphs.width(), _dstViewForGlyphs.height() );
 	
-	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y );
+	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y);
 	
 	std::for_each( _glyphs.begin(), _glyphs.end(), _kerning.begin(),
 	               render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor, _params._letterSpacing, Rect<std::ptrdiff_t>(textLocalRoi) )

@@ -74,7 +74,8 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::StringParamDescriptor* font = desc.defineStringParam( kParamFont );
 	font->setLabel( "Font file" );
 	font->setStringType( OFX::eStringTypeFilePath );
-	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/arial.ttf" );
+	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/Arial.ttf" );
+	font->setHint( "Be careful do not used link ( not times.ttf, but Times_New_Roman.ttf )");
 
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );
@@ -91,6 +92,10 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kParamColor );
 	color->setLabel( "Color" );
 	color->setDefault( 1.0, 1.0, 1.0, 1.0 );
+
+	OFX::RGBAParamDescriptor* backgroundColor = desc.defineRGBAParam( kParamBackgroundColor );
+	backgroundColor->setLabel( "Background Color" );
+	backgroundColor->setDefault( 0.0, 0.0, 0.0, 0.0 );
 
 	OFX::Double2DParamDescriptor* position = desc.defineDouble2DParam( kParamPosition );
 	position->setLabel( "Position" );
@@ -121,6 +126,15 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	verticalFlip->setAnimates( false );
 	verticalFlip->setHint( "Some hosts use inverted images, so you can correct this problem using this flag." );
 
+	OFX::BooleanParamDescriptor* italic = desc.defineBooleanParam( kParamItalic );
+	italic->setLabel( "Italic" );
+	italic->setDefault( false );
+	italic->setHint( "If the font in italic doesn't exist and doesn't named like MyFont_Italic.ttf, nothing displayed." );
+
+	OFX::BooleanParamDescriptor* bold = desc.defineBooleanParam( kParamBold );
+	bold->setLabel( "Bold" );
+	bold->setDefault( false );
+	bold->setHint( "If the font in bold doesn't exist and doesn't named like MyFont_Bold.ttf, nothing displayed." );
 }
 
 /**
