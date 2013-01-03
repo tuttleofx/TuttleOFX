@@ -19,10 +19,10 @@ namespace colorBars {
 void ColorBarsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels(
-		"ColorBars",
+		"TuttleColorBars",
 		"ColorBars",
 		"ColorBars" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	desc.setDescription( "Color Bars generator." );
 
