@@ -5,7 +5,7 @@ import numpy
 import Image
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 def testInputBuffer_loadImageWithPIL():
 	"""

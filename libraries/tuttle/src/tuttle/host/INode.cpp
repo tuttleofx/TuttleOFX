@@ -70,6 +70,7 @@ const INode::Data& INode::getData() const
 
 const INode::DataAtTime& INode::getData( const OfxTime time ) const
 {
+	//TUTTLE_TCOUT( "- INode::getData(" << time << ") of " << getName() );
 	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
 	if( it == _dataAtTime.end() )
 	{

@@ -5,7 +5,7 @@ import numpy
 import Image
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 
 # This is called by Tuttle as an input of the graph

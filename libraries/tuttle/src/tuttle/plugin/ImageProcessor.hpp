@@ -79,10 +79,12 @@ public:
 		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady()
-				<< exception::dev() + "Error on clip " + quotes(_clipDst->name()) );
+				<< exception::dev() + "Error on clip " + quotes(_clipDst->name())
+				<< exception::time( args.time ) );
 		if( _dst->getRowDistanceBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
-				<< exception::dev() + "Error on clip " + quotes(_clipDst->name()) );
+				<< exception::dev() + "Error on clip " + quotes(_clipDst->name())
+				<< exception::time( args.time ) );
 		
 		//		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_dstPixelRod       = _clipDst->getPixelRod( args.time, args.renderScale );

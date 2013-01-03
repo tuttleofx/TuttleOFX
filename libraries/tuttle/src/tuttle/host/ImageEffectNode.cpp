@@ -597,6 +597,7 @@ void ImageEffectNode::validBitDepthConnections() const
 
 OfxRangeD ImageEffectNode::getDefaultTimeDomain() const
 {
+	//TUTTLE_TCOUT( "- ImageEffectNode::getDefaultTimeDomain: " << getName() );
 	OfxRangeD range;
 	range.min = kOfxFlagInfiniteMin;
 	range.max = kOfxFlagInfiniteMax;
@@ -610,7 +611,7 @@ OfxRangeD ImageEffectNode::getDefaultTimeDomain() const
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
-			OfxRangeD clipRange = linkClip.getNode().getTimeDomain();
+			const OfxRangeD clipRange = linkClip.getNode().getTimeDomain();
 			if( first )
 			{
 				first = false;
@@ -629,6 +630,19 @@ OfxRangeD ImageEffectNode::getDefaultTimeDomain() const
 
 OfxRangeD ImageEffectNode::computeTimeDomain()
 {
+	// Copy connected clips frameRange into each input clips
+	for( ClipImageMap::iterator it = _clipImages.begin();
+		it != _clipImages.end();
+		++it )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			const OfxRangeD clipRange = linkClip.getFrameRange();
+			clip.setFrameRange( clipRange.min, clipRange.max );
+		}
+	}
 	TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
 	OfxRangeD defaultRange = getDefaultTimeDomain();
 	OfxRangeD range = defaultRange;
@@ -778,8 +792,10 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	}
 	TUTTLE_TCOUT_X( 40, "-" );
 	*/
-	BOOST_FOREACH( const graph::ProcessEdgeAtTime* inEdge, vData._inEdges )
+	TUTTLE_TCOUT( "Acquire needed input clips images" );
+	BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
 	{
+		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
 		//TUTTLE_TCOUT_VAR( i );
 		//TUTTLE_TCOUT_VAR( i->getInTime() );
 		//TUTTLE_TCOUT_VAR( i->getInAttrName() );
@@ -798,7 +814,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		allNeededDatas.push_back( imageCache );
 	}
 	
-	TUTTLE_TCOUT( "acquire needed output clip images" );
+	TUTTLE_TCOUT( "Acquire needed output clip images" );
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clipImages )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
@@ -851,8 +867,9 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	debugOutputImage( vData._time );
 
 	// release input images
-	BOOST_FOREACH( const graph::ProcessEdgeAtTime* inEdge, vData._inEdges )
+	BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
 	{
+		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
 		attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
 		const OfxTime outTime = inEdge->getOutTime();
 		

@@ -4,7 +4,7 @@ from pyTuttle.tuttle import *
 from nose.tools import *
 
 def setUp():
-	core().preload()
+	core().preload(False)
 
 
 @raises(Exception)

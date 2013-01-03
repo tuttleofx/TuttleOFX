@@ -5,7 +5,7 @@ from pyTuttle import tuttle
 from nose.tools import *
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 
 def testDoubleParamAnimation():
