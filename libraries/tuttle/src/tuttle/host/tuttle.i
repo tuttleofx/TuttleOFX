@@ -1,6 +1,8 @@
 
 %module tuttle
 
+%module(directors="1") tuttle
+
 %include "global.i"
 %include "Core.i"
 %include "ImageEffectNode.i"

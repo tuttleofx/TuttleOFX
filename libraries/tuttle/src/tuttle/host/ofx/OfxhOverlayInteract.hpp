@@ -22,8 +22,8 @@ protected:
 	bool _hasAlpha;
 
 public:
-	/// ctor this calls Instance->getOverlayDescriptor to get the descriptor
-	OverlayInteract( imageEffect::OfxhImageEffectNode& v, int bitDepthPerComponent = 8, bool hasAlpha = false );
+	/// ctor this calls effect.getOverlayDescriptor() to get the descriptor
+	OverlayInteract( imageEffect::OfxhImageEffectNode& effect, int bitDepthPerComponent = 8, bool hasAlpha = false );
 };
 
 }
