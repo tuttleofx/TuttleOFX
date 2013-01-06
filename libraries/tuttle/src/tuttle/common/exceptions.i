@@ -31,6 +31,12 @@ try
 }
 catch( boost::exception& e )
 {
+	// Add the C++ backtrace into the exception log.
+	//
+	// Python will display the Python backtrace and
+	// the exception message, which will contain the C++ backtrace.
+	e << tuttle::host::exception::backtrace( boost::trace(e) );
+	
 	SWIG_exception( SWIG_RuntimeError, boost::diagnostic_information_what(e) );
 }
 catch( std::out_of_range& e )
@@ -66,7 +72,8 @@ catch( std::invalid_argument& e )
 catch( std::system_error& e )
 {
 	SWIG_exception( SWIG_SystemError, e.what() );
-}*/
+}
+*/
 catch( std::exception& e )
 {
 	SWIG_exception( SWIG_RuntimeError, e.what() );

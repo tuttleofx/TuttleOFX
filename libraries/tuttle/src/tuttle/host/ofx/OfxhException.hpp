@@ -4,6 +4,8 @@
 #include "OfxhCore.hpp"
 #include "OfxhUtilities.hpp"
 
+#include <tuttle/common/utils/backtrace.hpp>
+
 #include <boost/throw_exception.hpp>
 #include <boost/exception/exception.hpp>
 
@@ -16,8 +18,9 @@ namespace ofx {
 /**
  * exception, representing an OfxStatus
  */
-class OfxhException : public std::logic_error
-	, virtual public boost::exception
+class OfxhException : public ::std::logic_error
+	, virtual public ::boost::exception
+	, virtual public ::boost::backtrace
 {
 OfxStatus _stat;
 
