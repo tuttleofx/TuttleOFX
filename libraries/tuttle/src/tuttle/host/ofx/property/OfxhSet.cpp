@@ -81,7 +81,8 @@ const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const
 		{
 			return _chainedSet->fetchProperty( name );
 		}
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue, "fetchProperty: " + name + " property not found." ) ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue )
+			<< exception::dev() + "fetchProperty: " + name + " property not found." );
 	}
 	return *( i->second );
 }
@@ -93,7 +94,8 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 {
 	if( _props.find( spec.name ) != _props.end() )
 	{
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, std::string( "Tried to add a duplicate property to a Property::Set (" ) + spec.name + ")" ) );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists )
+			<< exception::dev() + "Tried to add a duplicate property to a Property::Set (" + spec.name + ")" );
 	}
 	std::string key( spec.name ); // for constness
 	switch( spec.type )
@@ -111,7 +113,8 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 			_props.insert( key, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
 			break;
 		case ePropTypeNone:
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString( spec.type ) + ")" ) );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported )
+				<< exception::dev() + "Tried to create a property of an unrecognized type (" + spec.name + ", " + mapTypeEnumToString( spec.type ) + ")" );
 	}
 }
 
