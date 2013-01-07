@@ -7,7 +7,7 @@
 
 #include <boost/assign/list_of.hpp>
 
-#include <auto_ptr.h>
+#include <memory>
 
 namespace tuttle {
 namespace host {
