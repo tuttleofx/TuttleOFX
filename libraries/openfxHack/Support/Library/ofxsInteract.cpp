@@ -37,6 +37,9 @@
 /** @brief This file contains code that skins the ofx interact suite (for image effects) */
 
 #include "ofxsSupportPrivate.h"
+
+#include <tuttle/plugin/global.hpp>
+
 #include <algorithm> // for find
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries.
@@ -175,8 +178,9 @@ void InteractI::loseFocus( const FocusArgs& args )
 
 
 Interact::Interact( OfxInteractHandle handle )
-	: _interactHandle( handle ),
-	_effect( 0 )
+	: _interactHandle( handle )
+	, _effect( 0 )
+	, _magic( kMagic )
 {
 	// get the properties set on this handle
 	OfxPropertySetHandle propHandle;
@@ -412,15 +416,21 @@ OfxStatus interactMainEntry( const std::string& action,
 	Interact* interact = retrieveInteractPointer( handle );
 
 	// if one was not made, return and do nothing
-	if( !interact )
-		return stat;
-
+	if( interact == NULL )
+	{
+		return kOfxStatErrBadHandle;
+	}
+	if( ! interact->verifyMagic() )
+	{
+		return kOfxStatErrBadHandle;
+	}
+	
 	if( action == kOfxActionDestroyInstance )
 	{
 		delete interact;
 		stat = kOfxStatOK;
 	}
-	else if( action ==   kOfxInteractActionDraw )
+	else if( action == kOfxInteractActionDraw )
 	{
 		// make the draw args
 		DrawArgs drawArgs( inArgs );

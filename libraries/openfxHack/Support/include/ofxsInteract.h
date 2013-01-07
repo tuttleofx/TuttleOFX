@@ -181,6 +181,10 @@ protected:
 	std::list<Param*> _slaveParams;       /**< @brief List of params we are currently slaved to */
 	ImageEffect* _effect;                   /**< @brief The instance we are associated with */
 
+private:
+	static const int kMagic = 0x06012013; ///< magic number for Interact, and current day :-)
+	const int _magic; ///< to check for handles being nice
+	
 public:
 	/** @brief ctor */
 	Interact( OfxInteractHandle handle );
@@ -188,6 +192,8 @@ public:
 	/** @brief virtual destructor */
 	virtual ~Interact() = 0;
 
+	bool verifyMagic() const { return this != NULL && _magic == kMagic; }
+	
 	PropertySet& getProperties() { return _interactProperties; }
 
 	/** @brief The bitdepth of each component in the openGL frame buffer */
