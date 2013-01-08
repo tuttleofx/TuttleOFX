@@ -259,12 +259,11 @@ void OfxhInteract::getSlaveToParam( std::vector<std::string>& params ) const
 void OfxhInteract::initArgProp( OfxTime          time,
                                 const OfxPointD& renderScale )
 {
-	double pixelScale[2];
+	double pixelScale[2] = {1., 1.};
 
 	getPixelScale( pixelScale[0], pixelScale[1] );
 	_argProperties.setDoublePropertyN( kOfxInteractPropPixelScale, pixelScale, 2 ); /// ofxtuttle fix
 	_argProperties.setPointerProperty( kOfxPropEffectInstance, _effectInstance );
-	_argProperties.setPointerProperty( kOfxPropInstanceData, _properties.getPointerProperty( kOfxPropInstanceData ) );
 	_argProperties.setDoubleProperty( kOfxPropTime, time );
 	_argProperties.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 }
