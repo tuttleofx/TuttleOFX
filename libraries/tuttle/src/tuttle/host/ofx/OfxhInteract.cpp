@@ -41,6 +41,8 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#include <tuttle/host/exceptions.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -91,14 +93,17 @@ OfxStatus OfxhInteractDescriptor::callEntry( const char*          action,
                                              OfxPropertySetHandle inArgs,
                                              OfxPropertySetHandle outArgs ) const
 {
-	if( _entryPoint && _state != eFailed )
+	if( ! _entryPoint )
 	{
-		return _entryPoint( action, handle, inArgs, outArgs );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue )
+			<< exception::dev() + "Plugin entry point is not initialized." );
 	}
-	else
-		return kOfxStatFailed;
-
-	return kOfxStatOK;
+	if( _state == eFailed )
+	{
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue )
+			<< exception::dev() + "Previous call to plugin lead to a failure state." );
+	}
+	return _entryPoint( action, handle, inArgs, outArgs );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,12 +163,11 @@ OfxhInteract::~OfxhInteract()
 /// call the entry point in the descriptor with action and the given args
 OfxStatus OfxhInteract::callEntry( const char* action, property::OfxhSet* inArgs )
 {
-	if( _state != eFailed )
-	{
-		OfxPropertySetHandle inHandle = inArgs ? inArgs->getHandle() : NULL ;
-		return _descriptor.callEntry( action, getHandle(), inHandle, NULL );
-	}
-	return kOfxStatFailed;
+	if( _state == eFailed )
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
+	
+	OfxPropertySetHandle inHandle = inArgs ? inArgs->getHandle() : NULL ;
+	return _descriptor.callEntry( action, getHandle(), inHandle, NULL );
 }
 
 // do nothing
