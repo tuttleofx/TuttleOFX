@@ -1,32 +1,32 @@
-#include "ColorBarsPluginFactory.hpp"
-#include "ColorBarsPlugin.hpp"
-#include "ColorBarsDefinitions.hpp"
+#include "ColorWheelPluginFactory.hpp"
+#include "ColorWheelPlugin.hpp"
+#include "ColorWheelDefinitions.hpp"
 #include "ofxsImageEffect.h"
 
 #include <tuttle/plugin/context/GeneratorPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace colorBars {
+namespace colorWheel {
 
-//static const bool kSupportTiles = false;
+static const bool kSupportTiles = false;
 
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void ColorBarsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void ColorWheelPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels(
-		"TuttleColorBars",
-		"ColorBars",
-		"ColorBars" );
+		"TuttleColorWheel",
+		"ColorWheel",
+		"ColorWheel" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
-	desc.setDescription( "Color Bars generator." );
+	desc.setDescription( "Color Wheel generator." );
 
-	// add the supported contexts
+	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );
 
@@ -48,17 +48,10 @@ void ColorBarsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ColorBarsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void ColorWheelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                   OFX::EContext context )
 {
 	describeGeneratorParamsInContext( desc, context );
-	
-	OFX::ChoiceParamDescriptor* levels = desc.defineChoiceParam( kColorBarsLevels );
-	levels->setLabel( "Levels" );
-	levels->appendOption( kColorBarsLevels100 );
-	levels->appendOption( kColorBarsLevels75 );
-	levels->setDefault( eColorBarsLevels75 );
-	
 }
 
 /**
@@ -67,10 +60,10 @@ void ColorBarsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* ColorBarsPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* ColorWheelPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::EContext context )
 {
-	return new ColorBarsPlugin( handle );
+	return new ColorWheelPlugin( handle );
 }
 
 }
