@@ -87,27 +87,56 @@ void PngWriterProcess<View>::writeImage( View& src )
 
 	switch( _params._components )
 	{
+		case eTuttlePluginComponentsAuto:
+		{
+			switch ( _plugin._clipSrc->getPixelComponents() )
+			{
+				case OFX::ePixelComponentAlpha:
+				{
+					typedef pixel<Bits, gray_layout_t> OutPixelType;
+					png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
+					break;
+				}
+				case OFX::ePixelComponentRGB:
+				{
+					typedef pixel<Bits, rgb_layout_t> OutPixelType;
+					png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
+					break;
+				}
+				case OFX::ePixelComponentRGBA:
+				{
+					typedef pixel<Bits, rgba_layout_t> OutPixelType;
+					png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
+					break;
+				}
+				default:
+				{
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+					    << exception::user( "Png Writer: components not supported" ) );
+					break;
+				}
+			}
+			break;
+		}
 		case eTuttlePluginComponentsRGBA:
 		{
 			typedef pixel<Bits, rgba_layout_t> OutPixelType;
 			png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
-			return;
+			break;
 		}
 		case eTuttlePluginComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
 			png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
-			return;
+			break;
 		}
 		case eTuttlePluginComponentsGray:
 		{
 			typedef pixel<Bits, gray_layout_t> OutPixelType;
 			png_write_view( _params._filepath, color_converted_view<OutPixelType>( src ) );
-			return;
+			break;
 		}
 	}
-	BOOST_THROW_EXCEPTION( exception::ImageFormat()
-		<< exception::user( "PNG Writer: Unrecognized component choice." ) );
 }
 
 }

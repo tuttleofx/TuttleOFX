@@ -40,7 +40,9 @@ CPixel getPixel( const Pixel& p, const EColorspace eColorspace )
 	{
 		case eColorspaceNone:
 		{
-			return p;
+			CPixel cp;
+			pixel_assigns_t<Pixel,CPixel>()( p, cp );
+			return cp;
 		}
 		case eColorspaceLMS:
 		{
@@ -60,7 +62,9 @@ CPixel setPixel( const Pixel& p, const EColorspace eColorspace )
 	{
 		case eColorspaceNone:
 		{
-			return p;
+			CPixel cp;
+			pixel_assigns_t<CPixel,Pixel>()( p, cp );
+			return cp;
 		}
 		case eColorspaceLMS:
 		{

@@ -56,6 +56,26 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				switch( _params._componentsType )
 				{
+					case eTuttlePluginComponentsAuto:
+					{
+						switch ( _plugin._clipSrc->getPixelComponents() )
+						{
+							case OFX::ePixelComponentAlpha:
+								writeGrayImage<gray16h_pixel_t>( src, _params._filepath, Imf::HALF );
+								break;
+							case OFX::ePixelComponentRGB:
+								writeImage<rgb16h_pixel_t>( src, _params._filepath, Imf::HALF );
+								break;
+							case OFX::ePixelComponentRGBA:
+								writeImage<rgba16h_pixel_t>( src, _params._filepath, Imf::HALF );
+								break;
+							default:
+								BOOST_THROW_EXCEPTION( exception::Unsupported()
+								    << exception::user( "Exr Writer: components not supported" ) );
+								break;
+						}
+						break;
+					}
 					case eTuttlePluginComponentsGray:
 					{
 						writeGrayImage<gray16h_pixel_t>( src, _params._filepath, Imf::HALF );
@@ -81,6 +101,26 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				switch( _params._componentsType )
 				{
+					case eTuttlePluginComponentsAuto:
+					{
+						switch ( _plugin._clipSrc->getPixelComponents() )
+						{
+							case OFX::ePixelComponentAlpha:
+								writeGrayImage<gray32f_pixel_t>( src, _params._filepath, Imf::FLOAT );
+								break;
+							case OFX::ePixelComponentRGB:
+								writeImage<rgb32f_pixel_t>( src, _params._filepath, Imf::FLOAT );
+								break;
+							case OFX::ePixelComponentRGBA:
+								writeImage<rgba32f_pixel_t>( src, _params._filepath, Imf::FLOAT );
+								break;
+							default:
+								BOOST_THROW_EXCEPTION( exception::Unsupported()
+								    << exception::user( "Exr Writer: components not supported" ) );
+								break;
+						}
+						break;
+					}
 					case eTuttlePluginComponentsGray:
 					{
 						writeGrayImage<gray32f_pixel_t>(src, _params._filepath, Imf::FLOAT);
@@ -106,6 +146,26 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				switch( _params._componentsType )
 				{
+					case eTuttlePluginComponentsAuto:
+					{
+						switch ( _plugin._clipSrc->getPixelComponents() )
+						{
+							case OFX::ePixelComponentAlpha:
+								writeGrayImage<gray32_pixel_t>( src, _params._filepath, Imf::HALF );
+								break;
+							case OFX::ePixelComponentRGB:
+								writeImage<rgb32_pixel_t>( src, _params._filepath, Imf::HALF );
+								break;
+							case OFX::ePixelComponentRGBA:
+								writeImage<rgba32_pixel_t>( src, _params._filepath, Imf::HALF );
+								break;
+							default:
+								BOOST_THROW_EXCEPTION( exception::Unsupported()
+								    << exception::user( "Exr Writer: components not supported" ) );
+								break;
+						}
+						break;
+					}
 					case eTuttlePluginComponentsGray:
 					{
 						writeGrayImage<gray32_pixel_t>(src, _params._filepath, Imf::UINT);
@@ -127,9 +187,6 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			default:
-				BOOST_THROW_EXCEPTION( exception::Unsupported()
-				    << exception::user( "Exr Writer: bit depth not supported" ) );
 		}
 	}
 	catch( exception::Common& e )

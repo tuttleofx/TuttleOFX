@@ -22,7 +22,7 @@ void DummyPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"TuttleDummy",
 		"Dummy",
 		"Tuttle Dummy Node" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/tool" );
 
 	desc.setDescription( "Dummy node." );
 

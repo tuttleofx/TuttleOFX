@@ -122,6 +122,8 @@ public:
 
 	void debugOutputImage( const OfxTime time ) const;
 
+	OfxRangeD getDefaultTimeDomain() const;
+
 	/// @group Implementation of INode virtual functions
 	/// @{
 	OfxRangeD computeTimeDomain();

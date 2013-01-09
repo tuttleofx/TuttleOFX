@@ -426,7 +426,7 @@ public:
 	 *     - pixel depth
 	 *     - components
 	 *     - pixel aspect ratio
-	 * It will also set on the effect itselff
+	 * It will also set on the effect itself
 	 *     - whether it is continuously samplable
 	 *     - the premult state of the output
 	 *     - whether the effect is frame varying

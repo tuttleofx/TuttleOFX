@@ -1,8 +1,10 @@
+# scons: Checkerboard Blur FFMpeg Png
+
 from pyTuttle.tuttle import *
 from nose.tools import *
 
 def setUp():
-	core().preload()
+	core().preload(False)
 
 
 @raises(Exception)

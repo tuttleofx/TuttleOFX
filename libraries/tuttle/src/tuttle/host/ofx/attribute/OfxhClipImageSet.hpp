@@ -27,8 +27,8 @@ public:
 	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
 
 protected:
-	ClipImageMap _clipImages; ///< clips by name
-	ClipImageVector _clipsByOrder; ///< clips list
+	ClipImageVector _clipsByOrder; ///< clips list (data owner)
+	ClipImageMap _clipImages; ///< clips by name (link to datas)
 	bool _clipPrefsDirty; ///< do we need to re-run the clip prefs action
 
 public:

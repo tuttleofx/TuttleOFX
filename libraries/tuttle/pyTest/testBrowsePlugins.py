@@ -1,7 +1,9 @@
+# scons: all
+
 from pyTuttle import tuttle
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 def testBrowsePlugins():
 	pluginCache = tuttle.core().getPluginCache()

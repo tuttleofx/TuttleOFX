@@ -41,6 +41,7 @@ public:
 
 private:
 	void freeFormat();
+    std::string getErrorStr( const int errnum ) const;
 
 public:
 	void setFilename( const std::string& filename )
@@ -262,7 +263,7 @@ private:
 	double                         _aspectRatio;
 	PixelFormat                    _out_pixelFormat;
 	
-	float                          _fps;
+	double                          _fps;
 	std::string                    _formatName;
 	
 	std::string                    _videoCodecName;

@@ -45,9 +45,6 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	, _videoCodecName    ( "" )
 	, _videoPresetName   ( "" )
 {
-	av_log_set_level( AV_LOG_WARNING );
-	av_register_all();
-
 	AVOutputFormat* fmt = av_oformat_next( NULL );
 	
 	while( fmt )
@@ -115,6 +112,14 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 					break;
 				}
 				case AVMEDIA_TYPE_AUDIO:
+std::string VideoFFmpegWriter::getErrorStr( const int errnum ) const
+{
+    static const std::size_t errbuf_size = 2048;
+    char errbuf[errbuf_size];
+    av_strerror( errnum, errbuf, errbuf_size );
+    return std::string( errbuf );
+}
+
 				{
 					if( c->long_name )
 					{
@@ -317,7 +322,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
-		_stream->codec->time_base          = av_d2q( 1.0 / _fps, 100 );
+		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
 		//_stream->codec->gop_size           = _gopSize;
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
@@ -356,8 +361,18 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		}
 		_stream->codec->pix_fmt     = _out_pixelFormat;
 
-		if( !strcmp( _avFormatOptions->oformat->name, "mp4" ) || !strcmp( _avFormatOptions->oformat->name, "mov" ) || !strcmp( _avFormatOptions->oformat->name, "3gp" ) || !strcmp( _avFormatOptions->oformat->name, "flv" ) )
+		if( !strcmp( _avformatOptions->oformat->name, "mp4" ) ||
+            !strcmp( _avformatOptions->oformat->name, "mov" ) ||
+            !strcmp( _avformatOptions->oformat->name, "3gp" ) ||
+            !strcmp( _avformatOptions->oformat->name, "flv" ) )
+        {
 			_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
+        }
+        
+        if( _avformatOptions->oformat->flags & AVFMT_GLOBALHEADER )
+        {
+            _stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
+        }
 
 		av_dump_format( _avFormatOptions, 0, getFilename().c_str(), 1 );
 
@@ -413,15 +428,16 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 	}
 
 	int ret = 0;
-	if( ( _avFormatOptions->oformat->flags & AVFMT_RAWPICTURE ) != 0 )
+	if( ( _avformatOptions->oformat->flags & AVFMT_RAWPICTURE ) &&
+        ( _stream->codec->codec->id == AV_CODEC_ID_RAWVIDEO ) )
 	{
 		AVPacket pkt;
 		av_init_packet( &pkt );
-		pkt.flags       |= AV_PKT_FLAG_KEY;
-		pkt.stream_index = _stream->index;
 		pkt.data         = (boost::uint8_t*) out_frame;
 		pkt.size         = sizeof( AVPicture );
-		ret              = av_interleaved_write_frame( _avFormatOptions, &pkt );
+        pkt.pts          = av_rescale_q(out_frame->pts, _stream->codec->time_base, _stream->time_base);
+		pkt.stream_index = _stream->index;
+		pkt.flags       |= AV_PKT_FLAG_KEY;
 	}
 	else
 	{
@@ -432,18 +448,34 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		pkt.data = NULL;
 		pkt.stream_index = _stream->index;
 
-		if( _stream->codec->coded_frame && _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) // static_cast<unsigned long> (
+		if( ( _stream->codec->coded_frame ) &&
+		    ( _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) )
+		{
 			pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
-
-		if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
+			TUTTLE_TCOUT( "FFmpegWriter: Video Frame PTS: " << pkt.pts );
+		}
+		else
+		{
+			TUTTLE_TCOUT( "FFmpegWriter: Video Frame PTS: not set" );
+		}
+		if( _stream->codec->coded_frame &&
+		    _stream->codec->coded_frame->key_frame )
+		{
 			pkt.flags |= AV_PKT_FLAG_KEY;
-
-		out_frame->pts = pts++;
+		}
+		
+		out_frame->pts = pts;
+        out_frame->quality = _stream->codec->global_quality;
+		pts += _stream->codec->time_base.num;
 		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame,  &hasFrame );
-		if ( ret < 0 )
+		if( ret < 0 )
+        {
+            TUTTLE_CERR( "ffmpegWriter: error writing packet to file" );
+            TUTTLE_CERR( getErrorStr(ret) );
 			return false;
+        }
 
-		if ( hasFrame )
+		if( hasFrame )
 		{
 			ret = av_interleaved_write_frame( _avFormatOptions, &pkt );
 			if ( ret < 0 )
@@ -459,7 +491,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 	av_free( in_frame );
 	// in_buffer not free (function parameter)
 
-	if( ret )
+	if( ret < 0 )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
 			<< exception::user( "ffmpegWriter: error writing frame to file." ) );

@@ -62,9 +62,14 @@ def helpSamTool(tool) :
 
 helpSamTool("sam")
 helpSamTool("sam-ls")
+helpSamTool("sam-ll")
+helpSamTool("sam-lss")
+helpSamTool("sam-lls")
 helpSamTool("sam-cp")
 helpSamTool("sam-mv")
 helpSamTool("sam-rm")
 helpSamTool("sam-do")
 helpSamTool("sam-info")
+helpSamTool("sam-viewer")
 helpSamTool("sam-plugins")
+

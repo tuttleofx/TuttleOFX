@@ -22,10 +22,11 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::ChoiceParamDescriptor* channel = desc.defineChoiceParam( kTuttlePluginChannel );
 	channel->setLabel( kTuttlePluginChannelLabel );
+	channel->appendOption( kTuttlePluginChannelAuto );
 	channel->appendOption( kTuttlePluginChannelGray );
 	channel->appendOption( kTuttlePluginChannelRGB );
 	channel->appendOption( kTuttlePluginChannelRGBA );
-	channel->setDefault( 2 );
+	channel->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginBitDepth );
 	bitDepth->setLabel( kTuttlePluginBitDepthLabel );

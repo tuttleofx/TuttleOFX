@@ -153,7 +153,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderG
 		ProcessVertexAtTimeData& vData = v.getProcessDataAtTime();
 		TUTTLE_TCOUT( "\n--- node: " << v.getName() );
 
-		vData._outDegree  = renderGraphAtTime.getInDegree( vd ) - vData._isFinalNode;
+		vData._outDegree = renderGraphAtTime.getInDegree( vd ) - vData._isFinalNode;
 		vData._inDegree = renderGraphAtTime.getOutDegree( vd );
 
 		vData._outEdges.clear();
@@ -170,7 +170,6 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderG
 			TUTTLE_TCOUT_VAR( e->getInAttrName() );
 			vData._outEdges.push_back( e );
 		}
-		vData._inEdges.reserve( vData._inDegree );
 		vData._inEdges.clear();
 		BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, renderGraphAtTime.getOutEdges( vd ) )
 		{
@@ -178,7 +177,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderG
 			const ProcessEdgeAtTime* e = &renderGraphAtTime.instance(ed);
 			TUTTLE_TCOUT_VAR( e );
 			TUTTLE_TCOUT_VAR( e->getInAttrName() );
-			vData._inEdges.push_back( e );
+			vData._inEdges[e->getInAttrName()] = e;
 		}
 	}
 	TUTTLE_TCOUT( "---------------------------------------- connect clips" );
@@ -428,25 +427,6 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				graph::exportDebugAsDOT( "graphProcessAtTime_a.dot", renderGraphAtTime );
 		#endif
 
-				{
-					TUTTLE_TCOUT( "---------------------------------------- preprocess 1" );
-					TUTTLE_TCOUT_INFOS;
-					graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
-					TUTTLE_TCOUT_INFOS;
-					renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
-					TUTTLE_TCOUT_INFOS;
-				}
-
-				{
-					TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
-					graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
-					renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
-				}
-				
-		#ifndef TUTTLE_PRODUCTION
-				graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", renderGraphAtTime );
-		#endif
-
 				if( ! options.getForceIdentityNodesProcess() )
 				{
 					TUTTLE_TCOUT( "---------------------------------------- remove identity nodes" );
@@ -465,13 +445,36 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 					}
 				}
 
+		#ifndef TUTTLE_PRODUCTION
+				graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", renderGraphAtTime );
+		#endif
+
+				{
+					TUTTLE_TCOUT( "---------------------------------------- preprocess 1" );
+					TUTTLE_TCOUT_INFOS;
+					graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
+					TUTTLE_TCOUT_INFOS;
+					renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
+					TUTTLE_TCOUT_INFOS;
+				}
+
+				{
+					TUTTLE_TCOUT( "---------------------------------------- preprocess 2" );
+					graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( renderGraphAtTime );
+					renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
+				}
+				
+		#ifndef TUTTLE_PRODUCTION
+				graph::exportDebugAsDOT( "graphProcessAtTime_c.dot", renderGraphAtTime );
+		#endif
+
 				/*
 				TUTTLE_TCOUT( "---------------------------------------- optimize graph" );
 				graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( renderGraphAtTime );
 				renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 				*/
 		#ifndef TUTTLE_PRODUCTION
-				graph::exportDebugAsDOT( "graphProcessAtTime_c.dot", renderGraphAtTime );
+				graph::exportDebugAsDOT( "graphProcessAtTime_d.dot", renderGraphAtTime );
 		#endif
 				/*
 				InternalGraphImpl tmpGraph;
@@ -515,7 +518,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 					}
 				}
 		#ifndef TUTTLE_PRODUCTION
-				graph::exportDebugAsDOT( "graphprocess_d.dot", tmpGraph );
+				graph::exportDebugAsDOT( "graphprocess_e.dot", tmpGraph );
 		#endif
 				*/
 
@@ -555,6 +558,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				}
 				else
 				{
+					TUTTLE_TCOUT( "---------------------------------------- Error" );
 					endSequenceRender( procOptions );
 					core().getMemoryCache().clearUnused();
 					throw;
@@ -572,6 +576,7 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				}
 				else
 				{
+					TUTTLE_TCOUT( "---------------------------------------- Error" );
 					endSequenceRender( procOptions );
 					core().getMemoryCache().clearUnused();
 					throw;

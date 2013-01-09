@@ -1524,6 +1524,8 @@ bool OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
 	};
 
 	property::OfxhSet outArgs( outStuff );
+	outArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, range.min, 0 );
+	outArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, range.max, 1 );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionGetTimeDomain,
 				      this->getHandle(),

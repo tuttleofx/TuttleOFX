@@ -19,7 +19,7 @@ static const bool kSupportTiles = false;
 void ViewerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleViewer", "Viewer", "Viewer" );
-	desc.setPluginGrouping( "tuttle/image/io" );
+	desc.setPluginGrouping( "tuttle/image/display" );
 
 	desc.setDescription( kViewerHelp );
 
