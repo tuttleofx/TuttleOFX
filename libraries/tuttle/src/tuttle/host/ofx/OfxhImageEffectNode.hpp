@@ -391,7 +391,7 @@ public:
 	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false )
 	{
 		/// @todo tuttle initOverlayDescriptor... !!! Correct the constness
-		//_descriptor->initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
+		const_cast<OfxhImageEffectNodeDescriptor&>(_descriptor).initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
 	}
 
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const

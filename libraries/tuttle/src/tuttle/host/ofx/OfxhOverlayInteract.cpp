@@ -10,7 +10,9 @@ OverlayInteract::OverlayInteract( imageEffect::OfxhImageEffectNode& effect, int 
 	, _instance( effect )
 	, _bitDepthPerComponent( bitDepthPerComponent )
 	, _hasAlpha( hasAlpha )
-{}
+{
+	effect.initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
+}
 
 }
 }
