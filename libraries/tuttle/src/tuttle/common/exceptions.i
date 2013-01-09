@@ -78,6 +78,10 @@ catch( std::exception& e )
 {
 	SWIG_exception( SWIG_RuntimeError, e.what() );
 }
+catch( Swig::DirectorException& e )
+{
+	SWIG_exception( SWIG_RuntimeError, e.getMessage() );
+}
 catch(...)
 {
 	SWIG_exception( SWIG_RuntimeError, "Unknown C++ exception" );
