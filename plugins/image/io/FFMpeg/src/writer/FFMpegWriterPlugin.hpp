@@ -67,6 +67,7 @@ public:
 	std::vector<std::string>       _audioCodecListWithPreset;
 	
 	VideoFFmpegWriter   _writer;
+	bool                _initWriter;
 };
 
 }

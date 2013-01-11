@@ -155,6 +155,7 @@ void FFMpegWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 
 FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
+	, _initWriter ( false )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
@@ -581,6 +582,7 @@ bool FFMpegWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip
 
 void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	_initWriter = false;
 	WriterPlugin::beginSequenceRender( args );
 	
 	FFMpegProcessParams params = getProcessParams();
@@ -608,34 +610,39 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 	_writer.setWidth ( bounds.x2 - bounds.x1 );
 	_writer.setHeight( bounds.y2 - bounds.y1 );
 	
-	_writer.start( );
+	if( !_initWriter )
+	{
+		_writer.start( );
 	
-	// set Format parameters
-	AVFormatContext* avFormatContext;
-	avFormatContext = avformat_alloc_context();
-	setParameters( eAVParamFormat, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
-	
-	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
-	setParameters( eAVParamFormat, _writer.getFormatPrivOpts(), formatName );
-	
-	// set Video Codec parameters
-	AVCodecContext* avCodecContext;
-#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT( 53, 8, 0 )
-	avCodecContext = avcodec_alloc_context();
-	// deprecated in the same version
-	//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
-#else
-	AVCodec* avCodec = NULL;
-	avCodecContext = avcodec_alloc_context3( avCodec );
-#endif
-	setParameters( eAVParamVideo, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
-	
-	std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-	setParameters( eAVParamVideo, _writer.getVideoCodecPrivOpts(), codecName );
-	
-	// set Audio Codec parameters
-	//codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
-	//setParameters( eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
+		// set Format parameters
+		AVFormatContext* avFormatContext;
+		avFormatContext = avformat_alloc_context();
+		setParameters( eAVParamFormat, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
+		
+		std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
+		setParameters( eAVParamFormat, _writer.getFormatPrivOpts(), formatName );
+		
+		// set Video Codec parameters
+		AVCodecContext* avCodecContext;
+	#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT( 53, 8, 0 )
+		avCodecContext = avcodec_alloc_context();
+		// deprecated in the same version
+		//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
+	#else
+		AVCodec* avCodec = NULL;
+		avCodecContext = avcodec_alloc_context3( avCodec );
+	#endif
+		setParameters( eAVParamVideo, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+		
+		std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
+		setParameters( eAVParamVideo, _writer.getVideoCodecPrivOpts(), codecName );
+		
+		// set Audio Codec parameters
+		//codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
+		//setParameters( eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
+		
+		_initWriter = true;
+	}
 	
 	doGilRender<FFMpegWriterProcess>( *this, args );
 }
@@ -643,6 +650,7 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
 {
 	_writer.finish();
+	_initWriter = false;
 }
 
 }
