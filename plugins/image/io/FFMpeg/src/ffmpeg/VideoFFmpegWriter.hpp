@@ -222,13 +222,13 @@ public:
 	FFmpegPreset& getPresets() { return _preset; }
 	const FFmpegPreset& getPresets() const { return _preset; }
 
-	void optionSet( const EAVParamType& type, AVOption &opt, bool &value );
-	void optionSet( const EAVParamType& type, AVOption& opt, bool& value, std::string& valueToSetFlag );
-	void optionSet( const EAVParamType& type, AVOption &opt, int &value );
-	void optionSet( const EAVParamType& type, AVOption &opt, double &value );
-	void optionSet( const EAVParamType& type, AVOption &opt, int &valueNum, int& valueDen );
-	void optionSet( const EAVParamType& type, AVOption &opt, std::string &value );
-	void optionSetImageSize( const EAVParamType& type, AVOption &opt, int &width, int& height );
+	void optionSet( const EAVParamType& type, const AVOption &opt, bool &value );
+	void optionSet( const EAVParamType& type, const AVOption& opt, bool& value, std::string& valueToSetFlag );
+	void optionSet( const EAVParamType& type, const AVOption &opt, int &value );
+	void optionSet( const EAVParamType& type, const AVOption &opt, double &value );
+	void optionSet( const EAVParamType& type, const AVOption &opt, int &valueNum, int& valueDen );
+	void optionSet( const EAVParamType& type, const AVOption &opt, std::string &value );
+	void optionSetImageSize( const EAVParamType& type, const AVOption &opt, int &width, int& height );
 	
 	
 private:
@@ -257,6 +257,8 @@ private:
 	FFmpegPreset                   _preset;
 	
 	EWriterStatus                  _statusCode;
+	int                            _hasFrame;
+	
 	std::string                    _filename;
 	int                            _width;
 	int                            _height;

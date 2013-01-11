@@ -1,6 +1,6 @@
 #include "FFmpeg.hpp"
 #include <iostream>
-#include <iostream>
+#include <cstdio>
 
 namespace tuttle {
 namespace plugin {
@@ -8,10 +8,34 @@ namespace ffmpeg {
 
 bool FFmpeg::_hasBeenInit = globalInit( );
 
+const std::string FFmpeg::ffmpegLogLevel_toString( int logLevel )
+{
+	switch( logLevel )
+	{
+		case AV_LOG_PANIC :
+			return "panic";
+		case AV_LOG_FATAL :
+			return "fatal";
+		case AV_LOG_ERROR :
+			return "error";
+		case AV_LOG_WARNING :
+			return "warning";
+		case AV_LOG_INFO :
+			return "info";
+		case AV_LOG_VERBOSE :
+			return "verbose";
+		case AV_LOG_DEBUG :
+			return "debug";
+		default:
+			return "unknown log level";
+	}
+}
+
 void log_callback( void* /*ptr*/, int level, const char* format, va_list arglist )
 {
-	//	AVClass* p = (AVClass*)ptr;
-	std::cerr << "FFmpegWriter: (" << level << ")";
+	std::string logID = FFmpeg::ffmpegLogLevel_toString( level );
+
+	std::cerr << "FFmpeg " << logID << ":\t";
 	vfprintf( stderr, format, arglist );
 	std::cerr << std::endl;
 }

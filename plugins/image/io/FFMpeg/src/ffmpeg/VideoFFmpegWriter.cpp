@@ -112,14 +112,6 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 					break;
 				}
 				case AVMEDIA_TYPE_AUDIO:
-std::string VideoFFmpegWriter::getErrorStr( const int errnum ) const
-{
-    static const std::size_t errbuf_size = 2048;
-    char errbuf[errbuf_size];
-    av_strerror( errnum, errbuf, errbuf_size );
-    return std::string( errbuf );
-}
-
 				{
 					if( c->long_name )
 					{
@@ -175,6 +167,8 @@ int VideoFFmpegWriter::start( )
 				<< exception::user( "ffmpegWriter: codec not found." ) );
 		}
 		TUTTLE_CERR( "ffmpegWriter: " << std::string(_videoCodec->name) << " codec selected" );
+		
+		_avVideoOptions = avcodec_alloc_context3( _videoCodec );
 
 		_stream = avformat_new_stream( _avFormatOptions, _videoCodec );
 		if( !_stream )
@@ -188,16 +182,9 @@ int VideoFFmpegWriter::start( )
 		
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
-		_stream->codec->time_base          = av_d2q( 1.0 / _fps, 100 );
-		//_stream->codec->gop_size           = _gopSize;
+		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
-		/*if( _bFrames )
-		{
-			_stream->codec->max_b_frames     = _bFrames;
-			_stream->codec->b_frame_strategy = 0;
-			_stream->codec->b_quant_factor   = 2.0;
-		}*/
 
 		int pixfmt_allowed = 0, k;
 		if ( _videoCodec->pix_fmts )
@@ -229,7 +216,7 @@ int VideoFFmpegWriter::start( )
 
 		if( !strcmp( _avFormatOptions->oformat->name, "mp4" ) || !strcmp( _avFormatOptions->oformat->name, "mov" ) || !strcmp( _avFormatOptions->oformat->name, "3gp" ) || !strcmp( _avFormatOptions->oformat->name, "flv" ) )
 			_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
-
+		
 		av_dump_format( _avFormatOptions, 0, getFilename().c_str(), 1 );
 		
 		if( avcodec_open2( _stream->codec, _videoCodec, NULL ) < 0 )
@@ -262,141 +249,17 @@ int VideoFFmpegWriter::start( )
 	return true;
 }
 
+std::string VideoFFmpegWriter::getErrorStr( const int errnum ) const
+{
+	static const std::size_t errbuf_size = 2048;
+	char errbuf[errbuf_size];
+	av_strerror( errnum, errbuf, errbuf_size );
+	return std::string( errbuf );
+}
+
 int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_width, const int in_height, const PixelFormat in_pixelFormat )
 {
 	_statusCode = eWriterStatusIgnoreFinish;
-	
-	//start();
-	
-/*
-	if( !_avFormatOptions )
-	{
-		// TODO avformat_alloc_context2 can guess format from filename
-		// if format name is NULL, find a way to expose the feature
-		if( avformat_alloc_output_context2(&_avFormatOptions, NULL, _formatName.c_str(), getFilename().c_str()) < 0 )
-		{
-			TUTTLE_CERR( "ffmpegWriter: output context allocation failed" );
-			return false;
-		}
-		_ofmt = _avFormatOptions->oformat;
-		TUTTLE_CERR( "ffmpegWriter: " << std::string(_ofmt->name) << " format selected" );
-	}
-
-	if( !_stream )
-	{
-		_videoCodec = avcodec_find_encoder_by_name( _videoCodecName.c_str() );
-		if (!_videoCodec)
-		{
-			BOOST_THROW_EXCEPTION( exception::Format()
-				<< exception::user( "ffmpegWriter: codec not found." ) );
-		}
-		TUTTLE_CERR( "ffmpegWriter: " << std::string(_videoCodec->name) << " codec selected" );
-
-		_stream = avformat_new_stream( _avFormatOptions, _videoCodec );
-		if( !_stream )
-		{
-			BOOST_THROW_EXCEPTION( exception::File()
-				<< exception::user( "ffmpegWriter: out of memory." ) );
-		}
-		avcodec_get_context_defaults3(_stream->codec, _videoCodec);
-
-		TUTTLE_COUT_VAR2( _videoCodecName, _videoPresetName );
-		
-//		if( _videoPresetName.length() !=0 )
-//		{
-//			TUTTLE_COUT( "ffmpegWriter: " << _videoPresetName << " preset selected" );
-//			const std::string presetFilename = _preset.getFilename( std::string(_videoCodec->name), _videoPresetName );
-//			
-//			FFmpegPreset::PresetsOptions opts = _preset.getOptionsForPresetFilename( presetFilename );
-//			BOOST_FOREACH( FFmpegPreset::PresetsOptions::value_type& itOpt, opts )
-//			{
-//				int ret = av_opt_set( (void*)_stream->codec, itOpt.first.c_str(), itOpt.second.c_str(), 0);
-//				switch( ret )
-//				{
-//					case AVERROR_OPTION_NOT_FOUND: TUTTLE_CERR( "ffmpegPreset: unable to find " << itOpt.first ); break;
-//					case AVERROR(EINVAL): TUTTLE_CERR( "ffmpegPreset: invalid value " << itOpt.second.c_str() << " for option " << itOpt.first ); break;
-//					case AVERROR(ERANGE): TUTTLE_CERR( "ffmpegPreset: invalid range for parameter " << itOpt.first << " : " << itOpt.second.c_str() ); break;
-//				}
-//			}
-//		}
-		
-		_stream->codec->width              = getWidth();
-		_stream->codec->height             = getHeight();
-		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
-		//_stream->codec->gop_size           = _gopSize;
-		_stream->codec->sample_rate        = 48000; ///< samples per second
-		_stream->codec->channels           = 0;     ///< number of audio channels
-//		if( _bFrames )
-//		{
-//			_stream->codec->max_b_frames     = _bFrames;
-//			_stream->codec->b_frame_strategy = 0;
-//			_stream->codec->b_quant_factor   = 2.0;
-//		}
-
-		int pixfmt_allowed = 0, k;
-		if ( _videoCodec->pix_fmts )
-		{
-			for ( k = 0; _videoCodec->pix_fmts[k] != PIX_FMT_NONE; k++ )
-			{
-				if ( _videoCodec->pix_fmts[k] == _out_pixelFormat )
-				{
-					pixfmt_allowed = 1;
-					break;
-				}
-			}
-		}
-		else
-		{
-			// If a codec does not contain a list of supported pixel
-			// formats, just assume that _out_PixelFormat is valid
-			pixfmt_allowed = 1;
-		}
-
-		if ( !pixfmt_allowed )
-		{
-			// av_get_pix_fmt_name requires lavu 51.3.0 or higher
-			TUTTLE_CERR( "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" );
-			_out_pixelFormat = _videoCodec->pix_fmts[0];
-			TUTTLE_CERR( "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) );
-		}
-		_stream->codec->pix_fmt     = _out_pixelFormat;
-
-		if( !strcmp( _avformatOptions->oformat->name, "mp4" ) ||
-            !strcmp( _avformatOptions->oformat->name, "mov" ) ||
-            !strcmp( _avformatOptions->oformat->name, "3gp" ) ||
-            !strcmp( _avformatOptions->oformat->name, "flv" ) )
-        {
-			_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
-        }
-        
-        if( _avformatOptions->oformat->flags & AVFMT_GLOBALHEADER )
-        {
-            _stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
-        }
-
-		av_dump_format( _avFormatOptions, 0, getFilename().c_str(), 1 );
-
-		if( avcodec_open2( _stream->codec, _videoCodec, NULL ) < 0 )
-		{
-			freeFormat();
-			BOOST_THROW_EXCEPTION( exception::Format()
-				<< exception::user( "ffmpegWriter: unable to open codec." ) );
-			return false;
-		}
-
-		if( !( _ofmt->flags & AVFMT_NOFILE ) )
-		{
-			if( avio_open2( &_avFormatOptions->pb, getFilename().c_str(),
-							AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
-			{
-				freeFormat();
-				BOOST_THROW_EXCEPTION( exception::FileNotExist()
-					<< exception::user( "ffmpegWriter: unable to open file." ) );
-			}
-		}
-
-		avformat_write_header( _avFormatOptions, NULL );
-	}*/
 	
 	_statusCode = eWriterStatusCleanup;
 	
@@ -412,8 +275,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 
 	_sws_context = sws_getCachedContext( _sws_context, in_width, in_height, in_pixelFormat, getWidth(), getHeight(), _out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
 
-	TUTTLE_COUT( "ffmpegWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) );
-	TUTTLE_COUT( "ffmpegWriter: output format: " << av_get_pix_fmt_name( _out_pixelFormat ) );
+	TUTTLE_TCOUT( "ffmpegWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) << " -> output format: " << av_get_pix_fmt_name( _out_pixelFormat ) );
 
 	if( !_sws_context )
 	{
@@ -428,21 +290,21 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 	}
 
 	int ret = 0;
-	if( ( _avformatOptions->oformat->flags & AVFMT_RAWPICTURE ) &&
-        ( _stream->codec->codec->id == AV_CODEC_ID_RAWVIDEO ) )
+	if( ( _avFormatOptions->oformat->flags & AVFMT_RAWPICTURE ) &&
+		( _stream->codec->codec->id == AV_CODEC_ID_RAWVIDEO ) )
 	{
 		AVPacket pkt;
 		av_init_packet( &pkt );
 		pkt.data         = (boost::uint8_t*) out_frame;
 		pkt.size         = sizeof( AVPicture );
-        pkt.pts          = av_rescale_q(out_frame->pts, _stream->codec->time_base, _stream->time_base);
+		pkt.pts          = av_rescale_q(out_frame->pts, _stream->codec->time_base, _stream->time_base);
 		pkt.stream_index = _stream->index;
 		pkt.flags       |= AV_PKT_FLAG_KEY;
 	}
 	else
 	{
 		AVPacket pkt;
-		int hasFrame = 0;
+		_hasFrame = 0;
 		av_init_packet( &pkt );
 		pkt.size = 0;
 		pkt.data = NULL;
@@ -465,17 +327,18 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		}
 		
 		out_frame->pts = pts;
-        out_frame->quality = _stream->codec->global_quality;
+		out_frame->quality = _stream->codec->global_quality;
 		pts += _stream->codec->time_base.num;
-		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame,  &hasFrame );
+		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame, &_hasFrame );
 		if( ret < 0 )
-        {
-            TUTTLE_CERR( "ffmpegWriter: error writing packet to file" );
-            TUTTLE_CERR( getErrorStr(ret) );
+		{
+			TUTTLE_CERR( "ffmpegWriter: error writing packet to file" );
+			TUTTLE_CERR( getErrorStr(ret) );
 			return false;
-        }
+		}
 
-		if( hasFrame )
+		
+		if( _hasFrame )
 		{
 			ret = av_interleaved_write_frame( _avFormatOptions, &pkt );
 			if ( ret < 0 )
@@ -505,11 +368,46 @@ void VideoFFmpegWriter::finish()
 {
 	if( _statusCode == eWriterStatusIgnoreFinish )
 		return;
+	
+	int ret = 0;
+
+	for( _hasFrame = 1; _hasFrame; )
+	{
+		TUTTLE_TCOUT( "encode last frames ..." );
+		AVPacket pkt;
+		av_init_packet( &pkt );
+		pkt.size = 0;
+		pkt.data = NULL;
+		pkt.stream_index = _stream->index;
+		
+		
+		ret = avcodec_encode_video2( _stream->codec, &pkt, NULL, &_hasFrame );
+		if( ret < 0 )
+		{
+			TUTTLE_CERR( "ffmpegWriter: error writing packet to file" );
+			TUTTLE_CERR( getErrorStr(ret) );
+			break;
+		}
+		
+		if( _hasFrame )
+		{
+			TUTTLE_COUT( "write packet" );
+			ret = av_interleaved_write_frame( _avFormatOptions, &pkt );
+			if ( ret < 0 )
+			{
+				BOOST_THROW_EXCEPTION( exception::File()
+					<< exception::user( "ffmpegWriter: error writing packet to file" ) );
+			}
+			av_free_packet( &pkt );
+		}
+	}
+	
 	av_write_trailer( _avFormatOptions );
 	avcodec_close( _stream->codec );
 	if( !( _avFormatOptions->oformat->flags & AVFMT_NOFILE ) )
 		avio_close( _avFormatOptions->pb );
 	freeFormat();
+	
 }
 
 void VideoFFmpegWriter::freeFormat()
@@ -546,7 +444,7 @@ void VideoFFmpegWriter::setAudioPreset( const int id )
 	_audioPresetName = p[id];
 }
 
-void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool& value )
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption& opt, bool& value )
 {
 	int error;
 	switch( type )
@@ -572,49 +470,44 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool
 		TUTTLE_CERR( "FFMpeg writer: " << ffmpegError_toString( error ) << " : " << opt.name << " ( " << ( value ? "True" : "False" ) << " )" );
 }
 
-void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, bool& value, std::string& valueToSetFlag )
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt, bool& value, std::string& valueToSetFlag )
 {
-	int error;
+	int error = 0;
+	int64_t optVal;
+	void* obj = NULL;
 	switch( type )
 	{
 		case eAVParamFormat:
 		{
-			error = 0;
-			int value = 0;
-			error = av_opt_set_int( _avFormatOptions, valueToSetFlag.c_str(), AV_OPT_SEARCH_CHILDREN, value );
-			if( value )
-				value = opt.default_val.i64 | value;
-			else
-				value = ( ! opt.default_val.i64 ) & value;
-			
-			error = av_opt_set_int( _avFormatOptions, valueToSetFlag.c_str(), value, AV_OPT_SEARCH_CHILDREN );
+			obj = (void*) _avFormatOptions;
 			break;
 		}
 		case eAVParamVideo:
 		{
-			error = 0;
-			int value = 0;
-			error = av_opt_set_int( _stream->codec, valueToSetFlag.c_str(), AV_OPT_SEARCH_CHILDREN, value );
-			if( value )
-				value = opt.default_val.i64 | value;
-			else
-				value = ( ! opt.default_val.i64 ) & value;
-			
-			error = av_opt_set_int( _stream->codec, valueToSetFlag.c_str(), value, AV_OPT_SEARCH_CHILDREN );
+			obj = (void*) _stream->codec;
 			break;
 		}
 		case eAVParamAudio:
 		{
-			error = 0;
 			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
-			break;
+			return;
 		}
 	}
+	
+	error = av_opt_get_int( obj, opt.unit, AV_OPT_SEARCH_CHILDREN, &optVal );
+	
+	if( value )
+		optVal = optVal | (int64_t) opt.default_val.i64;
+	else
+		optVal = optVal &~(int64_t) opt.default_val.i64;
+	
+	error = av_opt_set_int( obj, opt.unit, optVal, AV_OPT_SEARCH_CHILDREN );
+	
 	if( error )
 		TUTTLE_CERR( "FFMpeg writer: " << ffmpegError_toString( error ) << " : " << valueToSetFlag << " ( " <<  opt.name << " = " << ( value ? "True" : "False" ) << " )" );
 }
 
-void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, int& value )
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption& opt, int& value )
 {
 	int error;
 	switch( type )
@@ -641,7 +534,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption& opt, int&
 }
 
 
-void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, double &value )
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt, double &value )
 {
 	int error;
 	switch( type )
@@ -667,7 +560,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, doub
 		TUTTLE_CERR( "FFMpeg writer: " << ffmpegError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
 }
 
-void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, int &valueNum, int& valueDen )
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt, int &valueNum, int& valueDen )
 {
 	int error;
 	AVRational q;
@@ -696,7 +589,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, int 
 		TUTTLE_CERR( "FFMpeg writer: " << ffmpegError_toString( error ) << " : " << opt.name << " ( " << valueNum << "/" << valueDen<< " )" );
 }
 
-void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, std::string &value )
+void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt, std::string &value )
 {
 	int error;
 	if( ! value.length() )
@@ -724,7 +617,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, AVOption &opt, std:
 		TUTTLE_CERR( "FFMpeg writer: " << ffmpegError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
 }
 
-void VideoFFmpegWriter::optionSetImageSize( const EAVParamType &type, AVOption &opt, int &width, int& height)
+void VideoFFmpegWriter::optionSetImageSize( const EAVParamType &type, const AVOption &opt, int &width, int& height)
 {
 	/*
 	switch( type )

@@ -46,6 +46,7 @@ protected:
 
 public:
 	static const std::string ffmpegError_toString( int error );
+	static const std::string ffmpegLogLevel_toString( int logLevel );
 	static const std::string codecType_toString( const AVMediaType codec_type );
 
 	std::vector<AVPrivOption> getAVOptions(const AVClass *av_class);

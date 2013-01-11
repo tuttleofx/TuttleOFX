@@ -228,6 +228,144 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
 	return params;
 }
 
+void FFMpegWriterPlugin::setParameters( const EAVParamType& type, void* av_class, int req_flags, int rej_flags )
+{
+	std::vector<OFX::GroupParam*> groups;
+	const AVOption *opt = NULL;
+
+	while( (opt = av_opt_next( av_class, opt)  ) != NULL )
+	{
+		if( !opt ||
+			!opt->name ||
+			(opt->flags & req_flags) != req_flags ||
+			(opt->flags & rej_flags) )
+		{
+			continue;
+		}
+		
+		if( opt->unit && opt->type == AV_OPT_TYPE_FLAGS )
+		{
+			std::string name = "g_";
+			name += opt->unit;
+			OFX::GroupParam* curOpt = fetchGroupParam( name );
+			groups.push_back( curOpt );
+			continue;
+		}
+		if( opt->unit && opt->type == AV_OPT_TYPE_INT )
+		{
+			OFX::ChoiceParam* curOpt = fetchChoiceParam( opt->name );
+			int v = curOpt->getValue();
+			_writer.optionSet( type, *opt, v );
+			continue;
+		}
+		
+		switch( opt->type )
+		{
+			case AV_OPT_TYPE_FLAGS:
+			{
+				OFX::BooleanParam* curOpt = fetchBooleanParam( opt->name );
+				bool v = curOpt->getValue();
+				_writer.optionSet( type, *opt, v );
+				break;
+			}
+			case AV_OPT_TYPE_INT:
+			case AV_OPT_TYPE_INT64:
+			{
+				OFX::IntParam* curOpt = fetchIntParam( opt->name );
+				int v = curOpt->getValue();
+				_writer.optionSet( type, *opt, v );
+				break;
+			}
+			case AV_OPT_TYPE_DOUBLE:
+			case AV_OPT_TYPE_FLOAT:
+			{
+				OFX::DoubleParam* curOpt = fetchDoubleParam( opt->name );
+				double v = curOpt->getValue();
+				_writer.optionSet( type, *opt, v );
+				break;
+			}
+			case AV_OPT_TYPE_STRING:
+			{
+				OFX::StringParam* curOpt = fetchStringParam( opt->name );
+				std::string v = curOpt->getValue();
+				_writer.optionSet( type, *opt, v );
+				break;
+			}
+			case AV_OPT_TYPE_RATIONAL:
+			{
+				OFX::Int2DParam* curOpt = fetchInt2DParam( opt->name );
+				int vn = curOpt->getValue().x;
+				int vd = curOpt->getValue().y;
+				_writer.optionSet( type, *opt, vn, vd );
+				break;
+			}
+			case AV_OPT_TYPE_IMAGE_SIZE:
+			{
+				OFX::Int2DParam* curOpt = fetchInt2DParam( opt->name );
+				int vn = curOpt->getValue().x;
+				int vd = curOpt->getValue().y;
+				_writer.optionSetImageSize( type, *opt, vn, vd );
+				break;
+			}
+			case AV_OPT_TYPE_PIXEL_FMT:
+			{
+				TUTTLE_COUT( "add pixel fmt " << opt->name );
+			}
+			case AV_OPT_TYPE_BINARY:
+			{
+				OFX::StringParam* curOpt = fetchStringParam( opt->name );
+				std::string v = curOpt->getValue();
+				_writer.optionSet( type, *opt, v );
+				break;
+			}
+			case AV_OPT_TYPE_CONST:
+			{
+				break;
+			}
+		}
+	}
+	
+	// adding enum values and flags in groups
+	opt = NULL;
+	while( (opt = av_opt_next( av_class, opt)  ) != NULL )
+	{
+		if( !opt ||
+			!opt->name ||
+			( opt->flags & req_flags ) != req_flags ||
+			( opt->flags & rej_flags ) ||
+			( opt->unit && opt->type == AV_OPT_TYPE_FLAGS ) ||
+			( opt->unit && opt->type == AV_OPT_TYPE_INT ) )
+		{
+			continue;
+		}
+		
+		switch( opt->type )
+		{
+			case AV_OPT_TYPE_CONST:
+			{
+				BOOST_FOREACH( OFX::GroupParam* g, groups )
+				{
+					std::string name = "g_";
+					name += opt->unit;
+					if( name == g->getName() )
+					{
+						OFX::BooleanParam* curOpt = fetchBooleanParam( opt->name );
+						bool v = curOpt->getValue();
+						std::string optName = opt->unit;
+						_writer.optionSet( type, *opt, v, optName );
+						break;
+					}
+				}
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+	}
+}
+
 void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec )
 {
 	std::vector<OFX::GroupParam*> groups;
@@ -264,6 +402,7 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vec
 		name += "_";
 		name += opt.o.name;
 		
+		
 		switch( opt.o.type )
 		{
 			case AV_OPT_TYPE_FLAGS:
@@ -277,7 +416,6 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vec
 			case AV_OPT_TYPE_INT64:
 			{
 				OFX::IntParam* curOpt = fetchIntParam( name );
-				
 				int v = curOpt->getValue();
 				_writer.optionSet( type, opt.o, v );
 				break;
@@ -444,8 +582,6 @@ bool FFMpegWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip
 void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	WriterPlugin::beginSequenceRender( args );
-
-	TUTTLE_COUT("begin sequence");
 	
 	FFMpegProcessParams params = getProcessParams();
 	
@@ -457,8 +593,6 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	_writer.setPixelFormat ( params._videoPixelFormat );
 	//TUTTLE_COUT( params._videoPreset );
 	//_writer.setVideoPreset ( params._videoPreset );
-	
-	TUTTLE_COUT("begin sequence ok");
 }
 
 /**
@@ -475,16 +609,34 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 	_writer.setHeight( bounds.y2 - bounds.y1 );
 	
 	_writer.start( );
+	
+	// set Format parameters
+	AVFormatContext* avFormatContext;
+	avFormatContext = avformat_alloc_context();
+	setParameters( eAVParamFormat, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
+	
 	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
 	setParameters( eAVParamFormat, _writer.getFormatPrivOpts(), formatName );
 	
+	// set Video Codec parameters
+	AVCodecContext* avCodecContext;
+#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT( 53, 8, 0 )
+	avCodecContext = avcodec_alloc_context();
+	// deprecated in the same version
+	//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
+#else
+	AVCodec* avCodec = NULL;
+	avCodecContext = avcodec_alloc_context3( avCodec );
+#endif
+	setParameters( eAVParamVideo, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	
 	std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
 	setParameters( eAVParamVideo, _writer.getVideoCodecPrivOpts(), codecName );
-
-	codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
-	setParameters( eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
 	
-	TUTTLE_COUT("begin render");
+	// set Audio Codec parameters
+	//codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
+	//setParameters( eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
+	
 	doGilRender<FFMpegWriterProcess>( *this, args );
 }
 

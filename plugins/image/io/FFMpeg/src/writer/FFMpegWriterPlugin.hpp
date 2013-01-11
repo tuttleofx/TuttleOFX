@@ -51,6 +51,7 @@ public:
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
 private:
+	void setParameters( const EAVParamType& type, void* av_class, int req_flags, int rej_flags );
 	void setParameters( const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
 	
 public:
