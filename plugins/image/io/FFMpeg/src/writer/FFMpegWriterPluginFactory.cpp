@@ -188,7 +188,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 					if( name == g->getName() )
 					{
 						OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( opt->name );
-						param->setDefault( opt->default_val.i64 );
+						param->setDefault( opt->offset );
 						if( opt->help )
 							param->setHint( opt->help );
 						param->setParent( g );
@@ -409,7 +409,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 						name += opt.o.name;
 						OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( name );
 						param->setLabel( opt.o.name );
-						param->setDefault( opt.o.default_val.i64 );
+						param->setDefault( opt.o.offset );
 						if( opt.o.help )
 							param->setHint( opt.o.help );
 						param->setParent( g );
