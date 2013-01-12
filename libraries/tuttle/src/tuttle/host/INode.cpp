@@ -46,6 +46,11 @@ void INode::setProcessDataAtTime( DataAtTime* dataAtTime )
 	_dataAtTime[dataAtTime->_time] = dataAtTime;
 }
 
+void INode::clearProcessDataAtTime()
+{
+	_dataAtTime.clear();
+}
+
 INode::Data& INode::getData()
 {
 	if( !_data )
@@ -66,6 +71,12 @@ const INode::Data& INode::getData() const
 			<< exception::nodeName( getName() ) );
 	}
 	return *_data;
+}
+
+bool INode::hasData( const OfxTime time ) const
+{
+	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
+	return it != _dataAtTime.end();
 }
 
 const INode::DataAtTime& INode::getData( const OfxTime time ) const

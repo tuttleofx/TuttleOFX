@@ -536,7 +536,19 @@ bool ProcessGraph::process( memory::MemoryCache& result, const ComputeOptions& o
 				TUTTLE_TCOUT( "---------------------------------------- postprocess" );
 				graph::visitor::PostProcess<InternalGraphAtTimeImpl> postProcessVisitor( renderGraphAtTime );
 				renderGraphAtTime.depthFirstVisit( postProcessVisitor, outputAtTime );
-
+/*
+				///@todo clean datas...
+				TUTTLE_TCOUT( "---------------------------------------- clear data at time" );
+				// give a link to the node on its attached process data
+				BOOST_FOREACH( const InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
+				{
+					VertexAtTime& v = renderGraphAtTime.instance(vd);
+					if( ! v.isFake() )
+					{
+						v.getProcessNode().clearProcessDataAtTime();
+					}
+				}
+*/
 				// end of one frame
 				// do some clean: memory clean, as temporary solution...
 				TUTTLE_TCOUT( "---------------------------------------- clearUnused" );

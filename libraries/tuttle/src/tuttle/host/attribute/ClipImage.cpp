@@ -63,8 +63,14 @@ std::string ClipImage::getFullName() const
 
 OfxTime ClipImage::getRemappedTime( const OfxTime time ) const
 {
+	//return time; // to disable time propagation support
+
 	if( isOutput() )
 		return time;
+	
+	/// Maybe we are not inside a compute (eg. overlay)... so datas are not initialized, etc.
+	if( ! getNode().hasData(time) )
+		return time; // throw an error?
 	
 	const OfxTime remappedTime = getNode().getData(time).getInputEdgeByClipName(getName()).getOutTime();
 	return remappedTime;
