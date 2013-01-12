@@ -24,6 +24,8 @@ protected:
 public:
 	/// ctor this calls effect.getOverlayDescriptor() to get the descriptor
 	OverlayInteract( imageEffect::OfxhImageEffectNode& effect, int bitDepthPerComponent = 8, bool hasAlpha = false );
+	
+	void draw( OfxTime time, const OfxPointD& renderScale );
 };
 
 }

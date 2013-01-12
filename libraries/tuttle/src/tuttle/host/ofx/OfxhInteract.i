@@ -7,7 +7,3 @@
 %}
 
 %include <tuttle/host/ofx/OfxhInteract.hpp>
-
-
-
-

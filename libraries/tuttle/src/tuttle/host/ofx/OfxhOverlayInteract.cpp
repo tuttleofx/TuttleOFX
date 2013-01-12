@@ -12,6 +12,12 @@ OverlayInteract::OverlayInteract( imageEffect::OfxhImageEffectNode& effect, int 
 	, _hasAlpha( hasAlpha )
 {
 	effect.initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
+	createInstanceAction();
+}
+
+void OverlayInteract::draw( OfxTime time, const OfxPointD& renderScale )
+{
+	interact::OfxhInteract::drawAction( time, renderScale );
 }
 
 }
