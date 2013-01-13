@@ -80,13 +80,22 @@ catch( std::exception& e )
 }
 catch( Swig::DirectorException& e )
 {
-	SWIG_exception( SWIG_RuntimeError, e.getMessage() );
+	SWIG_fail;
 }
 catch(...)
 {
 	SWIG_exception( SWIG_RuntimeError, "Unknown C++ exception" );
 }
 
+}
 
+
+/* If a Python error is raised by a call to a director function, the following
+ * code should cause a C++ exception to be thrown.
+ */
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
 }
 
