@@ -11,7 +11,6 @@
 %include <tuttle/host/ofx/OfxhImageEffectPlugin.i>
 //%include <tuttle/host/ofx/OfxhImageEffectPluginCache.i>
 %include <tuttle/host/ofx/OfxhImageEffectNodeBase.i>
-%include <tuttle/host/ofx/OfxhOverlayInteract.i>
 
 %{
 #include <tuttle/host/ImageEffectNode.hpp>

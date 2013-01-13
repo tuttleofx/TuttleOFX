@@ -313,8 +313,8 @@ bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes,
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph process( *this, nodes.getNodes() );
-	return process.process( memoryCache, options );
+	graph::ProcessGraph procGraph( memoryCache, options, *this, nodes.getNodes() );
+	return procGraph.process();
 }
 
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )

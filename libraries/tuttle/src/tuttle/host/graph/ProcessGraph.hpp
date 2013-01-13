@@ -48,24 +48,41 @@ public:
 	typedef Graph::InstanceCountMap InstanceCountMap;
 
 public:
-	ProcessGraph( Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
+	ProcessGraph( memory::MemoryCache& outCache, const ComputeOptions& options, Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
 	~ProcessGraph();
 
 private:
+	VertexAtTime::Key getOutputKeyAtTime( const OfxTime time );
+	InternalGraphAtTimeImpl::vertex_descriptor getOutputVertexAtTime( const OfxTime time );
+	
 	void relink();
 	void bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderGraphAtTime );
 	void beginSequenceRender( ProcessVertexData& procOptions );
 	void endSequenceRender( ProcessVertexData& procOptions );
 
+	
 public:
-	bool process( memory::MemoryCache& result, const ComputeOptions& options );
+	
+	void updateGraph( Graph& userGraph, const std::list<std::string>& outputNodes );
+
+	void setup();
+	std::list<TimeRange> computeTimeRange();
+	
+	void setupAtTime( const OfxTime time );
+	void processAtTime( const OfxTime time );
+
+	bool process();
 
 private:
-	InternalGraphImpl _graph;
+	InternalGraphImpl _renderGraph;
+	InternalGraphAtTimeImpl _renderGraphAtTime;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount;
 
 	static const std::string _outputId;
+	
+	memory::MemoryCache& _outCache;
+	ComputeOptions _options;
 };
 
 }
