@@ -84,7 +84,6 @@ private:
 	}
 
 public:
-	#ifndef SWIG
 	bool operator==( const This& other ) const
 	{
 		if( _binary != other._binary ||
@@ -130,6 +129,7 @@ public:
 		return _binary.isLoaded();
 	}
 
+#ifndef SWIG
 	void addPlugin( OfxhPlugin* pe )
 	{
 		_plugins.push_back( pe );
