@@ -12,6 +12,22 @@
 #include <tuttle/host/ofx/OfxhPluginCache.hpp>
 %}
 
+%extend tuttle::host::ofx::OfxhPluginCache
+{
+	OfxhPlugin& __getitem__( const std::string& name )
+	{
+		return *self->getPluginById( name );
+	}
+
+	std::string __str__() const
+	{
+		std::stringstream s;
+
+		s << *self;
+		return s.str();
+	}
+}
+
 namespace std {
 %template(OfxhPluginPtrList) list<tuttle::host::ofx::OfxhPlugin*>;
 }

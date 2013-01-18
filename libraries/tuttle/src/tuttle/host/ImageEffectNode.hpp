@@ -55,7 +55,6 @@ public:
 		return v;
 	}
 
-	#ifndef SWIG
 	ImageEffectNode* clone() const
 	{
 		return new ImageEffectNode( *this );
@@ -151,27 +150,6 @@ public:
 
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
 
-	#endif
-
-	#ifdef SWIG
-	%extend
-	{
-		ofx::attribute::OfxhParam& __getitem__( const std::string& name )
-		{
-			return self->getParam( name );
-			//			return self->getProcessAttribute(name); //< @todo tuttle: can be clip or params !
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
-	}
-	#endif
 
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +160,6 @@ public:
 	/// and  might be mapped (if the host allows such a thing)
 	const std::string& getDefaultOutputFielding() const;
 
-	#ifndef SWIG
 	/**
 	 * @return 1 to abort processing
 	 */
@@ -196,12 +173,14 @@ public:
 	/// make a clip
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
+#ifndef SWIG
 	/// vmessage
 	void vmessage( const char* type,
 	               const char* id,
 	               const char* format,
 	               va_list     args ) const OFX_EXCEPTION_SPEC;
-
+#endif
+	
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
 	// project may be a PAL SD project, but only be a letter-box within that. The project size is
@@ -320,7 +299,6 @@ private:
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;
 	void validBitDepthConnections() const;
-	#endif
 };
 
 }

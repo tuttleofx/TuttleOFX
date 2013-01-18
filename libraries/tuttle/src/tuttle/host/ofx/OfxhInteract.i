@@ -1,4 +1,5 @@
 %include <tuttle/host/global.i>
+%include <tuttle/host/ofx/OfxhException.i>
 %include <tuttle/host/ofx/OfxhPluginDesc.i>
 %include <tuttle/host/ofx/OfxhPluginBinary.i>
 

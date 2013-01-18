@@ -16,4 +16,23 @@
 #include <tuttle/host/ImageEffectNode.hpp>
 %}
 
+%extend tuttle::host::ImageEffectNode
+{
+	ofx::attribute::OfxhParam& __getitem__( const std::string& name )
+	{
+		return self->getParam( name );
+		//			return self->getProcessAttribute(name); //< @todo tuttle: can be clip or params !
+	}
+
+	std::string __str__() const
+	{
+		std::stringstream s;
+
+		s << *self;
+		return s.str();
+	}
+
+}
+
+
 %include <tuttle/host/ImageEffectNode.hpp>

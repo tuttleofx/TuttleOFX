@@ -171,24 +171,24 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 	     it != itEnd;
 	     ++it )
 	{
-		attribute::OfxhParamSet* setInstance = this;
+//		attribute::OfxhParamSet* setInstance = this;
 		// SetInstance where the childrens param instances will be added
 		const attribute::OfxhParamDescriptor& descriptor = *it;
 
 		// name and parentName of the parameter
 		std::string name       = descriptor.getName();
-		std::string parentName = descriptor.getParentName();
-
-		if( parentName != "" )
-		{
-			attribute::OfxhParamGroup* parentGroup = dynamic_cast<attribute::OfxhParamGroup*>( parameters[parentName] );
-			if( parentGroup )
-			{
-				setInstance = parentGroup->getChildrens();
-			}
-		}
-		else
-			setInstance = this;
+//		std::string parentName = descriptor.getParentName();
+//
+//		if( parentName != "" )
+//		{
+//			attribute::OfxhParamGroup* parentGroup = dynamic_cast<attribute::OfxhParamGroup*>( parameters[parentName] );
+//			if( parentGroup )
+//			{
+//				setInstance = parentGroup->getChildrens();
+//			}
+//		}
+//		else
+//			setInstance = this;
 
 		// get a param instance from a param descriptor. Param::Instance is automatically added into the setInstance provided.
 		attribute::OfxhParam* instance = newParam( descriptor );

@@ -33,6 +33,7 @@
 #include "property/OfxhSet.hpp"
 #include "property/OfxhGetHook.hpp"
 #include "property/OfxhNotifyHook.hpp"
+#include "OfxhException.hpp"
 
 #include <ofxInteract.h>
 

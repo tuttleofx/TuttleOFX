@@ -106,7 +106,7 @@ public:
 	virtual ofx::attribute::OfxhClipImageSet& getClipImageSet() = 0;
 	virtual const ofx::attribute::OfxhClipImageSet& getClipImageSet() const = 0;
 
-	#ifndef SWIG
+#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
 	virtual void setup1() = 0;
@@ -185,11 +185,13 @@ public:
 	 * @remark called on each node without predefined order.
 	 */
 	virtual void endSequence( graph::ProcessVertexData& processData ) = 0;
+#endif
 
 	virtual std::ostream& print( std::ostream& os ) const = 0;
 
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
-	
+
+#ifndef SWIG
 protected:
 	typedef graph::ProcessVertexData Data;
 	typedef graph::ProcessVertexAtTimeData DataAtTime;
@@ -211,8 +213,7 @@ public:
 	const DataAtTime& getFirstData() const; 
 	DataAtTime& getData( const OfxTime time );
 	DataAtTime& getFirstData();
-
-	#endif
+#endif
 };
 
 

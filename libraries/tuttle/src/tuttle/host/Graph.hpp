@@ -170,25 +170,6 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const Graph& g );
 	#endif
 
-	#ifdef SWIG
-	%extend
-	{
-		Node& __getitem__( const std::string& name )
-		{
-			return self->getNode( name );
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
-	}
-	#endif
-
 private:
 	InternalGraphImpl _graph;
 	NodeMap _nodes;

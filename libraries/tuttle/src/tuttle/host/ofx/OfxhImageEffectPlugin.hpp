@@ -104,7 +104,6 @@ public:
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
 	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==( other ); }
 
-	#ifndef SWIG
 	void setApiHandler( OfxhImageEffectPluginCache& api ) { _pc = &api; }
 	void setApiHandler( APICache::OfxhPluginAPICacheI& api );
 
@@ -112,6 +111,7 @@ public:
 	APICache::OfxhPluginAPICacheI&       getApiHandler();
 	const APICache::OfxhPluginAPICacheI& getApiHandler() const;
 
+	#ifndef SWIG
 	/// @brief get the base image effect descriptor
 	OfxhImageEffectNodeDescriptor& getDescriptor();
 
@@ -123,6 +123,7 @@ public:
 
 	void addContext( const std::string& context );
 	void addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied );
+	#endif
 
 	void              initContexts();
 	const ContextSet& getContexts() const;
@@ -154,8 +155,6 @@ private:
 		//ar & BOOST_SERIALIZATION_NVP(_pluginHandle); // don't save this
 		ar& BOOST_SERIALIZATION_NVP( _contexts );
 	}
-
-	#endif
 };
 
 }

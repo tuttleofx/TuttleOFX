@@ -134,8 +134,8 @@ public:
 	{
 		_plugins.push_back( pe );
 	}
-
 	void loadPluginInfo( OfxhPluginCache* );
+#endif
 
 	/// how many plugins?
 	int getNPlugins() const
@@ -191,8 +191,6 @@ private:
 			}
 		}
 	}
-
-	#endif
 };
 
 }
