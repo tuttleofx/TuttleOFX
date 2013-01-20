@@ -119,6 +119,11 @@ public:
 		return _bundlePath;
 	}
 
+	const std::string getResourcesPath() const
+	{
+		return _bundlePath + "/Contents/Resources";
+	}
+
 	bool hasBinaryChanged() const
 	{
 		return _binaryChanged;

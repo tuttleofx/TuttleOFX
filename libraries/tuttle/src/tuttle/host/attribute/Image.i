@@ -12,14 +12,19 @@
 #include <tuttle/host/attribute/Image.hpp>
 %}
 
+namespace tuttle {
+namespace host {
+namespace attribute {
+%ignore Image::getImage;
+}
+}
+}
+
 %include <tuttle/host/attribute/Image.hpp>
 
 namespace tuttle {
 namespace host {
 namespace attribute {
-
-%ignore getImage;
-
 
 %extend Image
 {

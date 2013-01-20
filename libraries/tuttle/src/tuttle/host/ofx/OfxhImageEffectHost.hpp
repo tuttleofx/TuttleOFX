@@ -1,11 +1,6 @@
 #ifndef _TUTTLE_HOST_OFX_IMAGEEFFECTHOST_HPP_
 #define _TUTTLE_HOST_OFX_IMAGEEFFECTHOST_HPP_
 
-#include <tuttle/host/exceptions.hpp>
-
-#include <ofxCore.h>
-#include <ofxImageEffect.h>
-
 #include "OfxhHost.hpp"
 #include "OfxhProgress.hpp"
 #include "OfxhTimeline.hpp"
@@ -13,6 +8,12 @@
 #include "OfxhInteract.hpp"
 #include "attribute/OfxhParam.hpp"
 #include "attribute/OfxhClipImage.hpp"
+
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
+
+#include <tuttle/host/exceptions.hpp>
+
 
 namespace tuttle {
 namespace host {
@@ -41,7 +42,7 @@ class OfxhImageEffectHost : public OfxhHost
 {
 public:
 	OfxhImageEffectHost();
-	virtual ~OfxhImageEffectHost();
+	virtual ~OfxhImageEffectHost() = 0;
 
 	/// fetch a suite
 	virtual void* fetchSuite( const char* suiteName, const int suiteVersion );
