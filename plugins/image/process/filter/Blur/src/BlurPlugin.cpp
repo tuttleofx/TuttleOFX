@@ -48,6 +48,9 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
 		case eParamBorderPadded:
 			params._boundary_option = convolve_option_extend_padded;
 			break;
+		case eParamBorderNo:
+			params._boundary_option = convolve_option_extend_mirror;
+			break;
 	}
 	return params;
 }
