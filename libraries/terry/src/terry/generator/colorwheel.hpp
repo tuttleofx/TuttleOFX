@@ -53,18 +53,15 @@ struct ColorWheelFunctor
 			return pixel;
 		}
 		
-		float h = 1.0;
+		float h = - atan( y / x );
 		float s = 1.0;
 		float l = 1.0;
 		
 		if( x >= 0 )
 		{
-			h = - atan( y / x );
+			h += boost::math::constants::pi<double>() ;
 		}
-		else
-			h = ( boost::math::constants::pi<double>() - atan( y / x ) );
-		
-		h /= (2.0 * boost::math::constants::pi<double>() );
+		h /= ( 2.0 * boost::math::constants::pi<double>() );
 		
 		l = sqrt( y * y + x * x );
 		
@@ -72,11 +69,14 @@ struct ColorWheelFunctor
 		
 		hsl32f_pixel_t hsl( h, s, l );
 		rgb32f_pixel_t rgb;
+		rgb32f_pixel_t white( 1.0, 1.0, 1.0 );
 		rgba32f_pixel_t rgba;
 		
 		color_convert( hsl, rgb );
-		color_convert( rgb, rgba );
 		
+		rgb = numeric::pixel_minus_t< rgb32f_pixel_t, rgb32f_pixel_t, rgb32f_pixel_t>()( white, rgb );
+		
+		color_convert( rgb, rgba );
 		color_convert( rgba, pixel );
 		
 		return pixel;
