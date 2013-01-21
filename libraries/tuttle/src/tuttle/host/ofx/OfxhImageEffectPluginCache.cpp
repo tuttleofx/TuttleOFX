@@ -237,8 +237,13 @@ std::ostream& operator<<( std::ostream& os, const OfxhImageEffectPluginCache& v 
 	os << "OfxhImageEffectPluginCache {" << std::endl;
 
 	if( v._pluginsByID.empty() )
+	{
 		os << "No Plug-ins Found." << std::endl;
-
+		os << "}" << std::endl;
+		return os;
+	}
+	os << "Nb Plugins:" << v._pluginsByID.size() << std::endl;
+	
 	os << "________________________________________________________________________________" << std::endl;
 	for( std::map<std::string, OfxhImageEffectPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
 	{

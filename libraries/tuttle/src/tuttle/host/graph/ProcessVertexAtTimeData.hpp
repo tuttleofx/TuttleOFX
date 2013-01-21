@@ -92,7 +92,7 @@ public:
 		ProcessEdgeAtTimeByClipName::const_iterator it = _inEdges.find(inputClipName);
 		if( it == _inEdges.end() )
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev() + "No such input clip name inside input edges map." );
+				<< exception::dev() + "No input clip " + quotes(inputClipName) + " inside input edges map." );
 		return *(it->second);
 	}
 	

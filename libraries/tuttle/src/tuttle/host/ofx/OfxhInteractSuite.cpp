@@ -59,6 +59,8 @@ OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle
 		interact::OfxhInteractBase* interact = reinterpret_cast<interact::OfxhInteractBase*>( handle );
 		if( !interact )
 			return kOfxStatErrBadHandle;
+		if( !interact->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
 		*property = interact->getPropHandle();
 

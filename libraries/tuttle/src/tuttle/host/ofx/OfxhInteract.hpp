@@ -44,13 +44,25 @@ namespace interact {
 class OfxhInteractBase
 {
 public:
-	virtual ~OfxhInteractBase() {}
-
+	OfxhInteractBase()
+	: _magic(kMagic)
+	{}
+	virtual ~OfxhInteractBase() = 0;
+	
+private:
+	static const int kMagic = 0x09012013; ///< magic number for Interact, and current day :-)
+	const int _magic; ///< to check for handles being nice
+	
+public:
+	bool verifyMagic() const { return this != NULL && _magic == kMagic; }
+	
 	/// grab a handle on the parameter for passing to the C API
 	OfxInteractHandle getHandle() { return ( OfxInteractHandle ) this; }
 
+#ifndef SWIG
 	/// get the property handle for this instance/descriptor
 	virtual OfxPropertySetHandle getPropHandle() = 0;
+#endif
 };
 
 /// state the interact can be in
@@ -143,12 +155,12 @@ public:
 	const property::OfxhSet& getProperties() const { return _properties; }
 
 	/// call the entry point in the descriptor with action and the given args
-	virtual OfxStatus callEntry( const char*        action,
-	                             property::OfxhSet* inArgs );
+	OfxStatus callEntry( const char*        action,
+	                     property::OfxhSet* inArgs );
 
 	/// hooks to kOfxInteractPropViewportSize in the property set
 	/// this is actually redundant and is to be deprecated
-	virtual void getViewportSize( double& width, double& height ) const = 0;
+	virtual void getViewportSize( int& width, int& height ) const = 0;
 
 	// hooks to live kOfxInteractPropPixelScale in the property set
 	virtual void getPixelScale( double& xScale, double& yScale ) const = 0;
@@ -165,17 +177,8 @@ public:
 	/// returns the params the interact uses
 	virtual void getSlaveToParam( std::vector<std::string>& params ) const;
 
-	// do nothing
-	virtual size_t getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC;
-
 	// don't know what to do
 	virtual void reset( const std::string& name ) OFX_EXCEPTION_SPEC;
-
-	/// the gethook virtuals for  pixel scale, background colour
-	virtual double getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC;
-
-	/// for pixel scale and background colour
-	virtual void getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC;
 
 	/// call create instance
 	virtual void createInstanceAction() OFX_EXCEPTION_SPEC;

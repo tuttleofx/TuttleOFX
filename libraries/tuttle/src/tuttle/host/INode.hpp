@@ -201,9 +201,12 @@ protected:
 public:
 	void setProcessData( Data* data );
 	void setProcessDataAtTime( DataAtTime* dataAtTime );
+	void clearProcessDataAtTime();
 	
 	Data& getData();
 	const Data& getData() const;
+	
+	bool hasData( const OfxTime time ) const;
 	const DataAtTime& getData( const OfxTime time ) const;
 	const DataAtTime& getFirstData() const; 
 	DataAtTime& getData( const OfxTime time );

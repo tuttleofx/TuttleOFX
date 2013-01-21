@@ -77,7 +77,8 @@ void Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
 	{
 		nodePtrs.push_back( &addNode( node ) ); // tranfer nodes ownership to the graph
 	}
-	connect( nodePtrs );
+	if( nodePtrs.size() > 1 )
+		connect( nodePtrs );
 }
 
 void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
@@ -312,8 +313,8 @@ bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes,
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph process( *this, nodes.getNodes() );
-	return process.process( memoryCache, options );
+	graph::ProcessGraph procGraph( memoryCache, options, *this, nodes.getNodes() );
+	return procGraph.process();
 }
 
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
