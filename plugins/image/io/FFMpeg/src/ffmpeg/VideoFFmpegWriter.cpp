@@ -1,4 +1,6 @@
 #include "VideoFFmpegWriter.hpp"
+#include "LibAVPreset.hpp"
+#include "LibAVFormatPreset.hpp"
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
@@ -25,7 +27,6 @@ static boost::int64_t pts = 0;
 
 VideoFFmpegWriter::VideoFFmpegWriter()
 	: FFmpeg()
-	, FFmpegPreset()
 	, _avFormatOptions   ( NULL )
 	, _avVideoOptions    ( NULL )
 	, _avAudioOptions    ( NULL )
@@ -43,7 +44,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	, _fps               ( 25.0f )
 	, _formatName        ( "" )
 	, _videoCodecName    ( "" )
-	, _videoPresetName   ( "" )
+	, _audioCodecName    ( "" )
 {
 	AVOutputFormat* fmt = av_oformat_next( NULL );
 	
@@ -418,30 +419,6 @@ void VideoFFmpegWriter::freeFormat()
 	av_free( _avFormatOptions );
 	_avFormatOptions = 0;
 	_stream          = 0;
-}
-
-void VideoFFmpegWriter::setVideoPreset( const int id )
-{
-	if( id == -1 )
-	{
-		_videoPresetName = "";
-		return;
-	}
-	
-	FFmpegPreset::Presets p = getPresets().getConfigList( _videoCodecName );
-	_videoPresetName = p[id];
-}
-
-void VideoFFmpegWriter::setAudioPreset( const int id )
-{
-	if( id == -1 )
-	{
-		_audioPresetName = "";
-		return;
-	}
-	
-	FFmpegPreset::Presets p = getPresets().getConfigList( _audioCodecName );
-	_audioPresetName = p[id];
 }
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption& opt, bool& value )

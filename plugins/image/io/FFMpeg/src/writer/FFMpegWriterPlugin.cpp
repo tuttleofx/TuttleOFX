@@ -2,10 +2,17 @@
 #include "FFMpegWriterProcess.hpp"
 #include "FFMpegWriterDefinitions.hpp"
 
+#include <ffmpeg/LibAVPreset.hpp>
+#include <ffmpeg/LibAVFormatPreset.hpp>
+#include <ffmpeg/LibAVVideoPreset.hpp>
+#include <ffmpeg/LibAVAudioPreset.hpp>
 #include <ffmpeg/VideoFFmpegWriter.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
+#include <cctype>
 
 namespace tuttle {
 namespace plugin {
@@ -160,35 +167,16 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_paramFormat                      = fetchChoiceParam( kParamFormat );
-	_paramVideoCodec                  = fetchChoiceParam( kParamVideoCodec );
-	_paramAudioCodec                  = fetchChoiceParam( kParamAudioCodec );
-	_paramVideoPixelFormat            = fetchChoiceParam( kParamVideoCodecPixelFmt );
+	_paramFormat     = fetchChoiceParam( kParamFormat );
+	_paramVideoCodec = fetchChoiceParam( kParamVideoCodec );
+	_paramAudioCodec = fetchChoiceParam( kParamAudioCodec );
 	
-	_videoCodecListWithPreset = _writer.getCodecListWithConfig();
-	std::vector<std::string>::iterator it;
-	for( it = _videoCodecListWithPreset.begin(); it < _videoCodecListWithPreset.end(); it++ )
-	{
-		std::vector<std::string> videoList = _writer.getVideoCodecsShort();
-		BOOST_FOREACH( const std::string& videoCodec, videoList )
-		{
-			if( videoCodec == (*it) )
-			{
-				OFX::ChoiceParam* paramPreset = fetchChoiceParam( *it );
-				_videoCodecPresetParams.push_back( paramPreset );
-			}
-		}
-
-		std::vector<std::string> audioList = _writer.getAudioCodecsShort();
-		BOOST_FOREACH( const std::string& audioCodec, audioList )
-		{
-			if( audioCodec == (*it) )
-			{
-				OFX::ChoiceParam* paramPreset = fetchChoiceParam( *it );
-				_audioCodecPresetParams.push_back( paramPreset );
-			}
-		}
-	}
+	_paramMainPreset       = fetchChoiceParam( kParamMainPreset );
+	_paramFormatPreset     = fetchChoiceParam( kParamFormatPreset );
+	_paramVideoCodecPreset = fetchChoiceParam( kParamVideoPreset );
+	_paramAudioCodecPreset = fetchChoiceParam( kParamAudioPreset );
+	
+	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	
 	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
 	disableAVOptionsForCodecOrFormat( _writer.getFormatPrivOpts(), formatName );
@@ -213,19 +201,7 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams()
 	params._videoPixelFormat               = static_cast<PixelFormat>( _paramVideoPixelFormat->getValue() );
 	
 	_writer.setVideoCodec( params._videoCodec );
-	const std::string codecName = _writer.getVideoCodec();
-/*
-	params._videoPreset = -1;
-	size_t pos = 0;
-	std::vector<OFX::ChoiceParam*>::const_iterator choiceParamIt = _videoCodecPresetParams.begin();
-	for( choiceParamIt = _videoCodecListWithPreset.begin(); choiceParamIt < _videoCodecListWithPreset.end(); choiceParamIt++, pos++ )
-	{
-		if( *choiceParamIt->getLabel() == codecName )
-		{
-			int presetIdx = _videoCodecPresetParams.at( pos )->getValue();
-			params._videoPreset = presetIdx;
-		}
-	}*/
+
 	return params;
 }
 
@@ -506,6 +482,256 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vec
 	}
 }
 
+int convertIntWithOptionalUnit( const std::string& param, const std::string& stringValue )
+{
+	int intValue = 0;
+	if( std::isdigit( stringValue[ stringValue.length()-1 ] ) )
+	{
+		try
+		{
+			intValue = boost::lexical_cast<int>( stringValue );
+		}
+		catch( ... )
+		{
+			TUTTLE_CERR( "FFMpeg writer: parameter " << param << " can't convert the value: " << stringValue );
+		}
+	}
+	else
+	{
+		char unit = stringValue[ stringValue.length()-1 ];
+		std::string val = stringValue;
+		val.erase( val.length()-1 ,1 );
+		try
+		{
+			intValue = boost::lexical_cast<int>( val );
+		}
+		catch( ... )
+		{
+			TUTTLE_CERR( "FFMpeg writer: parameter " << param << " can't convert the value: " << stringValue );
+		}
+		
+		switch( unit )
+		{
+			case 'k':
+				intValue *= 1024;
+				break;
+			case 'M':
+				intValue *= 1024 * 1024;
+				break;
+			case 'G':
+				intValue *= 1024 * 1024 * 1024;
+				break;
+			default:
+				TUTTLE_CERR("FFMpeg writer: unknown unit " << unit << " for parameter " << param );
+				break;
+		}
+	}
+	return intValue;
+}
+
+void FFMpegWriterPlugin::setParameters( const PresetParameters& parameters )
+{
+	BOOST_FOREACH( PresetParameters::value_type param, parameters )
+	{
+		//TUTTLE_COUT_VAR2( param.first, param.second );
+			if( paramExists( param.first ) )
+			{
+				std::string value = param.second.at( 0 );
+				switch( getParamType( param.first ) )
+				{
+					case OFX::eStringParam:
+					{
+						OFX::StringParam* fetchParam = fetchStringParam( param.first );
+						fetchParam->setValue( value );
+						break;
+					}
+					case OFX::eIntParam:
+					{
+						OFX::IntParam* fetchParam = fetchIntParam( param.first );
+						fetchParam->setValue( convertIntWithOptionalUnit( param.first, value ) );
+						break;
+					}
+					case OFX::eInt2DParam:
+					{
+						OFX::Int2DParam* fetchParam = fetchInt2DParam( param.first );
+						if( param.second.size() == 2 )
+						{
+							int x = convertIntWithOptionalUnit( param.first, param.second.at( 0 ) );
+							int y = convertIntWithOptionalUnit( param.first, param.second.at( 1 ) );
+							fetchParam->setValue( x, y );
+						}
+						else
+						{
+							TUTTLE_CERR("FFMpeg writer: unable to set an 2D Int value with " << param.second.size() << " parameters." );
+						}
+						break;
+					}
+					case OFX::eInt3DParam:
+					{
+						OFX::Int3DParam* fetchParam = fetchInt3DParam( param.first );
+						if( param.second.size() == 3 )
+						{
+							int x = convertIntWithOptionalUnit( param.first, param.second.at( 0 ) );
+							int y = convertIntWithOptionalUnit( param.first, param.second.at( 1 ) );
+							int z = convertIntWithOptionalUnit( param.first, param.second.at( 2 ) );
+							fetchParam->setValue( x, y, z );
+						}
+						else
+						{
+							TUTTLE_CERR("FFMpeg writer: unable to set an 3D Int value with " << param.second.size() << " parameters." );
+						}
+						break;
+					}
+					case OFX::eDoubleParam:
+					{
+						OFX::DoubleParam* fetchParam = fetchDoubleParam( param.first );
+						try
+						{
+							double value = boost::lexical_cast<double>( value );
+							fetchParam->setValue( value );
+						}
+						catch( ... )
+						{
+							TUTTLE_CERR( "FFMpeg writer: parameter " << param.first << " can't convert the value: " << value );
+						}
+						break;
+					}
+					case OFX::eDouble2DParam:
+					{
+						OFX::Double2DParam* fetchParam = fetchDouble2DParam( param.first );
+						if( param.second.size() == 2 )
+						{
+							try
+							{
+								double x = boost::lexical_cast<double>( param.second.at( 0 ) );
+								double y = boost::lexical_cast<double>( param.second.at( 1 ) );
+								fetchParam->setValue( x, y );
+							}
+							catch( ... )
+							{
+								TUTTLE_CERR( "FFMpeg writer: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << "]" );
+							}
+						}
+						else
+						{
+							TUTTLE_CERR("FFMpeg writer: unable to set an 2D Double value with " << param.second.size() << " parameters." );
+						}
+						break;
+					}
+					case OFX::eDouble3DParam:
+					{
+						OFX::Double3DParam* fetchParam = fetchDouble3DParam( param.first );
+						if( param.second.size() == 3 )
+						{
+							try
+							{
+								double x = boost::lexical_cast<double>( param.second.at( 0 ) );
+								double y = boost::lexical_cast<double>( param.second.at( 1 ) );
+								double z = boost::lexical_cast<double>( param.second.at( 2 ) );
+								fetchParam->setValue( x, y, z );
+							}
+							catch( ... )
+							{
+								TUTTLE_CERR( "FFMpeg writer: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << "]" );
+							}
+						}
+						else
+						{
+							TUTTLE_CERR("FFMpeg writer: unable to set an 3D Double value with " << param.second.size() << " parameters." );
+						}
+						break;
+					}
+					case OFX::eRGBParam:
+					{
+						OFX::RGBParam* fetchParam = fetchRGBParam( param.first );
+						if( param.second.size() == 3 )
+						{
+							try
+							{
+								double r = boost::lexical_cast<double>( param.second.at( 0 ) );
+								double g = boost::lexical_cast<double>( param.second.at( 1 ) );
+								double b = boost::lexical_cast<double>( param.second.at( 2 ) );
+								fetchParam->setValue( r, g, b );
+							}
+							catch( ... )
+							{
+								TUTTLE_CERR( "FFMpeg writer: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << "]" );
+							}
+						}
+						else
+						{
+							TUTTLE_CERR("FFMpeg writer: unable to set an RGB value with " << param.second.size() << " parameters." );
+						}
+						break;
+					}
+					case OFX::eRGBAParam:
+					{
+						OFX::RGBAParam* fetchParam = fetchRGBAParam( param.first );
+						if( param.second.size() == 4 )
+						{
+							try
+							{
+								double r = boost::lexical_cast<double>( param.second.at( 0 ) );
+								double g = boost::lexical_cast<double>( param.second.at( 1 ) );
+								double b = boost::lexical_cast<double>( param.second.at( 2 ) );
+								double a = boost::lexical_cast<double>( param.second.at( 3 ) );
+								fetchParam->setValue( r, g, b, a );
+							}
+							catch( ... )
+							{
+								TUTTLE_CERR( "FFMpeg writer: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << ", " << param.second.at( 3 ) << "]" );
+							}
+						}
+						else
+						{
+							TUTTLE_CERR("FFMpeg writer: unable to set an RGBA value with " << param.second.size() << " parameters." );
+						}
+						break;
+					}
+					case OFX::eBooleanParam:
+					{
+						OFX::BooleanParam* fetchParam = fetchBooleanParam( param.first );
+						bool boolValue = ( value == "1" || boost::iequals(value, "y") || boost::iequals(value, "yes") || boost::iequals(value, "true") );
+						fetchParam->setValue( boolValue );
+						break;
+					}
+					case OFX::eChoiceParam:
+					{
+						OFX::ChoiceParam* fetchParam = fetchChoiceParam( param.first );
+						int index = -1;
+						for( int i = 0; i< fetchParam->getProps().propGetDimension( "OfxParamPropChoiceOption" ); i++ )
+						{
+							if( fetchParam->getProps().propGetString( "OfxParamPropChoiceOption", i ) == value )
+							{
+								index = i;
+								break;
+							}
+						}
+						if( index > -1 )
+							fetchParam->setValue( index );
+						else
+							TUTTLE_CERR( "FFMpeg writer: unable to find value " << value << " for parameter " << param.first );
+						break;
+					}
+					case OFX::ePushButtonParam:
+					case OFX::eParametricParam:
+					case OFX::eCustomParam:
+					case OFX::eGroupParam:
+					case OFX::ePageParam:
+					case OFX::eCameraParam:
+					default:
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				TUTTLE_CERR( "FFMpeg writer: parameter " << param.first << " not exist." );
+			}
+	}
+}
+
 void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	WriterPlugin::changedParam( args, paramName );
@@ -527,45 +753,99 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 		disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), codecName );
 	}
 	
-	const std::vector<std::string> codecListWithPreset = _writer.getPresets().getCodecListWithConfig();
-	BOOST_FOREACH( const std::string& codecName, codecListWithPreset )
+	if( paramName == kParamMainPreset )
 	{
-		if( paramName == codecName )
+		//TUTTLE_COUT( "preset change " << _paramMainPreset->getValue() );
+		if( _paramMainPreset->getValue() == 0 )
+			return;
+		
+		std::vector<std::string> idList;
+		std::vector<std::string> idLabelList;
+		LibAVPreset::getPresetList( idList, idLabelList );
+		
+		LibAVPreset p( idList.at( _paramMainPreset->getValue() - 1 ) );
+		
+		std::vector<std::string> idFormatList;
+		LibAVFormatPreset::getPresetList( idFormatList );
+
+		std::vector<std::string> idVideoList;
+		LibAVVideoPreset::getPresetList( idVideoList );
+		
+		std::vector<std::string> idAudioList;
+		LibAVAudioPreset::getPresetList( idAudioList);
+		
+		int formatIndex = 0;
+		int videoIndex  = 0;
+		int audioIndex  = 0;
+		for( int id = 0; id < idFormatList.size(); id++ )
 		{
-			TUTTLE_COUT( "preset change for " << codecName );
-			
+			if( idFormatList.at( id ) == p.getFormatID() )
+			{
+				formatIndex = id + 1;
+				break;
+			}
 		}
+		
+		for( int id = 0; id < idVideoList.size(); id++ )
+		{
+			if( idVideoList.at( id ) == p.getVideoID() )
+			{
+				videoIndex = id + 1;
+				break;
+			}
+		}
+		
+		
+		for( int id = 0; id < idAudioList.size(); id++ )
+		{
+			if( idAudioList.at( id ) == p.getAudioID() )
+			{
+				audioIndex = id + 1;
+				break;
+			}
+		}
+		/*
+		TUTTLE_COUT( "set format at " << formatIndex );
+		TUTTLE_COUT( "set video at " << formatIndex );
+		TUTTLE_COUT( "set audio at " << formatIndex );*/
+		
+		_paramFormatPreset->setValue( formatIndex );
+		_paramVideoCodecPreset->setValue( videoIndex );
+		_paramAudioCodecPreset->setValue( audioIndex );
+	}
+	
+	if( paramName == kParamFormatPreset )
+	{
+		//TUTTLE_COUT( "preset change " << _paramFormatPreset->getValue() );
+		if( _paramFormatPreset->getValue() == 0 )
+			return;
+		std::vector<std::string> idFormatList;
+		LibAVFormatPreset::getPresetList( idFormatList );
+		
+		LibAVFormatPreset p( idFormatList.at( _paramFormatPreset->getValue() - 1 ) );
+		setParameters( p.getParameters() );
 	}
 	
 	if( paramName == kParamVideoPreset )
 	{
-		std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-		std::vector<std::string>::iterator it;
-		size_t pos = 0;
-		for( it = _videoCodecListWithPreset.begin(); it < _videoCodecListWithPreset.end(); it++, pos++ )
-		{
-			if( codecName == (*it) )
-			{
-				TUTTLE_COUT( codecName );
-				/*int presetIdx = videoCodecPresets.at( pos )->getValue();
-				params._videoPreset = presetIdx;
-				std::string presetFilename = _writer.getFilename( codecName, presetIdx );*/
-			}
-		}
-
-		/*
-		PresetsOptions opts = getOptionsForPresetFilename( presetFilename );
-		PresetsOptions::iterator itOpt;
-		for ( itOpt = opts.begin() ; itOpt != opts.end(); itOpt++ )
-		{
-			int ret = av_opt_set( (void*)_stream->codec, (*itOpt).first.c_str(), (*itOpt).second.c_str(), 0);
-			switch( ret )
-			{
-				case AVERROR_OPTION_NOT_FOUND: TUTTLE_CERR( "ffmpegPreset: unable to find " << (*itOpt).first ); break;
-				case AVERROR(EINVAL): TUTTLE_CERR( "ffmpegPreset: invalid value " << (*itOpt).second.c_str() << " for option " << (*itOpt).first ); break;
-				case AVERROR(ERANGE): TUTTLE_CERR( "ffmpegPreset: invalid range for parameter " << (*itOpt).first << " : " << (*itOpt).second.c_str() ); break;
-			}
-		}*/
+		if( _paramVideoCodecPreset->getValue() == 0 )
+			return;
+		std::vector<std::string> idVideoList;
+		LibAVVideoPreset::getPresetList( idVideoList );
+		
+		LibAVVideoPreset p( idVideoList.at( _paramVideoCodecPreset->getValue() - 1 ) );
+		setParameters( p.getParameters() );
+	}
+	
+	if( paramName == kParamAudioPreset )
+	{
+		if( _paramAudioCodecPreset->getValue() == 0 )
+			return;
+		std::vector<std::string> idAudioList;
+		LibAVAudioPreset::getPresetList( idAudioList);
+		
+		LibAVAudioPreset p( idAudioList.at( _paramAudioCodecPreset->getValue() - 1 ) );
+		setParameters( p.getParameters() );
 	}
 }
 
@@ -593,8 +873,6 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	_writer.setFps         ( _clipSrc->getFrameRate() );
 	_writer.setAspectRatio ( _clipSrc->getPixelAspectRatio() );
 	_writer.setPixelFormat ( params._videoPixelFormat );
-	//TUTTLE_COUT( params._videoPreset );
-	//_writer.setVideoPreset ( params._videoPreset );
 }
 
 /**

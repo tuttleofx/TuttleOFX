@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_FFMPEG_WRITER_PLUGIN_HPP_
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
+#include <ffmpeg/LibAVPresetDefinitions.hpp>
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
@@ -53,18 +54,20 @@ public:
 private:
 	void setParameters( const EAVParamType& type, void* av_class, int req_flags, int rej_flags );
 	void setParameters( const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
+	void setParameters( const PresetParameters& parameters );
 	
 public:
 	OFX::ChoiceParam*   _paramFormat;
 	OFX::ChoiceParam*   _paramVideoCodec;
 	OFX::ChoiceParam*   _paramAudioCodec;
+	
+	OFX::ChoiceParam*   _paramMainPreset;
+	OFX::ChoiceParam*   _paramFormatPreset;
+	OFX::ChoiceParam*   _paramVideoCodecPreset;
+	OFX::ChoiceParam*   _paramAudioCodecPreset;
+	
 	OFX::IntParam*      _paramBitRate;
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
-	
-	std::vector<OFX::ChoiceParam*> _videoCodecPresetParams;
-	std::vector<OFX::ChoiceParam*> _audioCodecPresetParams;
-	std::vector<std::string>       _videoCodecListWithPreset;
-	std::vector<std::string>       _audioCodecListWithPreset;
 	
 	VideoFFmpegWriter   _writer;
 	bool                _initWriter;

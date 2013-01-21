@@ -2,7 +2,6 @@
 #define _TUTTLE_PLUGIN_FFMPEG_VIDEOFFMPEGWRITER_HPP_
 
 #include "FFmpeg.hpp"
-#include "FFmpegPreset.hpp"
 #include "VideoFFmpegReader.hpp"
 
 #include <tuttle/plugin/global.hpp>
@@ -17,7 +16,7 @@ namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
 
-class VideoFFmpegWriter : public FFmpeg, public FFmpegPreset
+class VideoFFmpegWriter : public FFmpeg
 {
 private:
 	enum EWriterStatus
@@ -194,20 +193,6 @@ public:
 		_audioCodecName = codec;
 	}
 	
-	void setVideoPreset( const int id );
-	
-	void setVideoPreset( const std::string& preset )
-	{
-		_videoPresetName = preset;
-	}
-
-	void setAudioPreset( const int id );
-	
-	void setAudioPreset( const std::string& preset )
-	{
-		_audioPresetName = preset;
-	}
-	
 	void configureFromRead( const VideoFFmpegReader& reader )
 	{
 		setWidth       ( reader.width() );
@@ -218,9 +203,6 @@ public:
 		setVideoCodec  ( reader.codecName() );
 		//setAudioCodec  ( reader.codecName() );
 	}
-
-	FFmpegPreset& getPresets() { return _preset; }
-	const FFmpegPreset& getPresets() const { return _preset; }
 
 	void optionSet( const EAVParamType& type, const AVOption &opt, bool &value );
 	void optionSet( const EAVParamType& type, const AVOption& opt, bool& value, std::string& valueToSetFlag );
@@ -254,8 +236,6 @@ private:
 	std::vector<std::string>       _audioCodecsLongNames;
 	std::vector<std::string>       _audioCodecsShortNames;
 	
-	FFmpegPreset                   _preset;
-	
 	EWriterStatus                  _statusCode;
 	int                            _hasFrame;
 	
@@ -267,12 +247,8 @@ private:
 	
 	double                          _fps;
 	std::string                    _formatName;
-	
 	std::string                    _videoCodecName;
-	std::string                    _videoPresetName;
-	
 	std::string                    _audioCodecName;
-	std::string                    _audioPresetName;
 };
 
 }
