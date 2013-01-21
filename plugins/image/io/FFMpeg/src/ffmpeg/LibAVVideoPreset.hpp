@@ -19,14 +19,11 @@ public:
 	LibAVVideoPreset( const std::string& id )
 		: presetID( id )
 	{
-		TUTTLE_COUT( "video PRESETS" );
 		BOOST_FOREACH( const std::string& presetPath, LibAVPresetParser::researchPresetsFiles() )
 		{
 			bfs::path f = presetPath;
-			TUTTLE_COUT( presetPath );
 			if( f.extension() == kPresetVideoExtension )
 			{
-				TUTTLE_COUT( presetPath );
 				LibAVPresetFileParser fp( presetPath );
 				if( presetID == fp.getId() )
 				{
