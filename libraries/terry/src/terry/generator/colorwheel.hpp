@@ -5,6 +5,11 @@
 #include <boost/gil/extension/color/hsl.hpp>
 #include <boost/math/constants/constants.hpp>
 
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/operations_assign.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/init.hpp>
+
 #include <cmath>
 
 namespace terry {
@@ -37,14 +42,20 @@ struct ColorWheelFunctor
 	
 	Pixel operator()( const point_t& p ) const
 	{
+		double x = scale * p.x - 0.5;
+		double y = scale * p.y - 0.5;
+		
 		Pixel pixel;
+		
+		if( sqrt( y * y + x * x ) > 0.5 )
+		{
+			numeric::pixel_zeros_t<Pixel>( )( pixel );
+			return pixel;
+		}
 		
 		float h = 1.0;
 		float s = 1.0;
 		float l = 1.0;
-		
-		double x = scale * p.x - 0.5;
-		double y = scale * p.y - 0.5;
 		
 		if( x >= 0 )
 		{
@@ -65,14 +76,6 @@ struct ColorWheelFunctor
 		
 		color_convert( hsl, rgb );
 		color_convert( rgb, rgba );
-		
-		if( sqrt( y * y + x * x ) > 0.5 )
-		{
-			get_color( rgba, red_t()   ) = 0.0;
-			get_color( rgba, green_t() ) = 0.0;
-			get_color( rgba, blue_t()  ) = 0.0;
-			get_color( rgba, alpha_t() ) = 0.0;
-		}
 		
 		color_convert( rgba, pixel );
 		
