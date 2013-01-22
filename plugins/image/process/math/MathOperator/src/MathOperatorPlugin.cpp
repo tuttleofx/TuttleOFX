@@ -199,11 +199,6 @@ void MathOperatorPlugin::updateInterface()
 			bRGBA   = false;
 			bAlpha  = false;
 			break;
-		default: // Error
-			bMaster = true;
-			bRGBA   = true;
-			bAlpha  = false;
-			break;
 	}
 	_master      -> setIsSecretAndDisabled( bMaster );
 	_red         -> setIsSecretAndDisabled( bRGBA );

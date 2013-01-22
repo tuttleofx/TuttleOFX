@@ -104,22 +104,12 @@ void GammaPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std:
 				bMaster = true;
 				bRGBA   = false;
 				break;
-			default: // Error
-				bMaster = true;
-				bRGBA   = true;
-				break;
 		}
 		_master->setIsSecret( bMaster );
 		_red->setIsSecret( bRGBA );
 		_green->setIsSecret( bRGBA );
 		_blue->setIsSecret( bRGBA );
 		_alpha->setIsSecret( bRGBA );
-		//		_master->setEnabled( bMaster );
-		//		_red->setEnabled( bRGBA );
-		//		_green->setEnabled( bRGBA );
-		//		_blue->setEnabled( bRGBA );
-		//		_alpha->setEnabled( bRGBA );
-
 	}
 }
 
