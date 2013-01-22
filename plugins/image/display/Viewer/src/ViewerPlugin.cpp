@@ -91,7 +91,6 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 	size_t width = dst->getBoundsSize().x;
 	size_t height = dst->getBoundsSize().y;
 	size_t components = 0;
-	size_t bitDepth = 0;
 
 	GLenum format = GL_RGB;
 	GLenum type = GL_FLOAT;
