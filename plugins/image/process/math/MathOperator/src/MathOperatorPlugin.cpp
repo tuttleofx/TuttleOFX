@@ -180,8 +180,9 @@ void MathOperatorPlugin::render( const OFX::RenderArguments &args )
 
 void MathOperatorPlugin::updateInterface()
 {
-	bool bMaster, bRGBA;
-	bool bAlpha;
+	bool bMaster = false;
+	bool bRGBA   = false;
+	bool bAlpha  = false;
 	switch( getMathOperatorType() )
 	{
 		case eMathOperatorTypeRgba:

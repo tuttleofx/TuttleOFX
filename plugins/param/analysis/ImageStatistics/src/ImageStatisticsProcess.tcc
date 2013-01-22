@@ -230,6 +230,7 @@ struct ComputeOutputParams
 		CPixel sum_p3;
 		CPixel sum_p4;
 		pixel_zeros_t<CPixel>( )( sum );
+		pixel_zeros_t<CPixel>( )( varianceSum );
 		pixel_zeros_t<CPixel>( )( sum_p2 );
 		pixel_zeros_t<CPixel>( )( sum_p3 );
 		pixel_zeros_t<CPixel>( )( sum_p4 );
