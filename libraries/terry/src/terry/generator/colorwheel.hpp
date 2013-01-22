@@ -5,6 +5,11 @@
 #include <boost/gil/extension/color/hsl.hpp>
 #include <boost/math/constants/constants.hpp>
 
+#include <terry/numeric/operations.hpp>
+#include <terry/numeric/operations_assign.hpp>
+#include <terry/numeric/assign.hpp>
+#include <terry/numeric/init.hpp>
+
 #include <cmath>
 
 namespace terry {
@@ -37,23 +42,26 @@ struct ColorWheelFunctor
 	
 	Pixel operator()( const point_t& p ) const
 	{
-		Pixel pixel;
-		
-		float h = 1.0;
-		float s = 1.0;
-		float l = 1.0;
-		
 		double x = scale * p.x - 0.5;
 		double y = scale * p.y - 0.5;
 		
+		Pixel pixel;
+		
+		if( sqrt( y * y + x * x ) > 0.5 )
+		{
+			numeric::pixel_zeros_t<Pixel>( )( pixel );
+			return pixel;
+		}
+		
+		float h = - atan( y / x );
+		float s = 1.0;
+		float l = 1.0;
+		
 		if( x >= 0 )
 		{
-			h = - atan( y / x );
+			h += boost::math::constants::pi<double>() ;
 		}
-		else
-			h = ( boost::math::constants::pi<double>() - atan( y / x ) );
-		
-		h /= (2.0 * boost::math::constants::pi<double>() );
+		h /= ( 2.0 * boost::math::constants::pi<double>() );
 		
 		l = sqrt( y * y + x * x );
 		
@@ -61,19 +69,14 @@ struct ColorWheelFunctor
 		
 		hsl32f_pixel_t hsl( h, s, l );
 		rgb32f_pixel_t rgb;
+		rgb32f_pixel_t white( 1.0, 1.0, 1.0 );
 		rgba32f_pixel_t rgba;
 		
 		color_convert( hsl, rgb );
+		
+		rgb = numeric::pixel_minus_t< rgb32f_pixel_t, rgb32f_pixel_t, rgb32f_pixel_t>()( white, rgb );
+		
 		color_convert( rgb, rgba );
-		
-		if( sqrt( y * y + x * x ) > 0.5 )
-		{
-			get_color( rgba, red_t()   ) = 0.0;
-			get_color( rgba, green_t() ) = 0.0;
-			get_color( rgba, blue_t()  ) = 0.0;
-			get_color( rgba, alpha_t() ) = 0.0;
-		}
-		
 		color_convert( rgba, pixel );
 		
 		return pixel;
