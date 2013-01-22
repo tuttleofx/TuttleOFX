@@ -111,7 +111,6 @@ public:
 	APICache::OfxhPluginAPICacheI&       getApiHandler();
 	const APICache::OfxhPluginAPICacheI& getApiHandler() const;
 
-	#ifndef SWIG
 	/// @brief get the base image effect descriptor
 	OfxhImageEffectNodeDescriptor& getDescriptor();
 
@@ -121,6 +120,7 @@ public:
 	/// @brief get the image effect descriptor for the context
 	OfxhImageEffectNodeDescriptor& getDescriptorInContext( const std::string& context );
 
+	#ifndef SWIG
 	void addContext( const std::string& context );
 	void addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied );
 	#endif

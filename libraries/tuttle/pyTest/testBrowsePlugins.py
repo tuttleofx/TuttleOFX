@@ -10,3 +10,12 @@ def testBrowsePlugins():
 
 	print [p for p in pluginCache.getPluginPath()]
 	print [p.getIdentifier() for p in pluginCache.getPlugins()]
+
+def testBrowseIEPlugins():
+	pluginCache = tuttle.core().getImageEffectPluginCache()
+
+	print [p.getDescriptor().getShortLabel() for p in pluginCache.getPlugins()]
+	print [p.getDescriptor().getLabel() for p in pluginCache.getPlugins()]
+	print [p.getDescriptor().getLongLabel() for p in pluginCache.getPlugins()]
+
+
