@@ -26,24 +26,24 @@ OfxStatus _stat;
 
 public:
 	explicit OfxhException( const std::string& what )
-		: boost::exception()
+		: ::boost::exception()
 	{
-		*this << exception::dev() + what;
+		*this << ::tuttle::exception::dev() + what;
 	}
 
 	explicit OfxhException( OfxStatus stat )
-		: boost::exception()
+		: ::boost::exception()
 		, _stat( stat )
 	{
-		*this << exception::ofxStatus(stat);
+		*this << ::tuttle::exception::ofxStatus(stat);
 	}
 
 	explicit OfxhException( OfxStatus stat, const std::string& what )
-		: boost::exception()
+		: ::boost::exception()
 		, _stat( stat )
 	{
-		*this << exception::ofxStatus(stat);
-		*this << exception::dev() + what;
+		*this << ::tuttle::exception::ofxStatus(stat);
+		*this << ::tuttle::exception::dev() + what;
 	}
 
 	/// get the status

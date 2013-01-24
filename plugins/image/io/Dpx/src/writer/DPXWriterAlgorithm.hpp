@@ -133,7 +133,6 @@ void convertRGBAToABGR( DataVector& dataVec, size_t width, size_t height, int pi
 	__m128i* dataCharIt = NULL;
 	__m128i data, mask;
 	
-	float* dataFloatIt;
 	char*  charPtr = NULL;
 	// define flipping data
 	char charMask [16] = {0x03, 0x02, 0x01, 0x00, // pixel 1
@@ -244,6 +243,7 @@ void convertRGBAToABGR( DataVector& dataVec, size_t width, size_t height, int pi
 		}
 		case 16 :
 		{
+			float* dataFloatIt;
 			dataFloatIt = dataPtrIt;
 			
 			/*for(char c=0; c<4; c++)

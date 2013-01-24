@@ -54,10 +54,6 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			case eTuttlePluginBitDepth16:
 				writeImage<bits16>( srcView );
 				break;
-			default:
-				BOOST_THROW_EXCEPTION( exception::ImageFormat()
-				    << exception::user( "PNG Writer: Unrecognized bit depth" ) );
-				break;
 		}
 	}
 	catch( exception::Common& e )

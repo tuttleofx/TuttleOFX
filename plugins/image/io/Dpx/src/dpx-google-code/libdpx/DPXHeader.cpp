@@ -631,10 +631,6 @@ int dpx::GenericHeader::DataSizeByteCount(const DataSize ds)
 	case kDouble:
 		ret = sizeof(R64);
 		break;
-	default:
-		assert(0 && "Unknown data size");
-		ret = sizeof(R64);
-		break;
 	}
 	
 	return ret;

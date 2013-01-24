@@ -79,7 +79,6 @@ public:
 				_interpolator.reset( new SlowInterpolator<T>() );
 				break;
 			case ofx::attribute::eLinearInterpolator:
-			default:
 				_interpolator.reset( new LinearInterpolator<T>() );
 				break;
 		}

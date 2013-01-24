@@ -90,8 +90,6 @@ void ImageTensors<View>::process( const View & srcView, E_TensorsAlgorithm tensA
         case eAnisotGradient:
             anisotropic_gradient( srcView, progress, ( tensor_t<View>* )args );
             break;
-        default:
-            break;
     }
     progress->progressEnd( );
 }
