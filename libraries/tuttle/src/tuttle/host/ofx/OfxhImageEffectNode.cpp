@@ -487,11 +487,11 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
 						      OfxTime            time,
 						      OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
-	if( getParams()[paramName]->changedActionInProgress() )
+	if( getParamsByName()[paramName]->changedActionInProgress() )
 	{
 		return;
 	}
-	getParams()[paramName]->changedActionBegin();
+	getParamsByName()[paramName]->changedActionBegin();
 	/*attribute::OfxhParam& param = */ getParam( paramName );
 
 	if( isClipPreferencesSlaveParam( paramName ) )
@@ -518,7 +518,7 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 
-	getParams()[paramName]->changedActionEnd();
+	getParamsByName()[paramName]->changedActionEnd();
 
 }
 

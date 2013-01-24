@@ -361,6 +361,19 @@ std::vector<Graph::Node*> Graph::getNodesByPlugin( const std::string& pluginId )
 	return selectedNodes;
 }
 
+void Graph::exportDot( const std::string& filename, const EDotExportLevel level ) const
+{
+	switch( level )
+	{
+		case eDotExportLevelSimple:
+			graph::exportAsDOT( filename, _graph );
+			break;
+		case eDotExportLevelDetailed:
+			graph::exportAsDOT( filename, _graph );
+			break;
+	}
+}
+
 std::ostream& operator<<( std::ostream& os, const Graph& g )
 {
 	os << "Graph" << std::endl

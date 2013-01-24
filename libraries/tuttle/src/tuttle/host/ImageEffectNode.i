@@ -10,11 +10,20 @@
 //%include <tuttle/host/ofx/attribute/OfxhClipImageSet.i>
 %include <tuttle/host/ofx/OfxhImageEffectPlugin.i>
 //%include <tuttle/host/ofx/OfxhImageEffectPluginCache.i>
-%include <tuttle/host/ofx/OfxhImageEffectNodeBase.i>
+%include <tuttle/host/ofx/OfxhImageEffectNode.i>
+
+#include <std_vector.i>
+#include <std_string.i>
 
 %{
 #include <tuttle/host/ImageEffectNode.hpp>
 %}
+
+namespace std {
+%template(IntVector) vector<int>;
+}
+
+%include <tuttle/host/ImageEffectNode.hpp>
 
 %extend tuttle::host::ImageEffectNode
 {
@@ -34,5 +43,3 @@
 
 }
 
-
-%include <tuttle/host/ImageEffectNode.hpp>

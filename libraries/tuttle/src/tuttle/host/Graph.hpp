@@ -166,9 +166,13 @@ public:
 	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
 public:
-	#ifndef SWIG
+	enum EDotExportLevel {
+		eDotExportLevelSimple,
+		eDotExportLevelDetailed
+	};
+	void exportDot( const std::string& filename, const EDotExportLevel level = eDotExportLevelSimple ) const;
+	
 	friend std::ostream& operator<<( std::ostream& os, const Graph& g );
-	#endif
 
 private:
 	InternalGraphImpl _graph;

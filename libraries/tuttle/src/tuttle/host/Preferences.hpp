@@ -22,11 +22,11 @@ public:
 	
 	boost::filesystem::path getTuttleTempPath() const { return _temp; }
 	
-	boost::filesystem::path buildTuttleTestPath();
+	boost::filesystem::path buildTuttleTestPath() const;
 	
 private:
-	boost::filesystem::path buildTuttleHome();
-	boost::filesystem::path buildTuttleTemp();
+	boost::filesystem::path buildTuttleHome() const;
+	boost::filesystem::path buildTuttleTemp() const;
 };
 
 }

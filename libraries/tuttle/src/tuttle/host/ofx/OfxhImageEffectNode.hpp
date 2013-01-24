@@ -98,7 +98,7 @@ public:
 
 	OfxhImageEffectNode( const OfxhImageEffectNode& other );
 
-	virtual ~OfxhImageEffectNode();
+	virtual ~OfxhImageEffectNode() = 0;
 
 protected:
 	void initHook();
