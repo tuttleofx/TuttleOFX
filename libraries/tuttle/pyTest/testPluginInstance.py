@@ -44,37 +44,73 @@ def testNodeInfos():
 def testParamInfos():
 	graph = tuttle.Graph()
 	node = graph.createNode( "tuttle.lensdistort" )
-	paramCoef1 = node.getParam("coef1")
 	
-	print "paramCoef1:", paramCoef1
+	## Double param
+	print "-- Double param --"
+	doubleParam = node.getParam("coef1")
+	
+	print "doubleParam:", doubleParam
 	
 	# AttributeAccessor
-	print "Name:", paramCoef1.getName()
-	print "ShortLabel:", paramCoef1.getShortLabel()
-	print "Label:", paramCoef1.getLabel()
-	print "LongLabel:", paramCoef1.getLongLabel()
+	print "Name:", doubleParam.getName()
+	print "ShortLabel:", doubleParam.getShortLabel()
+	print "Label:", doubleParam.getLabel()
+	print "LongLabel:", doubleParam.getLongLabel()
 	
 	# ParamAccessor
-	print "ParamType:", paramCoef1.getParamTypeName()
-	print "ParentName:", paramCoef1.getParentName()
-	print "ScriptName:", paramCoef1.getScriptName()
-	print "Hint:", paramCoef1.getHint()
-	print "DoubleType:", paramCoef1.getDoubleType()
-	print "CacheInvalidation:", paramCoef1.getCacheInvalidation()
-	print "Enabled:", paramCoef1.getEnabled()
-	print "CanUndo:", paramCoef1.getCanUndo()
-	print "Secret:", paramCoef1.getSecret()
-	print "EvaluateOnChange:", paramCoef1.getEvaluateOnChange()
-	print "CanAnimate:", paramCoef1.getCanAnimate()
+	print "ParamType:", doubleParam.getParamTypeName()
+	print "ParentName:", doubleParam.getParentName()
+	print "ScriptName:", doubleParam.getScriptName()
+	print "Hint:", doubleParam.getHint()
+	print "DoubleType:", doubleParam.getDoubleType()
+	print "CacheInvalidation:", doubleParam.getCacheInvalidation()
+	print "Enabled:", doubleParam.getEnabled()
+	print "CanUndo:", doubleParam.getCanUndo()
+	print "Secret:", doubleParam.getSecret()
+	print "EvaluateOnChange:", doubleParam.getEvaluateOnChange()
+	print "CanAnimate:", doubleParam.getCanAnimate()
 	
-	print "Value A:", paramCoef1.getDoubleValue()
-	paramCoef1.setValue(0.4)
-	print "Value B:", paramCoef1.getDoubleValue()
-	assert paramCoef1.getDoubleValue() == 0.4
+	print "Value A:", doubleParam.getDoubleValue()
+	doubleParam.setValue(0.4)
+	print "Value B:", doubleParam.getDoubleValue()
+	assert doubleParam.getDoubleValue() == 0.4
 	
 	# Properties
-	print "Default value:", paramCoef1.getProperties().getDoubleProperty("OfxParamPropDefault")
-	
-	print "dir:", dir(paramCoef1)
+	print "Default value:", doubleParam.getProperties().getDoubleProperty("OfxParamPropDefault")
 
+	print "dir:", dir(doubleParam)
+
+
+	## Double2D param
+	print "-- Double2D param --"
+	double2dParam = node.getParam("gridCenter")
+	print double2dParam
+	
+	print "Value A:", double2dParam.getDoubleValueAtIndex(1)
+	double2dParam.setValueAtIndex(1, 0.4)
+	print "Value B:", double2dParam.getDoubleValueAtIndex(1)
+	assert double2dParam.getDoubleValueAtIndex(1) == 0.4
+
+	print "Default value: [", double2dParam.getProperties().getDoubleProperty("OfxParamPropDefault", 0), ", ", double2dParam.getProperties().getDoubleProperty("OfxParamPropDefault", 1), "]"
+	double2dParamDefaultProp = double2dParam.getProperties().fetchDoubleProperty("OfxParamPropDefault")
+	print "Default value: [", double2dParamDefaultProp.getValue(0), ", ", double2dParamDefaultProp.getValue(1), "]"
+
+
+	## Boolean param
+	print "-- Boolean param --"
+	boolParam = node.getParam( "gridOverlay")
+	print boolParam
+
+	print "Value A:", boolParam.getBoolValue()
+	boolParam.setValue(True)
+	print "Value B:", boolParam.getBoolValue()
+	assert boolParam.getBoolValue() == True
+	
+	print "Default value:", boolParam.getProperties().getIntProperty("OfxParamPropDefault")
+	boolParamDefaultProp = boolParam.getProperties().fetchIntProperty("OfxParamPropDefault")
+	print "Default value:", boolParamDefaultProp.getValue()
+
+	print "Hint:", boolParam.getHint()
+	# low level equivalent function, based on OpenFX properties.
+	print "Hint:", boolParam.getProperties().getStringProperty("OfxParamPropHint")
 
