@@ -73,6 +73,8 @@ def testParamInfos():
 	assert paramCoef1.getDoubleValue() == 0.4
 	
 	# Properties
-	#print "Default value:", paramCoef1.getProperties().fetchProperty("OfxParamPropDefault").getDoubleValue()
+	print "Default value:", paramCoef1.getProperties().getDoubleProperty("OfxParamPropDefault")
 	
 	print "dir:", dir(paramCoef1)
+
+
