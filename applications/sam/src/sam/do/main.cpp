@@ -844,7 +844,7 @@ int main( int argc, char** argv )
 												}
 											}
 
-											BOOST_FOREACH( OfxhClipImageSet::ClipImageMap::value_type& c, currentNode.getClipImageSet().getClips() )
+											BOOST_FOREACH( OfxhClipImageSet::ClipImageMap::value_type& c, currentNode.getClipImageSet().getClipsByName() )
 											{
 												allAttr.push_back( c.first );
 												if( boost::algorithm::starts_with( c.first, attributeName ) )
@@ -911,7 +911,7 @@ int main( int argc, char** argv )
 								/// @todo We only check if we have more than one clip (assuming that it's the default "Output" clip...)
 								///       instead of checking the number of input clips...
 								// if we have an input clip
-								if( currentNode.getClipImageSet().getClips().size() > 1 )
+								if( currentNode.getClipImageSet().getClipsByName().size() > 1 )
 								{
 									graph.connect( *nodes.back(), currentNode );
 								}

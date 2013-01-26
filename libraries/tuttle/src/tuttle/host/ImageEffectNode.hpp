@@ -71,35 +71,7 @@ public:
 	const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const { return dynamic_cast<const attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
 
 	attribute::Attribute& getAttribute( const std::string& name ) { return getClip( name ); }
-	attribute::Attribute& getSingleInputAttribute()
-	{
-		ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
-		ofx::attribute::OfxhClipImageSet::ClipImageMap& clipsMap = getClips();
-		ofx::attribute::OfxhAttribute* inAttr                    = NULL;
-
-		if( clips.size() == 1 )
-		{
-			inAttr = &clips[0];
-		}
-		else if( clips.size() > 1 )
-		{
-			const ofx::attribute::OfxhClipImageSet::ClipImageMap::iterator it( clipsMap.find( kOfxSimpleSourceAttributeName ) );
-			if( it != clipsMap.end() )
-			{
-				inAttr = it->second;
-			}
-			else
-			{
-				inAttr = &clips[0];
-			}
-		}
-		else // if( inClips.empty() )
-		{
-			BOOST_THROW_EXCEPTION( exception::Logic()
-			    << exception::user( "No source clip." ) );
-		}
-		return dynamic_cast<attribute::ClipImage&>( *inAttr );
-	}
+	attribute::Attribute& getSingleInputAttribute();
 
 	const attribute::Attribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>( this )->getSingleInputAttribute(); }
 

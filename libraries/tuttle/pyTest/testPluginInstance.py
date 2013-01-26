@@ -114,3 +114,29 @@ def testParamInfos():
 	# low level equivalent function, based on OpenFX properties.
 	print "Hint:", boolParam.getProperties().getStringProperty("OfxParamPropHint")
 
+	## Clips
+	print "nbClips:", node.getClipImageSet().getNbClips()
+	assert node.getClipImageSet().getNbClips() == 3
+
+	clips = node.getClipImageSet().getClips()
+	
+	print "clips:", clips
+	for clip in clips:
+		print "-----"
+		print "dir(clip):", dir(clips)
+		print "clip name:", clip.getName()
+
+		print "clip isOutput:", clip.isOutput()
+		print "clip isOptional:", clip.isOptional()
+		print "clip temporalAccess:", clip.temporalAccess()
+		print "clip isMask:", clip.isMask()
+		print "clip supportsTiles:", clip.supportsTiles()
+			
+		print "clip getBitDepthString:", clip.getBitDepthString()
+		print "clip getBitDepthMemorySize:", clip.getBitDepthMemorySize()
+		print "clip getPixelAspectRatio:", clip.getPixelAspectRatio()
+		print "clip getComponentsString:", clip.getComponentsString()
+		print "clip getNbComponents:", clip.getNbComponents()
+		print "clip getFrameRate:", clip.getFrameRate()
+		print "clip getFrameRange:", clip.getFrameRange()
+

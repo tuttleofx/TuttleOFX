@@ -7,5 +7,13 @@
 
 %include <tuttle/host/ofx/attribute/OfxhClipImageSet.hpp>
 
-
+%extend tuttle::host::ofx::attribute::OfxhClipImageSet
+{
+	%pythoncode
+	{
+		def getClips(self):
+			nb = self.getNbClips()
+			return [self.getNthClip(i) for i in range(nb)]
+	}
+}
 

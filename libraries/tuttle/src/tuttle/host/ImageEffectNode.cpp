@@ -62,14 +62,6 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 ImageEffectNode::~ImageEffectNode()
 {}
 
-void ImageEffectNode::connect( const INode& sourceEffect, attribute::Attribute& attr )
-{
-	const attribute::ClipImage& outputClip = dynamic_cast<const attribute::ClipImage&>( sourceEffect.getClip( kOfxImageEffectOutputClipName ) );
-	attribute::ClipImage& inputClip        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
-
-	inputClip.setConnectedClip( outputClip );
-}
-
 bool ImageEffectNode::operator==( const INode& other ) const
 {
 	const ImageEffectNode* other_ptr = dynamic_cast<const ImageEffectNode*>( &other );
@@ -84,6 +76,44 @@ bool ImageEffectNode::operator==( const INode& other ) const
 bool ImageEffectNode::operator==( const ImageEffectNode& other ) const
 {
 	return ofx::imageEffect::OfxhImageEffectNode::operator==( other );
+}
+
+void ImageEffectNode::connect( const INode& sourceEffect, attribute::Attribute& attr )
+{
+	const attribute::ClipImage& outputClip = dynamic_cast<const attribute::ClipImage&>( sourceEffect.getClip( kOfxImageEffectOutputClipName ) );
+	attribute::ClipImage& inputClip        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
+
+	inputClip.setConnectedClip( outputClip );
+}
+
+attribute::Attribute& ImageEffectNode::getSingleInputAttribute()
+{
+	ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
+	ofx::attribute::OfxhClipImageSet::ClipImageMap& clipsMap = getClipsByName();
+	ofx::attribute::OfxhAttribute* inAttr                    = NULL;
+
+	if( clips.size() == 1 )
+	{
+		inAttr = &clips[0];
+	}
+	else if( clips.size() > 1 )
+	{
+		const ofx::attribute::OfxhClipImageSet::ClipImageMap::iterator it( clipsMap.find( kOfxSimpleSourceAttributeName ) );
+		if( it != clipsMap.end() )
+		{
+			inAttr = it->second;
+		}
+		else
+		{
+			inAttr = &clips[0];
+		}
+	}
+	else // if( inClips.empty() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user( "No source clip." ) );
+	}
+	return dynamic_cast<attribute::ClipImage&>( *inAttr );
 }
 
 // get a new clip instance

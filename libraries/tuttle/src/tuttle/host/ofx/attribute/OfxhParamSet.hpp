@@ -42,7 +42,6 @@ public:
 
 	explicit OfxhParamSet( const OfxhParamSet& other );
 
-	/// dtor.
 	virtual ~OfxhParamSet() = 0;
 
 	void operator=( const OfxhParamSet& other );
