@@ -75,6 +75,7 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	font->setLabel( "Font name" );
 	font->setStringType(OFX::eStringTypeSingleLine);
 	font->setDefault("Arial");
+	font->setHint("Font among quotes with the correct syntax: font=\"Times New Roman\"\n");
 
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );
@@ -128,12 +129,10 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* italic = desc.defineBooleanParam( kParamItalic );
 	italic->setLabel( "Italic" );
 	italic->setDefault( false );
-	italic->setHint( "If the font in italic doesn't exist and doesn't named like MyFont_Italic.ttf, nothing displayed." );
 
 	OFX::BooleanParamDescriptor* bold = desc.defineBooleanParam( kParamBold );
 	bold->setLabel( "Bold" );
 	bold->setDefault( false );
-	bold->setHint( "If the font in bold doesn't exist and doesn't named like MyFont_Bold.ttf, nothing displayed." );
 }
 
 /**
