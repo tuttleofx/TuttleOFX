@@ -2,7 +2,6 @@
 #define _TUTTLE_PLUGIN_FFMPEG_VIDEOFFMPEGWRITER_HPP_
 
 #include "FFmpeg.hpp"
-#include "FFmpegPreset.hpp"
 #include "VideoFFmpegReader.hpp"
 
 #include <tuttle/plugin/global.hpp>
@@ -35,6 +34,7 @@ public:
 		return true;
 	}
 
+	int start( );
 	int  execute( boost::uint8_t* const in_buffer, const int in_width, const int height, const PixelFormat in_fmt = PIX_FMT_RGB24 );
 	void finish();
 
@@ -93,6 +93,16 @@ public:
 		return _fps;
 	}
 
+	void setPixelFormat( const PixelFormat pxlFmt )
+	{
+		_out_pixelFormat = pxlFmt;
+	}
+
+	PixelFormat getPixelFormat() const
+	{
+		return _out_pixelFormat;
+	}
+	
 	const std::string& getFormat() const
 	{
 		return _formatName;
@@ -108,11 +118,6 @@ public:
 		return _formatsLongNames;
 	}
 
-	void setBitRate( const int bitRate )
-	{
-		_bitRate = bitRate;
-	}
-
 	void setFormat( const unsigned int id )
 	{
 		_formatName = _formatsShortNames[id];
@@ -123,66 +128,117 @@ public:
 		_formatName = format;
 	}
 
-	const std::string& getCodec() const
+	const std::string& getVideoCodec() const
 	{
-		return _codecName;
-	}
-
-	const std::vector<std::string>& getCodecsShort() const
-	{
-		return _codecsShortNames;
-	}
-
-	const std::vector<std::string>& getCodecsLong() const
-	{
-		return _codecsLongNames;
-	}
-
-	void setCodec( const unsigned int id )
-	{
-		_codecName = _codecsShortNames[id];
-	}
-
-	void setCodec( const std::string& codec )
-	{
-		_codecName = codec;
+		return _videoCodecName;
 	}
 	
-	void setVideoPreset( const int id );
-	
-	void setVideoPreset( const std::string& preset )
+	const std::vector<std::string>& getVideoCodecsShort() const
 	{
-		_videoPresetName = preset;
+		return _videoCodecsShortNames;
 	}
 
+	const std::vector<std::string>& getVideoCodecsLong() const
+	{
+		return _videoCodecsLongNames;
+	}
+	
+	const std::string& getAudioCodec() const
+	{
+		return _audioCodecName;
+	}
+
+	const std::vector<std::string>& getAudioCodecsShort() const
+	{
+		return _audioCodecsShortNames;
+	}
+
+	const std::vector<std::string>& getAudioCodecsLong() const
+	{
+		return _audioCodecsLongNames;
+	}
+	
+	const std::vector<AVPrivOption>& getFormatPrivOpts() const
+	{
+		return _formatPrivOpts;
+	}
+
+	const std::vector<AVPrivOption>& getVideoCodecPrivOpts() const
+	{
+		return _videoCodecPrivOpts;
+	}
+	
+	const std::vector<AVPrivOption>& getAudioCodecPrivOpts() const
+	{
+		return _audioCodecPrivOpts;
+	}
+	
+	void setVideoCodec( const unsigned int id )
+	{
+		_videoCodecName = _videoCodecsShortNames[id];
+	}
+
+	void setVideoCodec( const std::string& codec )
+	{
+		_videoCodecName = codec;
+	}
+	
+	void setAudioCodec( const unsigned int id )
+	{
+		_audioCodecName = _audioCodecsShortNames[id];
+	}
+
+	void setAudioCodec( const std::string& codec )
+	{
+		_audioCodecName = codec;
+	}
+	
 	void configureFromRead( const VideoFFmpegReader& reader )
 	{
 		setWidth       ( reader.width() );
 		setHeight      ( reader.height() );
 		setAspectRatio ( reader.aspectRatio() );
 		setFps         ( reader.fps() );
-		setBitRate  ( reader.bitRate() );
-		setFormat   ( reader.formatName() );
-		setCodec    ( reader.codecName() );
+		setFormat      ( reader.formatName() );
+		setVideoCodec  ( reader.codecName() );
+		//setAudioCodec  ( reader.codecName() );
 	}
 
-	FFmpegPreset& getPresets() { return _preset; }
-	const FFmpegPreset& getPresets() const { return _preset; }
-
+	void optionSet( const EAVParamType& type, const AVOption &opt, bool &value );
+	void optionSet( const EAVParamType& type, const AVOption& opt, bool& value, std::string& valueToSetFlag );
+	void optionSet( const EAVParamType& type, const AVOption &opt, int &value );
+	void optionSet( const EAVParamType& type, const AVOption &opt, double &value );
+	void optionSet( const EAVParamType& type, const AVOption &opt, int &valueNum, int& valueDen );
+	void optionSet( const EAVParamType& type, const AVOption &opt, std::string &value );
+	void optionSetImageSize( const EAVParamType& type, const AVOption &opt, int &width, int& height );
+	
+	
 private:
-	AVFormatContext*               _avformatOptions;
+	AVFormatContext*               _avFormatOptions;
+	AVCodecContext*                _avVideoOptions;
+	AVCodecContext*                _avAudioOptions;
 	struct SwsContext*             _sws_context; ///< swscale: transformation context
 	AVStream*                      _stream;
-	AVCodec*                       _codec;
+	AVCodec*                       _videoCodec;
+	AVCodec*                       _audioCodec;
 	AVOutputFormat*                _ofmt;
+	
+	std::vector<AVPrivOption>      _formatPrivOpts;
+	std::vector<AVPrivOption>      _videoCodecPrivOpts;
+	std::vector<AVPrivOption>      _audioCodecPrivOpts;
+	
 	std::vector<std::string>       _formatsLongNames;
 	std::vector<std::string>       _formatsShortNames;
-	std::vector<std::string>       _codecsLongNames;
-	std::vector<std::string>       _codecsShortNames;
-
-	FFmpegPreset                   _preset;
 	
-	EWriterStatus                    _statusCode;
+	std::vector<std::string>       _videoCodecsLongNames;
+	std::vector<std::string>       _videoCodecsShortNames;
+
+	std::vector<std::string>       _audioCodecsLongNames;
+	std::vector<std::string>       _audioCodecsShortNames;
+	
+	EWriterStatus                  _statusCode;
+	int                            _hasFrame;
+	
 	std::string                    _filename;
 	int                            _width;
 	int                            _height;
@@ -191,13 +247,8 @@ private:
 	
 	double                          _fps;
 	std::string                    _formatName;
-	std::string                    _codecName;
-	std::string                    _videoPresetName;
-	int                            _bitRate;
-	int                            _bitRateTolerance;
-	int                            _gopSize;
-	int                            _bFrames;
-	int                            _mbDecision;
+	std::string                    _videoCodecName;
+	std::string                    _audioCodecName;
 };
 
 }

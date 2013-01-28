@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_FFMPEG_WRITER_PLUGIN_HPP_
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
+#include <ffmpeg/LibAVPresetDefinitions.hpp>
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
@@ -19,10 +20,13 @@ struct FFMpegProcessParams
 {
 	std::string _filepath;    ///< FFmpeg filepath
 	int         _format;      ///< Format
-	int         _codec;       ///< Codec
-	int         _bitrate;     ///< Bit rate
+	int         _videoCodec;  ///< Video codec
+	int         _audioCodec;  ///< Audio codec
 	
 	int         _videoPreset; ///< video configuration (based on the video codec)
+	int         _audioPreset; ///< video configuration (based on the video codec)
+	
+	PixelFormat _videoPixelFormat; /// videoPixelFormat
 };
 
 /**
@@ -36,6 +40,9 @@ public:
 public:
 	FFMpegProcessParams getProcessParams();
 
+	void disableAVOptionsForCodecOrFormat( const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
+	void updatePixelFormat( const std::string& videoCodecName );
+
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
@@ -44,15 +51,26 @@ public:
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
+private:
+	void setParameters( const EAVParamType& type, void* av_class, int req_flags, int rej_flags );
+	void setParameters( const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
+	void setParameters( const PresetParameters& parameters );
+	
 public:
 	OFX::ChoiceParam*   _paramFormat;
-	OFX::ChoiceParam*   _paramCodec;
-	OFX::IntParam*      _paramBitRate;
+	OFX::ChoiceParam*   _paramVideoCodec;
+	OFX::ChoiceParam*   _paramAudioCodec;
 	
-	std::vector<OFX::ChoiceParam*> _videoCodecPresetParams;
-	std::vector<std::string>       _codecListWithPreset;
+	OFX::ChoiceParam*   _paramMainPreset;
+	OFX::ChoiceParam*   _paramFormatPreset;
+	OFX::ChoiceParam*   _paramVideoCodecPreset;
+	OFX::ChoiceParam*   _paramAudioCodecPreset;
+	
+	OFX::IntParam*      _paramBitRate;
+	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
 	VideoFFmpegWriter   _writer;
+	bool                _initWriter;
 };
 
 }
