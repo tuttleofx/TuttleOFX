@@ -15,6 +15,8 @@
 #include <string>
 #include <iostream>
 
+#include <fontconfig/fontconfig.h>
+
 namespace tuttle {
 namespace plugin {
 namespace text {
@@ -36,12 +38,6 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 
 	_params = _plugin.getProcessParams( args.renderScale );
-
-	if( !boost::filesystem::exists( _params._font ) )
-	{
-		return;
-	}
-
 	
 	if( ! _params._isExpression )
 	{
@@ -121,24 +117,31 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 
 	FT_Face face;
 
-//
-	if(_params._bold)
-		_params._font.replace(_params._font.find("."), 1, "_Bold.");	
- 	if(_params._italic)
-		_params._font.replace(_params._font.find("."), 1, "_Italic.");		
-	
-	FILE * myF = fopen(_params._font.c_str(), "r");
+  FcInit();
 
-	if (myF == NULL)
-	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist(_params._font)
-				       << exception::user("Text: FontFile not found")
-				       << exception::filename(_params._font) 
-				       );
-	}
-	else
-		fclose(myF);
-//
+  FcChar8 *file;
+  FcResult result;	
+  
+  int weight = (_params._bold == 1) ? FC_WEIGHT_BOLD : FC_WEIGHT_MEDIUM;
+  int slant = (_params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;  
+  
+  FcPattern *p  = FcPatternBuild(NULL, 
+                                 FC_FAMILY, FcTypeString, _params._font.c_str(),
+                                 FC_WEIGHT, FcTypeInteger, weight, 
+                                 FC_SLANT, FcTypeInteger, slant, 
+                                 NULL);
+  
+  FcPatternGetString(FcFontMatch(0, p, &result), FC_FAMILY, 0, &file);
+
+  if((char*)file != _params._font){
+    	BOOST_THROW_EXCEPTION(exception::FileNotExist(_params._font)
+			      << exception::user("Text: FontFile not found")
+		              << exception::filename(_params._font));
+  }
+
+ FcPatternGetString(FcFontMatch(0, p, &result), FC_FILE, 0, &file);
+ _params._font = (char*) file;
+  
 
 	FT_New_Face( library, _params._font.c_str(), 0, &face );
 

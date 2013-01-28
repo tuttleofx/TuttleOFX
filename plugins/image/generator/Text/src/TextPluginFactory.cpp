@@ -72,10 +72,9 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	isExpression->setDefault( false );
 
 	OFX::StringParamDescriptor* font = desc.defineStringParam( kParamFont );
-	font->setLabel( "Font file" );
-	font->setStringType( OFX::eStringTypeFilePath );
-	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/Arial.ttf" );
-	font->setHint( "Be careful do not used link ( not times.ttf, but Times_New_Roman.ttf )");
+	font->setLabel( "Font name" );
+	font->setStringType(OFX::eStringTypeSingleLine);
+	font->setDefault("Arial");
 
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );
