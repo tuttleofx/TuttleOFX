@@ -4,6 +4,9 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
+#include <fontconfig/fontconfig.h>
+#include <iostream>
+
 #include <limits>
 
 namespace tuttle {
@@ -76,6 +79,26 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	font->setStringType(OFX::eStringTypeSingleLine);
 	font->setDefault("Arial");
 	font->setHint("Font among quotes with the correct syntax: font=\"Times New Roman\"\n");
+
+
+ OFX::ChoiceParamDescriptor* fontFamily = desc.defineChoiceParam("fontFamily");
+    fontFamily->setLabel("family of fonts");
+
+    FcInit ();
+
+    FcConfig *config = FcInitLoadConfigAndFonts();
+    FcChar8 *s;
+    FcPattern   *p  = FcPatternCreate();
+    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, NULL);
+    FcFontSet   *fs = FcFontList(config, p, os);
+
+    for (int i=0; fs && i < fs->nfont; i++)
+    {
+        FcPattern *font = fs->fonts[i];
+        s = FcNameUnparse(font);
+	fontFamily->appendOption((char*)s);
+    }
+
 
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );
