@@ -245,3 +245,48 @@ def testRGBAParam():
 	assert_equals( .5, c.getDoubleValueAtTimeAndIndex( 0., 1) )
 	assert_equals( .1, c.getDoubleValueAtTimeAndIndex(12., 2) )
 
+
+def testCopyDouble2DParam():
+	g = tuttle.Graph()
+	node = g.createNode( "tuttle.blur", size=[12.34,0.5] )
+	nodeCopy = g.createNode( "tuttle.blur", size=[12.34,0.5] )
+
+	# set Double2D param values
+	s = node.getParam("size")
+	sCopy = node.getParam("size")
+
+	assert_equal( 12.34, s.getDoubleValueAtIndex(0) )
+	assert_equal(   0.5, s.getDoubleValueAtIndex(1) )
+
+	# Simple set value
+	s.setValue( [1.5, 25.0] )
+	nodeCopy.getParamSet().copyParamsValues(node.getParamSet())
+	assert_equal( 1.5, sCopy.getDoubleValueAtIndex(0) )
+	assert_equal( 25., sCopy.getDoubleValueAtIndex(1) )
+	# check return the same value at all times
+	assert_equal( 1.5, sCopy.getDoubleValueAtTimeAndIndex(1., 0) )
+	assert_equal( 25., sCopy.getDoubleValueAtTimeAndIndex(1., 1) )
+
+	# Set at time
+	s.setValue( {1.0:[10.5, 40.], 9.0:0.} )
+	nodeCopy.getParamSet().copyParamsValues(node.getParamSet())
+	assert_equal( 10.5, sCopy.getDoubleValueAtTimeAndIndex(1., 0) )
+	assert_equal( 40., sCopy.getDoubleValueAtTimeAndIndex(1., 1) )
+	assert_equal( 0., sCopy.getDoubleValueAtTimeAndIndex(9., 0) )
+	assert_equal( 0., sCopy.getDoubleValueAtTimeAndIndex(9., 1) )
+
+	# Set integers to double (auto conversion)
+	s.setValue( [1, 25] )
+	nodeCopy.getParamSet().copyParamsValues(node.getParamSet())
+	assert_equal(  1., sCopy.getDoubleValueAtIndex(0) )
+	assert_equal( 25., sCopy.getDoubleValueAtIndex(1) )
+	# check return the same value at all times
+	assert_equal(  1., sCopy.getDoubleValueAtTimeAndIndex(1., 0) )
+	assert_equal( 25., sCopy.getDoubleValueAtTimeAndIndex(1., 1) )
+	
+	# mix double and integers
+	s.setValue( [1.345, 25] )
+	nodeCopy.getParamSet().copyParamsValues(node.getParamSet())
+	assert_equal(  1.345, sCopy.getDoubleValueAtIndex(0) )
+	assert_equal( 25., sCopy.getDoubleValueAtIndex(1) )
+

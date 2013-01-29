@@ -133,6 +133,16 @@ public:
 		_vertexDescriptorMap.clear();
 	}
 
+	std::size_t getNbEdges() const
+	{
+		return boost::num_edges(_graph);
+	}
+
+	std::size_t getNbVertices() const
+	{
+		return boost::num_vertices(_graph);
+	}
+	
 	vertex_descriptor addVertex( const Vertex& prop )
 	{
 		vertex_descriptor vd = boost::add_vertex( prop, _graph );
@@ -179,6 +189,17 @@ public:
 		}
 	}
 
+	void unconnect( const VertexKey& out, const VertexKey& in, const std::string& inAttr )
+	{
+		const edge_descriptor e = getEdge( getVertexDescriptor(out), getVertexDescriptor(in) );
+		removeEdge( e );
+	}
+
+	edge_descriptor getEdge( const vertex_descriptor& v1, const vertex_descriptor& v2 )
+	{
+		return boost::edge(v1, v2, _graph).first;
+	}
+	
 	edge_descriptor addEdge( const vertex_descriptor& v1, const vertex_descriptor& v2, const Edge& prop )
 	{
 		//TUTTLE_TCOUT_VAR2( v1, instance(v1) );

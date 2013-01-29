@@ -141,6 +141,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 				param->setParent( group );
 				break;
 			}
+			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
@@ -364,6 +365,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 				param->setParent( group );
 				break;
 			}
+			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
