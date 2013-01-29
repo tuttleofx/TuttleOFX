@@ -12,11 +12,13 @@ namespace colorWheel {
 ColorWheelPlugin::ColorWheelPlugin( OfxImageEffectHandle handle )
 : GeneratorPlugin( handle )
 {
+    _mode = fetchChoiceParam( kColorWheelMode );
 }
 
 ColorWheelProcessParams ColorWheelPlugin::getProcessParams( ) const
 {
 	ColorWheelProcessParams params;
+    params.mode = static_cast<EColorWheelMode>( _mode->getValue() );
 	return params;
 }
 

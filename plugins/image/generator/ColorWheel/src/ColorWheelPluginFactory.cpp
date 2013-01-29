@@ -52,6 +52,14 @@ void ColorWheelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
                                                   OFX::EContext context )
 {
 	describeGeneratorParamsInContext( desc, context );
+
+    OFX::ChoiceParamDescriptor* mode = desc.defineChoiceParam( kColorWheelMode );
+    mode->setLabel( "Type" );
+    mode->setHint( "Select mode for the color wheel." );
+    mode->appendOption( kColorWheelModeWhite );
+    mode->appendOption( kColorWheelModeBlack );
+    mode->appendOption( kColorWheelModeRainbow );
+    mode->setDefault( 0 );
 }
 
 /**

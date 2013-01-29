@@ -12,7 +12,7 @@ namespace colorWheel {
 
 struct ColorWheelProcessParams
 {
-	
+    EColorWheelMode mode;
 };
 
 /**
@@ -28,6 +28,9 @@ public:
 
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	void render( const OFX::RenderArguments &args );
+
+public:
+    OFX::ChoiceParam* _mode;
 };
 
 }

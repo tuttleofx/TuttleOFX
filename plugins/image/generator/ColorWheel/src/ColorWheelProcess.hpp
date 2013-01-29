@@ -5,6 +5,7 @@
 
 #include <terry/globals.hpp>
 #include <terry/generator/colorwheel.hpp>
+#include <terry/generator/rainbow.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -26,13 +27,21 @@ class ColorWheelProcess : public ImageGilProcessor<View>
 public:
 	typedef typename View::value_type Pixel;
 	typedef terry::generator::ColorWheelFunctor<Pixel> ColorWheelFunctorT;
-	typedef typename ColorWheelFunctorT::point_t Point;
-	typedef boost::gil::virtual_2d_locator<ColorWheelFunctorT, false> Locator;
-	typedef boost::gil::image_view<Locator> ColorWheelVirtualView;
+    typedef typename ColorWheelFunctorT::point_t ColorWheelPoint;
+    typedef boost::gil::virtual_2d_locator<ColorWheelFunctorT, false> ColorWheelLocator;
+    typedef boost::gil::image_view<ColorWheelLocator> ColorWheelVirtualView;
 	
+    typedef terry::generator::RainbowFunctor<Pixel> RainbowFunctorT;
+    typedef typename RainbowFunctorT::point_t RainbowPoint;
+    typedef boost::gil::virtual_2d_locator<RainbowFunctorT, false> RainbowLocator;
+    typedef boost::gil::image_view<RainbowLocator> RainbowVirtualView;
+
 protected:
 	ColorWheelPlugin&     _plugin;   ///< Rendering plugin
-	ColorWheelVirtualView _srcView;  ///< Source view
+    ColorWheelVirtualView _srcColorWheelView;  ///< Source view
+    RainbowVirtualView    _srcRainbowView;  ///< Source view
+
+    ColorWheelProcessParams _params;
 
 public:
 	ColorWheelProcess( ColorWheelPlugin& effect );
