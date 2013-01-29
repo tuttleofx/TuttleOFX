@@ -133,6 +133,13 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			{
 				TUTTLE_COUT( "add pixel fmt " << opt->name );
 			}
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT( 52, 3, 100 )
+                        case AV_OPT_TYPE_SAMPLE_FMT:
+                        {
+                                TUTTLE_COUT( "unsupported sample format parameter" );
+                                break;
+                        }
+#endif
 			case AV_OPT_TYPE_BINARY:
 			{
 				OFX::StringParamDescriptor* param = desc.defineStringParam( opt->name );
@@ -141,7 +148,6 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 				param->setParent( group );
 				break;
 			}
-			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
@@ -347,6 +353,13 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			{
 				TUTTLE_COUT( "add pixel fmt " << opt.class_name << " * " << opt.o.name );
 			}
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT( 52, 3, 100 )
+                        case AV_OPT_TYPE_SAMPLE_FMT:
+                        {
+                                TUTTLE_COUT( "unsupported sample format parameter" );
+                                break;
+                        }
+#endif
 			case AV_OPT_TYPE_IMAGE_SIZE:
 			{
 				OFX::Int2DParamDescriptor* param = desc.defineInt2DParam( name );
@@ -365,7 +378,6 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 				param->setParent( group );
 				break;
 			}
-			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;

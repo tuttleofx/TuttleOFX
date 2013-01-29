@@ -89,9 +89,16 @@ void FFMpegWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVP
 			}
 			case AV_OPT_TYPE_PIXEL_FMT:
 			{
-				TUTTLE_COUT( "unsupported pixel fmt parameter" );
+				TUTTLE_COUT( "unsupported pixel format parameter" );
 				break;
 			}
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT( 52, 3, 100 )
+			case AV_OPT_TYPE_SAMPLE_FMT:
+			{
+                                TUTTLE_COUT( "unsupported sample format parameter" );
+                                break;
+                        }
+#endif
 			case AV_OPT_TYPE_IMAGE_SIZE:
 			{
 				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
@@ -104,7 +111,6 @@ void FFMpegWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVP
 				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
-			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
@@ -289,6 +295,13 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, void* av_class
 			{
 				TUTTLE_COUT( "add pixel fmt " << opt->name );
 			}
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT( 52, 3, 100 )
+                        case AV_OPT_TYPE_SAMPLE_FMT:
+                        {
+                                TUTTLE_COUT( "unsupported sample format parameter" );
+                                break;
+                        }
+#endif
 			case AV_OPT_TYPE_BINARY:
 			{
 				OFX::StringParam* curOpt = fetchStringParam( opt->name );
@@ -296,7 +309,6 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, void* av_class
 				_writer.optionSet( type, *opt, v );
 				break;
 			}
-			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
@@ -427,6 +439,13 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vec
 				TUTTLE_COUT( "unsupported pixel fmt parameter" );
 				break;
 			}
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT( 52, 3, 100 )
+                        case AV_OPT_TYPE_SAMPLE_FMT:
+                        {
+                                TUTTLE_COUT( "unsupported sample format parameter" );
+                                break;
+                        }
+#endif
 			case AV_OPT_TYPE_IMAGE_SIZE:
 			{
 				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
@@ -442,7 +461,6 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vec
 				_writer.optionSet( type, opt.o, v );
 				break;
 			}
-			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
