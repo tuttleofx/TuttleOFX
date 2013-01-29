@@ -44,7 +44,7 @@ ETuttlePluginBitDepth OpenImageIOWriterProcess<View>::getDefaultBitDepth(const s
 					 format.find("bmp") != std::string::npos || format.find("dds") != std::string::npos  || 
 					 format.find("ico") != std::string::npos || format.find("jfi") != std::string::npos  ||
 					 format.find("pgm") != std::string::npos || format.find("pnm") != std::string::npos  ||
-					 format.find("ppm") != std::string::npos || format.find("pnm") != std::string::npos  ||
+					 format.find("ppm") != std::string::npos || format.find("pbm") != std::string::npos  ||
 					 format.find("pic") != std::string::npos
 					 ) {				
 				return eTuttlePluginBitDepth8;
