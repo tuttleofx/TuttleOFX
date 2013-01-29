@@ -1,6 +1,6 @@
 #include "FFmpeg.hpp"
-
 #include <iostream>
+#include <cstdio>
 
 namespace tuttle {
 namespace plugin {
@@ -8,10 +8,34 @@ namespace ffmpeg {
 
 bool FFmpeg::_hasBeenInit = globalInit( );
 
+const std::string FFmpeg::ffmpegLogLevel_toString( int logLevel )
+{
+	switch( logLevel )
+	{
+		case AV_LOG_PANIC :
+			return "panic";
+		case AV_LOG_FATAL :
+			return "fatal";
+		case AV_LOG_ERROR :
+			return "error";
+		case AV_LOG_WARNING :
+			return "warning";
+		case AV_LOG_INFO :
+			return "info";
+		case AV_LOG_VERBOSE :
+			return "verbose";
+		case AV_LOG_DEBUG :
+			return "debug";
+		default:
+			return "unknown log level";
+	}
+}
+
 void log_callback( void* /*ptr*/, int level, const char* format, va_list arglist )
 {
-	//	AVClass* p = (AVClass*)ptr;
-	std::cerr << "FFmpegWriter: (" << level << ")";
+	std::string logID = FFmpeg::ffmpegLogLevel_toString( level );
+
+	std::cerr << "FFmpeg " << logID << ":\t";
 	vfprintf( stderr, format, arglist );
 	std::cerr << std::endl;
 }
@@ -91,6 +115,56 @@ const std::string FFmpeg::codecType_toString( const AVMediaType codec_type )
 	return "CODEC_TYPE not handle.";
 }
 
+std::vector<AVPrivOption> FFmpeg::getAVOptions( const AVClass* av_class )
+{
+	std::vector<AVPrivOption> list;
+	
+	const AVOption *opt= av_class->option;
+
+	while( opt )
+	{
+		if( opt->help )
+			std::cout << opt->name << ": " << opt->help <<  std::endl;
+		else
+			std::cout << opt->name << std::endl;
+
+		opt = av_opt_next( (void*)av_class, opt );
+	}
+
+	/*
+	AV_OPT_TYPE_FLAGS,
+	AV_OPT_TYPE_INT,
+	AV_OPT_TYPE_INT64,
+	AV_OPT_TYPE_DOUBLE,
+	AV_OPT_TYPE_FLOAT,
+	AV_OPT_TYPE_STRING,
+	AV_OPT_TYPE_RATIONAL,
+	AV_OPT_TYPE_BINARY,  ///< offset must point to a pointer immediately followed by an int for the length
+	AV_OPT_TYPE_CONST = 128,
+	AV_OPT_TYPE_IMAGE_SIZE = MKBETAG('S','I','Z','E'), ///< offset must point to two consecutive integers
+	*/
+	
+	return list;
+}
+
+void FFmpeg::getPixelsFormatList( )
+{
+	for( int pix_fmt = 0; pix_fmt < PIX_FMT_NB; pix_fmt++ )
+	{
+		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
+		if(!pix_desc->name)
+			continue;
+		/*printf("%c%c%c%c%c %-16s       %d            %2d\n",
+			   sws_isSupportedInput (pix_fmt)      ? 'I' : '.',
+			   sws_isSupportedOutput(pix_fmt)      ? 'O' : '.',
+			   pix_desc->flags & PIX_FMT_HWACCEL   ? 'H' : '.',
+			   pix_desc->flags & PIX_FMT_PAL       ? 'P' : '.',
+			   pix_desc->flags & PIX_FMT_BITSTREAM ? 'B' : '.',
+			   pix_desc->name,
+			   pix_desc->nb_components,
+			   av_get_bits_per_pixel(pix_desc));*/
+	}
+}
 }
 }
 }

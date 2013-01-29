@@ -14,11 +14,27 @@ enum ETuttlePluginBitDepth
 	eTuttlePluginBitDepth8 = 0
 };
 
-static const std::string kParamFormat                    = "format";
-static const std::string kParamCodec                     = "codec";
-static const std::string kParamBitrate                   = "bitrate";
 
-static const std::string kParamPresetPostfix             = "_preset";
+static const std::string kParamFormat                    = "format";
+static const std::string kParamVideoCodec                = "videoCodec";
+static const std::string kParamAudioCodec                = "audioCodec";
+
+static const std::string kParamFormatGroup               = "formatGroup";
+static const std::string kParamFormatDetailledGroup      = "formatDetailledGroup";
+static const std::string kParamVideoGroup                = "videoGroup";
+static const std::string kParamVideoDetailledGroup       = "videoDetailledGroup";
+static const std::string kParamAudioGroup                = "audioGroup";
+static const std::string kParamAudioDetailledGroup       = "audioDetailledGroup";
+static const std::string kParamMetaGroup                 = "metaGroup";
+static const std::string kParamMetaDetailledGroup        = "metaDetailledGroup";
+
+static const std::string kParamMainPreset                = "mainPreset";
+
+static const std::string kParamFormatPreset              = "formatPreset";
+static const std::string kParamVideoPreset               = "videoPreset";
+static const std::string kParamAudioPreset               = "audioPreset";
+
+static const std::string kParamVideoCodecPixelFmt        = "videoPixelFormat";
 
 }
 }
