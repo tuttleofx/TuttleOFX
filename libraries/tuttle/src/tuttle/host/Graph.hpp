@@ -143,6 +143,8 @@ public:
 	 */
 	void init();
 	
+	void setup();
+	
 	/**
 	 * @brief Shortcut
 	 */

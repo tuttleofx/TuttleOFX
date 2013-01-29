@@ -1,4 +1,4 @@
-# scons: LensDistort
+# scons: LensDistort FFMpeg
 
 from pyTuttle import tuttle
 import os
@@ -139,4 +139,22 @@ def testParamInfos():
 		print "clip getNbComponents:", clip.getNbComponents()
 		print "clip getFrameRate:", clip.getFrameRate()
 		print "clip getFrameRange:", clip.getFrameRange()
+
+
+def testNodeComputeInfos():
+	graph = tuttle.Graph()
+	
+	node = graph.createNode( "tuttle.ffmpegreader", filename="TuttleOFX-data/video/bars_100.avi" )
+	node = node.asImageEffectNode()
+
+	graph.setup()
+	td = node.getTimeDomain()
+	print "node timeDomain: ", td.min, td.max
+	framerate = node.getFrameRate()
+	print "framerate: ", framerate
+	
+	assert td.min == 0.0
+	assert td.max == 101.0
+	
+	assert framerate == 25.0
 

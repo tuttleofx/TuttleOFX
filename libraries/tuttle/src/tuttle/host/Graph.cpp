@@ -299,6 +299,15 @@ std::size_t Graph::getNbOutputConnections( const Node& node ) const
 	return _graph.getOutDegree( _graph.getVertexDescriptor( node.getName() ) );
 }
 
+void Graph::setup()
+{
+	memory::MemoryCache memoryCache;
+	const ComputeOptions options;
+	const std::list<std::string> outputNodes;
+	graph::ProcessGraph procGraph( memoryCache, options, *this, outputNodes );
+	return procGraph.setup();
+}
+
 bool Graph::compute( const ComputeOptions& options )
 {
 	return compute( NodeListArg(), options );
