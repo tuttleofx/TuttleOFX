@@ -128,6 +128,8 @@ public:
 	void connect( const std::list<Node*>& nodes );
 	void connect( const std::vector<Node*>& nodes );
 	void connect( const Node& outNode, const Attribute& inAttr );
+	void connect( const Attribute& outAttr, const Attribute& inAttr );
+	void unconnect( const Attribute& outAttr, const Attribute& inAttr );
 	
 	void unconnect( const Node& node );
 	

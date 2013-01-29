@@ -216,6 +216,16 @@ void Graph::connect( const Node& outNode, const Attribute& inAttr )
 	_graph.connect( outNode.getName(), inAttr.getNode().getName(), inAttr.getName() );
 }
 
+void Graph::connect( const Attribute& outAttr, const Attribute& inAttr )
+{
+	_graph.connect( outAttr.getNode().getName(), inAttr.getNode().getName(), inAttr.getName() );
+}
+
+void Graph::unconnect( const Attribute& outAttr, const Attribute& inAttr )
+{
+	_graph.unconnect( outAttr.getNode().getName(), inAttr.getNode().getName(), inAttr.getName() );
+}
+
 namespace {
 template<class TGraph>
 inline void graphConnectClips( TGraph& graph )
