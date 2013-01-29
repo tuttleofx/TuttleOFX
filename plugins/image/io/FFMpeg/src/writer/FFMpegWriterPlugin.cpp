@@ -104,6 +104,7 @@ void FFMpegWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVP
 				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
 				break;
 			}
+			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
@@ -295,6 +296,7 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, void* av_class
 				_writer.optionSet( type, *opt, v );
 				break;
 			}
+			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
@@ -440,6 +442,7 @@ void FFMpegWriterPlugin::setParameters( const EAVParamType& type, const std::vec
 				_writer.optionSet( type, opt.o, v );
 				break;
 			}
+			case AV_OPT_TYPE_SAMPLE_FMT:
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
