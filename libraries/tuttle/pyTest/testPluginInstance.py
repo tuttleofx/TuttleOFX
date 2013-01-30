@@ -158,3 +158,14 @@ def testNodeComputeInfos():
 	
 	assert framerate == 25.0
 
+
+def testPushButton():
+	graph = tuttle.Graph()
+	
+	node = graph.createNode( "tuttle.ffmpegwriter", filename=".tests/plop.avi" )
+	node = node.asImageEffectNode()
+
+	render = node.getParam("render")
+	# the user click on the PushButton
+	render.paramChanged(tuttle.eChangeUserEdited)
+
