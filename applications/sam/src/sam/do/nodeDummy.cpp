@@ -345,7 +345,7 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 		TUTTLE_COUT( "" );
 		exit( 0 );
 	}
-	
+
 	if( nodeArgs.size() == 0 )
 	{
 		if( isDummyWriterNode( dummyNodeName ) )
@@ -365,10 +365,15 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 		paths = node_vm[kParamValuesOptionLongName].as< std::vector< std::string> > ();
 		BOOST_FOREACH( const std::string& basePath, paths )
 		{
+			//TUTTLE_COUT_VAR( basePath );
 			boost::filesystem::path p( basePath );
 			std::string inputExtension = p.extension().string();
 			boost::algorithm::to_lower( inputExtension );
-			if( inputExtension.size() == 0 )
+			if( inputExtension.size() )
+			{
+				break;
+			}
+			else
 			{
 				needRecursiveProcess = true;
 			}
@@ -378,12 +383,14 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 	{
 		paths.push_back( "./" );
 	}
-	
-	if( needRecursiveProcess)
+
+	if( needRecursiveProcess )
 	{
+		TUTTLE_COUT("recursive");
 		inputNode = "tuttle.dummy";
 		return;
 	}
+	
 	boost::filesystem::path p( paths.at(0) );
 	std::string inputExtension = p.extension().string();
 	inputExtension = inputExtension.substr( 1 ); // remove '.' at begining
