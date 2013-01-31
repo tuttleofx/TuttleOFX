@@ -443,9 +443,6 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 				}
 				break;
 			}
-			default:
-				BOOST_THROW_EXCEPTION( exception::Unsupported()
-					    << exception::user( "OIIO Writer: Unsupported bitdepth..." ) );
 		}
 	}
 	catch( exception::Common& e )
