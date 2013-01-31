@@ -250,7 +250,6 @@ int main( int argc, char** argv )
 		bool forceIdentityNodesProcess = false;
 		bool enableColor = false;
 		bool enableVerbose = false;
-		bool enableQuiet = false;
 		bool script = false;
 		std::vector<std::string> cl_options;
 		std::vector<std::vector<std::string> > cl_commands;
@@ -350,7 +349,7 @@ int main( int argc, char** argv )
 				}
 				if( samdo_vm.count( kQuietOptionLongName ) )
 				{
-					enableQuiet = true;
+					enableVerbose = false;
 				}
 				if( enableColor )
 				{

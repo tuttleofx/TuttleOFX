@@ -564,7 +564,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	std::vector<std::string> idList;
 	std::vector<std::string> idLabelList;
 	LibAVPreset::getPresetList( idList, idLabelList );
-	for( int it = 0; it < idList.size(); ++it )
+	for( unsigned int it = 0; it < idList.size(); ++it )
 	{
 		mainPreset->appendOption( idList.at( it ), idLabelList.at( it ) );
 	}
@@ -593,7 +593,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	std::vector<std::string> idFormatList;
 	std::vector<std::string> idFormatLabelList;
 	LibAVFormatPreset::getPresetList( idFormatList, idFormatLabelList );
-	for( int it = 0; it < idFormatList.size(); ++it )
+	for( unsigned int it = 0; it < idFormatList.size(); ++it )
 	{
 		formatPreset->appendOption( idFormatList.at( it ), idFormatLabelList.at( it ) );
 	}
@@ -639,7 +639,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	std::vector<std::string> idVideoList;
 	std::vector<std::string> idVideoLabelList;
 	LibAVVideoPreset::getPresetList( idVideoList, idVideoLabelList );
-	for( int it = 0; it < idVideoList.size(); ++it )
+	for( unsigned int it = 0; it < idVideoList.size(); ++it )
 	{
 		videoPreset->appendOption( idVideoList.at( it ), idVideoLabelList.at( it ) );
 	}
@@ -705,7 +705,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	std::vector<std::string> idAudioList;
 	std::vector<std::string> idAudioLabelList;
 	LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
-	for( int it = 0; it < idAudioList.size(); ++it )
+	for( unsigned int it = 0; it < idAudioList.size(); ++it )
 	{
 		audioPreset->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 	}

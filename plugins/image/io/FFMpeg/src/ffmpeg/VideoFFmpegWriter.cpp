@@ -423,7 +423,7 @@ void VideoFFmpegWriter::freeFormat()
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption& opt, bool& value )
 {
-	int error;
+	int error = 0;
 	switch( type )
 	{
 		case eAVParamFormat:
@@ -486,7 +486,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption& opt, int& value )
 {
-	int error;
+	int error = 0;
 	switch( type )
 	{
 		case eAVParamFormat:
@@ -513,7 +513,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption& opt
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt, double &value )
 {
-	int error;
+	int error = 0;
 	switch( type )
 	{
 		case eAVParamFormat:
@@ -539,7 +539,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt, int &valueNum, int& valueDen )
 {
-	int error;
+	int error = 0;
 	AVRational q;
 	q.num = valueNum;
 	q.den = valueDen;
@@ -568,7 +568,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt
 
 void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption &opt, std::string &value )
 {
-	int error;
+	int error = 0;
 	if( ! value.length() )
 		return;
 	switch( type )

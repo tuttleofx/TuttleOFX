@@ -798,7 +798,7 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 		int formatIndex = 0;
 		int videoIndex  = 0;
 		int audioIndex  = 0;
-		for( int id = 0; id < idFormatList.size(); id++ )
+		for( unsigned int id = 0; id < idFormatList.size(); id++ )
 		{
 			if( idFormatList.at( id ) == p.getFormatID() )
 			{
@@ -807,7 +807,7 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 			}
 		}
 		
-		for( int id = 0; id < idVideoList.size(); id++ )
+		for( unsigned int id = 0; id < idVideoList.size(); id++ )
 		{
 			if( idVideoList.at( id ) == p.getVideoID() )
 			{
@@ -817,7 +817,7 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 		}
 		
 		
-		for( int id = 0; id < idAudioList.size(); id++ )
+		for( unsigned int id = 0; id < idAudioList.size(); id++ )
 		{
 			if( idAudioList.at( id ) == p.getAudioID() )
 			{
