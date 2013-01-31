@@ -207,21 +207,21 @@ template< template<class,class> class Process,
           class Plugin >
 void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-	switch( sBitDepth )
+    switch( sBitDepth )
 	{
 		case OFX::eBitDepthUByte:
 		{
-			//doGilRender2<Process, sPlanar, SLayout, boost::gil::bits8>( plugin, args, dPlanar, dComponent, dBitDepth );
+			doGilRender2<Process, sPlanar, SLayout, boost::gil::bits8>( plugin, args, dPlanar, dComponent, dBitDepth );
 			return;
 		}
 		case OFX::eBitDepthUShort:
 		{
-			//doGilRender2<Process, sPlanar, SLayout, boost::gil::bits16>( plugin, args, dPlanar, dComponent, dBitDepth );
+			doGilRender2<Process, sPlanar, SLayout, boost::gil::bits16>( plugin, args, dPlanar, dComponent, dBitDepth );
 			return;
 		}
 		case OFX::eBitDepthFloat:
 		{
-			//doGilRender2<Process, sPlanar, SLayout, boost::gil::bits32f>( plugin, args, dPlanar, dComponent, dBitDepth );
+			doGilRender2<Process, sPlanar, SLayout, boost::gil::bits32f>( plugin, args, dPlanar, dComponent, dBitDepth );
 			return;
 		}
 		case OFX::eBitDepthCustom:
@@ -239,7 +239,7 @@ template< template<class,class> class Process,
           class Plugin >
 void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent sComponent, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-	switch( sComponent )
+    switch( sComponent )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
