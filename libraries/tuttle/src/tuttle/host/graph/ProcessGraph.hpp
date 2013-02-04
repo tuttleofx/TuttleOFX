@@ -38,8 +38,8 @@ public:
 	typedef graph::ProcessEdge Edge;
 	typedef graph::ProcessEdgeAtTime EdgeAtTime;
 	typedef Graph::Attribute Attribute;
-	typedef InternalGraph<Vertex, Edge, boost::vecS, boost::vecS> InternalGraphImpl;
-	typedef InternalGraph<ProcessVertexAtTime, ProcessEdgeAtTime, boost::vecS, boost::vecS> InternalGraphAtTimeImpl;
+	typedef InternalGraph<Vertex, Edge> InternalGraphImpl;
+	typedef InternalGraph<ProcessVertexAtTime, ProcessEdgeAtTime> InternalGraphAtTimeImpl;
 #ifdef PROCESSGRAPH_USE_LINK
 	typedef std::map<std::string, Node*> NodeMap;
 #else

@@ -3,6 +3,8 @@
 from pyTuttle import tuttle
 import os
 
+from nose.tools import *
+
 def setUp():
 	tuttle.core().preload(False)
 
@@ -67,13 +69,23 @@ def testGraphMultipleConnections():
 	assert graph.getNbOutputConnections(checkerboard) == 0
 	graph.connect( checkerboard.getClip("Output"), mergeClipA )
 	assert graph.getNbOutputConnections(checkerboard) == 1
-	graph.connect( checkerboard.getClip("Output"), mergeClipA )	
-	assert graph.getNbOutputConnections(checkerboard) == 1
 	print "graph:", graph
 	
 	graph.connect( checkerboard.getClip("Output"), mergeClipB )
 	
 	print "graph:", graph
-	#TODO: Should be able to have 2 connections...
-	#assert graph.getNbOutputConnections(checkerboard) == 2
+	assert graph.getNbOutputConnections(checkerboard) == 2
+
+
+@raises(Exception)
+def testGraphAlreadyConnected():
+	"""
+	Connect twice...
+	"""
+	graph = tuttle.Graph()
+	checkerboard = graph.createNode( "tuttle.checkerboard" ).asImageEffectNode()
+	merge = graph.createNode( "tuttle.merge" ).asImageEffectNode()
+
+	graph.connect( checkerboard.getClip("Output"), merge.getClip("A") )
+	graph.connect( checkerboard.getClip("Output"), merge.getClip("A") )
 
