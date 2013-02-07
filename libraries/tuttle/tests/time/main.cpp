@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( time_shift_offset_null )
 		TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
-		// computing at time 3 with an offset of -2, it require the frame 1
+		// computing at time 1 with an offset of 0, it require the frame 1
 		g.compute( outputs, ComputeOptions( 1 ) );
 	}
 	catch(... )
@@ -82,10 +82,8 @@ BOOST_AUTO_TEST_CASE( time_shift_positive_offset )
 		TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
-		// computing at time 3 with an offset of -2, it require the frame 1
-		g.compute( outputs, ComputeOptions( 1 )
-				.setForceIdentityNodesProcess() /// @todo remove this. Just to get the test working currently.
-			);
+		// computing at time 2 with an offset of 1, it require the frame 1
+		g.compute( outputs, ComputeOptions( 2 )	);
 	}
 	catch(... )
 	{
@@ -109,7 +107,43 @@ BOOST_AUTO_TEST_CASE( time_shift_negative_offset )
 
 		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
 		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
-		timeshift1.getParam("offset").setValue( -3 );
+		timeshift1.getParam("offset").setValue( 3 );
+		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
+
+		TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
+		g.connect( read1, timeshift1 );
+		g.connect( timeshift1, write1 );
+
+		TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
+		std::list<std::string> outputs;
+		outputs.push_back( write1.getName() );
+		// computing at time 3 with an offset of -2, it require the frame 1
+		g.compute( outputs, ComputeOptions( 4 )	);
+	}
+	catch(... )
+	{
+		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
+		BOOST_FAIL( "Exception" );
+	}
+}
+
+
+BOOST_AUTO_TEST_CASE( time_shift_negative_offset_forceIdentity )
+{
+	TUTTLE_COUT( "******** PROCESS TIMESHIFT ********" );
+	try
+	{
+		TUTTLE_COUT( "--> PLUGINS CREATION" );
+
+		Graph g;
+		Graph::Node& read1 = g.createNode( "tuttle.jpegreader" );
+		//Graph::Node& invert1 = g.createNode( "tuttle.invert" );
+		Graph::Node& timeshift1 = g.createNode( "tuttle.timeshift" );
+		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
+
+		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
+		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
+		timeshift1.getParam("offset").setValue( 3 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 
 		TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
@@ -121,7 +155,7 @@ BOOST_AUTO_TEST_CASE( time_shift_negative_offset )
 		outputs.push_back( write1.getName() );
 		// computing at time 3 with an offset of -2, it require the frame 1
 		g.compute( outputs, ComputeOptions( 4 )
-				.setForceIdentityNodesProcess() /// @todo remove this. Just to get the test working currently.
+				.setForceIdentityNodesProcess()
 			);
 	}
 	catch(... )
