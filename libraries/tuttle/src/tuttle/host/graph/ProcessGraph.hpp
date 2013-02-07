@@ -82,7 +82,7 @@ private:
 	static const std::string _outputId;
 	
 	memory::MemoryCache& _outCache;
-	ComputeOptions _options;
+	const ComputeOptions& _options;
 };
 
 }
