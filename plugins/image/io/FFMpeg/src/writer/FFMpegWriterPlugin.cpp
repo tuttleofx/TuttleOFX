@@ -157,7 +157,18 @@ void FFMpegWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 	AVCodec* _videoCodec = avcodec_find_encoder_by_name( videoCodecName.c_str() );
 	
 	_paramVideoPixelFormat->resetOptions();
-	
+    if( _videoCodec->pix_fmts == 0 )
+    {
+        for( int pix_fmt = 0; pix_fmt < PIX_FMT_NB; pix_fmt++ )
+        {
+            const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
+            if(!pix_desc->name)
+                continue;
+            _paramVideoPixelFormat->appendOption( pix_desc->name );
+        }
+        return;
+    }
+
 	int i = 0;
 	while( _videoCodec->pix_fmts[i] != -1 )
 	{
