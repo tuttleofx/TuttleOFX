@@ -117,31 +117,42 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 
 	FT_Face face;
 
-  FcInit();
 
-  FcChar8 *file;
-  FcResult result;	
-  
-  int weight = (_params._bold == 1) ? FC_WEIGHT_BOLD : FC_WEIGHT_MEDIUM;
-  int slant = (_params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;  
-  
-  FcPattern *p  = FcPatternBuild(NULL, 
-                                 FC_FAMILY, FcTypeString, _params._font.c_str(),
-                                 FC_WEIGHT, FcTypeInteger, weight, 
-                                 FC_SLANT, FcTypeInteger, slant, 
-                                 NULL);
-  
-  FcPatternGetString(FcFontMatch(0, p, &result), FC_FAMILY, 0, &file);
+  if(_params._font == ""){ //font path is not entered
+   FcInit();
 
-  if((char*)file != _params._font){
-    	BOOST_THROW_EXCEPTION(exception::FileNotExist(_params._font)
-			      << exception::user("Text: FontFile not found")
-		              << exception::filename(_params._font));
+   FcChar8 *file;
+   FcResult result;	
+   FcConfig *config = FcInitLoadConfigAndFonts();
+   FcPattern *p = FcPatternBuild(NULL, 
+	  		         FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD, 
+				 FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC, 
+				 NULL);
+
+   FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, NULL);
+   FcFontSet *fs = FcFontList(config, p, os);
+
+   _params._font = (char*) FcNameUnparse(fs->fonts[_params._fontFamily]);
+
+   int weight = (_params._bold == 1) ? FC_WEIGHT_BOLD : FC_WEIGHT_MEDIUM;
+   int slant = (_params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;  
+  
+   p  = FcPatternBuild(NULL, 
+                       FC_FAMILY, FcTypeString, _params._font.c_str(),
+                       FC_WEIGHT, FcTypeInteger, weight, 
+                       FC_SLANT, FcTypeInteger, slant, 
+                       NULL);	
+  
+   FcPatternGetString(FcFontMatch(0, p, &result), FC_FAMILY, 0, &file);
+   FcPatternGetString(FcFontMatch(0, p, &result), FC_FILE, 0, &file);	
+    _params._font = (char*) file;
   }
 
- FcPatternGetString(FcFontMatch(0, p, &result), FC_FILE, 0, &file);
- _params._font = (char*) file;
-  
+  else if(!boost::filesystem::exists(_params._font) || boost::filesystem::is_directory(_params._font)){
+          BOOST_THROW_EXCEPTION(exception::FileNotExist(_params._font)
+ 	             	        << exception::user("Text: Error in Font Path.")
+	                        << exception::filename(_params._font));
+  }
 
 	FT_New_Face( library, _params._font.c_str(), 0, &face );
 

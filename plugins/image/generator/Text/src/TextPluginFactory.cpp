@@ -74,31 +74,35 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	                       "text = 'At frame '+str(time)+', value is ' + str( sin(time) )\n" );
 	isExpression->setDefault( false );
 
-	OFX::StringParamDescriptor* font = desc.defineStringParam( kParamFont );
-	font->setLabel( "Font name" );
-	font->setStringType(OFX::eStringTypeSingleLine);
-	font->setDefault("Arial");
-	font->setHint("Font among quotes with the correct syntax: font=\"Times New Roman\"\n");
+	OFX::StringParamDescriptor* font = desc.defineStringParam(kParamFont);
+	font->setLabel("Font file path");
+	font->setStringType(OFX::eStringTypeFilePath);
+	font->setHint("When a font file path is activate, the bold and italic options are not available.");
 
+	OFX::ChoiceParamDescriptor* fontFamily = desc.defineChoiceParam("fontFamily");
+	fontFamily->setLabel("family of fonts");
 
- OFX::ChoiceParamDescriptor* fontFamily = desc.defineChoiceParam("fontFamily");
-    fontFamily->setLabel("family of fonts");
+	FcInit ();
+	FcConfig *config = FcInitLoadConfigAndFonts();
+	FcChar8 *s;
+	FcPattern *p  = FcPatternBuild(NULL, 
+				       FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD, 
+				       FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC, 
+				       NULL);
 
-    FcInit ();
+	FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, NULL);
+	FcFontSet *fs = FcFontList(config, p, os);
 
-    FcConfig *config = FcInitLoadConfigAndFonts();
-    FcChar8 *s;
-    FcPattern   *p  = FcPatternCreate();
-    FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, NULL);
-    FcFontSet   *fs = FcFontList(config, p, os);
+	for (int i=0; fs && i < fs->nfont; i++){
+	  s = FcNameUnparse(fs->fonts[i]);
+	  
+	  if(!strcmp((char*)s, "Arial"))
+	    fontFamily->setDefault(i);	
+	  
+	  fontFamily->appendOption((char*)s);
+	}
 
-    for (int i=0; fs && i < fs->nfont; i++)
-    {
-        FcPattern *font = fs->fonts[i];
-        s = FcNameUnparse(font);
-	fontFamily->appendOption((char*)s);
-    }
-
+	font->setHint("It lists only the fonts with the bold and italic options which are available in the system.");
 
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );

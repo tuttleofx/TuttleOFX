@@ -13,7 +13,10 @@ struct TextProcessParams
 {
 	std::string _text;
 	bool _isExpression;
+
 	std::string _font;
+        int _fontFamily;
+
 	int _fontX;
 	int _fontY;
 	OfxRGBAColourD _fontColor;
@@ -43,7 +46,10 @@ public:
 public:
 	OFX::StringParam* _paramText; ///< the text to rasterize in the image
 	OFX::BooleanParam* _paramIsExpression;
+
 	OFX::StringParam* _paramFont;
+        OFX::ChoiceParam * _paramFontFamily;
+
 	OFX::IntParam* _paramSize;
 	OFX::DoubleParam* _paramRatio;
 	OFX::RGBAParam* _paramColor;

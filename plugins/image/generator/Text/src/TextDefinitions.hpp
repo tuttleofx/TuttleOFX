@@ -9,7 +9,10 @@ namespace text {
 
 static const std::string kParamText          = "text";
 static const std::string kParamIsExpression  = "expression";
+
 static const std::string kParamFont          = "font";
+static const std::string kParamFontFamily    = "fontFamily";
+
 static const std::string kParamSize          = "size";
 static const std::string kParamRatio         = "ratio";
 static const std::string kParamColor         = "color";
