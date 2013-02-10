@@ -77,7 +77,6 @@ def testGraphMultipleConnections():
 	assert graph.getNbOutputConnections(checkerboard) == 2
 
 
-@raises(Exception)
 def testGraphAlreadyConnected():
 	"""
 	Connect twice...
@@ -87,5 +86,5 @@ def testGraphAlreadyConnected():
 	merge = graph.createNode( "tuttle.merge" ).asImageEffectNode()
 
 	graph.connect( checkerboard.getClip("Output"), merge.getClip("A") )
-	graph.connect( checkerboard.getClip("Output"), merge.getClip("A") )
+	assert_raises( Exception, graph.connect, checkerboard.getClip("Output"), merge.getClip("A") )
 
