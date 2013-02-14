@@ -692,12 +692,20 @@ int main( int argc, char** argv )
 						}
 						if( node_vm.count( kParametersOptionLongName ) )
 						{
-							TUTTLE_COUT( "\tsam do " << nodeFullName );
-							TUTTLE_COUT( "" );
-							TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
-							TUTTLE_COUT( "" );
-							coutParametersWithDetails( currentNode );
-							exit( 0 );
+                            if( !script )
+                            {
+                                TUTTLE_COUT( "\tsam do " << nodeFullName );
+                                TUTTLE_COUT( "" );
+                                TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
+                                TUTTLE_COUT( "" );
+                                coutParametersWithDetails( currentNode );
+                                exit( 0 );
+                            }
+                            else
+                            {
+                                coutParameters( currentNode );
+                                exit( 0 );
+                            }
 						}
 						if( node_vm.count( kParametersReduxOptionLongName ) )
 						{
