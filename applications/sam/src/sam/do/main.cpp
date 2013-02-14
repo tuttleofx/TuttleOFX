@@ -795,7 +795,7 @@ int main( int argc, char** argv )
 						
 						nodes.push_back( &currentNode );
 					}
-					catch( const boost::program_options::error& e )
+					catch( boost::program_options::error& e )
 					{
 						TUTTLE_CERR( _color._red << "sam do - " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
@@ -805,7 +805,7 @@ int main( int argc, char** argv )
 #endif
 						exit( -2 );
 					}
-					catch( const tuttle::exception::Common& e )
+					catch( tuttle::exception::Common& e )
 					{
 						TUTTLE_CERR( _color._red << "sam do - " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
