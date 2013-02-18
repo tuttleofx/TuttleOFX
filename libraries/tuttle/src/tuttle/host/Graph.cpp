@@ -308,6 +308,14 @@ void Graph::setup()
 	return procGraph.setup();
 }
 
+void Graph::setupAtTime( const OfxTime time, const NodeListArg& outputNodes )
+{
+	memory::MemoryCache memoryCache;
+	const ComputeOptions options;
+	graph::ProcessGraph procGraph( memoryCache, options, *this, outputNodes.getNodes() );
+	return procGraph.setupAtTime( time );
+}
+
 bool Graph::compute( const ComputeOptions& options )
 {
 	return compute( NodeListArg(), options );
