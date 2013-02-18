@@ -15,7 +15,9 @@
 #include <string>
 #include <iostream>
 
+#ifndef __WINDOWS__
 #include <fontconfig/fontconfig.h>
+#endif
 
 namespace tuttle {
 namespace plugin {
