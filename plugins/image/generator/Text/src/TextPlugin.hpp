@@ -14,8 +14,11 @@ struct TextProcessParams
 	std::string _text;
 	bool _isExpression;
 
+#ifdef __WINDOWS__
 	std::string _font;
-        int _fontFamily;
+#else
+	int _font;
+#endif
 
 	int _fontX;
 	int _fontY;
@@ -44,23 +47,26 @@ public:
 	void render( const OFX::RenderArguments& args );
 
 public:
-	OFX::StringParam* _paramText; ///< the text to rasterize in the image
-	OFX::BooleanParam* _paramIsExpression;
+	OFX::StringParam*   _paramText; ///< the text to rasterize in the image
+	OFX::BooleanParam*  _paramIsExpression;
 
-	OFX::StringParam* _paramFont;
-        OFX::ChoiceParam * _paramFontFamily;
+#ifdef __WINDOWS__
+	OFX::StringParam*   _paramFont;
+#else
+	OFX::ChoiceParam*   _paramFont;
+#endif
 
-	OFX::IntParam* _paramSize;
-	OFX::DoubleParam* _paramRatio;
-	OFX::RGBAParam* _paramColor;
-        OFX::RGBAParam* _paramBackgroundColor;
+	OFX::IntParam*      _paramSize;
+	OFX::DoubleParam*   _paramRatio;
+	OFX::RGBAParam*     _paramColor;
+	OFX::RGBAParam*     _paramBackgroundColor;
 	OFX::Double2DParam* _paramPosition;
-	OFX::DoubleParam* _paramLetterSpacing;
-	OFX::ChoiceParam* _paramVAlign;
-	OFX::ChoiceParam* _paramHAlign;
-	OFX::BooleanParam* _paramVerticalFlip;
-	OFX::BooleanParam* _paramItalic;
-	OFX::BooleanParam* _paramBold;
+	OFX::DoubleParam*   _paramLetterSpacing;
+	OFX::ChoiceParam*   _paramVAlign;
+	OFX::ChoiceParam*   _paramHAlign;
+	OFX::BooleanParam*  _paramVerticalFlip;
+	OFX::BooleanParam*  _paramItalic;
+	OFX::BooleanParam*  _paramBold;
 };
 
 }

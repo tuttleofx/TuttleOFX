@@ -4,8 +4,13 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
+#ifndef __WINDOWS__
 #include <fontconfig/fontconfig.h>
+#endif
+
 #include <iostream>
+
+#include <boost/algorithm/string.hpp>
 
 #include <limits>
 
@@ -21,7 +26,7 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleText",
 					"Text",
-	                "Text" );
+					"Text" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
@@ -73,37 +78,45 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	                       //+ kParamText +
 	                       "text = 'At frame '+str(time)+', value is ' + str( sin(time) )\n" );
 	isExpression->setDefault( false );
-
-	OFX::StringParamDescriptor* font = desc.defineStringParam(kParamFont);
-	font->setLabel("Font file path");
-	font->setStringType(OFX::eStringTypeFilePath);
-	font->setHint("When a font file path is activate, the bold and italic options are not available.");
-
-	OFX::ChoiceParamDescriptor* fontFamily = desc.defineChoiceParam("fontFamily");
-	fontFamily->setLabel("family of fonts");
+	
+#ifdef __WINDOWS__
+	OFX::StringParamDescriptor* font = desc.defineStringParam( kParamFont );
+	font->setStringType( OFX::eStringTypeFilePath );
+	font->setHint( "When a font file path is activate, the bold and italic options are not available." );
+#else
+	OFX::ChoiceParamDescriptor* font = desc.defineChoiceParam( kParamFont );
 
 	FcInit ();
 	FcConfig *config = FcInitLoadConfigAndFonts();
 	FcChar8 *s;
-	FcPattern *p  = FcPatternBuild(NULL, 
-				       FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD, 
-				       FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC, 
-				       NULL);
+	FcPattern *p  = FcPatternBuild( NULL, 
+									FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD, 
+									FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC, 
+									NULL );
 
-	FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, NULL);
-	FcFontSet *fs = FcFontList(config, p, os);
+	FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
+	FcFontSet   *fs = FcFontList( config, p, os );
 
-	for (int i=0; fs && i < fs->nfont; i++){
-	  s = FcNameUnparse(fs->fonts[i]);
-	  
-	  if(!strcmp((char*)s, "Arial"))
-	    fontFamily->setDefault(i);	
-	  
-	  fontFamily->appendOption((char*)s);
+	for( int i=0; fs && i < fs->nfont; i++ )
+	{
+		FcPattern *fcFont = fs->fonts[ i ];
+		s = FcNameUnparse( fcFont );
+	
+		std::ostringstream stream ;
+		stream << s ;
+		std::string id = stream.str();
+		boost::algorithm::to_lower( id );
+		boost::replace_all ( id, " ", "_" );
+	
+		font->appendOption( id, stream.str() );
+		
+		if(!strcmp((char*)s, "Arial"))
+			font->setDefault( i );	
 	}
-
-	font->setHint("It lists only the fonts with the bold and italic options which are available in the system.");
-
+#endif
+	font->setHint("Select the font.");
+	font->setLabel("Font");
+	
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );
 	size->setDefault( 18 );

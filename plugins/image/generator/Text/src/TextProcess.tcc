@@ -104,9 +104,9 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	if( !this->_clipSrc->isConnected() )
 	{
 		rgba32f_pixel_t backgroundColor( _params._backgroundColor.r,
-	       				         _params._backgroundColor.g,
-				        	 _params._backgroundColor.b,
-			                         _params._backgroundColor.a );
+										 _params._backgroundColor.g,
+										 _params._backgroundColor.b,
+										 _params._backgroundColor.a );
 		
 		fill_pixels( this->_dstView, backgroundColor );
 	}
@@ -117,52 +117,55 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 
 	FT_Face face;
 
-
-  if(_params._font == ""){ //font path is not entered
-   FcInit();
-
-   FcChar8 *file;
-   FcResult result;	
-   FcConfig *config = FcInitLoadConfigAndFonts();
-   FcPattern *p = FcPatternBuild(NULL, 
-	  		         FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD, 
-				 FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC, 
-				 NULL);
-
-   FcObjectSet *os = FcObjectSetBuild(FC_FAMILY, NULL);
-   FcFontSet *fs = FcFontList(config, p, os);
-
-   _params._font = (char*) FcNameUnparse(fs->fonts[_params._fontFamily]);
-
-   int weight = (_params._bold == 1) ? FC_WEIGHT_BOLD : FC_WEIGHT_MEDIUM;
-   int slant = (_params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;  
-  
-   p  = FcPatternBuild(NULL, 
-                       FC_FAMILY, FcTypeString, _params._font.c_str(),
-                       FC_WEIGHT, FcTypeInteger, weight, 
-                       FC_SLANT, FcTypeInteger, slant, 
-                       NULL);	
-  
-   FcPatternGetString(FcFontMatch(0, p, &result), FC_FAMILY, 0, &file);
-   FcPatternGetString(FcFontMatch(0, p, &result), FC_FILE, 0, &file);	
-    _params._font = (char*) file;
-  }
-
-  else if(!boost::filesystem::exists(_params._font) || boost::filesystem::is_directory(_params._font)){
-          BOOST_THROW_EXCEPTION(exception::FileNotExist(_params._font)
- 	             	        << exception::user("Text: Error in Font Path.")
-	                        << exception::filename(_params._font));
-  }
-
+#ifdef __WINDOWS__
+	if( !boost::filesystem::exists(_params._font) || boost::filesystem::is_directory(_params._font) )
+	{
+		BOOST_THROW_EXCEPTION( exception::FileNotExist(_params._font)
+							<< exception::user("Text: Error in Font Path.")
+							<< exception::filename(_params._font));
+	}
 	FT_New_Face( library, _params._font.c_str(), 0, &face );
+#else
+		FcInit();
 
+		std::string fontFile = "";
+		
+		FcChar8 *file;
+		FcResult result;
+		FcConfig *config = FcInitLoadConfigAndFonts();
+		FcPattern *p = FcPatternBuild(	NULL,
+										FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
+										FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
+										NULL);
+
+		FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
+		FcFontSet   *fs = FcFontList( config, p, os );
+
+		fontFile = (char*) FcNameUnparse( fs->fonts[_params._font] );
+
+		int weight = ( _params._bold   == 1) ? FC_WEIGHT_BOLD  : FC_WEIGHT_MEDIUM;
+		int slant  = ( _params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;
+
+		p  = FcPatternBuild( NULL, 
+							 FC_FAMILY, FcTypeString, fontFile.c_str(),
+							 FC_WEIGHT, FcTypeInteger, weight, 
+							 FC_SLANT, FcTypeInteger, slant, 
+							 NULL);	
+
+		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FAMILY, 0, &file );
+		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FILE, 0, &file );
+		fontFile = (char*) file;
+	
+	FT_New_Face( library, fontFile.c_str(), 0, &face );
+#endif
+	
 	FT_Set_Pixel_Sizes( face, _params._fontX, _params._fontY );	
 
 	//Step 3. Make Glyphs Array ------------------
 	rgba32f_pixel_t rgba32f_foregroundColor( _params._fontColor.r,
-	                                         _params._fontColor.g,
-	                                         _params._fontColor.b,
-	                                         _params._fontColor.a );
+											 _params._fontColor.g,
+											 _params._fontColor.b,
+											 _params._fontColor.a );
 	color_convert( rgba32f_foregroundColor, _foregroundColor );
 	std::transform( _text.begin(), _text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
