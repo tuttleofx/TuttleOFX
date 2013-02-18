@@ -91,7 +91,6 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 	size_t width = dst->getBoundsSize().x;
 	size_t height = dst->getBoundsSize().y;
 	size_t components = 0;
-	size_t bitDepth = 0;
 
 	GLenum format = GL_RGB;
 	GLenum type = GL_FLOAT;
@@ -103,9 +102,9 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
 				<< exception::user( "Dpx: Unable to compute custom or non bit depth" ) );
 			break;
-		case OFX::eBitDepthUByte:  bitDepth = 1; type = GL_UNSIGNED_BYTE; break;
-		case OFX::eBitDepthUShort: bitDepth = 2; type = GL_UNSIGNED_SHORT; break;
-		case OFX::eBitDepthFloat:  bitDepth = 4; type = GL_FLOAT; break;
+		case OFX::eBitDepthUByte:  type = GL_UNSIGNED_BYTE; break;
+		case OFX::eBitDepthUShort: type = GL_UNSIGNED_SHORT; break;
+		case OFX::eBitDepthFloat:  type = GL_FLOAT; break;
 	}
 	switch( dst->getPixelComponents() )
 	{

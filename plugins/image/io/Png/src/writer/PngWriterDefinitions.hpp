@@ -17,7 +17,8 @@ enum ETuttlePluginBitDepth
 
 enum ETuttlePluginComponents
 {
-	eTuttlePluginComponentsGray = 0,
+	eTuttlePluginComponentsAuto = 0,
+	eTuttlePluginComponentsGray,
 	eTuttlePluginComponentsRGB,
 	eTuttlePluginComponentsRGBA
 };

@@ -9,6 +9,7 @@ namespace blur {
 
 static const std::string kParamSize           = "size";
 static const std::string kParamBorder         = "border";
+static const std::string kParamBorderNo       = "No";
 static const std::string kParamBorderMirror   = "Mirror";
 static const std::string kParamBorderConstant = "Constant";
 static const std::string kParamBorderBlack    = "Black";
@@ -16,7 +17,8 @@ static const std::string kParamBorderPadded   = "Padded";
 
 enum EParamBorder
 {
-	eParamBorderMirror = 0,
+	eParamBorderNo = 0,
+	eParamBorderMirror,
 	eParamBorderConstant,
 	eParamBorderBlack,
 	eParamBorderPadded

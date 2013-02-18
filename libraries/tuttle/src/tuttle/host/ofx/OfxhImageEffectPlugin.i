@@ -1,4 +1,5 @@
 %include <tuttle/host/global.i>
+%include <tuttle/host/ofx/OfxhImageEffectNodeDescriptor.i>
 %include <tuttle/host/ofx/OfxhPluginBinary.i>
 
 %{

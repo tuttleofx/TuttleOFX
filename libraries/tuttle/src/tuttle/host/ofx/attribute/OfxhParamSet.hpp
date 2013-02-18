@@ -42,8 +42,7 @@ public:
 
 	explicit OfxhParamSet( const OfxhParamSet& other );
 
-	/// dtor.
-	virtual ~OfxhParamSet();
+	virtual ~OfxhParamSet() = 0;
 
 	void operator=( const OfxhParamSet& other );
 
@@ -56,8 +55,8 @@ public:
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
 
-	const ParamMap& getParams() const { return _params; }
-	ParamMap&       getParams()       { return _params; }
+	const ParamMap& getParamsByName() const { return _params; }
+	ParamMap&       getParamsByName()       { return _params; }
 
 	const ParamMap& getParamsByScriptName() const { return _paramsByScriptName; }
 	ParamMap&       getParamsByScriptName()       { return _paramsByScriptName; }

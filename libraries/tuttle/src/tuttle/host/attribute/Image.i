@@ -12,14 +12,19 @@
 #include <tuttle/host/attribute/Image.hpp>
 %}
 
+namespace tuttle {
+namespace host {
+namespace attribute {
+%ignore Image::getImage;
+}
+}
+}
+
 %include <tuttle/host/attribute/Image.hpp>
 
 namespace tuttle {
 namespace host {
 namespace attribute {
-
-%ignore getImage;
-
 
 %extend Image
 {
@@ -36,10 +41,11 @@ namespace attribute {
 					self.getComponentsType()
 				)
 
-		def getNumpyImage(self):
+		def getNumpyArray(self):
 			import numpy
-			import Image
 			(data, width, height, rowSizeBytes, bitDepth, components) = self.getImage()
+			
+			#print '(width, height, rowSizeBytes, bitDepth, components)', (width, height, rowSizeBytes, bitDepth, components)
 
 			numpyBitDepth = None
 			if bitDepth == eBitDepthUByte:
@@ -49,22 +55,35 @@ namespace attribute {
 			elif bitDepth == eBitDepthFloat:
 				numpyBitDepth = numpy.float32
 			else:
-				raise LogicError('Unrecognized bit depth')
+				raise TypeError('Unrecognized bit depth')
 			
-			d = cdata(data, rowSizeBytes*height)
+			bufferSize = rowSizeBytes*height
+			d = cdata(data, bufferSize)
 			arraySize = width*height*self.getNbComponents()
+			if rowSizeBytes != (width*self.getNbComponents()*self.getBitDepthMemorySize()):
+				print 'rowSizeBytes:', rowSizeBytes
+				print 'width:', width
+				print 'self.getNbComponents():', self.getNbComponents()
+				print 'self.getBitDepthMemorySize():', self.getBitDepthMemorySize()
+				raise NotImplementedError('The image padding is unsupported in the pyTuttle binding.')
 
-			print 'numpyBitDepth:', numpyBitDepth
-			print 'len(data):', len(d)
-			print 'rowSizeBytes:', rowSizeBytes
-			print 'height:', height
-			print 'arraySize:', arraySize
+			#print 'numpyBitDepth:', numpyBitDepth
+			#print 'len(data):', len(d)
+			#print 'rowSizeBytes:', rowSizeBytes
+			#print 'size: %dx%d' % (width, height)
+			#print 'nbComponents():', self.getNbComponents()
+			#print 'arraySize:', arraySize
 			
 			flatarray = numpy.fromstring( d, numpyBitDepth, arraySize )
 
-			print 'flatarray:', flatarray
-			outImage = numpy.array( numpy.flipud( numpy.reshape( flatarray, ( height, width, self.getNbComponents() ) ) ) )
-			return Image.fromarray(outImage)
+			#print 'flatarray:', flatarray
+			nArray = numpy.array( numpy.flipud( numpy.reshape( flatarray, ( height, width, self.getNbComponents() ) ) ) )
+			#print 'nArray:', nArray
+			return nArray
+
+		def getNumpyImage(self):
+			import Image
+			return Image.fromarray(self.getNumpyArray())
 	}
 }
 

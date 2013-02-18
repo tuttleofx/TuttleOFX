@@ -64,9 +64,10 @@ PixelFormat ofxPixelComponentToSwsPixelFormat( const OFX::EPixelComponent compon
 			break;
 		case OFX::ePixelComponentNone:
 		case OFX::ePixelComponentCustom:
-			break;
+			return PIX_FMT_NONE;
 	}
 	BOOST_ASSERT( false );
+	return PIX_FMT_NONE;
 }
 
 /**

@@ -111,6 +111,12 @@ void printImageProperties( std::string path )
 			case 20                       : colorSpaceType = "Rec709 Y Cb Cr"; break; //  Rec709YCbCrColorspace
 			case LogColorspace            : colorSpaceType = "Log"; break;
 			case 22                       : colorSpaceType = "CMY"; break; // CMYColorspace
+#if MagickLibVersion > 0x677
+			case LuvColorspace            : colorSpaceType = "Luv"; break;
+			case HCLColorspace            : colorSpaceType = "HCL"; break;
+			case LCHColorspace            : colorSpaceType = "LCH"; break;
+			case LMSColorspace            : colorSpaceType = "LMS"; break;
+#endif
 		}
 
 		std::string interlaceType;

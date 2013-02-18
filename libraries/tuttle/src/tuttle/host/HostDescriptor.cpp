@@ -31,10 +31,10 @@ Host::Host()
 	_properties.setStringProperty( kOfxPropName, "TuttleOfx" );
 	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx Alpha" );
 	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, false );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, false );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, true );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultiResolution, true );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, true ); ///< @todo tuttle: we hope to do this !
-	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, true ); ///< @todo tuttle: we hope to do this !
+	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, true );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGBA, 0 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGB, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentAlpha, 2 );

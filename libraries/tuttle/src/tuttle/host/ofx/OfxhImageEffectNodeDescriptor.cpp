@@ -102,8 +102,9 @@ void OfxhImageEffectNodeDescriptor::initOverlayDescriptor( int bitDepthPerCompon
 {
     if( _overlayDescriptor.getState() == interact::eUninitialised )
     {
+		OfxPluginEntryPoint* overlayEntryPoint = getOverlayInteractMainEntry();
         // OK, we need to describe it, set the entry point and describe away
-        _overlayDescriptor.setEntryPoint( getOverlayInteractMainEntry() );
+        _overlayDescriptor.setEntryPoint( overlayEntryPoint );
         _overlayDescriptor.describe( bitDepthPerComponent, hasAlpha );
     }
 }

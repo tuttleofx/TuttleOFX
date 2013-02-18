@@ -1,7 +1,9 @@
+# scons: Png MathOperator Diff
+
 from pyTuttle import tuttle
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 
 def testClamp_pngWriterImplicitClamp():

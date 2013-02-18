@@ -41,10 +41,16 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#include <tuttle/host/exceptions.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace interact {
+
+
+OfxhInteractBase::~OfxhInteractBase()
+{}
 
 //
 // descriptor
@@ -91,34 +97,38 @@ OfxStatus OfxhInteractDescriptor::callEntry( const char*          action,
                                              OfxPropertySetHandle inArgs,
                                              OfxPropertySetHandle outArgs ) const
 {
-	if( _entryPoint && _state != eFailed )
+	if( ! _entryPoint )
 	{
-		return _entryPoint( action, handle, inArgs, outArgs );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue )
+			<< exception::dev() + "Plugin entry point is not initialized." );
 	}
-	else
-		return kOfxStatFailed;
-
-	return kOfxStatOK;
+	if( _state == eFailed )
+	{
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue )
+			<< exception::dev() + "Previous call to plugin lead to a failure state." );
+	}
+	return _entryPoint( action, handle, inArgs, outArgs );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 static property::OfxhPropSpec interactInstanceStuffs[] = {
 	{ kOfxPropEffectInstance, property::ePropTypePointer, 1, true, NULL },
 	{ kOfxPropInstanceData, property::ePropTypePointer, 1, false, NULL },
-	{ kOfxInteractPropPixelScale, property::ePropTypeDouble, 2, true, "1.0f" },
-	{ kOfxInteractPropBackgroundColour, property::ePropTypeDouble, 3, true, "0.0f" },
-	{ kOfxInteractPropViewportSize, property::ePropTypeDouble, 2, true, "100.0f" },
+	{ kOfxInteractPropPixelScale, property::ePropTypeDouble, 2, true, "1.0" },
+	{ kOfxInteractPropBackgroundColour, property::ePropTypeDouble, 3, true, "0.0" },
+	{ kOfxInteractPropViewportSize, property::ePropTypeInt, 2, true, "0" },
 	{ kOfxInteractPropSlaveToParam, property::ePropTypeString, 0, false, "" },
 	{ 0 },
 };
 
 static property::OfxhPropSpec interactArgsStuffs[] = {
 	{ kOfxPropEffectInstance, property::ePropTypePointer, 1, false, NULL },
+	{ kOfxPropInstanceData, property::ePropTypePointer, 1, false, NULL },
 	{ kOfxPropTime, property::ePropTypeDouble, 1, false, "0.0" },
 	{ kOfxImageEffectPropRenderScale, property::ePropTypeDouble, 2, false, "0.0" },
-	{ kOfxInteractPropBackgroundColour, property::ePropTypeDouble, 3, false, "0.0f" },
-	{ kOfxInteractPropViewportSize, property::ePropTypeDouble, 2, false, "0.0f" },
-	{ kOfxInteractPropPixelScale, property::ePropTypeDouble, 2, false, "1.0f" },
+	{ kOfxInteractPropBackgroundColour, property::ePropTypeDouble, 3, false, "0.0" },
+	{ kOfxInteractPropViewportSize, property::ePropTypeInt, 2, false, "0" },
+	{ kOfxInteractPropPixelScale, property::ePropTypeDouble, 2, false, "1.0" },
 	{ kOfxInteractPropPenPosition, property::ePropTypeDouble, 2, false, "0.0" },
 	#ifdef kOfxInteractPropPenViewportPosition
 	{ kOfxInteractPropPenViewportPosition, property::ePropTypeInt, 2, false, "0" },
@@ -140,13 +150,6 @@ OfxhInteract::OfxhInteract( const OfxhInteractDescriptor& desc, void* effectInst
 {
 	_properties.setPointerProperty( kOfxPropEffectInstance, effectInstance );
 	_properties.setChainedSet( &desc.getProperties() ); /// chain it into the descriptor props
-	_properties.setGetHook( kOfxInteractPropPixelScale, this );
-	_properties.setGetHook( kOfxInteractPropBackgroundColour, this );
-	_properties.setGetHook( kOfxInteractPropViewportSize, this );
-
-	_argProperties.setGetHook( kOfxInteractPropPixelScale, this );
-	_argProperties.setGetHook( kOfxInteractPropBackgroundColour, this );
-	_argProperties.setGetHook( kOfxInteractPropViewportSize, this );
 }
 
 OfxhInteract::~OfxhInteract()
@@ -158,90 +161,17 @@ OfxhInteract::~OfxhInteract()
 /// call the entry point in the descriptor with action and the given args
 OfxStatus OfxhInteract::callEntry( const char* action, property::OfxhSet* inArgs )
 {
-	if( _state != eFailed )
-	{
-		OfxPropertySetHandle inHandle = inArgs ? inArgs->getHandle() : NULL ;
-		return _descriptor.callEntry( action, getHandle(), inHandle, NULL );
-	}
-	return kOfxStatFailed;
-}
-
-// do nothing
-size_t OfxhInteract::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
-{
-	if( name == kOfxInteractPropPixelScale )
-	{
-		return 2;
-	}
-	else if( name == kOfxInteractPropBackgroundColour )
-	{
-		return 3;
-	}
-	else if( name == kOfxInteractPropViewportSize )
-	{
-		return 2;
-	}
-	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
-	return 0;
+	if( _state == eFailed )
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
+	
+	OfxPropertySetHandle inHandle = inArgs ? inArgs->getHandle() : NULL ;
+	return _descriptor.callEntry( action, getHandle(), inHandle, NULL );
 }
 
 // do nothing function
 void OfxhInteract::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 {
 	// no-op
-}
-
-double OfxhInteract::getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
-{
-	if( name == kOfxInteractPropPixelScale )
-	{
-		if( index >= 2 )
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		double first[2];
-		getPixelScale( first[0], first[1] );
-		return first[index];
-	}
-	else if( name == kOfxInteractPropBackgroundColour )
-	{
-		if( index >= 3 )
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		double first[3];
-		getBackgroundColour( first[0], first[1], first[2] );
-		return first[index];
-	}
-	else if( name == kOfxInteractPropViewportSize )
-	{
-		if( index >= 2 )
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		double first[2];
-		getViewportSize( first[0], first[1] );
-		return first[index];
-	}
-	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
-	return 0.0;
-}
-
-void OfxhInteract::getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC
-{
-	if( name == kOfxInteractPropPixelScale )
-	{
-		if( n > 2 )
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		getPixelScale( first[0], first[1] );
-	}
-	else if( name == kOfxInteractPropBackgroundColour )
-	{
-		if( n > 3 )
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		getBackgroundColour( first[0], first[1], first[2] );
-	}
-	else if( name == kOfxInteractPropViewportSize )
-	{
-		if( n > 2 )
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		getViewportSize( first[0], first[1] );
-	}
-	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
 }
 
 void OfxhInteract::getSlaveToParam( std::vector<std::string>& params ) const
@@ -259,14 +189,22 @@ void OfxhInteract::getSlaveToParam( std::vector<std::string>& params ) const
 void OfxhInteract::initArgProp( OfxTime          time,
                                 const OfxPointD& renderScale )
 {
-	double pixelScale[2];
-
-	getPixelScale( pixelScale[0], pixelScale[1] );
-	_argProperties.setDoublePropertyN( kOfxInteractPropPixelScale, pixelScale, 2 ); /// ofxtuttle fix
 	_argProperties.setPointerProperty( kOfxPropEffectInstance, _effectInstance );
 	_argProperties.setPointerProperty( kOfxPropInstanceData, _properties.getPointerProperty( kOfxPropInstanceData ) );
 	_argProperties.setDoubleProperty( kOfxPropTime, time );
+	
+	double pixelScale[2] = {1., 1.};
+	getPixelScale( pixelScale[0], pixelScale[1] );
+	_argProperties.setDoublePropertyN( kOfxInteractPropPixelScale, pixelScale, 2 ); // the scale factor to convert cannonical pixels to screen pixels
 	_argProperties.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
+	
+	int viewportSize[2] = {0, 0};
+	getViewportSize( viewportSize[0], viewportSize[1] );
+	_argProperties.setIntPropertyN( kOfxInteractPropViewportSize, viewportSize, 2 ); // the openGL viewport size for the instance
+	
+	double backgroundColor[3] = {0, 0, 0};
+	getBackgroundColour( backgroundColor[0], backgroundColor[1], backgroundColor[2] );
+	_argProperties.setDoublePropertyN( kOfxInteractPropBackgroundColour, backgroundColor, 3 ); // the background colour of the application behind the current view
 }
 
 void OfxhInteract::setPenArgProps( const OfxPointD& penPos,

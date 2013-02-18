@@ -10,7 +10,7 @@ ParamDouble2D::ParamDouble2D( INode&                           effect,
                               const std::string&                         name,
                               const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
-	, ofx::attribute::OfxhMultiDimParam<ParamDouble, 2>( descriptor, name, effect.getParamSet() )
+	, ParamDoubleMultiDim<2>( descriptor, name, effect.getParamSet() )
 {
 	_controls.replace<0>( new ParamDouble( effect, name + ".x", descriptor, 0 ) );
 	_controls.replace<1>( new ParamDouble( effect, name + ".y", descriptor, 1 ) );
@@ -39,7 +39,6 @@ void ParamDouble2D::getValueAtTime( const OfxTime time, double& x, double& y ) c
 
 void ParamDouble2D::setValue( const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	TUTTLE_TCOUT( "ParamDouble2D::set x:" << x << " y:" << y );
 	_controls.at<0>().setValue( x, change );
 	_controls.at<1>().setValue( y, change );
 	this->paramChanged( change );

@@ -54,7 +54,7 @@ OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 		OfxhParamSet* setInstance = dynamic_cast<OfxhParamSet*>( baseSet );
 		if( setInstance )
 		{
-			const std::map<std::string, OfxhParam*>& params      = setInstance->getParams();
+			const std::map<std::string, OfxhParam*>& params      = setInstance->getParamsByName();
 			std::map<std::string, OfxhParam*>::const_iterator it = params.find( name );
 
 			// if we can't find it return an error...

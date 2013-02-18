@@ -35,15 +35,20 @@ project.commonLibs.append( tuttle )
 
 ### Load all SConscript files (in the correct order)
 SConscript(
-	project.scanFiles( [
-			'libraries/boostHack',
-			'libraries/openfxHack',
-			'libraries/terry',
-			'libraries/sequenceParser',
-			'libraries/tuttle',
-			'plugins',
-			'applications',
-			'doc',
-		], accept=['SConscript'] ) )
+		project.scanFiles( [
+				'libraries/boostHack',
+				'libraries/openfxHack',
+				'libraries/terry',
+				'libraries/sequenceParser',
+			], accept=['SConscript'] ) +
+		['libraries/tuttle/SConscript'] +
+		project.scanFiles( [
+				'plugins',
+				'applications',
+				'libraries/tuttle/tests',
+				'libraries/tuttle/pyTest',
+				'doc',
+			], accept=['SConscript'] )
+	)
 
 

@@ -27,35 +27,32 @@ public:
 	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
 
 protected:
-	ClipImageMap _clipImages; ///< clips by name
-	ClipImageVector _clipsByOrder; ///< clips list
+	ClipImageVector _clipsByOrder; ///< clips list (data owner)
+	ClipImageMap _clipImages; ///< clips by name (link to datas)
 	bool _clipPrefsDirty; ///< do we need to re-run the clip prefs action
 
 public:
-	/// ctor
-	///
 	/// The propery set being passed in belongs to the owning
 	/// plugin instance.
 	explicit OfxhClipImageSet();
 
 	explicit OfxhClipImageSet( const OfxhClipImageSet& other );
 
-	/// dtor.
-	virtual ~OfxhClipImageSet();
+	virtual ~OfxhClipImageSet() = 0;
 
 	bool operator==( const This& other ) const;
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
-	#ifndef SWIG
+
 	void copyClipsValues( const OfxhClipImageSet& other );
 
 	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC;
 
-	const ClipImageMap& getClips() const
+	const ClipImageMap& getClipsByName() const
 	{
 		return _clipImages;
 	}
 
-	ClipImageMap& getClips()
+	ClipImageMap& getClipsByName()
 	{
 		return _clipImages;
 	}
@@ -85,6 +82,7 @@ public:
 	OfxhClipImage* getClipPtr( const std::string& name, const bool acceptPartialName = false );
 
 
+#ifndef SWIG
 	/**
 	 * add a clip
 	 */
@@ -102,6 +100,7 @@ public:
 	 * Client host code needs to implement this
 	 */
 	virtual OfxhClipImage* newClipImage( const OfxhClipImageDescriptor& descriptor ) = 0;
+#endif
 
 	/**
 	 * get the nth clip, in order of declaration
@@ -112,9 +111,9 @@ public:
 	}
 
 	/**
-	 * get the nth clip, in order of declaration
+	 * get the number of clips
 	 */
-	int getNClips() const
+	int getNbClips() const
 	{
 		return int(_clipImages.size() );
 	}
@@ -129,7 +128,6 @@ public:
 
 private:
 	void initMapFromList();
-	#endif
 };
 
 }

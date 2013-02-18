@@ -3,8 +3,7 @@
 
 #include "Param.hpp"
 
-#include "ParamDouble.hpp"
-#include <tuttle/host/ofx/attribute/OfxhMultiDimParam.hpp>
+#include "ParamDoubleMultiDim.hpp"
 
 #include <ofxPixels.h>
 
@@ -13,7 +12,7 @@ namespace host {
 namespace attribute {
 
 class ParamRGB : public Param
-	, public ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
+	, public ParamDoubleMultiDim<3>
 {
 public:
 	ParamRGB( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
@@ -24,6 +23,15 @@ public:
 	void          getValueAtTime( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC;
 	void          setValue( const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void          setValueAtTime( const OfxTime time, const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	
+	void setValue( const int& r, const int& g, const int& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+	{
+		setValue( (double)r, (double)g, (double)b, change );
+	}
+	void setValueAtTime( const OfxTime time, const int& r, const int& g, const int& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+	{
+		setValueAtTime( time, (double)r, (double)g, (double)b, change );
+	}
 };
 
 }

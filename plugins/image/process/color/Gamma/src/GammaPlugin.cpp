@@ -53,11 +53,11 @@ GammaProcessParams<GammaPlugin::Scalar> GammaPlugin::getProcessParams( const Ofx
 			{
 				gamma = 1.0 / gamma;
 			}
-			iGamma                 = ( gamma == 1.0 ? 1.0 : 1.0 / gamma );
-			params.iRGamma         =
-			    params.iGGamma     =
-			        params.iBGamma = iGamma;
-			params.iAGamma         = 1.0;
+			iGamma         = ( gamma == 1.0 ? 1.0 : 1.0 / gamma );
+			params.iRGamma =
+				params.iGGamma =
+				params.iBGamma = iGamma;
+			params.iAGamma = 1.0;
 			break;
 		case eGammaTypeChannels:
 			rGamma = red;
@@ -93,7 +93,8 @@ void GammaPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std:
 {
 	if( paramName == kGammaType )
 	{
-		bool bMaster, bRGBA;
+		bool bMaster = false;
+		bool bRGBA   = false;
 		switch( getGammaType() )
 		{
 			case eGammaTypeGlobal:
@@ -104,22 +105,12 @@ void GammaPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std:
 				bMaster = true;
 				bRGBA   = false;
 				break;
-			default: // Error
-				bMaster = true;
-				bRGBA   = true;
-				break;
 		}
-		_master->setIsSecret( bMaster );
-		_red->setIsSecret( bRGBA );
-		_green->setIsSecret( bRGBA );
-		_blue->setIsSecret( bRGBA );
-		_alpha->setIsSecret( bRGBA );
-		//		_master->setEnabled( bMaster );
-		//		_red->setEnabled( bRGBA );
-		//		_green->setEnabled( bRGBA );
-		//		_blue->setEnabled( bRGBA );
-		//		_alpha->setEnabled( bRGBA );
-
+		_master->setIsSecretAndDisabled( bMaster );
+		_red   ->setIsSecretAndDisabled( bRGBA );
+		_green ->setIsSecretAndDisabled( bRGBA );
+		_blue  ->setIsSecretAndDisabled( bRGBA );
+		_alpha ->setIsSecretAndDisabled( bRGBA );
 	}
 }
 
