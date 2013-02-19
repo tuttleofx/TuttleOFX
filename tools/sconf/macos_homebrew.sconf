@@ -58,6 +58,7 @@ dir_ilmbase = homebrew_base
 
 incdir_imagemagick = os.path.join(homebrew_include, "ImageMagick")
 libdir_imagemagick = os.path.join(homebrew_base, "lib/ImageMagick")
+lib_imagemagick = "libMagickCore-Q16"
 
 dir_jpeg = homebrew_base
 
