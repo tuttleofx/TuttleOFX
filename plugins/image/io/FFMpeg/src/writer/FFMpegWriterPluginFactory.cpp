@@ -507,10 +507,10 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add supported pixel depths
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	//desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-	//desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-    // add supported extensions
+	// add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
 	
 	// plugin flags
