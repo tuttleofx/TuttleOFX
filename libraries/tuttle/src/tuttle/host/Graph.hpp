@@ -144,6 +144,8 @@ public:
 	void init();
 	
 	void setup();
+
+	void setupAtTime( const OfxTime time, const NodeListArg& nodes = NodeListArg() );
 	
 	/**
 	 * @brief Shortcut
