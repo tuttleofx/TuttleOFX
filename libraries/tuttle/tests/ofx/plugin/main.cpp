@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 		ofsb2.close();
 	}
 
-	BOOST_CHECK( boost::filesystem::exists( testfile ) );
+	BOOST_CHECK( boost::filesystem::exists( testfile2 ) );
 	boost::filesystem::remove( testfile2 );
 }
 

@@ -1,9 +1,11 @@
+# scons: Png Component Merge
+
 from pyTuttle import tuttle
 import numpy
 import Image
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 def testInputBuffer_loadImageWithPIL():
 	"""

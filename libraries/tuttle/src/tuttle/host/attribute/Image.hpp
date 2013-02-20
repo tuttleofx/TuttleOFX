@@ -32,7 +32,6 @@ public:
 	};
 	
 protected:
-	std::size_t _nbComponents; ///< number of components
 	std::size_t _memorySize; ///< memory size
 	std::size_t _pixelBytes; ///< pixel memory size
 	int _rowAbsDistanceBytes; ///< positive memory size for the distance between rows
@@ -63,7 +62,7 @@ public:
 	
 	EImageOrientation getOrientation() const { return _orientation; }
 	
-	std::size_t getNbComponents() const { return _nbComponents; }
+	std::size_t getNbComponents() const { return ofx::imageEffect::numberOfComponents( getComponentsType() ); }
 	
 	/**
 	 * @brief Get distance between rows depending on the requested orientation.

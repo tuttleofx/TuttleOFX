@@ -171,24 +171,24 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 	     it != itEnd;
 	     ++it )
 	{
-		attribute::OfxhParamSet* setInstance = this;
+//		attribute::OfxhParamSet* setInstance = this;
 		// SetInstance where the childrens param instances will be added
 		const attribute::OfxhParamDescriptor& descriptor = *it;
 
 		// name and parentName of the parameter
 		std::string name       = descriptor.getName();
-		std::string parentName = descriptor.getParentName();
-
-		if( parentName != "" )
-		{
-			attribute::OfxhParamGroup* parentGroup = dynamic_cast<attribute::OfxhParamGroup*>( parameters[parentName] );
-			if( parentGroup )
-			{
-				setInstance = parentGroup->getChildrens();
-			}
-		}
-		else
-			setInstance = this;
+//		std::string parentName = descriptor.getParentName();
+//
+//		if( parentName != "" )
+//		{
+//			attribute::OfxhParamGroup* parentGroup = dynamic_cast<attribute::OfxhParamGroup*>( parameters[parentName] );
+//			if( parentGroup )
+//			{
+//				setInstance = parentGroup->getChildrens();
+//			}
+//		}
+//		else
+//			setInstance = this;
 
 		// get a param instance from a param descriptor. Param::Instance is automatically added into the setInstance provided.
 		attribute::OfxhParam* instance = newParam( descriptor );
@@ -487,11 +487,11 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
 						      OfxTime            time,
 						      OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
-	if( getParams()[paramName]->changedActionInProgress() )
+	if( getParamsByName()[paramName]->changedActionInProgress() )
 	{
 		return;
 	}
-	getParams()[paramName]->changedActionBegin();
+	getParamsByName()[paramName]->changedActionBegin();
 	/*attribute::OfxhParam& param = */ getParam( paramName );
 
 	if( isClipPreferencesSlaveParam( paramName ) )
@@ -518,7 +518,7 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 
-	getParams()[paramName]->changedActionEnd();
+	getParamsByName()[paramName]->changedActionEnd();
 
 }
 
@@ -1524,6 +1524,8 @@ bool OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
 	};
 
 	property::OfxhSet outArgs( outStuff );
+	outArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, range.min, 0 );
+	outArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, range.max, 1 );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionGetTimeDomain,
 				      this->getHandle(),

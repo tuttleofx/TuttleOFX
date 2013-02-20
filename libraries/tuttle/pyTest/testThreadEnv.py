@@ -1,7 +1,9 @@
+# scons: Checkerboard Blur Png
+
 from pyTuttle import tuttle
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 def testThreadEnv():
 	g = tuttle.Graph()

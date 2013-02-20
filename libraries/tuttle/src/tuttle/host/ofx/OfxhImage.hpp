@@ -120,7 +120,7 @@ public:
 	// plugin can label the cached information with this identifier. If a user connects a different clip to the
 	// analysed input, or the image has changed in some way then the plugin can detect this via an identifier change
 	// and re-evaluate the cached information.
-
+/*
 	// construction based on clip instance
 	OfxhImage( attribute::OfxhClip& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
 			   OfxTime              time,
@@ -132,7 +132,7 @@ public:
 	           int                  rowBytes,
 	           const std::string&   field,
 	           const std::string&   uniqueIdentifier );
-
+*/
 	// OfxImageClipHandle getHandle();
 
 	OfxPropertySetHandle getPropHandle() const

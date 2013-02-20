@@ -85,6 +85,14 @@ typedef ::boost::error_info<struct tag_devMessage, ::boost::error_info_sstream> 
 //typedef ::boost::error_info_sstream<struct tag_message> dev;
 
 /**
+ * @brief When we convert a C++ exception into a Python exception,
+ *        we put the C++ backtrace into the message.
+ * 
+ * @remark Dev information.
+ */
+typedef ::boost::error_info<struct tag_backtraceMessage, ::boost::error_info_sstream> backtrace;
+
+/**
  * @brief The ofx error status code.
  * @remark Dev information.
  */

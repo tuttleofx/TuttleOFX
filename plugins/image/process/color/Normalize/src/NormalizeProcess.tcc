@@ -40,6 +40,7 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 	View src = this->_srcView;
 	Pixel smin;
 	Pixel smax;
+	pixel_zeros_t<Pixel>()(smin);
 	pixel_zeros_t<Pixel>()(smax);
 	
 	rgba32f_pixel_t r;

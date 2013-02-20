@@ -1821,31 +1821,31 @@ void loadAction( void )
 	// fetch the suites
 	OFX::Log::error( gHost == 0, "Host pointer has not been set." );
 	if( !gHost )
-	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
 
 	if( Private::gLoadCount == 1 )
 	{
-	gEffectSuite   = (OfxImageEffectSuiteV1*) fetchSuite( kOfxImageEffectSuite, 1 );
-	gPropSuite     = (OfxPropertySuiteV1*)    fetchSuite( kOfxPropertySuite, 1 );
-	gParamSuite    = (OfxParameterSuiteV1*)   fetchSuite( kOfxParameterSuite, 1 );
-	gMemorySuite   = (OfxMemorySuiteV1*)      fetchSuite( kOfxMemorySuite, 1 );
-	gThreadSuite   = (OfxMultiThreadSuiteV1*) fetchSuite( kOfxMultiThreadSuite, 1 );
-	gMessageSuite  = (OfxMessageSuiteV1*)     fetchSuite( kOfxMessageSuite, 1 );
-	gProgressSuite = (OfxProgressSuiteV1*)     fetchSuite( kOfxProgressSuite, 1, true );
-	gTimeLineSuite = (OfxTimeLineSuiteV1*)     fetchSuite( kOfxTimeLineSuite, 1, true );
-	gParametricParameterSuite = static_cast<OfxParametricParameterSuiteV1*>( OFX::fetchSuite( kOfxParametricParameterSuite, 1, true ) );
-	gCameraParameterSuite = static_cast<NukeOfxCameraSuiteV1*>( OFX::fetchSuite( kNukeOfxCameraSuite, 1, true ) );
+		gEffectSuite   = (OfxImageEffectSuiteV1*) fetchSuite( kOfxImageEffectSuite, 1 );
+		gPropSuite     = (OfxPropertySuiteV1*)    fetchSuite( kOfxPropertySuite, 1 );
+		gParamSuite    = (OfxParameterSuiteV1*)   fetchSuite( kOfxParameterSuite, 1 );
+		gMemorySuite   = (OfxMemorySuiteV1*)      fetchSuite( kOfxMemorySuite, 1 );
+		gThreadSuite   = (OfxMultiThreadSuiteV1*) fetchSuite( kOfxMultiThreadSuite, 1 );
+		gMessageSuite  = (OfxMessageSuiteV1*)     fetchSuite( kOfxMessageSuite, 1 );
+		gProgressSuite = (OfxProgressSuiteV1*)     fetchSuite( kOfxProgressSuite, 1, true );
+		gTimeLineSuite = (OfxTimeLineSuiteV1*)     fetchSuite( kOfxTimeLineSuite, 1, true );
+		gParametricParameterSuite = static_cast<OfxParametricParameterSuiteV1*>( OFX::fetchSuite( kOfxParametricParameterSuite, 1, true ) );
+		gCameraParameterSuite = static_cast<NukeOfxCameraSuiteV1*>( OFX::fetchSuite( kNukeOfxCameraSuite, 1, true ) );
 
-	// OK check and fetch host information
-	fetchHostDescription( gHost );
+		// OK check and fetch host information
+		fetchHostDescription( gHost );
 
-	/// and set some dendent flags
-	OFX::Private::gHostDescription.supportsProgressSuite = ( gProgressSuite != NULL );
-	OFX::Private::gHostDescription.supportsTimeLineSuite = ( gTimeLineSuite != NULL );
+		/// and set some dendent flags
+		OFX::Private::gHostDescription.supportsProgressSuite = ( gProgressSuite != NULL );
+		OFX::Private::gHostDescription.supportsTimeLineSuite = ( gTimeLineSuite != NULL );
 
-	// fetch the interact suite if the host supports interaction
-	if( OFX::Private::gHostDescription.supportsOverlays || OFX::Private::gHostDescription.supportsCustomInteract )
-		gInteractSuite = (OfxInteractSuiteV1*) fetchSuite( kOfxInteractSuite, 1 );
+		// fetch the interact suite if the host supports interaction
+		if( OFX::Private::gHostDescription.supportsOverlays || OFX::Private::gHostDescription.supportsCustomInteract )
+			gInteractSuite = (OfxInteractSuiteV1*) fetchSuite( kOfxInteractSuite, 1 );
 	}
 
 	// initialise the validation code
@@ -1862,14 +1862,14 @@ void unloadAction( const char* id )
 	--Private::gLoadCount;
 
 	{
-	EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
-	EffectContextMap& toBeDeleted    = it->second;
-	for( EffectContextMap::iterator it2 = toBeDeleted.begin(); it2 != toBeDeleted.end(); ++it2 )
-	{
-		OFX::ImageEffectDescriptor* desc = it2->second;
-		delete desc;
-	}
-	toBeDeleted.clear();
+		EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
+		EffectContextMap& toBeDeleted    = it->second;
+		for( EffectContextMap::iterator it2 = toBeDeleted.begin(); it2 != toBeDeleted.end(); ++it2 )
+		{
+			OFX::ImageEffectDescriptor* desc = it2->second;
+			delete desc;
+		}
+		toBeDeleted.clear();
 	}
 	{
 		OFX::OfxPlugInfoMap::iterator it  = OFX::Private::plugInfoMap.find( id );
@@ -1886,16 +1886,16 @@ void unloadAction( const char* id )
 
 	if( Private::gLoadCount == 0 )
 	{
-	// force these to null
-	gEffectSuite   = NULL;
-	gPropSuite     = NULL;
-	gParamSuite    = NULL;
-	gMemorySuite   = NULL;
-	gThreadSuite   = NULL;
-	gMessageSuite  = NULL;
-	gInteractSuite = NULL;
-	gParametricParameterSuite = NULL;
-	gCameraParameterSuite = NULL;
+		// force these to null
+		gEffectSuite   = NULL;
+		gPropSuite     = NULL;
+		gParamSuite    = NULL;
+		gMemorySuite   = NULL;
+		gThreadSuite   = NULL;
+		gMessageSuite  = NULL;
+		gInteractSuite = NULL;
+		gParametricParameterSuite = NULL;
+		gCameraParameterSuite = NULL;
 
 		ofxPlugs.clear();
 		gHasInit = false;
@@ -2259,6 +2259,8 @@ bool getTimeDomainAction( OfxImageEffectHandle handle, OFX::PropertySet& outArgs
 		"Calling kOfxImageEffectActionGetTimeDomain on an effect that is not a 'general', 'reader' or 'generator' context node." );
 
 	OfxRangeD timeDomain;
+	timeDomain.min = outArgs.propGetDouble( kOfxImageEffectPropFrameRange, 0 );
+	timeDomain.max = outArgs.propGetDouble( kOfxImageEffectPropFrameRange, 1 );
 
 	// and call the plugin client code
 	bool v = effectInstance->getTimeDomain( timeDomain );

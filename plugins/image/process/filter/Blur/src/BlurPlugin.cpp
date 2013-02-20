@@ -48,6 +48,9 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
 		case eParamBorderPadded:
 			params._boundary_option = convolve_option_extend_padded;
 			break;
+		case eParamBorderNo:
+			params._boundary_option = convolve_option_extend_mirror;
+			break;
 	}
 	return params;
 }
@@ -78,9 +81,18 @@ bool BlurPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& 
 			rod.x2 = srcRod.x2 - params._gilKernelX.right_size();
 			rod.y2 = srcRod.y2 - params._gilKernelY.right_size();
 			return true;
-		default:
-			break;
+		case eParamBorderBlack:
+		case eParamBorderConstant:
+		case eParamBorderMirror:
+			rod.x1 = srcRod.x1 - params._gilKernelX.left_size();
+			rod.y1 = srcRod.y1 - params._gilKernelY.left_size();
+			rod.x2 = srcRod.x2 + params._gilKernelX.right_size();
+			rod.y2 = srcRod.y2 + params._gilKernelY.right_size();
+			return true;
+		case eParamBorderNo:
+			return false; // don't modify the source image RoD
 	}
+	BOOST_ASSERT(false);
 	return false;
 }
 

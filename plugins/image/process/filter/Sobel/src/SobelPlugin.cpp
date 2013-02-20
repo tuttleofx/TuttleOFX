@@ -19,7 +19,7 @@ namespace exception = tuttle::plugin::exception;
 
 template< template<class,class> class Process,
           bool sPlanar, class SLayout, class SBits,
-		  bool dPlanar, class DLayout, class DBits,
+          bool dPlanar, class DLayout, class DBits,
           class Plugin >
 void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args )
 {
@@ -42,7 +42,7 @@ template< template<class,class> class Process,
           class Plugin >
 void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth dBitDepth )
 {
-    switch( dBitDepth )
+	switch( dBitDepth )
 	{
 		case OFX::eBitDepthUByte:
 		{
@@ -75,7 +75,7 @@ template< template<class,class> class Process,
           class Plugin >
 void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-    switch( dComponent )
+	switch( dComponent )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
@@ -87,10 +87,6 @@ void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const 
 			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, boost::gil::rgb_layout_t>( plugin, args, dBitDepth );
 			return;
 		}
-//		{
-//			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, boost::gil::gray_layout_t>( plugin, args, dBitDepth );
-//			return;
-//		}
 		case OFX::ePixelComponentAlpha:
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
@@ -122,7 +118,7 @@ template< template<class,class> class Process,
           class Plugin >
 void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-    switch( sBitDepth )
+	switch( sBitDepth )
 	{
 		case OFX::eBitDepthUByte:
 		{
@@ -154,7 +150,7 @@ template< template<class,class> class Process,
           class Plugin >
 void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent sComponent, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-    switch( sComponent )
+	switch( sComponent )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
@@ -178,7 +174,6 @@ void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const 
 				<< exception::user() + "Pixel component (" + mapPixelComponentEnumToString(sComponent) + ") not supported by the plugin." );
 		}
 	}
-	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 
@@ -420,13 +415,6 @@ bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& iden
  */
 void SobelPlugin::render( const OFX::RenderArguments &args )
 {
-	// TUTTLE_TCOUT_X( 20, "-" );
-	// TUTTLE_TCOUT_VAR( mapPixelComponentEnumToString( _clipSrc->getPixelComponents() ) );
-	// TUTTLE_TCOUT_VAR( mapBitDepthEnumToString( _clipSrc->getPixelDepth() ) );
-
-	// TUTTLE_TCOUT_VAR( mapPixelComponentEnumToString( _clipDst->getPixelComponents() ) );
-	// TUTTLE_TCOUT_VAR( mapBitDepthEnumToString( _clipDst->getPixelDepth() ) );
-
 	::sobel::localDoGilRender2<SobelProcess>( *this, args, *_clipSrc, *_clipDst );
 }
 

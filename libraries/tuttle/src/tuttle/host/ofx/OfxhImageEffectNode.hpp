@@ -98,7 +98,7 @@ public:
 
 	OfxhImageEffectNode( const OfxhImageEffectNode& other );
 
-	virtual ~OfxhImageEffectNode();
+	virtual ~OfxhImageEffectNode() = 0;
 
 protected:
 	void initHook();
@@ -391,7 +391,7 @@ public:
 	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false )
 	{
 		/// @todo tuttle initOverlayDescriptor... !!! Correct the constness
-		//_descriptor->initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
+		const_cast<OfxhImageEffectNodeDescriptor&>(_descriptor).initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
 	}
 
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const
@@ -426,7 +426,7 @@ public:
 	 *     - pixel depth
 	 *     - components
 	 *     - pixel aspect ratio
-	 * It will also set on the effect itselff
+	 * It will also set on the effect itself
 	 *     - whether it is continuously samplable
 	 *     - the premult state of the output
 	 *     - whether the effect is frame varying

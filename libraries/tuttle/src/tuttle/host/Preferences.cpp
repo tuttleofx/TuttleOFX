@@ -22,7 +22,7 @@ Preferences::Preferences()
 , _temp( buildTuttleTemp() )
 {}
 
-boost::filesystem::path Preferences::buildTuttleHome()
+boost::filesystem::path Preferences::buildTuttleHome() const
 {
 	boost::filesystem::path tuttleHome;
 	
@@ -91,7 +91,7 @@ boost::filesystem::path Preferences::buildTuttleHome()
 	return tuttleHome;
 }
 
-boost::filesystem::path Preferences::buildTuttleTemp()
+boost::filesystem::path Preferences::buildTuttleTemp() const
 {
 	const boost::filesystem::path tuttleTmp = boost::filesystem::temp_directory_path() / "tuttle";
 	if( ! boost::filesystem::exists( tuttleTmp ) )
@@ -102,7 +102,7 @@ boost::filesystem::path Preferences::buildTuttleTemp()
 	return tuttleTmp;
 }
 
-boost::filesystem::path Preferences::buildTuttleTestPath()
+boost::filesystem::path Preferences::buildTuttleTestPath() const
 {
 	const boost::filesystem::path tuttleTest = boost::filesystem::current_path() / ".tests";
 	if( ! boost::filesystem::exists( tuttleTest ) )

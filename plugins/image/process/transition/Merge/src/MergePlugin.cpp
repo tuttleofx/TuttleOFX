@@ -397,11 +397,6 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			render< View, FunctorInterpolated >( args );
 			break;
 		}
-		default:
-		{
-			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::user() + "Unrecognized merge operation (" + merge + ")." );
-		}
 	}
 }
 

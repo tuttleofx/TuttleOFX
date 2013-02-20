@@ -1,7 +1,9 @@
+# scons: Checkerboard Invert ColorTransform Png
+
 from pyTuttle import tuttle
 
 def setUp():
-	tuttle.core().preload()
+	tuttle.core().preload(False)
 
 def testMultipleCompute_simpleNodes():
 

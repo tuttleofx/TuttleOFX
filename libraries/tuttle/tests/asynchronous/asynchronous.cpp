@@ -71,6 +71,7 @@ BOOST_AUTO_TEST_CASE( computeAsynchronous )
 	
 	TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
 	ThreadEnv env;
+	env.getComputeOptions().setTimeRange(0, 15);
 	env.compute( g, outputs );
 	env.abort();
 

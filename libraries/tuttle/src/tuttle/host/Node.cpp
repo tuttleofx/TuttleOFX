@@ -15,6 +15,7 @@ INode* createNode( const std::string& pluginName )
 	{
 		BOOST_THROW_EXCEPTION( exception::Logic()
 		    << exception::user( "Plugin not found." )
+		    //<< exception::dev( core().getImageEffectPluginCache() )
 		    << exception::pluginIdentifier( pluginName ) );
 	}
 

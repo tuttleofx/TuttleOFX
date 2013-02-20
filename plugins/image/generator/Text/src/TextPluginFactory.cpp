@@ -4,6 +4,14 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
+#ifndef __WINDOWS__
+#include <fontconfig/fontconfig.h>
+#endif
+
+#include <iostream>
+
+#include <boost/algorithm/string.hpp>
+
 #include <limits>
 
 namespace tuttle {
@@ -18,7 +26,7 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleText",
 					"Text",
-	                "Text" );
+					"Text" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
@@ -70,12 +78,45 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	                       //+ kParamText +
 	                       "text = 'At frame '+str(time)+', value is ' + str( sin(time) )\n" );
 	isExpression->setDefault( false );
-
+	
+#ifdef __WINDOWS__
 	OFX::StringParamDescriptor* font = desc.defineStringParam( kParamFont );
-	font->setLabel( "Font file" );
 	font->setStringType( OFX::eStringTypeFilePath );
-	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/arial.ttf" );
+	font->setHint( "When a font file path is activate, the bold and italic options are not available." );
+#else
+	OFX::ChoiceParamDescriptor* font = desc.defineChoiceParam( kParamFont );
 
+	FcInit ();
+	FcConfig *config = FcInitLoadConfigAndFonts();
+	FcChar8 *s;
+	FcPattern *p  = FcPatternBuild( NULL, 
+									FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD, 
+									FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC, 
+									NULL );
+
+	FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
+	FcFontSet   *fs = FcFontList( config, p, os );
+
+	for( int i=0; fs && i < fs->nfont; i++ )
+	{
+		FcPattern *fcFont = fs->fonts[ i ];
+		s = FcNameUnparse( fcFont );
+	
+		std::ostringstream stream ;
+		stream << s ;
+		std::string id = stream.str();
+		boost::algorithm::to_lower( id );
+		boost::replace_all ( id, " ", "_" );
+	
+		font->appendOption( id, stream.str() );
+		
+		if(!strcmp((char*)s, "Arial"))
+			font->setDefault( i );	
+	}
+#endif
+	font->setHint("Select the font.");
+	font->setLabel("Font");
+	
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );
 	size->setDefault( 18 );
@@ -91,6 +132,10 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kParamColor );
 	color->setLabel( "Color" );
 	color->setDefault( 1.0, 1.0, 1.0, 1.0 );
+
+	OFX::RGBAParamDescriptor* backgroundColor = desc.defineRGBAParam( kParamBackgroundColor );
+	backgroundColor->setLabel( "Background Color" );
+	backgroundColor->setDefault( 0.0, 0.0, 0.0, 0.0 );
 
 	OFX::Double2DParamDescriptor* position = desc.defineDouble2DParam( kParamPosition );
 	position->setLabel( "Position" );
@@ -121,6 +166,13 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	verticalFlip->setAnimates( false );
 	verticalFlip->setHint( "Some hosts use inverted images, so you can correct this problem using this flag." );
 
+	OFX::BooleanParamDescriptor* italic = desc.defineBooleanParam( kParamItalic );
+	italic->setLabel( "Italic" );
+	italic->setDefault( false );
+
+	OFX::BooleanParamDescriptor* bold = desc.defineBooleanParam( kParamBold );
+	bold->setLabel( "Bold" );
+	bold->setDefault( false );
 }
 
 /**

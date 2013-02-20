@@ -142,25 +142,6 @@ protected:
 public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 
-	#ifdef SWIG
-	%extend
-	{
-		OfxhPlugin& __getitem__( const std::string& name )
-		{
-			return *self->getPluginById( name );
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
-	}
-	#endif
-
 public:
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
 	/// pick the highest found version.

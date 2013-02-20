@@ -54,7 +54,8 @@ public:
 			case eInterpolationTypeLinear:
 				return OCIO_NAMESPACE::INTERP_LINEAR;
 		}
-
+		BOOST_ASSERT(false);
+		return OCIO_NAMESPACE::INTERP_LINEAR;
 	}
 };
 

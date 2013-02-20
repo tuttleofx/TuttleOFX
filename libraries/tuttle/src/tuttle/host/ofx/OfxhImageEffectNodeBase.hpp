@@ -44,7 +44,6 @@ public:
 	/// obtain a handle on this for passing to the C api
 	OfxImageEffectHandle getHandle() const;
 
-	#ifndef SWIG
 	const property::OfxhSet& getProperties() const   { return _properties; }
 	property::OfxhSet&       getEditableProperties() { return _properties; }
 
@@ -79,8 +78,10 @@ public:
 	/// via tiling or some such
 	bool getHostFrameThreading() const;
 
+	#ifndef SWIG
 	/// get the overlay interact main entry if it exists
 	OfxPluginEntryPoint* getOverlayInteractMainEntry() const;
+	#endif
 
 	/// does the effect support images of differing sizes
 	bool supportsMultiResolution() const;
@@ -114,8 +115,6 @@ private:
 	{
 		ar& BOOST_SERIALIZATION_NVP( _properties );
 	}
-
-	#endif
 };
 
 }

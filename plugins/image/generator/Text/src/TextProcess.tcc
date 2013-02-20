@@ -12,7 +12,12 @@
 #include <boost/python.hpp>
 
 #include <sstream>
+#include <string>
+#include <iostream>
 
+#ifndef __WINDOWS__
+#include <fontconfig/fontconfig.h>
+#endif
 
 namespace tuttle {
 namespace plugin {
@@ -35,12 +40,6 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 
 	_params = _plugin.getProcessParams( args.renderScale );
-
-	if( !boost::filesystem::exists( _params._font ) )
-	{
-		return;
-	}
-
 	
 	if( ! _params._isExpression )
 	{
@@ -106,11 +105,11 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 1. Create terry image -----------
 	if( !this->_clipSrc->isConnected() )
 	{
-		//		rgba32f_pixel_t backgroundColor( params._backgroundColor.r,
-		//									     params._backgroundColor.g,
-		//									     params._backgroundColor.b,
-		//									     params._backgroundColor.a );
-		rgba32f_pixel_t backgroundColor( 0, 0, 0, 0 );
+		rgba32f_pixel_t backgroundColor( _params._backgroundColor.r,
+										 _params._backgroundColor.g,
+										 _params._backgroundColor.b,
+										 _params._backgroundColor.a );
+		
 		fill_pixels( this->_dstView, backgroundColor );
 	}
 
@@ -119,14 +118,56 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	FT_Init_FreeType( &library );
 
 	FT_Face face;
+
+#ifdef __WINDOWS__
+	if( !boost::filesystem::exists(_params._font) || boost::filesystem::is_directory(_params._font) )
+	{
+		BOOST_THROW_EXCEPTION( exception::FileNotExist(_params._font)
+							<< exception::user("Text: Error in Font Path.")
+							<< exception::filename(_params._font));
+	}
 	FT_New_Face( library, _params._font.c_str(), 0, &face );
-	FT_Set_Pixel_Sizes( face, _params._fontX, _params._fontY );
+#else
+		FcInit();
+
+		std::string fontFile = "";
+		
+		FcChar8 *file;
+		FcResult result;
+		FcConfig *config = FcInitLoadConfigAndFonts();
+		FcPattern *p = FcPatternBuild(	NULL,
+										FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
+										FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
+										NULL);
+
+		FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
+		FcFontSet   *fs = FcFontList( config, p, os );
+
+		fontFile = (char*) FcNameUnparse( fs->fonts[_params._font] );
+
+		int weight = ( _params._bold   == 1) ? FC_WEIGHT_BOLD  : FC_WEIGHT_MEDIUM;
+		int slant  = ( _params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;
+
+		p  = FcPatternBuild( NULL, 
+							 FC_FAMILY, FcTypeString, fontFile.c_str(),
+							 FC_WEIGHT, FcTypeInteger, weight, 
+							 FC_SLANT, FcTypeInteger, slant, 
+							 NULL);	
+
+		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FAMILY, 0, &file );
+		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FILE, 0, &file );
+		fontFile = (char*) file;
+	
+	FT_New_Face( library, fontFile.c_str(), 0, &face );
+#endif
+	
+	FT_Set_Pixel_Sizes( face, _params._fontX, _params._fontY );	
 
 	//Step 3. Make Glyphs Array ------------------
 	rgba32f_pixel_t rgba32f_foregroundColor( _params._fontColor.r,
-	                                         _params._fontColor.g,
-	                                         _params._fontColor.b,
-	                                         _params._fontColor.a );
+											 _params._fontColor.g,
+											 _params._fontColor.b,
+											 _params._fontColor.a );
 	color_convert( rgba32f_foregroundColor, _foregroundColor );
 	std::transform( _text.begin(), _text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
@@ -139,7 +180,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 6. Get Coordinates (x,y) ----------------
 	_textSize.x   = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), terry::make_width() );
 	_textSize.y   = std::for_each( _metrics.begin(), _metrics.end(), terry::make_height() );
-	
+
 	if( _metrics.size() > 1 )
 		_textSize.x   += _params._letterSpacing * (_metrics.size() - 1);
 
@@ -157,7 +198,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		}
 		case eParamVAlignBottom:
 		{
-			_textCorner.y = this->_dstView.height() - _textSize.y - 1;
+			_textCorner.y = this->_dstView.height() - (_textSize.y + _textSize.y / 3);
 			break;
 		}
 	}
@@ -191,7 +232,6 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		_textCorner.y    += _params._position.y;
 	}
 	_textCorner.x += _params._position.x;
-	
 }
 
 /**
@@ -232,7 +272,7 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	// if outside dstRod
 	// ...
 	// else
-	const OfxRectI textRod = { _textCorner.x, _textCorner.y, _textCorner.x + _textSize.x, _textCorner.y + _textSize.y };
+	const OfxRectI textRod = { _textCorner.x, _textCorner.y, _textCorner.x + _textSize.x, _textCorner.y + _textSize.y + _textSize.y / 3};
 	const OfxRectI textRoi = rectanglesIntersection( textRod, procWindowRoW );
 	const OfxRectI textLocalRoi = translateRegion( textRoi, - _textCorner );
 	
@@ -245,7 +285,7 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	//TUTTLE_TCOUT_VAR( textLocalRoi );
 	//TUTTLE_TCOUT_VAR2( _dstViewForGlyphs.width(), _dstViewForGlyphs.height() );
 	
-	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y );
+	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y);
 	
 	std::for_each( _glyphs.begin(), _glyphs.end(), _kerning.begin(),
 	               render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor, _params._letterSpacing, Rect<std::ptrdiff_t>(textLocalRoi) )

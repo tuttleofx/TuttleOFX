@@ -23,7 +23,7 @@ template< template<class> class Process,
           class Plugin>
 void doGilRender( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth bitDepth )
 {
-    switch( bitDepth )
+	switch( bitDepth )
 	{
 		case OFX::eBitDepthUByte:
 		{
@@ -55,7 +55,7 @@ template< template<class> class Process,
           class Plugin >
 void doGilRender( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent component, const OFX::EBitDepth bitDepth )
 {
-    switch( component )
+	switch( component )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
@@ -127,7 +127,7 @@ template< template<class,class> class Process,
           class Plugin >
 void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth dBitDepth )
 {
-    switch( dBitDepth )
+	switch( dBitDepth )
 	{
 		case OFX::eBitDepthUByte:
 		{
@@ -160,7 +160,7 @@ template< template<class,class> class Process,
           class Plugin >
 void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-    switch( dComponent )
+	switch( dComponent )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
@@ -207,7 +207,7 @@ template< template<class,class> class Process,
           class Plugin >
 void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-    switch( sBitDepth )
+	switch( sBitDepth )
 	{
 		case OFX::eBitDepthUByte:
 		{
@@ -239,7 +239,7 @@ template< template<class,class> class Process,
           class Plugin >
 void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent sComponent, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
 {
-    switch( sComponent )
+	switch( sComponent )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
@@ -263,7 +263,6 @@ void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::
 				<< exception::user() + "Pixel component (" + mapPixelComponentEnumToString(sComponent) + ") not supported by the plugin." );
 		}
 	}
-	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 
@@ -301,7 +300,7 @@ void doGilRender2( Plugin& plugin, const OFX::RenderArguments& args )
 template< template<class,class,class> class Process,
           bool s1planar, class S1Layout, class S1Bits,
           bool s2planar, class S2Layout, class S2Bits,
-		  bool dPlanar, class DLayout, class DBits,
+          bool dPlanar, class DLayout, class DBits,
           class Plugin>
 void doGilRender3( Plugin& plugin, const OFX::RenderArguments& args )
 {

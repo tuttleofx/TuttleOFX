@@ -19,6 +19,19 @@
 
 %extend tuttle::host::Graph
 {
+	Node& __getitem__( const std::string& name )
+	{
+		return self->getNode( name );
+	}
+
+	std::string __str__() const
+	{
+		std::stringstream s;
+
+		s << *self;
+		return s.str();
+	}
+
 	%pythoncode
 	{
 		def createNode(self, pluginName, *orderedParams, **namedParams):

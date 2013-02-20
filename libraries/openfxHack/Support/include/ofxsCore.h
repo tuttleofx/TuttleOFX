@@ -98,6 +98,9 @@
 #include <ofxParam.h>
 #include <ofxProperty.h>
 
+#include <tuttle/common/utils/backtrace.hpp>
+#include <tuttle/common/exceptions.hpp>
+
 #include <cmath>
 #include <cassert>
 #include <vector>
@@ -229,6 +232,8 @@ namespace Exception {
 /** @brief thrown when a suite returns a failure status code
  */
 class Suite : public std::runtime_error
+	, virtual public ::boost::exception
+	, virtual public ::boost::backtrace
 {
 protected:
 	OfxStatus _status;

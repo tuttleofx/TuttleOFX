@@ -85,6 +85,12 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	bitDepth->setDefault( eTuttlePluginBitDepth8 );
 	bitDepth->setEnabled( false );
 
+	OFX::ChoiceParamDescriptor* channel = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginChannel ) );
+	channel->resetOptions();
+	channel->appendOption( kTuttlePluginChannelRGB );
+	channel->setDefault( 0 );
+	channel->setEnabled( false );
+	
 	OFX::BooleanParamDescriptor* premult = static_cast<OFX::BooleanParamDescriptor*>( desc.getParamDescriptor( kParamPremultiplied ) );
 	premult->setDefault( true );
 

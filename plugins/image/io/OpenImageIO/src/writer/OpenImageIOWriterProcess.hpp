@@ -22,6 +22,8 @@ class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 
 	OpenImageIOWriterProcessParams params;
 
+	ETuttlePluginBitDepth getDefaultBitDepth(const std::string& filepath, const ETuttlePluginBitDepth &bitDepth);
+
 public:
 	typedef typename terry::image_from_view<View>::type Image;
 	typedef typename View::value_type Pixel;
@@ -37,7 +39,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	template<class WImage>
-	void writeImage( View& src, const std::string& filepath, const ETuttlePluginBitDepth bitDepth, const ETuttlePluginComponents components );
+	void writeImage( View& src, const std::string& filepath, const ETuttlePluginBitDepth& bitDepth );
 
 	static bool progressCallback( void *opaque_data, float portion_done )
 	{

@@ -9,8 +9,7 @@ namespace writer {
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( FFMpegWriterPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( FFMpegWriterPluginFactory, {}, {} );
 
 }
 }

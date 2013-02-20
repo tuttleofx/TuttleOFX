@@ -141,9 +141,9 @@ public:
 	{}
 
 	template<class VertexDescriptor, class Graph>
-	void finish_vertex( VertexDescriptor v, Graph& g )
+	void finish_vertex( VertexDescriptor vd, Graph& g )
 	{
-		Vertex& vertex = _graph.instance( v );
+		Vertex& vertex = _graph.instance( vd );
 
 		TUTTLE_TCOUT( "[TimeDomain] finish_vertex " << vertex );
 		if( vertex.isFake() )

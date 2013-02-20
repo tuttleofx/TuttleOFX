@@ -67,13 +67,9 @@ void correlate_rows_imp( const SrcView& src, const Kernel& ker, const DstView& d
                          Correlator correlator )
 {
 	using namespace terry::numeric;
-	
-	// assert dst frame with shift is inside src frame
-    assert( src.dimensions() >= dst.dimensions() );
+
 	// dst must be contained in src
-    assert( dst_tl >= 0 );
     assert( dst_tl <= src.dimensions() );
-	assert( dst_tl + dst.dimensions() <= src.dimensions() );
     assert( ker.size() != 0 );
 
 	typedef typename SrcView::point_t point_t;
@@ -507,9 +503,6 @@ void correlate_rows_cols_imp( const SrcView& src,
 						  const typename SrcView::point_t& dst_tl,
 						  const convolve_boundary_option option = convolve_option_extend_zero )
 {
-	// dst with dst_tl shift must be inside src
-	BOOST_ASSERT( dst.width() + dst_tl.x <= src.width() );
-	BOOST_ASSERT( dst.height() + dst_tl.y <= src.height() );
     typedef typename DstView::point_t Point;
     typedef typename DstView::coord_t Coord;
 	typedef typename view_type_from_pixel<PixelAccum, is_planar<DstView>::value >::type ViewAccum;

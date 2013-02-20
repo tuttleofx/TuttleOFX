@@ -56,18 +56,21 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         // Create the mandated output clip
         OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
         dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+        dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
         dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
         dstClip->setSupportsTiles( true );
 
         // create the mandated source clip
         OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
         srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+        srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
         srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
         srcClip->setSupportsTiles( true );
 
         // declare an optional clip reference for RoD
         OFX::ClipDescriptor* srcRefClip = desc.defineClip( kClipOptionalSourceRef );
         srcRefClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+        srcRefClip->addSupportedComponent( OFX::ePixelComponentRGB );
         srcRefClip->addSupportedComponent( OFX::ePixelComponentAlpha );
         srcRefClip->setSupportsTiles( true );
         srcRefClip->setOptional( true );
