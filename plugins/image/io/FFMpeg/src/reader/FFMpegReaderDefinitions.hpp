@@ -9,6 +9,8 @@ namespace plugin {
 namespace ffmpeg {
 namespace reader {
 
+static const std::string kParamKeepSAR = "keepSAR";
+
 }
 }
 }

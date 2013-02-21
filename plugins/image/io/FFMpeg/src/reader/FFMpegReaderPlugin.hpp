@@ -43,6 +43,7 @@ public:
 	OFX::Clip* _clipDst;              ///< Destination image clip
 
 	OFX::StringParam* _paramFilepath; ///< video filepath
+	OFX::BooleanParam* _paramKeepSAR; ///< Keep sample aspect ratio
 
 	bool _errorInFile;
 	VideoFFmpegReader _reader;
