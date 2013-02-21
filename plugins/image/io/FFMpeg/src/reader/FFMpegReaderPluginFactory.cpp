@@ -85,6 +85,11 @@ void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
+	OFX::BooleanParamDescriptor* keepSAR = desc.defineBooleanParam( kParamKeepSAR );
+	keepSAR->setLabel( "Keep input SAR" );
+	keepSAR->setDefault( true );
+	keepSAR->setHint( "Keep input sample aspect ratio." );
+
 	describeReaderParamsInContext( desc, context );
 }
 
