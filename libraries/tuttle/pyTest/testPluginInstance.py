@@ -154,7 +154,10 @@ def testNodeComputeInfos():
 	print "framerate: ", framerate
 	
 	assert td.min == 0.0
-	assert td.max == 101.0
+	assert td.max == 100.0
+	
+	# Duration is 101, the last frame is included
+	assert (td.max-td.min)+1 == 101.0
 	
 	assert framerate == 25.0
 
