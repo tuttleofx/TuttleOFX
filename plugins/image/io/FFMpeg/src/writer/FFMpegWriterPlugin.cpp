@@ -545,13 +545,13 @@ int convertIntWithOptionalUnit( const std::string& param, const std::string& str
 		switch( unit )
 		{
 			case 'k':
-				intValue *= 1024;
+				intValue *= 1000;
 				break;
 			case 'M':
-				intValue *= 1024 * 1024;
+				intValue *= 1000 * 1000;
 				break;
 			case 'G':
-				intValue *= 1024 * 1024 * 1024;
+				intValue *= 1000 * 1000 * 1000;
 				break;
 			default:
 				TUTTLE_CERR("FFMpeg writer: unknown unit " << unit << " for parameter " << param );
