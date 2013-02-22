@@ -294,6 +294,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 	if( ( _avFormatOptions->oformat->flags & AVFMT_RAWPICTURE ) &&
 		( _stream->codec->codec->id == AV_CODEC_ID_RAWVIDEO ) )
 	{
+		//TUTTLE_TCOUT( "RAW : " << sizeof( AVPicture ) );
 		AVPacket pkt;
 		av_init_packet( &pkt );
 		pkt.data         = (boost::uint8_t*) out_frame;
@@ -301,6 +302,13 @@ int VideoFFmpegWriter::execute( boost::uint8_t* const in_buffer, const int in_wi
 		pkt.pts          = av_rescale_q(out_frame->pts, _stream->codec->time_base, _stream->time_base);
 		pkt.stream_index = _stream->index;
 		pkt.flags       |= AV_PKT_FLAG_KEY;
+		
+		ret = av_interleaved_write_frame( _avFormatOptions, &pkt );
+		if ( ret < 0 )
+		{
+			BOOST_THROW_EXCEPTION( exception::File()
+				<< exception::user( "ffmpegWriter: error writing packet to file" ) );
+		}
 	}
 	else
 	{
