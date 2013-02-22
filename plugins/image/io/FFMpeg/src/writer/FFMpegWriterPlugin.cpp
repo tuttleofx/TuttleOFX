@@ -951,6 +951,8 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 		//codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
 		//setParameters( eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
 		
+		_writer.finishInit();
+		
 		_initWriter = true;
 	}
 	

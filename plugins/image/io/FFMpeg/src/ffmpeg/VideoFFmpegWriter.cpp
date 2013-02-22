@@ -186,66 +186,70 @@ int VideoFFmpegWriter::start( )
 		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
+	}
+	return true;
+}
 
-		int pixfmt_allowed = 0, k;
-		if ( _videoCodec->pix_fmts )
+bool VideoFFmpegWriter::finishInit()
+{
+	int pixfmt_allowed = 0, k;
+	if ( _videoCodec->pix_fmts )
+	{
+		for ( k = 0; _videoCodec->pix_fmts[k] != PIX_FMT_NONE; k++ )
 		{
-			for ( k = 0; _videoCodec->pix_fmts[k] != PIX_FMT_NONE; k++ )
+			if ( _videoCodec->pix_fmts[k] == _out_pixelFormat )
 			{
-				if ( _videoCodec->pix_fmts[k] == _out_pixelFormat )
-				{
-					pixfmt_allowed = 1;
-					break;
-				}
+				pixfmt_allowed = 1;
+				break;
 			}
 		}
-		else
-		{
-			// If a codec does not contain a list of supported pixel
-			// formats, just assume that _out_PixelFormat is valid
-			pixfmt_allowed = 1;
-		}
-
-		if ( !pixfmt_allowed )
-		{
-			// av_get_pix_fmt_name requires lavu 51.3.0 or higher
-			TUTTLE_CERR( "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" );
-			_out_pixelFormat = _videoCodec->pix_fmts[0];
-			TUTTLE_CERR( "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) );
-		}
-		_stream->codec->pix_fmt     = _out_pixelFormat;
-
-		if( !strcmp( _avFormatOptions->oformat->name, "mp4" ) || !strcmp( _avFormatOptions->oformat->name, "mov" ) || !strcmp( _avFormatOptions->oformat->name, "3gp" ) || !strcmp( _avFormatOptions->oformat->name, "flv" ) )
-			_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
-		
-		av_dump_format( _avFormatOptions, 0, getFilename().c_str(), 1 );
-		
-		if( avcodec_open2( _stream->codec, _videoCodec, NULL ) < 0 )
+	}
+	else
+	{
+		// If a codec does not contain a list of supported pixel
+		// formats, just assume that _out_PixelFormat is valid
+		pixfmt_allowed = 1;
+	}
+	
+	if ( !pixfmt_allowed )
+	{
+		// av_get_pix_fmt_name requires lavu 51.3.0 or higher
+		TUTTLE_CERR( "ffmpegWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" );
+		_out_pixelFormat = _videoCodec->pix_fmts[0];
+		TUTTLE_CERR( "ffmpegWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) );
+	}
+	_stream->codec->pix_fmt     = _out_pixelFormat;
+	
+	if( !strcmp( _avFormatOptions->oformat->name, "mp4" ) || !strcmp( _avFormatOptions->oformat->name, "mov" ) || !strcmp( _avFormatOptions->oformat->name, "3gp" ) || !strcmp( _avFormatOptions->oformat->name, "flv" ) )
+		_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
+	
+	av_dump_format( _avFormatOptions, 0, getFilename().c_str(), 1 );
+	
+	if( avcodec_open2( _stream->codec, _videoCodec, NULL ) < 0 )
+	{
+		freeFormat();
+		BOOST_THROW_EXCEPTION( exception::Format()
+							   << exception::user( "ffmpegWriter: unable to open codec." ) );
+		return false;
+	}
+	
+	if( !( _ofmt->flags & AVFMT_NOFILE ) )
+	{
+		if( avio_open2( &_avFormatOptions->pb, getFilename().c_str(),
+						AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
 		{
 			freeFormat();
-			BOOST_THROW_EXCEPTION( exception::Format()
-				<< exception::user( "ffmpegWriter: unable to open codec." ) );
-			return false;
+			BOOST_THROW_EXCEPTION( exception::FileNotExist()
+								   << exception::user( "ffmpegWriter: unable to open file." ) );
 		}
-
-		if( !( _ofmt->flags & AVFMT_NOFILE ) )
-		{
-			if( avio_open2( &_avFormatOptions->pb, getFilename().c_str(),
-							AVIO_FLAG_WRITE, NULL, NULL ) < 0 )
-			{
-				freeFormat();
-				BOOST_THROW_EXCEPTION( exception::FileNotExist()
-					<< exception::user( "ffmpegWriter: unable to open file." ) );
-			}
-		}
-
-		int error = avformat_write_header( _avFormatOptions, NULL );
-		if( error )
-		{
-			TUTTLE_CERR( ffmpegError_toString( error) );
-			BOOST_THROW_EXCEPTION( exception::Format()
-				<< exception::user( "ffmpegWriter: unable to write header." ) );
-		}
+	}
+	
+	int error = avformat_write_header( _avFormatOptions, NULL );
+	if( error )
+	{
+		TUTTLE_CERR( ffmpegError_toString( error) );
+		BOOST_THROW_EXCEPTION( exception::Format()
+							   << exception::user( "ffmpegWriter: unable to write header." ) );
 	}
 	return true;
 }
@@ -504,6 +508,7 @@ void VideoFFmpegWriter::optionSet( const EAVParamType& type, const AVOption& opt
 		}
 		case eAVParamVideo:
 		{
+			
 			error = av_opt_set_int( _stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
 			break;
 		}
