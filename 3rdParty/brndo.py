@@ -147,42 +147,42 @@ class Brndo(cmd.Cmd):
             else:
                 "**ERROR** - File {} doesn't exist."
 
-    def do_uncompress(arg):
+    def do_uncompress(self, arg):
         '''
         Uncompress lib.
         TODO
         '''
         print "Not implemented."
 
-    def do_configure(arg):
+    def do_configure(self, arg):
         '''
         Configure lib.
         TODO
         '''
         print "Not implemented."
 
-    def do_build(arg):
+    def do_build(self, arg):
         '''
         Build lib.
         TODO
         '''
         print "Not implemented."
 
-    def do_install(arg):
+    def do_install(self, arg):
         '''
         Install lib.
         TODO
         '''
         print "Not implemented."
 
-    def do_clean(arg):
+    def do_clean(self, arg):
         '''
         Clean lib build dir.
         TODO
         '''
         print "Not implemented."
 
-    def do_distclean(arg):
+    def do_distclean(self, arg):
         '''
         Delete all files (archive, build directory)
         TODO
