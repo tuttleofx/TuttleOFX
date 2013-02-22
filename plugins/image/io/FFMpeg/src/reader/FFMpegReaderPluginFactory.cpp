@@ -90,6 +90,11 @@ void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	keepSAR->setDefault( true );
 	keepSAR->setHint( "Keep input sample aspect ratio." );
 
+	OFX::DoubleParamDescriptor* customSAR = desc.defineDoubleParam( kParamCustomSAR );
+	customSAR->setLabel( "Custom SAR" );
+	customSAR->setDefault( 1.0 );
+	customSAR->setHint( "Set a custom SAR for the input image." );
+
 	describeReaderParamsInContext( desc, context );
 }
 

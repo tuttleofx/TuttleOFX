@@ -10,6 +10,7 @@ namespace ffmpeg {
 namespace reader {
 
 static const std::string kParamKeepSAR = "keepSAR";
+static const std::string kParamCustomSAR = "customSAR";
 
 }
 }
