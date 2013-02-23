@@ -1,6 +1,6 @@
-This folder is intented to receive third party libraries
+This folder is intented to receive third party libraries.
 
-Those libraries can be automatically downloaded and uncompressed for you by using the init script
+Those libraries can be automatically downloaded and uncompressed for you by using the brndo script
+./brndo -h for help
 
-/boost : unzipped boost sources ( http://sourceforge.net/projects/boost/files/ )
 
