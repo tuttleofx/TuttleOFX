@@ -20,7 +20,7 @@ CLI CMDS
   help ?
   quit q EOF
   list
-  fetch (WIP - DryRun)
+  fetch
   shacheck
 
 TODO
@@ -31,6 +31,8 @@ cmds:
   install
   clean
   distclean
+BUGS
+  readline completion does't work on osx.
 '''
 import os
 import readline
@@ -42,10 +44,10 @@ download_dir = "archive"
 extracted_dir = "extracted"
 
 ## History stuffs
-historyPath = ".brndohistory"
+history_path = ".brndohistory"
 
-def save_history(historyPath=historyPath):
-    readline.write_history_file(historyPath)
+def save_history(history_path=history_path):
+    readline.write_history_file(history_path)
 
 if __name__ == '__main__':
 
@@ -62,10 +64,9 @@ if __name__ == '__main__':
         sys.exit(brndo.onecmd(" ".join(sys.argv[sys.argv.index('-c')+1:])))
 
     ## Cmd history setup
-    if os.path.exists(historyPath):
-        readline.read_history_file(historyPath)
+    if os.path.exists(history_path):
+        readline.read_history_file(history_path)
     import atexit
     atexit.register(save_history)
 
     brndo.cmdloop(__doc__)
-

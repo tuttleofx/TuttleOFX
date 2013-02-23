@@ -19,7 +19,6 @@ macos        = sysplatform.startswith("darwin")
 linux        = not windows and not macos
 unix         = not windows
 
-global current_file # global variable used in dlProgress function
 current_file = ''
 
 download_dir = "archive"
@@ -27,19 +26,18 @@ extracted_dir = "extracted"
 
 error_list = []
 
-def dlProgress(count, blockSize, totalSize):
-    pcent = int( count * blockSize * 100/totalSize )
+def dl_progress(count, block_size, total_size):
+    percent = int( count * block_size * 100/total_size )
     progress_bar = '[--------------------]'
-    fill = "#" * (count * blockSize * (len(progress_bar)-2)/totalSize)
+    fill = "#" * (count * block_size * (len(progress_bar)-2)/total_size)
     progress_bar = progress_bar.replace('-'*len(fill), fill, 1)
     sys.stdout.write( '\r{} {} {} %'.format(current_file, progress_bar,
-                                            pcent))
-    if pcent == 100:
+                                            percent))
+    if percent == 100:
         sys.stdout.write('\nDone.\n')
     sys.stdout.flush()
 
-global knownExtensions
-knownExtensions = {
+known_extensions = {
                    'tar':     'tar xf',
                    'tar.gz':  'tar xfz',
                    'tgz':     'tar xfz',
@@ -48,12 +46,11 @@ knownExtensions = {
                    'exe':      '',
                    }
 
+def get_known_extensions( filename ):
+    global known_extensions
+    return [f for f in known_extensions.keys() if filename.endswith(f)]
 
-def getKnownExtensions( filename ):
-    global knownExtensions
-    return [f for f in knownExtensions.keys() if filename.endswith(f)]
-
-def uncompress(filename, ext, inNewDirectory, libname, folder):
+def uncompress(filename, ext, in_new_directory, libname, folder):
     if ext == 'tar.gz' :
         tar = tarfile.open( download_dir + "/" + filename, 'r:*')
         tar.extractall( folder )
@@ -71,7 +68,7 @@ def uncompress(filename, ext, inNewDirectory, libname, folder):
         
     if ext == 'zip' :
         zip = zipfile.ZipFile( download_dir + "/" + filename, 'r' )
-        if inNewDirectory == True : folder += filename[:-len(ext)-1]
+        if in_new_directory == True : folder += filename[:-len(ext)-1]
         zip.extractall( folder )
         out_dir = zip.namelist()[0]
 
@@ -99,7 +96,7 @@ def uncompress(filename, ext, inNewDirectory, libname, folder):
 def get_and_uncompress( libraries ):
     
     global current_file
-    #for libname, url, folderExtracted, inNewDirectory in libraries:
+
     for lib in libraries:
         libname = lib['name']
         url = lib['url']
@@ -108,11 +105,11 @@ def get_and_uncompress( libraries ):
         print ('-- %s'% libname)
 
         parts = url.split('/')
-        filename = [p for p in parts if len(getKnownExtensions(p))][0]
+        filename = [p for p in parts if len(get_known_extensions(p))][0]
 
         print ( '%s -> %s' % (url, filename) )
         
-        ext = getKnownExtensions(filename)[0]
+        ext = get_known_extensions(filename)[0]
         current_file = filename
         try:
             if not os.path.exists( download_dir ):
@@ -133,15 +130,12 @@ def get_and_uncompress( libraries ):
                     print "Sha dont match, redownloading archive."
             
             if not already_download:
-                urllib.urlretrieve(url, download_dir + "/" + filename, dlProgress)
-
-            #if os.path.isdir(libname) or os.path.islink(libname): # if not already uncompressed
+                urllib.urlretrieve(url, download_dir + "/" + filename, dl_progress)
 
             if os.path.isdir(os.path.join(extracted_dir, libname)) :
                 print ('Already uncompressed : %s' % os.path.join(extracted_dir, libname))
             else:
-                #print ('%s | %s | %s | %s | %s' % ( filename, ext, inNewDirectory, libname, folderExtracted ) )
-                uncompress(filename, ext, False, libname, extracted_dir) #uncompress( filename, ext, inNewDirectory, libname, folderExtracted )"
+                uncompress(filename, ext, False, libname, extracted_dir)
         except Exception as e:
             print ( 'uncompress error (%s)' % str(e) )
 
@@ -278,32 +272,32 @@ def insert_in_file( filename, linesIndexes, textToAppend ):
     os.remove(filename)
     os.rename('tmp.txt', filename)
 
-def commentLineInFile( filename, row ):
+def comment_line_in_file( filename, row ):
     '''
     Put a c++ comment (//) statement in filename at row.
     '''
     print ( '%s' % filename )
     if os.path.exists( filename ):
-        file = open( filename , 'r' )
-        fileTmp = open( 'tmp.txt' , 'w' )
-        lines = file.readlines()
+        f = open(filename , 'r')
+        tmp_file = open('tmp.txt' , 'w')
+        lines = f.readlines()
 
-        nlist = list( lines )
+        nlist = list(lines)
 
-        commentedLine = nlist[row]
-        commentedLine = "//" + commentedLine
-        nlist[row]=commentedLine
-        fileTmp.writelines( nlist )
+        commented_line = nlist[row]
+        commented_line = "//" + commented_line
+        nlist[row]=commented_line
+        tmp_file.writelines(nlist)
 
-        file.close()
-        fileTmp.close()
+        f.close()
+        tmp_file.close()
         os.remove(filename)
         os.rename('tmp.txt', filename)
     else:
-        print( 'file is not present.' )
+        print('file {} is not present.'.format(filename))
 
 
-def insertPatchStatementInFile( filename, statement, row ):
+def insert_patch_statement_in_file( filename, statement, row ):
     '''
     Insert statement in filename at row if not already present.
     '''
@@ -326,16 +320,12 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         get_and_uncompress( all_libs )
     else:
-#        libDic = {}
-#        for lib in allLibs:
-#            libDic[lib[0]] = lib
         lib_dict = {}
         for l in all_libs:
             lib_dict[l['name']] = l
         for libname in sys.argv[1:]:
             get_and_uncompress([lib_dict[libname]])
             sys.exit()
-#            get_and_uncompress( [libDic[libname]] )
 
     print ( '%s' % ('_'*80) )
     print ( '%s Files modifications  %s' % ( ('-'*29) , ('-'*29) ) )
@@ -351,7 +341,7 @@ if __name__ == "__main__":
                   ]
 
     for filename, line, row in patch_list:
-        insertPatchStatementInFile(os.path.join(extracted_dir, filename), line, row)
+        insert_patch_statement_in_file(os.path.join(extracted_dir, filename), line, row)
 
     # Commenting patches
     print "-- Commenting patches"
@@ -360,7 +350,6 @@ if __name__ == "__main__":
                   ("yaml/src/emitter.cpp", 663)
                   ]
     for filename, row in patch_list:
-        commentLineInFile(os.path.join(extracted_dir, filename), row)
-
+        comment_line_in_file(os.path.join(extracted_dir, filename), row)
     
     print ( 'End of initialisation.' )
