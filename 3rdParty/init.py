@@ -100,7 +100,7 @@ def get_and_uncompress( libraries ):
     for lib in libraries:
         libname = lib['name']
         url = lib['url']
-         
+
         print ('%s' % ('_'*80))
         print ('-- %s'% libname)
 

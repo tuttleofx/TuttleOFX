@@ -22,10 +22,10 @@ CLI CMDS
   list
   fetch
   shacheck
+  uncompress
 
 TODO
 cmds:
-  uncompress
   configure
   build
   install
