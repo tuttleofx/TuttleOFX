@@ -237,8 +237,8 @@ all_libs = [
              'url': 'http://github.com/imageworks/OpenColorIO/tarball/v1.0.6/imageworks-OpenColorIO-v1.0.6-0-g0f89532.tar.gz'},
 
             {'name': 'imagemagick',
-             'sha': 'c64dcac1fe5f315d07c3a506fa3969b14122867c',
-             'url': 'http://www.imagemagick.org/download/ImageMagick.tar.gz'},
+             'sha': 'cea4342b1d56ad12b8e94279a4228b6f7633568e',
+             'url': 'http://www.imagemagick.org/download/ImageMagick-6.8.3-4.tar.gz',},
             
             {'name': 'webp',
              'sha': 'f46aff9f1aeb8620d7ca4b9afc54e6df6d4de313',
