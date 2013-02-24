@@ -170,7 +170,9 @@ all_libs = [
             
             {'name': 'freetype',
              'sha': 'bb74c4ad6749ead86f4d3c2973492bedccc397ec',
-             'url': 'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz'},
+             'url': 'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz',
+             'configure_cmd': './configure',
+             },
             
             {'name': 'libraw',
              'sha': 'e924527bed3d72ee4756da0c9383dc74c584799f',
@@ -178,7 +180,8 @@ all_libs = [
             
             {'name': 'libcaca',
              'sha': '24cdb9fb7dc4a01be2787a9009304fad419f79db',
-             'url': 'http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz'},
+             'url': 'http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz',
+             'configure_cmd': './configure'},
             
             {'name': 'lcms2',
              'sha': '0ce856a004068ff6e22f9f2d7b94a11b9b469bf9',
@@ -190,7 +193,9 @@ all_libs = [
             
             {'name': 'libtiff',
              'sha': 'f40aab20fb2f609b5cbc1171c40b66a1445e3773',
-             'url': 'ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz'},
+             'url': 'ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz',
+             'configure_cmd': './configure',
+             },
             
             {'name': 'libtool',
              'sha': '149e9d7a993b643d13149a94d07bbca1085e601c',
@@ -198,7 +203,9 @@ all_libs = [
             
             {'name': 'libxml',
              'sha': '859dd535edbb851cc15b64740ee06551a7a17d40',
-             'url': 'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz'},
+             'url': 'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz',
+             'configure_cmd': './configure',
+             },
             
             {'name': 'jasper',
              'sha': '9c5735f773922e580bf98c7c7dfda9bbed4c5191',
@@ -214,7 +221,9 @@ all_libs = [
             
             {'name': 'jpeg',
              'sha': '7079f0d6c42fad0cfba382cf6ad322add1ace8f9',
-             'url': 'http://freefr.dl.sourceforge.net/project/libjpeg/libjpeg/6b/jpegsrc.v6b.tar.gz'},
+             'url': 'http://freefr.dl.sourceforge.net/project/libjpeg/libjpeg/6b/jpegsrc.v6b.tar.gz',
+             'configure_cmd': './configure',
+             },
             
             {'name': 'turbojpeg',
              'sha': '4ab00afc9a8d54cd2e7a67aacb9c49e01a8bccac',
@@ -222,7 +231,9 @@ all_libs = [
             
             {'name': 'openjpeg',
              'sha': '9ef6a08ecf5944962b4e2cd7569ac01a8eaa66d0',
-             'url': 'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'},
+             'url': 'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz',
+             'configure_cmd': './configure',
+             },
             
             {'name': 'ffmpeg',
              'sha': '984f731aced1380840cd8e3576e8db0c2fd5537f',
@@ -238,11 +249,25 @@ all_libs = [
 
             {'name': 'imagemagick',
              'sha': 'cea4342b1d56ad12b8e94279a4228b6f7633568e',
-             'url': 'http://www.imagemagick.org/download/ImageMagick-6.8.3-4.tar.gz',},
+             'url': 'http://www.imagemagick.org/download/ImageMagick-6.8.3-4.tar.gz',
+             'configure_cmd': ('./configure '
+                               '--disable-opencl --disable-openmp --with-gnu-ld=no '
+                               '--enable-hdri=no --with-bzlib=no --with-autotrace=no '
+                               '--with-djvu=no --with-dps=no --with-fftw=no '
+                               '--with-fpx=no --with-fontconfig=no --with-freetype=no '
+                               '--with-gslib=no --with-gvc=no --with-jbig=no '
+                               '--with-jpeg=no --with-jp2=no --with-lcms=no '
+                               '--with-lcms2=no --with-lqr=no --with-lzma=no '
+                               '--with-magick-plus-plus=no --with-openexr=no '
+                               '--with-perl=no --with-pango=no --with-png=no  '
+                               '--with-rsvg=no  --with-tiff=no --with-webp=no '
+                               '--with-wmf=no --with-x=no --with-xml=no '
+                               '--with-zlib=no')},
             
             {'name': 'webp',
              'sha': 'f46aff9f1aeb8620d7ca4b9afc54e6df6d4de313',
-             'url': 'https://webp.googlecode.com/files/libwebp-0.1.3.tar.gz'},
+             'url': 'https://webp.googlecode.com/files/libwebp-0.1.3.tar.gz',
+             'configure_cmd': './configure'},
             
             {'name': 'tinyxml',
              'sha': '2ff9c177a6c0bef10cbd27700b71826801c12987',

@@ -23,14 +23,18 @@ CLI CMDS
   fetch
   shacheck
   uncompress
-
-TODO
-cmds:
   configure
   build
   install
   clean
   distclean
+
+TODO
+  Factorize do_* arg parsing
+  Factorize library *_cmd execution
+cmds:
+  uninstall
+
 BUGS
   readline completion does't work on osx.
 '''
