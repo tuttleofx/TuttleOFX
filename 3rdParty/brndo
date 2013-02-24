@@ -30,13 +30,11 @@ CLI CMDS
   distclean
 
 TODO
-  Factorize do_* arg parsing
-  Factorize library *_cmd execution
 cmds:
   uninstall
 
 BUGS
-  readline completion does't work on osx.
+  readline tab completion doesn't work on some terminal.
 '''
 import os
 import readline
