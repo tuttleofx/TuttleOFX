@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- mode: python -*-
 '''
-(brndo0.0)
+(brndo0.1)
 Bernardo ! Come and fetch ! ... and build, and check and do stuffs.
 
 SYNOPSIS
@@ -16,6 +16,10 @@ SYNOPSIS
     Feature:
         readline history (file save in .brndohistory)
 
+    Tips:
+        for reading the syntax of a cli cmd directly from the terminal, type
+        `./brndo -c help cmd_name` or `./brndo -c ? cmd_name`
+        
 CLI CMDS
   help ?
   quit q EOF
@@ -30,6 +34,7 @@ CLI CMDS
   distclean
 
 TODO
+ dependencies
 cmds:
   uninstall
 

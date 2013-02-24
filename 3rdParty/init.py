@@ -142,7 +142,13 @@ def get_and_uncompress( libraries ):
 all_libs = [
             {'name': 'zlib',
              'sha': '60faeaaf250642db5c0ea36cd6dcc9f99c8f3902',
-             'url': 'http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz'},
+             'url': 'http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz',
+             'configure_cmd': './configure --prefix ../../local',
+             'build_cmd': 'make',
+             'install_cmd': 'make install',
+             'clean_cmd': 'make clean',
+             'distclean_cmd': 'make distclean',
+             },
 
             {'name': 'libpng',
              'sha': 'c9e5ea884d8f5551de328210ccfc386c60624366',
