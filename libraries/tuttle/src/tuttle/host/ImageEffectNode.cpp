@@ -167,7 +167,7 @@ void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 	  }
 	else
 	  {
-		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+		OfxRectD rod = getData( _dataAtTime.size()-1 )._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)
@@ -195,7 +195,7 @@ void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 	  }
 	else
 	  {
-		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+		OfxRectD rod = getData( _dataAtTime.size()-1 )._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)
@@ -215,7 +215,7 @@ double ImageEffectNode::getProjectPixelAspectRatio() const
 // we are only 25 frames
 double ImageEffectNode::getEffectDuration() const
 {
-	return 25.0;
+	return 99999.0;
 }
 
 double ImageEffectNode::getFrameRate() const
@@ -365,7 +365,7 @@ void ImageEffectNode::timelineGotoTime( double t )
 void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 {
 	t1 = 0;
-	t2 = 25;
+	t2 = 99999;
 }
 
 /// override to get frame range of the effect
