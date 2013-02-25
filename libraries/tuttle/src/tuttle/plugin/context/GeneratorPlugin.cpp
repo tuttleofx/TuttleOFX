@@ -196,8 +196,8 @@ bool GeneratorPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 			getFormatResolution( static_cast<EParamFormat>(_paramFormat->getValue()), width, height );
 			rod.x1 = 0;
 			rod.y1 = 0;
-			rod.x2 = width;
-			rod.y2 = height;
+			rod.x2 = width > 0 ? width-1 : 0;
+			rod.y2 = height > 0 ? height - 1 : 0;
 
 			return true;
 		}
@@ -227,8 +227,8 @@ bool GeneratorPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 			rod.x1 = 0;
 			rod.y1 = 0;
-			rod.x2 = sizex;
-			rod.y2 = sizey;
+			rod.x2 = sizex > 0 ? sizex-1 : 0;
+			rod.y2 = sizey > 0 ? sizey-1 : 0;
 
 			return true;
 		}
