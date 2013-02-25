@@ -218,11 +218,6 @@ double ImageEffectNode::getEffectDuration() const
 	return 99999.0;
 }
 
-double ImageEffectNode::getFrameRate() const
-{
-	return this->_outputFrameRate;
-}
-
 /// This is called whenever a param is changed by the plugin so that
 /// the recursive instanceChangedAction will be fed the correct frame
 double ImageEffectNode::getFrameRecursive() const
@@ -429,12 +424,44 @@ void ImageEffectNode::initComponents()
 }
 
 /// @todo multiple PAR
-void ImageEffectNode::initPixelAspectRatio()
+void ImageEffectNode::initInputClipsPixelAspectRatio()
 {
-	if( supportsMultipleClipPARs() )
-	{}
-	else
-	{}
+	std::set<double> inputPARs;
+//	if( supportsMultipleClipPARs() )
+	{
+		for( ClipImageMap::iterator it = _clipImages.begin();
+			 it != _clipImages.end();
+			 ++it )
+		{
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+			TUTTLE_TCOUT_VAR( clip.getName() );
+			if( !clip.isOutput() && clip.isConnected() )
+			{
+				const attribute::ClipImage& linkClip = clip.getConnectedClip();
+				const double par = linkClip.getPixelAspectRatio();
+				TUTTLE_TCOUT_VAR2( linkClip.getName(), par );
+				clip.setPixelAspectRatio( par, ofx::property::eModifiedByHost );
+				inputPARs.insert( par );
+			}
+		}
+	}
+//	else
+//	{
+//		// @todo The plugin doesn't support PAR, the host should do the conversions!
+//		// http://openfx.sourceforge.net/Documentation/1.3/ofxProgrammingReference.html#ImageEffectsPixelAspectRatios
+//		// If a plugin does not accept clips of differing PARs, then the host must resample all images fed to that effect to agree with the output's PAR.
+//		// If a plugin does accept clips of differing PARs, it will need to specify the output clip's PAR in the kOfxImageEffectActionGetClipPreferences action.
+//		
+//		// Convert images here ? Or introduce convert nodes into the ProcessGraph?
+//		BOOST_ASSERT(false);
+//	}
+	
+	// Not supported yet. So fail in debug,
+	// and process with a wrong pixel aspect ratio in release.
+	TUTTLE_TCOUT_VAR( getName() );
+	TUTTLE_TCOUT_VAR( supportsMultipleClipPARs() );
+	TUTTLE_TCOUT_VAR( getNbClips() );
+	BOOST_ASSERT( inputPARs.size() <= 1 || supportsMultipleClipPARs() || getNbClips() <= 2 );
 }
 
 void ImageEffectNode::initInputClipsFps()
@@ -455,7 +482,13 @@ void ImageEffectNode::initInputClipsFps()
 void ImageEffectNode::initFps()
 {
 	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
-	outputClip.setFrameRate( getFrameRate() );
+	outputClip.setFrameRate( getOutputFrameRate() );
+}
+
+void ImageEffectNode::initPixelAspectRatio()
+{
+	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+	outputClip.setPixelAspectRatio( getOutputPixelAspectRatio(), ofx::property::eModifiedByHost );
 }
 
 void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
@@ -697,6 +730,7 @@ void ImageEffectNode::setup1()
 	checkClipsConnections();
 	
 	initInputClipsFps();
+	initInputClipsPixelAspectRatio();
 
 	getClipPreferencesAction();
 	
@@ -766,12 +800,15 @@ void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData
 bool ImageEffectNode::isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const
 {
 	time = vData._time;
-	OfxRectI roi;
-	roi.x1 = std::floor( vData._apiImageEffect._renderRoI.x1 );
-	roi.x2 = std::ceil( vData._apiImageEffect._renderRoI.x2 );
-	roi.y1 = std::floor( vData._apiImageEffect._renderRoI.y1 );
-	roi.y2 = std::ceil( vData._apiImageEffect._renderRoI.y2 );
-	return isIdentityAction( time, vData._apiImageEffect._field, roi, vData._nodeData->_renderScale, clip );
+	double par = this->getOutputClip().getPixelAspectRatio();
+	if( par == 0.0 )
+		par = 1.0;
+	OfxRectI renderWindow;
+	renderWindow.x1 = boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) );
+	renderWindow.x2 = boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) );
+	renderWindow.y1 = boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) );
+	renderWindow.y2 = boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) );
+	return isIdentityAction( time, vData._apiImageEffect._field, renderWindow, vData._nodeData->_renderScale, clip );
 }
 
 
@@ -792,11 +829,14 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
 
-	const OfxRectI roi = {
-		boost::numeric_cast<int>( floor( vData._apiImageEffect._renderRoI.x1 ) ),
-		boost::numeric_cast<int>( floor( vData._apiImageEffect._renderRoI.y1 ) ),
-		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.x2 ) ),
-		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.y2 ) )
+	double par = this->getOutputClip().getPixelAspectRatio();
+	if( par == 0.0 )
+		par = 1.0;
+	const OfxRectI renderWindow = {
+		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) ),
+		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) ),
+		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) ),
+		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) )
 	};
 //	TUTTLE_TCOUT_VAR( roi );
 
@@ -889,7 +929,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 
 	renderAction( vData._time,
 		      vData._apiImageEffect._field,
-		      roi,
+		      renderWindow,
 		      vData._nodeData->_renderScale );
 
 	TUTTLE_TCOUT_X( 40, "-" );

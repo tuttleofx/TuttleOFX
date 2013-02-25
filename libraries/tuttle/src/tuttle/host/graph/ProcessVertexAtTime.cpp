@@ -75,6 +75,7 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 				}
 				s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
 				s << subDotEntry( "output RoD", ieNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
+				s << subDotEntry( "par", ieNode->getOutputClip().getPixelAspectRatio() );
 				break;
 			}
 			default:

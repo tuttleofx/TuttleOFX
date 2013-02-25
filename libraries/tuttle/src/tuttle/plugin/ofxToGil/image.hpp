@@ -23,12 +23,12 @@ namespace plugin {
  *            so we need to use the rod of the clip and not from the image.
  */
 template<class View>
-View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation orientation )
+View getGilView( OFX::Image* img, const OfxRectI& pixelRod, const EImageOrientation orientation )
 {
 	using namespace boost::gil;
 	typedef typename View::value_type Pixel;
 	TUTTLE_TCOUT_X( 50, "-" );
-	TUTTLE_TCOUT( "getGilView" );
+	TUTTLE_TCOUT( "getGilView => " << img->getUniqueIdentifier() );
 
 	//	OfxRectI imgrod = img->getRegionOfDefinition(); // bug in nuke returns bounds... not the clip rod with renderscale...
 	const OfxRectI bounds = img->getBounds();
@@ -60,8 +60,8 @@ View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation o
 	
 	View fullView;
 	const bool isTile = (
-		bounds.x1 != rod.x1 || bounds.y1 != rod.y1 ||
-	    bounds.x2 != rod.x2 || bounds.y2 != rod.y2 );
+		bounds.x1 != pixelRod.x1 || bounds.y1 != pixelRod.y1 ||
+	    bounds.x2 != pixelRod.x2 || bounds.y2 != pixelRod.y2 );
 	// if the tile is equals to the full image
 	// directly return the tile
 	if( ! isTile )
@@ -73,7 +73,7 @@ View getGilView( OFX::Image* img, const OfxRectI& rod, const EImageOrientation o
 	{
 		// view the tile as a full image
 		TUTTLE_TCOUT( "Tile to full view" );
-		fullView = subimage_view( tileView, rod.x1 - bounds.x1, rod.y1 - bounds.y1, rod.x2 - rod.x1, rod.y2 - rod.y1 );
+		fullView = subimage_view( tileView, pixelRod.x1 - bounds.x1, pixelRod.y1 - bounds.y1, pixelRod.x2 - pixelRod.x1, pixelRod.y2 - pixelRod.y1 );
 	}
 	
 	TUTTLE_TCOUT_VAR( fullView.pixels().row_size() );

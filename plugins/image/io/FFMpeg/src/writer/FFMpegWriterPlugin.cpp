@@ -883,7 +883,7 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 
 void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	// If pattern detected (frame varying on time)
+	// Need to be computed at each frame
 	clipPreferences.setOutputFrameVarying( true );
 }
 

@@ -1127,14 +1127,15 @@ OfxRectI Clip::getPixelRod( const OfxTime t ) const
 {
 	OfxRectD rod = getCanonicalRod(t);
 	double ratio = getPixelAspectRatio();
-	if( ratio == 0 )
-	ratio = 1;
+	if( ratio == 0.0 )
+		ratio = 1.0;
 
 	OfxRectI pixRod;
 	pixRod.x1 = boost::numeric_cast<int>(rod.x1 / ratio);
 	pixRod.y1 = boost::numeric_cast<int>(rod.y1);
 	pixRod.x2 = boost::numeric_cast<int>(std::ceil(rod.x2 / ratio));
 	pixRod.y2 = boost::numeric_cast<int>(std::ceil(rod.y2));
+
 	return pixRod;
 }
 
