@@ -167,7 +167,7 @@ void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 	  }
 	else
 	  {
-		OfxRectD rod = getData( _dataAtTime.size()-1 )._apiImageEffect._renderRoD;
+		OfxRectD rod = getLastData()._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)
@@ -195,7 +195,7 @@ void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 	  }
 	else
 	  {
-		OfxRectD rod = getData( _dataAtTime.size()-1 )._apiImageEffect._renderRoD;
+		OfxRectD rod = getLastData()._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)

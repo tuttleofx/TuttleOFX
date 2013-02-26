@@ -124,6 +124,41 @@ INode::DataAtTime& INode::getFirstData()
 	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getFirstData() );
 }
 
+const INode::DataAtTime& INode::getLastData() const
+{
+	OfxTime time = _dataAtTime.size() - 1;
+
+	if( time < 0 )
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev() + "Process data empty.\n"
+				       << exception::nodeName( getName() ) );
+	}
+
+	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
+	if( it == _dataAtTime.end() )
+	{
+		std::ostringstream ss;
+		ss << "Defined times : ";
+		BOOST_FOREACH( const DataAtTimeMap::value_type& v, _dataAtTime )
+		{
+			ss << v.first << ", ";
+		}
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev() + "Process data at time not set.\n"
+								+ ss.str()
+			<< exception::nodeName( getName() )
+			<< exception::time( time ) );
+	}
+
+	return *it->second;
+}
+
+INode::DataAtTime& INode::getLastData()
+{
+	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getLastData() );
+}
+
 std::ostream& operator<<( std::ostream& os, const INode& v )
 {
 	return v.print(os);
