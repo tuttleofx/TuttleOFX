@@ -25,6 +25,16 @@ FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
 	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
 	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
+	_paramKeepSAR  = fetchBooleanParam( kParamKeepSAR );
+	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
+
+	updateVisibleTools();
+}
+
+void FFMpegReaderPlugin::updateVisibleTools()
+{
+	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
+	changedParam( args, kParamCustomSAR );
 }
 
 FFMpegReaderParams FFMpegReaderPlugin::getProcessParams() const
@@ -60,6 +70,11 @@ void FFMpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 	{
 		_errorInFile = false;
 	}
+	else if( paramName == kParamCustomSAR )
+	{
+		const bool keepSAR = _paramKeepSAR->getValue();
+		_paramCustomSAR->setIsSecretAndDisabled( !keepSAR );
+	}
 }
 
 void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
@@ -76,7 +91,9 @@ void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 		return;
 
 	// options depending on input file
-	clipPreferences.setPixelAspectRatio( *_clipDst, _reader.aspectRatio() );
+	bool keepSAR = _paramKeepSAR->getValue();
+	double customSAR = _paramCustomSAR->getValue();
+	clipPreferences.setPixelAspectRatio( *_clipDst, keepSAR ? _reader.aspectRatio() : customSAR );
 	clipPreferences.setOutputFrameRate( _reader.fps() );
 
 	// Setup fielding
@@ -117,8 +134,11 @@ bool FFMpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArg
 	if( !ensureVideoIsOpen() )
 		return false;
 
+	bool keepSAR = _paramKeepSAR->getValue();
+	double customSAR = _paramCustomSAR->getValue();
+
 	rod.x1 = 0;
-	rod.x2 = _reader.width() * _reader.aspectRatio();
+	rod.x2 = _reader.width() * ( keepSAR ? _reader.aspectRatio() : customSAR );
 	rod.y1 = 0;
 	rod.y2 = _reader.height();
 	return true;
