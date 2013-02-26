@@ -5,7 +5,6 @@ namespace tuttle {
 namespace plugin {
 namespace ramp {
 
-
 }
 }
 }
