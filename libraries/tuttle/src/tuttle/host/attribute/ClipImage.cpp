@@ -143,7 +143,7 @@ void ClipImage::setFrameRange( const double startFrame, const double endFrame )
  */
 const double ClipImage::getUnmappedFrameRate() const
 {
-	return getNode().asImageEffectNode().getFrameRate();
+	return getNode().asImageEffectNode().getOutputFrameRate();
 }
 
 // Unmapped Frame Range -

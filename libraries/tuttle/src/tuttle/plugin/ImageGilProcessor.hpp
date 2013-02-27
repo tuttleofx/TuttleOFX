@@ -47,14 +47,14 @@ public:
 	/**
 	 * @brief Return a full gil view of an image.
 	 */
-	View getView( OFX::Image* img, const OfxRectI& rod ) const
+	View getView( OFX::Image* img, const OfxRectI& pixelRod ) const
 	{
-		return tuttle::plugin::getGilView<View>( img, rod, _imageOrientation );
+		return tuttle::plugin::getGilView<View>( img, pixelRod, _imageOrientation );
 	}
 	template<typename CustomView>
-	CustomView getCustomView( OFX::Image* img, const OfxRectI& rod ) const
+	CustomView getCustomView( OFX::Image* img, const OfxRectI& pixelRod ) const
 	{
-		return tuttle::plugin::getGilView<CustomView>( img, rod, _imageOrientation );
+		return tuttle::plugin::getGilView<CustomView>( img, pixelRod, _imageOrientation );
 	}
 };
 

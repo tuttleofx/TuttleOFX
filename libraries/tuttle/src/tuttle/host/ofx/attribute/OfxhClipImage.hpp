@@ -144,7 +144,7 @@ public:
 	 * set the current pixel aspect ratio
 	 * called by clip preferences action
 	 */
-	void setPixelAspectRatio( const double& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
+	void setPixelAspectRatio( const double& s, const property::EModifiedBy modifiedBy )
 	{
 		property::Double& prop = getEditableProperties().fetchLocalDoubleProperty( kOfxImagePropPixelAspectRatio );
 

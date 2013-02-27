@@ -1,4 +1,4 @@
-# scons: Checkerboard Merge
+# scons: Checkerboard Invert Merge FFMpeg
 
 from pyTuttle import tuttle
 
@@ -22,11 +22,10 @@ def testMergeWithDynamicOffset():
 	rodA = read1.getRegionOfDefinition( time )
 	assert rodA.x1 == 0
 	assert rodA.y1 == 0
-	assert rodA.x2 == 20
-	assert rodA.y2 == 137
+	assert rodA.x2 == 19
+	assert rodA.y2 == 136
 
-
-	merge.getParam("offsetB").setValue([int(rodA.x2), 0])
+	merge.getParam("offsetB").setValue([int(rodA.x2+1), 0])
 	
 	outputCache = tuttle.MemoryCache()
 	g.compute( outputCache, merge )
@@ -38,5 +37,26 @@ def testMergeWithDynamicOffset():
 	assert rodMerge.x1 == 0
 	assert rodMerge.y1 == 0
 	assert rodMerge.x2 == (rodA.x2 + 234)
-	assert rodMerge.y2 == 357
+	assert rodMerge.y2 == 356
+
+
+def testMergeWithSameChildrens():
+
+	g = tuttle.Graph()
+
+	read = g.createNode("tuttle.checkerboard", size=[100,200], explicitConversion="8i")
+	scale = g.createNode("tuttle.swscale", width=150)
+	effect = g.createNode("tuttle.invert")
+	merge = g.createNode("tuttle.merge", offsetA=[150, 0], mergingFunction="copy", rod="union")
+	write = g.createNode("tuttle.invert")
+
+	# read -> scale -> effect
+	#               \         \
+	#                -----------> merge -> write
+
+	g.connect([read, scale, effect])
+	g.connect(scale, merge.getAttribute("B"))
+	g.connect(effect, merge.getAttribute("A"))
+	g.connect(merge, write)
+	g.compute(write, tuttle.ComputeOptions(5))
 

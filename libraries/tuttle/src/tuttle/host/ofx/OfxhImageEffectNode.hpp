@@ -75,8 +75,6 @@ public:
 	typedef std::set<OfxTime> TimesSet;
 	typedef std::map<std::string, TimesSet > ClipTimesSetMap;
 
-	#ifndef SWIG
-
 protected:
 	const OfxhImageEffectPlugin& _plugin;
 	std::string _context;
@@ -111,6 +109,10 @@ protected:
 	 */
 	void populate();
 	void populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor );
+
+private:
+	attribute::OfxhClipImage&       getOutputOfxhClip()       { return getClip( kOfxImageEffectOutputClipName ); }
+	const attribute::OfxhClipImage& getOutputOfxhClip() const { return getClip( kOfxImageEffectOutputClipName ); }
 
 public:
 	void copyAttributesValues( const OfxhImageEffectNode& other )
@@ -154,6 +156,8 @@ public:
 
 	/// get the output frame rate, as set in the clip prefences action.
 	double getOutputFrameRate() const { return _outputFrameRate; }
+	
+	double getOutputPixelAspectRatio() const { return getOutputOfxhClip().getPixelAspectRatio(); }
 
 	/// are all the non optional clips connected
 	bool checkClipConnectionStatus() const;
@@ -169,11 +173,13 @@ public:
 	/// override this to make processing abort, return 1 to abort processing
 	virtual int abort() = 0;
 
+#ifndef SWIG
 	/// override this to use your own memory instance - must inherrit from OfxhMemory
 	virtual OfxhMemory* newMemoryInstance( size_t nBytes ) = 0;
 
 	// return an memory::instance calls makeMemoryInstance that can be overriden
 	OfxhMemory* imageMemoryAlloc( size_t nBytes );
+#endif
 
 	/// make a clip
 	//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;
@@ -240,9 +246,6 @@ public:
 	// The duration of the effect
 	// This contains the duration of the plug-in effect, in frames.
 	virtual double getEffectDuration() const = 0;
-
-	// For an instance, this is the frame rate of the project the effect is in.
-	virtual double getFrameRate() const = 0;
 
 	/// This is called whenever a param is changed by the plugin so that
 	/// the recursive instanceChangedAction will be fed the correct frame
@@ -334,7 +337,7 @@ public:
 
 	virtual void renderAction( OfxTime            time,
 	                           const std::string& field,
-	                           const OfxRectI&    renderRoI,
+	                           const OfxRectI&    renderWindow,
 	                           OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
 	virtual void endSequenceRenderAction( OfxTime   startFrame,
@@ -375,7 +378,7 @@ public:
 	// is identity
 	virtual bool isIdentityAction( OfxTime&           time,
 	                               const std::string& field,
-	                               const OfxRectI&    renderRoI,
+	                               const OfxRectI&    renderWindow,
 	                               OfxPointD          renderScale,
 	                               std::string&       clip ) const OFX_EXCEPTION_SPEC;
 
@@ -482,8 +485,6 @@ private:
 		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( attribute::OfxhParamSet );
 		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( attribute::OfxhClipImageSet );
 	}
-
-	#endif
 };
 
 }
