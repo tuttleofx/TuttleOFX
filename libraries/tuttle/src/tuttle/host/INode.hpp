@@ -210,9 +210,11 @@ public:
 	
 	bool hasData( const OfxTime time ) const;
 	const DataAtTime& getData( const OfxTime time ) const;
-	const DataAtTime& getFirstData() const; 
+	const DataAtTime& getFirstData() const;
+	const DataAtTime& getLastData() const; 
 	DataAtTime& getData( const OfxTime time );
 	DataAtTime& getFirstData();
+	DataAtTime& getLastData();
 #endif
 };
 
