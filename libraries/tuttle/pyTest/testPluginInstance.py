@@ -163,6 +163,14 @@ def testNodeComputeInfos():
 	pixelAspectRatio = node.getOutputPixelAspectRatio()
 	print "pixel aspect ratio: ", pixelAspectRatio
 	assert_almost_equal(pixelAspectRatio, 16.0/15.0)
+	
+	# modify input SAR
+	node.getParam("customSAR").setValue(2.0)
+	graph.setup()
+	
+	pixelAspectRatio = node.getOutputPixelAspectRatio()
+	print "pixel aspect ratio: ", pixelAspectRatio
+	assert_equal(pixelAspectRatio, 2.0)
 
 
 def testPushButton():

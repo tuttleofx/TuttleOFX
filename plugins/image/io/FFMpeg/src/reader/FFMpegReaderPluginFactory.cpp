@@ -85,15 +85,15 @@ void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::BooleanParamDescriptor* keepSAR = desc.defineBooleanParam( kParamKeepSAR );
-	keepSAR->setLabel( "Keep input SAR" );
-	keepSAR->setDefault( true );
-	keepSAR->setHint( "Keep input sample aspect ratio." );
+	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
+	useCustomSAR->setLabel( "Override SAR" );
+	useCustomSAR->setDefault( false );
+	useCustomSAR->setHint( "Override the file SAR (Storage Aspect Ratio) with a custom SAR value." );
 
 	OFX::DoubleParamDescriptor* customSAR = desc.defineDoubleParam( kParamCustomSAR );
 	customSAR->setLabel( "Custom SAR" );
 	customSAR->setDefault( 1.0 );
-	customSAR->setHint( "Set a custom SAR for the input image." );
+	customSAR->setHint( "Choose a custom value to override the file SAR (Storage Aspect Ratio)." );
 
 	describeReaderParamsInContext( desc, context );
 }

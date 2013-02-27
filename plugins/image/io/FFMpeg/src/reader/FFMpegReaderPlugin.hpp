@@ -44,7 +44,7 @@ public:
 	OFX::Clip* _clipDst;              ///< Destination image clip
 
 	OFX::StringParam* _paramFilepath; ///< video filepath
-	OFX::BooleanParam* _paramKeepSAR; ///< Keep sample aspect ratio
+	OFX::BooleanParam* _paramUseCustomSAR; ///< Keep sample aspect ratio
 	OFX::DoubleParam* _paramCustomSAR; ///< Custom SAR to use
 
 	bool _errorInFile;
