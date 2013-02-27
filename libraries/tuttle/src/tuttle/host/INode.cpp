@@ -112,10 +112,9 @@ const INode::DataAtTime& INode::getFirstData() const
 	if( it == _dataAtTime.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev() + "Process data empty.\n"
-				       << exception::nodeName( getName() ) );
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
 	}
-	
 	return *it->second;
 }
 
@@ -126,31 +125,13 @@ INode::DataAtTime& INode::getFirstData()
 
 const INode::DataAtTime& INode::getLastData() const
 {
-	OfxTime time = _dataAtTime.size() - 1;
-
-	if( time < 0 )
+	DataAtTimeMap::const_reverse_iterator it = _dataAtTime.rbegin();
+	if( it == _dataAtTime.rend() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev() + "Process data empty.\n"
-				       << exception::nodeName( getName() ) );
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
 	}
-
-	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
-	if( it == _dataAtTime.end() )
-	{
-		std::ostringstream ss;
-		ss << "Defined times : ";
-		BOOST_FOREACH( const DataAtTimeMap::value_type& v, _dataAtTime )
-		{
-			ss << v.first << ", ";
-		}
-		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev() + "Process data at time not set.\n"
-								+ ss.str()
-			<< exception::nodeName( getName() )
-			<< exception::time( time ) );
-	}
-
 	return *it->second;
 }
 
