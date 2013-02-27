@@ -20,7 +20,7 @@ def testOutputBufferCallback():
 	g = tuttle.Graph()
 
 	# Input node
-	input_node = g.createNode("tuttle.jpegreader", filename="data/input.jpg", channel="rgb", bitDepth="8i")
+	input_node = g.createNode("tuttle.jpegreader", filename="TuttleOFX-data/image/jpeg/MatrixLarge.jpg", channel="rgb", bitDepth="8i")
 
 	# Output node
 	output_buffer = g.createOutputBuffer()

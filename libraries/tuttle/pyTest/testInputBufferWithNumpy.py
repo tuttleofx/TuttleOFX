@@ -15,7 +15,7 @@ def testInputBuffer_loadImageWithPIL():
 
 	ib = g.createInputBuffer()
 	## numpy array from an image
-	img = numpy.asarray(Image.open('data/input.jpg'))
+	img = numpy.asarray(Image.open('TuttleOFX-data/image/jpeg/MatrixLarge.jpg'))
 	ib.set3DArrayBuffer( img )
 
 	w = g.createNode("tuttle.pngwriter", filename="foo.png")
@@ -47,7 +47,7 @@ def testInputBuffer_MergeInputBufferNodes():
 	"""
 	g = tuttle.Graph()
 
-	img = numpy.asarray(Image.open('data/input.jpg'))
+	img = numpy.asarray(Image.open('TuttleOFX-data/image/jpeg/MatrixLarge.jpg'))
 	ii = g.createInputBuffer()
 	ii.set3DArrayBuffer( img )
 
