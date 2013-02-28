@@ -112,16 +112,32 @@ const INode::DataAtTime& INode::getFirstData() const
 	if( it == _dataAtTime.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev() + "Process data empty.\n"
-				       << exception::nodeName( getName() ) );
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
 	}
-	
 	return *it->second;
 }
 
 INode::DataAtTime& INode::getFirstData()
 {
 	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getFirstData() );
+}
+
+const INode::DataAtTime& INode::getLastData() const
+{
+	DataAtTimeMap::const_reverse_iterator it = _dataAtTime.rbegin();
+	if( it == _dataAtTime.rend() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
+	}
+	return *it->second;
+}
+
+INode::DataAtTime& INode::getLastData()
+{
+	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getLastData() );
 }
 
 std::ostream& operator<<( std::ostream& os, const INode& v )

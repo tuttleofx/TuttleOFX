@@ -47,14 +47,14 @@ BOOST_AUTO_TEST_CASE( process_writer )
 	TUTTLE_TCOUT_VAR( imgRes->getROD() );
 	BOOST_CHECK_EQUAL( imgRes->getROD().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getROD().y1, 0 );
-	BOOST_CHECK_EQUAL( imgRes->getROD().x2, 500 );
-	BOOST_CHECK_EQUAL( imgRes->getROD().y2, 500 );
+	BOOST_CHECK_EQUAL( imgRes->getROD().x2, 499 );
+	BOOST_CHECK_EQUAL( imgRes->getROD().y2, 499 );
 
 	TUTTLE_TCOUT_VAR( imgRes->getBounds() );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().y1, 0 );
-	BOOST_CHECK_EQUAL( imgRes->getBounds().x2, 500 );
-	BOOST_CHECK_EQUAL( imgRes->getBounds().y2, 500 );
+	BOOST_CHECK_EQUAL( imgRes->getBounds().x2, 499 );
+	BOOST_CHECK_EQUAL( imgRes->getBounds().y2, 499 );
 }
 
 BOOST_AUTO_TEST_CASE( process_unconnected )
