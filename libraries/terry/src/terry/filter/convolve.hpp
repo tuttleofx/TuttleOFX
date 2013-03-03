@@ -368,20 +368,6 @@ void correlate_1d_auto_imp( const SrcView& src, const Kernel& ker, const DstView
 			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
 			break;
 		}
-		case 9:
-		{
-			typedef kernel_1d_fixed<typename Kernel::value_type, 9> FixedKernel;
-			FixedKernel fker( ker.begin(), ker.center() );
-			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
-			break;
-		}
-		case 11:
-		{
-			typedef kernel_1d_fixed<typename Kernel::value_type, 11> FixedKernel;
-			FixedKernel fker( ker.begin(), ker.center() );
-			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
-			break;
-		}
 		default:
 		{
 			correlate_1d_imp<PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option, Rows(), boost::mpl::false_() );

@@ -1,12 +1,16 @@
 Import( 'project', 'libs' )
 
 import os.path
-
+import sys
 commonLibs = [
 	libs.openfxHack,
 	libs.boost,
 	libs.dl,
 ]
+
+if sys.platform == 'darwin':
+   commonLibs.append(libs.corefoundation)
+
 if project.env['mode'] != 'production':
 	commonLibs.append( libs.system_debug_info )
 
@@ -72,11 +76,9 @@ project.ObjectLibrary(
 			]
 	)
 
-
 project.pySwigBinding(
-		packageName = "pyTuttle",
-		moduleName = "tuttle",
-		sources = ['src/tuttle/host/tuttle.i'],
-		libraries = [libs.tuttleHost],
-	)
-
+	packageName = "pyTuttle",
+	moduleName = "tuttle",
+	sources = ['src/tuttle/host/tuttle.i'],
+	libraries = [libs.tuttleHost], # libs.numpy],
+        )

@@ -1,10 +1,55 @@
 # use system libraries
 
+base = '/opt/local'
 include = '/opt/local/include'
 
+dir_boost = base
+lib_boost_system = 'libboost_system-mt'
+lib_boost_filesystem = 'libboost_filesystem-mt'
+lib_boost_regex = 'libboost_regex-mt'
+lib_boost_program_options = 'libboost_program_options-mt'
+lib_boost_thread = 'libboost_thread-mt'
+lib_boost_serialization = 'libboost_serialization-mt'
+lib_boost_unit_test_framework = 'libboost_unit_test_framework-mt'
+lib_boost_python = 'libboost_python-mt'
+
+incdir_boost_atomic = '#3rdParty/boost_atomic/'
+
+dir_half = base
+dir_openexr = base
+dir_imagemagick = base
+dir_png = base
+dir_jpeg = base
+dir_tiff = base
+dir_freetype = base
+dir_ffmpeg = base
+dir_lcms = base
+dir_openjpeg = base
+
+dir_xlibs = base
+dir_glut = base
+dir_glu = base
+dir_gl = base
+
+incdir_half = '/opt/local/include/OpenEXR/'
+
+dir_ctl = '/usr/local/'
+incdir_ctl = '/usr/local/include/CTL'
+
 incdir_openexr = join(include,'OpenEXR')
-incdir_freetype = join(include,'freetype2')
+incdir_freetype = [include, join(include,'freetype2')]
 incdir_imagemagick = join(include,'ImageMagick')
 
-fwkdir_python = True # use framework with default directories
+incdir_openimageio = '/Users/dev/lib/openimageio/dist/macosx/include/OpenImageIO/'
+libdir_openimageio = '/Users/dev/lib/openimageio/dist/macosx/lib'
+
+incdir_turbojpeg = '/opt/libjpeg-turbo/include'
+libdir_turbojpeg = '/opt/libjpeg-turbo/lib'
+
+incdir_python = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7'
+
+#fwkdir_python = True # use framework with default directories
+
+fwkdir_gl = True
+
 
