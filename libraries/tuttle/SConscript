@@ -80,5 +80,6 @@ project.pySwigBinding(
 	packageName = "pyTuttle",
 	moduleName = "tuttle",
 	sources = ['src/tuttle/host/tuttle.i'],
-	libraries = [libs.tuttleHost], # libs.numpy],
+	libraries = [libs.tuttleHost, libs.python_numpy],
         )
+
