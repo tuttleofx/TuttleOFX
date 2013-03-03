@@ -1,3 +1,9 @@
+#include <boost/python.hpp>
+// From Boost.Python:
+// The rule is that <Python.h> must be included before any system
+// headers (so it can get control over some awful macros).
+#include <Python.h> // Need to be included, because it is not always included by "boost/python.hpp".
+
 #include "TextPlugin.hpp"
 #include "TextProcess.hpp"
 #include "TextDefinitions.hpp"
@@ -9,7 +15,6 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/ptr_container/ptr_inserter.hpp>
-#include <boost/python.hpp>
 
 #include <sstream>
 #include <string>
