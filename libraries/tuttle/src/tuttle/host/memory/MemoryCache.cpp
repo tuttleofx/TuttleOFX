@@ -39,7 +39,7 @@ CACHE_ELEMENT MemoryCache::get( const std::size_t& i ) const
 {
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
 	MAP::const_iterator itr = _map.begin();
-	for( int j = 0; j < i && itr != _map.end(); ++j )
+	for( unsigned int j = 0; j < i && itr != _map.end(); ++j )
 		++itr;
 
 	if( itr == _map.end() )

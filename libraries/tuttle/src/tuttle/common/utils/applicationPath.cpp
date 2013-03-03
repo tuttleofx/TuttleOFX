@@ -5,6 +5,7 @@
 #include "applicationPath.hpp"
 
 #include <tuttle/common/system/system.hpp>
+#include <tuttle/common/system/macos.hpp>
 #include <tuttle/common/utils/global.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -110,7 +111,7 @@ boost::filesystem::path applicationFilepath( const std::string& argv0, const boo
 			CFStringContainer cfPath( CFURLCopyFileSystemPath( bundleURL, kCFURLPOSIXPathStyle ) );
 			if( cfPath )
 			{
-				return cfPath;
+				return cfPath.str();
 			}
 		}
 	}
