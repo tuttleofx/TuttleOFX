@@ -1,5 +1,7 @@
 #include "OfxhParamString.hpp"
 
+#include <boost/functional/hash.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -44,6 +46,13 @@ void OfxhParamString::setV( const OfxTime time, va_list arg, const EChange chang
 	char* value = va_arg( arg, char* );
 
 	this->setValueAtTime( time, value, change );
+}
+
+std::size_t OfxhParamString::getHashAtTime( const OfxTime time ) const
+{
+	std::string value;
+	getValueAtTime( time, value );
+	return boost::hash_value( value );
 }
 
 }

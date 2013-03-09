@@ -30,6 +30,7 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#include <boost/functional/hash.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -120,6 +121,20 @@ attribute::Attribute& ImageEffectNode::getSingleInputAttribute()
 tuttle::host::ofx::attribute::OfxhClipImage* ImageEffectNode::newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor )
 {
 	return new attribute::ClipImage( *this, descriptor );
+}
+
+std::size_t ImageEffectNode::getLocalHashAtTime( const OfxTime time ) const
+{
+	std::size_t seed = getPlugin().getHash();
+
+	if( isFrameVarying() )
+	{
+		boost::hash_combine( seed, time );
+	}
+
+	boost::hash_combine( seed, getParamSet().getHashAtTime(time) );
+
+	return seed;
 }
 
 /// get default output fielding. This is passed into the clip prefs action

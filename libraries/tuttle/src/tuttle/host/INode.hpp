@@ -106,6 +106,8 @@ public:
 	virtual ofx::attribute::OfxhClipImageSet& getClipImageSet() = 0;
 	virtual const ofx::attribute::OfxhClipImageSet& getClipImageSet() const = 0;
 
+	virtual std::size_t getLocalHashAtTime( const OfxTime time ) const = 0;
+
 #ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
