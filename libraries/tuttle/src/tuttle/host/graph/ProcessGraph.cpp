@@ -11,9 +11,8 @@ namespace graph {
 
 const std::string ProcessGraph::_outputId( "TUTTLE_FAKE_OUTPUT" );
 
-ProcessGraph::ProcessGraph( memory::MemoryCache& outCache, const ComputeOptions& options, Graph& userGraph, const std::list<std::string>& outputNodes )
+ProcessGraph::ProcessGraph( const ComputeOptions& options, Graph& userGraph, const std::list<std::string>& outputNodes )
 	: _instanceCount( userGraph.getInstanceCount() )
-	, _outCache(outCache)
 	, _options(options)
 {
 	updateGraph( userGraph, outputNodes );
@@ -503,7 +502,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 }
 
-void ProcessGraph::processAtTime( const OfxTime time )
+void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
 {
 	TUTTLE_COUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
 	TUTTLE_TCOUT( "________________________________________ frame: " << time );
@@ -519,8 +518,8 @@ void ProcessGraph::processAtTime( const OfxTime time )
 	graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( _renderGraphAtTime, core().getMemoryCache() );
 	if( _options.getReturnBuffers() )
 	{
-		// accumulate output nodes buffers into the @p _outCache MemoryCache
-		processVisitor.setOutputMemoryCache( _outCache );
+		// accumulate output nodes buffers into the @p outCache MemoryCache
+		processVisitor.setOutputMemoryCache( outCache );
 	}
 
 	_renderGraphAtTime.depthFirstVisit( processVisitor, outputAtTime );
@@ -547,12 +546,12 @@ void ProcessGraph::processAtTime( const OfxTime time )
 	core().getMemoryCache().clearUnused();
 	TUTTLE_TCOUT_VAR( core().getMemoryCache().size() );
 	TUTTLE_TCOUT_VAR( core().getMemoryCache() );
-	TUTTLE_TCOUT_VAR( _outCache );
+	TUTTLE_TCOUT_VAR( outCache );
 
 	TUTTLE_COUT( " " );
 }
 
-bool ProcessGraph::process()
+bool ProcessGraph::process( memory::MemoryCache& outCache )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graphProcess_a.dot", _renderGraph );
@@ -601,7 +600,7 @@ bool ProcessGraph::process()
 			
 			try
 			{
-				processAtTime( time );
+				processAtTime( outCache, time );
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{

@@ -25,7 +25,6 @@ protected:
 	bool _hasAlpha;
 	OfxTime _time;
 	graph::ProcessGraph _procGraph;
-	memory::MemoryCache _emptyMemoryCache;
 	
 public:
 	OverlayInteract( Graph& userGraph, ImageEffectNode& effect, int bitDepthPerComponent = 8, bool hasAlpha = false );

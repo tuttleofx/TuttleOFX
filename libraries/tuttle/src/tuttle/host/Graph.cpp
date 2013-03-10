@@ -301,18 +301,16 @@ std::size_t Graph::getNbOutputConnections( const Node& node ) const
 
 void Graph::setup()
 {
-	memory::MemoryCache memoryCache;
 	const ComputeOptions options;
 	const std::list<std::string> outputNodes;
-	graph::ProcessGraph procGraph( memoryCache, options, *this, outputNodes );
+	graph::ProcessGraph procGraph( options, *this, outputNodes );
 	return procGraph.setup();
 }
 
 void Graph::setupAtTime( const OfxTime time, const NodeListArg& outputNodes )
 {
-	memory::MemoryCache memoryCache;
 	const ComputeOptions options;
-	graph::ProcessGraph procGraph( memoryCache, options, *this, outputNodes.getNodes() );
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
 	return procGraph.setupAtTime( time );
 }
 
@@ -340,8 +338,8 @@ bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes,
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph procGraph( memoryCache, options, *this, nodes.getNodes() );
-	return procGraph.process();
+	graph::ProcessGraph procGraph( options, *this, nodes.getNodes() );
+	return procGraph.process( memoryCache );
 }
 
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
