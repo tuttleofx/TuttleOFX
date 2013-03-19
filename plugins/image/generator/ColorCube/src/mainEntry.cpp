@@ -1,4 +1,4 @@
-#define OFXPLUGIN_VERSION_MAJOR 0
+#define OFXPLUGIN_VERSION_MAJOR 2
 #define OFXPLUGIN_VERSION_MINOR 0
 
 #include "ColorCubePluginFactory.hpp"

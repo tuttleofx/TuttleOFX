@@ -64,7 +64,7 @@ void ColorCubeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			 y < procWindowOutput.y2;
 			 ++y )
 	{
-        typename ColorCubeVirtualView::x_iterator src_it = this->_srcColorCubeView.x_at( procWindowOutput.x1, y );
+		typename ColorCubeVirtualView::x_iterator src_it = this->_srcColorCubeView.x_at( procWindowOutput.x1, y );
 		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
 		for( int x = procWindowOutput.x1;
 			 x < procWindowOutput.x2;
@@ -74,7 +74,7 @@ void ColorCubeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		}
 		if( this->progressForward( procWindowSize.x ) )
 			return;
-    }
+	}
 }
 
 }
