@@ -23,55 +23,10 @@ ViewerProcessParams<ViewerPlugin::Scalar> ViewerPlugin::getProcessParams( const 
 
 void ViewerPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-//    if( paramName == kParamHelpButton )
-//    {
-//        sendMessage( OFX::Message::eMessageMessage,
-//                     "", // No XML resources
-//                     kParamHelpString );
-//    }
 }
-
-//bool ViewerPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-//{
-//	ViewerProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	switch( params._border )
-//	{
-//		case eParamBorderPadded:
-//			rod.x1 = srcRod.x1 + 1;
-//			rod.y1 = srcRod.y1 + 1;
-//			rod.x2 = srcRod.x2 - 1;
-//			rod.y2 = srcRod.y2 - 1;
-//			return true;
-//		default:
-//			break;
-//	}
-//	return false;
-//}
-//
-//void ViewerPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-//{
-//	ViewerProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	OfxRectD srcRoi;
-//	srcRoi.x1 = srcRod.x1 - 1;
-//	srcRoi.y1 = srcRod.y1 - 1;
-//	srcRoi.x2 = srcRod.x2 + 1;
-//	srcRoi.y2 = srcRod.y2 + 1;
-//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-//}
 
 bool ViewerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-//	ViewerProcessParams<Scalar> params = getProcessParams();
-//	if( params._in == params._out )
-//	{
-//		identityClip = _clipSrc;
-//		identityTime = args.time;
-//		return true;
-//	}
 	return false;
 }
 
@@ -100,7 +55,7 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 		case OFX::eBitDepthCustom:
 		case OFX::eBitDepthNone:
 			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
-				<< exception::user( "Dpx: Unable to compute custom or non bit depth" ) );
+				<< exception::user( "Viewer: Unable to compute custom or non bit depth" ) );
 			break;
 		case OFX::eBitDepthUByte:  type = GL_UNSIGNED_BYTE; break;
 		case OFX::eBitDepthUShort: type = GL_UNSIGNED_SHORT; break;
@@ -113,7 +68,7 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 		case OFX::ePixelComponentRGBA : components = 4; format = GL_RGBA; break;
 		default:
 			BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
-				<< exception::user( "Dpx: Unable to compute unknown component." ) );
+				<< exception::user( "Viewer: Unable to compute unknown component." ) );
 			break;
 	}
 
