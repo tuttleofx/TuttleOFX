@@ -50,7 +50,8 @@ protected:
 	void updateVisibleTools();
 
 public:
-	OFX::Clip*              _clipDst;           ///< Destination image clip
+	OFX::Clip*              _clipSrc;  ///< Input image clip
+	OFX::Clip*              _clipDst;  ///< Destination image clip
 	/// @name user parameters
 	/// @{
 	OFX::ChoiceParam*       _paramExplicitConv; ///< Explicit conversion
