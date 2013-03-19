@@ -32,14 +32,14 @@ struct ColorWheelFunctor
 	BOOST_STATIC_CONSTANT( bool, is_mutable = false );
 
 	point_t tile_size;
-    double  scale;
-    bool    blackCenter;
+	double  scale;
+	bool    blackCenter;
 
 	ColorWheelFunctor() {}
-    ColorWheelFunctor( const point_t& tileSize, const bool blackCenter = false ) :
+	ColorWheelFunctor( const point_t& tileSize, const bool blackCenter = false ) :
 		tile_size( tileSize ),
-        scale( 1.0 / tileSize.x ),
-        blackCenter( blackCenter )
+		scale( 1.0 / tileSize.x ),
+		blackCenter( blackCenter )
 	{}
 	
 	Pixel operator()( const point_t& p ) const
@@ -49,7 +49,7 @@ struct ColorWheelFunctor
 		
 		Pixel pixel;
 		
-        if( sqrt( y * y + x * x ) > 0.5 )
+		if( sqrt( y * y + x * x ) > 0.5 )
 		{
 			numeric::pixel_zeros_t<Pixel>( )( pixel );
 			return pixel;
@@ -76,10 +76,10 @@ struct ColorWheelFunctor
 		
 		color_convert( hsl, rgb );
 		
-        if( ! blackCenter )
-        {
-            rgb = numeric::pixel_minus_t< rgb32f_pixel_t, rgb32f_pixel_t, rgb32f_pixel_t>()( white, rgb );
-        }
+		if( ! blackCenter )
+		{
+			rgb = numeric::pixel_minus_t< rgb32f_pixel_t, rgb32f_pixel_t, rgb32f_pixel_t>()( white, rgb );
+		}
 		
 		color_convert( rgb, rgba );
 		color_convert( rgba, pixel );
