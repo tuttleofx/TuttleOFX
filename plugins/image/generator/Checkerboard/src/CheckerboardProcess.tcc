@@ -33,7 +33,7 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
 	ImageGilProcessor<View>::setup( args );
-
+	
 	boost::function_requires<PixelLocatorConcept<Locator> >();
 	gil_function_requires < StepIteratorConcept<typename Locator::x_iterator> >();
 
@@ -41,14 +41,14 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments& args )
 	CheckerboardParams<View> params = getParams();
 
 	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
+	
 	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
-	Point tileSize( dims.x / params._boxes.x, dims.x / params._boxes.y );
-	int yshift = boost::numeric_cast<int>( ( dims.x - dims.y ) * 0.5 );
-
-	// create a squared checkerboard
-	CheckerboardVirtualView checker( Point( dims.x, dims.x ), Locator( Point( 0, 0 ), Point( 1, 1 ), CheckerboardFunctorT( tileSize, params._color1, params._color2 ) ) );
+	Point tileSize( dims.x / params._boxes.x, dims.y / params._boxes.y );
+	
+	// create a squared color wheel
+	CheckerboardVirtualView checker( Point( dims.x, dims.y ), Locator( Point( 0, 0 ), Point( 1, 1 ), CheckerboardFunctorT( tileSize, params._color1, params._color2 ) ) );
 	// create a subview depending on the image ratio
-	_srcView = subimage_view<>( checker, 0, yshift, boost::numeric_cast<int>( dims.x ), boost::numeric_cast<int>( dims.y ) );
+	_srcView = subimage_view<>( checker, 0, 0, boost::numeric_cast<int>( dims.x ), boost::numeric_cast<int>( dims.y ) );
 }
 
 /**
