@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_TEXT_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_TEXT_PLUGIN_HPP_
 
+#include <tuttle/plugin/context/GeneratorPlugin.hpp>
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 #include "TextDefinitions.hpp"
@@ -29,21 +30,22 @@ struct TextProcessParams
 	EParamVAlign _vAlign;
 	EParamHAlign _hAlign;
 	bool _verticalFlip;
-        bool _italic;
-        bool _bold;
+	bool _italic;
+	bool _bold;
 };
 
 /**
  * @brief Text plugin
  */
-class TextPlugin : public ImageEffectGilPlugin
+class TextPlugin : public GeneratorPlugin
 {
 public:
 	TextPlugin( OfxImageEffectHandle handle );
 
 public:
 	TextProcessParams getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
-
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+	
 	void render( const OFX::RenderArguments& args );
 
 public:

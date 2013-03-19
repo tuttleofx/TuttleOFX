@@ -12,7 +12,7 @@ static const std::string kParamIsExpression  = "expression";
 
 static const std::string kParamFont          = "font";
 
-static const std::string kParamSize          = "size";
+static const std::string kParamSize          = "textSize";
 static const std::string kParamRatio         = "ratio";
 static const std::string kParamColor         = "color";
 static const std::string kParamBackgroundColor  = "backgroundColor";

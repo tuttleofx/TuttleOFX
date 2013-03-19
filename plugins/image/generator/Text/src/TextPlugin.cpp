@@ -9,7 +9,7 @@ namespace plugin {
 namespace text {
 
 TextPlugin::TextPlugin( OfxImageEffectHandle handle )
-	: ImageEffectGilPlugin( handle )
+	: GeneratorPlugin( handle )
 {
 	_paramText          = fetchStringParam( kParamText );
 	_paramIsExpression  = fetchBooleanParam( kParamIsExpression );
@@ -51,6 +51,11 @@ TextProcessParams TextPlugin::getProcessParams( const OfxPointD& renderScale ) c
 	params._bold          = _paramBold->getValue();
 
 	return params;
+}
+
+void TextPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	GeneratorPlugin::getClipPreferences( clipPreferences );
 }
 
 /**

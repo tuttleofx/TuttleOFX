@@ -3,6 +3,7 @@
 #include "TextDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/context/GeneratorPluginFactory.hpp>
 
 #ifndef __WINDOWS__
 #include <fontconfig/fontconfig.h>
@@ -30,7 +31,7 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
@@ -40,6 +41,9 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 
@@ -51,19 +55,7 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                            OFX::EContext               context )
 {
-	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
-	srcClip->setOptional(true);
-
-	// Create the mandated output clip
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+	describeGeneratorParamsInContext( desc, context );
 
 	OFX::StringParamDescriptor* text = desc.defineStringParam( kParamText );
 	text->setLabel( "Text" );
@@ -118,17 +110,17 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	font->setLabel("Font");
 	
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
-	size->setLabel( "Size" );
+	size->setLabel( "Font Size" );
 	size->setDefault( 18 );
 	size->setRange( 0, std::numeric_limits<int>::max() );
 	size->setDisplayRange( 0, 60 );
-
+/*
 	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kParamRatio );
 	ratio->setLabel( "Ratio" );
 	ratio->setRange( 0.0, std::numeric_limits<double>::max() );
 	ratio->setDisplayRange( 0.0, 2.0 );
 	ratio->setDefault( 1.0 );
-
+*/
 	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kParamColor );
 	color->setLabel( "Color" );
 	color->setDefault( 1.0, 1.0, 1.0, 1.0 );

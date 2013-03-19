@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_TEXT_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_TEXT_PROCESS_HPP_
 
-#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
 
 #include <terry/freetype/freegil.hpp>
 #include <boost/gil/typedefs.hpp>
@@ -13,18 +13,16 @@ namespace tuttle {
 namespace plugin {
 namespace text {
 
-using namespace boost::gil; ///< @todo: to remove
-
 /**
  * @brief Text process
  *
  */
 template<class View>
-class TextProcess : public ImageGilFilterProcessor<View>
+class TextProcess : public ImageGilProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
-	typedef rgb8_pixel_t text_pixel_t;
+	typedef terry::rgb8_pixel_t text_pixel_t;
 	struct glyph_t
 	{
 		char ch;
@@ -52,16 +50,22 @@ public:
 	};
 
 protected:
-	TextPlugin&    _plugin;        ///< Rendering plugin
+	
+	OFX::Clip*                    _clipSrc;       ///< Source image clip
+	boost::scoped_ptr<OFX::Image> _src;
+	OfxRectI                      _srcPixelRod;
+	View                          _srcView;       ///< @brief source clip (filters have only one input)
+	
+	TextPlugin&                   _plugin;        ///< Rendering plugin
 	std::vector<FT_Glyph_Metrics> _metrics;
-	std::vector<int> _kerning;
-	boost::ptr_vector<glyph_t> _glyphs;
-	View _dstViewForGlyphs;
-	boost::gil::point2<int> _textCorner;
-	boost::gil::point2<int> _textSize;
-	Pixel _foregroundColor;
-	TextProcessParams _params;
-	std::string _text;
+	std::vector<int>              _kerning;
+	boost::ptr_vector<glyph_t>    _glyphs;
+	View                          _dstViewForGlyphs;
+	boost::gil::point2<int>       _textCorner;
+	boost::gil::point2<int>       _textSize;
+	Pixel                         _foregroundColor;
+	TextProcessParams             _params;
+	std::string                   _text;
 
 public:
 	TextProcess( TextPlugin& instance );
