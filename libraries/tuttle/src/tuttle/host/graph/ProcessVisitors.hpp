@@ -157,6 +157,69 @@ private:
 	TGraph& _graph;
 };
 
+template<class TGraph>
+class ComputeHashAtTime : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::vertex_descriptor vertex_descriptor;
+	typedef typename TGraph::edge_descriptor edge_descriptor;
+	typedef typename TGraph::Vertex::Key VertexKey;
+
+	ComputeHashAtTime( TGraph& graph, NodeHashContainer& outNodesHash, const OfxTime time )
+		: _graph( graph )
+		, _outNodesHash( outNodesHash )
+		, _time( time )
+	{
+		//TUTTLE_TCOUT( "[ComputeHashAtTime] constructor" );
+	}
+
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor vd, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( vd );
+		TUTTLE_TCOUT( "[ComputeHashAtTime] finish_vertex " << vertex );
+
+		if( vertex.isFake() )
+			return;
+
+		const std::size_t localHash = vertex.getProcessNode().getLocalHashAtTime(_time);
+
+		typedef std::map<VertexKey, std::size_t> InputsHash;
+		InputsHash inputsGlobalHash;
+		BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+		{
+			const Edge& edge = _graph.instance( ed );
+			vertex_descriptor inputVertexDesc = _graph.target( ed );
+			Vertex& inputVertex = _graph.instance( inputVertexDesc );
+			
+			const std::size_t inputGlobalHash = _outNodesHash.getHash(inputVertex.getKey());
+			// Key is: (clipName, time)
+			VertexKey k( edge.getInAttrName(), edge.getOutTime() );
+			inputsGlobalHash[k] = inputGlobalHash;
+		}
+		// inputGlobalHashes is put into a map to be ordered by clip name
+		// the clipName is unique for each time used
+		std::size_t seed = localHash;
+		BOOST_FOREACH( const typename InputsHash::value_type& inputGlobalHash, inputsGlobalHash )
+		{
+			//TUTTLE_TCOUT_VAR2( inputGlobalHash.first, inputGlobalHash.second );
+			boost::hash_combine( seed, inputGlobalHash.first.getName() ); // name of the input clip connected
+			boost::hash_combine( seed, inputGlobalHash.second );
+		}
+		_outNodesHash.addHash( vertex.getKey(), seed );
+		//TUTTLE_TCOUT_VAR( localHash );
+		//TUTTLE_TCOUT_VAR2( vertex.getKey(), seed );
+	}
+
+private:
+	TGraph& _graph;
+	NodeHashContainer& _outNodesHash;
+	OfxTime _time;
+};
+
 
 /**
  * @brief Create a new version of a graph with nodes deployed over time.

@@ -4,8 +4,9 @@
 %include <tuttle/host/OutputBufferWrapper.i>
 %include <tuttle/host/ComputeOptions.i>
 %include <tuttle/host/NodeListArg.i>
+%include <tuttle/host/NodeAtTimeKey.i>
+%include <tuttle/host/NodeHashContainer.i>
 %include <tuttle/host/INode.i>
-
 
 %{
 #include <tuttle/host/Graph.hpp>

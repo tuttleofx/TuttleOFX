@@ -314,6 +314,13 @@ void Graph::setupAtTime( const OfxTime time, const NodeListArg& outputNodes )
 	return procGraph.setupAtTime( time );
 }
 
+void Graph::computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& outputNodes )
+{
+	const ComputeOptions options;
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
+	procGraph.computeHashAtTime( outNodesHash, time );
+}
+
 bool Graph::compute( const ComputeOptions& options )
 {
 	return compute( NodeListArg(), options );

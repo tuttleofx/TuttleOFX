@@ -12,6 +12,8 @@
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/UVertex.hpp>
 #include <tuttle/host/graph/UEdge.hpp>
+#include <tuttle/host/NodeAtTimeKey.hpp>
+#include <tuttle/host/NodeHashContainer.hpp>
 #include <tuttle/host/attribute/Attribute.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 #include <tuttle/common/utils/global.hpp>
@@ -146,6 +148,8 @@ public:
 	void setup();
 
 	void setupAtTime( const OfxTime time, const NodeListArg& nodes = NodeListArg() );
+	
+	void computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& nodes = NodeListArg() );
 	
 	/**
 	 * @brief Shortcut

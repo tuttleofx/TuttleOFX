@@ -502,6 +502,17 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 }
 
+void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time )
+{
+	TUTTLE_TCOUT( "---------------------------------------- setupAtTime" );
+	setupAtTime( time );
+	TUTTLE_TCOUT( "---------------------------------------- computeHashAtTime BEGIN" );
+	graph::visitor::ComputeHashAtTime<InternalGraphAtTimeImpl> computeHashAtTimeVisitor( _renderGraphAtTime, outNodesHash, time );
+	InternalGraphAtTimeImpl::vertex_descriptor outputAtTime = getOutputVertexAtTime( time );
+	_renderGraphAtTime.depthFirstVisit( computeHashAtTimeVisitor, outputAtTime );
+	TUTTLE_TCOUT( "---------------------------------------- computeHashAtTime END" );
+}
+
 void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
 {
 	TUTTLE_COUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );

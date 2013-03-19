@@ -1,11 +1,17 @@
 #include "OfxhParamString.hpp"
 
 #include <boost/functional/hash.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace attribute {
+
+const std::string& OfxhParamString::getStringMode() const
+{
+	return getProperties().getStringProperty( kOfxParamPropStringMode );
+}
 
 void OfxhParamString::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
@@ -52,7 +58,15 @@ std::size_t OfxhParamString::getHashAtTime( const OfxTime time ) const
 {
 	std::string value;
 	getValueAtTime( time, value );
-	return boost::hash_value( value );
+	std::size_t seed = boost::hash_value( value );
+	if( getStringMode() == kOfxParamStringIsFilePath )
+	{
+		if( boost::filesystem::exists(value) )
+		{
+			boost::hash_combine( seed, boost::filesystem::last_write_time(value) );
+		}
+	}
+	return seed;
 }
 
 }

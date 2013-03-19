@@ -9,6 +9,7 @@
 #include "InternalGraph.hpp"
 
 #include <tuttle/host/Graph.hpp>
+#include <tuttle/host/NodeHashContainer.hpp>
 
 #include <string>
 
@@ -70,6 +71,8 @@ public:
 	
 	void setupAtTime( const OfxTime time );
 	
+	void computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time );
+
 	void processAtTime( memory::MemoryCache& outCache, const OfxTime time );
 
 	bool process( memory::MemoryCache& outCache );

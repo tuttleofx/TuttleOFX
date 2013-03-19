@@ -1,6 +1,7 @@
 # scons: Checkerboard Blur Png
 
 from pyTuttle import tuttle
+import os
 
 from nose.tools import *
 
@@ -52,7 +53,34 @@ def testFrameVarying():
 	assert_not_equal( read_imageSequence.getLocalHashAtTime(1.0), read_imageSequence.getLocalHashAtTime(60.0) )
 
 
-def te_stClipOrder():
+def testFilenameLastWriteTimeChanged():
+	filename = ".tests/foo.png"
+	if os.path.exists(filename):
+		os.remove(filename)
+	g = tuttle.Graph()
+	read_filename = g.createNode( "tuttle.pngreader", filename=filename )
+	
+	hash_with_no_file = read_filename.getLocalHashAtTime(0.0)
+	assert_equal( read_filename.getLocalHashAtTime(0.0), read_filename.getLocalHashAtTime(0.0) )
+	open(filename, "w").write("Not empty\n")
+	# Cast to long, because in C++ we see it as a long.
+	last_modification_time = long(os.stat(filename).st_ctime)
+	hash_with_file = read_filename.getLocalHashAtTime(0.0)
+	assert_equal( read_filename.getLocalHashAtTime(0.0), read_filename.getLocalHashAtTime(0.0) )
+	
+	# Modify the timestamp, until the last write time change becames visible
+	i = 0
+	while last_modification_time == long(os.stat(filename).st_ctime):
+		open(filename, "w").write("Adding data to modify the last wite time: " + str(i) + "\n")
+		i += 1
+	hash_with_modified_file = read_filename.getLocalHashAtTime(0.0)
+	os.remove(filename)
+
+	assert_not_equal( hash_with_no_file, hash_with_file )
+	assert_not_equal( hash_with_file, hash_with_modified_file )
+
+
+def testClipOrder():
 	a_g = tuttle.Graph()
 	a_read1 = a_g.createNode("tuttle.checkerboard", size=[50,50])
 	a_read2 = a_g.createNode("tuttle.checkerboard", size=[50,49])
@@ -76,5 +104,5 @@ def te_stClipOrder():
 	c_g.connect(c_read1, c_merge.getClip("B"))
 	c_g.connect(c_read2, c_merge.getClip("A"))
 	
-	# todo
-	#assert_not_equal( b_merge.getLocalHashAtTime(1.0), c_merge.getLocalHashAtTime(1.0) )
+	# Clip connections has no impact
+	assert_equal( b_merge.getLocalHashAtTime(1.0), c_merge.getLocalHashAtTime(1.0) )

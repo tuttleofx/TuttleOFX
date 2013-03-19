@@ -21,6 +21,8 @@ public:
 	typedef std::string BaseType;
 	OfxhParamString( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 
+	const std::string& getStringMode() const;
+
 	virtual void getValue( std::string& ) const OFX_EXCEPTION_SPEC                                                  = 0;
 	virtual void getValueAtTime( const OfxTime time, std::string& ) const OFX_EXCEPTION_SPEC                        = 0;
 	virtual void setValue( const std::string&, const EChange change )                OFX_EXCEPTION_SPEC             = 0;
