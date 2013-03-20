@@ -565,7 +565,7 @@ public:
     /** @brief the unique ID of this image */
     std::string getUniqueIdentifier() const { return _uniqueID; }
 
-    /** @brief return a pixel pointer, returns NULL if (x,y) is outside the image bounds
+    /** @brief return a pixel pointer
      *
      * x and y are in pixel coordinates
      *

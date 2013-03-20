@@ -887,8 +887,7 @@ std::size_t Image::getBoundsImageDataBytes() const
 void* Image::getPixelAddress( int x, int y )
 {
 	// are we in the image bounds
-	if( x < _bounds.x1 || x >= _bounds.x2 || y < _bounds.y1 || y > _bounds.y2 || _pixelBytes == 0 )
-	return 0;
+	BOOST_ASSERT( x >= _bounds.x1 && x < _bounds.x2 && y >= _bounds.y1 && y < _bounds.y2 && _pixelBytes != 0 );
 
 	char* pix = ( char* )( ( (char*) _pixelData ) + ( y - _bounds.y1 ) * _rowDistanceBytes );
 	pix += ( x - _bounds.x1 ) * _pixelBytes;
