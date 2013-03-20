@@ -28,6 +28,7 @@ struct InputBufferProcessParams
 	OFX::EPixelComponent _pixelComponents;
 	OFX::EBitDepth _bitDepth;
 	OFX::EField _field;
+	EParamOrientation _orientation;
 };
 
 /**
@@ -68,6 +69,7 @@ public:
 	OFX::ChoiceParam* _paramPixelComponents;
 	OFX::ChoiceParam* _paramBitDepth;
 	OFX::ChoiceParam* _paramField;
+	OFX::ChoiceParam* _paramOrientation;
 	
 	OFX::Double2DParam* _paramTimeDomain;
 	
