@@ -1148,6 +1148,8 @@ bool OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
 
 	property::OfxhSet outArgs( outStuff );
 
+	outArgs.setDoubleProperty( kOfxPropTime, time );
+
 	OfxStatus status = mainEntry( kOfxImageEffectActionIsIdentity,
 				      this->getHandle(),
 				      &inArgs,
