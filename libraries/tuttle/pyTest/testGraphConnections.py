@@ -1,23 +1,23 @@
 # scons: Checkerboard LensDistort Merge
 
-from pyTuttle import tuttle
+from pyTuttle.tuttle import *
 import os
 
 from nose.tools import *
 
 def setUp():
-	tuttle.core().preload(False)
+	core().preload(False)
 
 def testGraphConnections():
-	graph = tuttle.Graph()
+	graph = Graph()
 
 	print "graph:", graph
 
 	checkerboard = graph.createNode( "tuttle.checkerboard" ).asImageEffectNode()
-	lensdistort = graph.createNode( "tuttle.lensdistort" ).asImageEffectNode()
+	lensdistort  = graph.createNode( "tuttle.lensdistort" ).asImageEffectNode()
 	
 	clipOut = checkerboard.getClip("Output")
-	clipIn = lensdistort.getClip("Source")
+	clipIn  = lensdistort.getClip("Source")
 
 	graph.connect( clipOut, clipIn )
 	print "graph:", graph
@@ -31,7 +31,7 @@ def testGraphUnconnect():
 	Multiple connections
 
 	"""
-	graph = tuttle.Graph()
+	graph = Graph()
 
 	print "graph:", graph
 
@@ -56,7 +56,7 @@ def testGraphMultipleConnections():
 	Multiple connections
 
 	"""
-	graph = tuttle.Graph()
+	graph = Graph()
 
 	print "graph:", graph
 
@@ -81,7 +81,7 @@ def testGraphAlreadyConnected():
 	"""
 	Connect twice...
 	"""
-	graph = tuttle.Graph()
+	graph = Graph()
 	checkerboard = graph.createNode( "tuttle.checkerboard" ).asImageEffectNode()
 	merge = graph.createNode( "tuttle.merge" ).asImageEffectNode()
 

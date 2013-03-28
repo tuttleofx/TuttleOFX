@@ -1,11 +1,11 @@
 # scons: Png
 
-from pyTuttle import tuttle
+from pyTuttle.tuttle import *
 import numpy
 import Image
 
 def setUp():
-	tuttle.core().preload(False)
+	core().preload(False)
 
 
 # This is called by Tuttle as an input of the graph
@@ -17,12 +17,12 @@ def getImage(time):
 
 def testInputBufferCallback():
 
-	g = tuttle.Graph()
+	g = Graph()
 
 	ib = g.createInputBuffer()
-	ib.setComponents( tuttle.InputBufferWrapper.ePixelComponentRGB );
-	ib.setBitDepth( tuttle.InputBufferWrapper.eBitDepthUByte );
-	ib.setOrientation( tuttle.InputBufferWrapper.eImageOrientationFromTopToBottom );
+	ib.setComponents( InputBufferWrapper.ePixelComponentRGB );
+	ib.setBitDepth( InputBufferWrapper.eBitDepthUByte );
+	ib.setOrientation( InputBufferWrapper.eImageOrientationFromTopToBottom );
 	ib.setPyCallback( getImage )
 
 	w = g.createNode("tuttle.pngwriter", filename=".tests/foo.png")
