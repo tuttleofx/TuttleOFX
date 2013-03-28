@@ -107,6 +107,8 @@ void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 	clipPreferences.setPixelAspectRatio( *_clipDst, useCustomSAR ? customSAR : _reader.aspectRatio() );
 	clipPreferences.setOutputFrameRate( _reader.fps() );
 
+	TUTTLE_COUT_VAR( _reader.fps() );
+	
 	// Setup fielding
 	switch( _reader.interlacment() )
 	{

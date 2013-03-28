@@ -84,7 +84,9 @@ public:
 	double fps() const
 	{
 		if( _fpsDen )
+		{
 			return _fpsNum / (double) _fpsDen;
+		}
 		return 1.0f;
 	}
 

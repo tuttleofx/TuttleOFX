@@ -1,5 +1,6 @@
 #include "OfxhParamSet.hpp"
 
+#include <boost/functional/hash.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -60,6 +61,20 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 		p.copy( op );
 	}
 	initMapFromList();
+}
+
+std::size_t OfxhParamSet::getHashAtTime( const OfxTime time ) const
+{
+	std::size_t seed = 0;
+	BOOST_FOREACH( const OfxhParam& param, getParamVector() )
+	{
+		//TUTTLE_TCOUT_VAR( param.getName() );
+		if( param.paramTypeHasData() && param.getEvaluateOnChange() )
+		{
+			boost::hash_combine( seed, param.getHashAtTime( time ) );
+		}
+	}
+	return seed;
 }
 
 //void OfxhParamSet::referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC

@@ -184,6 +184,9 @@ int VideoFFmpegWriter::start( )
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
 		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
+		TUTTLE_COUT_VAR( _fps );
+		TUTTLE_COUT_VAR2( _stream->codec->time_base.num, _stream->codec->time_base.den );
+		
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
 	}

@@ -899,6 +899,8 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	
 	FFMpegProcessParams params = getProcessParams();
 	
+	TUTTLE_COUT_VAR( _clipSrc->getFrameRate() );
+	
 	_writer.setFilename    ( params._filepath );
 	_writer.setFormat      ( params._format );
 	_writer.setVideoCodec  ( params._videoCodec );

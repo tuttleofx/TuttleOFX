@@ -81,6 +81,8 @@ public:
 	ofx::attribute::OfxhClipImageSet& getClipImageSet() { return *this; }
 	const ofx::attribute::OfxhClipImageSet& getClipImageSet() const { return *this; }
 	
+	std::size_t getLocalHashAtTime( const OfxTime time ) const;
+	
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
 		return getData(time)._apiImageEffect._renderRoD;

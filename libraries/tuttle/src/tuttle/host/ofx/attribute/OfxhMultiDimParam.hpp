@@ -7,8 +7,8 @@
 #include "OfxhParamSet.hpp"
 
 #include <boost/program_options/parsers.hpp>
-
 #include <boost/ptr_container/ptr_array.hpp>
+#include <boost/functional/hash.hpp>
 
 #include <string>
 #include <vector>
@@ -270,7 +270,21 @@ public:
 			_controls[index].integrate( time1, time2, *v );
 		}
 	}
-
+	
+	bool paramTypeHasData() const { return true; }
+	
+	std::size_t getHashAtTime( const OfxTime time ) const
+	{
+		std::size_t seed = 0;
+		for( std::size_t i = 0; i < getSize(); ++i )
+		{
+			BaseType value = 0;
+			getValueAtTimeAndIndex( time, i, value );
+			boost::hash_combine( seed, value );
+		}
+		return seed;
+	}
+	
 	std::ostream& displayValues( std::ostream& os ) const
 	{
 		os << "[";

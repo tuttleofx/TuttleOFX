@@ -56,7 +56,10 @@ public:
 	{
 		return _paramSetInstance->editEnd();
 	}
+	
+	bool paramTypeHasData() const { return false; }
 
+	std::size_t getHashAtTime( const OfxTime time ) const { return 0; }
 };
 
 }

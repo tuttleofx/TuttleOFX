@@ -257,6 +257,7 @@ bool VideoFFmpegReader::setupStreamInfo()
 
 	if( stream->r_frame_rate.num != 0 && stream->r_frame_rate.den != 0 )
 	{
+		std::cout << "fps " << stream->r_frame_rate.num << " / " << stream->r_frame_rate.den << std::endl;
 		_fpsNum = stream->r_frame_rate.num;
 		_fpsDen = stream->r_frame_rate.den;
 	}

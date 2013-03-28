@@ -1,7 +1,7 @@
 Import( 'project', 'libs' )
 
 ### To enable/disable python expressions in tuttle host
-project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = False
+project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = True
 
 
 

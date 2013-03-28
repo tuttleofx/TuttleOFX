@@ -150,6 +150,10 @@ public:
 	/// clone this parameter
 	virtual This* clone() const = 0;
 
+	virtual bool paramTypeHasData() const = 0;
+
+	virtual std::size_t getHashAtTime( const OfxTime time ) const = 0;
+
 	/**
 	 * @todo tuttle: check values !!!
 	 */
