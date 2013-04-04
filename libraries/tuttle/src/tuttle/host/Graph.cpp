@@ -62,23 +62,23 @@ Graph::Node& Graph::addNode( INode& node )
 	return node;
 }
 
-void Graph::addNodes( const std::vector<NodeInit>& nodes )
-{
-	BOOST_FOREACH( const NodeInit& node, nodes )
-	{
-		addNode( node ); // tranfer nodes ownership to the graph
-	}
-}
-
-void Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
+std::vector<INode*> Graph::addNodes( const std::vector<NodeInit>& nodes )
 {
 	std::vector<INode*> nodePtrs;
 	BOOST_FOREACH( const NodeInit& node, nodes )
 	{
-		nodePtrs.push_back( &addNode( node ) ); // tranfer nodes ownership to the graph
+		INode& newNode = addNode( node ); // tranfer nodes ownership to the graph
+		nodePtrs.push_back( & newNode );
 	}
+	return nodePtrs;
+}
+
+std::vector<INode*> Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
+{
+	std::vector<INode*> nodePtrs = addNodes( nodes );
 	if( nodePtrs.size() > 1 )
 		connect( nodePtrs );
+	return nodePtrs;
 }
 
 void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
