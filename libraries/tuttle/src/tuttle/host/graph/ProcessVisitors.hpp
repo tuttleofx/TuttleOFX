@@ -488,8 +488,8 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 	
 	BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, nodesToRemove )
 	{
-		TUTTLE_COUT( connection._identityVertex );
-		TUTTLE_COUT( "IN: "
+		TUTTLE_TCOUT( connection._identityVertex );
+		TUTTLE_TCOUT( "IN: "
 			<< connection._identityVertex << "::" << connection._input._inputClip
 			<< " <<-- "
 			<< connection._input._srcNode << "::" kOfxOutputAttributeName );
