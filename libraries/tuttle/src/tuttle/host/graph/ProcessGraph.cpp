@@ -4,6 +4,7 @@
 #include <tuttle/host/graph/GraphExporter.hpp>
 
 #include <boost/foreach.hpp>
+//#include <boost/timer/timer.hpp>
 
 namespace tuttle {
 namespace host {
@@ -322,6 +323,7 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 
 void ProcessGraph::setupAtTime( const OfxTime time )
 {
+	//boost::timer::auto_cpu_timer timer;
 	TUTTLE_TCOUT( "---------------------------------------- deploy time" );
 	graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( _renderGraph, time );
 	_renderGraph.depthFirstVisit( deployTimeVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
@@ -504,6 +506,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time )
 {
+	//boost::timer::auto_cpu_timer timer;
 	TUTTLE_TCOUT( "---------------------------------------- setupAtTime" );
 	setupAtTime( time );
 	TUTTLE_TCOUT( "---------------------------------------- computeHashAtTime BEGIN" );
@@ -515,12 +518,12 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 
 void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
 {
-	TUTTLE_COUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
+	//boost::timer::auto_cpu_timer timer;
+	///@todo callback
+	TUTTLE_TCOUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
 	TUTTLE_TCOUT( "________________________________________ frame: " << time );
 
 	TUTTLE_TCOUT( "________________________________________ output node : " << _renderGraph.getVertex( _outputId ).getName() );
-
-	setupAtTime( time );
 
 	InternalGraphAtTimeImpl::vertex_descriptor outputAtTime = getOutputVertexAtTime( time );
 
@@ -611,6 +614,8 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 			
 			try
 			{
+				setupAtTime( time );
+
 				processAtTime( outCache, time );
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
