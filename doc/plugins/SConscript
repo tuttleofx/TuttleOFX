@@ -12,5 +12,6 @@ project.ScriptTests(
 		accept=['*.py'],
 		reject=[
 			'generators/*',
+			'movie/*',
 		],
 	)
