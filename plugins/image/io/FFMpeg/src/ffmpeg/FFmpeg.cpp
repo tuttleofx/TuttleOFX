@@ -33,13 +33,13 @@ const std::string FFmpeg::ffmpegLogLevel_toString( int logLevel )
 
 void log_callback( void* /*ptr*/, int level, const char* format, va_list arglist )
 {
-	TUTTLE_IF_DEBUG(
+#ifndef TUTTLE_PRODUCTION
 		const std::string logID = FFmpeg::ffmpegLogLevel_toString( level );
 
 		std::cerr << "FFmpeg " << logID << ":\t";
 		vfprintf( stderr, format, arglist );
 		std::cerr << std::endl;
-	)
+#endif
 }
 
 bool FFmpeg::globalInit( )
