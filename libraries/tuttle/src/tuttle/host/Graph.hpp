@@ -96,14 +96,14 @@ public:
 	 * 
 	 * @warning: Nodes will be renamed.
 	 */
-	void addNodes( const std::vector<NodeInit>& nodes );
+	std::vector<INode*> addNodes( const std::vector<NodeInit>& nodes );
 	
 	/**
 	 * @brief Add nodes to the graph and connect them linearly.
 	 * 
 	 * @warning: Nodes will be renamed.
 	 */
-	void addConnectedNodes( const std::vector<NodeInit>& nodes );
+	std::vector<INode*> addConnectedNodes( const std::vector<NodeInit>& nodes );
 	
 	/**
 	 * @brief Rename a node in the current graph.

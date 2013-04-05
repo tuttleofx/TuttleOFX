@@ -7,6 +7,7 @@
 %include <tuttle/host/NodeAtTimeKey.i>
 %include <tuttle/host/NodeHashContainer.i>
 %include <tuttle/host/INode.i>
+%include <tuttle/host/Node.i>
 
 %{
 #include <tuttle/host/Graph.hpp>
