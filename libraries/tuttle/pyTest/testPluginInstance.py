@@ -1,4 +1,4 @@
-# scons: LensDistort FFMpeg
+# scons: LensDistort AudioVideo
 
 from pyTuttle import tuttle
 import os

@@ -1,4 +1,4 @@
-# scons: Checkerboard Blur FFMpeg Png
+# scons: Checkerboard Blur AudioVideo Png
 
 from pyTuttle.tuttle import *
 from nose.tools import *

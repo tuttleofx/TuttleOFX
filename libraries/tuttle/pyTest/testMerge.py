@@ -1,4 +1,4 @@
-# scons: Checkerboard Invert Merge FFMpeg
+# scons: Checkerboard Invert Merge AudioVideo
 
 from pyTuttle import tuttle
 
