@@ -148,12 +148,12 @@ int LibAVVideoWriter::start( )
 {
 	if( !_avFormatOptions )
 	{
-		AVFormatContext *s = avformat_alloc_context();
-		AVOutputFormat *oformat = NULL;
+		_avFormatOptions = avformat_alloc_context();
+		_ofmt = NULL;
 		
 		const char* filename = getFilename().c_str();
 		
-		if( !s )
+		if( !_avFormatOptions )
 		{
 			TUTTLE_CERR( "avWriter: format context allocation failed" );
 			return false;
@@ -161,8 +161,8 @@ int LibAVVideoWriter::start( )
 		
 		if( _formatName.empty() )
 		{
-			oformat = av_guess_format( _formatName.c_str(), NULL, NULL );
-			if (!oformat)
+			_ofmt = av_guess_format( _formatName.c_str(), NULL, NULL );
+			if (!_ofmt)
 			{
 				TUTTLE_CERR( "avWriter: Requested output format " << _formatName << " is not a suitable output format" );
 				return false;
@@ -170,38 +170,36 @@ int LibAVVideoWriter::start( )
 		}
 		else
 		{
-			oformat = av_guess_format( NULL, filename, NULL );
-			if (!oformat)
+			_ofmt = av_guess_format( NULL, filename, NULL );
+			if (!_ofmt)
 			{
 				TUTTLE_CERR( "avWriter: Unable to find a suitable output format for " << filename );
 				return false;
 			}
 		}
 		
-		s->oformat = oformat;
-		if( s->oformat->priv_data_size > 0 )
+		_avFormatOptions->oformat = _ofmt;
+		if( _avFormatOptions->oformat->priv_data_size > 0 )
 		{
-			s->priv_data = av_mallocz( s->oformat->priv_data_size );
-			if( !s->priv_data )
+			_avFormatOptions->priv_data = av_mallocz( _avFormatOptions->oformat->priv_data_size );
+			if( !_avFormatOptions->priv_data )
 			{
 				TUTTLE_CERR( "avWriter: format context allocation failed" );
 				return false;
 			}
-			if(s->oformat->priv_class)
+			if( _avFormatOptions->oformat->priv_class )
 			{
-				*(const AVClass**)s->priv_data= s->oformat->priv_class;
-				av_opt_set_defaults(s->priv_data);
+				*(const AVClass**)_avFormatOptions->priv_data= _avFormatOptions->oformat->priv_class;
+				av_opt_set_defaults( _avFormatOptions->priv_data );
 			}
 		}
 		else
-			s->priv_data = NULL;
+			_avFormatOptions->priv_data = NULL;
 		
 		if( filename )
-			av_strlcpy( s->filename, filename, sizeof(s->filename) );
-		_avFormatOptions = s;
-		
-		_ofmt = oformat;
-		TUTTLE_CERR( "avWriter: " << std::string(_ofmt->name) << " format selected" );
+			av_strlcpy( _avFormatOptions->filename, filename, sizeof( _avFormatOptions->filename ) );
+
+		TUTTLE_CERR( "avWriter: " << std::string( _ofmt->name ) << " format selected" );
 	}
 
 	if( !_stream )
@@ -229,8 +227,8 @@ int LibAVVideoWriter::start( )
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
 		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
-		TUTTLE_COUT_VAR( _fps );
-		TUTTLE_COUT_VAR2( _stream->codec->time_base.num, _stream->codec->time_base.den );
+		//TUTTLE_COUT_VAR( _fps );
+		//TUTTLE_COUT_VAR2( _stream->codec->time_base.num, _stream->codec->time_base.den );
 		
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
@@ -570,7 +568,6 @@ void LibAVVideoWriter::optionSet( const EAVParamType& type, const AVOption& opt,
 	if( error )
 		TUTTLE_CERR( "avwriter: " << libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
 }
-
 
 void LibAVVideoWriter::optionSet( const EAVParamType& type, const AVOption &opt, double &value )
 {

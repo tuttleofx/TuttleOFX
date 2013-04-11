@@ -3,6 +3,7 @@
 
 #include <libav/LibAVPresetDefinitions.hpp>
 #include <libav/LibAVVideoWriter.hpp>
+#include <libav/LibAVOptions.hpp>
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
@@ -32,7 +33,7 @@ struct AVProcessParams
 /**
  * @brief LibAV plugin
  */
-class AVWriterPlugin : public WriterPlugin
+class AVWriterPlugin : public AVOptionPlugin
 {
 public:
 	AVWriterPlugin( OfxImageEffectHandle handle );
@@ -50,11 +51,6 @@ public:
 	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
-
-private:
-	void setParameters( const EAVParamType& type, void* av_class, int req_flags, int rej_flags );
-	void setParameters( const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
-	void setParameters( const PresetParameters& parameters );
 	
 public:
 	OFX::ChoiceParam*   _paramFormat;
