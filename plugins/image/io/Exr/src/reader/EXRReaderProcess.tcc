@@ -122,7 +122,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( ... )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unknown()
-			<< exception::user( "Unable to write image")
+			<< exception::user( "Unable to read image")
 			<< exception::dev( boost::current_exception_diagnostic_information() )
 			<< exception::filename( _params._filepath ) );
 	}
