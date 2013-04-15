@@ -1,4 +1,4 @@
-#include "LibAVOptions.hpp"
+#include "LibAV.hpp"
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -9,13 +9,15 @@ namespace tuttle {
 namespace plugin {
 namespace av {
 
-AVOptionPlugin::AVOptionPlugin( OfxImageEffectHandle handle )
-	: WriterPlugin( handle )
+template< typename IOPlugin >
+AVOptionPlugin<IOPlugin>::AVOptionPlugin( OfxImageEffectHandle handle )
+	: IOPlugin( handle )
 {
 	
 }
 
-int AVOptionPlugin::convertIntWithOptionalUnit( const std::string& param, const std::string& stringValue )
+template< typename IOPlugin >
+int AVOptionPlugin<IOPlugin>::convertIntWithOptionalUnit( const std::string& param, const std::string& stringValue )
 {
 	int intValue = 0;
 	if( std::isdigit( stringValue[ stringValue.length()-1 ] ) )
@@ -62,7 +64,9 @@ int AVOptionPlugin::convertIntWithOptionalUnit( const std::string& param, const 
 	return intValue;
 }
 
-void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType& type, void* av_class, int req_flags, int rej_flags )
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::setParameters( LibAVVideoRW& videoRW, const EAVParamType& type, void* av_class, int req_flags, int rej_flags )
 {
 	std::vector<OFX::ChoiceParam*> choices;
 	std::vector<std::string> unit;
@@ -87,13 +91,13 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 		{
 			std::string name = "g_";
 			name += opt->unit;
-			OFX::GroupParam* curOpt = fetchGroupParam( name );
+			OFX::GroupParam* curOpt = IOPlugin::fetchGroupParam( name );
 			groups.push_back( curOpt );
 			continue;
 		}
 		if( opt->unit && opt->type == AV_OPT_TYPE_INT )
 		{
-			OFX::ChoiceParam* curOpt = fetchChoiceParam( opt->name );
+			OFX::ChoiceParam* curOpt = IOPlugin::fetchChoiceParam( opt->name );
 			//TUTTLE_COUT_VAR3( opt->name, opt->unit, curOpt->getValue() );
 			
 			choiceOpt.push_back( opt );
@@ -107,47 +111,47 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 		{
 			case AV_OPT_TYPE_FLAGS:
 			{
-				OFX::BooleanParam* curOpt = fetchBooleanParam( opt->name );
+				OFX::BooleanParam* curOpt = IOPlugin::fetchBooleanParam( opt->name );
 				bool v = curOpt->getValue();
-				writer.optionSet( type, *opt, v );
+				optionSet( videoRW, type, *opt, v );
 				break;
 			}
 			case AV_OPT_TYPE_INT:
 			case AV_OPT_TYPE_INT64:
 			{
-				OFX::IntParam* curOpt = fetchIntParam( opt->name );
+				OFX::IntParam* curOpt = IOPlugin::fetchIntParam( opt->name );
 				int v = curOpt->getValue();
-				writer.optionSet( type, *opt, v );
+				optionSet( videoRW, type, *opt, v );
 				break;
 			}
 			case AV_OPT_TYPE_DOUBLE:
 			case AV_OPT_TYPE_FLOAT:
 			{
-				OFX::DoubleParam* curOpt = fetchDoubleParam( opt->name );
+				OFX::DoubleParam* curOpt = IOPlugin::fetchDoubleParam( opt->name );
 				double v = curOpt->getValue();
-				writer.optionSet( type, *opt, v );
+				optionSet( videoRW, type, *opt, v );
 				break;
 			}
 			case AV_OPT_TYPE_STRING:
 			{
-				OFX::StringParam* curOpt = fetchStringParam( opt->name );
+				OFX::StringParam* curOpt = IOPlugin::fetchStringParam( opt->name );
 				std::string v = curOpt->getValue();
-				writer.optionSet( type, *opt, v );
+				optionSet( videoRW, type, *opt, v );
 				break;
 			}
 			case AV_OPT_TYPE_RATIONAL:
 			{
-				OFX::Int2DParam* curOpt = fetchInt2DParam( opt->name );
+				OFX::Int2DParam* curOpt = IOPlugin::fetchInt2DParam( opt->name );
 				int vn = curOpt->getValue().x;
 				int vd = curOpt->getValue().y;
-				writer.optionSet( type, *opt, vn, vd );
+				optionSet( videoRW, type, *opt, vn, vd );
 				break;
 			}
 			case AV_OPT_TYPE_BINARY:
 			{
-				OFX::StringParam* curOpt = fetchStringParam( opt->name );
+				OFX::StringParam* curOpt = IOPlugin::fetchStringParam( opt->name );
 				std::string v = curOpt->getValue();
-				writer.optionSet( type, *opt, v );
+				optionSet( videoRW, type, *opt, v );
 				break;
 			}
 			case AV_OPT_TYPE_CONST:
@@ -194,7 +198,7 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 						{
 							int value = opt->default_val.i64;
 							//TUTTLE_COUT( "options "  << choices.at(i)->getName() << " = " << choiceValue.at(i) << " - " << opt->name << " (" << value << ")" );
-							writer.optionSet( type, *choiceOpt.at(i), value );
+							optionSet( videoRW, type, *choiceOpt.at(i), value );
 						}
 					}
 				}
@@ -204,10 +208,10 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 					name += opt->unit;
 					if( name == g->getName() )
 					{
-						OFX::BooleanParam* curOpt = fetchBooleanParam( opt->name );
+						OFX::BooleanParam* curOpt = IOPlugin::fetchBooleanParam( opt->name );
 						bool v = curOpt->getValue();
 						std::string optName = opt->unit;
-						writer.optionSet( type, *opt, v, optName );
+						optionSet( videoRW, type, *opt, v, optName );
 						break;
 					}
 				}
@@ -221,7 +225,9 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 	}
 }
 
-void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec )
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::setParameters( LibAVVideoRW& videoRW, const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec )
 {
 	std::vector<OFX::GroupParam*> groups;
 
@@ -237,7 +243,7 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 			name += "_";
 			name += opt.o.unit;
 			
-			OFX::GroupParam* curOpt = fetchGroupParam( name );
+			OFX::GroupParam* curOpt = IOPlugin::fetchGroupParam( name );
 			groups.push_back( curOpt );
 			continue;
 		}
@@ -247,9 +253,9 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 			name += "_";
 			name += opt.o.name;
 			
-			OFX::ChoiceParam* curOpt = fetchChoiceParam( name );
+			OFX::ChoiceParam* curOpt = IOPlugin::fetchChoiceParam( name );
 			int v = curOpt->getValue();
-			writer.optionSet( type, opt.o, v );
+			optionSet( videoRW, type, opt.o, v );
 			continue;
 		}
 		
@@ -261,47 +267,47 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 		{
 			case AV_OPT_TYPE_FLAGS:
 			{
-				OFX::BooleanParam* curOpt = fetchBooleanParam( name );
+				OFX::BooleanParam* curOpt = IOPlugin::fetchBooleanParam( name );
 				bool v = curOpt->getValue();
-				writer.optionSet( type, opt.o, v );
+				optionSet( videoRW, type, opt.o, v );
 				break;
 			}
 			case AV_OPT_TYPE_INT:
 			case AV_OPT_TYPE_INT64:
 			{
-				OFX::IntParam* curOpt = fetchIntParam( name );
+				OFX::IntParam* curOpt = IOPlugin::fetchIntParam( name );
 				int v = curOpt->getValue();
-				writer.optionSet( type, opt.o, v );
+				optionSet( videoRW, type, opt.o, v );
 				break;
 			}
 			case AV_OPT_TYPE_DOUBLE:
 			case AV_OPT_TYPE_FLOAT:
 			{
-				OFX::DoubleParam* curOpt = fetchDoubleParam( name );
+				OFX::DoubleParam* curOpt = IOPlugin::fetchDoubleParam( name );
 				double v = curOpt->getValue();
-				writer.optionSet( type, opt.o, v );
+				optionSet( videoRW, type, opt.o, v );
 				break;
 			}
 			case AV_OPT_TYPE_STRING:
 			{
-				OFX::StringParam* curOpt = fetchStringParam( name );
+				OFX::StringParam* curOpt = IOPlugin::fetchStringParam( name );
 				std::string v = curOpt->getValue();
-				writer.optionSet( type, opt.o, v );
+				optionSet( videoRW, type, opt.o, v );
 				break;
 			}
 			case AV_OPT_TYPE_RATIONAL:
 			{
-				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
+				OFX::Int2DParam* curOpt = IOPlugin::fetchInt2DParam( name );
 				int vn = curOpt->getValue().x;
 				int vd = curOpt->getValue().y;
-				writer.optionSet( type, opt.o, vn, vd );
+				optionSet( videoRW, type, opt.o, vn, vd );
 				break;
 			}
 			case AV_OPT_TYPE_BINARY:
 			{
-				OFX::StringParam* curOpt = fetchStringParam( name );
+				OFX::StringParam* curOpt = IOPlugin::fetchStringParam( name );
 				std::string v = curOpt->getValue();
-				writer.optionSet( type, opt.o, v );
+				optionSet( videoRW, type, opt.o, v );
 				break;
 			}
 			case AV_OPT_TYPE_CONST:
@@ -330,9 +336,9 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 						name += "_";
 						name += opt.o.name;
 						
-						OFX::BooleanParam* curOpt = fetchBooleanParam( name );
+						OFX::BooleanParam* curOpt = IOPlugin::fetchBooleanParam( name );
 						bool v = curOpt->getValue();
-						writer.optionSet( type, opt.o, v, opt.class_name );
+						optionSet( videoRW, type, opt.o, v, opt.class_name );
 						break;
 					}
 				}
@@ -346,31 +352,32 @@ void AVOptionPlugin::setParameters( LibAVVideoWriter& writer, const EAVParamType
 	}
 }
 
-void AVOptionPlugin::setParameters( const PresetParameters& parameters )
+template< typename IOPlugin >
+void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters )
 {
 	BOOST_FOREACH( PresetParameters::value_type param, parameters )
 	{
 		//TUTTLE_COUT_VAR2( param.first, param.second );
-			if( paramExists( param.first ) )
+			if( IOPlugin::paramExists( param.first ) )
 			{
 				std::string value = param.second.at( 0 );
-				switch( getParamType( param.first ) )
+				switch( IOPlugin::getParamType( param.first ) )
 				{
 					case OFX::eStringParam:
 					{
-						OFX::StringParam* fetchParam = fetchStringParam( param.first );
+						OFX::StringParam* fetchParam = IOPlugin::fetchStringParam( param.first );
 						fetchParam->setValue( value );
 						break;
 					}
 					case OFX::eIntParam:
 					{
-						OFX::IntParam* fetchParam = fetchIntParam( param.first );
+						OFX::IntParam* fetchParam = IOPlugin::fetchIntParam( param.first );
 						fetchParam->setValue( convertIntWithOptionalUnit( param.first, value ) );
 						break;
 					}
 					case OFX::eInt2DParam:
 					{
-						OFX::Int2DParam* fetchParam = fetchInt2DParam( param.first );
+						OFX::Int2DParam* fetchParam = IOPlugin::fetchInt2DParam( param.first );
 						if( param.second.size() == 2 )
 						{
 							int x = convertIntWithOptionalUnit( param.first, param.second.at( 0 ) );
@@ -385,7 +392,7 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 					}
 					case OFX::eInt3DParam:
 					{
-						OFX::Int3DParam* fetchParam = fetchInt3DParam( param.first );
+						OFX::Int3DParam* fetchParam = IOPlugin::fetchInt3DParam( param.first );
 						if( param.second.size() == 3 )
 						{
 							int x = convertIntWithOptionalUnit( param.first, param.second.at( 0 ) );
@@ -401,7 +408,7 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 					}
 					case OFX::eDoubleParam:
 					{
-						OFX::DoubleParam* fetchParam = fetchDoubleParam( param.first );
+						OFX::DoubleParam* fetchParam = IOPlugin::fetchDoubleParam( param.first );
 						try
 						{
 							double value = 0.0;
@@ -416,7 +423,7 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 					}
 					case OFX::eDouble2DParam:
 					{
-						OFX::Double2DParam* fetchParam = fetchDouble2DParam( param.first );
+						OFX::Double2DParam* fetchParam = IOPlugin::fetchDouble2DParam( param.first );
 						if( param.second.size() == 2 )
 						{
 							try
@@ -438,7 +445,7 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 					}
 					case OFX::eDouble3DParam:
 					{
-						OFX::Double3DParam* fetchParam = fetchDouble3DParam( param.first );
+						OFX::Double3DParam* fetchParam = IOPlugin::fetchDouble3DParam( param.first );
 						if( param.second.size() == 3 )
 						{
 							try
@@ -461,7 +468,7 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 					}
 					case OFX::eRGBParam:
 					{
-						OFX::RGBParam* fetchParam = fetchRGBParam( param.first );
+						OFX::RGBParam* fetchParam = IOPlugin::fetchRGBParam( param.first );
 						if( param.second.size() == 3 )
 						{
 							try
@@ -484,7 +491,7 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 					}
 					case OFX::eRGBAParam:
 					{
-						OFX::RGBAParam* fetchParam = fetchRGBAParam( param.first );
+						OFX::RGBAParam* fetchParam = IOPlugin::fetchRGBAParam( param.first );
 						if( param.second.size() == 4 )
 						{
 							try
@@ -508,14 +515,14 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 					}
 					case OFX::eBooleanParam:
 					{
-						OFX::BooleanParam* fetchParam = fetchBooleanParam( param.first );
+						OFX::BooleanParam* fetchParam = IOPlugin::fetchBooleanParam( param.first );
 						bool boolValue = ( value == "1" || boost::iequals(value, "y") || boost::iequals(value, "yes") || boost::iequals(value, "true") );
 						fetchParam->setValue( boolValue );
 						break;
 					}
 					case OFX::eChoiceParam:
 					{
-						OFX::ChoiceParam* fetchParam = fetchChoiceParam( param.first );
+						OFX::ChoiceParam* fetchParam = IOPlugin::fetchChoiceParam( param.first );
 						int index = -1;
 						for( int i = 0; i< fetchParam->getProps().propGetDimension( "OfxParamPropChoiceOption" ); i++ )
 						{
@@ -548,6 +555,192 @@ void AVOptionPlugin::setParameters( const PresetParameters& parameters )
 				TUTTLE_CERR( "avwriter: parameter " << param.first << " not exist." );
 			}
 	}
+}
+
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption& opt, bool& value )
+{
+	int error = 0;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			error = av_opt_set_int( videoRW._avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			error = av_opt_set_int( videoRW._stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			error = 0;
+			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+	}
+	if( error )
+		TUTTLE_CERR( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << ( value ? "True" : "False" ) << " )" );
+}
+
+
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, bool& value, std::string& valueToSetFlag )
+{
+	int error = 0;
+	int64_t optVal;
+	void* obj = NULL;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			obj = (void*) videoRW._avFormatOptions;
+			break;
+		}
+		case eAVParamVideo:
+		{
+			obj = (void*) videoRW._stream->codec;
+			break;
+		}
+		case eAVParamAudio:
+		{
+			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			return;
+		}
+	}
+	
+	error = av_opt_get_int( obj, opt.unit, AV_OPT_SEARCH_CHILDREN, &optVal );
+	
+	if( value )
+		optVal = optVal | (int64_t) opt.default_val.i64;
+	else
+		optVal = optVal &~(int64_t) opt.default_val.i64;
+	
+	error = av_opt_set_int( obj, opt.unit, optVal, AV_OPT_SEARCH_CHILDREN );
+	
+	if( error )
+		TUTTLE_CERR( "avwriter: " << LibAV::libavError_toString( error ) << " : " << valueToSetFlag << " ( " <<  opt.name << " = " << ( value ? "True" : "False" ) << " )" );
+}
+
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption& opt, int& value )
+{
+	int error = 0;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			error = av_opt_set_int( videoRW._avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			
+			error = av_opt_set_int( videoRW._stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			error = 0;
+			//av_opt_set_int( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+	}
+	if( error )
+		TUTTLE_CERR( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
+}
+
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, double &value )
+{
+	int error = 0;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			error = av_opt_set_double( videoRW._avFormatOptions, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			error = av_opt_set_double( videoRW._stream->codec, opt.name, value, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			error = 0;
+			//av_opt_set_double( _avFormatOptions, opt.name, value, 0 );
+			break;
+		}
+	}
+	if( error )
+		TUTTLE_CERR( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
+}
+
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, int &valueNum, int& valueDen )
+{
+	int error = 0;
+	AVRational q;
+	q.num = valueNum;
+	q.den = valueDen;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			error = av_opt_set_q( videoRW._avFormatOptions, opt.name, q, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			error = av_opt_set_q( videoRW._stream->codec, opt.name, q, AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			error = 0;
+			//av_opt_set_q( _avFormatOptions, opt.name, q, 0 );
+			break;
+		}
+	}
+	if( error )
+		TUTTLE_CERR( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << valueNum << "/" << valueDen<< " )" );
+}
+
+template< typename IOPlugin >
+template< typename LibAVVideoRW >
+void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, std::string &value )
+{
+	int error = 0;
+	if( ! value.length() )
+		return;
+	switch( type )
+	{
+		case eAVParamFormat:
+		{
+			error = av_opt_set( videoRW._avFormatOptions, opt.name, value.c_str(), AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamVideo:
+		{
+			error = av_opt_set( videoRW._stream->codec, opt.name, value.c_str(), AV_OPT_SEARCH_CHILDREN );
+			break;
+		}
+		case eAVParamAudio:
+		{
+			error = 0;
+			//av_opt_set( _avFormatOptions, opt.name, value.c_str(), 0 );
+			break;
+		}
+	}
+	if( error )
+		TUTTLE_CERR( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
 }
 
 

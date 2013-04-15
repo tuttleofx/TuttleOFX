@@ -5,6 +5,7 @@
 #include "LibAVPresetDefinitions.hpp"
 #include "LibAVVideoWriter.hpp"
 
+#include <tuttle/plugin/context/ReaderPlugin.hpp>
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
 #include <ofxsImageEffect.h>
@@ -15,7 +16,8 @@ namespace tuttle {
 namespace plugin {
 namespace av {
 
-class AVOptionPlugin : public WriterPlugin
+template< typename IOPlugin >
+class AVOptionPlugin : public IOPlugin
 {
 public:
 	AVOptionPlugin( OfxImageEffectHandle handle );
@@ -23,17 +25,37 @@ public:
 protected:
 	int convertIntWithOptionalUnit( const std::string& param, const std::string& stringValue );
 	
-	void setParameters( LibAVVideoWriter& writer, const EAVParamType& type, void* av_class, int req_flags, int rej_flags );
-	void setParameters( LibAVVideoWriter& writer, const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
+	template< typename LibAVVideoRW >
+	void setParameters( LibAVVideoRW& writer, const EAVParamType& type, void* av_class, int req_flags, int rej_flags );
+	
+	template< typename LibAVVideoRW >
+	void setParameters( LibAVVideoRW& writer, const EAVParamType& type, const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
 	void setParameters( const PresetParameters& parameters );
 	
 private:
+	template< typename LibAVVideoRW >
+	void optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, bool &value );
 	
+	template< typename LibAVVideoRW >
+	void optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption& opt, bool& value, std::string& valueToSetFlag );
+	
+	template< typename LibAVVideoRW >
+	void optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, int &value );
+	
+	template< typename LibAVVideoRW >
+	void optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, double &value );
+	
+	template< typename LibAVVideoRW >
+	void optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, int &valueNum, int& valueDen );
+	
+	template< typename LibAVVideoRW >
+	void optionSet( LibAVVideoRW& videoRW, const EAVParamType& type, const AVOption &opt, std::string &value );
 };
 
+}
+}
+}
 
+#include "LibAVOptions.tcc"
 
-}
-}
-}
 #endif

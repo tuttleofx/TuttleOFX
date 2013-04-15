@@ -15,11 +15,11 @@ namespace av {
 namespace fs = boost::filesystem;
 
 LibAVVideoReader::LibAVVideoReader()
-	: _context( NULL )
+	: _avFormatOptions( NULL )
+	, _stream ( NULL )
 	, _format( NULL )
 	, _avFrame( NULL )
 	, _videoCodec( NULL )
-	, _avformatOptions( NULL )
 	, _sws_context( NULL )
 	, _fpsNum( 0 )
 	, _fpsDen( 0 )
@@ -38,7 +38,7 @@ LibAVVideoReader::LibAVVideoReader()
 //	{
 //		_avctxOptions[i] = avcodec_alloc_context3( avcodec_find_encoder( i ) );
 //	}
-	_avformatOptions = avformat_alloc_context();
+	_avFormatOptions = avformat_alloc_context();
 	_avFrame         = avcodec_alloc_frame();
 
 }
@@ -52,7 +52,7 @@ LibAVVideoReader::~LibAVVideoReader()
 //	{
 //		av_free( _avctxOptions[i] );
 //	}
-	av_free( _avformatOptions );
+	av_free( _avFormatOptions );
 
 }
 
@@ -66,9 +66,9 @@ bool LibAVVideoReader::open( const std::string& filename )
 	_isOpen = 0;
 
 #if LIBAVCODEC_VERSION_MAJOR <= 52
-	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, 0 );
+	int error = av_open_input_file( &_avFormatOptions, filename.c_str(), _format, 0, 0 );
 #else
-	int error = avformat_open_input( &_context, filename.c_str(), NULL, NULL );
+	int error = avformat_open_input( &_avFormatOptions, filename.c_str(), NULL, NULL );
 #endif
 	if( error < 0 )
 	{
@@ -77,7 +77,7 @@ bool LibAVVideoReader::open( const std::string& filename )
 		return false;
 	}
 	// FIXME_GC: needs to know if it's streamable.
-	error = avformat_find_stream_info( _context, NULL );
+	error = avformat_find_stream_info( _avFormatOptions, NULL );
 	if( error < 0 )
 	{
 		std::cerr << "avReader: " << libavError_toString( error ) << std::endl;
@@ -90,7 +90,10 @@ bool LibAVVideoReader::open( const std::string& filename )
 		return false;
 	}
 
-	AVCodecContext* codecContext = getVideoStream()->codec;
+	_stream = getVideoStream();
+	
+	AVCodecContext* codecContext = _stream->codec;
+	
 	if( getVideoStream()->sample_aspect_ratio.num )
 	{
 		_aspect = av_q2d( getVideoStream()->sample_aspect_ratio );
@@ -138,14 +141,14 @@ void LibAVVideoReader::close()
 {
 	_isOpen = false;
 	closeVideoCodec();
-	if( _context )
+	if( _avFormatOptions )
 	{
 #if LIBAVCODEC_VERSION_MAJOR <= 52
-		av_close_input_file( _context );
+		av_close_input_file( _avFormatOptions );
 #else
-		avformat_close_input( &_context );
+		avformat_close_input( &_avFormatOptions );
 #endif
-		_context = NULL;
+		_avFormatOptions = NULL;
 	}
 }
 
@@ -170,7 +173,7 @@ bool LibAVVideoReader::read( const int frame )
 	//	int i = 0;
 	while( error >= 0 && !hasPicture )
 	{
-		error = av_read_frame( _context, &_pkt );
+		error = av_read_frame( _avFormatOptions, &_pkt );
 		// on error or end of file
 		if( error < 0 && error != AVERROR_EOF )
 		{
@@ -193,9 +196,9 @@ bool LibAVVideoReader::read( const int frame )
 bool LibAVVideoReader::setupStreamInfo()
 {
 	_currVideoIdx = -1;
-	for( std::size_t i = 0; i < _context->nb_streams; ++i )
+	for( std::size_t i = 0; i < _avFormatOptions->nb_streams; ++i )
 	{
-		AVCodecContext* codecContext = _context->streams[i]->codec;
+		AVCodecContext* codecContext = _avFormatOptions->streams[i]->codec;
 		if( codecContext->codec_id == AV_CODEC_ID_NONE )
 		{
 			std::cerr << "avReader: Can't find decoder codec_id: CODEC_ID_NONE codecType:" << codecType_toString( codecContext->codec_type ) << std::endl;
@@ -267,9 +270,9 @@ bool LibAVVideoReader::setupStreamInfo()
 	openVideoCodec();
 
 	// Set the duration
-	if( _context->duration > 0 )
+	if( _avFormatOptions->duration > 0 )
 	{
-		_nbFrames = boost::numeric_cast<boost::uint64_t>( ( fps() * (double) _context->duration / (double) AV_TIME_BASE ) );
+		_nbFrames = boost::numeric_cast<boost::uint64_t>( ( fps() * (double) _avFormatOptions->duration / (double) AV_TIME_BASE ) );
 	}
 	else
 	{
@@ -281,12 +284,12 @@ bool LibAVVideoReader::setupStreamInfo()
 	{
 		seek( 0 );
 		av_init_packet( &_pkt );
-		av_read_frame( _context, &_pkt );
+		av_read_frame( _avFormatOptions, &_pkt );
 		boost::uint64_t firstPts = _pkt.pts;
 		boost::uint64_t maxPts   = firstPts;
 		seek( 1 << 29 );
 		av_init_packet( &_pkt );
-		while( stream && av_read_frame( _context, &_pkt ) >= 0 )
+		while( stream && av_read_frame( _avFormatOptions, &_pkt ) >= 0 )
 		{
 			boost::uint64_t currPts = boost::numeric_cast<boost::uint64_t>( av_q2d( getVideoStream()->time_base ) * ( _pkt.pts - firstPts ) * fps() );
 			if( currPts > maxPts )
@@ -342,8 +345,8 @@ boost::int64_t LibAVVideoReader::getTimeStamp( int pos ) const
 {
 	boost::int64_t timestamp = boost::numeric_cast<boost::int64_t>( ( (double) pos / fps() ) * AV_TIME_BASE );
 
-	if( (int)_context->start_time != AV_NOPTS_VALUE )
-		timestamp += _context->start_time;
+	if( (int)_avFormatOptions->start_time != AV_NOPTS_VALUE )
+		timestamp += _avFormatOptions->start_time;
 	return timestamp;
 }
 
@@ -354,7 +357,7 @@ bool LibAVVideoReader::seek( const std::size_t pos )
 	if( _offsetTime )
 	{
 		offset -= AV_TIME_BASE;
-		if( offset < _context->start_time )
+		if( offset < _avFormatOptions->start_time )
 			offset = 0;
 	}
 
@@ -363,7 +366,7 @@ bool LibAVVideoReader::seek( const std::size_t pos )
 		return false;
 
 	avcodec_flush_buffers( stream->codec );
-	if( av_seek_frame( _context, -1, offset, AVSEEK_FLAG_BACKWARD ) < 0 )
+	if( av_seek_frame( _avFormatOptions, -1, offset, AVSEEK_FLAG_BACKWARD ) < 0 )
 	{
 		return false;
 	}
@@ -376,7 +379,7 @@ bool LibAVVideoReader::decodeImage( const int frame )
 	// search for our picture.
 	double pts = 0;
 
-	if( _pkt.dts != AV_NOPTS_VALUE )
+	if( _pkt.dts != (int64_t)AV_NOPTS_VALUE )
 	{
 		AVStream* stream = getVideoStream();
 		if( stream )
@@ -390,8 +393,8 @@ bool LibAVVideoReader::decodeImage( const int frame )
 		curPos = _lastSearchPos + 1;
 	_lastSearchPos = curPos;
 
-	if( _context->start_time != AV_NOPTS_VALUE )
-		curPos -= int(_context->start_time * fps() / AV_TIME_BASE);
+	if( _avFormatOptions->start_time != (int64_t)AV_NOPTS_VALUE )
+		curPos -= int(_avFormatOptions->start_time * fps() / AV_TIME_BASE);
 
 	int hasPicture   = 0;
 	int curSearch    = 0;

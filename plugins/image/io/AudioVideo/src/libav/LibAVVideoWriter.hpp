@@ -205,21 +205,16 @@ public:
 		//setAudioCodec  ( reader.codecName() );
 	}
 
-	void optionSet( const EAVParamType& type, const AVOption &opt, bool &value );
-	void optionSet( const EAVParamType& type, const AVOption& opt, bool& value, std::string& valueToSetFlag );
-	void optionSet( const EAVParamType& type, const AVOption &opt, int &value );
-	void optionSet( const EAVParamType& type, const AVOption &opt, double &value );
-	void optionSet( const EAVParamType& type, const AVOption &opt, int &valueNum, int& valueDen );
-	void optionSet( const EAVParamType& type, const AVOption &opt, std::string &value );
-	void optionSetImageSize( const EAVParamType& type, const AVOption &opt, int &width, int& height );
-	
+public:
+	AVFormatContext*               _avFormatOptions;
+	AVStream*                      _stream;
 	
 private:
-	AVFormatContext*               _avFormatOptions;
+
 	AVCodecContext*                _avVideoOptions;
 	AVCodecContext*                _avAudioOptions;
 	struct SwsContext*             _sws_context; ///< swscale: transformation context
-	AVStream*                      _stream;
+
 	AVCodec*                       _videoCodec;
 	AVCodec*                       _audioCodec;
 	AVOutputFormat*                _ofmt;

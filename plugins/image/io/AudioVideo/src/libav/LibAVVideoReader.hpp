@@ -36,7 +36,7 @@ private:
 
 	AVStream* getVideoStream()
 	{
-		return _context && _currVideoIdx >= 0 ? _context->streams[_videoIdx[_currVideoIdx]] : NULL;
+		return _avFormatOptions && _currVideoIdx >= 0 ? _avFormatOptions->streams[_videoIdx[_currVideoIdx]] : NULL;
 	}
 
 	void    openVideoCodec();
@@ -151,13 +151,14 @@ public:
 //	}
 
 public: // private:
-	AVFormatContext* _context;
+	AVFormatContext* _avFormatOptions;
+	AVStream*        _stream;
+	
 	AVInputFormat* _format;
 	AVFrame* _avFrame;
 	AVCodec* _videoCodec;
 	AVPacket _pkt;
-//	AVCodecContext* _avctxOptions[AVMEDIA_TYPE_NB];
-	AVFormatContext* _avformatOptions;
+
 	struct SwsContext* _sws_context;  ///< contexte de transformation swscale
 	std::vector<int> _videoIdx;
 	int _fpsNum;

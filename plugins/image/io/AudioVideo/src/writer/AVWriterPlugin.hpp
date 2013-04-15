@@ -33,7 +33,7 @@ struct AVProcessParams
 /**
  * @brief LibAV plugin
  */
-class AVWriterPlugin : public AVOptionPlugin
+class AVWriterPlugin : public AVOptionPlugin< WriterPlugin >
 {
 public:
 	AVWriterPlugin( OfxImageEffectHandle handle );

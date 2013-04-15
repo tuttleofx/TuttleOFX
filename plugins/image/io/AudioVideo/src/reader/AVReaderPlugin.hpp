@@ -2,7 +2,10 @@
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
+
+#include <libav/LibAVPresetDefinitions.hpp>
 #include <libav/LibAVVideoReader.hpp>
+#include <libav/LibAVOptions.hpp>
 
 #include <string>
 
@@ -19,7 +22,7 @@ struct AVReaderParams
 /**
  * @brief AudioVideo plugin
  */
-class AVReaderPlugin : public ReaderPlugin
+class AVReaderPlugin : public AVOptionPlugin< ReaderPlugin >
 {
 public:
 	AVReaderPlugin( OfxImageEffectHandle handle );
@@ -47,8 +50,9 @@ public:
 	OFX::BooleanParam* _paramUseCustomSAR; ///< Keep sample aspect ratio
 	OFX::DoubleParam*  _paramCustomSAR;    ///< Custom SAR to use
 
-	bool _errorInFile;
-	LibAVVideoReader _reader;
+	bool               _errorInFile;
+	bool               _initReader;
+	LibAVVideoReader   _reader;
 };
 
 }

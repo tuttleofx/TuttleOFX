@@ -277,7 +277,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	}
 	audioPreset->setParent( audioGroup );
 	
-	/// aaudio codec list
+	/// audio codec list
 	int default_audio_codec = 0;
 	OFX::ChoiceParamDescriptor* audioCodec = desc.defineChoiceParam( kParamAudioCodec );
 	for( std::vector<std::string>::const_iterator itShort = writer.getAudioCodecsShort().begin(),

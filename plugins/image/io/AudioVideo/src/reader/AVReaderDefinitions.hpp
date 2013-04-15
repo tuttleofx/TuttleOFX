@@ -9,6 +9,15 @@ namespace plugin {
 namespace av {
 namespace reader {
 
+static const std::string kParamFormatGroup               = "formatGroup";
+static const std::string kParamFormatDetailledGroup      = "formatDetailledGroup";
+static const std::string kParamVideoGroup                = "videoGroup";
+static const std::string kParamVideoDetailledGroup       = "videoDetailledGroup";
+static const std::string kParamAudioGroup                = "audioGroup";
+static const std::string kParamAudioDetailledGroup       = "audioDetailledGroup";
+static const std::string kParamMetaGroup                 = "metaGroup";
+static const std::string kParamMetaDetailledGroup        = "metaDetailledGroup";
+
 static const std::string kParamUseCustomSAR = "useCustomSAR";
 static const std::string kParamCustomSAR = "customSAR";
 

@@ -2,6 +2,8 @@
 #include "AVReaderPlugin.hpp"
 #include "AVReaderDefinitions.hpp"
 
+#include <libav/LibAVOptionsFactory.hpp>
+
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 #include <boost/algorithm/string/join.hpp>
@@ -85,6 +87,43 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
+	describeReaderParamsInContext( desc, context );
+	
+	// Groups
+	OFX::GroupParamDescriptor* formatGroup = desc.defineGroupParam( kParamFormatGroup );
+	OFX::GroupParamDescriptor* videoGroup  = desc.defineGroupParam( kParamVideoGroup );
+	OFX::GroupParamDescriptor* audioGroup  = desc.defineGroupParam( kParamAudioGroup );
+	OFX::GroupParamDescriptor* metaGroup   = desc.defineGroupParam( kParamMetaGroup );
+	
+	formatGroup->setLabel( "Format" );
+	videoGroup->setLabel( "Video" );
+	audioGroup->setLabel( "Audio" );
+	metaGroup->setLabel( "Metadata" );
+	
+	formatGroup->setAsTab( );
+	videoGroup->setAsTab( );
+	audioGroup->setAsTab( );
+	metaGroup->setAsTab( );
+	
+	/// FORMAT PARAMETERS
+	AVFormatContext* avFormatContext;
+	avFormatContext = avformat_alloc_context();
+	addOptionsFromAVOption( desc, formatGroup, (void*)avFormatContext, AV_OPT_FLAG_DECODING_PARAM, 0 );
+	avformat_free_context( avFormatContext );
+	
+	/// VIDEO PARAMETERS
+	AVCodecContext* avCodecContext;
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
+	avCodecContext = avcodec_alloc_context();
+	// deprecated in the same version
+	//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
+#else
+	AVCodec* avCodec = NULL;
+	avCodecContext = avcodec_alloc_context3( avCodec );
+#endif
+	
+	addOptionsFromAVOption( desc, videoGroup, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
 	useCustomSAR->setDefault( false );
@@ -94,8 +133,6 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	customSAR->setLabel( "Custom SAR" );
 	customSAR->setDefault( 1.0 );
 	customSAR->setHint( "Choose a custom value to override the file SAR (Storage Aspect Ratio)." );
-
-	describeReaderParamsInContext( desc, context );
 }
 
 /**

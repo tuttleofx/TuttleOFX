@@ -16,8 +16,9 @@ using namespace boost::gil;
 namespace fs = boost::filesystem;
 
 AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
-	: ReaderPlugin( handle )
+	: AVOptionPlugin( handle )
 	, _errorInFile( false )
+	, _initReader( false )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
@@ -172,6 +173,28 @@ void AVReaderPlugin::render( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::Unknown() );
 	}
 
+	if( !_initReader )
+	{
+		// set Format parameters
+		AVFormatContext* avFormatContext;
+		avFormatContext = avformat_alloc_context();
+		setParameters( _reader, eAVParamFormat, (void*)avFormatContext, AV_OPT_FLAG_DECODING_PARAM, 0 );
+		avformat_free_context( avFormatContext );
+		
+		// set Video Codec parameters
+		AVCodecContext* avCodecContext;
+		
+	#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
+		avCodecContext = avcodec_alloc_context();
+		// deprecated in the same version
+		//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
+	#else
+		AVCodec* avCodec = NULL;
+		avCodecContext = avcodec_alloc_context3( avCodec );
+	#endif
+		setParameters( _reader, eAVParamVideo, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	}
+	
 	doGilRender<AVReaderProcess>( *this, args );
 }
 
