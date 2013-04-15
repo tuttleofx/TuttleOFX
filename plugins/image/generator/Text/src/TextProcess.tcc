@@ -74,10 +74,8 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		try
 		{
 			Py_Initialize();
-			
-			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("__main__")))));
-//			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("toto")))));
-			//boost::python::object main_module = boost::python::import( "__main__" );
+
+			boost::python::object main_module = boost::python::import( "__main__" );
 			boost::python::object main_namespace = main_module.attr( "__dict__" );
 			
 			std::ostringstream context;
@@ -85,14 +83,6 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 			context << "renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
 			context << "renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
 					                      << args.renderWindow.x2 << "," << args.renderWindow.y2 << "]" << std::endl;
-			
-			/*
-			OfxRectD srcCanonicalRod = this->_clipSrc->getCanonicalRod( args.time );
-			context << "srcCanonicalRod = [" << srcCanonicalRod.x1 << "," << srcCanonicalRod.y1 << ","
-					                         << srcCanonicalRod.x2 << "," << srcCanonicalRod.y2 << "]" << std::endl;
-			OfxRectI srcPixelRod = this->_clipSrc->getPixelRod( args.time );
-			context << "srcPixelRod = [" << srcPixelRod.x1 << "," << srcPixelRod.y1 << ","
-					                     << srcPixelRod.x2 << "," << srcPixelRod.y2 << "]" << std::endl;*/
 
 			OfxRectD dstCanonicalRod = this->_clipDst->getCanonicalRod( args.time );
 			context << "dstCanonicalRod = [" << dstCanonicalRod.x1 << "," << dstCanonicalRod.y1 << ","
@@ -100,15 +90,23 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 			OfxRectI dstPixelRod = this->_clipDst->getPixelRod( args.time );
 			context << "dstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
 					                     << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
-			/*object ignored = */
-			boost::python::exec( context.str().c_str(), main_namespace );
-			boost::python::exec( _params._text.c_str(), main_namespace );
-
-			_text = boost::python::extract<std::string>( main_namespace[kParamText.c_str()] );
 			
-//			object result = eval("5/0");
-			// execution will never get here:
-//			int five_divided_by_zero = extract<int>(result);
+			context << "fps = " << _clipSrc->getFrameRate() << std::endl;
+			
+			context << "def timecode():" << std::endl;
+			context << "    return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format( " << args.time << " / (3600 * fps), "
+																			   << args.time << " / (60 * fps) % 60, "
+																			   << args.time << " / fps % 60, "
+																			   << args.time << " % fps )" << std::endl;
+			
+			//TUTTLE_COUT( context.str().c_str() );
+
+			/*object ignored = */
+			
+			boost::python::exec( context.str().c_str(), main_namespace );
+			boost::python::object returnText = boost::python::eval( _params._text.c_str(), main_namespace );
+
+			_text = boost::python::extract<std::string>( returnText );
 		}
 		catch( boost::python::error_already_set const & )
 		{
@@ -118,7 +116,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		}
 //		Py_Finalize();
 	}
-
+	
 	//Step 1. Create terry image
 	//Step 2. Initialize freetype
 	//Step 3. Make Glyphs Array
@@ -145,35 +143,35 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	}
 	FT_New_Face( library, _params._font.c_str(), 0, &face );
 #else
-		FcInit();
-
-		std::string fontFile = "";
-		
-		FcChar8 *file;
-		FcResult result;
-		FcConfig *config = FcInitLoadConfigAndFonts();
-		FcPattern *p = FcPatternBuild(	NULL,
-										FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
-										FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
-										NULL);
-
-		FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
-		FcFontSet   *fs = FcFontList( config, p, os );
-
-		fontFile = (char*) FcNameUnparse( fs->fonts[_params._font] );
-
-		int weight = ( _params._bold   == 1) ? FC_WEIGHT_BOLD  : FC_WEIGHT_MEDIUM;
-		int slant  = ( _params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;
-
-		p  = FcPatternBuild( NULL, 
-							 FC_FAMILY, FcTypeString, fontFile.c_str(),
-							 FC_WEIGHT, FcTypeInteger, weight, 
-							 FC_SLANT, FcTypeInteger, slant, 
-							 NULL);	
-
-		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FAMILY, 0, &file );
-		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FILE, 0, &file );
-		fontFile = (char*) file;
+	FcInit();
+	
+	std::string fontFile = "";
+	
+	FcChar8 *file;
+	FcResult result;
+	FcConfig *config = FcInitLoadConfigAndFonts();
+	FcPattern *p = FcPatternBuild(	NULL,
+									FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
+									FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
+									NULL);
+	
+	FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
+	FcFontSet   *fs = FcFontList( config, p, os );
+	
+	fontFile = (char*) FcNameUnparse( fs->fonts[_params._font] );
+	
+	int weight = ( _params._bold   == 1) ? FC_WEIGHT_BOLD  : FC_WEIGHT_MEDIUM;
+	int slant  = ( _params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;
+	
+	p  = FcPatternBuild( NULL, 
+						 FC_FAMILY, FcTypeString, fontFile.c_str(),
+						 FC_WEIGHT, FcTypeInteger, weight, 
+						 FC_SLANT, FcTypeInteger, slant, 
+						 NULL);	
+	
+	FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FAMILY, 0, &file );
+	FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FILE, 0, &file );
+	fontFile = (char*) file;
 	
 	FT_New_Face( library, fontFile.c_str(), 0, &face );
 #endif
