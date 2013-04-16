@@ -1,6 +1,9 @@
 # scons: MemoryBuffer Png
 
 from pyTuttle.tuttle import *
+from nose.tools import *
+from tempfile import *
+
 import numpy
 import Image
 
@@ -24,7 +27,8 @@ def testInputBufferCallback():
 	ib.setOrientation( InputBufferWrapper.eImageOrientationFromTopToBottom )
 	ib.setPyCallback( getImage )
 
-	w = g.createNode("tuttle.pngwriter", filename=".tests/foo.png")
+	filepath = NamedTemporaryFile( prefix="inputBufferCallback-", suffix=".png" )
+	w = g.createNode("tuttle.pngwriter", filename = filepath.name )
 
 	g.connect( ib.getNode(), w )
 	g.compute( w )

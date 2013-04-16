@@ -1,6 +1,8 @@
 # scons: Jpeg
 
 from pyTuttle import tuttle
+from tempfile import *
+
 import Image
 import numpy
 
@@ -12,7 +14,9 @@ def writeImage(time, data, width, height, rowSizeBytes, bitDepth, components, fi
 	# FIXME this assumes 8bit RGB image. Check bitDepth, components, field
 	flatarray = numpy.fromstring(data, numpy.uint8, rowSizeBytes*height)
 	outImage = numpy.array(numpy.flipud(numpy.reshape(flatarray, (height, width, 3))))
-	Image.fromarray(outImage).save("foo.jpg")
+	
+	filepath = NamedTemporaryFile( prefix="outputBufferCallbackTest-", suffix=".jpg" )
+	Image.fromarray(outImage).save( filepath.name )
 
 
 def testOutputBufferCallback():

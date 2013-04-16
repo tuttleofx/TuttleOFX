@@ -1,9 +1,10 @@
 # scons: Checkerboard Blur Png
 
 from pyTuttle import tuttle
-import os
-
 from nose.tools import *
+from tempfile import *
+
+import os
 
 def setUp():
 	tuttle.core().preload(False)
@@ -54,27 +55,28 @@ def testFrameVarying():
 
 
 def testFilenameLastWriteTimeChanged():
-	filename = ".tests/foo.png"
-	if os.path.exists(filename):
-		os.remove(filename)
+	filepath = NamedTemporaryFile( prefix="localHashTest-", suffix=".png" )
+	if os.path.exists(filepath.name):
+		os.remove(filepath.name)
 	g = tuttle.Graph()
-	read_filename = g.createNode( "tuttle.pngreader", filename=filename )
+	read_filename = g.createNode( "tuttle.pngreader", filename=filepath.name )
 	
 	hash_with_no_file = read_filename.getLocalHashAtTime(0.0)
 	assert_equal( read_filename.getLocalHashAtTime(0.0), read_filename.getLocalHashAtTime(0.0) )
-	open(filename, "w").write("Not empty\n")
+	open(filepath.name, "w").write("Not empty\n")
 	# Cast to long, because in C++ we see it as a long.
-	last_modification_time = long(os.stat(filename).st_ctime)
+	
+	last_modification_time = long(os.stat(filepath.name).st_ctime)
 	hash_with_file = read_filename.getLocalHashAtTime(0.0)
 	assert_equal( read_filename.getLocalHashAtTime(0.0), read_filename.getLocalHashAtTime(0.0) )
 	
 	# Modify the timestamp, until the last write time change becames visible
 	i = 0
-	while last_modification_time == long(os.stat(filename).st_ctime):
-		open(filename, "w").write("Adding data to modify the last wite time: " + str(i) + "\n")
+	while last_modification_time == long(os.stat(filepath.name).st_ctime):
+		open( filepath.name, "w").write("Adding data to modify the last wite time: " + str(i) + "\n")
 		i += 1
 	hash_with_modified_file = read_filename.getLocalHashAtTime(0.0)
-	os.remove(filename)
+	os.remove(filepath.name)
 
 	assert_not_equal( hash_with_no_file, hash_with_file )
 	assert_not_equal( hash_with_file, hash_with_modified_file )
