@@ -196,6 +196,17 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	addOptionsFromAVOption( desc, formatDetailledGroup, writer.getFormatPrivOpts() );
 	
+	// fps parameters
+	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
+	useCustomFps->setLabel( "Override Fps" );
+	useCustomFps->setDefault( false );
+	useCustomFps->setHint( "Override the input Fps (Frames Per Second) with a custom Fps value." );
+
+	OFX::DoubleParamDescriptor* customFps = desc.defineDoubleParam( kParamCustomFps );
+	customFps->setLabel( "Custom Fps" );
+	customFps->setDefault( 1.0 );
+	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
+	
 	/// VIDEO PARAMETERS
 	/// video codec preset
 	OFX::ChoiceParamDescriptor* videoPreset = desc.defineChoiceParam( kParamVideoPreset );

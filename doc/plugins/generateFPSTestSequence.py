@@ -50,7 +50,7 @@ def check( video, sequence ):
 	graph = Graph()
 	
 	readSequence = graph.createNode( "tuttle.pngreader", filename=os.path.join( os.environ["DOC_DIR"], "images", sequence ) )
-	readVideo    = graph.createNode( "tuttle.avreader", filename=os.path.join( os.environ["DOC_DIR"], "videos", video ) )
+	readVideo    = graph.createNode( "tuttle.avreader", filename=os.path.join( os.environ["DOC_DIR"], "videos", video ), colorspace="bt709" )
 	diff         = graph.createNode( "tuttle.diff" ).asImageEffectNode()
 	
 	graph.connect( readSequence, diff.getClip("SourceA") )
@@ -79,6 +79,21 @@ def testEncodeSequencePng():
 	encodePAL( outputFilename , format="avi", videoCodec="png", colorspace="bt709", aspect=[0,1] )
 	checkVideoProperties( outputFilename, 25.0, 49.0, 1.0 )
 	check( outputFilename, "fps_test_#####.png" )
+
+
+def testEncodeSequencePng24Fps():
+	outputFilename = "fps_test_png_24fps.avi"
+	encodePAL( outputFilename , format="avi", videoCodec="png", colorspace="bt709", aspect=[0,1], useCustomFps=1, customFps=24 )
+	checkVideoProperties( outputFilename, 24.0, 99.0, 1.0 )
+	# can't check differents fps sequences.
+	#check( outputFilename, "fps_test_#####.png" )
+
+def testEncodeSequencePng12Fps():
+	outputFilename = "fps_test_png_12fps.avi"
+	encodePAL( outputFilename , format="avi", videoCodec="png", colorspace="bt709", aspect=[0,1], useCustomFps=1, customFps=12 )
+	checkVideoProperties( outputFilename, 12.0, 149.0, 1.0 )
+	# can't check differents fps sequences.
+	#check( outputFilename, "fps_test_#####.png" )
 
 def testEncodeSequenceMpeg2Intra(): 
 	outputFilename = "MPEG-2_I-frame_only_Highest_Quality_Encoding.m2v"
@@ -111,11 +126,11 @@ def testEncodeSequenceMJpeg():
 	#checkVideoProperties( outputFilename, 25.0, 49.0, 1.0 )
 	#check( outputFilename, "fps_test_#####.png" )
 
-def testEncodeSequenceWebm():
-	outputFilename = "fps_test_libvpx_b_1000000.webm"
-	encodePAL( outputFilename , format="webm", videoCodec="libvpx", b=1000000, colorspace="bt709", aspect=[0,1] )
-	#checkVideoProperties( outputFilename, 25.0, 49.0, 1.0 )
-	check( outputFilename, "fps_test_#####.png" )
+#def testEncodeSequenceWebm():
+#	outputFilename = "fps_test_libvpx_b_1000000.webm"
+#	encodePAL( outputFilename , format="webm", videoCodec="libvpx", b=1000000, colorspace="bt709", aspect=[0,1] )
+#	#checkVideoProperties( outputFilename, 25.0, 49.0, 1.0 )
+#	check( outputFilename, "fps_test_#####.png" )
 	
 def testEncodeSequenceRawVideo():
 	outputFilename = "fps_test_yuvRaw.y4m"

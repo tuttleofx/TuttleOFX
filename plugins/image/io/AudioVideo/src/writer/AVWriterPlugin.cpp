@@ -176,6 +176,9 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramVideoCodecPreset = fetchChoiceParam( kParamVideoPreset );
 	_paramAudioCodecPreset = fetchChoiceParam( kParamAudioPreset );
 	
+	_paramUseCustomFps     = fetchBooleanParam( kParamUseCustomFps );
+	_paramCustomFps        = fetchDoubleParam( kParamCustomFps );
+	
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	
 	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
@@ -345,7 +348,14 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_writer.setFilename    ( params._filepath );
 	_writer.setFormat      ( params._format );
 	_writer.setVideoCodec  ( params._videoCodec );
-	_writer.setFps         ( _clipSrc->getFrameRate() );
+	if( _paramUseCustomFps->getValue() )
+	{
+		_writer.setFps( _paramCustomFps->getValue() );
+	}
+	else
+	{
+		_writer.setFps( _clipSrc->getFrameRate() );
+	}
 	_writer.setAspectRatio ( _clipSrc->getPixelAspectRatio() );
 	_writer.setPixelFormat ( params._videoPixelFormat );
 }

@@ -63,6 +63,8 @@ public:
 	OFX::ChoiceParam*   _paramAudioCodecPreset;
 	
 	OFX::IntParam*      _paramBitRate;
+	OFX::BooleanParam*  _paramUseCustomFps;
+	OFX::DoubleParam*   _paramCustomFps;
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
 	LibAVVideoWriter    _writer;
