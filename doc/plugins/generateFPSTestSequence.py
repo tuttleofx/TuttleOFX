@@ -88,10 +88,17 @@ def testEncodeSequencePng24Fps():
 	# can't check differents fps sequences.
 	#check( outputFilename, "fps_test_#####.png" )
 
+def testEncodeSequencePng29_97Fps():
+	outputFilename = "fps_test_png_29_97fps.avi"
+	encodePAL( outputFilename , format="avi", videoCodec="png", colorspace="bt709", aspect=[0,1], useCustomFps=1, customFps=29.97 )
+	checkVideoProperties( outputFilename, 29.97002997002997, 5000.0, 1.0 )
+	# can't check differents fps sequences.
+	#check( outputFilename, "fps_test_#####.png" )
+
 def testEncodeSequencePng12Fps():
 	outputFilename = "fps_test_png_12fps.avi"
 	encodePAL( outputFilename , format="avi", videoCodec="png", colorspace="bt709", aspect=[0,1], useCustomFps=1, customFps=12 )
-	checkVideoProperties( outputFilename, 12.0, 149.0, 1.0 )
+	checkVideoProperties( outputFilename, 12.0, 5149.0, 1.0 )
 	# can't check differents fps sequences.
 	#check( outputFilename, "fps_test_#####.png" )
 
