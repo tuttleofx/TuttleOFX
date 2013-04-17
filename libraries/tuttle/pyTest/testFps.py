@@ -1,4 +1,4 @@
-# scons: FFMpeg Invert
+# scons: AudioVideo Invert
 
 from pyTuttle.tuttle import *
 

@@ -1,10 +1,13 @@
 import os
 from pyTuttle.tuttle import *
-#os.environ['DOC_DIR']='dist'
-#from generators import *
-#core().preload( False )
-#from pickle import dumps, loads
 
+# generate an image
+# wrote automaticaly the command line in the center of the image
+# the graph process will be:
+# pluginName -> burn command line -> write
+# 
+# orderedParams are pluginName default ordered parameters (HD)
+# namedParams are pluginName parameters (for example: format=HD)
 def generate( pluginName, *orderedParams, **namedParams ):
 	filename = pluginName + '_' + '_'.join(['%s_%s' % (key, value) for (key, value) in namedParams.items()]).replace(' ', '_')
 	
@@ -24,6 +27,13 @@ def generate( pluginName, *orderedParams, **namedParams ):
 	#print "######################################################################################"
 
 
+# generate an image in exr format (float)
+# wrote automaticaly the command line in the center of the image
+# the graph process will be:
+# pluginName -> burn command line -> write exr
+# 
+# orderedParams are pluginName default ordered parameters (HD)
+# namedParams are pluginName parameters (for example: format=HD)
 def generateEXR( pluginName, *orderedParams, **namedParams ):
 	filename = pluginName + '_' + '_'.join(['%s_%s' % (key, value) for (key, value) in namedParams.items()]).replace(' ', '_')
 	
