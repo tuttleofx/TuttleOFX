@@ -37,6 +37,10 @@
 /** @brief This file contains code that skins the ofx interact suite (for image effects) */
 
 #include "ofxsSupportPrivate.h"
+
+#include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/exceptions.hpp>
+
 #include <algorithm> // for find
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries.
@@ -175,8 +179,9 @@ void InteractI::loseFocus( const FocusArgs& args )
 
 
 Interact::Interact( OfxInteractHandle handle )
-	: _interactHandle( handle ),
-	_effect( 0 )
+	: _interactHandle( handle )
+	, _effect( 0 )
+	, _magic( kMagic )
 {
 	// get the properties set on this handle
 	OfxPropertySetHandle propHandle;
@@ -412,15 +417,21 @@ OfxStatus interactMainEntry( const std::string& action,
 	Interact* interact = retrieveInteractPointer( handle );
 
 	// if one was not made, return and do nothing
-	if( !interact )
-		return stat;
-
+	if( interact == NULL )
+	{
+		return kOfxStatErrBadHandle;
+	}
+	if( ! interact->verifyMagic() )
+	{
+		return kOfxStatErrBadHandle;
+	}
+	
 	if( action == kOfxActionDestroyInstance )
 	{
 		delete interact;
 		stat = kOfxStatOK;
 	}
-	else if( action ==   kOfxInteractActionDraw )
+	else if( action == kOfxInteractActionDraw )
 	{
 		// make the draw args
 		DrawArgs drawArgs( inArgs );
@@ -534,8 +545,62 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 		}
 
 	}
+	
+	catch( boost::exception& e )
+	{
+		std::cerr << tuttle::common::kColorError;
+		std::cerr << "__________" << std::endl;
+		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
+		{
+			std::cerr << "Error: " << *messageException << std::endl;
+		}
+		else
+		{
+			std::cerr << "Error: " "No message." << std::endl;
+		}
+		if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >(e) )
+		{
+			std::cerr << "filename: \"" << *filenameException << "\"" << std::endl;
+		}
+
+	#ifndef TUTTLE_PRODUCTION
+		std::cerr << "__________" << std::endl;
+		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
+	#ifndef BOOST_EXCEPTION_DISABLE
+		std::cerr << boost::diagnostic_information(e);
+	#endif
+		std::cerr << "----------" << std::endl;
+		std::cerr << "* Backtrace" << std::endl;
+		std::cerr << boost::trace(e);
+	#endif
+		std::cerr << "__________" << std::endl;
+		std::cerr << tuttle::common::kColorStd;
+		
+		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )
+		{
+			stat = *status;
+		}
+		else
+		{
+			stat = kOfxStatFailed;
+		}
+	}
+	
+	// catch suite exceptions
+	catch( OFX::Exception::Suite& e )
+	{
+		std::cerr << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
+		stat = e.status();
+	}
+	// catch all exceptions
+	catch( std::exception& e )
+	{
+		std::cerr << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
+		stat = kOfxStatFailed;
+	}
 	catch(... )
 	{
+		std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
 		stat = kOfxStatFailed;
 	}
 

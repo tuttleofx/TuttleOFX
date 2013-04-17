@@ -14,6 +14,7 @@ Used for ParamDouble and ParamInteger */
 #include <tuttle/host/attribute/ValueInterpolator.hpp>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/functional/hash.hpp>
 
 #include <vector>
 #include <algorithm>
@@ -79,7 +80,6 @@ public:
 				_interpolator.reset( new SlowInterpolator<T>() );
 				break;
 			case ofx::attribute::eLinearInterpolator:
-			default:
 				_interpolator.reset( new LinearInterpolator<T>() );
 				break;
 		}
@@ -295,6 +295,58 @@ public:
 
 	/* ======= END OfxhKeyframeParam functions ======= */
 
+	bool paramTypeHasData() const { return true; }
+
+	std::size_t getHash() const
+	{
+		std::size_t seed = 0;
+		BOOST_FOREACH( const TimeValue<T>& tv, _key_frames )
+		{
+			boost::hash_combine( seed, tv.time );
+			boost::hash_combine( seed, tv.value );
+		}
+		return seed;
+	}
+
+	std::size_t getHashAtTime_valueChangeToEnd( const OfxTime time ) const
+	{
+		T valueAtTime = 0;
+		getValueAtTime( time, valueAtTime );
+		std::size_t seed = 0;
+		BOOST_FOREACH( const TimeValue<T>& tv, _key_frames )
+		{
+			if( tv.time >= time )
+			{
+				boost::hash_combine( seed, tv.time );
+				boost::hash_combine( seed, tv.value );
+			}
+		}
+		return seed;
+	}
+	
+	std::size_t getHashAtTime( const OfxTime time ) const
+	{
+		const std::string cacheInvalidation = getCacheInvalidation();
+		if( cacheInvalidation == kOfxParamInvalidateAll )
+		{
+			std::size_t seed = getHash();
+			boost::hash_combine( seed, time );
+			return seed;
+		}
+		else if( cacheInvalidation == kOfxParamInvalidateValueChangeToEnd )
+		{
+			return getHashAtTime_valueChangeToEnd( time );
+		}
+		else
+		{
+			BOOST_ASSERT( cacheInvalidation == kOfxParamInvalidateValueChange );
+			
+			// Standard case
+			T valueAtTime = 0;
+			getValueAtTime( time, valueAtTime );
+			return boost::hash_value( valueAtTime );
+		}
+	}
 };
 
 /**

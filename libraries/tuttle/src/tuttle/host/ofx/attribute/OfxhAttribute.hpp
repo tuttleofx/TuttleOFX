@@ -64,7 +64,7 @@ public:
 
 	virtual bool operator==( const This& other ) const
 	{
-		if( _properties != other._properties )
+		if( getProperties() != other.getProperties() )
 			return false;
 		return true;
 	}
@@ -73,12 +73,12 @@ public:
 
 protected:
 	property::OfxhSet _properties;
-
+    
 protected:
 	void setProperties( const property::OfxhSet& properties )
 	{
 		_properties = properties;
-		assert( getAttributeType().c_str() );
+		BOOST_ASSERT( getAttributeType().c_str() );
 	}
 
 public:

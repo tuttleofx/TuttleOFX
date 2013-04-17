@@ -46,6 +46,11 @@ void INode::setProcessDataAtTime( DataAtTime* dataAtTime )
 	_dataAtTime[dataAtTime->_time] = dataAtTime;
 }
 
+void INode::clearProcessDataAtTime()
+{
+	_dataAtTime.clear();
+}
+
 INode::Data& INode::getData()
 {
 	if( !_data )
@@ -68,8 +73,15 @@ const INode::Data& INode::getData() const
 	return *_data;
 }
 
+bool INode::hasData( const OfxTime time ) const
+{
+	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
+	return it != _dataAtTime.end();
+}
+
 const INode::DataAtTime& INode::getData( const OfxTime time ) const
 {
+	//TUTTLE_TCOUT( "- INode::getData(" << time << ") of " << getName() );
 	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
 	if( it == _dataAtTime.end() )
 	{
@@ -100,16 +112,32 @@ const INode::DataAtTime& INode::getFirstData() const
 	if( it == _dataAtTime.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev() + "Process data empty.\n"
-				       << exception::nodeName( getName() ) );
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
 	}
-	
 	return *it->second;
 }
 
 INode::DataAtTime& INode::getFirstData()
 {
 	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getFirstData() );
+}
+
+const INode::DataAtTime& INode::getLastData() const
+{
+	DataAtTimeMap::const_reverse_iterator it = _dataAtTime.rbegin();
+	if( it == _dataAtTime.rend() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
+	}
+	return *it->second;
+}
+
+INode::DataAtTime& INode::getLastData()
+{
+	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getLastData() );
 }
 
 std::ostream& operator<<( std::ostream& os, const INode& v )

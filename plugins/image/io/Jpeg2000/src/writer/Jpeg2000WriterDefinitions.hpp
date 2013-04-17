@@ -12,7 +12,8 @@ namespace writer {
 
 enum ETuttlePluginBitDepth
 {
-	eTuttlePluginBitDepth8 = 0,
+	eTuttlePluginBitDepthAuto = 0,
+	eTuttlePluginBitDepth8,
 	eTuttlePluginBitDepth12,
 	eTuttlePluginBitDepth16,
 	eTuttlePluginBitDepth32

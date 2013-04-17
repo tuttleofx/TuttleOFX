@@ -71,8 +71,15 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 
 	describeWriterParamsInContext( desc, context );
 
+	OFX::ChoiceParamDescriptor* channel = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginChannel ) );
+	channel->resetOptions();
+	channel->appendOption( kTuttlePluginChannelRGB );
+	channel->setDefault( 0 );
+	channel->setEnabled( false );
+	
 	OFX::ChoiceParamDescriptor* bitDepth = static_cast<OFX::ChoiceParamDescriptor*>( desc.getParamDescriptor( kTuttlePluginBitDepth ) );
 	bitDepth->resetOptions();
+	bitDepth->appendOption( kTuttlePluginBitDepthAuto );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth12 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
@@ -80,7 +87,7 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 #endif
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	bitDepth->setDefault( eTuttlePluginBitDepth8 );
+	bitDepth->setDefault( eTuttlePluginBitDepthAuto );
 
     OFX::BooleanParamDescriptor* lossless = desc.defineBooleanParam( kParamLossless );
     lossless->setLabel( "lossless" );

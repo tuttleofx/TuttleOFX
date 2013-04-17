@@ -18,6 +18,8 @@ public:
 	Param( INode& effect );
 	virtual ~Param() = 0;
 
+	bool isOutput() const { return false; }
+	
 	const std::string& getName() const { return ofx::attribute::OfxhParamAccessor::getName(); }
 };
 

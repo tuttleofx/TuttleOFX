@@ -12,6 +12,8 @@
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/UVertex.hpp>
 #include <tuttle/host/graph/UEdge.hpp>
+#include <tuttle/host/NodeAtTimeKey.hpp>
+#include <tuttle/host/NodeHashContainer.hpp>
 #include <tuttle/host/attribute/Attribute.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 #include <tuttle/common/utils/global.hpp>
@@ -94,14 +96,14 @@ public:
 	 * 
 	 * @warning: Nodes will be renamed.
 	 */
-	void addNodes( const std::vector<NodeInit>& nodes );
+	std::vector<INode*> addNodes( const std::vector<NodeInit>& nodes );
 	
 	/**
 	 * @brief Add nodes to the graph and connect them linearly.
 	 * 
 	 * @warning: Nodes will be renamed.
 	 */
-	void addConnectedNodes( const std::vector<NodeInit>& nodes );
+	std::vector<INode*> addConnectedNodes( const std::vector<NodeInit>& nodes );
 	
 	/**
 	 * @brief Rename a node in the current graph.
@@ -128,6 +130,8 @@ public:
 	void connect( const std::list<Node*>& nodes );
 	void connect( const std::vector<Node*>& nodes );
 	void connect( const Node& outNode, const Attribute& inAttr );
+	void connect( const Attribute& outAttr, const Attribute& inAttr );
+	void unconnect( const Attribute& outAttr, const Attribute& inAttr );
 	
 	void unconnect( const Node& node );
 	
@@ -140,6 +144,12 @@ public:
 	 * @brief Temporary solution ! Prepare the user graph, so we can call getTimeDomain (and maybe others functions) on nodes.
 	 */
 	void init();
+	
+	void setup();
+
+	void setupAtTime( const OfxTime time, const NodeListArg& nodes = NodeListArg() );
+	
+	void computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& nodes = NodeListArg() );
 	
 	/**
 	 * @brief Shortcut
@@ -166,28 +176,13 @@ public:
 	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
 public:
-	#ifndef SWIG
+	enum EDotExportLevel {
+		eDotExportLevelSimple,
+		eDotExportLevelDetailed
+	};
+	void exportDot( const std::string& filename, const EDotExportLevel level = eDotExportLevelSimple ) const;
+	
 	friend std::ostream& operator<<( std::ostream& os, const Graph& g );
-	#endif
-
-	#ifdef SWIG
-	%extend
-	{
-		Node& __getitem__( const std::string& name )
-		{
-			return self->getNode( name );
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
-	}
-	#endif
 
 private:
 	InternalGraphImpl _graph;

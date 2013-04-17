@@ -127,7 +127,6 @@ PropertyDescription::PropertyDescription( const char* name, OFX::PropertyTypeEnu
                 break;
 
             case eDescFinished: // we are finished
-            default:
                 going = false;
                 break;
         }

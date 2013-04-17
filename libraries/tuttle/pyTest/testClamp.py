@@ -1,17 +1,19 @@
-from pyTuttle import tuttle
+# scons: Png MathOperator Diff
+
+from pyTuttle.tuttle import *
 
 def setUp():
-	tuttle.core().preload()
+	core().preload(False)
 
 
 def testClamp_pngWriterImplicitClamp():
 
 	tempFilename = '.tests/clampedImage.png'
 
-	g = tuttle.Graph()
-	read1 = g.createNode( "tuttle.pngreader", "data/input.png", bitDepth="32f" )
+	g = Graph()
+	read1  = g.createNode( "tuttle.pngreader", "data/input.png", bitDepth="32f" )
 	mathOp = g.createNode( "tuttle.mathoperator", master=0.6, operation="plus" )
-	write = g.createNode( "tuttle.pngwriter", filename=tempFilename )
+	write  = g.createNode( "tuttle.pngwriter", filename=tempFilename )
 
 	# @todo: re-read the image and compare to a clamped version of the input image
 	#clamp = g.createNode( "tuttle.clamp" )

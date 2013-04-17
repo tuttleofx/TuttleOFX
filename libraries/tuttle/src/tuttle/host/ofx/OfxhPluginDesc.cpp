@@ -1,5 +1,7 @@
 #include "OfxhPluginDesc.hpp"
 
+#include <boost/functional/hash.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -38,6 +40,16 @@ bool OfxhPluginDesc::operator==( const This& other ) const
 	    _ident != other._ident )
 		return false;
 	return true;
+}
+
+std::size_t OfxhPluginDesc::getHash() const
+{
+	std::size_t seed = 0;
+	boost::hash_combine( seed, getIdentifier() );
+	boost::hash_combine( seed, getVersionMajor() );
+	// The minor version should not change the rendering,
+	// so it's not part of the hash.
+	return seed;
 }
 
 }

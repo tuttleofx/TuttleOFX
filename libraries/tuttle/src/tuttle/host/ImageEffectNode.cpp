@@ -30,6 +30,7 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#include <boost/functional/hash.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -62,14 +63,6 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 ImageEffectNode::~ImageEffectNode()
 {}
 
-void ImageEffectNode::connect( const INode& sourceEffect, attribute::Attribute& attr )
-{
-	const attribute::ClipImage& outputClip = dynamic_cast<const attribute::ClipImage&>( sourceEffect.getClip( kOfxImageEffectOutputClipName ) );
-	attribute::ClipImage& inputClip        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
-
-	inputClip.setConnectedClip( outputClip );
-}
-
 bool ImageEffectNode::operator==( const INode& other ) const
 {
 	const ImageEffectNode* other_ptr = dynamic_cast<const ImageEffectNode*>( &other );
@@ -86,10 +79,62 @@ bool ImageEffectNode::operator==( const ImageEffectNode& other ) const
 	return ofx::imageEffect::OfxhImageEffectNode::operator==( other );
 }
 
+void ImageEffectNode::connect( const INode& sourceEffect, attribute::Attribute& attr )
+{
+	const attribute::ClipImage& outputClip = dynamic_cast<const attribute::ClipImage&>( sourceEffect.getClip( kOfxImageEffectOutputClipName ) );
+	attribute::ClipImage& inputClip        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
+
+	inputClip.setConnectedClip( outputClip );
+}
+
+attribute::Attribute& ImageEffectNode::getSingleInputAttribute()
+{
+	ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
+	ofx::attribute::OfxhClipImageSet::ClipImageMap& clipsMap = getClipsByName();
+	ofx::attribute::OfxhAttribute* inAttr                    = NULL;
+
+	if( clips.size() == 1 )
+	{
+		inAttr = &clips[0];
+	}
+	else if( clips.size() > 1 )
+	{
+		const ofx::attribute::OfxhClipImageSet::ClipImageMap::iterator it( clipsMap.find( kOfxSimpleSourceAttributeName ) );
+		if( it != clipsMap.end() )
+		{
+			inAttr = it->second;
+		}
+		else
+		{
+			inAttr = &clips[0];
+		}
+	}
+	else // if( inClips.empty() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user( "No source clip." ) );
+	}
+	return dynamic_cast<attribute::ClipImage&>( *inAttr );
+}
+
 // get a new clip instance
 tuttle::host::ofx::attribute::OfxhClipImage* ImageEffectNode::newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor )
 {
 	return new attribute::ClipImage( *this, descriptor );
+}
+
+std::size_t ImageEffectNode::getLocalHashAtTime( const OfxTime time ) const
+{
+	std::size_t seed = getPlugin().getHash();
+
+	if( isFrameVarying() )
+	{
+		boost::hash_combine( seed, time );
+	}
+
+	boost::hash_combine( seed, getParamSet().getHashAtTime(time) );
+
+	return seed;
 }
 
 /// get default output fielding. This is passed into the clip prefs action
@@ -137,7 +182,7 @@ void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 	  }
 	else
 	  {
-		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+		OfxRectD rod = getLastData()._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)
@@ -165,7 +210,7 @@ void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 	  }
 	else
 	  {
-		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+		OfxRectD rod = getLastData()._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)
@@ -185,12 +230,7 @@ double ImageEffectNode::getProjectPixelAspectRatio() const
 // we are only 25 frames
 double ImageEffectNode::getEffectDuration() const
 {
-	return 25.0;
-}
-
-double ImageEffectNode::getFrameRate() const
-{
-	return this->_outputFrameRate;
+	return 99999.0;
 }
 
 /// This is called whenever a param is changed by the plugin so that
@@ -335,7 +375,7 @@ void ImageEffectNode::timelineGotoTime( double t )
 void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 {
 	t1 = 0;
-	t2 = 25;
+	t2 = 99999;
 }
 
 /// override to get frame range of the effect
@@ -399,12 +439,44 @@ void ImageEffectNode::initComponents()
 }
 
 /// @todo multiple PAR
-void ImageEffectNode::initPixelAspectRatio()
+void ImageEffectNode::initInputClipsPixelAspectRatio()
 {
-	if( supportsMultipleClipPARs() )
-	{}
-	else
-	{}
+	std::set<double> inputPARs;
+//	if( supportsMultipleClipPARs() )
+	{
+		for( ClipImageMap::iterator it = _clipImages.begin();
+			 it != _clipImages.end();
+			 ++it )
+		{
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+			TUTTLE_TCOUT_VAR( clip.getName() );
+			if( !clip.isOutput() && clip.isConnected() )
+			{
+				const attribute::ClipImage& linkClip = clip.getConnectedClip();
+				const double par = linkClip.getPixelAspectRatio();
+				TUTTLE_TCOUT_VAR2( linkClip.getName(), par );
+				clip.setPixelAspectRatio( par, ofx::property::eModifiedByHost );
+				inputPARs.insert( par );
+			}
+		}
+	}
+//	else
+//	{
+//		// @todo The plugin doesn't support PAR, the host should do the conversions!
+//		// http://openfx.sourceforge.net/Documentation/1.3/ofxProgrammingReference.html#ImageEffectsPixelAspectRatios
+//		// If a plugin does not accept clips of differing PARs, then the host must resample all images fed to that effect to agree with the output's PAR.
+//		// If a plugin does accept clips of differing PARs, it will need to specify the output clip's PAR in the kOfxImageEffectActionGetClipPreferences action.
+//		
+//		// Convert images here ? Or introduce convert nodes into the ProcessGraph?
+//		BOOST_ASSERT(false);
+//	}
+	
+	// Not supported yet. So fail in debug,
+	// and process with a wrong pixel aspect ratio in release.
+	TUTTLE_TCOUT_VAR( getName() );
+	TUTTLE_TCOUT_VAR( supportsMultipleClipPARs() );
+	TUTTLE_TCOUT_VAR( getNbClips() );
+	BOOST_ASSERT( inputPARs.size() <= 1 || supportsMultipleClipPARs() || getNbClips() <= 2 );
 }
 
 void ImageEffectNode::initInputClipsFps()
@@ -425,7 +497,13 @@ void ImageEffectNode::initInputClipsFps()
 void ImageEffectNode::initFps()
 {
 	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
-	outputClip.setFrameRate( getFrameRate() );
+	outputClip.setFrameRate( getOutputFrameRate() );
+}
+
+void ImageEffectNode::initPixelAspectRatio()
+{
+	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+	outputClip.setPixelAspectRatio( getOutputPixelAspectRatio(), ofx::property::eModifiedByHost );
 }
 
 void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
@@ -595,11 +673,58 @@ void ImageEffectNode::validBitDepthConnections() const
 	}
 }
 
-OfxRangeD ImageEffectNode::computeTimeDomain()
+OfxRangeD ImageEffectNode::getDefaultTimeDomain() const
 {
+	//TUTTLE_TCOUT( "- ImageEffectNode::getDefaultTimeDomain: " << getName() );
 	OfxRangeD range;
 	range.min = kOfxFlagInfiniteMin;
 	range.max = kOfxFlagInfiniteMax;
+	// if no answer, compute it from input clips
+	bool first = true;
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+		it != _clipImages.end();
+		++it )
+	{
+		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			const OfxRangeD clipRange = linkClip.getNode().getTimeDomain();
+			if( first )
+			{
+				first = false;
+				range = clipRange;
+			}
+			else
+			{
+				// maybe better to use intersection instead of union
+				range.min = std::min( range.min, clipRange.min );
+				range.max = std::max( range.max, clipRange.max );
+			}
+		}
+	}
+	return range;
+}
+
+OfxRangeD ImageEffectNode::computeTimeDomain()
+{
+	// Copy connected clips frameRange into each input clips
+	for( ClipImageMap::iterator it = _clipImages.begin();
+		it != _clipImages.end();
+		++it )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			const OfxRangeD clipRange = linkClip.getFrameRange();
+			clip.setFrameRange( clipRange.min, clipRange.max );
+		}
+	}
+	TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
+	OfxRangeD defaultRange = getDefaultTimeDomain();
+	OfxRangeD range = defaultRange;
+
 	// ask to the plugin
 	if( getTimeDomainAction( range ) )
 	{
@@ -607,33 +732,7 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 	}
 	else
 	{
-		TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
-		range.min = kOfxFlagInfiniteMin;
-		range.max = kOfxFlagInfiniteMax;
-		// if no answer, compute it from input clips
-		bool first = true;
-		for( ClipImageMap::const_iterator it = _clipImages.begin();
-			it != _clipImages.end();
-			++it )
-		{
-			const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
-			if( !clip.isOutput() && clip.isConnected() )
-			{
-				const attribute::ClipImage& linkClip = clip.getConnectedClip();
-				OfxRangeD clipRange = linkClip.getNode().getTimeDomain();
-				if( first )
-				{
-					first = false;
-					range = clipRange;
-				}
-				else
-				{
-					// maybe better to use intersection instead of union
-					range.min = std::min( range.min, clipRange.min );
-					range.max = std::max( range.max, clipRange.max );
-				}
-			}
-		}
+		range = defaultRange;
 	}
 	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setFrameRange( range.min, range.max );
 	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setUnmappedFrameRange( range.min, range.max );
@@ -646,6 +745,7 @@ void ImageEffectNode::setup1()
 	checkClipsConnections();
 	
 	initInputClipsFps();
+	initInputClipsPixelAspectRatio();
 
 	getClipPreferencesAction();
 	
@@ -715,12 +815,15 @@ void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData
 bool ImageEffectNode::isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const
 {
 	time = vData._time;
-	OfxRectI roi;
-	roi.x1 = std::floor( vData._apiImageEffect._renderRoI.x1 );
-	roi.x2 = std::ceil( vData._apiImageEffect._renderRoI.x2 );
-	roi.y1 = std::floor( vData._apiImageEffect._renderRoI.y1 );
-	roi.y2 = std::ceil( vData._apiImageEffect._renderRoI.y2 );
-	return isIdentityAction( time, vData._apiImageEffect._field, roi, vData._nodeData->_renderScale, clip );
+	double par = this->getOutputClip().getPixelAspectRatio();
+	if( par == 0.0 )
+		par = 1.0;
+	OfxRectI renderWindow;
+	renderWindow.x1 = boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) );
+	renderWindow.x2 = boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) );
+	renderWindow.y1 = boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) );
+	renderWindow.y2 = boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) );
+	return isIdentityAction( time, vData._apiImageEffect._field, renderWindow, vData._nodeData->_renderScale, clip );
 }
 
 
@@ -741,11 +844,14 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
 
-	const OfxRectI roi = {
-		boost::numeric_cast<int>( floor( vData._apiImageEffect._renderRoI.x1 ) ),
-		boost::numeric_cast<int>( floor( vData._apiImageEffect._renderRoI.y1 ) ),
-		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.x2 ) ),
-		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.y2 ) )
+	double par = this->getOutputClip().getPixelAspectRatio();
+	if( par == 0.0 )
+		par = 1.0;
+	const OfxRectI renderWindow = {
+		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) ),
+		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) ),
+		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) ),
+		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) )
 	};
 //	TUTTLE_TCOUT_VAR( roi );
 
@@ -771,8 +877,10 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	}
 	TUTTLE_TCOUT_X( 40, "-" );
 	*/
-	BOOST_FOREACH( const graph::ProcessEdgeAtTime* inEdge, vData._inEdges )
+	TUTTLE_TCOUT( "Acquire needed input clips images" );
+	BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
 	{
+		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
 		//TUTTLE_TCOUT_VAR( i );
 		//TUTTLE_TCOUT_VAR( i->getInTime() );
 		//TUTTLE_TCOUT_VAR( i->getInAttrName() );
@@ -791,7 +899,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		allNeededDatas.push_back( imageCache );
 	}
 	
-	TUTTLE_TCOUT( "acquire needed output clip images" );
+	TUTTLE_TCOUT( "Acquire needed output clip images" );
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clipImages )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
@@ -836,7 +944,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 
 	renderAction( vData._time,
 		      vData._apiImageEffect._field,
-		      roi,
+		      renderWindow,
 		      vData._nodeData->_renderScale );
 
 	TUTTLE_TCOUT_X( 40, "-" );
@@ -844,8 +952,9 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 	debugOutputImage( vData._time );
 
 	// release input images
-	BOOST_FOREACH( const graph::ProcessEdgeAtTime* inEdge, vData._inEdges )
+	BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
 	{
+		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
 		attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
 		const OfxTime outTime = inEdge->getOutTime();
 		

@@ -50,7 +50,6 @@ public:
 	OfxhImageEffectPlugin*       getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 );
 	const OfxhImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>( *this ).getPluginByLabel( label, vermaj, vermin ); }
 
-	#ifndef SWIG
 	OfxhImageEffectHost& getHost() { return *_host; }
 
 	const std::vector<OfxhImageEffectPlugin*>& getPlugins() const;
@@ -66,6 +65,7 @@ public:
 
 	bool pluginSupported( const OfxhPlugin& p, std::string& reason ) const;
 
+#ifndef SWIG
 	OfxhPlugin* newPlugin( OfxhPluginBinary& pb,
 	                       int               pi,
 	                       OfxPlugin&        pl );
@@ -78,28 +78,9 @@ public:
 	                       const std::string& rawId,
 	                       int                pluginMajorVersion,
 	                       int                pluginMinorVersion );
-	#endif
+#endif
 
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
-
-	#ifdef SWIG
-	%extend
-	{
-		OfxhImageEffectPlugin& __getitem__( const std::string& name )
-		{
-			return *self->getPluginById( name );
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
-	}
-	#endif
 };
 
 }

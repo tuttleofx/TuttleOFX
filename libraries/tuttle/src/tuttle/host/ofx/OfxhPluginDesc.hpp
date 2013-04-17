@@ -119,7 +119,9 @@ public:
 	{
 		return _ident._versionMinor;
 	}
-
+	
+	std::size_t getHash() const;
+	
 private:
 	friend class boost::serialization::access;
 	template<class Archive>

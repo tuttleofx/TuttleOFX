@@ -17,11 +17,17 @@ private:
 	int _major;
 
 public:
+	OfxhMajorPlugin()
+		: _major( 0 )
+	{}
+	
 	OfxhMajorPlugin( const std::string& id, int major ) : _id( id )
-		, _major( major ) {}
+		, _major( major )
+	{}
 
 	OfxhMajorPlugin( OfxhPlugin& iep ) : _id( iep.getIdentifier() )
-		, _major( iep.getVersionMajor() ) {}
+		, _major( iep.getVersionMajor() )
+	{}
 
 	const std::string& getId() const
 	{

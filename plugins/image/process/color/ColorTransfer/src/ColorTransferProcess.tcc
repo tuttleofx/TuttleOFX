@@ -40,7 +40,9 @@ CPixel getPixel( const Pixel& p, const EColorspace eColorspace )
 	{
 		case eColorspaceNone:
 		{
-			return p;
+			CPixel cp;
+			pixel_assigns_t<Pixel,CPixel>()( p, cp );
+			return cp;
 		}
 		case eColorspaceLMS:
 		{
@@ -51,6 +53,10 @@ CPixel getPixel( const Pixel& p, const EColorspace eColorspace )
 			return pixel_rgb_to_lab_t<Pixel, CPixel>()( p );
 		}
 	}
+	BOOST_ASSERT(false);
+	CPixel cp;
+	pixel_assigns_t<Pixel,CPixel>()( p, cp );
+	return cp;
 }
 
 template< typename Pixel, typename CPixel >
@@ -60,7 +66,9 @@ CPixel setPixel( const Pixel& p, const EColorspace eColorspace )
 	{
 		case eColorspaceNone:
 		{
-			return p;
+			CPixel cp;
+			pixel_assigns_t<CPixel,Pixel>()( p, cp );
+			return cp;
 		}
 		case eColorspaceLMS:
 		{
@@ -71,6 +79,10 @@ CPixel setPixel( const Pixel& p, const EColorspace eColorspace )
 			return pixel_lab_to_rgb_t<Pixel, CPixel>()( p );
 		}
 	}
+	BOOST_ASSERT(false);
+	CPixel cp;
+	pixel_assigns_t<Pixel,CPixel>()( p, cp );
+	return cp;
 }
 
 template<class View>

@@ -84,7 +84,6 @@ private:
 	}
 
 public:
-	#ifndef SWIG
 	bool operator==( const This& other ) const
 	{
 		if( _binary != other._binary ||
@@ -120,6 +119,11 @@ public:
 		return _bundlePath;
 	}
 
+	const std::string getResourcesPath() const
+	{
+		return _bundlePath + "/Contents/Resources";
+	}
+
 	bool hasBinaryChanged() const
 	{
 		return _binaryChanged;
@@ -130,12 +134,13 @@ public:
 		return _binary.isLoaded();
 	}
 
+#ifndef SWIG
 	void addPlugin( OfxhPlugin* pe )
 	{
 		_plugins.push_back( pe );
 	}
-
 	void loadPluginInfo( OfxhPluginCache* );
+#endif
 
 	/// how many plugins?
 	int getNPlugins() const
@@ -191,8 +196,6 @@ private:
 			}
 		}
 	}
-
-	#endif
 };
 
 }

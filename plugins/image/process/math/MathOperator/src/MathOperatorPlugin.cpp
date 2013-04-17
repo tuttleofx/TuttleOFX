@@ -180,8 +180,9 @@ void MathOperatorPlugin::render( const OFX::RenderArguments &args )
 
 void MathOperatorPlugin::updateInterface()
 {
-	bool bMaster, bRGBA;
-	bool bAlpha;
+	bool bMaster = false;
+	bool bRGBA   = false;
+	bool bAlpha  = false;
 	switch( getMathOperatorType() )
 	{
 		case eMathOperatorTypeRgba:
@@ -197,11 +198,6 @@ void MathOperatorPlugin::updateInterface()
 		case eMathOperatorTypeChannels:
 			bMaster = true;
 			bRGBA   = false;
-			bAlpha  = false;
-			break;
-		default: // Error
-			bMaster = true;
-			bRGBA   = true;
 			bAlpha  = false;
 			break;
 	}

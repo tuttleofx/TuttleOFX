@@ -86,23 +86,23 @@ MemoryPool::MemoryPool( const std::size_t maxSize )
 
 MemoryPool::~MemoryPool()
 {
+	TUTTLE_TCOUT_X( 20, "-" );
+	TUTTLE_TCOUT( "~MemoryPool()" );
 	if( !_dataUsed.empty() )
 	{
-		TUTTLE_COUT_ERROR( "Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
+		TUTTLE_COUT_WARNING( "Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
 	}
-	TUTTLE_COUT_X_DEBUG( 20, "-" );
-	TUTTLE_COUT_DEBUG( "~MemoryPool()" );
-	TUTTLE_COUT_VAR_DEBUG( _dataUsed.size() );
-	TUTTLE_COUT_VAR_DEBUG( _dataUnused.size() );
-	TUTTLE_COUT_VAR_DEBUG( _allDatas.size() );
-	TUTTLE_COUT_VAR_DEBUG( _memoryAuthorized );
-	TUTTLE_COUT_DEBUG( "" );
-	TUTTLE_COUT_VAR_DEBUG( getUsedMemorySize() );
-	TUTTLE_COUT_VAR_DEBUG( getAllocatedMemorySize() );
-	TUTTLE_COUT_VAR_DEBUG( getMaxMemorySize() );
-	TUTTLE_COUT_VAR_DEBUG( getAvailableMemorySize() );
-	TUTTLE_COUT_VAR_DEBUG( getWastedMemorySize() );
-	TUTTLE_COUT_X_DEBUG( 20, "-" );
+	TUTTLE_TCOUT_VAR( _dataUsed.size() );
+	TUTTLE_TCOUT_VAR( _dataUnused.size() );
+	TUTTLE_TCOUT_VAR( _allDatas.size() );
+	TUTTLE_TCOUT_VAR( _memoryAuthorized );
+	TUTTLE_TCOUT( "" );
+	TUTTLE_TCOUT_VAR( getUsedMemorySize() );
+	TUTTLE_TCOUT_VAR( getAllocatedMemorySize() );
+	TUTTLE_TCOUT_VAR( getMaxMemorySize() );
+	TUTTLE_TCOUT_VAR( getAvailableMemorySize() );
+	TUTTLE_TCOUT_VAR( getWastedMemorySize() );
+	TUTTLE_TCOUT_X( 20, "-" );
 }
 
 void MemoryPool::referenced( PoolData* pData )

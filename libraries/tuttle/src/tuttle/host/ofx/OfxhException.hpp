@@ -4,6 +4,8 @@
 #include "OfxhCore.hpp"
 #include "OfxhUtilities.hpp"
 
+#include <tuttle/host/exceptions.hpp>
+
 #include <boost/throw_exception.hpp>
 #include <boost/exception/exception.hpp>
 
@@ -16,28 +18,33 @@ namespace ofx {
 /**
  * exception, representing an OfxStatus
  */
-class OfxhException : public std::logic_error
-	, virtual public boost::exception
+class OfxhException : virtual public ::std::exception
+	, virtual public ::boost::exception
+	, virtual public ::boost::backtrace
 {
 OfxStatus _stat;
 
 public:
 	explicit OfxhException( const std::string& what )
-		: boost::exception()
-		, std::logic_error( what )
-	{}
+		: ::boost::exception()
+	{
+		*this << ::tuttle::exception::dev() + what;
+	}
 
 	explicit OfxhException( OfxStatus stat )
-		: boost::exception()
-		, std::logic_error( ofx::mapStatusToString( stat ) )
+		: ::boost::exception()
 		, _stat( stat )
-	{}
+	{
+		*this << ::tuttle::exception::ofxStatus(stat);
+	}
 
 	explicit OfxhException( OfxStatus stat, const std::string& what )
-		: boost::exception()
-		, std::logic_error( ofx::mapStatusToString( stat ) + " " + what )
+		: ::boost::exception()
 		, _stat( stat )
-	{}
+	{
+		*this << ::tuttle::exception::ofxStatus(stat);
+		*this << ::tuttle::exception::dev() + what;
+	}
 
 	/// get the status
 	OfxStatus getStatus() const

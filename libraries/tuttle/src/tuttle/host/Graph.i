@@ -4,8 +4,10 @@
 %include <tuttle/host/OutputBufferWrapper.i>
 %include <tuttle/host/ComputeOptions.i>
 %include <tuttle/host/NodeListArg.i>
+%include <tuttle/host/NodeAtTimeKey.i>
+%include <tuttle/host/NodeHashContainer.i>
 %include <tuttle/host/INode.i>
-
+%include <tuttle/host/Node.i>
 
 %{
 #include <tuttle/host/Graph.hpp>
@@ -19,6 +21,19 @@
 
 %extend tuttle::host::Graph
 {
+	Node& __getitem__( const std::string& name )
+	{
+		return self->getNode( name );
+	}
+
+	std::string __str__() const
+	{
+		std::stringstream s;
+
+		s << *self;
+		return s.str();
+	}
+
 	%pythoncode
 	{
 		def createNode(self, pluginName, *orderedParams, **namedParams):

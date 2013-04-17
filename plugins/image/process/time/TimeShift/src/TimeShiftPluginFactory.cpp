@@ -28,7 +28,7 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setTemporalClipAccess( true );
+	desc.setTemporalClipAccess( true ); // The identity state change the time
 	desc.setSupportsTiles( true );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }
@@ -45,6 +45,7 @@ void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClip->setTemporalClipAccess( true );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );

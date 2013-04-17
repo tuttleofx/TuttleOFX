@@ -65,7 +65,6 @@ public:
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
 	}
-	explicit
 	ComputeOptions( const ComputeOptions& options )
 	: _abort( false )
 	{

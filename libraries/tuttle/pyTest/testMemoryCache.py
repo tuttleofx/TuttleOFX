@@ -1,7 +1,9 @@
+# scons: Checkerboard ColorTransform Invert
+
 from pyTuttle.tuttle import *
 
 def setUp():
-	core().preload()
+	core().preload(False)
 
 def testMemoryCache():
 

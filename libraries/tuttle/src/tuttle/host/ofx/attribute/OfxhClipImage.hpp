@@ -144,7 +144,7 @@ public:
 	 * set the current pixel aspect ratio
 	 * called by clip preferences action
 	 */
-	void setPixelAspectRatio( const double& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
+	void setPixelAspectRatio( const double& s, const property::EModifiedBy modifiedBy )
 	{
 		property::Double& prop = getEditableProperties().fetchLocalDoubleProperty( kOfxImagePropPixelAspectRatio );
 
@@ -260,6 +260,13 @@ public:
 	{
 		startFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
 		endFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
+	}
+	
+	OfxRangeD getFrameRange() const
+	{
+		OfxRangeD frameRange;
+		getFrameRange( frameRange.min, frameRange.max );
+		return frameRange;
 	}
 
 	/**  Field Order - Which spatial field occurs temporally first in a frame.

@@ -1,7 +1,9 @@
+# scons: Checkerboard Invert AudioVideo Png
+
 from pyTuttle.tuttle import *
 
 def setUp():
-	core().preload()
+	core().preload(False)
 
 def testSimpleNodeList():
 

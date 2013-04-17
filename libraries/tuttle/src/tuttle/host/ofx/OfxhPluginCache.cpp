@@ -240,8 +240,8 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 		if( name.find( ".ofx.bundle" ) != std::string::npos )
 		{
 			std::string barename   = name.substr( 0, name.length() - strlen( ".bundle" ) );
-			std::string bundlename = dir + DIRSEP + name;
-			std::string binpath    = dir + DIRSEP + name + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
+			std::string bundlepath = dir + DIRSEP + name;
+			std::string binpath    = bundlepath + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
 
 			foundBinFiles.insert( binpath );
 
@@ -254,7 +254,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				try
 				{
 					// the binary was not in the cache
-					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlename, this );
+					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlepath, this );
 					_binaries.push_back( pb );
 					_knownBinFiles.insert( binpath );
 

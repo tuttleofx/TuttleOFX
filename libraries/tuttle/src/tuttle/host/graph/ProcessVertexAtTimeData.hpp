@@ -86,7 +86,16 @@ public:
 		
 		return *this;
 	}
-
+	
+	inline const ProcessEdgeAtTime& getInputEdgeByClipName( const std::string& inputClipName ) const
+	{
+		ProcessEdgeAtTimeByClipName::const_iterator it = _inEdges.find(inputClipName);
+		if( it == _inEdges.end() )
+			BOOST_THROW_EXCEPTION( exception::Bug()
+				<< exception::dev() + "No input clip " + quotes(inputClipName) + " inside input edges map." );
+		return *(it->second);
+	}
+	
 public:
 	friend std::ostream& operator<<( std::ostream& os, const This& vData );
 
@@ -96,7 +105,8 @@ public:
 	OfxTime _time;
 	bool _isFinalNode;
 
-	std::vector<const ProcessEdgeAtTime*> _inEdges;
+	typedef std::map<std::string, const ProcessEdgeAtTime*> ProcessEdgeAtTimeByClipName;
+	ProcessEdgeAtTimeByClipName _inEdges;
 	std::vector<const ProcessEdgeAtTime*> _outEdges;
 	
 	std::size_t _outDegree; ///< number of connected input clips

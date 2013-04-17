@@ -62,22 +62,23 @@ Graph::Node& Graph::addNode( INode& node )
 	return node;
 }
 
-void Graph::addNodes( const std::vector<NodeInit>& nodes )
-{
-	BOOST_FOREACH( const NodeInit& node, nodes )
-	{
-		addNode( node ); // tranfer nodes ownership to the graph
-	}
-}
-
-void Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
+std::vector<INode*> Graph::addNodes( const std::vector<NodeInit>& nodes )
 {
 	std::vector<INode*> nodePtrs;
 	BOOST_FOREACH( const NodeInit& node, nodes )
 	{
-		nodePtrs.push_back( &addNode( node ) ); // tranfer nodes ownership to the graph
+		INode& newNode = addNode( node ); // tranfer nodes ownership to the graph
+		nodePtrs.push_back( & newNode );
 	}
-	connect( nodePtrs );
+	return nodePtrs;
+}
+
+std::vector<INode*> Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
+{
+	std::vector<INode*> nodePtrs = addNodes( nodes );
+	if( nodePtrs.size() > 1 )
+		connect( nodePtrs );
+	return nodePtrs;
 }
 
 void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
@@ -215,6 +216,16 @@ void Graph::connect( const Node& outNode, const Attribute& inAttr )
 	_graph.connect( outNode.getName(), inAttr.getNode().getName(), inAttr.getName() );
 }
 
+void Graph::connect( const Attribute& outAttr, const Attribute& inAttr )
+{
+	_graph.connect( outAttr.getNode().getName(), inAttr.getNode().getName(), inAttr.getName() );
+}
+
+void Graph::unconnect( const Attribute& outAttr, const Attribute& inAttr )
+{
+	_graph.unconnect( outAttr.getNode().getName(), inAttr.getNode().getName(), inAttr.getName() );
+}
+
 namespace {
 template<class TGraph>
 inline void graphConnectClips( TGraph& graph )
@@ -288,6 +299,28 @@ std::size_t Graph::getNbOutputConnections( const Node& node ) const
 	return _graph.getOutDegree( _graph.getVertexDescriptor( node.getName() ) );
 }
 
+void Graph::setup()
+{
+	const ComputeOptions options;
+	const std::list<std::string> outputNodes;
+	graph::ProcessGraph procGraph( options, *this, outputNodes );
+	return procGraph.setup();
+}
+
+void Graph::setupAtTime( const OfxTime time, const NodeListArg& outputNodes )
+{
+	const ComputeOptions options;
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
+	return procGraph.setupAtTime( time );
+}
+
+void Graph::computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& outputNodes )
+{
+	const ComputeOptions options;
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
+	procGraph.computeHashAtTime( outNodesHash, time );
+}
+
 bool Graph::compute( const ComputeOptions& options )
 {
 	return compute( NodeListArg(), options );
@@ -312,8 +345,8 @@ bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes,
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph process( *this, nodes.getNodes() );
-	return process.process( memoryCache, options );
+	graph::ProcessGraph procGraph( options, *this, nodes.getNodes() );
+	return procGraph.process( memoryCache );
 }
 
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
@@ -358,6 +391,19 @@ std::vector<Graph::Node*> Graph::getNodesByPlugin( const std::string& pluginId )
 		}
 	}
 	return selectedNodes;
+}
+
+void Graph::exportDot( const std::string& filename, const EDotExportLevel level ) const
+{
+	switch( level )
+	{
+		case eDotExportLevelSimple:
+			graph::exportAsDOT( filename, _graph );
+			break;
+		case eDotExportLevelDetailed:
+			graph::exportAsDOT( filename, _graph );
+			break;
+	}
 }
 
 std::ostream& operator<<( std::ostream& os, const Graph& g )

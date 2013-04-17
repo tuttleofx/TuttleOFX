@@ -48,6 +48,7 @@ public:
 	std::string _nameOut;
 	std::string _name;
 	const std::string&           getName() const { return _name; }
+	const std::string&           getInAttrName() const { return _nameIn; }
 	friend std::ostream& operator<<( std::ostream& os, const TestEdge& v );
 };
 inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )

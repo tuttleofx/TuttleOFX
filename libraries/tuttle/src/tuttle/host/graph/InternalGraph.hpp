@@ -50,7 +50,7 @@ private:
 
 }
 
-template < typename VERTEX, typename EDGE, typename OutEdgeList = boost::setS, typename VertexList = boost::vecS, typename EdgeList = boost::listS >
+template < typename VERTEX, typename EDGE, typename OutEdgeList = boost::multisetS, typename VertexList = boost::vecS, typename EdgeList = boost::listS >
 class InternalGraph
 {
 public:
@@ -133,6 +133,16 @@ public:
 		_vertexDescriptorMap.clear();
 	}
 
+	std::size_t getNbEdges() const
+	{
+		return boost::num_edges(_graph);
+	}
+
+	std::size_t getNbVertices() const
+	{
+		return boost::num_vertices(_graph);
+	}
+	
 	vertex_descriptor addVertex( const Vertex& prop )
 	{
 		vertex_descriptor vd = boost::add_vertex( prop, _graph );
@@ -179,8 +189,63 @@ public:
 		}
 	}
 
+	void unconnect( const VertexKey& out, const VertexKey& in, const std::string& inAttr )
+	{
+		try
+		{
+			const edge_descriptor ed = getEdge( out, in, inAttr );
+			removeEdge( ed );
+		}
+		catch( boost::exception& e )
+		{
+			e << exception::user() + "No such connection in the graph. Can't unconnect from \"" + getVertex(out) + "\" to \"" + getVertex(in) + "." + inAttr + "\"";
+		}
+	}
+
+	bool hasEdge( const VertexKey& out, const VertexKey& in, const std::string& inAttr ) const
+	{
+		return hasEdge( getVertexDescriptor(out), getVertexDescriptor(in), inAttr );
+	}
+	
+	bool hasEdge( const vertex_descriptor& out, const vertex_descriptor& in, const std::string& inAttr ) const
+	{
+		const out_edge_range_t edges = getEdges( out, in );
+		BOOST_FOREACH( const edge_descriptor ed, edges )
+		{
+			if( instance(ed).getInAttrName() == inAttr )
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	edge_descriptor getEdge( const VertexKey& out, const VertexKey& in, const std::string& inAttr ) const
+	{
+		const out_edge_range_t edges = getEdges( getVertexDescriptor(out), getVertexDescriptor(in) );
+		BOOST_FOREACH( const edge_descriptor ed, edges )
+		{
+			if( instance(ed).getInAttrName() == inAttr )
+			{
+				return ed;
+			}
+		}
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user() + "No connection in the graph from \"" + getVertex(out) + "\" to \"" + getVertex(in) + "/" + inAttr + "\"" );
+	}
+	
+	out_edge_range_t getEdges( const vertex_descriptor& v1, const vertex_descriptor& v2 ) const
+	{
+		return boost::edge_range(v1, v2, _graph);
+	}
+	
 	edge_descriptor addEdge( const vertex_descriptor& v1, const vertex_descriptor& v2, const Edge& prop )
 	{
+		if( hasEdge( v1, v2, prop.getInAttrName() ) )
+		{
+			BOOST_THROW_EXCEPTION( exception::Logic()
+				<< exception::dev() + "Can't add Edge. There is already a connection from \"" + instance(v1) + "\" to \"" + instance(v2) + "/" + prop.getInAttrName() + "\"" );
+		}
 		//TUTTLE_TCOUT_VAR2( v1, instance(v1) );
 		//TUTTLE_TCOUT_VAR2( v2, instance(v2) );
 		

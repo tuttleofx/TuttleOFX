@@ -55,7 +55,6 @@ public:
 		return v;
 	}
 
-	#ifndef SWIG
 	ImageEffectNode* clone() const
 	{
 		return new ImageEffectNode( *this );
@@ -72,35 +71,7 @@ public:
 	const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const { return dynamic_cast<const attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
 
 	attribute::Attribute& getAttribute( const std::string& name ) { return getClip( name ); }
-	attribute::Attribute& getSingleInputAttribute()
-	{
-		ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
-		ofx::attribute::OfxhClipImageSet::ClipImageMap& clipsMap = getClips();
-		ofx::attribute::OfxhAttribute* inAttr                    = NULL;
-
-		if( clips.size() == 1 )
-		{
-			inAttr = &clips[0];
-		}
-		else if( clips.size() > 1 )
-		{
-			const ofx::attribute::OfxhClipImageSet::ClipImageMap::iterator it( clipsMap.find( kOfxSimpleSourceAttributeName ) );
-			if( it != clipsMap.end() )
-			{
-				inAttr = it->second;
-			}
-			else
-			{
-				inAttr = &clips[0];
-			}
-		}
-		else // if( inClips.empty() )
-		{
-			BOOST_THROW_EXCEPTION( exception::Logic()
-			    << exception::user( "No source clip." ) );
-		}
-		return dynamic_cast<attribute::ClipImage&>( *inAttr );
-	}
+	attribute::Attribute& getSingleInputAttribute();
 
 	const attribute::Attribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>( this )->getSingleInputAttribute(); }
 
@@ -109,6 +80,8 @@ public:
 
 	ofx::attribute::OfxhClipImageSet& getClipImageSet() { return *this; }
 	const ofx::attribute::OfxhClipImageSet& getClipImageSet() const { return *this; }
+	
+	std::size_t getLocalHashAtTime( const OfxTime time ) const;
 	
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
@@ -121,6 +94,8 @@ public:
 	}
 
 	void debugOutputImage( const OfxTime time ) const;
+
+	OfxRangeD getDefaultTimeDomain() const;
 
 	/// @group Implementation of INode virtual functions
 	/// @{
@@ -149,27 +124,6 @@ public:
 
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
 
-	#endif
-
-	#ifdef SWIG
-	%extend
-	{
-		ofx::attribute::OfxhParam& __getitem__( const std::string& name )
-		{
-			return self->getParam( name );
-			//			return self->getProcessAttribute(name); //< @todo tuttle: can be clip or params !
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
-	}
-	#endif
 
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +134,6 @@ public:
 	/// and  might be mapped (if the host allows such a thing)
 	const std::string& getDefaultOutputFielding() const;
 
-	#ifndef SWIG
 	/**
 	 * @return 1 to abort processing
 	 */
@@ -194,12 +147,14 @@ public:
 	/// make a clip
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
+#ifndef SWIG
 	/// vmessage
 	void vmessage( const char* type,
 	               const char* id,
 	               const char* format,
 	               va_list     args ) const OFX_EXCEPTION_SPEC;
-
+#endif
+	
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
 	// project may be a PAL SD project, but only be a letter-box within that. The project size is
@@ -232,9 +187,6 @@ public:
 	// The duration of the effect
 	// This contains the duration of the plug-in effect, in frames.
 	double getEffectDuration() const;
-
-	// For an instance, this is the frame rate of the project the effect is in.
-	double getFrameRate() const;
 
 	/// This is called whenever a param is changed by the plugin so that
 	/// the recursive instanceChangedAction will be fed the correct frame
@@ -310,6 +262,7 @@ private:
 	void checkClipsConnections() const;
 
 	void initComponents();
+	void initInputClipsPixelAspectRatio();
 	void initPixelAspectRatio();
 	void initInputClipsFps();
 	void initFps();
@@ -318,7 +271,6 @@ private:
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;
 	void validBitDepthConnections() const;
-	#endif
 };
 
 }

@@ -9,15 +9,18 @@ namespace text {
 
 static const std::string kParamText          = "text";
 static const std::string kParamIsExpression  = "expression";
+
 static const std::string kParamFont          = "font";
-static const std::string kParamSize          = "size";
+
+static const std::string kParamSize          = "textSize";
 static const std::string kParamRatio         = "ratio";
 static const std::string kParamColor         = "color";
+static const std::string kParamBackgroundColor  = "backgroundColor";
 static const std::string kParamPosition      = "position";
 static const std::string kParamLetterSpacing = "letterSpacing";
 
-static const std::string kParamVAlign = "vAlign";
-static const std::string kParamVAlignTop = "top";
+static const std::string kParamVAlign       = "vAlign";
+static const std::string kParamVAlignTop    = "top";
 static const std::string kParamVAlignCenter = "center";
 static const std::string kParamVAlignBottom = "bottom";
 enum EParamVAlign
@@ -26,10 +29,10 @@ enum EParamVAlign
 	eParamVAlignCenter,
 	eParamVAlignBottom
 };
-static const std::string kParamHAlign = "hAlign";
-static const std::string kParamHAlignLeft = "left";
+static const std::string kParamHAlign       = "hAlign";
+static const std::string kParamHAlignLeft   = "left";
 static const std::string kParamHAlignCenter = "center";
-static const std::string kParamHAlignRight = "right";
+static const std::string kParamHAlignRight  = "right";
 enum EParamHAlign
 {
 	eParamHAlignLeft = 0,
@@ -38,7 +41,8 @@ enum EParamHAlign
 };
 
 static const std::string kParamVerticalFlip  = "verticalFlip";
-
+static const std::string kParamItalic        = "italic";
+static const std::string kParamBold          = "bold";
 }
 }
 }

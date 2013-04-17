@@ -76,6 +76,7 @@ InputBufferPlugin::InputBufferPlugin( OfxImageEffectHandle handle )
 	_paramPixelComponents = fetchChoiceParam( kParamPixelComponents );
 	_paramBitDepth = fetchChoiceParam( kParamBitDepth );
 	_paramField = fetchChoiceParam( kParamField );
+	_paramOrientation = fetchChoiceParam( kParamOrientation );
 	
 	_paramTimeDomain = fetchDouble2DParam( kParamTimeDomain );
 	
@@ -150,6 +151,7 @@ InputBufferProcessParams InputBufferPlugin::getProcessParams( const OfxTime time
 		params._field = OFX::eFieldUpper;
 		break;
 	}
+	params._orientation = static_cast<EParamOrientation>(_paramOrientation->getValue());
 	
 	return params;
 }
@@ -312,9 +314,32 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 			rowBytesDistanceSize = widthBytesSize;
 
 		// Copy the image
-		for( int y = 0; y < dstPixelRodSize.y; ++y )
+//		TUTTLE_TCOUT_VAR( nbComponents );
+//		TUTTLE_TCOUT_VAR( bitDepthMemSize );
+//		TUTTLE_TCOUT_VAR( widthBytesSize );
+//		TUTTLE_TCOUT_VAR( (void*)inputImageBufferPtr );
+//		TUTTLE_TCOUT_VAR( dstPixelRodSize.x );
+//		TUTTLE_TCOUT_VAR( dstPixelRodSize.y );
+//		TUTTLE_TCOUT_VAR( rowBytesDistanceSize );
+//		TUTTLE_TCOUT_VAR( widthBytesSize );
+		switch( params._orientation )
 		{
-			memcpy( dst->getPixelAddress( 0, y ), inputImageBufferPtr + y * rowBytesDistanceSize, widthBytesSize );
+			case eParamOrientationFromBottomToTop:
+			{
+				for( int y = 0; y < dstPixelRodSize.y; ++y )
+				{
+					memcpy( dst->getPixelAddress( 0, y ), inputImageBufferPtr + y * rowBytesDistanceSize, widthBytesSize );
+				}
+				break;
+			}
+			case eParamOrientationFromTopToBottom:
+			{
+				for( int y = 0; y < dstPixelRodSize.y; ++y )
+				{
+					memcpy( dst->getPixelAddress( 0, y ), inputImageBufferPtr + (dstPixelRodSize.y-y) * rowBytesDistanceSize, widthBytesSize );
+				}
+				break;
+			}
 		}
 		
 		switch( params._mode )

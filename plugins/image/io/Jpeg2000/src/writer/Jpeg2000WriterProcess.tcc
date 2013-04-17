@@ -50,59 +50,68 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 
 	switch(_params._bitDepth)
 	{
+		case eTuttlePluginBitDepthAuto:
+		{
+			switch( _plugin._clipSrc->getPixelDepth() )
+			{
+				case OFX::eBitDepthUByte:
+				{
+					writeImage<rgb8_image_t>( srcView, 8 );
+					break;
+				}
+				case OFX::eBitDepthUShort:
+				{
+					writeImage<rgb16_image_t>( srcView, 16 );
+					break;
+				}
+				case OFX::eBitDepthFloat:
+				{
+					writeImage<rgb16_image_t>( srcView, 16 );
+					//writeImage<rgb32_image_t>( srcView, 32 );
+					break;
+				}
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+					    << exception::user( "Jpeg2000 Writer: bit depth not supported" ) );
+			}
+			break;
+		}
 		case eTuttlePluginBitDepth8:
 		{
-			rgb8_image_t img( srcView.dimensions() );
-			rgb8_view_t vw( view(img) );
-
-			// Convert pixels in PIX_FMT_RGB24
-			copy_and_convert_pixels(srcView, vw );
-
-			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
-
-			_writer.open( _params._filepath, srcView.width(), srcView.height(), num_channels<rgb8_view_t::value_type>::type::value, 8 );
-			_writer.encode(pixels, 8);
-
+			writeImage<rgb8_image_t>( srcView, 8 );
 			break;
 		}
 		case eTuttlePluginBitDepth12:
 		case eTuttlePluginBitDepth16:
 		{
-			rgb16_image_t img( srcView.dimensions() );
-			rgb16_view_t vw( view(img) );
-
-//			TUTTLE_COUT_VAR( vw.dimensions() );
-
-			copy_and_convert_pixels( srcView, vw );
-
-			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
-
-			_writer.open( _params._filepath, srcView.width(), srcView.height(), num_channels<rgb16_view_t::value_type>::type::value, 16 );
-			_writer.encode(pixels, 16);
-
+			writeImage<rgb16_image_t>( srcView, 16 );
 			break;
 		}
 		case eTuttlePluginBitDepth32:
 		{
-			rgb32_image_t img( srcView.dimensions() );
-			rgb32_view_t vw( view(img) );
-
-			// Convert pixels in PIX_FMT_RGB24
-			copy_and_convert_pixels(srcView, vw );
-
-			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
-
-			_writer.open( _params._filepath, srcView.width(), srcView.height(), num_channels<rgb32_view_t::value_type>::type::value, 32 );
-			_writer.encode(pixels, 32);
+			writeImage<rgb32_image_t>( srcView, 32 );
 			break;
-		}
-		default:
-		{
-			BOOST_THROW_EXCEPTION( exception::ImageFormat() );
 		}
 	}
 	// Convert pixels to destination
 	copy_and_convert_pixels( this->_srcView, this->_dstView );
+}
+
+template< typename View >
+template< typename SImg >
+void Jpeg2000WriterProcess<View>::writeImage( const View& srcView, const int& bitDepth )
+{
+	using namespace terry;
+	SImg img( srcView.dimensions() );
+	typename SImg::view_t vw( view(img) );
+
+	copy_and_convert_pixels( srcView, vw );
+
+	uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
+
+	_writer.open( _params._filepath, srcView.width(), srcView.height(), num_channels<typename SImg::view_t::value_type>::type::value, bitDepth );
+	_writer.encode( pixels, bitDepth );
 }
 
 }

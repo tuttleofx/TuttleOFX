@@ -16,7 +16,6 @@ class NodeInit;
 
 using boost::assign::list_of;
 
-
 INode* createNode( const std::string& pluginName );
 
 bool compute( const std::vector<NodeInit>& nodes, const ComputeOptions& options = ComputeOptions() );
@@ -46,10 +45,8 @@ public:
 		return *this;
 	}
 	
-#ifndef SWIG
 	INode& operator->() { return *_node.get(); }
 	const INode& operator->() const { return *_node.get(); }
-#endif
 	
 	/**
 	 * @brief Set parameter values. If it's a multi-dimensional parameter,

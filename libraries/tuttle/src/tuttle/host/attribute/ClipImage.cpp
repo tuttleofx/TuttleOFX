@@ -4,6 +4,7 @@
 #include <tuttle/host/Core.hpp>
 #include <tuttle/host/ImageEffectNode.hpp>
 #include <tuttle/host/InputBufferWrapper.hpp>
+#include <tuttle/host/graph/ProcessEdgeAtTime.hpp>
 
 #include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhBinary.hpp>
@@ -60,6 +61,21 @@ std::string ClipImage::getFullName() const
 	return getNode().getName() + "." + getName();
 }
 
+OfxTime ClipImage::getRemappedTime( const OfxTime time ) const
+{
+	//return time; // to disable time propagation support
+
+	if( isOutput() )
+		return time;
+	
+	/// Maybe we are not inside a compute (eg. overlay)... so datas are not initialized, etc.
+	if( ! getNode().hasData(time) )
+		return time; // throw an error?
+	
+	const OfxTime remappedTime = getNode().getData(time).getInputEdgeByClipName(getName()).getOutTime();
+	return remappedTime;
+}
+
 /// Return the rod on the clip cannoical coords!
 OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 {
@@ -70,7 +86,7 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 			BOOST_THROW_EXCEPTION( exception::Bug()
 			    << exception::dev( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." ) );
 		}
-		return _connectedClip->fetchRegionOfDefinition( time );
+		return _connectedClip->fetchRegionOfDefinition( getRemappedTime(time) );
 	}
 
 	/// @todo tuttle: renderscale, time, ?
@@ -127,7 +143,7 @@ void ClipImage::setFrameRange( const double startFrame, const double endFrame )
  */
 const double ClipImage::getUnmappedFrameRate() const
 {
-	return getNode().asImageEffectNode().getFrameRate();
+	return getNode().asImageEffectNode().getOutputFrameRate();
 }
 
 // Unmapped Frame Range -
@@ -148,9 +164,6 @@ void ClipImage::setUnmappedFrameRange( const double unmappedStartFrame, const do
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
 tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime time, const OfxRectD* optionalBounds )
 {
-//	const OfxTime realTime = isConnected() ? getNode().mapInputTime( time ) : time;
-	const OfxTime realTime = time;
-	
 	OfxRectD bounds;
 
 	if( optionalBounds )
@@ -165,9 +178,10 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	}
 	else
 	{
-		bounds = fetchRegionOfDefinition( realTime );
+		bounds = fetchRegionOfDefinition( time );
 	}
 	
+	const OfxTime realTime = getRemappedTime(time);
 	//	TUTTLE_TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
 	boost::shared_ptr<Image> image = _memoryCache.get( getClipIdentifier(), realTime );
 	//	std::cout << "got image : " << image.get() << std::endl;
