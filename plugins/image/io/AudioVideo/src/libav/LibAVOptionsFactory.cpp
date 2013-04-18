@@ -116,6 +116,10 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			{
 				break;
 			}
+			default:
+			{
+				TUTTLE_COUT( "AudioVideo: undefined type for " << opt->name );
+			}
 		}
 	}
 
@@ -325,6 +329,11 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
+			}
+			default:
+			{
+				TUTTLE_COUT( "AudioVideo: undefined type for " << opt.o.name );
+				
 			}
 		}
 	}
