@@ -51,7 +51,7 @@ struct ColorCubeFunctor
 			return pixel;
 		}
 		
-		size_t cubeStep = sqrt( step );
+		size_t cubeStep = sqrt( (float) step );
 		Pixel pixel;
 		
 		float red   = 0.0;
