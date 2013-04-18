@@ -158,6 +158,10 @@ void AVOptionPlugin<IOPlugin>::setParameters( LibAVVideoRW& videoRW, const EAVPa
 			{
 				break;
 			}
+			default:
+			{
+				TUTTLE_COUT( "AudioVideo: undefined type for " << opt->name );
+			}
 		}
 	}
 	
@@ -313,6 +317,10 @@ void AVOptionPlugin<IOPlugin>::setParameters( LibAVVideoRW& videoRW, const EAVPa
 			case AV_OPT_TYPE_CONST:
 			{
 				break;
+			}
+			default:
+			{
+				TUTTLE_COUT( "AudioVideo: undefined type for " << opt.o.name );
 			}
 		}
 	}

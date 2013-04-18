@@ -97,6 +97,10 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVPrivO
 			{
 				break;
 			}
+			default:
+			{
+				TUTTLE_COUT( "AudioVideo: undefined type for " << opt.o.name );
+			}
 		}
 	}
 	
