@@ -76,12 +76,21 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 	return os;
 }
 
-
+#ifdef AMBIGUOUS_OPERATOR_WORKAROUND
+std::ostream& operator<<(std::ostream& os, const ProcessVertexAtTime& v )
+{
+    char buf[255];
+    sprintf_s(buf,"%s", v.getKey());
+    os << buf;
+    return os;
+}
+#else
 std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime& v )
 {
 	os << v.getKey();
 	return os;
 }
+#endif
 
 }
 }
