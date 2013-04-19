@@ -12,6 +12,8 @@
 #include <boost/foreach.hpp>
 #include <boost/throw_exception.hpp>
 
+#include <climits>
+
 namespace sam {
 
 namespace bfs = boost::filesystem;
@@ -209,8 +211,10 @@ int main(int argc, char** argv) {
 
         const std::string fullcmd(toolFullPath.string() + " " + boost::algorithm::join(sam_cmd, " "));
 
-        //TUTTLE_TCOUT_VAR( fullcmd );
-        return system(fullcmd.c_str());
+        // TUTTLE_TCOUT_VAR( fullcmd );
+		int returnCode = system( fullcmd.c_str() );
+		// TUTTLE_COUT_VAR( UINT_MAX - returnCode );
+		return UINT_MAX - returnCode;
     } catch (const bpo::error& e) {
         TUTTLE_CERR( _color._red << "Error in command line: " << e.what() << _color._std);
         exit(-2);
