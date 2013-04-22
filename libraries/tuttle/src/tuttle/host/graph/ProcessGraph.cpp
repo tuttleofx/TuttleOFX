@@ -299,12 +299,18 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 	{
 		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( _renderGraph.getVertexDescriptor(_outputId), _renderGraph.getGraph() ) )
 		{
-			TUTTLE_TCOUT_INFOS;
+			//TUTTLE_TCOUT_INFOS;
 			ProcessVertex& v = _renderGraph.targetInstance( ed );
 			// compute the time domain for each output node
-			TUTTLE_TCOUT_INFOS;
+			//TUTTLE_TCOUT_INFOS;
 			OfxRangeD timeDomain = v.getProcessData()._timeDomain;
-
+			TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
+			
+			if( timeDomain.min < _options.getBegin() )
+				timeDomain.min = _options.getBegin();
+			if( timeDomain.max > _options.getEnd() )
+				timeDomain.max = _options.getEnd();
+			
 			TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
 			// special case for infinite time domain (eg. a still image)
 			if( timeDomain.min <= kOfxFlagInfiniteMin )
@@ -312,7 +318,7 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 			if( timeDomain.max >= kOfxFlagInfiniteMax )
 				timeDomain.max = 0;
 
-			TUTTLE_TCOUT_INFOS;
+			//TUTTLE_TCOUT_INFOS;
 			timeRanges.push_back( TimeRange( timeDomain ) );
 			TUTTLE_TCOUT_INFOS;
 			TUTTLE_TCOUT( "Compute " << quotes(v.getName()) << " full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );

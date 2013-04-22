@@ -263,6 +263,7 @@ int main( int argc, char** argv )
 		
 		std::vector<ttl::Graph::Node*> facticesNodes;
 		
+		ttl::ComputeOptions options;
 		std::vector<std::ssize_t> range;
 		std::vector<double> renderscale;
 		std::size_t step;
@@ -294,7 +295,9 @@ int main( int argc, char** argv )
 					( kStopOnMissingFileOptionString, bpo::value<bool>(), kStopOnMissingFileOptionMessage )
 					( kDisableProcessOptionString, kDisableProcessOptionMessage )
 					( kForceIdentityNodesProcessOptionString, kForceIdentityNodesProcessOptionMessage )
-					( kRangeOptionString, bpo::value<std::string > (), kRangeOptionMessage )
+					( kRangeOptionString, bpo::value< std::string > (), kRangeOptionMessage )
+					( kFirstImageOptionString, bpo::value< int > (), kFirstImageOptionMessage )
+					( kLastImageOptionString, bpo::value< int > (), kLastImageOptionMessage )
 					( kRenderScaleOptionString, bpo::value<std::string > (), kRenderScaleOptionMessage )
 					( kVerboseOptionString, kVerboseOptionMessage )
 					( kQuietOptionString, kQuietOptionMessage )
@@ -430,9 +433,25 @@ int main( int argc, char** argv )
 				}
 
 				{
+					if( samdo_vm.count( kRangeOptionLongName ) && ( samdo_vm.count( kFirstImageOptionLongName ) || samdo_vm.count( kLastImageOptionLongName ) ) )
+					{
+						TUTTLE_COUT( _color._red << "sam do: could not use " << kRangeOptionLongName << "and " << kFirstImageOptionLongName << " or " << kLastImageOptionLongName << " option." << _color._std << std::endl );
+						exit( -1 );
+					}
+					
+					if( samdo_vm.count( kFirstImageOptionLongName ) )
+					{
+						int startFrame = samdo_vm[kFirstImageOptionLongName	].as< int > ();
+						options.setBegin( startFrame );
+					}
+					if( samdo_vm.count( kLastImageOptionLongName ) )
+					{
+						int stopFrame  = samdo_vm[kLastImageOptionLongName].as< int > ();
+						options.setEnd( stopFrame );
+					}
 					if( samdo_vm.count( kRangeOptionLongName ) )
 					{
-						const std::string rangeStr = samdo_vm[kRangeOptionLongName].as<std::string > ();
+						const std::string rangeStr = samdo_vm[kRangeOptionLongName].as< std::string > ();
 						std::vector<std::string> rangeVStr = boost::program_options::split_unix( rangeStr, " ," );
 						range.reserve( rangeVStr.size() );
 						TUTTLE_TCOUT( rangeVStr.size() );
@@ -692,20 +711,20 @@ int main( int argc, char** argv )
 						}
 						if( node_vm.count( kParametersOptionLongName ) )
 						{
-                            if( !script )
-                            {
-                                TUTTLE_COUT( "\tsam do " << nodeFullName );
-                                TUTTLE_COUT( "" );
-                                TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
-                                TUTTLE_COUT( "" );
-                                coutParametersWithDetails( currentNode );
-                                exit( 0 );
-                            }
-                            else
-                            {
-                                coutParameters( currentNode );
-                                exit( 0 );
-                            }
+							if( !script )
+							{
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
+								TUTTLE_COUT( _color._blue << "PARAMETERS" << _color._std );
+								TUTTLE_COUT( "" );
+								coutParametersWithDetails( currentNode );
+								exit( 0 );
+							}
+							else
+							{
+								coutParameters( currentNode );
+								exit( 0 );
+							}
 						}
 						if( node_vm.count( kParametersReduxOptionLongName ) )
 						{
@@ -848,11 +867,11 @@ int main( int argc, char** argv )
 			exit( -1 );
 
 		// Setup compute options
-		ttl::ComputeOptions options;
 		if( range.size() >= 2 )
 		{
 			options.addTimeRange( range[0], range[1], step );
 		}
+		
 		if( renderscale.size() == 2 )
 		{
 			options.setRenderScale( renderscale[0], renderscale[1] );
