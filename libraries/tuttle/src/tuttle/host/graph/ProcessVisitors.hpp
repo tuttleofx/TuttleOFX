@@ -290,7 +290,7 @@ public:
 		// Set all times needed on each input edges
 		BOOST_FOREACH( const OfxTime t, vertex._data._times )
 		{
-			TUTTLE_TCOUT( "-  time: "<< t );
+			TUTTLE_TCOUT( "-  time: "<< boost::lexical_cast< std::string >(t) );
 			INode::ClipTimesSetMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
@@ -488,11 +488,12 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 	
 	BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, nodesToRemove )
 	{
-		TUTTLE_TCOUT( connection._identityVertex );
+		//Lexical_cast is used, here, to prevent an error ("error C2593: 'operator <<' is ambiguous") with ostream operator and OFXTime in msvc10-express (at least).
+		TUTTLE_TCOUT( boost::lexical_cast<std::string>(connection._identityVertex) );
 		TUTTLE_TCOUT( "IN: "
-			<< connection._identityVertex << "::" << connection._input._inputClip
+			<< boost::lexical_cast<std::string>(connection._identityVertex) << "::" << boost::lexical_cast<std::string>(connection._input._inputClip)
 			<< " <<-- "
-			<< connection._input._srcNode << "::" kOfxOutputAttributeName );
+			<< boost::lexical_cast<std::string>(connection._input._srcNode) << "::" kOfxOutputAttributeName );
 		const typename TGraph::VertexKey* searchIn = &( connection._input._srcNode );
 		{
 			// search a non-identity node to replace the connection

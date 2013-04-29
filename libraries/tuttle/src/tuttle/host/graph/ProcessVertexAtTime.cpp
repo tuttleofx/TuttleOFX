@@ -76,21 +76,13 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 	return os;
 }
 
-#ifdef AMBIGUOUS_OPERATOR_WORKAROUND
-std::ostream& operator<<(std::ostream& os, const ProcessVertexAtTime& v )
-{
-    char buf[255];
-    sprintf_s(buf,"%s", v.getKey());
-    os << buf;
-    return os;
-}
-#else
 std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime& v )
 {
-	os << v.getKey();
+	//Lexical_cast is used, here, to prevent an error ("error C2593: 'operator <<' is ambiguous") with ostream operator and OFXTime in msvc10-express (at least).
+	os <<  boost::lexical_cast<std::string>(v.getKey());
 	return os;
 }
-#endif
+
 
 }
 }
