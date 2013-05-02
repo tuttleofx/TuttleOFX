@@ -28,6 +28,10 @@ ProcessGraph::ProcessGraph( const ComputeOptions& options, Graph& userGraph, con
 	: _instanceCount( userGraph.getInstanceCount() )
 	, _options(options)
 {
+	_procOptions._interactive = _options.getIsInteractive();
+	// imageEffect specific...
+	_procOptions._renderScale = _options.getRenderScale();
+	
 	updateGraph( userGraph, outputNodes );
 }
 
@@ -184,8 +188,12 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 
 }
 
-void ProcessGraph::beginSequenceRender( ProcessVertexData& procOptions )
+void ProcessGraph::beginSequence( const TimeRange& timeRange )
 {
+	_procOptions._renderTimeRange.min = timeRange._begin;
+	_procOptions._renderTimeRange.max = timeRange._end;
+	_procOptions._step                = timeRange._step;
+
 	TUTTLE_TCOUT( "process begin sequence" );
 	//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
@@ -193,17 +201,17 @@ void ProcessGraph::beginSequenceRender( ProcessVertexData& procOptions )
 		++it )
 	{
 		NodeMap::value_type& p = *it;
-		p.second->beginSequence( procOptions );
+		p.second->beginSequence( _procOptions );
 	}
 }
 
-void ProcessGraph::endSequenceRender( ProcessVertexData& procOptions )
+void ProcessGraph::endSequence()
 {
 	TUTTLE_TCOUT( "process end sequence" );
 	//--- END sequence render
 	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
-		p.second->endSequence( procOptions ); // node option... or no option here ?
+		p.second->endSequence( _procOptions ); // node option... or no option here ?
 	}
 }
 
@@ -247,12 +255,6 @@ void ProcessGraph::setup()
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
-	ProcessVertexData defaultVertexData;
-	defaultVertexData._interactive = _options.getIsInteractive();
-	// imageEffect specific...
-//	defaultVertexData._field       = kOfxImageFieldBoth;
-	defaultVertexData._renderScale = _options.getRenderScale();
-//	defaultVertexData._renderRoI   = renderWindow;
 
 	///@todo tuttle: exception if there is non-optional clips unconnected.
 	/// It's already checked in the beginSequence of the imageEffectNode.
@@ -277,7 +279,7 @@ void ProcessGraph::setup()
 		Vertex& v = _renderGraph.instance(vd);
 		if( ! v.isFake() )
 		{
-			v.setProcessData( defaultVertexData );
+			v.setProcessData( _procOptions );
 			v.getProcessNode().setProcessData( &v._data );
 		}
 	}
@@ -611,27 +613,18 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 	//--- RENDER
 	// at each frame
 	
-	
-	ProcessVertexData procOptions;
-	procOptions._interactive = _options.getIsInteractive();
-	// imageEffect specific...
-	procOptions._renderScale = _options.getRenderScale();
-	
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
 		TUTTLE_TCOUT( "timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
-		procOptions._renderTimeRange.min = timeRange._begin;
-		procOptions._renderTimeRange.max = timeRange._end;
-		procOptions._step                = timeRange._step;
-
-		beginSequenceRender( procOptions );
+		
+		beginSequence( timeRange );
 		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
 			if( _options.getAbort() )
 			{
 				TUTTLE_COUT( tuttle::common::kColorRed << "PROCESS ABORTED at time " << time << "." << tuttle::common::kColorStd );
-				endSequenceRender( procOptions );
+				endSequence();
 				core().getMemoryCache().clearUnused();
 				return false;
 			}
@@ -666,7 +659,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 				else
 				{
 					TUTTLE_TCOUT( "---------------------------------------- Error" );
-					endSequenceRender( procOptions );
+					endSequence();
 					core().getMemoryCache().clearUnused();
 					throw;
 				}
@@ -684,14 +677,14 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 				else
 				{
 					TUTTLE_TCOUT( "---------------------------------------- Error" );
-					endSequenceRender( procOptions );
+					endSequence();
 					core().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
 		}
 		
-		endSequenceRender( procOptions );
+		endSequence();
 	}
 	
 #ifdef TUTTLE_EXPORT_WITH_TIMER
