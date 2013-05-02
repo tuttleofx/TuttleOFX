@@ -4,7 +4,19 @@
 #include <tuttle/host/graph/GraphExporter.hpp>
 
 #include <boost/foreach.hpp>
-//#include <boost/timer/timer.hpp>
+
+
+#ifndef TUTTLE_PRODUCTION
+#define TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#endif
+
+//#define TUTTLE_EXPORT_WITH_TIMER
+
+
+
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+#include <boost/timer/timer.hpp>
+#endif
 
 namespace tuttle {
 namespace host {
@@ -96,10 +108,10 @@ void ProcessGraph::relink()
    container c;
    topological_sort( G, std::back_inserter(c) );
 
-   cout << "A topological ordering: ";
-   for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
-   cout << index(*ii) << " ";
-   cout << endl;
+   //cout << "A topological ordering: ";
+   //for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
+   //cout << index(*ii) << " ";
+   //cout << endl;
 */
 /*
 template<class TGraph>
@@ -323,11 +335,14 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 
 void ProcessGraph::setupAtTime( const OfxTime time )
 {
-	//boost::timer::auto_cpu_timer timer;
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer timer;
+#endif
+	
 	TUTTLE_TCOUT( "---------------------------------------- deploy time" );
 	graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( _renderGraph, time );
 	_renderGraph.depthFirstVisit( deployTimeVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcess_c.dot", _renderGraph );
 #endif
 
@@ -403,7 +418,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	bakeGraphInformationToNodes( _renderGraphAtTime );
 
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_a.dot", _renderGraphAtTime );
 #endif
 
@@ -425,7 +440,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		}
 	}
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", _renderGraphAtTime );
 #endif
 
@@ -444,7 +459,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		_renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
 	}
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_c.dot", _renderGraphAtTime );
 #endif
 
@@ -453,7 +468,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 	*/
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_d.dot", _renderGraphAtTime );
 #endif
 	/*
@@ -497,7 +512,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 			TUTTLE_TCOUT( e.getName() << " - " <<  _renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
 		}
 	}
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphprocess_e.dot", tmpGraph );
 #endif
 	*/
@@ -506,7 +521,9 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time )
 {
-	//boost::timer::auto_cpu_timer timer;
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer timer;
+#endif
 	TUTTLE_TCOUT( "---------------------------------------- setupAtTime" );
 	setupAtTime( time );
 	TUTTLE_TCOUT( "---------------------------------------- computeHashAtTime BEGIN" );
@@ -518,7 +535,10 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 
 void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
 {
-	//boost::timer::auto_cpu_timer timer;
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer timer;
+#endif
+	
 	///@todo callback
 	TUTTLE_TCOUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
 	TUTTLE_TCOUT( "________________________________________ frame: " << time );
@@ -562,12 +582,16 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 	TUTTLE_TCOUT_VAR( core().getMemoryCache() );
 	TUTTLE_TCOUT_VAR( outCache );
 
-	TUTTLE_COUT( " " );
+	//TUTTLE_COUT( " " );
 }
 
 bool ProcessGraph::process( memory::MemoryCache& outCache )
 {
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer all_process_timer;
+#endif
+
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportAsDOT( "graphProcess_a.dot", _renderGraph );
 #endif
 	
@@ -576,7 +600,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 	TUTTLE_TCOUT_INFOS;
 	std::list<TimeRange> timeRanges = computeTimeRange();
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcess_b.dot", _renderGraph );
 #endif
 
@@ -614,9 +638,21 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 			
 			try
 			{
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				boost::timer::cpu_timer setup_timer;
+#endif
 				setupAtTime( time );
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				TUTTLE_COUT( "setup_timer:" << boost::timer::format(setup_timer.elapsed()) );
+#endif
 
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				boost::timer::cpu_timer processAtTime_timer;
+#endif
 				processAtTime( outCache, time );
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				TUTTLE_COUT( "processAtTime_timer:" << boost::timer::format(processAtTime_timer.elapsed()) );
+#endif
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{
@@ -657,6 +693,11 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 		
 		endSequenceRender( procOptions );
 	}
+	
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	TUTTLE_COUT( "all_process_timer:" << boost::timer::format(all_process_timer.elapsed()) );
+#endif
+	
 	return true;
 }
 

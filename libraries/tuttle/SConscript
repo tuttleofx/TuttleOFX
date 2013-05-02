@@ -46,6 +46,7 @@ tuttleHostLibs = [
 		libs.boost_atomic,
 		libs.boost_gil,
 		libs.boost_program_options,
+		#libs.boost_timer,
 	]
 tuttleHostFlags = {}
 
