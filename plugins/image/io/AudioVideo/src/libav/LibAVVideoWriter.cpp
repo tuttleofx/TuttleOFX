@@ -159,7 +159,7 @@ int LibAVVideoWriter::start( )
 			return false;
 		}
 		
-		if( _formatName.empty() )
+		if( !_formatName.empty() )
 		{
 			_ofmt = av_guess_format( _formatName.c_str(), NULL, NULL );
 			if (!_ofmt)
