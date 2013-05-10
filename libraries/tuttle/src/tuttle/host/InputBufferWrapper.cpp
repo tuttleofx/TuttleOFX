@@ -41,8 +41,8 @@ void InputBufferWrapper::set2DArrayBuffer( void* rawBuffer, const int width, con
 
 void InputBufferWrapper::set3DArrayBuffer( void* rawBuffer, const int width, const int height, const int nbComponents )
 {
-	TUTTLE_TCOUT_INFOS;
-	TUTTLE_TCOUT_VAR3( width, height, nbComponents );
+	TUTTLE_TLOG_INFOS;
+	TUTTLE_TLOG( TUTTLE_INFO, "[Inpput buffer wrapper] width = " << width << ", height = " << height << ", components = " << nbComponents );
 	setBuffer( rawBuffer );
 	setSize( width, height );
 	switch( nbComponents )
@@ -70,7 +70,7 @@ void InputBufferWrapper::setSize( const int width, const int height )
 
 void InputBufferWrapper::setComponents( const EPixelComponent components )
 {
-    static std::map<EPixelComponent, const char*> toString = map_list_of
+	static std::map<EPixelComponent, const char*> toString = map_list_of
 		( ePixelComponentRGBA, "RGBA" )
 		( ePixelComponentRGB,  "RGB" )
 		( ePixelComponentAlpha, "Gray" );
@@ -80,7 +80,7 @@ void InputBufferWrapper::setComponents( const EPixelComponent components )
 
 void InputBufferWrapper::setBitDepth( const EBitDepth bitDepth )
 {
-    static std::map<EBitDepth, const char*> toString = map_list_of
+	static std::map<EBitDepth, const char*> toString = map_list_of
 		( eBitDepthFloat,  "Float" )
 		( eBitDepthUShort, "UShort" )
 		( eBitDepthUByte,  "UByte" );

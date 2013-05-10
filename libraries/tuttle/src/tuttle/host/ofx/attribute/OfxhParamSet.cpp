@@ -68,7 +68,7 @@ std::size_t OfxhParamSet::getHashAtTime( const OfxTime time ) const
 	std::size_t seed = 0;
 	BOOST_FOREACH( const OfxhParam& param, getParamVector() )
 	{
-		//TUTTLE_TCOUT_VAR( param.getName() );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, param.getName() );
 		if( param.paramTypeHasData() && param.getEvaluateOnChange() )
 		{
 			boost::hash_combine( seed, param.getHashAtTime( time ) );

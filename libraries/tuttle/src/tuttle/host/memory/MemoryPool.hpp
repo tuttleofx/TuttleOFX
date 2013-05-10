@@ -50,6 +50,9 @@ public:
 	std::size_t getAvailableMemorySize() const;
 	std::size_t getWastedMemorySize() const;
 
+	std::size_t getDataUsedSize() const;
+	std::size_t getDataUnusedSize() const;
+	
 	void clear( std::size_t size );
 	void clear();
 	void clearOne();
@@ -63,7 +66,11 @@ private:
 	std::size_t _memoryAuthorized;
 	mutable boost::mutex _mutex;
 };
-
+/*
+#ifndef SWIG
+std::ostream& operator<<( std::ostream& os, const MemoryPool& memoryPool );
+#endif
+*/
 }
 }
 }

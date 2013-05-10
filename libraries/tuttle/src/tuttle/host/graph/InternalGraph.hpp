@@ -147,7 +147,7 @@ public:
 	{
 		vertex_descriptor vd = boost::add_vertex( prop, _graph );
 
-		//TUTTLE_TCOUT( "addVertex, vd: " << vd << ", prop.getKey(): " << prop.getKey() );
+		//TUTTLE_TLOG( TUTTLE_INFO, "addVertex, vd: " << vd << ", prop.getKey(): " << prop.getKey() );
 		_vertexDescriptorMap[prop.getKey()] = vd;
 		return vd;
 	}
@@ -246,8 +246,8 @@ public:
 			BOOST_THROW_EXCEPTION( exception::Logic()
 				<< exception::dev() + "Can't add Edge. There is already a connection from \"" + instance(v1) + "\" to \"" + instance(v2) + "/" + prop.getInAttrName() + "\"" );
 		}
-		//TUTTLE_TCOUT_VAR2( v1, instance(v1) );
-		//TUTTLE_TCOUT_VAR2( v2, instance(v2) );
+		//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, v1, instance(v1) );
+		//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, v2, instance(v2) );
 		
 		const edge_descriptor addedEdge = boost::add_edge( v1, v2, prop, _graph ).first;
 		

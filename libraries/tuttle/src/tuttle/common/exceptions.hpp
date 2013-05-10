@@ -24,14 +24,14 @@
 #include <stdexcept>
 
 #define TUTTLE_COUT_EXCEPTION( e )  \
-    TUTTLE_CERR( tuttle::common::kColorError << "Exception:" << \
-    ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << ::boost::diagnostic_information( e ) << tuttle::common::kColorStd )
+    TUTTLE_LOG_ERROR( "Exception:" ) \
+    TUTTLE_LOG_ERROR( TUTTLE_INFOS ) \
+    TUTTLE_LOG_ERROR( "\t" << ::boost::diagnostic_information( e ) )
 
 #define TUTTLE_COUT_CURRENT_EXCEPTION  \
-    TUTTLE_CERR( tuttle::common::kColorError << "Exception:" << \
-    ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << ::boost::current_exception_diagnostic_information() << tuttle::common::kColorStd )
+    TUTTLE_LOG_ERROR( "Exception:" ) \
+    TUTTLE_LOG_ERROR( << TUTTLE_INFOS ) \
+    TUTTLE_LOG_ERROR( "\t" << ::boost::current_exception_diagnostic_information() )
 
 #ifndef SWIG
 namespace OFX {

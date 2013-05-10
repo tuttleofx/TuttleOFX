@@ -62,9 +62,9 @@ public:
 			BOOST_THROW_EXCEPTION( exception::Logic()
 			    << exception::user( "You can't connect to an input Clip !" ) );
 		}
-		//TUTTLE_TCOUT( "== setConnectedClip: " );
-		//TUTTLE_TCOUT_VAR( getFullName() );
-		//TUTTLE_TCOUT_VAR( other.getFullName() );
+		//TUTTLE_TLOG( TUTTLE_TRACE, "== setConnectedClip: " );
+		//TUTTLE_TLOG_VAR( TUTTLE_TRACE, getFullName() );
+		//TUTTLE_TLOG_VAR( TUTTLE_TRACE, other.getFullName() );
 		
 		_connectedClip = &other;
 		setConnected();

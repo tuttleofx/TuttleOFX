@@ -120,7 +120,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 
 bool InteractScene::penDown( const OFX::PenArgs& args )
 {
-//	TUTTLE_COUT_X( 20, "-" );
+//	TUTTLE_COUT_X( 20, '-' );
 //	TUTTLE_COUT("penDown");
 	const Point2 penPosition = ofxToGil( args.penPosition );
 	_mouseDown = true;
@@ -272,7 +272,7 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 	
 	_params.endEditBlock();
 
-//	TUTTLE_COUT_X( 20, "-" );
+//	TUTTLE_COUT_X( 20, '-' );
 	return result;
 }
 

@@ -54,14 +54,16 @@ public:
 	/// notify override properties
 	void notify( const std::string& name, bool isSingle, int indexOrN ) OFX_EXCEPTION_SPEC
 	{
-		TUTTLE_COUT_WITHINFOS( "What we should do here?" );
+		TUTTLE_LOG_INFOS;
+		TUTTLE_LOG_ERROR( "What we should do here?" );
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	}
 
 	// don't know what to do
 	void reset( const std::string& name ) OFX_EXCEPTION_SPEC
 	{
-		TUTTLE_COUT_WITHINFOS( "What we should do here?" );
+		TUTTLE_LOG_INFOS;
+		TUTTLE_LOG_ERROR( "What we should do here?" );
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	}
 #endif

@@ -48,33 +48,33 @@ public:
 	typedef ComputeOptions This;
 	
 	ComputeOptions()
-	: _abort( false )
-	, _begin( 0 )
+	: _begin( 0 )
 	, _end( 0 )
+	, _abort( false )
 	{
 		init();
 	}
 	explicit
 	ComputeOptions( const int frame )
-	: _abort( false )
-	, _begin( 0 )
+	: _begin( 0 )
 	, _end( 0 )
+	, _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( frame, frame ) );
 	}
 	ComputeOptions( const int begin, const int end, const int step = 1 )
-	: _abort( false )
-	, _begin( 0 )
+	: _begin( 0 )
 	, _end( 0 )
+	, _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
 	}
 	ComputeOptions( const ComputeOptions& options )
-	: _abort( false )
-	, _begin( 0 )
+	: _begin( 0 )
 	, _end( 0 )
+	, _abort( false )
 	{
 		*this = options;
 	}
