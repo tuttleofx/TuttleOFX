@@ -204,11 +204,11 @@ typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangle
 	const Point2 p              = ofxToGil( args.penPosition );
 	const double margeCanonical = this->getMarge() * args.pixelScale.x;
 
-	TUTTLE_COUT_VAR( this->getMarge() );
-	TUTTLE_COUT_VAR( args.pixelScale.x );
-	TUTTLE_COUT_VAR( margeCanonical );
+	TUTTLE_LOG_VAR( TUTTLE_TRACE, this->getMarge() );
+	TUTTLE_LOG_VAR( TUTTLE_TRACE, args.pixelScale.x );
+	TUTTLE_LOG_VAR( TUTTLE_TRACE, margeCanonical );
 	const OfxRectD rod = _frame.getFrame( this->getTime() );
-	const Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
+	//const Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	const Point2 pCenter = _center.getPoint();
 	const Point2 pSize   = _size.getPoint();
 	const Point2 min     = pCenter - pSize;
@@ -246,13 +246,13 @@ MotionType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::Pe
 	MotionType m = _center.intersect( args );
 	if( m._mode != eMotionNone )
 	{
-		TUTTLE_TCOUT( "intersect center." );
+		TUTTLE_TLOG( TUTTLE_TRACE, "intersect center." );
 		_selectType = eSelectTypeC;
 		return m;
 	}
 	// intersect borders
 	_selectType = selectType( args );
-	TUTTLE_TCOUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
+	TUTTLE_TLOG( TUTTLE_TRACE, "_selectType : " << mapESelectTypeToString( _selectType ) );
 	if( _selectType != eSelectTypeNone )
 	{
 		m._mode = eMotionTranslate;

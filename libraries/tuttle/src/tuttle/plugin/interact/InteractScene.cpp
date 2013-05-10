@@ -54,9 +54,8 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	if( _creatingSelection )
 	{
 		// create selection
-#ifndef TUTTLE_PRODUCTION
-		TUTTLE_COUT("create a selection");
-#endif
+
+		TUTTLE_TLOG( TUTTLE_TRACE, "create a selection" );
 		_selectionRect.x2 = args.penPosition.x;
 		_selectionRect.y2 = args.penPosition.y;
 		_hasSelection = false;
@@ -83,7 +82,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 
 	if( _selected.size() == 0 )
 	{
-		TUTTLE_COUT_INFOS;
+		TUTTLE_LOG_INFOS;
 		return false;
 	}
 
@@ -111,7 +110,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		}
 		case eMotionNone:
 		{
-			TUTTLE_COUT_INFOS;
+			TUTTLE_LOG_INFOS;
 			break;
 		}
 	}
@@ -120,8 +119,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 
 bool InteractScene::penDown( const OFX::PenArgs& args )
 {
-//	TUTTLE_COUT_X( 20, '-' );
-//	TUTTLE_COUT("penDown");
+	//TUTTLE_LOG_TRACE("penDown");
 	const Point2 penPosition = ofxToGil( args.penPosition );
 	_mouseDown = true;
 	_beginPenPosition = penPosition;
@@ -234,7 +232,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 
 bool InteractScene::penUp( const OFX::PenArgs& args )
 {
-//	TUTTLE_COUT("penUp");
+	//TUTTLE_LOG_TRACE("penUp");
 	bool result = false;
 
 	if( _creatingSelection )
@@ -243,7 +241,7 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 		_selectionRect.y2 = args.penPosition.y;
 
 		_selected.clear();
-//		TUTTLE_COUT_VAR4( _selectionRect.x1, _selectionRect.y1, _selectionRect.x2, _selectionRect.y2 );
+		//TUTTLE_LOG_VAR4( TUTTLE_TRACE, _selectionRect.x1, _selectionRect.y1, _selectionRect.x2, _selectionRect.y2 );
 		IsActiveFunctorVector::iterator itActive = _isActive.begin();
 		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 			 it != itEnd;
@@ -263,7 +261,7 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 				it->setSelected(false);
 			}
 		}
-//		TUTTLE_COUT_VAR( _selected.size() );
+		//TUTTLE_LOG_VAR( TUTTLE_TRACE, _selected.size() );
 		_creatingSelection = false;
 	}
 
@@ -272,7 +270,6 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 	
 	_params.endEditBlock();
 
-//	TUTTLE_COUT_X( 20, '-' );
 	return result;
 }
 
@@ -300,7 +297,7 @@ bool InteractScene::drawSelection( const OFX::DrawArgs& args )
 
 void InteractScene::translate( const Point2& vec )
 {
-	//TUTTLE_COUT_VAR2( vec.x, vec.y );
+	//TUTTLE_LOG_VAR2( TUTTLE_TRACE, vec.x, vec.y );
 	Point2 newVec = vec;
 	switch( _motionType._axis )
 	{
