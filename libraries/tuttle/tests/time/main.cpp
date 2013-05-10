@@ -14,19 +14,19 @@ BOOST_AUTO_TEST_SUITE( time_tests_suite01 )
 
 BOOST_AUTO_TEST_CASE( preload )
 {
-	TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
+	TUTTLE_LOG_INFO( "-------- LOADING OPENFX PLUGINS --------" );
 	core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 	core().preload();
-//	TUTTLE_TCOUT( core().getImageEffectPluginCache() );
-	TUTTLE_COUT( "----------------- DONE -----------------" );
+//	TUTTLE_TLOG( TUTTLE_TRACE, core().getImageEffectPluginCache() );
+	TUTTLE_LOG_INFO( "----------------- DONE -----------------" );
 }
 
 BOOST_AUTO_TEST_CASE( time_shift_offset_null )
 {
-	TUTTLE_COUT( "******** PROCESS TIMESHIFT ********" );
+	TUTTLE_LOG_INFO( "******** PROCESS TIMESHIFT ********" );
 	try
 	{
-		TUTTLE_COUT( "--> PLUGINS CREATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CREATION" );
 
 		Graph g;
 		Graph::Node& read1 = g.createNode( "tuttle.jpegreader" );
@@ -34,16 +34,16 @@ BOOST_AUTO_TEST_CASE( time_shift_offset_null )
 		Graph::Node& timeshift1 = g.createNode( "tuttle.timeshift" );
 		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
 
-		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CONFIGURATION" );
 		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
 		timeshift1.getParam("offset").setValue( 0 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 
-		TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH CONNECTION --------" );
 		g.connect( read1, timeshift1 );
 		g.connect( timeshift1, write1 );
 
-		TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH PROCESSING --------" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		// computing at time 1 with an offset of 0, it require the frame 1
@@ -59,10 +59,10 @@ BOOST_AUTO_TEST_CASE( time_shift_offset_null )
 
 BOOST_AUTO_TEST_CASE( time_shift_positive_offset )
 {
-	TUTTLE_COUT( "******** PROCESS TIMESHIFT ********" );
+	TUTTLE_LOG_INFO( "******** PROCESS TIMESHIFT ********" );
 	try
 	{
-		TUTTLE_COUT( "--> PLUGINS CREATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CREATION" );
 
 		Graph g;
 		Graph::Node& read1 = g.createNode( "tuttle.jpegreader" );
@@ -70,16 +70,16 @@ BOOST_AUTO_TEST_CASE( time_shift_positive_offset )
 		Graph::Node& timeshift1 = g.createNode( "tuttle.timeshift" );
 		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
 
-		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CONFIGURATION" );
 		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
 		timeshift1.getParam("offset").setValue( 1 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 
-		TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH CONNECTION --------" );
 		g.connect( read1, timeshift1 );
 		g.connect( timeshift1, write1 );
 
-		TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH PROCESSING --------" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		// computing at time 2 with an offset of 1, it require the frame 1
@@ -94,10 +94,10 @@ BOOST_AUTO_TEST_CASE( time_shift_positive_offset )
 
 BOOST_AUTO_TEST_CASE( time_shift_negative_offset )
 {
-	TUTTLE_COUT( "******** PROCESS TIMESHIFT ********" );
+	TUTTLE_LOG_INFO( "******** PROCESS TIMESHIFT ********" );
 	try
 	{
-		TUTTLE_COUT( "--> PLUGINS CREATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CREATION" );
 
 		Graph g;
 		Graph::Node& read1 = g.createNode( "tuttle.jpegreader" );
@@ -105,16 +105,16 @@ BOOST_AUTO_TEST_CASE( time_shift_negative_offset )
 		Graph::Node& timeshift1 = g.createNode( "tuttle.timeshift" );
 		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
 
-		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CONFIGURATION" );
 		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
 		timeshift1.getParam("offset").setValue( 3 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 
-		TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH CONNECTION --------" );
 		g.connect( read1, timeshift1 );
 		g.connect( timeshift1, write1 );
 
-		TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH PROCESSING --------" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		// computing at time 3 with an offset of -2, it require the frame 1
@@ -130,10 +130,10 @@ BOOST_AUTO_TEST_CASE( time_shift_negative_offset )
 
 BOOST_AUTO_TEST_CASE( time_shift_negative_offset_forceIdentity )
 {
-	TUTTLE_COUT( "******** PROCESS TIMESHIFT ********" );
+	TUTTLE_LOG_INFO( "******** PROCESS TIMESHIFT ********" );
 	try
 	{
-		TUTTLE_COUT( "--> PLUGINS CREATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CREATION" );
 
 		Graph g;
 		Graph::Node& read1 = g.createNode( "tuttle.jpegreader" );
@@ -141,16 +141,16 @@ BOOST_AUTO_TEST_CASE( time_shift_negative_offset_forceIdentity )
 		Graph::Node& timeshift1 = g.createNode( "tuttle.timeshift" );
 		Graph::Node& write1 = g.createNode( "tuttle.jpegwriter" );
 
-		TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
+		TUTTLE_LOG_INFO( "--> PLUGINS CONFIGURATION" );
 		read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/MARS@.JPG" );
 		timeshift1.getParam("offset").setValue( 3 );
 		write1.getParam( "filename" ).setValue( ".tests/output_####.jpg" );
 
-		TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH CONNECTION --------" );
 		g.connect( read1, timeshift1 );
 		g.connect( timeshift1, write1 );
 
-		TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
+		TUTTLE_LOG_INFO( "-------- GRAPH PROCESSING --------" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		// computing at time 3 with an offset of -2, it require the frame 1
