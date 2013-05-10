@@ -77,35 +77,6 @@
  **/
  #define TUTTLE_LOG_INFOS TUTTLE_LOG_TRACE( TUTTLE_GET_INFOS_FILE ); TUTTLE_LOG_TRACE( TUTTLE_GET_INFOS_FUNCTION )
 
-/**
- * @param[in] ... : all parameters with an operator << defined
- * @brief terminal information display
- **/
-/*
- #define TUTTLE_COUT_WITHINFOS(... )  \
-    TUTTLE_TRACE( TUTTLE_INFOS_FILE ); \
-    TUTTLE_TRACE( TUTTLE_INFOS_FUNCTION ); \
-    TUTTLE_COUT( __VA_ARGS__ )
-
- #define TUTTLE_COUT_WARNING(... )  \
-    TUTTLE_CERR( "TuttleOFX - Warning:" ); \
-    TUTTLE_CERR( TUTTLE_INFOS_FILE ); \
-    TUTTLE_CERR( TUTTLE_INFOS_FUNCTION ); \
-    TUTTLE_CERR( __VA_ARGS__ )
-
- #define TUTTLE_COUT_ERROR(... )  \
-    TUTTLE_CERR( tuttle::common::kColorError << "TuttleOFX - Error:" ); \
-    TUTTLE_CERR( TUTTLE_INFOS_FILE ); \
-    TUTTLE_CERR( TUTTLE_INFOS_FUNCTION ); \
-    TUTTLE_CERR( __VA_ARGS__ << tuttle::common::kColorStd )
-
- #define TUTTLE_COUT_FATALERROR(... )  \
-    TUTTLE_CERR( tuttle::common::kColorError << "TuttleOFX - Fatal error:" ); \
-    TUTTLE_CERR( TUTTLE_INFOS_FILE ); \
-    TUTTLE_CERR( TUTTLE_INFOS_FUNCTION ); \
-    TUTTLE_CERR( __VA_ARGS__ << tuttle::common::kColorStd )
-*/
-
 ////////////////////////////////////////////////////////////////////////////////
 // Some specifics things to debug or release version
 #ifdef DEBUG

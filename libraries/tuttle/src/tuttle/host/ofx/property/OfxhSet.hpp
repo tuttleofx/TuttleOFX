@@ -356,7 +356,7 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 	{
 		TUTTLE_LOG_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ").");
 		TUTTLE_LOG_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		TUTTLE_LOG_ERROR( e.getStatusStr() );
+		TUTTLE_LOG_EXCEPTION( e );
 		//TUTTLE_LOG_DEBUG( *this );
 	}
 	catch(... )
@@ -380,7 +380,7 @@ void OfxhSet::setPropertyN( const std::string& property, int count, const typena
 	{
 		TUTTLE_LOG_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
 		TUTTLE_LOG_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		TUTTLE_LOG_ERROR( e.getStatusStr() );
+		TUTTLE_LOG_EXCEPTION( e );
 	}
 	catch(... )
 	{

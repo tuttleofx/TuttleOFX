@@ -23,14 +23,16 @@
 #include <string>
 #include <stdexcept>
 
-#define TUTTLE_COUT_EXCEPTION( e )  \
-    TUTTLE_LOG_ERROR( "Exception:" ) \
-    TUTTLE_LOG_ERROR( TUTTLE_INFOS ) \
+#define TUTTLE_LOG_EXCEPTION( e )  \
+    TUTTLE_LOG_ERROR( "Exception:" ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FILE ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FUNCTION ); \
     TUTTLE_LOG_ERROR( "\t" << ::boost::diagnostic_information( e ) )
 
-#define TUTTLE_COUT_CURRENT_EXCEPTION  \
-    TUTTLE_LOG_ERROR( "Exception:" ) \
-    TUTTLE_LOG_ERROR( << TUTTLE_INFOS ) \
+#define TUTTLE_LOG_CURRENT_EXCEPTION  \
+    TUTTLE_LOG_ERROR( "Exception:" ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FILE ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FUNCTION ); \
     TUTTLE_LOG_ERROR( "\t" << ::boost::current_exception_diagnostic_information() )
 
 #ifndef SWIG

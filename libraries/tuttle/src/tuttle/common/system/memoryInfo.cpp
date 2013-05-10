@@ -36,8 +36,8 @@ MemoryInfo getMemoryInfo()
 	//infos._bufferRam = sys_info.bufferram * sys_info.mem_unit;
 	infos._totalSwap = sys_info.totalswap * sys_info.mem_unit;
 	infos._freeSwap  = sys_info.freeswap * sys_info.mem_unit;
-//	TUTTLE_COUT_VAR( sys_info.sharedram * sys_info.mem_unit );
-//	TUTTLE_COUT_VAR( sys_info.bufferram * sys_info.mem_unit );
+//	TUTTLE_LOG_VAR( TUTTLE_TRACE, sys_info.sharedram * sys_info.mem_unit );
+//	TUTTLE_LOG_VAR( TUTTLE_TRACE, sys_info.bufferram * sys_info.mem_unit );
 	#else
 	infos._totalRam             =
 	    infos._freeRam          =
