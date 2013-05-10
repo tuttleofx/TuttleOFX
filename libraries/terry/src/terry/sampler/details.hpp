@@ -340,7 +340,7 @@ bool sample( Sampler& sampler, const SrcView& src, const point2<F>& p, DstP& res
 		}
 		else // upper the image
 		{
-			//TUTTLE_COUT( src.height() << " @@ " << (pTL.y - src.height() ) );
+			//TUTTLE_LOG_INFO( src.height() << " @@ " << (pTL.y - src.height() ) );
 			switch( outOfImageProcess )
 			{
 				case eParamFilterOutBlack :
