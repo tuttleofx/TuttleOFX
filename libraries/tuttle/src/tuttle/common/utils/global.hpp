@@ -2,6 +2,7 @@
 #define _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 
 #include "color.hpp"
+#include "formatters.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // System stuff
@@ -14,8 +15,6 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/current_function.hpp>
-
-#include <boost/log/trivial.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Define functions to display infos in the console
@@ -33,11 +32,11 @@
 #  define TUTTLE_FORCEINLINE inline
 #endif
 
-#define TUTTLE_TRACE BOOST_LOG_TRIVIAL(trace)
-#define TUTTLE_INFO BOOST_LOG_TRIVIAL(info)
+#define TUTTLE_TRACE   BOOST_LOG_TRIVIAL(trace)
+#define TUTTLE_INFO    BOOST_LOG_TRIVIAL(info)
 #define TUTTLE_WARNING BOOST_LOG_TRIVIAL(warning)
-#define TUTTLE_ERROR BOOST_LOG_TRIVIAL(error)
-#define TUTTLE_FATAL BOOST_LOG_TRIVIAL(fatal)
+#define TUTTLE_ERROR   BOOST_LOG_TRIVIAL(error)
+#define TUTTLE_FATAL   BOOST_LOG_TRIVIAL(fatal)
 
 /**
  * @def   TUTTLE_INFOS
@@ -61,9 +60,9 @@
 
 #define TUTTLE_LOG_TRACE( ... )   BOOST_LOG_TRIVIAL(trace) << __VA_ARGS__
 #define TUTTLE_LOG_INFO( ... )    BOOST_LOG_TRIVIAL(info)  << __VA_ARGS__
-#define TUTTLE_LOG_WARNING( ... ) BOOST_LOG_TRIVIAL(warning) << common::Color::get()->_yellow << "warning: " << __VA_ARGS__ << common::Color::get()->_std
-#define TUTTLE_LOG_ERROR( ... )   BOOST_LOG_TRIVIAL(error)   << common::Color::get()->_error  << "error: "   << __VA_ARGS__ << common::Color::get()->_std
-#define TUTTLE_LOG_FATAL( ... )   BOOST_LOG_TRIVIAL(fatal)   << common::Color::get()->_error  << "fatal: "   << __VA_ARGS__ << common::Color::get()->_std
+#define TUTTLE_LOG_WARNING( ... ) BOOST_LOG_TRIVIAL(warning) << tuttle::common::Color::get()->_yellow << "warning: " << __VA_ARGS__ << tuttle::common::Color::get()->_std
+#define TUTTLE_LOG_ERROR( ... )   BOOST_LOG_TRIVIAL(error)   << tuttle::common::Color::get()->_error  << "error: "   << __VA_ARGS__ << tuttle::common::Color::get()->_std
+#define TUTTLE_LOG_FATAL( ... )   BOOST_LOG_TRIVIAL(fatal)   << tuttle::common::Color::get()->_error  << "fatal: "   << __VA_ARGS__ << tuttle::common::Color::get()->_std
 
 #define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
 

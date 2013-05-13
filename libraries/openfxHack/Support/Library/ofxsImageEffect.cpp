@@ -821,7 +821,7 @@ Image::Image( OfxPropertySetHandle props )
 	_uniqueID = _imageProps.propGetString( kOfxImagePropUniqueIdentifier );
 
 	//	std::string tuttleFullName = _imageProps.propGetString( "TuttleFullName" );
-	//	TUTTLE_COUT("tuttleFullName: " << tuttleFullName );
+	//	TUTTLE_LOG_TRACE("tuttleFullName: " << tuttleFullName );
 
 	_renderScale.x = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	_renderScale.y = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
