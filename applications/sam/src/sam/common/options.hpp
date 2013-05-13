@@ -1,20 +1,11 @@
-/*
- * options.hpp
- *
- *  Created on: Apr 16, 2012
- *      Author: mfe
- */
-
 #ifndef OPTIONS_HPP_
 #define OPTIONS_HPP_
 
-
-
 namespace sam {
 
-#define SAM_EXAMPLE_TITLE_COUT(x) TUTTLE_COUT( std::endl << _color._yellow << "  " << x << _color._std );
-#define SAM_EXAMPLE_LINE_COUT(x,y) TUTTLE_COUT( _color._green << "    " << std::setw(SAM_HELP_MARGING) << x << y << _color._std );
 #define SAM_HELP_MARGING 35
+#define SAM_EXAMPLE_TITLE_COUT( ... )   TUTTLE_LOG_INFO( std::endl << color->_yellow << "  " << __VA_ARGS__ << color->_std );
+#define SAM_EXAMPLE_LINE_COUT( x, ... ) TUTTLE_LOG_INFO( color->_green << "    " << std::setw(SAM_HELP_MARGING) << x << __VA_ARGS__ << color->_std );
 
 static const char* const kUrlTuttleofxProject = "http://sites.google.com/site/tuttleofx";
 
@@ -59,6 +50,12 @@ static const char* const kFilterOptionMessage = "filtering the output for resear
 static const char* const kHelpOptionLongName = "help";
 static const char* const kHelpOptionString = "help,h";
 static const char* const kHelpOptionMessage = "display help";
+/*
+ * options.hpp
+ *
+ *  Created on: Apr 16, 2012
+ *      Author: mfe
+ */
 
 //-i, --input
 static const char* const kInputOptionLongName = "input";
@@ -118,7 +115,7 @@ static const char* const kVersionOptionMessage = "display version";
 //-V, --verbose
 static const char* const kVerboseOptionLongName = "verbose";
 static const char* const kVerboseOptionString =  "verbose,V";
-static const char* const kVerboseOptionMessage = "enable verbose mode";
+static const char* const kVerboseOptionMessage = "verbose level (trace, debug, warning, error, fatal)";
 
 /// options without short-cut
 
@@ -322,7 +319,6 @@ static const char* const kScriptOptionLongName = "script";
 static const char* const kScriptOptionString = kScriptOptionLongName;
 static const char* const kScriptOptionMessage = "format the output such as it could be dump in a file and be used as a script";
 
-
 }
 
-#endif /* OPTIONS_HPP_ */
+#endif

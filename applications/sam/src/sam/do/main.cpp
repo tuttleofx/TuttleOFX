@@ -19,15 +19,42 @@
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 #include <Detector.hpp>
 
 #include <iostream>
+
+///
+#include <fstream>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+
+namespace logging = boost::log;
+namespace src = boost::log::sources;
+namespace expr = boost::log::expressions;
+namespace sinks = boost::log::sinks;
+namespace keywords = boost::log::keywords;
+//////
+
 
 namespace bpo = boost::program_options;
 namespace ttl = tuttle::host;
 
 namespace bfs = boost::filesystem;
 namespace sp  = sequenceParser;
+
+//namespace logging = boost::log;
 
 void displayHelp( bpo::options_description &infoOptions, bpo::options_description &confOptions )
 {
@@ -236,14 +263,82 @@ bool isContextSupported( const ttl::Graph::Node* node , const std::string& conte
 	return false;
 }
 
+
+void init()
+{
+	boost::shared_ptr< logging::core > core = logging::core::get();
+	
+	// Create a backend and attach a couple of streams to it
+	boost::shared_ptr< sinks::text_ostream_backend > backend = boost::make_shared< sinks::text_ostream_backend >();
+	backend->add_stream( boost::shared_ptr< std::ostream >(&std::clog ));
+	backend->add_stream( boost::shared_ptr< std::ostream >(new std::ofstream("sample.log")));
+	
+	// Enable auto-flushing after each log record written
+	backend->auto_flush(true);
+	
+	// Wrap it into the frontend and register in the core.
+	// The backend requires synchronization in the frontend.
+	typedef sinks::synchronous_sink< sinks::text_ostream_backend > sink_t;
+	boost::shared_ptr< sink_t > sink(new sink_t(backend));
+	
+	sink->set_formatter
+			(
+				expr::format("[%1%] %2%")
+				//% expr::attr< unsigned int >("LineID")
+				% logging::trivial::severity
+				% expr::smessage
+				);
+	
+	core->add_sink(sink);
+	
+	/*
+	typedef sinks::synchronous_sink< sinks::text_ostream_backend > text_sink;
+	boost::shared_ptr< text_sink > sink = boost::make_shared< text_sink >();
+	
+	sink->locked_backend()->add_stream(
+				boost::make_shared< std::ofstream >("sample.log"));
+	
+	// This makes the sink to write log records that look like this:
+	// 1: <normal> A normal severity message
+	// 2: <error> An error severity message
+	sink->set_formatter
+			(
+				expr::format("[%1%] %2%")
+				//% expr::attr< unsigned int >("LineID")
+				% logging::trivial::severity
+				% expr::smessage
+				);
+	
+	logging::core::get()->add_sink(sink);*/
+}
+
 int main( int argc, char** argv )
 {
 	using namespace sam;
 	using namespace sam::samdo;
 
+	
+	init();
+	logging::add_common_attributes();
+	
+	using namespace logging::trivial;
+	src::severity_logger< severity_level > lg;
+	
+	/*
+	BOOST_LOG_SEV(lg, trace) << "A trace severity message";
+	BOOST_LOG_SEV(lg, debug) << "A debug severity message";
+	BOOST_LOG_SEV(lg, info) << "An informational severity message";
+	BOOST_LOG_SEV(lg, warning) << "A warning severity message";
+	BOOST_LOG_SEV(lg, error) << "An error severity message";
+	BOOST_LOG_SEV(lg, fatal) << "A fatal severity message";*/
+	/*
+	logging::core::get()->set_filter
+	(
+		logging::trivial::severity >= logging::trivial::info
+	);
+	*/
 	try
 	{
-
 		bool continueOnError = false;
 		bool stopOnMissingFile = false;
 		bool disableProcess = false;
@@ -816,7 +911,7 @@ int main( int argc, char** argv )
 					}
 					catch( boost::program_options::error& e )
 					{
-						TUTTLE_CERR( _color._red << "sam do - " << nodeFullName );
+						TUTTLE_CERR( _color._red << "[sam do] " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
 						TUTTLE_CERR( "Error: " << e.what() << _color._std );
 #else
@@ -826,7 +921,7 @@ int main( int argc, char** argv )
 					}
 					catch( tuttle::exception::Common& e )
 					{
-						TUTTLE_CERR( _color._red << "sam do - " << nodeFullName );
+						TUTTLE_CERR( _color._red << "[sam do] " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
 						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) << _color._std );
 #else
@@ -837,7 +932,7 @@ int main( int argc, char** argv )
 					}
 					catch( ... )
 					{
-						TUTTLE_CERR( _color._red << "sam do - " << nodeFullName );
+						TUTTLE_CERR( _color._red << "[sam do] " << nodeFullName );
 						TUTTLE_CERR( "Unknown error." );
 						TUTTLE_CERR( "\n" );
 						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() << _color._std );
@@ -919,7 +1014,7 @@ int main( int argc, char** argv )
 					{
 						size_t count = 0;
 						if( enableVerbose )
-							TUTTLE_COUT( n->getName() << " browse: " << inputPath );
+							TUTTLE_COUT( "[sam-do] " <<n->getName() << " browse: " << inputPath );
 					
 						// get filenames adn sequences
 						boost::ptr_vector<sp::FileObject> listOfSequences = detector.fileObjectInDirectory( inputPath, filters, researchMask, descriptionMask );
@@ -993,9 +1088,12 @@ int main( int argc, char** argv )
 			}
 		}
 		
-		TUTTLE_TCOUT_VAR2( numberOfLoop, writerHaveExtensionInParameter );
-		TUTTLE_TCOUT_VAR2( haveReader, haveWriter );
-		TUTTLE_TCOUT_VAR2( listOfSequencesPerReaderNode.size(), listOfSequencesPerWriterNode.size() );
+		TUTTLE_TCOUT( "[sam-do] number of loop: " << numberOfLoop );
+		TUTTLE_TCOUT( "[sam-do] writer have extension: " << writerHaveExtensionInParameter );
+		TUTTLE_TCOUT( "[sam-do] graph have reader : " << haveReader );
+		TUTTLE_TCOUT( "[sam-do] graph have writer : " << haveWriter );
+		TUTTLE_TCOUT( "[sam-do] number of sequence per reader : " << listOfSequencesPerReaderNode.size() );
+		TUTTLE_TCOUT( "[sam-do] number of sequence per writer : " << listOfSequencesPerWriterNode.size() );
 		
 		if( ( writerHaveExtensionInParameter || haveWriter || haveReader ) && numberOfLoop > 1 )
 		{
@@ -1010,7 +1108,7 @@ int main( int argc, char** argv )
 		for( size_t loop = 0; loop < numberOfLoop; ++loop )
 		{
 			if( enableVerbose )
-				TUTTLE_COUT( _color._red << "********** graph processing " << loop << " **********" << _color._std );
+				TUTTLE_COUT( "[sam-do] " << _color._red << "graph processing " << loop << _color._std );
 			
 			// copy graph and node for each iteration
 			ttl::Graph graphTmp( graph );
@@ -1177,7 +1275,7 @@ int main( int argc, char** argv )
 			if( processGraph )
 			{
 				if( enableVerbose )
-					TUTTLE_COUT( "graph processing" );
+					TUTTLE_COUT( "[sam-do] graph processing" );
 				if( !disableProcess )
 					graphTmp.compute( *nodesTmp.back(), options );
 			}
@@ -1187,24 +1285,22 @@ int main( int argc, char** argv )
 	}
 	catch( const tuttle::exception::Common& e )
 	{
-		TUTTLE_CERR( _color._red << "sam do - error" );
 #ifdef TUTTLE_PRODUCTION
-		TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) << _color._std );
+		TUTTLE_CERR( "[sam-do] Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) << _color._std );
 #else
-		TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
-		TUTTLE_CERR( "Backtrace: " << boost::trace( e ) << _color._std );
+		TUTTLE_CERR( "[sam-do] Debug: " << boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR( "[sam-do] Backtrace: " << boost::trace( e ) << _color._std );
 #endif
 		exit( -2 );
 	}
 	catch( const boost::program_options::error& e )
 	{
-		TUTTLE_CERR( _color._red << "sam do - error" );
-		TUTTLE_CERR( "Error: " << e.what() << _color._std );
+		TUTTLE_CERR( "[sam-do] Error: " << e.what() << _color._std );
 		exit( -2 );
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( _color._red << "sam do - error" << _color._std );
+		TUTTLE_CERR( _color._red << "[sam-do] Error" << _color._std );
 #ifndef TUTTLE_PRODUCTION
 		TUTTLE_CERR( _color._red << boost::current_exception_diagnostic_information() << _color._std );
 #endif
