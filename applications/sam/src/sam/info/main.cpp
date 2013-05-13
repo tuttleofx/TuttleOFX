@@ -1,5 +1,4 @@
 #include <sam/common/utility.hpp>
-#include <sam/common/color.hpp>
 #include <sam/common/options.hpp>
 
 #include <tuttle/common/utils/global.hpp>
@@ -28,15 +27,11 @@ namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace sp  = sequenceParser;
 
-bool	enableColor	= false;
-bool	verbose		= false;
-
 int	firstImage	= 0;
 int	lastImage	= 0;
 
 namespace sam
 {
-	Color _color;
 	bool wasSthgDumped = false;
 }
 
@@ -45,7 +40,6 @@ void printImageProperties( std::string path )
 {
 	try
 	{
-
 		Image         *image;
 		ImageInfo     *image_info;
 		
@@ -132,40 +126,40 @@ void printImageProperties( std::string path )
 			case 7                     : interlaceType = "PNG interlacing"; break; // PNGInterlace
 		}
 
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "width"                 << image->columns                                                                         );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "height"                << image->rows                                                                            );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"             << image->depth  << " bits"                                                               );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"   << image->quality                                                                         );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "image type"            << imageType                                                                              );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"          << image->x_resolution  << resolutionType                                                 );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"          << image->y_resolution  << resolutionType                                                 );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"           << interlaceType                                                                          );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		//TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "format"                << image->format()                                                                        );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "channels"              << colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" )  );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "color space"           << colorSpaceType                                                                         );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "gamma"                 << image->gamma                                                                           );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "width"                 << image->columns                                                                         );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "height"                << image->rows                                                                            );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"             << image->depth  << " bits"                                                               );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"   << image->quality                                                                         );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "image type"            << imageType                                                                              );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "" );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"          << image->x_resolution  << resolutionType                                                 );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"          << image->y_resolution  << resolutionType                                                 );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"           << interlaceType                                                                          );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "" );
+		//TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "format"                << image->format()                                                                        );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "channels"              << colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" )  );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "color space"           << colorSpaceType                                                                         );
+		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "gamma"                 << image->gamma                                                                           );
 
-		TUTTLE_COUT( "" );
+		TUTTLE_LOG_INFO( "" );
 	}
 	catch( ... )
 	{
-		TUTTLE_COUT( "Caught exception" << "\n" );
+		TUTTLE_LOG_ERROR( "Caught exception" << "\n" );
 	}
 	
 }
 
 void dumpImageProperties( const sp::File& s )
 {
-	TUTTLE_COUT(s);
+	TUTTLE_LOG_INFO(s);
 	printImageProperties( s.getAbsoluteFilename() );
 	sam::wasSthgDumped = true;
 }
 
 void dumpImageProperties( const sp::Sequence& s )
 {
-	TUTTLE_COUT(s);
+	TUTTLE_LOG_INFO(s);
 	printImageProperties( s.getAbsoluteFirstFilename() );
 	sam::wasSthgDumped = true;
 }
@@ -189,37 +183,43 @@ void dumpImageProperties( boost::ptr_vector<sp::FileObject>& listing )
 
 int main( int argc, char** argv )
 {
+	using namespace tuttle::common;
 	using namespace sam;
+	
+	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Color>                 color( Color::get() );
 
-	sp::EMaskType researchMask       = sp::eMaskTypeSequence;	// by default show sequences
-	sp::EMaskOptions descriptionMask = sp::eMaskOptionsColor;	// by default show nothing
-	bool recursiveListing	     = false;
+	sp::EMaskType researchMask       = sp::eMaskTypeSequence; // by default show sequences
+	sp::EMaskOptions descriptionMask = sp::eMaskOptionsColor; // by default show nothing
+	bool recursiveListing = false;
 	std::string availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
+	formatter->init_logging();
+	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		(kAllOptionString            , kAllOptionMessage)
-		(kExpressionOptionString     , bpo::value<std::string>(), kExpressionOptionMessage)
-		(kFilesOptionString          , kFilesOptionMessage)
-		(kHelpOptionString           , kHelpOptionMessage)
-		(kIgnoreOptionString          , kIgnoreOptionMessage)
-		(kPathOptionString     , kPathOptionMessage)
-		(kRecursiveOptionString      , kRecursiveOptionMessage)
-		(kColorOptionString           , kColorOptionMessage)
-		(kFirstImageOptionString     , bpo::value<unsigned int>(), kFirstImageOptionMessage)
-		(kLastImageOptionString      , bpo::value<unsigned int>(), kLastImageOptionMessage)
-		(kBriefOptionString            , kBriefOptionMessage)
-	;
+		( kAllOptionString, kAllOptionMessage )
+		( kExpressionOptionString, bpo::value<std::string>(), kExpressionOptionMessage )
+		( kFilesOptionString,      kFilesOptionMessage )
+		( kHelpOptionString,       kHelpOptionMessage )
+		( kIgnoreOptionString,     kIgnoreOptionMessage )
+		( kPathOptionString,       kPathOptionMessage )
+		( kRecursiveOptionString,  kRecursiveOptionMessage )
+		( kVerboseOptionString,    bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+		( kQuietOptionString,      kQuietOptionMessage )
+		( kColorOptionString,      kColorOptionMessage )
+		( kFirstImageOptionString, bpo::value<unsigned int>(), kFirstImageOptionMessage )
+		( kLastImageOptionString,  bpo::value<unsigned int>(), kLastImageOptionMessage )
+		( kBriefOptionString,      kBriefOptionMessage );
 
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		(kInputDirOptionString        , bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
-		(kEnableColorOptionString     , bpo::value<std::string>(), kEnableColorOptionMessage)
-	;
+		( kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage )
+		( kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage );
 
 	// define default options
 	bpo::positional_options_description pod;
@@ -254,64 +254,71 @@ int main( int argc, char** argv )
 	}
 	catch( const bpo::error& e)
 	{
-		TUTTLE_COUT("error in command line: " << e.what() );
+		TUTTLE_LOG_ERROR( "error in command line: " << e.what() );
 		exit( -2 );
 	}
 	catch(...)
 	{
-		TUTTLE_COUT("unknown error in command line.");
+		TUTTLE_LOG_ERROR( "unknown error in command line." );
 		exit( -2 );
 	}
 
-	if ( vm.count(kColorOptionLongName) )
+	if( vm.count( kColorOptionLongName ) )
 	{
-		enableColor = true;
+		color->enable();
 	}
-	if ( vm.count(kEnableColorOptionLongName) )
+	
+	if( vm.count( kEnableColorOptionLongName ) )
 	{
 		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
-		enableColor = string_to_boolean( str );
+		if( string_to_boolean(str) )
+		{
+			color->enable();
+		}
+		else
+		{
+			color->disable();
+		}
 	}
 
-	if( enableColor )
+	if( vm.count( kHelpOptionLongName ) )
 	{
-		descriptionMask |= sp::eMaskOptionsColor;
-		_color.enable();
-	}
-
-	if (vm.count(kHelpOptionLongName))
-	{
-	    TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
-	    TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
-	    TUTTLE_COUT( _color._green << "\tsam-info - get informations about a sequence" << _color._std << std::endl );
-	    TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
-	    TUTTLE_COUT( _color._green << "\tsam-info [options] [sequences]" << _color._std << std::endl );
-	    TUTTLE_COUT( _color._blue  << "DESCRIPTION\n" << _color._std );
-	    TUTTLE_COUT( "Print informations from Sequence (or file) like resolution, colorspace, etc." << std::endl );
-	    TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std);
-	    TUTTLE_COUT( mainOptions );
-	    return 0;
+		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
+		TUTTLE_LOG_INFO( color->_green << "\tsam-info - get informations about a sequence" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_LOG_INFO( color->_green << "\tsam-info [options] [sequences]" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION\n" << color->_std );
+		TUTTLE_LOG_INFO( "Print informations from Sequence (or file) like resolution, colorspace, etc." );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std);
+		TUTTLE_LOG_INFO( mainOptions );
+		TUTTLE_LOG_INFO( "" );
+		return 0;
 	}
 
 	if ( vm.count(kBriefOptionLongName) )
 	{
-		TUTTLE_COUT( _color._green << "get informations about a sequence" << _color._std);
+		TUTTLE_LOG_INFO( color->_green << "get informations about a sequence" << color->_std );
 		return 0;
 	}
 
 	if (vm.count(kExpressionOptionLongName))
 	{
-	    bal::split( filters, vm[kExpressionOptionLongName].as<std::string>(), bal::is_any_of(","));
+		bal::split( filters, vm[kExpressionOptionLongName].as<std::string>(), bal::is_any_of(","));
 	}
 
 	if (vm.count(kDirectoriesOptionLongName))
 	{
-	    researchMask |= sp::eMaskTypeDirectory;
+		researchMask |= sp::eMaskTypeDirectory;
 	}
 
 	if (vm.count(kFilesOptionLongName))
 	{
-	    researchMask |= sp::eMaskTypeFile;
+		researchMask |= sp::eMaskTypeFile;
 	}
 
 	if (vm.count(kIgnoreOptionLongName))
@@ -319,9 +326,19 @@ int main( int argc, char** argv )
 		researchMask &= ~sp::eMaskTypeSequence;
 	}
 
-	if (vm.count(kVerboseOptionLongName))
+	switch( vm[ kVerboseOptionLongName ].as< int >() )
 	{
-		verbose = true;
+		case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
+		case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
+		case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
+		case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
+		case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
+		case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
+		default : formatter->setLogLevel( boost::log::trivial::warning ); break;
+	}
+	if( vm.count(kQuietOptionLongName) )
+	{
+		formatter->setLogLevel( boost::log::trivial::fatal );
 	}
 
 	if (vm.count(kFirstImageOptionLongName))
@@ -425,21 +442,25 @@ int main( int argc, char** argv )
 				}
 				catch(... )
 				{
-					TUTTLE_CERR ( _color._red << "Unrecognized pattern \"" << path << "\"" << _color._std );
+					TUTTLE_LOG_ERROR( "Unrecognized pattern \"" << path << "\"" );
 				}
 			}
 		}
 	}
 	catch (bfs::filesystem_error &ex)
 	{
-		TUTTLE_CERR( _color._error << ex.what() << _color._std );
+		TUTTLE_LOG_ERROR( ex.what() );
 	}
 	catch(... )
 	{
-		TUTTLE_CERR ( _color._error << boost::current_exception_diagnostic_information() << _color._std );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 	}
-	if(!wasSthgDumped)
-	    TUTTLE_CERR ( _color._error << "No sequence found here." << _color._std );
+	
+	if( !wasSthgDumped )
+	{
+		TUTTLE_LOG_ERROR( "No sequence found here." );
+	}
+	
 	return 0;
 }
 
