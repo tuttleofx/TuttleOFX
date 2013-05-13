@@ -1,5 +1,4 @@
 #include <sam/common/utility.hpp>
-#include <sam/common/color.hpp>
 #include <sam/common/options.hpp>
 
 #include <tuttle/common/utils/global.hpp>
@@ -25,19 +24,15 @@ namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace sp  = sequenceParser;
 
-bool         enableColor    = false;
-bool         verbose        = false;
 bool         selectRange    = false;
 std::ssize_t firstImage     = 0;
 std::ssize_t lastImage      = 0;
-
-sam::Color _color;
 
 // A helper function to simplify the main part.
 template<class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 {
-	copy(v.begin(), v.end(), std::ostream_iterator<T>(std::cout, " "));
+	copy( v.begin(), v.end(), std::ostream_iterator<T>( std::cout, " " ) );
 	return os;
 }
 
@@ -63,26 +58,22 @@ void removeSequence( const sp::Sequence& s )
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( !bfs::exists( sFile ) )
 		{
-			TUTTLE_CERR("Could not remove (file not exist): " << _color._red << sFile.string() << _color._std );
+			TUTTLE_LOG_ERROR( "Could not remove (file not exist): " << sFile.string() );
 		}
 		else
 		{
-			if(verbose)
-			{
-				TUTTLE_COUT("remove: " << _color._folder << sFile.string() << _color._std );
-			}
+			TUTTLE_LOG_TRACE( "remove: " << tuttle::common::Color::get()->_folder << sFile.string() << tuttle::common::Color::get()->_std );
 			try
 			{
 				bfs::remove( sFile );
 			}
-			catch(const boost::filesystem::filesystem_error& e)
+			catch( const boost::filesystem::filesystem_error& e )
 			{
 //			   if( e.code() == boost::system::errc::permission_denied )
 //				   "permission denied"
-				TUTTLE_CERR( "sam-rm: Error:\t\n" << e.what() );
+				TUTTLE_LOG_ERROR( "sam-rm: Error:\t\n" << e.what() );
 				/// @todo cin
-//				TUTTLE_COUT( "sam-rm: Continue ? (Yes/No/Yes for All/No for All)" );
-				
+//				TUTTLE_LOG_INFO( "sam-rm: Continue ? (Yes/No/Yes for All/No for All)" );
 			}
 		}
 	}
@@ -95,8 +86,7 @@ void removeFileObject( boost::ptr_vector<sp::FileObject> &listing, std::vector<b
 	{
 		if( !(s.getMaskType () == sp::eMaskTypeDirectory))
 		{
-			if(verbose)
-				TUTTLE_COUT( "remove: " << s );
+			TUTTLE_LOG_TRACE( "remove: " << s );
 			if( s.getMaskType () == sp::eMaskTypeSequence )
 				removeSequence( static_cast<const sp::Sequence&>( s ) );
 			else
@@ -113,8 +103,7 @@ void removeFileObject( boost::ptr_vector<sp::FileObject> &listing, std::vector<b
 			{
 				if( bfs::is_empty( paths.at(i) ) )
 				{
-					if(verbose)
-						TUTTLE_COUT( "remove: " << s );
+					TUTTLE_LOG_TRACE( "remove: " << s );
 					bfs::remove( paths.at(i) );
 				}
 				else
@@ -134,15 +123,12 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 	{
 		if( bfs::is_empty( paths ) )
 		{
-			if( verbose )
-			{
-				TUTTLE_COUT( "remove: " << _color._folder << paths << _color._std );
-			}
+			TUTTLE_LOG_TRACE( "remove: " << tuttle::common::Color::get()->_folder << paths << tuttle::common::Color::get()->_std );
 			bfs::remove( paths );
 		}
 		else
 		{
-			TUTTLE_CERR( "could not remove " << _color._error << paths << _color._std );
+			TUTTLE_LOG_ERROR( "could not remove " << paths );
 		}
 	}
 }
@@ -150,7 +136,11 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 
 int main( int argc, char** argv )
 {
+	using namespace tuttle::common;
 	using namespace sam;
+	
+	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Color>                 color( Color::get() );
 
 	sp::EMaskType                researchMask      = sp::eMaskTypeSequence;	// by default show sequences
 	sp::EMaskOptions             descriptionMask   = sp::eMaskOptionsColor;	// by default show nothing
@@ -158,6 +148,8 @@ int main( int argc, char** argv )
 	std::vector<std::string>     paths;
 	std::vector<std::string>     filters;
 
+	formatter->init_logging();
+	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
@@ -169,7 +161,8 @@ int main( int argc, char** argv )
 			( kIgnoreOptionString,      kIgnoreOptionMessage )
 			( kPathOptionString,        kPathOptionMessage )
 			( kRecursiveOptionString,   kRecursiveOptionMessage )
-			( kVerboseOptionString,     kVerboseOptionMessage )
+			( kVerboseOptionString,     bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+			( kQuietOptionString,       kQuietOptionMessage )
 			( kColorOptionString,       kColorOptionMessage )
 			( kFirstImageOptionString,  bpo::value<std::ssize_t>(), kFirstImageOptionMessage )
 			( kLastImageOptionString,   bpo::value<std::ssize_t>(), kLastImageOptionMessage )
@@ -179,8 +172,8 @@ int main( int argc, char** argv )
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-			( kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
-			( kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage);
+			( kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage )
+			( kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage );
 	
 	// define default options 
 	bpo::positional_options_description pod;
@@ -215,50 +208,52 @@ int main( int argc, char** argv )
 	}
 	catch( const bpo::error& e)
 	{
-		TUTTLE_COUT( "sam-rm: command line error: " << e.what() );
+		TUTTLE_LOG_ERROR( "sam-rm: command line error: " << e.what() );
 		exit( -2 );
 	}
 	catch(...)
 	{
-		TUTTLE_COUT("sam-rm: unknown error in command line.");
+		TUTTLE_LOG_ERROR( "sam-rm: unknown error in command line." );
 		exit( -2 );
 	}
 
 	if( vm.count( kColorOptionLongName ) )
 	{
-		enableColor = true;
+		color->enable();
 	}
+	
 	if( vm.count( kEnableColorOptionLongName ) )
 	{
 		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
-		enableColor = string_to_boolean( str );
-	}
-
-	if( enableColor )
-	{
-		descriptionMask |= sp::eMaskOptionsColor;
-		_color.enable();
+		if( string_to_boolean(str) )
+		{
+			color->enable();
+		}
+		else
+		{
+			color->disable();
+		}
 	}
 
 	if( vm.count( kHelpOptionLongName ) )
 	{
-		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std );
-		TUTTLE_COUT( "" );
-		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-rm - remove file sequences" << _color._std );
-		TUTTLE_COUT( "" );
-		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-rm [options] [sequence_pattern]" << _color._std );
-		TUTTLE_COUT( "" );
-		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
-		TUTTLE_COUT( "" );
-		TUTTLE_COUT( "Remove sequence of files, and could remove trees (folder, files and sequences)." );
-		TUTTLE_COUT( "" );
-		TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std );
-		TUTTLE_COUT( "" );
-		TUTTLE_COUT( mainOptions );
+		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
+		TUTTLE_LOG_INFO( color->_green << "\tsam-rm - remove file sequences" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_LOG_INFO( color->_green << "\tsam-rm [options] [sequence_pattern]" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( "Remove sequence of files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( mainOptions );
 
-		TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left );
+		TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std );
 		SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: " );
 		SAM_EXAMPLE_LINE_COUT ( "Auto-detect padding : ", "seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (usual style): ", "seq.########.jpg" );
@@ -266,13 +261,14 @@ int main( int argc, char** argv )
 		SAM_EXAMPLE_TITLE_COUT( "Delete: " );
 		SAM_EXAMPLE_LINE_COUT ( "A sequence:", "sam-rm /path/to/sequence/seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Sequences in a directory:", "sam-rm /path/to/sequence/" );
+		TUTTLE_LOG_INFO( "" );
 
 		return 0;
 	}
 
 	if( vm.count( kBriefOptionLongName) )
 	{
-		TUTTLE_COUT( _color._green << "remove file sequences" << _color._std);
+		TUTTLE_LOG_INFO( color->_green << "remove file sequences" << color->_std );
 		return 0;
 	}
 
@@ -296,9 +292,19 @@ int main( int argc, char** argv )
 		researchMask &= ~sp::eMaskTypeSequence;
 	}
 	
-	if( vm.count( kVerboseOptionLongName ) )
+	switch( vm[ kVerboseOptionLongName ].as< int >() )
 	{
-		verbose = true;
+		case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
+		case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
+		case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
+		case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
+		case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
+		case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
+		default : formatter->setLogLevel( boost::log::trivial::warning ); break;
+	}
+	if( vm.count(kQuietOptionLongName) )
+	{
+		formatter->setLogLevel( boost::log::trivial::fatal );
 	}
 
 	if( vm.count( kFirstImageOptionLongName ) )
@@ -338,7 +344,7 @@ int main( int argc, char** argv )
 	}
 	else
 	{
-		TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std );
+		TUTTLE_LOG_ERROR( "No sequence and/or directory are specified." );
 		return 1;
 	}
 
@@ -401,7 +407,7 @@ int main( int argc, char** argv )
 				}
 				catch(... )
 				{
-					TUTTLE_CERR ( _color._error << "Unrecognized pattern \"" << path << "\"" << _color._std );
+					TUTTLE_LOG_ERROR( "Unrecognized pattern \"" << path << "\"" );
 				}
 			}
 		}
@@ -410,11 +416,11 @@ int main( int argc, char** argv )
 	}
 	catch( bfs::filesystem_error &ex )
 	{
-		TUTTLE_COUT( _color._error << ex.what() << _color._std );
+		TUTTLE_LOG_ERROR( ex.what() );
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR ( _color._error << boost::current_exception_diagnostic_information() << _color._std );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	return 0;
 }
