@@ -5,6 +5,8 @@
 
 #include <boost/atomic.hpp>
 
+#include <limits>
+
 #include <list>
 
 namespace tuttle {
@@ -13,8 +15,8 @@ namespace host {
 struct TimeRange
 {
 	TimeRange()
-		: _begin( 0 )
-		, _end( 0 )
+		: _begin( std::numeric_limits<int>::min() )
+		, _end( std::numeric_limits<int>::max() )
 		, _step( 1 )
 	{}
 	TimeRange( const int frame )
@@ -49,32 +51,32 @@ public:
 	
 	ComputeOptions()
 	: _abort( false )
-	, _begin( 0 )
-	, _end( 0 )
+	, _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
 	{
 		init();
 	}
 	explicit
 	ComputeOptions( const int frame )
 	: _abort( false )
-	, _begin( 0 )
-	, _end( 0 )
+	, _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( frame, frame ) );
 	}
 	ComputeOptions( const int begin, const int end, const int step = 1 )
 	: _abort( false )
-	, _begin( 0 )
-	, _end( 0 )
+	, _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
 	}
 	ComputeOptions( const ComputeOptions& options )
 	: _abort( false )
-	, _begin( 0 )
-	, _end( 0 )
+	, _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
 	{
 		*this = options;
 	}

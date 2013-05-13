@@ -320,9 +320,9 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 			OfxRangeD timeDomain = v.getProcessData()._timeDomain;
 			TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
 			
-			if( timeDomain.min < _options.getBegin() )
+			if( _options.getBegin() != std::numeric_limits<int>::min() && timeDomain.min < _options.getBegin() )
 				timeDomain.min = _options.getBegin();
-			if( timeDomain.max > _options.getEnd() )
+			if( _options.getEnd() != std::numeric_limits<int>::max() && timeDomain.max > _options.getEnd() )
 				timeDomain.max = _options.getEnd();
 			
 			TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
