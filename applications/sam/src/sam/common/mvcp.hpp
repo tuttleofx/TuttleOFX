@@ -215,6 +215,7 @@ int sammvcp(int argc, char** argv)
 	{
 		color->enable();
 	}
+	
 	if( vm.count( kEnableColorOptionLongName ) )
 	{
 		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
