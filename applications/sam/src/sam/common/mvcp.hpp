@@ -252,7 +252,7 @@ int sammvcp(int argc, char** argv)
 		if( isPathSizeTooSmall && !vm.count( kHelpOptionLongName ) )
 			TUTTLE_LOG_ERROR( "Two sequences and/or directories must be specified." );
 		
-		TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << color->_std );
+		TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_LOG_INFO( "" );
 #ifndef SAM_MOVEFILES
 		TUTTLE_LOG_INFO( color->_blue <<"NAME" << color->_std );
