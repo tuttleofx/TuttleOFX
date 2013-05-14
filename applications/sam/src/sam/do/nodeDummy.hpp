@@ -50,11 +50,11 @@ struct Dummy
 	void printAllSupportedNodes( const std::string& context );
 	void printAllSupportedExtensions( const std::string& context );
 	
-	void displayHelp( const std::string& nodeFullName, const Color &color );
-	void displayExpertHelp( const std::string& nodeFullName, const Color &color );
+	void displayHelp( const std::string& nodeFullName );
+	void displayExpertHelp( const std::string& nodeFullName );
 	
-	void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const NodeList& nodeList, const std::vector<std::string>& nodeArgs, const Color& color  );
-	void foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs, const Color& color );
+	void foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const NodeList& nodeList, const std::vector<std::string>& nodeArgs );
+	void foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs );
 };
 
 }
