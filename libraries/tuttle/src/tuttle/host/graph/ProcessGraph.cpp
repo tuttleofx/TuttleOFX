@@ -4,7 +4,19 @@
 #include <tuttle/host/graph/GraphExporter.hpp>
 
 #include <boost/foreach.hpp>
-//#include <boost/timer/timer.hpp>
+
+
+#ifndef TUTTLE_PRODUCTION
+#define TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#endif
+
+//#define TUTTLE_EXPORT_WITH_TIMER
+
+
+
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+#include <boost/timer/timer.hpp>
+#endif
 
 namespace tuttle {
 namespace host {
@@ -16,6 +28,10 @@ ProcessGraph::ProcessGraph( const ComputeOptions& options, Graph& userGraph, con
 	: _instanceCount( userGraph.getInstanceCount() )
 	, _options(options)
 {
+	_procOptions._interactive = _options.getIsInteractive();
+	// imageEffect specific...
+	_procOptions._renderScale = _options.getRenderScale();
+	
 	updateGraph( userGraph, outputNodes );
 }
 
@@ -96,10 +112,10 @@ void ProcessGraph::relink()
    container c;
    topological_sort( G, std::back_inserter(c) );
 
-   cout << "A topological ordering: ";
-   for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
-   cout << index(*ii) << " ";
-   cout << endl;
+   //cout << "A topological ordering: ";
+   //for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
+   //cout << index(*ii) << " ";
+   //cout << endl;
 */
 /*
 template<class TGraph>
@@ -172,8 +188,12 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 
 }
 
-void ProcessGraph::beginSequenceRender( ProcessVertexData& procOptions )
+void ProcessGraph::beginSequence( const TimeRange& timeRange )
 {
+	_procOptions._renderTimeRange.min = timeRange._begin;
+	_procOptions._renderTimeRange.max = timeRange._end;
+	_procOptions._step                = timeRange._step;
+
 	TUTTLE_TCOUT( "process begin sequence" );
 	//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
@@ -181,17 +201,17 @@ void ProcessGraph::beginSequenceRender( ProcessVertexData& procOptions )
 		++it )
 	{
 		NodeMap::value_type& p = *it;
-		p.second->beginSequence( procOptions );
+		p.second->beginSequence( _procOptions );
 	}
 }
 
-void ProcessGraph::endSequenceRender( ProcessVertexData& procOptions )
+void ProcessGraph::endSequence()
 {
 	TUTTLE_TCOUT( "process end sequence" );
 	//--- END sequence render
 	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
-		p.second->endSequence( procOptions ); // node option... or no option here ?
+		p.second->endSequence( _procOptions ); // node option... or no option here ?
 	}
 }
 
@@ -235,12 +255,6 @@ void ProcessGraph::setup()
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
-	ProcessVertexData defaultVertexData;
-	defaultVertexData._interactive = _options.getIsInteractive();
-	// imageEffect specific...
-//	defaultVertexData._field       = kOfxImageFieldBoth;
-	defaultVertexData._renderScale = _options.getRenderScale();
-//	defaultVertexData._renderRoI   = renderWindow;
 
 	///@todo tuttle: exception if there is non-optional clips unconnected.
 	/// It's already checked in the beginSequence of the imageEffectNode.
@@ -265,7 +279,7 @@ void ProcessGraph::setup()
 		Vertex& v = _renderGraph.instance(vd);
 		if( ! v.isFake() )
 		{
-			v.setProcessData( defaultVertexData );
+			v.setProcessData( _procOptions );
 			v.getProcessNode().setProcessData( &v._data );
 		}
 	}
@@ -306,9 +320,9 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 			OfxRangeD timeDomain = v.getProcessData()._timeDomain;
 			TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
 			
-			if( timeDomain.min < _options.getBegin() )
+			if( _options.getBegin() != std::numeric_limits<int>::min() && timeDomain.min < _options.getBegin() )
 				timeDomain.min = _options.getBegin();
-			if( timeDomain.max > _options.getEnd() )
+			if( _options.getEnd() != std::numeric_limits<int>::max() && timeDomain.max > _options.getEnd() )
 				timeDomain.max = _options.getEnd();
 			
 			TUTTLE_TCOUT_VAR2( timeDomain.min, timeDomain.max );
@@ -329,11 +343,14 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 
 void ProcessGraph::setupAtTime( const OfxTime time )
 {
-	//boost::timer::auto_cpu_timer timer;
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer timer;
+#endif
+	
 	TUTTLE_TCOUT( "---------------------------------------- deploy time" );
 	graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( _renderGraph, time );
 	_renderGraph.depthFirstVisit( deployTimeVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcess_c.dot", _renderGraph );
 #endif
 
@@ -409,7 +426,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	bakeGraphInformationToNodes( _renderGraphAtTime );
 
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_a.dot", _renderGraphAtTime );
 #endif
 
@@ -431,7 +448,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		}
 	}
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", _renderGraphAtTime );
 #endif
 
@@ -450,7 +467,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		_renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
 	}
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_c.dot", _renderGraphAtTime );
 #endif
 
@@ -459,7 +476,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 	*/
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcessAtTime_d.dot", _renderGraphAtTime );
 #endif
 	/*
@@ -503,7 +520,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 			TUTTLE_TCOUT( e.getName() << " - " <<  _renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
 		}
 	}
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphprocess_e.dot", tmpGraph );
 #endif
 	*/
@@ -512,7 +529,9 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time )
 {
-	//boost::timer::auto_cpu_timer timer;
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer timer;
+#endif
 	TUTTLE_TCOUT( "---------------------------------------- setupAtTime" );
 	setupAtTime( time );
 	TUTTLE_TCOUT( "---------------------------------------- computeHashAtTime BEGIN" );
@@ -524,7 +543,10 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 
 void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
 {
-	//boost::timer::auto_cpu_timer timer;
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer timer;
+#endif
+	
 	///@todo callback
 	TUTTLE_TCOUT( tuttle::common::kColorBlue << "process at time " << time << tuttle::common::kColorStd );
 	TUTTLE_TCOUT( "________________________________________ frame: " << time );
@@ -568,12 +590,16 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 	TUTTLE_TCOUT_VAR( core().getMemoryCache() );
 	TUTTLE_TCOUT_VAR( outCache );
 
-	TUTTLE_COUT( " " );
+	//TUTTLE_COUT( " " );
 }
 
 bool ProcessGraph::process( memory::MemoryCache& outCache )
 {
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	boost::timer::cpu_timer all_process_timer;
+#endif
+
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportAsDOT( "graphProcess_a.dot", _renderGraph );
 #endif
 	
@@ -582,7 +608,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 	TUTTLE_TCOUT_INFOS;
 	std::list<TimeRange> timeRanges = computeTimeRange();
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcess_b.dot", _renderGraph );
 #endif
 
@@ -593,36 +619,39 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 	//--- RENDER
 	// at each frame
 	
-	
-	ProcessVertexData procOptions;
-	procOptions._interactive = _options.getIsInteractive();
-	// imageEffect specific...
-	procOptions._renderScale = _options.getRenderScale();
-	
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
 		TUTTLE_TCOUT( "timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
-		procOptions._renderTimeRange.min = timeRange._begin;
-		procOptions._renderTimeRange.max = timeRange._end;
-		procOptions._step                = timeRange._step;
-
-		beginSequenceRender( procOptions );
+		
+		beginSequence( timeRange );
 		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
 			if( _options.getAbort() )
 			{
 				TUTTLE_COUT( tuttle::common::kColorRed << "PROCESS ABORTED at time " << time << "." << tuttle::common::kColorStd );
-				endSequenceRender( procOptions );
+				endSequence();
 				core().getMemoryCache().clearUnused();
 				return false;
 			}
 			
 			try
 			{
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				boost::timer::cpu_timer setup_timer;
+#endif
 				setupAtTime( time );
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				TUTTLE_COUT( "setup_timer:" << boost::timer::format(setup_timer.elapsed()) );
+#endif
 
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				boost::timer::cpu_timer processAtTime_timer;
+#endif
 				processAtTime( outCache, time );
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+				TUTTLE_COUT( "processAtTime_timer:" << boost::timer::format(processAtTime_timer.elapsed()) );
+#endif
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{
@@ -636,7 +665,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 				else
 				{
 					TUTTLE_TCOUT( "---------------------------------------- Error" );
-					endSequenceRender( procOptions );
+					endSequence();
 					core().getMemoryCache().clearUnused();
 					throw;
 				}
@@ -654,15 +683,20 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 				else
 				{
 					TUTTLE_TCOUT( "---------------------------------------- Error" );
-					endSequenceRender( procOptions );
+					endSequence();
 					core().getMemoryCache().clearUnused();
 					throw;
 				}
 			}
 		}
 		
-		endSequenceRender( procOptions );
+		endSequence();
 	}
+	
+#ifdef TUTTLE_EXPORT_WITH_TIMER
+	TUTTLE_COUT( "all_process_timer:" << boost::timer::format(all_process_timer.elapsed()) );
+#endif
+	
 	return true;
 }
 
