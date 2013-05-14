@@ -632,9 +632,9 @@ void ImageEffectNode::coutBitDepthConnections() const
 	{
 		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 
-		const ofx::property::String& propPixelDepth       = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
-		const ofx::property::String& propComponent        = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
-		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
+		//const ofx::property::String& propPixelDepth       = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
+		//const ofx::property::String& propComponent        = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
+		//const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
 		/*
 		TUTTLE_TLOG( TUTTLE_INFO, "-- " << "clip: " << " = " << clip.getFullName() );
 		TUTTLE_TLOG( TUTTLE_INFO, "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
