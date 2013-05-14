@@ -203,7 +203,7 @@ void ProcessGraph::updateGraph( Graph& userGraph, const std::list<std::string>& 
 		BOOST_FOREACH( const std::string & s, outputNodes )
 		{
 			_renderGraph.connect( _outputId, s, "Output" );
-			TUTTLE_LOG_DEBUG( "MY OUTPUT: " << s );
+			TUTTLE_LOG_DEBUG( TUTTLE_INFO, "MY OUTPUT: " << s );
 		}
 	}
 	else

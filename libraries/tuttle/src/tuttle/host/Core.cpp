@@ -82,14 +82,14 @@ void Core::preload( const bool useCache )
 	{
 		cacheFile = (getPreferences().getTuttleHomePath() / "tuttlePluginCacheSerialize.xml").string();
 		
-		TUTTLE_LOG_DEBUG("plugin cache file = " << cacheFile );
+		TUTTLE_LOG_DEBUG( TUTTLE_INFO, "plugin cache file = " << cacheFile );
 
 		try
 		{
 			std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
 			if( ifsb.is_open() )
 			{
-				TUTTLE_LOG_DEBUG( "Read plugins cache." );
+				TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Read plugins cache." );
 				IArchive iArchive( ifsb );
 				iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
 				ifsb.close();
@@ -110,7 +110,7 @@ void Core::preload( const bool useCache )
 		boost::uuids::uuid u = gen();
 		const std::string tmpCacheFile( cacheFile + ".writing." + boost::uuids::to_string(u) + ".xml" );
 		
-		TUTTLE_LOG_DEBUG( "Write plugins cache " << tmpCacheFile );
+		TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Write plugins cache " << tmpCacheFile );
 		// serialize into a temporary file
 		std::ofstream ofsb( tmpCacheFile.c_str(), std::ios::out );
 		if( ofsb.is_open() )
