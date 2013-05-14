@@ -121,7 +121,6 @@ void copy_sequence( const sp::Sequence& s, const bfs::path& d, const sp::Time of
 
 int sammvcp(int argc, char** argv)
 {
-
 	using namespace tuttle::common;
 	using namespace sam;
 	
