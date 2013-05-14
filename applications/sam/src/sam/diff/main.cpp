@@ -288,7 +288,7 @@ void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Gra
 void displayHelp(bpo::options_description &desc) {
     using namespace sam;
     //std::cout.rdbuf(_stdCout); // restore cout's original streambuf
-    TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
+    TUTTLE_COUT( _color._blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << _color._std << std::endl);
     TUTTLE_COUT( _color._blue << "NAME" << _color._std);
     TUTTLE_COUT( _color._green << "\tsam-diff - compute difference between 2 images/sequences" << _color._std << std::endl);
     TUTTLE_COUT( _color._blue << "SYNOPSIS" << _color._std);

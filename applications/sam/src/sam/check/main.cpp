@@ -215,7 +215,7 @@ int main( int argc, char** argv )
 	
 	if( vm.count(kHelpOptionLongName) || vm.count(kInputDirOptionLongName) == 0 )
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << color->_std );
+		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_LOG_INFO( "" );
 		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
 		TUTTLE_LOG_INFO( color->_green << "\tsam-check - detect black images in sequences" << color->_std );
