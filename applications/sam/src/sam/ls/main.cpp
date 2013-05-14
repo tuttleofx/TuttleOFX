@@ -162,7 +162,7 @@ int main( int argc, char** argv )
 	
 	if (vm.count(kHelpOptionLongName))
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << color->_std );
+		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_LOG_INFO( "" );
 		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
 		TUTTLE_LOG_INFO( color->_green << "\tsam-ls - list directory contents" << color->_std );
