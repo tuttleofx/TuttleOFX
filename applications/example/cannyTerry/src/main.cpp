@@ -1,4 +1,5 @@
-
+#include <tuttle/common/utils/global.hpp>
+	
 #include <boost/gil/gil_all.hpp>
 
 #define png_infopp_NULL (png_infopp)NULL
@@ -20,6 +21,11 @@
 
 int main( int argc, char** argv )
 {
+	boost::shared_ptr<tuttle::common::formatters::Formatter> formatter( tuttle::common::formatters::Formatter::get() );
+	boost::shared_ptr<tuttle::common::Color>                 color( tuttle::common::Color::get() );
+	formatter->init_logging();
+	color->disable();
+	
 	try
 	{
 		using namespace boost::gil;
@@ -28,8 +34,8 @@ int main( int argc, char** argv )
 		boost::gil::png_read_and_convert_image( "data/input.png", img );
 		boost::gil::rgb32f_view_t imgView( view(img) );
 		
-		std::cout << "input - x:" << imgView.width() << ", y:" << imgView.height() << std::endl;
-		std::cout << "input - size:" << imgView.size() << std::endl;
+		TUTTLE_LOG_INFO( "input - x:" << imgView.width() << ", y:" << imgView.height() );
+		TUTTLE_LOG_INFO( "input - size:" << imgView.size() );
 		
 		boost::gil::gray32f_image_t imgCanny( imgView.width(), imgView.height() );
 		boost::gil::rgb32f_image_t tmpImgRgb( imgView.width(), imgView.height() );
@@ -44,14 +50,14 @@ int main( int argc, char** argv )
 			terry::filter::convolve_option_extend_zero,
 			0.025, 0.1
 			);
-		std::cout << "full canny time: " << t.elapsed() << std::endl;
+		TUTTLE_LOG_INFO( "full canny time: " << t.elapsed() );
 		
 		boost::gil::png_write_view( "data/terry/output_canny_terry.png", color_converted_view<rgb8_pixel_t>( view(imgCanny) ) );
 	}
 	catch(... )
 	{
-		std::cerr << "Exception ... : main de sam." << std::endl;
-		std::cerr << boost::current_exception_diagnostic_information();
+		TUTTLE_LOG_ERROR( "Exception ... : main de sam." );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 
 	}
 
