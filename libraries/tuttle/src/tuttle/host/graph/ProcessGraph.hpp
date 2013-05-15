@@ -58,22 +58,18 @@ private:
 	
 	void relink();
 	void bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderGraphAtTime );
-	void beginSequenceRender( ProcessVertexData& procOptions );
-	void endSequenceRender( ProcessVertexData& procOptions );
 
-	
 public:
-	
 	void updateGraph( Graph& userGraph, const std::list<std::string>& outputNodes );
 
 	void setup();
 	std::list<TimeRange> computeTimeRange();
-	
-	void setupAtTime( const OfxTime time );
-	
 	void computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time );
 
+	void beginSequence( const TimeRange& timeRange );
+	void setupAtTime( const OfxTime time );
 	void processAtTime( memory::MemoryCache& outCache, const OfxTime time );
+	void endSequence();
 
 	bool process( memory::MemoryCache& outCache );
 
@@ -86,6 +82,7 @@ private:
 	static const std::string _outputId;
 	
 	const ComputeOptions& _options;
+	ProcessVertexData _procOptions;
 };
 
 }
