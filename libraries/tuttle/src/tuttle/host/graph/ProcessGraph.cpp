@@ -190,7 +190,7 @@ void ProcessGraph::beginSequence( const TimeRange& timeRange )
 	_procOptions._renderTimeRange.max = timeRange._end;
 	_procOptions._step                = timeRange._step;
 
-	TUTTLE_TCOUT( "process begin sequence" );
+	TUTTLE_TLOG( TUTTLE_INFO, "[begin sequence] start" );
 	//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
 		it != itEnd;
@@ -342,7 +342,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	boost::timer::cpu_timer timer;
 #endif
 	
-	TUTTLE_TCOUT( "---------------------------------------- deploy time" );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] start" );
 	graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( _renderGraph, time );
 	_renderGraph.depthFirstVisit( deployTimeVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
 #ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
@@ -629,7 +629,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 #endif
 				setupAtTime( time );
 #ifdef TUTTLE_EXPORT_WITH_TIMER
-				TUTTLE_COUT( "setup_timer:" << boost::timer::format(setup_timer.elapsed()) );
+				TUTTLE_LOG_WARNING( "[process timer] setup " << boost::timer::format(setup_timer.elapsed()) );
 #endif
 
 #ifdef TUTTLE_EXPORT_WITH_TIMER
@@ -637,7 +637,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 #endif
 				processAtTime( outCache, time );
 #ifdef TUTTLE_EXPORT_WITH_TIMER
-				TUTTLE_COUT( "processAtTime_timer:" << boost::timer::format(processAtTime_timer.elapsed()) );
+				TUTTLE_LOG_WARNING( "[process timer] took " << boost::timer::format(processAtTime_timer.elapsed()) );
 #endif
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
