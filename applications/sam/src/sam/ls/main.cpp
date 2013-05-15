@@ -259,9 +259,9 @@ int main( int argc, char** argv )
 
 
 // 	for(uint i=0; i<filters.size(); i++)
-// 	  TUTTLE_COUT("filters = " << filters.at(i));
-// 	TUTTLE_COUT("research mask = " << researchMask);
-// 	TUTTLE_COUT("options  mask = " << descriptionMask);
+// 	TUTTLE_LOG_TRACE( "filters = " << filters.at(i) );
+// 	TUTTLE_LOG_TRACE( "research mask = " << researchMask );
+// 	TUTTLE_LOG_TRACE( "options  mask = " << descriptionMask );
 
 	std::list<boost::shared_ptr<sp::FileObject> > listing;
 	try

@@ -387,7 +387,7 @@ int main( int argc, char** argv )
 		parameters = true;
 	}
 //	for(unsigned int i=0; i< plugins.size(); i++)
-//		TUTTLE_COUT( plugins.at(i) );
+//		TUTTLE_LOG_TRACE( plugins.at(i) );
 	
 	try
 	{
@@ -415,7 +415,7 @@ int main( int argc, char** argv )
 					++founded;
 					if( founded == termsPlugin.size() )
 					{
-						/*TUTTLE_COUT("plug is " << plugs.at(i)->getRawIdentifier() );*/
+						/*TUTTLE_LOG_TRACE("plug is " << plugs.at(i)->getRawIdentifier() );*/
 						foundPlugins.push_back( plugs.at(i)->getRawIdentifier() );
 					}
 				}
