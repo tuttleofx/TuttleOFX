@@ -384,9 +384,9 @@ int main( int argc, char** argv )
 		recursiveListing = true;
 	}
 // 	for(unsigned int i=0; i<filters.size(); i++)
-// 	  TUTTLE_COUT("filters = " << filters.at(i));
-// 	TUTTLE_COUT("research mask = " << researchMask);
-// 	TUTTLE_COUT("options  mask = " << descriptionMask);
+// 	TUTTLE_LOG_TRACE( "filters = " << filters.at(i) );
+// 	TUTTLE_LOG_TRACE( "research mask = " << researchMask );
+// 	TUTTLE_LOG_TRACE( "options  mask = " << descriptionMask );
 
 
 	try
@@ -395,19 +395,19 @@ int main( int argc, char** argv )
 		sp::Detector detector;
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-//			TUTTLE_COUT( "path: "<< path );
+//			TUTTLE_LOG_TRACE( "path: "<< path );
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )
 				{
-//					TUTTLE_COUT( "is a directory" );
+//					TUTTLE_LOG_TRACE( "is a directory" );
 					if( recursiveListing )
 					{
 						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
 						{
 							if( bfs::is_directory( *dir ) )
 							{
-//								TUTTLE_COUT( *dir );
+//								TUTTLE_LOG_TRACE *dir );
 								boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( ( (bfs::path)*dir ).string() , filters, researchMask, descriptionMask );
 								dumpImageProperties( listing );
 							}
@@ -420,7 +420,7 @@ int main( int argc, char** argv )
 				{
 					if( std::strcmp( path.branch_path().string().c_str(),"" ) == 0 )
 						path = "."/path.leaf();
-					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
+					//TUTTLE_LOG_TRACE( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
 					boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
 					dumpImageProperties( listing );
@@ -429,14 +429,14 @@ int main( int argc, char** argv )
 			}
 			else
 			{
-//				TUTTLE_COUT( "not exist ...." );
+//				TUTTLE_LOG_TRACE( "not exist ...." );
 				try
 				{
 					sp::Sequence s(path.branch_path(), descriptionMask );
 					s.initFromDetection( path.string(), sp::Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{
-						//TUTTLE_COUT(s);
+						//TUTTLE_LOG_TRACE(s);
 						dumpImageProperties( s );
 					}
 				}
