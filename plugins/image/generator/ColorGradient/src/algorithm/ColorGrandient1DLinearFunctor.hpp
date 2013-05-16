@@ -114,19 +114,19 @@ public:
 		using namespace terry;
 		using namespace terry::numeric;
 		point_t pM = _droiteEquation.pointOrthogonalProjection( pA );
-		//		TUTTLE_COUT( "________________________________________" );
-		//		TUTTLE_COUT_VAR( _pB );
-		//		TUTTLE_COUT_VAR( _pC );
-		//		TUTTLE_COUT_VAR( pA );
-		//		TUTTLE_COUT_VAR( pM );
+		//		TUTTLE_LOG_INFO( "________________________________________" );
+		//		TUTTLE_LOG_VAR( TUTTLE_INFO, _pB );
+		//		TUTTLE_LOG_VAR( TUTTLE_INFO, _pC );
+		//		TUTTLE_LOG_VAR( TUTTLE_INFO, pA );
+		//		TUTTLE_LOG_VAR( TUTTLE_INFO, pM );
 		double distB = distance( pM, _pB );
 		double distC = distance( pM, _pC );
 		double norm  = distB + distC;
-		//		TUTTLE_COUT_VAR3( distB, distC, norm );
+		//		TUTTLE_LOG_VAR3( TUTTLE_INFO, distB, distC, norm );
 		distB /= norm;
 		distC /= norm;
-		//		TUTTLE_COUT_VAR2( _pB, _pC );
-		//		TUTTLE_COUT_VAR2( distB, distC );
+		//		TUTTLE_LOG_VAR2( TUTTLE_INFO,  _pB, _pC );
+		//		TUTTLE_LOG_VAR2( TUTTLE_INFO, distB, distC );
 		// distB * _colors[0] + distC * _colors[1];
 		return pixel_plus_t<result_type, result_type, result_type>() (
 			   pixel_multiplies_scalar_t<result_type, double, result_type>() ( _colors[0], distB ),

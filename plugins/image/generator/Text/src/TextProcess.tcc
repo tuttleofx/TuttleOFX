@@ -99,7 +99,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 																			   << args.time << " / fps % 60, "
 																			   << args.time << " % fps )" << std::endl;
 			
-			//TUTTLE_COUT( context.str().c_str() );
+			//TUTTLE_LOG_INFO( context.str().c_str() );
 
 			/*object ignored = */
 			
@@ -278,14 +278,14 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	const OfxRectI textRoi = rectanglesIntersection( textRod, procWindowRoW );
 	const OfxRectI textLocalRoi = translateRegion( textRoi, - _textCorner );
 	
-	//TUTTLE_TCOUT_VAR( _textSize );
-	//TUTTLE_TCOUT_VAR( - _textCorner );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, _textSize );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, _textCorner );
 	
-	//TUTTLE_TCOUT_VAR( textRod );
-	//TUTTLE_TCOUT_VAR( procWindowRoW );
-	//TUTTLE_TCOUT_VAR( textRoi );
-	//TUTTLE_TCOUT_VAR( textLocalRoi );
-	//TUTTLE_TCOUT_VAR2( _dstViewForGlyphs.width(), _dstViewForGlyphs.height() );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, textRod );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, procWindowRoW );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, textRoi );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, textLocalRoi );
+	//TUTTLE_LOG_VAR2( TUTTLE_INFO, _dstViewForGlyphs.width(), _dstViewForGlyphs.height() );
 	
 	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y);
 	
