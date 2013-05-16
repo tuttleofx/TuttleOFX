@@ -173,7 +173,7 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 			default:
 			{
 				// convert in RGB colorspace
-				TUTTLE_COUT("convert to RGB colorspace");
+				TUTTLE_LOG_WARNING("convert to RGB colorspace");
 				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 				break;
 			}

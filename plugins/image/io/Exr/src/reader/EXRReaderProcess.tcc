@@ -78,7 +78,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	try
 	{
 		View dst = this->_dstView;
-		//TUTTLE_COUT_VAR( _params._fileComponents );
+		//TUTTLE_LOG_VAR( TUTTLE_INFO, _params._fileComponents );
 		switch( _params._fileComponents )
 		{
 			case 1:
@@ -116,7 +116,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( boost::exception& e )
 	{
 		e << exception::filename( _params._filepath );
-		//TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
+		TUTTLE_TLOG( TUTTLE_ERROR, boost::diagnostic_information( e ) );
 		throw;
 	}
 	catch( ... )
@@ -150,7 +150,7 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 
 	// Get number of output components
 	
-	TUTTLE_COUT_VAR(params._outComponents);
+	TUTTLE_TLOG_VAR( TUTTLE_INFO, params._outComponents );
 	switch( (EParamReaderChannel)params._outComponents )
 	{
 		case eParamReaderChannelGray:

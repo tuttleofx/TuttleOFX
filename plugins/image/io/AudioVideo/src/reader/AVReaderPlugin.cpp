@@ -137,7 +137,7 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 	range.min = 0.0;
 	range.max = (double)(_reader.nbFrames()-1);
 	
-	//TUTTLE_COUT_VAR2( range.min, range.max );
+	//TUTTLE_LOG_VAR2( TUTTLE_INFO, range.min, range.max );
 	
 	return true;
 }

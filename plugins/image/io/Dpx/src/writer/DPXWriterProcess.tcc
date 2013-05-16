@@ -112,7 +112,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			<< exception::user( "Dpx: Unable to write data (DPX Header)" ) );
 	}
 
-	//TUTTLE_COUT_VAR(_params._descriptor);
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, _params._descriptor);
 	switch( _params._descriptor )
 	{
 		case ::dpx::kUserDefinedDescriptor:

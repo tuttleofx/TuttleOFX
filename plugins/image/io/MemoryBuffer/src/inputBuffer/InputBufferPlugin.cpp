@@ -305,7 +305,7 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 		}
-//		TUTTLE_TCOUT_VAR( (void*)inputImageBufferPtr );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, (void*)inputImageBufferPtr );
 
 		const std::size_t nbComponents = numberOfComponents( params._pixelComponents );
 		const std::size_t bitDepthMemSize = bitDepthMemorySize( params._bitDepth );
@@ -314,14 +314,14 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 			rowBytesDistanceSize = widthBytesSize;
 
 		// Copy the image
-//		TUTTLE_TCOUT_VAR( nbComponents );
-//		TUTTLE_TCOUT_VAR( bitDepthMemSize );
-//		TUTTLE_TCOUT_VAR( widthBytesSize );
-//		TUTTLE_TCOUT_VAR( (void*)inputImageBufferPtr );
-//		TUTTLE_TCOUT_VAR( dstPixelRodSize.x );
-//		TUTTLE_TCOUT_VAR( dstPixelRodSize.y );
-//		TUTTLE_TCOUT_VAR( rowBytesDistanceSize );
-//		TUTTLE_TCOUT_VAR( widthBytesSize );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, nbComponents );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, bitDepthMemSize );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, widthBytesSize );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, (void*)inputImageBufferPtr );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, dstPixelRodSize.x );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, dstPixelRodSize.y );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, rowBytesDistanceSize );
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, widthBytesSize );
 		switch( params._orientation )
 		{
 			case eParamOrientationFromBottomToTop:

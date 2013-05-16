@@ -77,7 +77,7 @@ PresetParameters LibAVPresetFileParser::parseFile( const std::string& filepath )
 		boost::property_tree::basic_ptree<std::string,std::string>::const_iterator iter = pt.begin(), iterEnd = pt.end();
 		for( ; iter != iterEnd; ++iter )
 		{
-			//TUTTLE_COUT( iter->first << " " << iter->second.get_value<std::string>() );
+			//TUTTLE_LOG_INFO( iter->first << " " << iter->second.get_value<std::string>() );
 			std::vector<std::string> values;
 			std::string value = iter->second.get_value<std::string>();
 			
@@ -85,7 +85,7 @@ PresetParameters LibAVPresetFileParser::parseFile( const std::string& filepath )
 			{
 				BOOST_FOREACH( boost::property_tree::ptree::value_type &v, pt.get_child( iter->first ) )
 				{
-					//TUTTLE_COUT( v.second.get_value<std::string>() );
+					//TUTTLE_LOG_INFO( v.second.get_value<std::string>() );
 					values.push_back( v.second.get_value<std::string>() );
 				}
 				opts[ iter->first ] = values;
@@ -106,8 +106,8 @@ PresetParameters LibAVPresetFileParser::parseFile( const std::string& filepath )
 	}
 	catch( boost::property_tree::json_parser::json_parser_error &je )
 	{
-		TUTTLE_CERR( "Error parsing: " << je.filename() << " on line: " << je.line() );
-		TUTTLE_CERR( je.message() );
+		TUTTLE_LOG_WARNING( "Error parsing: " << je.filename() << " on line: " << je.line() );
+		TUTTLE_LOG_WARNING( je.message() );
 	}
 
 	inPreset.close();
@@ -131,17 +131,13 @@ void LibAVPresetFileParser::print() const
 	name += ": ";
 	name += idLabel;
 	
-	TUTTLE_COUT_X( name.length() + 4, "*");
-	TUTTLE_COUT( "* " << name << " *" );
-	TUTTLE_COUT_X( name.length() + 4, "*");
+	TUTTLE_LOG_WARNING( "* " << name << " *" );
 	
-	//TUTTLE_COUT_VAR( presetsParameters.size() );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, presetsParameters.size() );
 	
 	PresetParameters::const_iterator it = presetsParameters.begin();
 	for( ; it != presetsParameters.end(); ++it )
-		TUTTLE_COUT( it->first << ": " << it->second.at(0) );
-	
-	TUTTLE_COUT_X( name.length() + 4, "_");
+		TUTTLE_LOG_WARNING( it->first << ": " << it->second.at(0) );
 }
 
 }

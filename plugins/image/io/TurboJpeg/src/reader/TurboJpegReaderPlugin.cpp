@@ -83,7 +83,7 @@ bool TurboJpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinition
 		rod.x2 = width * this->_clipDst->getPixelAspectRatio();
 		rod.y1 = 0;
 		rod.y2 = height;
-		//TUTTLE_COUT_VAR( rod );
+		//TUTTLE_LOG_VAR( TUTTLE_INFO, rod );
 	}
 	catch( std::exception& e )
 	{

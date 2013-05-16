@@ -155,7 +155,7 @@ int LibAVVideoWriter::start( )
 		
 		if( !_avFormatOptions )
 		{
-			TUTTLE_CERR( "avWriter: format context allocation failed" );
+			TUTTLE_LOG_ERROR( "avWriter: format context allocation failed" );
 			return false;
 		}
 		
@@ -164,7 +164,7 @@ int LibAVVideoWriter::start( )
 			_ofmt = av_guess_format( _formatName.c_str(), NULL, NULL );
 			if (!_ofmt)
 			{
-				TUTTLE_CERR( "avWriter: Requested output format " << _formatName << " is not a suitable output format" );
+				TUTTLE_LOG_ERROR( "avWriter: Requested output format " << _formatName << " is not a suitable output format" );
 				return false;
 			}
 		}
@@ -173,7 +173,7 @@ int LibAVVideoWriter::start( )
 			_ofmt = av_guess_format( NULL, filename, NULL );
 			if (!_ofmt)
 			{
-				TUTTLE_CERR( "avWriter: Unable to find a suitable output format for " << filename );
+				TUTTLE_LOG_ERROR( "avWriter: Unable to find a suitable output format for " << filename );
 				return false;
 			}
 		}
@@ -184,7 +184,7 @@ int LibAVVideoWriter::start( )
 			_avFormatOptions->priv_data = av_mallocz( _avFormatOptions->oformat->priv_data_size );
 			if( !_avFormatOptions->priv_data )
 			{
-				TUTTLE_CERR( "avWriter: format context allocation failed" );
+				TUTTLE_LOG_ERROR( "avWriter: format context allocation failed" );
 				return false;
 			}
 			if( _avFormatOptions->oformat->priv_class )
@@ -199,7 +199,7 @@ int LibAVVideoWriter::start( )
 		if( filename )
 			av_strlcpy( _avFormatOptions->filename, filename, sizeof( _avFormatOptions->filename ) );
 
-		TUTTLE_CERR( "avWriter: " << std::string( _ofmt->name ) << " format selected" );
+		TUTTLE_LOG_ERROR( "avWriter: " << std::string( _ofmt->name ) << " format selected" );
 	}
 
 	if( !_stream )
@@ -210,7 +210,7 @@ int LibAVVideoWriter::start( )
 			BOOST_THROW_EXCEPTION( exception::Format()
 				<< exception::user( "avWriter: codec not found." ) );
 		}
-		TUTTLE_CERR( "avWriter: " << std::string(_videoCodec->name) << " codec selected" );
+		TUTTLE_LOG_ERROR( "avWriter: " << std::string(_videoCodec->name) << " codec selected" );
 		
 		_avVideoOptions = avcodec_alloc_context3( _videoCodec );
 
@@ -222,13 +222,13 @@ int LibAVVideoWriter::start( )
 		}
 		avcodec_get_context_defaults3(_stream->codec, _videoCodec);
 
-//		TUTTLE_COUT_VAR2( _videoCodecName, _videoPresetName );
+//		TUTTLE_LOG_VAR2( TUTTLE_INFO, _videoCodecName, _videoPresetName );
 		
 		_stream->codec->width              = getWidth();
 		_stream->codec->height             = getHeight();
 		_stream->codec->time_base          = av_inv_q( av_d2q( _fps, INT_MAX ) );
-		//TUTTLE_COUT_VAR( _fps );
-		//TUTTLE_COUT_VAR2( _stream->codec->time_base.num, _stream->codec->time_base.den );
+		//TUTTLE_LOG_VAR( TUTTLE_INFO,  _fps );
+		//TUTTLE_LOG_VAR2( TUTTLE_INFO, _stream->codec->time_base.num, _stream->codec->time_base.den );
 		
 		_stream->codec->sample_rate        = 48000; ///< samples per second
 		_stream->codec->channels           = 0;     ///< number of audio channels
@@ -260,9 +260,9 @@ bool LibAVVideoWriter::finishInit()
 	if ( !pixfmt_allowed )
 	{
 		// av_get_pix_fmt_name requires lavu 51.3.0 or higher
-		TUTTLE_CERR( "avWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" );
+		TUTTLE_LOG_ERROR( "avWriter: pixel format " << av_get_pix_fmt_name(_out_pixelFormat) << " not available in codec" );
 		_out_pixelFormat = _videoCodec->pix_fmts[0];
-		TUTTLE_CERR( "avWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) );
+		TUTTLE_LOG_ERROR( "avWriter: auto-selecting " << av_get_pix_fmt_name(_out_pixelFormat) );
 	}
 	_stream->codec->pix_fmt     = _out_pixelFormat;
 	
@@ -293,7 +293,7 @@ bool LibAVVideoWriter::finishInit()
 	int error = avformat_write_header( _avFormatOptions, NULL );
 	if( error )
 	{
-		TUTTLE_CERR( libavError_toString( error) );
+		TUTTLE_LOG_ERROR( libavError_toString( error) );
 		BOOST_THROW_EXCEPTION( exception::Format()
 							   << exception::user( "avWriter: unable to write header." ) );
 	}
@@ -326,7 +326,7 @@ int LibAVVideoWriter::execute( boost::uint8_t* const in_buffer, const int in_wid
 
 	_sws_context = sws_getCachedContext( _sws_context, in_width, in_height, in_pixelFormat, getWidth(), getHeight(), _out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
 
-	TUTTLE_TCOUT( "avWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) << " -> output format: " << av_get_pix_fmt_name( _out_pixelFormat ) );
+	TUTTLE_TLOG( TUTTLE_TRACE, "avWriter: input format: " << av_get_pix_fmt_name( in_pixelFormat ) << " -> output format: " << av_get_pix_fmt_name( _out_pixelFormat ) );
 
 	if( !_sws_context )
 	{
@@ -344,7 +344,7 @@ int LibAVVideoWriter::execute( boost::uint8_t* const in_buffer, const int in_wid
 	if( ( _avFormatOptions->oformat->flags & AVFMT_RAWPICTURE ) &&
 		( _stream->codec->codec->id == AV_CODEC_ID_RAWVIDEO ) )
 	{
-		//TUTTLE_TCOUT( "RAW : " << sizeof( AVPicture ) );
+		//TUTTLE_TLOG( TUTTLE_TRACE, "RAW : " << sizeof( AVPicture ) );
 		AVPacket pkt;
 		av_init_packet( &pkt );
 		pkt.data         = (boost::uint8_t*) out_frame;
@@ -373,11 +373,11 @@ int LibAVVideoWriter::execute( boost::uint8_t* const in_buffer, const int in_wid
 		    ( _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) )
 		{
 			pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
-			TUTTLE_TCOUT( "avWriter: Video Frame PTS: " << pkt.pts );
+			TUTTLE_TLOG( TUTTLE_TRACE, "avWriter: Video Frame PTS: " << pkt.pts );
 		}
 		else
 		{
-			TUTTLE_TCOUT( "avWriter: Video Frame PTS: not set" );
+			TUTTLE_TLOG( TUTTLE_TRACE, "avWriter: Video Frame PTS: not set" );
 		}
 		if( _stream->codec->coded_frame &&
 		    _stream->codec->coded_frame->key_frame )
@@ -391,8 +391,8 @@ int LibAVVideoWriter::execute( boost::uint8_t* const in_buffer, const int in_wid
 		ret = avcodec_encode_video2( _stream->codec, &pkt, out_frame, &_hasFrame );
 		if( ret < 0 )
 		{
-			TUTTLE_CERR( "avWriter: error writing packet to file" );
-			TUTTLE_CERR( getErrorStr(ret) );
+			TUTTLE_LOG_ERROR( "avWriter: error writing packet to file" );
+			TUTTLE_LOG_ERROR( getErrorStr(ret) );
 			return false;
 		}
 
@@ -432,7 +432,7 @@ void LibAVVideoWriter::finish()
 
 	for( _hasFrame = 1; _hasFrame; )
 	{
-		TUTTLE_TCOUT( "encode last frames ..." );
+		TUTTLE_TLOG( TUTTLE_TRACE, "encode last frames ..." );
 		AVPacket pkt;
 		av_init_packet( &pkt );
 		pkt.size = 0;
@@ -443,14 +443,14 @@ void LibAVVideoWriter::finish()
 		ret = avcodec_encode_video2( _stream->codec, &pkt, NULL, &_hasFrame );
 		if( ret < 0 )
 		{
-			TUTTLE_CERR( "avWriter: error writing packet to file" );
-			TUTTLE_CERR( getErrorStr(ret) );
+			TUTTLE_LOG_ERROR( "avWriter: error writing packet to file" );
+			TUTTLE_LOG_ERROR( getErrorStr(ret) );
 			break;
 		}
 		
 		if( _hasFrame )
 		{
-			TUTTLE_COUT( "write packet" );
+			TUTTLE_LOG_ERROR( "write packet" );
 			ret = av_interleaved_write_frame( _avFormatOptions, &pkt );
 			if ( ret < 0 )
 			{

@@ -57,7 +57,7 @@ OutputBufferProcessParams OutputBufferPlugin::getProcessParams() const
 
 void OutputBufferPlugin::render( const OFX::RenderArguments& args )
 {
-	TUTTLE_TCOUT( "        --> Output Buffer ");
+	TUTTLE_TLOG( TUTTLE_INFO, "        --> Output Buffer ");
 	typedef std::vector<char, OfxAllocator<char> > DataVector;
 	DataVector rawImage;
 	char* rawImagePtrLink;

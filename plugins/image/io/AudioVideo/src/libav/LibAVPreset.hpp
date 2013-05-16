@@ -31,7 +31,7 @@ public:
 				}
 			}
 		}
-		//TUTTLE_TCOUT_VAR( presetID );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, presetID );
 	}
 	
 	~LibAVPreset()
