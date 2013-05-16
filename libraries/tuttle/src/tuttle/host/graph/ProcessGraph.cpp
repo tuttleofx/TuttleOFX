@@ -681,7 +681,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 	}
 	
 #ifdef TUTTLE_EXPORT_WITH_TIMER
-	TUTTLE_COUT( "all_process_timer:" << boost::timer::format(all_process_timer.elapsed()) );
+	TUTTLE_LOG_WARNING( "[all process timer] " << boost::timer::format(all_process_timer.elapsed()) );
 #endif
 	
 	return true;
