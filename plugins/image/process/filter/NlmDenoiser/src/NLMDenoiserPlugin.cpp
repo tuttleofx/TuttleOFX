@@ -43,18 +43,18 @@ void NLMDenoiserPlugin::getFramesNeeded( const OFX::FramesNeededArguments &args,
     const int depth = _paramDepth->getValue();
 	
     const OfxRangeD clipFullRange = _clipSrc->getFrameRange( );
-//	TUTTLE_TCOUT_VAR2( clipFullRange.min, clipFullRange.max );
+//	TUTTLE_TLOG_VAR2( TUTTLE_INFO, clipFullRange.min, clipFullRange.max );
 	OfxRangeD requestedRange;
 	requestedRange.min = args.time - depth;
 	requestedRange.max = args.time + depth;
-//	TUTTLE_TCOUT_VAR2( requestedRange.min, requestedRange.max );
+//	TUTTLE_TLOG_VAR2( TUTTLE_INFO, requestedRange.min, requestedRange.max );
 	OfxRangeD realRange;
 	realRange.min = clamp( requestedRange.min, clipFullRange.min, clipFullRange.max );
 	realRange.max = clamp( requestedRange.max, clipFullRange.min, clipFullRange.max );
-//	TUTTLE_TCOUT_VAR2( realRange.min, realRange.max );
+//	TUTTLE_TLOG_VAR2( TUTTLE_INFO, realRange.min, realRange.max );
 	
     frames.setFramesNeeded( *_clipSrc, realRange );
-//	TUTTLE_TCOUT( "NLMDenoiserPlugin::getFramesNeeded timerange min:" << realRange.min << ", max:" << realRange.max << " for time:" << args.time );
+//	TUTTLE_TLOG( TUTTLE_INFO, "NLMDenoiserPlugin::getFramesNeeded timerange min:" << realRange.min << ", max:" << realRange.max << " for time:" << args.time );
 }
 
 
@@ -111,7 +111,7 @@ void NLMDenoiserPlugin::render( const OFX::RenderArguments &args )
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					TUTTLE_COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+					TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 					break;
 				}
 			}
@@ -142,7 +142,7 @@ void NLMDenoiserPlugin::render( const OFX::RenderArguments &args )
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					TUTTLE_COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+					TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 					break;
 				}
 			}
@@ -173,7 +173,7 @@ void NLMDenoiserPlugin::render( const OFX::RenderArguments &args )
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					TUTTLE_COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+					TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 					break;
 				}
 			}
@@ -182,7 +182,7 @@ void NLMDenoiserPlugin::render( const OFX::RenderArguments &args )
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
 		{
-			TUTTLE_COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+			TUTTLE_LOG_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
 			break;
 		}
 	}

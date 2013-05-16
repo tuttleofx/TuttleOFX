@@ -1,4 +1,5 @@
 #include "SelectionAverage.hpp"
+#include <tuttle/common/utils/global.hpp>
 
 #include <tuttle/plugin/opengl/gl.h>
 
@@ -66,7 +67,7 @@ bool SelectionAverage::computeAverageSelection(OFX::Clip* clipColor, const OfxPo
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
 	{
-		std::cout << "color src is not accessible (average)" << std::endl;
+		TUTTLE_LOG_INFO( "color src is not accessible (average)" );
 		return false;
 	}
 
@@ -81,16 +82,16 @@ bool SelectionAverage::computeAverageSelection(OFX::Clip* clipColor, const OfxPo
 		(!clipColor->getPixelComponents()) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
-        return false;
+		return false;
 	}
 
-	//TUTTLE_TCOUT_VAR( src->getBounds());
-	//TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
+	//TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getBounds());
+	//TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getRegionOfDefinition() );
 
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
 		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return false;
 	}
 
@@ -119,13 +120,13 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 
 	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current source clip
 	
-	//TUTTLE_TCOUT_VAR( clipColor->getPixelRod(_time,renderScale)); 
-	//TUTTLE_TCOUT_VAR( clipColor->getCanonicalRod(_time, renderScale));
+	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipColor->getPixelRod(_time,renderScale)); 
+	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipColor->getCanonicalRod(_time, renderScale));
 
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
 	{
-		std::cout << "src is not accessible (color clip)" << std::endl;
+		TUTTLE_LOG_ERROR( "src is not accessible (color clip)" );
 		return;
 	}
 
@@ -140,13 +141,13 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 		(!clipColor->getPixelComponents()) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
-        return;
+		return;
 	}
 
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
 		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return;
 	}
 

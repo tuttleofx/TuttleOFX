@@ -124,7 +124,7 @@ void ComponentPlugin::render( const OFX::RenderArguments &args )
 	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 	OFX::EPixelComponent srcComponents = _clipSrc->getPixelComponents();*/
 
-//	TUTTLE_COUT( _clipSrc->getPixelComponents() << " $$ " << _clipDst->getPixelComponents() );
+//	TUTTLE_LOG_INFO( _clipSrc->getPixelComponents() << " $$ " << _clipDst->getPixelComponents() );
 	
 	doGilRender2<ComponentProcess>( *this, args, *_clipSrc, *_clipDst );
 	/*

@@ -158,13 +158,13 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 		return;
 	}
 	
-	//TUTTLE_TCOUT_INFOS;
-	//TUTTLE_TCOUT_VAR( "computeHistogramBufferData - fetchImage " << time );
+	//TUTTLE_TLOG_INFOS;
+	//TUTTLE_TLOG_VAR( TUTTLE_INFO, "computeHistogramBufferData - fetchImage " << time );
 	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
-	//TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TLOG_INFOS;
 	
-	//TUTTLE_TCOUT_VAR( clipSrc->getPixelRod(time, renderScale) );
-	//TUTTLE_TCOUT_VAR( clipSrc->getCanonicalRod(time, renderScale) );
+	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getPixelRod(time, renderScale) );
+	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getCanonicalRod(time, renderScale) );
 	
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
@@ -174,8 +174,8 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 		return;
 	}
 	
-//	TUTTLE_TCOUT_VAR( src->getBounds() );
-//	TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getBounds() );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getRegionOfDefinition() );
 
 	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
@@ -189,13 +189,13 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
         return;
 	}
 	
-//	TUTTLE_TCOUT_INFOS;
+//	TUTTLE_TLOG_INFOS;
 //	BOOST_ASSERT( srcPixelRod == src->getBounds() );
 	if( srcPixelRod != src->getBounds() )
 	{
 		// the host does bad things !
 		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return;
 	}
 //	BOOST_ASSERT( srcPixelRod.x1 == src->getBounds().x1 );
@@ -210,28 +210,28 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 	imgSize.x = srcView.width();
 	imgSize.y = srcView.height();
 	
-//	TUTTLE_TCOUT_INFOS;
+//	TUTTLE_TLOG_INFOS;
 	if( isImageSizeModified( imgSize ) )
 	{
-		//TUTTLE_TCOUT_INFOS;
+		//TUTTLE_TLOG_INFOS;
 		clearAll( imgSize );
 	}
 	
-	//TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TLOG_INFOS;
 	//Compute histogram buffer
 	this->computeHistogramBufferData( _data, srcView, time);
 	
-	//TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TLOG_INFOS;
 	//Compute selection histogram buffer
 	this->computeHistogramBufferData( _selectionData, srcView, time, true );
 	
-	//TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TLOG_INFOS;
 	//Compute averages
 	this->computeAverages();
 	_isComputing = false;
 	
 	_currentTime = time;
-	//TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TLOG_INFOS;
 }
 
 /**
@@ -349,14 +349,14 @@ void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTi
 		(!clipSrc->getPixelComponents()) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
-        return;
+		return;
 	}
 
 	if( srcPixelRod != src->getBounds() )
 	{
 		// the host does bad things !
 		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return;
 	}
 	

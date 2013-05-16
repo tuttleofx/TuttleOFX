@@ -61,8 +61,8 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	using namespace terry::filter;
 	using namespace terry::algorithm;
 
-//	TUTTLE_COUT( "Sobel X: " << _params._xKernelGaussianDerivative.size() << "x" << _params._xKernelGaussian.size() );
-//	TUTTLE_COUT( "Sobel Y: " << _params._yKernelGaussianDerivative.size() << "x" << _params._yKernelGaussian.size() );
+//	TUTTLE_LOG_INFO( "Sobel X: " << _params._xKernelGaussianDerivative.size() << "x" << _params._xKernelGaussian.size() );
+//	TUTTLE_LOG_INFO( "Sobel Y: " << _params._yKernelGaussianDerivative.size() << "x" << _params._yKernelGaussian.size() );
 
 	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	const OfxPointI procWindowSize  = {
