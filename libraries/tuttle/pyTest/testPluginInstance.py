@@ -146,7 +146,7 @@ def testParamInfos():
 def testNodeComputeInfos():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi" ).asImageEffectNode()
+	node = graph.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" ).asImageEffectNode()
 
 	graph.setup()
 	td = node.getTimeDomain()
@@ -176,7 +176,7 @@ def testNodeComputeInfos():
 def testPushButton():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.avwriter", filename=".tests/plop.avi" )
+	node = graph.createNode( "tuttle.avwriter", filename=".tests/plop.avi", colorspace="bt709" )
 	node = node.asImageEffectNode()
 
 	render = node.getParam("render")

@@ -11,7 +11,7 @@ def testComputeTime():
 	N = 0
 	print "testComputeTime %d" % N; N += 1
 	gA = tuttle.Graph()
-	gA.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi" )
+	gA.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" )
 
 	print "testComputeTime %d" % N; N += 1
 	t0 = time.clock()
@@ -28,7 +28,7 @@ def testComputeTime():
 	print "testComputeTime %d" % N; N += 1
 
 	gB = tuttle.Graph()
-	gB.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi" )
+	gB.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" )
 	
 	print "testComputeTime %d" % N; N += 1
 	t0 = time.clock()
@@ -61,6 +61,6 @@ def testComputeTime():
 	print "_"*10
 		
 	print "testComputeTime %d" % N; N += 1
-	assert(False)
+	#assert(False)
 
 
