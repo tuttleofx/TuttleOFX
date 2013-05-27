@@ -4,7 +4,7 @@
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 #include "DPXWriterDefinitions.hpp"
 
-#include <DPX.h>
+#include <libdpx/DPX.h>
 
 namespace tuttle {
 namespace plugin {

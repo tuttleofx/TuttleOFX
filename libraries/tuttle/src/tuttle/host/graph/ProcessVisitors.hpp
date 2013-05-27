@@ -290,7 +290,7 @@ public:
 		// Set all times needed on each input edges
 		BOOST_FOREACH( const OfxTime t, vertex._data._times )
 		{
-			TUTTLE_TLOG( TUTTLE_TRACE, "[Deploy Time] time: " << t );
+			TUTTLE_TLOG( TUTTLE_TRACE, "[Deploy Time] time: " << boost::lexical_cast< std::string >(t) );
 			INode::ClipTimesSetMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
@@ -486,11 +486,11 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 	
 	BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, nodesToRemove )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, connection._identityVertex );
+		TUTTLE_TLOG( TUTTLE_TRACE, boost::lexical_cast<std::string>(connection._identityVertex) );
 		TUTTLE_TLOG( TUTTLE_TRACE, "IN: "
-			<< connection._identityVertex << "::" << connection._input._inputClip
+			<< boost::lexical_cast<std::string>(connection._identityVertex) << "::" << boost::lexical_cast<std::string>(connection._input._inputClip)
 			<< " <<-- "
-			<< connection._input._srcNode << "::" kOfxOutputAttributeName );
+			<< boost::lexical_cast<std::string>(connection._input._srcNode) << "::" kOfxOutputAttributeName );
 		const typename TGraph::VertexKey* searchIn = &( connection._input._srcNode );
 		{
 			// search a non-identity node to replace the connection
