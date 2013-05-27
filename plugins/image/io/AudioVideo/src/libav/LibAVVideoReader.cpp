@@ -262,7 +262,7 @@ bool LibAVVideoReader::setupStreamInfo()
 
 	if( stream->avg_frame_rate.num != 0 && stream->avg_frame_rate.den != 0 )
 	{
-		TUTTLE_TCOUT( "fps " << stream->avg_frame_rate.num << " / " << stream->avg_frame_rate.den );
+		TUTTLE_TLOG( TUTTLE_INFO, "fps " << stream->avg_frame_rate.num << " / " << stream->avg_frame_rate.den );
 		_fpsNum = stream->avg_frame_rate.num;
 		_fpsDen = stream->avg_frame_rate.den;
 	}

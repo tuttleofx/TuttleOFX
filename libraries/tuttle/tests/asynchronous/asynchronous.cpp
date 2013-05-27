@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_SUITE( asynchronous_suite )
 
 BOOST_AUTO_TEST_CASE( computeAsynchronous )
 {
-	TUTTLE_COUT( "--> PLUGINS CREATION" );
+	TUTTLE_LOG_INFO( "--> PLUGINS CREATION" );
 	Graph g;
 	Graph::Node& read1 = g.createNode( "tuttle.jpegreader" );
 	Graph::Node& read2 = g.createNode( "tuttle.jpegreader" );
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( computeAsynchronous )
 	Graph::Node& write2 = g.createNode( "tuttle.jpegwriter" );
 	Graph::Node& write3 = g.createNode( "tuttle.exrwriter" );
 
-	TUTTLE_COUT( "--> PLUGINS CONFIGURATION" );
+	TUTTLE_LOG_INFO( "--> PLUGINS CONFIGURATION" );
 	// Setup parameters
 	read1.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/GRN.JPG" );
 	read2.getParam( "filename" ).setValue( "TuttleOFX-data/image/jpeg/RED.JPG" );
@@ -38,38 +38,38 @@ BOOST_AUTO_TEST_CASE( computeAsynchronous )
 	write3.getParam( "filename" ).setValue( ".tests/processGraph/output3.exr" );
 	write4.getParam( "filename" ).setValue( ".tests/processGraph/output4.png" );
 
-	TUTTLE_COUT( "-------- GRAPH CONNECTION --------" );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_LOG_INFO( "-------- GRAPH CONNECTION --------" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	g.connect( read1, invert1 );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	//		g.connect( invert1, bitdepth );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	g.connect( invert1, invert2 );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	g.connect( invert2, invert3 );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	g.connect( invert3, write1 );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	g.connect( invert1, invert4 );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	g.connect( invert4, write2 );
-	TUTTLE_TCOUT( "connect" );
+	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
 	g.connect( invert1, write3 );
 
-	TUTTLE_COUT( "-------- GRAPH CONNECT CLIPS --------" );
+	TUTTLE_LOG_INFO( "-------- GRAPH CONNECT CLIPS --------" );
 //	g.connect( invert1, merge1.getAttribute( "A" ) );
 //	g.connect( read2, merge1.getAttribute( "B" ) );
 //	g.connect( merge1, write4 );
 	g.connect( invert1, write4 );
 
-	TUTTLE_COUT( "-------- SET GRAPH OUTPUTS --------" );
+	TUTTLE_LOG_INFO( "-------- SET GRAPH OUTPUTS --------" );
 	std::list<std::string> outputs;
 	outputs.push_back( write1.getName() );
 	outputs.push_back( write2.getName() );
 	outputs.push_back( write3.getName() );
 	outputs.push_back( write4.getName() );
 	
-	TUTTLE_COUT( "-------- GRAPH PROCESSING --------" );
+	TUTTLE_LOG_INFO( "-------- GRAPH PROCESSING --------" );
 	ThreadEnv env;
 	env.getComputeOptions().setTimeRange(0, 15);
 	env.compute( g, outputs );
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( computeAsynchronous )
 	// the process result is not successful, because it has been aborted.
 	BOOST_CHECK( env.getResult() == false );
 	
-	TUTTLE_COUT( "----------------- DONE -----------------" );
+	TUTTLE_LOG_INFO( "----------------- DONE -----------------" );
 }
 
 

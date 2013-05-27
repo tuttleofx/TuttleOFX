@@ -11,13 +11,9 @@
 #include <vector>
 #include <string>
 
-#include "color.hpp"
-
 namespace ttl = ::tuttle::host;
 
 namespace sam {
-
-Color _color;
 
 /**
  * @brief Get all values of the property as a vector of strings.
@@ -47,17 +43,18 @@ std::string getFormattedStringValue( const tuttle::host::ofx::property::OfxhProp
 void coutProperties( const ttl::Graph::Node& node )
 {
 	const ttl::ofx::property::OfxhSet& props = node.getProperties();
-
+	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
+	
 	BOOST_FOREACH( ttl::ofx::property::PropertyMap::const_reference clip, props.getMap() )
 	{
-		TUTTLE_COUT(
-					 "\t" <<
-					 _color._green <<
-					 clip.first << " " <<
-					 _color._red <<
-					 ( clip.second->getDimension() > 1 ? ( std::string( " x" ) + boost::lexical_cast<std::string > ( clip.second->getDimension() ) ) : "" ) <<
-					 _color._std
-					 );
+		TUTTLE_LOG_INFO(
+					"\t" <<
+					color->_green <<
+					clip.first << " " <<
+					color->_red <<
+					( clip.second->getDimension() > 1 ? ( std::string( " x" ) + boost::lexical_cast<std::string > ( clip.second->getDimension() ) ) : "" ) <<
+					color->_std
+					);
 	}
 }
 
@@ -67,36 +64,41 @@ void coutProperties( const ttl::Graph::Node& node )
 void coutClipsWithDetails( const ttl::Graph::Node& node )
 {
 	const ttl::ofx::attribute::OfxhClipImageSet& clips = node.getClipImageSet();
+	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
+	
 	BOOST_FOREACH( const ttl::ofx::attribute::OfxhClipImage& clip, clips.getClipsByOrder() )
 	{
-		std::cout << "\t" << _color._green << std::left << std::setw( 25 ) << clip.getName() << ": " << _color._std;
+		std::stringstream stream;
 		
-		std::cout << _color._yellow;
+		stream << "\t" << color->_green << std::left << std::setw( 25 ) << clip.getName() << ": " << color->_std;
+		
+		stream << color->_yellow;
 		{
 			std::vector<std::string> components = clip.getSupportedComponents();
 			BOOST_FOREACH( std::string& s, components )
 			{
 				s = s.substr( 17 ); // remove 'OfxImageComponent'
 			}
-			std::cout << "[" << boost::algorithm::join( components, ", " ) << "]";
+			stream << "[" << boost::algorithm::join( components, ", " ) << "]";
 		}
 		if( clip.getProperties().getIntProperty( kOfxImageClipPropOptional ) )
 		{
-			std::cout << ", optional";
+			stream << ", optional";
 		}
 		if( clip.isMask() )
 		{
-			std::cout << ", mask";
+			stream << ", mask";
 		}
 //		if( clip.supportsTiles() )
 //		{
-//			std::cout << " supportTiles";
+//			stream << " supportTiles";
 //		}
 		if( clip.temporalAccess() )
 		{
-			std::cout << ", use temporal access";
+			stream << ", use temporal access";
 		}
-		std::cout << _color._std << std::endl;
+		stream << color->_std;
+		TUTTLE_LOG_INFO( stream.str() );
 	}
 }
 
@@ -105,7 +107,7 @@ void coutClips( const ttl::Graph::Node& node )
 	const ttl::ofx::attribute::OfxhClipImageSet& clips = node.getClipImageSet();
 	BOOST_FOREACH( const ttl::ofx::attribute::OfxhClipImage& clip, clips.getClipsByOrder() )
 	{
-		TUTTLE_COUT( clip.getName() );
+		TUTTLE_LOG_INFO( clip.getName() );
 	}
 }
 
@@ -166,27 +168,28 @@ void coutParametersWithDetails( const ttl::Graph::Node& node )
 	{
 	if( param.getSecret() )
 		continue; // ignore secret parameters
-	TUTTLE_COUT(
+	TUTTLE_LOG_INFO(
 		"\t" <<
-		_color._green <<
+		color->_green <<
 		param.getScriptName() << ":\t" <<
-		_color._red <<
+		color->_red <<
 		param.getParamType() <<
 		(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "") <<
-		_color._std
+		color->_std
 		);
 	const std::string& hint = param.getHint();
 	if( hint.size() )
 	{
-		TUTTLE_COUT( hint );
+		TUTTLE_LOG_INFO( hint );
 	}
-	TUTTLE_COUT("");
+	TUTTLE_LOG_INFO("");
 	}
 }*/
 
 void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 {
 	using namespace tuttle::host::ofx::property;
+	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
 	const std::string type = param.getParamType();
 	const std::string typeName = param.getParamTypeName();
@@ -230,48 +233,54 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 		{
 			static const std::string standardItem = " -  ";
 			static const std::string defaultItem  = "--> ";
-			std::cout << "\t" <<
-				_color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
-				_color._std << std::setw( 15 ) << typeName <<
-				_color._std << "\n";
+			
+			std::stringstream stream;
+			stream << "\t" << color->_green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
+					  color->_std << std::setw( 15 ) << typeName << color->_std;
+			
+			TUTTLE_LOG_INFO( stream.str() );
 			for( std::size_t i = 0; i < choiceValues.size(); ++i )
 			{
-				std::cout << "\t\t\t\t\t";
+				std::stringstream stream;
+				stream << "\t\t\t\t\t";
 				if( (std::size_t)(choiceDefaultIndexValue) == i )
 				{
-					std::cout << _color._yellow << defaultItem;
+					stream << color->_yellow << defaultItem;
 				}
 				else
 				{
-					std::cout << _color._red << standardItem;
+					stream << color->_red << standardItem;
 				}
-				std::cout << std::left << std::setw( 20 ) << choiceValues[i];
+				stream << std::left << std::setw( 20 ) << choiceValues[i];
 				if( hasLabel && ! choiceLabelValues[i].empty() )
 				{
-					std::cout << "\"" << choiceLabelValues[i] << "\"";
+					stream << "\"" << choiceLabelValues[i] << "\"";
 				}
-				std::cout << _color._std << "\n";
+				stream << color->_std;
+				TUTTLE_LOG_INFO( stream.str() );
 			}
 		}
 	}
 	else
 	{
-		const std::string stringDefaultValue = boost::algorithm::join( defaultValues, "," );
-		std::cout << "\t" <<
-			_color._green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
-			_color._std << std::setw( 15 ) << typeName << _color._yellow << stringDefaultValue <<
-			_color._std;
+		std::stringstream stream;
+		const std::string stringDefaultValue =  boost::algorithm::join( defaultValues, "," );
+		stream << "\t" <<
+			color->_green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
+			color->_std << std::setw( 15 ) << typeName << color->_yellow;
+		
+		stream <<  boost::algorithm::join( defaultValues, "," ) << color->_std;
 
 		if( param.getProperties().hasProperty( kOfxParamPropDisplayMin ) )
 		{
 			const OfxhProperty& propDisplayMin = param.getProperties().fetchProperty( kOfxParamPropDisplayMin );
-			const std::string minDisplayValue = getFormattedStringValue( propDisplayMin );
 			const OfxhProperty& propDisplayMax = param.getProperties().fetchProperty( kOfxParamPropDisplayMax );
+			const std::string minDisplayValue = getFormattedStringValue( propDisplayMin );
 			const std::string maxDisplayValue = getFormattedStringValue( propDisplayMax );
 
-			std::cout << "  [" << minDisplayValue << " --> " << maxDisplayValue << "]";
+			stream << "  [" << minDisplayValue << " --> " << maxDisplayValue << "]";
 		}
-		std::cout << std::endl;
+		TUTTLE_LOG_INFO( stream.str() );
 	}
 	
 	if( param.getProperties().hasProperty( kOfxParamPropHint ) )
@@ -283,9 +292,9 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 			boost::split( hintSplitted, hint, boost::is_any_of("\n"));
 			BOOST_FOREACH( const std::string hintString, hintSplitted )
 			{
-				std::cout << _color._std
-					<< std::left << std::setw( 10 ) << " " << hintString
-					<< std::endl;
+				std::stringstream stream;
+				stream << std::left << std::setw( 10 ) << " " << hintString;
+				TUTTLE_LOG_INFO( stream.str() );
 			}
 		}
 	}
@@ -302,7 +311,7 @@ void coutParametersWithDetails( const ttl::Graph::Node& node )
 		
 		// if it is a displayable parameter
 		coutParameterWithDetails( param );
-		//TUTTLE_COUT( _color._green << "[ " << strParamsContexts << " ]" << _color._std );
+		//TUTTLE_LOG_TRACE( color->_green << "[ " << strParamsContexts << " ]" << color->_std );
 	}
 }
 
@@ -314,7 +323,7 @@ void coutParameters( const ttl::Graph::Node& node )
 	{
 		//if( param.getSecret() )
 		//    continue; // ignore secret parameters
-		TUTTLE_COUT( param.getScriptName() );
+		TUTTLE_LOG_INFO( param.getScriptName() );
 	}
 }
 

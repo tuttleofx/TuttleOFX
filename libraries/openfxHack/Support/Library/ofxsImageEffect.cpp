@@ -821,7 +821,7 @@ Image::Image( OfxPropertySetHandle props )
 	_uniqueID = _imageProps.propGetString( kOfxImagePropUniqueIdentifier );
 
 	//	std::string tuttleFullName = _imageProps.propGetString( "TuttleFullName" );
-	//	TUTTLE_COUT("tuttleFullName: " << tuttleFullName );
+	//	TUTTLE_LOG_TRACE("tuttleFullName: " << tuttleFullName );
 
 	_renderScale.x = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	_renderScale.y = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
@@ -2632,7 +2632,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	}
 	catch( boost::exception& e )
 	{
-		std::cerr << tuttle::common::kColorError;
+		std::cerr << tuttle::common::Color::get()->_error;
 		std::cerr << "__________" << std::endl;
 		/*
 		[tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
@@ -2664,7 +2664,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		std::cerr << boost::trace(e);
 	#endif
 		std::cerr << "__________" << std::endl;
-		std::cerr << tuttle::common::kColorStd;
+		std::cerr << tuttle::common::Color::get()->_std;
 		
 		/// @todo there is an assert in boost::get_error_info here. Why?
 		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )

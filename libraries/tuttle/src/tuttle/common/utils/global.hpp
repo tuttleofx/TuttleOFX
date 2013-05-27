@@ -1,9 +1,8 @@
 #ifndef _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 #define _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 
-//#define TUTTLE_NO_COUT
-
 #include "color.hpp"
+#include "formatters.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // System stuff
@@ -33,73 +32,49 @@
 #  define TUTTLE_FORCEINLINE inline
 #endif
 
-#ifndef TUTTLE_COUT
+#define TUTTLE_TRACE   BOOST_LOG_TRIVIAL(trace)
+#define TUTTLE_INFO    BOOST_LOG_TRIVIAL(info)
+#define TUTTLE_WARNING BOOST_LOG_TRIVIAL(warning)
+#define TUTTLE_ERROR   BOOST_LOG_TRIVIAL(error)
+#define TUTTLE_FATAL   BOOST_LOG_TRIVIAL(fatal)
 
 /**
  * @def   TUTTLE_INFOS
  * @brief informations : filename, line number, function name
  **/
- #define TUTTLE_INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << ::std::endl << "function: " << BOOST_CURRENT_FUNCTION
 
- #define TUTTLE_VAR( a )  # a << ": " << a
- #define TUTTLE_VAR2( a, b )  # a << ": " << a << ", " << # b << ": " << b
- #define TUTTLE_VAR3( a, b, c )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c
- #define TUTTLE_VAR4( a, b, c, d )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d
- #define TUTTLE_VAR_ENDL( a )  # a << ":" << ::std::endl << a
+#define TUTTLE_GET_INFOS_FILE      "in file:  " << __FILE__ << ",  line: " << __LINE__
+#define TUTTLE_GET_INFOS_FUNCTION  "function: " << BOOST_CURRENT_FUNCTION
+#define TUTTLE_GET_INFOS           TUTTLE_GET_INFOS_FILE << TUTTLE_GET_INFOS_FUNCTION
 
-#ifndef TUTTLE_NO_COUT
+#define TUTTLE_GET_VAR( a )           #a << ": " << a
+#define TUTTLE_GET_VAR2( a, b )       TUTTLE_GET_VAR ( a ) << ", " << TUTTLE_GET_VAR ( b )
+#define TUTTLE_GET_VAR3( a, b, c )    TUTTLE_GET_VAR ( a ) << ", " << TUTTLE_GET_VAR ( b ) << ", " << TUTTLE_GET_VAR ( c )
+#define TUTTLE_GET_VAR4( a, b, c, d ) TUTTLE_GET_VAR ( a ) << ", " << TUTTLE_GET_VAR ( b ) << ", " << TUTTLE_GET_VAR ( c ) << ", " << TUTTLE_GET_VAR ( d )
+
+
 /**
  * @param[in] ... : all parameters with an operator << defined
  * @brief terminal display
  **/
- #define TUTTLE_COUT(... )  ::std::cout << __VA_ARGS__ << ::std::endl
- #define TUTTLE_CERR(... )  ::std::cerr << __VA_ARGS__ << ::std::endl
 
- #define TUTTLE_COUT_X( N, ... ) \
-    for( std::size_t i = 0; i < N; ++i ) { ::std::cout << __VA_ARGS__; } \
-    ::std::cout << ::std::endl
+#define TUTTLE_LOG_TRACE( ... )   BOOST_LOG_TRIVIAL(trace) << __VA_ARGS__
+#define TUTTLE_LOG_INFO( ... )    BOOST_LOG_TRIVIAL(info)  << __VA_ARGS__
+#define TUTTLE_LOG_WARNING( ... ) BOOST_LOG_TRIVIAL(warning) << tuttle::common::Color::get()->_yellow << "warning: " << __VA_ARGS__ << tuttle::common::Color::get()->_std
+#define TUTTLE_LOG_ERROR( ... )   BOOST_LOG_TRIVIAL(error)   << tuttle::common::Color::get()->_error  << "error: "   << __VA_ARGS__ << tuttle::common::Color::get()->_std
+#define TUTTLE_LOG_FATAL( ... )   BOOST_LOG_TRIVIAL(fatal)   << tuttle::common::Color::get()->_error  << "fatal: "   << __VA_ARGS__ << tuttle::common::Color::get()->_std
 
-#else
- #define TUTTLE_COUT(...)
- #define TUTTLE_CERR(...)
- #define TUTTLE_COUT_X( N, ... )
-#endif
+#define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
 
-
- #define TUTTLE_COUT_VAR( a )  TUTTLE_COUT( TUTTLE_VAR( a ) )
- #define TUTTLE_COUT_VAR2( a, b )  TUTTLE_COUT( TUTTLE_VAR2( a, b ) )
- #define TUTTLE_COUT_VAR3( a, b, c )  TUTTLE_COUT( TUTTLE_VAR3( a, b, c ) )
- #define TUTTLE_COUT_VAR4( a, b, c, d )  TUTTLE_COUT( TUTTLE_VAR4( a, b, c, d ) )
+#define TUTTLE_LOG_VAR( MODE, a )           TUTTLE_LOG( MODE, TUTTLE_GET_VAR ( a ) )
+#define TUTTLE_LOG_VAR2( MODE, a, b )       TUTTLE_LOG( MODE, TUTTLE_GET_VAR2( a, b ) )
+#define TUTTLE_LOG_VAR3( MODE, a, b, c )    TUTTLE_LOG( MODE, TUTTLE_GET_VAR3( a, b, c ) )
+#define TUTTLE_LOG_VAR4( MODE, a, b, c, d ) TUTTLE_LOG( MODE, TUTTLE_GET_VAR4( a, b, c, d ) )
 
 /**
  * @brief terminal information display
  **/
- #define TUTTLE_COUT_INFOS TUTTLE_COUT( TUTTLE_INFOS )
-
-/**
- * @param[in] ... : all parameters with an operator << defined
- * @brief terminal information display
- **/
- #define TUTTLE_COUT_WITHINFOS(... )  \
-    TUTTLE_COUT( TUTTLE_INFOS << \
-          ::std::endl << "\t" << __VA_ARGS__ )
-
- #define TUTTLE_COUT_WARNING(... )  \
-    TUTTLE_CERR( "TuttleOFX - Warning:" << \
-    ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__ )
-
- #define TUTTLE_COUT_ERROR(... )  \
-    TUTTLE_CERR( tuttle::common::kColorError << "TuttleOFX - Error:" << \
-    ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__ << tuttle::common::kColorStd )
-
- #define TUTTLE_COUT_FATALERROR(... )  \
-    TUTTLE_CERR( tuttle::common::kColorError << "TuttleOFX - Fatal error:" << \
-    ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__ << tuttle::common::kColorStd )
-
-#endif
+ #define TUTTLE_LOG_INFOS TUTTLE_LOG_TRACE( TUTTLE_GET_INFOS_FILE ); TUTTLE_LOG_TRACE( TUTTLE_GET_INFOS_FUNCTION )
 
 ////////////////////////////////////////////////////////////////////////////////
 // Some specifics things to debug or release version
@@ -110,30 +85,28 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-// TUTTLE_TCOUT* defines are used by developers for temporary displays during development stages.
+// TUTTLE_TLOG* defines are used by developers for temporary displays during development stages.
 // They are removed in production mode.
 #ifndef TUTTLE_PRODUCTION
-	#define TUTTLE_TCOUT TUTTLE_COUT
-	#define TUTTLE_TCOUT_X TUTTLE_COUT_X
-	#define TUTTLE_TCOUT_VAR TUTTLE_COUT_VAR
-	#define TUTTLE_TCOUT_VAR2 TUTTLE_COUT_VAR2
-	#define TUTTLE_TCOUT_VAR3 TUTTLE_COUT_VAR3
-	#define TUTTLE_TCOUT_VAR4 TUTTLE_COUT_VAR4
-	#define TUTTLE_TCOUT_INFOS TUTTLE_COUT_INFOS
-	#define TUTTLE_TCOUT_WITHINFOS TUTTLE_COUT_WITHINFOS
-	#define TUTTLE_TCOUT_EXCEPTION TUTTLE_COUT_EXCEPTION
+	#define TUTTLE_TLOG TUTTLE_LOG
+	#define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR
+	#define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2
+	#define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3
+	#define TUTTLE_TLOG_VAR4 TUTTLE_LOG_VAR4
+	#define TUTTLE_TLOG_INFOS TUTTLE_LOG_INFOS
+	#define TUTTLE_TLOG_WITHINFOS TUTTLE_LOG_WITHINFOS
+	#define TUTTLE_TLOG_EXCEPTION TUTTLE_LOG_EXCEPTION
 #else
-	#define TUTTLE_TCOUT TUTTLE_COUT_DEBUG
-	#define TUTTLE_TCOUT_X TUTTLE_COUT_X_DEBUG
-	#define TUTTLE_TCOUT_VAR TUTTLE_COUT_VAR_DEBUG
-	#define TUTTLE_TCOUT_VAR2 TUTTLE_COUT_VAR2_DEBUG
-	#define TUTTLE_TCOUT_VAR3 TUTTLE_COUT_VAR3_DEBUG
-	#define TUTTLE_TCOUT_VAR4 TUTTLE_COUT_VAR4_DEBUG
-	#define TUTTLE_TCOUT_INFOS TUTTLE_COUT_INFOS_DEBUG
-	#define TUTTLE_TCOUT_WITHINFOS TUTTLE_COUT_WITHINFOS_DEBUG
-	#define TUTTLE_TCOUT_EXCEPTION TUTTLE_COUT_EXCEPTION_DEBUG
+	#define TUTTLE_TLOG TUTTLE_LOG_DEBUG
+	#define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR_DEBUG
+	#define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2_DEBUG
+	#define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3_DEBUG
+	#define TUTTLE_TLOG_VAR4 TUTTLE_LOG_VAR4_DEBUG
+	#define TUTTLE_TLOG_INFOS TUTTLE_LOG_INFOS_DEBUG
+	#define TUTTLE_TLOG_WITHINFOS TUTTLE_LOG_WITHINFOS_DEBUG
+	#define TUTTLE_TLOG_EXCEPTION TUTTLE_LOG_EXCEPTION_DEBUG
 #endif
 
-#define TUTTLE_COUT_PLUGIN_NAME_WIDTH 30
+#define TUTTLE_LOG_PLUGIN_NAME_WIDTH 30
 
 #endif

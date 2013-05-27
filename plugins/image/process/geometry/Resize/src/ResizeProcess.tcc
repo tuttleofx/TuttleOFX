@@ -38,7 +38,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	const double dst_width  = std::max<double>(this->_dstView.width () -1,1);
 	const double dst_height = std::max<double>(this->_dstView.height() -1,1);
 
-	//TUTTLE_COUT("\E[1;31mResize Position = " << -( _params._centerPoint.x - dst_width * 0.5) << "x" << -( _params._centerPoint.y - dst_height * 0.5) << "\E[0;0m");
+	//TUTTLE_LOG_INFO("\E[1;31mResize Position = " << -( _params._centerPoint.x - dst_width * 0.5) << "x" << -( _params._centerPoint.y - dst_height * 0.5) << "\E[0;0m");
 
 	const EParamFilterOutOfImage outOfImageProcess = static_cast<EParamFilterOutOfImage>(_params._samplerProcessParams._outOfImageProcess);
 

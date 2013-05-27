@@ -80,7 +80,6 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 			{
 				boost::filesystem::path p ( params._filepath );
 				std::string ext = p.extension().string();
-				TUTTLE_COUT_VAR( ext );
 				if( ext == ".cin" )
 				{
 					switch ( _plugin._clipSrc->getPixelComponents() )

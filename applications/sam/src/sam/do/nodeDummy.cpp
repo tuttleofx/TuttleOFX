@@ -1,5 +1,3 @@
-#include <sam/common/color.hpp>
-
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
 #include <tuttle/host/Core.hpp>
@@ -213,7 +211,7 @@ std::vector<std::string> Dummy::getSupportedExtensions( const std::string& conte
 			node->loadAndDescribeActions();
 			if( node->supportsContext( context ) )
 			{
-				//TUTTLE_COUT( pluginName );
+				//TUTTLE_LOG_INFO( pluginName );
 				if( node->getDescriptorInContext( context ).getProperties().hasProperty( kTuttleOfxImageEffectPropSupportedExtensions ) )
 				{
 					const tuttle::host::ofx::property::OfxhProperty& prop = node->getDescriptorInContext( context ).getProperties().fetchProperty( kTuttleOfxImageEffectPropSupportedExtensions );
@@ -242,67 +240,70 @@ void Dummy::printAllSupportedNodes( const std::string& context )
 {
 	BOOST_FOREACH( const std::string& pluginName, getAllSupportedNodes( context ) )
 	{
-		TUTTLE_COUT( pluginName );
+		TUTTLE_LOG_INFO( pluginName );
 	}
 }
 
 void Dummy::printAllSupportedExtensions( const std::string& context )
 {
-	TUTTLE_COUT( boost::algorithm::join( getSupportedExtensions( context ), "," ) );
+	TUTTLE_LOG_INFO( boost::algorithm::join( getSupportedExtensions( context ), "," ) );
 }
 
-void Dummy::displayHelp( const std::string& nodeFullName, const Color& color )
+void Dummy::displayHelp( const std::string& nodeFullName )
 {
 	using namespace sam;
-
-	TUTTLE_COUT( color._blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color._std );
-	TUTTLE_COUT( "" );
-	TUTTLE_COUT( color._blue << "NODE" << color._std );
-	TUTTLE_COUT( color._green << "\tsam do " << nodeFullName << " - OpenFX node." << color._std );
-	TUTTLE_COUT( "" );
-	TUTTLE_COUT( color._blue << "DESCRIPTION" << color._std );
-	TUTTLE_COUT( color._green << "\tnode type: dummy (specific to TuttleOFX)" << color._std );
+	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
+	
+	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "NODE" << color->_std );
+	TUTTLE_LOG_INFO( color->_green << "\tsam do " << nodeFullName << " - OpenFX node." << color->_std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "DESCRIPTION" << color->_std );
+	TUTTLE_LOG_INFO( color->_green << "\tnode type: dummy (specific to TuttleOFX)" << color->_std );
 	// internal node help
-	TUTTLE_COUT( "" );
-	TUTTLE_COUT( "Dummy reader call specific reader detected by the extension of the sequence name." );
-	TUTTLE_COUT( "" );
-	TUTTLE_COUT( color._blue << "ASSOCIATED PLUGINS" << color._std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( "Dummy reader call specific reader detected by the extension of the sequence name." );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "ASSOCIATED PLUGINS" << color->_std );
 	if( isDummyReaderNode( nodeFullName ) )
 		printAllSupportedNodes( kOfxImageEffectContextReader );
 	if( isDummyWriterNode( nodeFullName ) )
 		printAllSupportedNodes( kOfxImageEffectContextWriter );
-	TUTTLE_COUT( "" );
-	TUTTLE_COUT( color._blue << "SUPPORTED FORMATS" << color._std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "SUPPORTED FORMATS" << color->_std );
 	if( isDummyReaderNode( nodeFullName ) )
 		printAllSupportedExtensions( kOfxImageEffectContextReader );
 	if( isDummyWriterNode( nodeFullName ) )
 		printAllSupportedExtensions( kOfxImageEffectContextWriter );
-	TUTTLE_COUT( "" );
-	TUTTLE_COUT( color._blue << "PARAMETERS" << color._std );
-	TUTTLE_COUT( color._green << "\t" << std::left << std::setw( 25 ) << "ext" << ": " << color._std << " String\n\t  select extension from supported format list.");
-	TUTTLE_COUT( "" );
-	//TUTTLE_COUT( color._blue << "CLIPS" << color._std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "PARAMETERS" << color->_std );
+	TUTTLE_LOG_INFO( color->_green << "\t" << std::left << std::setw( 25 ) << "ext" << ": " << color->_std << " String\n\t  select extension from supported format list.");
+	TUTTLE_LOG_INFO( "" );
+	//TUTTLE_LOG_INFO( color->_blue << "CLIPS" << color->_std );
 	//coutClipsWithDetails( currentNode );
 
-	TUTTLE_COUT( "" );
-	TUTTLE_COUT( color._blue << "DISPLAY OPTIONS (override the process)" << color._std );
-	TUTTLE_COUT( getInfoOptions() );
-	TUTTLE_COUT( color._blue << "CONFIGURE PROCESS" << color._std );
-	TUTTLE_COUT( getConfOptions() );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "DISPLAY OPTIONS (override the process)" << color->_std );
+	TUTTLE_LOG_INFO( getInfoOptions() );
+	TUTTLE_LOG_INFO( color->_blue << "CONFIGURE PROCESS" << color->_std );
+	TUTTLE_LOG_INFO( getConfOptions() );
 
-	TUTTLE_COUT( "" );
+	TUTTLE_LOG_INFO( "" );
 }
 
-void Dummy::displayExpertHelp( const std::string& nodeFullName, const Color& color )
+void Dummy::displayExpertHelp( const std::string& nodeFullName )
 {
 	using namespace sam;
-	displayHelp( nodeFullName, color );
+	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
+	
+	displayHelp( nodeFullName );
 
-	TUTTLE_COUT( color._blue << "EXPERT OPTIONS" << color._std );
-	TUTTLE_COUT( getOpenFXOptions() );
+	TUTTLE_LOG_INFO( color->_blue << "EXPERT OPTIONS" << color->_std );
+	TUTTLE_LOG_INFO( getOpenFXOptions() );
 }
 
-void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const NodeList& nodeList, const std::vector<std::string>& nodeArgs, const Color& color )
+void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::string& dummyNodeName, const NodeList& nodeList, const std::vector<std::string>& nodeArgs )
 {
 	if( std::strcmp( inputNode.c_str(), dummyNodeName.c_str() ) )
 		return;
@@ -312,12 +313,12 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 	
 	if( node_vm.count( kHelpOptionLongName ) )
 	{
-		displayHelp( dummyNodeName, color );
+		displayHelp( dummyNodeName );
 		exit( 0 );
 	}
 	if( node_vm.count( kExpertOptionLongName ) )
 	{
-		displayExpertHelp( dummyNodeName, color );
+		displayExpertHelp( dummyNodeName );
 		exit( 0 );
 	}
 	if( node_vm.count( kPluginsOptionLongName ) )
@@ -340,9 +341,9 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 	
 	if( node_vm.count( kVersionOptionLongName ) )
 	{
-		TUTTLE_COUT( "\tsam do " << dummyNodeName );
-		TUTTLE_COUT( "Version 1.0" );
-		TUTTLE_COUT( "" );
+		TUTTLE_LOG_INFO( "\tsam do " << dummyNodeName );
+		TUTTLE_LOG_INFO( "Version 1.0" );
+		TUTTLE_LOG_INFO( "" );
 		exit( 0 );
 	}
 
@@ -365,7 +366,7 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 		paths = node_vm[kParamValuesOptionLongName].as< std::vector< std::string> > ();
 		BOOST_FOREACH( const std::string& basePath, paths )
 		{
-			//TUTTLE_COUT_VAR( basePath );
+			//TUTTLE_LOG_VAR( TUTTLE_TRACE, basePath );
 			boost::filesystem::path p( basePath );
 			std::string inputExtension = p.extension().string();
 			boost::algorithm::to_lower( inputExtension );
@@ -386,7 +387,7 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 
 	if( needRecursiveProcess )
 	{
-		TUTTLE_COUT("recursive");
+		TUTTLE_LOG_INFO("recursive");
 		inputNode = "tuttle.dummy";
 		return;
 	}
@@ -410,10 +411,10 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 
 				for( std::size_t n = 0; n < prop.getDimension(); ++n )
 				{
-					//TUTTLE_TCOUT_VAR2( prop.getStringValue( n ), inputExtension );
+					//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, prop.getStringValue( n ), inputExtension );
 					if( prop.getStringValue( n ) == inputExtension )
 					{
-						//TUTTLE_TCOUT( pluginName << " [" << prop.getDimension() << "] can read " << prop.getStringValue( n ) );
+						//TUTTLE_TLOG( TUTTLE_TRACE, pluginName << " [" << prop.getDimension() << "] can read " << prop.getStringValue( n ) );
 						if( prop.getDimension() < numberOfSupportedExtension )
 						{
 							// Arbitrary solution...
@@ -434,14 +435,14 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 		BOOST_THROW_EXCEPTION( tuttle::exception::Value()
 							   << tuttle::exception::user() + "Unsupported extension \"" + inputExtension + "\"." );
 	}
-	TUTTLE_COUT( color._yellow << "Replace " << dummyNodeName << " with: " << inputNode << color._std );
+	TUTTLE_LOG_WARNING( "Replace " << dummyNodeName << " with: " << inputNode );
 }
 
-void Dummy::foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs, const Color& color )
+void Dummy::foundAssociateDummyNode( std::string& inputNode, const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList, const std::vector<std::string>& nodeArgs )
 {
 	getFullName( inputNode );
-	foundAssociateSpecificDummyNode( inputNode, READER_DUMMY_NAME, nodeList, nodeArgs, color );
-	foundAssociateSpecificDummyNode( inputNode, WRITER_DUMMY_NAME, nodeList, nodeArgs, color );
+	foundAssociateSpecificDummyNode( inputNode, READER_DUMMY_NAME, nodeList, nodeArgs );
+	foundAssociateSpecificDummyNode( inputNode, WRITER_DUMMY_NAME, nodeList, nodeArgs );
 }
 
 }

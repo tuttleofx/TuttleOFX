@@ -50,33 +50,33 @@ public:
 	typedef ComputeOptions This;
 	
 	ComputeOptions()
-	: _abort( false )
-	, _begin( std::numeric_limits<int>::min() )
+	: _begin( std::numeric_limits<int>::min() )
 	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		init();
 	}
 	explicit
 	ComputeOptions( const int frame )
-	: _abort( false )
-	, _begin( std::numeric_limits<int>::min() )
+	: _begin( std::numeric_limits<int>::min() )
 	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( frame, frame ) );
 	}
 	ComputeOptions( const int begin, const int end, const int step = 1 )
-	: _abort( false )
-	, _begin( std::numeric_limits<int>::min() )
+	: _begin( std::numeric_limits<int>::min() )
 	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
 	}
 	ComputeOptions( const ComputeOptions& options )
-	: _abort( false )
-	, _begin( std::numeric_limits<int>::min() )
+	: _begin( std::numeric_limits<int>::min() )
 	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		*this = options;
 	}

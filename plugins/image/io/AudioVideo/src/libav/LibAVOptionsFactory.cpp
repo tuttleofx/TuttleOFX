@@ -46,7 +46,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			choices.push_back( param );
 			unit.push_back( opt->unit );
 			defaultEnumChoices.push_back( opt->default_val.dbl );
-			//TUTTLE_COUT( opt->unit << " = " << opt->default_val.dbl );
+			//TUTTLE_LOG_INFO( opt->unit << " = " << opt->default_val.dbl );
 			continue;
 		}
 		
@@ -118,7 +118,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			}
 			default:
 			{
-				TUTTLE_COUT( "AudioVideo: undefined type for " << opt->name );
+				TUTTLE_LOG_WARNING( "AudioVideo: undefined type for " << opt->name );
 			}
 		}
 	}
@@ -147,7 +147,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 				{
 					if( opt->unit == unit.at( i ) )
 					{
-						//TUTTLE_COUT( "add " << opt->name << " to " << choices.at(i)->getName() );
+						//TUTTLE_LOG_INFO( "add " << opt->name << " to " << choices.at(i)->getName() );
 						if( opt->help )
 							choices.at(i)->appendOption( opt->name, opt->help );
 						else
@@ -223,7 +223,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			name += opt.class_name;
 			name += "_";
 			name += opt.o.unit;
-			//TUTTLE_COUT( "add " << name );
+			//TUTTLE_LOG_INFO( "add " << name );
 			OFX::GroupParamDescriptor* param = desc.defineGroupParam( name );
 			param->setLabel( opt.o.name );
 			if( opt.o.help )
@@ -238,7 +238,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			std::string name = opt.class_name;
 			name += "_";
 			name += opt.o.name;
-			//TUTTLE_COUT( "add " << name );
+			//TUTTLE_LOG_INFO( "add " << name );
 			OFX::ChoiceParamDescriptor* param = desc.defineChoiceParam( name );
 			param->setLabel( opt.o.name );
 			if( opt.o.help )
@@ -250,14 +250,14 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			u += opt.o.unit;
 			unit.push_back( u );
 			defaultEnumChoices.push_back( opt.o.default_val.dbl );
-			//TUTTLE_COUT( opt.o.unit << " = " << opt.o.default_val.dbl );
+			//TUTTLE_LOG_INFO( opt.o.unit << " = " << opt.o.default_val.dbl );
 			continue;
 		}
 		
 		std::string name = opt.class_name;
 		name += "_";
 		name += opt.o.name;
-		//TUTTLE_COUT( "+add " << name );
+		//TUTTLE_LOG_INFO( "+add " << name );
 		switch( opt.o.type )
 		{
 			case AV_OPT_TYPE_FLAGS:
@@ -332,7 +332,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 			}
 			default:
 			{
-				TUTTLE_COUT( "AudioVideo: undefined type for " << opt.o.name );
+				TUTTLE_LOG_WARNING( "AudioVideo: undefined type for " << opt.o.name );
 				
 			}
 		}
@@ -354,7 +354,7 @@ void addOptionsFromAVOption( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDe
 					u += opt.o.unit;
 					if( u == unit.at( i ) )
 					{
-						//TUTTLE_COUT( "add " << opt.o.name << " to " << choices.at(i)->getName() );
+						//TUTTLE_LOG_INFO( "add " << opt.o.name << " to " << choices.at(i)->getName() );
 						if( opt.o.help )
 							choices.at(i)->appendOption( opt.o.name, opt.o.help );
 						else

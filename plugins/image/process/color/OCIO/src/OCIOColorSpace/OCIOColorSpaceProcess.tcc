@@ -22,19 +22,22 @@ namespace colorspace {
 template<class View>
 OCIOColorSpaceProcess<View>::OCIOColorSpaceProcess(OCIOColorSpacePlugin& instance) :
 	ImageGilFilterProcessor<View> (instance, eImageOrientationIndependant),
-			_plugin(instance) {
+	_plugin(instance)
+{
 }
 
 template<class View>
-void OCIOColorSpaceProcess<View>::setup(const OFX::RenderArguments& args) {
+void OCIOColorSpaceProcess<View>::setup(const OFX::RenderArguments& args)
+{
 	ImageGilFilterProcessor<View>::setup(args);
 	_params = _plugin.getProcessParams(args.renderScale);
 	
-	try {
+	try
+	{
 		// Load the current config.
 		_config = _params._config;
 
-		// Try to load the processor		
+		// Try to load the processor
 		_config->getProcessor(  _params._inputSpace.c_str(),  _params._outputSpace.c_str() );
 	}
 	catch(OCIO::Exception & exception)
@@ -50,7 +53,8 @@ void OCIOColorSpaceProcess<View>::setup(const OFX::RenderArguments& args) {
  */
 template<class View>
 void OCIOColorSpaceProcess<View>::multiThreadProcessImages(
-		const OfxRectI& procWindowRoW) {
+		const OfxRectI& procWindowRoW)
+{
 	
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates(
 			procWindowRoW);
@@ -73,14 +77,18 @@ void OCIOColorSpaceProcess<View>::applyLut(View& dst, View& src) {
 
 	copy_pixels(src, dst);
 
-	try {
-
+	try
+	{
 		OCIO::ConstProcessorRcPtr processor = _config->getProcessor( _params._inputSpace.c_str(), _params._outputSpace.c_str() );
 		
-		if (is_planar<View>::value) {
-			BOOST_THROW_EXCEPTION(exception::NotImplemented());
-		} else {
-			for (std::size_t y = 0; y < (unsigned int) dst.height(); ++y) {
+		if (is_planar<View>::value)
+		{
+			BOOST_THROW_EXCEPTION( exception::NotImplemented() );
+		}
+		else
+		{
+			for (std::size_t y = 0; y < (unsigned int) dst.height(); ++y)
+			{
 				// Wrap the image in a light-weight ImageDescription
 				OCIO::PackedImageDesc imageDesc((float*) &(dst(0, y)[0]),
 						dst.width(), 1, num_channels<View>::type::value,
@@ -94,11 +102,11 @@ void OCIOColorSpaceProcess<View>::applyLut(View& dst, View& src) {
 			}
 		}
 		
-	} catch (OCIO::Exception & exception) {
-		TUTTLE_COUT(
-				tuttle::common::kColorError << "OCIO Error: "
-						<< exception.what() << tuttle::common::kColorStd);
-		BOOST_THROW_EXCEPTION(exception);
+	}
+	catch( OCIO::Exception & exception )
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user() + "OCIO: " + exception.what() ) ;
 	}
 }
 

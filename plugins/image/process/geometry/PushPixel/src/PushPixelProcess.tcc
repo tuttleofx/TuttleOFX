@@ -51,15 +51,14 @@ void PushPixelProcess<View>::setup( const OFX::RenderArguments& args )
 	_params = _plugin.getProcessParams( args.renderScale );
 
 	/*
-	COUT_X(40, "_-");
-	TUTTLE_COUT_VAR( this->_renderArgs.fieldToRender );
-	TUTTLE_COUT_VAR( this->_renderArgs.renderScale );
-	TUTTLE_COUT_VAR( this->_renderArgs.renderWindow );
-	TUTTLE_COUT_VAR( this->_renderArgs.time );
-	TUTTLE_COUT_VAR( this->_srcPixelRod );
-	TUTTLE_COUT_VAR( this->_dstPixelRod );
-	COUT_VAR2( this->_srcView.width(), this->_srcView.height() );
-	COUT_VAR2( this->_dstView.width(), this->_dstView.height() );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_renderArgs.fieldToRender );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_renderArgs.renderScale );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_renderArgs.renderWindow );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_renderArgs.time );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_srcPixelRod );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_dstPixelRod );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_srcView.width(), this->_srcView.height() );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_dstView.width(), this->_dstView.height() );
 	*/
 }
 
@@ -146,15 +145,14 @@ void PushPixelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	Point proc_mask_tl( imgGradientWin.x1 - usedMaskPixelRod.x1, imgGradientWin.y1 - usedMaskPixelRod.y1 );
 	
 	/*
-	COUT_X(40, "-");
-	TUTTLE_COUT_VAR( usedMaskPixelRod );
-	TUTTLE_COUT_VAR( imgGradientWin );
-	TUTTLE_COUT_VAR( procWindowRoW );
-	TUTTLE_COUT_VAR( partialGradient );
-	TUTTLE_COUT_VAR( procWindowOutput );
-	TUTTLE_COUT_VAR( procWindowSize );
-	TUTTLE_COUT_VAR( imgGradientSize );
-	TUTTLE_COUT_VAR( proc_mask_tl );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, usedMaskPixelRod );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, imgGradientWin );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, procWindowRoW );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, partialGradient );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, procWindowOutput );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, procWindowSize );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, imgGradientSize );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, proc_mask_tl );
 	*/
 
 	// compute motion vectors
@@ -211,9 +209,9 @@ void PushPixelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				case eParamInterpolationNearest:
 					motionvectors_resample_pixels<sampler::nearest_neighbor_sampler>(
 							this->_srcView, this->_srcPixelRod,
-						    xGradientView, yGradientView, imgGradientWin,
-						    this->_dstView, this->_dstPixelRod,
-						    procWindowRoW,
+							xGradientView, yGradientView, imgGradientWin,
+							this->_dstView, this->_dstPixelRod,
+							procWindowRoW,
 							sampler::eParamFilterOutBlack,
 							this->getOfxProgress() );
 					return;
@@ -227,7 +225,7 @@ void PushPixelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 							this->getOfxProgress() );
 					return;
 			}
-			TUTTLE_COUT_ERROR( "Interpolation method not recognize." );
+			TUTTLE_LOG_ERROR( "Interpolation method not recognize." );
 			return;
 		}
 	}

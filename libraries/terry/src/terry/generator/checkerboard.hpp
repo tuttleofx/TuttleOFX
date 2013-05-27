@@ -42,10 +42,10 @@ struct CheckerboardFunctor
 		const point_t mp( fmod( p.x, _tile_size_2.x ), fmod( p.y, _tile_size_2.y ) );
 
 		/*
-		TUTTLE_COUT( "__________" );
-		TUTTLE_COUT( "p.x: " << p.x << " p.y: " << p.y );
-		TUTTLE_COUT( "mp.x: " << mp.x << " mp.y: " << mp.y );
-		TUTTLE_COUT( "_tile_size.x: " << _tile_size.x << " _tile_size.y: " << _tile_size.y );*/
+		TUTTLE_LOG_TRACE( "__________" );
+		TUTTLE_LOG_TRACE( "p.x: " << p.x << " p.y: " << p.y );
+		TUTTLE_LOG_TRACE( "mp.x: " << mp.x << " mp.y: " << mp.y );
+		TUTTLE_LOG_TRACE( "_tile_size.x: " << _tile_size.x << " _tile_size.y: " << _tile_size.y );*/
 		
 		if( ( mp.x > _tile_size.x ) != ( mp.y > _tile_size.y ) )
 			return _in_color;

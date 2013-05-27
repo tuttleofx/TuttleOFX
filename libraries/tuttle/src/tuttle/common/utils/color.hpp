@@ -2,11 +2,16 @@
 #define	_TUTTLE_COMMON_COLOR_HPP_
 
 #include <tuttle/common/system/system.hpp>
+
+#include <boost/utility.hpp>
+#include <boost/shared_ptr.hpp>
+
 #include <string>
 
 namespace tuttle {
 namespace common {
 
+namespace details {
 #if defined __LINUX__ || defined __MACOS__
 static const std::string kColorBlack    ( "\E[1;30m" );
 static const std::string kColorWhite    ( "\E[1;37m" );
@@ -38,6 +43,61 @@ static const std::string kColorFile     ( "" );
 static const std::string kColorSequence ( "" );
 static const std::string kColorError    ( "" );
 #endif
+}
+
+class Color : boost::noncopyable
+{
+private:
+	Color( ) { }
+	
+public:
+	
+	static boost::shared_ptr<Color> get();
+	
+	~Color(){}
+	
+	std::string _blue;
+	std::string _green;
+	std::string _yellow;
+	std::string _red;
+
+	std::string _folder;
+	std::string _file;
+
+	std::string _std;
+	std::string _error;
+
+	void disable()
+	{
+		_blue.clear();
+		_green.clear();
+		_red.clear();
+		_yellow.clear();
+
+		_folder.clear();
+		_file.clear();
+
+		_std.clear();
+		_error.clear();
+	}
+	void enable()
+	{
+		using namespace common::details;
+		_blue   = kColorBlue;
+		_green  = kColorGreen;
+		_red    = kColorRed;
+		_yellow = kColorYellow;
+
+		_folder = kColorFolder;
+		_file   = kColorFile;
+
+		_std    = kColorStd;
+		_error  = kColorError;
+	}
+
+public:
+	static boost::shared_ptr<Color> color;
+};
 
 }
 }

@@ -354,16 +354,16 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 	}
 	catch( OfxhException& e )
 	{
-		TUTTLE_COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
-		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		TUTTLE_COUT_EXCEPTION( e );
-		//TUTTLE_COUT_DEBUG( *this );
+		TUTTLE_LOG_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ").");
+		TUTTLE_LOG_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
+		TUTTLE_LOG_EXCEPTION( e );
+		//TUTTLE_LOG_DEBUG( *this );
 	}
 	catch(... )
 	{
-		TUTTLE_COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
+		TUTTLE_LOG_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		//TUTTLE_COUT_DEBUG( *this );
+		//TUTTLE_LOG_DEBUG( *this );
 	}
 }
 
@@ -378,14 +378,14 @@ void OfxhSet::setPropertyN( const std::string& property, int count, const typena
 	}
 	catch( OfxhException& e )
 	{
-		TUTTLE_COUT_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
-		TUTTLE_COUT_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		TUTTLE_COUT_EXCEPTION( e );
+		TUTTLE_LOG_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
+		TUTTLE_LOG_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
+		TUTTLE_LOG_EXCEPTION( e );
 	}
 	catch(... )
 	{
-		TUTTLE_COUT_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
-		TUTTLE_COUT_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
+		TUTTLE_LOG_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
+		TUTTLE_LOG_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 	}
 }
 
@@ -395,12 +395,12 @@ template<class T>
 typename T::ReturnType OfxhSet::getProperty( const std::string& property, int index ) const
 {
 	/*
-	   if( !hasProperty( property, true ) )
-	   {
-	    TUTTLE_TCOUT( "return kEmpty on property: " << property );
-	    return T::kEmpty; /// @todo tuttle: is this really needed ?
-	   }
-	 */
+	if( !hasProperty( property, true ) )
+	{
+		TUTTLE_TLOG( TUTTLE_INFO, "return kEmpty on property: " << property );
+		return T::kEmpty; /// @todo tuttle: is this really needed ?
+	}
+	*/
 	return fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).getValue( index );
 }
 

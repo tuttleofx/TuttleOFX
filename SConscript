@@ -11,7 +11,10 @@ tuttleFlags = {
 		'LIBPATH': [project.inOutputLib()],
 		'CCFLAGS': project.CC['warning3'],
 		'CPPDEFINES':
-			[('TUTTLE_PLUGIN_PATH','"'+project.inOutputPlugin()+'"')],
+			[
+				('TUTTLE_PLUGIN_PATH','"'+project.inOutputPlugin()+'"'),
+				'BOOST_ALL_DYN_LINK',
+			],
 	}
 
 if project.env['mode'] == 'production' :

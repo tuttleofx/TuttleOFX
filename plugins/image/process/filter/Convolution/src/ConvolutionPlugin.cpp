@@ -74,7 +74,7 @@ ConvolutionProcessParams ConvolutionPlugin::getProcessParams() const
 		for( unsigned int x = 0; x < params._size.x; ++x )
 		{
 			params._convMatrix(x, y) = _paramCoef[y][x]->getValue();
-			TUTTLE_COUT( "coef[" << y << "][" << x << "] = " << params._convMatrix(x, y) );
+			TUTTLE_LOG_INFO( "coef[" << y << "][" << x << "] = " << params._convMatrix(x, y) );
 		}
 	}
 	*/

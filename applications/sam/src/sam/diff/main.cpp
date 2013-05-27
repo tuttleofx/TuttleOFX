@@ -1,5 +1,4 @@
 #include <sam/common/utility.hpp>
-#include <sam/common/color.hpp>
 #include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
@@ -17,13 +16,6 @@ using namespace tuttle::host;
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace sp  = sequenceParser;
-
-namespace sam {
-Color _color;
-}
-
-bool verbose = false;
-static std::streambuf * const _stdCout = std::cout.rdbuf(); // back up cout's streambuf
 
 static int _notNullImage = 0;
 static int _nullFileSize = 0;
@@ -62,33 +54,29 @@ EImageStatus diffImageStatus(Graph::Node& read1, Graph::Node& read2, Graph::Node
 		read1.getParam("filename").setValue(filename1.string());
 		read2.getParam("filename").setValue(filename2.string());
 		
-		if( !verbose )
-			std::cout.rdbuf(0);
 		graph.compute(stat);
-		std::cout.rdbuf(_stdCout);
-		if( verbose )
+
+		std::stringstream stream;
+		stream << "diff = ";
+		for (unsigned int i = 0; i < 3; ++i)
 		{
-			std::cout << "diff = ";
-			for (unsigned int i = 0; i < 3; ++i)
-			{
-				std::cout << stat.getParam("quality").getDoubleValueAtIndex(i) << "  ";
-			}
-			std::cout << std::endl;
+			stream << stat.getParam("quality").getDoubleValueAtIndex(i) << "  ";
 		}
+		TUTTLE_LOG_TRACE( stream.str() );
 
 		for (unsigned int i = 0; i < 3; ++i)
 		{
 			if (stat.getParam("quality").getDoubleValueAtIndex(i) != 0.0 )
 				return eImageStatusDiffNotNull;
 		}
-		//std::cout << stat << std::endl;
+		//TUTTLE_LOG_TRACE( stat );
 
 		return eImageStatusDiffNull;
 	}
 	catch (...)
 	{
-		std::cerr << boost::current_exception() << std::endl;
-		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
+		TUTTLE_LOG_ERROR( boost::current_exception() );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 		return eImageStatusImageError;
 	}
 }
@@ -150,8 +138,8 @@ EImageStatus diffImageStatus(Graph::Node& read1, Graph::Node& read2, Graph::Node
 					default :
 					{
 						for(size_t i=0; i<opt.size(); i++)
-								TUTTLE_COUT_VAR(opt.at(i));
-						TUTTLE_COUT("ERROR: unable to process " << optList.size() << " arguments");
+								TUTTLE_LOG_VAR( TUTTLE_INFO, opt.at(i));
+						TUTTLE_LOG_ERROR( "unable to process " << optList.size() << " arguments" );
 						break;
 					}
 				}
@@ -164,34 +152,29 @@ EImageStatus diffImageStatus(Graph::Node& read1, Graph::Node& read2, Graph::Node
 			}
 		}
 
-		if( !verbose )
-			std::cout.rdbuf(0);
 		graph.compute(stat);
-		std::cout.rdbuf(_stdCout);
 
-		if( verbose )
+		std::stringstream stream;
+		stream << "diff = ";
+		for (unsigned int i = 0; i < 3; ++i)
 		{
-			std::cout << "diff = ";
-			for (unsigned int i = 0; i < 3; ++i)
-			{
-				std::cout << stat.getParam("quality").getDoubleValueAtIndex(i) << "  ";
-			}
-			std::cout << std::endl;
+			stream << stat.getParam("quality").getDoubleValueAtIndex(i) << "  ";
 		}
+		TUTTLE_LOG_TRACE( stream.str() );
 
 		for (unsigned int i = 0; i < 3; ++i)
 		{
 			if (stat.getParam("quality").getDoubleValueAtIndex(i) != 0.0 )
 				return eImageStatusDiffNotNull;
 		}
-		//std::cout << stat << std::endl;
+		//TUTTLE_LOG_TRACE( stat );
 
 		return eImageStatusDiffNull;
-    }
+	}
 	catch (...)
 	{
-		std::cerr << boost::current_exception() << std::endl;
-		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
+		TUTTLE_LOG_ERROR( boost::current_exception() );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 		return eImageStatusImageError;
 	}
 }
@@ -203,34 +186,29 @@ EImageStatus diffFile(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat,
 {
 	EImageStatus s = diffImageStatus(read1, read2, stat, graph, filename1, filename2);
 
-	//std::cout.rdbuf(_stdCout); // restore cout's original streambuf
+	std::string message;
 	switch (s) {
 		case eImageStatusDiffNull:
 			break;
 		case eImageStatusDiffNotNull:
-			if( verbose )
-				std::cout << "Diff not null: ";
+			message = "Diff not null: ";
 			++_notNullImage;
 			break;
 		case eImageStatusFileSizeError:
-			if( verbose )
-				std::cout << "Null file size: ";
+			message = "Null file size: ";
 			++_nullFileSize;
 			break;
 		case eImageStatusNoFile:
-			if( verbose )
-				std::cout << "Missing file: ";
+			message = "Missing file: ";
 			++_missingFiles;
 			break;
 		case eImageStatusImageError:
-			if( verbose )
-				std::cout << "Corrupted image: ";
+			message = "Corrupted image: ";
 			++_corruptedImage;
 			break;
 	}
 	++_processedImages;
-	//std::cout << filename1 << "  |  " << filename2 << std::endl;
-	//std::cout.rdbuf(0); // remove cout's streambuf
+	TUTTLE_LOG_WARNING( message << filename1 << "  and: " << filename2 );
 	return s;
 }
 
@@ -241,93 +219,97 @@ EImageStatus diffFile(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat,
 {
 	EImageStatus s = diffImageStatus(read1, read2, stat, graph, filename1, generatorOptions);
 
-	//std::cout.rdbuf(_stdCout); // restore cout's original streambuf
+	std::string message;
 	switch (s) {
 		case eImageStatusDiffNull:
 			break;
 		case eImageStatusDiffNotNull:
-			if( verbose )
-				std::cout << "Diff not null: ";
+			message = "Diff not null: ";
 			++_notNullImage;
 			break;
 		case eImageStatusFileSizeError:
-			if( verbose )
-				std::cout << "Null file size: ";
+			message = "Null file size: ";
 			++_nullFileSize;
 			break;
 		case eImageStatusNoFile:
-			if( verbose )
-				std::cout << "Missing file: ";
+			message = "Missing file: ";
 			++_missingFiles;
 			break;
 		case eImageStatusImageError:
-			if( verbose )
-				std::cout << "Corrupted image: ";
+			message = "Corrupted image: ";
 			++_corruptedImage;
 			break;
 	}
 	++_processedImages;
-	//std::cout << filename1 << std::endl;
-	//std::cout.rdbuf(0); // remove cout's streambuf
+	TUTTLE_LOG_WARNING( message << filename1 << "  and  the generator" );
 	return s;
 }
 
-void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const sp::Sequence& seq1, const sp::Sequence& seq2) {
-    for (sp::Time t = seq1.getFirstTime(); t <= seq1.getLastTime(); ++t) {
-        diffFile(read1, read2, stat, graph, seq1.getAbsoluteFilenameAt(t), seq2.getAbsoluteFilenameAt(t));
-    }
+void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const sp::Sequence& seq1, const sp::Sequence& seq2)
+{
+	for (sp::Time t = seq1.getFirstTime(); t <= seq1.getLastTime(); ++t)
+	{
+		diffFile(read1, read2, stat, graph, seq1.getAbsoluteFilenameAt(t), seq2.getAbsoluteFilenameAt(t));
+	}
 }
 
 void diffSequence(Graph::Node& read1, Graph::Node& read2, Graph::Node& stat, Graph& graph, const sp::Sequence& seq1, const sp::Sequence& seq2, const sp::Time first,
-                  const sp::Time last) {
-    for (sp::Time t = first; t <= last; ++t) {
-        diffFile(read1, read2, stat, graph, seq1.getAbsoluteFilenameAt(t), seq2.getAbsoluteFilenameAt(t));
-    }
+				  const sp::Time last)
+{
+	for (sp::Time t = first; t <= last; ++t)
+	{
+		diffFile(read1, read2, stat, graph, seq1.getAbsoluteFilenameAt(t), seq2.getAbsoluteFilenameAt(t));
+	}
 }
 
-void displayHelp(bpo::options_description &desc) {
-    using namespace sam;
-    //std::cout.rdbuf(_stdCout); // restore cout's original streambuf
-    TUTTLE_COUT( _color._blue << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl);
-    TUTTLE_COUT( _color._blue << "NAME" << _color._std);
-    TUTTLE_COUT( _color._green << "\tsam-diff - compute difference between 2 images/sequences" << _color._std << std::endl);
-    TUTTLE_COUT( _color._blue << "SYNOPSIS" << _color._std);
-    TUTTLE_COUT( _color._green << "\tsam-diff [reader] [input] [reader] [input] [options]" << _color._std << std::endl);
-    TUTTLE_COUT( _color._blue << "DESCRIPTION" << _color._std);
-    TUTTLE_COUT( _color._green << "\tDiff if sequence have black images." << _color._std );
-    TUTTLE_COUT( _color._green << "\tThis tools process the PSNR of an image, and if it's null, the image is considered black." << _color._std );
-    TUTTLE_COUT( _color._green << "\tOnly compare RGB layout, not Alpha." << _color._std << std::endl );
+void displayHelp(bpo::options_description &desc)
+{
+	using namespace sam;
+	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
+	
+	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std);
+	TUTTLE_LOG_INFO( color->_green << "\tsam-diff - compute difference between 2 images/sequences" << color->_std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "SYNOPSIS" << color->_std);
+	TUTTLE_LOG_INFO( color->_green << "\tsam-diff [reader] [input] [reader] [input] [options]" << color->_std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "DESCRIPTION" << color->_std);
+	TUTTLE_LOG_INFO( color->_green << "\tDiff if sequence have black images." << color->_std );
+	TUTTLE_LOG_INFO( color->_green << "\tThis tools process the PSNR of an image, and if it's null, the image is considered black." << color->_std );
+	TUTTLE_LOG_INFO( color->_green << "\tOnly compare RGB layout, not Alpha." << color->_std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( color->_blue << "OPTIONS" << color->_std );
+	TUTTLE_LOG_INFO( "" );
+	TUTTLE_LOG_INFO( desc);
 
-    TUTTLE_COUT( _color._blue << "OPTIONS" << _color._std << std::endl);
-    TUTTLE_COUT( desc);
-    //std::cout.rdbuf(0); // remove cout's streambuf
-
-	TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
+	TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std << std::left );
 	SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: ");
-	SAM_EXAMPLE_LINE_COUT("Auto-detect padding : ", "seq.@.jpg");
-	SAM_EXAMPLE_LINE_COUT("Padding of 8 (usual style): ", "seq.########.jpg");
+	SAM_EXAMPLE_LINE_COUT ( "Auto-detect padding : ", "seq.@.jpg");
+	SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (usual style): ", "seq.########.jpg");
 	SAM_EXAMPLE_TITLE_COUT( "Compare two images: ");
-	SAM_EXAMPLE_LINE_COUT("", "sam-diff --reader tuttle.jpegreader --input path/image.jpg --reader tuttle.jpegreader --input anotherPath/image.jpg");
+	SAM_EXAMPLE_LINE_COUT ( "", "sam-diff --reader tuttle.jpegreader --input path/image.jpg --reader tuttle.jpegreader --input anotherPath/image.jpg");
 	SAM_EXAMPLE_TITLE_COUT( "Compare two sequences: ");
-	SAM_EXAMPLE_LINE_COUT("", "sam-diff --reader tuttle.jpegreader --input path/seq.@.jpg --reader tuttle.jpegreader --input anotherPath/seq.@.jpg --range 677836 677839");
+	SAM_EXAMPLE_LINE_COUT ( "", "sam-diff --reader tuttle.jpegreader --input path/seq.@.jpg --reader tuttle.jpegreader --input anotherPath/seq.@.jpg --range 677836 677839");
 	SAM_EXAMPLE_TITLE_COUT( "Compare one sequence with one generator (generator need to be every time the second node): ");
-	SAM_EXAMPLE_LINE_COUT("", "sam-diff --reader tuttle.jpegreader --input path/seq.@.jpg --reader tuttle.constant --generator-args width=500 components=rgb --range 677836 677839" << std::endl );
-
-
+	SAM_EXAMPLE_LINE_COUT ( "", "sam-diff --reader tuttle.jpegreader --input path/seq.@.jpg --reader tuttle.constant --generator-args width=500 components=rgb --range 677836 677839" );
+	TUTTLE_LOG_INFO( "" );
 }
 
-int main(int argc, char** argv) {
-    using namespace sam;
-
-    //std::cout.rdbuf(0); // remove cout's streambuf
-    //std::cerr.rdbuf(0); // remove cerr's streambuf
+int main( int argc, char** argv )
+{
+	using namespace tuttle::common;
+	using namespace sam;
+	
+	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Color>                 color( Color::get() );
 
     try {
         std::vector<std::string> inputs;
         std::vector<std::string> nodeId;
         bool hasRange = false;
-        bool script = false;
-        bool enableColor = false;
+		bool script   = false;
         std::vector<int> range;
 		
 		std::vector<std::string> generator;
@@ -335,18 +317,23 @@ int main(int argc, char** argv) {
         bpo::options_description desc;
         bpo::options_description hidden;
 
-		desc.add_options()(kHelpOptionString, kHelpOptionMessage)
-		(kReaderOptionString, bpo::value(&nodeId), kReaderOptionMessage)
-		(kInputOptionString, bpo::value(&inputs), kInputOptionMessage)
-		(kRangeOptionString, bpo::value(&range)->multitoken(), kRangeOptionMessage)
-		(kGeneratorArgsOptionString, bpo::value(&generator)->multitoken(), kGeneratorArgsOptionMessage)
-		(kVerboseOptionString, kVerboseOptionMessage)
-		(kBriefOptionString, kBriefOptionMessage)
-		(kColorOptionString, kColorOptionMessage)
-		(kScriptOptionString, kScriptOptionMessage);
+		formatter->init_logging();
+		
+		desc.add_options()
+				( kHelpOptionString,   kHelpOptionMessage )
+				( kReaderOptionString, bpo::value(&nodeId), kReaderOptionMessage )
+				( kInputOptionString,  bpo::value(&inputs), kInputOptionMessage )
+				( kRangeOptionString,  bpo::value(&range)->multitoken(), kRangeOptionMessage )
+				( kGeneratorArgsOptionString, bpo::value(&generator)->multitoken(),  kGeneratorArgsOptionMessage )
+				( kVerboseOptionString,       bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+				( kQuietOptionString,  kQuietOptionMessage )
+				( kBriefOptionString,  kBriefOptionMessage )
+				( kColorOptionString,  kColorOptionMessage )
+				( kScriptOptionString, kScriptOptionMessage );
 
         // describe hidden options
-        hidden.add_options()(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage);
+        hidden.add_options()
+				( kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage );
 
         bpo::options_description cmdline_options;
         cmdline_options.add(desc).add(hidden);
@@ -371,10 +358,10 @@ int main(int argc, char** argv) {
             }
             bpo::notify(vm);
         } catch (const bpo::error& e) {
-            TUTTLE_COUT("sam-diff: command line error: " << e.what());
+            TUTTLE_LOG_ERROR( "sam-diff: command line error: " << e.what() );
             exit(-2);
         } catch (...) {
-            TUTTLE_COUT("sam-diff: unknown error in command line.");
+            TUTTLE_LOG_ERROR( "sam-diff: unknown error in command line." );
             exit(-2);
         }
 
@@ -383,27 +370,42 @@ int main(int argc, char** argv) {
 			script = true;
 		}
 		
-		if (vm.count(kVerboseOptionLongName)) {
-			// print verbose messages
-			verbose = true;
+		switch( vm[ kVerboseOptionLongName ].as< int >() )
+		{
+			case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
+			case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
+			case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
+			case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
+			case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
+			case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
+			default : formatter->setLogLevel( boost::log::trivial::warning ); break;
+		}
+		if( vm.count(kQuietOptionLongName) )
+		{
+			formatter->setLogLevel( boost::log::trivial::fatal );
 		}
 
-        if (vm.count(kColorOptionLongName) && !script) {
-            enableColor = true;
-        }
-        if (vm.count(kEnableColorOptionLongName) && !script) {
-            const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
-            enableColor = string_to_boolean(str);
-        }
+		if( vm.count( kColorOptionLongName ) && !script )
+		{
+			color->enable();
+		}
+		
+		if( vm.count( kEnableColorOptionLongName ) && !script )
+		{
+			const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
+			if( string_to_boolean(str) )
+			{
+				color->enable();
+			}
+			else
+			{
+				color->disable();
+			}
+		}
 
-        if (enableColor) {
-            _color.enable();
-        }
-
-        if (vm.count(kBriefOptionLongName)) {
-            //std::cout.rdbuf(_stdCout);
-            TUTTLE_COUT( _color._green << "diff image files" << _color._std);
-            //std::cout.rdbuf(0);
+        if( vm.count( kBriefOptionLongName ) )
+		{
+            TUTTLE_LOG_INFO( color->_green << "diff image files" << color->_std );
             return 0;
         }
 
@@ -412,14 +414,14 @@ int main(int argc, char** argv) {
             return 0;
         }
         if (!vm.count(kReaderOptionLongName)) {
-            TUTTLE_COUT( _color._red << "sam-diff : no reader specified." << _color._std);
+            TUTTLE_LOG_ERROR( "sam-diff : no reader specified." );
             displayHelp(desc);
-            return 0;
+            return -2;
         }
         if (!vm.count(kInputOptionLongName)) {
-            TUTTLE_COUT( _color._red << "sam-diff : no input specified." << _color._std);
+            TUTTLE_LOG_ERROR( "sam-diff : no input specified." );
             displayHelp(desc);
-            return 0;
+            return -2;
         }
 		
 		if (vm.count(kGeneratorArgsOptionLongName)) {
@@ -431,9 +433,9 @@ int main(int argc, char** argv) {
 		
 		if( nodeId.size() != 2 )
 		{
-			TUTTLE_COUT( _color._red << "sam-diff : require 2 input nodes." << _color._std);
+			TUTTLE_LOG_ERROR( "sam-diff : require 2 input nodes." );
 			displayHelp(desc);
-			return 0;
+			return -2;
 		}
 		if (vm.count(kRangeOptionLongName))
 		{
@@ -443,11 +445,10 @@ int main(int argc, char** argv) {
 
 		core().preload();
 		Graph graph;
-		if( verbose )
-		{
-			TUTTLE_COUT( "in1: " << nodeId.at(0) );
-			TUTTLE_COUT( "in2: " << nodeId.at(1) );
-		}
+		
+		TUTTLE_LOG_TRACE( "in1: " << nodeId.at(0) );
+		TUTTLE_LOG_TRACE( "in2: " << nodeId.at(1) );
+		
 		Graph::Node& read1 = graph.createNode(nodeId.at(0));
 		Graph::Node& read2 = graph.createNode(nodeId.at(1));
 		//Graph::Node& viewer = graph.createNode( "tuttle.viewer" );
@@ -494,52 +495,62 @@ int main(int argc, char** argv) {
 				bfs::path path2 = inputs.at(1);
 
 
-				if (bfs::exists(path1)) {
-				if (!bfs::exists(path2)) {
-					TUTTLE_COUT( "could not find file or directory 2 (first is not a sequence).");
-					return 0;
+				if (bfs::exists(path1))
+				{
+					if (!bfs::exists(path2))
+					{
+						TUTTLE_LOG_ERROR( "could not find file or directory 2 (first is not a sequence)." );
+						return 0;
+					}
+					/*
+					 if( bfs::is_directory( path1 ) )
+					 {
+					 std::list<boost::shared_ptr<FileObject> > fObjects;
+					 fObjects = fileObjectsInDir( path );
+					 BOOST_FOREACH( const boost::shared_ptr<FileObject> fObj, fObjects )
+					 {
+					 switch( fObj->getMaskType() )
+					 {
+					 case eMaskTypeSequence:
+					 {
+					 diffSequence( read1, read2, stat, graph, dynamic_cast<const Sequence&>( *fObj ) );
+					 break;
+					 }
+					 case eMaskTypeFile:
+					 {
+					 const File fFile = dynamic_cast<const File&>( *fObj );
+					 diffFile( read1, read2, stat, graph, fFile.getAbsoluteFilename(), fFile.getAbsoluteFilename() );
+					 break;
+					 }
+					 case eMaskTypeDirectory:
+					 case eMaskTypeUndefined:
+					 break;
+					 }
+					 }
+					 }
+					 else
+					 {*/
+						diffFile(read1, read2, stat, graph, path1, path2);
+					 //}
 				}
-				/*
-				 if( bfs::is_directory( path1 ) )
-				 {
-				 std::list<boost::shared_ptr<FileObject> > fObjects;
-				 fObjects = fileObjectsInDir( path );
-				 BOOST_FOREACH( const boost::shared_ptr<FileObject> fObj, fObjects )
-				 {
-				 switch( fObj->getMaskType() )
-				 {
-				 case eMaskTypeSequence:
-				 {
-				 diffSequence( read1, read2, stat, graph, dynamic_cast<const Sequence&>( *fObj ) );
-				 break;
-				 }
-				 case eMaskTypeFile:
-				 {
-				 const File fFile = dynamic_cast<const File&>( *fObj );
-				 diffFile( read1, read2, stat, graph, fFile.getAbsoluteFilename(), fFile.getAbsoluteFilename() );
-				 break;
-				 }
-				 case eMaskTypeDirectory:
-				 case eMaskTypeUndefined:
-				 break;
-				 }
-				 }
-				 }
-				 else
-				 {*/
-					diffFile(read1, read2, stat, graph, path1, path2);
-				 //}
-				} else {
-					try {
+				else
+				{
+					try
+					{
 						sp::Sequence s1(path1);
 						sp::Sequence s2(path2);
-						if (hasRange) {
+						if (hasRange)
+						{
 							diffSequence(read1, read2, stat, graph, s1, s2, range[0], range[1]);
-						} else {
+						}
+						else
+						{
 							diffSequence(read1, read2, stat, graph, s1, s2);
 						}
-					} catch (...) {
-						std::cerr << "Unrecognized pattern " << path1 << " or " << path2 << std::endl;
+					}
+					catch(...)
+					{
+						TUTTLE_LOG_WARNING( "Unrecognized pattern " << path1 << " or " << path2 );
 						return eReturnCodeApplicationError;
 					}
 				}
@@ -548,21 +559,17 @@ int main(int argc, char** argv) {
 	}
 	catch (...)
 	{
-		//std::cerr.rdbuf(_stdCerr); // restore cout's original streambuf
-		std::cerr << "sam-diff error " << boost::current_exception_diagnostic_information() << std::endl;
-		//std::cerr.rdbuf(0); // remove cerr's streambuf
+		TUTTLE_LOG_ERROR( "sam-diff error " << boost::current_exception_diagnostic_information() );
 		return -1;
 	}
 	
-	//std::cout.rdbuf(_stdCerr); // restore cout's original streambuf
-	TUTTLE_COUT( "________________________________________");
-	TUTTLE_COUT( "Processed images: " << _processedImages);
-	TUTTLE_COUT( "Different images: " << _notNullImage);
-	TUTTLE_COUT( "Null file size: " << _nullFileSize);
-	TUTTLE_COUT( "Corrupted images: " << _corruptedImage);
-	TUTTLE_COUT( "Holes in sequence: " << _missingFiles);
-	TUTTLE_COUT( "________________________________________");
-	//std::cout.rdbuf(0); // remove cerr's streambuf
+	TUTTLE_LOG_INFO( "________________________________________");
+	TUTTLE_LOG_INFO( "Processed images: " << _processedImages);
+	TUTTLE_LOG_INFO( "Different images: " << _notNullImage);
+	TUTTLE_LOG_INFO( "Null file size: " << _nullFileSize);
+	TUTTLE_LOG_INFO( "Corrupted images: " << _corruptedImage);
+	TUTTLE_LOG_INFO( "Holes in sequence: " << _missingFiles);
+	TUTTLE_LOG_INFO( "________________________________________");
 
 	return _notNullImage + _nullFileSize + _corruptedImage + _missingFiles;
 }

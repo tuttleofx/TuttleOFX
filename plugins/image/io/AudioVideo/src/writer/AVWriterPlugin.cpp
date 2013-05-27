@@ -99,7 +99,7 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVPrivO
 			}
 			default:
 			{
-				TUTTLE_COUT( "AudioVideo: undefined type for " << opt.o.name );
+				TUTTLE_LOG_WARNING( "AudioVideo: undefined type for " << opt.o.name );
 			}
 		}
 	}
@@ -235,7 +235,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	
 	if( paramName == kParamMainPreset )
 	{
-		//TUTTLE_COUT( "preset change " << _paramMainPreset->getValue() );
+		//TUTTLE_LOG_TRACE( "preset change " << _paramMainPreset->getValue() );
 		if( _paramMainPreset->getValue() == 0 )
 			return;
 		
@@ -285,9 +285,9 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			}
 		}
 		/*
-		TUTTLE_COUT( "set format at " << formatIndex );
-		TUTTLE_COUT( "set video at " << formatIndex );
-		TUTTLE_COUT( "set audio at " << formatIndex );*/
+		TUTTLE_LOG_INFO( "set format at " << formatIndex );
+		TUTTLE_LOG_INFO( "set video at " << formatIndex );
+		TUTTLE_LOG_INFO( "set audio at " << formatIndex );*/
 		
 		_paramFormatPreset->setValue( formatIndex );
 		_paramVideoCodecPreset->setValue( videoIndex );
@@ -296,7 +296,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	
 	if( paramName == kParamFormatPreset )
 	{
-		//TUTTLE_COUT( "preset change " << _paramFormatPreset->getValue() );
+		//TUTTLE_LOG_INFO( "preset change " << _paramFormatPreset->getValue() );
 		if( _paramFormatPreset->getValue() == 0 )
 			return;
 		std::vector<std::string> idFormatList;
@@ -347,7 +347,7 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	
 	AVProcessParams params = getProcessParams();
 	
-	//TUTTLE_COUT_VAR( _clipSrc->getFrameRate() );
+	//TUTTLE_LOG_VAR( TUTTLE_WARNING, _clipSrc->getFrameRate() );
 	
 	_writer.setFilename    ( params._filepath );
 	_writer.setFormat      ( params._format );

@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 
 	//// Write "tuttle.invert" plugin into a cache file
 	const std::string testfile = ( core().getPreferences().buildTuttleTestPath() / "test_imageEffectPlugin_serialization.xml" ).string();
-	TUTTLE_TCOUT_VAR( testfile );
+	TUTTLE_TLOG_VAR( TUTTLE_TRACE, testfile );
 	BOOST_REQUIRE( testfile.size() );
 
 	{
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	
 	// Rewrite "tuttle.invert" plugin into another cache file
 	const std::string testfile2 = ( core().getPreferences().buildTuttleTestPath() / "test_imageEffectPlugin_serialization2.xml" ).string();
-	TUTTLE_TCOUT_VAR( testfile2 );
+	TUTTLE_TLOG_VAR( TUTTLE_TRACE, testfile2 );
 	BOOST_REQUIRE( testfile2.size() );
 
 	{

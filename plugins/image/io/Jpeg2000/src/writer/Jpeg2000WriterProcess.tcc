@@ -45,8 +45,8 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 
 	View srcView = this->_srcView;
 
-//	TUTTLE_COUT_VAR( this->_srcView.dimensions() );
-//	TUTTLE_COUT_VAR( srcView.dimensions() );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_srcView.dimensions() );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, srcView.dimensions() );
 
 	switch(_params._bitDepth)
 	{

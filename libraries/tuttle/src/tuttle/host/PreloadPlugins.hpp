@@ -10,19 +10,18 @@ namespace host {
 
 struct PreloadPlugins
 {
-    PreloadPlugins()
+	PreloadPlugins()
 	{
 		using namespace tuttle::host;
-		// std::cout << "PreloadOpenFXPlugins: global setup\n";
-		TUTTLE_COUT( "-------- LOADING OPENFX PLUGINS --------" );
+		TUTTLE_LOG_TRACE( "-------- LOADING OPENFX PLUGINS --------" );
 		core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 		core().preload();
-		// TUTTLE_COUT( core().getImageEffectPluginCache() );
-		TUTTLE_COUT( "------ LOADING OPENFX PLUGINS DONE -----" );
+		// TUTTLE_LOG_TRACE( core().getImageEffectPluginCache() );
+		TUTTLE_LOG_TRACE( "------ LOADING OPENFX PLUGINS DONE -----" );
 	}
-    ~PreloadPlugins()
+	~PreloadPlugins()
 	{
-		// std::cout << "PreloadOpenFXPlugins: global teardown\n";
+		// TUTTLE_LOG_TRACE( "PreloadOpenFXPlugins: global teardown" );
 	}
 };
 

@@ -74,8 +74,8 @@ public:
 	virtual void setup( const OFX::RenderArguments& args )
 	{
 		// destination view
-//		TUTTLE_COUT_INFOS;
-//		TUTTLE_COUT_VAR( "dst - fetchImage " << time );
+//		TUTTLE_LOG_INFOS;
+//		TUTTLE_LOG_VAR( TUTTLE_INFO,  "dst - fetchImage " << time );
 		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady()

@@ -171,9 +171,9 @@ void fillAroundIntersection(
 		const OfxRectI intersectRegionA = rectanglesIntersection( procWindowRoW, srcAPixelRod );
 		const OfxRectI procWindowSrcA = translateRegion( intersectRegionA, srcAPixelRod );
 		const OfxRectI procWindowOutputA = translateRegion( intersectRegionA, dstPixelRod );
-		//TUTTLE_TCOUT_VAR( intersectRegionA );
-		//TUTTLE_TCOUT_VAR( procWindowSrcA );
-		//TUTTLE_TCOUT_VAR( procWindowOutputA );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, intersectRegionA );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, procWindowSrcA );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, procWindowOutputA );
 		
 		/// @todo tuttle: fill only the good regions
 		copy_pixels( viewA, procWindowSrcA, dstView, procWindowOutputA );
@@ -183,9 +183,9 @@ void fillAroundIntersection(
 		const OfxRectI intersectRegionB = rectanglesIntersection( procWindowRoW, srcBPixelRod );
 		const OfxRectI procWindowSrcB = translateRegion( intersectRegionB, srcBPixelRod );
 		const OfxRectI procWindowOutputB = translateRegion( intersectRegionB, dstPixelRod );
-		//TUTTLE_TCOUT_VAR( intersectRegionB );
-		//TUTTLE_TCOUT_VAR( procWindowSrcB );
-		//TUTTLE_TCOUT_VAR( procWindowOutputB );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, intersectRegionB );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, procWindowSrcB );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, procWindowOutputB );
 		
 		/// @todo tuttle: fill only the good regions
 		copy_pixels( viewB, procWindowSrcB, dstView, procWindowOutputB );

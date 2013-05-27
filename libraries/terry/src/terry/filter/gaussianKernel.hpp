@@ -84,8 +84,8 @@ terry::filter::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const
 	std::copy( rightKernel.rbegin(), rightKernel.rend(), kernel.begin() );
 	std::copy( rightKernel.begin(), rightKernel.end(), kernel.begin() + rightKernel.size() + 1 );
 
-	//	TUTTLE_COUT_VAR( rightKernel.size() );
-	//	TUTTLE_COUT_VAR( kernel.size() );
+	//	TUTTLE_CLOG_VAR( TUTTLE_TRACE, rightKernel.size() );
+	//	TUTTLE_CLOG_VAR( TUTTLE_TRACE, kernel.size() );
 	//	std::cout << "[";
 	//	std::for_each(rightKernel.begin(), rightKernel.end(), std::cout << lambda::_1 << ',');
 	//	std::cout << "]" << std::endl;
@@ -158,8 +158,8 @@ terry::filter::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar s
 
 	std::for_each( kernel.begin(), kernel.begin() + rightKernel.size(), lambda::_1 *= -1 );
 
-	//	TUTTLE_COUT_VAR( rightKernel.size() );
-	//	TUTTLE_COUT_VAR( kernel.size() );
+	//	TUTTLE_CLOG_VAR( TUTTLE_TRACE, rightKernel.size() );
+	//	TUTTLE_CLOG_VAR( TUTTLE_TRACE, kernel.size() );
 	//	std::cout << "[";
 	//	std::for_each(rightKernel.begin(), rightKernel.end(), std::cout << lambda::_1 << ',');
 	//	std::cout << "]" << std::endl;
