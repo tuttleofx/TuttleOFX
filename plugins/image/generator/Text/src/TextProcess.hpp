@@ -17,7 +17,7 @@ namespace text {
  * @brief Text process
  *
  */
-template<class View>
+template<class View, class Functor>
 class TextProcess : public ImageGilProcessor<View>
 {
 public:
