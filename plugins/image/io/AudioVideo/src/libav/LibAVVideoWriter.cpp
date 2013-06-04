@@ -199,7 +199,7 @@ int LibAVVideoWriter::start( )
 		if( filename )
 			av_strlcpy( _avFormatOptions->filename, filename, sizeof( _avFormatOptions->filename ) );
 
-		TUTTLE_LOG_ERROR( "avWriter: " << std::string( _ofmt->name ) << " format selected" );
+		TUTTLE_LOG_TRACE( "avWriter: " << std::string( _ofmt->name ) << " format selected" );
 	}
 
 	if( !_stream )
@@ -210,7 +210,7 @@ int LibAVVideoWriter::start( )
 			BOOST_THROW_EXCEPTION( exception::Format()
 				<< exception::user( "avWriter: codec not found." ) );
 		}
-		TUTTLE_LOG_ERROR( "avWriter: " << std::string(_videoCodec->name) << " codec selected" );
+		TUTTLE_LOG_TRACE( "avWriter: " << std::string(_videoCodec->name) << " codec selected" );
 		
 		_avVideoOptions = avcodec_alloc_context3( _videoCodec );
 
