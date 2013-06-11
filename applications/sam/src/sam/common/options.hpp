@@ -115,7 +115,7 @@ static const char* const kVersionOptionMessage = "display version";
 //-V, --verbose
 static const char* const kVerboseOptionLongName = "verbose";
 static const char* const kVerboseOptionString =  "verbose,V";
-static const char* const kVerboseOptionMessage = "verbose level (trace, debug, warning, error, fatal)";
+static const char* const kVerboseOptionMessage = "verbose level (trace=0, debug=1, warning=2, error=3, fatal=4)";
 
 /// options without short-cut
 
