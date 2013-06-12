@@ -1,4 +1,3 @@
-
 #define SAM_MOVEFILES
 
 #include <sam/common/mvcp.hpp>

@@ -7,8 +7,8 @@
 #include "OfxhParamSet.hpp"
 
 #include <boost/program_options/parsers.hpp>
-
 #include <boost/ptr_container/ptr_array.hpp>
+#include <boost/functional/hash.hpp>
 
 #include <string>
 #include <vector>
@@ -29,6 +29,8 @@ public:
 protected:
 	boost::ptr_array<T, DIM> _controls; // owns the sub-parameters
 
+	BOOST_STATIC_ASSERT( DIM != 0 );
+	
 public:
 	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
 	: OfxhParam( descriptor, name, setInstance )
@@ -74,13 +76,23 @@ protected:
 	// Deriving implementatation needs to overide these
 	inline virtual void getValueAtIndex( const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() > index );
+		if( index >= getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Get value at index "+index+" on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		_controls[index].getValue( outDst );
 	}
 
 	inline virtual void getValueAtTimeAndIndex( const OfxTime time, const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() > index );
+		if( index >= getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Get value at index "+index+" on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		_controls[index].getValueAtTime( time, outDst );
 	}
 
@@ -120,21 +132,36 @@ public:
 
 	inline virtual void setValueAtIndex( const std::size_t index, const BaseType& value, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() > index );
+		if( index >= getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Get value at index "+index+" on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		_controls[index].setValue( value, eChangeNone );
 		this->paramChanged( change );
 	}
 
 	inline virtual void setValueAtTimeAndIndex( const OfxTime time, const std::size_t index, const BaseType& value, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() > index );
+		if( index >= getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Get value at index "+index+" on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		_controls[index].setValueAtTime( time, value, eChangeNone );
 		this->paramChanged( change );
 	}
 
 	inline virtual void setValue( const std::vector<BaseType>& values, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() == values.size() );
+		if( values.size() != getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Set "+values.size()+" values on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		for( std::size_t i = 0; i < getSize(); ++i )
 		{
 			_controls[i].setValue( values[i], eChangeNone );
@@ -144,7 +171,12 @@ public:
 
 	inline virtual void setValueAtTime( const OfxTime time, const std::vector<BaseType>& values, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() == values.size() );
+		if( values.size() != getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Set "+values.size()+" values on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		for( std::size_t i = 0; i < getSize(); ++i )
 		{
 			_controls[i].setValueAtTime( time, values[i], eChangeNone );
@@ -155,13 +187,23 @@ public:
 	// derived class does not need to implement, default is an approximation
 	inline virtual void deriveAtIndex( const OfxTime time, const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() > index );
+		if( index >= getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Derive value at index "+index+" on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		_controls[index].derive( time, outDst );
 	}
 
 	inline virtual void integrateAtIndex( const OfxTime time1, const OfxTime time2, const std::size_t index, BaseType& outDst ) const OFX_EXCEPTION_SPEC
 	{
-		BOOST_ASSERT( _controls.size() > index );
+		if( index >= getSize() )
+		{
+			BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Integrate value at index "+index+" on a multidimensional parameter of size " + DIM + "."
+				);
+		}
 		_controls[index].integrate( time1, time2, outDst );
 	}
 
@@ -228,10 +270,23 @@ public:
 			_controls[index].integrate( time1, time2, *v );
 		}
 	}
-
+	
+	bool paramTypeHasData() const { return true; }
+	
+	std::size_t getHashAtTime( const OfxTime time ) const
+	{
+		std::size_t seed = 0;
+		for( std::size_t i = 0; i < getSize(); ++i )
+		{
+			BaseType value = 0;
+			getValueAtTimeAndIndex( time, i, value );
+			boost::hash_combine( seed, value );
+		}
+		return seed;
+	}
+	
 	std::ostream& displayValues( std::ostream& os ) const
 	{
-		BOOST_STATIC_ASSERT( DIM != 0 );
 		os << "[";
 		for( std::size_t index = 0; index < DIM-1; ++index )
 		{

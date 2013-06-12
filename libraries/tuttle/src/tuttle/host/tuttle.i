@@ -9,6 +9,7 @@
 %include "InputBufferWrapper.i"
 %include "attribute/allParams.i"
 %include "Graph.i"
+%include "graph/ProcessGraph.i"
 %include "ThreadEnv.i"
 %include "Node.i"
 %include "OverlayInteract.i"

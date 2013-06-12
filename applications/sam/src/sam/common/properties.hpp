@@ -4,9 +4,4 @@
 #include "node_io.hpp"
 #include <tuttle/host/Graph.hpp>
 
-
-
-
-
-
 #endif

@@ -154,7 +154,7 @@ void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEff
 void OfxhImageEffectPlugin::addContext( const std::string& context )
 {
 	_knownContexts.insert( context );
-	//TUTTLE_TCOUT( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
+	//TUTTLE_TLOG( TUTTLE_TRACE, "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
 }
 
 const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
@@ -165,16 +165,15 @@ const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 {
 	/*
-	   std::cout << context << " supportsContext? " << _knownContexts.size() << std::endl;
-
-	   for( ContextSet::iterator it = _knownContexts.begin(),
-	     itEnd = _knownContexts.end();
-	     it != itEnd;
-	 ++it )
-	   {
-	    TUTTLE_TCOUT( "context " << *it );
-	   }
-	 */
+	TUTTLE_TLOG( TUTTLE_TRACE, context << " supportsContext? " << _knownContexts.size() << std::endl;
+	
+	for( ContextSet::iterator it = _knownContexts.begin(),
+		 it != _knownContexts.end();
+		 ++it )
+	{
+		TUTTLE_TLOG( TUTTLE_TRACE, "context " << *it );
+	}
+	*/
 	return _knownContexts.find( context ) != _knownContexts.end();
 }
 
@@ -194,7 +193,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 {
 	if( getPluginHandle() )
 	{
-		//TUTTLE_TCOUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
+		//TUTTLE_TLOG( TUTTLE_TRACE, "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
 		return;
 	}
 	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( *this, getApiHandler().getHost() ) );
@@ -235,10 +234,10 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 {
 	ContextMap::iterator it = _contexts.find( context );
 
-	//TUTTLE_TCOUT( "context : " << context );
+	//TUTTLE_TLOG( TUTTLE_TRACE, "context : " << context );
 	if( it != _contexts.end() )
 	{
-		//TUTTLE_TCOUT( "found context description : " << it->second->getLabel() );
+		//TUTTLE_TLOG( TUTTLE_TRACE, "found context description : " << it->second->getLabel() );
 		return *( it->second );
 	}
 

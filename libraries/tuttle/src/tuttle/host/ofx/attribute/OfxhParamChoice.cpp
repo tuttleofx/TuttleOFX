@@ -2,6 +2,7 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/functional/hash.hpp>
 
 namespace tuttle {
 namespace host {
@@ -73,11 +74,31 @@ int OfxhParamChoice::getIndexFor( const std::string& key ) const
 		) );
 }
 
-const std::string& OfxhParamChoice::getValueForId( const int id ) const
+const std::string& OfxhParamChoice::getChoiceKeyAt( const int index ) const
 {
-	typedef std::vector<std::string> StringVector;
-	const StringVector& values = this->getProperties().fetchStringProperty( kOfxParamPropChoiceOption ).getValues();
-	return values[id];
+	const std::vector<std::string>& keys = getChoiceKeys();
+	if( index < 0 || index >= keys.size() )
+	{
+		BOOST_THROW_EXCEPTION( OfxhException(kOfxStatErrBadIndex)
+			<< exception::user() + "The index value \"" + index + "\" is out of kays range.\n" +
+			"Choice keys are : [\n\"" + boost::algorithm::join( keys, "\",\n\"" ) + "\" ]"
+			);
+	}
+	return keys[index];
+}
+
+void OfxhParamChoice::getValue( std::string& outKey ) const OFX_EXCEPTION_SPEC
+{
+	int index = 0;
+	getValue( index );
+	outKey = getChoiceKeyAt(index);
+}
+
+void OfxhParamChoice::getValueAtTime( const OfxTime time, std::string& outKey ) const OFX_EXCEPTION_SPEC
+{
+	int index = 0;
+	getValueAtTime( time, index );
+	outKey = getChoiceKeyAt(index);
 }
 
 /**
@@ -118,6 +139,13 @@ void OfxhParamChoice::setV( const OfxTime time, va_list arg, const EChange chang
 	int value = va_arg( arg, int );
 
 	return setValueAtTime( time, value, change );
+}
+	
+std::size_t OfxhParamChoice::getHashAtTime( const OfxTime time ) const
+{
+	std::string value; // don't use the index here. The plugin could change the order of choices values in a minor version change.
+	getValueAtTime( time, value );
+	return boost::hash_value( value );
 }
 
 }

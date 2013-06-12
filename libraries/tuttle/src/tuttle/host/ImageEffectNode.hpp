@@ -81,6 +81,8 @@ public:
 	ofx::attribute::OfxhClipImageSet& getClipImageSet() { return *this; }
 	const ofx::attribute::OfxhClipImageSet& getClipImageSet() const { return *this; }
 	
+	std::size_t getLocalHashAtTime( const OfxTime time ) const;
+	
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
 		return getData(time)._apiImageEffect._renderRoD;
@@ -186,9 +188,6 @@ public:
 	// This contains the duration of the plug-in effect, in frames.
 	double getEffectDuration() const;
 
-	// For an instance, this is the frame rate of the project the effect is in.
-	double getFrameRate() const;
-
 	/// This is called whenever a param is changed by the plugin so that
 	/// the recursive instanceChangedAction will be fed the correct frame
 	double getFrameRecursive() const;
@@ -263,6 +262,7 @@ private:
 	void checkClipsConnections() const;
 
 	void initComponents();
+	void initInputClipsPixelAspectRatio();
 	void initPixelAspectRatio();
 	void initInputClipsFps();
 	void initFps();

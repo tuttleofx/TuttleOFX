@@ -29,21 +29,24 @@ struct CheckerboardFunctor
 
 	CheckerboardFunctor() {}
 	CheckerboardFunctor( const point_t& tileSize, const value_type& in_color, const value_type& out_color )
-		: _in_color( in_color )
-		, _out_color( out_color )
-		, _tile_size( tileSize )
-		, _tile_size_2( tileSize*2.0 ) {}
+		: _in_color   ( in_color )
+		, _out_color  ( out_color )
+		, _tile_size  ( tileSize )
+		, _tile_size_2( tileSize * 2.0 )
+	{
+		
+	}
 
 	result_type operator()( const point_t& p ) const
 	{
 		const point_t mp( fmod( p.x, _tile_size_2.x ), fmod( p.y, _tile_size_2.y ) );
 
 		/*
-		   std::cout << "__________" << std::endl;
-		   std::cout << "p.x: " << p.x << " p.y: " << p.y << std::endl;
-		   std::cout << "mp.x: " << mp.x << " mp.y: " << mp.y << std::endl;
-		   std::cout << "_tile_size.x: " << _tile_size.x << " _tile_size.y: " << _tile_size.y << std::endl;
-		 */
+		TUTTLE_LOG_TRACE( "__________" );
+		TUTTLE_LOG_TRACE( "p.x: " << p.x << " p.y: " << p.y );
+		TUTTLE_LOG_TRACE( "mp.x: " << mp.x << " mp.y: " << mp.y );
+		TUTTLE_LOG_TRACE( "_tile_size.x: " << _tile_size.x << " _tile_size.y: " << _tile_size.y );*/
+		
 		if( ( mp.x > _tile_size.x ) != ( mp.y > _tile_size.y ) )
 			return _in_color;
 		return _out_color;

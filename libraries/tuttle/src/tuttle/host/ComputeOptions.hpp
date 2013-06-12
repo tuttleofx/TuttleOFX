@@ -5,6 +5,8 @@
 
 #include <boost/atomic.hpp>
 
+#include <limits>
+
 #include <list>
 
 namespace tuttle {
@@ -13,8 +15,8 @@ namespace host {
 struct TimeRange
 {
 	TimeRange()
-		: _begin( 0 )
-		, _end( 0 )
+		: _begin( std::numeric_limits<int>::min() )
+		, _end( std::numeric_limits<int>::max() )
 		, _step( 1 )
 	{}
 	TimeRange( const int frame )
@@ -48,26 +50,33 @@ public:
 	typedef ComputeOptions This;
 	
 	ComputeOptions()
-	: _abort( false )
+	: _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		init();
 	}
 	explicit
 	ComputeOptions( const int frame )
-	: _abort( false )
+	: _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( frame, frame ) );
 	}
 	ComputeOptions( const int begin, const int end, const int step = 1 )
-	: _abort( false )
+	: _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
 	}
-	explicit
 	ComputeOptions( const ComputeOptions& options )
-	: _abort( false )
+	: _begin( std::numeric_limits<int>::min() )
+	, _end( std::numeric_limits<int>::max() )
+	, _abort( false )
 	{
 		*this = options;
 	}
@@ -104,6 +113,9 @@ private:
 public:
 	const std::list<TimeRange>& getTimeRanges() const { return _timeRanges; }
 	
+	int getBegin( ) const { return _begin; }
+	int getEnd  ( ) const { return _end; }
+	
 	This& setTimeRange( const int begin, const int end, const int step = 1 )
 	{
 		_timeRanges.clear();
@@ -124,6 +136,18 @@ public:
 	This& addTimeRange( const TimeRange& timeRange )
 	{
 		_timeRanges.push_back( timeRange );
+		return *this;
+	}
+	
+	This& setBegin( const int& beginTime )
+	{
+		_begin = beginTime;
+		return *this;
+	}
+	
+	This& setEnd( const int& endTime )
+	{
+		_end = endTime;
 		return *this;
 	}
 	
@@ -217,11 +241,15 @@ private:
 	std::list<TimeRange> _timeRanges;
 	
 	OfxPointD _renderScale;
+	EVerboseLevel _verboseLevel;
+	// different to range
+	int _begin;
+	int _end;
+	
 	bool _continueOnError;
 	bool _continueOnMissingFile;
 	bool _forceIdentityNodesProcess;
 	bool _returnBuffers;
-	EVerboseLevel _verboseLevel;
 	bool _isInteractive;
 	
 	boost::atomic_bool _abort;

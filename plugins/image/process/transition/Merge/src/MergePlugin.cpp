@@ -214,7 +214,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 //			case eParamMergeStencil:
 //			case eParamMergeUnder:
 //			case eParamMergeXOR:
-//				TUTTLE_COUT_FATALERROR( "Need an alpha channel for this Merge operation." );
+//				TUTTLE_LOG_FATAL( "Need an alpha channel for this Merge operation." );
 //				return;
 //			default:
 //				break;

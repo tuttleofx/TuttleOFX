@@ -78,7 +78,7 @@ CacaImage load_cacaimage_from_view<boost::gil::gray8_view_t>( const boost::gil::
 template<typename Channel>
 struct channel_cout_t : public std::unary_function<Channel,Channel> {
 	GIL_FORCEINLINE
-    Channel operator()(typename boost::gil::channel_traits<Channel>::const_reference ch) const
+	Channel operator()(typename boost::gil::channel_traits<Channel>::const_reference ch) const
 	{
 		std::cout << ch << " ";
 		return ch;
@@ -211,8 +211,8 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						cv = caca_create_canvas(0, 0);
 						if( !cv )
 						{
-							TUTTLE_CERR( "Unable to initialise libcaca." );
-							return;
+							BOOST_THROW_EXCEPTION( exception::Failed()
+								<< exception::user( "Print: unable to initialise libcaca" ) );
 						}
 						switch(_params._colorMode)
 						{
@@ -259,7 +259,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						{
 							cols = lines * cacaImg.w * font_height / cacaImg.h / font_width;
 						}
-						//TUTTLE_COUT ( "output : " << cols << " x " << lines );
+						//TUTTLE_LOG_TRACE( "output : " << cols << " x " << lines );
 						caca_set_canvas_size( cv, cols, lines );
 
 						caca_clear_canvas( cv );
@@ -314,7 +314,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 					}
 					catch(...)
 					{
-						TUTTLE_COUT_CURRENT_EXCEPTION;
+						TUTTLE_LOG_CURRENT_EXCEPTION;
 						if(cv != NULL )
 						caca_free_canvas( cv );
 					}

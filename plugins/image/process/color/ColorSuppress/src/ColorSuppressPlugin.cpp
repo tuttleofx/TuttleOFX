@@ -63,12 +63,14 @@ void ColorSuppressPlugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                TUTTLE_COUT_FATALERROR( "BitDepthUbyte not handeld. (TODO)" );
+				BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+					<< exception::user( "Colorsuppress: BitDepthCustom not supported" ) );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                TUTTLE_COUT_FATALERROR( "BitDepthUShort not handeld. (TODO)" );
+				BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+					<< exception::user( "Colorsuppress: BitDepthCustom not supported" ) );
                 break;
             }
             case OFX::eBitDepthFloat :
@@ -77,10 +79,9 @@ void ColorSuppressPlugin::render( const OFX::RenderArguments &args )
                 break;
             }
             case OFX::eBitDepthNone :
-                TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
             case OFX::eBitDepthCustom :
-                TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
+				BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+					<< exception::user( "Colorsuppress: BitDepthCustom not recognize" ) );
                 return;
         }
     }

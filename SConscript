@@ -1,7 +1,7 @@
 Import( 'project', 'libs' )
 
 ### To enable/disable python expressions in tuttle host
-project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = False
+project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = True
 
 
 
@@ -11,7 +11,10 @@ tuttleFlags = {
 		'LIBPATH': [project.inOutputLib()],
 		'CCFLAGS': project.CC['warning3'],
 		'CPPDEFINES':
-			[('TUTTLE_PLUGIN_PATH','"'+project.inOutputPlugin()+'"')],
+			[
+				('TUTTLE_PLUGIN_PATH','"'+project.inOutputPlugin()+'"'),
+				'BOOST_ALL_DYN_LINK',
+			],
 	}
 
 if project.env['mode'] == 'production' :

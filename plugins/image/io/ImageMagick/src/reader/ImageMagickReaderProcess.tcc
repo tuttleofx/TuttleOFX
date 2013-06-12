@@ -135,7 +135,7 @@ View& ImageMagickReaderProcess<View>::readGilImage( View& dst, const std::string
 			image->colorspace != GRAYColorspace &&
 			image->colorspace != TransparentColorspace )
 	{
-		TUTTLE_COUT( " Change colorspace to RGB." );
+		TUTTLE_LOG_WARNING( " Change colorspace to RGB." );
 		SetImageColorspace( image, RGBColorspace );
 	}
 	

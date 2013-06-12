@@ -37,6 +37,20 @@ def testInt2DParam():
 	# set Int2D param values
 	s = node.getParam("size")
 	s.setValue( [1, 2] )
+	assert_equal( 1, s.getIntValueAtIndex(0) )
+	assert_equal( 2, s.getIntValueAtIndex(1) )
+
+	# Check error cases
+	# not a double param
+	assert_raises( Exception, s.getDoubleValue )
+	# not a string param
+	assert_raises( Exception, s.getStringValue )
+	# not a multidim double param
+	assert_raises( Exception, s.getDoubleValueAtIndex, 0 )
+	assert_raises( Exception, s.getDoubleValueAtIndex, 1 )
+	# outside dim
+	assert_raises( Exception, s.getIntValueAtIndex, 3 )
+	assert_raises( Exception, s.getIntValueAtIndex, 13 )
 
 	# set values at times
 	s.setValue( {1.0:[80, 40], 9.0:0} )
@@ -63,14 +77,41 @@ def testDoubleParam():
 	# set Double2D param values
 	s = node.getParam("master")
 
-	# raise, not a multidim param
-	#assert_equal( 12.34, s.getDoubleValueAtIndex(0) )
-
+	# Check init value
 	assert_equal( 12.34, s.getDoubleValue() )
+
+	# Check error cases
+	# not an int param
+	assert_raises( Exception, s.getIntValue )
+	# not a string param
+	assert_raises( Exception, s.getStringValue )
+	# not a multidim param
+	assert_raises( Exception, s.getDoubleValueAtIndex, 0 )
+	assert_raises( Exception, s.getDoubleValueAtIndex, 1 )
 
 	# Simple set value
 	s.setValue( 1.456 )
 	assert_equal( 1.456, s.getDoubleValue() )
+
+	# Set at time
+	s.setValue( {1.0:1.5, 9.0:9.5} )
+	assert_equal( 1.5, s.getDoubleValueAtTime(1.) )
+	assert_equal( 9.5, s.getDoubleValueAtTime(9.) )
+
+	# Check outside ranges
+	assert_equal( 1.5, s.getDoubleValueAtTime(0.) )
+	assert_equal( 9.5, s.getDoubleValueAtTime(10.) )
+
+	# Check interpolation
+	m = s.getDoubleValueAtTime(4.)
+	assert_greater( m, 1.5 )
+	assert_less( m, 9.5 )
+
+	s.setValueAtTime( 15.0, 3.5 )
+	assert_equal( 3.5, s.getDoubleValueAtTime(15.) )
+
+	s.setValueAtTime( 150.0, 30.5 )
+	assert_equal( 30.5, s.getDoubleValueAtTime(150.) )
 
 
 def testDouble2DParam():
@@ -80,8 +121,17 @@ def testDouble2DParam():
 	# set Double2D param values
 	s = node.getParam("size")
 
+	# Check init values
 	assert_equal( 12.34, s.getDoubleValueAtIndex(0) )
 	assert_equal(   0.5, s.getDoubleValueAtIndex(1) )
+
+	# Check error cases
+	# not an int param
+	assert_raises( Exception, s.getIntValue )
+	assert_raises( Exception, s.getIntValueAtIndex, 0 )
+	assert_raises( Exception, s.getIntValueAtIndex, 1 )
+	# not a single value param
+	assert_raises( Exception, s.getDoubleValue )
 
 	# Simple set value
 	s.setValue( [1.5, 25.0] )
@@ -98,6 +148,17 @@ def testDouble2DParam():
 	assert_equal( 0., s.getDoubleValueAtTimeAndIndex(9., 0) )
 	assert_equal( 0., s.getDoubleValueAtTimeAndIndex(9., 1) )
 
+	# Check interpolation
+	m = s.getDoubleValueAtTimeAndIndex(3., 0)
+	assert_greater( m, 0. )
+	assert_less( m, 10.5 )
+	
+	# Check outside ranges
+	assert_equal( 10.5, s.getDoubleValueAtTimeAndIndex(-5., 0) )
+	assert_equal(  0.0, s.getDoubleValueAtTimeAndIndex(20., 0) )
+	assert_equal( 40.0, s.getDoubleValueAtTimeAndIndex(-5., 1) )
+	assert_equal(  0.0, s.getDoubleValueAtTimeAndIndex(20., 1) )
+	
 	# Set integers to double (auto conversion)
 	s.setValue( [1, 25] )
 	assert_equal(  1., s.getDoubleValueAtIndex(0) )
@@ -106,7 +167,7 @@ def testDouble2DParam():
 	assert_equal(  1., s.getDoubleValueAtTimeAndIndex(1., 0) )
 	assert_equal( 25., s.getDoubleValueAtTimeAndIndex(1., 1) )
 	
-	# mix double and integers
+	# mix double and integers (auto conversion)
 	s.setValue( [1.345, 25] )
 	assert_equal(  1.345, s.getDoubleValueAtIndex(0) )
 	assert_equal( 25., s.getDoubleValueAtIndex(1) )
@@ -158,6 +219,7 @@ def testDouble3DParam():
 	assert_equal( 25., s.getDoubleValueAtTimeAndIndex(1., 1) )
 	assert_equal(  3.58, s.getDoubleValueAtTimeAndIndex(1., 2) )
 
+
 def testRGBParam():
 	g = tuttle.Graph()
 
@@ -165,10 +227,10 @@ def testRGBParam():
 	node = g.createNode( "tuttle.pinning", overlayInColor=[.5, .5, .5] )
 	assert_equal( .5, node.getParam("overlayInColor").getDoubleValueAtIndex(1) )
 	
-#	@raises(Exception)
-#	def test_setRGBA_on_RGB_param():
-#		# Set RGBA values on an RGB parameter
-#		node = g.createNode( "tuttle.pinning", overlayInColor=[.5, .5, .5, .5] )
+	# Check error cases
+	# Set RGBA values on an RGB parameter
+	assert_raises( Exception, g.createNode, "tuttle.pinning", overlayInColor=[.5, .5, .5, .5] )
+	assert_raises( Exception, g.createNode, "tuttle.pinning", overlayInColor="I'm not a color value." )
 
 	c = node.getParam("overlayInColor")
 	

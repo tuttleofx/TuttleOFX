@@ -1,0 +1,16 @@
+Import( 'project', 'libs' )
+
+project.createOfxPlugin(
+	dirs = ['src'],
+	libraries = [
+		libs.tuttlePlugin,
+		libs.boost_gil,
+		libs.boost_filesystem,
+		libs.boost_regex,
+		libs.avutil,
+		libs.avcodec,
+		libs.avformat,
+		libs.swscale,
+		]
+	)
+

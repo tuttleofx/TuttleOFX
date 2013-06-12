@@ -247,8 +247,8 @@ void convertRGBAToABGR( DataVector& dataVec, size_t width, size_t height, int pi
 			dataFloatIt = dataPtrIt;
 			
 			/*for(char c=0; c<4; c++)
-				TUTTLE_COUT( *(dataFloatIt+c) );
-			TUTTLE_COUT( "" );*/
+				TUTTLE_LOG_INFO( *(dataFloatIt+c) );
+			TUTTLE_LOG_INFO( "" );*/
 			
 			__m128 floatData;
 			// only interate on 1 dimension: 128 bits is one pixel
@@ -263,7 +263,7 @@ void convertRGBAToABGR( DataVector& dataVec, size_t width, size_t height, int pi
 			}
 			
 			/*for(char i=0; i<4; i++)
-				TUTTLE_COUT( *(dataFloatIt+i) );*/
+				TUTTLE_LOG_INFO( *(dataFloatIt+i) );*/
 			break;
 		}
 	}

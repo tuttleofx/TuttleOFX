@@ -73,7 +73,7 @@ void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestAr
 	srcRealRoiD.y1 = srcRealRoi.y1;
 	srcRealRoiD.x2 = srcRealRoi.x2;
 	srcRealRoiD.y2 = srcRealRoi.y2;
-//	TUTTLE_COUT_VAR( srcRealRoiD );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, srcRealRoiD );
 	
 	rois.setRegionOfInterest( *_clipSrc, srcRealRoiD );
 }

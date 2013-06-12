@@ -245,7 +245,7 @@ void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int
 	}
 	_value[index] = value;
 
-	//	TUTTLE_TCOUT( "setValue: " << value << " at index: " << index );
+	//TUTTLE_TLOG( TUTTLE_INFO, "setValue: " << value << " at index: " << index );
 
 	_modifiedBy = who;
 

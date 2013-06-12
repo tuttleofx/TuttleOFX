@@ -65,7 +65,7 @@ OfxhImage::OfxhImage()
 	, _clipName( "No clip !" )
 	, _time( 0 )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName()
+	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] create clip:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
@@ -81,7 +81,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance, const OfxTime time )
 	, _clipName( instance.getName() )
 	, _time( time )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName()
+	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] create clip:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
@@ -107,7 +107,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 	, _clipName( instance.getName() )
 	, _time( time )
 {
-	TUTTLE_TCOUT( "++ OfxhImage, clipName:" << getClipName()
+	TUTTLE_TLOG( TUTTLE_INFO, "++ OfxhImage, clipName:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
@@ -136,7 +136,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 
 OfxhImage::~OfxhImage()
 {
-	TUTTLE_TCOUT( "-- ~OfxhImage, clipName:" << getClipName()
+	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] delete clip:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( eReferenceOwnerHost )
@@ -236,13 +236,13 @@ int OfxhImage::getReferenceCount( const EReferenceOwner from ) const
 void OfxhImage::addReference( const EReferenceOwner from, const std::size_t n )
 {
 	const std::ptrdiff_t refC = _referenceCount[from] = getReferenceCount(from) + n;
-	TUTTLE_TCOUT( "+"<<n<<"  Image::addReference, id:" << getId() << ", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << refC );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] add reference with degree " << n << ", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << refC );
 }
 
 bool OfxhImage::releaseReference( const EReferenceOwner from )
 {
 	const std::ptrdiff_t refC = _referenceCount[from] = getReferenceCount(from) - 1;
-	TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() <<", clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << refC );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] release reference, clipName:" << getClipName() << ", time:" << getTime() << ", id:" << getId() << ", ref:" << refC );
 	if( refC < 0 )
 		BOOST_THROW_EXCEPTION( std::logic_error( "Try to release an undeclared reference to an Image." ) );
 	return refC <= 0;

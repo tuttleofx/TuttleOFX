@@ -1,33 +1,41 @@
+#include <tuttle/common/utils/global.hpp>
+
 #include <tuttle/host/Graph.hpp>
 
 void sam_terminate( void )
 {
-	std::cerr << "Sorry, Sam has encountered a fatal error." << std::endl;
-	std::cerr << "Please report this bug." << std::endl;
+	TUTTLE_LOG_ERROR( "[io example] Sorry, Sam has encountered a fatal error." );
+	TUTTLE_LOG_ERROR( "[io example] Please report this bug." );
 	exit( -1 );
 }
 
 void sam_unexpected( void )
 {
-	std::cerr << "Sorry, Sam has encountered an unexpected exception." << std::endl;
-	std::cerr << "Please report this bug." << std::endl;
+	TUTTLE_LOG_ERROR( "[io example] Sorry, Sam has encountered a fatal error." );
+	TUTTLE_LOG_ERROR( "[io example] Please report this bug." );
 	BOOST_THROW_EXCEPTION( std::runtime_error( "Sorry, Sam has encountered an unexpected exception.\nPlease report this bug." ) );
 }
 
 int main( int argc, char** argv )
 {
+	boost::shared_ptr<tuttle::common::formatters::Formatter> formatter( tuttle::common::formatters::Formatter::get() );
+	boost::shared_ptr<tuttle::common::Color>                 color( tuttle::common::Color::get() );
+	formatter->init_logging();
+	color->disable();
+	
 	std::set_terminate( &sam_terminate );
 	std::set_unexpected( &sam_unexpected );
 	try
 	{
 		using namespace tuttle::host;
-		TUTTLE_COUT( "__________________________________________________0" );
+		TUTTLE_LOG_INFO( "[canny example] Preload plugins" );
 		core().preload();
 
-		TUTTLE_COUT( core().getImageEffectPluginCache() );
+		TUTTLE_TLOG( TUTTLE_INFO, core().getImageEffectPluginCache() );
 
-		TUTTLE_COUT( "__________________________________________________1" );
+		TUTTLE_LOG_INFO( "[canny example] Preload done" );
 
+		TUTTLE_LOG_INFO( "[canny example] create plugins" );
 		Graph g;
 		//		Graph::Node& read1   = g.createNode( "tuttle.ffmpegreader" );
 		Graph::Node& read1    = g.createNode( "tuttle.pngreader" );
@@ -47,15 +55,17 @@ int main( int argc, char** argv )
 		Graph::Node& write2    = g.createNode( "tuttle.dpxwriter" );
 		Graph::Node& write3    = g.createNode( "tuttle.exrwriter" );
 		Graph::Node& write4    = g.createNode( "tuttle.ffmpegwriter" );
-
-		TUTTLE_COUT( "__________________________________________________2" );
+		
+		TUTTLE_LOG_INFO( "[canny example] set plugins parameters" );
 		// Setup parameters
 		//		read1.getParam( "filename" ).setValue( "data/input1.avi" );
 		read1.getParam( "filename" ).setValue( "data/input.png" );
 		read2.getParam( "filename" ).setValue( "data/input.dpx" );
 		read3.getParam( "filename" ).setValue( "data/input.exr" );
 		bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
-		TUTTLE_COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getStringValue() );
+		
+		TUTTLE_LOG_VAR( TUTTLE_INFO, bitdepth.getParam( "outputBitDepth" ).getStringValue() );
+		
 		blur1.getParam( "size" ).setValue( 6.5, 15.0 );
 		//		blur1.getParam( "size" ).setAtIndex( 65.43, 1 );
 		//	crop1.getParam( "Down" ).setValue( 400 );
@@ -64,7 +74,7 @@ int main( int argc, char** argv )
 		write3.getParam( "filename" ).setValue( "data/output3.exr" );
 		write4.getParam( "filename" ).setValue( "data/output4.avi" );
 
-		TUTTLE_COUT( "__________________________________________________3" );
+		TUTTLE_LOG_INFO( "[canny example] connect plugins" );
 		g.connect( read1, bitdepth );
 		g.connect( bitdepth, invert1 );
 		g.connect( invert1, invert2 );
@@ -80,24 +90,26 @@ int main( int argc, char** argv )
 		//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
 
-		TUTTLE_COUT( "__________________________________________________4" );
+		TUTTLE_LOG_INFO( "[canny example] process graph" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		//		outputs.push_back( write2.getName() );
 		//		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
 		g.compute( outputs );
+		TUTTLE_LOG_INFO( "[canny example] finish" );
 	}
 	catch( tuttle::exception::Common& e )
 	{
-		std::cout << "Tuttle Exception : main de sam." << std::endl;
-		std::cerr << boost::diagnostic_information( e );
+		TUTTLE_LOG_ERROR( "Tuttle Exception : main de sam." );
+		TUTTLE_LOG_ERROR( boost::diagnostic_information( e ) );
+		return -1;
 	}
 	catch(... )
 	{
-		std::cerr << "Exception ... : main de sam." << std::endl;
-		std::cerr << boost::current_exception_diagnostic_information();
-
+		TUTTLE_LOG_ERROR( "Exception ... : main de sam." );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
+		return -1;
 	}
 
 	return 0;

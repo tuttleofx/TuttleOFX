@@ -756,7 +756,9 @@ protected:
         {
             if( param->getType() == paramType )
             {
+#ifdef _DEBUG
                 OFXS_COUT_WARNING( "Parameter already defined ! (" + name + ")" );
+#endif
                 paramPtr = (T*) param; // could be a dynamic cast here
                 return true;
             }

@@ -104,7 +104,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 void EXRReaderPlugin::updateCombos()
 {
 	const std::string filename( getAbsoluteFirstFilename() );
-	//TUTTLE_COUT("update Combo");
+	//TUTTLE_LOG_VAR("update Combo");
 	if( bfs::exists( filename ) )
 	{
 		// read dims
@@ -122,7 +122,7 @@ void EXRReaderPlugin::updateCombos()
 		for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
 		{
 			_vChannelNames.push_back( it.name() );
-			//TUTTLE_COUT_VAR( it.name() );
+			//TUTTLE_LOG_VAR( it.name() );
 			for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
 			{
 				_vChannelChoice[j]->appendOption( it.name() );

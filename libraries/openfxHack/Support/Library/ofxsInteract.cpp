@@ -548,7 +548,7 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 	
 	catch( boost::exception& e )
 	{
-		std::cerr << tuttle::common::kColorError;
+		std::cerr << tuttle::common::Color::get()->_error;
 		std::cerr << "__________" << std::endl;
 		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
 		{
@@ -574,7 +574,7 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 		std::cerr << boost::trace(e);
 	#endif
 		std::cerr << "__________" << std::endl;
-		std::cerr << tuttle::common::kColorStd;
+		std::cerr << tuttle::common::Color::get()->_std;
 		
 		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )
 		{

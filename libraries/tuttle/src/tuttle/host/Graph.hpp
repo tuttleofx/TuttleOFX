@@ -12,6 +12,8 @@
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/UVertex.hpp>
 #include <tuttle/host/graph/UEdge.hpp>
+#include <tuttle/host/NodeAtTimeKey.hpp>
+#include <tuttle/host/NodeHashContainer.hpp>
 #include <tuttle/host/attribute/Attribute.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 #include <tuttle/common/utils/global.hpp>
@@ -94,14 +96,14 @@ public:
 	 * 
 	 * @warning: Nodes will be renamed.
 	 */
-	void addNodes( const std::vector<NodeInit>& nodes );
+	std::vector<INode*> addNodes( const std::vector<NodeInit>& nodes );
 	
 	/**
 	 * @brief Add nodes to the graph and connect them linearly.
 	 * 
 	 * @warning: Nodes will be renamed.
 	 */
-	void addConnectedNodes( const std::vector<NodeInit>& nodes );
+	std::vector<INode*> addConnectedNodes( const std::vector<NodeInit>& nodes );
 	
 	/**
 	 * @brief Rename a node in the current graph.
@@ -144,6 +146,10 @@ public:
 	void init();
 	
 	void setup();
+
+	void setupAtTime( const OfxTime time, const NodeListArg& nodes = NodeListArg() );
+	
+	void computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& nodes = NodeListArg() );
 	
 	/**
 	 * @brief Shortcut

@@ -54,11 +54,11 @@ void OCIOLutProcess<View>::setup(const OFX::RenderArguments& args)
 	
 		outputColorSpace->setTransform( groupTransform, OCIO::COLORSPACE_DIR_FROM_REFERENCE );
 	
-		TUTTLE_TCOUT( tuttle::common::kColorMagenta << "Specified Transform:" << *(groupTransform) << tuttle::common::kColorStd );
+		TUTTLE_TLOG( TUTTLE_WARNING, "Specified Transform:" << *(groupTransform) );
 	
 		config->addColorSpace( outputColorSpace );
 		
-		// Try to load the processor		
+		// Try to load the processor
 		config->getProcessor( kOCIOInputspace.c_str(), kOCIOOutputspace.c_str() );
 	}
 	catch(OCIO::Exception & exception)
@@ -107,7 +107,8 @@ void OCIOLutProcess<View>::applyLut(View& dst, View& src) {
 		}
 		else
 		{
-			for (std::size_t y = 0; y < (unsigned int) dst.height(); ++y) {
+			for (std::size_t y = 0; y < (unsigned int) dst.height(); ++y)
+			{
 				// Wrap the image in a light-weight ImageDescription
 				OCIO::PackedImageDesc imageDesc((float*) &(dst(0, y)[0]),
 						dst.width(), 1, num_channels<View>::type::value,

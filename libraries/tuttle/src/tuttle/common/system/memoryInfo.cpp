@@ -36,26 +36,24 @@ MemoryInfo getMemoryInfo()
 	//infos._bufferRam = sys_info.bufferram * sys_info.mem_unit;
 	infos._totalSwap = sys_info.totalswap * sys_info.mem_unit;
 	infos._freeSwap  = sys_info.freeswap * sys_info.mem_unit;
-//	TUTTLE_COUT_VAR( sys_info.sharedram * sys_info.mem_unit );
-//	TUTTLE_COUT_VAR( sys_info.bufferram * sys_info.mem_unit );
+//	TUTTLE_LOG_VAR( TUTTLE_TRACE, sys_info.sharedram * sys_info.mem_unit );
+//	TUTTLE_LOG_VAR( TUTTLE_TRACE, sys_info.bufferram * sys_info.mem_unit );
 	#else
 	infos._totalRam             =
 	    infos._freeRam          =
 	        infos._totalSwap    =
 	            infos._freeSwap = std::numeric_limits<std::size_t>::max();
 	#endif
-	TUTTLE_COUT_X_DEBUG( 40, "-=" );
-	TUTTLE_COUT_DEBUG( "Memory infos" );
-	TUTTLE_COUT_DEBUG( infos );
+	TUTTLE_LOG_DEBUG( TUTTLE_INFO, "[Memory infos] " << infos );
 
 	return infos;
 }
 
 std::ostream& operator<<( std::ostream& os, const MemoryInfo& infos )
 {
-	os << "total ram:" << infos._totalRam << std::endl
-	   << "free ram:" << infos._freeRam << std::endl
+	os << "total ram:"  << infos._totalRam << std::endl
+	   << "free ram:"   << infos._freeRam << std::endl
 	   << "total swap:" << infos._totalSwap << std::endl
-	   << "free swap:" << infos._freeSwap << std::endl;
+	   << "free swap:"  << infos._freeSwap << std::endl;
 	return os;
 }

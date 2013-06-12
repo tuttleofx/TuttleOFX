@@ -821,7 +821,7 @@ Image::Image( OfxPropertySetHandle props )
 	_uniqueID = _imageProps.propGetString( kOfxImagePropUniqueIdentifier );
 
 	//	std::string tuttleFullName = _imageProps.propGetString( "TuttleFullName" );
-	//	TUTTLE_COUT("tuttleFullName: " << tuttleFullName );
+	//	TUTTLE_LOG_TRACE("tuttleFullName: " << tuttleFullName );
 
 	_renderScale.x = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	_renderScale.y = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
@@ -887,8 +887,7 @@ std::size_t Image::getBoundsImageDataBytes() const
 void* Image::getPixelAddress( int x, int y )
 {
 	// are we in the image bounds
-	if( x < _bounds.x1 || x >= _bounds.x2 || y < _bounds.y1 || y > _bounds.y2 || _pixelBytes == 0 )
-	return 0;
+	BOOST_ASSERT( x >= _bounds.x1 && x < _bounds.x2 && y >= _bounds.y1 && y < _bounds.y2 && _pixelBytes != 0 );
 
 	char* pix = ( char* )( ( (char*) _pixelData ) + ( y - _bounds.y1 ) * _rowDistanceBytes );
 	pix += ( x - _bounds.x1 ) * _pixelBytes;
@@ -1127,14 +1126,15 @@ OfxRectI Clip::getPixelRod( const OfxTime t ) const
 {
 	OfxRectD rod = getCanonicalRod(t);
 	double ratio = getPixelAspectRatio();
-	if( ratio == 0 )
-	ratio = 1;
+	if( ratio == 0.0 )
+		ratio = 1.0;
 
 	OfxRectI pixRod;
 	pixRod.x1 = boost::numeric_cast<int>(rod.x1 / ratio);
 	pixRod.y1 = boost::numeric_cast<int>(rod.y1);
 	pixRod.x2 = boost::numeric_cast<int>(std::ceil(rod.x2 / ratio));
 	pixRod.y2 = boost::numeric_cast<int>(std::ceil(rod.y2));
+
 	return pixRod;
 }
 
@@ -1821,31 +1821,31 @@ void loadAction( void )
 	// fetch the suites
 	OFX::Log::error( gHost == 0, "Host pointer has not been set." );
 	if( !gHost )
-	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
 
 	if( Private::gLoadCount == 1 )
 	{
-	gEffectSuite   = (OfxImageEffectSuiteV1*) fetchSuite( kOfxImageEffectSuite, 1 );
-	gPropSuite     = (OfxPropertySuiteV1*)    fetchSuite( kOfxPropertySuite, 1 );
-	gParamSuite    = (OfxParameterSuiteV1*)   fetchSuite( kOfxParameterSuite, 1 );
-	gMemorySuite   = (OfxMemorySuiteV1*)      fetchSuite( kOfxMemorySuite, 1 );
-	gThreadSuite   = (OfxMultiThreadSuiteV1*) fetchSuite( kOfxMultiThreadSuite, 1 );
-	gMessageSuite  = (OfxMessageSuiteV1*)     fetchSuite( kOfxMessageSuite, 1 );
-	gProgressSuite = (OfxProgressSuiteV1*)     fetchSuite( kOfxProgressSuite, 1, true );
-	gTimeLineSuite = (OfxTimeLineSuiteV1*)     fetchSuite( kOfxTimeLineSuite, 1, true );
-	gParametricParameterSuite = static_cast<OfxParametricParameterSuiteV1*>( OFX::fetchSuite( kOfxParametricParameterSuite, 1, true ) );
-	gCameraParameterSuite = static_cast<NukeOfxCameraSuiteV1*>( OFX::fetchSuite( kNukeOfxCameraSuite, 1, true ) );
+		gEffectSuite   = (OfxImageEffectSuiteV1*) fetchSuite( kOfxImageEffectSuite, 1 );
+		gPropSuite     = (OfxPropertySuiteV1*)    fetchSuite( kOfxPropertySuite, 1 );
+		gParamSuite    = (OfxParameterSuiteV1*)   fetchSuite( kOfxParameterSuite, 1 );
+		gMemorySuite   = (OfxMemorySuiteV1*)      fetchSuite( kOfxMemorySuite, 1 );
+		gThreadSuite   = (OfxMultiThreadSuiteV1*) fetchSuite( kOfxMultiThreadSuite, 1 );
+		gMessageSuite  = (OfxMessageSuiteV1*)     fetchSuite( kOfxMessageSuite, 1 );
+		gProgressSuite = (OfxProgressSuiteV1*)     fetchSuite( kOfxProgressSuite, 1, true );
+		gTimeLineSuite = (OfxTimeLineSuiteV1*)     fetchSuite( kOfxTimeLineSuite, 1, true );
+		gParametricParameterSuite = static_cast<OfxParametricParameterSuiteV1*>( OFX::fetchSuite( kOfxParametricParameterSuite, 1, true ) );
+		gCameraParameterSuite = static_cast<NukeOfxCameraSuiteV1*>( OFX::fetchSuite( kNukeOfxCameraSuite, 1, true ) );
 
-	// OK check and fetch host information
-	fetchHostDescription( gHost );
+		// OK check and fetch host information
+		fetchHostDescription( gHost );
 
-	/// and set some dendent flags
-	OFX::Private::gHostDescription.supportsProgressSuite = ( gProgressSuite != NULL );
-	OFX::Private::gHostDescription.supportsTimeLineSuite = ( gTimeLineSuite != NULL );
+		/// and set some dendent flags
+		OFX::Private::gHostDescription.supportsProgressSuite = ( gProgressSuite != NULL );
+		OFX::Private::gHostDescription.supportsTimeLineSuite = ( gTimeLineSuite != NULL );
 
-	// fetch the interact suite if the host supports interaction
-	if( OFX::Private::gHostDescription.supportsOverlays || OFX::Private::gHostDescription.supportsCustomInteract )
-		gInteractSuite = (OfxInteractSuiteV1*) fetchSuite( kOfxInteractSuite, 1 );
+		// fetch the interact suite if the host supports interaction
+		if( OFX::Private::gHostDescription.supportsOverlays || OFX::Private::gHostDescription.supportsCustomInteract )
+			gInteractSuite = (OfxInteractSuiteV1*) fetchSuite( kOfxInteractSuite, 1 );
 	}
 
 	// initialise the validation code
@@ -1862,14 +1862,14 @@ void unloadAction( const char* id )
 	--Private::gLoadCount;
 
 	{
-	EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
-	EffectContextMap& toBeDeleted    = it->second;
-	for( EffectContextMap::iterator it2 = toBeDeleted.begin(); it2 != toBeDeleted.end(); ++it2 )
-	{
-		OFX::ImageEffectDescriptor* desc = it2->second;
-		delete desc;
-	}
-	toBeDeleted.clear();
+		EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
+		EffectContextMap& toBeDeleted    = it->second;
+		for( EffectContextMap::iterator it2 = toBeDeleted.begin(); it2 != toBeDeleted.end(); ++it2 )
+		{
+			OFX::ImageEffectDescriptor* desc = it2->second;
+			delete desc;
+		}
+		toBeDeleted.clear();
 	}
 	{
 		OFX::OfxPlugInfoMap::iterator it  = OFX::Private::plugInfoMap.find( id );
@@ -1886,16 +1886,16 @@ void unloadAction( const char* id )
 
 	if( Private::gLoadCount == 0 )
 	{
-	// force these to null
-	gEffectSuite   = NULL;
-	gPropSuite     = NULL;
-	gParamSuite    = NULL;
-	gMemorySuite   = NULL;
-	gThreadSuite   = NULL;
-	gMessageSuite  = NULL;
-	gInteractSuite = NULL;
-	gParametricParameterSuite = NULL;
-	gCameraParameterSuite = NULL;
+		// force these to null
+		gEffectSuite   = NULL;
+		gPropSuite     = NULL;
+		gParamSuite    = NULL;
+		gMemorySuite   = NULL;
+		gThreadSuite   = NULL;
+		gMessageSuite  = NULL;
+		gInteractSuite = NULL;
+		gParametricParameterSuite = NULL;
+		gCameraParameterSuite = NULL;
 
 		ofxPlugs.clear();
 		gHasInit = false;
@@ -2632,7 +2632,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	}
 	catch( boost::exception& e )
 	{
-		std::cerr << tuttle::common::kColorError;
+		std::cerr << tuttle::common::Color::get()->_error;
 		std::cerr << "__________" << std::endl;
 		/*
 		[tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
@@ -2664,7 +2664,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		std::cerr << boost::trace(e);
 	#endif
 		std::cerr << "__________" << std::endl;
-		std::cerr << tuttle::common::kColorStd;
+		std::cerr << tuttle::common::Color::get()->_std;
 		
 		/// @todo there is an assert in boost::get_error_info here. Why?
 		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )

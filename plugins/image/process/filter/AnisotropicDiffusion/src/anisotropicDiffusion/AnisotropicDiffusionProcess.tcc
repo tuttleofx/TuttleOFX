@@ -160,13 +160,13 @@ void AnisotropicDiffusionProcess<View>::blur_anisotropic( View &dst, View &src, 
     {
         if( src.num_channels( ) < 3 || dst.num_channels( ) < 3 )
         {
-            TUTTLE_COUT_ERROR( "blur_anisotropic() : Specified tensor field (" << (int)G.width( ) << ", " << (int)G.height( ) << ", " << (int)G.num_channels( ) << ") is not valid." );
+            TUTTLE_LOG_ERROR( "blur_anisotropic() : Specified tensor field (" << (int)G.width( ) << ", " << (int)G.height( ) << ", " << (int)G.num_channels( ) << ") is not valid." );
             return;
         }
 
         if( src.dimensions( ) != G.dimensions( ) )
         {
-            TUTTLE_COUT_ERROR( "blur_anisotropic() : Incompatible dimensions." );
+            TUTTLE_LOG_ERROR( "blur_anisotropic() : Incompatible dimensions." );
             return;
         }
 

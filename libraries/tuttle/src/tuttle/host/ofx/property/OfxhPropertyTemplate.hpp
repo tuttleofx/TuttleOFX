@@ -126,7 +126,7 @@ public:
 	{
 		if( getType() != other.getType() )
 		{
-			//TUTTLE_TCOUT( "OfxhPropertyTemplate::operator== not same type : " << getType() << " != " << other.getType() );
+			//TUTTLE_TLOG( TUTTLE_INFO, "OfxhPropertyTemplate::operator== not same type : " << getType() << " != " << other.getType() );
 			return false;
 		}
 		return operator==( dynamic_cast<const This&>( other ) );
@@ -140,12 +140,12 @@ public:
 			return true; // we can't compare abstract pointer content, so assume true.
 		if( _value != other._value )
 		{
-			//TUTTLE_TCOUT( "OfxhPropertyTemplate::operator== not same value : " );
+			//TUTTLE_TLOG( TUTTLE_INFO, "OfxhPropertyTemplate::operator== not same value : " );
 			//for( typename std::vector<Type>::const_iterator it = _value.begin(), itEnd = _value.end(), ito = other._value.begin(), itoEnd = other._value.end();
 			//	 it != itEnd && ito != itoEnd;
 			//     ++it, ++ito )
 			//{
-			//	TUTTLE_TCOUT( *it << " != " << *ito );
+			//	TUTTLE_TLOG( TUTTLE_INFO, *it << " != " << *ito );
 			//}
 			return false;
 		}

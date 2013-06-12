@@ -222,7 +222,7 @@ property::OfxhSet& OfxhImageEffectNode::getParamSetProps()
 // do nothing
 size_t OfxhImageEffectNode::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
 {
-	TUTTLE_COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ << " with name=" << name );
+	TUTTLE_LOG_ERROR( "failing in " << __PRETTY_FUNCTION__ << " with name=" << name );
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	return 0;
 }
@@ -234,7 +234,7 @@ size_t OfxhImageEffectNode::upperGetDimension( const std::string& name )
 
 void OfxhImageEffectNode::notify( const std::string& name, bool singleValue, int indexOrN ) OFX_EXCEPTION_SPEC
 {
-	TUTTLE_COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ );
+	TUTTLE_LOG_ERROR( "failing in " << __PRETTY_FUNCTION__ );
 }
 
 /**
@@ -242,7 +242,7 @@ void OfxhImageEffectNode::notify( const std::string& name, bool singleValue, int
  */
 void OfxhImageEffectNode::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 {
-	TUTTLE_COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ );
+	TUTTLE_LOG_ERROR( "failing in " << __PRETTY_FUNCTION__ );
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
@@ -279,7 +279,7 @@ double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int inde
 	{
 		if( index >= 1 )
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		return getProjectPixelAspectRatio();
+		return getOutputPixelAspectRatio();
 	}
 	else if( name == kOfxImageEffectInstancePropEffectDuration )
 	{
@@ -291,7 +291,7 @@ double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int inde
 	{
 		if( index >= 1 )
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		return getFrameRate();
+		return getOutputFrameRate();
 	}
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
 	return 0.0;
@@ -321,7 +321,7 @@ void OfxhImageEffectNode::getDoublePropertyN( const std::string& name, double* f
 	{
 		if( n > 1 )
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		*first = getProjectPixelAspectRatio();
+		*first = getOutputPixelAspectRatio();
 	}
 	else if( name == kOfxImageEffectInstancePropEffectDuration )
 	{
@@ -333,7 +333,7 @@ void OfxhImageEffectNode::getDoublePropertyN( const std::string& name, double* f
 	{
 		if( n > 1 )
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
-		*first = getFrameRate();
+		*first = getOutputFrameRate();
 	}
 	else
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
@@ -646,7 +646,7 @@ void OfxhImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
 
 void OfxhImageEffectNode::renderAction( OfxTime            time,
 					const std::string& field,
-					const OfxRectI&    renderRoI,
+					const OfxRectI&    renderWindow,
 					OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
 	static const property::OfxhPropSpec stuff[] = {
@@ -661,10 +661,10 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 
 	inArgs.setDoubleProperty( kOfxPropTime, time );
 	inArgs.setStringProperty( kOfxImageEffectPropFieldToRender, field );
-	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderRoI.x1, 4 );
+	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderWindow.x1, 4 );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
-	//TUTTLE_TCOUT("OfxhImageEffect::renderAction inArgs=" << inArgs );
+	//TUTTLE_TLOG( TUTTLE_INFO, "OfxhImageEffect::renderAction inArgs=" << inArgs );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionRender, this->getHandle(), &inArgs, 0 );
 
@@ -730,8 +730,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 {
 	ClipTimesSetMap timesSetMap = getFramesNeeded( time ); /// @todo: do not recompute this here
 	
-//	TUTTLE_TCOUT( "calcDefaultRegionOfDefinition" );
-//	TUTTLE_TCOUT_VAR( _context );
+//	TUTTLE_TLOG( TUTTLE_INFO, "calcDefaultRegionOfDefinition" );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, _context );
 	OfxRectD rod = { 0, 0, 0, 0 };
 	try
 	{
@@ -1121,7 +1121,7 @@ OfxhImageEffectNode::ClipTimesSetMap OfxhImageEffectNode::getFramesNeeded( const
 
 bool OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
 					    const std::string& field,
-					    const OfxRectI&    renderRoI,
+					    const OfxRectI&    renderWindow,
 					    OfxPointD          renderScale,
 					    std::string&       clip ) const OFX_EXCEPTION_SPEC
 {
@@ -1143,10 +1143,12 @@ bool OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
 
 	inArgs.setStringProperty( kOfxImageEffectPropFieldToRender, field );
 	inArgs.setDoubleProperty( kOfxPropTime, time );
-	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderRoI.x1, 4 );
+	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderWindow.x1, 4 );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
 	property::OfxhSet outArgs( outStuff );
+
+	outArgs.setDoubleProperty( kOfxPropTime, time );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionIsIdentity,
 				      this->getHandle(),
@@ -1220,7 +1222,8 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	/// most components
 	std::string deepestBitDepth = kOfxBitDepthNone;
 	std::string mostComponents  = kOfxImageComponentNone;
-	double frameRate            = 0;
+	double frameRate            = 0.0;
+	double defaultPixelAspectRatio = 0.0;
 	std::string premult         = kOfxImageOpaque;
 
 	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clipImages.begin();
@@ -1236,6 +1239,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 			{
 				frameRate = maximum( frameRate, clip->getFrameRate() );
 			}
+			defaultPixelAspectRatio = std::max( defaultPixelAspectRatio, clip->getPixelAspectRatio() );
 
 			std::string rawComp = clip->getUnmappedComponents();
 			rawComp = clip->findSupportedComp( rawComp ); // turn that into a comp the plugin expects on that clip
@@ -1256,8 +1260,10 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	}
 
 	// default value if the generator don't set the framerate
-	if( frameRate == 0 )
-		frameRate = 25;
+	if( frameRate == 0.0 )
+		frameRate = 25.0;
+	if( defaultPixelAspectRatio == 0.0 )
+		defaultPixelAspectRatio = 1.0;
 	
 	/// set some stuff up
 	_outputFrameRate         = frameRate;
@@ -1265,6 +1271,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	_outputPreMultiplication = premult;
 	_continuousSamples       = false;
 	_frameVarying            = false;
+	getOutputOfxhClip().setPixelAspectRatio( defaultPixelAspectRatio, property::eModifiedByHost );
 
 	/// now find the best depth that the plugin supports
 	deepestBitDepth = bestSupportedBitDepth( deepestBitDepth );
@@ -1312,6 +1319,8 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
  */
 void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, std::list<std::string>& outKeepPropNamesOwnership )
 {
+	// http://openfx.sourceforge.net/Documentation/1.3/ofxProgrammingReference.html#ImageEffectClipPreferences
+	
 	/// reset all the clip prefs stuff to their defaults
 	setDefaultClipPreferences();
 
@@ -1359,7 +1368,7 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs, 
 		const std::string& parParamName = outKeepPropNamesOwnership.back();
 		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::ePropTypeDouble, 1, false, "1" };
 		outArgs.createProperty( specPAR );
-		outArgs.setDoubleProperty( parParamName, 1.0 ); // Default pixel aspect ratio is set to 1.0
+		outArgs.setDoubleProperty( parParamName, clip->getPixelAspectRatio() );
 	}
 }
 
@@ -1412,7 +1421,7 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 			clip->setBitDepthString( kOfxBitDepthFloat, property::eModifiedByHost );
 		}
 	}
-
+	
 	_outputFrameRate         = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRate );
 	_outputFielding          = outArgs.getStringProperty( kOfxImageClipPropFieldOrder );
 	_outputPreMultiplication = outArgs.getStringProperty( kOfxImageEffectPropPreMultiplication );

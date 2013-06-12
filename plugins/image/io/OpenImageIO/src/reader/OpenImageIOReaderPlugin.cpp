@@ -76,6 +76,13 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 
 	const std::string filename( getAbsoluteFirstFilename() );
 
+	if( !bfs::exists( filename ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
+			<< exception::user( "OpenImageIO: Unable to open file" )
+			<< exception::filename( filename ) );
+	}
+
 	// if no filename
 	if( filename.size() == 0 )
 	{

@@ -57,7 +57,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		//TUTTLE_TCOUT( "MarkUsed &&&&& init" << vertex.getName() );
+		//TUTTLE_TLOG( TUTTLE_INFO, "MarkUsed &&&&& init" << vertex.getName() );
 		vertex.setUsed( false );
 	}
 
@@ -69,7 +69,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		//TUTTLE_COUT_VAR( vertex.getName() );
+		//TUTTLE_LOG_VAR( TUTTLE_TRACE, vertex.getName() );
 		vertex.setUsed();
 	}
 
@@ -88,14 +88,12 @@ public:
 	Test_dfs( TGraph& graph )
 		: _graph( graph )
 	{
-		TUTTLE_COUT_X( 80, "_" );
-		TUTTLE_TCOUT( "Test_dfs" );
+		TUTTLE_TLOG( TUTTLE_TRACE, "Test_dfs" );
 	}
 
 	~Test_dfs()
 	{
-		TUTTLE_TCOUT( "~Test_dfs" );
-		TUTTLE_COUT_X( 80, "_" );
+		TUTTLE_TLOG( TUTTLE_TRACE, "~Test_dfs" );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -103,7 +101,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TCOUT( "initialize_vertex: " << vertex );
+		TUTTLE_TLOG( TUTTLE_TRACE, "initialize_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -111,7 +109,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TCOUT( "start_vertex: " << vertex );
+		TUTTLE_TLOG( TUTTLE_TRACE, "start_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -119,7 +117,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TCOUT( "discover_vertex: " << vertex );
+		TUTTLE_TLOG( TUTTLE_TRACE, "discover_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -127,7 +125,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TCOUT( "finish_vertex: " << vertex );
+		TUTTLE_TLOG( TUTTLE_TRACE, "finish_vertex: " << vertex );
 	}
 
 	template<class EdgeDescriptor, class Graph>
@@ -138,7 +136,7 @@ public:
 		//		Vertex& vertexSource = _graph.sourceInstance(e);
 		//		Vertex& vertexDest   = _graph.targetInstance(e);
 
-		TUTTLE_TCOUT( "examine_edge: " << edge );
+		TUTTLE_TLOG( TUTTLE_TRACE, "examine_edge: " << edge );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -146,7 +144,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TUTTLE_TCOUT( "tree_edge: " << edge  );
+		TUTTLE_TLOG( TUTTLE_TRACE, "tree_edge: " << edge  );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -154,7 +152,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TUTTLE_TCOUT( "back_edge: " << edge  );
+		TUTTLE_TLOG( TUTTLE_TRACE, "back_edge: " << edge  );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -162,7 +160,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TUTTLE_TCOUT( "forward_or_cross_edge: " << edge );
+		TUTTLE_TLOG( TUTTLE_TRACE, "forward_or_cross_edge: " << edge );
 	}
 
 private:
@@ -177,67 +175,55 @@ public:
 	template<class VertexDescriptor, class Graph>
 	void initialize_vertex( VertexDescriptor v, Graph& g )
 	{
-		std::cout << "initialize_vertex "
-		          << g[v] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "initialize_vertex " << g[v] );
 	}
 
 	template<class VertexDescriptor, class Graph>
 	void discover_vertex( VertexDescriptor v, Graph& g )
 	{
-		std::cout << "discover_vertex "
-		          << g[v]
-		          << "  outedges: " << out_degree( v, g )
-		          << std::endl;
-
+		TUTTLE_TLOG( TUTTLE_TRACE, "discover_vertex " << g[v] << " outedges: " << out_degree( v, g ) );
 	}
 
 	template<class VertexDescriptor, class Graph>
 	void examine_vertex( VertexDescriptor v, Graph& g )
 	{
-		std::cout << "examine_vertex "
-		          << g[v] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "examine_vertex " << g[v] );
 	}
 
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
-		std::cout << "finish_vertex "
-		          << g[v] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "finish_vertex " << g[v] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void examine_edge( EdgeDescriptor e, Graph& g )
 	{
-		std::cout << "examine_edge "
-		          << g[e] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "examine_edge " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void tree_edge( EdgeDescriptor e, Graph& g )
 	{
-		std::cout << "tree_edge "
-		          << g[e] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "tree_edge " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void non_tree_edge( EdgeDescriptor e, Graph& g )
 	{
-		std::cout << "non_tree_edge "
-		          << g[e] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "non_tree_edge " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void gray_target( EdgeDescriptor e, Graph& g )
 	{
-		std::cout << "gray_target "
-		          << g[e] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "gray_target " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void black_target( EdgeDescriptor e, Graph& g )
 	{
-		std::cout << "black_target "
-		          << g[e] << std::endl;
+		TUTTLE_TLOG( TUTTLE_TRACE, "black_target " << g[e] );
 	}
 
 };

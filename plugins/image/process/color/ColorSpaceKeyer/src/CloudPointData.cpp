@@ -67,7 +67,7 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
 		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return false;
 	}
 	// Compute if source is OK
@@ -170,7 +170,7 @@ bool CloudPointData::generateColorSelectionVBO(OFX::Clip* clipColor, const OfxPo
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
 		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return false;
 	}
 	// Compute if source is OK
@@ -238,12 +238,12 @@ bool CloudPointData::generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPo
 		(clipSpill->getPixelComponents() == OFX::ePixelComponentNone) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
-        return false;
+		return false;
 	}
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
 		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return false;
 	}
 	// Compute if source is OK

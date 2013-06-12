@@ -61,7 +61,6 @@ bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionA
 	FileInfo fileInfo = retrieveFileInfo( args.time );
 	if ( fileInfo._failed )
 	{
-		//TUTTLE_COUT_DEBUG("Input not found => Rod is unvailable");
 		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
 			<< exception::user( "Jpeg2000: Unable to open file" )
 			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
@@ -77,10 +76,10 @@ bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionA
 
 void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-//	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
-//	TUTTLE_COUT_VAR( getAbsoluteFirstFilename() );
-//	TUTTLE_COUT_VAR( getFirstTime() );
-//	TUTTLE_COUT_VAR( getAbsoluteFilenameAt(getFirstTime()) );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, _paramFilepath->getValue() );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, getAbsoluteFirstFilename() );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, getFirstTime() );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, getAbsoluteFilenameAt(getFirstTime()) );
 
 	ReaderPlugin::getClipPreferences( clipPreferences );
 
@@ -88,7 +87,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 	if ( fileInfo._failed )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
-			<< exception::user( "Unable to read file infos." ) );
+			<< exception::user( "Jpeg2000: Unable to read file infos." ) );
 	}
 
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
@@ -116,7 +115,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 			default:
 			{
 				BOOST_THROW_EXCEPTION( exception::ImageFormat()
-					<< exception::user() + "Unexpected number of channels (" + fileInfo._components + ")" );
+					<< exception::user() + "Jpeg2000: Unexpected number of channels (" + fileInfo._components + ")" );
 			}
 		}
 	}
@@ -132,8 +131,8 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 {
 	if( retrieveFileInfo(args.time)._failed )
 	{
-		TUTTLE_COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
-		return;
+		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+			<< exception::user( "Jpeg2000: get file info failed" ) );
 	}
 	// Full image decoding
 	_reader.decode();
@@ -165,14 +164,10 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 			case OFX::eBitDepthNone:
-			{
-				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			}
 			case OFX::eBitDepthCustom:
 			{
-				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
+				BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+					<< exception::user( "Jpeg2000: BitDepthCustom not recognize" ) );
 			}
 		}
 	}
@@ -199,14 +194,10 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 			case OFX::eBitDepthNone:
-			{
-				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			}
 			case OFX::eBitDepthCustom:
 			{
-				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
+				BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+					<< exception::user( "Jpeg2000: BitDepthCustom not recognize" ) );
 			}
 		}
 	}
@@ -233,20 +224,17 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 			case OFX::eBitDepthNone:
-			{
-				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			}
 			case OFX::eBitDepthCustom:
 			{
-				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
+				BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
+					<< exception::user( "Jpeg2000: BitDepthCustom not recognize" ) );
 			}
 		}
 	}
 	else
 	{
-		TUTTLE_COUT_FATALERROR( dstComponents << " not recognize." );
+		TUTTLE_LOG_FATAL( dstComponents << " not recognize." );
+		BOOST_THROW_EXCEPTION( exception::Unknown() );
 	}
 }
 
@@ -323,7 +311,7 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 		default:
 			_fileInfos._failed = true;
 			BOOST_THROW_EXCEPTION( exception::ImageFormat()
-			<< exception::user() + "Bit depth not handled ! (" + _reader.precision() + ")"
+			<< exception::user() + "Jpeg2000: Bit depth not handled ! (" + _reader.precision() + ")"
 			<< exception::filename( filename )
 			<< exception::time( time ) );
 	}

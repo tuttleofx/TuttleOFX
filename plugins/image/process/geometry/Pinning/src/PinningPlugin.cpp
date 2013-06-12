@@ -251,7 +251,7 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 				subrange( A, 3,6, 0,3 ) = subrange( A, 0,3, 3,6 ) = zero_matrix<double>(n);
 				subrange( A, 0,3, 2,3 ) = subrange( A, 3,6, 5,6 ) = scalar_matrix<double>(3,1, 1);
 				
-				// TUTTLE_COUT_VAR( A );
+				// TUTTLE_LOG_VAR( TUTTLE_INFO, A );
 
 				lu_factorize( A, P );
 				// Now A and P contain the LU factorization of A
@@ -320,7 +320,7 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 					b(i) = pIn[i][0];
 					b(i+4) = pIn[i][1];
 				}
-				//TUTTLE_COUT_VAR( A );
+				//TUTTLE_LOG_VAR( TUTTLE_INFO, A );
 
 				lu_factorize( A, P );
 				// Now A and P contain the LU factorization of A
@@ -473,9 +473,10 @@ void PinningPlugin::render( const OFX::RenderArguments& args )
 				p.setupAndProcess( args );
 				break;
 			}
-			default:
+			case OFX::eBitDepthNone:
+			case OFX::eBitDepthCustom:
 			{
-				TUTTLE_COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 				break;
 			}
 		}
@@ -502,16 +503,17 @@ void PinningPlugin::render( const OFX::RenderArguments& args )
 				p.setupAndProcess( args );
 				break;
 			}
-			default:
+			case OFX::eBitDepthNone:
+			case OFX::eBitDepthCustom:
 			{
-				TUTTLE_COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 				break;
 			}
 		}
 	}
 	else
 	{
-		TUTTLE_COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
+		TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 	}
 }
 

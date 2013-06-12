@@ -108,8 +108,8 @@ void setParametersForNode( const std::vector<std::string> parameters, ttl::Graph
 				tuttle::exception::Value() <<
 				tuttle::exception::user() + "Non-keyword parameter after keyword parameter. \"" + paramStr + "\"." );
 		}
-		//								TUTTLE_COUT( "* " << paramStr );
-		//								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
+		//TUTTLE_LOG_INFO( "* " << paramStr );
+		//TUTTLE_LOG_INFO( "3: " << paramName << " => " << paramValue );
 
 		if( isDummyNode )
 		{

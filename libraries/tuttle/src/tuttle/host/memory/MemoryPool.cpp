@@ -86,23 +86,11 @@ MemoryPool::MemoryPool( const std::size_t maxSize )
 
 MemoryPool::~MemoryPool()
 {
-	TUTTLE_TCOUT_X( 20, "-" );
-	TUTTLE_TCOUT( "~MemoryPool()" );
-	if( !_dataUsed.empty() )
+/*	if( !_dataUsed.empty() )
 	{
-		TUTTLE_COUT_WARNING( "Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
+		TUTTLE_LOG_WARNING( "[Memory Pool] Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
 	}
-	TUTTLE_TCOUT_VAR( _dataUsed.size() );
-	TUTTLE_TCOUT_VAR( _dataUnused.size() );
-	TUTTLE_TCOUT_VAR( _allDatas.size() );
-	TUTTLE_TCOUT_VAR( _memoryAuthorized );
-	TUTTLE_TCOUT( "" );
-	TUTTLE_TCOUT_VAR( getUsedMemorySize() );
-	TUTTLE_TCOUT_VAR( getAllocatedMemorySize() );
-	TUTTLE_TCOUT_VAR( getMaxMemorySize() );
-	TUTTLE_TCOUT_VAR( getAvailableMemorySize() );
-	TUTTLE_TCOUT_VAR( getWastedMemorySize() );
-	TUTTLE_TCOUT_X( 20, "-" );
+*/
 }
 
 void MemoryPool::referenced( PoolData* pData )
@@ -167,7 +155,7 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 
 boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 {
-	TUTTLE_TCOUT( "MemoryPool::allocate: " << size );
+	TUTTLE_TLOG( TUTTLE_TRACE, "[Memory Pool] allocate " << size << " bytes" );
 	PoolData* pData = NULL;
 
 	{
@@ -186,7 +174,7 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 	if( size > availableSize )
 	{
 		std::stringstream s;
-		s << "MemoryPool can't allocate size:" << size << " because memorySizeAvailable=" << availableSize;
+		s << "[Memory Pool] can't allocate size:" << size << " because memory available is equal to " << availableSize << " bytes";
 		BOOST_THROW_EXCEPTION( std::length_error( s.str() ) );
 	}
 	return new PoolData( *this, size );
@@ -195,8 +183,7 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 std::size_t MemoryPool::updateMemoryAuthorizedWithRAM()
 {
 	_memoryAuthorized = /*getUsedMemorySize() +*/ getMemoryInfo()._totalRam;
-	TUTTLE_COUT_X_DEBUG( 5, " - MEMORYPOOL::updateMemoryAuthorizedWithRAM - " );
-	TUTTLE_COUT_VAR_DEBUG( _memoryAuthorized );
+	TUTTLE_LOG_DEBUG( TUTTLE_TRACE, "[Memory Pool] update memory authorized with RAM: " << _memoryAuthorized );
 	return _memoryAuthorized;
 }
 
@@ -247,6 +234,16 @@ std::size_t MemoryPool::getWastedMemorySize() const
 	return std::accumulate( _dataUsed.begin(), _dataUsed.end(), 0, std::ptr_fun( &accumulateWastedSize ) );
 }
 
+std::size_t MemoryPool::getDataUsedSize() const
+{
+	return _dataUsed.size();
+}
+
+std::size_t MemoryPool::getDataUnusedSize() const
+{
+	return _dataUnused.size();
+}
+
 void MemoryPool::clear( std::size_t size )
 {
 	/// @todo tuttle
@@ -263,7 +260,21 @@ void MemoryPool::clearOne()
 {
 	/// @todo tuttle
 }
-
+/*
+std::ostream& operator<<( std::ostream& os, const MemoryPool& memoryPool )
+{
+	os << "[Memory Pool] Used data:             " << memoryPool._dataUsed.size() << " bytes";
+	os << "[Memory Pool] Unused data:           " << memoryPool.getDataUnusedSize() << " bytes";
+	os << "[Memory Pool] All datas:             " << memoryPool.getDataUsedSize() << " bytes";
+	os << "[Memory Pool] Memory authorized:     " << memoryPool.updateMemoryAuthorizedWithRAM() << " bytes";
+	os << "";
+	os << "[Memory Pool] Used memory:           " << memoryPool.getUsedMemorySize() << " bytes";
+	os << "[Memory Pool] Allocated memory:      " << memoryPool.getAllocatedMemorySize() << " bytes";
+	os << "[Memory Pool] Max memory:            " << memoryPool.getMaxMemorySize() << " bytes";
+	os << "[Memory Pool] Available memory size: " << memoryPool.getAvailableMemorySize() << " bytes";
+	os << "[Memory Pool] Wasted memory:         " << memoryPool.getWastedMemorySize() << " bytes";
+	return ostream;
+}*/
 
 }
 }

@@ -67,13 +67,9 @@ void correlate_rows_imp( const SrcView& src, const Kernel& ker, const DstView& d
                          Correlator correlator )
 {
 	using namespace terry::numeric;
-	
-	// assert dst frame with shift is inside src frame
-    assert( src.dimensions() >= dst.dimensions() );
+
 	// dst must be contained in src
-    assert( dst_tl >= 0 );
     assert( dst_tl <= src.dimensions() );
-	assert( dst_tl + dst.dimensions() <= src.dimensions() );
     assert( ker.size() != 0 );
 
 	typedef typename SrcView::point_t point_t;
@@ -372,20 +368,6 @@ void correlate_1d_auto_imp( const SrcView& src, const Kernel& ker, const DstView
 			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
 			break;
 		}
-		case 9:
-		{
-			typedef kernel_1d_fixed<typename Kernel::value_type, 9> FixedKernel;
-			FixedKernel fker( ker.begin(), ker.center() );
-			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
-			break;
-		}
-		case 11:
-		{
-			typedef kernel_1d_fixed<typename Kernel::value_type, 11> FixedKernel;
-			FixedKernel fker( ker.begin(), ker.center() );
-			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
-			break;
-		}
 		default:
 		{
 			correlate_1d_imp<PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option, Rows(), boost::mpl::false_() );
@@ -521,9 +503,6 @@ void correlate_rows_cols_imp( const SrcView& src,
 						  const typename SrcView::point_t& dst_tl,
 						  const convolve_boundary_option option = convolve_option_extend_zero )
 {
-	// dst with dst_tl shift must be inside src
-	BOOST_ASSERT( dst.width() + dst_tl.x <= src.width() );
-	BOOST_ASSERT( dst.height() + dst_tl.y <= src.height() );
     typedef typename DstView::point_t Point;
     typedef typename DstView::coord_t Coord;
 	typedef typename view_type_from_pixel<PixelAccum, is_planar<DstView>::value >::type ViewAccum;

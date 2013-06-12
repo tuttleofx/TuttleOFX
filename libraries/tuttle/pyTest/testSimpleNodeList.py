@@ -1,4 +1,4 @@
-# scons: Checkerboard Invert FFMpeg Png
+# scons: Checkerboard Invert AudioVideo Png
 
 from pyTuttle.tuttle import *
 

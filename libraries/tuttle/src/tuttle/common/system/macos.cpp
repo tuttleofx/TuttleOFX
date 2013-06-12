@@ -8,7 +8,7 @@
 namespace tuttle {
 namespace common {
 
-std::string CFStringContainer::str( CFStringRef cfString )
+std::string CFStringContainer::toString( CFStringRef cfString )
 {
 	if( !cfString )
 		return std::string();
@@ -17,23 +17,30 @@ std::string CFStringContainer::str( CFStringRef cfString )
 	if( length == 0 )
 		return std::string();
 
-	std::string s( length );
-	CFStringGetCharacters( cfString, CFRangeMake( 0, length ), reinterpret_cast<UniChar *> ( const_cast<QChar *> ( s.unicode() ) ) );
+	std::string s;
+	s.resize( length );
+	// std::wstring s( length );
+	CFStringGetCharacters( cfString, CFRangeMake( 0, length ), reinterpret_cast<UniChar *>( const_cast<char*>( s.c_str() ) ) );
 
-	return string;
+	return s;
 }
 
 CFStringContainer::operator std::string() const
 {
-	if( string.isEmpty() && type )
-		const_cast<CFStringContainer*>(this)->string = toQString( type );
-	return string;
+	return str();
+}
+
+const std::string& CFStringContainer::str() const
+{
+	if( _string.empty() && _type )
+		const_cast<CFStringContainer*>(this)->_string = toString(_type);
+	return _string;
 }
 
 CFStringRef CFStringContainer::toCFStringRef( const std::string& s )
 {
-	return CFStringCreateWithCharacters( 0, reinterpret_cast<const UniChar *> ( s.unicode() ),
-										 s.size() );
+	return CFStringCreateWithCharacters( 0,
+		reinterpret_cast<const UniChar *>( s.c_str() ), s.size() );
 }
 
 CFStringContainer::operator CFStringRef() const
@@ -42,11 +49,11 @@ CFStringContainer::operator CFStringRef() const
 	{
 		const_cast<CFStringContainer*> ( this )->_type =
 			CFStringCreateWithCharactersNoCopy( 0,
-												reinterpret_cast<const UniChar *> ( _string.unicode() ),
-												_string.size(),
-												kCFAllocatorNull );
+				reinterpret_cast<const UniChar *> ( _string.c_str() ),
+				_string.size(),
+				kCFAllocatorNull );
 	}
-	return type;
+	return _type;
 }
 
 

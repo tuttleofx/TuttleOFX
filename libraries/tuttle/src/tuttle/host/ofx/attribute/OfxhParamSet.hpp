@@ -51,7 +51,9 @@ public:
 	bool operator==( const This& other ) const { return _paramVector == other._paramVector; }
 
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
-
+	
+	std::size_t getHashAtTime( const OfxTime time ) const;
+	
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
 
