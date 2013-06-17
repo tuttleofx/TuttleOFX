@@ -7,9 +7,6 @@ import os
 import sys
 windows = os.name.lower() == "nt" and sys.platform.lower().startswith("win")
 
-if not windows:
-	tuttleFlags['CPPDEFINES'].append( 'BOOST_ALL_DYN_LINK' )
-
 ### Define global flags for the whole project
 # depending on the platform and compilation mode
 tuttleFlags = {
@@ -20,6 +17,9 @@ tuttleFlags = {
 				('TUTTLE_PLUGIN_PATH','"'+project.inOutputPlugin()+'"'),
 			],
 	}
+
+if not windows:
+	tuttleFlags['CPPDEFINES'].append( 'BOOST_ALL_DYN_LINK' )
 
 if project.env['mode'] == 'production' :
 	# In 'production' mode set a flag TUTTLE_PRODUCTION
