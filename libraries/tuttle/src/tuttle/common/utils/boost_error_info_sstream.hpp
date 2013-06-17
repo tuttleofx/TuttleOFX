@@ -4,6 +4,9 @@
 #include <boost/exception/exception.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/version.hpp>
+#if( BOOST_VERSION >= 105400 )
+#include <boost/exception/to_string_stub.hpp>
+#endif
 
 #include <sstream>
 #include <string>
@@ -61,7 +64,13 @@ public:
 	value_type&       value()       { return _value; }
 
 private:
-	#if( BOOST_VERSION >= 104300 )
+	
+	#if( BOOST_VERSION >= 105400 )
+	inline std::string name_value_string() const
+	{
+		return to_string_stub(*this);
+	}
+	#elif( BOOST_VERSION >= 104300 )
 	std::string tag_typeid_name() const { return tag_type_name<Tag>(); }
 	#else
 	char const* tag_typeid_name() const { return tag_type_name<Tag>(); }
