@@ -3,7 +3,12 @@ Import( 'project', 'libs' )
 ### To enable/disable python expressions in tuttle host
 project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = True
 
+import os
+import sys
+windows = os.name.lower() == "nt" and sys.platform.lower().startswith("win")
 
+if not windows:
+	tuttleFlags['CPPDEFINES'].append( 'BOOST_ALL_DYN_LINK' )
 
 ### Define global flags for the whole project
 # depending on the platform and compilation mode
@@ -13,7 +18,6 @@ tuttleFlags = {
 		'CPPDEFINES':
 			[
 				('TUTTLE_PLUGIN_PATH','"'+project.inOutputPlugin()+'"'),
-				'BOOST_ALL_DYN_LINK',
 			],
 	}
 
