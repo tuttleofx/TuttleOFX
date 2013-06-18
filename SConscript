@@ -3,10 +3,6 @@ Import( 'project', 'libs' )
 ### To enable/disable python expressions in tuttle host
 project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION = True
 
-import os
-import sys
-windows = os.name.lower() == "nt" and sys.platform.lower().startswith("win")
-
 ### Define global flags for the whole project
 # depending on the platform and compilation mode
 tuttleFlags = {
@@ -17,9 +13,6 @@ tuttleFlags = {
 				('TUTTLE_PLUGIN_PATH','"'+project.inOutputPlugin()+'"'),
 			],
 	}
-
-if not windows:
-	tuttleFlags['CPPDEFINES'].append( 'BOOST_ALL_DYN_LINK' )
 
 if project.env['mode'] == 'production' :
 	# In 'production' mode set a flag TUTTLE_PRODUCTION
@@ -38,6 +31,13 @@ tuttle = project.ObjectLibrary( 'tuttleDefault', envFlags=tuttleFlags )
 # Set this object library as a default library for all targets
 project.commonLibs.append( tuttle )
 
+### Define BOOST_ALL_DYN_LINK if windows isn't the platform. Dynamic link is required on linux for Boost log.
+import os
+import sys
+windows = os.name.lower() == "nt" and sys.platform.lower().startswith("win")
+
+if not windows:
+	tuttleFlags['CPPDEFINES'].append( 'BOOST_ALL_DYN_LINK' )
 
 
 ### Load all SConscript files (in the correct order)
