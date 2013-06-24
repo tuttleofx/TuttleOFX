@@ -61,12 +61,16 @@ public:
 	value_type&       value()       { return _value; }
 
 private:
+	#if( BOOST_VERSION >= 105400 )
+	std::string name_value_string() const { return tag_type_name<Tag>() + '=' + _value._v.str(); }
+	#else
 	#if( BOOST_VERSION >= 104300 )
 	std::string tag_typeid_name() const { return tag_type_name<Tag>(); }
 	#else
 	char const* tag_typeid_name() const { return tag_type_name<Tag>(); }
 	#endif
 	std::string value_as_string() const { return _value._v.str(); }
+	#endif
 
 	value_type _value;
 };
