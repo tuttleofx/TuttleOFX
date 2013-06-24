@@ -7,6 +7,7 @@
 
 //#include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
+#undef nil // /usr/include/MacTypes.h defines nil as NULL. This borks boost.
 
 #include <string>
 
