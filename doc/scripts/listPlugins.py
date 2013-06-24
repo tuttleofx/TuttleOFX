@@ -50,7 +50,7 @@ os.environ['LD_LIBRARY_PATH']= TUTTLE_ROOT+'/lib'
 os.environ['PATH']= TUTTLE_ROOT+'/bin'
 os.environ['SAM_PATH']=TUTTLE_ROOT+'/bin'
 
-process = subprocess.Popen("sam-plugins", shell=True, stdout=subprocess.PIPE)
+process = subprocess.Popen("sam-plugins", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 list = process.communicate()[0]
 
@@ -91,7 +91,7 @@ def TuttleOFX_serialisator(obj):
 
 for plugin in splited:
 	if( plugin == "") : break;
-	processPlugin = subprocess.Popen("sam-do "+plugin+" --param-group" , shell=True, stdout=subprocess.PIPE)
+	processPlugin = subprocess.Popen("sam-do "+plugin+" --param-group" , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	group = processPlugin.communicate()[0]
 	group = group.replace("\n","")
 	splitedGroup = group.split('/')
