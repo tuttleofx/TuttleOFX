@@ -108,6 +108,15 @@ void printImageProperties( std::string path )
 			case LCHColorspace            : colorSpaceType = "LCH"; break;
 			case LMSColorspace            : colorSpaceType = "LMS"; break;
 #endif
+#if MagickLibVersion > 0x684
+			case LCHabColorspace          : colorSpaceType = "LCHab"; break;
+			case LCHuvColorspace          : colorSpaceType = "LCHuv"; break;
+			case scRGBColorspace          : colorSpaceType = "scRGB"; break;
+			case HSIColorspace            : colorSpaceType = "HSI"; break;
+			case HSVColorspace            : colorSpaceType = "HSV"; break;
+			case HCLpColorspace           : colorSpaceType = "HCLp"; break;
+			case YDbDrColorspace          : colorSpaceType = "YDbDr"; break;
+#endif
 		}
 
 		std::string interlaceType;
