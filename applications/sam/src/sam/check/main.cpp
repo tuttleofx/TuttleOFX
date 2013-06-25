@@ -115,6 +115,8 @@ void checkSequence( Graph::Node& read, Graph::Node& stat, Graph& graph, const sp
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	

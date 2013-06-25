@@ -45,6 +45,8 @@ std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)
 
 void printProperties( const tth::ofx::property::OfxhSet properties, std::string context="" )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	boost::shared_ptr<Color> color( Color::get() );
 	if( context.size() == 0 )

@@ -121,6 +121,8 @@ void copy_sequence( const sp::Sequence& s, const bfs::path& d, const sp::Time of
 
 int sammvcp(int argc, char** argv)
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	
