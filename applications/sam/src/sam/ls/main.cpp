@@ -125,12 +125,12 @@ int main( int argc, char** argv )
 	catch( const bpo::error& e)
 	{
 		TUTTLE_LOG_ERROR("sam-ls: command line error: " << e.what() );
-		exit( -2 );
+		exit( 254 );
 	}
 	catch(...)
 	{
 		TUTTLE_LOG_ERROR("sam-ls: unknown error in command line.");
-		exit( -2 );
+		exit( 254 );
 	}
 
 	if ( vm.count(kScriptOptionLongName) )

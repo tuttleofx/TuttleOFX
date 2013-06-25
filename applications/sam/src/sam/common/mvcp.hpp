@@ -202,12 +202,12 @@ int sammvcp(int argc, char** argv)
 	catch( const bpo::error& e )
 	{
 		TUTTLE_LOG_ERROR( SAM_TOOL ": command line error:  " << e.what() );
-		exit(-2);
+		exit(254);
 	}
 	catch( ... )
 	{
 		TUTTLE_LOG_ERROR( SAM_TOOL ": unknown error in command line." );
-		exit(-2);
+		exit(254);
 	}
 
 	if( vm.count( kColorOptionLongName ) )
@@ -344,7 +344,7 @@ int sammvcp(int argc, char** argv)
 		if( offsetMode != eOffsetModeNotSet )
 		{
 			TUTTLE_LOG_ERROR( "You can't cumulate multiple options to modify the time." );
-			return -1;
+			return 255;
 		}
 		offsetMode = eOffsetModeFirstTime;
 	}
@@ -355,7 +355,7 @@ int sammvcp(int argc, char** argv)
 		if (offsetMode != eOffsetModeNotSet)
 		{
 			TUTTLE_LOG_ERROR( "You can't cumulate multiple options to modify the time." );
-			return -1;
+			return 255;
 		}
 		offsetMode = eOffsetModeLastTime;
 	}
@@ -387,7 +387,7 @@ int sammvcp(int argc, char** argv)
 		if( ! dstPath.empty() && !bfs::is_directory( dstPath ) )
 		{
 			TUTTLE_LOG_ERROR( "Your destination is not in a valid directory: " << tuttle::quotes( dstPath.string() ) << "." );
-			return -1;
+			return 255;
 		}
 	}
 	else
@@ -395,7 +395,7 @@ int sammvcp(int argc, char** argv)
 		if( paths.size() > 1 )
 		{
 			TUTTLE_LOG_ERROR( "To copy multiple sequences, your destination must be a directory: " << tuttle::quotes( dstPath.string() ) << "." );
-			return -1;
+			return 255;
 		}
 		sequencePattern = "";
 	}
@@ -408,7 +408,7 @@ int sammvcp(int argc, char** argv)
 		if( !dstIsSeq ) // there is a pattern, but it's not valid.
 		{
 			TUTTLE_LOG_ERROR("Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." );
-			return -1;
+			return 255;
 		}
 	}
 	
@@ -421,12 +421,12 @@ int sammvcp(int argc, char** argv)
 			if( ! srcIsSeq )
 			{
 				TUTTLE_LOG_ERROR( color->_error << "Input is not a sequence: " << tuttle::quotes( srcPath.string() ) << "." << color->_std );
-				return -1;
+				return 255;
 			}
 			if( srcSeq.getNbFiles() == 0 )
 			{
 				TUTTLE_LOG_ERROR( color->_error << "No existing file for the input sequence: " << tuttle::quotes( srcPath.string() ) << "." << color->_std );
-				return -1;
+				return 255;
 			}
 			
 			sp::Time first = hasInputFirst ? inputFirst : srcSeq.getFirstTime();
@@ -471,12 +471,12 @@ int sammvcp(int argc, char** argv)
 	catch( bfs::filesystem_error &ex )
 	{
 		TUTTLE_LOG_ERROR( ex.what( ) );
-		return -2;
+		return 254;
 	}
 	catch(...)
 	{
 		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information( ) );
-		return -3;
+		return 253;
 	}
 	
 	return 0;
