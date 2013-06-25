@@ -258,7 +258,7 @@ int main( int argc, char** argv )
 		// TUTTLE_TLOG_VAR( TUTTLE_INFO, fullcmd );
 		int returnCode = system( fullcmd.c_str() );
 		// TUTTLE_CLOG_VAR( TUTTLE_INFO, UINT_MAX - returnCode );
-		return UINT_MAX - returnCode;
+		return returnCode>>8;
 	}
 	catch( const bpo::error& e )
 	{
