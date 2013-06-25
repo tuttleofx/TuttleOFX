@@ -1,8 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -15,7 +13,6 @@
 #include <Detector.hpp>
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 
 namespace bpo = boost::program_options;
@@ -49,6 +46,8 @@ void coutVec( const boost::ptr_vector<T>& v )
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 
@@ -125,12 +124,12 @@ int main( int argc, char** argv )
 	catch( const bpo::error& e)
 	{
 		TUTTLE_LOG_ERROR("sam-ls: command line error: " << e.what() );
-		exit( -2 );
+		exit( 254 );
 	}
 	catch(...)
 	{
 		TUTTLE_LOG_ERROR("sam-ls: unknown error in command line.");
-		exit( -2 );
+		exit( 254 );
 	}
 
 	if ( vm.count(kScriptOptionLongName) )

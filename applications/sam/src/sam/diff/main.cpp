@@ -2,7 +2,6 @@
 #include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
-#include <tuttle/common/utils/global.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -299,6 +298,8 @@ void displayHelp(bpo::options_description &desc)
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	
@@ -359,10 +360,10 @@ int main( int argc, char** argv )
             bpo::notify(vm);
         } catch (const bpo::error& e) {
             TUTTLE_LOG_ERROR( "sam-diff: command line error: " << e.what() );
-            exit(-2);
+            exit(254);
         } catch (...) {
             TUTTLE_LOG_ERROR( "sam-diff: unknown error in command line." );
-            exit(-2);
+            exit(254);
         }
 
 		if (vm.count(kScriptOptionLongName)) {
@@ -416,12 +417,12 @@ int main( int argc, char** argv )
         if (!vm.count(kReaderOptionLongName)) {
             TUTTLE_LOG_ERROR( "sam-diff : no reader specified." );
             displayHelp(desc);
-            return -2;
+            return 254;
         }
         if (!vm.count(kInputOptionLongName)) {
             TUTTLE_LOG_ERROR( "sam-diff : no input specified." );
             displayHelp(desc);
-            return -2;
+            return 254;
         }
 		
 		if (vm.count(kGeneratorArgsOptionLongName)) {
@@ -435,7 +436,7 @@ int main( int argc, char** argv )
 		{
 			TUTTLE_LOG_ERROR( "sam-diff : require 2 input nodes." );
 			displayHelp(desc);
-			return -2;
+			return 254;
 		}
 		if (vm.count(kRangeOptionLongName))
 		{
@@ -560,7 +561,7 @@ int main( int argc, char** argv )
 	catch (...)
 	{
 		TUTTLE_LOG_ERROR( "sam-diff error " << boost::current_exception_diagnostic_information() );
-		return -1;
+		return 255;
 	}
 	
 	TUTTLE_LOG_INFO( "________________________________________");
