@@ -1,8 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -17,7 +15,6 @@
 #include <Detector.hpp>
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 
 #define FIRST_COLUMN_WIDTH 23

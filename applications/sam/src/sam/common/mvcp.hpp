@@ -1,7 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -15,7 +14,6 @@
 #include <Sequence.hpp>
 
 #include <algorithm>
-#include <iostream>
 
 #ifndef SAM_MOVEFILES
 #define SAM_MV_OR_CP_OPTIONS    "SAM_CP_OPTIONS"

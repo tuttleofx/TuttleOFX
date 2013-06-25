@@ -2,7 +2,6 @@
 #include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
-#include <tuttle/common/utils/global.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
