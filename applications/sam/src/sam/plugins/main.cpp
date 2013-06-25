@@ -13,7 +13,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#include <iostream>
 
 namespace           bpo         = boost::program_options;
 namespace           bal         = boost::algorithm;

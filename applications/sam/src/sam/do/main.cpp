@@ -7,7 +7,6 @@
 #include <sam/common/options.hpp>
 #include <sam/common/utility.hpp>
 
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 #include <tuttle/host/attribute/expression.hpp>
@@ -21,7 +20,6 @@
 
 #include <Detector.hpp>
 
-#include <iostream>
 
 namespace bpo = boost::program_options;
 namespace ttl = tuttle::host;
