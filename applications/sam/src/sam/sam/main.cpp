@@ -99,6 +99,8 @@ std::vector<bfs::path> retrieveAllSamCommands(const std::vector<bfs::path>& dirs
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	

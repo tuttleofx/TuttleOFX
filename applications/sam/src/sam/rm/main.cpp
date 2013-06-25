@@ -136,6 +136,8 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	
