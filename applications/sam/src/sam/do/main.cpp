@@ -424,7 +424,7 @@ int main( int argc, char** argv )
 					// No display option and no sub-command to execute
 					TUTTLE_LOG_ERROR( "sam do: missing operand." );
 					//displayHelp( infoOptions, confOptions );
-					exit( -1 );
+					exit( 255 );
 				}
 				
 				
@@ -464,7 +464,7 @@ int main( int argc, char** argv )
 					if( samdo_vm.count( kRangeOptionLongName ) && ( samdo_vm.count( kFirstImageOptionLongName ) || samdo_vm.count( kLastImageOptionLongName ) ) )
 					{
 						TUTTLE_LOG_ERROR( color->_red << "sam do: could not use " << kRangeOptionLongName << "and " << kFirstImageOptionLongName << " or " << kLastImageOptionLongName << " option." << color->_std << std::endl );
-						exit( -1 );
+						exit( 255 );
 					}
 					
 					if( samdo_vm.count( kFirstImageOptionLongName ) )
@@ -531,12 +531,12 @@ int main( int argc, char** argv )
 			catch( const boost::program_options::error& e )
 			{
 				TUTTLE_LOG_ERROR( "sam do: command line error: " << e.what() );
-				exit( -2 );
+				exit( 254 );
 			}
 			catch( ... )
 			{
 				TUTTLE_LOG_ERROR( "sam do: error: " << boost::current_exception_diagnostic_information() );
-				exit( -2 );
+				exit( 254 );
 			}
 
 			/// @todo Set all sam do options for rendering
@@ -851,7 +851,7 @@ int main( int argc, char** argv )
 #else
 						TUTTLE_LOG_ERROR( "Debug: " << boost::current_exception_diagnostic_information() );
 #endif
-						exit( -2 );
+						exit( 254 );
 					}
 					catch( tuttle::exception::Common& e )
 					{
@@ -862,7 +862,7 @@ int main( int argc, char** argv )
 						TUTTLE_LOG_ERROR( "Debug: " << boost::current_exception_diagnostic_information() );
 						TUTTLE_LOG_ERROR( "Backtrace: " << boost::trace( e ) );
 #endif
-						exit( -2 );
+						exit( 254 );
 					}
 					catch( ... )
 					{
@@ -870,7 +870,7 @@ int main( int argc, char** argv )
 						TUTTLE_LOG_ERROR( "Unknown error." );
 						TUTTLE_LOG_ERROR( "\n" );
 						TUTTLE_LOG_ERROR( "Debug: " << boost::current_exception_diagnostic_information() );
-						exit( -2 );
+						exit( 254 );
 					}
 				}
 			}
@@ -892,7 +892,7 @@ int main( int argc, char** argv )
 		
 		if( nodes.size() == 0 )
 			// nothing to do!
-			exit( -1 );
+			exit( 255 );
 
 		// Setup compute options
 		if( range.size() >= 2 )
@@ -1220,12 +1220,12 @@ int main( int argc, char** argv )
 		TUTTLE_LOG_ERROR( "[sam-do] Debug: " << boost::current_exception_diagnostic_information() );
 		TUTTLE_LOG_ERROR( "[sam-do] Backtrace: " << boost::trace( e ));
 #endif
-		exit( -2 );
+		exit( 254 );
 	}
 	catch( const boost::program_options::error& e )
 	{
 		TUTTLE_LOG_ERROR( "[sam-do] Error: " << e.what());
-		exit( -2 );
+		exit( 254 );
 	}
 	catch( ... )
 	{
@@ -1233,7 +1233,7 @@ int main( int argc, char** argv )
 #ifndef TUTTLE_PRODUCTION
 		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 #endif
-		exit( -2 );
+		exit( 254 );
 	}
 	return 0;
 }

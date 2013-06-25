@@ -174,12 +174,12 @@ int main( int argc, char** argv )
 	catch( const bpo::error& e)
 	{
 		TUTTLE_LOG_ERROR( "sam-check: command line error: " << e.what() );
-		exit( -2 );
+		exit( 254 );
 	}
 	catch(...)
 	{
 		TUTTLE_LOG_ERROR( "sam-check: unknown error in command line." );
-		exit( -2 );
+		exit( 254 );
 	}
 	
 	if( vm.count( kScriptOptionLongName ) )
@@ -325,7 +325,7 @@ int main( int argc, char** argv )
 	catch( ... )
 	{
 		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
-		return -1;
+		return 255;
 	}
 	TUTTLE_LOG_WARNING( "________________________________________" );
 	TUTTLE_LOG_WARNING( "Black images: "      << _blackImage       );
