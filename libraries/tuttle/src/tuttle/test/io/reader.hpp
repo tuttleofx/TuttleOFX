@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE( process_reader )
 	TUTTLE_LOG_INFO( "******** PROCESS READER " << pluginName << " ********" );
 	Graph g;
 
-	TUTTLE_LOG_INFO( "--> PLUGINS CREATION " );
+	TUTTLE_LOG_INFO( "--> PLUGINS CREATION " << pluginName );
 	Graph::Node& read = g.createNode( pluginName );
 
 	TUTTLE_LOG_INFO( "--> PLUGINS CONFIGURATION" );
