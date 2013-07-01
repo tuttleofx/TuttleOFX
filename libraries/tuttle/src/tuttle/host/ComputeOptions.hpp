@@ -3,6 +3,8 @@
 
 #include <ofxCore.h>
 
+#include <tuttle/common/utils/formatters.hpp>
+
 #include <boost/atomic.hpp>
 
 #include <limits>
@@ -39,9 +41,12 @@ struct TimeRange
 enum EVerboseLevel
 {
 	eVerboseLevelNone,
+	eVerboseLevelFatal,
 	eVerboseLevelError,
 	eVerboseLevelWarning,
-	eVerboseLevelDebug
+	eVerboseLevelInfo,
+	eVerboseLevelDebug,
+	eVerboseLevelTrace
 };
 
 class ComputeOptions
@@ -200,6 +205,18 @@ public:
 	This& setVerboseLevel( const EVerboseLevel v )
 	{
 		_verboseLevel = v;
+		boost::shared_ptr<tuttle::common::formatters::Formatter> formatter( tuttle::common::formatters::Formatter::get() );
+		formatter->init_logging();
+		switch( v )
+		{
+				case eVerboseLevelTrace :   formatter->setLogLevel( boost::log::trivial::trace   ); break;
+				case eVerboseLevelDebug :   formatter->setLogLevel( boost::log::trivial::debug   ); break;
+				case eVerboseLevelInfo :    formatter->setLogLevel( boost::log::trivial::info    ); break;
+				case eVerboseLevelWarning : formatter->setLogLevel( boost::log::trivial::warning ); break;
+				case eVerboseLevelError :   formatter->setLogLevel( boost::log::trivial::error   ); break;
+				case eVerboseLevelFatal :   formatter->setLogLevel( boost::log::trivial::fatal   ); break;
+				case eVerboseLevelNone  :   formatter->setLogLevel( boost::log::trivial::fatal   ); break;
+		}
 		return *this;
 	}
 	EVerboseLevel getVerboseLevel() const { return _verboseLevel; }
