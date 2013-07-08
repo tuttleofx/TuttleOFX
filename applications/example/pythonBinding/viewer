@@ -1,0 +1,35 @@
+#!/usr/bin/python
+import sys
+import os
+import envTuttle
+envTuttle.setEnvTuttle()
+
+from pyTuttle.tuttle import *
+import getBestPlugin
+core().preload(False)
+
+pluginCache = core().getPluginCache()
+
+if len( sys.argv) < 2 :
+	print "ERROR: no such input file"
+	exit()
+
+print sys.argv[1]
+( base, ext ) = os.path.splitext( sys.argv[1] )
+
+plugin = getBestPlugin.getBestReader( ext )
+
+if len( plugin ) == 0 :
+	print "ERROR: unsupported input file"
+	exit()
+
+g = Graph()
+reader = g.createNode( plugin, filename=sys.argv[1] )
+viewer = g.createNode( "tuttle.viewer" )
+
+co = ComputeOptions()
+co.setVerboseLevel( eVerboseLevelError )
+
+g.connect( [reader, viewer ] )
+
+g.compute( viewer, co )
