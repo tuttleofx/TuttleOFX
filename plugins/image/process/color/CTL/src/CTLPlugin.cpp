@@ -84,37 +84,29 @@ void CTLPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::s
 	}
 }
 
-//bool CTLPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-//{
-//	CTLProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	switch( params._border )
-//	{
-//		case eParamB orderPadded:
-//			rod.x1 = srcRod.x1 + 1;
-//			rod.y1 = srcRod.y1 + 1;
-//			rod.x2 = srcRod.x2 - 1;
-//			rod.y2 = srcRod.y2 - 1;
-//			return true;
-//		default:
-//			break;
-//	}
-//	return false;
-//}
-//
-//void CTLPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-//{
-//	CTLProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	OfxRectD srcRoi;
-//	srcRoi.x1 = srcRod.x1 - 1;
-//	srcRoi.y1 = srcRod.y1 - 1;
-//	srcRoi.x2 = srcRod.x2 + 1;
-//	srcRoi.y2 = srcRod.y2 + 1;
-//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-//}
+bool CTLPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+
+	rod.x1 = srcRod.x1;
+	rod.y1 = srcRod.y1;
+	rod.x2 = srcRod.x2;
+	rod.y2 = srcRod.y2;
+
+	return false;
+}
+
+void CTLPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+{
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+
+	OfxRectD srcRoi;
+	srcRoi.x1 = srcRod.x1;
+	srcRoi.y1 = srcRod.y1;
+	srcRoi.x2 = srcRod.x2;
+	srcRoi.y2 = srcRod.y2;
+	rois.setRegionOfInterest( *_clipSrc, srcRoi );
+}
 
 bool CTLPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
