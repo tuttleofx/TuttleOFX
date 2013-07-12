@@ -10,7 +10,7 @@ namespace tuttle {
 namespace plugin {
 namespace ctl {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**

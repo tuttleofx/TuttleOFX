@@ -34,7 +34,7 @@ bfs::path retrieveToolFullPath(const std::string& toolName, const std::vector<bf
 	/// @todo exception ?
 	TUTTLE_LOG_ERROR( "Sam command \"" << toolName << "\" not found." );
 	// displayAvailableCommands();
-	exit(-1);
+	exit(255);
 }
 
 std::vector<bfs::path> retrieveSearchPaths(const bfs::path& samDirectory)
@@ -99,6 +99,8 @@ std::vector<bfs::path> retrieveAllSamCommands(const std::vector<bfs::path>& dirs
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	
@@ -258,17 +260,17 @@ int main( int argc, char** argv )
 		// TUTTLE_TLOG_VAR( TUTTLE_INFO, fullcmd );
 		int returnCode = system( fullcmd.c_str() );
 		// TUTTLE_CLOG_VAR( TUTTLE_INFO, UINT_MAX - returnCode );
-		return UINT_MAX - returnCode;
+		return returnCode>>8;
 	}
 	catch( const bpo::error& e )
 	{
 		TUTTLE_LOG_ERROR( "Error in command line: " << e.what() );
-		exit(-2);
+		exit(254);
 	}
 	catch( ... )
 	{
 		TUTTLE_LOG_ERROR( "Error in command line: " << boost::current_exception_diagnostic_information() );
-		exit(-2);
+		exit(254);
 	}
 	
 	return 0;

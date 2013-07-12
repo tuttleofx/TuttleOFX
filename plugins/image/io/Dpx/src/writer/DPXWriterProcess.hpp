@@ -1,7 +1,7 @@
 #ifndef _DPXWRITER_PROCESS_HPP_
 #define _DPXWRITER_PROCESS_HPP_
 
-#include <DPX.h>
+#include <libdpx/DPX.h>
 
 #include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>

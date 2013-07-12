@@ -214,13 +214,10 @@ void ColorSuppressProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 			if( _params.preserveLuma == true && _params.output != eOutputTypeAlpha )
 			{
 				double luma2 = luminance( output );
-				if( luma2 != 0 )
-				{
-					luma2 = luma1 / luma2;
-					output.r *= luma2;
-					output.g *= luma2;
-					output.b *= luma2;
-				}
+				luma2 = luma1 - luma2;
+				output.r += luma2;
+				output.g += luma2;
+				output.b += luma2;
 			}
 			if( _params.obeyAlpha == true )
 			{

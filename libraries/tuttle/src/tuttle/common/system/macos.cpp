@@ -10,19 +10,17 @@ namespace common {
 
 std::string CFStringContainer::toString( CFStringRef cfString )
 {
-	if( !cfString )
-		return std::string();
-
 	CFIndex length = CFStringGetLength( cfString );
-	if( length == 0 )
-		return std::string();
-
-	std::string s;
-	s.resize( length );
-	// std::wstring s( length );
-	CFStringGetCharacters( cfString, CFRangeMake( 0, length ), reinterpret_cast<UniChar *>( const_cast<char*>( s.c_str() ) ) );
-
-	return s;
+	CFIndex size = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8);
+	char *buffer = new char[size];
+	Boolean worked = CFStringGetCString( cfString, buffer, size, kCFStringEncodingUTF8 );
+	if( worked ) {
+		std::string result( buffer );
+		delete [] buffer;
+		return result;
+	}
+	delete [] buffer;
+	return std::string();
 }
 
 CFStringContainer::operator std::string() const
@@ -39,8 +37,7 @@ const std::string& CFStringContainer::str() const
 
 CFStringRef CFStringContainer::toCFStringRef( const std::string& s )
 {
-	return CFStringCreateWithCharacters( 0,
-		reinterpret_cast<const UniChar *>( s.c_str() ), s.size() );
+	return CFStringCreateWithCString(kCFAllocatorDefault, s.c_str(), kCFStringEncodingUTF8); 
 }
 
 CFStringContainer::operator CFStringRef() const

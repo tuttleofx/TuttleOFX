@@ -43,6 +43,32 @@ enum EParamHAlign
 static const std::string kParamVerticalFlip  = "verticalFlip";
 static const std::string kParamItalic        = "italic";
 static const std::string kParamBold          = "bold";
+
+static const std::string kParamFunction      = "mergingFunction";
+static const std::string kParamFunctionLabel = "Merging function";
+
+enum EParamMerge
+{
+	eParamMergeATop, eParamMergeAverage,
+	eParamMergeColor,
+	eParamMergeColorBurn, eParamMergeColorDodge,
+	eParamMergeConjointOver, eParamMergeCopy,
+	eParamMergeDifference, eParamMergeDisjointOver,
+	eParamMergeDivide, eParamMergeExclusion,
+	eParamMergeFreeze, eParamMergeFrom,
+	eParamMergeGeometric, eParamMergeHardLight,
+	eParamMergeHypot, eParamMergeIn,
+	eParamMergeInterpolated, eParamMergeMask,
+	eParamMergeMatte, eParamMergeLighten,
+	eParamMergeDarken, eParamMergeMinus,
+	eParamMergeMultiply, eParamMergeOut,
+	eParamMergeOver, eParamMergeOverlay,
+	eParamMergePinLight, eParamMergePlus,
+	eParamMergeReflect, eParamMergeScreen,
+	eParamMergeStencil, eParamMergeUnder,
+	eParamMergeXOR
+};
+
 }
 }
 }

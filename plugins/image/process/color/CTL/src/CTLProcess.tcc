@@ -138,7 +138,6 @@ CTLProcess<View>::CTLProcess( CTLPlugin &effect )
 , _plugin( effect )
 {
 	ctlPlugin = &_plugin;
-	this->setNoMultiThreading();
 }
 
 template<class View>
@@ -184,16 +183,16 @@ void CTLProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 
 	const std::size_t alignment = 2;
 	rgba32f_planar_image_t srcWorkLine( procWindowSize.x, 1, alignment );
-        rgba32f_planar_view_t  srcWorkLineV = view( srcWorkLine );
+	rgba32f_planar_view_t  srcWorkLineV = view( srcWorkLine );
 	rgba32f_planar_image_t dstWorkLine( procWindowSize.x, 1, alignment );
-        rgba32f_planar_view_t  dstWorkLineV = view( dstWorkLine );
+	rgba32f_planar_view_t  dstWorkLineV = view( dstWorkLine );
 
 	for( int y = procWindowOutput.y1;
 			 y < procWindowOutput.y2;
 			 ++y )
 	{
-		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1,    y-procWindowSrc.y1,    procWindowSize.x, 1 );
-		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y-procWindowOutput.y1, procWindowSize.x, 1 );
+		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1,    y,    procWindowSize.x, 1 );
+		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y, procWindowSize.x, 1 );
 
 		copy_pixels( srcLineV, srcWorkLineV );
 

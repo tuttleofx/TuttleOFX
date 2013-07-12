@@ -1,8 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -17,7 +15,6 @@
 #include <Detector.hpp>
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 
 #define FIRST_COLUMN_WIDTH 23
@@ -111,6 +108,15 @@ void printImageProperties( std::string path )
 			case LCHColorspace            : colorSpaceType = "LCH"; break;
 			case LMSColorspace            : colorSpaceType = "LMS"; break;
 #endif
+#if MagickLibVersion > 0x684
+			case LCHabColorspace          : colorSpaceType = "LCHab"; break;
+			case LCHuvColorspace          : colorSpaceType = "LCHuv"; break;
+			case scRGBColorspace          : colorSpaceType = "scRGB"; break;
+			case HSIColorspace            : colorSpaceType = "HSI"; break;
+			case HSVColorspace            : colorSpaceType = "HSV"; break;
+			case HCLpColorspace           : colorSpaceType = "HCLp"; break;
+			case YDbDrColorspace          : colorSpaceType = "YDbDr"; break;
+#endif
 		}
 
 		std::string interlaceType;
@@ -183,6 +189,8 @@ void dumpImageProperties( boost::ptr_vector<sp::FileObject>& listing )
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	
@@ -255,12 +263,12 @@ int main( int argc, char** argv )
 	catch( const bpo::error& e)
 	{
 		TUTTLE_LOG_ERROR( "error in command line: " << e.what() );
-		exit( -2 );
+		exit( 254 );
 	}
 	catch(...)
 	{
 		TUTTLE_LOG_ERROR( "unknown error in command line." );
-		exit( -2 );
+		exit( 254 );
 	}
 
 	if( vm.count( kColorOptionLongName ) )

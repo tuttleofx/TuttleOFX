@@ -1,8 +1,6 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -16,7 +14,6 @@
 #include <Sequence.hpp>
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 
 namespace bpo = boost::program_options;
@@ -136,6 +133,8 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 
 int main( int argc, char** argv )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	using namespace sam;
 	
@@ -209,12 +208,12 @@ int main( int argc, char** argv )
 	catch( const bpo::error& e)
 	{
 		TUTTLE_LOG_ERROR( "sam-rm: command line error: " << e.what() );
-		exit( -2 );
+		exit( 254 );
 	}
 	catch(...)
 	{
 		TUTTLE_LOG_ERROR( "sam-rm: unknown error in command line." );
-		exit( -2 );
+		exit( 254 );
 	}
 
 	if( vm.count( kColorOptionLongName ) )

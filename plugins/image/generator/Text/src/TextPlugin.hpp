@@ -48,6 +48,17 @@ public:
 	
 	void render( const OFX::RenderArguments& args );
 
+private:
+	template< class View >
+	void render( const OFX::RenderArguments& args );
+	template< class View, template <typename> class Functor >
+	void render( const OFX::RenderArguments& args );
+
+	template< class View, template <typename> class Functor >
+	void render_if( const OFX::RenderArguments& args, boost::mpl::false_ );
+	template< class View, template <typename> class Functor >
+	void render_if( const OFX::RenderArguments& args, boost::mpl::true_ );
+
 public:
 	OFX::StringParam*   _paramText; ///< the text to rasterize in the image
 	OFX::BooleanParam*  _paramIsExpression;
@@ -69,6 +80,8 @@ public:
 	OFX::BooleanParam*  _paramVerticalFlip;
 	OFX::BooleanParam*  _paramItalic;
 	OFX::BooleanParam*  _paramBold;
+
+	OFX::ChoiceParam*   _paramMerge;
 };
 
 }

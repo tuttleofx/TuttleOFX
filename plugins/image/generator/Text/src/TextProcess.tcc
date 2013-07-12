@@ -16,6 +16,9 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/common/ofx/core.hpp>
 
+#include <boost/gil/extension/color/hsl.hpp>
+#include <boost/gil/gil_all.hpp>
+
 #include <boost/filesystem.hpp>
 #include <boost/ptr_container/ptr_inserter.hpp>
 
@@ -31,8 +34,8 @@ namespace tuttle {
 namespace plugin {
 namespace text {
 
-template<class View>
-TextProcess<View>::TextProcess( TextPlugin& instance )
+template<class View, class Functor>
+TextProcess<View, Functor>::TextProcess( TextPlugin& instance )
 	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 {
@@ -41,8 +44,8 @@ TextProcess<View>::TextProcess( TextPlugin& instance )
 	this->setNoMultiThreading();
 }
 
-template<class View>
-void TextProcess<View>::setup( const OFX::RenderArguments& args )
+template<class View, class Functor>
+void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 {
 	using namespace terry;
 	ImageGilProcessor<View>::setup( args );
@@ -254,8 +257,8 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
  */
-template<class View>
-void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+template<class View, class Functor>
+void TextProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace terry;
 	
@@ -267,7 +270,8 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	
 	if( _clipSrc->isConnected() )
 	{
-		merge_views( this->_dstView, _srcView, this->_dstView, FunctorMatte<Pixel>() );
+		//merge_views( this->_dstView, _srcView, this->_dstView, FunctorMatte<Pixel>() );
+		merge_views( this->_dstView, _srcView, this->_dstView, Functor() );
 	}
 	
 	//Step 7. Render Glyphs ------------------------

@@ -1,14 +1,4 @@
-// BIG HACK: workaround CTL limitation
-// We force the Interpreter class to be fully public
-// This allows us to write and external function which has
-// full access to the class.
-// Our new function allows to load a module whose source code comes
-// from a string (dynamic value from the user interface) and not from a file.
-#define private public
-#define protected public
 #include <CtlSimdInterpreter.h>
-#undef private
-#undef protected
 #include <CtlModuleSet.h>
 #include <CtlModule.h>
 #include <CtlLContext.h>

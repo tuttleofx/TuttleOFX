@@ -1,0 +1,12 @@
+#!/usr/bin/python
+import envTuttle
+envTuttle.setEnvTuttle()
+
+from pyTuttle.tuttle import *
+core().preload(False)
+
+pluginCache = core().getPluginCache()
+
+for  p in pluginCache.getPlugins():
+	print p.getIdentifier().ljust(30) + " (v" + str( p.getVersionMajor() ) + "." + str( p.getVersionMinor() ) + ")"
+	

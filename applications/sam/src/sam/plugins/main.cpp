@@ -13,7 +13,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#include <iostream>
 
 namespace           bpo         = boost::program_options;
 namespace           bal         = boost::algorithm;
@@ -45,6 +44,8 @@ std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)
 
 void printProperties( const tth::ofx::property::OfxhSet properties, std::string context="" )
 {
+	signal(SIGINT, signal_callback_handler);
+
 	using namespace tuttle::common;
 	boost::shared_ptr<Color> color( Color::get() );
 	if( context.size() == 0 )
@@ -293,12 +294,12 @@ int main( int argc, char** argv )
 	catch( const bpo::error& e)
 	{
 		TUTTLE_LOG_ERROR( "sam-plugins: command line error: " << e.what() );
-		exit( -2 );
+		exit( 254 );
 	}
 	catch(...)
 	{
 		TUTTLE_LOG_ERROR( "sam-plugins: unknown error in command line.");
-		exit( -2 );
+		exit( 254 );
 	}
 
 	if( vm.count( kColorOptionLongName ) )
