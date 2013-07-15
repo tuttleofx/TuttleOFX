@@ -15,7 +15,7 @@ def generate( pluginName, *orderedParams, **namedParams ):
 
 	graph = Graph()
 	generator = graph.createNode( pluginName, *orderedParams, **namedParams )
-	text = graph.createNode( "tuttle.text", vAlign="center", font="teen", bold=1, color=[0.5, 0.5, 0.5, 1.0], text=cmdLine )
+	text = graph.createNode( "tuttle.text", vAlign="center", bold=1, color=[0.5, 0.5, 0.5, 1.0], text=cmdLine )
 	write = graph.createNode( "tuttle.pngwriter", filename=os.path.join( os.environ["DOC_DIR"], "images", filename + ".png" ) )
 	graph.connect( [generator, text, write] )
 	graph.compute( write )
@@ -41,7 +41,7 @@ def generateEXR( pluginName, *orderedParams, **namedParams ):
 
 	graph = Graph()
 	generator = graph.createNode( pluginName, *orderedParams, **namedParams )
-	text = graph.createNode( "tuttle.text", vAlign="center", font="teen", bold=1, color=[0.5, 0.5, 0.5, 1.0], text=cmdLine )
+	text = graph.createNode( "tuttle.text", vAlign="center", bold=1, color=[0.5, 0.5, 0.5, 1.0], text=cmdLine )
 	write = graph.createNode( "tuttle.exrwriter", filename=os.path.join( os.environ["DOC_DIR"], "images", filename + ".exr" ) )
 	graph.connect( [generator, text, write] )
 	graph.compute( write )
