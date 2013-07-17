@@ -107,10 +107,20 @@ class Tuttle( SConsProject ):
 		if self.env['mode'] == 'production' and versions[0] <= 0:
 			print '''Don't create "''' + pluginFilename + '" in "production" mode.'
 			return None
-		
+		allLocalEnvFlags = localEnvFlags.copy()  # duplicate the user dictionary
+		if self.sysplatform.find("linux") >= 0 :
+			ofxLinkflags = ['--version-script=' + project.inTopDir('libraries/openfxHack/Support/include/linuxSymbols')]
+		elif self.sysplatform.find("darwin") >= 0 :
+			ofxLinkflags = ['-exported_symbols_list', project.inTopDir('libraries/openfxHack/Support/include/osxSymbols')]
+		else:
+			ofxLinkflags = []
+		if 'SHLINKFLAGS' in allLocalEnvFlags:
+	    		allLocalEnvFlags['SHLINKFLAGS'].append(ofxLinkflags)
+		else:
+	    		allLocalEnvFlags['SHLINKFLAGS'] = ofxLinkflags
 		pluginInstall = self.SharedLibrary( pluginName,
 				sources=sources, dirs=dirs, libraries=libraries, includes=includes,
-				env=env, localEnvFlags=localEnvFlags, replaceLocalEnvFlags=replaceLocalEnvFlags, externEnvFlags=externEnvFlags, globalEnvFlags=globalEnvFlags,
+				env=env, localEnvFlags=allLocalEnvFlags, replaceLocalEnvFlags=replaceLocalEnvFlags, externEnvFlags=externEnvFlags, globalEnvFlags=globalEnvFlags,
 				dependencies=dependencies, installAs=self.getOutputOfxPlugin(pluginFilename), install=install,
 				public=False )
 
