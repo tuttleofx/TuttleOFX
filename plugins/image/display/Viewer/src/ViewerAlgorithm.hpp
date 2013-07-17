@@ -3,11 +3,10 @@
 
 #include <terry/channel.hpp>
 
-#ifdef HAVE_OPENGL_GL_H
-#   include <OpenGL/gl.h>
+#include <tuttle/plugin/opengl/gl.h>
+#ifdef __APPLE__
 #   include <GLUT/glut.h>
 #else
-#   include <GL/gl.h>
 #   include <GL/glut.h>
 #   include <GL/freeglut.h>
 #endif
@@ -524,7 +523,9 @@ void openGLWindow( const size_t& width, const size_t& height )
 	glutInitDisplayMode ( GLUT_DOUBLE | GLUT_RGB | GLUT_RGBA | GLUT_MULTISAMPLE );
 	glutInitWindowSize ( width, height );
 	glutInitWindowPosition (0,0);
+#ifdef GLUT_ACTION_ON_WINDOW_CLOSE
 	glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION );
+#endif
 	
 	windowID = glutCreateWindow("TuttleOFX Viewer");
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f );
