@@ -30,10 +30,12 @@ protected:
 
 	template<class DView>
 	void channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer,
-			  DView& dst, int w, int h, int n, int left, int nc );
+					  DView& dst, int w, int h, size_t nc );
 	template<class DView>
 	void sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n );
 
+	std::string getChannelName( size_t index );
+	
 public:
 	EXRReaderProcess<View>( EXRReaderPlugin & instance );
 

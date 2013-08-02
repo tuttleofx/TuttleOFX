@@ -206,6 +206,7 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
 		rod.y1 = 0;
 		rod.y2 = dataWindow.y + 1;
+
 	}
 	catch( ... )
 	{

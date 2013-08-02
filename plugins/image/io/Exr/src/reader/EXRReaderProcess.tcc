@@ -147,146 +147,113 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 	typename Imath::V2i imageDims = dw.size();
 	imageDims.x++;  // Width
 	imageDims.y++;  // Height
-
-	// Get number of output components
 	
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, params._outComponents );
+	// Get number of output components
 	switch( (EParamReaderChannel)params._outComponents )
 	{
 		case eParamReaderChannelGray:
 		{
 			// Copy 1 channel seletected by alpha channel ( index 3 )
-			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 3, 1, 1 );
+			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 1 );
 			break;
 		}
 		case eParamReaderChannelRGB:
 		{
 			// Copy 3 channels starting by the first channel (0, 1, 2)
-			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 3, 3 );
+			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 3 );
 			break;
 		}
 		case eParamReaderChannelRGBA:
 		{
 			// Copy 4 channels starting by the first channel (0, 1, 2, 3)
-			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 4, 4 );
+			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 4 );
 			break;
 		}
 		case eParamReaderChannelAuto:
 		{
-			switch( _params._fileComponents )
+			if( ! ( _params._fileComponents == 1 || _params._fileComponents == 3 || _params._fileComponents == 4 ) )
 			{
-				case 1:
-				{
-					// Copy 1 channel seletected by alpha channel ( index 3 )
-					channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 3, 1, 1 );
-					break;
-				}
-				case 3:
-				{
-					// Copy 3 channels starting by the first channel (0, 1, 2)
-					channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 3, 3 );
-					break;
-				}
-				case 4:
-				{
-					// Copy 4 channels starting by the first channel (0, 1, 2, 3)
-					channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 4, 4 );
-					break;
-				}
-				default:
-				{
-					std::string msg = "EXR: not support ";
-					msg += _params._fileComponents;
-					msg += " channels.";
-					BOOST_THROW_EXCEPTION( exception::FileNotExist()
-										   << exception::user( msg ) );
-					break;
-				}
+				std::string msg = "EXR: not support ";
+				msg += _params._fileComponents;
+				msg += " channels.";
+				BOOST_THROW_EXCEPTION( exception::FileNotExist()
+									   << exception::user( msg ) );
 			}
+			
+			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, _params._fileComponents );
 		}
 	}
 }
 
+template< typename PixelType >
+void initExrChannel( char*& data, Imf::Slice& slice, Imf::FrameBuffer& frameBuffer, Imf::PixelType pixelType, std::string channelID, const Imath::Box2i& dw, int w, int h )
+{
+	data = new char[ sizeof( PixelType ) * w * h ];
+	
+	slice.type = pixelType;
+	slice.base = (char*) (data - sizeof( PixelType ) * ( dw.min.x + dw.min.y * w ) );
+	slice.xStride   = sizeof( PixelType ) * 1;
+	slice.yStride   = sizeof( PixelType ) * w;
+	slice.xSampling = 1;
+	slice.ySampling = 1;
+	slice.fillValue = 1.0;
+	
+	frameBuffer.insert( channelID.c_str(), slice );
+}
+
 template<class View>
 template<class DView>
-void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
-					  Imf::FrameBuffer& frameBuffer,
-					  DView& dst, int w, int h,
-					  int n, int left, int nc )
+void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer,
+										  DView& dst, int w, int h, size_t nc )
 {
 	using namespace boost::gil;
 	const Imf::Header& header = input.header();
 	const Imath::Box2i& dw    = header.dataWindow();
 
-	if( left )
+	char*      data   [nc];
+	Imf::Slice slices [nc];
+	
+	for( size_t layer = 0; layer < nc; ++layer )
 	{
-		// If channel left, prepare them
 		const Imf::ChannelList& cl( header.channels() );
-		const Imf::Channel& ch = cl[ _plugin.channelNames()[ _plugin.channelChoice()[n]->getValue() ].c_str() ];
+		const Imf::Channel& ch = cl[ getChannelName( layer ).c_str() ];
 		switch( ch.type )
 		{
 			case Imf::HALF:
 			{
-				std::vector<half> array( w * h );
-				//@todo: check: this may bug: swap w and h
-				frameBuffer.insert( _plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
-						    Imf::Slice( ch.type,
-								(char*)&array[0],
-								sizeof( half ) * 1,        // xStride
-								sizeof( half ) * w,        // yStride
-								1, 1,                     // x/y sampling
-								1.0 )
-						    ); // fillValue
-				channelCopy( input, frameBuffer, dst, w, h, ++n, --left, nc );
+				initExrChannel<half>( data[layer], slices[layer], frameBuffer, ch.type, getChannelName( layer ), dw, w, h );
 				break;
 			}
 			case Imf::FLOAT:
 			{
-				std::vector<float> array( w * h );
-				frameBuffer.insert( _plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
-						    Imf::Slice( ch.type,
-								(char*)&array[0],
-								sizeof( float ) * 1,       // xStride
-								sizeof( float ) * w,       // yStride
-								1, 1,                     // x/y sampling
-								std::numeric_limits<float>::max() )
-						    ); // fillValue
-				channelCopy( input, frameBuffer, dst, w, h, ++n, --left, nc );
+				initExrChannel<float>( data[layer], slices[layer], frameBuffer, ch.type, getChannelName( layer ), dw, w, h );
 				break;
 			}
-			default:
+			case Imf::UINT:
 			{
-				std::vector<boost::uint32_t> array( w * h );
-				frameBuffer.insert( _plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
-						    Imf::Slice( ch.type,
-								(char*)&array[0],
-								sizeof( boost::uint32_t ) * 1,         // xStride
-								sizeof( boost::uint32_t ) * w,         // yStride
-								1, 1, // x/y sampling
-								std::numeric_limits<boost::uint32_t>::max() )
-						    ); // fillValue
-				channelCopy( input, frameBuffer, dst, w, h, ++n, --left, nc );
+				initExrChannel<boost::uint32_t>( data[layer], slices[layer], frameBuffer, ch.type, getChannelName( layer ), dw, w, h );
+				break;
+			}
+			case Imf::NUM_PIXELTYPES:
+			{
+				BOOST_THROW_EXCEPTION( exception::Value()
+				    << exception::user( "Pixel type not supported." ) );
 				break;
 			}
 		}
 	}
-	else
+	
+	input.setFrameBuffer( frameBuffer );
+	input.readPixels( dw.min.y, dw.max.y );
+
+	for( size_t layer = 0; layer < nc; ++layer )
 	{
-		// Read prepared channels and copy pixels
-		input.setFrameBuffer( frameBuffer );
-		input.readPixels( dw.min.y, dw.max.y );
-		for( int s = 0; s < nc; ++s )
-		{
-			const Imf::Slice* slice =
-			    frameBuffer.findSlice(
-				_plugin.channelNames()[_plugin.channelChoice()[s]->getValue()].c_str() );
-			if( !slice )
-			{
-				BOOST_THROW_EXCEPTION( exception::Value()
-				    << exception::user( std::string( "Slice " ) + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!" ) );
-			}
-			sliceCopy( slice, dst, w, h, s );
-		}
+		sliceCopy( &slices[layer], dst, w, h, layer );
+	}
+	
+	for( size_t layer = 0; layer < nc; ++layer )
+	{
+		delete[] data[layer];
 	}
 }
 
@@ -317,6 +284,12 @@ void EXRReaderProcess<View>::sliceCopy( const Imf::Slice* slice, DView& dst, int
 			break;
 		}
 	}
+}
+
+template<class View>
+std::string EXRReaderProcess<View>::getChannelName( size_t index )
+{
+	return _plugin.channelNames()[ _plugin.channelChoice()[index]->getValue() ];
 }
 
 }
