@@ -563,7 +563,7 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] post process" );
 	graph::visitor::PostProcess<InternalGraphAtTimeImpl> postProcessVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( postProcessVisitor, outputAtTime );
-/*
+
 	///@todo clean datas...
 	TUTTLE_TLOG( TUTTLE_INFO, "---------------------------------------- clear data at time" );
 	// give a link to the node on its attached process data
@@ -575,7 +575,7 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 			v.getProcessNode().clearProcessDataAtTime();
 		}
 	}
-*/
+
 	// end of one frame
 	// do some clean: memory clean, as temporary solution...
 	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] clear unused buffers" );
