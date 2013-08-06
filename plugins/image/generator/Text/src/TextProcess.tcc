@@ -137,47 +137,50 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 
 	FT_Face face;
 
-#ifdef __WINDOWS__
-	if( !boost::filesystem::exists(_params._font) || boost::filesystem::is_directory(_params._font) )
+	std::string selectedFont = "";
+
+	if( !boost::filesystem::exists( _params._fontPath ) || boost::filesystem::is_directory( _params._fontPath ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::FileNotExist(_params._font)
-							<< exception::user("Text: Error in Font Path.")
-							<< exception::filename(_params._font));
-	}
-	FT_New_Face( library, _params._font.c_str(), 0, &face );
+#ifdef __WINDOWS__
+		BOOST_THROW_EXCEPTION( exception::FileNotExist( _params._fontPath )
+							<< exception::user( "Text: Error in Font Path." )
+							<< exception::filename( _params._fontPath ) );
 #else
-	FcInit();
-	
-	std::string fontFile = "";
-	
-	FcChar8 *file;
-	FcResult result;
-	FcConfig *config = FcInitLoadConfigAndFonts();
-	FcPattern *p = FcPatternBuild(	NULL,
-									FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
-									FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
-									NULL);
-	
-	FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
-	FcFontSet   *fs = FcFontList( config, p, os );
-	
-	fontFile = (char*) FcNameUnparse( fs->fonts[_params._font] );
-	
-	int weight = ( _params._bold   == 1) ? FC_WEIGHT_BOLD  : FC_WEIGHT_MEDIUM;
-	int slant  = ( _params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;
-	
-	p  = FcPatternBuild( NULL, 
-						 FC_FAMILY, FcTypeString, fontFile.c_str(),
-						 FC_WEIGHT, FcTypeInteger, weight, 
-						 FC_SLANT, FcTypeInteger, slant, 
-						 NULL);	
-	
-	FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FAMILY, 0, &file );
-	FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FILE, 0, &file );
-	fontFile = (char*) file;
-	
-	FT_New_Face( library, fontFile.c_str(), 0, &face );
+		FcInit();
+
+		FcChar8 *file;
+		FcResult result;
+		FcConfig *config = FcInitLoadConfigAndFonts();
+		FcPattern *p = FcPatternBuild(
+						   NULL,
+						   FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
+						   FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
+						   NULL );
+
+		FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
+		FcFontSet   *fs = FcFontList( config, p, os );
+
+		selectedFont = (char*) FcNameUnparse( fs->fonts[_params._font] );
+
+		int weight = ( _params._bold   == 1) ? FC_WEIGHT_BOLD  : FC_WEIGHT_MEDIUM;
+		int slant  = ( _params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;
+
+		p  = FcPatternBuild( NULL,
+							 FC_FAMILY, FcTypeString, selectedFont.c_str(),
+							 FC_WEIGHT, FcTypeInteger, weight,
+							 FC_SLANT, FcTypeInteger, slant,
+							 NULL );
+
+		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FAMILY, 0, &file );
+		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FILE, 0, &file );
+		selectedFont = (char*) file;
 #endif
+	}
+	else
+	{
+		selectedFont = _params._fontPath;
+	}
+	FT_New_Face( library, selectedFont.c_str(), 0, &face );
 	
 	FT_Set_Pixel_Sizes( face, _params._fontX, _params._fontY );	
 
