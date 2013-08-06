@@ -189,13 +189,14 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 	}
 }
 
+template<class View>
 template< typename PixelType >
-void initExrChannel( char*& data, Imf::Slice& slice, Imf::FrameBuffer& frameBuffer, Imf::PixelType pixelType, std::string channelID, const Imath::Box2i& dw, int w, int h )
+void EXRReaderProcess<View>::initExrChannel( DataVector& data, Imf::Slice& slice, Imf::FrameBuffer& frameBuffer, Imf::PixelType pixelType, std::string channelID, const Imath::Box2i& dw, int w, int h )
 {
-	data = new char[ sizeof( PixelType ) * w * h ];
+	data.resize( sizeof( PixelType ) * w * h );
 	
 	slice.type = pixelType;
-	slice.base = (char*) (data - sizeof( PixelType ) * ( dw.min.x + dw.min.y * w ) );
+	slice.base = (char*) (&data[0] - sizeof( PixelType ) * ( dw.min.x + dw.min.y * w ) );
 	slice.xStride   = sizeof( PixelType ) * 1;
 	slice.yStride   = sizeof( PixelType ) * w;
 	slice.xSampling = 1;
@@ -214,7 +215,7 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffe
 	const Imf::Header& header = input.header();
 	const Imath::Box2i& dw    = header.dataWindow();
 
-	char*      data   [nc];
+	DataVector data   [nc];
 	Imf::Slice slices [nc];
 	
 	for( size_t layer = 0; layer < nc; ++layer )
@@ -276,11 +277,6 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffe
 				break;
 			}
 		}
-	}
-	
-	for( size_t layer = 0; layer < nc; ++layer )
-	{
-		delete[] data[layer];
 	}
 }
 
