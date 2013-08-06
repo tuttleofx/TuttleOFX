@@ -30,11 +30,6 @@ struct id_keyer_t
 	id_keyer_t( PixelList colors )
 		: _colors ( colors )
 	{
-		using namespace terry;
-		for( PixelList::const_iterator color = _colors.begin(); color != _colors.end(); ++color )
-		{
-			TUTTLE_LOG_WARNING( "key color " << get_color( *color, red_t() ) << ", " << get_color( *color, green_t() ) << ", " << get_color( *color, blue_t() ) << ", " << get_color( *color, alpha_t() ) );
-		}
 	}
 
 	template<class Pixel>
