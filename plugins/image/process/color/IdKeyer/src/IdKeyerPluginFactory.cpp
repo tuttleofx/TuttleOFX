@@ -16,8 +16,7 @@ namespace idKeyer {
  */
 void IdKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleIdKeyer", "IdKeyer",
-					"Id keyer" );
+	desc.setLabels( "TuttleIdKeyer", "IdKeyer", "Id keyer" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription( "Simplest Keyer: ID selectioner Keyer" );
@@ -63,7 +62,7 @@ void IdKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	nbPoint->setDisplayRange( 1, kMaxNbPoints );
 	nbPoint->setDefault( 1 );
 
-	for( unsigned int i = 0; i < kMaxNbPoints; ++i )
+	for( size_t i = 0; i < kMaxNbPoints; ++i )
 	{
 		OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( getColorParamName( i ) );
 		color->setLabel( getColorParamName( i ) );
@@ -77,7 +76,7 @@ void IdKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* IdKeyerPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                           OFX::EContext        context )
+														OFX::EContext        context )
 {
 	return new IdKeyerPlugin( handle );
 }

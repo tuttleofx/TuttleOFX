@@ -27,7 +27,7 @@ IdKeyerPlugin::IdKeyerPlugin( OfxImageEffectHandle handle )
 		_paramColors.push_back( fetchRGBAParam( getColorParamName( i ) ) );
 	}
 
-	changedParam( _instanceChangedArgs, kParamNbPoints ); // init IsSecret property for each point/color param
+	changedParam( _instanceChangedArgs, kParamNbPoints );
 }
 
 template<class View>
@@ -44,7 +44,7 @@ IdKeyerProcessParams<View> IdKeyerPlugin::getProcessParams() const
 		OfxRGBAColourD c = ( *it_color )->getValue();
 		params._colors.push_back( rgba32f_pixel_t( c.r, c.g, c.b, c.a ) );
 
-		TUTTLE_LOG_WARNING( "key color " <<  c.r << ", " <<  c.g << ", " <<  c.b << ", " << c.a );
+		//TUTTLE_LOG_WARNING( "key color " <<  c.r << ", " <<  c.g << ", " <<  c.b << ", " << c.a );
 	}
 	return params;
 }
@@ -82,15 +82,11 @@ void IdKeyerPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 {
 	if( paramName == kParamNbPoints )
 	{
-		const unsigned int nbPoints            = boost::numeric_cast<unsigned int>( _paramNbPoints->getValue() );
-		RGBAParamVector::iterator it_color     = _paramColors.begin();
-		for( unsigned int i = 0; i < nbPoints; ++i, ++it_color )
+		const size_t              nbPoints = boost::numeric_cast<size_t>( _paramNbPoints->getValue() );
+		RGBAParamVector::iterator it_color = _paramColors.begin();
+		for( size_t i = 0; i < kMaxNbPoints; ++i, ++it_color )
 		{
-			( *it_color )->setIsSecret( false );
-		}
-		for( unsigned int i = nbPoints; i < kMaxNbPoints; ++i, ++it_color )
-		{
-			( *it_color )->setIsSecret( true );
+			( *it_color )->setIsSecret( i < nbPoints ? false : true );
 		}
 	}
 }
