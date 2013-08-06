@@ -96,6 +96,12 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	outAlphaIs->appendOption( "3" );
 	outAlphaIs->setLabel( "Alpha is" );
 	outAlphaIs->setDefault( 0 );
+	
+	OFX::ChoiceParamDescriptor* outputData = desc.defineChoiceParam( kParamOutputData );
+	outputData->appendOption( "display" );
+	outputData->appendOption( "data" );
+	outputData->setLabel( "Output Data" );
+	outputData->setDefault( 0 );
 }
 
 /**

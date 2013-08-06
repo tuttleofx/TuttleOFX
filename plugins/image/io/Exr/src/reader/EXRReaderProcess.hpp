@@ -29,10 +29,11 @@ protected:
 	boost::scoped_ptr<Imf::InputFile>   _exrImage;  ///< Pointer to an exr image
 
 	template<class DView>
-	void channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer,
+	void channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer, const EXRReaderProcessParams& params,
 					  DView& dst, int w, int h, size_t nc );
-	template<class DView>
-	void sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n );
+	
+	template<class DView, typename workingView>
+	void sliceCopy( Imf::InputFile& input, const Imf::Slice* slice, DView& dst, const EXRReaderProcessParams& params, int w, int h, int n );
 
 	std::string getChannelName( size_t index );
 	
