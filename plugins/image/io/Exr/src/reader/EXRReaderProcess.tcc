@@ -288,7 +288,7 @@ void EXRReaderProcess<View>::sliceCopy( Imf::InputFile& input, const Imf::Slice*
 	const Imath::Box2i& dataw    = input.header().dataWindow();
 	const Imath::Box2i& dispw    = input.header().displayWindow();
 	
-	workingView vw( interleaved_view( w, h, ( typename workingView::value_type*)slice->base, w * sizeof( half ) ) );
+	workingView vw( interleaved_view( w, h, ( typename workingView::value_type*)slice->base, w * sizeof( typename workingView::value_type ) ) );
 	workingView subView;
 	
 	if( params._displayWindow )
