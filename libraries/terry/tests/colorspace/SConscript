@@ -8,6 +8,7 @@ project.UnitTest(
 		libs.terry,
 		libs.boost_system,
 		libs.boost_unit_test_framework,
+		libs.boost_system,
 		]
 	)
 
