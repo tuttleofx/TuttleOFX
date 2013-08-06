@@ -293,24 +293,23 @@ void EXRReaderProcess<View>::sliceCopy( Imf::InputFile& input, const Imf::Slice*
 	
 	if( params._displayWindow )
 	{
-		size_t xoffsetData = abs( dataw.min.x );
-		size_t yoffsetData = abs( dataw.min.y );
+		size_t xoffsetData = abs( dispw.min.x );
+		size_t yoffsetData = abs( dispw.min.y );
 		size_t xoffsetDisp = abs( dataw.min.x );
 		size_t yoffsetDisp = abs( dataw.min.y );
 		
-		size_t wView = std::min( dataw.max.x, dispw.max.x ) - std::max( dataw.min.x, dispw.min.x );
-		size_t hView = std::min( dataw.max.y, dispw.max.y ) - std::max( dataw.min.y, dispw.min.y );
+		size_t wView = std::min( dataw.max.x, dispw.max.x ) - std::max( dataw.min.x, dispw.min.x ) + 1;
+		size_t hView = std::min( dataw.max.y, dispw.max.y ) - std::max( dataw.min.y, dispw.min.y ) + 1;
 		
-		if( dispw.min.x > 0 )
+		if( dispw.min.x < 0 )
 		{
-			xoffsetData = - dataw.min.x + dispw.min.x;
-			xoffsetDisp = 0;
+			xoffsetData -= - dispw.min.x;
+			xoffsetDisp += - dispw.min.x;
 		}
-
-		if( dispw.min.y > 0 )
+		if( dispw.min.y < 0 )
 		{
-			yoffsetData = - dataw.min.y + dispw.min.y;
-			yoffsetDisp = 0;
+			yoffsetData -= - dispw.min.y;
+			yoffsetDisp += - dispw.min.y;
 		}
 		
 		subView = subimage_view( vw,

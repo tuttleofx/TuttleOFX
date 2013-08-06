@@ -213,7 +213,7 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		std::cout << "getRegionOfDefinition " << ( window.size().x + 1 ) * _par << " x " << window.size().y + 1 << std::endl;
 		
 		rod.x1 = 0;
-		rod.x2 = ( window.size().x + 1 ) * _par;
+		rod.x2 = window.size().x + 1;
 		rod.y1 = 0;
 		rod.y2 = window.size().y + 1;
 
