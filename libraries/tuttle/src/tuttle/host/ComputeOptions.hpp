@@ -40,12 +40,12 @@ struct TimeRange
 
 enum EVerboseLevel
 {
-	eVerboseLevelTrace,
-	eVerboseLevelDebug,
-	eVerboseLevelInfo,
-	eVerboseLevelWarning,
-	eVerboseLevelError,
-	eVerboseLevelFatal
+	eVerboseLevelTrace   = boost::log::trivial::trace,
+	eVerboseLevelDebug   = boost::log::trivial::debug,
+	eVerboseLevelInfo    = boost::log::trivial::info,
+	eVerboseLevelWarning = boost::log::trivial::warning,
+	eVerboseLevelError   = boost::log::trivial::error,
+	eVerboseLevelFatal   = boost::log::trivial::fatal
 };
 
 class ComputeOptions
@@ -215,15 +215,7 @@ public:
 	 */
 	This& setVerboseLevel( const EVerboseLevel level )
 	{
-		switch( level )
-		{
-			case eVerboseLevelTrace   : _formatter->setLogLevel( boost::log::trivial::trace   ); break;
-			case eVerboseLevelDebug   : _formatter->setLogLevel( boost::log::trivial::debug   ); break;
-			case eVerboseLevelInfo    : _formatter->setLogLevel( boost::log::trivial::info    ); break;
-			case eVerboseLevelWarning : _formatter->setLogLevel( boost::log::trivial::warning ); break;
-			case eVerboseLevelError   : _formatter->setLogLevel( boost::log::trivial::error   ); break;
-			case eVerboseLevelFatal   : _formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-		}
+		_formatter->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
 		return *this;
 	}
 	
