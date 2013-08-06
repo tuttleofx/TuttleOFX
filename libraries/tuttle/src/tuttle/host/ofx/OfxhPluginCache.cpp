@@ -255,9 +255,10 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				{
 					// the binary was not in the cache
 					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlepath, this );
+					//TUTTLE_LOG_WARNING( binpath );
 					_binaries.push_back( pb );
 					_knownBinFiles.insert( binpath );
-
+					//TUTTLE_LOG_WARNING( binpath << " (" << pb->getNPlugins() <<  ")" );
 					for( int j = 0; j < pb->getNPlugins(); ++j )
 					{
 						OfxhPlugin& plug                   = pb->getPlugin( j );
@@ -269,6 +270,9 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				{
 					TUTTLE_LOG_INFOS;
 					TUTTLE_LOG_ERROR( "warning: can't load " << binpath );
+					TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
+					TUTTLE_LOG_ERROR( "LD_LIBRARY_PATH" );
+					TUTTLE_LOG_ERROR( std::getenv("LD_LIBRARY_PATH") );
 				}
 			}
 			else
