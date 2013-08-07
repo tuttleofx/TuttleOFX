@@ -19,8 +19,10 @@ using namespace terry;
 IdKeyerPlugin::IdKeyerPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-	_paramNbPoints = fetchIntParam( kParamNbPoints );
-
+	_paramNbPoints  = fetchIntParam( kParamNbPoints );
+	_paramUseAlpha  = fetchBooleanParam( kParamUseAlpha );
+	_paramTolerance = fetchDoubleParam( kParamTolerance );
+	
 	_paramColors.reserve( kMaxNbPoints );
 	for( size_t i = 0; i < kMaxNbPoints; ++i )
 	{
@@ -35,6 +37,9 @@ IdKeyerProcessParams<View> IdKeyerPlugin::getProcessParams() const
 {
 	IdKeyerProcessParams<View> params;
 
+	params._useAlpha  = _paramUseAlpha->getValue();
+	params._tolerance = _paramTolerance->getValue();
+	
 	RGBAParamVector::const_iterator it_color     = _paramColors.begin();
 
 	size_t nbPoints = boost::numeric_cast<size_t>( _paramNbPoints->getValue() );

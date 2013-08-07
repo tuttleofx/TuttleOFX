@@ -46,15 +46,15 @@ void IdKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	//srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	//srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	//dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	//dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::IntParamDescriptor* nbPoint = desc.defineIntParam( kParamNbPoints );
@@ -67,6 +67,16 @@ void IdKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( getColorParamName( i ) );
 		color->setLabel( getColorParamName( i ) );
 	}
+	
+	OFX::BooleanParamDescriptor* useAlpha = desc.defineBooleanParam( kParamUseAlpha );
+	useAlpha->setLabel( "Use alpha" );
+	useAlpha->setDefault( false );
+	
+	OFX::DoubleParamDescriptor* tolerance = desc.defineDoubleParam( kParamTolerance );
+	tolerance->setLabel( "Tolerance" );
+	tolerance->setDefault( 0.00001 );
+	tolerance->setRange( 0.0, 1000 );
+	tolerance->setDisplayRange( 0.0, 1.0 );
 }
 
 /**

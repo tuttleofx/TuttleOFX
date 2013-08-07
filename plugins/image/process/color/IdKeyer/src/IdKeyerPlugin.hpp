@@ -13,7 +13,9 @@ template<class View>
 struct IdKeyerProcessParams
 {
 	typedef typename boost::gil::rgba32f_pixel_t Pixel;
-	std::vector<Pixel>  _colors;
+	std::vector<Pixel> _colors;
+	double             _tolerance;
+	bool               _useAlpha;
 };
 
 /**
@@ -34,8 +36,10 @@ public:
 public:
 	typedef std::vector<OFX::RGBAParam*> RGBAParamVector;
 
-	RGBAParamVector _paramColors;
-	OFX::IntParam* _paramNbPoints;
+	RGBAParamVector    _paramColors;
+	OFX::IntParam*     _paramNbPoints;
+	OFX::BooleanParam* _paramUseAlpha;
+	OFX::DoubleParam*  _paramTolerance;
 
 private:
 	OFX::InstanceChangedArgs _instanceChangedArgs;
