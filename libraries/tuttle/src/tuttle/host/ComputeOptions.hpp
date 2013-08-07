@@ -54,9 +54,7 @@ public:
 	typedef ComputeOptions This;
 	
 	ComputeOptions()
-	: _formatter( tuttle::common::formatters::Formatter::get() )
-	, _color    ( tuttle::common::Color::get() )
-	, _begin    ( std::numeric_limits<int>::min() )
+	: _begin    ( std::numeric_limits<int>::min() )
 	, _end      ( std::numeric_limits<int>::max() )
 	, _abort    ( false )
 	{
@@ -65,9 +63,7 @@ public:
 	
 	explicit
 	ComputeOptions( const int frame )
-	: _formatter( tuttle::common::formatters::Formatter::get() )
-	, _color    ( tuttle::common::Color::get() )
-	, _begin    ( std::numeric_limits<int>::min() )
+	: _begin    ( std::numeric_limits<int>::min() )
 	, _end      ( std::numeric_limits<int>::max() )
 	, _abort    ( false )
 	{
@@ -76,9 +72,7 @@ public:
 	}
 	
 	ComputeOptions( const int begin, const int end, const int step = 1 )
-	: _formatter( tuttle::common::formatters::Formatter::get() )
-	, _color    ( tuttle::common::Color::get() )
-	, _begin    ( std::numeric_limits<int>::min() )
+	: _begin    ( std::numeric_limits<int>::min() )
 	, _end      ( std::numeric_limits<int>::max() )
 	, _abort    ( false )
 	{
@@ -87,9 +81,7 @@ public:
 	}
 	
 	ComputeOptions( const ComputeOptions& options )
-	: _formatter( tuttle::common::formatters::Formatter::get() )
-	, _color    ( tuttle::common::Color::get() )
-	, _begin    ( std::numeric_limits<int>::min() )
+	: _begin    ( std::numeric_limits<int>::min() )
 	, _end      ( std::numeric_limits<int>::max() )
 	, _abort    ( false )
 	{
@@ -215,7 +207,7 @@ public:
 	 */
 	This& setVerboseLevel( const EVerboseLevel level )
 	{
-		_formatter->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
+		tuttle::common::formatters::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
 		return *this;
 	}
 	
@@ -224,7 +216,9 @@ public:
 	 */
 	This& setColorEnable( const bool enable = true )
 	{
-		enable ? _color->enable() : _color->disable();
+		enable ?
+			tuttle::common::Color::get()->enable() :
+			tuttle::common::Color::get()->disable();
 		return *this;
 	}
 	
@@ -265,8 +259,6 @@ private:
 	std::list<TimeRange> _timeRanges;
 	
 	OfxPointD _renderScale;
-	boost::shared_ptr<tuttle::common::formatters::Formatter> _formatter;
-	boost::shared_ptr<tuttle::common::Color>                 _color;
 	// different to range
 	int _begin;
 	int _end;
