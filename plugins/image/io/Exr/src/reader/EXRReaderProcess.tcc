@@ -293,24 +293,18 @@ void EXRReaderProcess<View>::sliceCopy( Imf::InputFile& input, const Imf::Slice*
 	
 	if( params._displayWindow )
 	{
-		size_t xoffsetData = abs( dispw.min.x );
-		size_t yoffsetData = abs( dispw.min.y );
-		size_t xoffsetDisp = abs( dataw.min.x );
-		size_t yoffsetDisp = abs( dataw.min.y );
+		size_t xoffsetData = dataw.min.x + std::max( 0, dispw.min.x );
+		size_t yoffsetData = dataw.min.y + std::max( 0, dispw.min.y );
+		size_t xoffsetDisp = dataw.min.x - std::min( 0, dispw.min.x );
+		size_t yoffsetDisp = dataw.min.y - std::min( 0, dispw.min.y );
 		
 		size_t wView = std::min( dataw.max.x, dispw.max.x ) - std::max( dataw.min.x, dispw.min.x ) + 1;
 		size_t hView = std::min( dataw.max.y, dispw.max.y ) - std::max( dataw.min.y, dispw.min.y ) + 1;
-		
-		if( dispw.min.x < 0 )
-		{
-			xoffsetData -= - dispw.min.x;
-			xoffsetDisp += - dispw.min.x;
-		}
-		if( dispw.min.y < 0 )
-		{
-			yoffsetData -= - dispw.min.y;
-			yoffsetDisp += - dispw.min.y;
-		}
+
+		TUTTLE_TLOG_VAR4( TUTTLE_WARNING, dataw.min.x, dataw.min.y, dataw.max.x, dataw.max.y );
+		TUTTLE_TLOG_VAR4( TUTTLE_WARNING, dispw.min.x, dispw.min.y, dispw.max.x, dispw.max.y );
+		TUTTLE_TLOG_VAR4( TUTTLE_WARNING, xoffsetData, yoffsetData, xoffsetDisp, yoffsetDisp );
+		TUTTLE_TLOG_VAR2( TUTTLE_WARNING, wView, hView );
 		
 		subView = subimage_view( vw,
 								 xoffsetData,
