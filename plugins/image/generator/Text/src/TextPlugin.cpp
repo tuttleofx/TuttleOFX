@@ -21,9 +21,8 @@ TextPlugin::TextPlugin( OfxImageEffectHandle handle )
 {
 	_paramText          = fetchStringParam( kParamText );
 	_paramIsExpression  = fetchBooleanParam( kParamIsExpression );
-#ifdef __WINDOWS__
-	_paramFont          = fetchStringParam( kParamFont );
-#else
+	_paramFontPath      = fetchStringParam( kParamFontPath );
+#ifndef __WINDOWS__
 	_paramFont          = fetchChoiceParam( kParamFont );
 #endif
 	_paramSize          = fetchIntParam( kParamSize );
@@ -47,7 +46,10 @@ TextProcessParams TextPlugin::getProcessParams( const OfxPointD& renderScale ) c
 
 	params._text          = _paramText->getValue();
 	params._isExpression  = _paramIsExpression->getValue();
+	params._fontPath      = _paramFontPath->getValue();
+#ifndef __WINDOWS__
 	params._font          = _paramFont->getValue();
+#endif
 	params._fontY         = _paramSize->getValue() * renderScale.y;
 	params._fontX         = params._fontY * _paramRatio->getValue();
 	params._fontColor     = _paramColor->getValue();

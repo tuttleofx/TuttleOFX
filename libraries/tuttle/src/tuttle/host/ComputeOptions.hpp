@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_HOST_CORE_COMPUTEOPTIONS_HPP_
 #define _TUTTLE_HOST_CORE_COMPUTEOPTIONS_HPP_
 
+#include <tuttle/common/utils/global.hpp>
+
 #include <ofxCore.h>
 
 #include <tuttle/common/utils/formatters.hpp>
@@ -18,18 +20,18 @@ struct TimeRange
 {
 	TimeRange()
 		: _begin( std::numeric_limits<int>::min() )
-		, _end( std::numeric_limits<int>::max() )
-		, _step( 1 )
+		, _end  ( std::numeric_limits<int>::max() )
+		, _step ( 1 )
 	{}
 	TimeRange( const int frame )
 		: _begin( frame )
-		, _end( frame )
-		, _step( 1 )
+		, _end  ( frame )
+		, _step ( 1 )
 	{}
 	TimeRange( const int begin, const int end, const int step = 1 )
 		: _begin( begin )
-		, _end( end )
-		, _step( step )
+		, _end  ( end )
+		, _step ( step )
 	{}
 	TimeRange( const OfxRangeD& range, const int step = 1 );
 	
@@ -40,13 +42,12 @@ struct TimeRange
 
 enum EVerboseLevel
 {
-	eVerboseLevelNone,
-	eVerboseLevelFatal,
-	eVerboseLevelError,
-	eVerboseLevelWarning,
-	eVerboseLevelInfo,
-	eVerboseLevelDebug,
-	eVerboseLevelTrace
+	eVerboseLevelTrace   = boost::log::trivial::trace,
+	eVerboseLevelDebug   = boost::log::trivial::debug,
+	eVerboseLevelInfo    = boost::log::trivial::info,
+	eVerboseLevelWarning = boost::log::trivial::warning,
+	eVerboseLevelError   = boost::log::trivial::error,
+	eVerboseLevelFatal   = boost::log::trivial::fatal
 };
 
 class ComputeOptions
@@ -55,36 +56,40 @@ public:
 	typedef ComputeOptions This;
 	
 	ComputeOptions()
-	: _begin( std::numeric_limits<int>::min() )
-	, _end( std::numeric_limits<int>::max() )
-	, _abort( false )
+	: _begin    ( std::numeric_limits<int>::min() )
+	, _end      ( std::numeric_limits<int>::max() )
+	, _abort    ( false )
 	{
 		init();
 	}
+	
 	explicit
 	ComputeOptions( const int frame )
-	: _begin( std::numeric_limits<int>::min() )
-	, _end( std::numeric_limits<int>::max() )
-	, _abort( false )
+	: _begin    ( std::numeric_limits<int>::min() )
+	, _end      ( std::numeric_limits<int>::max() )
+	, _abort    ( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( frame, frame ) );
 	}
+	
 	ComputeOptions( const int begin, const int end, const int step = 1 )
-	: _begin( std::numeric_limits<int>::min() )
-	, _end( std::numeric_limits<int>::max() )
-	, _abort( false )
+	: _begin    ( std::numeric_limits<int>::min() )
+	, _end      ( std::numeric_limits<int>::max() )
+	, _abort    ( false )
 	{
 		init();
 		_timeRanges.push_back( TimeRange( begin, end, step ) );
 	}
+	
 	ComputeOptions( const ComputeOptions& options )
-	: _begin( std::numeric_limits<int>::min() )
-	, _end( std::numeric_limits<int>::max() )
-	, _abort( false )
+	: _begin    ( std::numeric_limits<int>::min() )
+	, _end      ( std::numeric_limits<int>::max() )
+	, _abort    ( false )
 	{
 		*this = options;
 	}
+	
 	ComputeOptions& operator=( const ComputeOptions& other )
 	{
 		_timeRanges = other._timeRanges;
@@ -94,7 +99,6 @@ public:
 		_continueOnMissingFile = other._continueOnMissingFile;
 		_forceIdentityNodesProcess = other._forceIdentityNodesProcess;
 		_returnBuffers = other._returnBuffers;
-		_verboseLevel = other._verboseLevel;
 		_isInteractive = other._isInteractive;
 
 		// don't modify the abort status?
@@ -107,11 +111,12 @@ private:
 	void init()
 	{
 		setRenderScale( 1.0, 1.0 );
-		setContinueOnError( false );
-		setContinueOnMissingFile( false );
-		setReturnBuffers( true );
-		setVerboseLevel( eVerboseLevelError );
-		setIsInteractive( false );
+		setVerboseLevel( eVerboseLevelWarning );
+		setReturnBuffers            ( true  );
+		setContinueOnError          ( false );
+		setContinueOnMissingFile    ( false );
+		setColorEnable              ( false );
+		setIsInteractive            ( false );
 		setForceIdentityNodesProcess( false );
 	}
 	
@@ -202,24 +207,22 @@ public:
 	/**
 	 * @brief Set the verbose level of the process.
 	 */
-	This& setVerboseLevel( const EVerboseLevel v )
+	This& setVerboseLevel( const EVerboseLevel level )
 	{
-		_verboseLevel = v;
-		boost::shared_ptr<tuttle::common::formatters::Formatter> formatter( tuttle::common::formatters::Formatter::get() );
-		formatter->init_logging();
-		switch( v )
-		{
-				case eVerboseLevelTrace :   formatter->setLogLevel( boost::log::trivial::trace   ); break;
-				case eVerboseLevelDebug :   formatter->setLogLevel( boost::log::trivial::debug   ); break;
-				case eVerboseLevelInfo :    formatter->setLogLevel( boost::log::trivial::info    ); break;
-				case eVerboseLevelWarning : formatter->setLogLevel( boost::log::trivial::warning ); break;
-				case eVerboseLevelError :   formatter->setLogLevel( boost::log::trivial::error   ); break;
-				case eVerboseLevelFatal :   formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-				case eVerboseLevelNone  :   formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-		}
+		tuttle::common::formatters::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
 		return *this;
 	}
-	EVerboseLevel getVerboseLevel() const { return _verboseLevel; }
+	
+	/**
+	 * @brief Set the output color enabled or not.
+	 */
+	This& setColorEnable( const bool enable = true )
+	{
+		enable ?
+			tuttle::common::Color::get()->enable() :
+			tuttle::common::Color::get()->disable();
+		return *this;
+	}
 	
 	/**
 	 * @brief Inform plugins about the kind of process: batch or interactive.
@@ -258,7 +261,6 @@ private:
 	std::list<TimeRange> _timeRanges;
 	
 	OfxPointD _renderScale;
-	EVerboseLevel _verboseLevel;
 	// different to range
 	int _begin;
 	int _end;

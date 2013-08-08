@@ -12,26 +12,23 @@ namespace text {
 
 struct TextProcessParams
 {
-	std::string _text;
-	bool _isExpression;
+	std::string    _text;
+	bool           _isExpression;
 
-#ifdef __WINDOWS__
-	std::string _font;
-#else
-	int _font;
-#endif
+	std::string    _fontPath;
+	int            _font;
 
-	int _fontX;
-	int _fontY;
+	int            _fontX;
+	int            _fontY;
 	OfxRGBAColourD _fontColor;
 	OfxRGBAColourD _backgroundColor;
 	boost::gil::point2<double> _position;
-	double _letterSpacing;
-	EParamVAlign _vAlign;
-	EParamHAlign _hAlign;
-	bool _verticalFlip;
-	bool _italic;
-	bool _bold;
+	double         _letterSpacing;
+	EParamVAlign   _vAlign;
+	EParamHAlign   _hAlign;
+	bool           _verticalFlip;
+	bool           _italic;
+	bool           _bold;
 };
 
 /**
@@ -63,12 +60,10 @@ public:
 	OFX::StringParam*   _paramText; ///< the text to rasterize in the image
 	OFX::BooleanParam*  _paramIsExpression;
 
-#ifdef __WINDOWS__
-	OFX::StringParam*   _paramFont;
-#else
+	OFX::StringParam*   _paramFontPath;
+#ifndef __WINDOWS__
 	OFX::ChoiceParam*   _paramFont;
 #endif
-
 	OFX::IntParam*      _paramSize;
 	OFX::DoubleParam*   _paramRatio;
 	OFX::RGBAParam*     _paramColor;
