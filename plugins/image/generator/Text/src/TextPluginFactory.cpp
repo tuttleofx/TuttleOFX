@@ -69,11 +69,12 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	                       "text = 'At frame '+str(time)+', timecode is ' + timecode()\n" );
 	isExpression->setDefault( false );
 	
-#ifdef __WINDOWS__
-	OFX::StringParamDescriptor* font = desc.defineStringParam( kParamFont );
-	font->setStringType( OFX::eStringTypeFilePath );
-	font->setHint( "When a font file path is activate, the bold and italic options are not available." );
-#else
+
+	OFX::StringParamDescriptor* fontFile = desc.defineStringParam( kParamFontPath );
+	fontFile->setStringType( OFX::eStringTypeFilePath );
+	fontFile->setHint( "When a font file path is fill, font & bold and italic options are not available." );
+
+#ifndef __WINDOWS__
 	OFX::ChoiceParamDescriptor* font = desc.defineChoiceParam( kParamFont );
 
 	FcInit ();

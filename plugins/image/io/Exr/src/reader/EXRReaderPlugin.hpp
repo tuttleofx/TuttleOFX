@@ -18,6 +18,7 @@ struct EXRReaderProcessParams
 	int         _greenChannelIndex;
 	int         _blueChannelIndex;
 	int         _alphaChannelIndex;
+	bool        _displayWindow;
 };
 
 /**
@@ -50,7 +51,9 @@ protected:
 	OFX::ChoiceParam*              _greenComponents; ///< index of Green components
 	OFX::ChoiceParam*              _blueComponents;  ///< index of Blue components
 	OFX::ChoiceParam*              _alphaComponents; ///< index of Alpha components
+	OFX::ChoiceParam*              _outputData;      ///< Output data
 	int                            _channels;        ///< number of channels in file
+	float                          _par;             ///< pixel aspect ratio
 };
 
 }
