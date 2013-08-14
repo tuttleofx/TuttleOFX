@@ -66,7 +66,10 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	isExpression->setHint( "If you check this parameter the text must be a python code.\n"
 	                       "The final result must be in a variable with the name of the parameter.\n"
 	                       "Example:\n"
-	                       "text = 'At frame '+str(time)+', timecode is ' + timecode()\n" );
+	                       "text = 'text=\"str(tuttleArgs().time)\"\n"
+	                       "or\n"
+	                       "text = 'text=\"tuttleArgs().timecode()\"\n"
+	                       );
 	isExpression->setDefault( false );
 	
 
