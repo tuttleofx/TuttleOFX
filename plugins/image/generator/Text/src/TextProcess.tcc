@@ -82,7 +82,7 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			boost::python::object main_namespace = main_module.attr( "__dict__" );
 			
 			std::ostringstream context;
-			context << "class tuttleArgs :" << args.time << std::endl;
+			context << "class tuttleArgs :" << std::endl;
 			context << "    time = " << args.time << std::endl;
 			context << "    renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
 			context << "    renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
@@ -97,11 +97,11 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			
 			context << "    fps = " << _clipSrc->getFrameRate() << std::endl;
 			
-			context << "    def timecode():" << std::endl;
-			context << "        return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format( " << args.time << " / (3600 * fps), "
-																				   << args.time << " / (60 * fps) % 60, "
-																				   << args.time << " / fps % 60, "
-																				   << args.time << " % fps )" << std::endl;
+			context << "    def timecode( self ):" << std::endl;
+			context << "        return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format(  self.time / (3600 * self.fps ), "
+																				" self.time / (60 * self.fps ) % 60, "
+																				" self.time / self.fps % 60, "
+																				" self.time % self.fps )" << std::endl;
 			
 			//TUTTLE_LOG_INFO( context.str().c_str() );
 
