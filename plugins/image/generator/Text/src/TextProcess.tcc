@@ -116,6 +116,7 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		{
 			// if we can't evaluate the expression
 			// use the text without interpretation
+			PyErr_Print();
 			_text = _params._text;
 		}
 //		Py_Finalize();
