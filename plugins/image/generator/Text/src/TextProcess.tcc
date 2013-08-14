@@ -82,25 +82,26 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			boost::python::object main_namespace = main_module.attr( "__dict__" );
 			
 			std::ostringstream context;
-			context << "tuttleArgs.Time = " << args.time << std::endl;
-			context << "tuttleArgs.RenderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
-			context << "tuttleArgs.RenderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
+			context << "class tuttleArgs :" << args.time << std::endl;
+			context << "    time = " << args.time << std::endl;
+			context << "    renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
+			context << "    renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
 					                      << args.renderWindow.x2 << "," << args.renderWindow.y2 << "]" << std::endl;
 
 			OfxRectD dstCanonicalRod = this->_clipDst->getCanonicalRod( args.time );
-			context << "tuttleArgs.DstCanonicalRod = [" << dstCanonicalRod.x1 << "," << dstCanonicalRod.y1 << ","
+			context << "    dstCanonicalRod = [" << dstCanonicalRod.x1 << "," << dstCanonicalRod.y1 << ","
 					                         << dstCanonicalRod.x2 << "," << dstCanonicalRod.y2 << "]" << std::endl;
 			OfxRectI dstPixelRod = this->_clipDst->getPixelRod( args.time );
-			context << "tuttleArgs.DstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
-					                     << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
+			context << "    dstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
+											 << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
 			
-			context << "tuttleArgs.Fps = " << _clipSrc->getFrameRate() << std::endl;
+			context << "    fps = " << _clipSrc->getFrameRate() << std::endl;
 			
-			context << "def tuttleArgs.Timecode():" << std::endl;
-			context << "    return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format( " << args.time << " / (3600 * fps), "
-																			   << args.time << " / (60 * fps) % 60, "
-																			   << args.time << " / fps % 60, "
-																			   << args.time << " % fps )" << std::endl;
+			context << "    def timecode():" << std::endl;
+			context << "        return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format( " << args.time << " / (3600 * fps), "
+																				   << args.time << " / (60 * fps) % 60, "
+																				   << args.time << " / fps % 60, "
+																				   << args.time << " % fps )" << std::endl;
 			
 			//TUTTLE_LOG_INFO( context.str().c_str() );
 
