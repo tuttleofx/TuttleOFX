@@ -21,12 +21,18 @@ static const bool kSupportTiles = false;
 void SeExprPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels(
-		"SeExpr",
+		"TuttleSeExpr",
 		"SeExpr",
 		"SeExpr" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
-	desc.setDescription( "Plugin under early development." );
+	desc.setDescription( "SeExpr is a simple expression language that we use to provide"
+						 "artistic control and customization to our core software.\n"
+						 "We use it for procedural geometry synthesis, image synthesis,"
+						 "simulation control, and much more.\n\n"
+						 "language documentation: http://wdas.github.io/SeExpr/doxygen/userdoc.html"
+						 "\n\n"
+						 "projet website: http://www.disneyanimation.com/technology/seexpr.html" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextGenerator );
