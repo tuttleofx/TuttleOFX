@@ -69,8 +69,8 @@ void SeExprProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 			 x < procWindowOutput.x2;
 			 ++x, ++dst_it )
 		{
-			u = one_over_width * ( x + .5 );
-			v = one_over_height * ( y + .5 );
+			u = one_over_width  * ( x + .5 + _params._paramTextureOffset.x );
+			v = one_over_height * ( y + .5 + _params._paramTextureOffset.y );
 			SeVec3d result = expr.evaluate();
 
 			color_convert( rgba32f_pixel_t( (float)result[0], (float)result[1], (float)result[2], 1.0 ), *dst_it );
