@@ -18,6 +18,8 @@ void SeExprProcess<View>::setup( const OFX::RenderArguments& args )
 
 	rod = _plugin._clipDst->getCanonicalRod( args.time );
 
+	_time = args.time;
+	
 	TUTTLE_TLOG( TUTTLE_INFO, _params._code );
 
 	ImageSynthExpr expr( _params._code );
@@ -25,6 +27,7 @@ void SeExprProcess<View>::setup( const OFX::RenderArguments& args )
 	expr.vars["v"] = ImageSynthExpr::Var( _params._paramTextureOffset.y );
 	expr.vars["w"] = ImageSynthExpr::Var( rod.x2 - rod.x1 );
 	expr.vars["h"] = ImageSynthExpr::Var( rod.y2 - rod.y1 );
+	expr.vars["frame"] = ImageSynthExpr::Var( _time );
 
 	bool valid = expr.isValid();
 	if( !valid )
@@ -54,6 +57,7 @@ void SeExprProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 	expr.vars["v"] = ImageSynthExpr::Var( _params._paramTextureOffset.y );
 	expr.vars["w"] = ImageSynthExpr::Var( rod.x2 - rod.x1 );
 	expr.vars["h"] = ImageSynthExpr::Var( rod.y2 - rod.y1 );
+	expr.vars["frame"] = ImageSynthExpr::Var( _time );
 
 	double one_over_width  = 1.0 / procWindowSize.x;
 	double one_over_height = 1.0 / procWindowSize.y;

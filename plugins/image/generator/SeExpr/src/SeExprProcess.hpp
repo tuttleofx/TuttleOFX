@@ -34,6 +34,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 private:
 	OfxRectD rod;
+	size_t _time;
 };
 
 }
