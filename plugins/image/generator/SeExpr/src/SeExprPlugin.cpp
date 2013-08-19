@@ -17,6 +17,8 @@ SeExprPlugin::SeExprPlugin( OfxImageEffectHandle handle )
 	_paramCode          = fetchStringParam  ( kParamSeExprCode );
 	_paramFile          = fetchStringParam  ( kTuttlePluginFilename );
 	_paramTextureOffset = fetchDouble2DParam( kParamTextureOffset );
+	
+	changedParam ( _instanceChangedArgs, kParamChooseInput );
 }
 
 SeExprProcessParams<SeExprPlugin::Scalar> SeExprPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -64,6 +66,36 @@ SeExprProcessParams<SeExprPlugin::Scalar> SeExprPlugin::getProcessParams( const 
 void SeExprPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
 	GeneratorPlugin::changedParam( args, paramName );
+	
+	if( paramName == kParamChooseInput )
+	{
+		EParamChooseInput input = static_cast<EParamChooseInput>( _paramInput->getValue() );
+		switch( input )
+		{
+			case eParamChooseInputCode:
+			{
+				_paramCode->setIsSecretAndDisabled( false );
+				_paramFile->setIsSecretAndDisabled( true );
+				break;
+			}
+			case eParamChooseInputFile:
+			{
+				_paramCode->setIsSecretAndDisabled( true );
+				_paramFile->setIsSecretAndDisabled( false );
+				break;
+			}
+		}
+	}
+	
+	if( paramName == kParamSeExprCode )
+	{
+		_paramInput->setValue( eParamChooseInputCode );
+	}
+	
+	if( paramName == kTuttlePluginFilename )
+	{
+		_paramInput->setValue( eParamChooseInputFile );
+	}
 }
 
 void SeExprPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )

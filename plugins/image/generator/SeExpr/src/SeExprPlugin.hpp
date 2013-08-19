@@ -42,6 +42,8 @@ public:
 	OFX::StringParam*   _paramCode;
 	OFX::StringParam*   _paramFile;
 	OFX::Double2DParam* _paramTextureOffset;
+private:
+	OFX::InstanceChangedArgs _instanceChangedArgs;
 };
 
 }
