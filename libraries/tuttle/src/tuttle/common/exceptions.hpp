@@ -1,6 +1,21 @@
 #ifndef _TUTTLE_COMMON_EXCEPTION_HPP_
 #define _TUTTLE_COMMON_EXCEPTION_HPP_
 
+namespace boost {
+  struct errinfo_file_name_ {};
+}
+namespace tuttle { namespace exception {
+    struct tag_userMessage {};
+    struct tag_devMessage {};
+    struct tag_backtraceMessage {};
+    struct tag_ofxContext {};
+    struct tag_ofxApi {};
+    struct tag_pluginIdentifier {};
+    struct tag_pluginName {};
+    struct tag_nodeName {};
+    struct tag_time {};
+}}
+
 #include "utils/boost_error_info_sstream.hpp"
 #include "utils/backtrace.hpp"
 
