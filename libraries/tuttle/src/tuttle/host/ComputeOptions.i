@@ -11,5 +11,11 @@ namespace std {
 %template(TimeRangeList) list<tuttle::host::TimeRange>;
 }
 
+namespace tuttle {
+namespace host {
+%feature("director") IProgressHandle;
+}
+}
+
 %include <tuttle/host/ComputeOptions.hpp>
 

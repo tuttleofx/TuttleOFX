@@ -16,6 +16,16 @@
 namespace tuttle {
 namespace host {
 
+class IProgressHandle
+{
+	public:
+		virtual void beginSequence() = 0;
+		virtual void setupAtTime() = 0;
+		virtual void processAtTime() = 0;
+		virtual void endSequence() = 0;
+
+};
+
 struct TimeRange
 {
 	TimeRange()
@@ -256,7 +266,39 @@ public:
 	 * @brief Has someone asked to abort the process?
 	 */
 	bool getAbort() const { return _abort.load( boost::memory_order_relaxed ); }
-	
+
+	/**
+	* @brief A handle to follow the progress (start, end...) of the compute
+	*/
+	void setProgressHandle( IProgressHandle *progressHandle ) { _progressHandle.reset( progressHandle ); }
+	bool isProgressHandleSet() const
+	{
+		if (_progressHandle.get() == NULL)
+			return false;
+		else
+			return true;
+	}
+	void beginSequenceHandle() const
+	{
+		if (isProgressHandleSet())
+			_progressHandle.get()->beginSequence();
+	}
+	void setupAtTimeHandle() const
+	{
+		if (isProgressHandleSet())
+			_progressHandle.get()->setupAtTime();
+	}
+	void processAtTimeHandle() const
+	{
+		if (isProgressHandleSet())
+			_progressHandle.get()->processAtTime();
+	}
+	void endSequenceHandle() const
+	{
+		if (isProgressHandleSet())
+			_progressHandle.get()->endSequence();
+	}
+
 private:
 	std::list<TimeRange> _timeRanges;
 	
@@ -272,6 +314,8 @@ private:
 	bool _isInteractive;
 	
 	boost::atomic_bool _abort;
+
+	std::auto_ptr<IProgressHandle> _progressHandle;
 };
 
 }
