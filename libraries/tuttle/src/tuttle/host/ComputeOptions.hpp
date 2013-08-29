@@ -24,7 +24,6 @@ class IProgressHandle
 		virtual void setupAtTime() = 0;
 		virtual void processAtTime() = 0;
 		virtual void endSequence() = 0;
-
 };
 
 struct TimeRange
