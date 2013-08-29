@@ -4,6 +4,12 @@
 %include <std_string.i>
 
 %{
+#include <boost/shared_ptr.hpp>
+%}
+%include <boost_shared_ptr.i>
+%shared_ptr(tuttle::host::IProgressHandle)
+
+%{
 #include <tuttle/host/ComputeOptions.hpp>
 %}
 
