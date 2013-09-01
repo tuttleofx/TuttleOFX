@@ -3,7 +3,7 @@
 
 #include <tuttle/host/Graph.hpp>
 
-#include <Detector.hpp>
+#include <detector.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -11,7 +11,7 @@
 using namespace tuttle::host;
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
-namespace sp  = sequenceParser;
+
 
 static int _blackImage     = 0;
 static int _nullFileSize   = 0;
@@ -96,17 +96,17 @@ EImageStatus checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, cons
 	return s;
 }
 
-void checkSequence( Graph::Node& read, Graph::Node& stat, Graph& graph, const sp::Sequence& seq )
+void checkSequence( Graph::Node& read, Graph::Node& stat, Graph& graph, const sequenceParser::Sequence& seq )
 {
-	for( sp::Time t = seq.getFirstTime(); t <= seq.getLastTime(); ++t )
+	for( sequenceParser::Time t = seq.getFirstTime(); t <= seq.getLastTime(); ++t )
 	{
 		checkFile( read, stat, graph, seq.getAbsoluteFilenameAt(t) );
 	}
 }
 
-void checkSequence( Graph::Node& read, Graph::Node& stat, Graph& graph, const sp::Sequence& seq, const sp::Time first, const sp::Time last )
+void checkSequence( Graph::Node& read, Graph::Node& stat, Graph& graph, const sequenceParser::Sequence& seq, const sequenceParser::Time first, const sequenceParser::Time last )
 {
-	for( sp::Time t = first; t <= last; ++t )
+	for( sequenceParser::Time t = first; t <= last; ++t )
 	{
 		checkFile( read, stat, graph, seq.getAbsoluteFilenameAt(t) );
 	}
@@ -272,26 +272,26 @@ int main( int argc, char** argv )
 			{
 				if( bfs::is_directory( path ) )
 				{
-					boost::ptr_vector<sp::FileObject> fObjects;
-					sp::Detector detector;
-					fObjects = detector.fileObjectInDirectory( path.string() );
-					BOOST_FOREACH( sp::FileObject& fObj, fObjects )
+					boost::ptr_vector<sequenceParser::FileObject> fObjects;
+					
+					fObjects = sequenceParser::fileObjectInDirectory( path.string() );
+					BOOST_FOREACH( sequenceParser::FileObject& fObj, fObjects )
 					{
 						switch( fObj.getMaskType() )
 						{
-							case sp::eMaskTypeSequence:
+							case sequenceParser::eMaskTypeSequence:
 							{
-								checkSequence( read, stat, graph, dynamic_cast<const sp::Sequence&>( fObj ) );
+								checkSequence( read, stat, graph, dynamic_cast<const sequenceParser::Sequence&>( fObj ) );
 								break;
 							}
-							case sp::eMaskTypeFile:
+							case sequenceParser::eMaskTypeFile:
 							{
-								const sp::File fFile = dynamic_cast<const sp::File&>( fObj );
+								const sequenceParser::File fFile = dynamic_cast<const sequenceParser::File&>( fObj );
 								checkFile( read, stat, graph, fFile.getAbsoluteFilename() );
 								break;
 							}
-							case sp::eMaskTypeDirectory:
-							case sp::eMaskTypeUndefined:
+							case sequenceParser::eMaskTypeDirectory:
+							case sequenceParser::eMaskTypeUndefined:
 								break;
 						}
 					}
@@ -305,7 +305,7 @@ int main( int argc, char** argv )
 			{
 				try
 				{
-					sp::Sequence s( path );
+					sequenceParser::Sequence s( path );
 					if( hasRange )
 					{
 						checkSequence( read, stat, graph, s, range[0], range[1] );

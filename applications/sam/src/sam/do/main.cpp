@@ -18,14 +18,14 @@
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 
-#include <Detector.hpp>
+#include <detector.hpp>
 
 
 namespace bpo = boost::program_options;
 namespace ttl = tuttle::host;
 
 namespace bfs = boost::filesystem;
-namespace sp  = sequenceParser;
+
 
 //namespace logging = boost::log;
 
@@ -172,24 +172,24 @@ void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, 
 	TUTTLE_LOG_INFO( expertOptions );
 }
 
-int addListOfSequencesInListOfProcess( boost::ptr_vector<sp::FileObject>& inputList, boost::ptr_vector<sp::FileObject>& outputList, const std::vector<std::string>& extensions )
+int addListOfSequencesInListOfProcess( boost::ptr_vector<sequenceParser::FileObject>& inputList, boost::ptr_vector<sequenceParser::FileObject>& outputList, const std::vector<std::string>& extensions )
 {
 	sam::samdo::Dummy dummy;
 	std::vector<std::string> exts = dummy.getSupportedExtensions( kOfxImageEffectContextReader );
 	int count = 0;
 	
-	BOOST_FOREACH( sp::FileObject& fo, inputList )
+	BOOST_FOREACH( sequenceParser::FileObject& fo, inputList )
 	{
 		bool isSupportedExtension = false;
 		std::string filename;
 		std::string ext;
-		if( fo.getMaskType() == sp::eMaskTypeSequence )
+		if( fo.getMaskType() == sequenceParser::eMaskTypeSequence )
 		{
-			filename = static_cast<const sp::Sequence&>(fo).getAbsoluteStandardPattern();
+			filename = static_cast<const sequenceParser::Sequence&>(fo).getAbsoluteStandardPattern();
 		}
-		if( fo.getMaskType() == sp::eMaskTypeFile )
+		if( fo.getMaskType() == sequenceParser::eMaskTypeFile )
 		{
-			filename = static_cast<const sp::File&>(fo).getAbsoluteFilename();
+			filename = static_cast<const sequenceParser::File&>(fo).getAbsoluteFilename();
 		}
 		ext = bfs::path( filename ).extension().string();
 		ext.erase( 0, 1 ); // erase the dot
@@ -223,12 +223,12 @@ int addListOfSequencesInListOfProcess( boost::ptr_vector<sp::FileObject>& inputL
 	return count;
 }
 
-std::string getAbsoluteFilename( const sp::FileObject& fo )
+std::string getAbsoluteFilename( const sequenceParser::FileObject& fo )
 {
-	if( fo.getMaskType() == sp::eMaskTypeSequence )
-		return static_cast<const sp::Sequence&>(fo).getAbsoluteStandardPattern();
-	if( fo.getMaskType() == sp::eMaskTypeFile )
-		return static_cast<const sp::File&>(fo).getAbsoluteFilename();
+	if( fo.getMaskType() == sequenceParser::eMaskTypeSequence )
+		return static_cast<const sequenceParser::Sequence&>(fo).getAbsoluteStandardPattern();
+	if( fo.getMaskType() == sequenceParser::eMaskTypeFile )
+		return static_cast<const sequenceParser::File&>(fo).getAbsoluteFilename();
 	return "";
 }
 
@@ -909,16 +909,16 @@ int main( int argc, char** argv )
 		options.setForceIdentityNodesProcess( forceIdentityNodesProcess );
 		
 		size_t numberOfLoop = std::numeric_limits<size_t>::max();
-		boost::ptr_vector< boost::ptr_vector< sp::FileObject > > listOfSequencesPerReaderNode;
+		boost::ptr_vector< boost::ptr_vector< sequenceParser::FileObject > > listOfSequencesPerReaderNode;
 		std::vector< std::string > listOfSequencesPerWriterNode;
 		bool writerHaveExtensionInParameter = false;
 		
 		if( facticesNodes.size() )
 		{
 			// create a detector from the sequence parsing library
-			sp::Detector detector;
-			sp::EMaskType    researchMask    = sp::eMaskTypeSequence | sp::eMaskTypeFile ;
-			sp::EMaskOptions descriptionMask = sp::eMaskOptionsAbsolutePath | sp::eMaskOptionsRecursive;
+			
+			sequenceParser::EMaskType    researchMask    = sequenceParser::eMaskTypeSequence | sequenceParser::eMaskTypeFile ;
+			sequenceParser::EMaskOptions descriptionMask = sequenceParser::eMaskOptionsAbsolutePath | sequenceParser::eMaskOptionsRecursive;
 			
 			std::vector<std::string> filters;
 			
@@ -940,7 +940,7 @@ int main( int argc, char** argv )
 					std::vector<std::string> extensions;
 					dummy.getExtensionsFromCommandLine( extensions, nodeArgs );
 					
-					boost::ptr_vector<sp::FileObject> listOfSequencesForThisNode;
+					boost::ptr_vector<sequenceParser::FileObject> listOfSequencesForThisNode;
 					
 					// browse all paths in parameters
 					BOOST_FOREACH( std::string& inputPath, paths )
@@ -949,7 +949,7 @@ int main( int argc, char** argv )
 						TUTTLE_LOG_TRACE( "[sam-do] " <<n->getName() << " browse: " << inputPath );
 					
 						// get filenames adn sequences
-						boost::ptr_vector<sp::FileObject> listOfSequences = detector.fileObjectInDirectory( inputPath, filters, researchMask, descriptionMask );
+						boost::ptr_vector<sequenceParser::FileObject> listOfSequences = sequenceParser::fileObjectInDirectory( inputPath, filters, researchMask, descriptionMask );
 						count += addListOfSequencesInListOfProcess( listOfSequences, listOfSequencesForThisNode, extensions );
 					
 						bfs::path p( inputPath );
@@ -960,7 +960,7 @@ int main( int argc, char** argv )
 								if( bfs::is_directory( *dir ) )
 								{
 									bfs::path currentPath = (bfs::path)*dir;
-									boost::ptr_vector<sp::FileObject> listOfSequences = detector.fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask );
+									boost::ptr_vector<sequenceParser::FileObject> listOfSequences = sequenceParser::fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask );
 									count += addListOfSequencesInListOfProcess( listOfSequences, listOfSequencesForThisNode, extensions );
 								}
 							}
@@ -1073,7 +1073,7 @@ int main( int argc, char** argv )
 					}
 					else
 					{
-						sp::FileObject& fo = listOfSequencesPerReaderNode.at( countDummyReader ).at( loop );
+						sequenceParser::FileObject& fo = listOfSequencesPerReaderNode.at( countDummyReader ).at( loop );
 						filename = getAbsoluteFilename( fo );
 						countDummyReader++;
 					}
@@ -1130,7 +1130,7 @@ int main( int argc, char** argv )
 							}
 							else
 							{
-								sp::FileObject& fo = listOfSequencesPerReaderNode.at( 0 ).at( loop );
+								sequenceParser::FileObject& fo = listOfSequencesPerReaderNode.at( 0 ).at( loop );
 								filename = getAbsoluteFilename( fo );
 							}
 							

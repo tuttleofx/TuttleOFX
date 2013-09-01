@@ -10,7 +10,7 @@
 #include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <Detector.hpp>
+#include <detector.hpp>
 #include <Sequence.hpp>
 
 #include <algorithm>
@@ -19,7 +19,6 @@
 namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
-namespace sp  = sequenceParser;
 
 bool         selectRange    = false;
 std::ssize_t firstImage     = 0;
@@ -33,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 	return os;
 }
 
-void removeSequence( const sp::Sequence& s )
+void removeSequence( const sequenceParser::Sequence& s )
 {
 	std::ssize_t first;
 	std::ssize_t last;
@@ -50,7 +49,7 @@ void removeSequence( const sp::Sequence& s )
 //	TUTTLE_TCOUT( "remove sequence." );
 //	TUTTLE_TCOUT("remove from " << first << " to " << last);
 
-	for( sp::Time t = first; t <= last; t += s.getStep() )
+	for( sequenceParser::Time t = first; t <= last; t += s.getStep() )
 	{
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( !bfs::exists( sFile ) )
@@ -76,16 +75,16 @@ void removeSequence( const sp::Sequence& s )
 	}
 }
 
-void removeFileObject( boost::ptr_vector<sp::FileObject> &listing, std::vector<boost::filesystem::path> &notRemoved )
+void removeFileObject( boost::ptr_vector<sequenceParser::FileObject> &listing, std::vector<boost::filesystem::path> &notRemoved )
 {
 //	TUTTLE_TCOUT( "removeFileObject." );
-	BOOST_FOREACH( const sp::FileObject& s, listing )
+	BOOST_FOREACH( const sequenceParser::FileObject& s, listing )
 	{
-		if( !(s.getMaskType () == sp::eMaskTypeDirectory))
+		if( !(s.getMaskType () == sequenceParser::eMaskTypeDirectory))
 		{
 			TUTTLE_LOG_TRACE( "remove: " << s );
-			if( s.getMaskType () == sp::eMaskTypeSequence )
-				removeSequence( static_cast<const sp::Sequence&>( s ) );
+			if( s.getMaskType () == sequenceParser::eMaskTypeSequence )
+				removeSequence( static_cast<const sequenceParser::Sequence&>( s ) );
 			else
 			{
 				std::vector<bfs::path> paths = s.getFiles();
@@ -141,8 +140,8 @@ int main( int argc, char** argv )
 	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 
-	sp::EMaskType                researchMask      = sp::eMaskTypeSequence;	// by default show sequences
-	sp::EMaskOptions             descriptionMask   = sp::eMaskOptionsColor;	// by default show nothing
+	sequenceParser::EMaskType                researchMask      = sequenceParser::eMaskTypeSequence;	// by default show sequences
+	sequenceParser::EMaskOptions             descriptionMask   = sequenceParser::eMaskOptionsColor;	// by default show nothing
 	bool                         recursiveListing  = false;
 	std::vector<std::string>     paths;
 	std::vector<std::string>     filters;
@@ -278,17 +277,17 @@ int main( int argc, char** argv )
 
 	if( vm.count( kDirectoriesOptionLongName ) )
 	{
-		researchMask |= sp::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
 	
 	if( vm.count( kFilesOptionLongName ) )
 	{
-		researchMask |= sp::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeFile;
 	}
 	
 	if( vm.count( kIgnoreOptionLongName ) )
 	{
-		researchMask &= ~sp::eMaskTypeSequence;
+		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 	
 	switch( vm[ kVerboseOptionLongName ].as< int >() )
@@ -320,20 +319,20 @@ int main( int argc, char** argv )
 
 	if( vm.count( kFullRMPathOptionLongName ) )
 	{
-		researchMask |= sp::eMaskTypeDirectory;
-		researchMask |= sp::eMaskTypeFile;
-		researchMask |= sp::eMaskTypeSequence;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
 	if( vm.count( kAllOptionLongName ) )
 	{
 		// add .* files
-		descriptionMask |= sp::eMaskOptionsDotFile;
+		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 	
 	if( vm.count( kPathOptionLongName ) )
 	{
-		descriptionMask |= sp::eMaskOptionsPath;
+		descriptionMask |= sequenceParser::eMaskOptionsPath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -359,7 +358,7 @@ int main( int argc, char** argv )
 	try
 	{
 		std::vector<boost::filesystem::path> pathsNoRemoved;
-		sp::Detector detector;
+		
 		BOOST_FOREACH( bfs::path path, paths )
 		{
 //			TUTTLE_TCOUT( "path: "<< path );
@@ -375,19 +374,19 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 								//TUTTLE_TCOUT( *dir );
-								boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, researchMask, descriptionMask );
+								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, researchMask, descriptionMask );
 								removeFileObject( listing, pathsNoRemoved );
 							}
 						}
 					}
-					boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 				else
 				{
 					//TUTTLE_TCOUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 			}
@@ -396,8 +395,8 @@ int main( int argc, char** argv )
 //				TUTTLE_TCOUT( "not exist ...." );
 				try
 				{
-					sp::Sequence s(path.branch_path(), descriptionMask );
-					s.initFromDetection( path.string(), sp::Sequence::ePatternDefault );
+					sequenceParser::Sequence s(path.branch_path(), descriptionMask );
+					s.initFromDetection( path.string(), sequenceParser::Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{
 //						TUTTLE_TCOUT( s );
