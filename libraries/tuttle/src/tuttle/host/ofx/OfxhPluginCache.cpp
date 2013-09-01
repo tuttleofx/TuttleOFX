@@ -268,11 +268,9 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				}
 				catch(... )
 				{
-					TUTTLE_LOG_INFOS;
-					TUTTLE_LOG_ERROR( "warning: can't load " << binpath );
-					TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
-					TUTTLE_LOG_ERROR( "LD_LIBRARY_PATH" );
-					TUTTLE_LOG_ERROR( std::getenv("LD_LIBRARY_PATH") );
+					TUTTLE_LOG_WARNING( "Can't load " << binpath );
+					TUTTLE_LOG_WARNING( boost::current_exception_diagnostic_information() );
+					TUTTLE_LOG_WARNING( "LD_LIBRARY_PATH: " << std::getenv("LD_LIBRARY_PATH") );
 				}
 			}
 			else
