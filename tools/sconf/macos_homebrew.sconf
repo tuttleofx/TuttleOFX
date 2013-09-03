@@ -80,7 +80,7 @@ libdir_openjpeg = '/usr/local/lib/'
 
 dir_png = homebrew_base
 
-incdir_python = '/usr/local/Frameworks/Python.framework/Headers/'
+incdir_python = '/usr/local/Frameworks/Python.framework/Versions/2.7/include/python2.7/'
 
 dir_raw = homebrew_base
 
