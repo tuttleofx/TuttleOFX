@@ -201,8 +201,16 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 		{
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
 		}
-		// _srcRefPixelRod = _srcRef->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_srcRefPixelRod = _plugin._clipSrcRef->getPixelRod( args.time, args.renderScale );
+		
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			_srcRefPixelRod   = _plugin._clipSrcRef->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			_srcRefPixelRod = _srcRef->getRegionOfDefinition();
+		}
 		this->_srcRefView = this->getView( this->_srcRef.get(), _srcRefPixelRod );
 	}
 	else
@@ -221,8 +229,16 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
 	}
-	// _dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_dstRefPixelRod = _plugin._clipDstRef->getPixelRod( args.time, args.renderScale );
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+	{
+		// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+		_dstRefPixelRod   = _plugin._clipDstRef->getPixelRod( args.time, args.renderScale );
+	}
+	else
+	{
+		_dstRefPixelRod = _dstRef->getRegionOfDefinition();
+	}
 	this->_dstRefView = this->getView( this->_dstRef.get( ), _dstRefPixelRod );
 
 	// analyse srcRef and dstRef

@@ -86,8 +86,15 @@ public:
 				<< exception::dev() + "Error on clip " + quotes(_clipDst->name())
 				<< exception::time( args.time ) );
 		
-		//		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_dstPixelRod       = _clipDst->getPixelRod( args.time, args.renderScale );
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			_dstPixelRod   = _clipDst->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			_dstPixelRod = _dst->getRegionOfDefinition();
+		}
 		_dstPixelRodSize.x = ( this->_dstPixelRod.x2 - this->_dstPixelRod.x1 );
 		_dstPixelRodSize.y = ( this->_dstPixelRod.y2 - this->_dstPixelRod.y1 );
 	}

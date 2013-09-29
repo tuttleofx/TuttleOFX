@@ -58,8 +58,16 @@ void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& a
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
 				<< exception::dev() + "Error on clip " + quotes(_clipSrc->name())
 				<< exception::time( args.time ) );
-	//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+	{
+		// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+		_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
+	}
+	else
+	{
+		_srcPixelRod = _src->getRegionOfDefinition();
+	}
 	_srcView = ImageGilProcessor<DView>::template getCustomView<SView>( _src.get(), _srcPixelRod );
 
 //	// Make sure bit depths are same

@@ -78,9 +78,17 @@ void FadeProcess<View>::setup( const OFX::RenderArguments& args )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 		if( _srcA->getRowDistanceBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-		this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcFrom->getPixelRod( args.time, args.renderScale ) );
-		//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_srcPixelRodA = _plugin._clipSrcFrom->getPixelRod( args.time, args.renderScale );
+		
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			_srcPixelRodA   = _plugin._clipSrcFrom->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			_srcPixelRodA = _srcA->getRegionOfDefinition();
+		}
+		this->_srcViewA = this->getView( _srcA.get(), _srcPixelRodA );
 	}
 	// clip B
 	if( _plugin._clipSrcTo->isConnected() )
@@ -90,9 +98,17 @@ void FadeProcess<View>::setup( const OFX::RenderArguments& args )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 		if( _srcB->getRowDistanceBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-		this->_srcViewB = this->getView( _srcB.get(), _plugin._clipSrcTo->getPixelRod( args.time, args.renderScale ) );
-		//	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_srcPixelRodB = _plugin._clipSrcTo->getPixelRod( args.time, args.renderScale );
+		
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			_srcPixelRodB   = _plugin._clipSrcTo->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			_srcPixelRodB = _srcB->getRegionOfDefinition();
+		}
+		this->_srcViewB = this->getView( _srcB.get(), _srcPixelRodB );
 	}
 	if( _plugin._clipSrcFrom->isConnected() && _plugin._clipSrcTo->isConnected() )
 	{

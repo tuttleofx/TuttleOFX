@@ -44,8 +44,16 @@ void PushPixelProcess<View>::setup( const OFX::RenderArguments& args )
 		if( this->_mask->getRowDistanceBytes( ) <= 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		this->_maskView = this->getView( this->_mask.get(), _clipMask->getPixelRod(args.time, args.renderScale) );
-	//	_maskPixelRod = _mask->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_maskPixelRod = _clipMask->getPixelRod(args.time, args.renderScale);
+		
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			_maskPixelRod   = _clipMask->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			_maskPixelRod = _mask->getRegionOfDefinition();
+		}
 	}
 
 	_params = _plugin.getProcessParams( args.renderScale );
