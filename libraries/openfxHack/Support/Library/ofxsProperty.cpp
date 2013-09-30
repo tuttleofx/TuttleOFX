@@ -200,6 +200,9 @@ std::string PropertySet::propGetString( const char* property, int idx, bool thro
 	if( _gPropLogging > 0 )
 		Log::print( "Retrieved string property %s[%d], was given %s.", property, idx, value );
 
+    if( value == NULL )
+        return std::string();
+
 	return std::string( value );
 }
 
