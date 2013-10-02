@@ -104,10 +104,9 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		if(!strcmp((char*)s, "Arial"))
 			font->setDefault( i );	
 	}
-#endif
 	font->setHint("Select the font.");
 	font->setLabel("Font");
-	
+#endif
 	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Font Size" );
 	size->setDefault( 18 );
