@@ -1867,6 +1867,12 @@ void unloadAction( const char* id )
 {
 	--Private::gLoadCount;
 
+    if( Private::gLoadCount < 0 )
+    {
+        std::cerr << "OFX Plugin \"" << id << "\" is already unloaded." << std::endl;
+        return;
+    }
+
 	{
 		EffectDescriptorMap::iterator it = gEffectDescriptors.find( id );
 		EffectContextMap& toBeDeleted    = it->second;
