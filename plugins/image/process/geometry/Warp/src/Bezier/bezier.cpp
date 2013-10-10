@@ -1,4 +1,4 @@
-#include "Bezier/bezier.hpp"
+#include "bezier.hpp"
 
 #include <boost/math/special_functions/pow.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>

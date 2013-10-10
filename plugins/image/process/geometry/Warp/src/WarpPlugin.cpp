@@ -258,9 +258,9 @@ void WarpPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::
         //Si le mode est MultiCurve
         else if( paramName == kParamNextCurve )
         {
-                TUTTLE_COUT(_paramNbPoints->getValue());
+                TUTTLE_LOG_DEBUG(_paramNbPoints->getValue());
                 _paramCurveBegin[(_paramNbPoints->getValue())]->setValue(true);
-                TUTTLE_COUT(_paramCurveBegin[(_paramNbPoints->getValue())]->getValue());
+                TUTTLE_LOG_DEBUG(_paramCurveBegin[(_paramNbPoints->getValue())]->getValue());
         }
 	else if( paramName == kParamSetKey )
 	{
@@ -333,7 +333,7 @@ void WarpPlugin::render( const OFX::RenderArguments &args )
 			}
 			default:
 			{
-				TUTTLE_COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
 
 				break;
 			}
@@ -364,7 +364,7 @@ void WarpPlugin::render( const OFX::RenderArguments &args )
 			default:
 			{
 
-				TUTTLE_COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				TUTTLE_LOG_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
 
 				break;
 			}
@@ -372,7 +372,7 @@ void WarpPlugin::render( const OFX::RenderArguments &args )
 	}
 	else
 	{
-		TUTTLE_COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
+		TUTTLE_LOG_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
 
 	}
 }

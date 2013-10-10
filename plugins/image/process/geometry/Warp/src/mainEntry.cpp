@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::warp::WarpPluginFactory, "fr.tuttle.warp" );
+	mAppendPluginFactory( ids, tuttle::plugin::warp::WarpPluginFactory, "tuttle.warp" );
 }
 
 }

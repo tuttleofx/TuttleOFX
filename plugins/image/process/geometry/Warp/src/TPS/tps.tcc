@@ -1,6 +1,6 @@
-#include "WarpPlugin.hpp"
-#include "WarpProcess.hpp"
-#include "WarpDefinitions.hpp"
+#include "../WarpPlugin.hpp"
+#include "../WarpProcess.hpp"
+#include "../WarpDefinitions.hpp"
 #include "tps.hpp"
 
 #include <terry/globals.hpp>

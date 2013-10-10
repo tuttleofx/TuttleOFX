@@ -33,10 +33,15 @@ void WarpProcess<View>::setup( const OFX::RenderArguments& args )
 		{
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady( ) );
 		}
-		if( this->_srcB->getRowBytes( ) == 0 )
-		{
-			BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
-		}
+		
+		// Commented because of a build error :
+		// getRowBytes( ) is not a method of OFX::Image
+		// TODO: Fix this
+		// if( this->_srcB->getRowBytes( ) == 0 )
+		// {
+		// 	BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
+		// }
+
 		// _srcBPixelRod = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_srcBPixelRod = _clipSrcB->getPixelRod( args.time, args.renderScale );
 		this->_srcBView = this->getView( this->_srcB.get( ), _srcBPixelRod );

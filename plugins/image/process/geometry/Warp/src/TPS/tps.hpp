@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_TPS_HPP_
 #define _TUTTLE_PLUGIN_TPS_HPP_
 
-#include "WarpDefinitions.hpp"
+#include "../WarpDefinitions.hpp"
 
 #include <tuttle/plugin/global.hpp>
 

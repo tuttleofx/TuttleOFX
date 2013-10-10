@@ -241,9 +241,9 @@ bool WarpOverlayInteract::penDown( const OFX::PenArgs& args )
 bool WarpOverlayInteract::keyDown( const OFX::KeyArgs& args )
 {
 	if( args.keySymbol == kOfxKey_space )
-		TUTTLE_COUT( "test" );
+		TUTTLE_LOG_DEBUG( "test" );
 	else
-		TUTTLE_COUT( "test failed" );
+		TUTTLE_LOG_DEBUG( "test failed" );
 	return false;
 }
 

@@ -1,10 +1,10 @@
 #ifndef _TUTTLE_PLUGIN_BEZIER_HPP_
 #define _TUTTLE_PLUGIN_BEZIER_HPP_
 
-#include "WarpPlugin.hpp"
-#include "WarpProcess.hpp"
-#include "WarpDefinitions.hpp"
-#include "WarpOverlayInteract.hpp"
+#include "../WarpPlugin.hpp"
+#include "../WarpProcess.hpp"
+#include "../WarpDefinitions.hpp"
+#include "../WarpOverlayInteract.hpp"
 
 #include <sstream>
 #include <tuttle/plugin/global.hpp>
