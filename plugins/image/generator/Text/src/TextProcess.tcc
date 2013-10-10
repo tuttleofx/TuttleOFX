@@ -116,7 +116,13 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		{
 			// if we can't evaluate the expression
 			// use the text without interpretation
-			PyErr_Print();
+
+			//Get error message from python
+			PyObject *ptype, *pvalue, *ptraceback;
+			PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+			char *pStrErrorMessage = PyString_AsString(pvalue);
+			TUTTLE_LOG_ERROR("Python error : " << pStrErrorMessage);
+
 			_text = _params._text;
 		}
 //		Py_Finalize();
