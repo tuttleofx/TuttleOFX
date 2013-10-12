@@ -1,12 +1,18 @@
 # system libraries
 
 incdir_qt4 = '/usr/include/qt4'
+incdir_half = '/usr/include/OpenEXR'
 incdir_ilmbase = '/usr/include/OpenEXR'
 incdir_freetype = '/usr/include/freetype2'
 incdir_imagemagick = '/usr/include/ImageMagick'
 lib_python = 'python2.7'
+# To use python 3.3
+if 0:
+    lib_python = 'python3.3m'
+    version_python = '3.3'
 incdir_python = join('/usr/include',lib_python)
 
+lib_freeglut = 'glut'
 
 # manually compiled libraries
 
@@ -15,7 +21,7 @@ extern = '#3rdParty'
 #extern = '/path/to/extern/libraries'
 
 # no default package for openimageio
-dir_openimageio = join( extern, 'oiio/dist/linux')
+dir_openimageio = join( extern, 'oiio/dist/linux64')
 incdir_openimageio = join(dir_openimageio, 'include/OpenImageIO')
 
 dir_ctl = join(extern, 'ctl')
@@ -23,7 +29,27 @@ modules_ctl = ['IlmCtlSimd', 'IlmCtl', 'IlmCtlMath']
 incdir_ctl = [join(dir_ctl,inc) for inc in modules_ctl]
 libdir_ctl = [join(dir_ctl,inc,'.libs') for inc in modules_ctl]
 
-dir_opencolorio = join(extern, 'opencolorio')
+dir_opencolorio = join(extern, 'OpenColorIO')
 incdir_opencolorio = [join(dir_opencolorio, 'export'),
                       join(dir_opencolorio, 'build/export')]
 libdir_opencolorio = join(dir_opencolorio, 'build/src/core')
+
+incdir_avcodec = join(extern, 'libav')
+libdir_avcodec = [join(incdir_avcodec,d) for d in os.listdir(incdir_avcodec) if os.path.isdir(join(incdir_avcodec,d))]
+
+dir_raw = join(extern, 'LibRaw-0.14.6')
+libdir_raw = join(dir_raw, 'lib/.libs')
+flags_raw = ['-fopenmp']
+
+# to build with clang
+if 0:
+    CXX='clang++'
+    CC='clang'
+    compiler='clang'
+
+# to build with a specific version of gcc
+if 0:
+    CXX='g++-4.6'
+    CC='gcc-4.6'
+
+
