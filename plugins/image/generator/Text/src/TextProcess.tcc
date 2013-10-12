@@ -128,7 +128,12 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			//Get error message from python
 			PyObject *ptype, *pvalue, *ptraceback;
 			PyErr_Fetch(&ptype, &pvalue, &ptraceback);
-			char *pStrErrorMessage = PyString_AsString(pvalue);
+			char *pStrErrorMessage =
+#if PY_MAJOR_VERSION < 3
+				PyString_AsString(pvalue);
+#else
+				PyUnicode_AsUTF8(pvalue);
+#endif
 			TUTTLE_LOG_ERROR("Python error : " << pStrErrorMessage);
 
 			_text = _params._text;

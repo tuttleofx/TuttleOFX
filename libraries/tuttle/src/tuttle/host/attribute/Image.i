@@ -61,10 +61,10 @@ namespace attribute {
 			d = cdata(data, bufferSize)
 			arraySize = width*height*self.getNbComponents()
 			if rowSizeBytes != (width*self.getNbComponents()*self.getBitDepthMemorySize()):
-				print 'rowSizeBytes:', rowSizeBytes
-				print 'width:', width
-				print 'self.getNbComponents():', self.getNbComponents()
-				print 'self.getBitDepthMemorySize():', self.getBitDepthMemorySize()
+				print('rowSizeBytes:', rowSizeBytes)
+				print('width:', width)
+				print('self.getNbComponents():', self.getNbComponents())
+				print('self.getBitDepthMemorySize():', self.getBitDepthMemorySize())
 				raise NotImplementedError('The image padding is unsupported in the pyTuttle binding.')
 
 			#print 'numpyBitDepth:', numpyBitDepth
