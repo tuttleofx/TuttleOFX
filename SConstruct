@@ -111,7 +111,7 @@ class Tuttle( SConsProject ):
 		if self.linux:
 			ofxLinkflags = ['-Wl,--version-script=' + project.inTopDir('libraries/openfxHack/Support/include/linuxSymbols')]
 		elif self.macos:
-			ofxLinkflags = ['-exported_symbols_list', project.inTopDir('libraries/openfxHack/Support/include/osxSymbols')]
+			ofxLinkflags = ['-headerpad_max_install_names', '-exported_symbols_list', project.inTopDir('libraries/openfxHack/Support/include/osxSymbols')]
 		else:
 			ofxLinkflags = []
 		if 'SHLINKFLAGS' in allLocalEnvFlags:
