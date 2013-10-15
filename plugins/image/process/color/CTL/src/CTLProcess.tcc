@@ -172,9 +172,7 @@ template<class View>
 void CTLProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
-	
+
 	Ctl::FunctionCallPtr call = _interpreter.newFunctionCall( "main" );
 
 	const OfxPointI procWindowSize = {
@@ -187,12 +185,12 @@ void CTLProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 	rgba32f_planar_image_t dstWorkLine( procWindowSize.x, 1, alignment );
 	rgba32f_planar_view_t  dstWorkLineV = view( dstWorkLine );
 
-	for( int y = procWindowOutput.y1;
-			 y < procWindowOutput.y2;
+	for( int y = procWindowRoW.y1;
+			 y < procWindowRoW.y2;
 			 ++y )
 	{
-		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1,    y,    procWindowSize.x, 1 );
-		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y, procWindowSize.x, 1 );
+		View srcLineV = subimage_view( this->_srcView, procWindowRoW.x1, y, procWindowSize.x, 1 );
+		View dstLineV = subimage_view( this->_dstView, procWindowRoW.x1, y, procWindowSize.x, 1 );
 
 		copy_pixels( srcLineV, srcWorkLineV );
 
