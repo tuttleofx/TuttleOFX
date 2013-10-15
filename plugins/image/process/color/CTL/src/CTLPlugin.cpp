@@ -96,18 +96,6 @@ bool CTLPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& a
 	return false;
 }
 
-void CTLPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-{
-	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-
-	OfxRectD srcRoi;
-	srcRoi.x1 = srcRod.x1;
-	srcRoi.y1 = srcRod.y1;
-	srcRoi.x2 = srcRod.x2;
-	srcRoi.y2 = srcRod.y2;
-	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-}
-
 bool CTLPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
 //	CTLProcessParams<Scalar> params = getProcessParams();
