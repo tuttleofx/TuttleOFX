@@ -17,9 +17,12 @@ tuttleFlags = {
 if project.env['mode'] == 'production' :
 	# In 'production' mode set a flag TUTTLE_PRODUCTION
 	tuttleFlags['CPPDEFINES'].append( 'TUTTLE_PRODUCTION' )
-	# If your compiler as a visibility flag, hide all plugin internal things
-	if 'visibilityhidden' in project.CC:
-		tuttleFlags['SHCCFLAGS'] = [project.CC['visibilityhidden']]
+
+# If your compiler as a visibility flag, hide all plugin internal things
+# Note that this is necessary even in debug mode, to avoid multiply defined symbols
+# when several plugins are loaded (this doesn't remove debugging symbols).
+if 'visibilityhidden' in project.CC:
+	tuttleFlags['SHCCFLAGS'] = [project.CC['visibilityhidden']]
 
 # If your compiler as a flag to mark undefined flags as error in shared libraries
 if 'sharedNoUndefined' in project.CC:

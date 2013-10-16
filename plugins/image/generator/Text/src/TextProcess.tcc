@@ -61,8 +61,16 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
 					<< exception::dev() + "Error on clip " + quotes(_clipSrc->name())
 					<< exception::time( args.time ) );
-		//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
+		
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			_srcPixelRod = _src->getRegionOfDefinition();
+		}
 		_srcView = ImageGilProcessor<View>::template getCustomView<View>( _src.get(), _srcPixelRod );
 	}
 	
@@ -82,25 +90,26 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			boost::python::object main_namespace = main_module.attr( "__dict__" );
 			
 			std::ostringstream context;
-			context << "time = " << args.time << std::endl;
-			context << "renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
-			context << "renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
+			context << "class tuttleArgs :" << std::endl;
+			context << "    time = " << args.time << std::endl;
+			context << "    renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
+			context << "    renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
 					                      << args.renderWindow.x2 << "," << args.renderWindow.y2 << "]" << std::endl;
 
 			OfxRectD dstCanonicalRod = this->_clipDst->getCanonicalRod( args.time );
-			context << "dstCanonicalRod = [" << dstCanonicalRod.x1 << "," << dstCanonicalRod.y1 << ","
+			context << "    dstCanonicalRod = [" << dstCanonicalRod.x1 << "," << dstCanonicalRod.y1 << ","
 					                         << dstCanonicalRod.x2 << "," << dstCanonicalRod.y2 << "]" << std::endl;
 			OfxRectI dstPixelRod = this->_clipDst->getPixelRod( args.time );
-			context << "dstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
-					                     << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
+			context << "    dstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
+											 << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
 			
-			context << "fps = " << _clipSrc->getFrameRate() << std::endl;
+			context << "    fps = " << _clipSrc->getFrameRate() << std::endl;
 			
-			context << "def timecode():" << std::endl;
-			context << "    return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format( " << args.time << " / (3600 * fps), "
-																			   << args.time << " / (60 * fps) % 60, "
-																			   << args.time << " / fps % 60, "
-																			   << args.time << " % fps )" << std::endl;
+			context << "    def timecode( self ):" << std::endl;
+			context << "        return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format(  self.time / (3600 * self.fps ), "
+																				" self.time / (60 * self.fps ) % 60, "
+																				" self.time / self.fps % 60, "
+																				" self.time % self.fps )" << std::endl;
 			
 			//TUTTLE_LOG_INFO( context.str().c_str() );
 
@@ -115,10 +124,31 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		{
 			// if we can't evaluate the expression
 			// use the text without interpretation
+
+			//Get error message from python
+			PyObject *ptype, *pvalue, *ptraceback;
+			PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+#if PY_MAJOR_VERSION < 3
+			// Python version is < 3.0
+			char *pStrErrorMessage = PyString_AsString(pvalue);
+#elif PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 3
+			// PYTHON version is < 3.3
+			PyObject* stringObj = PyUnicode_AsUTF8String(pvalue);
+			char *pStrErrorMessage = PyBytes_AsString(stringObj);;
+#else
+			// PYTHON version is >= 3.3
+			char *pStrErrorMessage = PyUnicode_AsUTF8(pvalue);
+#endif
+			TUTTLE_LOG_ERROR("Python error : " << pStrErrorMessage);
+#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 3
+			Py_DECREF(stringObj);
+#endif
+
 			_text = _params._text;
 		}
 //		Py_Finalize();
 	}
+	
 	
 	//Step 1. Create terry image
 	//Step 2. Initialize freetype

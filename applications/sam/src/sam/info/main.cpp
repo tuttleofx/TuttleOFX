@@ -12,7 +12,7 @@
 
 #include <magick/MagickCore.h>
 
-#include <Detector.hpp>
+#include <detector.hpp>
 
 #include <algorithm>
 #include <iterator>
@@ -22,7 +22,7 @@
 namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
-namespace sp  = sequenceParser;
+
 
 int	firstImage	= 0;
 int	lastImage	= 0;
@@ -108,6 +108,15 @@ void printImageProperties( std::string path )
 			case LCHColorspace            : colorSpaceType = "LCH"; break;
 			case LMSColorspace            : colorSpaceType = "LMS"; break;
 #endif
+#if MagickLibVersion > 0x684
+			case LCHabColorspace          : colorSpaceType = "LCHab"; break;
+			case LCHuvColorspace          : colorSpaceType = "LCHuv"; break;
+			case scRGBColorspace          : colorSpaceType = "scRGB"; break;
+			case HSIColorspace            : colorSpaceType = "HSI"; break;
+			case HSVColorspace            : colorSpaceType = "HSV"; break;
+			case HCLpColorspace           : colorSpaceType = "HCLp"; break;
+			case YDbDrColorspace          : colorSpaceType = "YDbDr"; break;
+#endif
 		}
 
 		std::string interlaceType;
@@ -147,14 +156,14 @@ void printImageProperties( std::string path )
 	
 }
 
-void dumpImageProperties( const sp::File& s )
+void dumpImageProperties( const sequenceParser::File& s )
 {
 	TUTTLE_LOG_INFO(s);
 	printImageProperties( s.getAbsoluteFilename() );
 	sam::wasSthgDumped = true;
 }
 
-void dumpImageProperties( const sp::Sequence& s )
+void dumpImageProperties( const sequenceParser::Sequence& s )
 {
 	TUTTLE_LOG_INFO(s);
 	printImageProperties( s.getAbsoluteFirstFilename() );
@@ -162,16 +171,16 @@ void dumpImageProperties( const sp::Sequence& s )
 }
 
 
-void dumpImageProperties( boost::ptr_vector<sp::FileObject>& listing )
+void dumpImageProperties( boost::ptr_vector<sequenceParser::FileObject>& listing )
 {
-	BOOST_FOREACH( const sp::FileObject& sequence, listing )
+	BOOST_FOREACH( const sequenceParser::FileObject& sequence, listing )
 	{
 		switch( sequence.getMaskType () )
 		{
-			case sp::eMaskTypeSequence	: dumpImageProperties( static_cast<const sp::Sequence&>( sequence ) ); break;
-			case sp::eMaskTypeFile		: dumpImageProperties( static_cast<const sp::File&>( sequence ) ); break;
-			case sp::eMaskTypeDirectory	: break;
-			case sp::eMaskTypeUndefined	: break;
+			case sequenceParser::eMaskTypeSequence	: dumpImageProperties( static_cast<const sequenceParser::Sequence&>( sequence ) ); break;
+			case sequenceParser::eMaskTypeFile		: dumpImageProperties( static_cast<const sequenceParser::File&>( sequence ) ); break;
+			case sequenceParser::eMaskTypeDirectory	: break;
+			case sequenceParser::eMaskTypeUndefined	: break;
 		}
 	}
 	listing.clear();
@@ -188,8 +197,8 @@ int main( int argc, char** argv )
 	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 
-	sp::EMaskType researchMask       = sp::eMaskTypeSequence; // by default show sequences
-	sp::EMaskOptions descriptionMask = sp::eMaskOptionsColor; // by default show nothing
+	sequenceParser::EMaskType researchMask       = sequenceParser::eMaskTypeSequence; // by default show sequences
+	sequenceParser::EMaskOptions descriptionMask = sequenceParser::eMaskOptionsColor; // by default show nothing
 	bool recursiveListing = false;
 	std::string availableExtensions;
 	std::vector<std::string> paths;
@@ -312,17 +321,17 @@ int main( int argc, char** argv )
 
 	if (vm.count(kDirectoriesOptionLongName))
 	{
-		researchMask |= sp::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
 
 	if (vm.count(kFilesOptionLongName))
 	{
-		researchMask |= sp::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeFile;
 	}
 
 	if (vm.count(kIgnoreOptionLongName))
 	{
-		researchMask &= ~sp::eMaskTypeSequence;
+		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 
 	switch( vm[ kVerboseOptionLongName ].as< int >() )
@@ -352,20 +361,20 @@ int main( int argc, char** argv )
 
 	if (vm.count(kFullRMPathOptionLongName))
 	{
-		researchMask |= sp::eMaskTypeDirectory;
-		researchMask |= sp::eMaskTypeFile;
-		researchMask |= sp::eMaskTypeSequence;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 
 	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
-		descriptionMask |= sp::eMaskOptionsDotFile;
+		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 
 	if (vm.count(kPathOptionLongName))
 	{
-		 descriptionMask |= sp::eMaskOptionsPath;
+		 descriptionMask |= sequenceParser::eMaskOptionsPath;
 	}
 
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -391,7 +400,7 @@ int main( int argc, char** argv )
 	try
 	{
 		std::vector<boost::filesystem::path> pathsNoRemoved;
-		sp::Detector detector;
+		
 		BOOST_FOREACH( bfs::path path, paths )
 		{
 //			TUTTLE_LOG_TRACE( "path: "<< path );
@@ -407,12 +416,12 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 //								TUTTLE_LOG_TRACE *dir );
-								boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( ( (bfs::path)*dir ).string() , filters, researchMask, descriptionMask );
+								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path)*dir ).string() , filters, researchMask, descriptionMask );
 								dumpImageProperties( listing );
 							}
 						}
 					}
-					boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
 					dumpImageProperties( listing );
 				}
 				else
@@ -421,7 +430,7 @@ int main( int argc, char** argv )
 						path = "."/path.leaf();
 					//TUTTLE_LOG_TRACE( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
 					dumpImageProperties( listing );
 					filters.pop_back( );
 				}
@@ -431,8 +440,8 @@ int main( int argc, char** argv )
 //				TUTTLE_LOG_TRACE( "not exist ...." );
 				try
 				{
-					sp::Sequence s(path.branch_path(), descriptionMask );
-					s.initFromDetection( path.string(), sp::Sequence::ePatternDefault );
+					sequenceParser::Sequence s(path.branch_path(), descriptionMask );
+					s.initFromDetection( path.string(), sequenceParser::Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{
 						//TUTTLE_LOG_TRACE(s);

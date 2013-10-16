@@ -281,8 +281,16 @@ void InputBufferPlugin::render( const OFX::RenderArguments &args )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
 				<< exception::dev() + "Error on clip " + quotes(_clipDst->name()) );
 
-		// dstPixelRod = dst->getRegionOfDefinition(); // bug in nuke, returns bounds
-		OfxRectI dstPixelRod = _clipDst->getPixelRod( args.time, args.renderScale );
+		OfxRectI dstPixelRod;
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			dstPixelRod = _clipDst->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			dstPixelRod = dst->getRegionOfDefinition();
+		}
 		OfxPointI dstPixelRodSize;
 		dstPixelRodSize.x = ( dstPixelRod.x2 - dstPixelRod.x1 );
 		dstPixelRodSize.y = ( dstPixelRod.y2 - dstPixelRod.y1 );

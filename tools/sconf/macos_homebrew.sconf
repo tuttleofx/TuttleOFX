@@ -29,6 +29,9 @@ lib_boost_system = 'boost_system-mt'
 lib_boost_serialization = 'boost_serialization-mt'
 lib_boost_unit_test_framework = 'boost_unit_test_framework-mt'
 lib_boost_thread = 'boost_thread-mt'
+lib_boost_date_time = 'boost_date_time-mt'
+lib_boost_chrono = 'boost_chrono-mt'
+lib_boost_log = 'boost_log-mt'
 
 dir_caca = homebrew_base
 
@@ -56,9 +59,9 @@ incdir_half = [ homebrew_include, os.path.join(homebrew_include, 'OpenExr') ]
 
 dir_ilmbase = homebrew_base
 
-incdir_imagemagick = os.path.join(homebrew_include, "ImageMagick")
+incdir_imagemagick = os.path.join(homebrew_include, "ImageMagick-6")
 libdir_imagemagick = os.path.join(homebrew_base, "lib/ImageMagick")
-lib_imagemagick = "libMagickCore-Q16"
+lib_imagemagick = "libMagickCore-6.Q16"
 
 dir_jpeg = homebrew_base
 

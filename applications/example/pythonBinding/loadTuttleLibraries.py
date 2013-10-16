@@ -51,5 +51,5 @@ for lib in libs:
 		lib_path = os.path.join( TUTTLE_LIB_DIR, lib )
 		cdll.LoadLibrary( lib_path )
 	except Exception, e:
-		print "ERROR: unable to load library:", lib_path )
+		print("ERROR: unable to load library:", lib_path)
 		print e

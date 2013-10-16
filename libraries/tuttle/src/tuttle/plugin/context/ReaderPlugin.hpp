@@ -9,7 +9,6 @@
 #include <Sequence.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-namespace sp = sequenceParser;
 
 namespace tuttle {
 namespace plugin {
@@ -109,7 +108,7 @@ public:
 
 private:
 	bool _isSequence;
-	sp::Sequence _filePattern;            ///< Filename pattern manager
+	sequenceParser::Sequence _filePattern;            ///< Filename pattern manager
 };
 
 }

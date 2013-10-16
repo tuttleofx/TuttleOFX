@@ -20,7 +20,6 @@
 namespace tuttle {
 namespace plugin {
 
-namespace sp = sequenceParser;
 
 class WriterPlugin : public ImageEffectGilPlugin
 {
@@ -41,7 +40,7 @@ protected:
 
 private:
 	bool _isSequence;                            ///<
-	sp::Sequence _filePattern;               ///< Filename pattern manager
+	sequenceParser::Sequence _filePattern;               ///< Filename pattern manager
 
 	bool _oneRender;                            ///<
 	OfxTime _oneRenderAtTime;                         ///<
@@ -50,7 +49,7 @@ public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
 		if( _isSequence )
-			return _filePattern.getAbsoluteFilenameAt( boost::numeric_cast<sp::Time>(time) );
+			return _filePattern.getAbsoluteFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) );
 		else
 			return _paramFilepath->getValue();
 	}

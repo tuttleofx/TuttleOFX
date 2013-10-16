@@ -215,9 +215,9 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffe
 	const Imf::Header& header = input.header();
 	const Imath::Box2i& dw    = header.dataWindow();
 
-	DataVector data   [nc];
-	Imf::Slice slices [nc];
-	
+	DataVector *data = new DataVector[nc];
+	Imf::Slice *slices = new  Imf::Slice[nc];
+
 	for( size_t layer = 0; layer < nc; ++layer )
 	{
 		const Imf::ChannelList& cl( header.channels() );
@@ -278,6 +278,8 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffe
 			}
 		}
 	}
+	delete []data;
+	delete []slices;
 }
 
 template<class View>

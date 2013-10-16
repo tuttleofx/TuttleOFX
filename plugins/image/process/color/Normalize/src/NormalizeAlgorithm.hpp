@@ -133,7 +133,7 @@ void analyseInputMinMax( const View& src, const EParamAnalyseMode analyseMode, t
 }
 
 template<>
-void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnalyseMode analyseMode, boost::gil::rgb32f_view_t::value_type& min, boost::gil::rgb32f_view_t::value_type& max, IProgress& p )
+void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnalyseMode analyseMode, boost::gil::rgb32f_view_t::value_type& min, boost::gil::rgb32f_view_t::value_type& max, IProgress& progress )
 {
 	using namespace terry;
 	using namespace terry::numeric;
@@ -150,7 +150,7 @@ void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnaly
 			transform_pixels_progress(
 				src,
 				minmax,
-				p );
+				progress );
 			min = minmax.min;
 			max = minmax.max;
 			break;
@@ -164,7 +164,7 @@ void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnaly
 			transform_pixels_progress(
 				localView,
 				minmax,
-				p );
+				progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;
@@ -177,7 +177,7 @@ void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnaly
 			transform_pixels_progress(
 					localView,
 					minmax,
-					p );
+					progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;
@@ -190,7 +190,7 @@ void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnaly
 			transform_pixels_progress(
 					localView,
 					minmax,
-					p );
+					progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;
@@ -203,7 +203,7 @@ void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnaly
 			transform_pixels_progress(
 					localView,
 					minmax,
-					p );
+					progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;
@@ -218,7 +218,7 @@ void analyseInputMinMax( const boost::gil::rgb32f_view_t& src, const EParamAnaly
 }
 
 template<>
-void analyseInputMinMax( const boost::gil::rgb16_view_t& src, const EParamAnalyseMode analyseMode, boost::gil::rgb16_view_t::value_type& min, boost::gil::rgb16_view_t::value_type& max, IProgress& p )
+void analyseInputMinMax( const boost::gil::rgb16_view_t& src, const EParamAnalyseMode analyseMode, boost::gil::rgb16_view_t::value_type& min, boost::gil::rgb16_view_t::value_type& max, IProgress& progress )
 {
 	using namespace terry;
 	using namespace terry::numeric;
@@ -235,7 +235,7 @@ void analyseInputMinMax( const boost::gil::rgb16_view_t& src, const EParamAnalys
 			transform_pixels_progress(
 				src,
 				minmax,
-				p );
+				progress );
 			min = minmax.min;
 			max = minmax.max;
 			break;
@@ -249,7 +249,7 @@ void analyseInputMinMax( const boost::gil::rgb16_view_t& src, const EParamAnalys
 			transform_pixels_progress(
 				localView,
 				minmax,
-				p );
+				progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;
@@ -262,7 +262,7 @@ void analyseInputMinMax( const boost::gil::rgb16_view_t& src, const EParamAnalys
 			transform_pixels_progress(
 					localView,
 					minmax,
-					p );
+					progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;
@@ -275,7 +275,7 @@ void analyseInputMinMax( const boost::gil::rgb16_view_t& src, const EParamAnalys
 			transform_pixels_progress(
 					localView,
 					minmax,
-					p );
+					progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;
@@ -288,7 +288,7 @@ void analyseInputMinMax( const boost::gil::rgb16_view_t& src, const EParamAnalys
 			transform_pixels_progress(
 					localView,
 					minmax,
-					p );
+					progress );
 			static_fill( min, minmax.min[0] );
 			static_fill( max, minmax.max[0] );
 			break;

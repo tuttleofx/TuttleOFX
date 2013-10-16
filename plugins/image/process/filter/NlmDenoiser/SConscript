@@ -1,9 +1,13 @@
 Import( 'project', 'libs' )
 
-project.createOfxPlugin( dirs = ['src'],
-                         libraries = [libs.openfxHack,
-								 libs.openfxPluginSupportHack,
-								 libs.tuttlePlugin,
-								 libs.boost,
-								 libs.boost_gil] )
+project.createOfxPlugin(
+    dirs = ['src'],
+    includes = ['src'],
+    libraries = [
+        libs.openfxHack,
+        libs.openfxPluginSupportHack,
+        libs.tuttlePlugin,
+        libs.boost,
+        libs.boost_gil
+    ] )
 

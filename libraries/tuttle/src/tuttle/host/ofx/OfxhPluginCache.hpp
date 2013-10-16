@@ -118,13 +118,7 @@ protected:
 		}
 		else
 		{
-			std::string message =  "Warning! Plugin: ";
-			message += plugin->getRawIdentifier();
-			message += " loaded twice!";
-			message += " (";
-			message += plugin->getBinary().getFilePath();
-			message += ")";
-			TUTTLE_LOG_WARNING( message );
+			TUTTLE_LOG_WARNING( "Plugin: " << plugin->getRawIdentifier() << " loaded twice! (" << plugin->getBinary().getFilePath() << ")" );
 		}
 		_plugins.push_back( plugin );
 

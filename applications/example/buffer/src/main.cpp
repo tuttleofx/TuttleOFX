@@ -104,7 +104,7 @@ int main( int argc, char** argv )
 		TUTTLE_LOG_VAR( TUTTLE_INFO, mapPixelComponentEnumToString( pc ) );
 		TUTTLE_LOG_VAR4( TUTTLE_INFO, bounds.x1, bounds.y1, bounds.x2, bounds.y2 );
 		TUTTLE_LOG_VAR( TUTTLE_INFO, img->getClipName() );
-		//TUTTLE_COUT_VAR( img->getPixelData() );
+		//TUTTLE_LOG_VAR( img->getPixelData() );
 	}
 	catch( tuttle::exception::Common& e )
 	{

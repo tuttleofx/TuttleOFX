@@ -186,6 +186,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 
 void ProcessGraph::beginSequence( const TimeRange& timeRange )
 {
+	_options.beginSequenceHandle();
 	_procOptions._renderTimeRange.min = timeRange._begin;
 	_procOptions._renderTimeRange.max = timeRange._end;
 	_procOptions._step                = timeRange._step;
@@ -203,6 +204,7 @@ void ProcessGraph::beginSequence( const TimeRange& timeRange )
 
 void ProcessGraph::endSequence()
 {
+	_options.endSequenceHandle();
 	TUTTLE_TLOG( TUTTLE_INFO, "[Process render] process end sequence" );
 	//--- END sequence render
 	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
@@ -338,6 +340,7 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 
 void ProcessGraph::setupAtTime( const OfxTime time )
 {
+	_options.setupAtTimeHandle();
 #ifdef TUTTLE_EXPORT_WITH_TIMER
 	boost::timer::cpu_timer timer;
 #endif
@@ -535,6 +538,7 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 
 void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
 {
+	_options.processAtTimeHandle();
 #ifdef TUTTLE_EXPORT_WITH_TIMER
 	boost::timer::cpu_timer timer;
 #endif
@@ -559,7 +563,7 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] post process" );
 	graph::visitor::PostProcess<InternalGraphAtTimeImpl> postProcessVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( postProcessVisitor, outputAtTime );
-/*
+
 	///@todo clean datas...
 	TUTTLE_TLOG( TUTTLE_INFO, "---------------------------------------- clear data at time" );
 	// give a link to the node on its attached process data
@@ -571,7 +575,7 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 			v.getProcessNode().clearProcessDataAtTime();
 		}
 	}
-*/
+
 	// end of one frame
 	// do some clean: memory clean, as temporary solution...
 	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] clear unused buffers" );

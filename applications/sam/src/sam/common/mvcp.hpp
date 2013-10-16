@@ -26,13 +26,13 @@
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace bal = boost::algorithm;
-namespace sp  = sequenceParser;
 
-void copy_sequence( const sp::Sequence& s, const sp::Time firstImage, const sp::Time lastImage, const sp::Sequence& d, int offset = 0 )
+
+void copy_sequence( const sequenceParser::Sequence& s, const sequenceParser::Time firstImage, const sequenceParser::Time lastImage, const sequenceParser::Sequence& d, int offset = 0 )
 {
-	sp::Time begin;
-	sp::Time end;
-	sp::Time step;
+	sequenceParser::Time begin;
+	sequenceParser::Time end;
+	sequenceParser::Time step;
 	if (offset > 0) {
 		begin = lastImage;
 		end = firstImage;
@@ -43,9 +43,9 @@ void copy_sequence( const sp::Sequence& s, const sp::Time firstImage, const sp::
 		step = s.getStep();
 	}
 	
-	for( sp::Time t = begin;
-		 (offset > 0) ? (t >= end) :
-		 (t <= end); t += step )
+	for( sequenceParser::Time t = begin;
+		 (offset > 0) ? (t >= end) : (t <= end);
+		 t += step )
 	{
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		//TUTTLE_TLOG_VAR( TUTTLE_TRACE, sFile );
@@ -100,19 +100,19 @@ void copy_sequence( const sp::Sequence& s, const sp::Time firstImage, const sp::
 	}
 }
 
-void copy_sequence( const sp::Sequence& s, const sp::Sequence& d, const sp::Time offset = 0 )
+void copy_sequence( const sequenceParser::Sequence& s, const sequenceParser::Sequence& d, const sequenceParser::Time offset = 0 )
 {
 	copy_sequence(s, s.getFirstTime(), s.getLastTime(), d, offset);
 }
 
-void copy_sequence( const sp::Sequence& s, const sp::Time firstImage, const sp::Time lastImage, const bfs::path& d, const sp::Time offset = 0 )
+void copy_sequence( const sequenceParser::Sequence& s, const sequenceParser::Time firstImage, const sequenceParser::Time lastImage, const bfs::path& d, const sequenceParser::Time offset = 0 )
 {
-	sp::Sequence dSeq( s ); // create dst from src
+	sequenceParser::Sequence dSeq( s ); // create dst from src
 	dSeq.setDirectory( d ); // modify path
 	copy_sequence( s, firstImage, lastImage, dSeq, offset );
 }
 
-void copy_sequence( const sp::Sequence& s, const bfs::path& d, const sp::Time offset = 0 )
+void copy_sequence( const sequenceParser::Sequence& s, const bfs::path& d, const sequenceParser::Time offset = 0 )
 {
 	copy_sequence( s, s.getFirstTime(), s.getLastTime(), d, offset );
 }
@@ -127,7 +127,7 @@ int sammvcp(int argc, char** argv)
 	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 	
-	sp::EMaskOptions descriptionMask = sp::eMaskOptionsNone; // by default show nothing
+	sequenceParser::EMaskOptions descriptionMask = sequenceParser::eMaskOptionsNone; // by default show nothing
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
@@ -317,7 +317,7 @@ int sammvcp(int argc, char** argv)
 	if( vm.count(kAllOptionLongName) )
 	{
 		// add .* files
-		descriptionMask |= sp::eMaskOptionsDotFile;
+		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 	
 	if( vm.count(kOffsetOptionLongName) )
@@ -400,11 +400,11 @@ int sammvcp(int argc, char** argv)
 		sequencePattern = "";
 	}
 
-	sp::Sequence dstSeq( dstPath, descriptionMask );
+	sequenceParser::Sequence dstSeq( dstPath, descriptionMask );
 	
 	if( sequencePattern.size() > 0 )
 	{
-		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, sp::Sequence::ePatternAll );
+		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, sequenceParser::Sequence::ePatternAll );
 		if( !dstIsSeq ) // there is a pattern, but it's not valid.
 		{
 			TUTTLE_LOG_ERROR("Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." );
@@ -416,8 +416,8 @@ int sammvcp(int argc, char** argv)
 	{
 		BOOST_FOREACH( const bfs::path& srcPath, paths )
 		{
-			sp::Sequence srcSeq( srcPath.branch_path(), descriptionMask );
-			const bool srcIsSeq = srcSeq.initFromDetection( srcPath.string(), sp::Sequence::ePatternDefault );
+			sequenceParser::Sequence srcSeq( srcPath.branch_path(), descriptionMask );
+			const bool srcIsSeq = srcSeq.initFromDetection( srcPath.string(), sequenceParser::Sequence::ePatternDefault );
 			if( ! srcIsSeq )
 			{
 				TUTTLE_LOG_ERROR( color->_error << "Input is not a sequence: " << tuttle::quotes( srcPath.string() ) << "." << color->_std );
@@ -429,8 +429,8 @@ int sammvcp(int argc, char** argv)
 				return 255;
 			}
 			
-			sp::Time first = hasInputFirst ? inputFirst : srcSeq.getFirstTime();
-			sp::Time last = hasInputLast ? inputLast : srcSeq.getLastTime();
+			sequenceParser::Time first = hasInputFirst ? inputFirst : srcSeq.getFirstTime();
+			sequenceParser::Time last = hasInputLast ? inputLast : srcSeq.getLastTime();
 			switch( offsetMode )
 			{
 				case eOffsetModeNotSet:

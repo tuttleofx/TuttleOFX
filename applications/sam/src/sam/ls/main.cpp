@@ -10,7 +10,7 @@
 #include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <Detector.hpp>
+#include <detector.hpp>
 
 #include <algorithm>
 #include <iterator>
@@ -18,7 +18,7 @@
 namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
-namespace sp  = sequenceParser;
+
 
 namespace sam
 {
@@ -54,14 +54,13 @@ int main( int argc, char** argv )
 	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 	
-	sp::EMaskType    researchMask        = sp::eMaskTypeDirectory | sp::eMaskTypeFile | sp::eMaskTypeSequence ; // by default show directories, files and sequences
-	sp::EMaskOptions descriptionMask     = sp::eMaskOptionsNone;   // by default show nothing
+	sequenceParser::EMaskType    researchMask        = sequenceParser::eMaskTypeDirectory | sequenceParser::eMaskTypeFile | sequenceParser::eMaskTypeSequence ; // by default show directories, files and sequences
+	sequenceParser::EMaskOptions descriptionMask     = sequenceParser::eMaskOptionsNone;   // by default show nothing
 	bool             recursiveListing    = false;
 	bool             script              = false;
 	std::string      availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
-	sp::Detector     detector;
 
 	formatter->init_logging();
 	
@@ -136,13 +135,13 @@ int main( int argc, char** argv )
 	{
 		// disable color, disable directory printing and set relative path by default
 		script = true;
-		descriptionMask |= sp::eMaskOptionsAbsolutePath;
+		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 
 	if ( vm.count(kColorOptionLongName) && !script )
 	{
 		color->enable();
-		descriptionMask |= sp::eMaskOptionsColor;
+		descriptionMask |= sequenceParser::eMaskOptionsColor;
 	}
 	if ( vm.count(kEnableColorOptionLongName) && !script )
 	{
@@ -150,12 +149,12 @@ int main( int argc, char** argv )
 		if( string_to_boolean( str ) )
 		{
 			color->enable();
-			descriptionMask |= sp::eMaskOptionsColor;
+			descriptionMask |= sequenceParser::eMaskOptionsColor;
 		}
 		else
 		{
 			color->disable();
-			remove( descriptionMask, sp::eMaskOptionsColor );
+			remove( descriptionMask, sequenceParser::eMaskOptionsColor );
 		}
 	}
 	
@@ -195,50 +194,50 @@ int main( int argc, char** argv )
 
 	if( vm.count(kDirectoriesOptionLongName ) | vm.count(kFilesOptionLongName) | vm.count(kSequencesOptionLongName) )
 	{
-		researchMask &= ~sp::eMaskTypeDirectory;
-		researchMask &= ~sp::eMaskTypeFile;
-		researchMask &= ~sp::eMaskTypeSequence;
+		researchMask &= ~sequenceParser::eMaskTypeDirectory;
+		researchMask &= ~sequenceParser::eMaskTypeFile;
+		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 		
 	if( vm.count(kDirectoriesOptionLongName ) )
 	{
-		researchMask |= sp::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
 	if (vm.count(kFilesOptionLongName))
 	{
-		researchMask |= sp::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeFile;
 	}
 	if (vm.count(kSequencesOptionLongName))
 	{
-		researchMask |= sp::eMaskTypeSequence;
+		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
 	if (vm.count(kFullDisplayOptionLongName))
 	{
-		researchMask |= sp::eMaskTypeDirectory;
-		researchMask |= sp::eMaskTypeFile;
-		researchMask |= sp::eMaskTypeSequence;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
 	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
-		descriptionMask |= sp::eMaskOptionsDotFile;
+		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 	
 	if (vm.count(kLongListingOptionLongName))
 	{
-		descriptionMask |= sp::eMaskOptionsProperties;
+		descriptionMask |= sequenceParser::eMaskOptionsProperties;
 	}
 	
 	if (vm.count(kRelativePathOptionLongName) )
 	{
-		descriptionMask |= sp::eMaskOptionsPath;
+		descriptionMask |= sequenceParser::eMaskOptionsPath;
 	}
 
 	if(vm.count(kPathOptionLongName))
 	{
-		descriptionMask |= sp::eMaskOptionsAbsolutePath;
+		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -262,7 +261,7 @@ int main( int argc, char** argv )
 // 	TUTTLE_LOG_TRACE( "research mask = " << researchMask );
 // 	TUTTLE_LOG_TRACE( "options  mask = " << descriptionMask );
 
-	std::list<boost::shared_ptr<sp::FileObject> > listing;
+	std::list<boost::shared_ptr<sequenceParser::FileObject> > listing;
 	try
 	{
 		std::size_t index = 0;
@@ -282,7 +281,7 @@ int main( int argc, char** argv )
 				wasSthgDumped = true;
 			}
 
-			coutVec( detector.fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask ) );
+			coutVec( sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask ) );
 
 			if(recursiveListing)
 			{
@@ -294,7 +293,7 @@ int main( int argc, char** argv )
 						if( !script )
 							TUTTLE_LOG_INFO( "\n" << currentPath.string() << ":" );
 
-						coutVec( detector.fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
+						coutVec( sequenceParser::fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
 
 					}
 				}
