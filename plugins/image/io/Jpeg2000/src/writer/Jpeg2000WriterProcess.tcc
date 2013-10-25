@@ -94,8 +94,6 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			break;
 		}
 	}
-	// Convert pixels to destination
-	copy_and_convert_pixels( this->_srcView, this->_dstView );
 }
 
 template< typename View >

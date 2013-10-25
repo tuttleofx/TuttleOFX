@@ -201,8 +201,6 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			<< exception::dev( boost::current_exception_diagnostic_information() )
 			<< exception::filename( _params._filepath ) );
 	}
-	// @todo: This is sometimes not neccessary... Checkbox it.
-	copy_and_convert_pixels( this->_srcView, this->_dstView );
 }
 
 template<class View>
