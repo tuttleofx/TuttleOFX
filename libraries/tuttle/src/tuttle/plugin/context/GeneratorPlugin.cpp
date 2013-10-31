@@ -222,6 +222,8 @@ void GeneratorPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 bool GeneratorPlugin::getTimeDomain( OfxRangeD& range )
 {
+	if( _clipSrc->isConnected() )
+		return false;
 	range.min = kOfxFlagInfiniteMin;
 	range.max = kOfxFlagInfiniteMax;
 	return true;
