@@ -80,11 +80,10 @@ public:
 	typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
 
 protected:
-	tuttle::host::ofx::property::OfxhPropSpec* _hostSpec;
-
 	std::list<std::string> _pluginPath; ///< list of directories to look in
 	std::set<std::string> _nonrecursePath; ///< list of directories to look in (non-recursively)
 	std::list<std::string> _pluginDirs; ///< list of directories we found
+	
 	OfxhPluginBinaryList _binaries; ///< all the binaries we know about, we own these
 	std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
 	std::map<std::string, OfxhPlugin*> _pluginsByID;
@@ -199,6 +198,9 @@ public:
 
 	/// scan for plugins
 	void scanPluginFiles();
+	
+	/// Remove all plugins
+	void clearPluginFiles();
 
 	/// register an API cache handler
 	void registerAPICache( APICache::OfxhPluginAPICacheI& apiCache )

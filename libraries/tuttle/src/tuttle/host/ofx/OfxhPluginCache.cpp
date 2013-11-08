@@ -396,6 +396,17 @@ void OfxhPluginCache::scanPluginFiles()
 	}
 }
 
+void OfxhPluginCache::clearPluginFiles()
+{
+	setDirty();
+	
+	_binaries.clear();
+	_plugins.clear();
+	_pluginsByID.clear();
+	_loadedMap.clear();
+	_knownBinFiles.clear();
+}
+
 APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler( const std::string& api, int version )
 {
 	std::list<PluginCacheSupportedApi>::iterator i = _apiHandlers.begin();
