@@ -35,8 +35,21 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 	bitDepth->setDefault( 0 );
 	
 	OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremultiplied );
-	premult->setLabel( kParamPremultipliedLabel );
+	premult->setLabel( "Premultiplied" );
 	premult->setDefault( false );
+	
+	OFX::ChoiceParamDescriptor* existingFile = desc.defineChoiceParam( kParamWriterExistingFile );
+	existingFile->setLabel( "Existing File" );
+	existingFile->appendOption( kParamWriterExistingFile_overwrite );
+	existingFile->appendOption( kParamWriterExistingFile_error );
+	if( OFX::getImageEffectHostDescription()->hostName == "TuttleOfx" )
+	{
+		// Only Tuttle is able to do that, because we disable the computation
+		// using the IsIdentity Action. This is not in the OpenFX standard.
+		existingFile->appendOption( kParamWriterExistingFile_skip );
+	}
+	//existingFile->appendOption( kParamWriterExistingFile_reader ); // TODO: not implemented yet.
+	existingFile->setDefault( eParamWriterExistingFile_overwrite );
 	
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
 	render->setLabels( "Render", "Render", "Render step" );
@@ -44,11 +57,13 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
 	renderAlways->setLabel( "Render always" );
+	renderAlways->setHint( "This is only useful as a workaround for GUI applications." );
 //	renderAlways->setDefault( false );
 	renderAlways->setDefault( true ); // because tuttle is not declared as a background renderer
 
 	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
 	forceNewRender->setLabel( "Force new render" );
+	forceNewRender->setHint( "This is only useful as a workaround for GUI applications." );
 	forceNewRender->setEnabled( false );
 	forceNewRender->setIsSecret( true );
 	forceNewRender->setIsPersistant( false );

@@ -1235,6 +1235,12 @@ ImageEffect::~ImageEffect()
 	}
 }
 
+/// name of the imageEffect
+const std::string& ImageEffect::getName() const
+{
+	return getPropertySet().propGetString( kOfxPropName );
+}
+
 /** @brief the context this effect was instantiate in */
 EContext ImageEffect::getContext( void ) const
 {
@@ -2064,11 +2070,12 @@ bool isIdentityAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, OFX
 	double identityTime = args.time;
 	bool v              = effectInstance->isIdentity( args, identityClip, identityTime );
 
-	if( v && identityClip )
+	if( v )
 	{
-	outArgs.propSetString( kOfxPropName, identityClip->name() );
-	outArgs.propSetDouble( kOfxPropTime, identityTime );
-	return true;
+		// This is not possible to put an empty clip in the OpenFX standard, but it's allowed in TuttleOFX.
+		outArgs.propSetString( kOfxPropName, identityClip ? identityClip->name() : "" );
+		outArgs.propSetDouble( kOfxPropTime, identityTime );
+		return true;
 	}
 	return false;
 }

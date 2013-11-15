@@ -965,6 +965,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 			BOOST_THROW_EXCEPTION( exception::Memory()
 				<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier: " + quotes( clip.getClipIdentifier() ) + ", time: " + outTime + ")." );
 		}
+		// TUTTLE_TLOG_TRACE( ">>>>> - ImageEffectNode => releaseReference: " << imageCache->getFullName() );
 		imageCache->releaseReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost );
 	}
 	
@@ -983,10 +984,12 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 				BOOST_THROW_EXCEPTION( exception::Memory()
 					<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
 			}
-			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Declare future usages: " << clip.getClipIdentifier() << ", add reference: " << vData._outDegree );
-			if( vData._outDegree > 0 )
+			const std::size_t realOutDegree = vData._outDegree - vData._isFinalNode;  // final nodes have a connection to the fake output node.
+			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Declare future usages: " << clip.getClipIdentifier() << ", add reference: " << realOutDegree );
+			if( realOutDegree > 0 )
 			{
-				imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a reference on this node for each future usages
+				//TUTTLE_TLOG_TRACE( ">>>>> + ImageEffectNode => addReference: " << imageCache->getFullName() );
+				imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, realOutDegree ); // add a reference on this node for each future usages
 			}
 		}
 //		else

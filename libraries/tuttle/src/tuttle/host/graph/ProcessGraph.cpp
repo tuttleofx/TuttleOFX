@@ -156,7 +156,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		
 		TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] node: " << v.getName() );
 
-		vData._outDegree = _renderGraphAtTime.getInDegree( vd ) - vData._isFinalNode;
+		vData._outDegree = _renderGraphAtTime.getInDegree( vd );
 		vData._inDegree = _renderGraphAtTime.getOutDegree( vd );
 
 		vData._outEdges.clear();
@@ -165,9 +165,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		{
 			const ProcessEdgeAtTime* e = &_renderGraphAtTime.instance(ed);
 			VertexAtTime& v = _renderGraphAtTime.sourceInstance( ed );
-			if( v.isFake() )
-				continue;
-			
+
 			TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] in edge " << e->getInAttrName() << ", at time " << e->getInTime() );
 			vData._outEdges.push_back( e );
 		}
