@@ -90,8 +90,20 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			boost::python::object main_namespace = main_module.attr( "__dict__" );
 			
 			std::ostringstream context;
-			context << "class tuttleArgs :" << std::endl;
-			context << "    time = " << args.time << std::endl;
+			context << "def _timecode(time_sec, time_frame, fps):" << std::endl;
+			context << "    return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format(int(time_sec / 3600), "
+																			"int(time_sec / 60) % 60, "
+																			"int(time_sec) % 60, "
+																			"int(time_frame % fps) )" << std::endl;
+			context << "def timecode_sec(time_sec, fps):" << std::endl;
+			context << "    time_frame = int(time_sec * float(fps))" << std::endl;
+			context << "    return _timecode(time_sec, time_frame, fps)" << std::endl;
+			context << "def timecode_frame(time_frame, fps):" << std::endl;
+			context << "    time_sec = time_frame / float(fps) if fps else time_frame" << std::endl;
+			context << "    return _timecode(time_sec, time_frame, fps)" << std::endl;
+			
+			context << "class TuttleArgs:" << std::endl;
+			context << "    time_frame = " << args.time << std::endl;
 			context << "    renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
 			context << "    renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
 					                      << args.renderWindow.x2 << "," << args.renderWindow.y2 << "]" << std::endl;
@@ -102,21 +114,26 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 			OfxRectI dstPixelRod = this->_clipDst->getPixelRod( args.time );
 			context << "    dstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
 											 << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
-			
 			context << "    fps = " << _clipSrc->getFrameRate() << std::endl;
-			
-			context << "    def timecode( self ):" << std::endl;
-			context << "        return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format(  self.time / (3600 * self.fps ), "
-																				" self.time / (60 * self.fps ) % 60, "
-																				" self.time / self.fps % 60, "
-																				" self.time % self.fps )" << std::endl;
-			
-			//TUTTLE_LOG_INFO( context.str().c_str() );
 
-			/*object ignored = */
+			context << "    @property" << std::endl;
+			context << "    def time_sec(self):" << std::endl;
+			context << "        return self.time_frame / float(self.fps) if self.fps else self.time_frame" << std::endl;
+
+			context << "    @property" << std::endl;
+			context << "    def timecode(self):" << std::endl;
+			context << "        return timecode_frame(self.time_frame, self.fps)" << std::endl;
 			
+			context << "args = TuttleArgs()" << std::endl;
+
+			// TUTTLE_TLOG_INFO( "TEXT exec:\n" << context.str().c_str() );
+			// TUTTLE_TLOG_INFO( "TEXT eval:\n" << _params._text.c_str() );
+
 			boost::python::exec( context.str().c_str(), main_namespace );
-			boost::python::object returnText = boost::python::eval( _params._text.c_str(), main_namespace );
+			
+			std::ostringstream toEval;
+			toEval << "str(" << _params._text << ")";
+			boost::python::object returnText = boost::python::eval( toEval.str().c_str(), main_namespace );
 
 			_text = boost::python::extract<std::string>( returnText );
 		}
