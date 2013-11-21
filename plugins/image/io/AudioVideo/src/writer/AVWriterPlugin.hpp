@@ -38,6 +38,9 @@ class AVWriterPlugin : public AVOptionPlugin< WriterPlugin >
 public:
 	AVWriterPlugin( OfxImageEffectHandle handle );
 
+private:
+	void updateVisibleTools();
+
 public:
 	AVProcessParams getProcessParams();
 
