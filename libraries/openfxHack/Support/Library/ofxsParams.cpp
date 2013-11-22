@@ -695,7 +695,7 @@ void GroupParamDescriptor::setOpen( const bool open )
 
 void GroupParamDescriptor::setAsTab()
 {
-    // only anable on supported Nuke
+    // PropGroupIdTab is a nuke extension
     if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
     {
         getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
