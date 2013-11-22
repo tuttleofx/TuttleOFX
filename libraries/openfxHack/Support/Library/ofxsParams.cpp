@@ -696,10 +696,7 @@ void GroupParamDescriptor::setOpen( const bool open )
 void GroupParamDescriptor::setAsTab()
 {
     // PropGroupIdTab is a nuke extension
-    if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
-    {
-        getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
-    }
+	getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1, false ); // this property is an optional extension, don't throw if not present.
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2253,7 +2250,7 @@ void ChoiceParam::appendOption( const std::string& shortName, const std::string&
     const int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
 
     getProps().propSetString( kOfxParamPropChoiceOption, shortName, nCurrentValues );
-    getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues, false ); // this option is optional extension, don't throw if not present.
+    getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues, false ); // this property is an optional extension, don't throw if not present.
 }
 
 /** @brief set the default value */
