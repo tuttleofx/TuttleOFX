@@ -69,7 +69,6 @@ void Core::preload( const bool useCache )
 	
 	_isPreloaded = true;
 	
-#ifndef __WINDOWS__
 	//	typedef boost::archive::binary_oarchive OArchive;
 	//	typedef boost::archive::binary_iarchive IArchive;
 	//	typedef boost::archive::text_oarchive OArchive;
@@ -106,9 +105,7 @@ void Core::preload( const bool useCache )
 			}
 		}
 	}
-#endif
 	_pluginCache.scanPluginFiles();
-#ifndef __WINDOWS__
 	if( useCache && _pluginCache.isDirty() )
 	{
 		// generate unique name for writing
@@ -146,7 +143,6 @@ void Core::preload( const bool useCache )
 			{}
 		}
 	}
-#endif
 }
 
 std::ostream& operator<<( std::ostream& os, const Core& v )
