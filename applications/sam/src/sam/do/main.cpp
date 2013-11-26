@@ -1124,7 +1124,7 @@ int main( int argc, char** argv )
 						}
 						else
 						{
-							if( listOfSequencesPerReaderNode.size() && numberOfLoop == 1 )
+							if( listOfSequencesPerReaderNode.size() > 1 && numberOfLoop == 1 )
 							{
 								filename = readerToReplace->getParamByScriptName( "expression" ).getStringValue();
 							}
