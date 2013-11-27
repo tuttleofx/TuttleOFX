@@ -190,11 +190,12 @@ void HudPlugin::render( const OFX::RenderArguments& args )
 			render< View, FunctorATop >( args );
 			break;
 		}
-		case eParamMergeColor:
-		{
-			render< View, FunctorColor >( args );
-			break;
-		}
+		// @todo : Build pb here
+		// case eParamMergeColor:
+		// {
+		// 	render< View, FunctorColor >( args );
+		// 	break;
+		// }
 		case eParamMergeConjointOver:
 		{
 			render< View, FunctorConjointOver >( args );
@@ -359,6 +360,9 @@ void HudPlugin::render( const OFX::RenderArguments& args )
 			render< View, FunctorInterpolated >( args );
 			break;
 		}
+		default:
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Mode (" + merge + ") not supported by the plugin." );
 	}
 }
 
