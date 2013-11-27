@@ -5,14 +5,16 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
+#include <boost/gil/gil_all.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace hud {
 
-template<typename Scalar>
+template<typename Pixel>
 struct HudProcessParams
 {
-	
+	Pixel _color;
 };
 
 /**
@@ -20,13 +22,13 @@ struct HudProcessParams
  */
 class HudPlugin : public ImageEffectGilPlugin
 {
-public:
-	typedef float Scalar;
+
 public:
     HudPlugin( OfxImageEffectHandle handle );
 
 public:
-	HudProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+	template<class Pixel>
+	HudProcessParams<Pixel> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
@@ -38,7 +40,15 @@ public:
 	
 public:
 //    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
+	OFX::RGBAParam* _color;
 };
+
+template<class Pixel>
+HudProcessParams<Pixel> HudPlugin::getProcessParams( const OfxPointD& renderScale ) const{
+	HudProcessParams<Pixel> params;
+	boost::gil::color_convert( ofxToGil( _color->getValue() ), params._color );
+	return params;
+}
 
 }
 }

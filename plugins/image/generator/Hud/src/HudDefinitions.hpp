@@ -8,6 +8,7 @@ namespace tuttle {
 namespace plugin {
 namespace hud {
 
+static const std::string kConstantColor = "color";
 
 }
 }

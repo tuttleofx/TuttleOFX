@@ -1,4 +1,6 @@
 #include "HudAlgorithm.hpp"
+#include <terry/draw/fill.hpp>
+#include <tuttle/plugin/ofxToGil/rect.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -15,7 +17,7 @@ template<class View>
 void HudProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
-	_params = _plugin.getProcessParams( args.renderScale );
+	_params = _plugin.getProcessParams<Pixel>( args.renderScale );
 
 }
 
@@ -33,6 +35,9 @@ void HudProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
 	
+	terry::draw::fill_pixels( this->_dstView, ofxToGil(procWindowOutput), _params._color );
+
+	/*
 	for( int y = procWindowOutput.y1;
 			 y < procWindowOutput.y2;
 			 ++y )
@@ -48,6 +53,7 @@ void HudProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 		if( this->progressForward( procWindowSize.x ) )
 			return;
 	}
+	*/
 	/*
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,

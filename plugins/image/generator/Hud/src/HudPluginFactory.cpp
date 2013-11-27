@@ -60,6 +60,10 @@ void HudPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
+
+	OFX::RGBAParamDescriptor* color1 = desc.defineRGBAParam( kConstantColor );
+	color1->setDefault( 0, 0, 0, 1 );
+	color1->setLabel( "Color" );
 }
 
 /**

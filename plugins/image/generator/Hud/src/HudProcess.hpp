@@ -17,10 +17,9 @@ class HudProcess : public ImageGilFilterProcessor<View>
 public:
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::channel_type<View>::type Channel;
-	typedef float Scalar;
 protected:
     HudPlugin&    _plugin;            ///< Rendering plugin
-	HudProcessParams<Scalar> _params; ///< parameters
+	HudProcessParams<Pixel> _params; ///< parameters
 
 public:
     HudProcess( HudPlugin& effect );

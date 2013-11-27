@@ -2,7 +2,7 @@
 #include "HudProcess.hpp"
 #include "HudDefinitions.hpp"
 
-#include <boost/gil/gil_all.hpp>
+
 
 namespace tuttle {
 namespace plugin {
@@ -13,12 +13,8 @@ HudPlugin::HudPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
 //    _clipSrcMatte = fetchClip( kClipMatte );
-}
+	_color = fetchRGBAParam( kConstantColor );
 
-HudProcessParams<HudPlugin::Scalar> HudPlugin::getProcessParams( const OfxPointD& renderScale ) const
-{
-	HudProcessParams<Scalar> params;
-	return params;
 }
 
 void HudPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
