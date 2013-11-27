@@ -6,15 +6,15 @@ namespace tuttle {
 namespace plugin {
 namespace hud {
 
-template<class View>
-HudProcess<View>::HudProcess( HudPlugin &effect )
+template<class View, class Functor>
+HudProcess<View, Functor>::HudProcess( HudPlugin &effect )
 : ImageGilFilterProcessor<View>( effect, eImageOrientationIndependant )
 , _plugin( effect )
 {
 }
 
-template<class View>
-void HudProcess<View>::setup( const OFX::RenderArguments& args )
+template<class View, class Functor>
+void HudProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams<Pixel>( args.renderScale );
@@ -25,8 +25,8 @@ void HudProcess<View>::setup( const OFX::RenderArguments& args )
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window
  */
-template<class View>
-void HudProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+template<class View, class Functor>
+void HudProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );

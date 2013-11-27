@@ -37,10 +37,23 @@ public:
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
     void render( const OFX::RenderArguments &args );
-	
+
+private:
+	template< class View >
+	void render( const OFX::RenderArguments& args );
+
+	template< class View, template <typename> class Functor >
+    void render( const OFX::RenderArguments &args );
+
+    template< class View, template <typename> class Functor >
+	void render_if( const OFX::RenderArguments& args, boost::mpl::false_ );
+	template< class View, template <typename> class Functor >
+	void render_if( const OFX::RenderArguments& args, boost::mpl::true_ );
+
 public:
 //    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
 	OFX::RGBAParam* _color;
+	OFX::ChoiceParam* _paramMerge;   ///< Functor structure
 };
 
 template<class Pixel>

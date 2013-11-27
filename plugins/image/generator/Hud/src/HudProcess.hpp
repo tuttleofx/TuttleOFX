@@ -11,7 +11,7 @@ namespace hud {
  * @brief Hud process
  *
  */
-template<class View>
+template<class View, class Functor>
 class HudProcess : public ImageGilFilterProcessor<View>
 {
 public:
