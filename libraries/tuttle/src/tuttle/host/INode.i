@@ -17,7 +17,7 @@ namespace host {
 		def setParamValues(self, *orderedParams, **namedParams):
 			for index, paramValue in enumerate(orderedParams):
 				self.getParam(index).setValue(paramValue)
-			for paramName, paramValue in namedParams.iteritems():
+			for paramName, paramValue in namedParams.items():
 				self.getParam(paramName).setValue(paramValue)
 			return self
 	}
