@@ -63,7 +63,7 @@ Image::Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const
 
 Image::~Image()
 {
-	TUTTLE_TCOUT_VAR( getFullName() );
+	//TUTTLE_TLOG_VAR( TUTTLE_TRACE, getFullName() );
 }
 
 boost::uint8_t* Image::getPixelData()

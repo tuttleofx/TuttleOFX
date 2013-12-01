@@ -32,9 +32,17 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcA->getRowDistanceBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcA->getPixelRod( args.time ) );
-	//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRodA = _plugin._clipSrcA->getPixelRod( args.time );
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+	{
+		// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+		_srcPixelRodA   = _plugin._clipSrcA->getPixelRod( args.time, args.renderScale );
+	}
+	else
+	{
+		_srcPixelRodA = _srcA->getRegionOfDefinition();
+	}
+	this->_srcViewA = this->getView( _srcA.get(), _srcPixelRodA );
 
 	// clip B
 	_srcB.reset( _plugin._clipSrcB->fetchImage( args.time ) );
@@ -42,9 +50,17 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcB->getRowDistanceBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewB = this->getView( _srcB.get(), _plugin._clipSrcB->getPixelRod( args.time ) );
-	//	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRodB = _plugin._clipSrcB->getPixelRod( args.time );
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+	{
+		// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+		_srcPixelRodB   = _plugin._clipSrcB->getPixelRod( args.time, args.renderScale );
+	}
+	else
+	{
+		_srcPixelRodB = _srcB->getRegionOfDefinition();
+	}
+	this->_srcViewB = this->getView( _srcB.get(), _srcPixelRodB );
 
 	// Make sure bit depths are the same
 	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||

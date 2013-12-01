@@ -115,6 +115,8 @@ struct channel_divides_t : public std::binary_function<Channel1,Channel2,Channel
 	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel1>::const_reference ch1,
                         typename channel_traits<Channel2>::const_reference ch2) const {
+        if( ch2 == ChannelR(0) )
+            return ChannelR(0);
         return ChannelR(ch1)/ChannelR(ch2);
     }
 };

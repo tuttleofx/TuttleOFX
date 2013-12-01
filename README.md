@@ -3,7 +3,7 @@
 **Project under early development.**
   
 TuttleOFX project is an image processing framework based on [OpenFX plugin format](http://openfx.sourceforge.net/).  
-More informations on the official website :[https://sites.google.com/site/tuttleofx/](https://sites.google.com/site/tuttleofx/).
+More informations on the official website :[http://www.tuttleofx.org](http://www.tuttleofx.org).
 
 The project is composed of 4 main parts:
 > - **Tuttle Host Library**, an OpenFX host that allows you to manipulate a graph of OpenFX nodes.  
@@ -37,7 +37,7 @@ Compilation
 >
 >    2. Use packaging tools or installers
 >    See the website instructions to install all dependencies. There are command lines (apt-get, macports, ...) to install all dependencies for some standard distributions, and links to windows installers.  
->    [Extern libraries](https://sites.google.com/site/tuttleofx/development/build/libraries)
+>    [Extern libraries](http://www.tuttleofx.org/development/build/libraries)
 
 - Compilation
 
@@ -70,7 +70,7 @@ Tested compilers
 More information 
 ----------------
 Check TuttleOFX website for more information. 
->[http://sites.google.com/site/tuttleofx](http://sites.google.com/site/tuttleofx)
+>[http://www.tuttleofx.org](http://www.tuttleofx.org)
 
 TuttleOFX public repository.
 >[http://github.com/tuttleofx/TuttleOFX](http://github.com/tuttleofx/TuttleOFX)

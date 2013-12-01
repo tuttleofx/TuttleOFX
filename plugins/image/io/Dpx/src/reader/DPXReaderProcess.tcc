@@ -113,7 +113,6 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
-					TUTTLE_COUT("default");
 					int width               = _dpxImage.width();
 					int height              = _dpxImage.height();
 					gray32_view_t src = interleaved_view( width, height,
@@ -304,10 +303,10 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		case tuttle::io::DpxImage::eCompTypeR16G16B16:
 		{
 			/// @todo: bug here.
-			//TUTTLE_COUT_INFOS;
-			//TUTTLE_COUT_VAR( _dpxImage.width() );
-			//TUTTLE_COUT_VAR( _dpxImage.height() );
-			//TUTTLE_COUT_VAR( sizeof( rgb16_pixel_t ) );
+			//TUTTLE_LOG_INFOS;
+			//TUTTLE_LOG_VAR( TUTTLE_INFO, _dpxImage.width() );
+			//TUTTLE_LOG_VAR( TUTTLE_INFO, _dpxImage.height() );
+			//TUTTLE_LOG_VAR( TUTTLE_INFO, sizeof( rgb16_pixel_t ) );
 			// Tests passed: fill, non fill, big endian, little endian
 			rgb16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 							      (const rgb16_pixel_t*)( _dpxImage.data() ),
@@ -319,8 +318,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			// Tests passed: fill, non fill, big endian, little endian
 			rgba16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-							       (const rgba16_pixel_t*)( _dpxImage.data() ),
-							       _dpxImage.width() * sizeof( uint64_t ) );
+												   (const rgba16_pixel_t*)( _dpxImage.data() ),
+												   _dpxImage.width() * sizeof( uint64_t ) );
 
 			copy_and_convert_pixels( src, dst );
 			break;
@@ -329,8 +328,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		{
 			// Untested (need images samples), quite sure it is working
 			abgr16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
-							       (const abgr16_pixel_t*)( _dpxImage.data() ),
-							       _dpxImage.width() * sizeof( uint64_t ) );
+												   (const abgr16_pixel_t*)( _dpxImage.data() ),
+												   _dpxImage.width() * sizeof( uint64_t ) );
 
 			copy_and_convert_pixels( src, dst );
 			break;

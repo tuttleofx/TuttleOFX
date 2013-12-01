@@ -82,16 +82,14 @@ bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	range.min = getFirstTime();
 	range.max = getLastTime();
-	TUTTLE_TCOUT( "ReaderPlugin::getTimeDomain" );
-	TUTTLE_TCOUT_VAR2( range.min, range.max );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Reader plugin] Time Domain : " << range.min << " to " << range.max );
 	return true;
 }
 
 void ReaderPlugin::render( const OFX::RenderArguments& args )
 {
-	std::string filename =  getAbsoluteFilenameAt( args.time );;
-	std::cout << "        >-- " << filename;
-
+	std::string filename =  getAbsoluteFilenameAt( args.time );
+	TUTTLE_LOG_INFO( "        >-- " << filename );
 }
 
 }

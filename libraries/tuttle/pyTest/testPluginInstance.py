@@ -1,7 +1,9 @@
-# scons: LensDistort FFMpeg
+# scons: LensDistort AudioVideo
 
 from pyTuttle import tuttle
 import os
+
+from nose.tools import *
 
 def setUp():
 	tuttle.core().preload(False)
@@ -144,25 +146,37 @@ def testParamInfos():
 def testNodeComputeInfos():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.ffmpegreader", filename="TuttleOFX-data/video/bars_100.avi" )
-	node = node.asImageEffectNode()
+	node = graph.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" ).asImageEffectNode()
 
 	graph.setup()
 	td = node.getTimeDomain()
 	print "node timeDomain: ", td.min, td.max
-	framerate = node.getFrameRate()
-	print "framerate: ", framerate
-	
 	assert td.min == 0.0
-	assert td.max == 101.0
+	assert td.max == 100.0
+	# Duration is 101, the last frame is included
+	assert_equal((td.max-td.min)+1, 101.0)
 	
-	assert framerate == 25.0
+	framerate = node.getOutputFrameRate()
+	print "framerate: ", framerate
+	assert_equal(framerate, 25.0)
+	
+	pixelAspectRatio = node.getOutputPixelAspectRatio()
+	print "pixel aspect ratio: ", pixelAspectRatio
+	assert_almost_equal(pixelAspectRatio, 16.0/15.0)
+	
+	# modify input SAR
+	node.getParam("customSAR").setValue(2.0)
+	graph.setup()
+	
+	pixelAspectRatio = node.getOutputPixelAspectRatio()
+	print "pixel aspect ratio: ", pixelAspectRatio
+	assert_equal(pixelAspectRatio, 2.0)
 
 
 def testPushButton():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.ffmpegwriter", filename=".tests/plop.avi" )
+	node = graph.createNode( "tuttle.avwriter", filename=".tests/plop.avi", colorspace="bt709" )
 	node = node.asImageEffectNode()
 
 	render = node.getParam("render")

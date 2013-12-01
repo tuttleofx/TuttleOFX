@@ -9,7 +9,11 @@ namespace plugin {
 namespace ramp {
 
 static const std::string kRampDirection  = "direction";
-static const std::string kRampColor  = "color";
+
+static const std::string kRampColorStart = "start";
+static const std::string kRampColorEnd   = "end";
+
+static const std::string kRampColor      = "color";
 
 }
 }

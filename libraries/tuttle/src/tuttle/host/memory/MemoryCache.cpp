@@ -39,7 +39,7 @@ CACHE_ELEMENT MemoryCache::get( const std::size_t& i ) const
 {
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
 	MAP::const_iterator itr = _map.begin();
-	for( int j = 0; j < i && itr != _map.end(); ++j )
+	for( unsigned int j = 0; j < i && itr != _map.end(); ++j )
 		++itr;
 
 	if( itr == _map.end() )
@@ -143,7 +143,7 @@ void MemoryCache::clearUnused()
 
 void MemoryCache::clearAll()
 {
-	TUTTLE_COUT_DEBUG( " - MEMORYCACHE::CLEARALL - " );
+	TUTTLE_LOG_DEBUG( TUTTLE_TRACE, " - MEMORYCACHE::CLEARALL - " );
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
 	_map.clear();
 }

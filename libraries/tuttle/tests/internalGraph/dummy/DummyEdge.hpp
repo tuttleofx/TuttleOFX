@@ -30,16 +30,18 @@ public:
 	}
 
 	const std::string& getName() const                { return _name; }
+	const std::string& getInAttrName() const          { return _inAttrName; }
 	void               setName( const std::string s ) { _name = s; }
 
 	friend std::ostream& operator<<( std::ostream& os, const DummyEdge& v );
 
 private:
 	std::string _name;
+	std::string _inAttrName;
 };
 
-} // namespace test
-} // namespace tuttle
+}
+}
 
 #endif
 

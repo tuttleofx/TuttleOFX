@@ -21,9 +21,9 @@ namespace pushPixel {
 PushPixelPlugin::PushPixelPlugin( OfxImageEffectHandle handle )
 : ImageEffect( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipMask = fetchClip( kClipMask );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipMask = fetchClip( kClipMask );
+	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_paramOutput = fetchChoiceParam( kParamOutput );
 	_paramSize = fetchDoubleParam( kParamSize );
@@ -50,7 +50,7 @@ PushPixelProcessParams<PushPixelPlugin::Scalar> PushPixelPlugin::getProcessParam
 	static const double degreeToRadian = boost::math::constants::pi<double>() / 180.0;
 	params._angle = _paramAngle->getValue() * degreeToRadian;
 	
-    params._interpolation = static_cast<EParamInterpolation>( _paramInterpolation->getValue() );
+	params._interpolation = static_cast<EParamInterpolation>( _paramInterpolation->getValue() );
 	
 	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
 	params._boundary_option = convolve_option_extend_mirror;
@@ -123,74 +123,74 @@ void PushPixelPlugin::render( const OFX::RenderArguments &args )
 	BOOST_ASSERT( _clipDst->getPixelDepth() == _clipSrc->getPixelDepth() );
 	BOOST_ASSERT( _clipDst->getPixelComponents() == _clipSrc->getPixelComponents() );
 
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
-
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                PushPixelProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                PushPixelProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                PushPixelProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }/*
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                PushPixelProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                PushPixelProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                PushPixelProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }*/
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte :
+			{
+				PushPixelProcess<rgba8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort :
+			{
+				PushPixelProcess<rgba16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat :
+			{
+				PushPixelProcess<rgba32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone :
+				TUTTLE_LOG_FATAL( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom :
+				TUTTLE_LOG_FATAL( "BitDepthCustom not recognize." );
+				return;
+		}
+	}/*
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte :
+			{
+				PushPixelProcess<gray8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort :
+			{
+				PushPixelProcess<gray16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat :
+			{
+				PushPixelProcess<gray32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone :
+				TUTTLE_LOG_FATAL( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom :
+				TUTTLE_LOG_FATAL( "BitDepthCustom not recognize." );
+				return;
+		}
+	}*/
 	else
 	{
-		TUTTLE_COUT_FATALERROR( "Components not recognize." );
+		TUTTLE_LOG_FATAL( "Components not recognize." );
 	}
 }
 

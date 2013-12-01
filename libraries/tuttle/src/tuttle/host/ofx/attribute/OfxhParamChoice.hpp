@@ -18,7 +18,7 @@ public:
 	virtual ~OfxhParamChoice() {}
 
 	int                getIndexFor( const std::string& key ) const;
-	const std::string& getValueForId( const int id ) const;
+	const std::string& getChoiceKeyAt( const int index ) const;
 
 	const std::vector<std::string>& getChoiceKeys() const
 	{
@@ -30,21 +30,9 @@ public:
 	virtual void setValue( const int&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
 	virtual void setValueAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
 
-	void getValue( std::string& key ) const OFX_EXCEPTION_SPEC
-	{
-		int id = 0;
+	void getValue( std::string& outKey ) const OFX_EXCEPTION_SPEC;
 
-		getValue( id );
-		key = getValueForId( id );
-	}
-
-	void getValueAtTime( const OfxTime time, std::string& key ) const OFX_EXCEPTION_SPEC
-	{
-		int id = 0;
-
-		getValueAtTime( time, id );
-		key = getValueForId( id );
-	}
+	void getValueAtTime( const OfxTime time, std::string& outKey ) const OFX_EXCEPTION_SPEC;
 
 	void setValue( const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
@@ -67,6 +55,10 @@ public:
 
 	/// implementation of var args function
 	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
+	
+	bool paramTypeHasData() const { return true; }
+
+	std::size_t getHashAtTime( const OfxTime time ) const;
 };
 
 }

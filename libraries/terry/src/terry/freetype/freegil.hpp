@@ -243,17 +243,15 @@ public:
 		const rect_t glyphRoi = rectanglesIntersection( glyphRod, _roi );
 		const point_t glyphRegionSize = glyphRoi.size();
 		
-		//TUTTLE_TCOUT_VAR( glyphRod );
-		//TUTTLE_TCOUT_VAR( _roi );
-		//TUTTLE_TCOUT_VAR( glyphRoi );
-		//TUTTLE_TCOUT_VAR2( _x, y );
-		//TUTTLE_TCOUT_VAR2( width, height );
+		//TUTTLE_TLOG_VAR3( TUTTLE_TRACE, glyphRod, _roi, glyphRoi );
+		//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, _x, y );
+		//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, width, height );
 		
 		if( glyphRegionSize.x != 0 &&
 		    glyphRegionSize.y != 0 )
 		{
 			const rect_t glyphLocalRoi = translateRegion( glyphRoi, - glyphRod.x1, - glyphRod.y1 );
-			//TUTTLE_TCOUT_VAR( glyphLocalRoi );
+			//TUTTLE_TLOG_VAR( TUTTLE_TRACE, glyphLocalRoi );
 			
 			BOOST_ASSERT( glyphLocalRoi.x1 >= 0 );
 			BOOST_ASSERT( glyphLocalRoi.y1 >= 0 );

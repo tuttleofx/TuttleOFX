@@ -42,7 +42,7 @@ void INode::setProcessData( Data* data )
 
 void INode::setProcessDataAtTime( DataAtTime* dataAtTime )
 {
-//	TUTTLE_TCOUT( "setProcessDataAtTime \"" << getName() << "\" at " << dataAtTime->_time );
+	TUTTLE_TLOG( TUTTLE_TRACE, "setProcessDataAtTime \"" << getName() << "\" at " << dataAtTime->_time );
 	_dataAtTime[dataAtTime->_time] = dataAtTime;
 }
 
@@ -81,7 +81,7 @@ bool INode::hasData( const OfxTime time ) const
 
 const INode::DataAtTime& INode::getData( const OfxTime time ) const
 {
-	//TUTTLE_TCOUT( "- INode::getData(" << time << ") of " << getName() );
+	//TUTTLE_TLOG( TUTTLE_TRACE, "- INode::getData(" << time << ") of " << getName() );
 	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
 	if( it == _dataAtTime.end() )
 	{
@@ -95,7 +95,7 @@ const INode::DataAtTime& INode::getData( const OfxTime time ) const
 			<< exception::dev() + "Process data at time not set.\n"
 								+ ss.str()
 			<< exception::nodeName( getName() )
-//			<< exception::pluginIdentifier( getPlugin().getIdentifier() )
+			//<< exception::pluginIdentifier( getPlugin().getIdentifier() )
 			<< exception::time( time ) );
 	}
 	return *it->second;
@@ -112,16 +112,32 @@ const INode::DataAtTime& INode::getFirstData() const
 	if( it == _dataAtTime.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev() + "Process data empty.\n"
-				       << exception::nodeName( getName() ) );
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
 	}
-	
 	return *it->second;
 }
 
 INode::DataAtTime& INode::getFirstData()
 {
 	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getFirstData() );
+}
+
+const INode::DataAtTime& INode::getLastData() const
+{
+	DataAtTimeMap::const_reverse_iterator it = _dataAtTime.rbegin();
+	if( it == _dataAtTime.rend() )
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev() + "Process data empty."
+			<< exception::nodeName( getName() ) );
+	}
+	return *it->second;
+}
+
+INode::DataAtTime& INode::getLastData()
+{
+	return const_cast<DataAtTime&>( const_cast<const This*>(this)->getLastData() );
 }
 
 std::ostream& operator<<( std::ostream& os, const INode& v )

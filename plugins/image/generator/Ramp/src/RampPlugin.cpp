@@ -12,23 +12,18 @@ namespace ramp {
 RampPlugin::RampPlugin( OfxImageEffectHandle handle )
 : GeneratorPlugin( handle )
 {
-    _direction = fetchChoiceParam( kRampDirection );
-    _color = fetchBooleanParam( kRampColor );
-}
-
-RampProcessParams RampPlugin::getProcessParams( const OfxPointD& renderScale ) const
-{
-    RampProcessParams params;
-
-    params.direction = ( _direction->getValue() == 0 );
-    params.color = _color->getValue();
-
-	return params;
+	_direction  = fetchChoiceParam( kRampDirection );
+	
+	_colorStart = fetchRGBAParam( kRampColorStart );
+	_colorEnd   = fetchRGBAParam( kRampColorEnd );
+	
+	_color      = fetchBooleanParam( kRampColor );
+	
 }
 
 void RampPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-    GeneratorPlugin::getClipPreferences( clipPreferences );
+	GeneratorPlugin::getClipPreferences( clipPreferences );
 }
 
 /**

@@ -1,7 +1,8 @@
 #include "AnisotropicTensorsMargin.hpp"
 #include "AnisotropicTensorsPlugin.hpp"
 
-#include <GL/gl.h>
+#include <tuttle/plugin/opengl/gl.h>
+
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
 #include <boost/gil/gil_all.hpp>

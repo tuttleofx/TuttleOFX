@@ -9,6 +9,10 @@ project.Program(
 		libs.terry,
 		libs.boost_gil,
 		libs.png,
+		libs.tuttleCommon,
+		libs.boost_filesystem,
+		libs.boost_thread,
+		libs.boost_log,
 		],
 	installDir = os.path.join(project.inOutputBin(),'example')
 	)

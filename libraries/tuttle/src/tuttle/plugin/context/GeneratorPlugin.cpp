@@ -9,6 +9,7 @@ using boost::numeric_cast;
 GeneratorPlugin::GeneratorPlugin( OfxImageEffectHandle handle )
 	: OFX::ImageEffect( handle )
 {
+	_clipSrc                = fetchClip         ( kOfxImageEffectSimpleSourceClipName );
 	_clipDst                = fetchClip         ( kOfxImageEffectOutputClipName );
 	_paramExplicitConv      = fetchChoiceParam  ( kParamGeneratorExplicitConversion );
 	_paramComponents        = fetchChoiceParam  ( kTuttlePluginChannel );
@@ -146,34 +147,77 @@ void GeneratorPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 			break;
 		}
-		case eParamGeneratorExplicitConversionAuto:
 		case eParamGeneratorExplicitConversionFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 			break;
 		}
+		case eParamGeneratorExplicitConversionAuto:
+		{
+			if( _clipSrc->isConnected() )
+			{
+				switch( _clipSrc->getPixelDepth() )
+				{
+					case OFX::eBitDepthUByte:
+						clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+						break;
+					case OFX::eBitDepthUShort:
+						clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+						break;
+					case OFX::eBitDepthFloat:
+						clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+						break;
+					case OFX::eBitDepthCustom:
+					case OFX::eBitDepthNone:
+						break;
+				}
+			}
+			else
+			{
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+			}
+		}
 	}
 
-	switch( _paramComponents->getValue() )
+	if( _clipSrc->isConnected() )
 	{
-		case eParamGeneratorComponentsAlpha:
+		switch( _clipSrc->getPixelComponents() )
 		{
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
-			break;
+			case OFX::ePixelComponentAlpha:
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+				break;
+			case OFX::ePixelComponentRGB:
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+				break;
+			case OFX::ePixelComponentRGBA:
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			default: break;
 		}
-		case eParamGeneratorComponentsRGB:
-		{
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
-			break;
-		}
-		//case eParamGeneratorExplicitConversionAuto:
-		case eParamGeneratorComponentsRGBA:
-		{
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
-		}
+		clipPreferences.setPixelAspectRatio( *this->_clipDst, _clipSrc->getPixelAspectRatio() );
 	}
-	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+	else
+	{
+		switch( _paramComponents->getValue() )
+		{
+			case eParamGeneratorComponentsAlpha:
+			{
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+				break;
+			}
+			case eParamGeneratorComponentsRGB:
+			{
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
+				break;
+			}
+			case eParamGeneratorComponentsRGBA:
+			{
+				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			}
+		}
+		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+	}
 }
 
 bool GeneratorPlugin::getTimeDomain( OfxRangeD& range )
@@ -187,6 +231,16 @@ bool GeneratorPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 {
 	using namespace boost::gil;
 
+	if( _clipSrc->isConnected() )
+	{
+		using namespace boost::gil;
+	
+		const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+		
+		rod = srcRod;
+		return true;
+	}
+	
 	switch(_paramMode->getValue())
 	{
 		case eParamModeFormat :
@@ -196,8 +250,8 @@ bool GeneratorPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 			getFormatResolution( static_cast<EParamFormat>(_paramFormat->getValue()), width, height );
 			rod.x1 = 0;
 			rod.y1 = 0;
-			rod.x2 = width;
-			rod.y2 = height;
+			rod.x2 = width > 0 ? width : 0;
+			rod.y2 = height > 0 ? height : 0;
 
 			return true;
 		}
@@ -227,8 +281,8 @@ bool GeneratorPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 			rod.x1 = 0;
 			rod.y1 = 0;
-			rod.x2 = sizex;
-			rod.y2 = sizey;
+			rod.x2 = sizex > 0 ? sizex : 0;
+			rod.y2 = sizey > 0 ? sizey : 0;
 
 			return true;
 		}

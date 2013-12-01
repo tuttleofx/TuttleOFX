@@ -47,11 +47,11 @@ import_array();
 	{
 		Inputbuffer_python_customData& customData = *(Inputbuffer_python_customData*)object;
 		
-//		TUTTLE_TCOUT( "inputbuffer_python_callback: " << (void*)object << ", time: " << time << ", width: " << width << ", height: " << height << ", customData._funcObject: " << (void*)customData._funcObject );
+//		TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer_python_callback: " << (void*)object << ", time: " << time << ", width: " << width << ", height: " << height << ", customData._funcObject: " << (void*)customData._funcObject );
 		PyObject* ret = PyObject_CallFunction( customData._funcObject, (char *)"d", time );
 		if( (void *)ret == NULL )
 		{
-			TUTTLE_COUT( "TuttleOFX InputBuffer Python callback failed" );
+			TUTTLE_LOG_TRACE( "TuttleOFX InputBuffer Python callback failed" );
 			PyErr_SetString( PyExc_RuntimeError, "TuttleOFX InputBuffer Python callback failed" );
 			*rawdata = NULL;
 			*width = 0;
@@ -62,7 +62,7 @@ import_array();
 		
 		if( ! PyTuple_Check(ret) || PyTuple_Size(ret) != 4 )
 		{
-			TUTTLE_COUT( "The python callback doesn't return a tuple with 4 values as expected. Aborting..." );
+			TUTTLE_LOG_TRACE( "The python callback doesn't return a tuple with 4 values as expected. Aborting..." );
 			*rawdata = NULL;
 			*width = 0;
 			*height = 0;
@@ -72,20 +72,20 @@ import_array();
 		
 		*rawdata = PyString_AsString( PyTuple_GetItem(ret, 0) );
 //		*rawdata = (void*)(std::ptrdiff_t)( PyInt_AsLong( PyTuple_GetItem(ret, 0) ) );
-//		TUTTLE_TCOUT_VAR( *rawdata );
+//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *rawdata );
 		*width = static_cast<int>( PyInt_AsLong( PyTuple_GetItem(ret, 1) ) );
-//		TUTTLE_TCOUT_VAR( *width );
+//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *width );
 		*height = static_cast<int>( PyInt_AsLong( PyTuple_GetItem(ret, 2) ) );
-//		TUTTLE_TCOUT_VAR( *height );
+//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *height );
 		*rowSizeBytes = static_cast<int>( PyInt_AsLong( PyTuple_GetItem(ret, 3) ) );
-//		TUTTLE_TCOUT_VAR( *rowSizeBytes );
+//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *rowSizeBytes );
 		
 		customData.setImgObject( ret );
 	}
 	
 	void inputbuffer_destroy_callback( void* object )
 	{
-//		TUTTLE_TCOUT( "inputbuffer_destroy_callback, Py_DECREF: " << (void*)object );
+//		TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer_destroy_callback, Py_DECREF: " << (void*)object );
 		delete (Inputbuffer_python_customData*)object;
 	}
 	
@@ -103,7 +103,7 @@ import_array();
 	{
 		if( PyCallable_Check( (PyObject *)object ) )
 		{
-			//TUTTLE_TCOUT( "inputbuffer, Py_INCREF: " << (void*)object );
+			//TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer, Py_INCREF: " << (void*)object );
 			Py_INCREF( (PyObject *)object );
 			Inputbuffer_python_customData* customData = new Inputbuffer_python_customData();
 			customData->_funcObject = (PyObject *)object;

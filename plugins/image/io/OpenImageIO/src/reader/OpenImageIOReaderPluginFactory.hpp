@@ -9,8 +9,7 @@ namespace reader {
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( OpenImageIOReaderPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( OpenImageIOReaderPluginFactory, {}, {} );
 
 }
 }

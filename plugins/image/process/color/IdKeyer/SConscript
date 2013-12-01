@@ -1,0 +1,10 @@
+Import( 'project', 'libs' )
+
+project.createOfxPlugin(
+	dirs = ['src'],
+	libraries = [
+		libs.tuttlePlugin,
+		libs.boost_gil,
+		]
+	)
+

@@ -9,6 +9,7 @@
 #include "InternalGraph.hpp"
 
 #include <tuttle/host/Graph.hpp>
+#include <tuttle/host/NodeHashContainer.hpp>
 
 #include <string>
 
@@ -38,8 +39,8 @@ public:
 	typedef graph::ProcessEdge Edge;
 	typedef graph::ProcessEdgeAtTime EdgeAtTime;
 	typedef Graph::Attribute Attribute;
-	typedef InternalGraph<Vertex, Edge, boost::vecS, boost::vecS> InternalGraphImpl;
-	typedef InternalGraph<ProcessVertexAtTime, ProcessEdgeAtTime, boost::vecS, boost::vecS> InternalGraphAtTimeImpl;
+	typedef InternalGraph<Vertex, Edge> InternalGraphImpl;
+	typedef InternalGraph<ProcessVertexAtTime, ProcessEdgeAtTime> InternalGraphAtTimeImpl;
 #ifdef PROCESSGRAPH_USE_LINK
 	typedef std::map<std::string, Node*> NodeMap;
 #else
@@ -48,7 +49,7 @@ public:
 	typedef Graph::InstanceCountMap InstanceCountMap;
 
 public:
-	ProcessGraph( memory::MemoryCache& outCache, const ComputeOptions& options, Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
+	ProcessGraph( const ComputeOptions& options, Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
 	~ProcessGraph();
 
 private:
@@ -57,21 +58,20 @@ private:
 	
 	void relink();
 	void bakeGraphInformationToNodes( InternalGraphAtTimeImpl& renderGraphAtTime );
-	void beginSequenceRender( ProcessVertexData& procOptions );
-	void endSequenceRender( ProcessVertexData& procOptions );
 
-	
 public:
-	
 	void updateGraph( Graph& userGraph, const std::list<std::string>& outputNodes );
 
 	void setup();
 	std::list<TimeRange> computeTimeRange();
-	
-	void setupAtTime( const OfxTime time );
-	void processAtTime( const OfxTime time );
+	void computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time );
 
-	bool process();
+	void beginSequence( const TimeRange& timeRange );
+	void setupAtTime( const OfxTime time );
+	void processAtTime( memory::MemoryCache& outCache, const OfxTime time );
+	void endSequence();
+
+	bool process( memory::MemoryCache& outCache );
 
 private:
 	InternalGraphImpl _renderGraph;
@@ -81,8 +81,8 @@ private:
 
 	static const std::string _outputId;
 	
-	memory::MemoryCache& _outCache;
-	ComputeOptions _options;
+	const ComputeOptions& _options;
+	ProcessVertexData _procOptions;
 };
 
 }

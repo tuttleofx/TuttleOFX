@@ -44,7 +44,7 @@ void InvertProcess<View>::preProcess()
 template<class View>
 void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	TUTTLE_COUT("undefined template");
+	TUTTLE_LOG_ERROR("undefined template");
 }
 
 

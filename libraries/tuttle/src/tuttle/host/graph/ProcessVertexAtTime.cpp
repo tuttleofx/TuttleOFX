@@ -4,31 +4,12 @@
 #include <tuttle/host/ImageEffectNode.hpp>
 #include <tuttle/host/InputBufferWrapper.hpp>
 
-#include <boost/functional/hash.hpp>
-
 #include <boost/format.hpp>
 
 
 namespace tuttle {
 namespace host {
 namespace graph {
-
-
-bool ProcessVertexAtTime::Key::operator==( const Key& v ) const
-{
-	return
-		( v._name == _name ) &&
-		( v._time == _time );
-}
-
-std::size_t ProcessVertexAtTime::Key::getHash() const
-{
-	std::size_t seed = 0;
-	boost::hash_combine( seed, _name );
-	boost::hash_combine( seed, _time );
-	return seed;
-}
-
 
 
 ProcessVertexAtTime::ProcessVertexAtTime( )
@@ -75,6 +56,7 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 				}
 				s << subDotEntry( "fps", ieNode->getOutputClip().getFrameRate() );
 				s << subDotEntry( "output RoD", ieNode->getOutputClip().fetchRegionOfDefinition(_data._time) );
+				s << subDotEntry( "par", ieNode->getOutputClip().getPixelAspectRatio() );
 				break;
 			}
 			default:
@@ -94,18 +76,13 @@ std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 	return os;
 }
 
-
 std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime& v )
 {
-	os << v.getKey();
+	//Lexical_cast is used, here, to prevent an error ("error C2593: 'operator <<' is ambiguous") with ostream operator and OFXTime in msvc10-express (at least).
+	os <<  boost::lexical_cast<std::string>(v.getKey());
 	return os;
 }
 
-std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime::Key& v )
-{
-	os << "\"" << v.getName() << "\"" << " at time " << v.getTime();
-	return os;
-}
 
 }
 }

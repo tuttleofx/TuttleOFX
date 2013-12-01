@@ -201,7 +201,7 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 	for( int i = 0; i < 4; ++i )
 		ss << color.cam_xyz[i][0] << "\t" << color.cam_xyz[i][1] << "\t" << color.cam_xyz[i][2] << "\n"; // %6.4f
 
-	TUTTLE_COUT_DEBUG( ss );
+	TUTTLE_LOG_DEBUG( TUTTLE_INFO, ss );
 }
 
 void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -242,7 +242,7 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 	//	point2<ptrdiff_t> dims( sizes.raw_width, sizes.raw_height );
 	point2<ptrdiff_t> dims( sizes.width, sizes.height );
-	//TUTTLE_COUT_VAR( dims );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, dims );
 	rod.x1 = 0;
 	rod.x2 = dims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;

@@ -1,0 +1,81 @@
+#!/usr/bin/python
+import sys
+import os
+import envTuttle
+envTuttle.setEnvTuttle()
+import argparse
+
+from pyTuttle.tuttle import *
+from getBestPlugin import *
+
+core().preload(False)
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('input', help='input file or sequence')
+
+args = parser.parse_args()
+inputSequence = args.input
+
+fileName, fileExtension = os.path.splitext( inputSequence )
+
+core().preload( True )
+
+readerPlugin = getBestReader( fileExtension )
+
+if readerPlugin == "":
+	print "ERROR: unsuported file format"
+	exit()
+
+g = Graph()
+read = g.createNode( readerPlugin, filename=inputSequence ).asImageEffectNode()
+
+try:
+	g.setup()
+	td = read.getTimeDomain()
+
+	g.setupAtTime( td.min, [read] )
+
+except :
+	print "ERROR: ", sys.exc_info()[0]
+	exit()
+
+rodA = read.getRegionOfDefinition( td.min )
+width  = rodA.x2 - rodA.x1
+height = rodA.y2 - rodA.y1
+
+clips = read.getClipImageSet().getClips()
+print "Input                    : " + inputSequence
+print "Width                    : " + str( int( width ) )
+print "Height                   : " + str( int( height ) )
+
+def getComponents( componentString ):
+	if componentString == "OfxImageComponentNone":
+		return "None"
+	if componentString == "OfxImageComponentAlpha":
+		return "Alpha"
+	if componentString == "OfxImageComponentRGB":
+		return "RGB"
+	if componentString == "OfxImageComponentRGBA":
+		return "RGBA"
+	if componentString == "OfxImageComponentYUVA":
+		return "YUVA (deprecated)"
+
+
+def getBitDetph( bitDepthString ):
+	if bitDepthString == "kOfxBitDepthNone":
+		return "None"
+	if bitDepthString == "kOfxBitDepthByte":
+		return "8  bits"
+	if bitDepthString == "kOfxBitDepthShort":
+		return "16 bits"
+	if bitDepthString == "kOfxBitDepthFloat":
+		return "32 bits floating point"
+
+for clip in clips:
+	if clip.isOutput():		
+		print "Bit depth                :", getBitDetph( clip.getBitDepthString() )
+		print "Pixel Aspect Ratio (par) :", clip.getPixelAspectRatio()
+		print "Components               :", getComponents( clip.getComponentsString() )
+		print "Number of components     :", clip.getNbComponents()
+		print "frame rate (fps)         :", clip.getFrameRate()
+		print "frame range              : ["+ str( int( clip.getFrameRange().min ) )+ ", "+ str( int( clip.getFrameRange().max ) )+ "]"

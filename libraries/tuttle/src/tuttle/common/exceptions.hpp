@@ -1,6 +1,21 @@
 #ifndef _TUTTLE_COMMON_EXCEPTION_HPP_
 #define _TUTTLE_COMMON_EXCEPTION_HPP_
 
+namespace boost {
+  struct errinfo_file_name_ {};
+}
+namespace tuttle { namespace exception {
+    struct tag_userMessage {};
+    struct tag_devMessage {};
+    struct tag_backtraceMessage {};
+    struct tag_ofxContext {};
+    struct tag_ofxApi {};
+    struct tag_pluginIdentifier {};
+    struct tag_pluginName {};
+    struct tag_nodeName {};
+    struct tag_time {};
+}}
+
 #include "utils/boost_error_info_sstream.hpp"
 #include "utils/backtrace.hpp"
 
@@ -23,15 +38,17 @@
 #include <string>
 #include <stdexcept>
 
-#define TUTTLE_COUT_EXCEPTION( e )  \
-    TUTTLE_CERR( tuttle::common::kColorError << "Exception:" << \
-    ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << ::boost::diagnostic_information( e ) << tuttle::common::kColorStd )
+#define TUTTLE_LOG_EXCEPTION( e )  \
+    TUTTLE_LOG_ERROR( "Exception:" ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FILE ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FUNCTION ); \
+    TUTTLE_LOG_ERROR( "\t" << ::boost::diagnostic_information( e ) )
 
-#define TUTTLE_COUT_CURRENT_EXCEPTION  \
-    TUTTLE_CERR( tuttle::common::kColorError << "Exception:" << \
-    ::std::endl << TUTTLE_INFOS << \
-    ::std::endl << "\t" << ::boost::current_exception_diagnostic_information() << tuttle::common::kColorStd )
+#define TUTTLE_LOG_CURRENT_EXCEPTION  \
+    TUTTLE_LOG_ERROR( "Exception:" ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FILE ); \
+    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FUNCTION ); \
+    TUTTLE_LOG_ERROR( "\t" << ::boost::current_exception_diagnostic_information() )
 
 #ifndef SWIG
 namespace OFX {

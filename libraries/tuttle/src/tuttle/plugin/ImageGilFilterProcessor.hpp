@@ -47,8 +47,8 @@ void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& a
 	ImageGilProcessor<DView>::setup( args );
 
 	// source view
-//	TUTTLE_COUT_INFOS;
-//	TUTTLE_COUT_VAR( "src - fetchImage " << time );
+//	TUTTLE_LOG_INFOS;
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, "src - fetchImage " << time );
 	_src.reset( _clipSrc->fetchImage( args.time ) );
 	if( ! _src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady()
@@ -58,8 +58,16 @@ void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& a
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes()
 				<< exception::dev() + "Error on clip " + quotes(_clipSrc->name())
 				<< exception::time( args.time ) );
-	//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+	{
+		// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+		_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
+	}
+	else
+	{
+		_srcPixelRod = _src->getRegionOfDefinition();
+	}
 	_srcView = ImageGilProcessor<DView>::template getCustomView<SView>( _src.get(), _srcPixelRod );
 
 //	// Make sure bit depths are same

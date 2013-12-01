@@ -85,19 +85,19 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 {
 	_oneRender = false;
 
-	TUTTLE_COUT( "        --> " << getAbsoluteFilenameAt( args.time ) );
+	TUTTLE_LOG_INFO( "        --> " << getAbsoluteFilenameAt( args.time ) );
 
 	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
 	boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
 	
 	// Copy buffer
 	const OfxRectI bounds = dst->getBounds();
-	TUTTLE_TCOUT_VAR( bounds );
+	TUTTLE_TLOG_VAR( TUTTLE_TRACE, bounds );
 	if( src->isLinearBuffer() && dst->isLinearBuffer() )
 	{
-		TUTTLE_TCOUT( "isLinearBuffer" );
+		TUTTLE_TLOG( TUTTLE_TRACE, "isLinearBuffer" );
 		const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
-		TUTTLE_TCOUT_VAR( imageDataBytes );
+		TUTTLE_TLOG_VAR( TUTTLE_TRACE, imageDataBytes );
 		if( imageDataBytes )
 		{
 			void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );

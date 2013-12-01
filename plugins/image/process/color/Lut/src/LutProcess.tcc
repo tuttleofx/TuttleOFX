@@ -48,7 +48,7 @@ void LutProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 template<class View>
 void LutProcess<View>::applyLut( View& dst, View& src, const OfxRectI& procWindow )
 {
-	using namespace boost::gil;
+	using namespace terry;
 	typedef typename View::x_iterator vIterator;
 	typedef typename channel_type<View>::type Pixel;
 	const OfxPointI procWindowSize = {
@@ -61,7 +61,7 @@ void LutProcess<View>::applyLut( View& dst, View& src, const OfxRectI& procWindo
 		vIterator dit = dst.row_begin( y );
 		for( int x = procWindow.x1; x < procWindow.x2; ++x )
 		{
-			Color col = _lut3D->getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
+			tuttle::Color col = _lut3D->getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
 			( *dit )[0] = static_cast<Pixel>( col.x );
 			( *dit )[1] = static_cast<Pixel>( col.y );
 			( *dit )[2] = static_cast<Pixel>( col.z );

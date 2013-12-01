@@ -21,14 +21,17 @@ using namespace Imf;
 using namespace boost::gil;
 
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
-	: ReaderPlugin( handle ),
-	  _channels ( 0 )
+	: ReaderPlugin( handle )
+	, _channels ( 0 )
+	, _par      ( 1.0 )
 {
 	_outComponents   = fetchChoiceParam( kTuttlePluginChannel );
 	_redComponents   = fetchChoiceParam( kParamOutputRedIs );
 	_greenComponents = fetchChoiceParam( kParamOutputGreenIs );
 	_blueComponents  = fetchChoiceParam( kParamOutputBlueIs );
 	_alphaComponents = fetchChoiceParam( kParamOutputAlphaIs );
+	
+	_outputData      = fetchChoiceParam( kParamOutputData );
 	
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputRedIs ) );
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputGreenIs ) );
@@ -51,6 +54,8 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 	params._greenChannelIndex = _greenComponents->getValue();
 	params._blueChannelIndex  = _blueComponents->getValue();
 	params._alphaChannelIndex = _alphaComponents->getValue();
+	
+	params._displayWindow     = ( _outputData->getValue() == 0 );
 	
 	return params;
 }
@@ -104,13 +109,15 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 void EXRReaderPlugin::updateCombos()
 {
 	const std::string filename( getAbsoluteFirstFilename() );
-	//TUTTLE_COUT("update Combo");
+	//TUTTLE_LOG_VAR("update Combo");
 	if( bfs::exists( filename ) )
 	{
 		// read dims
 		InputFile in( filename.c_str() );
 		const Header& h  = in.header();
 		const ChannelList& cl = h.channels();
+		
+		_par = h.pixelAspectRatio();
 		
 		// Hide output channel selection till we don't select a channel.
 		for( std::size_t i = 0; i < _vChannelChoice.size(); ++i )
@@ -122,7 +129,7 @@ void EXRReaderPlugin::updateCombos()
 		for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
 		{
 			_vChannelNames.push_back( it.name() );
-			//TUTTLE_COUT_VAR( it.name() );
+			//TUTTLE_LOG_VAR( it.name() );
 			for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
 			{
 				_vChannelChoice[j]->appendOption( it.name() );
@@ -191,8 +198,8 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			}
 		}
 	}
-	
-	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info from exr
+
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, _par );
 }
 
 bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
@@ -200,12 +207,16 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	try
 	{
 		InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
-		const Header& h             = in.header();
-		const Imath::V2i dataWindow = h.dataWindow().size();
+		const Header&      h      = in.header();
+		const Imath::Box2i window( ( _outputData->getValue() == 0 ) ? h.displayWindow() : h.dataWindow() );
+
+		std::cout << "getRegionOfDefinition " << ( window.size().x + 1 ) * _par << " x " << window.size().y + 1 << std::endl;
+		
 		rod.x1 = 0;
-		rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
+		rod.x2 = window.size().x + 1;
 		rod.y1 = 0;
-		rod.y2 = dataWindow.y + 1;
+		rod.y2 = window.size().y + 1;
+
 	}
 	catch( ... )
 	{

@@ -62,23 +62,23 @@ Graph::Node& Graph::addNode( INode& node )
 	return node;
 }
 
-void Graph::addNodes( const std::vector<NodeInit>& nodes )
-{
-	BOOST_FOREACH( const NodeInit& node, nodes )
-	{
-		addNode( node ); // tranfer nodes ownership to the graph
-	}
-}
-
-void Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
+std::vector<INode*> Graph::addNodes( const std::vector<NodeInit>& nodes )
 {
 	std::vector<INode*> nodePtrs;
 	BOOST_FOREACH( const NodeInit& node, nodes )
 	{
-		nodePtrs.push_back( &addNode( node ) ); // tranfer nodes ownership to the graph
+		INode& newNode = addNode( node ); // tranfer nodes ownership to the graph
+		nodePtrs.push_back( & newNode );
 	}
+	return nodePtrs;
+}
+
+std::vector<INode*> Graph::addConnectedNodes( const std::vector<NodeInit>& nodes )
+{
+	std::vector<INode*> nodePtrs = addNodes( nodes );
 	if( nodePtrs.size() > 1 )
 		connect( nodePtrs );
+	return nodePtrs;
 }
 
 void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
@@ -87,7 +87,7 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 	if( node.getName() == newUniqueName )
 		return;
 	
-	TUTTLE_TCOUT( "Graph::renameNode: from: " << node.getName() << " -> to: " << newUniqueName );
+	TUTTLE_TLOG( TUTTLE_INFO, "Graph::renameNode: from: " << node.getName() << " -> to: " << newUniqueName );
 	{
 		// check if newUniqueName is not already in the graph
 		NodeMap::iterator itNew = _nodes.find( newUniqueName );
@@ -120,14 +120,14 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 
 void Graph::addToInternalGraph( Node& node )
 {
-	//TUTTLE_TCOUT( "Graph::addToInternalGraph: " << node.getName() );
+	//TUTTLE_TLOG( TUTTLE_INFO, "Graph::addToInternalGraph: " << node.getName() );
 	Vertex v( node.getName(), node );
 	_graph.addVertex( v );
 }
 
 void Graph::removeFromInternalGraph( Node& node )
 {
-	//TUTTLE_TCOUT( "Graph::removeFromInternalGraph: " << node.getName() );
+	//TUTTLE_TLOG( TUTTLE_INFO, "Graph::removeFromInternalGraph: " << node.getName() );
 	const unsigned int id = _graph.getVertexDescriptor( node.getName() );
 	_graph.removeVertex( id );
 }
@@ -236,8 +236,8 @@ inline void graphConnectClips( TGraph& graph )
 		typename TGraph::Vertex& vertexSource = graph.sourceInstance( ed );
 		typename TGraph::Vertex& vertexDest   = graph.targetInstance( ed );
 
-		// TUTTLE_TCOUT( "[connectClips] " << edge );
-		// TUTTLE_TCOUT( vertexSource << "->" << vertexDest );
+		//TUTTLE_TLOG( TUTTLE_INFO, "[connectClips] " << edge );
+		//TUTTLE_TLOG( TUTTLE_INFO, vertexSource << "->" << vertexDest );
 		
 		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
 		{
@@ -301,11 +301,24 @@ std::size_t Graph::getNbOutputConnections( const Node& node ) const
 
 void Graph::setup()
 {
-	memory::MemoryCache memoryCache;
 	const ComputeOptions options;
 	const std::list<std::string> outputNodes;
-	graph::ProcessGraph procGraph( memoryCache, options, *this, outputNodes );
+	graph::ProcessGraph procGraph( options, *this, outputNodes );
 	return procGraph.setup();
+}
+
+void Graph::setupAtTime( const OfxTime time, const NodeListArg& outputNodes )
+{
+	const ComputeOptions options;
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
+	return procGraph.setupAtTime( time );
+}
+
+void Graph::computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& outputNodes )
+{
+	const ComputeOptions options;
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
+	procGraph.computeHashAtTime( outNodesHash, time );
 }
 
 bool Graph::compute( const ComputeOptions& options )
@@ -332,8 +345,8 @@ bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes,
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph procGraph( memoryCache, options, *this, nodes.getNodes() );
-	return procGraph.process();
+	graph::ProcessGraph procGraph( options, *this, nodes.getNodes() );
+	return procGraph.process( memoryCache );
 }
 
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )

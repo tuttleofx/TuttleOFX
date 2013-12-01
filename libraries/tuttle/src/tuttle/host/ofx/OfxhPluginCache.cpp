@@ -201,7 +201,7 @@ void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
 void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse )
 {
 	#ifdef CACHE_DEBUG
-	TUTTLE_TCOUT( "looking in " << dir << " for plugins" );
+	TUTTLE_TLOG( TUTTLE_INFO, "looking in " << dir << " for plugins" );
 	#endif
 
 	#if defined ( WINDOWS )
@@ -248,16 +248,17 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
 			{
 				#ifdef CACHE_DEBUG
-				TUTTLE_TCOUT( "found non-cached binary " << binpath );
+				TUTTLE_TLOG( TUTTLE_INFO, "found non-cached binary " << binpath );
 				#endif
 				setDirty();
 				try
 				{
 					// the binary was not in the cache
 					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlepath, this );
+					//TUTTLE_LOG_WARNING( binpath );
 					_binaries.push_back( pb );
 					_knownBinFiles.insert( binpath );
-
+					//TUTTLE_LOG_WARNING( binpath << " (" << pb->getNPlugins() <<  ")" );
 					for( int j = 0; j < pb->getNPlugins(); ++j )
 					{
 						OfxhPlugin& plug                   = pb->getPlugin( j );
@@ -267,14 +268,15 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				}
 				catch(... )
 				{
-					TUTTLE_COUT( tuttle::common::kColorError << "warning: can't load " << binpath << tuttle::common::kColorStd );
-					TUTTLE_COUT_CURRENT_EXCEPTION;
+					TUTTLE_LOG_WARNING( "Can't load " << binpath );
+					TUTTLE_LOG_WARNING( boost::current_exception_diagnostic_information() );
+					TUTTLE_LOG_WARNING( "LD_LIBRARY_PATH: " << std::getenv("LD_LIBRARY_PATH") );
 				}
 			}
 			else
 			{
 				#ifdef CACHE_DEBUG
-				TUTTLE_TCOUT( "found cached binary " << binpath );
+				TUTTLE_TLOG( TUTTLE_INFO, "found cached binary " << binpath );
 				#endif
 			}
 		}
@@ -375,14 +377,14 @@ void OfxhPluginCache::scanPluginFiles()
 					}
 					else
 					{
-						TUTTLE_COUT_ERROR(
+						TUTTLE_LOG_ERROR(
 							"Ignoring plugin " << quotes(plug.getIdentifier()) <<
 							": unsupported, " << reason << "." );
 					}
 				}
 				catch(...)
 				{
-					TUTTLE_COUT_ERROR(
+					TUTTLE_LOG_ERROR(
 						"Ignoring plugin " << quotes(plug.getIdentifier()) <<
 						": loading error." );
 					

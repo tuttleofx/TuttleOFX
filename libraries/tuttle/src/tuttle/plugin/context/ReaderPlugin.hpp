@@ -9,7 +9,6 @@
 #include <Sequence.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-namespace sp = sequenceParser;
 
 namespace tuttle {
 namespace plugin {
@@ -31,15 +30,15 @@ public:
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
-		//		TUTTLE_COUT_VAR( time );
+		//TUTTLE_LOG_VAR( TUTTLE_INFO, time );
 		if( _isSequence )
 		{
-			//			TUTTLE_COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
+			//TUTTLE_LOG_VAR( TUTTLE_INFO, _filePattern.getAbsoluteFilenameAt( time ) );
 			return _filePattern.getAbsoluteFilenameAt( static_cast<std::ssize_t>(time) );
 		}
 		else
 		{
-			//			TUTTLE_COUT_VAR( _paramFilepath->getValue() );
+			//TUTTLE_LOG_VAR( TUTTLE_INFO, _paramFilepath->getValue() );
 			return _paramFilepath->getValue();
 		}
 	}
@@ -109,7 +108,7 @@ public:
 
 private:
 	bool _isSequence;
-	sp::Sequence _filePattern;            ///< Filename pattern manager
+	sequenceParser::Sequence _filePattern;            ///< Filename pattern manager
 };
 
 }

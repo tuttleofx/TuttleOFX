@@ -8,32 +8,36 @@
 namespace tuttle {
 namespace common {
 
-std::string CFStringContainer::str( CFStringRef cfString )
+std::string CFStringContainer::toString( CFStringRef cfString )
 {
-	if( !cfString )
-		return std::string();
-
 	CFIndex length = CFStringGetLength( cfString );
-	if( length == 0 )
-		return std::string();
-
-	std::string s( length );
-	CFStringGetCharacters( cfString, CFRangeMake( 0, length ), reinterpret_cast<UniChar *> ( const_cast<QChar *> ( s.unicode() ) ) );
-
-	return string;
+	CFIndex size = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8);
+	char *buffer = new char[size];
+	Boolean worked = CFStringGetCString( cfString, buffer, size, kCFStringEncodingUTF8 );
+	if( worked ) {
+		std::string result( buffer );
+		delete [] buffer;
+		return result;
+	}
+	delete [] buffer;
+	return std::string();
 }
 
 CFStringContainer::operator std::string() const
 {
-	if( string.isEmpty() && type )
-		const_cast<CFStringContainer*>(this)->string = toQString( type );
-	return string;
+	return str();
+}
+
+const std::string& CFStringContainer::str() const
+{
+	if( _string.empty() && _type )
+		const_cast<CFStringContainer*>(this)->_string = toString(_type);
+	return _string;
 }
 
 CFStringRef CFStringContainer::toCFStringRef( const std::string& s )
 {
-	return CFStringCreateWithCharacters( 0, reinterpret_cast<const UniChar *> ( s.unicode() ),
-										 s.size() );
+	return CFStringCreateWithCString(kCFAllocatorDefault, s.c_str(), kCFStringEncodingUTF8); 
 }
 
 CFStringContainer::operator CFStringRef() const
@@ -42,11 +46,11 @@ CFStringContainer::operator CFStringRef() const
 	{
 		const_cast<CFStringContainer*> ( this )->_type =
 			CFStringCreateWithCharactersNoCopy( 0,
-												reinterpret_cast<const UniChar *> ( _string.unicode() ),
-												_string.size(),
-												kCFAllocatorNull );
+				reinterpret_cast<const UniChar *> ( _string.c_str() ),
+				_string.size(),
+				kCFAllocatorNull );
 	}
-	return type;
+	return _type;
 }
 
 

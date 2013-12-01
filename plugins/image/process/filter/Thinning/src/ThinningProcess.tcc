@@ -50,15 +50,15 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	const OfxRectI srcRodCrop2 = rectangleReduce( srcRodCrop1, border );
 	const OfxRectI procWindowRoWCrop1 = rectanglesIntersection( rectangleGrow( procWindowRoW, border ), srcRodCrop1 );
 	const OfxRectI procWindowRoWCrop2 = rectanglesIntersection( procWindowRoW, srcRodCrop2 );
-	
-//	TUTTLE_COUT_X( 20, "-");
-//	TUTTLE_COUT_VAR( this->_srcPixelRod );
-//	TUTTLE_COUT_VAR( srcRodCrop1 );
-//	TUTTLE_COUT("");
-//	TUTTLE_COUT_VAR( procWindowRoW );
-//	TUTTLE_COUT_VAR( procWindowRoWCrop1 );
-//	TUTTLE_COUT_X( 20, "-");
 
+//	TUTTLE_LOG_WARNING("-----");
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, this->_srcPixelRod );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, srcRodCrop1 );
+//	TUTTLE_LOG_INFO("");
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, procWindowRoW );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, procWindowRoWCrop1 );
+//	TUTTLE_LOG_WARNING("-----");
+	
 	/// @todo use an allocator
 	OfxPointI tmpSize;
 	tmpSize.x = procWindowRoWCrop1.x2-procWindowRoWCrop1.x1;

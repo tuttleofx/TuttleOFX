@@ -6,6 +6,8 @@ libraries = [
 		libs.boost_filesystem,
 		libs.boost_program_options,
 		libs.boost_regex,
+		libs.boost_thread,
+		libs.boost_log,
 	]
 
 sam = project.Program(

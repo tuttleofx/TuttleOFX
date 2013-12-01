@@ -29,8 +29,16 @@ void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 	if( _src->getRowDistanceBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	_srcView = ImageGilProcessor<DView>::template getCustomView<SView>( _src.get(), _clipSrc->getPixelRod( args.time ) );
-	//	this->_srcPixelRod = this->_src->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRod = _clipSrc->getPixelRod( args.time );
+	
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+	{
+		// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+		_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
+	}
+	else
+	{
+		_srcPixelRod = _src->getRegionOfDefinition();
+	}
 }
 
 /**

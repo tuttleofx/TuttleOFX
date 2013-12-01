@@ -1,8 +1,5 @@
 #include <sam/common/utility.hpp>
-#include <sam/common/color.hpp>
 #include <sam/common/options.hpp>
-
-#include <tuttle/common/utils/global.hpp>
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
@@ -13,35 +10,29 @@
 #include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <Detector.hpp>
+#include <detector.hpp>
 #include <Sequence.hpp>
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 
 namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
-namespace sp  = sequenceParser;
 
-bool         enableColor    = false;
-bool         verbose        = false;
 bool         selectRange    = false;
 std::ssize_t firstImage     = 0;
 std::ssize_t lastImage      = 0;
-
-sam::Color _color;
 
 // A helper function to simplify the main part.
 template<class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 {
-	copy(v.begin(), v.end(), std::ostream_iterator<T>(std::cout, " "));
+	copy( v.begin(), v.end(), std::ostream_iterator<T>( std::cout, " " ) );
 	return os;
 }
 
-void removeSequence( const sp::Sequence& s )
+void removeSequence( const sequenceParser::Sequence& s )
 {
 	std::ssize_t first;
 	std::ssize_t last;
@@ -58,47 +49,42 @@ void removeSequence( const sp::Sequence& s )
 //	TUTTLE_TCOUT( "remove sequence." );
 //	TUTTLE_TCOUT("remove from " << first << " to " << last);
 
-	for( sp::Time t = first; t <= last; t += s.getStep() )
+	for( sequenceParser::Time t = first; t <= last; t += s.getStep() )
 	{
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( !bfs::exists( sFile ) )
 		{
-			TUTTLE_CERR("Could not remove (file not exist): " << _color._red << sFile.string() << _color._std );
+			TUTTLE_LOG_ERROR( "Could not remove (file not exist): " << sFile.string() );
 		}
 		else
 		{
-			if(verbose)
-			{
-				TUTTLE_COUT("remove: " << _color._folder << sFile.string() << _color._std );
-			}
+			TUTTLE_LOG_TRACE( "remove: " << tuttle::common::Color::get()->_folder << sFile.string() << tuttle::common::Color::get()->_std );
 			try
 			{
 				bfs::remove( sFile );
 			}
-			catch(const boost::filesystem::filesystem_error& e)
+			catch( const boost::filesystem::filesystem_error& e )
 			{
 //			   if( e.code() == boost::system::errc::permission_denied )
 //				   "permission denied"
-				TUTTLE_CERR( "sam-rm: Error:\t\n" << e.what() );
+				TUTTLE_LOG_ERROR( "sam-rm: Error:\t\n" << e.what() );
 				/// @todo cin
-//				TUTTLE_COUT( "sam-rm: Continue ? (Yes/No/Yes for All/No for All)" );
-				
+//				TUTTLE_LOG_INFO( "sam-rm: Continue ? (Yes/No/Yes for All/No for All)" );
 			}
 		}
 	}
 }
 
-void removeFileObject( boost::ptr_vector<sp::FileObject> &listing, std::vector<boost::filesystem::path> &notRemoved )
+void removeFileObject( boost::ptr_vector<sequenceParser::FileObject> &listing, std::vector<boost::filesystem::path> &notRemoved )
 {
 //	TUTTLE_TCOUT( "removeFileObject." );
-	BOOST_FOREACH( const sp::FileObject& s, listing )
+	BOOST_FOREACH( const sequenceParser::FileObject& s, listing )
 	{
-		if( !(s.getMaskType () == sp::eMaskTypeDirectory))
+		if( !(s.getMaskType () == sequenceParser::eMaskTypeDirectory))
 		{
-			if(verbose)
-				TUTTLE_COUT( "remove: " << s );
-			if( s.getMaskType () == sp::eMaskTypeSequence )
-				removeSequence( static_cast<const sp::Sequence&>( s ) );
+			TUTTLE_LOG_TRACE( "remove: " << s );
+			if( s.getMaskType () == sequenceParser::eMaskTypeSequence )
+				removeSequence( static_cast<const sequenceParser::Sequence&>( s ) );
 			else
 			{
 				std::vector<bfs::path> paths = s.getFiles();
@@ -113,8 +99,7 @@ void removeFileObject( boost::ptr_vector<sp::FileObject> &listing, std::vector<b
 			{
 				if( bfs::is_empty( paths.at(i) ) )
 				{
-					if(verbose)
-						TUTTLE_COUT( "remove: " << s );
+					TUTTLE_LOG_TRACE( "remove: " << s );
 					bfs::remove( paths.at(i) );
 				}
 				else
@@ -132,17 +117,14 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 	std::reverse(listing.begin(), listing.end());
 	BOOST_FOREACH( const boost::filesystem::path& paths, listing )
 	{
-		if(bfs::is_empty(paths))
+		if( bfs::is_empty( paths ) )
 		{
-			if(verbose)
-			{
-				TUTTLE_COUT( "remove: " << _color._folder << paths << _color._std );
-			}
-			bfs::remove(paths);
+			TUTTLE_LOG_TRACE( "remove: " << tuttle::common::Color::get()->_folder << paths << tuttle::common::Color::get()->_std );
+			bfs::remove( paths );
 		}
 		else
 		{
-			TUTTLE_CERR( "could not remove " << _color._error << paths << _color._std );
+			TUTTLE_LOG_ERROR( "could not remove " << paths );
 		}
 	}
 }
@@ -150,207 +132,233 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 
 int main( int argc, char** argv )
 {
-	using namespace sam;
+	signal(SIGINT, signal_callback_handler);
 
-	sp::EMaskType                researchMask      = sp::eMaskTypeSequence;	// by default show sequences
-	sp::EMaskOptions             descriptionMask   = sp::eMaskOptionsColor;	// by default show nothing
+	using namespace tuttle::common;
+	using namespace sam;
+	
+	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Color>                 color( Color::get() );
+
+	sequenceParser::EMaskType                researchMask      = sequenceParser::eMaskTypeSequence;	// by default show sequences
+	sequenceParser::EMaskOptions             descriptionMask   = sequenceParser::eMaskOptionsColor;	// by default show nothing
 	bool                         recursiveListing  = false;
 	std::vector<std::string>     paths;
 	std::vector<std::string>     filters;
 
+	formatter->init_logging();
+	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-			(kAllOptionString           , kAllOptionMessage)
-			(kDirectoriesOptionString   , kDirectoriesOptionMessage)
-			(kExpressionOptionString    , bpo::value<std::string>(), kExpressionOptionMessage)
-			(kFilesOptionString         , kFilesOptionMessage)
-			(kHelpOptionString          , kHelpOptionMessage)
-			(kIgnoreOptionString         , kIgnoreOptionMessage)
-			(kPathOptionString    , kPathOptionMessage)
-			(kRecursiveOptionString     , kRecursiveOptionMessage )
-			(kVerboseOptionString       , kVerboseOptionMessage)
-			(kColorOptionString           , kColorOptionMessage)
-			(kFirstImageOptionString     , bpo::value<std::ssize_t>(), kFirstImageOptionMessage)
-			(kLastImageOptionString      , bpo::value<std::ssize_t>(), kLastImageOptionMessage)
-			(kFullRMPathOptionString        , kFullRMPathOptionMessage )
-			(kBriefOptionString           , kBriefOptionMessage )
-			;
+			( kAllOptionString,         kAllOptionMessage )
+			( kDirectoriesOptionString, kDirectoriesOptionMessage )
+			( kExpressionOptionString,  bpo::value<std::string>(), kExpressionOptionMessage )
+			( kFilesOptionString,       kFilesOptionMessage )
+			( kHelpOptionString,        kHelpOptionMessage )
+			( kIgnoreOptionString,      kIgnoreOptionMessage )
+			( kPathOptionString,        kPathOptionMessage )
+			( kRecursiveOptionString,   kRecursiveOptionMessage )
+			( kVerboseOptionString,     bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+			( kQuietOptionString,       kQuietOptionMessage )
+			( kColorOptionString,       kColorOptionMessage )
+			( kFirstImageOptionString,  bpo::value<std::ssize_t>(), kFirstImageOptionMessage )
+			( kLastImageOptionString,   bpo::value<std::ssize_t>(), kLastImageOptionMessage )
+			( kFullRMPathOptionString,  kFullRMPathOptionMessage )
+			( kBriefOptionString,       kBriefOptionMessage );
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-			(kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage)
-			(kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage)
-			;
+			( kInputDirOptionString, bpo::value< std::vector<std::string> >(), kInputDirOptionMessage )
+			( kEnableColorOptionString, bpo::value<std::string>(), kEnableColorOptionMessage );
 	
 	// define default options 
 	bpo::positional_options_description pod;
 	pod.add(kInputDirOptionString, -1);
 	
 	bpo::options_description cmdline_options;
-	cmdline_options.add(mainOptions).add(hidden);
+	cmdline_options.add( mainOptions ).add( hidden );
 
 	bpo::positional_options_description pd;
-	pd.add("", -1);
+	pd.add( "", -1 );
 	
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
 
-	bpo::notify(vm);
+	bpo::notify( vm );
 
 	try
 	{
-		bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+		bpo::store( bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm );
 
 		// get environment options and parse them
 		if( const char* env_rm_options = std::getenv("SAM_RM_OPTIONS") )
 		{
 			const std::vector<std::string> vecOptions = bpo::split_unix( env_rm_options, " " );
-			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+			bpo::store( bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm );
 		}
 		if( const char* env_rm_options = std::getenv("SAM_OPTIONS") )
 		{
 			const std::vector<std::string> vecOptions = bpo::split_unix( env_rm_options, " " );
-			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+			bpo::store( bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm );
 		}
 	}
 	catch( const bpo::error& e)
 	{
-		TUTTLE_COUT( "sam-rm: command line error: " << e.what() );
-		exit( -2 );
+		TUTTLE_LOG_ERROR( "sam-rm: command line error: " << e.what() );
+		exit( 254 );
 	}
 	catch(...)
 	{
-		TUTTLE_COUT("sam-rm: unknown error in command line.");
-		exit( -2 );
+		TUTTLE_LOG_ERROR( "sam-rm: unknown error in command line." );
+		exit( 254 );
 	}
 
-	if ( vm.count(kColorOptionLongName) )
+	if( vm.count( kColorOptionLongName ) )
 	{
-		enableColor = true;
+		color->enable();
 	}
-	if ( vm.count(kEnableColorOptionLongName) )
+	
+	if( vm.count( kEnableColorOptionLongName ) )
 	{
 		const std::string str = vm[kEnableColorOptionLongName].as<std::string>();
-		enableColor = string_to_boolean( str );
+		if( string_to_boolean(str) )
+		{
+			color->enable();
+		}
+		else
+		{
+			color->disable();
+		}
 	}
 
-	if( enableColor )
+	if( vm.count( kHelpOptionLongName ) )
 	{
-		descriptionMask |= sp::eMaskOptionsColor;
-		_color.enable();
-	}
+		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
+		TUTTLE_LOG_INFO( color->_green << "\tsam-rm - remove file sequences" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_LOG_INFO( color->_green << "\tsam-rm [options] [sequence_pattern]" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( "Remove sequence of files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std );
+		TUTTLE_LOG_INFO( "" );
+		TUTTLE_LOG_INFO( mainOptions );
 
-	if ( vm.count(kHelpOptionLongName ) )
-	{
-		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
-		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-rm - remove file sequences" << _color._std << std::endl );
-		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
-		TUTTLE_COUT( _color._green << "\tsam-rm [options] [sequence_pattern]" << _color._std << std::endl );
-		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
-		TUTTLE_COUT( "Remove sequence of files, and could remove trees (folder, files and sequences)." << std::endl );
-		TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
-		TUTTLE_COUT( mainOptions );
-
-		  TUTTLE_COUT( _color._blue << "EXAMPLES" << _color._std << std::left);
-		           SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: ");
-		           SAM_EXAMPLE_LINE_COUT("Auto-detect padding : ", "seq.@.jpg");
-		           SAM_EXAMPLE_LINE_COUT("Padding of 8 (usual style): ", "seq.########.jpg");
-		           SAM_EXAMPLE_LINE_COUT("Padding of 8 (printf style): ", "seq.%08d.jpg");
-		           SAM_EXAMPLE_TITLE_COUT( "Delete: ");
-		                   SAM_EXAMPLE_LINE_COUT("A sequence:", "sam-rm /path/to/sequence/seq.@.jpg");
-		                   SAM_EXAMPLE_LINE_COUT("Sequences in a directory:", "sam-rm /path/to/sequence/");
+		TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std );
+		SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: " );
+		SAM_EXAMPLE_LINE_COUT ( "Auto-detect padding : ", "seq.@.jpg" );
+		SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (usual style): ", "seq.########.jpg" );
+		SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (printf style): ", "seq.%08d.jpg" );
+		SAM_EXAMPLE_TITLE_COUT( "Delete: " );
+		SAM_EXAMPLE_LINE_COUT ( "A sequence:", "sam-rm /path/to/sequence/seq.@.jpg" );
+		SAM_EXAMPLE_LINE_COUT ( "Sequences in a directory:", "sam-rm /path/to/sequence/" );
+		TUTTLE_LOG_INFO( "" );
 
 		return 0;
 	}
 
-	if ( vm.count(kBriefOptionLongName) )
+	if( vm.count( kBriefOptionLongName) )
 	{
-		TUTTLE_COUT( _color._green << "remove file sequences" << _color._std);
+		TUTTLE_LOG_INFO( color->_green << "remove file sequences" << color->_std );
 		return 0;
 	}
 
-	if (vm.count(kExpressionOptionLongName))
+	if(vm.count( kExpressionOptionLongName))
 	{
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if (vm.count(kDirectoriesOptionLongName))
+	if( vm.count( kDirectoriesOptionLongName ) )
 	{
-		researchMask |= sp::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
 	}
 	
-	if (vm.count(kFilesOptionLongName))
+	if( vm.count( kFilesOptionLongName ) )
 	{
-		researchMask |= sp::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeFile;
 	}
 	
-	if (vm.count(kIgnoreOptionLongName))
+	if( vm.count( kIgnoreOptionLongName ) )
 	{
-		researchMask &= ~sp::eMaskTypeSequence;
+		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 	
-	if (vm.count(kVerboseOptionLongName))
+	switch( vm[ kVerboseOptionLongName ].as< int >() )
 	{
-		verbose = true;
+		case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
+		case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
+		case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
+		case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
+		case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
+		case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
+		default : formatter->setLogLevel( boost::log::trivial::warning ); break;
+	}
+	if( vm.count(kQuietOptionLongName) )
+	{
+		formatter->setLogLevel( boost::log::trivial::fatal );
 	}
 
-	if (vm.count(kFirstImageOptionLongName))
+	if( vm.count( kFirstImageOptionLongName ) )
 	{
 		selectRange = true;
 		firstImage  = vm[kFirstImageOptionLongName].as< std::ssize_t >();
 	}
 
-	if (vm.count(kLastImageOptionLongName))
+	if( vm.count( kLastImageOptionLongName ) )
 	{
 		selectRange = true;
 		lastImage  = vm[kLastImageOptionLongName].as< std::ssize_t >();
 	}
 
-	if (vm.count(kFullRMPathOptionLongName))
+	if( vm.count( kFullRMPathOptionLongName ) )
 	{
-		researchMask |= sp::eMaskTypeDirectory;
-		researchMask |= sp::eMaskTypeFile;
-		researchMask |= sp::eMaskTypeSequence;
+		researchMask |= sequenceParser::eMaskTypeDirectory;
+		researchMask |= sequenceParser::eMaskTypeFile;
+		researchMask |= sequenceParser::eMaskTypeSequence;
 	}
 	
-	if (vm.count(kAllOptionLongName))
+	if( vm.count( kAllOptionLongName ) )
 	{
 		// add .* files
-		descriptionMask |= sp::eMaskOptionsDotFile;
+		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
 	}
 	
-	if (vm.count(kPathOptionLongName))
+	if( vm.count( kPathOptionLongName ) )
 	{
-		descriptionMask |= sp::eMaskOptionsPath;
+		descriptionMask |= sequenceParser::eMaskOptionsPath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
-	if (vm.count(kInputDirOptionLongName))
+	if( vm.count( kInputDirOptionLongName ) )
 	{
 		paths = vm[kInputDirOptionLongName].as< std::vector<std::string> >();
 	}
 	else
 	{
-		TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std );
+		TUTTLE_LOG_ERROR( "No sequence and/or directory are specified." );
 		return 1;
 	}
 
-	if (vm.count(kRecursiveOptionLongName))
+	if( vm.count( kRecursiveOptionLongName ) )
 	{
 		recursiveListing = true;
 	}
 	// 	for(unsigned int i=0; i<filters.size(); i++)
-	// 	TUTTLE_COUT("filters = " << filters.at(i));
-	// 	TUTTLE_COUT("research mask = " << researchMask);
-	// 	TUTTLE_COUT("options  mask = " << descriptionMask);
+	// 	TUTTLE_LOG_TRACE("filters = " << filters.at(i));
+	// 	TUTTLE_LOG_TRACE("research mask = " << researchMask);
+	// 	TUTTLE_LOG_TRACE("options  mask = " << descriptionMask);
 
 	try
 	{
 		std::vector<boost::filesystem::path> pathsNoRemoved;
-		sp::Detector detector;
+		
 		BOOST_FOREACH( bfs::path path, paths )
 		{
 //			TUTTLE_TCOUT( "path: "<< path );
@@ -366,19 +374,19 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 								//TUTTLE_TCOUT( *dir );
-								boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, researchMask, descriptionMask );
+								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, researchMask, descriptionMask );
 								removeFileObject( listing, pathsNoRemoved );
 							}
 						}
 					}
-					boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 				else
 				{
 					//TUTTLE_TCOUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					boost::ptr_vector<sp::FileObject> listing = detector.fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 			}
@@ -387,8 +395,8 @@ int main( int argc, char** argv )
 //				TUTTLE_TCOUT( "not exist ...." );
 				try
 				{
-					sp::Sequence s(path.branch_path(), descriptionMask );
-					s.initFromDetection( path.string(), sp::Sequence::ePatternDefault );
+					sequenceParser::Sequence s(path.branch_path(), descriptionMask );
+					s.initFromDetection( path.string(), sequenceParser::Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{
 //						TUTTLE_TCOUT( s );
@@ -397,20 +405,20 @@ int main( int argc, char** argv )
 				}
 				catch(... )
 				{
-					TUTTLE_CERR ( _color._error << "Unrecognized pattern \"" << path << "\"" << _color._std );
+					TUTTLE_LOG_ERROR( "Unrecognized pattern \"" << path << "\"" );
 				}
 			}
 		}
 		// delete not empty folder the first time
 		removeFiles( pathsNoRemoved );
 	}
-	catch (bfs::filesystem_error &ex)
+	catch( bfs::filesystem_error &ex )
 	{
-		TUTTLE_COUT( _color._error << ex.what() << _color._std );
+		TUTTLE_LOG_ERROR( ex.what() );
 	}
-	catch(... )
+	catch( ... )
 	{
-		TUTTLE_CERR ( _color._error << boost::current_exception_diagnostic_information() << _color._std );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	return 0;
 }

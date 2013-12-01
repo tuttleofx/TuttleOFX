@@ -30,8 +30,11 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#include <boost/functional/hash.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include <boost/log/trivial.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -122,6 +125,20 @@ tuttle::host::ofx::attribute::OfxhClipImage* ImageEffectNode::newClipImage( cons
 	return new attribute::ClipImage( *this, descriptor );
 }
 
+std::size_t ImageEffectNode::getLocalHashAtTime( const OfxTime time ) const
+{
+	std::size_t seed = getPlugin().getHash();
+
+	if( isFrameVarying() )
+	{
+		boost::hash_combine( seed, time );
+	}
+
+	boost::hash_combine( seed, getParamSet().getHashAtTime(time) );
+
+	return seed;
+}
+
 /// get default output fielding. This is passed into the clip prefs action
 /// and  might be mapped (if the host allows such a thing)
 const std::string& ImageEffectNode::getDefaultOutputFielding() const
@@ -161,21 +178,21 @@ void ImageEffectNode::vmessage( const char* type,
 void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 {
 	if (_dataAtTime.size() == 0 )
-	  {
-	       	xSize = 720;
-       		ySize = 576;		
-	  }
+	{
+		xSize = 720;
+		ySize = 576;
+	}
 	else
-	  {
-		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+	{
+		OfxRectD rod = getLastData()._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)
-		  {
-	    		xSize = 720;
-	    		ySize = 576;
-		  }
-	  }
+		{
+			xSize = 720;
+			ySize = 576;
+		}
+	}
 }
 
 // get the project offset in CANONICAL pixels, we are at 0,0
@@ -189,21 +206,21 @@ void ImageEffectNode::getProjectOffset( double& xOffset, double& yOffset ) const
 void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 {
 	if (_dataAtTime.size() == 0 )
-	  {
-	       	xSize = 720;
-       		ySize = 576;		
-	  }
+	{
+		xSize = 720;
+		ySize = 576;
+	}
 	else
-	  {
-		OfxRectD rod = getFirstData()._apiImageEffect._renderRoD;
+	{
+		OfxRectD rod = getLastData()._apiImageEffect._renderRoD;
 		xSize = rod.x2 - rod.x1;
 		ySize = rod.y2 - rod.y1;
 		if (xSize < 1 || ySize < 1)
-		  {
-	    		xSize = 720;
-	    		ySize = 576;
-		  }
-	  }
+		{
+			xSize = 720;
+			ySize = 576;
+		}
+	}
 }
 
 // get the PAR, SD PAL is 768/720=1.0666
@@ -215,12 +232,7 @@ double ImageEffectNode::getProjectPixelAspectRatio() const
 // we are only 25 frames
 double ImageEffectNode::getEffectDuration() const
 {
-	return 25.0;
-}
-
-double ImageEffectNode::getFrameRate() const
-{
-	return this->_outputFrameRate;
+	return 99999.0;
 }
 
 /// This is called whenever a param is changed by the plugin so that
@@ -328,25 +340,27 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 /// Start doing progress.
 void ImageEffectNode::progressStart( const std::string& message )
 {
-	//TUTTLE_COUT( message );
+	//TUTTLE_LOG_TRACE( message );
 	if( !( getContext() == kOfxImageEffectContextReader ) && !( getContext() == kOfxImageEffectContextWriter ) )
-		std::cout << std::left << "       " << tuttle::common::kColorGreen << std::setw( TUTTLE_COUT_PLUGIN_NAME_WIDTH ) << getName() << tuttle::common::kColorStd << std::flush;
+		TUTTLE_LOG_INFO( std::left << "       " << common::Color::get()->_green << std::setw( TUTTLE_LOG_PLUGIN_NAME_WIDTH ) << getName() << common::Color::get()->_std );
 }
 
 /// finish yer progress
 void ImageEffectNode::progressEnd()
 {
-	std::cout << std::endl;
+	//std::cout << std::endl;
 }
 
 /// set the progress to some level of completion,
 /// returns true if you should abandon processing, false to continue
 bool ImageEffectNode::progressUpdate( const double progress )
 {
+	/*
 	if( ( getContext() == kOfxImageEffectContextReader ) || ( getContext() == kOfxImageEffectContextWriter ) )
-		std::cout << "\r" << tuttle::common::kColorStd << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << " " << std::left << std::flush;
+		TUTTLE_LOG_INFO( "\r" << common::Color::get()->_std << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << " " << std::left << std::flush );
 	else
-		std::cout << "\r" << tuttle::common::kColorStd << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << std::left << tuttle::common::kColorGreen << getName() << tuttle::common::kColorStd << std::flush;
+		TUTTLE_LOG_INFO( "\r" << common::Color::get()->_std << "[" << std::right << std::setw(3) << int(progress * 100) << "%] " << std::left << common::Color::get()->_green << getName() << common::Color::get()->_std << std::flush );
+		*/
 	return false;
 }
 
@@ -365,7 +379,7 @@ void ImageEffectNode::timelineGotoTime( double t )
 void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 {
 	t1 = 0;
-	t2 = 25;
+	t2 = 99999;
 }
 
 /// override to get frame range of the effect
@@ -429,12 +443,43 @@ void ImageEffectNode::initComponents()
 }
 
 /// @todo multiple PAR
-void ImageEffectNode::initPixelAspectRatio()
+void ImageEffectNode::initInputClipsPixelAspectRatio()
 {
-	if( supportsMultipleClipPARs() )
-	{}
-	else
-	{}
+	std::set<double> inputPARs;
+//	if( supportsMultipleClipPARs() )
+	{
+		for( ClipImageMap::iterator it = _clipImages.begin();
+			 it != _clipImages.end();
+			 ++it )
+		{
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+			TUTTLE_TLOG( TUTTLE_INFO, "[Clip] " << clip.getName() );
+			if( !clip.isOutput() && clip.isConnected() )
+			{
+				const attribute::ClipImage& linkClip = clip.getConnectedClip();
+				const double par = linkClip.getPixelAspectRatio();
+				TUTTLE_TLOG( TUTTLE_INFO, "[Clip] " << linkClip.getName() << ", pixel aspect ratio = " << par );
+				clip.setPixelAspectRatio( par, ofx::property::eModifiedByHost );
+				inputPARs.insert( par );
+			}
+		}
+	}
+//	else
+//	{
+//		// @todo The plugin doesn't support PAR, the host should do the conversions!
+//		// http://openfx.sourceforge.net/Documentation/1.3/ofxProgrammingReference.html#ImageEffectsPixelAspectRatios
+//		// If a plugin does not accept clips of differing PARs, then the host must resample all images fed to that effect to agree with the output's PAR.
+//		// If a plugin does accept clips of differing PARs, it will need to specify the output clip's PAR in the kOfxImageEffectActionGetClipPreferences action.
+//		
+//		// Convert images here ? Or introduce convert nodes into the ProcessGraph?
+//		BOOST_ASSERT(false);
+//	}
+	
+	// Not supported yet. So fail in debug,
+	// and process with a wrong pixel aspect ratio in release.
+	TUTTLE_TLOG( TUTTLE_INFO, "[Clip] support Multiple clip PAR = " << supportsMultipleClipPARs() );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Clip] number of clips = " << getNbClips() );
+	BOOST_ASSERT( inputPARs.size() <= 1 || supportsMultipleClipPARs() || getNbClips() <= 2 );
 }
 
 void ImageEffectNode::initInputClipsFps()
@@ -455,7 +500,13 @@ void ImageEffectNode::initInputClipsFps()
 void ImageEffectNode::initFps()
 {
 	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
-	outputClip.setFrameRate( getFrameRate() );
+	outputClip.setFrameRate( getOutputFrameRate() );
+}
+
+void ImageEffectNode::initPixelAspectRatio()
+{
+	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+	outputClip.setPixelAspectRatio( getOutputPixelAspectRatio(), ofx::property::eModifiedByHost );
 }
 
 void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
@@ -532,7 +583,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 
 void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 {
-	//TUTTLE_TCOUT( "maximizeBitDepthFromWritesToReads: " << getName() );
+	//TUTTLE_TLOG( TUTTLE_INFO, "maximizeBitDepthFromWritesToReads: " << getName() );
 	if( !supportsMultipleClipDepths() )
 	{
 		attribute::ClipImage& outputClip         = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
@@ -548,8 +599,7 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 				/// through the graph ? through a graph inside ProcessOptions ?
 				/*const */ attribute::ClipImage& linkClip = clip.getConnectedClip();
 
-				//TUTTLE_TCOUT_X( 20, "-" );
-				//TUTTLE_TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
+				//TUTTLE_TLOG( TUTTLE_INFO, clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
 				if( linkClip.getNode().getNodeType() == INode::eNodeTypeImageEffect &&
 				    linkClip.getNode().asImageEffectNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
 				{
@@ -562,11 +612,11 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 						linkClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
 					}
 				}
-				//TUTTLE_TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
+				//TUTTLE_TLOG( TUTTLE_INFO, clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
 			}
 			//else
 			//{
-			//	TUTTLE_TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << ", unconnected ? " << clip.isConnected() << ", output ? " << clip.isOutput() );
+			//	TUTTLE_TLOG( TUTTLE_INFO, clip.getFullName() << "(" << clip.getBitDepth() << ")" << ", unconnected ? " << clip.isConnected() << ", output ? " << clip.isOutput() );
 			//}
 		}
 	}
@@ -582,21 +632,22 @@ void ImageEffectNode::coutBitDepthConnections() const
 	{
 		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 
-		const ofx::property::String& propPixelDepth       = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
-		const ofx::property::String& propComponent        = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
-		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
-		TUTTLE_TCOUT( "-- " << "clip: " << " = " << clip.getFullName() );
-		TUTTLE_TCOUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
-			     << " : " << ( propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
-		TUTTLE_TCOUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
-			     << " : " << ( propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
-		TUTTLE_TCOUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
-			     << " : " << ( propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
-
+		//const ofx::property::String& propPixelDepth       = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
+		//const ofx::property::String& propComponent        = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
+		//const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
+		/*
+		TUTTLE_TLOG( TUTTLE_INFO, "-- " << "clip: " << " = " << clip.getFullName() );
+		TUTTLE_TLOG( TUTTLE_INFO, "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
+							   << " : " << ( propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
+		TUTTLE_TLOG( TUTTLE_INFO, "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
+							   << " : " << ( propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
+		TUTTLE_TLOG( TUTTLE_INFO, "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
+							   << " : " << ( propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
+		*/
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
-			TUTTLE_TCOUT( "  Connection between " << clip.getFullName() << " (" << clip.getBitDepth() << " bytes)" << " => " << linkClip.getFullName() << " (" << linkClip.getBitDepth() << " bytes)." );
+			TUTTLE_TLOG( TUTTLE_INFO, "[Bit Depth Connection] Connection between " << clip.getFullName() << " (" << clip.getBitDepth() << " bytes)" << " => " << linkClip.getFullName() << " (" << linkClip.getBitDepth() << " bytes)." );
 		}
 	}
 #endif
@@ -627,7 +678,7 @@ void ImageEffectNode::validBitDepthConnections() const
 
 OfxRangeD ImageEffectNode::getDefaultTimeDomain() const
 {
-	//TUTTLE_TCOUT( "- ImageEffectNode::getDefaultTimeDomain: " << getName() );
+	//TUTTLE_TLOG( TUTTLE_INFO, "- ImageEffectNode::getDefaultTimeDomain: " << getName() );
 	OfxRangeD range;
 	range.min = kOfxFlagInfiniteMin;
 	range.max = kOfxFlagInfiniteMax;
@@ -673,14 +724,14 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 			clip.setFrameRange( clipRange.min, clipRange.max );
 		}
 	}
-	TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the host." );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Time domain] getTimeDomain " << quotes(getName()) << " computed by the host." );
 	OfxRangeD defaultRange = getDefaultTimeDomain();
 	OfxRangeD range = defaultRange;
 
 	// ask to the plugin
 	if( getTimeDomainAction( range ) )
 	{
-		TUTTLE_TCOUT( "getTimeDomain " << quotes(getName()) << " computed by the plugin." );
+		TUTTLE_TLOG( TUTTLE_INFO, "[Time domain] getTimeDomain " << quotes(getName()) << " computed by the plugin." );
 	}
 	else
 	{
@@ -697,6 +748,7 @@ void ImageEffectNode::setup1()
 	checkClipsConnections();
 	
 	initInputClipsFps();
+	initInputClipsPixelAspectRatio();
 
 	getClipPreferencesAction();
 	
@@ -715,13 +767,13 @@ void ImageEffectNode::setup2_reverse()
 void ImageEffectNode::setup3()
 {
 	maximizeBitDepthFromReadsToWrites();
-//	coutBitDepthConnections();
+	//coutBitDepthConnections();
 	validBitDepthConnections();
 }
 
 void ImageEffectNode::beginSequence( graph::ProcessVertexData& vData )
 {
-//	TUTTLE_TCOUT( "begin: " << getName() );
+	//TUTTLE_TLOG( TUTTLE_INFO, "begin: " << getName() );
 	beginSequenceRenderAction(
 			vData._renderTimeRange.min,
 			vData._renderTimeRange.max,
@@ -733,51 +785,54 @@ void ImageEffectNode::beginSequence( graph::ProcessVertexData& vData )
 
 void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 {
-	TUTTLE_TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
-//	setCurrentTime( vData._time );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Pre Process 1] " << getName() << " at time: " << vData._time );
+	//setCurrentTime( vData._time );
 
 	OfxRectD rod;
 	getRegionOfDefinitionAction(
 			vData._time,
 			vData._nodeData->_renderScale,
 			rod );
-//	TUTTLE_TCOUT_VAR3( this->getName(), vData._time, rod );
-//	TUTTLE_TCOUT_VAR( &getData(vData._time) );
-//	TUTTLE_TCOUT_VAR( &vData );
+//	TUTTLE_TLOG_VAR3( TUTTLE_INFO, this->getName(), vData._time, rod );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, &getData(vData._time) );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, &vData );
 	vData._apiImageEffect._renderRoD = rod;
 	vData._apiImageEffect._renderRoI = rod; ///< @todo tuttle: tile supports
 
-	TUTTLE_TCOUT_VAR( rod );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Pre Process 1] rod: x1:" << rod.x1 << " y1:" << rod.y1 << " x2:" << rod.x2 << " y2:" << rod.y2 );
 }
 
 void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData )
 {
-//	TUTTLE_TCOUT( "preProcess2_finish: " << getName() << " at time: " << vData._time );
+//	TUTTLE_TLOG( TUTTLE_INFO, "preProcess2_finish: " << getName() << " at time: " << vData._time );
 
 	getRegionOfInterestAction( vData._time,
 				   vData._nodeData->_renderScale,
 				   vData._apiImageEffect._renderRoI,
 				   vData._apiImageEffect._inputsRoI );
-//	TUTTLE_TCOUT_VAR( vData._renderRoD );
-//	TUTTLE_TCOUT_VAR( vData._renderRoI );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._renderRoD );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._renderRoI );
 }
 
 
 bool ImageEffectNode::isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const
 {
 	time = vData._time;
-	OfxRectI roi;
-	roi.x1 = std::floor( vData._apiImageEffect._renderRoI.x1 );
-	roi.x2 = std::ceil( vData._apiImageEffect._renderRoI.x2 );
-	roi.y1 = std::floor( vData._apiImageEffect._renderRoI.y1 );
-	roi.y2 = std::ceil( vData._apiImageEffect._renderRoI.y2 );
-	return isIdentityAction( time, vData._apiImageEffect._field, roi, vData._nodeData->_renderScale, clip );
+	double par = this->getOutputClip().getPixelAspectRatio();
+	if( par == 0.0 )
+		par = 1.0;
+	OfxRectI renderWindow;
+	renderWindow.x1 = boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) );
+	renderWindow.x2 = boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) );
+	renderWindow.y1 = boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) );
+	renderWindow.y2 = boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) );
+	return isIdentityAction( time, vData._apiImageEffect._field, renderWindow, vData._nodeData->_renderScale, clip );
 }
 
 
 void ImageEffectNode::preProcess_infos( const graph::ProcessVertexAtTimeData& vData, const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const
 {
-//	TUTTLE_TCOUT( "preProcess_infos: " << getName() );
+//	TUTTLE_TLOG( TUTTLE_INFO, "preProcess_infos: " << getName() );
 	const OfxRectD rod             = vData._apiImageEffect._renderRoD;
 	const std::size_t bitDepth     = this->getOutputClip().getBitDepth(); // value in bytes
 	const std::size_t nbComponents = getOutputClip().getNbComponents();
@@ -787,54 +842,53 @@ void ImageEffectNode::preProcess_infos( const graph::ProcessVertexAtTimeData& vD
 
 void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 {
-//	TUTTLE_TCOUT( "process: " << getName() );
+//	TUTTLE_TLOG( TUTTLE_INFO, "process: " << getName() );
 	memory::IMemoryCache& memoryCache( core().getMemoryCache() );
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
 
-	const OfxRectI roi = {
-		boost::numeric_cast<int>( floor( vData._apiImageEffect._renderRoI.x1 ) ),
-		boost::numeric_cast<int>( floor( vData._apiImageEffect._renderRoI.y1 ) ),
-		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.x2 ) ),
-		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.y2 ) )
+	double par = this->getOutputClip().getPixelAspectRatio();
+	if( par == 0.0 )
+		par = 1.0;
+	const OfxRectI renderWindow = {
+		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) ),
+		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) ),
+		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) ),
+		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) )
 	};
-//	TUTTLE_TCOUT_VAR( roi );
+//	TUTTLE_TLOG_VAR( TUTTLE_INFO, roi );
 
 //	INode::ClipTimesSetMap timesSetMap = this->getFramesNeeded( vData._time );
 	
 	// acquire needed clip images
 	/*
-	TUTTLE_TCOUT_X( 80, "_" );
-	TUTTLE_TCOUT( "acquire needed input clip images" );
-	TUTTLE_TCOUT_VAR( vData._inEdges.size() );
-	TUTTLE_TCOUT_VAR( vData._outEdges.size() );
+	TUTTLE_TLOG( TUTTLE_INFO, "acquire needed input clip images" );
+	TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._inEdges.size() );
+	TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._outEdges.size() );
 	BOOST_FOREACH( const graph::ProcessEdgeAtTime* o, vData._outEdges )
 	{
-		TUTTLE_TCOUT_VAR( o );
-		TUTTLE_TCOUT_VAR( o->getInTime() );
-		TUTTLE_TCOUT_VAR( o->getInAttrName() );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, o );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, o->getInTime() );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, o->getInAttrName() );
 	}
 	BOOST_FOREACH( const graph::ProcessEdgeAtTime* i, vData._inEdges )
 	{
-		TUTTLE_TCOUT_VAR( i );
-		TUTTLE_TCOUT_VAR( i->getInTime() );
-		TUTTLE_TCOUT_VAR( i->getInAttrName() );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, i );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInTime() );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInAttrName() );
 	}
-	TUTTLE_TCOUT_X( 40, "-" );
 	*/
-	TUTTLE_TCOUT( "Acquire needed input clips images" );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Acquire needed input clips images" );
 	BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
 	{
 		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
-		//TUTTLE_TCOUT_VAR( i );
-		//TUTTLE_TCOUT_VAR( i->getInTime() );
-		//TUTTLE_TCOUT_VAR( i->getInAttrName() );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, i );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInTime() );
+		//TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInAttrName() );
 		attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
 		const OfxTime outTime = inEdge->getOutTime();
 		
-		TUTTLE_TCOUT_X( 20, "*" );
-		TUTTLE_TCOUT_VAR2( clip.getClipIdentifier(), outTime );
-		TUTTLE_TCOUT_VAR2( inEdge->getOut(), inEdge->getIn() );
+		TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] out: " << inEdge->getOut() << " -> in " << inEdge->getIn() );
 		memory::CACHE_ELEMENT imageCache( memoryCache.get( clip.getClipIdentifier(), outTime ) );
 		if( imageCache.get() == NULL )
 		{
@@ -844,13 +898,13 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		allNeededDatas.push_back( imageCache );
 	}
 	
-	TUTTLE_TCOUT( "Acquire needed output clip images" );
+	TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Acquire needed output clip images" );
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clipImages )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
 		if( clip.isOutput() )
 		{
-			TUTTLE_TCOUT_VAR( vData._apiImageEffect._renderRoI );
+			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] " << vData._apiImageEffect._renderRoI );
 			memory::CACHE_ELEMENT imageCache( new attribute::Image(
 					clip,
 					vData._time,
@@ -884,15 +938,13 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 //			}
 //		}
 	}
-	TUTTLE_TCOUT_X( 40, "-" );
-	TUTTLE_TCOUT( "Plugin Render Action" );
+
+	TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Plugin Render Action" );
 
 	renderAction( vData._time,
-		      vData._apiImageEffect._field,
-		      roi,
-		      vData._nodeData->_renderScale );
-
-	TUTTLE_TCOUT_X( 40, "-" );
+				  vData._apiImageEffect._field,
+				  renderWindow,
+				  vData._nodeData->_renderScale );
 	
 	debugOutputImage( vData._time );
 
@@ -902,12 +954,11 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
 		attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
 		const OfxTime outTime = inEdge->getOutTime();
-		
-		TUTTLE_TCOUT_X( 20, "!" );
-		TUTTLE_TCOUT_VAR2( clip.getClipIdentifier(), outTime );
-		TUTTLE_TCOUT_VAR2( inEdge->getOut(), inEdge->getIn() );
-		
-		//TUTTLE_TCOUT_VAR2( clip.getIdentifier(), clip.getFullName() );
+		/*
+		TUTTLE_TLOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), outTime );
+		TUTTLE_TLOG_VAR2( TUTTLE_INFO, inEdge->getOut(), inEdge->getIn() );
+		TUTTLE_TLOG_VAR2( TUTTLE_INFO, clip.getIdentifier(), clip.getFullName() );
+		*/
 		memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), outTime );
 		if( imageCache.get() == NULL )
 		{
@@ -932,9 +983,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 				BOOST_THROW_EXCEPTION( exception::Memory()
 					<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
 			}
-			TUTTLE_TCOUT( "== Declare future usages ==" );
-			TUTTLE_TCOUT_VAR2( clip.getClipIdentifier(), clip.getFullName() );
-			TUTTLE_TCOUT( "++ image->addReference: " << vData._outDegree );
+			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Declare future usages: " << clip.getClipIdentifier() << ", add reference: " << vData._outDegree );
 			if( vData._outDegree > 0 )
 			{
 				imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a reference on this node for each future usages
@@ -947,7 +996,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 //				continue; // the plugin don't use this input (is it allowed by the standard?)
 //			BOOST_FOREACH( const INode::TimesSet::value_type& inTime, timesSet )
 //			{
-//				//TUTTLE_TCOUT_VAR2( clip.getIdentifier(), clip.getFullName() );
+//				//TUTTLE_TLOG_VAR2( TUTTLE_INFO, clip.getIdentifier(), clip.getFullName() );
 //				memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), inTime );
 //				if( imageCache.get() == NULL )
 //				{
@@ -963,13 +1012,13 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 
 void ImageEffectNode::postProcess( graph::ProcessVertexAtTimeData& vData )
 {
-//	TUTTLE_TCOUT( "postProcess: " << getName() );
+//	TUTTLE_TLOG( TUTTLE_INFO, "postProcess: " << getName() );
 }
 
 
 void ImageEffectNode::endSequence( graph::ProcessVertexData& vData )
 {
-//	TUTTLE_TCOUT( "end: " << getName() );
+//	TUTTLE_TLOG( TUTTLE_INFO, "end: " << getName() );
 	endSequenceRenderAction( vData._renderTimeRange.min,
 			 vData._renderTimeRange.max,
 			 vData._step,

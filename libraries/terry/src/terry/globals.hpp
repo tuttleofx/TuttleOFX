@@ -48,7 +48,7 @@ struct image_from_view
 template<class View>
 struct layout_type
 {
-    typedef boost::gil::layout<
+	typedef boost::gil::layout<
 	 typename boost::gil::color_space_type<View>::type,
 	 typename boost::gil::channel_mapping_type<View>::type
 	 > type;

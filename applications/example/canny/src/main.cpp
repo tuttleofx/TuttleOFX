@@ -1,3 +1,5 @@
+#include <tuttle/common/utils/global.hpp>
+
 #include <tuttle/host/Graph.hpp>
 
 #include <boost/gil/gil_all.hpp>
@@ -15,21 +17,26 @@
 
 int main( int argc, char** argv )
 {
+	boost::shared_ptr<tuttle::common::formatters::Formatter> formatter( tuttle::common::formatters::Formatter::get() );
+	boost::shared_ptr<tuttle::common::Color>                 color( tuttle::common::Color::get() );
+	formatter->init_logging();
+	color->disable();
+	
 	if( argc < 2 )
 	{
-		std::cerr << "canny: missing operand." << std::endl;
-		std::cerr << "Usage: ./canny image.png" << std::endl;
+		TUTTLE_LOG_ERROR( "[canny example] Missing operand." );
+		TUTTLE_LOG_ERROR( "[canny example] Usage: ./canny image.png" );
 		return 1;
 	}
 	try
 	{
 		using namespace tuttle::host;
-		TUTTLE_TCOUT( "__________________________________________________0" );
+		TUTTLE_LOG_INFO( "[canny example] Preload plugins" );
 		core().preload();
 
-		TUTTLE_TCOUT( core().getImageEffectPluginCache() );
+		TUTTLE_TLOG( TUTTLE_INFO, core().getImageEffectPluginCache() );
 
-		TUTTLE_TCOUT( "__________________________________________________1" );
+		TUTTLE_LOG_INFO( "[canny example] Preload done" );
 
 //		boost::gil::rgba32f_image_t imgRead;
 //		boost::gil::rgba8_image_t imgRead;
@@ -39,7 +46,7 @@ int main( int argc, char** argv )
 //		boost::gil::rgba8_view_t imgView( view( imgRead ) );
 		boost::gil::gray8_view_t imgView( view( imgRead ) );
 
-		TUTTLE_TCOUT( "__________________________________________________2" );
+		TUTTLE_LOG_INFO( "[canny example] Create graph" );
 
 		Graph g;
 		InputBufferWrapper inputBuffer1 = g.createInputBuffer();
@@ -62,9 +69,7 @@ int main( int argc, char** argv )
 		Graph::Node& write3       = g.createNode( "tuttle.pngwriter" );
 		Graph::Node& write4       = g.createNode( "tuttle.pngwriter" );
 
-		TUTTLE_TCOUT( "__________________________________________________3" );
-
-		TUTTLE_COUT_VAR( (void*)boost::gil::interleaved_view_get_raw_data( imgView ) );
+		TUTTLE_LOG_INFO( "[canny example] Initialize input buffer" );
 		
 		inputBuffer1.setRawImageBuffer(
 				(void*)boost::gil::interleaved_view_get_raw_data( imgView ),
@@ -78,7 +83,8 @@ int main( int argc, char** argv )
 		// Setup parameters
 		static const double kernelEpsilon = 0.01;
 
-		TUTTLE_COUT_VAR( kernelEpsilon );
+		TUTTLE_LOG_INFO( "[canny example] setup parameters" );
+		TUTTLE_LOG_INFO( "[canny example] kernel epsilon " << kernelEpsilon );
 
 		bitdepth1.getParam( "outputBitDepth" ).setValue( "float" );
 		bitdepth2.getParam( "outputBitDepth" ).setValue( "byte" );
@@ -149,7 +155,7 @@ int main( int argc, char** argv )
 		write3.getParam( "filename" ).setValue( "data/canny/3_floodfill.png" );
 		write4.getParam( "filename" ).setValue( "data/canny/4_thinning.png" );
 
-		TUTTLE_TCOUT( "__________________________________________________4" );
+		TUTTLE_LOG_INFO( "[canny example] connect plugins" );
 //		g.connect( read1, bitdepth );
 //		g.connect( bitdepth, sobel1 );
 
@@ -173,7 +179,6 @@ int main( int argc, char** argv )
 		g.connect( floodfill, write3 );
 		g.connect( thinning, write4 );
 
-		TUTTLE_TCOUT( "__________________________________________________5" );
 		std::list<std::string> outputs;
 		outputs.push_back( write00.getName() );
 //		outputs.push_back( write0.getName() );
@@ -185,19 +190,20 @@ int main( int argc, char** argv )
 		outputs.push_back( write4.getName() );
 		outputs.push_back( bitdepth2.getName() );
 
+		TUTTLE_LOG_INFO( "[canny example] process" );
 		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
 //		memory::MemoryCache res0 = g.compute( bitdepth2 );
 		memory::MemoryCache outputCache;
 		g.compute( outputCache, outputs );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
-		TUTTLE_COUT( "Process took: " << t2 - t1 );
+		TUTTLE_LOG_INFO( "[canny example] Process took: " << t2 - t1 );
 
-		std::cout << outputCache << std::endl;
+		TUTTLE_LOG_INFO( outputCache );
 		memory::CACHE_ELEMENT imgRes = outputCache.get( bitdepth2.getName(), 0 );
 
-		TUTTLE_COUT_VAR( imgRes->getROD() );
-		TUTTLE_COUT_VAR( imgRes->getBounds() );
+		TUTTLE_LOG_VAR( TUTTLE_TRACE, imgRes->getROD() );
+		TUTTLE_LOG_VAR( TUTTLE_TRACE, imgRes->getBounds() );
 //		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
 //		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
 		boost::gil::gray8_view_t imgResView = imgRes->getGilView<boost::gil::gray8_view_t>( tuttle::host::attribute::Image::eImageOrientationFromTopToBottom );
@@ -205,13 +211,13 @@ int main( int argc, char** argv )
 	}
 	catch( tuttle::exception::Common& e )
 	{
-		std::cout << "Tuttle Exception : main de sam." << std::endl;
-		std::cerr << boost::diagnostic_information( e );
+		TUTTLE_LOG_ERROR( "[canny example] Tuttle exception" );
+		TUTTLE_LOG_ERROR( boost::diagnostic_information( e ) );
 	}
 	catch(... )
 	{
-		std::cerr << "Exception ... : main de sam." << std::endl;
-		std::cerr << boost::current_exception_diagnostic_information();
+		TUTTLE_LOG_ERROR( "[canny example] Erreur inconnue" );
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 
 	}
 

@@ -201,11 +201,11 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 
 	//OfxPointD centerPoint = _paramCenterPoint->getValue();
 
-	//TUTTLE_COUT( centerPoint.x << " x " << centerPoint.y );
+	//TUTTLE_LOG_INFO( centerPoint.x << " x " << centerPoint.y );
 
 	ResizeProcessParams<Scalar> params = getProcessParams();
 	
-//	TUTTLE_COUT( rod.x1 << ", " << rod.y1 << " || " << rod.x2 << ", " << rod.y2 );
+//	TUTTLE_LOG_INFO( rod.x1 << ", " << rod.y1 << " || " << rod.x2 << ", " << rod.y2 );
 
 	switch(_paramMode->getValue())
 	{
@@ -284,7 +284,7 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 		}
 	}
 
-//	TUTTLE_COUT( rod.x1 << ", " << rod.y1 << " || " << rod.x2 << ", " << rod.y2 );
+//	TUTTLE_LOG_INFO( rod.x1 << ", " << rod.y1 << " || " << rod.x2 << ", " << rod.y2 );
 	return false;
 }
 

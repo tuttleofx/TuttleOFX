@@ -107,10 +107,10 @@ void copy_and_convert_alpha_blended_pixels( const GlyphView& glyphView, const ty
 			    pColor,
 			    *it_img
 			);
-//			TUTTLE_COUT_VAR( get_color( *it_glyph, gray_color_t() ) );
-//			TUTTLE_COUT_VAR( (*it_img)[0] );
-//			TUTTLE_COUT_VAR( (int)(color[0]) );
-//			TUTTLE_COUT_VAR( (int)(pColor[0]) );
+//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, get_color( *it_glyph, gray_color_t() ) );
+//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, (*it_img)[0] );
+//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, (int)(color[0]) );
+//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, (int)(pColor[0]) );
 		}
 	}
 }
