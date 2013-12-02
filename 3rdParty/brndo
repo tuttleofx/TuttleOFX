@@ -23,9 +23,8 @@ SYNOPSIS
 CLI CMDS
   help ?        quit q EOF
   list
-  fetch         shacheck        extract
-  configure     build           install
-  clean         distclean
+  materialize   install
+  distclean     clean
 
 TODO
   dependencies
