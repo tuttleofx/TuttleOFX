@@ -21,31 +21,29 @@ SYNOPSIS
         `./brndo -c help cmd_name` or `./brndo -c ? cmd_name`
         
 CLI CMDS
-  help ?
-  quit q EOF
+  help ?        quit q EOF
   list
-  fetch
-  shacheck
-  extract
-  configure
-  build
-  install
-  clean
-  distclean
+  fetch         shacheck        extract
+  configure     build           install
+  clean         distclean
 
 TODO
- dependencies
+  dependencies
+  memorize installed libs
+  adapt to the new procedure materailize install clean distclean steps.
 cmds:
-  uninstall
+  materialize
+  delete cmds: fetch configure shacheck build extract
 
 BUGS
-  readline tab completion doesn't work on some terminal.
+  readline tab completion doesn't work on some terminal. (spot on osx between a Lion and a Mountain Lion)
 '''
+import json
 import os
 import readline
 import sys
 
-from init import all_libs
+#from init import all_libs
 
 download_dir = "archive"
 extracted_dir = "extracted"
@@ -65,6 +63,9 @@ if __name__ == '__main__':
     sys.path.append('site-packages')
     import bernardo.cli
 
+    with open('all_libs.json') as f:
+        all_libs = json.loads(f.read())
+
     brndo = bernardo.cli.Brndo(all_libs, download_dir, extracted_dir)
 
     if '-c' in sys.argv:
@@ -73,7 +74,8 @@ if __name__ == '__main__':
     ## Cmd history setup
     if os.path.exists(history_path):
         readline.read_history_file(history_path)
-    import atexit
-    atexit.register(save_history)
 
+    import atexit
+
+    atexit.register(save_history)
     brndo.cmdloop(__doc__)
