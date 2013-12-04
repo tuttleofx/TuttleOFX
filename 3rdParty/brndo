@@ -61,10 +61,20 @@ if __name__ == '__main__':
 
     sys.path.append('site-packages')
     import bernardo.cli
+    import bernardo.tool
 
     with open('all_libs.json') as f:
         all_libs = json.loads(f.read())
 
+    # print all_libs
+    # for l in all_libs:
+    #     script = bernardo.tool.format_lib_as_script(l, 'site-packages/all_libs')
+    #     dir_name = 'site-packages/all_libs/'+l['name']+"/"
+    #     if not os.path.exists(dir_name):
+    #         os.makedirs(dir_name)
+
+    #     with open(dir_name + "__init__.py", 'w') as f:
+    #         f.write(script)
     brndo = bernardo.cli.Brndo(all_libs, download_dir, extracted_dir)
 
     if '-c' in sys.argv:

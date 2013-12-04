@@ -5,9 +5,15 @@
 	"url": "http://llvm.org/releases/3.3/clang+llvm-3.3-x86_64-apple-darwin12.tar.gz"
     },
     {
+	"name": "readline",
+	"sha": "a9761cd9c3da485eb354175fcc2fe35856bc43ac",
+	"url": "ftp://ftp.cwru.edu/pub/bash/readline-6.2.tar.gz",
+	"depends_on": ["clang"]
+    },
+    {
 	"name": "python",
 	"sha": "8328d9f1d55574a287df384f4931a3942f03da64",
 	"url": "http://python.org/ftp/python/2.7.6/Python-2.7.6.tgz",
-	"depends_on": ["clang"]
+	"depends_on": ["clang", "readline"]
     }
 ]
