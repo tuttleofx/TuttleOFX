@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 import sys
 import os
 from ctypes import *
@@ -50,6 +51,6 @@ for lib in libs:
 	try:
 		lib_path = os.path.join( TUTTLE_LIB_DIR, lib )
 		cdll.LoadLibrary( lib_path )
-	except Exception, e:
+	except Exception as e:
 		print("ERROR: unable to load library:", lib_path)
-		print e
+		print(e)
