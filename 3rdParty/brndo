@@ -86,6 +86,6 @@ if __name__ == '__main__':
         readline.read_history_file(history_path)
 
     import atexit
-
+    os.environ['BRNDO_ROOT'] = os.path.dirname(__file__)
     atexit.register(save_history)
     brndo.cmdloop(__doc__)
