@@ -42,11 +42,6 @@ import os
 import readline
 import sys
 
-#from init import all_libs
-
-download_dir = "archive"
-extracted_dir = "extracted"
-
 ## History stuffs
 history_path = ".brndohistory"
 
@@ -76,8 +71,8 @@ if __name__ == '__main__':
 
     #     with open(dir_name + "__init__.py", 'w') as f:
     #         f.write(script)
-    brndo = bernardo.cli.Brndo(all_libs, download_dir, extracted_dir)
-
+    brndo = bernardo.cli.Brndo(all_libs)
+    os.environ['BRNDO_ROOT'] = os.path.dirname(__file__)
     if '-c' in sys.argv:
         sys.exit(brndo.onecmd(" ".join(sys.argv[sys.argv.index('-c')+1:])))
 
@@ -86,6 +81,5 @@ if __name__ == '__main__':
         readline.read_history_file(history_path)
 
     import atexit
-    os.environ['BRNDO_ROOT'] = os.path.dirname(__file__)
     atexit.register(save_history)
     brndo.cmdloop(__doc__)
