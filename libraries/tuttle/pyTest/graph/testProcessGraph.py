@@ -21,20 +21,20 @@ def testCompute():
 	procOptions = tuttle.ComputeOptions()
 	procGraph = tuttle.ProcessGraph(procOptions, graph, [])
 
-	print "before compute"
+	print("before compute")
 
 	outputCache = tuttle.MemoryCache()
 	timeRange = tuttle.TimeRange(1, 16, 10)
-	print "setup"
+	print("setup")
 	procGraph.setup()
-	print "beginSequence"
+	print("beginSequence")
 	procGraph.beginSequence(timeRange)
-	for time in xrange(timeRange._begin, timeRange._end, timeRange._step):
-		print "time:", time
+	for time in range(timeRange._begin, timeRange._end, timeRange._step):
+		print("time:", time)
 		procGraph.setupAtTime(time)
 		procGraph.processAtTime(outputCache, time)
-	print "endSequence"
+	print("endSequence")
 	procGraph.endSequence()
 
-	print "after compute"
+	print("after compute")
 

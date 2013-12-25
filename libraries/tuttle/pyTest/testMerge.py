@@ -40,7 +40,7 @@ def testMergeWithDynamicOffset():
 	# We retrieve the output image buffer, and we could read the image size
 	rodMerge = outputCache.get(0).getROD()
 	
-	print rodMerge.x1, rodMerge.y1, rodMerge.x2, rodMerge.y2
+	print(rodMerge.x1, rodMerge.y1, rodMerge.x2, rodMerge.y2)
 	assert rodMerge.x1 == 0
 	assert rodMerge.y1 == 0
 	assert rodMerge.x2 == ( rodA.x2 + rodB.x2 )
@@ -72,7 +72,7 @@ def testMergeWithSameChildrens():
 	# We retrieve the output image buffer, and we could read the image size
 	rodMerge = outputCache.get(0).getROD()
 	
-	print rodMerge.x1, rodMerge.y1, rodMerge.x2, rodMerge.y2
+	print(rodMerge.x1, rodMerge.y1, rodMerge.x2, rodMerge.y2)
 	assert rodMerge.x1 == 0
 	assert rodMerge.y1 == 0
 	assert rodMerge.x2 == 300

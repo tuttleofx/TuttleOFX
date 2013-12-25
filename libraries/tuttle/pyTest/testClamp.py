@@ -1,16 +1,16 @@
 # scons: Png MathOperator Diff
 
-from pyTuttle.tuttle import *
+from pyTuttle import tuttle
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
 
 
 def testClamp_pngWriterImplicitClamp():
 
 	tempFilename = '.tests/clampedImage.png'
 
-	g = Graph()
+	g = tuttle.Graph()
 	read1  = g.createNode( "tuttle.pngreader", "data/input.png", bitDepth="32f" )
 	mathOp = g.createNode( "tuttle.mathoperator", master=0.6, operation="plus" )
 	write  = g.createNode( "tuttle.pngwriter", filename=tempFilename )

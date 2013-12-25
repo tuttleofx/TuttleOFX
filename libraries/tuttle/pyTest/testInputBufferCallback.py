@@ -1,14 +1,16 @@
 # scons: MemoryBuffer Png
 
-from pyTuttle.tuttle import *
-from nose.tools import *
-from tempfile import *
+from pyTuttle import tuttle
+import tempfile
 
 import numpy
-import Image
+from PIL import Image
+
+from nose.tools import *
+
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
 
 
 # This is called by Tuttle as an input of the graph
@@ -19,7 +21,7 @@ def getImage(time):
 
 def testInputBufferCallback():
 
-	g = Graph()
+	g = tuttle.Graph()
 
 	ib = g.createInputBuffer()
 	ib.setComponents( InputBufferWrapper.ePixelComponentRGB )
@@ -27,7 +29,7 @@ def testInputBufferCallback():
 	ib.setOrientation( InputBufferWrapper.eImageOrientationFromTopToBottom )
 	ib.setPyCallback( getImage )
 
-	filepath = NamedTemporaryFile( prefix="inputBufferCallback-", suffix=".png" )
+	filepath = tempfile.NamedTemporaryFile( prefix="inputBufferCallback-", suffix=".png" )
 	w = g.createNode("tuttle.pngwriter", filename = filepath.name )
 
 	g.connect( ib.getNode(), w )

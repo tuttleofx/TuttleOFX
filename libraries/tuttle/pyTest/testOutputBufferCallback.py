@@ -3,7 +3,7 @@
 from pyTuttle import tuttle
 from tempfile import *
 
-import Image
+from PIL import Image
 import numpy
 
 def setUp():

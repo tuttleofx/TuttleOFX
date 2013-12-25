@@ -1,14 +1,17 @@
 # scons: Png Component Merge
 
 from pyTuttle import tuttle
-from nose.tools import *
-from tempfile import *
+import tempfile
 
 import numpy
-import Image
+from PIL import Image
+
+from nose.tools import *
+
 
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testInputBuffer_loadImageWithPIL():
 	"""
@@ -74,3 +77,4 @@ def testInputBuffer_MergeInputBufferNodes():
 	# @todo: fix this test, it doesn't work.
 	#        Maybe a bug on the host side.
 	#g.compute( w )
+
