@@ -5,11 +5,16 @@ incdir_half = '/usr/include/OpenEXR'
 incdir_ilmbase = '/usr/include/OpenEXR'
 incdir_freetype = '/usr/include/freetype2'
 incdir_imagemagick = '/usr/include/ImageMagick'
-lib_python = 'python2.7'
-# To use python 3.3
-if 0:
+
+use_python3 = False
+
+if use_python3:
     lib_python = 'python3.3m'
     version_python = '3.3'
+    SCRIPTTESTXX = 'nosetests3'
+else:
+    lib_python = 'python2.7'
+
 incdir_python = join('/usr/include',lib_python)
 
 lib_freeglut = 'glut'
@@ -29,15 +34,21 @@ modules_ctl = ['IlmCtlSimd', 'IlmCtl', 'IlmCtlMath']
 incdir_ctl = [join(dir_ctl,inc) for inc in modules_ctl]
 libdir_ctl = [join(dir_ctl,inc,'.libs') for inc in modules_ctl]
 
+dir_seexpr = join(extern, 'SeExpr' )
+incdir_seexpr = join(dir_seexpr, 'src/SeExpr')
+libdir_seexpr = join(dir_seexpr, 'build/src/SeExpr')
+
 dir_opencolorio = join(extern, 'OpenColorIO')
 incdir_opencolorio = [join(dir_opencolorio, 'export'),
                       join(dir_opencolorio, 'build/export')]
 libdir_opencolorio = join(dir_opencolorio, 'build/src/core')
 
 incdir_avcodec = join(extern, 'libav')
-libdir_avcodec = [join(incdir_avcodec,d) for d in os.listdir(incdir_avcodec) if os.path.isdir(join(incdir_avcodec,d))]
+if os.path.isdir(incdir_avcodec):
+    libdir_avcodec = [join(incdir_avcodec,d) for d in os.listdir(incdir_avcodec)]
 
-dir_raw = join(extern, 'LibRaw-0.14.6')
+dir_raw = join(extern, 'LibRaw-0.15.4')
+incdir_raw = dir_raw
 libdir_raw = join(dir_raw, 'lib/.libs')
 flags_raw = ['-fopenmp']
 
