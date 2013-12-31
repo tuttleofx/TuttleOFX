@@ -22,8 +22,8 @@ using namespace boost::gil;
 
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
-	, _channels ( 0 )
-	, _par      ( 1.0 )
+	, _channels( 0 )
+	, _par( 1.0 )
 {
 	_outComponents   = fetchChoiceParam( kTuttlePluginChannel );
 	_redComponents   = fetchChoiceParam( kParamOutputRedIs );
@@ -108,54 +108,54 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 void EXRReaderPlugin::updateCombos()
 {
-	const std::string filename( getAbsoluteFirstFilename() );
+	const std::string filepath( getAbsoluteFirstFilename() );
 	//TUTTLE_LOG_VAR("update Combo");
-	if( bfs::exists( filename ) )
+	if( ! bfs::exists( filepath ) )
+		return;
+	
+	// read dims
+	InputFile in( filepath.c_str() );
+	const Header& h  = in.header();
+	const ChannelList& cl = h.channels();
+
+	_par = h.pixelAspectRatio();
+
+	// Hide output channel selection till we don't select a channel.
+	for( std::size_t i = 0; i < _vChannelChoice.size(); ++i )
 	{
-		// read dims
-		InputFile in( filename.c_str() );
-		const Header& h  = in.header();
-		const ChannelList& cl = h.channels();
-		
-		_par = h.pixelAspectRatio();
-		
-		// Hide output channel selection till we don't select a channel.
-		for( std::size_t i = 0; i < _vChannelChoice.size(); ++i )
+		//_vChannelChoice[i]->setIsSecret( true );
+		_vChannelChoice[i]->resetOptions();
+	}
+	_vChannelNames.clear();
+	for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
+	{
+		_vChannelNames.push_back( it.name() );
+		//TUTTLE_LOG_VAR( it.name() );
+		for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
 		{
-			//_vChannelChoice[i]->setIsSecret( true );
-			_vChannelChoice[i]->resetOptions();
+			_vChannelChoice[j]->appendOption( it.name() );
 		}
-		_vChannelNames.clear();
-		for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
+		++_channels;
+		switch( _channels )
 		{
-			_vChannelNames.push_back( it.name() );
-			//TUTTLE_LOG_VAR( it.name() );
-			for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
+			case 1:
 			{
-				_vChannelChoice[j]->appendOption( it.name() );
+				for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
+					_vChannelChoice.at(j)->setValue( 0 );
+				break;
 			}
-			++_channels;
-			switch( _channels )
+			case 3:
 			{
-				case 1:
-				{
-					for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
-						_vChannelChoice.at(j)->setValue( 0 );
-					break;
-				}
-				case 3:
-				{
-					for( std::size_t j = 0; j < _vChannelChoice.size() - 1; j++ )
-						_vChannelChoice.at(j)->setValue( 2 - j );
-					_vChannelChoice.at(3)->setValue( 0 );
-					break;
-				}
-				case 4:
-				{
-					for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
-						_vChannelChoice.at(j)->setValue( 3 - j );
-					break;
-				}
+				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; j++ )
+					_vChannelChoice.at(j)->setValue( 2 - j );
+				_vChannelChoice.at(3)->setValue( 0 );
+				break;
+			}
+			case 4:
+			{
+				for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
+					_vChannelChoice.at(j)->setValue( 3 - j );
+				break;
 			}
 		}
 	}
@@ -204,6 +204,10 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
+	const std::string filepath( getAbsoluteFilenameAt( args.time ) );
+	if( ! bfs::exists( filepath ) )
+		return false;
+	
 	try
 	{
 		InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
