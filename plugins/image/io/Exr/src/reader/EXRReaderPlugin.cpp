@@ -210,23 +210,46 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	
 	try
 	{
-		InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
-		const Header&      h      = in.header();
-		const Imath::Box2i window( ( _outputData->getValue() == 0 ) ? h.displayWindow() : h.dataWindow() );
+		InputFile in( filepath.c_str() );
+		const Header& h = in.header();
+		const Imath::Box2i displayWindow( h.displayWindow() );
+		if( _outputData->getValue() == 0 )
+		{
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = displayWindow.size().x + 1;
+			rod.y2 = displayWindow.size().y + 1;
+		}
+		else
+		{
+			const Imath::Box2i dataWindow(h.dataWindow());
 
-		std::cout << "getRegionOfDefinition " << ( window.size().x + 1 ) * _par << " x " << window.size().y + 1 << std::endl;
+//			TUTTLE_TLOG_INFO( "ExrReaderPlugin: displayWindow: " << displayWindow.min.x << ", " << displayWindow.min.y << ", " << displayWindow.max.x << ", " << displayWindow.max.y );
+//			TUTTLE_TLOG_INFO( "ExrReaderPlugin: dataWindow: " << h.dataWindow().min.x << ", " << h.dataWindow().min.y << ", " << h.dataWindow().max.x << ", " << h.dataWindow().max.y );
+
+			// Exr is top to bottom and OpenFX is bottom to top.
+			const double height = displayWindow.max.y - displayWindow.min.y + 1;
+
+			rod.x1 = dataWindow.min.x;
+			rod.x2 = dataWindow.max.x + 1;
+			rod.y1 = height - (dataWindow.max.y + 1);
+			rod.y2 = height - dataWindow.min.y;
+		}
+		rod.x1 *= h.pixelAspectRatio();
+		rod.x2 *= h.pixelAspectRatio();
 		
-		rod.x1 = 0;
-		rod.x2 = window.size().x + 1;
-		rod.y1 = 0;
-		rod.y2 = window.size().y + 1;
-
+		rod.x1 *= args.renderScale.x;
+		rod.x2 *= args.renderScale.x;
+		rod.y1 *= args.renderScale.y;
+		rod.y2 *= args.renderScale.y;
+		
+//		TUTTLE_TLOG_INFO( "ExrReaderPlugin: getRegionOfDefinition " << rod );
 	}
 	catch( ... )
 	{
 		BOOST_THROW_EXCEPTION( exception::FileInSequenceNotExist()
-		<< exception::user( "EXR: Unable to open file." )
-		<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
+			<< exception::user( "EXR: Unable to open file." )
+			<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
 	}
 	return true;
 }
