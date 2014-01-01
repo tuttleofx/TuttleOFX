@@ -377,7 +377,7 @@ public:
 			try
 			{
 				IdentityNodeConnection<TGraph> reconnect;
-				reconnect._identityVertex = _graph.instance(vd).getKey();
+				reconnect._identityVertex = vertex.getKey();
 				reconnect._input._inputClip = inputClip;
 				
 				if( ! inputClip.empty() )
@@ -386,17 +386,52 @@ public:
 					// but it's used in TuttleOFX to disable the process of the node
 					// and all the graph branch behind.
 					
+					bool clipFound = false;
+					bool clipFoundAtTime = false;
 					BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
 					{
 						const Edge& e = _graph.instance( ed );
-						if( ( e.getInAttrName() == inputClip ) &&
-							( e.getOutTime() == atTime )
-						  )
+						if( e.getInAttrName() == inputClip )
 						{
-							vertex_descriptor in = _graph.target( ed );
-							reconnect._input._srcNode = _graph.instance(in).getKey();
+							clipFound = true;
+							if( e.getOutTime() == atTime )
+							{
+								clipFoundAtTime = true;
+								vertex_descriptor in = _graph.target( ed );
+								reconnect._input._srcNode = _graph.instance(in).getKey();
+							}
 						}
 					}
+					if( ! clipFound )
+					{
+						std::stringstream existingClips;
+						BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+						{
+							const Edge& e = _graph.instance( ed );
+							existingClips << e.getInAttrName() << ", ";
+						}
+						BOOST_THROW_EXCEPTION( exception::Bug()
+								<< exception::dev() + "Plugin declares itself as identity, but gives a non existing input clip. "
+									"(node: " + vertex.getName() + ", input clip:" + inputClip + ", existing clips: (" + existingClips.str() + "))"
+								);
+					}
+					if( ! clipFoundAtTime )
+					{
+						std::stringstream framesNeeded;
+						BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+						{
+							const Edge& e = _graph.instance( ed );
+							if( e.getInAttrName() == inputClip )
+							{
+								framesNeeded << e.getOutTime() << ", ";
+							}
+						}
+						BOOST_THROW_EXCEPTION( exception::Bug()
+								<< exception::dev() + "Plugin declares itself as identity, but gives a time on the input clip different from declared framesNeeded. "
+									"(node: " + vertex.getName() + ", input clip:" + inputClip + ", time:" + atTime + ", framesNeeded:(" + framesNeeded.str() + "))"
+								);
+					}
+					
 					BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
 					{
 						const Edge& e = _graph.instance( ed );
@@ -413,7 +448,7 @@ public:
 			}
 			catch( boost::exception& e )
 			{
-				e << exception::user() + "A node is declared identity without given a valid input clip ("+quotes(inputClip)+", "+atTime+ ")."
+				e << exception::user() + "Error on the node " + quotes(vertex.getName()) + ". It fails to declare itself as an identity node."
 				  << exception::nodeName( vertex.getName() )
 				  << exception::time( vertex.getProcessDataAtTime()._time );
 				throw;
