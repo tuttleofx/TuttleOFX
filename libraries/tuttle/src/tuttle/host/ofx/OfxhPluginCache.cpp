@@ -48,8 +48,6 @@
 #include <cstring>
 #include <cstdlib>
 
-// Define this to enable ofx plugin cache debug messages.
-//#define CACHE_DEBUG
 
 #if defined ( __linux__ )
 
@@ -200,9 +198,7 @@ void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
 
 void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse )
 {
-	#ifdef CACHE_DEBUG
-	TUTTLE_TLOG( TUTTLE_INFO, "looking in " << dir << " for plugins" );
-	#endif
+	TUTTLE_LOG_TRACE( "Search plugins" << (recurse?" recursively":"") << " in " << quotes(dir) << "." );
 
 	#if defined ( WINDOWS )
 	WIN32_FIND_DATA findData;
@@ -239,45 +235,40 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 		#endif
 		if( name.find( ".ofx.bundle" ) != std::string::npos )
 		{
-			std::string barename   = name.substr( 0, name.length() - strlen( ".bundle" ) );
-			std::string bundlepath = dir + DIRSEP + name;
-			std::string binpath    = bundlepath + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
+			const std::string barename   = name.substr( 0, name.length() - strlen( ".bundle" ) );
+			const std::string bundlepath = dir + DIRSEP + name;
+			const std::string binpath    = bundlepath + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
 
 			foundBinFiles.insert( binpath );
 
 			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
 			{
-				#ifdef CACHE_DEBUG
-				TUTTLE_TLOG( TUTTLE_INFO, "found non-cached binary " << binpath );
-				#endif
-				setDirty();
+				TUTTLE_LOG_TRACE( "Found binary not in cache: " << quotes(binpath) );
 				try
 				{
 					// the binary was not in the cache
 					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlepath, this );
-					//TUTTLE_LOG_WARNING( binpath );
 					_binaries.push_back( pb );
-					_knownBinFiles.insert( binpath );
-					//TUTTLE_LOG_WARNING( binpath << " (" << pb->getNPlugins() <<  ")" );
+					TUTTLE_LOG_TRACE( quotes(barename) << " constains " << pb->getNPlugins() <<  " plugins." );
 					for( int j = 0; j < pb->getNPlugins(); ++j )
 					{
 						OfxhPlugin& plug                   = pb->getPlugin( j );
 						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
 						api.loadFromPlugin( plug );
 					}
+					setDirty();
+					_knownBinFiles.insert( binpath );
 				}
 				catch(... )
 				{
-					TUTTLE_LOG_WARNING( "Can't load " << binpath );
-					TUTTLE_LOG_WARNING( boost::current_exception_diagnostic_information() );
-					TUTTLE_LOG_WARNING( "LD_LIBRARY_PATH: " << std::getenv("LD_LIBRARY_PATH") );
+					TUTTLE_LOG_INFO( "Can't load plugin file " << quotes(binpath) );
+					TUTTLE_LOG_TRACE( boost::current_exception_diagnostic_information() );
+					TUTTLE_LOG_TRACE( "LD_LIBRARY_PATH: " << std::getenv("LD_LIBRARY_PATH") << std::endl );
 				}
 			}
 			else
 			{
-				#ifdef CACHE_DEBUG
-				TUTTLE_TLOG( TUTTLE_INFO, "found cached binary " << binpath );
-				#endif
+				TUTTLE_LOG_TRACE( "Found cached binary " << quotes(binpath) );
 			}
 		}
 		else
@@ -377,14 +368,14 @@ void OfxhPluginCache::scanPluginFiles()
 					}
 					else
 					{
-						TUTTLE_LOG_ERROR(
+						TUTTLE_LOG_WARNING(
 							"Ignoring plugin " << quotes(plug.getIdentifier()) <<
 							": unsupported, " << reason << "." );
 					}
 				}
 				catch(...)
 				{
-					TUTTLE_LOG_ERROR(
+					TUTTLE_LOG_WARNING(
 						"Ignoring plugin " << quotes(plug.getIdentifier()) <<
 						": loading error." );
 					
