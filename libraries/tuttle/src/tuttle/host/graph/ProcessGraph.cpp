@@ -353,6 +353,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] build render graph" );
 	// create a new graph with time information
 	_renderGraphAtTime.clear();
+	
 	{
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, _renderGraph.getVertices() )
 		{
@@ -432,7 +433,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> vis( _renderGraphAtTime, toRemove );
 		_renderGraphAtTime.depthFirstVisit( vis, outputAtTime );
-		TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] removing " << toRemove.size() << "nodes" );
+		TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] removing " << toRemove.size() << " nodes" );
 		if( toRemove.size() )
 		{
 			graph::visitor::removeIdentityNodes( _renderGraphAtTime, toRemove );

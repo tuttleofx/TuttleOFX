@@ -76,7 +76,7 @@ OfxTime ClipImage::getRemappedTime( const OfxTime time ) const
 	return remappedTime;
 }
 
-/// Return the rod on the clip cannoical coords!
+/// Return the rod on the clip canonical coords!
 OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 {
 	if( !isOutput() )

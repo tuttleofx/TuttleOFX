@@ -65,7 +65,7 @@ OfxhImage::OfxhImage()
 	, _clipName( "No clip !" )
 	, _time( 0 )
 {
-	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] create clip:" << getClipName()
+	TUTTLE_TLOG_INFO( "[Ofxh Image] create clip:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
