@@ -522,11 +522,18 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 		identityNodes[connection._identityVertex] = &connection;
 	}
 	
+	bool disabledBranch = false;
 	BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, nodesToRemove )
 	{
-		// Create new connections if the input clip name is not empty
-		if( ! connection._input._inputClip.empty() )
+		if( connection._input._inputClip.empty() )
 		{
+			// The input clip is empty, this not in the OpenFX standard.
+			// In Tuttle, it means that the branch is disabled.
+			disabledBranch = true;
+		}
+		else
+		{
+			// Create new connections if the input clip name is not empty
 			TUTTLE_TLOG_TRACE( boost::lexical_cast<std::string>(connection._identityVertex) );
 			TUTTLE_TLOG_TRACE( "IN: "
 				<< boost::lexical_cast<std::string>(connection._identityVertex) << "::" << boost::lexical_cast<std::string>(connection._input._inputClip)
@@ -566,6 +573,12 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 //		graph.removeVertex( graph.getVertexDescriptor(connection._identityVertex) );
 		// remove all node connections
 		graph.clearVertex( graph.getVertexDescriptor(connection._identityVertex) );
+	}
+	
+	if( disabledBranch )
+	{
+		// @todo: Remove connections of all vertices not connected to the output.
+		// These unconnected branches have been created by identity nodes without source clip.
 	}
 }
 
