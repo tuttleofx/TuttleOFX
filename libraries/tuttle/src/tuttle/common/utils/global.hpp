@@ -54,7 +54,7 @@
 
 
 /**
- * @param[in] ... : all parameters with an operator << defined
+ * @param[in] ... : all parameters with an output stream operator defined
  * @brief terminal display
  **/
 
@@ -63,6 +63,8 @@
 #define TUTTLE_LOG_WARNING( ... ) BOOST_LOG_TRIVIAL(warning) << tuttle::common::Color::get()->_yellow << __VA_ARGS__ << tuttle::common::Color::get()->_std
 #define TUTTLE_LOG_ERROR( ... )   BOOST_LOG_TRIVIAL(error)   << tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std
 #define TUTTLE_LOG_FATAL( ... )   BOOST_LOG_TRIVIAL(fatal)   << tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std
+
+#define TUTTLE_COUT( ... ) std::cout << __VA_ARGS__ << std::endl
 
 #define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
 
