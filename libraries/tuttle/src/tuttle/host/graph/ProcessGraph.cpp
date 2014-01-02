@@ -282,6 +282,12 @@ void ProcessGraph::setup()
 	}
 	
 	connectClips<InternalGraphImpl>( _renderGraph );
+	
+	{
+		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] Time domain propagation" );
+		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( _renderGraph );
+		_renderGraph.depthFirstVisit( timeDomainPropagationVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
+	}
 
 	{	
 		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] setup visitors" );
@@ -291,12 +297,6 @@ void ProcessGraph::setup()
 		_renderGraph.depthFirstVisit( setup2Visitor, _renderGraph.getVertexDescriptor( _outputId ) );
 		graph::visitor::Setup3<InternalGraphImpl> setup3Visitor( _renderGraph );
 		_renderGraph.depthFirstVisit( setup3Visitor, _renderGraph.getVertexDescriptor( _outputId ) );
-	}
-	
-	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] Time domain propagation" );
-		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( _renderGraph );
-		_renderGraph.depthFirstVisit( timeDomainPropagationVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
 	}
 }
 
