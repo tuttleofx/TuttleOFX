@@ -48,6 +48,8 @@ public:
 
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
+	virtual std::string getFullName() const = 0;
+	
 #ifndef SWIG
 	void initHook( const property::OfxhPropSpec* propSpec );
 

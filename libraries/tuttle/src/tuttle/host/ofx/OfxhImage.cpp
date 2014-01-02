@@ -78,7 +78,7 @@ OfxhImage::OfxhImage()
 OfxhImage::OfxhImage( attribute::OfxhClip& instance, const OfxTime time )
 	: property::OfxhSet( imageStuffs )
 	, _id( _count++ )
-	, _clipName( instance.getName() )
+	, _clipName( instance.getFullName() )
 	, _time( time )
 {
 	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] create clip:" << getClipName()
