@@ -70,6 +70,9 @@ public:
 	attribute::ClipImage&       getClip( const std::string& name, const bool acceptPartialName = false )       { return dynamic_cast<attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
 	const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const { return dynamic_cast<const attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
 
+	attribute::ClipImage&       getOutputClip()       { return getClip( kOfxImageEffectOutputClipName ); }
+	const attribute::ClipImage& getOutputClip() const { return getClip( kOfxImageEffectOutputClipName ); }
+	
 	attribute::Attribute& getAttribute( const std::string& name ) { return getClip( name ); }
 	attribute::Attribute& getSingleInputAttribute();
 
