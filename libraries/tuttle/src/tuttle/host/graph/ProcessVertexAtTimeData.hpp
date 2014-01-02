@@ -87,12 +87,13 @@ public:
 		return *this;
 	}
 	
-	inline const ProcessEdgeAtTime& getInputEdgeByClipName( const std::string& inputClipName ) const
+	inline const ProcessEdgeAtTime& getInputEdgeByClipName( const std::string& inputClipName, const OfxTime time ) const
 	{
-		ProcessEdgeAtTimeByClipName::const_iterator it = _inEdges.find(inputClipName);
+		Key k(inputClipName, time);
+		ProcessEdgeAtTimeByClipName::const_iterator it = _inEdges.find(k);
 		if( it == _inEdges.end() )
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev() + "No input clip " + quotes(inputClipName) + " inside input edges map." );
+				<< exception::dev() + "No input clip " + quotes(inputClipName) + " at time " + time + " inside input edges map." );
 		return *(it->second);
 	}
 	
@@ -105,7 +106,8 @@ public:
 	OfxTime _time;
 	bool _isFinalNode;
 
-	typedef std::map<std::string, const ProcessEdgeAtTime*> ProcessEdgeAtTimeByClipName;
+	typedef std::pair<std::string, OfxTime> Key;
+	typedef std::map<Key, const ProcessEdgeAtTime*> ProcessEdgeAtTimeByClipName;
 	ProcessEdgeAtTimeByClipName _inEdges;
 	std::vector<const ProcessEdgeAtTime*> _outEdges;
 	

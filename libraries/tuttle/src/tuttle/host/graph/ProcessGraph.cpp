@@ -174,7 +174,8 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		{
 			const ProcessEdgeAtTime* e = &_renderGraphAtTime.instance(ed);
 			TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] out edge " << e->getInAttrName() << ", at time " << e->getInTime() );
-			vData._inEdges[e->getInAttrName()] = e;
+			std::pair<std::string, OfxTime> key( e->getInAttrName(), e->getInTime() );
+			vData._inEdges[key] = e;
 		}
 	}
 	TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] connect clips" );

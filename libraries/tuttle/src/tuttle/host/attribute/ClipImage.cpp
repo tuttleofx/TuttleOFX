@@ -72,7 +72,7 @@ OfxTime ClipImage::getRemappedTime( const OfxTime time ) const
 	if( ! getNode().hasData(time) )
 		return time; // throw an error?
 	
-	const OfxTime remappedTime = getNode().getData(time).getInputEdgeByClipName(getName()).getOutTime();
+	const OfxTime remappedTime = getNode().getData(time).getInputEdgeByClipName(getName(), time).getOutTime();
 	return remappedTime;
 }
 
