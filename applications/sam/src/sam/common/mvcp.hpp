@@ -158,7 +158,7 @@ int sammvcp(int argc, char** argv)
 			( kHelpOptionString,  kHelpOptionMessage )
 			( kOffsetOptionString,      bpo::value<std::ssize_t>(), kOffsetOptionMessage ) 
 			//		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" )
-			( kVerboseOptionString,     bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+			( kVerboseOptionString,     bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 			( kQuietOptionString, kQuietOptionMessage )
 			( kInputFirstOptionString,  bpo::value<std::ssize_t>(), kInputFirstOptionMessage )
 			( kInputLastOptionString,   bpo::value<std::ssize_t>(), kInputLastOptionMessage )
@@ -238,9 +238,9 @@ int sammvcp(int argc, char** argv)
 	if( vm.count( kBriefOptionLongName ) )
 	{
 #ifndef SAM_MOVEFILES
-		TUTTLE_LOG_INFO( color->_green << "copy sequence(s) in a directory" << color->_std);
+		TUTTLE_COUT( color->_green << "copy sequence(s) in a directory" << color->_std);
 #else
-		TUTTLE_LOG_INFO( color->_green << "move sequence(s) in a directory" << color->_std );
+		TUTTLE_COUT( color->_green << "move sequence(s) in a directory" << color->_std );
 #endif
 		return 0;
 	}
@@ -251,35 +251,35 @@ int sammvcp(int argc, char** argv)
 		if( isPathSizeTooSmall && !vm.count( kHelpOptionLongName ) )
 			TUTTLE_LOG_ERROR( "Two sequences and/or directories must be specified." );
 		
-		TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
 #ifndef SAM_MOVEFILES
-		TUTTLE_LOG_INFO( color->_blue <<"NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-cp - copy sequence(s) in a directory" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
+		TUTTLE_COUT( color->_blue <<"NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-cp - copy sequence(s) in a directory" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
 #else
-		TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-mv - move sequence(s) in a directory" << color->_std);
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
+		TUTTLE_COUT( color->_blue << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-mv - move sequence(s) in a directory" << color->_std);
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
 #endif
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "DESCRIPTION" << color->_std );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "DESCRIPTION" << color->_std );
+		TUTTLE_COUT( "" );
 #ifndef SAM_MOVEFILES
-		TUTTLE_LOG_INFO( "Copy sequence of image files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_COUT( "Copy sequence of image files, and could remove trees (folder, files and sequences)." );
 #else
-		TUTTLE_LOG_INFO( "Move sequence of image files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_COUT( "Move sequence of image files, and could remove trees (folder, files and sequences)." );
 #endif
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "OPTIONS" << color->_std );
-		TUTTLE_LOG_INFO( mainOptions );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "OPTIONS" << color->_std );
+		TUTTLE_COUT( mainOptions );
 		/////Examples
 		
-		TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std << std::left );
+		TUTTLE_COUT( color->_blue << "EXAMPLES" << color->_std << std::left );
 		SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: " );
 		SAM_EXAMPLE_LINE_COUT ( "Auto-detect padding : ", "seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (usual style): ", "seq.########.jpg" );

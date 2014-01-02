@@ -159,7 +159,7 @@ int main( int argc, char** argv )
 			( kIgnoreOptionString,      kIgnoreOptionMessage )
 			( kPathOptionString,        kPathOptionMessage )
 			( kRecursiveOptionString,   kRecursiveOptionMessage )
-			( kVerboseOptionString,     bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+			( kVerboseOptionString,     bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 			( kQuietOptionString,       kQuietOptionMessage )
 			( kColorOptionString,       kColorOptionMessage )
 			( kFirstImageOptionString,  bpo::value<std::ssize_t>(), kFirstImageOptionMessage )
@@ -235,23 +235,23 @@ int main( int argc, char** argv )
 
 	if( vm.count( kHelpOptionLongName ) )
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-rm - remove file sequences" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-rm [options] [sequence_pattern]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( "Remove sequence of files, and could remove trees (folder, files and sequences)." );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( mainOptions );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-rm - remove file sequences" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-rm [options] [sequence_pattern]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( "Remove sequence of files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "OPTIONS" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( mainOptions );
 
-		TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std );
+		TUTTLE_COUT( color->_blue << "EXAMPLES" << color->_std );
 		SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: " );
 		SAM_EXAMPLE_LINE_COUT ( "Auto-detect padding : ", "seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (usual style): ", "seq.########.jpg" );
@@ -259,14 +259,14 @@ int main( int argc, char** argv )
 		SAM_EXAMPLE_TITLE_COUT( "Delete: " );
 		SAM_EXAMPLE_LINE_COUT ( "A sequence:", "sam-rm /path/to/sequence/seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Sequences in a directory:", "sam-rm /path/to/sequence/" );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( "" );
 
 		return 0;
 	}
 
 	if( vm.count( kBriefOptionLongName) )
 	{
-		TUTTLE_LOG_INFO( color->_green << "remove file sequences" << color->_std );
+		TUTTLE_COUT( color->_green << "remove file sequences" << color->_std );
 		return 0;
 	}
 

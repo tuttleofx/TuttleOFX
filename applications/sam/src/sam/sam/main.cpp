@@ -178,15 +178,15 @@ int main( int argc, char** argv )
 		if( ( sam_vm.count( kHelpOptionLongName ) || ( argc == 1 ) )
 				|| ( ( argc == 2 ) && (strstr( argv[1], kColorOptionLongName ) != NULL ) ) )
 		{
-			TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-			TUTTLE_LOG_INFO( "" );
-			TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std );
-			TUTTLE_LOG_INFO( color->_green <<"\tsam - A set of command line tools." << color->_std );
-			TUTTLE_LOG_INFO( "" );
-			TUTTLE_LOG_INFO( color->_blue << "SYNOPSIS" << color->_std );
-			TUTTLE_LOG_INFO( color->_green << "\tsam COMMAND [options]..." << color->_std );
-			TUTTLE_LOG_INFO( "" );
-			TUTTLE_LOG_INFO( color->_blue << "COMMANDS" << color->_std );
+			TUTTLE_COUT( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+			TUTTLE_COUT( "" );
+			TUTTLE_COUT( color->_blue << "NAME" << color->_std );
+			TUTTLE_COUT( color->_green <<"\tsam - A set of command line tools." << color->_std );
+			TUTTLE_COUT( "" );
+			TUTTLE_COUT( color->_blue << "SYNOPSIS" << color->_std );
+			TUTTLE_COUT( color->_green << "\tsam COMMAND [options]..." << color->_std );
+			TUTTLE_COUT( "" );
+			TUTTLE_COUT( color->_blue << "COMMANDS" << color->_std );
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
@@ -194,25 +194,25 @@ int main( int argc, char** argv )
 				system((c.string() + " --brief").c_str());
 				std::cout << std::flush;
 			}
-			TUTTLE_LOG_INFO( "" );
-			TUTTLE_LOG_INFO( color->_blue << "DESCRIPTION" << color->_std );
-			TUTTLE_LOG_INFO( "Sam is the TuttleOFX command line tool to manage image processing." );
-			TUTTLE_LOG_INFO( "" );
-			TUTTLE_LOG_INFO( color->_blue << "OPTIONS" << color->_std );
-			TUTTLE_LOG_INFO( infoOptions );
+			TUTTLE_COUT( "" );
+			TUTTLE_COUT( color->_blue << "DESCRIPTION" << color->_std );
+			TUTTLE_COUT( "Sam is the TuttleOFX command line tool to manage image processing." );
+			TUTTLE_COUT( "" );
+			TUTTLE_COUT( color->_blue << "OPTIONS" << color->_std );
+			TUTTLE_COUT( infoOptions );
 			exit( 0 );
 		}
 		
 		if( sam_vm.count( kVersionOptionLongName ) )
 		{
-			TUTTLE_LOG_INFO( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR);
+			TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR);
 			exit(0);
 		}
 		
 		if( sam_vm.count(kCommandsOptionLongName ) )
 		{
-			TUTTLE_LOG_INFO( "" );
-			TUTTLE_LOG_INFO( color->_blue << "COMMANDS" << color->_std );
+			TUTTLE_COUT( "" );
+			TUTTLE_COUT( color->_blue << "COMMANDS" << color->_std );
 			
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands(searchPaths);
 			BOOST_FOREACH( const bfs::path& c, cmds )
@@ -221,7 +221,7 @@ int main( int argc, char** argv )
 				system((c.string() + " --brief").c_str());
 				std::cout << std::flush;
 			}
-			TUTTLE_LOG_INFO( "" );
+			TUTTLE_COUT( "" );
 			
 			exit(0);
 		}
@@ -230,7 +230,7 @@ int main( int argc, char** argv )
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
-				TUTTLE_LOG_INFO( c.string());
+				TUTTLE_COUT( c.string());
 			}
 			exit(0);
 		}
@@ -239,7 +239,7 @@ int main( int argc, char** argv )
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
-				TUTTLE_LOG_INFO( c.filename().string().substr(4) );
+				TUTTLE_COUT( c.filename().string().substr(4) );
 			}
 			exit(0);
 		}

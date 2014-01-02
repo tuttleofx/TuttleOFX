@@ -326,7 +326,7 @@ int main( int argc, char** argv )
 				( kInputOptionString,  bpo::value(&inputs), kInputOptionMessage )
 				( kRangeOptionString,  bpo::value(&range)->multitoken(), kRangeOptionMessage )
 				( kGeneratorArgsOptionString, bpo::value(&generator)->multitoken(),  kGeneratorArgsOptionMessage )
-				( kVerboseOptionString,       bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+				( kVerboseOptionString,       bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 				( kQuietOptionString,  kQuietOptionMessage )
 				( kBriefOptionString,  kBriefOptionMessage )
 				( kColorOptionString,  kColorOptionMessage )
@@ -406,7 +406,7 @@ int main( int argc, char** argv )
 
         if( vm.count( kBriefOptionLongName ) )
 		{
-            TUTTLE_LOG_INFO( color->_green << "diff image files" << color->_std );
+            TUTTLE_COUT( color->_green << "diff image files" << color->_std );
             return 0;
         }
 

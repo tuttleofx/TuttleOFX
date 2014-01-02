@@ -27,26 +27,24 @@ namespace ttl = tuttle::host;
 namespace bfs = boost::filesystem;
 
 
-//namespace logging = boost::log;
-
 void displayHelp( bpo::options_description &infoOptions, bpo::options_description &confOptions )
 {
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_LOG_INFO( std::left << color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std );
-	TUTTLE_LOG_INFO( color->_green << "\tsam do - A command line to execute a list of OpenFX nodes." << color->_std << std::endl );
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "SYNOPSIS" << color->_std );
-	TUTTLE_LOG_INFO( "\tsam do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" << std::endl );
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "DESCRIPTION" << color->_std );
-	TUTTLE_LOG_INFO( color->_green << "\tA command line to execute a list of OpenFX nodes." << color->_std );
-	TUTTLE_LOG_INFO( color->_green << "\tUse the sperarator // to pipe images between nodes." << color->_std << std::endl );
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std << std::left );
+	TUTTLE_COUT( std::left << color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "NAME" << color->_std );
+	TUTTLE_COUT( color->_green << "\tsam do - A command line to execute a list of OpenFX nodes." << color->_std << std::endl );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "SYNOPSIS" << color->_std );
+	TUTTLE_COUT( "\tsam do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" << std::endl );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "DESCRIPTION" << color->_std );
+	TUTTLE_COUT( color->_green << "\tA command line to execute a list of OpenFX nodes." << color->_std );
+	TUTTLE_COUT( color->_green << "\tUse the sperarator // to pipe images between nodes." << color->_std << std::endl );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "EXAMPLES" << color->_std << std::left );
 	SAM_EXAMPLE_TITLE_COUT( "Plugins options" );
 	SAM_EXAMPLE_LINE_COUT( "Plugin list: ", "sam do --nodes" );
 	SAM_EXAMPLE_LINE_COUT( "Plugin help: ", "sam do blur -h" );
@@ -97,11 +95,11 @@ void displayHelp( bpo::options_description &infoOptions, bpo::options_descriptio
 	SAM_EXAMPLE_LINE_COUT ( "Multiple CPUs: ", "sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4" );
 	SAM_EXAMPLE_LINE_COUT ( "Continues whatever happens: ", "sam do reader in.@.dpx // writer out.@.exr // --continueOnError" );
 
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "DISPLAY OPTIONS (replace the process)" << color->_std );
-	TUTTLE_LOG_INFO( infoOptions );
-	TUTTLE_LOG_INFO( color->_blue << "CONFIGURE PROCESS" << color->_std );
-	TUTTLE_LOG_INFO( confOptions );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "DISPLAY OPTIONS (replace the process)" << color->_std );
+	TUTTLE_COUT( infoOptions );
+	TUTTLE_COUT( color->_blue << "CONFIGURE PROCESS" << color->_std );
+	TUTTLE_COUT( confOptions );
 
 }
 
@@ -112,8 +110,8 @@ void displayHelp( bpo::options_description &infoOptions, bpo::options_descriptio
 	
 	displayHelp( infoOptions, confOptions );
 
-	TUTTLE_LOG_INFO( color->_blue << "EXPERT OPTIONS" << color->_std );
-	TUTTLE_LOG_INFO( expertOptions );
+	TUTTLE_COUT( color->_blue << "EXPERT OPTIONS" << color->_std );
+	TUTTLE_COUT( expertOptions );
 }
 
 void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, bpo::options_description &infoOptions, bpo::options_description &confOptions )
@@ -121,44 +119,44 @@ void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, 
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "NODE" << color->_std );
-	TUTTLE_LOG_INFO( color->_green << "\tsam do " << nodeFullName << " - OpenFX node." << color->_std );
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "DESCRIPTION" << color->_std );
-	TUTTLE_LOG_INFO( color->_green << "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) << color->_std );
+	TUTTLE_COUT( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "NODE" << color->_std );
+	TUTTLE_COUT( color->_green << "\tsam do " << nodeFullName << " - OpenFX node." << color->_std );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "DESCRIPTION" << color->_std );
+	TUTTLE_COUT( color->_green << "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) << color->_std );
 	// internal node help
 	if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect )
 	{
 		if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping ) )
 		{
-			TUTTLE_LOG_INFO( "\t" << color->_green << currentNode.asImageEffectNode().getPluginGrouping() << color->_std );
+			TUTTLE_COUT( "\t" << color->_green << currentNode.asImageEffectNode().getPluginGrouping() << color->_std );
 		}
 	}
-	TUTTLE_LOG_INFO( "" );
+	TUTTLE_COUT( "" );
 	if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription ) )
 	{
-		TUTTLE_LOG_INFO( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue( 0 ) );
+		TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue( 0 ) );
 	}
 	else
 	{
-		TUTTLE_LOG_INFO( "\tNo description." );
+		TUTTLE_COUT( "\tNo description." );
 	}
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "PARAMETERS" << color->_std );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "PARAMETERS" << color->_std );
 	coutParametersWithDetails( currentNode );
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "CLIPS" << color->_std );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "CLIPS" << color->_std );
 	coutClipsWithDetails( currentNode );
 
-	TUTTLE_LOG_INFO( "" );
-	TUTTLE_LOG_INFO( color->_blue << "DISPLAY OPTIONS (override the process)" << color->_std );
-	TUTTLE_LOG_INFO( infoOptions );
-	TUTTLE_LOG_INFO( color->_blue << "CONFIGURE PROCESS" << color->_std );
-	TUTTLE_LOG_INFO( confOptions );
+	TUTTLE_COUT( "" );
+	TUTTLE_COUT( color->_blue << "DISPLAY OPTIONS (override the process)" << color->_std );
+	TUTTLE_COUT( infoOptions );
+	TUTTLE_COUT( color->_blue << "CONFIGURE PROCESS" << color->_std );
+	TUTTLE_COUT( confOptions );
 
-	TUTTLE_LOG_INFO( "" );
+	TUTTLE_COUT( "" );
 }
 
 void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, bpo::options_description &infoOptions, bpo::options_description &confOptions, bpo::options_description &expertOptions )
@@ -168,8 +166,8 @@ void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, 
 	
 	displayNodeHelp( nodeFullName, currentNode, infoOptions, confOptions );
 
-	TUTTLE_LOG_INFO( color->_blue << "EXPERT OPTIONS" << color->_std );
-	TUTTLE_LOG_INFO( expertOptions );
+	TUTTLE_COUT( color->_blue << "EXPERT OPTIONS" << color->_std );
+	TUTTLE_COUT( expertOptions );
 }
 
 int addListOfSequencesInListOfProcess( boost::ptr_vector<sequenceParser::FileObject>& inputList, boost::ptr_vector<sequenceParser::FileObject>& outputList, const std::vector<std::string>& extensions )
@@ -283,8 +281,7 @@ int main( int argc, char** argv )
 		
 		std::vector<std::string> idNames; // list of id setted in the command line
 		
-		// plugins loading
-		ttl::core().preload();
+		// Plugins are not loaded. We just declare a link.
 		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*>& allNodes = ttl::core().getImageEffectPluginCache().getPlugins();
 
 		// Analyze each part of the command line
@@ -312,7 +309,7 @@ int main( int argc, char** argv )
 					( kFirstImageOptionString,  bpo::value<int>(),          kFirstImageOptionMessage )
 					( kLastImageOptionString,   bpo::value<int>(),          kLastImageOptionMessage )
 					( kRenderScaleOptionString, bpo::value<std::string >(), kRenderScaleOptionMessage )
-					( kVerboseOptionString,     bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+					( kVerboseOptionString,     bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 					( kQuietOptionString,       kQuietOptionMessage )
 					( kNbCoresOptionString,     bpo::value<std::size_t>(), kNbCoresOptionMessage );
 
@@ -403,13 +400,13 @@ int main( int argc, char** argv )
 
 				if( samdo_vm.count( kBriefOptionLongName ) )
 				{
-					TUTTLE_LOG_INFO( color->_green << "A command line to execute a list of OpenFX nodes" << color->_std );
+					TUTTLE_COUT( color->_green << "A command line to execute a list of OpenFX nodes" << color->_std );
 					return 0;
 				}
 
 				if( samdo_vm.count( kVersionOptionLongName ) )
 				{
-					TUTTLE_LOG_INFO( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR );
+					TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR );
 					exit( 0 );
 				}
 
@@ -422,7 +419,7 @@ int main( int argc, char** argv )
 				    cl_commands.size() == 0 )
 				{
 					// No display option and no sub-command to execute
-					TUTTLE_LOG_ERROR( "sam do: missing operand." );
+					TUTTLE_LOG_FATAL( "sam do: missing operand." );
 					//displayHelp( infoOptions, confOptions );
 					exit( 255 );
 				}
@@ -430,6 +427,9 @@ int main( int argc, char** argv )
 				
 				// start to analyse and execute all sub-commands //
 				
+				// Load plugins
+				ttl::core().preload();
+
 				const std::string logFilename = ( ttl::core().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();
 				std::ofstream logFile( logFilename.c_str() );
 				std::streambuf* strm_buffer = std::cerr.rdbuf(); // save cerr's output buffer
@@ -437,7 +437,7 @@ int main( int argc, char** argv )
 				
 				if( samdo_vm.count( kNodesOptionLongName ) || samdo_vm.count( kNodesListOptionLongName ) )
 				{
-					TUTTLE_LOG_INFO( color->_blue << "NODES" << color->_std );
+					TUTTLE_COUT( color->_blue << "NODES" << color->_std );
 					std::vector<std::string> pluginNames;
 					
 					Dummy dummy;
@@ -455,7 +455,7 @@ int main( int argc, char** argv )
 
 					BOOST_FOREACH( const std::string& pluginName, pluginNames )
 					{
-						TUTTLE_LOG_INFO( indent << pluginName );
+						TUTTLE_COUT( indent << pluginName );
 					}
 					exit( 0 );
 				}
@@ -651,49 +651,49 @@ int main( int argc, char** argv )
 
 						if( node_vm.count( kVersionOptionLongName ) )
 						{
-							TUTTLE_LOG_INFO( "\tsam do " << nodeFullName );
-							TUTTLE_LOG_INFO( "Version " << currentNode.getVersionStr() );
-							TUTTLE_LOG_INFO( "" );
+							TUTTLE_COUT( "\tsam do " << nodeFullName );
+							TUTTLE_COUT( "Version " << currentNode.getVersionStr() );
+							TUTTLE_COUT( "" );
 							exit( 0 );
 						}
 						if( node_vm.count( kAttributesOptionLongName ) )
 						{
-							TUTTLE_LOG_INFO( "\tsam do " << nodeFullName );
-							TUTTLE_LOG_INFO( "" );
-							TUTTLE_LOG_INFO( color->_blue << "ATTRIBUTES" << color->_std );
-							TUTTLE_LOG_INFO( "" );
-							TUTTLE_LOG_INFO( color->_blue << "- CLIPS" << color->_std );
+							TUTTLE_COUT( "\tsam do " << nodeFullName );
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( color->_blue << "ATTRIBUTES" << color->_std );
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( color->_blue << "- CLIPS" << color->_std );
 							coutClipsWithDetails( currentNode );
-							TUTTLE_LOG_INFO( "" );
-							TUTTLE_LOG_INFO( color->_blue << "- PARAMETERS" << color->_std );
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( color->_blue << "- PARAMETERS" << color->_std );
 							coutParametersWithDetails( currentNode );
-							TUTTLE_LOG_INFO( "" );
+							TUTTLE_COUT( "" );
 							exit( 0 );
 						}
 						if( node_vm.count( kPropertiesOptionLongName ) )
 						{
 							if( !script )
 							{
-								TUTTLE_LOG_INFO( "\tsam do " << nodeFullName );
-								TUTTLE_LOG_INFO( "" );
-								TUTTLE_LOG_INFO( color->_blue << "PROPERTIES" << color->_std );
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
+								TUTTLE_COUT( color->_blue << "PROPERTIES" << color->_std );
 							}
 							coutProperties( currentNode );
 							if( !script )
-								TUTTLE_LOG_INFO( "" );
+								TUTTLE_COUT( "" );
 							exit( 0 );
 						}
 						if( node_vm.count( kClipsOptionLongName ) )
 						{
 							if( !script )
 							{
-								TUTTLE_LOG_INFO( "\tsam do " << nodeFullName );
-								TUTTLE_LOG_INFO( "" );
-								TUTTLE_LOG_INFO( color->_blue << "CLIPS" << color->_std );
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
+								TUTTLE_COUT( color->_blue << "CLIPS" << color->_std );
 							}
 							coutClips( currentNode );
 							if( !script )
-								TUTTLE_LOG_INFO( "" );
+								TUTTLE_COUT( "" );
 							exit( 0 );
 						}
 						if( node_vm.count( kClipOptionLongName ) )
@@ -718,22 +718,22 @@ int main( int argc, char** argv )
 							
 							if( !script )
 							{
-								TUTTLE_LOG_INFO( "\tsam do " << nodeFullName );
-								TUTTLE_LOG_INFO( "" );
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
 
-								TUTTLE_LOG_INFO( color->_blue << "CLIP: " << color->_green << clipName << color->_std );
-								//TUTTLE_LOG_INFO( "supported bit depth: " << boost::algorithm::join( bitDepths, ", " ) );
-								TUTTLE_LOG_INFO( "supported components: " << boost::algorithm::join( components, ", " ) );
-								TUTTLE_LOG_INFO( "pixel aspect ratio: "   << clip.getPixelAspectRatio() );
-								TUTTLE_LOG_INFO( "number of components: " << clip.getNbComponents() );
-								TUTTLE_LOG_INFO( "" );
+								TUTTLE_COUT( color->_blue << "CLIP: " << color->_green << clipName << color->_std );
+								//TUTTLE_COUT( "supported bit depth: " << boost::algorithm::join( bitDepths, ", " ) );
+								TUTTLE_COUT( "supported components: " << boost::algorithm::join( components, ", " ) );
+								TUTTLE_COUT( "pixel aspect ratio: "   << clip.getPixelAspectRatio() );
+								TUTTLE_COUT( "number of components: " << clip.getNbComponents() );
+								TUTTLE_COUT( "" );
 							}
 							else
 							{
-								//TUTTLE_LOG_INFO( boost::algorithm::join( bitDepths, ", " ));
-								TUTTLE_LOG_INFO( boost::algorithm::join( components, ", " ) );
-								TUTTLE_LOG_INFO( clip.getPixelAspectRatio() );
-								TUTTLE_LOG_INFO( clip.getNbComponents());
+								//TUTTLE_COUT( boost::algorithm::join( bitDepths, ", " ));
+								TUTTLE_COUT( boost::algorithm::join( components, ", " ) );
+								TUTTLE_COUT( clip.getPixelAspectRatio() );
+								TUTTLE_COUT( clip.getNbComponents());
 							}
 							
 							exit( 0 );
@@ -742,10 +742,10 @@ int main( int argc, char** argv )
 						{
 							if( !script )
 							{
-								TUTTLE_LOG_INFO( "\tsam do " << nodeFullName );
-								TUTTLE_LOG_INFO( "" );
-								TUTTLE_LOG_INFO( color->_blue << "PARAMETERS" << color->_std );
-								TUTTLE_LOG_INFO( "" );
+								TUTTLE_COUT( "\tsam do " << nodeFullName );
+								TUTTLE_COUT( "" );
+								TUTTLE_COUT( color->_blue << "PARAMETERS" << color->_std );
+								TUTTLE_COUT( "" );
 								coutParametersWithDetails( currentNode );
 								exit( 0 );
 							}
@@ -763,18 +763,18 @@ int main( int argc, char** argv )
 						if( node_vm.count( kParamInfosOptionLongName ) )
 						{
 							const std::string attributeName = node_vm[kParamInfosOptionLongName].as<std::string > ();
-							TUTTLE_LOG_INFO( "\tsam do " << nodeFullName );
-							TUTTLE_LOG_INFO( color->_blue << "PARAM: " << color->_green << attributeName << color->_std );
+							TUTTLE_COUT( "\tsam do " << nodeFullName );
+							TUTTLE_COUT( color->_blue << "PARAM: " << color->_green << attributeName << color->_std );
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
-							TUTTLE_LOG_INFO( "" );
-							TUTTLE_LOG_INFO( "\t" << color->_red << ( param.getSecret() ? "SECRET -- " : "" ) << param.getScriptName() << ": " << param.getParamTypeName() << " x" << param.getSize() << color->_std );
-							TUTTLE_LOG_INFO( "" );
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( "\t" << color->_red << ( param.getSecret() ? "SECRET -- " : "" ) << param.getScriptName() << ": " << param.getParamTypeName() << " x" << param.getSize() << color->_std );
+							TUTTLE_COUT( "" );
 							const std::string& hint = param.getHint();
 							if( hint.size() )
 							{
-								TUTTLE_LOG_INFO( "\t" << hint );
+								TUTTLE_COUT( "\t" << hint );
 							}
-							TUTTLE_LOG_INFO( "" );
+							TUTTLE_COUT( "" );
 							exit( 0 );
 						}
 
@@ -782,7 +782,7 @@ int main( int argc, char** argv )
 						{
 							const std::string attributeName = node_vm[kParamTypeOptionLongName].as<std::string > ();
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
-							TUTTLE_LOG_INFO( param.getParamTypeName() );
+							TUTTLE_COUT( param.getParamTypeName() );
 							exit( 0 );
 						}
 
@@ -797,7 +797,7 @@ int main( int argc, char** argv )
 						{
 							const std::string attributeName = node_vm[kParamDefaultOptionLongName].as<std::string > ();
 							ttl::ofx::attribute::OfxhParam& param = currentNode.getParamByScriptName( attributeName );
-							TUTTLE_LOG_INFO( getFormattedStringValue( param.getProperties().fetchProperty( kOfxParamPropDefault ) ) );
+							TUTTLE_COUT( getFormattedStringValue( param.getProperties().fetchProperty( kOfxParamPropDefault ) ) );
 							exit( 0 );
 						}
 						if( node_vm.count( kParamGroupOptionLongName ) )
@@ -806,7 +806,7 @@ int main( int argc, char** argv )
 							{
 								if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping ) )
 								{
-									TUTTLE_LOG_INFO( currentNode.asImageEffectNode().getPluginGrouping() );
+									TUTTLE_COUT( currentNode.asImageEffectNode().getPluginGrouping() );
 								}
 							}
 							exit( 0 );

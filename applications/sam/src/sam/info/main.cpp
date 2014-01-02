@@ -132,22 +132,22 @@ void printImageProperties( std::string path )
 			case 7                     : interlaceType = "PNG interlacing"; break; // PNGInterlace
 		}
 
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "width"                 << image->columns                                                                         );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "height"                << image->rows                                                                            );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"             << image->depth  << " bits"                                                               );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"   << image->quality                                                                         );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "image type"            << imageType                                                                              );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"          << image->x_resolution  << resolutionType                                                 );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"          << image->y_resolution  << resolutionType                                                 );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"           << interlaceType                                                                          );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		//TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "format"                << image->format()                                                                        );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "channels"              << colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" )  );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "color space"           << colorSpaceType                                                                         );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "gamma"                 << image->gamma                                                                           );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "width"                 << image->columns                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "height"                << image->rows                                                                            );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"             << image->depth  << " bits"                                                               );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"   << image->quality                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "image type"            << imageType                                                                              );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"          << image->x_resolution  << resolutionType                                                 );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"          << image->y_resolution  << resolutionType                                                 );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"           << interlaceType                                                                          );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
+		//TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "format"                << image->format()                                                                        );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "channels"              << colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" )  );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "color space"           << colorSpaceType                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "gamma"                 << image->gamma                                                                           );
 
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( "" );
 	}
 	catch( ... )
 	{
@@ -158,14 +158,14 @@ void printImageProperties( std::string path )
 
 void dumpImageProperties( const sequenceParser::File& s )
 {
-	TUTTLE_LOG_INFO(s);
+	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFilename() );
 	sam::wasSthgDumped = true;
 }
 
 void dumpImageProperties( const sequenceParser::Sequence& s )
 {
-	TUTTLE_LOG_INFO(s);
+	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFirstFilename() );
 	sam::wasSthgDumped = true;
 }
@@ -216,7 +216,7 @@ int main( int argc, char** argv )
 		( kIgnoreOptionString,     kIgnoreOptionMessage )
 		( kPathOptionString,       kPathOptionMessage )
 		( kRecursiveOptionString,  kRecursiveOptionMessage )
-		( kVerboseOptionString,    bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+		( kVerboseOptionString,    bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 		( kQuietOptionString,      kQuietOptionMessage )
 		( kColorOptionString,      kColorOptionMessage )
 		( kFirstImageOptionString, bpo::value<unsigned int>(), kFirstImageOptionMessage )
@@ -291,26 +291,26 @@ int main( int argc, char** argv )
 
 	if( vm.count( kHelpOptionLongName ) )
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-info - get informations about a sequence" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-info [options] [sequences]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION\n" << color->_std );
-		TUTTLE_LOG_INFO( "Print informations from Sequence (or file) like resolution, colorspace, etc." );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std);
-		TUTTLE_LOG_INFO( mainOptions );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-info - get informations about a sequence" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-info [options] [sequences]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "DESCRIPTION\n" << color->_std );
+		TUTTLE_COUT( "Print informations from Sequence (or file) like resolution, colorspace, etc." );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "OPTIONS" << color->_std);
+		TUTTLE_COUT( mainOptions );
+		TUTTLE_COUT( "" );
 		return 0;
 	}
 
 	if ( vm.count(kBriefOptionLongName) )
 	{
-		TUTTLE_LOG_INFO( color->_green << "get informations about a sequence" << color->_std );
+		TUTTLE_COUT( color->_green << "get informations about a sequence" << color->_std );
 		return 0;
 	}
 

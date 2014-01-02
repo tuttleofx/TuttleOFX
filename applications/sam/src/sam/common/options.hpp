@@ -4,8 +4,8 @@
 namespace sam {
 
 #define SAM_HELP_MARGING 35
-#define SAM_EXAMPLE_TITLE_COUT( ... )   TUTTLE_LOG_INFO( std::endl << color->_yellow << "  " << __VA_ARGS__ << color->_std );
-#define SAM_EXAMPLE_LINE_COUT( x, ... ) TUTTLE_LOG_INFO( color->_green << "    " << std::setw(SAM_HELP_MARGING) << x << __VA_ARGS__ << color->_std );
+#define SAM_EXAMPLE_TITLE_COUT( ... )   TUTTLE_COUT( std::endl << color->_yellow << "  " << __VA_ARGS__ << color->_std );
+#define SAM_EXAMPLE_LINE_COUT( x, ... ) TUTTLE_COUT( color->_green << "    " << std::setw(SAM_HELP_MARGING) << x << __VA_ARGS__ << color->_std );
 
 static const char* const kUrlTuttleofxProject = "http://sites.google.com/site/tuttleofx";
 
@@ -115,7 +115,8 @@ static const char* const kVersionOptionMessage = "display version";
 //-V, --verbose
 static const char* const kVerboseOptionLongName = "verbose";
 static const char* const kVerboseOptionString =  "verbose,V";
-static const char* const kVerboseOptionMessage = "verbose level (trace=0, debug=1, warning=2, error=3, fatal=4)";
+static const char* const kVerboseOptionMessage = "verbose level (trace=0, debug=1, info=2, warning=3, error=4, fatal=5)";
+static int kVerboseOptionDefaultValue = 3;
 
 /// options without short-cut
 

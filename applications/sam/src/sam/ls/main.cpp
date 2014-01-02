@@ -38,7 +38,7 @@ void coutVec( const boost::ptr_vector<T>& v )
 {
 	BOOST_FOREACH( const T& f, v )
 	{
-		TUTTLE_LOG_INFO( f );
+		TUTTLE_COUT( f );
 		sam::wasSthgDumped = true;
 	}
 }
@@ -160,29 +160,29 @@ int main( int argc, char** argv )
 	
 	if (vm.count(kHelpOptionLongName))
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-ls - list directory contents" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-ls [options] [directories]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( "List information about the sequences, files and folders." );
-		TUTTLE_LOG_INFO( "List the current directory by default, and only sequences." );
-		TUTTLE_LOG_INFO( "The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default." );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( mainOptions );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-ls - list directory contents" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-ls [options] [directories]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "DESCRIPTION" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( "List information about the sequences, files and folders." );
+		TUTTLE_COUT( "List the current directory by default, and only sequences." );
+		TUTTLE_COUT( "The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default." );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "OPTIONS" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( mainOptions );
 		return 0;
 	}
 
 	if ( vm.count(kBriefOptionLongName) )
 	{
-		TUTTLE_LOG_INFO( color->_green << "list directory contents" << color->_std );
+		TUTTLE_COUT( color->_green << "list directory contents" << color->_std );
 		return 0;
 	}
 
@@ -275,9 +275,9 @@ int main( int argc, char** argv )
 			{
 				if( index > 0 )
 				{
-					TUTTLE_LOG_INFO( "" );
+					TUTTLE_COUT( "" );
 				}
-				TUTTLE_LOG_INFO( path.string() << ":");
+				TUTTLE_COUT( path.string() << ":");
 				wasSthgDumped = true;
 			}
 
@@ -291,7 +291,7 @@ int main( int argc, char** argv )
 					{
 						bfs::path currentPath = (bfs::path)*dir;
 						if( !script )
-							TUTTLE_LOG_INFO( "\n" << currentPath.string() << ":" );
+							TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
 						coutVec( sequenceParser::fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
 
