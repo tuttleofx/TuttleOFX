@@ -265,7 +265,17 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 					{
 						OfxhPlugin& plug = pb->getPlugin( j );
 						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
-						api.loadFromPlugin( plug );
+						try
+						{
+							api.loadFromPlugin( plug );
+						}	
+						catch(... )
+						{
+							TUTTLE_LOG_INFO( "Can't load plugin "
+								<< quotes(plug.getIdentifier()) << " " << plug.getVersionMajor() << "." << plug.getVersionMinor()
+								<< " from file " << quotes(binpath) );
+							TUTTLE_LOG_TRACE( boost::current_exception_diagnostic_information() );
+						}
 					}
 				}
 				catch(... )
