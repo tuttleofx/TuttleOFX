@@ -39,6 +39,7 @@
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/ptr_container/serialize_ptr_list.hpp>
+#include <boost/foreach.hpp>
 
 #include <string>
 #include <set>
@@ -227,26 +228,23 @@ private:
 	template<class Archive>
 	void serialize( Archive& ar, const unsigned int version )
 	{
-		//		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
-		//		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
-		//		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
+		// ar & BOOST_SERIALIZATION_NVP(_pluginPath);
+		// ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
+		// ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
 		ar& BOOST_SERIALIZATION_NVP( _binaries );
-		//		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
-		ar& BOOST_SERIALIZATION_NVP( _knownBinFiles );
+		// ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
+		// ar& BOOST_SERIALIZATION_NVP( _knownBinFiles );
 
 		if( typename Archive::is_loading() )
 		{
-			for( ofx::OfxhPluginCache::OfxhPluginBinaryList::iterator it = getBinaries().begin(), itEnd = getBinaries().end();
-			     it != itEnd;
-			     ++it )
+			BOOST_FOREACH( OfxhPluginBinary& pluginBinary, _binaries )
 			{
-				for( ofx::OfxhPluginBinary::PluginVector::iterator i = it->getPlugins().begin(), iEnd = it->getPlugins().end();
-				     i != iEnd;
-				     ++i )
+				_knownBinFiles.insert( pluginBinary.getFilePath() );
+				BOOST_FOREACH( OfxhPlugin& plugin, pluginBinary.getPlugins() )
 				{
-					APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( i->getPluginApi(), i->getApiVersion() );
-					i->setApiHandler( *apiCache );
-					_plugins.push_back( &( *i ) );
+					APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( plugin.getPluginApi(), plugin.getApiVersion() );
+					plugin.setApiHandler( *apiCache );
+					_plugins.push_back( &plugin );
 				}
 			}
 		}

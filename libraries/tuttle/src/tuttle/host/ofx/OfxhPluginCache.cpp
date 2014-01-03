@@ -228,16 +228,16 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 	{
 		#if defined ( UNIX )
 		std::string name = de->d_name;
-		bool isdir       = true;
+		bool isdir = true;
 		#else
 		std::string name = findData.cFileName;
-		bool isdir       = ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) != 0;
+		bool isdir = ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) != 0;
 		#endif
 		if( name.find( ".ofx.bundle" ) != std::string::npos )
 		{
-			const std::string barename   = name.substr( 0, name.length() - strlen( ".bundle" ) );
+			const std::string barename = name.substr( 0, name.length() - strlen( ".bundle" ) );
 			const std::string bundlepath = dir + DIRSEP + name;
-			const std::string binpath    = bundlepath + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
+			const std::string binpath = bundlepath + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
 
 			foundBinFiles.insert( binpath );
 
@@ -246,24 +246,37 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				TUTTLE_LOG_TRACE( "Found binary not in cache: " << quotes(binpath) );
 				try
 				{
-					// the binary was not in the cache
+					// Creating the binary may throw, if there are some missing
+					// dependencies (like wrong LD_LIBRARY_PATH).
+					// If it throws, it will not be declared in the plugin cache.
 					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlepath, this );
 					_binaries.push_back( pb );
+					
+					// The binary file has been succesfully loaded,
+					// so we need to add it into the cache.
+					setDirty();  // the cache has to be rewrite
+					_knownBinFiles.insert( binpath );
+					
 					TUTTLE_LOG_TRACE( quotes(barename) << " constains " << pb->getNPlugins() <<  " plugins." );
+					
+					// Now, if there is an error that's because the plugin
+					// is not supported by the host.
 					for( int j = 0; j < pb->getNPlugins(); ++j )
 					{
-						OfxhPlugin& plug                   = pb->getPlugin( j );
+						OfxhPlugin& plug = pb->getPlugin( j );
 						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
 						api.loadFromPlugin( plug );
 					}
-					setDirty();
-					_knownBinFiles.insert( binpath );
 				}
 				catch(... )
 				{
 					TUTTLE_LOG_INFO( "Can't load plugin file " << quotes(binpath) );
 					TUTTLE_LOG_TRACE( boost::current_exception_diagnostic_information() );
+#ifdef __WINDOWS__
+					TUTTLE_LOG_TRACE( "PATH: " << std::getenv("PATH") << std::endl );
+#else
 					TUTTLE_LOG_TRACE( "LD_LIBRARY_PATH: " << std::getenv("LD_LIBRARY_PATH") << std::endl );
+#endif
 				}
 			}
 			else
