@@ -308,8 +308,8 @@ int main( int argc, char** argv )
 					( kRangeOptionString,       bpo::value<std::string>(),  kRangeOptionMessage )
 					( kFirstImageOptionString,  bpo::value<int>(),          kFirstImageOptionMessage )
 					( kLastImageOptionString,   bpo::value<int>(),          kLastImageOptionMessage )
-					( kRenderScaleOptionString, bpo::value<std::string >(), kRenderScaleOptionMessage )
-					( kVerboseOptionString,     bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
+					( kRenderScaleOptionString, bpo::value<std::string>(), kRenderScaleOptionMessage )
+					( kVerboseOptionString,     bpo::value<std::string>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 					( kQuietOptionString,       kQuietOptionMessage )
 					( kNbCoresOptionString,     bpo::value<std::size_t>(), kNbCoresOptionMessage );
 
@@ -362,16 +362,7 @@ int main( int argc, char** argv )
 					}
 				}
 				
-				switch( samdo_vm[ kVerboseOptionLongName ].as< int >() )
-				{
-					case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
-					case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
-					case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
-					case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
-					case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
-					case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-					default : formatter->setLogLevel( boost::log::trivial::warning ); break;
-				}
+				formatter->setLogLevel_string( samdo_vm[ kVerboseOptionLongName ].as< std::string >() );
 				
 				if( samdo_vm.count( kQuietOptionLongName ) )
 				{

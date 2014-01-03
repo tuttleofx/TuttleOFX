@@ -159,7 +159,7 @@ int main( int argc, char** argv )
 			( kIgnoreOptionString,      kIgnoreOptionMessage )
 			( kPathOptionString,        kPathOptionMessage )
 			( kRecursiveOptionString,   kRecursiveOptionMessage )
-			( kVerboseOptionString,     bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
+			( kVerboseOptionString,     bpo::value<std::string>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 			( kQuietOptionString,       kQuietOptionMessage )
 			( kColorOptionString,       kColorOptionMessage )
 			( kFirstImageOptionString,  bpo::value<std::ssize_t>(), kFirstImageOptionMessage )
@@ -290,16 +290,8 @@ int main( int argc, char** argv )
 		researchMask &= ~sequenceParser::eMaskTypeSequence;
 	}
 	
-	switch( vm[ kVerboseOptionLongName ].as< int >() )
-	{
-		case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
-		case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
-		case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
-		case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
-		case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
-		case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-		default : formatter->setLogLevel( boost::log::trivial::warning ); break;
-	}
+	formatter->setLogLevel_string( vm[ kVerboseOptionLongName ].as<std::string>() );
+	
 	if( vm.count(kQuietOptionLongName) )
 	{
 		formatter->setLogLevel( boost::log::trivial::fatal );

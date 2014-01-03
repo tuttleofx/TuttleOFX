@@ -34,7 +34,7 @@ class Formatter : boost::noncopyable
 	typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend > sink_t;
 
 private:
-	Formatter( ) { }
+	Formatter();
 
 public:
 	static boost::shared_ptr<Formatter> get();
@@ -44,6 +44,9 @@ public:
 	
 	void setLogLevel( const boost::log::trivial::severity_level level );
 	
+	void setLogLevel_int( const int level );
+	void setLogLevel_string( const std::string& level );
+
 	void displayLogLevel( bool display );
 
 public:

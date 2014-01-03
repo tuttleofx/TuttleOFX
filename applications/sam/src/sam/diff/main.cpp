@@ -326,7 +326,7 @@ int main( int argc, char** argv )
 				( kInputOptionString,  bpo::value(&inputs), kInputOptionMessage )
 				( kRangeOptionString,  bpo::value(&range)->multitoken(), kRangeOptionMessage )
 				( kGeneratorArgsOptionString, bpo::value(&generator)->multitoken(),  kGeneratorArgsOptionMessage )
-				( kVerboseOptionString,       bpo::value<int>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
+				( kVerboseOptionString, bpo::value<std::string>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 				( kQuietOptionString,  kQuietOptionMessage )
 				( kBriefOptionString,  kBriefOptionMessage )
 				( kColorOptionString,  kColorOptionMessage )
@@ -371,16 +371,8 @@ int main( int argc, char** argv )
 			script = true;
 		}
 		
-		switch( vm[ kVerboseOptionLongName ].as< int >() )
-		{
-			case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
-			case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
-			case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
-			case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
-			case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
-			case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-			default : formatter->setLogLevel( boost::log::trivial::warning ); break;
-		}
+		formatter->setLogLevel_string( vm[ kVerboseOptionLongName ].as<std::string>() );
+		
 		if( vm.count(kQuietOptionLongName) )
 		{
 			formatter->setLogLevel( boost::log::trivial::fatal );
