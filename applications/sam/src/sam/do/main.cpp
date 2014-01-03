@@ -447,6 +447,8 @@ int main( int argc, char** argv )
 					{
 						std::string plugName = node->getRawIdentifier();
 						boost::algorithm::replace_first( plugName, "tuttle.", "" );
+						if( ! node->isSupported() )
+							plugName += " (unsupported)";
 						pluginNames.push_back( plugName );
 					}
 					std::sort( pluginNames.begin(), pluginNames.end() );

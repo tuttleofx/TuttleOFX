@@ -126,6 +126,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 	
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
+		op.setIsSupported(false);
 		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
 		    << exception::user( "Loading plugin failed." )
 		    << exception::dev( "kOfxActionLoad failed." )
@@ -136,6 +137,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
+		op.setIsSupported(false);
 		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
 		    << exception::user( "Loading plugin failed." )
 		    << exception::dev( "kOfxActionDescribe failed." )
@@ -153,6 +155,8 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 		p.addContext( context );
 	}
 
+	op.setIsSupported(true);
+	
 	rval = plug->mainEntry( kOfxActionUnload, 0, 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
