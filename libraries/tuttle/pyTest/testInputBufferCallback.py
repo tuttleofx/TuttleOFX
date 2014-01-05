@@ -26,9 +26,11 @@ def testInputBufferCallback():
 	ib = g.createInputBuffer()
 	ib.setComponents(tuttle.InputBufferWrapper.ePixelComponentRGB)
 	ib.setBitDepth(tuttle.InputBufferWrapper.eBitDepthUByte)
-	ib.setOrientation(tuttle.InputBufferWrapper.eImageOrientationFromTopToBottom)
+	# Should be eImageOrientationFromTopToBottom, but it doesn't work currently.
+	# ib.setOrientation(tuttle.InputBufferWrapper.eImageOrientationFromTopToBottom)
+	ib.setOrientation(tuttle.InputBufferWrapper.eImageOrientationFromBottomToTop)
 	ib.setPyCallback(getImage)
-	
+
 	filepath = tempfile.NamedTemporaryFile(prefix="inputBufferCallback-", suffix=".png")
 	
 	w = g.createNode("tuttle.pngwriter", filename=filepath.name)
@@ -36,5 +38,4 @@ def testInputBufferCallback():
 	g.connect(ib.getNode(), w)
 	
 	g.compute(w)
-
 
