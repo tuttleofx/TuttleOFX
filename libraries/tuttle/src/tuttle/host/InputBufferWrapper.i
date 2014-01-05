@@ -69,9 +69,11 @@ import_array();
 			*rowSizeBytes = 0;
 			return;
 		}
-		
+#if PY_MAJOR_VERSION < 3
 		*rawdata = PyString_AsString( PyTuple_GetItem(ret, 0) );
-//		*rawdata = (void*)(std::ptrdiff_t)( PyInt_AsLong( PyTuple_GetItem(ret, 0) ) );
+#else
+		*rawdata = PyBytes_AsString( PyTuple_GetItem(ret, 0) );
+#endif
 //		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *rawdata );
 		*width = static_cast<int>( PyInt_AsLong( PyTuple_GetItem(ret, 1) ) );
 //		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *width );
