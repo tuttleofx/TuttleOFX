@@ -122,7 +122,7 @@ class Tuttle( SConsProject ):
 				sources=sources, dirs=dirs, libraries=libraries, includes=includes,
 				env=env, localEnvFlags=allLocalEnvFlags, replaceLocalEnvFlags=replaceLocalEnvFlags, externEnvFlags=externEnvFlags, globalEnvFlags=globalEnvFlags,
 				dependencies=dependencies, installAs=self.getOutputOfxPlugin(pluginFilename), install=install,
-				public=False )
+				public=True, publicName="plugin"+pluginName )
 
 		envLocal = self.env
 
