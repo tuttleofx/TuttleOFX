@@ -1,4 +1,4 @@
-# scons: AudioVideo Invert
+# scons: pluginAudioVideo pluginInvert
 
 from pyTuttle import tuttle
 

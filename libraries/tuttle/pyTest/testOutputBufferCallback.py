@@ -1,4 +1,4 @@
-# scons: Jpeg
+# scons: pluginJpeg
 
 from pyTuttle import tuttle
 from tempfile import *

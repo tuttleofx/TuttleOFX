@@ -1,4 +1,4 @@
-# scons: LensDistort AudioVideo
+# scons: pluginLensDistort pluginAudioVideo
 
 from pyTuttle import tuttle
 import os

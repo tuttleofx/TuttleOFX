@@ -1,4 +1,4 @@
-# scons: ColorCube Text Png
+# scons: pluginColorCube pluginText pluginPng
 
 import os
 

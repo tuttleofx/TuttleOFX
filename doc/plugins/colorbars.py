@@ -1,4 +1,4 @@
-# scons: ColorBars Text Png
+# scons: pluginColorBars pluginText pluginPng
 
 import os
 

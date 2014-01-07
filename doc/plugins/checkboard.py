@@ -1,4 +1,4 @@
-# scons: Checkerboard Text Png
+# scons: pluginCheckerboard pluginText pluginPng
 
 import os
 

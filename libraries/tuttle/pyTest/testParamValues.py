@@ -1,4 +1,4 @@
-# scons: Checkerboard Blur Png Constant Gamma ImageStatistics Pinning Constant
+# scons: pluginCheckerboard pluginBlur pluginPng pluginConstant pluginGamma pluginImageStatistics pluginPinning pluginConstant
 
 from pyTuttle import tuttle
 

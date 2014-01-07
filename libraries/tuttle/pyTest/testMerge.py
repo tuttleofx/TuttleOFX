@@ -1,4 +1,4 @@
-# scons: Checkerboard Invert Merge AudioVideo
+# scons: pluginCheckerboard pluginInvert pluginMerge pluginAudioVideo
 
 from pyTuttle import tuttle
 

@@ -1,4 +1,4 @@
-# scons: Checkerboard Invert ColorTransform Png
+# scons: pluginCheckerboard pluginInvert pluginColorTransform pluginPng
 
 from pyTuttle import tuttle
 

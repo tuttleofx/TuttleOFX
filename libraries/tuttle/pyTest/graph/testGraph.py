@@ -1,4 +1,4 @@
-# scons: OpenImageIO Invert TimeShift Gamma Jpeg
+# scons: pluginOpenImageIO pluginInvert pluginTimeShift pluginGamma pluginJpeg
 
 from pyTuttle import tuttle
 from nose.tools import *

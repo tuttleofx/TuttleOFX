@@ -1,4 +1,4 @@
-# scons: Exr Invert Gamma Jpeg
+# scons: pluginExr pluginInvert pluginGamma pluginJpeg
 
 from pyTuttle import tuttle
 from nose.tools import *

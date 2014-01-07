@@ -1,4 +1,4 @@
-# scons: Ramp Text Png Exr
+# scons: pluginRamp pluginText pluginPng pluginExr
 
 import os
 

@@ -1,4 +1,4 @@
-# scons: Checkerboard Blur Png
+# scons: pluginCheckerboard pluginBlur pluginPng
 
 from pyTuttle import tuttle
 from nose.tools import *

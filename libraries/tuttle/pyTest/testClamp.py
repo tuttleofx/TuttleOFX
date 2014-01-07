@@ -1,4 +1,4 @@
-# scons: Png MathOperator Diff
+# scons: pluginPng pluginMathOperator pluginDiff
 
 from pyTuttle import tuttle
 

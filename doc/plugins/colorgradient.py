@@ -1,4 +1,4 @@
-# scons: ColorGradient Text Png
+# scons: pluginColorGradient pluginText pluginPng
 
 import os
 

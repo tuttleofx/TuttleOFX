@@ -1,4 +1,4 @@
-# scons: Checkerboard LensDistort Merge
+# scons: pluginCheckerboard pluginLensDistort pluginMerge
 
 from pyTuttle import tuttle
 import os

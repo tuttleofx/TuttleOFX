@@ -1,4 +1,4 @@
-# scons: Constant Text Png
+# scons: pluginConstant pluginText pluginPng
 
 import os
 

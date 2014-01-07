@@ -1,4 +1,4 @@
-# scons: ColorWheel Text Png
+# scons: pluginColorWheel pluginText pluginPng
 
 import os
 

@@ -1,4 +1,4 @@
-# scons: Text Png AudioVideo Diff
+# scons: pluginText pluginPng pluginAudioVideo pluginDiff
 import os
 
 from pyTuttle.tuttle import *

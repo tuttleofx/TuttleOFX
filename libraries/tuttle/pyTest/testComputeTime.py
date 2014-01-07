@@ -1,4 +1,4 @@
-# scons: AudioVideo
+# scons: pluginAudioVideo
 
 from pyTuttle import tuttle
 import time
