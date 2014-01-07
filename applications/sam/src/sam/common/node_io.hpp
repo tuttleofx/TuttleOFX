@@ -47,7 +47,7 @@ void coutProperties( const ttl::Graph::Node& node )
 	
 	BOOST_FOREACH( ttl::ofx::property::PropertyMap::const_reference clip, props.getMap() )
 	{
-		TUTTLE_LOG_INFO(
+		TUTTLE_COUT(
 					"\t" <<
 					color->_green <<
 					clip.first << " " <<
@@ -98,7 +98,7 @@ void coutClipsWithDetails( const ttl::Graph::Node& node )
 			stream << ", use temporal access";
 		}
 		stream << color->_std;
-		TUTTLE_LOG_INFO( stream.str() );
+		TUTTLE_COUT( stream.str() );
 	}
 }
 
@@ -107,7 +107,7 @@ void coutClips( const ttl::Graph::Node& node )
 	const ttl::ofx::attribute::OfxhClipImageSet& clips = node.getClipImageSet();
 	BOOST_FOREACH( const ttl::ofx::attribute::OfxhClipImage& clip, clips.getClipsByOrder() )
 	{
-		TUTTLE_LOG_INFO( clip.getName() );
+		TUTTLE_COUT( clip.getName() );
 	}
 }
 
@@ -238,7 +238,7 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 			stream << "\t" << color->_green << std::left << std::setw( 25 ) << param.getScriptName() << ": " <<
 					  color->_std << std::setw( 15 ) << typeName << color->_std;
 			
-			TUTTLE_LOG_INFO( stream.str() );
+			TUTTLE_COUT( stream.str() );
 			for( std::size_t i = 0; i < choiceValues.size(); ++i )
 			{
 				std::stringstream stream;
@@ -257,7 +257,7 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 					stream << "\"" << choiceLabelValues[i] << "\"";
 				}
 				stream << color->_std;
-				TUTTLE_LOG_INFO( stream.str() );
+				TUTTLE_COUT( stream.str() );
 			}
 		}
 	}
@@ -280,7 +280,7 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 
 			stream << "  [" << minDisplayValue << " --> " << maxDisplayValue << "]";
 		}
-		TUTTLE_LOG_INFO( stream.str() );
+		TUTTLE_COUT( stream.str() );
 	}
 	
 	if( param.getProperties().hasProperty( kOfxParamPropHint ) )
@@ -294,7 +294,7 @@ void coutParameterWithDetails( const ttl::ofx::attribute::OfxhParam& param )
 			{
 				std::stringstream stream;
 				stream << std::left << std::setw( 10 ) << " " << hintString;
-				TUTTLE_LOG_INFO( stream.str() );
+				TUTTLE_COUT( stream.str() );
 			}
 		}
 	}
@@ -323,7 +323,7 @@ void coutParameters( const ttl::Graph::Node& node )
 	{
 		//if( param.getSecret() )
 		//    continue; // ignore secret parameters
-		TUTTLE_LOG_INFO( param.getScriptName() );
+		TUTTLE_COUT( param.getScriptName() );
 	}
 }
 
