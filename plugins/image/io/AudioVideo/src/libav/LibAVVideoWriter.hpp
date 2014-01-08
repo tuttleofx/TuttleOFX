@@ -34,7 +34,7 @@ public:
 		return true;
 	}
 
-	int  start( );
+	int  start( const std::map<std::string, std::string>& metas );
 	bool finishInit();
 	int  execute( boost::uint8_t* const in_buffer, const int in_width, const int height, const PixelFormat in_fmt = PIX_FMT_RGB24 );
 	void finish();

@@ -319,6 +319,78 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	av_free( avCodecContext );
 	
 	/// METADATA PARAMETERS
+	std::map<std::string, std::string> keys;
+	std::map<std::string, std::string> hints;
+
+	keys[ kParamMetaAlbum           ] = "Album";
+	keys[ kParamMetaAlbumArtist     ] = "Album Artist";
+	keys[ kParamMetaArtist          ] = "Artist";
+	keys[ kParamMetaComment         ] = "Comment";
+	keys[ kParamMetaComposer        ] = "Composer";
+	keys[ kParamMetaCopyright       ] = "Copyright";
+	keys[ kParamMetaCreationTime    ] = "Creation Time";
+	keys[ kParamMetaDate            ] = "Date";
+	keys[ kParamMetaDisc            ] = "Disc";
+	keys[ kParamMetaEncoder         ] = "Encoder";
+	keys[ kParamMetaEncodedBy       ] = "Encoded by";
+	keys[ kParamMetaFilename        ] = "Filename";
+	keys[ kParamMetaGenre           ] = "Genre";
+	keys[ kParamMetaLanguage        ] = "Language";
+	keys[ kParamMetaPerformer       ] = "Performer";
+	keys[ kParamMetaPublisher       ] = "Publisher";
+	keys[ kParamMetaServiceName     ] = "Service Pame";
+	keys[ kParamMetaServiceProvider ] = "Service Provider";
+	keys[ kParamMetaTitle           ] = "Title";
+	keys[ kParamMetaTrack           ] = "Track";
+	keys[ kParamMetaVariantBitrate  ] = "Variant Bitrate";
+
+	hints[ kParamMetaAlbum           ] = "name of the set this work belongs to";
+	hints[ kParamMetaAlbumArtist     ] = "main creator of the set/album, if different from artist. (e.g. 'Various Artists' for compilation albums.)";
+	hints[ kParamMetaArtist          ] = "main creator of the work";
+	hints[ kParamMetaComment         ] = "any additional description of the file.";
+	hints[ kParamMetaComposer        ] = "who composed the work, if different from artist.";
+	hints[ kParamMetaCopyright       ] = "name of copyright holder.";
+	hints[ kParamMetaCreationTime    ] = "time when the file was created, preferably in ISO 8601.";
+	hints[ kParamMetaDate            ] = "date when the file was created, preferably in ISO 8601.";
+	hints[ kParamMetaDisc            ] = "number of a subset, e.g. disc in a multi-disc collection.";
+	hints[ kParamMetaEncoder         ] = "name/settings of the software/hardware that produced the file.";
+	hints[ kParamMetaEncodedBy       ] = "person/group who created the file.";
+	hints[ kParamMetaFilename        ] = "original name of the file.";
+	hints[ kParamMetaGenre           ] = "self-evident>.";
+	hints[ kParamMetaLanguage        ] = "main language in which the work is performed, preferably in ISO 639-2 format. Multiple languages can be specified by separating them with commas.";
+	hints[ kParamMetaPerformer       ] = "artist who performed the work, if different from artist. ( E.g for 'Also sprach Zarathustra', artist would be 'Richard Strauss' and performer 'London Philharmonic Orchestra'.";
+	hints[ kParamMetaPublisher       ] = "name of the label/publisher.";
+	hints[ kParamMetaServiceName     ] = "name of the service in broadcasting (channel name).";
+	hints[ kParamMetaServiceProvider ] = "name of the service provider in broadcasting.";
+	hints[ kParamMetaTitle           ] = "name of the work.";
+	hints[ kParamMetaTrack           ] = "number of this work in the set, can be in form current/total.";
+	hints[ kParamMetaVariantBitrate  ] = "the total bitrate of the bitrate variant that the current stream is part of";
+
+	std::map<std::string, std::string>::iterator ritKeys;
+	std::map<std::string, std::string>::iterator ritHint;
+
+	for( ritKeys = keys.begin(), ritHint = hints.begin();
+		 ritKeys != keys.end();
+		 ++ritKeys, ++ritHint )
+	{
+		OFX::StringParamDescriptor* metaParam = desc.defineStringParam( ritKeys->first );
+		metaParam->setLabel( ritKeys->second );
+		metaParam->setHint( ritHint->second );
+		metaParam->setParent( metaGroup );
+
+		if( ritKeys->first == kParamMetaEncoder )
+		{
+			std::ostringstream os;
+			os << "TuttleOFX AudioVideo ";
+			os << getMajorVersion();
+			os << ".";
+			os << getMinorVersion();
+
+			metaParam->setDefault( os.str() );
+			metaParam->setEnabled( false );
+		}
+	}
+
 	OFX::GroupParamDescriptor* metaDetailledGroup   = desc.defineGroupParam( kParamMetaDetailledGroup );
 	metaDetailledGroup->setLabel( "Detailled" );
 	metaDetailledGroup->setAsTab( );

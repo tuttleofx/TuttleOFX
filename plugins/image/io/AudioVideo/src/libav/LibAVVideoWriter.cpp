@@ -144,7 +144,7 @@ LibAVVideoWriter::LibAVVideoWriter()
 
 }
 
-int LibAVVideoWriter::start( )
+int LibAVVideoWriter::start( const std::map<std::string, std::string>& metas )
 {
 	if( !_avFormatOptions )
 	{
@@ -198,6 +198,13 @@ int LibAVVideoWriter::start( )
 		
 		if( filename )
 			av_strlcpy( _avFormatOptions->filename, filename, sizeof( _avFormatOptions->filename ) );
+
+		// insert metadatas in format container
+		typedef std::pair<std::string, std::string> metaPair;
+		BOOST_FOREACH( const metaPair meta, metas )
+		{
+			av_dict_set( &_avFormatOptions->metadata, meta.first.c_str(), meta.second.c_str(), 0 );
+		}
 
 		TUTTLE_LOG_TRACE( "avWriter: " << std::string( _ofmt->name ) << " format selected" );
 	}
