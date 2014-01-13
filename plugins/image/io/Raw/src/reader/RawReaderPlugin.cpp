@@ -175,7 +175,13 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		if( !p1.cdesc[3] )
 			p1.cdesc[3] = 'G';
 		for( int i = 0; i < 16; ++i )
+		{
+#if LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0,15)
 			putchar( p1.cdesc[rawProcessor.fcol( i >> 1, i & 1 )] );
+#else
+			putchar( p1.cdesc[rawProcessor.fc( i >> 1, i & 1 )] );
+#endif
+		}
 		ss << "\n";
 	}
 	ss << "Daylight multipliers: ";
