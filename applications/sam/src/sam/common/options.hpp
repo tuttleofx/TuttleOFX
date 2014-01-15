@@ -7,7 +7,7 @@ namespace sam {
 #define SAM_EXAMPLE_TITLE_COUT( ... )   TUTTLE_COUT( std::endl << color->_yellow << "  " << __VA_ARGS__ << color->_std );
 #define SAM_EXAMPLE_LINE_COUT( x, ... ) TUTTLE_COUT( color->_green << "    " << std::setw(SAM_HELP_MARGING) << x << __VA_ARGS__ << color->_std );
 
-static const char* const kUrlTuttleofxProject = "http://sites.google.com/site/tuttleofx";
+static const char* const kUrlTuttleofxProject = "http://www.tuttleofx.org";
 
 /// options with short-cut
 
