@@ -240,10 +240,10 @@ protected:
 
 public:
 	explicit Suite( OfxStatus s )
-		: std::runtime_error( mapStatusToString( _status ) )
+		: std::runtime_error( mapStatusToString( s ) )
 		, _status( s ) {}
 	explicit Suite( OfxStatus s, const std::string& what )
-		: std::runtime_error( mapStatusToString( _status ) + " : " + what )
+		: std::runtime_error( mapStatusToString( s ) + " : " + what )
 		, _status( s ) {}
 	OfxStatus status( void ) { return _status; }
 	operator OfxStatus() { return _status; }
