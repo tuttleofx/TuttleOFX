@@ -395,6 +395,7 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 	boost::filesystem::path p( paths.at(0) );
 	std::string inputExtension = p.extension().string();
 	inputExtension = inputExtension.substr( 1 ); // remove '.' at begining
+	boost::algorithm::to_lower(inputExtension);
 	unsigned int numberOfSupportedExtension = std::numeric_limits<unsigned int>::max();
 	BOOST_FOREACH( ttl::ofx::imageEffect::OfxhImageEffectPlugin* node, nodeList )
 	{
