@@ -1,6 +1,8 @@
 #ifndef _EXRREADER_DEFINITIONS_HPP_
 #define _EXRREADER_DEFINITIONS_HPP_
 
+#include <EXRDefinitions.hpp>
+
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/context/ReaderDefinition.hpp>
 
@@ -15,6 +17,8 @@ static const std::string kParamOutputBlueIs       = "blueIs";
 static const std::string kParamOutputAlphaIs      = "alphaIs";
 
 static const std::string kParamOutputData         = "outputData";
+
+static const std::string kParamFileBitDepth       = "fileBitDepth";
 
 }
 }

@@ -13,6 +13,7 @@ static const std::string kTuttlePluginBitDepth      = "bitDepth";
 static const std::string kTuttlePluginBitDepthLabel = "Bit depth";
 
 static const std::string kTuttlePluginBitDepthAuto  = "auto";
+static const std::string kTuttlePluginBitDepthNone  = "none";
 static const std::string kTuttlePluginBitDepth8     = "8i    8  bits integer";
 static const std::string kTuttlePluginBitDepth10    = "10i   10 bits integer";
 static const std::string kTuttlePluginBitDepth12    = "12i   12 bits integer";

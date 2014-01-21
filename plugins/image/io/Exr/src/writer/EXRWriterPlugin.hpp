@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_EXRWRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_EXRWRITER_PLUGIN_HPP_
 
-#include "EXRWriterDefinitions.hpp"
+#include <EXRDefinitions.hpp>
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
 namespace tuttle {
@@ -11,10 +11,11 @@ namespace writer {
 
 struct EXRWriterProcessParams
 {
-	std::string             _filepath;          ///< filepath
-	ETuttlePluginBitDepth   _bitDepth;          ///< Bit depth
-	ETuttlePluginComponents _componentsType;    ///< Components type
-	EParamStorage           _storageType;       ///< Storage type (Scan line or tile)
+	std::string _filepath;
+	ETuttlePluginFileBitDepth _fileBitDepth;
+	ETuttlePluginComponents _componentsType;
+	EParamStorage _storageType;
+	EParamCompression _compression;
 };
 
 /**
@@ -31,8 +32,10 @@ public:
 	void                   render( const OFX::RenderArguments& args );
 
 protected:
-	OFX::ChoiceParam*     _componentsType;  ///< Components type
-	OFX::ChoiceParam*     _storageType;     ///< Storage type
+	OFX::ChoiceParam* _paramComponentsType;
+	OFX::ChoiceParam* _paramStorageType;
+	OFX::ChoiceParam* _paramFileBitDepth;
+	OFX::ChoiceParam* _paramCompression;
 };
 
 }

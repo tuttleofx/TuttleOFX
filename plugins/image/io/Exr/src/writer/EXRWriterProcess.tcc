@@ -1,5 +1,6 @@
-#include "EXRWriterDefinitions.hpp"
+#include <EXRDefinitions.hpp>
 #include "EXRWriterPlugin.hpp"
+#include "EXRWriterProcess.hpp"
 
 
 #include <terry/globals.hpp>
@@ -50,9 +51,9 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 	try
 	{
-		switch( _params._bitDepth )
+		switch( _params._fileBitDepth )
 		{
-			case eTuttlePluginBitDepth16f:
+			case eTuttlePluginFileBitDepth16f:
 			{
 				switch( _params._componentsType )
 				{
@@ -97,7 +98,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case eTuttlePluginBitDepth32f:
+			case eTuttlePluginFileBitDepth32f:
 			{
 				switch( _params._componentsType )
 				{
@@ -142,7 +143,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case eTuttlePluginBitDepth32:
+			case eTuttlePluginFileBitDepth32:
 			{
 				switch( _params._componentsType )
 				{
@@ -186,6 +187,10 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 						    << exception::user( "Exr Writer: components not supported" ) );
 				}
 				break;
+			}
+			case eTuttlePluginFileBitDepthNone:
+			{
+				BOOST_THROW_EXCEPTION( exception::Bug() );
 			}
 		}
 	}
@@ -286,7 +291,48 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 	image_t img( src.width(), src.height() );
 	view_t  dvw( view( img ) );
 	copy_and_convert_pixels( src, dvw );
-	Imf::Header header( src.width(), src.height() );
+	Imf::Header header( src.width(), src.height(), (float) _plugin._clipSrc->getPixelAspectRatio() );
+
+	switch( _params._compression )
+	{
+		case eParamCompression_RLE:
+			header.compression() = Imf::RLE_COMPRESSION;
+			break;
+		case eParamCompression_ZIPS:
+			header.compression() = Imf::ZIPS_COMPRESSION;
+			break;
+		case eParamCompression_ZIP:
+			header.compression() = Imf::ZIP_COMPRESSION;
+			break;
+		case eParamCompression_PIZ:
+			header.compression() = Imf::PIZ_COMPRESSION;
+			break;
+		case eParamCompression_PXR24:
+			header.compression() = Imf::PXR24_COMPRESSION;
+			break;
+		case eParamCompression_B44:
+			header.compression() = Imf::B44_COMPRESSION;
+			break;
+		case eParamCompression_B44A:
+			header.compression() = Imf::B44A_COMPRESSION;
+			break;
+		case eParamCompression_None:
+			header.compression() = Imf::NO_COMPRESSION;
+			break;
+		default:
+			BOOST_THROW_EXCEPTION( exception::Bug()
+					<< exception::dev("EXRWriter: unrecognized compression parameter value.") );
+			break;
+	}
+	
+	// TODO
+	// RoI
+//	header.dataWindow()
+	// RoD
+//	header.displayWindow()
+//	header.lineOrder() = Imf::INCREASING_Y;
+	
+
 	switch( pixType )
 	{
 		case Imf::HALF:

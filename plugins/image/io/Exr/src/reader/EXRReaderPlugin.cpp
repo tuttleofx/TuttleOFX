@@ -22,21 +22,24 @@ using namespace boost::gil;
 
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
-	, _channels( 0 )
 	, _par( 1.0 )
 {
-	_outComponents   = fetchChoiceParam( kTuttlePluginChannel );
-	_redComponents   = fetchChoiceParam( kParamOutputRedIs );
-	_greenComponents = fetchChoiceParam( kParamOutputGreenIs );
-	_blueComponents  = fetchChoiceParam( kParamOutputBlueIs );
-	_alphaComponents = fetchChoiceParam( kParamOutputAlphaIs );
+	_paramOutComponents = fetchChoiceParam( kTuttlePluginChannel );
 	
-	_outputData      = fetchChoiceParam( kParamOutputData );
+	_paramRedComponents = fetchChoiceParam( kParamOutputRedIs );
+	_paramGreenComponents = fetchChoiceParam( kParamOutputGreenIs );
+	_paramBlueComponents = fetchChoiceParam( kParamOutputBlueIs );
+	_paramAlphaComponents = fetchChoiceParam( kParamOutputAlphaIs );
+
+	_paramsChannelChoice.push_back( _paramRedComponents );
+	_paramsChannelChoice.push_back( _paramGreenComponents );
+	_paramsChannelChoice.push_back( _paramBlueComponents );
+	_paramsChannelChoice.push_back( _paramAlphaComponents );
+
+	_paramOutputData = fetchChoiceParam( kParamOutputData );
 	
-	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputRedIs ) );
-	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputGreenIs ) );
-	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputBlueIs ) );
-	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputAlphaIs ) );
+	_paramFileCompression = fetchChoiceParam( kParamCompression );
+	_paramFileBitDepth = fetchChoiceParam( kParamFileBitDepth );
 
 	updateCombos();
 }
@@ -46,16 +49,16 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 	EXRReaderProcessParams params;
 
 	params._filepath       = getAbsoluteFilenameAt( time );
-	params._outComponents  = _outComponents->getValue();
-	params._fileComponents = _channels;
+	params._outComponents  = _paramOutComponents->getValue();
+	params._fileComponents = _channelNames.size();
 	
 	
-	params._redChannelIndex   = _redComponents->getValue();
-	params._greenChannelIndex = _greenComponents->getValue();
-	params._blueChannelIndex  = _blueComponents->getValue();
-	params._alphaChannelIndex = _alphaComponents->getValue();
+	params._redChannelIndex   = _paramRedComponents->getValue();
+	params._greenChannelIndex = _paramGreenComponents->getValue();
+	params._blueChannelIndex  = _paramBlueComponents->getValue();
+	params._alphaChannelIndex = _paramAlphaComponents->getValue();
 	
-	params._displayWindow     = ( _outputData->getValue() == 0 );
+	params._displayWindow     = ( _paramOutputData->getValue() == 0 );
 	
 	return params;
 }
@@ -69,32 +72,32 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else if( paramName == kTuttlePluginChannel )
 	{
-		switch( _outComponents->getValue() )
+		switch( _paramOutComponents->getValue() )
 		{
 			case eParamReaderChannelGray:
 			{
-				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+				for( std::size_t j = 0; j < _paramsChannelChoice.size() - 1; ++j )
 				{
-					_vChannelChoice[j]->setIsSecret( true );
+					_paramsChannelChoice[j]->setIsSecret( true );
 				}
-				_vChannelChoice[3]->setIsSecret( false );
+				_paramsChannelChoice[3]->setIsSecret( false );
 				break;
 			}
 			case eParamReaderChannelRGB:
 			{
-				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+				for( std::size_t j = 0; j < _paramsChannelChoice.size() - 1; ++j )
 				{
-					_vChannelChoice[j]->setIsSecret( false );
+					_paramsChannelChoice[j]->setIsSecret( false );
 				}
-				_vChannelChoice[3]->setIsSecret( true );
+				_paramsChannelChoice[3]->setIsSecret( true );
 				break;
 			}
 			case eParamReaderChannelAuto:
 			case eParamReaderChannelRGBA:
 			{	
-				for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
+				for( std::size_t j = 0; j < _paramsChannelChoice.size(); ++j )
 				{
-					_vChannelChoice[j]->setIsSecret( false );
+					_paramsChannelChoice[j]->setIsSecret( false );
 				}
 				break;
 			}
@@ -120,44 +123,96 @@ void EXRReaderPlugin::updateCombos()
 
 	_par = h.pixelAspectRatio();
 
+	Imf::Compression compression = h.compression();
+	
+	switch( compression )
+	{
+		case RLE_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_RLE );
+			break;
+		case ZIPS_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_ZIPS );
+			break;
+		case ZIP_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_ZIP );
+			break;
+		case PIZ_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_PIZ );
+			break;
+		case PXR24_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_PXR24 );
+			break;
+		case B44_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_B44 );
+			break;
+		case B44A_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_B44A );
+			break;
+		case NO_COMPRESSION:
+			_paramFileCompression->setValue( eParamCompression_None );
+			break;
+		default:
+			_paramFileCompression->setValue( eParamCompression_None );
+			TUTTLE_LOG_WARNING( "EXRReader: Unknown compression " << compression );
+			break;
+	}
+	
 	// Hide output channel selection till we don't select a channel.
-	for( std::size_t i = 0; i < _vChannelChoice.size(); ++i )
+	for( std::size_t i = 0; i < _paramsChannelChoice.size(); ++i )
 	{
 		//_vChannelChoice[i]->setIsSecret( true );
-		_vChannelChoice[i]->resetOptions();
+		_paramsChannelChoice[i]->resetOptions();
 	}
-	_vChannelNames.clear();
+	_channelNames.clear();
 	for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
 	{
-		_vChannelNames.push_back( it.name() );
+		_channelNames.push_back( it.name() );
 		//TUTTLE_LOG_VAR( it.name() );
-		for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
+		for( std::size_t j = 0; j < _paramsChannelChoice.size(); ++j )
 		{
-			_vChannelChoice[j]->appendOption( it.name() );
+			_paramsChannelChoice[j]->appendOption( it.name() );
 		}
-		++_channels;
-		switch( _channels )
+	}
+	switch( _channelNames.size() )
+	{
+		case 1:
 		{
-			case 1:
-			{
-				for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
-					_vChannelChoice.at(j)->setValue( 0 );
-				break;
-			}
-			case 3:
-			{
-				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; j++ )
-					_vChannelChoice.at(j)->setValue( 2 - j );
-				_vChannelChoice.at(3)->setValue( 0 );
-				break;
-			}
-			case 4:
-			{
-				for( std::size_t j = 0; j < _vChannelChoice.size(); j++ )
-					_vChannelChoice.at(j)->setValue( 3 - j );
-				break;
-			}
+			for( std::size_t j = 0; j < _paramsChannelChoice.size(); j++ )
+				_paramsChannelChoice.at(j)->setValue( 0 );
+			break;
 		}
+		case 3:
+		{
+			for( std::size_t j = 0; j < _paramsChannelChoice.size() - 1; j++ )
+				_paramsChannelChoice.at(j)->setValue( 2 - j );
+			_paramsChannelChoice.at(3)->setValue( 0 );
+			break;
+		}
+		case 4:
+		{
+			for( std::size_t j = 0; j < _paramsChannelChoice.size(); j++ )
+				_paramsChannelChoice.at(j)->setValue( 3 - j );
+			break;
+		}
+	}
+	
+	const std::string& firstChannelName = _channelNames[ _paramsChannelChoice[0]->getValue() ];
+	Imf::PixelType firstChannelType = cl.find(firstChannelName.c_str()).channel().type;
+	switch( firstChannelType )
+	{
+		case UINT:
+			_paramFileBitDepth->setValue( eTuttlePluginFileBitDepth32 );
+			break;
+		case HALF:
+			_paramFileBitDepth->setValue( eTuttlePluginFileBitDepth16f );
+			break;
+		case FLOAT:
+			_paramFileBitDepth->setValue( eTuttlePluginFileBitDepth32f );
+			break;
+		default:
+			_paramFileBitDepth->setValue( eTuttlePluginFileBitDepthNone );
+			TUTTLE_LOG_WARNING( "EXRReader: Unknown bit depth " << firstChannelType );
+			break;
 	}
 }
 
@@ -167,7 +222,7 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	
 	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
-		switch( _channels )
+		switch( _channelNames.size() )
 		{
 			case 1:
 			{
@@ -189,11 +244,8 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			}
 			default:
 			{
-				std::string msg = "EXR: not support ";
-				msg += _channels;
-				msg += " channels.";
 				BOOST_THROW_EXCEPTION( exception::FileNotExist()
-									   << exception::user( msg ) );
+									   << exception::user() + "EXR: doesn't support " + _channelNames.size() + " channels." );
 				break;
 			}
 		}
@@ -213,7 +265,7 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		InputFile in( filepath.c_str() );
 		const Header& h = in.header();
 		const Imath::Box2i displayWindow( h.displayWindow() );
-		if( _outputData->getValue() == 0 )
+		if( _paramOutputData->getValue() == 0 )
 		{
 			rod.x1 = 0;
 			rod.y1 = 0;
