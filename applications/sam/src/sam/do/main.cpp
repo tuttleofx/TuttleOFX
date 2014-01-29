@@ -1223,9 +1223,7 @@ int main( int argc, char** argv )
 	catch( ... )
 	{
 		TUTTLE_LOG_ERROR( "[sam-do] Error" );
-#ifndef TUTTLE_PRODUCTION
 		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
-#endif
 		exit( 254 );
 	}
 	return 0;
