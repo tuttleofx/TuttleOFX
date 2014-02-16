@@ -1,16 +1,14 @@
 #include <tuttle/common/utils/global.hpp>
-	
-#include <boost/gil/gil_all.hpp>
 
 #define png_infopp_NULL (png_infopp)NULL
 #define int_p_NULL (int*)NULL
-
+// Should be included first to avoid setjmp.h include troubles
 #include <boost/gil/extension/io/png_io.hpp>
 
+#include <boost/gil/gil_all.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/all.hpp>
-
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
