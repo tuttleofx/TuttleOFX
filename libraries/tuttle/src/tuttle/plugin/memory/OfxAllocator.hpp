@@ -36,7 +36,7 @@ public:
 	OfxAllocator( const OfxAllocator<U>& ) {}
 
 public:
-	pointer allocate( const size_type n, const void* = 0 )
+	inline pointer allocate( const size_type n, const void* = 0 )
 	{
 		++size_all;
 		//TUTTLE_TLOG( TUTTLE_TRACE, "Use OfxAllocator to allocate" );
@@ -46,7 +46,7 @@ public:
 		return t;
 	}
 
-	void deallocate( void* ptr, size_type )
+	inline void deallocate( void* ptr, size_type )
 	{
 		--size_all;
 		//TUTTLE_TLOG( TUTTLE_TRACE, "Use OfxAllocator to deallocate (address:" << ptr << ") (-)" << size_all );
@@ -55,9 +55,9 @@ public:
 		//TUTTLE_TLOG( TUTTLE_TRACE, "deallocate done." );
 	}
 
-	void construct( pointer p, const T& val ) { new ( (T*) p )T( val ); }
+	inline void construct( pointer p, const T& val ) { new ( (T*) p )T( val ); }
 
-	void destroy( pointer p ) { p->~T(); }
+	inline void destroy( pointer p ) { p->~T(); }
 
 	template <class U>
 	struct rebind
@@ -65,15 +65,16 @@ public:
 		typedef OfxAllocator<U> other;
 	};
 
-	OfxAllocator<T>& operator=( const OfxAllocator& ) { return *this; }
+	inline OfxAllocator<T>& operator=( const OfxAllocator<T>& ) { return *this; }
 
 	template <class U>
-	OfxAllocator& operator=( const OfxAllocator<U>& ) { return *this; }
+	inline OfxAllocator<T>& operator=( const OfxAllocator<U>& ) { return *this; }
 
-	pointer       address( reference x ) const       { return &x; }
-	const_pointer address( const_reference x ) const { return &x; }
+	inline pointer       address( reference x ) const       { return &x; }
+	inline const_pointer address( const_reference x ) const { return &x; }
 
-	size_type max_size() const { return size_t( -1 ); }
+	inline size_type max_size() const { return size_t( -1 ); }
+
 };
 
 template <typename T>
