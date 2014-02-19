@@ -75,6 +75,9 @@ public:
 
 	inline size_type max_size() const { return std::numeric_limits<size_type>::max() / sizeof(T); }
 
+	inline bool operator==( OfxAllocator<T> const& ) { return true; }
+	inline bool operator!=( OfxAllocator<T> const& a ) { return !operator==(a); }
+
 };
 
 template <typename T>
