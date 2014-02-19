@@ -73,7 +73,7 @@ public:
 	inline pointer       address( reference x ) const       { return &x; }
 	inline const_pointer address( const_reference x ) const { return &x; }
 
-	inline size_type max_size() const { return size_t( -1 ); }
+	inline size_type max_size() const { return std::numeric_limits<size_type>::max() / sizeof(T); }
 
 };
 
