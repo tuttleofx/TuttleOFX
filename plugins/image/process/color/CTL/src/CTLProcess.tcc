@@ -11,13 +11,6 @@ namespace tuttle {
 namespace plugin {
 namespace ctl {
 
-/**
- * @brief HACK: workaround CTL limitation to load a module which source code
- * comes from a string and not a file.
- */
-void loadModule( Ctl::Interpreter& interpreter, const std::string &moduleName, const std::string& code );
-void loadModuleRecursive( Ctl::Interpreter& interpreter,const std::string &moduleName, const std::string& code );
-
 namespace {
 
 CTLPlugin* ctlPlugin;
@@ -151,15 +144,14 @@ void CTLProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		case eParamChooseInputCode:
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "CTL -- Load code: " << _params._code );
-			loadModule( _interpreter, _params._module, _params._code );
+			TUTTLE_LOG_TRACE( "CTL -- Load code: " << _params._code );
+			_interpreter.loadModule( "", "", _params._code );
 			break;
 		}
 		case eParamChooseInputFile:
 		{
-			_interpreter.setModulePaths( _params._paths );
-			TUTTLE_TLOG( TUTTLE_INFO, "CTL -- Load module: " << _params._module );
-			_interpreter.loadModule( _params._module );
+			TUTTLE_LOG_TRACE( "CTL -- Load module: " << _params._filename << " " << _params._module );
+			_interpreter.loadFile( _params._filename, _params._module );
 			break;
 		}
 	}
