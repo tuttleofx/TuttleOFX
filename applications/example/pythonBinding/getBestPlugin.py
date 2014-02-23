@@ -4,30 +4,36 @@ import sys
 
 
 def getBestIOPlugin(extension, context):
+	"""
+	Returns the node identifier that supports the given file extension,
+	for a specific plugin context.
+	"""
 	result = None
-	extSizeForPlugin = sys.maxsize
-	test_extension = extension if not extension.startswith(".") else extension[1:]
-	tuttle.core().preload(False)
-	# print("test_extension: '%s'" % test_extension)
-	# print("tuttle.core().getPlugins(): '%s'" % str(tuttle.core().getPlugins()))
-	# print("tuttle.core().getPluginCache().getPlugins(): '%s'" % str(tuttle.core().getPluginCache().getPlugins()))
-	for p in tuttle.core().getPlugins():
-		# print(p.getIdentifier() + " (v" + str( p.getVersionMajor() ) + "." + str( p.getVersionMinor() ) + ")")
-		g = tuttle.Graph()
+	# If multiple plugins support the same extension,
+	# we keep the plugin which declares less supported extensions.
+	# So we suppose that this plugin is more specialized...
+	# This is a simple but non optimal trick.
+	minExtensionsOfPlugin = sys.maxsize
+	
+	# Normalize the input extension, so the searchExtension should be something like "jpg".
+	searchExtension = extension if not extension.startswith(".") else extension[1:]
+	
+	for plugin in tuttle.core().getImageEffectPluginCache().getPlugins():
+		# print(plugin.getIdentifier() + " (v" + str( plugin.getVersionMajor() ) + "." + str( plugin.getVersionMinor() ) + ")")
 		try:
-			n = g.createNode(p.getIdentifier()).asImageEffectNode()
-
-			if n.getContext() == context:
-				# print(p.getIdentifier())
-				extSize = n.getProperties().getDimension("TuttleOfxImageEffectPropSupportedExtensions")
-				if extSize >= extSizeForPlugin:
+			plugin.loadAndDescribeActions()
+			desc = plugin.getDescriptor()
+			if plugin.supportsContext(context):
+				supportedExtensionsProp = fetchStringProperty("TuttleOfxImageEffectPropSupportedExtensions")
+				supportedExtensionsSize = supportedExtensionsProp.getDimension()
+				if supportedExtensionsSize >= minExtensionsOfPlugin:
 					break
-				for extIndex in range(extSize):
-					curExt = n.getProperties().getStringProperty("TuttleOfxImageEffectPropSupportedExtensions", extIndex)
-					# print(p.getIdentifier(), curExt, extSize, extSizeForPlugin)
-					if test_extension == curExt:
+				supportedExtensions = supportedExtensionsProp.getValues()
+				for ext in supportedExtensions:
+					# print(plugin.getIdentifier(), ext, supportedExtensionsSize, minExtensionsOfPlugin)
+					if ext == searchExtension:
 						result = p.getIdentifier()
-						extSizeForPlugin = extSize
+						minExtensionsOfPlugin = supportedExtensionsSize
 						break
 		except Exception:
 			# The creation of the node could failed, if not fully supported
@@ -37,9 +43,15 @@ def getBestIOPlugin(extension, context):
 	return result
 
 def getBestReader(extension):
+	"""
+	Returns the reader node identifier that supports the given file extension.
+	"""
 	return getBestIOPlugin(extension, "OfxImageEffectContextReader")
 
 def getBestWriter(extension):
+	"""
+	Returns the writer node identifier that supports the given file extension.
+	"""
 	return getBestIOPlugin(extension, "OfxImageEffectContextWriter")
 
 
