@@ -43,6 +43,7 @@ CTLProcessParams<CTLPlugin::Scalar> CTLPlugin::getProcessParams( const OfxPointD
 //			std::getline( f, params._code, '\0' );
 //			split( params._paths, paths, is_any_of(":;"), token_compress_on );
 			const path filename = path( _paramFile->getValue() );
+			params._filename = _paramFile->getValue();
 			params._module = filename.stem().string();
 			params._paths.push_back( filename.parent_path().string() );
 			break;
