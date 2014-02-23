@@ -19,12 +19,12 @@ def getBestIOPlugin(extension, context):
 	searchExtension = extension if not extension.startswith(".") else extension[1:]
 	
 	for plugin in tuttle.core().getImageEffectPluginCache().getPlugins():
-		# print(plugin.getIdentifier() + " (v" + str( plugin.getVersionMajor() ) + "." + str( plugin.getVersionMinor() ) + ")")
 		try:
 			plugin.loadAndDescribeActions()
 			desc = plugin.getDescriptor()
 			if plugin.supportsContext(context):
-				supportedExtensionsProp = fetchStringProperty("TuttleOfxImageEffectPropSupportedExtensions")
+				# print(plugin.getIdentifier() + " (v" + str( plugin.getVersionMajor() ) + "." + str( plugin.getVersionMinor() ) + ")")
+				supportedExtensionsProp = desc.getProperties().fetchStringProperty("TuttleOfxImageEffectPropSupportedExtensions")
 				supportedExtensionsSize = supportedExtensionsProp.getDimension()
 				if supportedExtensionsSize >= minExtensionsOfPlugin:
 					break
@@ -32,7 +32,7 @@ def getBestIOPlugin(extension, context):
 				for ext in supportedExtensions:
 					# print(plugin.getIdentifier(), ext, supportedExtensionsSize, minExtensionsOfPlugin)
 					if ext == searchExtension:
-						result = p.getIdentifier()
+						result = plugin.getIdentifier()
 						minExtensionsOfPlugin = supportedExtensionsSize
 						break
 		except Exception:
