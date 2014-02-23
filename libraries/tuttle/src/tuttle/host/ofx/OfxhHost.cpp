@@ -43,7 +43,7 @@
 #include <cfloat>
 #include <cstring>
 
-//typedef OfxPlugin* ( *OfxGetPluginType )( int );
+
 namespace tuttle {
 namespace host {
 namespace ofx {

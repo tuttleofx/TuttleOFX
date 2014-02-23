@@ -120,7 +120,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	OfxhImageEffectPlugin& p = dynamic_cast<OfxhImageEffectPlugin&>( op );
 
-	OfxhPluginHandle plug( p, getHost() );
+	OfxhPluginLoadGuard plug( p, getHost() );
 
 	int rval = plug->mainEntry( kOfxActionLoad, 0, 0, 0 );
 	

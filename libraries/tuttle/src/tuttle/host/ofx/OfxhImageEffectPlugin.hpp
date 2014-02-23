@@ -32,7 +32,7 @@
 
 #include "OfxhImageEffectHost.hpp"
 #include "OfxhImageEffectNode.hpp"
-#include "OfxhPluginHandle.hpp"
+#include "OfxhPluginLoadGuard.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
 
@@ -71,12 +71,12 @@ public:
 	typedef std::set<std::string> ContextSet;
 
 private:
-	OfxhImageEffectPluginCache* _pc;
+	OfxhImageEffectPluginCache* _imageEffectPluginCache;
 
 	/// map to store contexts in
 	ContextMap _contexts;
 	ContextSet _knownContexts;
-	boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
+	boost::scoped_ptr<OfxhPluginLoadGuard> _pluginLoadGuard;
 
 	// this comes off Descriptor's property set after a describe
 	// context independent
@@ -87,11 +87,11 @@ private:
 	OfxhImageEffectPlugin();
 
 public:
-	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary& pb, int pi, OfxPlugin& pl );
+	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& imageEffectPluginCache, OfxhPluginBinary& pluginBinary, int pluginIndex, OfxPlugin& plugin );
 
-	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
-	                       OfxhPluginBinary&           pb,
-	                       int                         pi,
+	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& imageEffectPluginCache,
+	                       OfxhPluginBinary&           pluginBinary,
+	                       int                         pluginIndex,
 	                       const std::string&          api,
 	                       int                         apiVersion,
 	                       const std::string&          pluginId,
@@ -104,7 +104,7 @@ public:
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
 	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==( other ); }
 
-	void setApiHandler( OfxhImageEffectPluginCache& api ) { _pc = &api; }
+	void setApiHandler( OfxhImageEffectPluginCache& api ) { _imageEffectPluginCache = &api; }
 	void setApiHandler( APICache::OfxhPluginAPICacheI& api );
 
 	/// @return the API handler this plugin was constructed by
@@ -129,8 +129,8 @@ public:
 	const ContextSet& getContexts() const;
 	bool              supportsContext( const std::string& context ) const;
 
-	OfxhPluginHandle*       getPluginHandle()       { return _pluginHandle.get(); }
-	const OfxhPluginHandle* getPluginHandle() const { return _pluginHandle.get(); }
+	OfxhPluginLoadGuard*       getPluginLoadGuardPtr()       { return _pluginLoadGuard.get(); }
+	const OfxhPluginLoadGuard* getPluginLoadGuardPtr() const { return _pluginLoadGuard.get(); }
 
 	void loadAndDescribeActions();
 
@@ -152,7 +152,7 @@ private:
 	{
 		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhPlugin );
 		ar& BOOST_SERIALIZATION_NVP( _baseDescriptor );
-		//ar & BOOST_SERIALIZATION_NVP(_pluginHandle); // don't save this
+		//ar & BOOST_SERIALIZATION_NVP(_pluginLoadGuard); // don't save this
 		ar& BOOST_SERIALIZATION_NVP( _contexts );
 	}
 };

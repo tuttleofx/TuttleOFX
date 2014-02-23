@@ -7,34 +7,37 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
+typedef int( *OfxGetNumberOfPluginsType )( void );
+typedef OfxPlugin*( *OfxGetPluginType )( int );
+
 /**
  * @brief try to open the plugin bundle object and query it for plugins
  */
 void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 {
 	_fileModificationTime = _binary.getTime();
-	_fileSize             = _binary.getSize();
-	_binaryChanged        = false;
+	_fileSize = _binary.getSize();
+	_binaryChanged = false;
 
 	_binary.load();
 
-	int ( *getNo )( void )       = ( int( * ) () )_binary.findSymbol( "OfxGetNumberOfPlugins" );
-	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_binary.findSymbol( "OfxGetPlugin" );
+	OfxGetNumberOfPluginsType getNumberOfPlugins_func = (OfxGetNumberOfPluginsType)_binary.findSymbol( "OfxGetNumberOfPlugins" );
+	OfxGetPluginType getPlugin_func = (OfxGetPluginType)_binary.findSymbol( "OfxGetPlugin" );
 
-	if( getNo == 0 || getPlug == 0 )
+	if( getNumberOfPlugins_func == 0 || getPlugin_func == 0 )
 	{
 		_binary.setInvalid( true );
 	}
 	else
 	{
-		int pluginCount = ( *getNo )( );
+		int pluginCount = ( *getNumberOfPlugins_func )( );
 
 		_plugins.clear();
 		_plugins.reserve( pluginCount );
 
 		for( int i = 0; i < pluginCount; ++i )
 		{
-			OfxPlugin& plug = *( *getPlug )( i );
+			OfxPlugin& plug = *( *getPlugin_func )( i );
 
 			APICache::OfxhPluginAPICacheI* api = cache->findApiHandler( plug.pluginApi, plug.apiVersion );
 			assert( api );
