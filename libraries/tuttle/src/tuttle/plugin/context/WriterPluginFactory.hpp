@@ -18,6 +18,8 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 	filename->setLabel( kTuttlePluginFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	// the file doesn't need to exist, the writer will create it!
+	filename->setFilePathExists(false);
 	desc.addClipPreferencesSlaveParam( *filename );
 
 	OFX::ChoiceParamDescriptor* channel = desc.defineChoiceParam( kTuttlePluginChannel );
