@@ -27,15 +27,19 @@ public:
 	
 	ThreadEnv( const bool asynchronous = true )
 	: _asynchronous( asynchronous )
+	, _isRunning(false)
 	, _result(false)
 	{
 		_options.setReturnBuffers(false);
 	}
 	
-	ComputeOptions& getComputeOptions() { return _options; }
-	const ComputeOptions& getComputeOptions() const { return _options; }
+	inline memory::MemoryCache& getImageCache() { return _imageCache; }
+	inline const memory::MemoryCache& getImageCache() const { return _imageCache; }
 	
-	This& setAsynchronous( const bool v = true )
+	inline ComputeOptions& getComputeOptions() { return _options; }
+	inline const ComputeOptions& getComputeOptions() const { return _options; }
+	
+	inline This& setAsynchronous( const bool v = true )
 	{
 		_asynchronous = v;
 		return *this;
@@ -43,7 +47,8 @@ public:
 	
 	/// @brief Main functions
 	/// @{
-	
+	inline bool isRunning() { return _isRunning.load( boost::memory_order_relaxed ); }
+
 	/**
 	 * @brief Launch the graph computation in a synchrone or asynchrone way.
 	 */
@@ -52,28 +57,30 @@ public:
 	/**
 	 * @brief The application would like to abort the process (from another thread).
 	 */
-	void abort() { _options.abort(); }
+	inline void abort() { _options.abort(); }
 	
-	void join() { _thread.join(); }
+	inline void join() { _thread.join(); }
 	
-	bool getResult() const { return _result.load( boost::memory_order_relaxed ); }
+	inline bool getResult() const { return _result.load( boost::memory_order_relaxed ); }
 	
-	SignalType& getSignalEnd() { return _signalEnd; }
+	inline SignalType& getSignalEnd() { return _signalEnd; }
 	/// @}
 	
 private:
-	static void runProcessFunc( ThreadEnv* threadEnv, Graph* graph, const std::list<std::string>& nodes, const ComputeOptions* const options );
+	static void runProcessFunc( ThreadEnv* threadEnv, Graph& graph, const std::list<std::string>& nodes );
 	
 	void setResult( const bool res ) { _result.store( res, boost::memory_order_relaxed ); }
+	void setIsRunning( const bool res ) { _isRunning.store( res, boost::memory_order_relaxed ); }
 	
 private:
 	boost::thread _thread;
 	
 	
 	bool _asynchronous;
-	memory::MemoryCache _memoryCache;
+	memory::MemoryCache _imageCache;
 	ComputeOptions _options;
 	
+	boost::atomic_bool _isRunning;
 	boost::atomic_bool _result;
 	
 	SignalType _signalEnd;
