@@ -44,10 +44,12 @@
 namespace tuttle {
 namespace host {
 
-ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
-				  tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
-				  const std::string&                                             context )
+ImageEffectNode::ImageEffectNode(
+		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin& plugin,
+		tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
+		const std::string& context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( plugin, desc, context, false )
+	, _defaultOutputFielding( kOfxImageFieldNone )
 {
 	populate();
 	//	createInstanceAction();
@@ -56,6 +58,7 @@ ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffec
 ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 	: INode( other )
 	, tuttle::host::ofx::imageEffect::OfxhImageEffectNode( other )
+	, _defaultOutputFielding( other._defaultOutputFielding )
 {
 	populate();
 	copyAttributesValues( other ); // values need to be setted before the createInstanceAction !
@@ -137,16 +140,6 @@ std::size_t ImageEffectNode::getLocalHashAtTime( const OfxTime time ) const
 	boost::hash_combine( seed, getParamSet().getHashAtTime(time) );
 
 	return seed;
-}
-
-/// get default output fielding. This is passed into the clip prefs action
-/// and  might be mapped (if the host allows such a thing)
-const std::string& ImageEffectNode::getDefaultOutputFielding() const
-{
-	/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
-	static const std::string v( kOfxImageFieldNone );
-
-	return v;
 }
 
 /**

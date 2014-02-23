@@ -135,7 +135,7 @@ public:
 
 	/// get default output fielding. This is passed into the clip prefs action
 	/// and  might be mapped (if the host allows such a thing)
-	const std::string& getDefaultOutputFielding() const;
+	inline const std::string& getDefaultOutputFielding() const { return _defaultOutputFielding; }
 
 	/**
 	 * @return 1 to abort processing
@@ -274,6 +274,10 @@ private:
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;
 	void validBitDepthConnections() const;
+
+	/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
+	std::string _defaultOutputFielding;
+
 };
 
 }
