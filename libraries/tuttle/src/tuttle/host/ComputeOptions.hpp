@@ -11,7 +11,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include <limits>
-
 #include <list>
 
 namespace tuttle {
@@ -19,11 +18,13 @@ namespace host {
 
 class IProgressHandle
 {
-	public:
-		virtual void beginSequence() = 0;
-		virtual void setupAtTime() = 0;
-		virtual void processAtTime() = 0;
-		virtual void endSequence() = 0;
+public:
+	virtual ~IProgressHandle() = 0;
+
+	virtual void beginSequence() = 0;
+	virtual void setupAtTime() = 0;
+	virtual void processAtTime() = 0;
+	virtual void endSequence() = 0;
 };
 
 struct TimeRange
@@ -276,30 +277,27 @@ public:
 	}
 	bool isProgressHandleSet() const
 	{
-		if (_progressHandle.get() == NULL)
-			return false;
-		else
-			return true;
+		return _progressHandle.get() != NULL;
 	}
 	void beginSequenceHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->beginSequence();
+		if( isProgressHandleSet() )
+			_progressHandle->beginSequence();
 	}
 	void setupAtTimeHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->setupAtTime();
+		if( isProgressHandleSet() )
+			_progressHandle->setupAtTime();
 	}
 	void processAtTimeHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->processAtTime();
+		if( isProgressHandleSet() )
+			_progressHandle->processAtTime();
 	}
 	void endSequenceHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->endSequence();
+		if( isProgressHandleSet() )
+			_progressHandle->endSequence();
 	}
 
 private:

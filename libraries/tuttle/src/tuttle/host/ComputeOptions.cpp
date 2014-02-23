@@ -6,6 +6,8 @@
 namespace tuttle {
 namespace host {
 
+IProgressHandle::~IProgressHandle() {}
+
 TimeRange::TimeRange( const OfxRangeD& range, const int step )
 	: _begin( boost::lexical_cast<int>(range.min) )
 	, _end( boost::lexical_cast<int>(range.max) )
