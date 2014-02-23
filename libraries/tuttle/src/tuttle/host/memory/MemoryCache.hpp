@@ -56,6 +56,9 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const MemoryCache& v );
 };
 
+#ifndef SWIG
+std::ostream& operator<<( std::ostream& os, const MemoryCache& memoryCache );
+#endif
 }
 }
 }
