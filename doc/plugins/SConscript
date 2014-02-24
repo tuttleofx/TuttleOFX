@@ -1,17 +1,14 @@
 Import( 'project', 'libs' )
 
 project.ScriptTests(
-		target = project.getDirs(2),
-		dirs = [ '.' ],
-		libraries = [libs.pyTuttle],
-		procEnvFlags = {
+		target=project.getDirs(2),
+		dirs=[ '.' ],
+		recursive=False,
+		libraries=[libs.pyTuttle],
+		procEnvFlags={
 			'PYTHONPATH': project.inOutputDir('python'),
 			'OFX_PLUGIN_PATH': project.inOutputPlugin(),
 			'DOC_DIR': '#dist/doc',
 			},
 		accept=['*.py'],
-		reject=[
-			'generators/*',
-			'movie/*',
-		],
 	)

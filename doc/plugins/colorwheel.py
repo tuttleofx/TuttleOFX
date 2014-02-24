@@ -1,19 +1,23 @@
 # scons: pluginColorWheel pluginText pluginPng
 
+from pyTuttle import tuttle
+import generators
+
 import os
 
-from pyTuttle.tuttle import *
-from generators import *
 
 def setUp():
-	core().preload( False )
+	tuttle.core().preload( False )
+
 
 def testColorWheel():
-	generate( "tuttle.colorwheel", format="1K-Super35-full-ap" )
+	generators.generate( "tuttle.colorwheel", format="1K-Super35-full-ap" )
+
 
 def testColorWheelBlack():
-	generate( "tuttle.colorwheel", format="1K-Super35-full-ap", type="black" )
+	generators.generate( "tuttle.colorwheel", format="1K-Super35-full-ap", type="black" )
+
 
 def testRainbowColorWheel():
-	generate( "tuttle.colorwheel", format="1K-Super35-full-ap", type="rainbow" )
+	generators.generate( "tuttle.colorwheel", format="1K-Super35-full-ap", type="rainbow" )
 
