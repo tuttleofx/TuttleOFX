@@ -304,20 +304,22 @@ void Graph::setup()
 	const ComputeOptions options;
 	const std::list<std::string> outputNodes;
 	graph::ProcessGraph procGraph( options, *this, outputNodes );
-	return procGraph.setup();
+	procGraph.setup();
 }
 
 void Graph::setupAtTime( const OfxTime time, const NodeListArg& outputNodes )
 {
 	const ComputeOptions options;
 	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
-	return procGraph.setupAtTime( time );
+	procGraph.setupAtTime( time );
 }
 
 void Graph::computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& outputNodes )
 {
 	const ComputeOptions options;
 	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
+	procGraph.setup();
+	procGraph.setupAtTime( time );
 	procGraph.computeHashAtTime( outNodesHash, time );
 }
 
