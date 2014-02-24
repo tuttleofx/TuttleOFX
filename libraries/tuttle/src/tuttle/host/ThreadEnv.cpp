@@ -8,7 +8,17 @@ namespace host {
 
 void ThreadEnv::runProcessFunc( ThreadEnv* threadEnv, Graph& graph, const std::list<std::string>& nodes )
 {
-	threadEnv->setResult( graph.compute( threadEnv->_imageCache, nodes, threadEnv->_options ) );
+	try
+	{
+		threadEnv->setResult( graph.compute( threadEnv->_imageCache, nodes, threadEnv->_options ) );
+	}
+	catch(...)
+	{
+		threadEnv->setResult( false );  // error during the process.
+		TUTTLE_LOG_ERROR( "[Process render] Error.");
+		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
+		core().getMemoryCache().clearUnused();
+	}
 	threadEnv->setIsRunning(false);
 	threadEnv->getSignalEnd()();
 }
