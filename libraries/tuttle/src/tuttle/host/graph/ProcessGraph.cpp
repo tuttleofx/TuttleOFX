@@ -616,16 +616,16 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 		
 		beginSequence( timeRange );
 		
+		if( _options.getAbort() )
+		{
+			TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED before first frame." );
+			endSequence();
+			core().getMemoryCache().clearUnused();
+			return false;
+		}
+		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
-			if( _options.getAbort() )
-			{
-				TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED at time " << time << "." );
-				endSequence();
-				core().getMemoryCache().clearUnused();
-				return false;
-			}
-			
 			try
 			{
 #ifdef TUTTLE_EXPORT_WITH_TIMER
@@ -646,7 +646,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{
-				if( _options.getContinueOnMissingFile() && ! _options.getAbort() )
+				if( _options.getContinueOnError() || _options.getContinueOnMissingFile() )
 				{
 					TUTTLE_LOG_ERROR( "[Process render] Undefined input at time " << time << "." );
 		#ifndef TUTTLE_PRODUCTION
@@ -663,7 +663,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 			}
 			catch( ... )
 			{
-				if( _options.getContinueOnError() && ! _options.getAbort() )
+				if( _options.getContinueOnError() )
 				{
 					TUTTLE_LOG_ERROR( "[Process render] Skip frame " << time << "." );
 		#ifndef TUTTLE_PRODUCTION
@@ -679,6 +679,15 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 					throw;
 				}
 			}
+
+			if( _options.getAbort() )
+			{
+				TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED at time " << time << "." );
+				endSequence();
+				core().getMemoryCache().clearUnused();
+				return false;
+			}
+
 		}
 		
 		endSequence();
