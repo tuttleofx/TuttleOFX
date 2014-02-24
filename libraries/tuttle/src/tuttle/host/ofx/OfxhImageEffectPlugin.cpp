@@ -165,13 +165,10 @@ const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 {
 	/*
-	TUTTLE_TLOG( TUTTLE_TRACE, context << " supportsContext? " << _knownContexts.size() << std::endl;
-	
-	for( ContextSet::iterator it = _knownContexts.begin(),
-		 it != _knownContexts.end();
-		 ++it )
+	TUTTLE_LOG( TUTTLE_TRACE, context << " supportsContext? " << _knownContexts.size() );
+	BOOST_FOREACH( const std::string& c, _knownContexts )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "context " << *it );
+		TUTTLE_LOG( TUTTLE_TRACE, "context " << c );
 	}
 	*/
 	return _knownContexts.find( context ) != _knownContexts.end();
