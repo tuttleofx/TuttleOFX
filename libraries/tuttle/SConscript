@@ -82,6 +82,7 @@ project.ObjectLibrary(
 project.pySwigBinding(
 	packageName = "pyTuttle",
 	moduleName = "tuttle",
+	swigFlags=["-threads"],
 	sources = ['src/tuttle/host/tuttle.i'],
 	libraries = [libs.tuttleHost, libs.python_numpy],
         )
