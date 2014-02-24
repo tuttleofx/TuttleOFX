@@ -20,19 +20,23 @@ import_array();
 	typedef void *PyFunc;
 	void outputbuffer_python_callback( OfxTime time, void* object, void* rawdata, int width, int height, int rowSizeBytes, tuttle::host::OutputBufferWrapper::EBitDepth bitDepth, tuttle::host::OutputBufferWrapper::EPixelComponent components, tuttle::host::OutputBufferWrapper::EField field )
 	{
+		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		//std::cout << "outputbuffer_python_callback: " << (void*)object << ", time: " << time << ", width: " << width << ", height: " << height << std::endl;
 		PyObject* ret = PyObject_CallFunction( (PyObject *)object, (char *)"ds#iiiiii", time, rawdata, height*rowSizeBytes, width, height, rowSizeBytes, bitDepth, components, field );
 		if( (void *)ret == NULL )
 		{
 			PyErr_SetString( PyExc_RuntimeError, "TuttleOFX OutputBuffer Python callback failed" );
 		}
+		SWIG_PYTHON_THREAD_END_BLOCK;
 	}
 	
 	void outputbuffer_destroy_callback( void* object )
 	{
+		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		//std::cout << "outputbuffer_destroy_callback, Py_DECREF: " << (void*)object << std::endl;
 		if( object != NULL )
 			Py_DECREF( (PyObject*)object );
+		SWIG_PYTHON_THREAD_END_BLOCK;
 	}
 %}
 
@@ -45,6 +49,7 @@ import_array();
 {
 	void setPyCallback( PyFunc object )
 	{
+		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		if( PyCallable_Check((PyObject *)object) )
 		{
 			//std::cout << "outputbuffer, Py_INCREF: " << (void*)object << std::endl;
@@ -55,6 +60,7 @@ import_array();
 		{
 			PyErr_SetString(PyExc_RuntimeError, "Callback function must be a callable");
 		}
+		SWIG_PYTHON_THREAD_END_BLOCK;
 	}
 	
 }

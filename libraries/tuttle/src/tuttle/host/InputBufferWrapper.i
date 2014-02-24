@@ -26,18 +26,22 @@ import_array();
 		
 		~Inputbuffer_python_customData()
 		{
+			SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 			if( _funcObject != NULL )
 				Py_DECREF( _funcObject );
 			if( _imgObject != NULL )
 				Py_DECREF( _imgObject );
+			SWIG_PYTHON_THREAD_END_BLOCK;
 		}
 		
 		void setImgObject( PyObject* imgObject )
 		{
+			SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 			if( _imgObject != NULL )
 				Py_DECREF( _imgObject );
 			_imgObject = imgObject;
 			Py_INCREF( _imgObject );
+			SWIG_PYTHON_THREAD_END_BLOCK;
 		}
 		
 		PyObject* _funcObject;
@@ -45,6 +49,7 @@ import_array();
 	};
 	void inputbuffer_python_callback( OfxTime time, void* object, void** rawdata, int* width, int* height, int* rowSizeBytes )
 	{
+		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		Inputbuffer_python_customData& customData = *(Inputbuffer_python_customData*)object;
 		
 //		TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer_python_callback: " << (void*)object << ", time: " << time << ", width: " << width << ", height: " << height << ", customData._funcObject: " << (void*)customData._funcObject );
@@ -83,6 +88,7 @@ import_array();
 //		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *rowSizeBytes );
 		
 		customData.setImgObject( ret );
+		SWIG_PYTHON_THREAD_END_BLOCK;
 	}
 	
 	void inputbuffer_destroy_callback( void* object )
@@ -103,6 +109,7 @@ import_array();
 {
 	void setPyCallback( PyFunc object )
 	{
+		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		if( PyCallable_Check( (PyObject *)object ) )
 		{
 			//TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer, Py_INCREF: " << (void*)object );
@@ -115,6 +122,7 @@ import_array();
 		{
 			PyErr_SetString(PyExc_RuntimeError, "Callback function must be a callable");
 		}
+		SWIG_PYTHON_THREAD_END_BLOCK;
 	}
 	
 }
