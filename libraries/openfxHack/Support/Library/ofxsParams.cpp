@@ -174,7 +174,8 @@ void ParamDescriptor::setEnabled( bool v )
 
 void ParamDescriptor::setLayoutHint( const ELayoutHint layoutHint )
 {
-    getProps().propSetInt( kOfxParamPropLayoutHint, static_cast<int>(layoutHint) );
+    // This is a nuke ofx extension property, so it's optional.
+    getProps().propSetInt( kOfxParamPropLayoutHint, static_cast<int>(layoutHint), false );
 }
 
 
