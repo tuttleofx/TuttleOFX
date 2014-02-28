@@ -80,6 +80,7 @@ HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::
 {
 	HistogramKeyerProcessParams<Scalar> params;
 
+	params._time = time;
 	params._paramColorRGB = _paramColorRGBSelection; //curve RGB
 	params._boolRGB[0] = _paramOverlayRSelection; //R (is channel selected?)
 	params._boolRGB[1] = _paramOverlayGSelection; //G (is channel selected?)
