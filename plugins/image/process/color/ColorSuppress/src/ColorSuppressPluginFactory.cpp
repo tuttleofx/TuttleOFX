@@ -67,42 +67,36 @@ void ColorSuppressPluginFactory::describeInContext( OFX::ImageEffectDescriptor& 
 	redSuppress->setLabel( "Red" );
 	redSuppress->setHint( "Suppressing X percent of red." );
 	redSuppress->setDefault( 0.0 );
-	redSuppress->setRange( 0.0, 1.0 );
 	redSuppress->setDisplayRange( 0.0, 1.0 );
 
 	OFX::DoubleParamDescriptor *greenSuppress = desc.defineDoubleParam( kParamGreenSuppressRate );
 	greenSuppress->setLabel( "Green" );
 	greenSuppress->setHint( "Suppressing X percent of green." );
 	greenSuppress->setDefault( 0.0 );
-	greenSuppress->setRange( 0.0, 1.0 );
 	greenSuppress->setDisplayRange( 0.0, 1.0 );
 
 	OFX::DoubleParamDescriptor *blueSuppress = desc.defineDoubleParam( kParamBlueSuppressRate );
 	blueSuppress->setLabel( "Blue" );
 	blueSuppress->setHint( "Suppressing X percent of the blue." );
 	blueSuppress->setDefault( 0.0 );
-	blueSuppress->setRange( 0.0, 1.0 );
 	blueSuppress->setDisplayRange( 0.0, 1.0 );
 
 	OFX::DoubleParamDescriptor *cyanSuppress = desc.defineDoubleParam( kParamCyanSuppressRate );
 	cyanSuppress->setLabel( "Cyan" );
 	cyanSuppress->setHint( "Suppressing X percent of the cyan." );
 	cyanSuppress->setDefault( 0.0 );
-	cyanSuppress->setRange( 0.0, 1.0 );
 	cyanSuppress->setDisplayRange( 0.0, 1.0 );
 
 	OFX::DoubleParamDescriptor *magentaSuppress = desc.defineDoubleParam( kParamMagentaSuppressRate );
 	magentaSuppress->setLabel( "Magenta" );
 	magentaSuppress->setHint( "Suppressing X percent of the magenta." );
 	magentaSuppress->setDefault( 0.0 );
-	magentaSuppress->setRange( 0.0, 1.0 );
 	magentaSuppress->setDisplayRange( 0.0, 1.0 );
 
 	OFX::DoubleParamDescriptor *yellowSuppress = desc.defineDoubleParam( kParamYellowSuppressRate );
 	yellowSuppress->setLabel( "Yellow" );
 	yellowSuppress->setHint( "Suppressing X percent of the yellow." );
 	yellowSuppress->setDefault( 0.0 );
-	yellowSuppress->setRange( 0.0, 1.0 );
 	yellowSuppress->setDisplayRange( 0.0, 1.0 );
 
 	OFX::ChoiceParamDescriptor *outputTo = desc.defineChoiceParam( kParamApplyOn );

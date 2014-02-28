@@ -71,7 +71,7 @@ void ColorSuppressProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 			 x < procWindowOutput.x2;
 			 ++x, ++src_it, ++dst_it )
 		{
-			double suppressed = 0;
+			double pixelModified = 0;
 			input.r = ( *src_it )[ 0 ];
 			input.g = ( *src_it )[ 1 ];
 			input.b = ( *src_it )[ 2 ];
@@ -87,7 +87,9 @@ void ColorSuppressProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 			{
 				save = input;
 			}
-			if( _params.yellow > 0.0 )
+
+			// Yellow
+			if( _params.yellow != 0.0 )
 			{
 				if( output.b < output.g && output.b < output.r )
 				{
@@ -99,17 +101,19 @@ void ColorSuppressProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 					{
 						output.g -= diff2;
 						output.r -= diff2;
-						suppressed += diff2;
+						pixelModified += std::abs(diff2);
 					}
 					else
 					{
 						output.g -= diff1;
 						output.r -= diff1;
-						suppressed += diff1;
+						pixelModified += std::abs(diff1);
 					}
 				}
 			}
-			if( _params.magenta > 0.0 )
+
+			// Magenta
+			if( _params.magenta != 0.0 )
 			{
 				if( output.g < output.b && output.g < output.r )
 				{
@@ -121,17 +125,19 @@ void ColorSuppressProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 					{
 						output.b -= diff2;
 						output.r -= diff2;
-						suppressed += diff2;
+						pixelModified += std::abs(diff2);
 					}
 					else
 					{
 						output.b -= diff1;
 						output.r -= diff1;
-						suppressed += diff1;
+						pixelModified += std::abs(diff1);
 					}
 				}
 			}
-			if( _params.cyan > 0.0 )
+
+			// Cyan
+			if( _params.cyan != 0.0 )
 			{
 				if( output.r < output.g && output.r < output.b )
 				{
@@ -143,73 +149,55 @@ void ColorSuppressProcess<View>::multiThreadProcessImages( const OfxRectI& procW
 					{
 						output.g -= diff2;
 						output.b -= diff2;
-						suppressed += diff2;
+						pixelModified += std::abs(diff2);
 					}
 					else
 					{
 						output.g -= diff1;
 						output.b -= diff1;
-						suppressed += diff1;
+						pixelModified += std::abs(diff1);
 					}
 				}
 			}
-			if( _params.red > 0.0 )
+			
+			// Red
+			if( _params.red != 0.0 )
 			{
 				if( output.r > output.g && output.r > output.b )
 				{
-					double diff1;
-					if( output.g < output.b )
-					{
-						diff1 = output.r - output.b;
-					}
-					else
-					{
-						diff1 = output.r - output.g;
-					}
+					double diff1 = output.r - std::max( output.g, output.b );
 					diff1 *= _params.red;
 					output.r -= diff1;
-					suppressed += diff1;
+					pixelModified += std::abs(diff1);
 				}
 			}
-			if( _params.green > 0.0 )
+			
+			// Green
+			if( _params.green != 0.0 )
 			{
 				if( output.g > output.b && output.g > output.r )
 				{
-					double diff1;
-					if( output.b < output.r )
-					{
-						diff1 = output.g - output.r;
-					}
-					else
-					{
-						diff1 = output.g - output.b;
-					}
+					double diff1 = output.g - std::max( output.b, output.r );
 					diff1 *= _params.green;
 					output.g -= diff1;
-					suppressed += diff1;
+					pixelModified += std::abs(diff1);
 				}
 			}
-			if( _params.blue > 0.0 )
+			
+			// Blue
+			if( _params.blue != 0.0 )
 			{
 				if( output.b > output.g && output.b > output.r )
 				{
-					double diff1;
-					if( output.g < output.r )
-					{
-						diff1 = output.b - output.r;
-					}
-					else
-					{
-						diff1 = output.b - output.g;
-					}
+					double diff1 = output.b - std::max( output.g, output.r );
 					diff1 *= _params.blue;
 					output.b -= diff1;
-					suppressed += diff1;
+					pixelModified += std::abs(diff1);
 				}
 			}
 			if( _params.output == eOutputTypeAlpha || _params.output == eOutputTypeAlphaImage )
 			{
-				output.a = suppressed;
+				output.a = pixelModified;
 			}
 			if( _params.preserveLuma == true && _params.output != eOutputTypeAlpha )
 			{
