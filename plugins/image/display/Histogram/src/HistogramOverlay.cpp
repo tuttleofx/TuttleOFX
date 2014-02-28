@@ -46,7 +46,7 @@ bool HistogramOverlay::draw( const OFX::DrawArgs& args )
 			getOverlayData().clearAll( imgSize );
 		}
 		
-		if( ! _plugin->_isRendering )
+		if( ! _plugin->getIsRendering() )
 		{
 			getOverlayData()._isDataInvalid = false;
 			getOverlayData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );

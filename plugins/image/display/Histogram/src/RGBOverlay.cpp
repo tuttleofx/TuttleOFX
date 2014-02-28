@@ -12,14 +12,12 @@ RGBOverlay::RGBOverlay(OfxInteractHandle handle, OFX::ImageEffect* effect):OFX::
 	_plugin->addRefOverlayData();
 }*/
 
-//tomporary constructor
 RGBOverlay::RGBOverlay(HistogramPlugin* plugin)
 {
 	_plugin = plugin;
 	_plugin->addRefOverlayData();
 }
 
-/*Destructor*/
 RGBOverlay::~RGBOverlay()
 {
 	_plugin->releaseOverlayData();
