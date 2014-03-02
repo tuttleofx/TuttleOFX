@@ -157,29 +157,18 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 		return;
 	}
 	
-	//TUTTLE_TLOG_INFOS;
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, "computeHistogramBufferData - fetchImage " << time );
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
-	//TUTTLE_TLOG_INFOS;
-	
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getPixelRod(time, renderScale) );
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getCanonicalRod(time, renderScale) );
-	
-	// Compatibility tests
-	if( !src.get() ) // source isn't accessible
-	{
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage( time ) );
+	if( ! src.get() )
+	{	
 		_isComputing = false;
-		std::cout << "src is not accessible" << std::endl;
 		return;
 	}
-	
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getBounds() );
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getRegionOfDefinition() );
-
-	if( src->getRowDistanceBytes() == 0 )//if source is wrong
-	{
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+	if( src->getRowDistanceBytes() == 0 )
+	{	
+		_isComputing = false;
+		return;
 	}
+
 	OfxRectI srcPixelRod = clipSrc->getPixelRod( time, renderScale ); //get current RoD
 	if( (clipSrc->getPixelDepth() != OFX::eBitDepthFloat) ||
 		(!clipSrc->getPixelComponents()) )
