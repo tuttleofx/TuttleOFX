@@ -37,6 +37,38 @@ F transform_pixels( const View& dst, const F& fun )
 	return fun;
 }
 
+// 2 sources without region
+
+/// \ingroup ImageViewSTLAlgorithmsTransformPixels
+/// \brief std::transform for image views
+template <typename View, typename F> GIL_FORCEINLINE
+F transform_pixels( const View& src1, const View& src2, F& fun )
+{
+	for( std::ptrdiff_t y = 0; y < src1.height( ); ++y )
+	{
+		typename View::x_iterator src1It = src1.row_begin( y );
+		typename View::x_iterator src2It = src2.row_begin( y );
+		for( std::ptrdiff_t x = 0; x < src1.width( ); ++x )
+			fun( src1It[x], src2It[x] );
+	}
+	return fun;
+}
+
+/// \ingroup ImageViewSTLAlgorithmsTransformPixels
+/// \brief std::transform for image views
+template <typename View, typename F> GIL_FORCEINLINE
+F transform_pixels( const View& src1, const View& src2, const F& fun )
+{
+	for( std::ptrdiff_t y = 0; y < src1.height( ); ++y )
+	{
+		typename View::x_iterator src1It = src1.row_begin( y );
+		typename View::x_iterator src2It = src2.row_begin( y );
+		for( std::ptrdiff_t x = 0; x < src1.width( ); ++x )
+			fun( src1It[x], src2It[x] );
+	}
+	return fun;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
