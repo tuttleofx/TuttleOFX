@@ -19,6 +19,9 @@ namespace host {
 
 class Graph;
 
+/**
+ * Utility class to compute a graph inside a thread.
+ */
 class ThreadEnv
 {
 public:
@@ -30,6 +33,7 @@ public:
 	, _isRunning(false)
 	, _result(false)
 	{
+		// By default the Thread doesn't return a buffer.
 		_options.setReturnBuffers(false);
 	}
 	
@@ -47,6 +51,11 @@ public:
 	
 	/// @brief Main functions
 	/// @{
+	
+	/**
+	 * @brief Is this ThreadEnv executing a compute?
+	 * Thread Safe
+	 */
 	inline bool isRunning() { return _isRunning.load( boost::memory_order_relaxed ); }
 
 	/**
@@ -56,30 +65,44 @@ public:
 	
 	/**
 	 * @brief The application would like to abort the process (from another thread).
+	 * Thread Safe
 	 */
 	inline void abort() { _options.abort(); }
 	
 	inline void join() { _thread.join(); }
 	
+	/**
+	 * @brief Result status of the lastest compute.
+	 * Thread Safe
+	 */
 	inline bool getResult() const { return _result.load( boost::memory_order_relaxed ); }
 	
 	inline SignalType& getSignalEnd() { return _signalEnd; }
+	
 	/// @}
 	
 private:
 	static void runProcessFunc( ThreadEnv* threadEnv, Graph& graph, const std::list<std::string>& nodes );
 	
+	/**
+	 * @brief Result status of the lastest compute.
+	 * Thread Safe
+	 */
 	void setResult( const bool res ) { _result.store( res, boost::memory_order_relaxed ); }
+	
+	/**
+	 * @brief Is this ThreadEnv executing a compute?
+	 * Thread Safe
+	 */
 	void setIsRunning( const bool res ) { _isRunning.store( res, boost::memory_order_relaxed ); }
 	
 private:
 	boost::thread _thread;
-	
-	
+
 	bool _asynchronous;
 	memory::MemoryCache _imageCache;
 	ComputeOptions _options;
-	
+
 	boost::atomic_bool _isRunning;
 	boost::atomic_bool _result;
 	
