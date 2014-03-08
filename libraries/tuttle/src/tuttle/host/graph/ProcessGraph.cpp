@@ -626,6 +626,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 		
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
+			_options.beginFrameHandle();
 			try
 			{
 #ifdef TUTTLE_EXPORT_WITH_TIMER
@@ -656,6 +657,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 				else
 				{
 					TUTTLE_TLOG( TUTTLE_ERROR, "[Process render] Undefined input at time " << time << "." );
+					_options.endFrameHandle();
 					endSequence();
 					core().getMemoryCache().clearUnused();
 					throw;
@@ -674,6 +676,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 				else
 				{
 					TUTTLE_TLOG( TUTTLE_ERROR, "[Process render] Skip frame " << time << "." );
+					_options.endFrameHandle();
 					endSequence();
 					core().getMemoryCache().clearUnused();
 					throw;
@@ -683,11 +686,12 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 			if( _options.getAbort() )
 			{
 				TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED at time " << time << "." );
+				_options.endFrameHandle();
 				endSequence();
 				core().getMemoryCache().clearUnused();
 				return false;
 			}
-
+			_options.endFrameHandle();
 		}
 		
 		endSequence();

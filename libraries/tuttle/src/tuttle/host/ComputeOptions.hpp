@@ -22,8 +22,10 @@ public:
 	virtual ~IProgressHandle() = 0;
 
 	virtual void beginSequence() = 0;
+	virtual void beginFrame() = 0;
 	virtual void setupAtTime() = 0;
 	virtual void processAtTime() = 0;
+	virtual void endFrame() = 0;
 	virtual void endSequence() = 0;
 };
 
@@ -284,6 +286,11 @@ public:
 		if( isProgressHandleSet() )
 			_progressHandle->beginSequence();
 	}
+	void beginFrameHandle() const
+	{
+		if( isProgressHandleSet() )
+			_progressHandle->beginFrame();
+	}
 	void setupAtTimeHandle() const
 	{
 		if( isProgressHandleSet() )
@@ -293,6 +300,11 @@ public:
 	{
 		if( isProgressHandleSet() )
 			_progressHandle->processAtTime();
+	}
+	void endFrameHandle() const
+	{
+		if( isProgressHandleSet() )
+			_progressHandle->endFrame();
 	}
 	void endSequenceHandle() const
 	{
