@@ -164,7 +164,6 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, _renderGraphAtTime.getInEdges( vd ) )
 		{
 			const ProcessEdgeAtTime* e = &_renderGraphAtTime.instance(ed);
-			VertexAtTime& v = _renderGraphAtTime.sourceInstance( ed );
 
 			TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] in edge " << e->getInAttrName() << ", at time " << e->getInTime() );
 			vData._outEdges.push_back( e );
