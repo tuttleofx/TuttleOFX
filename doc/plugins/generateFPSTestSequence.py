@@ -113,7 +113,7 @@ def testEncodeSequencePng12Fps():
 
 def testEncodeSequenceMpeg2Intra(): 
 	outputFilename = "MPEG-2_I-frame_only_Highest_Quality_Encoding.m2v"
-	encodePAL( outputFilename , format="mpeg2video", videoCodec="mpeg2video", videoPixelFormat="yuv422p", qmin=1, mpeg2video_intra_vlc=1, colorspace="bt709", aspect=[0,1] )
+	encodePAL( outputFilename , format="mpeg2video", videoCodec="mpeg2video", videoPixelFormat="yuv420p", qmin=1, mpeg2video_intra_vlc=1, colorspace="bt709", aspect=[0,1] )
 	checkVideoProperties( outputFilename, 25.0, (1 << 29) - 1, 1.0 )
 	#check( outputFilename, "fps_test_#####.png" )
 	# missing parameter qscale=1
