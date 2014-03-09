@@ -30,7 +30,7 @@ static const char* const kCommandsOptionMessage = "show list of all available sa
 static const char* const kDirectoriesOptionLongName = "directories";
 static const char* const kDirectoriesOptionString = "directories,d";
 static const char* const kDirectoriesOptionMessage = "handle directories";
-//
+
 //-e, --expression
 static const char* const kExpressionOptionLongName = "expression";
 static const char* const kExpressionOptionString = "expression,e";
@@ -50,12 +50,6 @@ static const char* const kFilterOptionMessage = "filtering the output for resear
 static const char* const kHelpOptionLongName = "help";
 static const char* const kHelpOptionString = "help,h";
 static const char* const kHelpOptionMessage = "display help";
-/*
- * options.hpp
- *
- *  Created on: Apr 16, 2012
- *      Author: mfe
- */
 
 //-i, --input
 static const char* const kInputOptionLongName = "input";

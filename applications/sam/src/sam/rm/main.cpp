@@ -80,11 +80,13 @@ void removeFileObject( boost::ptr_vector<sequenceParser::FileObject> &listing, s
 //	TUTTLE_TCOUT( "removeFileObject." );
 	BOOST_FOREACH( const sequenceParser::FileObject& s, listing )
 	{
-		if( !(s.getMaskType () == sequenceParser::eMaskTypeDirectory))
+		if( !(s.getType() == sequenceParser::eTypeFolder))
 		{
 			TUTTLE_LOG_TRACE( "remove: " << s );
-			if( s.getMaskType () == sequenceParser::eMaskTypeSequence )
+			if( s.getType() == sequenceParser::eTypeSequence )
+			{
 				removeSequence( static_cast<const sequenceParser::Sequence&>( s ) );
+			}
 			else
 			{
 				std::vector<bfs::path> paths = s.getFiles();
@@ -138,16 +140,17 @@ int main( int argc, char** argv )
 	using namespace sam;
 	
 	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
+	boost::shared_ptr<Color> color( Color::get() );
 
-	sequenceParser::EMaskType                researchMask      = sequenceParser::eMaskTypeSequence;	// by default show sequences
-	sequenceParser::EMaskOptions             descriptionMask   = sequenceParser::eMaskOptionsColor;	// by default show nothing
-	bool                         recursiveListing  = false;
-	std::vector<std::string>     paths;
-	std::vector<std::string>     filters;
+	sequenceParser::EType filterByType = sequenceParser::eTypeSequence;	// by default show sequences
+	sequenceParser::EDetection detectionOptions = sequenceParser::eDetectionDefault;
+	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayColor;
+	bool recursiveListing = false;
+	std::vector<std::string> paths;
+	std::vector<std::string> filters;
 
 	formatter->init_logging();
-	
+
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
@@ -277,17 +280,17 @@ int main( int argc, char** argv )
 
 	if( vm.count( kDirectoriesOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
+		filterByType |= sequenceParser::eTypeFolder;
 	}
 	
 	if( vm.count( kFilesOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeFile;
+		filterByType |= sequenceParser::eTypeFile;
 	}
 	
 	if( vm.count( kIgnoreOptionLongName ) )
 	{
-		researchMask &= ~sequenceParser::eMaskTypeSequence;
+		filterByType &= ~sequenceParser::eTypeSequence;
 	}
 	
 	formatter->setLogLevel_string( vm[ kVerboseOptionLongName ].as<std::string>() );
@@ -311,20 +314,20 @@ int main( int argc, char** argv )
 
 	if( vm.count( kFullRMPathOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
-		researchMask |= sequenceParser::eMaskTypeFile;
-		researchMask |= sequenceParser::eMaskTypeSequence;
+		filterByType |= sequenceParser::eTypeFolder;
+		filterByType |= sequenceParser::eTypeFile;
+		filterByType |= sequenceParser::eTypeSequence;
 	}
 	
 	if( vm.count( kAllOptionLongName ) )
 	{
 		// add .* files
-		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
+		detectionOptions &= ~sequenceParser::eDetectionIgnoreDotFile;
 	}
 	
 	if( vm.count( kPathOptionLongName ) )
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsPath;
+		displayOptions |= sequenceParser::eDisplayPath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -366,19 +369,19 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 								//TUTTLE_TCOUT( *dir );
-								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, researchMask, descriptionMask );
+								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, filterByType, detectionOptions, displayOptions );
 								removeFileObject( listing, pathsNoRemoved );
 							}
 						}
 					}
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, filterByType, detectionOptions, displayOptions );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 				else
 				{
 					//TUTTLE_TCOUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, filterByType, detectionOptions, displayOptions );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 			}
@@ -387,7 +390,7 @@ int main( int argc, char** argv )
 //				TUTTLE_TCOUT( "not exist ...." );
 				try
 				{
-					sequenceParser::Sequence s(path.branch_path(), descriptionMask );
+					sequenceParser::Sequence s(path.branch_path(), displayOptions );
 					s.initFromDetection( path.string(), sequenceParser::Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{

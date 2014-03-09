@@ -502,21 +502,21 @@ int main( int argc, char** argv )
 					 fObjects = fileObjectsInDir( path );
 					 BOOST_FOREACH( const boost::shared_ptr<FileObject> fObj, fObjects )
 					 {
-					 switch( fObj->getMaskType() )
+					 switch( fObj->getType() )
 					 {
-					 case eMaskTypeSequence:
+					 case eTypeSequence:
 					 {
 					 diffSequence( read1, read2, stat, graph, dynamic_cast<const Sequence&>( *fObj ) );
 					 break;
 					 }
-					 case eMaskTypeFile:
+					 case eTypeFile:
 					 {
 					 const File fFile = dynamic_cast<const File&>( *fObj );
 					 diffFile( read1, read2, stat, graph, fFile.getAbsoluteFilename(), fFile.getAbsoluteFilename() );
 					 break;
 					 }
-					 case eMaskTypeDirectory:
-					 case eMaskTypeUndefined:
+					 case eTypeFolder:
+					 case eTypeUndefined:
 					 break;
 					 }
 					 }

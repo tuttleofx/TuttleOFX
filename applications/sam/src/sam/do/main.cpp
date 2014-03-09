@@ -181,11 +181,11 @@ int addListOfSequencesInListOfProcess( boost::ptr_vector<sequenceParser::FileObj
 		bool isSupportedExtension = false;
 		std::string filename;
 		std::string ext;
-		if( fo.getMaskType() == sequenceParser::eMaskTypeSequence )
+		if( fo.getType() == sequenceParser::eTypeSequence )
 		{
 			filename = static_cast<const sequenceParser::Sequence&>(fo).getAbsoluteStandardPattern();
 		}
-		if( fo.getMaskType() == sequenceParser::eMaskTypeFile )
+		if( fo.getType() == sequenceParser::eTypeFile )
 		{
 			filename = static_cast<const sequenceParser::File&>(fo).getAbsoluteFilename();
 		}
@@ -223,9 +223,9 @@ int addListOfSequencesInListOfProcess( boost::ptr_vector<sequenceParser::FileObj
 
 std::string getAbsoluteFilename( const sequenceParser::FileObject& fo )
 {
-	if( fo.getMaskType() == sequenceParser::eMaskTypeSequence )
+	if( fo.getType() == sequenceParser::eTypeSequence )
 		return static_cast<const sequenceParser::Sequence&>(fo).getAbsoluteStandardPattern();
-	if( fo.getMaskType() == sequenceParser::eMaskTypeFile )
+	if( fo.getType() == sequenceParser::eTypeFile )
 		return static_cast<const sequenceParser::File&>(fo).getAbsoluteFilename();
 	return "";
 }
@@ -910,8 +910,9 @@ int main( int argc, char** argv )
 		{
 			// create a detector from the sequence parsing library
 			
-			sequenceParser::EMaskType    researchMask    = sequenceParser::eMaskTypeSequence | sequenceParser::eMaskTypeFile ;
-			sequenceParser::EMaskOptions descriptionMask = sequenceParser::eMaskOptionsAbsolutePath | sequenceParser::eMaskOptionsRecursive;
+			sequenceParser::EType filterByType = sequenceParser::eTypeSequence | sequenceParser::eTypeFile;
+			sequenceParser::EDetection detectionOptions = sequenceParser::eDetectionDefault;
+			sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayDefault;
 			
 			std::vector<std::string> filters;
 			
@@ -942,7 +943,7 @@ int main( int argc, char** argv )
 						TUTTLE_LOG_TRACE( "[sam-do] " <<n->getName() << " browse: " << inputPath );
 					
 						// get filenames adn sequences
-						boost::ptr_vector<sequenceParser::FileObject> listOfSequences = sequenceParser::fileObjectInDirectory( inputPath, filters, researchMask, descriptionMask );
+						boost::ptr_vector<sequenceParser::FileObject> listOfSequences = sequenceParser::fileObjectInDirectory( inputPath, filters, filterByType, detectionOptions, displayOptions );
 						count += addListOfSequencesInListOfProcess( listOfSequences, listOfSequencesForThisNode, extensions );
 					
 						bfs::path p( inputPath );
@@ -953,7 +954,7 @@ int main( int argc, char** argv )
 								if( bfs::is_directory( *dir ) )
 								{
 									bfs::path currentPath = (bfs::path)*dir;
-									boost::ptr_vector<sequenceParser::FileObject> listOfSequences = sequenceParser::fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask );
+									boost::ptr_vector<sequenceParser::FileObject> listOfSequences = sequenceParser::fileObjectInDirectory( currentPath.string(), filters, filterByType, detectionOptions, displayOptions );
 									count += addListOfSequencesInListOfProcess( listOfSequences, listOfSequencesForThisNode, extensions );
 								}
 							}

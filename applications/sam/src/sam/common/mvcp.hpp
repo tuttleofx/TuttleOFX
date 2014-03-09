@@ -127,7 +127,8 @@ int sammvcp(int argc, char** argv)
 	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 	
-	sequenceParser::EMaskOptions descriptionMask = sequenceParser::eMaskOptionsNone; // by default show nothing
+	sequenceParser::EDetection detectionOptions = (sequenceParser::eDetectionSequenceNeedAtLeastTwoFiles | sequenceParser::eDetectionIgnoreDotFile | sequenceParser::eDetectionSequenceFromFilename);
+	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayNone;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
@@ -317,7 +318,7 @@ int sammvcp(int argc, char** argv)
 	if( vm.count(kAllOptionLongName) )
 	{
 		// add .* files
-		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
+		detectionOptions &= ~sequenceParser::eDetectionIgnoreDotFile;
 	}
 	
 	if( vm.count(kOffsetOptionLongName) )
@@ -392,11 +393,11 @@ int sammvcp(int argc, char** argv)
 		sequencePattern = "";
 	}
 
-	sequenceParser::Sequence dstSeq( dstPath, descriptionMask );
+	sequenceParser::Sequence dstSeq( dstPath, displayOptions );
 	
 	if( sequencePattern.size() > 0 )
 	{
-		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, sequenceParser::Sequence::ePatternAll );
+		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, sequenceParser::Sequence::ePatternAll );
 		if( !dstIsSeq ) // there is a pattern, but it's not valid.
 		{
 			TUTTLE_LOG_ERROR("Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." );
@@ -408,7 +409,7 @@ int sammvcp(int argc, char** argv)
 	{
 		BOOST_FOREACH( const bfs::path& srcPath, paths )
 		{
-			sequenceParser::Sequence srcSeq( srcPath.branch_path(), descriptionMask );
+			sequenceParser::Sequence srcSeq( srcPath.branch_path(), displayOptions );
 			const bool srcIsSeq = srcSeq.initFromDetection( srcPath.string(), sequenceParser::Sequence::ePatternDefault );
 			if( ! srcIsSeq )
 			{

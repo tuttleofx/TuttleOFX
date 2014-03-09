@@ -52,13 +52,14 @@ int main( int argc, char** argv )
 	using namespace sam;
 
 	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
+	boost::shared_ptr<Color> color( Color::get() );
 	
-	sequenceParser::EMaskType    researchMask        = sequenceParser::eMaskTypeDirectory | sequenceParser::eMaskTypeFile | sequenceParser::eMaskTypeSequence ; // by default show directories, files and sequences
-	sequenceParser::EMaskOptions descriptionMask     = sequenceParser::eMaskOptionsNone;   // by default show nothing
-	bool             recursiveListing    = false;
-	bool             script              = false;
-	std::string      availableExtensions;
+	sequenceParser::EType filterByType = sequenceParser::eTypeFolder | sequenceParser::eTypeFile | sequenceParser::eTypeSequence; // by default show directories, files and sequences
+	sequenceParser::EDetection detectionOptions = (sequenceParser::eDetectionSequenceNeedAtLeastTwoFiles | sequenceParser::eDetectionIgnoreDotFile | sequenceParser::eDetectionSequenceFromFilename);
+	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayNone;
+	bool recursiveListing = false;
+	bool script = false;
+	std::string availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
@@ -135,13 +136,13 @@ int main( int argc, char** argv )
 	{
 		// disable color, disable directory printing and set relative path by default
 		script = true;
-		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
+		displayOptions |= sequenceParser::eDisplayAbsolutePath;
 	}
 
 	if ( vm.count(kColorOptionLongName) && !script )
 	{
 		color->enable();
-		descriptionMask |= sequenceParser::eMaskOptionsColor;
+		displayOptions |= sequenceParser::eDisplayColor;
 	}
 	if ( vm.count(kEnableColorOptionLongName) && !script )
 	{
@@ -149,12 +150,12 @@ int main( int argc, char** argv )
 		if( string_to_boolean( str ) )
 		{
 			color->enable();
-			descriptionMask |= sequenceParser::eMaskOptionsColor;
+			displayOptions |= sequenceParser::eDisplayColor;
 		}
 		else
 		{
 			color->disable();
-			remove( descriptionMask, sequenceParser::eMaskOptionsColor );
+			displayOptions &= ~sequenceParser::eDisplayColor;
 		}
 	}
 	
@@ -192,52 +193,52 @@ int main( int argc, char** argv )
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if( vm.count(kDirectoriesOptionLongName ) | vm.count(kFilesOptionLongName) | vm.count(kSequencesOptionLongName) )
+	if( vm.count(kDirectoriesOptionLongName ) || vm.count(kFilesOptionLongName) || vm.count(kSequencesOptionLongName) )
 	{
-		researchMask &= ~sequenceParser::eMaskTypeDirectory;
-		researchMask &= ~sequenceParser::eMaskTypeFile;
-		researchMask &= ~sequenceParser::eMaskTypeSequence;
+		filterByType &= ~sequenceParser::eTypeFolder;
+		filterByType &= ~sequenceParser::eTypeFile;
+		filterByType &= ~sequenceParser::eTypeSequence;
 	}
 		
 	if( vm.count(kDirectoriesOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
+		filterByType |= sequenceParser::eTypeFolder;
 	}
 	if (vm.count(kFilesOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeFile;
+		filterByType |= sequenceParser::eTypeFile;
 	}
 	if (vm.count(kSequencesOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeSequence;
+		filterByType |= sequenceParser::eTypeSequence;
 	}
 	
 	if (vm.count(kFullDisplayOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
-		researchMask |= sequenceParser::eMaskTypeFile;
-		researchMask |= sequenceParser::eMaskTypeSequence;
+		filterByType |= sequenceParser::eTypeFolder;
+		filterByType |= sequenceParser::eTypeFile;
+		filterByType |= sequenceParser::eTypeSequence;
 	}
 	
 	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
-		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
+		detectionOptions &= ~sequenceParser::eDetectionIgnoreDotFile;
 	}
 	
 	if (vm.count(kLongListingOptionLongName))
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsProperties;
+		displayOptions |= sequenceParser::eDisplayProperties;
 	}
 	
 	if (vm.count(kRelativePathOptionLongName) )
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsPath;
+		displayOptions |= sequenceParser::eDisplayPath;
 	}
 
 	if(vm.count(kPathOptionLongName))
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
+		displayOptions |= sequenceParser::eDisplayAbsolutePath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -281,7 +282,7 @@ int main( int argc, char** argv )
 				wasSthgDumped = true;
 			}
 
-			coutVec( sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask ) );
+			coutVec( sequenceParser::fileObjectInDirectory( path.string(), filters, filterByType, detectionOptions, displayOptions ) );
 
 			if(recursiveListing)
 			{
@@ -293,7 +294,7 @@ int main( int argc, char** argv )
 						if( !script )
 							TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
-						coutVec( sequenceParser::fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
+						coutVec( sequenceParser::fileObjectInDirectory( currentPath.string(), filters, filterByType, detectionOptions, displayOptions ) );
 
 					}
 				}

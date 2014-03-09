@@ -277,21 +277,21 @@ int main( int argc, char** argv )
 					fObjects = sequenceParser::fileObjectInDirectory( path.string() );
 					BOOST_FOREACH( sequenceParser::FileObject& fObj, fObjects )
 					{
-						switch( fObj.getMaskType() )
+						switch( fObj.getType() )
 						{
-							case sequenceParser::eMaskTypeSequence:
+							case sequenceParser::eTypeSequence:
 							{
 								checkSequence( read, stat, graph, dynamic_cast<const sequenceParser::Sequence&>( fObj ) );
 								break;
 							}
-							case sequenceParser::eMaskTypeFile:
+							case sequenceParser::eTypeFile:
 							{
 								const sequenceParser::File fFile = dynamic_cast<const sequenceParser::File&>( fObj );
 								checkFile( read, stat, graph, fFile.getAbsoluteFilename() );
 								break;
 							}
-							case sequenceParser::eMaskTypeDirectory:
-							case sequenceParser::eMaskTypeUndefined:
+							case sequenceParser::eTypeFolder:
+							case sequenceParser::eTypeUndefined:
 								break;
 						}
 					}
