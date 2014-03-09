@@ -151,9 +151,8 @@ void printImageProperties( std::string path )
 	}
 	catch( ... )
 	{
-		TUTTLE_LOG_ERROR( "Caught exception" << "\n" );
+		TUTTLE_LOG_ERROR( "Caught exception\n" );
 	}
-	
 }
 
 void dumpImageProperties( const sequenceParser::File& s )
@@ -173,14 +172,20 @@ void dumpImageProperties( const sequenceParser::Sequence& s )
 
 void dumpImageProperties( boost::ptr_vector<sequenceParser::FileObject>& listing )
 {
-	BOOST_FOREACH( const sequenceParser::FileObject& sequence, listing )
+	BOOST_FOREACH( const sequenceParser::FileObject& item, listing )
 	{
-		switch( sequence.getType () )
+		switch( item.getType() )
 		{
-			case sequenceParser::eTypeSequence	: dumpImageProperties( static_cast<const sequenceParser::Sequence&>( sequence ) ); break;
-			case sequenceParser::eTypeFile		: dumpImageProperties( static_cast<const sequenceParser::File&>( sequence ) ); break;
-			case sequenceParser::eTypeFolder	: break;
-			case sequenceParser::eTypeUndefined	: break;
+			case sequenceParser::eTypeSequence:
+				dumpImageProperties( static_cast<const sequenceParser::Sequence&>( item ) );
+				break;
+			case sequenceParser::eTypeFile:
+				dumpImageProperties( static_cast<const sequenceParser::File&>( item ) );
+				break;
+			case sequenceParser::eTypeFolder:
+			case sequenceParser::eTypeUndefined:
+			case sequenceParser::eTypeAll:
+				break;
 		}
 	}
 	listing.clear();
@@ -201,7 +206,7 @@ int main( int argc, char** argv )
 	sequenceParser::EDetection detectionOptions = (sequenceParser::eDetectionSequenceNeedAtLeastTwoFiles | sequenceParser::eDetectionIgnoreDotFile | sequenceParser::eDetectionSequenceFromFilename);
 	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayColor;
 	bool recursiveListing = false;
-	std::string availableExtensions;
+	int returnCode = 0;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
@@ -389,19 +394,15 @@ int main( int argc, char** argv )
 // 	TUTTLE_LOG_TRACE( "research mask = " << researchMask );
 // 	TUTTLE_LOG_TRACE( "options  mask = " << descriptionMask );
 
-
 	try
 	{
-		std::vector<boost::filesystem::path> pathsNoRemoved;
-		
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-//			TUTTLE_LOG_TRACE( "path: "<< path );
+//			TUTTLE_LOG_TRACE( "------> " << path );
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )
 				{
-//					TUTTLE_LOG_TRACE( "is a directory" );
 					if( recursiveListing )
 					{
 						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
@@ -414,32 +415,48 @@ int main( int argc, char** argv )
 							}
 						}
 					}
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, filterByType, detectionOptions, displayOptions );
-					dumpImageProperties( listing );
+					else
+					{
+						boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, filterByType, detectionOptions, displayOptions );
+						dumpImageProperties( listing );
+					}
 				}
 				else
 				{
-					if( std::strcmp( path.branch_path().string().c_str(),"" ) == 0 )
-						path = "."/path.leaf();
-					//TUTTLE_LOG_TRACE( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
-					filters.push_back( path.leaf().string() );
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, filterByType, detectionOptions, displayOptions );
+					// Filter by the filename
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory(
+							path.string(), filters,
+							sequenceParser::eTypeAll,
+							detectionOptions, displayOptions );
 					dumpImageProperties( listing );
-					filters.pop_back( );
 				}
 			}
 			else
 			{
-//				TUTTLE_LOG_TRACE( "not exist ...." );
 				try
 				{
-					sequenceParser::Sequence s(path.branch_path(), displayOptions );
-					s.initFromDetection( path.string(), sequenceParser::Sequence::ePatternDefault );
-					if( s.getNbFiles() )
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory(
+							path.string(), filters,
+							sequenceParser::eTypeAll,
+							detectionOptions, displayOptions );
+					if( listing.empty() )
 					{
-						//TUTTLE_LOG_TRACE(s);
-						dumpImageProperties( s );
+//						const bool isPattern = boost::algorithm::contains( pattern, boost::is_any_of("#@*?") );
+						std::string pattern = path.leaf().string();
+						std::vector<std::string> tmp;
+						boost::split( tmp, pattern, boost::is_any_of("#@*?") );
+						const bool isPattern = tmp.size() != 1;
+						if( isPattern )
+						{
+							TUTTLE_LOG_ERROR( "Pattern \"" << pattern << "\" not found." );
+						}
+						else
+						{
+							TUTTLE_LOG_ERROR( "File \"" << pattern << "\" not found." );
+						}
+						++returnCode;
 					}
+					dumpImageProperties( listing );
 				}
 				catch(... )
 				{
@@ -456,12 +473,7 @@ int main( int argc, char** argv )
 	{
 		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 	}
-	
-	if( !wasSthgDumped )
-	{
-		TUTTLE_LOG_ERROR( "No sequence found here." );
-	}
-	
-	return 0;
+
+	return returnCode;
 }
 

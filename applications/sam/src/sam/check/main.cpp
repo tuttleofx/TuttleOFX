@@ -292,6 +292,7 @@ int main( int argc, char** argv )
 							}
 							case sequenceParser::eTypeFolder:
 							case sequenceParser::eTypeUndefined:
+							case sequenceParser::eTypeAll:
 								break;
 						}
 					}
