@@ -8,6 +8,7 @@ def setUp():
 	tuttle.core().preload(False)
 
 def testComputeTime():
+	nbFrames = 30
 	N = 0
 	print("testComputeTime %d" % N); N += 1
 	gA = tuttle.Graph()
@@ -17,7 +18,7 @@ def testComputeTime():
 	t0 = time.clock()
 	time0 = time.time()
 	print("testComputeTime %d" % N); N += 1
-	gA.compute( tuttle.ComputeOptions(0, 200) )
+	gA.compute( tuttle.ComputeOptions(0, nbFrames) )
 	t1 = time.clock()
 	time1 = time.time()
 	
@@ -34,7 +35,7 @@ def testComputeTime():
 	t0 = time.clock()
 	time0 = time.time()
 	print("compute frame by frame")
-	for i in range(0, 200):
+	for i in range(0, nbFrames):
 		print("compute frame %d" % i)
 		gB.compute( tuttle.ComputeOptions(i) )
 	t1 = time.clock()
