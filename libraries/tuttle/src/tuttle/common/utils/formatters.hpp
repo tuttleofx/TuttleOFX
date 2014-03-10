@@ -10,6 +10,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
+#ifdef WITH_BOOST_LOG
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -24,6 +25,23 @@
 #include <boost/log/expressions/attr.hpp>
 #include <boost/log/expressions/message.hpp>
 
+#else
+
+namespace boost {
+namespace log {
+namespace trivial {
+enum severity_level
+{
+    trace,
+    debug,
+    info,
+    warning,
+    error,
+    fatal
+};
+}}}
+
+#endif
 
 namespace tuttle {
 namespace common {
@@ -31,7 +49,9 @@ namespace formatters {
 
 class Formatter : boost::noncopyable
 {
+#ifdef WITH_BOOST_LOG
 	typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend > sink_t;
+#endif
 
 private:
 	Formatter();
@@ -51,7 +71,9 @@ public:
 
 public:
 	static boost::shared_ptr< Formatter > _formatter;
+#ifdef WITH_BOOST_LOG
 	boost::shared_ptr< sink_t > _sink;
+#endif
 };
 
 }

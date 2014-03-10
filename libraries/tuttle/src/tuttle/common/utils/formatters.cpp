@@ -35,6 +35,7 @@ Formatter::Formatter()
 
 void Formatter::init_logging()
 {
+#ifdef WITH_BOOST_LOG
 	namespace sinks = boost::log::sinks;
 
 	boost::shared_ptr< sinks::text_ostream_backend > backend = boost::make_shared< sinks::text_ostream_backend >();
@@ -50,6 +51,7 @@ void Formatter::init_logging()
 	displayLogLevel( false );
 
 	boost::log::core::get()->add_sink( _sink );
+#endif
 }
 
 void Formatter::setLogLevel_int( const int level )
@@ -110,11 +112,14 @@ void Formatter::setLogLevel_string( const std::string& level )
 
 void Formatter::setLogLevel( const boost::log::trivial::severity_level level )
 {
+#ifdef WITH_BOOST_LOG
 	boost::log::core::get()->set_filter( boost::log::trivial::severity >= level );
+#endif
 }
 
 void Formatter::displayLogLevel( bool display )
 {
+#ifdef WITH_BOOST_LOG
 	namespace expr = boost::log::expressions;
 	_sink->reset_formatter();
 	if( display )
@@ -130,6 +135,7 @@ void Formatter::displayLogLevel( bool display )
 	{
 		_sink->set_formatter ( expr::stream << expr::smessage );
 	}
+#endif
 }
 
 }

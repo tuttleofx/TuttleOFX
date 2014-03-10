@@ -34,8 +34,6 @@
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <boost/log/trivial.hpp>
-
 #include <iomanip>
 #include <iostream>
 #include <fstream>

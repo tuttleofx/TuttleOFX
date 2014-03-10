@@ -32,11 +32,26 @@
 #  define TUTTLE_FORCEINLINE inline
 #endif
 
+#define TUTTLE_COUT( ... ) std::cout << __VA_ARGS__ << std::endl
+
+
+#ifdef WITH_BOOST_LOG
+#define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
+
 #define TUTTLE_TRACE   BOOST_LOG_TRIVIAL(trace)
 #define TUTTLE_INFO    BOOST_LOG_TRIVIAL(info)
 #define TUTTLE_WARNING BOOST_LOG_TRIVIAL(warning)
 #define TUTTLE_ERROR   BOOST_LOG_TRIVIAL(error)
 #define TUTTLE_FATAL   BOOST_LOG_TRIVIAL(fatal)
+#else
+#define TUTTLE_LOG( MODE, ... ) TUTTLE_COUT(MODE << __VA_ARGS__)
+
+#define TUTTLE_TRACE   "trace: "
+#define TUTTLE_INFO    "info: "
+#define TUTTLE_WARNING "warning: "
+#define TUTTLE_ERROR   "error: "
+#define TUTTLE_FATAL   "fatal: "
+#endif
 
 /**
  * @def   TUTTLE_INFOS
@@ -58,15 +73,11 @@
  * @brief terminal display
  **/
 
-#define TUTTLE_LOG_TRACE( ... )   BOOST_LOG_TRIVIAL(trace) << __VA_ARGS__
-#define TUTTLE_LOG_INFO( ... )    BOOST_LOG_TRIVIAL(info)  << __VA_ARGS__
-#define TUTTLE_LOG_WARNING( ... ) BOOST_LOG_TRIVIAL(warning) << tuttle::common::Color::get()->_yellow << __VA_ARGS__ << tuttle::common::Color::get()->_std
-#define TUTTLE_LOG_ERROR( ... )   BOOST_LOG_TRIVIAL(error)   << tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std
-#define TUTTLE_LOG_FATAL( ... )   BOOST_LOG_TRIVIAL(fatal)   << tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std
-
-#define TUTTLE_COUT( ... ) std::cout << __VA_ARGS__ << std::endl
-
-#define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
+#define TUTTLE_LOG_TRACE( ... )   TUTTLE_LOG( TUTTLE_TRACE, __VA_ARGS__ )
+#define TUTTLE_LOG_INFO( ... )    TUTTLE_LOG( TUTTLE_INFO, __VA_ARGS__ )
+#define TUTTLE_LOG_WARNING( ... ) TUTTLE_LOG( TUTTLE_WARNING, tuttle::common::Color::get()->_yellow << __VA_ARGS__ << tuttle::common::Color::get()->_std )
+#define TUTTLE_LOG_ERROR( ... )   TUTTLE_LOG( TUTTLE_ERROR, tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std )
+#define TUTTLE_LOG_FATAL( ... )   TUTTLE_LOG( TUTTLE_FATAL, tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std )
 
 #define TUTTLE_LOG_VAR( MODE, a )           TUTTLE_LOG( MODE, TUTTLE_GET_VAR ( a ) )
 #define TUTTLE_LOG_VAR2( MODE, a, b )       TUTTLE_LOG( MODE, TUTTLE_GET_VAR2( a, b ) )
