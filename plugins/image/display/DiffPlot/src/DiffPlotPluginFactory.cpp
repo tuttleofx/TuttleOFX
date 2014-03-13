@@ -26,7 +26,7 @@ void DiffPlotPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setDescription(
 		"DiffPlot\n"
 		"\n"
-		"Display channel values correspondances between 2 images.\n"
+		"Display channel values correspondences between 2 images.\n"
 		"It will look like an 1D LUT, but for one value in the first image, "
 		"multiple values could exist in the 2nd image.\n"
 	);

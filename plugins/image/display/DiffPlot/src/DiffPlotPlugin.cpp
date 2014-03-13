@@ -16,32 +16,32 @@ DiffPlotPlugin::DiffPlotPlugin( OfxImageEffectHandle handle )
 {
 	_clipSrcB = fetchClip( kClipSourceB );
 
-	_paramGlobalDisplaySelection = fetchBooleanParam( kGlobalDisplay ); //global display
+	_paramGlobalDisplaySelection = fetchBooleanParam( kGlobalDisplay );
 
-	_paramOverlayRSelection = fetchBooleanParam( kBoolRed ); //R (is channel selected?)
-	_paramMutliplierR = fetchDoubleParam(kMultiplierRed); //R multiplier
-	_paramOverlayGSelection = fetchBooleanParam( kBoolGreen ); //G (is channel selected?)
-	_paramMutliplierG = fetchDoubleParam(kMultiplierGreen); //G multiplier
+	_paramOverlayRSelection = fetchBooleanParam( kBoolRed );
+	_paramMutliplierR = fetchDoubleParam(kMultiplierRed);
+	_paramOverlayGSelection = fetchBooleanParam( kBoolGreen );
+	_paramMutliplierG = fetchDoubleParam(kMultiplierGreen);
 	
-	_paramOverlayBSelection = fetchBooleanParam( kBoolBlue ); //B (is channel selected?)
-	_paramMutliplierB = fetchDoubleParam(kMultiplierBlue); //B multiplier
+	_paramOverlayBSelection = fetchBooleanParam( kBoolBlue );
+	_paramMutliplierB = fetchDoubleParam(kMultiplierBlue);
 	
-	_paramOverlayHSelection = fetchBooleanParam( kBoolHue ); //H (is channel selected?)
-	_paramMutliplierH = fetchDoubleParam(kMultiplierHue); //H multiplier
-	_paramOverlaySSelection = fetchBooleanParam( kBoolSaturation ); //S (is channel selected?)
-	_paramMutliplierS = fetchDoubleParam(kMultiplierSaturation); //S multiplier
+	_paramOverlayHSelection = fetchBooleanParam( kBoolHue );
+	_paramMutliplierH = fetchDoubleParam(kMultiplierHue);
+	_paramOverlaySSelection = fetchBooleanParam( kBoolSaturation );
+	_paramMutliplierS = fetchDoubleParam(kMultiplierSaturation);
 	
-	_paramOverlayLSelection = fetchBooleanParam( kBoolLightness ); //L (is channel selected?)
-	_paramMutliplierL = fetchDoubleParam(kMultiplierLightness); //L multiplier
+	_paramOverlayLSelection = fetchBooleanParam( kBoolLightness );
+	_paramMutliplierL = fetchDoubleParam(kMultiplierLightness);
 	
-	_paramDisplayTypeSelection = fetchChoiceParam( kHistoDisplayListParamLabel ); //diffPlot display list (DiffPlot overlay group)
+	_paramDisplayTypeSelection = fetchChoiceParam( kHistoDisplayListParamLabel );
 
-	_paramDisplaySelection = fetchBooleanParam( kBoolSelection ); //display selection on source clip (Selection group)
-	_paramSelectionMode = fetchChoiceParam( kSelectionModeListParamLabel ); //selection mode (Selection group)
+	_paramDisplaySelection = fetchBooleanParam( kBoolSelection );
+	_paramSelectionMode = fetchChoiceParam( kSelectionModeListParamLabel );
 	
-	_paramSelectionMultiplierSelection = fetchDoubleParam( kselectionMultiplier ); //selection multiplier (Advanced group)
-	_paramRefreshOverlaySelection = fetchPushButtonParam( kButtonRefreshOverlay ); //refresh overlay (Advanced group)
-	_paramNbStepSelection = fetchIntParam( knbStepRange ); //nb step range (Advanced group)
+	_paramSelectionMultiplierSelection = fetchDoubleParam( kselectionMultiplier );
+	_paramRefreshOverlaySelection = fetchPushButtonParam( kButtonRefreshOverlay );
+	_paramNbStepSelection = fetchIntParam( knbStepRange );
 
 	//Reset param booleans
 	_isCleaned = false;
