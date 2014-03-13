@@ -41,6 +41,7 @@ const static std::string kGroupDiffPlotOverlayLabel = "DiffPlot overlay";
 const static std::string kHistoDisplayListParamLabel = "DiffPlot adjustment";
 const static std::string kHistoDisplayListParamOpt1 = "by channel";
 const static std::string kHistoDisplayListParamOpt2 = "global";
+const static std::string kParamColorMapping = "colorMapping";
 
 //DiffPlot check box
 const static std::string kBoolRed = "Red";

@@ -77,6 +77,13 @@ void DiffPlotPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	boolGLOBAL->setHint("Display global overlay on screen.");
 	boolGLOBAL->setDefault(true);
 	
+	//process mode
+	OFX::ChoiceParamDescriptor* colorMapping = desc.defineChoiceParam(kParamColorMapping);
+	colorMapping->setLabel("Color Mapping");
+	colorMapping->setHint("Process channel by channel independently or compare full colors triplets");
+	colorMapping->appendOption("per channel");
+	colorMapping->appendOption("color triplet");
+
     // RGB / HSL
 	{
 		//Group Param (RGB & HSL)

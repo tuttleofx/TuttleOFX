@@ -17,7 +17,9 @@ DiffPlotPlugin::DiffPlotPlugin( OfxImageEffectHandle handle )
 	_clipSrcB = fetchClip( kClipSourceB );
 
 	_paramGlobalDisplaySelection = fetchBooleanParam( kGlobalDisplay );
+	_paramColorMapping = fetchChoiceParam( kParamColorMapping );
 
+	_paramGroupRGB = fetchGroupParam( kGroupRGB );
 	_paramOverlayRSelection = fetchBooleanParam( kBoolRed );
 	_paramMutliplierR = fetchDoubleParam(kMultiplierRed);
 	_paramOverlayGSelection = fetchBooleanParam( kBoolGreen );
@@ -26,6 +28,7 @@ DiffPlotPlugin::DiffPlotPlugin( OfxImageEffectHandle handle )
 	_paramOverlayBSelection = fetchBooleanParam( kBoolBlue );
 	_paramMutliplierB = fetchDoubleParam(kMultiplierBlue);
 	
+	_paramGroupHSL = fetchGroupParam( kGroupHSL );
 	_paramOverlayHSelection = fetchBooleanParam( kBoolHue );
 	_paramMutliplierH = fetchDoubleParam(kMultiplierHue);
 	_paramOverlaySSelection = fetchBooleanParam( kBoolSaturation );
@@ -80,8 +83,28 @@ DiffPlotProcessParams<DiffPlotPlugin::Scalar> DiffPlotPlugin::getProcessParams( 
  */
 void DiffPlotPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
+	if( paramName == kParamColorMapping )
+	{
+		int colorMappingMode = _paramColorMapping->getValue();
+		bool isNotChannelMapping = colorMappingMode != 0;
+		_paramGroupRGB->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramOverlayRSelection->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramMutliplierR->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramOverlayGSelection->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramMutliplierG->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramOverlayBSelection->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramMutliplierB->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramGroupHSL->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramOverlayHSelection->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramMutliplierH->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramOverlaySSelection->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramMutliplierS->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramOverlayLSelection->setIsSecretAndDisabled( isNotChannelMapping );
+		_paramMutliplierL->setIsSecretAndDisabled( isNotChannelMapping );
+
+	}
 	// refresh diffPlot overlay
-	if( paramName == kButtonRefreshOverlay )
+	else if( paramName == kButtonRefreshOverlay )
 	{
 		//Draw forced
 		OFX::InstanceChangedArgs changed( args.time, args.renderScale );

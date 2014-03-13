@@ -35,7 +35,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 	//height of the window (image for test)
 	//width of the window (image for test)
 	OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
-    const double step = size.x / (double)(getOverlayData()._data._step -1);
+    const double step = size.x / (double)(getOverlayData()._channelData._step -1);
 
 	float selectionMultiplier = (float)_plugin->_paramSelectionMultiplierSelection->getValue();
 	//Display on screen if specified (HSL)
@@ -46,7 +46,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 			displayGrid(size.y, size.x); //display grid on screen
 			hasGridBeenDisplayed = true; //set grid has already been displayed to true
 		}
-		plotChannelMapping( getOverlayData()._data._bufferHue, getOverlayData()._selectionData._bufferHue, step, size.y, size.x, selectionMultiplier );
+		plotChannelMapping( getOverlayData()._channelData._bufferHue, getOverlayData()._selectionData._bufferHue, step, size.y, size.x, selectionMultiplier );
 	}
 	if(_plugin->_paramOverlaySSelection->getValue())			//SATURATION CHANNEL
 	{
@@ -56,7 +56,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 			hasGridBeenDisplayed = true; //set grid has already been displayed to true
 		}
 		
-		plotChannelMapping( getOverlayData()._data._bufferSaturation, getOverlayData()._selectionData._bufferSaturation, step, size.y, size.x, selectionMultiplier );
+		plotChannelMapping( getOverlayData()._channelData._bufferSaturation, getOverlayData()._selectionData._bufferSaturation, step, size.y, size.x, selectionMultiplier );
 	}
 	if(_plugin->_paramOverlayLSelection->getValue())			//LIGHTNESS CHANNEL
 	{
@@ -66,7 +66,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 			hasGridBeenDisplayed = true; //set grid has already been displayed to true
 		}
 
-		plotChannelMapping( getOverlayData()._data._bufferLightness, getOverlayData()._selectionData._bufferLightness, step, size.y, size.x, selectionMultiplier );
+		plotChannelMapping( getOverlayData()._channelData._bufferLightness, getOverlayData()._selectionData._bufferLightness, step, size.y, size.x, selectionMultiplier );
 	}
 	return true;
 }

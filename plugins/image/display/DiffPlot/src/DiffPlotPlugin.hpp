@@ -36,7 +36,9 @@ public:
 	
 	// Plugin parameters
 	OFX::BooleanParam* _paramGlobalDisplaySelection;//global display
+	OFX::ChoiceParam* _paramColorMapping;
 
+	OFX::GroupParam* _paramGroupRGB;
 	OFX::BooleanParam* _paramOverlayRSelection;		//R
 	OFX::DoubleParam* _paramMutliplierR;			//multiplier R
 	
@@ -46,6 +48,7 @@ public:
 	OFX::BooleanParam* _paramOverlayBSelection;		//B
 	OFX::DoubleParam* _paramMutliplierB;			//multiplier B
 	
+	OFX::GroupParam* _paramGroupHSL;
 	OFX::BooleanParam* _paramOverlayHSelection;		//H
 	OFX::DoubleParam* _paramMutliplierH;			//multiplier H
 	

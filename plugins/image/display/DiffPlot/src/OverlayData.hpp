@@ -20,7 +20,7 @@ typedef long Number;
 typedef boost::container::flat_set<Number> ValueSet;
 typedef boost::container::flat_map<Number, ValueSet> DiffPlotMap;
 
-struct DiffPlotBufferData
+struct ChannelPlotBufferData
 {
 	//step
 	int _step;								//nbStep (for computing and display)
@@ -32,6 +32,17 @@ struct DiffPlotBufferData
 	DiffPlotMap _bufferHue;			//H
 	DiffPlotMap _bufferLightness;	//S
 	DiffPlotMap _bufferSaturation;	//L
+
+	void clear()
+	{
+		_bufferRed.clear();
+		_bufferGreen.clear();
+		_bufferBlue.clear();
+
+		_bufferHue.clear();
+		_bufferLightness.clear();
+		_bufferSaturation.clear();
+	}
 };
 
 /*
@@ -42,14 +53,14 @@ typedef boost::multi_array<unsigned char,2, OfxAllocator<unsigned char> > bool_2
 
 struct Pixel_compute_diffPlots
 {
-    DiffPlotBufferData& _data;		//DiffPlotBufferData to fill up
+    ChannelPlotBufferData& _data;		//DiffPlotBufferData to fill up
 	bool_2d& _imgBool;				//bool selection img (pixels)
 	std::ssize_t _height;			//height of src clip
 	std::ssize_t _width;			//width of src clip
 	std::ssize_t _y, _x;			//position of the current pixel (functor needs to know which pixel is it)
 	bool _isSelectionMode;			//do we work on all of the pixels (normal diffPlots) or only on selection
 	
-	Pixel_compute_diffPlots( bool_2d& selection, DiffPlotBufferData& data, const bool isSelectionMode )
+	Pixel_compute_diffPlots( bool_2d& selection, ChannelPlotBufferData& data, const bool isSelectionMode )
 	: _data( data )
 	, _imgBool( selection )
 	, _height( _imgBool.shape()[0] )
@@ -189,9 +200,7 @@ public:
 	
 private:
 	/*DiffPlot management*/
-	void computeDiffPlotBufferData( DiffPlotBufferData& data, SView& srcAView, SView& srcBView, const OfxTime time, const bool isSelection);
-
-	void resetDiffPlotBufferData( DiffPlotBufferData& toReset ) const;		//reset a complete DiffPlotBufferData
+	void computeDiffPlotBufferData( ChannelPlotBufferData& data, SView& srcAView, SView& srcBView, const OfxTime time, const bool isSelection);
 
 	/*Average management*/
 	void computeAverages();		//compute average of each channel
@@ -205,8 +214,16 @@ private:
 	void resetVectortoZero( DiffPlotMap& v, const std::size_t size ) const;	//reset a specific channel buffer
 	
 public:
-	DiffPlotBufferData _data;				//diffPlot data
-	DiffPlotBufferData _selectionData;		//selection diffPlot data
+	/// @group Color Mapping By Channel
+	/// @{
+	ChannelPlotBufferData _data;
+	ChannelPlotBufferData _selectionData;
+	/// @}
+
+	/// @group Color Mapping Color Triplet
+	/// @{
+	ColorTripletPlotBufferData _tripletData;
+	/// @}
 
 	bool_2d _imgBool;						//unsigned char 2D (use for display texture on screen)
 	OfxTime _currentTime;					//time of the current frame

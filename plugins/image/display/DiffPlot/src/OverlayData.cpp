@@ -26,7 +26,7 @@ OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
  * Update selection areas buffer to selection diffPlots overlay
  * @param args needed to have current time
  */
-void OverlayData::computeDiffPlotBufferData( DiffPlotBufferData& data, SView& srcAView, SView& srcBView, const OfxTime time, const bool isSelection)
+void OverlayData::computeDiffPlotBufferData( ChannelPlotBufferData& data, SView& srcAView, SView& srcBView, const OfxTime time, const bool isSelection)
 {
 	data._step = _vNbStep;					//prepare DiffPlotBuffer structure
 	
@@ -39,22 +39,6 @@ void OverlayData::computeDiffPlotBufferData( DiffPlotBufferData& data, SView& sr
 
 	Pixel_compute_diffPlots funct( _imgBool, data, isSelection );
 	terry::algorithm::transform_pixels( srcAView, srcBView, funct );
-}
-
-/**
- * @brief Set each values of the vector to null
- * @param toReset DiffPlotBufferdata instance to reset
- */
-void OverlayData::resetDiffPlotBufferData( DiffPlotBufferData& toReset ) const
-{
-	//RGB
-	toReset._bufferRed.clear();
-	toReset._bufferGreen.clear();
-	toReset._bufferBlue.clear();
-	//HLS
-	toReset._bufferHue.clear();
-	toReset._bufferLightness.clear();
-	toReset._bufferSaturation.clear();
 }
 
 /**
@@ -141,7 +125,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrcA, OFX::Clip* clipSrcB, con
 	SView srcBView = tuttle::plugin::getGilView<SView>( srcB.get(), srcBPixelRod, eImageOrientationIndependant );	// get current view from source clip
 
 	// Compute diffPlot buffer
-	this->computeDiffPlotBufferData( _data, srcAView, srcBView, time, false );
+	this->computeDiffPlotBufferData( _channelData, srcAView, srcBView, time, false );
 
 //	 // Compute selection diffPlot buffer
 //	this->computeDiffPlotBufferData( _selectionData, srcView, time, true );
@@ -157,8 +141,8 @@ void OverlayData::computeFullData( OFX::Clip* clipSrcA, OFX::Clip* clipSrcB, con
 void OverlayData::resetDiffPlotData()
 {
 	// Reset DiffPlot buffers
-	this->_data._step = _vNbStep;
-	this->resetDiffPlotBufferData(this->_data);
+	this->_channelData._step = _vNbStep;
+	this->_channelData.clear();
 }
 
 /**
@@ -169,7 +153,7 @@ void OverlayData::resetDiffPlotSelectionData()
 {
 	//Reset DiffPlot selection buffers
 	this->_selectionData._step = _vNbStep;
-	this->resetDiffPlotBufferData(this->_selectionData);
+	this->_selectionData.clear();
 }
 
 void OverlayData::removeSelection()
