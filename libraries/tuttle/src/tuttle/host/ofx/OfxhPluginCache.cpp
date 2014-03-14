@@ -345,7 +345,7 @@ void OfxhPluginCache::addPlugin( OfxhPlugin* plugin )
 	}
 	else
 	{
-		TUTTLE_LOG_WARNING( "Plugin: " << plugin->getRawIdentifier() << " loaded twice! (" << plugin->getBinary().getFilePath() << ")" );
+		TUTTLE_LOG_INFO( "Plugin: " << plugin->getRawIdentifier() << " loaded twice! (" << plugin->getBinary().getFilePath() << ")" );
 	}
 	_plugins.push_back( plugin );
 
