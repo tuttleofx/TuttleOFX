@@ -1,5 +1,5 @@
-#ifndef OPTIONS_HPP_
-#define OPTIONS_HPP_
+#ifndef _SAM_OPTIONS_HPP_
+#define _SAM_OPTIONS_HPP_
 
 namespace sam {
 
