@@ -86,6 +86,24 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
+struct PluginCacheSupportedApi
+{
+	APICache::OfxhPluginAPICacheI* _handler;
+
+	PluginCacheSupportedApi( APICache::OfxhPluginAPICacheI* handler )
+		: _handler( handler ) {}
+
+	bool matches( std::string api, int version ) const
+	{
+		if( api == _handler->_apiName && version >= _handler->_apiVersionMin && version <= _handler->_apiVersionMax )
+		{
+			return true;
+		}
+		return false;
+	}
+};
+
+
 #if defined ( __linux__ )
 
 static const char* getArchStr()
@@ -318,6 +336,33 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 	#endif
 }
 
+void OfxhPluginCache::addPlugin( OfxhPlugin* plugin )
+{
+	// Check if the same plugin has already been loaded
+	if( _loadedMap.find( plugin->getIdentity() ) == _loadedMap.end() )
+	{
+		_loadedMap[plugin->getIdentity()] = true;
+	}
+	else
+	{
+		TUTTLE_LOG_WARNING( "Plugin: " << plugin->getRawIdentifier() << " loaded twice! (" << plugin->getBinary().getFilePath() << ")" );
+	}
+	_plugins.push_back( plugin );
+
+	if( _pluginsByID.find( plugin->getIdentifier() ) != _pluginsByID.end() )
+	{
+		OfxhPlugin& otherPlugin = *_pluginsByID[plugin->getIdentifier()];
+		if( plugin->trumps( otherPlugin ) )
+		{
+			_pluginsByID[plugin->getIdentifier()] = plugin;
+		}
+	}
+	else
+	{
+		_pluginsByID[plugin->getIdentifier()] = plugin;
+	}
+}
+
 std::string OfxhPluginCache::seekPluginFile( const std::string& baseName ) const
 {
 	// Exit early if disabled
@@ -419,6 +464,11 @@ void OfxhPluginCache::clearPluginFiles()
 	_pluginsByID.clear();
 	_loadedMap.clear();
 	_knownBinFiles.clear();
+}
+
+void OfxhPluginCache::registerAPICache( APICache::OfxhPluginAPICacheI& apiCache )
+{
+	_apiHandlers.push_back( PluginCacheSupportedApi( &apiCache ) );
 }
 
 APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler( const std::string& api, int version )
