@@ -456,7 +456,7 @@ int main( int argc, char** argv )
 				{
 					if( samdo_vm.count( kRangeOptionLongName ) && ( samdo_vm.count( kFirstImageOptionLongName ) || samdo_vm.count( kLastImageOptionLongName ) ) )
 					{
-						TUTTLE_LOG_ERROR( color->_red << "sam do: could not use " << kRangeOptionLongName << "and " << kFirstImageOptionLongName << " or " << kLastImageOptionLongName << " option." << color->_std << std::endl );
+						TUTTLE_LOG_FATAL( color->_red << "sam do: could not use " << kRangeOptionLongName << "and " << kFirstImageOptionLongName << " or " << kLastImageOptionLongName << " option." << color->_std << std::endl );
 						exit( 255 );
 					}
 					
@@ -523,12 +523,12 @@ int main( int argc, char** argv )
 			}
 			catch( const boost::program_options::error& e )
 			{
-				TUTTLE_LOG_ERROR( "sam do: command line error: " << e.what() );
+				TUTTLE_LOG_FATAL( "sam do: command line error: " << e.what() );
 				exit( 254 );
 			}
 			catch( ... )
 			{
-				TUTTLE_LOG_ERROR( "sam do: error: " << boost::current_exception_diagnostic_information() );
+				TUTTLE_LOG_FATAL( "sam do: error: " << boost::current_exception_diagnostic_information() );
 				exit( 254 );
 			}
 
@@ -838,31 +838,31 @@ int main( int argc, char** argv )
 					}
 					catch( boost::program_options::error& e )
 					{
-						TUTTLE_LOG_ERROR( "[sam do] " << nodeFullName );
+						TUTTLE_LOG_FATAL( "[sam do] " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
-						TUTTLE_LOG_ERROR( "Error: " << e.what() );
+						TUTTLE_LOG_FATAL( "Error: " << e.what() );
 #else
-						TUTTLE_LOG_ERROR( "Debug: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_LOG_FATAL( "Debug: " << boost::current_exception_diagnostic_information() );
 #endif
 						exit( 254 );
 					}
 					catch( tuttle::exception::Common& e )
 					{
-						TUTTLE_LOG_ERROR( "[sam do] " << nodeFullName );
+						TUTTLE_LOG_FATAL( "[sam do] " << nodeFullName );
 #ifdef TUTTLE_PRODUCTION
-						TUTTLE_LOG_ERROR( "Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) );
+						TUTTLE_LOG_FATAL( "Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) );
 #else
-						TUTTLE_LOG_ERROR( "Debug: " << boost::current_exception_diagnostic_information() );
-						TUTTLE_LOG_ERROR( "Backtrace: " << boost::trace( e ) );
+						TUTTLE_LOG_FATAL( "Debug: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_LOG_FATAL( "Backtrace: " << boost::trace( e ) );
 #endif
 						exit( 254 );
 					}
 					catch( ... )
 					{
-						TUTTLE_LOG_ERROR( "[sam do] " << nodeFullName );
-						TUTTLE_LOG_ERROR( "Unknown error." );
-						TUTTLE_LOG_ERROR( "\n" );
-						TUTTLE_LOG_ERROR( "Debug: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_LOG_FATAL( "[sam do] " << nodeFullName );
+						TUTTLE_LOG_FATAL( "Unknown error." );
+						TUTTLE_LOG_FATAL( "\n" );
+						TUTTLE_LOG_FATAL( "Debug: " << boost::current_exception_diagnostic_information() );
 						exit( 254 );
 					}
 				}
@@ -1209,22 +1209,22 @@ int main( int argc, char** argv )
 	catch( const tuttle::exception::Common& e )
 	{
 #ifdef TUTTLE_PRODUCTION
-		TUTTLE_LOG_ERROR( "[sam-do] Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) );
+		TUTTLE_LOG_FATAL( "[sam-do] Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) );
 #else
-		TUTTLE_LOG_ERROR( "[sam-do] Debug: " << boost::current_exception_diagnostic_information() );
-		TUTTLE_LOG_ERROR( "[sam-do] Backtrace: " << boost::trace( e ));
+		TUTTLE_LOG_FATAL( "[sam-do] Debug: " << boost::current_exception_diagnostic_information() );
+		TUTTLE_LOG_FATAL( "[sam-do] Backtrace: " << boost::trace( e ));
 #endif
 		exit( 254 );
 	}
 	catch( const boost::program_options::error& e )
 	{
-		TUTTLE_LOG_ERROR( "[sam-do] Error: " << e.what());
+		TUTTLE_LOG_FATAL( "[sam-do] Error: " << e.what());
 		exit( 254 );
 	}
 	catch( ... )
 	{
-		TUTTLE_LOG_ERROR( "[sam-do] Error" );
-		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
+		TUTTLE_LOG_FATAL( "[sam-do] Error" );
+		TUTTLE_LOG_FATAL( boost::current_exception_diagnostic_information() );
 		exit( 254 );
 	}
 	return 0;
