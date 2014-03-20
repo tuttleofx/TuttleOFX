@@ -318,6 +318,8 @@ void TextProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procW
 									 _params._backgroundColor.a );
 	fill_pixels( this->_dstView, backgroundColor );
 	
+	OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+
 	if( _clipSrc->isConnected() )
 	{
 		//merge_views( this->_dstView, _srcView, this->_dstView, FunctorMatte<Pixel>() );
@@ -329,7 +331,7 @@ void TextProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procW
 	// ...
 	// else
 	const OfxRectI textRod = { _textCorner.x, _textCorner.y, _textCorner.x + _textSize.x, _textCorner.y + _textSize.y + _textSize.y / 3};
-	const OfxRectI textRoi = rectanglesIntersection( textRod, procWindowRoW );
+	const OfxRectI textRoi = rectanglesIntersection( textRod, procWindowOutput );
 	const OfxRectI textLocalRoi = translateRegion( textRoi, - _textCorner );
 	
 	//TUTTLE_LOG_VAR( TUTTLE_INFO, _textSize );

@@ -52,6 +52,8 @@ incdir_raw = dir_raw
 libdir_raw = join(dir_raw, 'lib/.libs')
 flags_raw = ['-fopenmp']
 
+SWIG = "swig2.0"
+
 # to build with clang
 if 0:
     CXX='clang++'
