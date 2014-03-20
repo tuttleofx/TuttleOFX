@@ -311,7 +311,7 @@ static const char* const kRenderScaleOptionMessage = "specify render scale";
 
 //--script
 static const char* const kScriptOptionLongName = "script";
-static const char* const kScriptOptionString = kScriptOptionLongName;
+static const char* const kScriptOptionString = "script,S";
 static const char* const kScriptOptionMessage = "format the output such as it could be dump in a file and be used as a script";
 
 }
