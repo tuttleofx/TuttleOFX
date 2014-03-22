@@ -17,6 +17,7 @@ def getBestIOPlugin(extension, context):
 	
 	# Normalize the input extension, so the searchExtension should be something like "jpg".
 	searchExtension = extension if not extension.startswith(".") else extension[1:]
+	searchExtension = searchExtension.lower()
 	
 	for plugin in tuttle.core().getImageEffectPluginCache().getPlugins():
 		try:
