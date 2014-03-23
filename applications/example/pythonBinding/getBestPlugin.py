@@ -3,18 +3,13 @@ from pyTuttle import tuttle
 import sys
 
 
-def getBestIOPlugin(extension, context):
+def getIOPluginsForExtension(extension, context):
 	"""
 	Returns the node identifier that supports the given file extension,
 	for a specific plugin context.
 	"""
-	result = None
-	# If multiple plugins support the same extension,
-	# we keep the plugin which declares less supported extensions.
-	# So we suppose that this plugin is more specialized...
-	# This is a simple but non optimal trick.
-	minExtensionsOfPlugin = sys.maxsize
-	
+	results = []
+
 	# Normalize the input extension, so the searchExtension should be something like "jpg".
 	searchExtension = extension if not extension.startswith(".") else extension[1:]
 	searchExtension = searchExtension.lower()
@@ -27,32 +22,48 @@ def getBestIOPlugin(extension, context):
 				# print(plugin.getIdentifier() + " (v" + str( plugin.getVersionMajor() ) + "." + str( plugin.getVersionMinor() ) + ")")
 				supportedExtensionsProp = desc.getProperties().fetchStringProperty("TuttleOfxImageEffectPropSupportedExtensions")
 				supportedExtensionsSize = supportedExtensionsProp.getDimension()
-				if supportedExtensionsSize >= minExtensionsOfPlugin:
-					break
 				supportedExtensions = supportedExtensionsProp.getValues()
-				for ext in supportedExtensions:
-					# print(plugin.getIdentifier(), ext, supportedExtensionsSize, minExtensionsOfPlugin)
-					if ext == searchExtension:
-						result = plugin.getIdentifier()
-						minExtensionsOfPlugin = supportedExtensionsSize
-						break
+				if searchExtension in supportedExtensions:
+					# print(plugin.getIdentifier(), ext, supportedExtensionsSize)
+					results.append((supportedExtensionsSize, plugin.getIdentifier()))
 		except Exception:
 			# The creation of the node could failed, if not fully supported
 			pass
-	if not result:
-		raise ValueError("File extension '%s' not found" % extension)
-	return result
+	# sort by the number of supported extensions.
+	results.sort()
+	return [v[1] for v in results]
+
 
 def getBestReader(extension):
 	"""
 	Returns the reader node identifier that supports the given file extension.
 	"""
-	return getBestIOPlugin(extension, "OfxImageEffectContextReader")
+	results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
+	if not results:
+		raise ValueError("File extension '%s' not found" % extension)
+	return results[0]
+
+
+def getBestReaders(extension):
+	"""
+	Returns the reader nodes identifiers that supports the given file extension.
+	"""
+	return getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
+
 
 def getBestWriter(extension):
 	"""
 	Returns the writer node identifier that supports the given file extension.
 	"""
-	return getBestIOPlugin(extension, "OfxImageEffectContextWriter")
+	results = getIOPluginsForExtension(extension, "OfxImageEffectContextWriter")[0]
+	if not results:
+		raise ValueError("File extension '%s' not found" % extension)
+	return results[0]
 
+
+def getBestWriters(extension):
+	"""
+	Returns the writer nodes identifiers that supports the given file extension.
+	"""
+	return getIOPluginsForExtension(extension, "OfxImageEffectContextWriter")
 
