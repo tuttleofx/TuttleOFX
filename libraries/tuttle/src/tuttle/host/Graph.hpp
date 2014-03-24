@@ -151,18 +151,22 @@ public:
 	
 	void computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& nodes = NodeListArg() );
 	
-	/**
-	 * @brief Shortcut
-	 */
 	bool compute( const ComputeOptions& options = ComputeOptions() );
-	/**
-	 * @brief Shortcut
-	 */
+	
 	bool compute( const NodeListArg& nodes, const ComputeOptions& options = ComputeOptions() );
 	
-	bool compute( memory::MemoryCache& memoryCache, const ComputeOptions& options );
+	bool compute( memory::IMemoryCache& memoryCache, const ComputeOptions& options );
 	
-	bool compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes = NodeListArg(), const ComputeOptions& options = ComputeOptions() );
+	bool compute(
+			memory::IMemoryCache& memoryCache,
+			const NodeListArg& nodes = NodeListArg(),
+			const ComputeOptions& options = ComputeOptions() );
+	
+	bool compute(
+			memory::IMemoryCache& memoryCache,
+			const NodeListArg& nodes,
+			const ComputeOptions& options,
+			memory::IMemoryCache& internMemoryCache );
 	
 public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }

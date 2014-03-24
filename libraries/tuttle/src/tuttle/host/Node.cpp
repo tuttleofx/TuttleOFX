@@ -71,11 +71,16 @@ bool compute( const std::vector<NodeInit>& nodes, const ComputeOptions& options 
 	return compute( emptyMemoryCache, nodes, options );
 }
 
-bool compute( memory::MemoryCache& memoryCache, const std::vector<NodeInit>& nodes, const ComputeOptions& options )
+bool compute( memory::IMemoryCache& memoryCache, const std::vector<NodeInit>& nodes, const ComputeOptions& options )
+{
+	return compute( memoryCache, nodes, options, core().getMemoryCache() );
+}
+
+bool compute( memory::IMemoryCache& memoryCache, const std::vector<NodeInit>& nodes, const ComputeOptions& options, memory::IMemoryCache& internMemoryCache )
 {
 	Graph g;
 	g.addConnectedNodes( nodes );
-	return g.compute( memoryCache, options );
+	return g.compute( memoryCache, NodeListArg(), options, internMemoryCache );
 }
 
 

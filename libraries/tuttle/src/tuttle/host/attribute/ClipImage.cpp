@@ -36,7 +36,6 @@ ClipImage::ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescript
 	, tuttle::host::ofx::attribute::OfxhClipImage( desc )
 	, _isConnected( false )
 	, _continuousSamples( false )
-	, _memoryCache( core().getMemoryCache() )
 {
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleIdentifier", 1, 1, "" ) );
@@ -45,7 +44,6 @@ ClipImage::ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescript
 ClipImage::ClipImage( const ClipImage& other )
 	: Attribute( other )
 	, ofx::attribute::OfxhClipImage( other )
-	, _memoryCache( core().getMemoryCache() )
 {
 	_name = other._name;
 	_isConnected = other._isConnected;
@@ -183,7 +181,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	
 	const OfxTime realTime = getRemappedTime(time);
 	//TUTTLE_TLOG( TUTTLE_TRACE, "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
-	boost::shared_ptr<Image> image = _memoryCache.get( getClipIdentifier(), realTime );
+	boost::shared_ptr<Image> image = getNode().getData().getInternMemoryCache().get( getClipIdentifier(), realTime );
 	//	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds...
 	/// if bounds != cache buffer bounds:

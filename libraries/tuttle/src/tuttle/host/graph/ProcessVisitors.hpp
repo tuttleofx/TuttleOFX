@@ -751,6 +751,7 @@ public:
 			{
 				BOOST_THROW_EXCEPTION( exception::Logic()
 					<< exception::user() + "Output buffer not found in memoryCache at the end of the node process."
+					<< exception::dev() + vertex._clipName + "." kOfxOutputAttributeName + " at time " + vertex._data._time
 					<< exception::nodeName( vertex._name )
 					<< exception::time( vertex._data._time ) );
 			}

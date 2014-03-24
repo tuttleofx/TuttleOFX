@@ -834,7 +834,7 @@ void ImageEffectNode::preProcess_infos( const graph::ProcessVertexAtTimeData& vD
 void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 {
 //	TUTTLE_TLOG( TUTTLE_INFO, "process: " << getName() );
-	memory::IMemoryCache& memoryCache( core().getMemoryCache() );
+	memory::IMemoryCache& memoryCache = vData._nodeData->getInternMemoryCache();
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
 
@@ -945,18 +945,18 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
 		attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
 		const OfxTime outTime = inEdge->getOutTime();
-		/*
-		TUTTLE_TLOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), outTime );
-		TUTTLE_TLOG_VAR2( TUTTLE_INFO, inEdge->getOut(), inEdge->getIn() );
-		TUTTLE_TLOG_VAR2( TUTTLE_INFO, clip.getIdentifier(), clip.getFullName() );
-		*/
+		
+		// TUTTLE_LOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), outTime );
+		// TUTTLE_LOG_VAR2( TUTTLE_INFO, inEdge->getOut(), inEdge->getIn() );
+		// TUTTLE_LOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), clip.getFullName() );
+		
 		memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), outTime );
 		if( imageCache.get() == NULL )
 		{
 			BOOST_THROW_EXCEPTION( exception::Memory()
 				<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier: " + quotes( clip.getClipIdentifier() ) + ", time: " + outTime + ")." );
 		}
-		// TUTTLE_TLOG_TRACE( ">>>>> - ImageEffectNode => releaseReference: " << imageCache->getFullName() );
+		TUTTLE_LOG_TRACE( ">>>>> - ImageEffectNode => releaseReference: " << imageCache->getFullName() );
 		imageCache->releaseReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost );
 	}
 	
@@ -979,7 +979,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Declare future usages: " << clip.getClipIdentifier() << ", add reference: " << realOutDegree );
 			if( realOutDegree > 0 )
 			{
-				//TUTTLE_TLOG_TRACE( ">>>>> + ImageEffectNode => addReference: " << imageCache->getFullName() );
+				TUTTLE_LOG_TRACE( ">>>>> + ImageEffectNode => addReference: " << imageCache->getFullName() << ", degree=" << realOutDegree );
 				imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, realOutDegree ); // add a reference on this node for each future usages
 			}
 		}
@@ -1054,9 +1054,7 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
 	#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
-	IMemoryCache& memoryCache( core().getMemoryCache() );
-
-	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + "." kOfxOutputAttributeName, time );
+	boost::shared_ptr<Image> image = getNode().getData().getInternMemoryCache().get( this->getName() + "." kOfxOutputAttributeName, time );
 
 	// big hack, for debug...
 	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>( time ) + "_" + this->getName() + ".png" );

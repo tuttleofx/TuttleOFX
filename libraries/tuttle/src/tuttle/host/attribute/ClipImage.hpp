@@ -29,7 +29,6 @@ protected:
 	std::string _name;
 	bool _isConnected;
 	bool _continuousSamples;
-	memory::IMemoryCache& _memoryCache;
 
 	const ClipImage* _connectedClip; ///< @warning HACK ! to keep the connection @todo remove this !!!!
 

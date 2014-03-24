@@ -18,8 +18,17 @@ using boost::assign::list_of;
 
 INode* createNode( const std::string& pluginName );
 
-bool compute( const std::vector<NodeInit>& nodes, const ComputeOptions& options = ComputeOptions() );
-bool compute( memory::MemoryCache& memoryCache, const std::vector<NodeInit>& nodes, const ComputeOptions& options = ComputeOptions() );
+bool compute( const std::vector<NodeInit>& nodes,
+		const ComputeOptions& options = ComputeOptions() );
+
+bool compute( memory::IMemoryCache& memoryCache,
+		const std::vector<NodeInit>& nodes,
+		const ComputeOptions& options = ComputeOptions() );
+
+bool compute( memory::IMemoryCache& memoryCache,
+		const std::vector<NodeInit>& nodes,
+		const ComputeOptions& options,
+		memory::IMemoryCache& internMemoryCache );
 
 
 /**

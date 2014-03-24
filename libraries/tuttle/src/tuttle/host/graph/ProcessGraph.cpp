@@ -24,9 +24,11 @@ namespace graph {
 
 const std::string ProcessGraph::_outputId( "TUTTLE_FAKE_OUTPUT" );
 
-ProcessGraph::ProcessGraph( const ComputeOptions& options, Graph& userGraph, const std::list<std::string>& outputNodes )
+ProcessGraph::ProcessGraph( const ComputeOptions& options, Graph& userGraph, const std::list<std::string>& outputNodes, memory::IMemoryCache& internMemoryCache )
 	: _instanceCount( userGraph.getInstanceCount() )
 	, _options(options)
+	, _internMemoryCache(internMemoryCache)
+	, _procOptions(&_internMemoryCache)
 {
 	_procOptions._interactive = _options.getIsInteractive();
 	// imageEffect specific...
@@ -41,8 +43,9 @@ ProcessGraph::~ProcessGraph()
 
 ProcessGraph::VertexAtTime::Key ProcessGraph::getOutputKeyAtTime( const OfxTime time )
 {
-	return VertexAtTime(Vertex(_outputId), time).getKey();
+	return VertexAtTime(Vertex(_procOptions, _outputId), time).getKey();
 }
+
 ProcessGraph::InternalGraphAtTimeImpl::vertex_descriptor ProcessGraph::getOutputVertexAtTime( const OfxTime time )
 {
 	return _renderGraphAtTime.getVertexDescriptor( getOutputKeyAtTime( time ) );
@@ -215,7 +218,7 @@ void ProcessGraph::updateGraph( Graph& userGraph, const std::list<std::string>& 
 {
 	_renderGraph.copyTransposed( userGraph.getGraph() );
 
-	Vertex outputVertex( _outputId );
+	Vertex outputVertex( _procOptions, _outputId );
 
 	if( outputNodes.size() )
 	{
@@ -535,7 +538,7 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 	TUTTLE_TLOG( TUTTLE_INFO, "[Compute hash at time] end" );
 }
 
-void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
+void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime time )
 {
 	_options.processAtTimeHandle();
 #ifdef TUTTLE_EXPORT_WITH_TIMER
@@ -550,7 +553,7 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 
 	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] process" );
 	// do the process
-	graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( _renderGraphAtTime, core().getMemoryCache() );
+	graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( _renderGraphAtTime, _internMemoryCache );
 	if( _options.getReturnBuffers() )
 	{
 		// accumulate output nodes buffers into the @p outCache MemoryCache
@@ -577,13 +580,12 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 
 	// end of one frame
 	// do some clean: memory clean, as temporary solution...
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] clear unused buffers" );
-	core().getMemoryCache().clearUnused();
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] Memory cache size: " << core().getMemoryCache().size() );
-	//TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] Out cache size: " << outCache );
+	_internMemoryCache.clearUnused();
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Memory cache size: " << _internMemoryCache.size() );
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Out cache size: " << outCache );
 }
 
-bool ProcessGraph::process( memory::MemoryCache& outCache )
+bool ProcessGraph::process( memory::IMemoryCache& outCache )
 {
 #ifdef TUTTLE_EXPORT_WITH_TIMER
 	boost::timer::cpu_timer all_process_timer;
@@ -611,7 +613,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 	
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
+		TUTTLE_LOG_TRACE( "[Process render] timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
 		
 		beginSequence( timeRange );
 		
@@ -619,7 +621,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 		{
 			TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED before first frame." );
 			endSequence();
-			core().getMemoryCache().clearUnused();
+			_internMemoryCache.clearUnused();
 			return false;
 		}
 		
@@ -658,7 +660,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 					TUTTLE_TLOG( TUTTLE_ERROR, "[Process render] Undefined input at time " << time << "." );
 					_options.endFrameHandle();
 					endSequence();
-					core().getMemoryCache().clearUnused();
+					_internMemoryCache.clearUnused();
 					throw;
 				}
 			}
@@ -677,7 +679,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 					TUTTLE_TLOG( TUTTLE_ERROR, "[Process render] Skip frame " << time << "." );
 					_options.endFrameHandle();
 					endSequence();
-					core().getMemoryCache().clearUnused();
+					_internMemoryCache.clearUnused();
 					throw;
 				}
 			}
@@ -687,7 +689,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 				TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED at time " << time << "." );
 				_options.endFrameHandle();
 				endSequence();
-				core().getMemoryCache().clearUnused();
+				_internMemoryCache.clearUnused();
 				return false;
 			}
 			_options.endFrameHandle();
