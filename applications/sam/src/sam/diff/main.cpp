@@ -318,8 +318,6 @@ int main( int argc, char** argv )
         bpo::options_description desc;
         bpo::options_description hidden;
 
-		formatter->init_logging();
-		
 		desc.add_options()
 				( kHelpOptionString,   kHelpOptionMessage )
 				( kReaderOptionString, bpo::value(&nodeId), kReaderOptionMessage )

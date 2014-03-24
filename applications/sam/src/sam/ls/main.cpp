@@ -51,7 +51,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	formatters::Formatter::get();
 	boost::shared_ptr<Color> color( Color::get() );
 	
 	sequenceParser::EType filterByType = sequenceParser::eTypeFolder | sequenceParser::eTypeFile | sequenceParser::eTypeSequence; // by default show directories, files and sequences
@@ -63,8 +63,6 @@ int main( int argc, char** argv )
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
-	formatter->init_logging();
-	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()

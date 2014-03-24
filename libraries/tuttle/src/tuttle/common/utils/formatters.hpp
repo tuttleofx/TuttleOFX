@@ -59,11 +59,13 @@ private:
 public:
 	static boost::shared_ptr<Formatter> get();
 	~Formatter() { }
-	
+
+private:
 	void init_logging();
-	
+
+public:
 	void setLogLevel( const boost::log::trivial::severity_level level );
-	
+
 	void setLogLevel_int( const int level );
 	void setLogLevel_string( const std::string& level );
 

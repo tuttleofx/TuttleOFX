@@ -118,9 +118,9 @@ int main( int argc, char** argv )
 
 	using namespace tuttle::common;
 	using namespace sam;
-	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
+
+	formatters::Formatter::get();
+	boost::shared_ptr<Color> color( Color::get() );
 
 	std::vector<std::string> inputs;
 	std::string readerId;
@@ -130,8 +130,6 @@ int main( int argc, char** argv )
 	
 	bpo::options_description desc;
 	bpo::options_description hidden;
-	
-	formatter->init_logging();
 	
 	desc.add_options()
 			( kHelpOptionString,   kHelpOptionMessage )

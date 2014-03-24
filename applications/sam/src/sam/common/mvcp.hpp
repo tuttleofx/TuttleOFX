@@ -151,8 +151,6 @@ int sammvcp(int argc, char** argv)
 	} EOffsetMode;
 	EOffsetMode offsetMode = eOffsetModeNotSet;
 
-	formatter->init_logging();
-	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()

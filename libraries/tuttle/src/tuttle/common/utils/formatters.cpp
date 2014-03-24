@@ -22,6 +22,8 @@ boost::shared_ptr<Formatter> Formatter::_formatter(new Formatter);
 
 Formatter::Formatter()
 {
+	init_logging();
+
 	const char* envLevel = std::getenv("TUTTLE_LOG_LEVEL");
 	if( envLevel == NULL )
 	{

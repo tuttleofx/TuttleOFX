@@ -11,6 +11,7 @@
 #include <tuttle/common/patterns/Singleton.hpp>
 
 #include <boost/preprocessor/stringize.hpp>
+#include <boost/shared_ptr.hpp>
 
 
 #define TUTTLE_HOST_VERSION_MAJOR 0
@@ -21,6 +22,11 @@
 
 
 namespace tuttle {
+namespace common {
+namespace formatters {
+class Formatter;
+}
+}
 namespace host {
 
 class Core : public Singleton<Core>
@@ -40,6 +46,7 @@ private:
 	memory::IMemoryPool& _memoryPool;
 	memory::IMemoryCache& _memoryCache;
 	bool _isPreloaded;
+	boost::shared_ptr<tuttle::common::formatters::Formatter> _formatter;
 	
 	Preferences _preferences;
 

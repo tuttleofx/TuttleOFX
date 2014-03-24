@@ -5,6 +5,7 @@
 #include <tuttle/host/memory/MemoryCache.hpp>
 
 #include <tuttle/common/system/system.hpp>
+#include <tuttle/common/utils/formatters.hpp>
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -46,6 +47,7 @@ Core::Core()
 	, _memoryPool( pool )
 	, _memoryCache( cache )
 	, _isPreloaded( false )
+	, _formatter( tuttle::common::formatters::Formatter::get() )
 {
 #ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	Py_Initialize( );

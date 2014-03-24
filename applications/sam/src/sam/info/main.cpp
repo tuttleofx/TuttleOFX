@@ -210,8 +210,6 @@ int main( int argc, char** argv )
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
-	formatter->init_logging();
-	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()

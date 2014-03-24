@@ -237,14 +237,12 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
+	formatters::Formatter::get();
+	boost::shared_ptr<Color> color( Color::get() );
 	
 	std::vector<std::string> plugins;
 	std::vector<std::string> foundPlugins;
 	std::vector<std::string> filters;
-	
-	formatter->init_logging();
 	
 	// Declare the supported options.
 	bpo::options_description mainOptions;

@@ -104,10 +104,8 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
-	
-	formatter->init_logging();
+	formatters::Formatter::get();
+	boost::shared_ptr<Color> color( Color::get() );
 	
 	try
 	{

@@ -263,8 +263,6 @@ int main( int argc, char** argv )
 		std::vector<std::string> cl_options;
 		std::vector<std::vector<std::string> > cl_commands;
 
-		formatter->init_logging();
-		
 		decomposeCommandLine( argc, argv, cl_options, cl_commands );
 
 		// create the graph

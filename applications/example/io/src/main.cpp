@@ -18,11 +18,8 @@ void sam_unexpected( void )
 
 int main( int argc, char** argv )
 {
-	boost::shared_ptr<tuttle::common::formatters::Formatter> formatter( tuttle::common::formatters::Formatter::get() );
-	boost::shared_ptr<tuttle::common::Color>                 color( tuttle::common::Color::get() );
-	formatter->init_logging();
-	color->disable();
-	
+	tuttle::common::formatters::Formatter::get();
+
 	std::set_terminate( &sam_terminate );
 	std::set_unexpected( &sam_unexpected );
 	try
