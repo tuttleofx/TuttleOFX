@@ -51,11 +51,32 @@ CTL
 
 We currently use a customized version of the CTL.
 
+If you build TuttleOFX on master (version <= 0.8) :
 ```
-git clone https://github.com/tuttleofx/CTL
+git clone https://github.com/tuttleofx/CTL.git
+git checkout tuttle_master
 cd CTL
 ./configure
 make
+```
+
+If you build TuttleOFX on develop (version > 0.8) :
+```
+- First build aces_container :
+	git clone https://github.com/ampas/aces_container.git
+	cd aces_container
+	mkdir build && cd build
+	cmake ..
+	make install
+- Then build CTL :
+	cd ..
+	git clone https://github.com/tuttleofx/CTL.git
+	git checkout tuttle_develop
+	cd CTL
+	mkdir build && cd build
+	cmake ..
+	make install
+
 ```
 
 
