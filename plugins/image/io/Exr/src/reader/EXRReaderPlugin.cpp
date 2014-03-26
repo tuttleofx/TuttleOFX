@@ -200,13 +200,13 @@ void EXRReaderPlugin::updateCombos()
 	Imf::PixelType firstChannelType = cl.find(firstChannelName.c_str()).channel().type;
 	switch( firstChannelType )
 	{
-		case UINT:
+		case Imf::UINT:
 			_paramFileBitDepth->setValue( eTuttlePluginFileBitDepth32 );
 			break;
-		case HALF:
+		case Imf::HALF:
 			_paramFileBitDepth->setValue( eTuttlePluginFileBitDepth16f );
 			break;
-		case FLOAT:
+		case Imf::FLOAT:
 			_paramFileBitDepth->setValue( eTuttlePluginFileBitDepth32f );
 			break;
 		default:
