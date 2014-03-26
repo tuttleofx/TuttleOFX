@@ -23,16 +23,21 @@ RGBOverlay::~RGBOverlay()
 	_plugin->releaseOverlayData();
 }
 
-/**
- * Display of the RGB diffPlots data
- */
 bool RGBOverlay::draw(const OFX::DrawArgs& args)
+{
+	if( _plugin->_paramColorMapping->getValue() == 0 )
+		return drawByChannel( args );
+	else
+		return drawByColor( args );
+}
+
+bool RGBOverlay::drawByChannel(const OFX::DrawArgs& args)
 {
 	bool hasGridBeenDisplayed = false;
 	//height of the window (image for test)
 	//width of the window (image for test)
 	const OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
-	const double step = size.x / (double)(getOverlayData()._data._step -1);
+	const double step = size.x / (double)(getOverlayData()._channelData._step -1);
 	
 	float selectionMultiplier = (float)_plugin->_paramSelectionMultiplierSelection->getValue(); //get selection multiplier from plugin
 	//display on screen if specified (RGB)
@@ -45,7 +50,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 			hasGridBeenDisplayed = true;		//set display grid to true
 		}
 		
-		plotChannelMapping( getOverlayData()._data._bufferRed, getOverlayData()._selectionData._bufferRed, step, size.y, size.x, selectionMultiplier );
+		plotChannelMapping( getOverlayData()._channelData._bufferRed, getOverlayData()._selectionData._bufferRed, step, size.y, size.x, selectionMultiplier );
 	}
 	if(_plugin->_paramOverlayGSelection->getValue())		//GREEN CHANNEL
 	{
@@ -55,7 +60,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 			hasGridBeenDisplayed = true;		//set display grid to true
 		}
 		
-		plotChannelMapping( getOverlayData()._data._bufferGreen, getOverlayData()._selectionData._bufferGreen, step, size.y, size.x, selectionMultiplier );
+		plotChannelMapping( getOverlayData()._channelData._bufferGreen, getOverlayData()._selectionData._bufferGreen, step, size.y, size.x, selectionMultiplier );
 	}
 	if(_plugin->_paramOverlayBSelection->getValue())		//BLUE CHANNEL
 	{
@@ -65,8 +70,14 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 			hasGridBeenDisplayed = true;		//set display grid to true
 		}
 		
-		plotChannelMapping( getOverlayData()._data._bufferBlue, getOverlayData()._selectionData._bufferBlue, step, size.y, size.x, selectionMultiplier );
+		plotChannelMapping( getOverlayData()._channelData._bufferBlue, getOverlayData()._selectionData._bufferBlue, step, size.y, size.x, selectionMultiplier );
 	}
+	return true;
+}
+
+bool RGBOverlay::drawByColor(const OFX::DrawArgs& args)
+{
+
 	return true;
 }
 

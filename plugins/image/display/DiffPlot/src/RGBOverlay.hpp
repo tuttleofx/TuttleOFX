@@ -44,6 +44,8 @@ public:
 	
 	/*draw main function*/
 	bool draw(const OFX::DrawArgs& args);
+	bool drawByChannel(const OFX::DrawArgs& args);
+	bool drawByColor(const OFX::DrawArgs& args);
 	
 	/*get selected channels*/
 	ESelectedChannelRGB getOnlyChannelSelectedRGB()const;

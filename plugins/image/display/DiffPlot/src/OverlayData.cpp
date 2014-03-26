@@ -26,7 +26,7 @@ OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
  * Update selection areas buffer to selection diffPlots overlay
  * @param args needed to have current time
  */
-void OverlayData::computeDiffPlotBufferData( ChannelPlotBufferData& data, SView& srcAView, SView& srcBView, const OfxTime time, const bool isSelection)
+void OverlayData::computeDiffPlotBufferData( ChannelData& data, SView& srcAView, SView& srcBView, const OfxTime time, const bool isSelection)
 {
 	data._step = _vNbStep;					//prepare DiffPlotBuffer structure
 	
@@ -37,7 +37,7 @@ void OverlayData::computeDiffPlotBufferData( ChannelPlotBufferData& data, SView&
 	BOOST_ASSERT( srcBView.width()  == std::size_t(_size.x) );
 	BOOST_ASSERT( srcBView.height() == std::size_t(_size.y) );
 
-	Pixel_compute_diffPlots funct( _imgBool, data, isSelection );
+	ChannelDiffPlotFunc funct( _imgBool, data, isSelection );
 	terry::algorithm::transform_pixels( srcAView, srcBView, funct );
 }
 
