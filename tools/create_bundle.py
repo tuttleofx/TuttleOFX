@@ -370,36 +370,24 @@ def write_file(output_dir, file_name, text):
     file_handle.close()
 
 
-def write_sam_script(output_dir):
+def copy_sam_scripts(source_dir, output_dir):
     """Write sam.sh script in output_dir
 
     Args:
+        source_dir (str)
+
         output_dir (str)
 
     """
+    script_path = os.path.join(source_dir, "tools", "sam_scripts")
     if OS_NAME == "nt" and SYS_PLATFORM.startswith("win"):
-        print ("Warning: sam.sh is a Unix Bash script, it won't work"
-               "on Windows.\nUse it for inspiration.")
-    script = (
-"""#!/bin/bash
-# just run: source envtuttle
-export TUTTLE_ROOT=`pwd`
-
-export OFX_PLUGIN_PATH=$OFX_PLUGIN_PATH:$TUTTLE_ROOT/plugin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUTTLE_ROOT/lib
-export PATH=$PATH:$TUTTLE_ROOT/bin
-export LIBAV_DATADIR=$TUTTLE_ROOT/libav-presets
-
-export TUTTLE_HOME=$HOME/.tuttleOFX
-mkdir $TUTTLE_HOME -p
-export SAM_PATH=$TUTTLE_ROOT/bin
-export SAM_OPTIONS=--color
-$TUTTLE_ROOT/bin/sam "$@"
-"""
-)
-    script_name = "sam.sh"
-    write_file(output_dir, script_name, script)
-    os.chmod(os.path.join(output_dir, script_name), 0755)
+        native_script = os.path.join(script_path, "sam.bat")
+    else:
+        native_script = os.path.join(script_path, "sam.sh")
+    python_script = os.path.join(script_path, "sam.py")
+    shutil.copy(native_script, os.path.join(output_dir, "sam"))
+    shutil.copy(python_script, output_dir)
+    os.chmod(native_script, 0755)
 
 
 def write_readme(output_dir):
@@ -431,11 +419,13 @@ to `OFX_PLUGIN_PATH` var env and Tuttle's lib directory to your env.
     write_file(output_dir, "readme.md", readme)
 
 
-def create_bundle(build_dir, output_dir, overwrite=False, exclude_sys_lib=False,
-                  verbose=False):
+def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
+                  exclude_sys_lib=False, verbose=False):
     """Create bundle by copying pertinent files in output_dir
 
     Args:
+        source_dir (str): TuttleOFX source code directory
+
         build_dir (str): directory where binaries has been built
 
         output_dir (str): Bundle will be create in this directory
@@ -490,8 +480,8 @@ def create_bundle(build_dir, output_dir, overwrite=False, exclude_sys_lib=False,
         print process.stdout.readline()
 
     # write utils files
-    print_with_deco("sam.sh")
-    write_sam_script(output_dir)
+    print_with_deco("sam launcher")
+    copy_sam_scripts(source_dir, output_dir)
     print_with_deco("readme.md")
     write_readme(output_dir)
 
@@ -523,6 +513,8 @@ def __get_options():
     ## Define parser
     description = 'Create Tuttle bundle'
     parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("source_directory", help=("TuttleOFX source code"
+                                                  "directory"), type=str)
     parser.add_argument("build_directory", help=("directory where binaries has"
                                                  " been built"), type=str)
     parser.add_argument("output_directory", help=("Bundle will be create in"
@@ -537,5 +529,6 @@ def __get_options():
 
 if __name__ == '__main__':
     ARGS = __get_options()
-    create_bundle(ARGS.build_directory, ARGS.output_directory, ARGS.overwrite,
+    create_bundle(ARGS.source_directory, ARGS.build_directory,
+                  ARGS.output_directory, ARGS.overwrite,
                   exclude_sys_lib=ARGS.exclude_sys_lib, verbose=ARGS.verbose)
