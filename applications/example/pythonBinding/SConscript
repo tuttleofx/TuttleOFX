@@ -1,0 +1,10 @@
+Import( 'project', 'libs' )
+import os
+
+installDir = os.path.join(project.inOutputDir(), 'python', 'example')
+
+sourcesFiles = project.scanFiles( ".", accept=['*.py'] )
+
+install = project.env.Install(installDir, sourcesFiles)
+
+project.env.Alias('all', install)
