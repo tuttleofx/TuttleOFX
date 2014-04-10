@@ -49,6 +49,9 @@ void TurboJpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+	desc.addSupportedExtensions( supportedExtensions );
+	desc.setPluginEvaluation( 90 );
+	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setHostFrameThreading( false );

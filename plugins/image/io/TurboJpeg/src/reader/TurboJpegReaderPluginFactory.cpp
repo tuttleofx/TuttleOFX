@@ -50,6 +50,7 @@ void TurboJpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
+	desc.setPluginEvaluation( 90 );
 	
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );

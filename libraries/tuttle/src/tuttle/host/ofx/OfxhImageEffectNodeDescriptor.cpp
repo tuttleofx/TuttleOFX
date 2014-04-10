@@ -32,6 +32,7 @@ static property::OfxhPropSpec effectDescriptorStuff[] = {
     { kOfxImageEffectPropTemporalClipAccess, property::ePropTypeInt, 1, false, "0" },
     { kOfxImageEffectPropSupportedPixelDepths, property::ePropTypeString, 0, false, "" },
     { kTuttleOfxImageEffectPropSupportedExtensions, property::ePropTypeString, 0, false, "" },
+    { kTuttleOfxImageEffectPropEvaluation, property::ePropTypeDouble, 1, false, "-1" },
     { kOfxImageEffectPluginPropFieldRenderTwiceAlways, property::ePropTypeInt, 1, false, "1" },
     { kOfxImageEffectPropSupportsMultipleClipDepths, property::ePropTypeInt, 1, false, "0" },
     { kOfxImageEffectPropSupportsMultipleClipPARs, property::ePropTypeInt, 1, false, "0" },
