@@ -1,11 +1,12 @@
 #!/usr/bin/python
 from pyTuttle import tuttle
 import sys
+import os
 
 
 def getIOPluginsForExtension(extension, context):
 	"""
-	Returns the node identifier that supports the given file extension,
+	Returns the node identifier that has the best evaluation among nodes which supports the given file extension,
 	for a specific plugin context.
 	"""
 	results = []
@@ -20,23 +21,24 @@ def getIOPluginsForExtension(extension, context):
 			desc = plugin.getDescriptor()
 			if plugin.supportsContext(context):
 				# print(plugin.getIdentifier() + " (v" + str( plugin.getVersionMajor() ) + "." + str( plugin.getVersionMinor() ) + ")")
+				evaluation = desc.getProperties().getDoubleProperty( "TuttleOfxImageEffectPropEvaluation" )
 				supportedExtensionsProp = desc.getProperties().fetchStringProperty("TuttleOfxImageEffectPropSupportedExtensions")
 				supportedExtensionsSize = supportedExtensionsProp.getDimension()
 				supportedExtensions = supportedExtensionsProp.getValues()
 				if searchExtension in supportedExtensions:
 					# print(plugin.getIdentifier(), ext, supportedExtensionsSize)
-					results.append((supportedExtensionsSize, plugin.getIdentifier()))
+					results.append((evaluation, plugin.getIdentifier()))
 		except Exception:
 			# The creation of the node could failed, if not fully supported
 			pass
-	# sort by the number of supported extensions.
+	# sort by the evaluation value.
 	results.sort()
 	return [v[1] for v in results]
 
 
 def getBestReader(extension):
 	"""
-	Returns the reader node identifier that supports the given file extension.
+	Returns a reader node identifier that supports the given file extension.
 	"""
 	results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
 	if not results:
@@ -44,11 +46,30 @@ def getBestReader(extension):
 	return results[0]
 
 
-def getBestReaders(extension):
+def getReaders(extension):
 	"""
 	Returns the reader nodes identifiers that supports the given file extension.
 	"""
 	return getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
+
+
+def getReader(filename):
+	"""
+	Returns the reader node identifier that supports the extension of the given file.
+	"""
+	(shortname, extension) = os.path.splitext(filename)
+	readerPluginId = getBestReader(extension)
+
+	try:
+		graph = tuttle.Graph()
+		readerIn = graph.createNode(readerPluginId, filename=filename).asImageEffectNode()
+		graph.setupAtTime(0)
+		readerIn.getRegionOfDefinition(0)
+		return readerPluginId
+	except Exception as exception:
+		raise #exception
+	
+	raise IOError("Can't get RoD of image %s" % filename)
 
 
 def getBestWriter(extension):
@@ -61,7 +82,7 @@ def getBestWriter(extension):
 	return results[0]
 
 
-def getBestWriters(extension):
+def getWriters(extension):
 	"""
 	Returns the writer nodes identifiers that supports the given file extension.
 	"""
