@@ -27,13 +27,13 @@ def getIOPluginsForExtension(extension, context):
 				supportedExtensions = supportedExtensionsProp.getValues()
 				if searchExtension in supportedExtensions:
 					# print(plugin.getIdentifier(), ext, supportedExtensionsSize)
-					results.append((evaluation, plugin.getIdentifier()))
+					results.append((evaluation, supportedExtensionsSize, plugin.getIdentifier()))
 		except Exception:
 			# The creation of the node could failed, if not fully supported
 			pass
 	# sort by the evaluation value.
 	results.sort()
-	return [v[1] for v in results]
+	return [v[2] for v in results]
 
 
 def getBestReader(extension):
@@ -63,8 +63,10 @@ def getReader(filename):
 	try:
 		graph = tuttle.Graph()
 		readerIn = graph.createNode(readerPluginId, filename=filename).asImageEffectNode()
-		graph.setupAtTime(0)
-		readerIn.getRegionOfDefinition(0)
+		graph.setup()
+		timeRange = readerIn.getTimeDomain() #timeRange contains min and max time
+		graph.setupAtTime(timeRange.min)
+		readerIn.getRegionOfDefinition(timeRange.min)
 		return readerPluginId
 	except Exception as exception:
 		raise #exception
