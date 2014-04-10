@@ -46,6 +46,43 @@ cd boost
 ```
 
 
+OpenEXR
+-------
+
+```
+git clone https://github.com/openexr/openexr.git
+cd openexr/
+git checkout -b v1.7.1 v1.7.1
+
+cd IlmBase
+./bootstrap
+./configure --prefix=$PWD/../install
+make install
+cd ../OpenEXR
+./bootstrap
+./configure --prefix=$PWD/../install
+make install
+```
+
+
+OpenEXR v2
+----------
+
+```
+git clone https://github.com/openexr/openexr.git
+cd openexr/
+
+cd IlmBase
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=$PWD/../../install
+make install
+cd ../../OpenEXR
+mkdir build && cd build
+cmake .. -DCMAKE_CXX_FLAGS=-I$PWD/../../install/include/OpenEXR -DCMAKE_SHARED_LINKER_FLAGS=-L$PWD/../../install/lib -DCMAKE_INSTALL_PREFIX=$PWD/../../install
+make install -i
+```
+
+
 CTL
 ---
 
@@ -66,13 +103,14 @@ If you build TuttleOFX on develop (version > 0.8) :
 	git clone https://github.com/ampas/aces_container.git
 	cd aces_container
 	mkdir build && cd build
+	# Could choose the install folder: -DCMAKE_INSTALL_PREFIX=$PWD/../install
 	cmake ..
 	make install
 - Then build CTL :
 	cd ..
 	git clone https://github.com/tuttleofx/CTL.git
-	git checkout tuttle_develop
 	cd CTL
+	git checkout tuttle_develop
 	mkdir build && cd build
 	cmake ..
 	make install
