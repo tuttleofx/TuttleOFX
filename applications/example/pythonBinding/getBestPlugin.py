@@ -71,7 +71,7 @@ def getReader(filename):
 	except Exception as exception:
 		raise #exception
 	
-	raise IOError("Can't get RoD of image %s" % filename)
+	raise IOError("Can't read image %s" % filename)
 
 
 def getBestWriter(extension):
