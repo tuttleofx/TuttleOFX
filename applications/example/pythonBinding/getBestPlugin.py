@@ -58,18 +58,19 @@ def getReader(filename):
 	Returns the reader node identifier that supports the extension of the given file.
 	"""
 	(shortname, extension) = os.path.splitext(filename)
-	readerPluginId = getBestReader(extension)
+	readersId = getReaders(extension)
 
-	try:
-		graph = tuttle.Graph()
-		readerIn = graph.createNode(readerPluginId, filename=filename).asImageEffectNode()
-		graph.setup()
-		timeRange = readerIn.getTimeDomain() #timeRange contains min and max time
-		graph.setupAtTime(timeRange.min)
-		readerIn.getRegionOfDefinition(timeRange.min)
-		return readerPluginId
-	except Exception as exception:
-		raise #exception
+	for readerId in readersId:
+		try:
+			graph = tuttle.Graph()
+			readerIn = graph.createNode(readerId, filename=filename).asImageEffectNode()
+			graph.setup()
+			timeRange = readerIn.getTimeDomain() #timeRange contains min and max time
+			graph.setupAtTime(timeRange.min)
+			readerIn.getRegionOfDefinition(timeRange.min)
+			return readerId
+		except Exception as exception:
+			raise #exception
 	
 	raise IOError("Can't read image %s" % filename)
 
