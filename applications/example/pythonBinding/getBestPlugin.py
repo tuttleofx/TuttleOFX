@@ -32,7 +32,7 @@ def getIOPluginsForExtension(extension, context):
 			# The creation of the node could failed, if not fully supported
 			pass
 	# sort by the evaluation value.
-	results.sort()
+	results.sort(reverse=True)
 	return [v[2] for v in results]
 
 
