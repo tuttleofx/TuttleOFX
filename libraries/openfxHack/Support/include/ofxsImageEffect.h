@@ -431,6 +431,8 @@ public:
     void addSupportedExtension( const std::string& extension );
     void addSupportedExtensions( const std::vector<std::string>& extensions );
 
+    void setPluginEvaluation( double evaluation );
+    
     /** @brief Is the plugin single instance only ? defaults to false */
     void setSingleInstance( bool v );
 

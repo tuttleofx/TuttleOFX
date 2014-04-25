@@ -65,6 +65,7 @@ void ImageMagickReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	
 	// add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
+	desc.setPluginEvaluation( 0 );
 	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );

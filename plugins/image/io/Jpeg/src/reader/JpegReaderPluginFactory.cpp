@@ -47,6 +47,7 @@ void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
+	desc.setPluginEvaluation( 50 );
 
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
