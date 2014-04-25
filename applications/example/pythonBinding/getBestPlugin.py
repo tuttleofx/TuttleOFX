@@ -36,11 +36,26 @@ def getIOPluginsForExtension(extension, context):
 	return [v[2] for v in results]
 
 
-def getBestReader(extension):
+def getBestReader(inputFile):
 	"""
 	Returns a reader node identifier that supports the given file extension.
+	inputFile argument can be a filename or an extension.
 	"""
-	results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
+	results = []
+
+	(shortname, extension) = os.path.splitext(inputFile)
+
+	# inputFile is an extension
+	if not extension:
+		extension = inputFile
+		results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
+	# inputFile is a filePath
+	else:
+		if os.path.exists(inputFile):
+			results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
+		else:
+			raise IOError("The image %s doesn't exist" % inputFile)
+
 	if not results:
 		raise ValueError("File extension '%s' not found" % extension)
 	return results[0]
