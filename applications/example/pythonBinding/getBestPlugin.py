@@ -48,13 +48,8 @@ def getBestReader(inputFile):
 	# inputFile is an extension
 	if not extension:
 		extension = inputFile
-		results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
-	# inputFile is a filePath
-	else:
-		if os.path.exists(inputFile):
-			results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
-		else:
-			raise IOError("The image %s doesn't exist" % inputFile)
+		
+	results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
 
 	if not results:
 		raise ValueError("File extension '%s' not found" % extension)
