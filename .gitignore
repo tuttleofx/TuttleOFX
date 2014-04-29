@@ -63,3 +63,6 @@ Production
 /plugins/image/io/test/*.rgbe
 /plugins/image/io/test/*.hdr
 
+# data
+/TuttleOFX-data
+
