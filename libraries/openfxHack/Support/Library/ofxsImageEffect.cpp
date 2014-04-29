@@ -641,6 +641,12 @@ void ImageEffectDescriptor::addSupportedExtensions( const std::vector<std::strin
 	}
 }
 
+void ImageEffectDescriptor::setPluginEvaluation( double evaluation )
+{
+	// This property is an extension, so it's optional.
+	_effectProps.propSetDouble( kTuttleOfxImageEffectPropEvaluation, evaluation, false );
+}
+
 /** @brief Is the plugin single instance only ? */
 void ImageEffectDescriptor::setSingleInstance( bool v )
 {

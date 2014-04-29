@@ -59,7 +59,7 @@ void ImageMagickWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	"ycbcr", "ycbcra", "yuv";
 	
 	desc.addSupportedExtensions( supportedExtensions );
-	
+	desc.setPluginEvaluation( 0 );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );

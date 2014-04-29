@@ -35,6 +35,7 @@ void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
     // add supported extensions
     desc.addSupportedExtension( "png" );
+	desc.setPluginEvaluation( 90 );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );

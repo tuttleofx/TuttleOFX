@@ -40,6 +40,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add supported extensions
 	desc.addSupportedExtension( "exr" );
+	desc.setPluginEvaluation( 90 );
 	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
