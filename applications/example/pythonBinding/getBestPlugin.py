@@ -27,12 +27,12 @@ def getIOPluginsForExtension(extension, context):
 				supportedExtensions = supportedExtensionsProp.getValues()
 				if searchExtension in supportedExtensions:
 					# print(plugin.getIdentifier(), ext, supportedExtensionsSize)
-					results.append((evaluation, supportedExtensionsSize, plugin.getIdentifier()))
+					results.append((-evaluation, supportedExtensionsSize, plugin.getIdentifier()))
 		except Exception:
 			# The creation of the node could failed, if not fully supported
 			pass
 	# sort by the evaluation value.
-	results.sort(reverse=True)
+	results.sort()
 	return [v[2] for v in results]
 
 
