@@ -36,68 +36,94 @@ def getIOPluginsForExtension(extension, context):
 	return [v[2] for v in results]
 
 
-def getBestReader(inputFile):
-	"""
-	Returns a reader node identifier that supports the given file extension.
-	inputFile argument can be a filename or an extension.
-	"""
-	results = []
+def getFileExtension(filename):
+	(shortname, extension) = os.path.splitext(filename)
 
-	(shortname, extension) = os.path.splitext(inputFile)
-
-	# inputFile is an extension
 	if not extension:
-		extension = inputFile
-		
-	results = getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
+		if os.path.sep in filename:
+			raise ValueError("Filename has no extension: '%s'." % filename)
 
-	if not results:
-		raise ValueError("File extension '%s' not found" % extension)
-	return results[0]
+		# If filename is not a filename but just an extension...
+		return filename
+	return extension
 
 
-def getReaders(extension):
+def _getReaders(extension):
 	"""
 	Returns the reader nodes identifiers that supports the given file extension.
+	:extension: <str> - argument is an extension.
 	"""
 	return getIOPluginsForExtension(extension, "OfxImageEffectContextReader")
 
 
-def getReader(filename):
+def getReaders(filename):
+	"""
+	Returns the reader nodes identifiers that supports the given file extension.
+	:filename: <str> - argument can be a filename or an extension.
+	"""
+	return _getReaders(getFileExtension(filename))
+
+
+def getBestReader(filename):
 	"""
 	Returns the reader node identifier that supports the extension of the given file.
+	:filename: <str> - argument can be a filename or an extension.
 	"""
-	(shortname, extension) = os.path.splitext(filename)
-	readersId = getReaders(extension)
+	extension = getFileExtension(filename)
 
-	for readerId in readersId:
-		try:
-			graph = tuttle.Graph()
-			readerIn = graph.createNode(readerId, filename=filename).asImageEffectNode()
-			graph.setup()
-			timeRange = readerIn.getTimeDomain() #timeRange contains min and max time
-			graph.setupAtTime(timeRange.min)
-			readerIn.getRegionOfDefinition(timeRange.min)
-			return readerId
-		except Exception as exception:
-			raise #exception
-	
-	raise IOError("Can't read image %s" % filename)
+	if not os.path.exists(filename):
+		readersId = _getReaders(extension)
+		if not readersId:
+			raise ValueError("Unknown file extension '%s'." % extension)
+		return readersId[0]
+
+	else:
+		readersId = _getReaders(extension)
+		for readerId in readersId:
+			try:
+				graph = tuttle.Graph()
+				readerIn = graph.createNode(readerId, filename=filename).asImageEffectNode()
+				graph.setup()
+				timeRange = readerIn.getTimeDomain()
+				graph.setupAtTime(timeRange.min)
+				readerIn.getRegionOfDefinition(timeRange.min)
+				return readerId
+			except Exception as exception:
+				# Ignore the exception, if we can't load this file with this reader plugin,
+				# we will try with the other ones.
+				pass
+		raise ValueError(
+			("Can't read image '%s'.\n"
+			 "Readers tried: %s") % (filename, str(readersId)))
+
+	assert(False)
 
 
-def getBestWriter(extension):
-	"""
-	Returns the writer node identifier that supports the given file extension.
-	"""
-	results = getIOPluginsForExtension(extension, "OfxImageEffectContextWriter")[0]
-	if not results:
-		raise ValueError("File extension '%s' not found" % extension)
-	return results[0]
-
-
-def getWriters(extension):
+def _getWriters(extension):
 	"""
 	Returns the writer nodes identifiers that supports the given file extension.
+	:extension: <str> - argument is an extension.
 	"""
 	return getIOPluginsForExtension(extension, "OfxImageEffectContextWriter")
+
+
+def getWriters(filename):
+	"""
+	Returns the writer nodes identifiers that supports the given file extension.
+	:filename: <str> - argument can be a filename or an extension.
+	"""
+	return _getWriters(getFileExtension(filename))
+
+
+def getBestWriter(filename):
+	"""
+	Returns the writer node identifier that supports the given file extension.
+	:filename: <str> - argument can be a filename or an extension.
+	"""
+	extension = getFileExtension(filename)
+
+	results = _getWriters(extension)
+	if not results:
+		raise ValueError("Unknown file extension '%s'." % extension)
+	return results[0]
 
