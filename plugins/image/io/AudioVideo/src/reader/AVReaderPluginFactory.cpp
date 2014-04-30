@@ -30,6 +30,9 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"Audio Video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
+	av_register_all();
+	//av_log_set_level( AV_LOG_ERROR );
+
 	std::vector<std::string> supportedExtensions;
 	{
 		AVInputFormat* iFormat = av_iformat_next( NULL );
@@ -38,8 +41,14 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 			if( iFormat->extensions != NULL )
 			{
 				using namespace boost::algorithm;
-				const std::string extStr( iFormat->extensions );
+				std::string extStr( iFormat->extensions );
 				std::vector<std::string> exts;
+				split( exts, extStr, is_any_of(",") );
+				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
+
+				// name's format defines (in general) extensions
+				// require to fix extension in LibAV/FFMpeg to don't use it.
+				extStr = iFormat->name;
 				split( exts, extStr, is_any_of(",") );
 				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
 			}
