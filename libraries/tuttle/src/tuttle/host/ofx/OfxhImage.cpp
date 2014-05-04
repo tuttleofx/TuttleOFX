@@ -141,7 +141,20 @@ OfxhImage::~OfxhImage()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( eReferenceOwnerHost )
 		<< ", ref plugins:" << getReferenceCount( eReferenceOwnerPlugin ) );
-	BOOST_ASSERT( getReferenceCount(eReferenceOwnerHost) == 0 );
+	// Ref count host/plugin, should be 0, but when an error occured
+	// during the graph computation the ref count can be > 0.
+	if( getReferenceCount( eReferenceOwnerHost ) )
+	{
+		TUTTLE_LOG_INFO( "[Ofxh Image] The HOST has not properly released the image ref count ("
+			<< getReferenceCount(eReferenceOwnerHost) << ") of clip " << quotes(getClipName())
+			<< " at time " << getTime() << "." );
+	}
+	if( getReferenceCount( eReferenceOwnerPlugin ) )
+	{
+		TUTTLE_LOG_INFO( "[Ofxh Image] The PLUGIN has not properly released the image ref count ("
+			<< getReferenceCount(eReferenceOwnerPlugin) << ") of clip " << quotes(getClipName())
+			<< " at time " << getTime() << "." );
+	}
 }
 
 /// called during ctor to get bits from the clip props into ours
