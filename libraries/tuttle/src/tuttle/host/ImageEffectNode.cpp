@@ -383,7 +383,7 @@ void ImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
 	OfxhImageEffectNode::beginSequenceRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
 
-void ImageEffectNode::checkClipsConnections() const
+void ImageEffectNode::checkClipsConnected() const
 {
 	for( ClipImageMap::const_iterator it = _clipImages.begin();
 	     it != _clipImages.end();
@@ -644,7 +644,7 @@ void ImageEffectNode::coutBitDepthConnections() const
 #endif
 }
 
-void ImageEffectNode::validBitDepthConnections() const
+void ImageEffectNode::validInputClipsConnections() const
 {
 	// validation
 	for( ClipImageMap::const_iterator it = _clipImages.begin();
@@ -655,11 +655,19 @@ void ImageEffectNode::validBitDepthConnections() const
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			if( clip.getComponents() != linkClip.getComponents() )
+			{
+				BOOST_THROW_EXCEPTION( exception::Logic()
+					<< exception::dev() + "Error in graph components propagation.\n"
+							      "Connection \"" + linkClip.getFullName() + "\" (" + linkClip.getComponentsString() + ")" + " => \"" + clip.getFullName() + "\" (" + clip.getComponentsString() + ")."
+					<< exception::pluginName( getName() )
+					<< exception::pluginIdentifier( getPlugin().getIdentifier() ) );
+			}
 			if( clip.getBitDepth() != linkClip.getBitDepth() )
 			{
 				BOOST_THROW_EXCEPTION( exception::Logic()
-					<< exception::dev() + "Error in graph bit depth propagation."
-							      "Connection between " + clip.getFullName() + " (" + clip.getBitDepth() + " bytes)" + " => " + linkClip.getFullName() + " (" + linkClip.getBitDepth() + " bytes)."
+					<< exception::dev() + "Error in graph bit depth propagation.\n"
+							      "Connection \"" + linkClip.getFullName() + "\" (" + linkClip.getBitDepth() + " bytes)" + " => \"" + clip.getFullName() + "\" (" + clip.getBitDepth() + " bytes)."
 					<< exception::pluginName( getName() )
 					<< exception::pluginIdentifier( getPlugin().getIdentifier() ) );
 			}
@@ -736,7 +744,7 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 
 void ImageEffectNode::setup1()
 {
-	checkClipsConnections();
+	checkClipsConnected();
 	
 	initInputClipsFps();
 	initInputClipsPixelAspectRatio();
@@ -759,7 +767,7 @@ void ImageEffectNode::setup3()
 {
 	maximizeBitDepthFromReadsToWrites();
 	//coutBitDepthConnections();
-	validBitDepthConnections();
+	validInputClipsConnections();
 }
 
 void ImageEffectNode::beginSequence( graph::ProcessVertexData& vData )

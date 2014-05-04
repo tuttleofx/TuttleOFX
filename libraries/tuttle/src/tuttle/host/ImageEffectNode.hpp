@@ -262,7 +262,7 @@ public:
 	                        OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 private:
-	void checkClipsConnections() const;
+	void checkClipsConnected() const;
 
 	void initComponents();
 	void initInputClipsPixelAspectRatio();
@@ -273,7 +273,7 @@ private:
 	void maximizeBitDepthFromReadsToWrites();
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;
-	void validBitDepthConnections() const;
+	void validInputClipsConnections() const;
 
 	/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
 	std::string _defaultOutputFielding;
