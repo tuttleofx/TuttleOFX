@@ -27,23 +27,25 @@ void ImageMagickReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 
 	using namespace boost::assign;
 	std::vector<std::string> supportedExtensions;
-	supportedExtensions += "aai", "art", "arw", "avi", "avs", "bmp", "bmp2", "bmp3",
+	supportedExtensions += "aai", "art", "arw", "avs", "bmp", "bmp2", "bmp3",
 	"cals", "cgm", "cin", "cmyk", "cmyka", "cr2", "crw", "cur", "cut", "dcm",
 	"dcr", "dcx", "dib", "djvu", "dng", "dot", "dpx", "emf", "epdf", "epi", "eps",
 	"eps2", "eps3", "epsf", "epsi", "ept", "exr", "fax", "fig",
 	"fits", "fpx", "gif", "gplt", "gray", "hdr", "hpgl", "hrz",
 	"html", "ico", "info", "inline", "jbig", "jng", "jp2", "jpc",
 	"jpg", "jpeg", "man", "mat", "miff", "mono", "mng", "m2v",
-	"mpeg", "mpc", "mpr", "mrw", "msl", "mtv", "mvg", "nef",
+	"mpc", "mpr", "mrw", "msl", "mtv", "mvg", "nef",
 	"orf", "otb", "p7", "palm", "pam", "pbm", "pcd", "pcds",
 	"pcl", "pcx", "pdb", "pdf", "pef", "pfa", "pfb", "pfm",
 	"pgm", "picon", "pict", "pix", "png", "png8", "png16", "png32",
 	"pnm", "ppm", "ps", "ps2", "ps3", "psb", "psd", "ptif",
 	"pwp", "rad", "rgb", "rgba", "rla", "rle", "sct", "sfw",
 	"sgi", "shtml", "sid", "mrsid", "sun", "svg", "tga", "tiff",
-	"tim", "tif", "txt", "uil", "uyvy", "vicar", "viff", "wbmp",
-	"webp", "wmf", "wpg", "x", "xbm", "xcf", "xpm", "xwd", "x3f",
+	"tim", "tif", "uil", "uyvy", "vicar", "viff", "wbmp",
+	"wpg", "x", "xbm", "xcf", "xpm", "xwd", "x3f",
 	"ycbcr", "ycbcra", "yuv";
+	// blacklist
+	// "avi", "mpeg", "txt", "webp", "wmf", 
 	
 	desc.setDescription(
 			"ImageMagick File reader"
