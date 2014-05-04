@@ -65,7 +65,7 @@ OfxhImage::OfxhImage()
 	, _clipName( "No clip !" )
 	, _time( 0 )
 {
-	TUTTLE_TLOG_INFO( "[Ofxh Image] create clip:" << getClipName()
+	TUTTLE_LOG_TRACE( "[Ofxh Image] create clip:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
@@ -81,7 +81,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance, const OfxTime time )
 	, _clipName( instance.getFullName() )
 	, _time( time )
 {
-	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] create clip:" << getClipName()
+	TUTTLE_LOG_TRACE( "[Ofxh Image] create clip:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
@@ -136,7 +136,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 
 OfxhImage::~OfxhImage()
 {
-	TUTTLE_TLOG( TUTTLE_INFO, "[Ofxh Image] delete clip:" << getClipName()
+	TUTTLE_LOG_TRACE( "[Ofxh Image] delete clip:" << getClipName()
 		<< ", time:" << getTime()
 		<< ", id:" << getId()
 		<< ", ref host:" << getReferenceCount( eReferenceOwnerHost )
@@ -157,8 +157,9 @@ OfxhImage::~OfxhImage()
 	}
 }
 
-/// called during ctor to get bits from the clip props into ours
-
+/**
+ * called during ctor to get bits from the clip props into ours
+ */
 void OfxhImage::initClipBits( attribute::OfxhClip& instance )
 {
 	const property::OfxhSet& clipProperties = instance.getProperties();
