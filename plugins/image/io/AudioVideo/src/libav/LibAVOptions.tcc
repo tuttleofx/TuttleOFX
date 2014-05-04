@@ -28,7 +28,7 @@ int AVOptionPlugin<IOPlugin>::convertIntWithOptionalUnit( const std::string& par
 		}
 		catch( ... )
 		{
-			TUTTLE_LOG_ERROR( "avwriter: parameter " << param << " can't convert the value: " << stringValue );
+			TUTTLE_LOG_ERROR( "avoption: parameter " << param << " can't convert the value: " << stringValue );
 		}
 	}
 	else
@@ -42,7 +42,7 @@ int AVOptionPlugin<IOPlugin>::convertIntWithOptionalUnit( const std::string& par
 		}
 		catch( ... )
 		{
-			TUTTLE_LOG_ERROR( "avwriter: parameter " << param << " can't convert the value: " << stringValue );
+			TUTTLE_LOG_ERROR( "avoption: parameter " << param << " can't convert the value: " << stringValue );
 		}
 		
 		switch( unit )
@@ -57,7 +57,7 @@ int AVOptionPlugin<IOPlugin>::convertIntWithOptionalUnit( const std::string& par
 				intValue *= 1000 * 1000 * 1000;
 				break;
 			default:
-				TUTTLE_LOG_ERROR("avwriter: unknown unit " << unit << " for parameter " << param );
+				TUTTLE_LOG_ERROR("avoption: unknown unit " << unit << " for parameter " << param );
 				break;
 		}
 	}
@@ -394,7 +394,7 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 						}
 						else
 						{
-							TUTTLE_LOG_WARNING( "avwriter: unable to set an 2D Int value with " << param.second.size() << " parameters." );
+							TUTTLE_LOG_WARNING( "avoption: unable to set an 2D Int value with " << param.second.size() << " parameters." );
 						}
 						break;
 					}
@@ -410,7 +410,7 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 						}
 						else
 						{
-							TUTTLE_LOG_WARNING( "avwriter: unable to set an 3D Int value with " << param.second.size() << " parameters." );
+							TUTTLE_LOG_WARNING( "avoption: unable to set an 3D Int value with " << param.second.size() << " parameters." );
 						}
 						break;
 					}
@@ -425,7 +425,7 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 						}
 						catch( ... )
 						{
-							TUTTLE_LOG_WARNING( "avwriter: parameter " << param.first << " can't convert the value: " << value );
+							TUTTLE_LOG_WARNING( "avoption: parameter " << param.first << " can't convert the value: " << value );
 						}
 						break;
 					}
@@ -442,12 +442,12 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 							}
 							catch( ... )
 							{
-								TUTTLE_LOG_WARNING( "avwriter: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << "]" );
+								TUTTLE_LOG_WARNING( "avoption: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << "]" );
 							}
 						}
 						else
 						{
-							TUTTLE_LOG_WARNING("avwriter: unable to set an 2D Double value with " << param.second.size() << " parameters." );
+							TUTTLE_LOG_WARNING("avoption: unable to set an 2D Double value with " << param.second.size() << " parameters." );
 						}
 						break;
 					}
@@ -465,12 +465,12 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 							}
 							catch( ... )
 							{
-								TUTTLE_LOG_WARNING( "avwriter: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << "]" );
+								TUTTLE_LOG_WARNING( "avoption: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << "]" );
 							}
 						}
 						else
 						{
-							TUTTLE_LOG_WARNING("avwriter: unable to set an 3D Double value with " << param.second.size() << " parameters." );
+							TUTTLE_LOG_WARNING("avoption: unable to set an 3D Double value with " << param.second.size() << " parameters." );
 						}
 						break;
 					}
@@ -488,12 +488,12 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 							}
 							catch( ... )
 							{
-								TUTTLE_LOG_WARNING( "avwriter: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << "]" );
+								TUTTLE_LOG_WARNING( "avoption: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << "]" );
 							}
 						}
 						else
 						{
-							TUTTLE_LOG_WARNING("avwriter: unable to set an RGB value with " << param.second.size() << " parameters." );
+							TUTTLE_LOG_WARNING("avoption: unable to set an RGB value with " << param.second.size() << " parameters." );
 						}
 						break;
 					}
@@ -512,12 +512,12 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 							}
 							catch( ... )
 							{
-								TUTTLE_LOG_WARNING( "avwriter: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << ", " << param.second.at( 3 ) << "]" );
+								TUTTLE_LOG_WARNING( "avoption: parameter " << param.first << " can't convert the value: [" << param.second.at( 0 ) << ", " << param.second.at( 1 ) << ", " << param.second.at( 2 ) << ", " << param.second.at( 3 ) << "]" );
 							}
 						}
 						else
 						{
-							TUTTLE_LOG_WARNING("avwriter: unable to set an RGBA value with " << param.second.size() << " parameters." );
+							TUTTLE_LOG_WARNING("avoption: unable to set an RGBA value with " << param.second.size() << " parameters." );
 						}
 						break;
 					}
@@ -543,7 +543,7 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 						if( index > -1 )
 							fetchParam->setValue( index );
 						else
-							TUTTLE_LOG_WARNING( "avwriter: unable to find value " << value << " for parameter " << param.first );
+							TUTTLE_LOG_WARNING( "avoption: unable to find value " << value << " for parameter " << param.first );
 						break;
 					}
 					case OFX::ePushButtonParam:
@@ -560,7 +560,7 @@ void AVOptionPlugin<IOPlugin>::setParameters( const PresetParameters& parameters
 			}
 			else
 			{
-				TUTTLE_LOG_WARNING( "avwriter: parameter " << param.first << " not exist." );
+				TUTTLE_LOG_WARNING( "avoption: parameter " << param.first << " not exist." );
 			}
 	}
 }
@@ -590,7 +590,7 @@ void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamT
 		}
 	}
 	if( error )
-		TUTTLE_LOG_WARNING( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << ( value ? "True" : "False" ) << " )" );
+		TUTTLE_LOG_WARNING( "avoption: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << ( value ? "True" : "False" ) << " )" );
 }
 
 
@@ -630,7 +630,7 @@ void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamT
 	error = av_opt_set_int( obj, opt.unit, optVal, AV_OPT_SEARCH_CHILDREN );
 	
 	if( error )
-		TUTTLE_LOG_WARNING( "avwriter: " << LibAV::libavError_toString( error ) << " : " << valueToSetFlag << " ( " <<  opt.name << " = " << ( value ? "True" : "False" ) << " )" );
+		TUTTLE_LOG_WARNING( "avoption: " << LibAV::libavError_toString( error ) << " : " << valueToSetFlag << " ( " <<  opt.name << " = " << ( value ? "True" : "False" ) << " )" );
 }
 
 template< typename IOPlugin >
@@ -659,7 +659,7 @@ void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamT
 		}
 	}
 	if( error )
-		TUTTLE_LOG_WARNING( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
+		TUTTLE_LOG_WARNING( "avoption: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
 }
 
 template< typename IOPlugin >
@@ -687,7 +687,7 @@ void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamT
 		}
 	}
 	if( error )
-		TUTTLE_LOG_WARNING( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
+		TUTTLE_LOG_WARNING( "avoption: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
 }
 
 template< typename IOPlugin >
@@ -718,7 +718,7 @@ void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamT
 		}
 	}
 	if( error )
-		TUTTLE_LOG_WARNING( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << valueNum << "/" << valueDen<< " )" );
+		TUTTLE_LOG_WARNING( "avoption: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << valueNum << "/" << valueDen<< " )" );
 }
 
 template< typename IOPlugin >
@@ -748,7 +748,7 @@ void AVOptionPlugin<IOPlugin>::optionSet( LibAVVideoRW& videoRW, const EAVParamT
 		}
 	}
 	if( error )
-		TUTTLE_LOG_WARNING( "avwriter: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
+		TUTTLE_LOG_WARNING( "avoption: " << LibAV::libavError_toString( error ) << " : " << opt.name << " ( " << value << " )" );
 }
 
 
