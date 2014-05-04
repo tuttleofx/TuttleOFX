@@ -55,7 +55,22 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 			iFormat = av_iformat_next( iFormat );
 		}
 	}
+
+	// Hack: Add basic video container extensions
+	// as some versions of LibAV doesn't declare properly all extensions...
+	supportedExtensions.push_back("mov");
+	supportedExtensions.push_back("avi");
+	supportedExtensions.push_back("mpg");
+	supportedExtensions.push_back("mkv");
+	supportedExtensions.push_back("flv");
+	supportedExtensions.push_back("m2ts");
 	
+	// sort / unique
+	std::sort(supportedExtensions.begin(), supportedExtensions.end());
+	supportedExtensions.erase(
+		std::unique(supportedExtensions.begin(), supportedExtensions.end()),
+		supportedExtensions.end() );
+
 	desc.setDescription( "Video reader based on LibAV library\n\n"
 			"Supported extensions: \n" +
 			boost::algorithm::join( supportedExtensions, ", " )
