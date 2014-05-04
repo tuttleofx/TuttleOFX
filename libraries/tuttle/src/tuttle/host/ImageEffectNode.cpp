@@ -841,176 +841,155 @@ void ImageEffectNode::preProcess_infos( const graph::ProcessVertexAtTimeData& vD
 
 void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 {
-//	TUTTLE_TLOG( TUTTLE_INFO, "process: " << getName() );
-	memory::IMemoryCache& memoryCache = vData._nodeData->getInternMemoryCache();
-	// keep the hand on all needed datas during the process function
-	std::list<memory::CACHE_ELEMENT> allNeededDatas;
+	try
+	{
+		memory::IMemoryCache& memoryCache = vData._nodeData->getInternMemoryCache();
+		// keep the hand on all needed datas during the process function
+		std::list<memory::CACHE_ELEMENT> allNeededDatas;
 
-	double par = this->getOutputClip().getPixelAspectRatio();
-	if( par == 0.0 )
-		par = 1.0;
-	const OfxRectI renderWindow = {
-		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) ),
-		boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) ),
-		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) ),
-		boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) )
-	};
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, roi );
+		double par = this->getOutputClip().getPixelAspectRatio();
+		if( par == 0.0 )
+			par = 1.0;
+		const OfxRectI renderWindow = {
+			boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.x1 / par ) ),
+			boost::numeric_cast<int>( std::floor( vData._apiImageEffect._renderRoI.y1 ) ),
+			boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.x2 / par ) ),
+			boost::numeric_cast<int>( std::ceil( vData._apiImageEffect._renderRoI.y2 ) )
+		};
+//		TUTTLE_TLOG_VAR( TUTTLE_INFO, roi );
 
-//	INode::ClipTimesSetMap timesSetMap = this->getFramesNeeded( vData._time );
-	
-	// acquire needed clip images
-	/*
-	TUTTLE_TLOG( TUTTLE_INFO, "acquire needed input clip images" );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._inEdges.size() );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._outEdges.size() );
-	BOOST_FOREACH( const graph::ProcessEdgeAtTime* o, vData._outEdges )
-	{
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, o );
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, o->getInTime() );
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, o->getInAttrName() );
-	}
-	BOOST_FOREACH( const graph::ProcessEdgeAtTime* i, vData._inEdges )
-	{
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, i );
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInTime() );
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInAttrName() );
-	}
-	*/
-	TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Acquire needed input clips images" );
-	BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
-	{
-		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
-		//TUTTLE_TLOG_VAR( TUTTLE_INFO, i );
-		//TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInTime() );
-		//TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInAttrName() );
-		attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
-		const OfxTime outTime = inEdge->getOutTime();
-		
-		TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] out: " << inEdge->getOut() << " -> in " << inEdge->getIn() );
-		memory::CACHE_ELEMENT imageCache( memoryCache.get( clip.getClipIdentifier(), outTime ) );
-		if( imageCache.get() == NULL )
+//		INode::ClipTimesSetMap timesSetMap = this->getFramesNeeded( vData._time );
+
+		// acquire needed clip images
+		/*
+		TUTTLE_TLOG( TUTTLE_INFO, "acquire needed input clip images" );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._inEdges.size() );
+		TUTTLE_TLOG_VAR( TUTTLE_INFO, vData._outEdges.size() );
+		BOOST_FOREACH( const graph::ProcessEdgeAtTime* o, vData._outEdges )
 		{
-			BOOST_THROW_EXCEPTION( exception::Memory()
-				<< exception::dev() + "Input attribute " + quotes( clip.getFullName() ) + " at time " + vData._time + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
+			TUTTLE_TLOG_VAR( TUTTLE_INFO, o );
+			TUTTLE_TLOG_VAR( TUTTLE_INFO, o->getInTime() );
+			TUTTLE_TLOG_VAR( TUTTLE_INFO, o->getInAttrName() );
 		}
-		allNeededDatas.push_back( imageCache );
-	}
-	
-	TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Acquire needed output clip images" );
-	BOOST_FOREACH( ClipImageMap::value_type& i, _clipImages )
-	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
-		if( clip.isOutput() )
+		BOOST_FOREACH( const graph::ProcessEdgeAtTime* i, vData._inEdges )
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] " << vData._apiImageEffect._renderRoI );
-			memory::CACHE_ELEMENT imageCache( new attribute::Image(
-					clip,
-					vData._time,
-					vData._apiImageEffect._renderRoI,
-					attribute::Image::eImageOrientationFromBottomToTop,
-					0 )
-				);
-			imageCache->setPoolData( core().getMemoryPool().allocate( imageCache->getMemorySize() ) );
-			memoryCache.put( clip.getClipIdentifier(), vData._time, imageCache );
-			
-			allNeededDatas.push_back( imageCache );
+			TUTTLE_TLOG_VAR( TUTTLE_INFO, i );
+			TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInTime() );
+			TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInAttrName() );
 		}
-//		else
-//		{
-//			if( ! clip.isConnected() )
-//				continue;
-//			
-//			// for each framesNeeded
-//			const INode::TimesSet& timesSet = timesSetMap[clip.getName()]; /// @todo tuttle: for each edge use edge._outTime
-//			if( timesSet.size() == 0 )
-//				continue; // the plugin don't use this input (is it allowed by the standard?)
-//			BOOST_FOREACH( const INode::TimesSet::value_type& inTime, timesSet )
-//			{
-//				memory::CACHE_ELEMENT imageCache( memoryCache.get( clip.getClipIdentifier(), inTime ) );
-//				if( imageCache.get() == NULL )
-//				{
-//					BOOST_THROW_EXCEPTION( exception::Memory()
-//						<< exception::dev() + "Input attribute " + quotes( clip.getFullName() ) + " at time " + vData._time + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
-//				}
-//				allNeededDatas.push_back( imageCache );
-//			}
-//		}
-	}
-
-	TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Plugin Render Action" );
-
-	renderAction( vData._time,
-				  vData._apiImageEffect._field,
-				  renderWindow,
-				  vData._nodeData->_renderScale );
-	
-	debugOutputImage( vData._time );
-
-	// release input images
-	BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
-	{
-		const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
-		attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
-		const OfxTime outTime = inEdge->getOutTime();
-		
-		// TUTTLE_LOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), outTime );
-		// TUTTLE_LOG_VAR2( TUTTLE_INFO, inEdge->getOut(), inEdge->getIn() );
-		// TUTTLE_LOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), clip.getFullName() );
-		
-		memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), outTime );
-		if( imageCache.get() == NULL )
+		*/
+		TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Acquire needed input clips images" );
+		BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
 		{
-			BOOST_THROW_EXCEPTION( exception::Memory()
-				<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier: " + quotes( clip.getClipIdentifier() ) + ", time: " + outTime + ")." );
-		}
-		TUTTLE_LOG_TRACE( ">>>>> - ImageEffectNode => releaseReference: " << imageCache->getFullName() );
-		imageCache->releaseReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost );
-	}
-	
-	// declare future usages of the output
-	BOOST_FOREACH( ClipImageMap::value_type& item, _clipImages )
-	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( item.second ) );
-		if( ! clip.isOutput() && ! clip.isConnected() )
-			continue;
-		
-		if( clip.isOutput() )
-		{
-			memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), vData._time );
+			const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
+			//TUTTLE_TLOG_VAR( TUTTLE_INFO, i );
+			//TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInTime() );
+			//TUTTLE_TLOG_VAR( TUTTLE_INFO, i->getInAttrName() );
+			attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
+			const OfxTime outTime = inEdge->getOutTime();
+
+			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] out: " << inEdge->getOut() << " -> in " << inEdge->getIn() );
+			memory::CACHE_ELEMENT imageCache( memoryCache.get( clip.getClipIdentifier(), outTime ) );
 			if( imageCache.get() == NULL )
 			{
 				BOOST_THROW_EXCEPTION( exception::Memory()
-					<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
+					<< exception::dev() + "Input attribute " + quotes( clip.getFullName() ) + " at time " + vData._time + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
 			}
-			const std::size_t realOutDegree = vData._outDegree - vData._isFinalNode;  // final nodes have a connection to the fake output node.
-			TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Declare future usages: " << clip.getClipIdentifier() << ", add reference: " << realOutDegree );
-			if( realOutDegree > 0 )
+			allNeededDatas.push_back( imageCache );
+		}
+
+		TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Acquire needed output clip images" );
+		BOOST_FOREACH( ClipImageMap::value_type& i, _clipImages )
+		{
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
+			if( clip.isOutput() )
 			{
-				TUTTLE_LOG_TRACE( ">>>>> + ImageEffectNode => addReference: " << imageCache->getFullName() << ", degree=" << realOutDegree );
-				imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, realOutDegree ); // add a reference on this node for each future usages
+				TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] " << vData._apiImageEffect._renderRoI );
+				memory::CACHE_ELEMENT imageCache( new attribute::Image(
+						clip,
+						vData._time,
+						vData._apiImageEffect._renderRoI,
+						attribute::Image::eImageOrientationFromBottomToTop,
+						0 )
+					);
+				imageCache->setPoolData( core().getMemoryPool().allocate( imageCache->getMemorySize() ) );
+				memoryCache.put( clip.getClipIdentifier(), vData._time, imageCache );
+
+				allNeededDatas.push_back( imageCache );
 			}
 		}
-//		else
-//		{
-//			const INode::TimesSet& timesSet = timesSetMap[clip.getName()]; /// @todo tuttle: use edge._timesNeeded
-//			if( timesSet.size() == 0 )
-//				continue; // the plugin don't use this input (is it allowed by the standard?)
-//			BOOST_FOREACH( const INode::TimesSet::value_type& inTime, timesSet )
-//			{
-//				//TUTTLE_TLOG_VAR2( TUTTLE_INFO, clip.getIdentifier(), clip.getFullName() );
-//				memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), inTime );
-//				if( imageCache.get() == NULL )
-//				{
-//					BOOST_THROW_EXCEPTION( exception::Memory()
-//						<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
-//				}
-//				imageCache->releaseReference();
-//			}
-//		}
-	}
-}
 
+		TUTTLE_LOG_TRACE( "[Node Process] Plugin Render Action" );
+
+		renderAction( vData._time,
+					  vData._apiImageEffect._field,
+					  renderWindow,
+					  vData._nodeData->_renderScale );
+
+		TUTTLE_LOG_TRACE( "[Node Process] Plugin Render Action - End" );
+
+		debugOutputImage( vData._time );
+
+		// release input images
+		BOOST_FOREACH( const graph::ProcessVertexAtTimeData::ProcessEdgeAtTimeByClipName::value_type& inEdgePair, vData._inEdges )
+		{
+			const graph::ProcessEdgeAtTime* inEdge = inEdgePair.second;
+			attribute::ClipImage& clip = getClip( inEdge->getInAttrName() );
+			const OfxTime outTime = inEdge->getOutTime();
+
+			// TUTTLE_LOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), outTime );
+			// TUTTLE_LOG_VAR2( TUTTLE_INFO, inEdge->getOut(), inEdge->getIn() );
+			// TUTTLE_LOG_VAR2( TUTTLE_INFO, clip.getClipIdentifier(), clip.getFullName() );
+
+			memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), outTime );
+			if( imageCache.get() == NULL )
+			{
+				BOOST_THROW_EXCEPTION( exception::Memory()
+					<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier: " + quotes( clip.getClipIdentifier() ) + ", time: " + outTime + ")." );
+			}
+			TUTTLE_LOG_TRACE( ">>>>> - ImageEffectNode => releaseReference: " << imageCache->getFullName() );
+			// TODO: use RAII technique for add/releaseReference...
+			imageCache->releaseReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost );
+		}
+
+		// declare future usages of the output
+		BOOST_FOREACH( ClipImageMap::value_type& item, _clipImages )
+		{
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( item.second ) );
+			if( ! clip.isOutput() && ! clip.isConnected() )
+				continue;
+
+			if( clip.isOutput() )
+			{
+				memory::CACHE_ELEMENT imageCache = memoryCache.get( clip.getClipIdentifier(), vData._time );
+				if( imageCache.get() == NULL )
+				{
+					BOOST_THROW_EXCEPTION( exception::Memory()
+						<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier:" + quotes( clip.getClipIdentifier() ) + ")." );
+				}
+				const std::size_t realOutDegree = vData._outDegree - vData._isFinalNode;  // final nodes have a connection to the fake output node.
+				TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Declare future usages: " << clip.getClipIdentifier() << ", add reference: " << realOutDegree );
+				if( realOutDegree > 0 )
+				{
+					TUTTLE_LOG_TRACE( ">>>>> + ImageEffectNode => addReference: " << imageCache->getFullName() << ", degree=" << realOutDegree );
+					// TODO: use RAII technique for add/releaseReference...
+					//       to properly declare image unused when an error occured
+					//       during the computation.
+					// Add a reference on this node for each future usages
+					imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, realOutDegree );
+				}
+			}
+		}
+	}
+	catch(boost::exception& e)
+	{
+		e << exception::time(vData._time)
+		  << exception::pluginIdentifier(this->getPlugin().getIdentifier())
+		  << exception::nodeName(this->getName());
+		throw;
+	}
+
+}
 
 void ImageEffectNode::postProcess( graph::ProcessVertexAtTimeData& vData )
 {
