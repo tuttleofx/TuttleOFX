@@ -836,32 +836,26 @@ int main( int argc, char** argv )
 					}
 					catch( boost::program_options::error& e )
 					{
-						TUTTLE_LOG_FATAL( "[sam do] " << nodeFullName );
-#ifdef TUTTLE_PRODUCTION
-						TUTTLE_LOG_FATAL( "Error: " << e.what() );
-#else
-						TUTTLE_LOG_FATAL( "Debug: " << boost::current_exception_diagnostic_information() );
-#endif
-						exit( 254 );
+						TUTTLE_LOG_FATAL( "[sam do] Command line parsing error on node: \"" << nodeFullName << "\"." << std::endl
+								<< e.what() << std::endl
+								<< tuttle::exception::format_current_exception()
+							);
+						exit( 249 );
 					}
-					catch( tuttle::exception::Common& e )
+					catch( ::boost::exception& e )
 					{
-						TUTTLE_LOG_FATAL( "[sam do] " << nodeFullName );
-#ifdef TUTTLE_PRODUCTION
-						TUTTLE_LOG_FATAL( "Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) );
-#else
-						TUTTLE_LOG_FATAL( "Debug: " << boost::current_exception_diagnostic_information() );
-						TUTTLE_LOG_FATAL( "Backtrace: " << boost::trace( e ) );
-#endif
-						exit( 254 );
+						TUTTLE_LOG_FATAL( "[sam do] Error on node: \"" << nodeFullName << "\"." << std::endl
+								<< tuttle::exception::format_exception_message(e) << std::endl
+								<< tuttle::exception::format_exception_info(e)
+							);
+						exit( 250 );
 					}
 					catch( ... )
 					{
-						TUTTLE_LOG_FATAL( "[sam do] " << nodeFullName );
-						TUTTLE_LOG_FATAL( "Unknown error." );
-						TUTTLE_LOG_FATAL( "\n" );
-						TUTTLE_LOG_FATAL( "Debug: " << boost::current_exception_diagnostic_information() );
-						exit( 254 );
+						TUTTLE_LOG_FATAL( "[sam do] Unknown error on node: \"" << nodeFullName << "\"." << std::endl
+								<< tuttle::exception::format_current_exception()
+							);
+						exit( 251 );
 					}
 				}
 			}
@@ -938,7 +932,7 @@ int main( int argc, char** argv )
 					BOOST_FOREACH( std::string& inputPath, paths )
 					{
 						size_t count = 0;
-						TUTTLE_LOG_TRACE( "[sam-do] " <<n->getName() << " browse: " << inputPath );
+						TUTTLE_LOG_TRACE( "[sam-do] " << n->getName() << " browse: " << inputPath );
 					
 						// get filenames adn sequences
 						boost::ptr_vector<sequenceParser::FileObject> listOfSequences = sequenceParser::fileObjectInDirectory( inputPath, filters, filterByType, detectionOptions, displayOptions );
@@ -1201,28 +1195,27 @@ int main( int argc, char** argv )
 					graphTmp.compute( *nodesTmp.back(), options );
 			}
 		}
-		
-		
 	}
-	catch( const tuttle::exception::Common& e )
+	catch( boost::program_options::error& e )
 	{
-#ifdef TUTTLE_PRODUCTION
-		TUTTLE_LOG_FATAL( "[sam-do] Error: " << *boost::get_error_info<tuttle::exception::user > ( e ) );
-#else
-		TUTTLE_LOG_FATAL( "[sam-do] Debug: " << boost::current_exception_diagnostic_information() );
-		TUTTLE_LOG_FATAL( "[sam-do] Backtrace: " << boost::trace( e ));
-#endif
-		exit( 254 );
+		TUTTLE_LOG_FATAL( "[sam do] Command line parsing error." << std::endl
+				<< e.what() << std::endl
+				<< tuttle::exception::format_current_exception()
+			);
+		exit( 252 );
 	}
-	catch( const boost::program_options::error& e )
+	catch( ::boost::exception& e )
 	{
-		TUTTLE_LOG_FATAL( "[sam-do] Error: " << e.what());
-		exit( 254 );
+		TUTTLE_LOG_FATAL( "[sam do] " << tuttle::exception::format_exception_message(e) << std::endl
+				<< tuttle::exception::format_exception_info(e)
+			);
+		exit( 253 );
 	}
 	catch( ... )
 	{
-		TUTTLE_LOG_FATAL( "[sam-do] Error" );
-		TUTTLE_LOG_FATAL( boost::current_exception_diagnostic_information() );
+		TUTTLE_LOG_FATAL( "[sam do] Unknown error." << std::endl
+				<< tuttle::exception::format_current_exception()
+			);
 		exit( 254 );
 	}
 	return 0;

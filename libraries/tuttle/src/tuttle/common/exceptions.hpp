@@ -470,6 +470,10 @@ struct ReadOnlyFile : virtual public File
 };
 /// @}
 
+std::string format_exception_message( const ::boost::exception& e );
+std::string format_exception_info( const ::boost::exception& e );
+std::string format_current_exception();
+
 }
 }
 

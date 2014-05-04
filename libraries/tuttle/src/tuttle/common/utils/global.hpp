@@ -46,11 +46,11 @@
 #else
 #define TUTTLE_LOG( MODE, ... ) TUTTLE_COUT(MODE << __VA_ARGS__)
 
-#define TUTTLE_TRACE   "trace: "
-#define TUTTLE_INFO    "info: "
-#define TUTTLE_WARNING "warning: "
-#define TUTTLE_ERROR   "error: "
-#define TUTTLE_FATAL   "fatal: "
+#define TUTTLE_TRACE   "Trace: "
+#define TUTTLE_INFO    "Info: "
+#define TUTTLE_WARNING "Warning: "
+#define TUTTLE_ERROR   "Error: "
+#define TUTTLE_FATAL   "Fatal: "
 #endif
 
 /**
