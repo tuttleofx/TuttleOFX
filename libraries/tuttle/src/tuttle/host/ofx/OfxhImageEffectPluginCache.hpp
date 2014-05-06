@@ -22,6 +22,7 @@ class OfxhImageEffectPluginCache : public APICache::OfxhPluginAPICacheI
 {
 public:
 	typedef OfxhImageEffectPluginCache This;
+	typedef std::map<std::string, OfxhImageEffectPlugin*> MapPluginsByID;
 
 private:
 	/// all plugins

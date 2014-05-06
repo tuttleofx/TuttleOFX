@@ -10,16 +10,13 @@ def setUp():
 
 
 def testGetBestReader():
-	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("../eia1956-small.jpg"))
+	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("../image.jpg"))
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader(".jpg"))
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("jpg"))
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("JPG"))
 	assert_raises(RuntimeError, tuttle.getBestReader, "/JPG")
 	assert_raises(RuntimeError, tuttle.getBestReader, "/non/existing/path")
 
-	allJpegReaders = ['tuttle.turbojpegreader', 'tuttle.jpegreader', 'tuttle.oiioreader', 'tuttle.imagemagickreader']
+	allJpegReaders = ('tuttle.turbojpegreader', 'tuttle.jpegreader', 'tuttle.oiioreader', 'tuttle.imagemagickreader')
 	foundListReaders = tuttle.getReaders("jpg")
-	for reader in foundListReaders:
-		if not reader in allJpegReaders:
-			assert( false )
-
+	assert_equals(allJpegReaders, foundListReaders)

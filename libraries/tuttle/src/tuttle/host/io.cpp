@@ -3,6 +3,7 @@
 #include <tuttle/host/Graph.hpp>
 #include <tuttle/host/Core.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectPluginCache.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -40,14 +41,14 @@ std::vector< std::string > getIOPluginsForExtension( const std::string& extensio
 	boost::algorithm::to_lower(searchExtension);
 
 	// get array of tuple( evaluation, supportedExtensions, nodeIdentifier )
-	const std::vector<ofx::imageEffect::OfxhImageEffectPlugin*>& nodeList = core().getImageEffectPluginCache().getPlugins();
-	BOOST_FOREACH( ofx::imageEffect::OfxhImageEffectPlugin* node, nodeList )
+	ofx::imageEffect::OfxhImageEffectPluginCache::MapPluginsByID nodeMap = core().getImageEffectPluginCache().getPluginsByID();
+	BOOST_FOREACH( const ofx::imageEffect::OfxhImageEffectPluginCache::MapPluginsByID::value_type& node, nodeMap )
 	{
 		try
 		{
-			node->loadAndDescribeActions();
-			const ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc = node->getDescriptor();
-			if( node->supportsContext( context ) )
+			node.second->loadAndDescribeActions();
+			const ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc = node.second->getDescriptor();
+			if( node.second->supportsContext( context ) )
 			{
 				double evaluation = desc.getProperties().getDoubleProperty( "TuttleOfxImageEffectPropEvaluation" );
 				int supportedExtensionsSize = desc.getProperties().fetchStringProperty( "TuttleOfxImageEffectPropSupportedExtensions" ).getDimension();
@@ -57,18 +58,17 @@ std::vector< std::string > getIOPluginsForExtension( const std::string& extensio
 				{
 					if( supportedExtensions.at( indexExtension ) == searchExtension )
 					{
-						// No distinction of version between plugins.
-						// node->getRawIdentifier() + ".v" + node->getVersionMajor() + "." + node->getVersionMinor()
-						Tuple tuple( -evaluation, supportedExtensionsSize, node->getRawIdentifier() );
+						Tuple tuple( -evaluation, supportedExtensionsSize, node.second->getRawIdentifier() );
 						tupleArray.push_back( tuple );
+						break;
 					}
 				}
 			}
-	  }
-	  catch( std::exception& e )
-	  {
-		  // Ignore the exception.
-	  }
+		}
+		catch( std::exception& e )
+		{
+			// Ignore the exception.
+		}
 	}
 
 	// get nodeIdentifier of the plugin with the best evaluation
