@@ -10,7 +10,7 @@ def setUp():
 
 
 def testGetBestReader():
-	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("../image.jpg"))
+	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("path/to/image.jpg"))
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader(".jpg"))
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("jpg"))
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("JPG"))
