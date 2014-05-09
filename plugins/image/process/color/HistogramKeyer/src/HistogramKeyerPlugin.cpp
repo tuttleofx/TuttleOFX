@@ -155,7 +155,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			}
 		}
 		//reset HSL curves
-		if( paramName == kButtonResetHSL || paramName == kButtonResetAll )//HSL or Clean all
+		if( paramName == kButtonResetHSL || paramName == kButtonResetAll )
 		{
 			for( std::size_t channel = 0; channel < nbCurvesHSL; ++channel )
 			{
@@ -184,15 +184,14 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		/// @todo How to request a redraw on ParametricParameters?
 		//	_paramColorHSLSelection->getProps().propGetPointer( kOfxParamPropParametricInteractBackground );
 	}
-
-		/*refresh histogram overlay*/
+	// refresh histogram overlay
 	else if( paramName == kButtonRefreshOverlay )
 	{
 		//Draw forced
 		OFX::InstanceChangedArgs changed( args.time, args.renderScale );
 		this->changedClip( changed, this->_clipSrc->name( ) );
 	}
-		/*nbStep changed*/
+	// nbStep changed
 	else if( paramName == knbStepRange )
 	{
 		if( this->hasOverlayData( ) ) //if there is overlay value
@@ -202,7 +201,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			getOverlayData()._isDataInvalid = true;
 		}
 	}
-	/*Clear user selection*/
+	// Clear user selection
 	else if( paramName == kButtonResetSelection )
 	{
 		if( this->hasOverlayData( ) )//if there is overlay value
@@ -210,7 +209,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			this->getOverlayData( ).clearSelection( ); //clear selection
 		}
 	}
-	/*Selection to curve */
+	// Selection to curve
 	else if( paramName == kButtonSelectionToCurveHSL || paramName == kButtonSelectionToCurveRGB )
 	{
 		//prepare buffer
@@ -220,15 +219,15 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		//getOverlayData().resetCurvesFromSelectionData();	//reset curve from selection buffer data
 		//RGB
 		if( paramName == kButtonSelectionToCurveRGB )
-		{			
-			//get nb points for each curve (RGB)
+		{
+			// Get nb points for each curve (RGB)
 			std::vector<std::size_t> nbControlPointsRGB( nbCurvesRGB ); //initialize vector
 			for( std::size_t i = 0; i < nbCurvesRGB; ++i ) //fill up vector
 			{
 				nbControlPointsRGB[i] = _paramColorRGBSelection->getNControlPoints( i, args.time );
 			}
 			
-			//Delete all points on selected RGB curves
+			// Delete all points on selected RGB curves
 			for( std::size_t channel = 0; channel < nbCurvesRGB; ++channel )
 			{
 				if(		paramName == kButtonResetAll ||									// if button is Reset all curves
@@ -239,8 +238,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 					_paramColorRGBSelection->deleteControlPoint( channel );
 				}
 			}
-			//For all selected channel create new curves from selection
-			
+			// For all selected channel create new curves from selection
 			for( std::size_t i = 0; i < nbCurvesRGB; ++i )
 			{
 				if(		paramName == kButtonResetAll ||							// if button is Reset all curves
@@ -317,13 +315,12 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 						}
 						xPosition += step; //add step to Xposition
 					}
-					
 				}
 			}
 		}
 		
-		//HSL
-		if( paramName == kButtonSelectionToCurveHSL )
+		// HSL
+		else if( paramName == kButtonSelectionToCurveHSL )
 		{
 			//get nb points for each curve (RGB)
 			std::vector<std::size_t> nbControlPointsHSL( nbCurvesHSL ); //initialize vector
@@ -425,8 +422,9 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			}
 		}
 	}
-	//Append to curve
-	if(paramName == kButtonAppendSelectionToCurveHSL || paramName == kButtonAppendSelectionToCurveRGB)
+	
+	// Append to curve
+	else if(paramName == kButtonAppendSelectionToCurveHSL || paramName == kButtonAppendSelectionToCurveRGB)
 	{
 		//prepare buffer (compute with curve precision)
 		getOverlayData()._vNbStepCurveFromSelection = _paramSelectionFromCurve->getValue();				//change precision step (precision)
@@ -580,7 +578,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 				}
 			}
 		}
-		if(paramName == kButtonAppendSelectionToCurveRGB)		//Append to curve (RGB) 
+		else if(paramName == kButtonAppendSelectionToCurveRGB)		//Append to curve (RGB) 
 		{
 			for(unsigned int i=0; i<nbCurvesRGB; ++i)
 			{
