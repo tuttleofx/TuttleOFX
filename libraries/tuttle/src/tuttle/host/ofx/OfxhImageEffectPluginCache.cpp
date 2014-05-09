@@ -101,7 +101,7 @@ const std::vector<OfxhImageEffectPlugin*>& OfxhImageEffectPluginCache::getPlugin
 	return _plugins;
 }
 
-const std::map<std::string, OfxhImageEffectPlugin*>& OfxhImageEffectPluginCache::getPluginsByID() const
+const OfxhImageEffectPluginCache::MapPluginsByID& OfxhImageEffectPluginCache::getPluginsByID() const
 {
 	return _pluginsByID;
 }
@@ -249,7 +249,7 @@ std::ostream& operator<<( std::ostream& os, const OfxhImageEffectPluginCache& v 
 	os << "Nb Plugins:" << v._pluginsByID.size() << std::endl;
 	
 	os << "________________________________________________________________________________" << std::endl;
-	for( std::map<std::string, OfxhImageEffectPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
+	for( OfxhImageEffectPluginCache::MapPluginsByID::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
 	{
 		os << "Plug-in:" << it->first << std::endl;
 		os << "  " << "Filepath: " << it->second->getBinary().getFilePath();

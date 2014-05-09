@@ -13,4 +13,5 @@
 %include "ThreadEnv.i"
 %include "Node.i"
 %include "OverlayInteract.i"
+%include "io.i"
 
