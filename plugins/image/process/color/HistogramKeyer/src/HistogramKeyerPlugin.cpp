@@ -67,9 +67,7 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	//Initialize scoped pointer
 	_overlayDataCount = 0;
 
-	/// @todo: HACK to display curves default position
 	OFX::InstanceChangedArgs changed( this->timeLineGetTime( ) );
-	changedParam( changed, kButtonResetAll );
 	changedClip( changed, kOfxImageEffectSimpleSourceClipName );
 }
 
