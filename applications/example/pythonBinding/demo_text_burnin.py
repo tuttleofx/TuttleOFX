@@ -11,13 +11,12 @@ fontFile="/usr/share/fonts/truetype/arial.ttf"
 # set Tuttle env
 import envTuttle
 from pyTuttle import tuttle
-import getBestPlugin
 
 # Create graph
 tuttle.core().preload(False)
 g = tuttle.Graph()
 # Create reader node
-reader = g.createNode(getBestPlugin.getBestReader(os.path.splitext(in_seq)[-1]),
+reader = g.createNode(tuttle.getBestReader(os.path.splitext(in_seq)[-1]),
                       filename=in_seq).asImageEffectNode()
 
 g.setup()
