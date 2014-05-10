@@ -44,6 +44,7 @@ namespace host {
 		( NodeInit(io::getBestWriter(thumbnailToCreate))
 			.setParam("filename", thumbnailToCreate.c_str()) )
 		);
+	graph.setup();
 
 	OfxRangeD timeDomain = nodes.back()->getTimeDomain();
 	OfxTime time = timeDomain.min + (timeDomain.max - timeDomain.min) * 0.5;
