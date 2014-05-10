@@ -46,7 +46,6 @@ std::vector< std::string > getIOPluginsForExtension( const std::string& extensio
 	{
 		try
 		{
-			node.second->loadAndDescribeActions();
 			const ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc = node.second->getDescriptor();
 			if( node.second->supportsContext( context ) )
 			{
@@ -136,7 +135,7 @@ std::string getBestReader( const std::string& filename )
 		{
 			try
 			{
-				Graph graph = Graph();
+				Graph graph;
 				ImageEffectNode& readerIn = graph.createNode(readerId).asImageEffectNode();
 				readerIn.getParam("filename").setValue( filename );
 				graph.setup();
