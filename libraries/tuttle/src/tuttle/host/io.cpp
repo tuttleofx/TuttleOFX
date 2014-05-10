@@ -46,6 +46,7 @@ std::vector< std::string > getIOPluginsForExtension( const std::string& extensio
 	{
 		try
 		{
+			node.second->loadAndDescribeActions();
 			const ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc = node.second->getDescriptor();
 			if( node.second->supportsContext( context ) )
 			{
