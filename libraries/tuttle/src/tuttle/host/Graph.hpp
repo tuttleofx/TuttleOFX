@@ -19,8 +19,6 @@
 #include <tuttle/common/utils/global.hpp>
 
 #include <boost/ptr_container/ptr_map.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/exception/all.hpp>
 
 #include <stdexcept>
 #include <string>

@@ -7,6 +7,8 @@
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/exception/all.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
