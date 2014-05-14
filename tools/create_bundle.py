@@ -285,7 +285,7 @@ def get_py_bin_path(py_dir):
     return bin_pathes
 
 
-def get_shared_libs_path(output_dir, exclude_sys_lib=False):
+def get_shared_libs_path(output_dir, exclude_sys_lib, exclude_usr_lib):
     """Inspect binaries location to get shared dependencies
 
     Args:
@@ -328,16 +328,25 @@ def get_shared_libs_path(output_dir, exclude_sys_lib=False):
                 if len(split_str) == 2:
                     if os.path.isfile(split_str[0]):
                         shared_libs.append(split_str[0])
+    # get glic dependcies
+    process = subprocess.Popen(["rpm", "-ql", "glibc"],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    result = process.stdout.readlines()
+    for lib in result:
+        if ".so" in lib and "/lib64" in lib:
+            shared_libs.append(lib.rstrip())
     # remove duplicates
     shared_libs = sorted(set(shared_libs))
-
     # filter if asked
-    if not exclude_sys_lib:
+    if not exclude_sys_lib and not exclude_usr_lib:
         return shared_libs
     filtered_shared_libs = []
     for lib in shared_libs:
-        if (lib.startswith('/usr/lib64') or lib.startswith('/lib64') or
-            lib.startswith('/usr/lib')):
+        if (exclude_sys_lib and lib.startswith('/lib64')):
+            continue
+        if (exclude_usr_lib and
+           (lib.startswith('/usr/lib64') or lib.startswith('/usr/lib'))):
             continue
         filtered_shared_libs.append(lib)
     return filtered_shared_libs
@@ -421,7 +430,7 @@ to `OFX_PLUGIN_PATH` var env and Tuttle's lib directory to your env.
 
 
 def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
-                  exclude_sys_lib=False, verbose=False):
+                  exclude_sys_lib=False, exclude_usr_lib=False, verbose=False):
     """Create bundle by copying pertinent files in output_dir
 
     Args:
@@ -491,7 +500,8 @@ def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
     if verbose:
         print_with_deco("Copy shared libraries")
     shared_libs = get_shared_libs_path(output_dir,
-                                       exclude_sys_lib)
+                                       exclude_sys_lib,
+                                       exclude_usr_lib)
     lib_dir = os.path.join(output_dir, "lib")
     create_dir(lib_dir, overwrite)
     for lib in shared_libs:
@@ -522,8 +532,10 @@ def __get_options():
                                                   "this directory"), type=str)
     parser.add_argument("-o", "--overwrite", action="store_true",
                         help="Overwrite output directory")
-    parser.add_argument("-e", "--exclude-sys-lib", action="store_true",
+    parser.add_argument("-s", "--exclude-sys-lib", action="store_true",
                         help="Do not bundle system libs")
+    parser.add_argument("-u", "--exclude-usr-lib", action="store_true",
+                        help="Do not bundle usr libs")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Print log")
     return parser.parse_args()
@@ -532,4 +544,5 @@ if __name__ == '__main__':
     ARGS = __get_options()
     create_bundle(ARGS.source_directory, ARGS.build_directory,
                   ARGS.output_directory, ARGS.overwrite,
-                  exclude_sys_lib=ARGS.exclude_sys_lib, verbose=ARGS.verbose)
+                  exclude_sys_lib=ARGS.exclude_sys_lib,
+                  exclude_usr_lib=ARGS.exclude_usr_lib, verbose=ARGS.verbose)
