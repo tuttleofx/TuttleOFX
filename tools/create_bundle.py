@@ -8,7 +8,8 @@ import argparse
 import subprocess
 import sys
 import platform
-import os, errno
+import os
+import errno
 import shutil
 import ntpath
 
@@ -53,7 +54,7 @@ def copytree_verbose_condition(path):
 
     """
     return (os.path.isfile(path) and not path.endswith(".png")
-            and not  path.endswith(".svg"))
+            and not path.endswith(".svg"))
 
 
 def copytree(src, dst, symlinks=False, ignore=None, verbose=False):
@@ -100,7 +101,7 @@ def copytree(src, dst, symlinks=False, ignore=None, verbose=False):
                 print "Copy {0}".format(src)
     except OSError, why:
         if (shutil.WindowsError is not None
-            and isinstance(why, shutil.WindowsError)):
+           and isinstance(why, shutil.WindowsError)):
             # Copying file access times may fail on Windows
             pass
         else:
@@ -132,7 +133,7 @@ def ignored_pyc(directory, filenames):
         filenames: list of filenames
 
     """
-    return ignored_ext(filenames,".pyc")
+    return ignored_ext(filenames, ".pyc")
 
 
 def copy_tree(source_dir, dest_dir, overwrite=False, ignore=None,
@@ -205,16 +206,16 @@ def get_ofx_platform_name():
     Stolen from :
     https://github.com/tuttleofx/TuttleOFX/blob/master/SConstruct#L19
     """
-    if OS_NAME == "posix" :
-        if SYS_PLATFORM.find("linux") >= 0 :
+    if OS_NAME == "posix":
+        if SYS_PLATFORM.find("linux") >= 0:
             if OS_ARCH == 64:
                 return 'Linux-x86-64'
             return 'Linux-x86'
-        elif SYS_PLATFORM.find("cygwin") >= 0 :
+        elif SYS_PLATFORM.find("cygwin") >= 0:
             if OS_ARCH == 64:
                 return 'Linux-x86-64'
             return 'Linux-x86'
-        elif SYS_PLATFORM.find("darwin") >= 0 :
+        elif SYS_PLATFORM.find("darwin") >= 0:
             return 'MacOS'
         elif SYS_PLATFORM.find("irix") >= 0:
             if OS_ARCH == 64:
@@ -237,7 +238,7 @@ def get_ofx_bin_path(plugins_dir):
     """
     plugin_pathes = []
     for item in os.listdir(plugins_dir):
-        path = os.path.join(plugins_dir,item)
+        path = os.path.join(plugins_dir, item)
         if not os.path.isdir(path):
             continue
         # construct the path to the .ofx
@@ -262,7 +263,7 @@ def get_exe_bin_path(bin_dir):
     """
     bin_pathes = []
     for item in os.listdir(bin_dir):
-        path = os.path.join(bin_dir,item)
+        path = os.path.join(bin_dir, item)
         if os.path.isfile(path):
             bin_pathes.append(path)
     return bin_pathes
@@ -435,8 +436,8 @@ def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
     """
     # get system infos
     python_version = "{0}.{1}.{2}".format(sys.version_info[0],
-                                         sys.version_info[1],
-                                         sys.version_info[2])
+                                          sys.version_info[1],
+                                          sys.version_info[2])
     os_type = platform.system()
     if 'Linux' in os_type:
         os_type = platform.linux_distribution()[0].rstrip()
@@ -452,7 +453,7 @@ def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
 
     # create bundle directory
     bundle_name = "TuttleOFX_{0}_{1}_python{2}".format(version, os_full_name,
-                                                 python_version)
+                                                       python_version)
     output_dir = os.path.join(output_dir, bundle_name)
     create_dir(output_dir, overwrite)
 
