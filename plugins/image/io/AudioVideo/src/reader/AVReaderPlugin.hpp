@@ -1,11 +1,13 @@
 #ifndef _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
+#include <AvTranscoder/ColorTransform.hpp>
+#include <AvTranscoder/InputFile.hpp>
+#include <AvTranscoder/InputStreamVideo.hpp>
+
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
-#include <libav/LibAVPresetDefinitions.hpp>
-#include <libav/LibAVVideoReader.hpp>
-#include <libav/LibAVOptions.hpp>
+#include <boost/scoped_ptr.hpp>
 
 #include <string>
 
@@ -22,14 +24,14 @@ struct AVReaderParams
 /**
  * @brief AudioVideo plugin
  */
-class AVReaderPlugin : public AVOptionPlugin< ReaderPlugin >
+class AVReaderPlugin : public ReaderPlugin
 {
 public:
 	AVReaderPlugin( OfxImageEffectHandle handle );
 
 public:
-	bool ensureVideoIsOpen();
-
+	void ensureVideoIsOpen( const std::string& path );
+	
 	AVReaderParams getProcessParams() const;
 
 	void updateVisibleTools();
@@ -38,9 +40,7 @@ public:
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool getTimeDomain( OfxRangeD& range );
 
-	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
-	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
 public:
 	// do not need to delete these, the ImageEffect is managing them for us
@@ -49,10 +49,13 @@ public:
 	OFX::StringParam*  _paramFilepath;     ///< video filepath
 	OFX::BooleanParam* _paramUseCustomSAR; ///< Keep sample aspect ratio
 	OFX::DoubleParam*  _paramCustomSAR;    ///< Custom SAR to use
-
-	bool               _errorInFile;
-	bool               _initReader;
-	LibAVVideoReader   _reader;
+	
+	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
+	boost::scoped_ptr<avtranscoder::InputStreamVideo> _inputStreamVideo;
+	size_t _indexVideoStream;
+	avtranscoder::ColorTransform _colorTransform;
+	
+	std::string _lastInputFilePath;
 };
 
 }

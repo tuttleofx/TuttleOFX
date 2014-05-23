@@ -1,8 +1,9 @@
+#include <AvTranscoder/common.hpp>
+#include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
+
 #include "AVReaderPlugin.hpp"
 #include "AVReaderProcess.hpp"
 #include "AVReaderDefinitions.hpp"
-
-#include <libav/LibAVVideoReader.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
@@ -16,13 +17,12 @@ using namespace boost::gil;
 namespace fs = boost::filesystem;
 
 AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
-	: AVOptionPlugin( handle )
-	, _errorInFile( false )
-	, _initReader( false )
-{
-	// We want to render a sequence
-	setSequentialRender( true );
-
+	: ReaderPlugin( handle )
+	, _inputFile( NULL )
+	, _inputStreamVideo( NULL )
+	, _indexVideoStream( 0 )
+	, _lastInputFilePath( "" )
+{	
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
 	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
@@ -30,6 +30,41 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
 
 	updateVisibleTools();
+}
+
+void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
+{
+	if( _lastInputFilePath == filepath && // already opened
+		! _lastInputFilePath.empty() ) // not the first time...
+		return;
+	
+	if( filepath == "" || ! boost::filesystem::exists( filepath ) )
+	{
+		_inputFile.reset();
+		_lastInputFilePath = filepath;
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		    << exception::filename( filepath ) );
+	}
+	
+	try
+	{
+		// set and analyse inputFile
+		_inputFile.reset( new avtranscoder::InputFile( filepath ) );
+		_lastInputFilePath = filepath;
+		_inputFile->analyse();
+
+		// get index of first video stream
+		_indexVideoStream = _inputFile->getProperties().videoStreams[0].streamId;
+		
+		// set video stream
+		_inputStreamVideo.reset( new avtranscoder::InputStreamVideo( _inputFile->getStream( _indexVideoStream ) ) );
+	}
+	catch( std::exception& e )
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to open file : " + e.what()
+		    << exception::filename( filepath ) );
+	}
 }
 
 void AVReaderPlugin::updateVisibleTools()
@@ -46,32 +81,11 @@ AVReaderParams AVReaderPlugin::getProcessParams() const
 	return params;
 }
 
-/**
- * @brief Open the video if not already opened.
- * @return If the video file is now open,
- *         else the file doesn't exist, is unrecognized or is corrupted.
- */
-bool AVReaderPlugin::ensureVideoIsOpen()
-{
-	if( _reader.isOpen() )
-		return true;
-
-	// if we have not already tried
-	if( !_errorInFile )
-	{
-		_errorInFile = !_reader.open( _paramFilepath->getValue() );
-	}
-	return !_errorInFile;
-}
-
 void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	ReaderPlugin::changedParam( args, paramName );
-	if( paramName == kTuttlePluginFilename )
-	{
-		_errorInFile = false;
-	}
-	else if( paramName == kParamUseCustomSAR )
+	
+	if( paramName == kParamUseCustomSAR )
 	{
 		const bool useCustomSAR = _paramUseCustomSAR->getValue();
 		_paramCustomSAR->setIsSecretAndDisabled( !useCustomSAR );
@@ -91,51 +105,78 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
+	ensureVideoIsOpen( _paramFilepath->getValue() );
+	
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	clipPreferences.setOutputFrameVarying( true );
-	clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+	
+	// conversion of bitdepth
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte ); /// @todo tuttle: some video format may need other bit depth (how we can detect this ?)
 	}
-
-	if( !ensureVideoIsOpen() )
-		return;
-
-	// options depending on input file
+	else
+	{
+		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUShort );
+	}
+	
+	// conversion of channel
+	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
+	{
+		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
+	}
+	else
+	{
+		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+	}
+	
+	// frame varying
+	clipPreferences.setOutputFrameVarying( true );
+	
+	// sar
+	const avtranscoder::Properties& properties = _inputFile->getProperties();
+	avtranscoder::Ratio sar = properties.videoStreams.at( _indexVideoStream ).sar;
+	const double videoRatio = sar.num / (double)sar.den;
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, videoRatio );
+	
+	// output frame rate
+	double fps = properties.videoStreams.at( _indexVideoStream ).fps;
+	clipPreferences.setOutputFrameRate( fps );
+	
+	// sar
 	const bool useCustomSAR = _paramUseCustomSAR->getValue();
 	const double customSAR = _paramCustomSAR->getValue();
-	clipPreferences.setPixelAspectRatio( *_clipDst, useCustomSAR ? customSAR : _reader.aspectRatio() );
-	clipPreferences.setOutputFrameRate( _reader.fps() );
+	clipPreferences.setPixelAspectRatio( *_clipDst, useCustomSAR ? customSAR : videoRatio );
 	
-	// Setup fielding
-	switch( _reader.interlacment() )
+	// interlaced
+	bool isInterlaced = properties.videoStreams.at( _indexVideoStream ).isInterlaced;
+	bool topFieldFirst = properties.videoStreams.at( _indexVideoStream ).topFieldFirst;
+	if( isInterlaced )
 	{
-		case  eInterlacmentNone:
-		{
-			clipPreferences.setOutputFielding( OFX::eFieldNone );
-			break;
-		}
-		case  eInterlacmentUpper:
+		clipPreferences.setOutputFielding( OFX::eFieldNone );
+	}
+	else
+	{
+		if( topFieldFirst )
 		{
 			clipPreferences.setOutputFielding( OFX::eFieldUpper );
-			break;
 		}
-		case  eInterlacmentLower:
+		else
 		{
 			clipPreferences.setOutputFielding( OFX::eFieldLower );
-			break;
 		}
 	}
 }
 
 bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
-	if( !ensureVideoIsOpen() )
-		return false;
-
+	ensureVideoIsOpen( _paramFilepath->getValue() );
+	
+	double duration = _inputFile->getProperties().duration;
+	double fps = _inputFile->getProperties().videoStreams.at( _indexVideoStream ).fps;
+	double nbFrames = fps * duration;
+	
 	range.min = 0.0;
-	range.max = (double)(_reader.nbFrames()-1);
+	range.max = nbFrames - 1;
 	
 	//TUTTLE_LOG_VAR2( TUTTLE_INFO, range.min, range.max );
 	
@@ -144,22 +185,23 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	if( !ensureVideoIsOpen() )
-		return false;
-
+	ensureVideoIsOpen( _paramFilepath->getValue() );
+	
+	// get metadata of video stream
+	const avtranscoder::Properties& properties = _inputFile->getProperties();
+	size_t width = properties.videoStreams.at( _indexVideoStream ).width;
+	size_t height = properties.videoStreams.at( _indexVideoStream ).height;
+	avtranscoder::Ratio sar = properties.videoStreams.at( _indexVideoStream ).sar;
+	const double videoRatio = sar.num / (double)sar.den;
+	
 	const bool useCustomSAR = _paramUseCustomSAR->getValue();
 	const double customSAR = _paramCustomSAR->getValue();
 
 	rod.x1 = 0;
-	rod.x2 = _reader.width() * ( useCustomSAR ? customSAR : _reader.aspectRatio() );
+	rod.x2 = width * ( useCustomSAR ? customSAR : videoRatio );
 	rod.y1 = 0;
-	rod.y2 = _reader.height();
+	rod.y2 = height;
 	return true;
-}
-
-void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
-{
-	ensureVideoIsOpen();
 }
 
 /**
@@ -168,39 +210,8 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
  */
 void AVReaderPlugin::render( const OFX::RenderArguments& args )
 {
-	if( !ensureVideoIsOpen() )
-	{
-		BOOST_THROW_EXCEPTION( exception::Unknown() );
-	}
-
-	if( !_initReader )
-	{
-		// set Format parameters
-		AVFormatContext* avFormatContext;
-		avFormatContext = avformat_alloc_context();
-		setParameters( _reader, eAVParamFormat, (void*)avFormatContext, AV_OPT_FLAG_DECODING_PARAM, 0 );
-		avformat_free_context( avFormatContext );
-		
-		// set Video Codec parameters
-		AVCodecContext* avCodecContext;
-		
-	#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
-		avCodecContext = avcodec_alloc_context();
-		// deprecated in the same version
-		//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
-	#else
-		AVCodec* avCodec = NULL;
-		avCodecContext = avcodec_alloc_context3( avCodec );
-	#endif
-		setParameters( _reader, eAVParamVideo, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
-	}
-	
+	ReaderPlugin::render(args);
 	doGilRender<AVReaderProcess>( *this, args );
-}
-
-void AVReaderPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
-{
-	_reader.close();
 }
 
 }
