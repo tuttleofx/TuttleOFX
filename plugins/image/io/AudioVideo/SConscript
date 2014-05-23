@@ -12,6 +12,7 @@ project.createOfxPlugin(
 		libs.avcodec,
 		libs.avformat,
 		libs.swscale,
+		libs.avTranscoder,
 		]
 	)
 
