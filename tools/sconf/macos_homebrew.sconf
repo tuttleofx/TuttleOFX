@@ -9,7 +9,7 @@
 
 import os
 
-homebrew_base = '/usr/local'
+homebrew_base = os.environ.get('HOMEBREW_PREFIX', '/usr/local')
 homebrew_include = join(homebrew_base, 'include')
 
 ##
