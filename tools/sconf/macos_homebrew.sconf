@@ -10,7 +10,7 @@
 import os
 
 homebrew_base = '/usr/local'
-homebrew_include = os.path.join(homebrew_base, 'include')
+homebrew_include = join(homebrew_base, 'include')
 
 ##
 ## Customizing default values 
@@ -36,14 +36,14 @@ lib_boost_log = 'boost_log-mt'
 dir_caca = homebrew_base
 
 dir_ctl = homebrew_base
-incdir_ctl = [ os.path.join(dir_ctl, 'include'),
-               os.path.join(dir_ctl, 'include', 'CTL') ]
+incdir_ctl = [ join(dir_ctl, 'include'),
+               join(dir_ctl, 'include', 'CTL') ]
 
 dir_ffmpeg = homebrew_base
 
 dir_freetype = homebrew_base
 incdir_freetype = [ homebrew_include,
-                    os.path.join(homebrew_include, 'freetype2') ]
+                    join(homebrew_include, 'freetype2') ]
 
 dir_gl = '/usr/X11'
 lib_gl = 'GL'
@@ -55,12 +55,12 @@ dir_glut = homebrew_base
 dir_glew = homebrew_base
 
 dir_half = homebrew_base
-incdir_half = [ homebrew_include, os.path.join(homebrew_include, 'OpenExr') ]
+incdir_half = [ homebrew_include, join(homebrew_include, 'OpenExr') ]
 
 dir_ilmbase = homebrew_base
 
-incdir_imagemagick = os.path.join(homebrew_include, "ImageMagick-6")
-libdir_imagemagick = os.path.join(homebrew_base, "lib/ImageMagick")
+incdir_imagemagick = join(homebrew_include, "ImageMagick-6")
+libdir_imagemagick = join(homebrew_base, "lib/ImageMagick")
 lib_imagemagick = "libMagickCore-6.Q16"
 
 dir_jpeg = homebrew_base
@@ -68,22 +68,22 @@ dir_jpeg = homebrew_base
 dir_littlecms = homebrew_base
 dir_lcms = homebrew_base
 
-dir_numpy = os.path.join(homebrew_base, 'lib/python2.7/site-packages/numpy/core')
+# incdir_python_numpy is set dynamically by homebrew
 
 dir_opencolorio = homebrew_base
 
-incdir_openexr = os.path.join(homebrew_include, 'OpenEXR/')
+incdir_openexr = join(homebrew_include, 'OpenEXR/')
 
 dir_openimageio = homebrew_base
-incdir_openimageio = [ os.path.join(dir_openimageio, 'include'),
-                       os.path.join(dir_openimageio, 'include', 'OpenImageIO') ]
+incdir_openimageio = [ join(dir_openimageio, 'include'),
+                       join(dir_openimageio, 'include', 'OpenImageIO') ]
 
 incdir_openjpeg = '/usr/local/include/openjpeg-1.5/'
 libdir_openjpeg = '/usr/local/lib/'
 
 dir_png = homebrew_base
 
-incdir_python = '/usr/local/Frameworks/Python.framework/Versions/2.7/include/python2.7/'
+incdir_python = join(homebrew_base, 'Frameworks/Python.framework/Versions/2.7/include/python2.7')
 
 dir_raw = homebrew_base
 
