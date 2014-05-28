@@ -20,8 +20,9 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 	, _inputFile( NULL )
 	, _inputStreamVideo( NULL )
-	, _indexVideoStream( 0 )
+	, _idVideoStream( 0 )
 	, _lastInputFilePath( "" )
+	, _lastFrame( 0 )
 {	
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
@@ -54,10 +55,13 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 		_inputFile->analyse();
 
 		// get index of first video stream
-		_indexVideoStream = _inputFile->getProperties().videoStreams[0].streamId;
+		_idVideoStream = _inputFile->getProperties().videoStreams.at(0).streamId;
+		
+		// buffered video stream at _indexVideoStream (to seek)
+		_inputFile->readStream( _idVideoStream );
 		
 		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::InputStreamVideo( _inputFile->getStream( _indexVideoStream ) ) );
+		_inputStreamVideo.reset( new avtranscoder::InputStreamVideo( _inputFile->getStream( _idVideoStream ) ) );
 	}
 	catch( std::exception& e )
 	{
@@ -112,57 +116,54 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	// conversion of bitdepth
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
+		// @TODO get file info => if bitdetph = 10 or 16 => UShort
 		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte ); /// @todo tuttle: some video format may need other bit depth (how we can detect this ?)
-	}
-	else
-	{
-		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUShort );
 	}
 	
 	// conversion of channel
 	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
+		// @TODO get file info => if components = rgba set RGBA :-P
 		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
-	}
-	else
-	{
-		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
 	}
 	
 	// frame varying
 	clipPreferences.setOutputFrameVarying( true );
 	
-	// sar
-	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	avtranscoder::Ratio sar = properties.videoStreams.at( _indexVideoStream ).sar;
-	const double videoRatio = sar.num / (double)sar.den;
-	clipPreferences.setPixelAspectRatio( *this->_clipDst, videoRatio );
-	
-	// output frame rate
-	double fps = properties.videoStreams.at( _indexVideoStream ).fps;
-	clipPreferences.setOutputFrameRate( fps );
-	
-	// sar
-	const bool useCustomSAR = _paramUseCustomSAR->getValue();
-	const double customSAR = _paramCustomSAR->getValue();
-	clipPreferences.setPixelAspectRatio( *_clipDst, useCustomSAR ? customSAR : videoRatio );
-	
-	// interlaced
-	bool isInterlaced = properties.videoStreams.at( _indexVideoStream ).isInterlaced;
-	bool topFieldFirst = properties.videoStreams.at( _indexVideoStream ).topFieldFirst;
-	if( isInterlaced )
+	if( _inputFile )
 	{
-		clipPreferences.setOutputFielding( OFX::eFieldNone );
-	}
-	else
-	{
-		if( topFieldFirst )
+		// sar
+		const avtranscoder::Properties& properties = _inputFile->getProperties();
+		avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
+		const double videoRatio = sar.num / (double)sar.den;
+		clipPreferences.setPixelAspectRatio( *this->_clipDst, videoRatio );
+
+		// output frame rate
+		double fps = properties.videoStreams.at( _idVideoStream ).fps;
+		clipPreferences.setOutputFrameRate( fps );
+
+		// sar
+		const bool useCustomSAR = _paramUseCustomSAR->getValue();
+		const double customSAR = _paramCustomSAR->getValue();
+		clipPreferences.setPixelAspectRatio( *_clipDst, useCustomSAR ? customSAR : videoRatio );
+
+		// interlaced
+		bool isInterlaced = properties.videoStreams.at( _idVideoStream ).isInterlaced;
+		bool topFieldFirst = properties.videoStreams.at( _idVideoStream ).topFieldFirst;
+		if( isInterlaced )
 		{
-			clipPreferences.setOutputFielding( OFX::eFieldUpper );
+			clipPreferences.setOutputFielding( OFX::eFieldNone );
 		}
 		else
 		{
-			clipPreferences.setOutputFielding( OFX::eFieldLower );
+			if( topFieldFirst )
+			{
+				clipPreferences.setOutputFielding( OFX::eFieldUpper );
+			}
+			else
+			{
+				clipPreferences.setOutputFielding( OFX::eFieldLower );
+			}
 		}
 	}
 }
@@ -170,38 +171,61 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	ensureVideoIsOpen( _paramFilepath->getValue() );
+	if( _inputFile )
+	{
+		double duration = _inputFile->getProperties().duration;
+		double fps = _inputFile->getProperties().videoStreams.at( _idVideoStream ).fps;
+		double nbFrames = fps * duration;
+
+		range.min = 0.0;
+		range.max = nbFrames - 1;
+		
+		return true;
+	}
+	else
+	{
+		range.min = 0.0;
+		range.max = 0.0;
+		
+		return false;
+	}
 	
-	double duration = _inputFile->getProperties().duration;
-	double fps = _inputFile->getProperties().videoStreams.at( _indexVideoStream ).fps;
-	double nbFrames = fps * duration;
-	
-	range.min = 0.0;
-	range.max = nbFrames - 1;
-	
-	//TUTTLE_LOG_VAR2( TUTTLE_INFO, range.min, range.max );
-	
-	return true;
+	return false;
 }
 
 bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	ensureVideoIsOpen( _paramFilepath->getValue() );
-	
-	// get metadata of video stream
-	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	size_t width = properties.videoStreams.at( _indexVideoStream ).width;
-	size_t height = properties.videoStreams.at( _indexVideoStream ).height;
-	avtranscoder::Ratio sar = properties.videoStreams.at( _indexVideoStream ).sar;
-	const double videoRatio = sar.num / (double)sar.den;
-	
-	const bool useCustomSAR = _paramUseCustomSAR->getValue();
-	const double customSAR = _paramCustomSAR->getValue();
+	if( _inputFile )
+	{
+		// get metadata of video stream
+		const avtranscoder::Properties& properties = _inputFile->getProperties();
+		size_t width = properties.videoStreams.at( _idVideoStream ).width;
+		size_t height = properties.videoStreams.at( _idVideoStream ).height;
+		avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
+		const double videoRatio = sar.num / (double)sar.den;
 
-	rod.x1 = 0;
-	rod.x2 = width * ( useCustomSAR ? customSAR : videoRatio );
-	rod.y1 = 0;
-	rod.y2 = height;
-	return true;
+		const bool useCustomSAR = _paramUseCustomSAR->getValue();
+		const double customSAR = _paramCustomSAR->getValue();
+
+		rod.x1 = 0;
+		rod.x2 = width * ( useCustomSAR ? customSAR : videoRatio );
+		rod.y1 = 0;
+		rod.y2 = height;
+		
+		return true;
+	}
+	else
+	{
+		rod.x1 = 0;
+		rod.x2 = 0;
+		rod.y1 = 0;
+		rod.y2 = 0;
+		
+		return false;
+	}
+	
+	return false;
 }
 
 /**

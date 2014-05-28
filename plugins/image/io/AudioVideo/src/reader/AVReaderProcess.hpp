@@ -32,6 +32,9 @@ public:
 	// Do some processing
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 	
+	template<typename bitDepth, typename layout, typename fileView>
+	View& readImage( View& dst, avtranscoder::Image& image );
+	
 private:
 	boost::scoped_ptr<avtranscoder::Image> _imageToEncode;
 };

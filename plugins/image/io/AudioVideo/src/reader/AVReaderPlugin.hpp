@@ -52,10 +52,11 @@ public:
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
 	boost::scoped_ptr<avtranscoder::InputStreamVideo> _inputStreamVideo;
-	size_t _indexVideoStream;
+	size_t _idVideoStream;
 	avtranscoder::ColorTransform _colorTransform;
 	
 	std::string _lastInputFilePath;
+	size_t _lastFrame;
 };
 
 }
