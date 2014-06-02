@@ -158,6 +158,11 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	customSAR->setLabel( "Custom SAR" );
 	customSAR->setDefault( 1.0 );
 	customSAR->setHint( "Choose a custom value to override the file SAR (Storage Aspect Ratio)." );
+	
+	OFX::IntParamDescriptor* streamIndex = desc.defineIntParam( kParamVideoStreamIndex );
+	streamIndex->setLabel( kParamVideoStreamIndexLabel );
+	streamIndex->setDefault( 0 );
+	streamIndex->setHint( "Choose a custom value to decode the video stream you want." );
 }
 
 /**

@@ -21,6 +21,9 @@ static const std::string kParamMetaDetailledGroup        = "metaDetailledGroup";
 static const std::string kParamUseCustomSAR = "useCustomSAR";
 static const std::string kParamCustomSAR = "customSAR";
 
+static const std::string kParamVideoStreamIndex      = "videoStreamIndex";
+static const std::string kParamVideoStreamIndexLabel = "Video stream index";
+
 }
 }
 }

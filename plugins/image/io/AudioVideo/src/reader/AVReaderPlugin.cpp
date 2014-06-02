@@ -25,6 +25,8 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _lastFrame( 0 )
 {
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
+
+	_paramVideoStreamIndex = fetchIntParam( kParamVideoStreamIndex );
 	_paramUseCustomSAR = fetchBooleanParam( kParamUseCustomSAR );
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
 
@@ -51,9 +53,12 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 		_inputFile.reset( new avtranscoder::InputFile( filepath ) );
 		_lastInputFilePath = filepath;
 		_inputFile->analyse();
-
-		// get index of first video stream
-		_idVideoStream = _inputFile->getProperties().videoStreams.at(0).streamId;
+		
+		// set range of the OFX param
+		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
+		
+		// get streamId of the video stream
+		_idVideoStream = _inputFile->getProperties().videoStreams.at( _paramVideoStreamIndex->getValue() ).streamId;
 		
 		// buffered video stream at _indexVideoStream (to seek)
 		_inputFile->readStream( _idVideoStream );
