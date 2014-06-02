@@ -301,17 +301,31 @@ public:
         return std::find( _supportedContexts.begin(), _supportedContexts.end(), context ) != _supportedContexts.end();
     }
 	
-    /** @return the pixel depth used by host application, if it doesn't support multiple clip depth. */
-    EBitDepth getPixelDepth() const
+    /** @return default pixel depth supported by host application. */
+    EBitDepth getDefaultPixelDepth() const
     {
-        if( _supportedPixelDepths.size() == 1 )
+        if( ! _supportedPixelDepths.empty() )
         {
             return _supportedPixelDepths[0];
         }
         else
         {
-            OFXS_COUT_WARNING("The host doesn't support multiple clip depths, but doesn't define supported pixel depth. (size: " << _supportedPixelDepths.size() << ")" );
+            OFXS_COUT_WARNING("The host doesn't define supported pixel depth. (size: " << _supportedPixelDepths.size() << ")" );
             return eBitDepthFloat;
+        }
+    }
+	
+    /** @return default pixel component supported by host application. */
+    EPixelComponent getDefaultPixelComponent() const
+    {
+        if( ! _supportedComponents.empty() )
+        {
+            return _supportedComponents[0];
+        }
+        else
+        {
+            OFXS_COUT_WARNING("The host doesn't define supported pixel component. (size: " << _supportedComponents.size() << ")" );
+            return ePixelComponentRGBA;
         }
     }
 };

@@ -123,14 +123,24 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
 		// @TODO get file info => if bitdetph = 10 or 16 => UShort
-		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte ); /// @todo tuttle: some video format may need other bit depth (how we can detect this ?)
+		OFX::EBitDepth fileBitDepth = OFX::eBitDepthUByte;
+		
+		if( OFX::getImageEffectHostDescription()->supportsBitDepth( fileBitDepth ) )
+			clipPreferences.setClipBitDepth( *_clipDst, fileBitDepth );
+		else
+			clipPreferences.setClipBitDepth( *_clipDst, OFX::getImageEffectHostDescription()->getDefaultPixelDepth() );
 	}
 	
 	// conversion of channel
 	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
-		// @TODO get file info => if components = rgba set RGBA :-P
-		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
+		// @TODO get file info => if components = rgba set RGBA
+		OFX::EPixelComponent filePixelComponent = OFX::ePixelComponentRGB;
+		
+		if( OFX::getImageEffectHostDescription()->supportsPixelComponent( filePixelComponent ) )
+			clipPreferences.setClipComponents( *_clipDst, filePixelComponent );
+		else
+			clipPreferences.setClipComponents( *_clipDst, OFX::getImageEffectHostDescription()->getDefaultPixelComponent() );
 	}
 	
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
