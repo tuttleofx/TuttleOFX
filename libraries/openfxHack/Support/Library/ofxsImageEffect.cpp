@@ -2599,11 +2599,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 			// call the instance changed action
 			if( getTimeDomainAction( handle, outArgs ) )
-			stat = kOfxStatOK;
-
-			// fetch our pointer out of the props on the handle
-			/*ImageEffect *instance = */ retrieveImageEffectPointer( handle );
-
+				stat = kOfxStatOK;
 		}
 		else if( action == kOfxActionBeginInstanceChanged )
 		{
