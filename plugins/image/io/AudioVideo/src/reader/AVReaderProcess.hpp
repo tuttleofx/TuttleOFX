@@ -23,16 +23,15 @@ template<class View>
 class AVReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	AVReaderPlugin& _plugin;        ///< Rendering plugin
+	AVReaderPlugin& _plugin;
 
 public:
 	AVReaderProcess( AVReaderPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
-	// Do some processing
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 	
-	template<typename bitDepth, typename layout, typename fileView>
+	template<typename FileView>
 	View& readImage( View& dst, avtranscoder::Image& image );
 	
 private:

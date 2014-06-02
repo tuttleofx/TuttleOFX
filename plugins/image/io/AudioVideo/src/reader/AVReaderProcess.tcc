@@ -23,7 +23,7 @@ template<class View>
 void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {	
 	ImageGilProcessor<View>::setup( args );
-		
+	
 	// get source image
 	avtranscoder::ImageDesc sourceImageDesc = _plugin._inputFile->getStream( _plugin._idVideoStream ).getVideoDesc().getImageDesc();
 	avtranscoder::Image sourceImage( sourceImageDesc );
@@ -31,7 +31,7 @@ void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	// set pixel data of image to encode
 	avtranscoder::Pixel oPixel;
 	size_t pixelComponents = sourceImageDesc.getPixelDesc().getComponents();
-	size_t pixelDepth = 8;// waiting for getMaxBitPerChannel() in avTranscoder
+	size_t pixelDepth = 8; // waiting for getMaxBitPerChannel() in avTranscoder
 	oPixel.setBitsPerPixel( pixelDepth * pixelComponents );
 	oPixel.setComponents( pixelComponents );
 	oPixel.setColorComponents( avtranscoder::eComponentRgb );
@@ -41,7 +41,7 @@ void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	
 	// get image to encode
 	avtranscoder::ImageDesc imageToEncodeDesc( sourceImageDesc );
-	imageToEncodeDesc.setPixel( oPixel.findPixel() ); // seg fault with bitDepth: 32
+	imageToEncodeDesc.setPixel( oPixel.findPixel() );
 	_imageToEncode.reset( new avtranscoder::Image( imageToEncodeDesc ) );
 
 	TUTTLE_LOG_ERROR( "Read at frame : " << _plugin._lastFrame << " / " << args.time );
@@ -63,10 +63,8 @@ void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 		    << exception::user() + "Can't open the frame at time " + args.time
 		    << exception::filename( _plugin._paramFilepath->getValue() ) );
 	}
-	else
-	{
-		_plugin._colorTransform.convert( sourceImage, *(_imageToEncode) );
-	}
+	
+	_plugin._colorTransform.convert( sourceImage, *(_imageToEncode) );
 }
 
 /**
@@ -80,7 +78,7 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 		
 	size_t components = _imageToEncode->desc().getPixelDesc().getComponents();
-	size_t bitDepth = 8;// waiting for getMaxBitPerChannel() in avTranscoder
+	size_t bitDepth = 8; // waiting for getMaxBitPerChannel() in avTranscoder
 	
 	switch( bitDepth )
 	{
@@ -88,13 +86,13 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 			switch( components )
 			{
 				case 3:
-					readImage<bits8, rgb_layout_t, rgb8c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<rgb8c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 				case 4:
-					readImage<bits8, rgba_layout_t, rgba8c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<rgba8c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 				default:
-					readImage<bits8, gray_layout_t, gray8c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<gray8c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 			}
 			break;
@@ -102,13 +100,13 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 			switch( components )
 			{
 				case 3:
-					readImage<bits16, rgb_layout_t, rgb16c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<rgb16c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 				case 4:
-					readImage<bits16, rgba_layout_t, rgba16c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<rgba16c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 				default:
-					readImage<bits16, gray_layout_t, gray16c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<gray16c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 			}
 			break;
@@ -116,47 +114,40 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 			switch( components )
 			{
 				case 3:
-					readImage<bits32, rgb_layout_t, rgb32c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<rgb32c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 				case 4:
-					readImage<bits32, rgba_layout_t, rgba32c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<rgba32c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 				default:
-					readImage<bits32, gray_layout_t, gray32c_view_t>( this->_dstView, *(_imageToEncode) );
+					readImage<gray32c_view_t>( this->_dstView, *(_imageToEncode) );
 					break;
 			}
 			break;
 		default:
-			// bitDepth: 16, color componenent: Gray
-			readImage<bits16, gray_layout_t, gray16c_view_t>( this->_dstView, *(_imageToEncode) );
+			readImage<gray16c_view_t>( this->_dstView, *(_imageToEncode) );
 			break;
 			
 	}
 }
 
 template<class View>
-template<typename bitDepth, typename layout, typename fileView>
+template<typename FileView>
 View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::Image& image )
-{	
-	typedef boost::gil::pixel<bitDepth, layout> pixel_t;
-	typedef boost::gil::image<pixel_t, false>   image_t;
+{
+	typedef typename FileView::value_type Pixel;
 	
-	size_t width = image.desc().getWidth();
-	size_t height = image.desc().getHeight();
-		
-	image_t tmpImg( width, height );
-	fileView tmpView = view( tmpImg );
+	std::size_t width = image.desc().getWidth();
+	std::size_t height = image.desc().getHeight();
+	std::size_t rowSize = image.desc().getPixelDesc().getComponents() * 1 * image.desc().getWidth(); //in bytes
 	
-	const int outRowSizeBytes = tmpView.pixels().row_size();
-	
-	fileView avSrcView = interleaved_view
-		( 
+	FileView avSrcView = interleaved_view( 
 		width, height,
-		(const pixel_t*)( image.getPtr() ),
-		outRowSizeBytes );
-		
+		(const Pixel*)( image.getPtr() ),
+		rowSize );
+	
 	copy_and_convert_pixels( avSrcView, dst );
-		
+	
 	return dst;
 }
 

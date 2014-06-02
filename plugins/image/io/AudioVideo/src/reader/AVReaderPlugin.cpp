@@ -23,10 +23,8 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _idVideoStream( 0 )
 	, _lastInputFilePath( "" )
 	, _lastFrame( 0 )
-{	
+{
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
-	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
 	_paramUseCustomSAR = fetchBooleanParam( kParamUseCustomSAR );
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
 
@@ -42,7 +40,7 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 	if( filepath == "" || ! boost::filesystem::exists( filepath ) )
 	{
 		_inputFile.reset();
-		_lastInputFilePath = filepath;
+		_lastInputFilePath = "";
 		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 		    << exception::filename( filepath ) );
 	}
@@ -113,6 +111,9 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	
+	// frame varying
+	clipPreferences.setOutputFrameVarying( true );
+	
 	// conversion of bitdepth
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
@@ -127,105 +128,73 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
 	}
 	
-	// frame varying
-	clipPreferences.setOutputFrameVarying( true );
+	const avtranscoder::Properties& properties = _inputFile->getProperties();
 	
-	if( _inputFile )
+	// output frame rate
+	double fps = properties.videoStreams.at( _idVideoStream ).fps;
+	clipPreferences.setOutputFrameRate( fps );
+
+	// sar
+	if( _paramUseCustomSAR->getValue() )
 	{
-		// sar
+		clipPreferences.setPixelAspectRatio( *_clipDst, _paramCustomSAR->getValue() );
+	}
+	else
+	{
 		const avtranscoder::Properties& properties = _inputFile->getProperties();
 		avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
 		const double videoRatio = sar.num / (double)sar.den;
-		clipPreferences.setPixelAspectRatio( *this->_clipDst, videoRatio );
 
-		// output frame rate
-		double fps = properties.videoStreams.at( _idVideoStream ).fps;
-		clipPreferences.setOutputFrameRate( fps );
+		clipPreferences.setPixelAspectRatio( *_clipDst, videoRatio );
+	}
 
-		// sar
-		const bool useCustomSAR = _paramUseCustomSAR->getValue();
-		const double customSAR = _paramCustomSAR->getValue();
-		clipPreferences.setPixelAspectRatio( *_clipDst, useCustomSAR ? customSAR : videoRatio );
-
-		// interlaced
-		bool isInterlaced = properties.videoStreams.at( _idVideoStream ).isInterlaced;
+	// interlaced
+	bool isInterlaced = properties.videoStreams.at( _idVideoStream ).isInterlaced;
+	if( isInterlaced )
+	{
 		bool topFieldFirst = properties.videoStreams.at( _idVideoStream ).topFieldFirst;
-		if( isInterlaced )
-		{
-			clipPreferences.setOutputFielding( OFX::eFieldNone );
-		}
-		else
-		{
-			if( topFieldFirst )
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldUpper );
-			}
-			else
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldLower );
-			}
-		}
+		clipPreferences.setOutputFielding( topFieldFirst ? OFX::eFieldUpper : OFX::eFieldLower );
+	}
+	else
+	{
+		clipPreferences.setOutputFielding( OFX::eFieldNone );
 	}
 }
 
 bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	ensureVideoIsOpen( _paramFilepath->getValue() );
-	if( _inputFile )
-	{
-		double duration = _inputFile->getProperties().duration;
-		double fps = _inputFile->getProperties().videoStreams.at( _idVideoStream ).fps;
-		double nbFrames = fps * duration;
 
-		range.min = 0.0;
-		range.max = nbFrames - 1;
-		
-		return true;
-	}
-	else
-	{
-		range.min = 0.0;
-		range.max = 0.0;
-		
-		return false;
-	}
-	
-	return false;
+	double duration = _inputFile->getProperties().duration;
+	double fps = _inputFile->getProperties().videoStreams.at( _idVideoStream ).fps;
+	double nbFrames = fps * duration;
+
+	range.min = 0.0;
+	range.max = nbFrames - 1;
+
+	return true;
 }
 
 bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	ensureVideoIsOpen( _paramFilepath->getValue() );
-	if( _inputFile )
-	{
-		// get metadata of video stream
-		const avtranscoder::Properties& properties = _inputFile->getProperties();
-		size_t width = properties.videoStreams.at( _idVideoStream ).width;
-		size_t height = properties.videoStreams.at( _idVideoStream ).height;
-		avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
-		const double videoRatio = sar.num / (double)sar.den;
 
-		const bool useCustomSAR = _paramUseCustomSAR->getValue();
-		const double customSAR = _paramCustomSAR->getValue();
+	// get metadata of video stream
+	const avtranscoder::Properties& properties = _inputFile->getProperties();
+	size_t width = properties.videoStreams.at( _idVideoStream ).width;
+	size_t height = properties.videoStreams.at( _idVideoStream ).height;
+	avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
+	const double videoRatio = sar.num / (double)sar.den;
 
-		rod.x1 = 0;
-		rod.x2 = width * ( useCustomSAR ? customSAR : videoRatio );
-		rod.y1 = 0;
-		rod.y2 = height;
-		
-		return true;
-	}
-	else
-	{
-		rod.x1 = 0;
-		rod.x2 = 0;
-		rod.y1 = 0;
-		rod.y2 = 0;
-		
-		return false;
-	}
-	
-	return false;
+	const bool useCustomSAR = _paramUseCustomSAR->getValue();
+	const double customSAR = _paramCustomSAR->getValue();
+
+	rod.x1 = 0;
+	rod.x2 = width * ( useCustomSAR ? customSAR : videoRatio );
+	rod.y1 = 0;
+	rod.y2 = height;
+
+	return true;
 }
 
 /**
