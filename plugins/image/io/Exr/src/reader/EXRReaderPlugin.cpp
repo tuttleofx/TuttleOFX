@@ -50,8 +50,28 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 
 	params._filepath       = getAbsoluteFilenameAt( time );
 	params._outComponents  = _paramOutComponents->getValue();
-	params._fileComponents = _channelNames.size();
+	params._fileNbChannels = _channelNames.size();
+	params._userNbComponents = 0;
 	
+	switch( EParamReaderChannel(params._outComponents) )
+	{
+		case eParamReaderChannelGray:
+		{
+			params._userNbComponents = 1;
+			break;
+		}
+		case eParamReaderChannelRGB:
+		{
+			params._userNbComponents = 3;
+			break;
+		}
+		case eParamReaderChannelAuto:
+		case eParamReaderChannelRGBA:
+		{	
+			params._userNbComponents = 4;
+			break;
+		}
+	}
 	
 	params._redChannelIndex   = _paramRedComponents->getValue();
 	params._greenChannelIndex = _paramGreenComponents->getValue();
@@ -78,18 +98,18 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 			{
 				for( std::size_t j = 0; j < _paramsChannelChoice.size() - 1; ++j )
 				{
-					_paramsChannelChoice[j]->setIsSecret( true );
+					_paramsChannelChoice[j]->setIsSecretAndDisabled( true );
 				}
-				_paramsChannelChoice[3]->setIsSecret( false );
+				_paramsChannelChoice[3]->setIsSecretAndDisabled( false );
 				break;
 			}
 			case eParamReaderChannelRGB:
 			{
 				for( std::size_t j = 0; j < _paramsChannelChoice.size() - 1; ++j )
 				{
-					_paramsChannelChoice[j]->setIsSecret( false );
+					_paramsChannelChoice[j]->setIsSecretAndDisabled( false );
 				}
-				_paramsChannelChoice[3]->setIsSecret( true );
+				_paramsChannelChoice[3]->setIsSecretAndDisabled( true );
 				break;
 			}
 			case eParamReaderChannelAuto:
@@ -97,7 +117,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 			{	
 				for( std::size_t j = 0; j < _paramsChannelChoice.size(); ++j )
 				{
-					_paramsChannelChoice[j]->setIsSecret( false );
+					_paramsChannelChoice[j]->setIsSecretAndDisabled( false );
 				}
 				break;
 			}
@@ -112,7 +132,6 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 void EXRReaderPlugin::updateCombos()
 {
 	const std::string filepath( getAbsoluteFirstFilename() );
-	//TUTTLE_LOG_VAR("update Combo");
 	if( ! bfs::exists( filepath ) )
 		return;
 	
@@ -226,26 +245,22 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		{
 			case 1:
 			{
-				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
+				if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentAlpha ) )
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
 				break;
 			}
+			case 2:
 			case 3:
 			{
 				if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentRGB ) )
 					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
-				else
-					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-				break;
-			}
-			case 4:
-			{
-				clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 				break;
 			}
 			default:
+			//case 4:
 			{
-				BOOST_THROW_EXCEPTION( exception::FileNotExist()
-									   << exception::user() + "EXR: doesn't support " + _channelNames.size() + " channels." );
+				if( OFX::getImageEffectHostDescription()->supportsPixelComponent( OFX::ePixelComponentRGBA ) )
+					clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 				break;
 			}
 		}
@@ -265,12 +280,15 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		InputFile in( filepath.c_str() );
 		const Header& h = in.header();
 		const Imath::Box2i displayWindow( h.displayWindow() );
+		// Exr is top to bottom and OpenFX is bottom to top.
+		const double height = (displayWindow.max.y - displayWindow.min.y) + 1;
+  
 		if( _paramOutputData->getValue() == 0 )
 		{
-			rod.x1 = 0;
-			rod.y1 = 0;
-			rod.x2 = displayWindow.size().x + 1;
-			rod.y2 = displayWindow.size().y + 1;
+			rod.x1 = displayWindow.min.x;
+			rod.x2 = displayWindow.max.x + 1;
+			rod.y1 = height - (displayWindow.max.y + 1);
+			rod.y2 = height - displayWindow.min.y;
 		}
 		else
 		{
@@ -278,9 +296,6 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 //			TUTTLE_TLOG_INFO( "ExrReaderPlugin: displayWindow: " << displayWindow.min.x << ", " << displayWindow.min.y << ", " << displayWindow.max.x << ", " << displayWindow.max.y );
 //			TUTTLE_TLOG_INFO( "ExrReaderPlugin: dataWindow: " << h.dataWindow().min.x << ", " << h.dataWindow().min.y << ", " << h.dataWindow().max.x << ", " << h.dataWindow().max.y );
-
-			// Exr is top to bottom and OpenFX is bottom to top.
-			const double height = displayWindow.max.y - displayWindow.min.y + 1;
 
 			rod.x1 = dataWindow.min.x;
 			rod.x2 = dataWindow.max.x + 1;
@@ -294,8 +309,6 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		rod.x2 *= args.renderScale.x;
 		rod.y1 *= args.renderScale.y;
 		rod.y2 *= args.renderScale.y;
-		
-//		TUTTLE_TLOG_INFO( "ExrReaderPlugin: getRegionOfDefinition " << rod );
 	}
 	catch( ... )
 	{

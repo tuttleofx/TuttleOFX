@@ -12,8 +12,10 @@ namespace reader {
 struct EXRReaderProcessParams
 {
 	std::string _filepath;       ///< filepath
-	int         _fileComponents; ///< File Component type
+	int         _fileNbChannels; ///< Number of channels in the Exr file
+	int         _userNbComponents; ///< Number of channel asked by user
 	int         _outComponents;  ///< Components type
+	
 	int         _redChannelIndex;
 	int         _greenChannelIndex;
 	int         _blueChannelIndex;

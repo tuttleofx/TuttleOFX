@@ -32,17 +32,15 @@ protected:
 	boost::scoped_ptr<Imf::InputFile>   _exrImage;  ///< Pointer to an exr image
 
 	template< typename PixelType >
-	void initExrChannel( DataVector& data, Imf::Slice& slice, Imf::FrameBuffer& frameBuffer, Imf::PixelType pixelType, std::string channelID, const Imath::Box2i& dw, int w, int h );
+	void initExrChannel( DataVector& data, Imf::Slice& slice, Imf::FrameBuffer& frameBuffer, Imf::PixelType pixelType, std::string channelID, const Imath::Box2i& dw );
 	
-	template<class DView>
-	void channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer, const EXRReaderProcessParams& params,
-					  DView& dst, int w, int h, size_t nc );
+	void channelCopy( Imf::InputFile& input, const EXRReaderProcessParams& params, View& dst, const std::size_t nbChannels );
 	
-	template<class DView, typename workingView>
-	void sliceCopy( Imf::InputFile& input, const Imf::Slice* slice, DView& dst, const EXRReaderProcessParams& params, int w, int h, int n );
+	template<typename workingView>
+	void sliceCopy( Imf::InputFile& input, const Imf::Slice* slice, View& dst, const EXRReaderProcessParams& params, const std::size_t channelIndex );
 
 	std::string getChannelName( size_t index );
-	
+
 public:
 	EXRReaderProcess<View>( EXRReaderPlugin & instance );
 
@@ -50,9 +48,7 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	// Read exr image
-	template<class DView>
-	void readImage( DView dst, const std::string& filepath );
+	void readImage( const std::string& filepath );
 };
 
 }
