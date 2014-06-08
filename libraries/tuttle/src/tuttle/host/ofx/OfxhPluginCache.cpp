@@ -261,7 +261,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 
 			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
 			{
-				TUTTLE_LOG_TRACE( "Found binary not in cache: " << quotes(binpath) );
+				TUTTLE_LOG_TRACE( "Binary does not exist in the cache: " << quotes(binpath) );
 				try
 				{
 					// Creating the binary may throw, if there are some missing
@@ -275,7 +275,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 					setDirty();  // the cache has to be rewrite
 					_knownBinFiles.insert( binpath );
 					
-					TUTTLE_LOG_TRACE( quotes(barename) << " constains " << pb->getNPlugins() <<  " plugins." );
+					TUTTLE_LOG_TRACE( quotes(barename) << " contains " << pb->getNPlugins() <<  " plugins." );
 					
 					// Now, if there is an error that's because the plugin
 					// is not supported by the host.
