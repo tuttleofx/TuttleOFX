@@ -320,7 +320,7 @@ int main( int argc, char** argv )
 
 	if( vm.count(kHelpOptionLongName) )
 	{
-		TUTTLE_COUT( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_COUT( "" );
 		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
 		TUTTLE_COUT( color->_green << "\tsam-plugins - show informations about OpenFX plugins" << color->_std );

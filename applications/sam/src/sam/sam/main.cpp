@@ -176,7 +176,7 @@ int main( int argc, char** argv )
 		if( ( sam_vm.count( kHelpOptionLongName ) || ( argc == 1 ) )
 				|| ( ( argc == 2 ) && (strstr( argv[1], kColorOptionLongName ) != NULL ) ) )
 		{
-			TUTTLE_COUT( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+			TUTTLE_COUT( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 			TUTTLE_COUT( "" );
 			TUTTLE_COUT( color->_blue << "NAME" << color->_std );
 			TUTTLE_COUT( color->_green <<"\tsam - A set of command line tools." << color->_std );

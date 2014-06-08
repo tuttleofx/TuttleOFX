@@ -254,7 +254,7 @@ void Dummy::displayHelp( const std::string& nodeFullName )
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_COUT( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_COUT( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color->_blue << "NODE" << color->_std );
 	TUTTLE_COUT( color->_green << "\tsam do " << nodeFullName << " - OpenFX node." << color->_std );

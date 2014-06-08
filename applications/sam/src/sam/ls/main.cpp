@@ -1,6 +1,8 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
+#include <tuttle/host/version.hpp>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -159,7 +161,7 @@ int main( int argc, char** argv )
 	
 	if (vm.count(kHelpOptionLongName))
 	{
-		TUTTLE_COUT( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_COUT( "" );
 		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
 		TUTTLE_COUT( color->_green << "\tsam-ls - list directory contents" << color->_std );

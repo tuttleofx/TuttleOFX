@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_HOST_CORE_HPP_
 #define _TUTTLE_HOST_CORE_HPP_
 
+#include "version.hpp"
 #include "Preferences.hpp"
 
 #include <tuttle/host/memory/IMemoryCache.hpp>
@@ -12,14 +13,6 @@
 
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/shared_ptr.hpp>
-
-
-#define TUTTLE_HOST_VERSION_MAJOR 0
-#define TUTTLE_HOST_VERSION_MINOR 8
-#define TUTTLE_HOST_VERSION_MICRO 0
-
-#define TUTTLE_HOST_VERSION_STR BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MAJOR) "." BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MINOR) "." BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MICRO)
-
 
 namespace tuttle {
 namespace common {

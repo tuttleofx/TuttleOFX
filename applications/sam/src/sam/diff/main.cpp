@@ -266,7 +266,7 @@ void displayHelp(bpo::options_description &desc)
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 	TUTTLE_LOG_INFO( "" );
 	TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std);
 	TUTTLE_LOG_INFO( color->_green << "\tsam-diff - compute difference between 2 images/sequences" << color->_std );
