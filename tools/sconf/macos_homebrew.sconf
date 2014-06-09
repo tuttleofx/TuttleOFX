@@ -68,8 +68,6 @@ dir_jpeg = homebrew_base
 dir_littlecms = homebrew_base
 dir_lcms = homebrew_base
 
-# incdir_python_numpy is set dynamically by homebrew
-
 dir_opencolorio = homebrew_base
 
 incdir_openexr = join(homebrew_include, 'OpenEXR/')
@@ -82,8 +80,6 @@ incdir_openjpeg = '/usr/local/include/openjpeg-1.5/'
 libdir_openjpeg = '/usr/local/lib/'
 
 dir_png = homebrew_base
-
-incdir_python = join(homebrew_base, 'Frameworks/Python.framework/Versions/2.7/include/python2.7')
 
 dir_raw = homebrew_base
 
