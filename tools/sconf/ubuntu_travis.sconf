@@ -1,0 +1,27 @@
+import os
+
+incdir_qt4 = '/usr/include/qt4'
+incdir_half = '/usr/include/OpenEXR'
+incdir_ilmbase = '/usr/include/OpenEXR'
+incdir_freetype = '/usr/include/freetype2'
+incdir_imagemagick = '/usr/include/ImageMagick'
+incdir_openimageio = '/usr/include/OpenImageIO'
+
+incdir_ctl = '/usr/local/include/CTL'
+libdir_ctl = ['/usr/local/lib/', '/usr/local/lib/CTL']
+
+
+use_python3 = False
+
+if use_python3:
+    lib_python = 'python3.3m'
+    version_python = '3.3'
+    SCRIPTTESTXX = 'nosetests3'
+else:
+    lib_python = 'python2.7'
+
+incdir_python = join('/usr/include',lib_python)
+
+lib_freeglut = 'glut'
+
+SWIG = 'swig2.0'
