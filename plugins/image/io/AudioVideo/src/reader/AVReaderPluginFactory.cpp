@@ -4,22 +4,12 @@
 
 #include <AvTranscoder/OptionLoader.hpp>
 #include <AvTranscoder/Option.hpp>
+#include <AvTranscoder/Description.hpp>
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 #include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
 #include <boost/foreach.hpp>
-
-extern "C" {
-#ifndef __STDC_CONSTANT_MACROS
-	#define __STDC_CONSTANT_MACROS
-#endif
-	#include <libavcodec/avcodec.h>
-	#include <libavformat/avformat.h>
-}
-
 
 #include <string>
 #include <vector>
@@ -40,33 +30,9 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"AVReader",
 		"Audio Video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
-
-	av_register_all();
-	//av_log_set_level( AV_LOG_ERROR );
-
-	std::vector<std::string> supportedExtensions;
-	{
-		AVInputFormat* iFormat = av_iformat_next( NULL );
-		while( iFormat != NULL )
-		{
-			if( iFormat->extensions != NULL )
-			{
-				using namespace boost::algorithm;
-				std::string extStr( iFormat->extensions );
-				std::vector<std::string> exts;
-				split( exts, extStr, is_any_of(",") );
-				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
-
-				// name's format defines (in general) extensions
-				// require to fix extension in LibAV/FFMpeg to don't use it.
-				extStr = iFormat->name;
-				split( exts, extStr, is_any_of(",") );
-				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
-			}
-			iFormat = av_iformat_next( iFormat );
-		}
-	}
-
+	
+	std::vector<std::string> supportedExtensions = avtranscoder::getInputExtensions();
+	
 	// Hack: Add basic video container extensions
 	// as some versions of LibAV doesn't declare properly all extensions...
 	supportedExtensions.push_back("mov");
