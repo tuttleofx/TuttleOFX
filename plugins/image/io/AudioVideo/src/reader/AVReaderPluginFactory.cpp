@@ -147,7 +147,6 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	addOptionsToGroup( desc, formatGroup, (void*)avFormatContext, AV_OPT_FLAG_DECODING_PARAM, 0 );
 	avformat_free_context( avFormatContext );
 	
-	/// VIDEO PARAMETERS
 	AVCodecContext* avCodecContext;
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
 	avCodecContext = avcodec_alloc_context();
@@ -158,7 +157,16 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avCodecContext = avcodec_alloc_context3( avCodec );
 #endif
 	
+	/// VIDEO PARAMETERS
 	addOptionsToGroup( desc, videoGroup, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	
+	/// AUDIO PARAMETERS
+	addOptionsToGroup( desc, audioGroup, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, 0 );
+	
+	/// METADATA PARAMETERS
+	addOptionsToGroup( desc, metaGroup, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA, 0 );
+	
+	avcodec_close( avCodecContext );
 	
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
