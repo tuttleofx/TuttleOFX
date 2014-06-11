@@ -11,7 +11,7 @@ static const bool kSupportTiles = false;
 
 mDeclarePluginFactory( AVReaderPluginFactory, {}, {} );
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, void* av_class, int req_flags, int rej_flags );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, int req_flags, int rej_flags );
 
 }
 }

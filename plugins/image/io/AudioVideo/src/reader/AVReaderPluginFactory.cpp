@@ -142,31 +142,16 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	metaGroup->setAsTab( );
 	
 	/// FORMAT PARAMETERS
-	AVFormatContext* avFormatContext;
-	avFormatContext = avformat_alloc_context();
-	addOptionsToGroup( desc, formatGroup, (void*)avFormatContext, AV_OPT_FLAG_DECODING_PARAM, 0 );
-	avformat_free_context( avFormatContext );
-	
-	AVCodecContext* avCodecContext;
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
-	avCodecContext = avcodec_alloc_context();
-	// deprecated in the same version
-	//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
-#else
-	AVCodec* avCodec = NULL;
-	avCodecContext = avcodec_alloc_context3( avCodec );
-#endif
+	addOptionsToGroup( desc, formatGroup, AV_OPT_FLAG_DECODING_PARAM, 0 );
 	
 	/// VIDEO PARAMETERS
-	addOptionsToGroup( desc, videoGroup, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	addOptionsToGroup( desc, videoGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
 	
 	/// AUDIO PARAMETERS
-	addOptionsToGroup( desc, audioGroup, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, 0 );
+	addOptionsToGroup( desc, audioGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, 0 );
 	
 	/// METADATA PARAMETERS
-	addOptionsToGroup( desc, metaGroup, (void*)avCodecContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA, 0 );
-	
-	avcodec_close( avCodecContext );
+	addOptionsToGroup( desc, metaGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA, 0 );
 	
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
@@ -201,14 +186,13 @@ OFX::ImageEffect* AVReaderPluginFactory::createInstance( OfxImageEffectHandle ha
  * Get AVOption of ffmpeg / libav from an OptionLoader in avTranscoder lib.
  * @param desc: object to create OFX parameter descriptors
  * @param group: the group to add OFX params
- * @param av_class: ffmpeg / libav object which contains AVOptions
  * @param req_flags: AVOption flags
  * @param rej_flags: AVOption flags
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, void* av_class, int req_flags, int rej_flags )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, int req_flags, int rej_flags )
 {
 	avtranscoder::OptionLoader optionLoader;
-	optionLoader.loadOptions( av_class, req_flags, rej_flags );
+	optionLoader.loadOptions( req_flags, rej_flags );
 	
 	// ValueDescriptor ?
 	OFX::ParamDescriptor* param = NULL;
