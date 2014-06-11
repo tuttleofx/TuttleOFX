@@ -1,3 +1,6 @@
+os:
+  - linux
+
 language: cpp
 
 compiler:
@@ -5,44 +8,14 @@ compiler:
   - clang
 
 before_script:
-  - yes | sudo add-apt-repository ppa:boost-latest/ppa
-  - yes | sudo add-apt-repository ppa:irie/openimageio
-  - yes | sudo add-apt-repository ppa:kubuntu-ppa/backports
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq swig swig2.0 libboost1.55-all-dev python-dev python-numpy libfreetype6-dev libXt-dev libbz2-dev liblcms-dev libopenctl0.8 libltdl-dev libpng-dev libcaca-dev libjpeg-dev libglew-dev libtiff-dev libilmbase-dev libopenexr-dev libMagickCore-dev libraw-dev libopenjpeg-dev libglui-dev libglew-dev graphviz graphviz-dev python-nose python-imaging libtinyxml-dev libyaml-cpp-dev libopenimageio-dev libturbojpeg libxmu-dev yasm
-  - git clone git://github.com/MarcAntoine-Arnaud/libav.git
-  - cd libav
-  - ./configure --enable-shared && make -j3 && sudo make install
-  - cd $TRAVIS_BUILD_DIR
-  - wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
-  - tar -xzvf /tmp/aces_container-1.0.tar.gz
-  - mkdir aces_container-1.0/build
-  - cd aces_container-1.0/build
-  - cmake .. && make -j3 && sudo make install
-  - cd $TRAVIS_BUILD_DIR
-  - wget https://github.com/ampas/CTL/archive/ctl-1.5.2.tar.gz -O /tmp/ctl-1.5.2.tar.gz
-  - tar -xzvf /tmp/ctl-1.5.2.tar.gz
-  - mkdir CTL-ctl-1.5.2/build
-  - cd CTL-ctl-1.5.2/build
-  - cmake .. && make -j3 && sudo make install
-  - cd $TRAVIS_BUILD_DIR
-  - wget https://github.com/wdas/SeExpr/archive/rel-1.0.1.tar.gz -O /tmp/SeExpr-1.0.1.tar.gz
-  - tar -xzvf /tmp/SeExpr-1.0.1.tar.gz
-  - mkdir SeExpr-rel-1.0.1/build
-  - cd SeExpr-rel-1.0.1/build
-  - cmake .. && make -j3 && sudo make install
-  - cd $TRAVIS_BUILD_DIR
-  - wget https://github.com/imageworks/OpenColorIO/archive/v1.0.9.tar.gz -O /tmp/ocio-1.0.9.tar.gz
-  - tar -xzvf /tmp/ocio-1.0.9.tar.gz
-  - mkdir OpenColorIO-1.0.9/build
-  - cd OpenColorIO-1.0.9/build
-  - cmake .. && make -j3 && sudo make install
+  - date -u
+  - uname -a
+  - export J='-j3'
+  - tools/travis/install_dependencies.sh
 
 script:
-  - cd $TRAVIS_BUILD_DIR
   - git submodule update --init --recursive
-  - cp tools/sconf/ubuntu_travis.sconf host.sconf
-  - scons -j3 CC=$CC CXX=$CXX compiler=$CC
+  - tools/travis/build.sh
 
 after_failure:
   - cat config.log
