@@ -1,5 +1,9 @@
 language: cpp
 
+compiler:
+  - gcc
+  - clang
+
 before_script:
   - yes | sudo add-apt-repository ppa:boost-latest/ppa
   - yes | sudo add-apt-repository ppa:irie/openimageio
@@ -33,11 +37,12 @@ before_script:
   - mkdir OpenColorIO-1.0.9/build
   - cd OpenColorIO-1.0.9/build
   - cmake .. && make -j3 && sudo make install
+
 script:
   - cd $TRAVIS_BUILD_DIR
   - git submodule update --init --recursive
   - cp tools/sconf/ubuntu_travis.sconf host.sconf
-  - scons -j3
+  - scons -j3 CC=$CC CXX=$CXX
 
 after_failure:
   - cat config.log
