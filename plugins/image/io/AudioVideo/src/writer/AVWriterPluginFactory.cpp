@@ -9,6 +9,7 @@
 #include <libav/LibAVVideoWriter.hpp>
 #include <libav/LibAVOptionsFactory.hpp>
 
+#include <AvTranscoder/Description.hpp>
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
@@ -36,31 +37,7 @@ void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"Audio Video writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	std::vector<std::string> supportedExtensions;
-	{
-		AVOutputFormat* oFormat = av_oformat_next( NULL );
-		while( oFormat != NULL )
-		{
-			if( oFormat->extensions != NULL )
-			{
-				using namespace boost::algorithm;
-				const std::string extStr( oFormat->extensions );
-				std::vector<std::string> exts;
-				split( exts, extStr, is_any_of(",") );
-				
-				// remove empty extensions...
-				for( std::vector<std::string>::iterator it = exts.begin(); it != exts.end(); )
-				{
-					if( it->size() == 0 )
-						it = exts.erase( it );
-					else
-						++it;
-				}
-				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
-			}
-			oFormat = av_oformat_next( oFormat );
-		}
-	}
+	std::vector<std::string> supportedExtensions( avtranscoder::getOutputExtensions() );
 	
 	desc.setDescription( "Video writer based on LibAV library\n\n"
 			"Supported extensions: \n" +
