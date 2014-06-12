@@ -31,7 +31,7 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"Audio Video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 	
-	std::vector<std::string> supportedExtensions = avtranscoder::getInputExtensions();
+	std::vector<std::string> supportedExtensions( avtranscoder::getInputExtensions() );
 	
 	// Hack: Add basic video container extensions
 	// as some versions of LibAV doesn't declare properly all extensions...
@@ -108,16 +108,16 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	metaGroup->setAsTab( );
 	
 	/// FORMAT PARAMETERS
-	addOptionsToGroup( desc, formatGroup, AV_OPT_FLAG_DECODING_PARAM, 0 );
+	addOptionsToGroup( desc, formatGroup, AV_OPT_FLAG_DECODING_PARAM );
 	
 	/// VIDEO PARAMETERS
-	addOptionsToGroup( desc, videoGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	addOptionsToGroup( desc, videoGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	
 	/// AUDIO PARAMETERS
-	addOptionsToGroup( desc, audioGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, 0 );
+	addOptionsToGroup( desc, audioGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	
 	/// METADATA PARAMETERS
-	addOptionsToGroup( desc, metaGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA, 0 );
+	addOptionsToGroup( desc, metaGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
 	
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
@@ -153,12 +153,11 @@ OFX::ImageEffect* AVReaderPluginFactory::createInstance( OfxImageEffectHandle ha
  * @param desc: object to create OFX parameter descriptors
  * @param group: the group to add OFX params
  * @param req_flags: AVOption flags
- * @param rej_flags: AVOption flags
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, int req_flags, int rej_flags )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, int req_flags )
 {
 	avtranscoder::OptionLoader optionLoader;
-	optionLoader.loadOptions( req_flags, rej_flags );
+	optionLoader.loadOptions( req_flags );
 	
 	// ValueDescriptor ?
 	OFX::ParamDescriptor* param = NULL;
