@@ -10,6 +10,8 @@
 #include <libav/LibAVOptionsFactory.hpp>
 
 #include <AvTranscoder/Description.hpp>
+#include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/Option.hpp>
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
@@ -161,10 +163,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	format->setDefault( default_format );
 	format->setParent( formatGroup );
 	
-	AVFormatContext* avFormatContext;
-	avFormatContext = avformat_alloc_context();
-	addOptionsFromAVOption( desc, formatGroup, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
-	avformat_free_context( avFormatContext );
+	addOptionsToGroup( desc, formatGroup, AV_OPT_FLAG_ENCODING_PARAM );
 	
 	/// format parameters
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
@@ -232,17 +231,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	}
 	videoCodecPixelFmt->setParent( videoGroup );
 	
-	AVCodecContext* avCodecContext;
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
-	avCodecContext = avcodec_alloc_context();
-	// deprecated in the same version
-	//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
-#else
-	AVCodec* avCodec = NULL;
-	avCodecContext = avcodec_alloc_context3( avCodec );
-#endif
-	
-	addOptionsFromAVOption( desc, videoGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
+	addOptionsToGroup( desc, videoGroup, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
@@ -285,7 +274,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioCodec->setParent( audioGroup );
 	
 	/// audio codec parameters
-	addOptionsFromAVOption( desc, audioGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, AV_OPT_FLAG_VIDEO_PARAM );
+	addOptionsToGroup( desc, audioGroup, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM  );
 	
 	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
 	audioDetailledGroup->setLabel( "Detailled" );
@@ -293,8 +282,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioDetailledGroup->setParent( audioGroup );
 	
 	addOptionsFromAVOption( desc, audioDetailledGroup, writer.getAudioCodecPrivOpts() );
-	
-	av_free( avCodecContext );
 	
 	/// METADATA PARAMETERS
 	std::map<std::string, std::string> keys;
@@ -385,6 +372,95 @@ OFX::ImageEffect* AVWriterPluginFactory::createInstance( OfxImageEffectHandle ha
 							     OFX::EContext        context )
 {
 	return new AVWriterPlugin( handle );
+}
+
+/**
+ * @brief Create OFX parameters depending on the list of Options found.
+ * Get AVOption of ffmpeg / libav from an OptionLoader in avTranscoder lib.
+ * @param desc: object to create OFX parameter descriptors
+ * @param group: the group to add OFX params
+ * @param req_flags: AVOption flags
+ */
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, int req_flags )
+{
+	avtranscoder::OptionLoader optionLoader;
+	optionLoader.loadOptions( req_flags );
+	
+	// ValueDescriptor ?
+	OFX::ParamDescriptor* param = NULL;
+	BOOST_FOREACH( avtranscoder::Option& option, optionLoader.getOptions() )
+	{
+		switch( option.getType() )
+		{
+			case avtranscoder::TypeBool:
+			{
+				OFX::BooleanParamDescriptor* boolParam = desc.defineBooleanParam( option.getName() );
+				boolParam->setDefault( option.getDefaultValueBool() );
+				param = boolParam;
+				break;
+			}
+			case avtranscoder::TypeInt:
+			{
+				OFX::IntParamDescriptor* intParam = desc.defineIntParam( option.getName() );
+				intParam->setDefault( option.getDefaultValueInt() );
+				param = intParam;
+				break;
+			}
+			case avtranscoder::TypeDouble:
+			{
+				OFX::DoubleParamDescriptor* doubleParam = desc.defineDoubleParam( option.getName() );
+				doubleParam->setDefault( option.getDefaultValueDouble() );
+				param = doubleParam;
+				break;
+			}
+			case avtranscoder::TypeString:
+			{
+				OFX::StringParamDescriptor* strParam = desc.defineStringParam( option.getName() );
+				strParam->setDefault( option.getDefaultValueString() );
+				param = strParam;
+				break;
+			}
+			case avtranscoder::TypeRatio:
+			{
+				OFX::Int2DParamDescriptor* ratioParam = desc.defineInt2DParam( option.getName() );
+				ratioParam->setDefault( option.getDefaultValueRatio().first, option.getDefaultValueRatio().second );
+				param = ratioParam;
+				break;
+			}
+			case avtranscoder::TypeChoice:
+			{
+				OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam( option.getName() );
+				choiceParam->setDefault( option.getDefaultChildIndex() );
+				for( size_t i = 0; i < option.getNbChilds(); ++i )
+					choiceParam->appendOption( option.getChild( i ).getName(), option.getChild( i ).getHelp() );
+				param = choiceParam;
+				break;
+			}
+			case avtranscoder::TypeGroup:
+			{
+				std::string groupName = "g_";
+				groupName += option.getName();
+				OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
+				for( size_t i = 0; i < option.getNbChilds(); ++i )
+				{
+					OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( option.getChild( i ).getName() );
+					param->setDefault( option.getChild( i ).getOffset() );
+					param->setHint( option.getChild( i ).getHelp() );
+					param->setParent( groupParam );
+				}
+				param = groupParam;
+				break;
+			}
+			default:
+				break;
+		}
+		if( param )
+		{
+			param->setLabel( option.getName() );
+			param->setHint( option.getHelp() );
+			param->setParent( group );
+		}
+	}
 }
 
 }
