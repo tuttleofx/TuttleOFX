@@ -2,8 +2,9 @@
 #include "AVReaderPlugin.hpp"
 #include "AVReaderDefinitions.hpp"
 
+#include <common/util.hpp>
+
 #include <AvTranscoder/OptionLoader.hpp>
-#include <AvTranscoder/Option.hpp>
 #include <AvTranscoder/Description.hpp>
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
@@ -107,17 +108,22 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioGroup->setAsTab( );
 	metaGroup->setAsTab( );
 	
+	avtranscoder::OptionLoader optionLoader;
 	/// FORMAT PARAMETERS
-	addOptionsToGroup( desc, formatGroup, AV_OPT_FLAG_DECODING_PARAM );
+	avtranscoder::OptionLoader::OptionArray formatOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
+	common::addOptionsToGroup( desc, formatGroup, formatOptions );
 	
 	/// VIDEO PARAMETERS
-	addOptionsToGroup( desc, videoGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	avtranscoder::OptionLoader::OptionArray videoOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	common::addOptionsToGroup( desc, videoGroup, videoOptions );
 	
 	/// AUDIO PARAMETERS
-	addOptionsToGroup( desc, audioGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
+	avtranscoder::OptionLoader::OptionArray audioOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
+	common::addOptionsToGroup( desc, audioGroup, audioOptions );
 	
 	/// METADATA PARAMETERS
-	addOptionsToGroup( desc, metaGroup, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	avtranscoder::OptionLoader::OptionArray metadataOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	common::addOptionsToGroup( desc, metaGroup, metadataOptions );
 	
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
@@ -145,95 +151,6 @@ OFX::ImageEffect* AVReaderPluginFactory::createInstance( OfxImageEffectHandle ha
                                                          OFX::EContext        context )
 {
 	return new AVReaderPlugin( handle );
-}
-
-/**
- * @brief Create OFX parameters depending on the list of Options found.
- * Get AVOption of ffmpeg / libav from an OptionLoader in avTranscoder lib.
- * @param desc: object to create OFX parameter descriptors
- * @param group: the group to add OFX params
- * @param req_flags: AVOption flags
- */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, int req_flags )
-{
-	avtranscoder::OptionLoader optionLoader;
-	optionLoader.loadOptions( req_flags );
-	
-	// ValueDescriptor ?
-	OFX::ParamDescriptor* param = NULL;
-	BOOST_FOREACH( avtranscoder::Option& option, optionLoader.getOptions() )
-	{
-		switch( option.getType() )
-		{
-			case avtranscoder::TypeBool:
-			{
-				OFX::BooleanParamDescriptor* boolParam = desc.defineBooleanParam( option.getName() );
-				boolParam->setDefault( option.getDefaultValueBool() );
-				param = boolParam;
-				break;
-			}
-			case avtranscoder::TypeInt:
-			{
-				OFX::IntParamDescriptor* intParam = desc.defineIntParam( option.getName() );
-				intParam->setDefault( option.getDefaultValueInt() );
-				param = intParam;
-				break;
-			}
-			case avtranscoder::TypeDouble:
-			{
-				OFX::DoubleParamDescriptor* doubleParam = desc.defineDoubleParam( option.getName() );
-				doubleParam->setDefault( option.getDefaultValueDouble() );
-				param = doubleParam;
-				break;
-			}
-			case avtranscoder::TypeString:
-			{
-				OFX::StringParamDescriptor* strParam = desc.defineStringParam( option.getName() );
-				strParam->setDefault( option.getDefaultValueString() );
-				param = strParam;
-				break;
-			}
-			case avtranscoder::TypeRatio:
-			{
-				OFX::Int2DParamDescriptor* ratioParam = desc.defineInt2DParam( option.getName() );
-				ratioParam->setDefault( option.getDefaultValueRatio().first, option.getDefaultValueRatio().second );
-				param = ratioParam;
-				break;
-			}
-			case avtranscoder::TypeChoice:
-			{
-				OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam( option.getName() );
-				choiceParam->setDefault( option.getDefaultChildIndex() );
-				for( size_t i = 0; i < option.getNbChilds(); ++i )
-					choiceParam->appendOption( option.getChild( i ).getName(), option.getChild( i ).getHelp() );
-				param = choiceParam;
-				break;
-			}
-			case avtranscoder::TypeGroup:
-			{
-				std::string groupName = "g_";
-				groupName += option.getName();
-				OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
-				for( size_t i = 0; i < option.getNbChilds(); ++i )
-				{
-					OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( option.getChild( i ).getName() );
-					param->setDefault( option.getChild( i ).getOffset() );
-					param->setHint( option.getChild( i ).getHelp() );
-					param->setParent( groupParam );
-				}
-				param = groupParam;
-				break;
-			}
-			default:
-				break;
-		}
-		if( param )
-		{
-			param->setLabel( option.getName() );
-			param->setHint( option.getHelp() );
-			param->setParent( group );
-		}
-	}
 }
 
 }
