@@ -119,23 +119,23 @@ class Tuttle( SConsProject ):
 		else:
 			allLocalEnvFlags['SHLINKFLAGS'] = ofxLinkflags
 		publicName = "plugin"+pluginName
+		outArgs = {}
 		pluginInstall = self.SharedLibrary( pluginName,
 				sources=sources, dirs=dirs, libraries=libraries, includes=includes,
 				env=env, localEnvFlags=allLocalEnvFlags, replaceLocalEnvFlags=replaceLocalEnvFlags, externEnvFlags=externEnvFlags, globalEnvFlags=globalEnvFlags,
 				dependencies=dependencies, installAs=self.getOutputOfxPlugin(pluginFilename), install=install,
-				public=True, publicName=publicName )
+				public=True, publicName=publicName, outArgs=outArgs )
 
-		envLocal = self.env
-
+                localEnv = outArgs["env"]
 		resources_dir =  os.path.join( self.getRealAbsoluteCwd(), 'Resources' )
 		if os.path.isdir( resources_dir ):
-			plugin_resources = envLocal.InstallAs( self.getOutputOfxResources(pluginFilename), resources_dir )
-			envLocal.Depends( plugin_resources, pluginInstall )
-			envLocal.Alias( publicName,   plugin_resources )
+			plugin_resources = localEnv.InstallAs( self.getOutputOfxResources(pluginFilename), resources_dir )
+			localEnv.Depends( plugin_resources, pluginInstall )
+			localEnv.Alias( publicName, plugin_resources )
 
-		envLocal.Alias( publicName, pluginInstall )
-		envLocal.Alias( 'ofxplugins', publicName )
-		envLocal.Alias( 'all', 'ofxplugins' )
+		localEnv.Alias( publicName, pluginInstall )
+		localEnv.Alias( 'ofxplugins', publicName )
+		self.declareTarget(localEnv, pluginInstall, pluginName)
 
 		return pluginInstall
 
