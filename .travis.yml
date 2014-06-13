@@ -42,7 +42,7 @@ script:
   - cd $TRAVIS_BUILD_DIR
   - git submodule update --init --recursive
   - cp tools/sconf/ubuntu_travis.sconf host.sconf
-  - scons -j3 CC=$CC CXX=$CXX
+  - scons -j3 CC=$CC CXX=$CXX compiler=$CC
 
 after_failure:
   - cat config.log
