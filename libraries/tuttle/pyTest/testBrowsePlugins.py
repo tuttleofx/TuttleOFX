@@ -10,7 +10,9 @@ def setUp():
 def testBrowsePlugins():
 	pluginCache = tuttle.core().getPluginCache()
 
-	print([p for p in pluginCache.getPluginPath()])
+	pluginPath = pluginCache.getPluginPath()
+	print([p for p in pluginPath])
+#	print([p for p in pluginCache.getPluginPath()])  # BUG binding: TODO
 	print([p.getIdentifier() for p in pluginCache.getPlugins()])
 
 
