@@ -24,23 +24,6 @@ def testNodeInfos():
 	print([p for p in node.getParams()])
 	print([p.getName() for p in node.getParams()])
 
-	pref = tuttle.Preferences()
-	print(dir(pref))
-	testPath = pref.buildTuttleTestPathStr()
-
-	filenameSimple = os.path.join(testPath, "testNodeInfos_exportDot_simple.dot")
-	filenameDetailed = os.path.join(testPath, "testNodeInfos_exportDot_detailed.dot")
-	graph.exportDot(filenameSimple)
-	graph.exportDot(filenameDetailed, tuttle.Graph.eDotExportLevelDetailed)
-	
-	assert os.path.isfile(filenameSimple)
-	assert os.path.isfile(filenameDetailed)
-	
-	print("filenameSimple:", filenameSimple)
-	print("filenameDetailed:", filenameDetailed)
-	
-	os.remove(filenameSimple)
-	os.remove(filenameDetailed)
 
 
 def testParamInfos():
