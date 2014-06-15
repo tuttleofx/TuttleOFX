@@ -24,6 +24,8 @@ def testNodeInfos():
 	print([p for p in node.getParams()])
 	print([p.getName() for p in node.getParams()])
 
+	grouping = node.getProperties().fetchProperty("OfxImageEffectPluginPropGrouping").getStringValue()
+	print("group:", grouping.split('/'))
 
 
 def testParamInfos():
