@@ -8,7 +8,7 @@ def setUp():
 	tuttle.core().preload(False)
 
 def testComputeTime():
-	nbFrames = 30
+	nbFrames = 10
 	N = 0
 	print("testComputeTime %d" % N); N += 1
 	gA = tuttle.Graph()
