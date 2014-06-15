@@ -102,7 +102,7 @@ public:
 	const OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>( *this ).getPluginById( id, vermaj, vermin ); }
 
 	/// get the list in which plugins are sought
-	const std::list<std::string>& getPluginPath()
+	const std::list<std::string>& getPluginPath() const
 	{
 		return _pluginPath;
 	}
