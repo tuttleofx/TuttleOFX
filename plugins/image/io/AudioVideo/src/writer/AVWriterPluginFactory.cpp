@@ -8,13 +8,18 @@
 #include <libav/LibAVFormatPreset.hpp>
 #include <libav/LibAVVideoPreset.hpp>
 #include <libav/LibAVAudioPreset.hpp>
-#include <libav/LibAVVideoWriter.hpp>
-#include <libav/LibAVOptionsFactory.hpp>
 
 #include <AvTranscoder/Description.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
+
+extern "C" {
+#ifndef __STDC_CONSTANT_MACROS
+	#define __STDC_CONSTANT_MACROS
+#endif
+	#include <libavutil/pixdesc.h>
+}
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
@@ -76,8 +81,6 @@ void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
                                                OFX::EContext               context )
 {
-	LibAVVideoWriter writer;
-
 	avtranscoder::OptionLoader optionLoader;
 	
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -151,9 +154,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// format list
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-	for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
-		itLong = writer.getFormatsLong().begin(),
-		itEnd = writer.getFormatsShort().end();
+	for( std::vector<std::string>::const_iterator itShort = optionLoader.getFormatsShortNames().begin(),
+		itLong = optionLoader.getFormatsLongNames().begin(),
+		itEnd = optionLoader.getFormatsShortNames().end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
@@ -207,9 +210,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// video codec list
 	int default_codec = 0;
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
-	for( std::vector<std::string>::const_iterator itShort = writer.getVideoCodecsShort().begin(),
-		itLong  = writer.getVideoCodecsLong().begin(),
-		itEnd = writer.getVideoCodecsShort().end();
+	for( std::vector<std::string>::const_iterator itShort = optionLoader.getVideoCodecsShortNames().begin(),
+		itLong  = optionLoader.getVideoCodecsLongNames().begin(),
+		itEnd = optionLoader.getVideoCodecsShortNames().end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
@@ -265,9 +268,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// audio codec list
 	int default_audio_codec = 0;
 	OFX::ChoiceParamDescriptor* audioCodec = desc.defineChoiceParam( kParamAudioCodec );
-	for( std::vector<std::string>::const_iterator itShort = writer.getAudioCodecsShort().begin(),
-		itLong  = writer.getAudioCodecsLong().begin(),
-		itEnd = writer.getAudioCodecsShort().end();
+	for( std::vector<std::string>::const_iterator itShort = optionLoader.getAudioCodecsShortNames().begin(),
+		itLong  = optionLoader.getAudioCodecsLongNames().begin(),
+		itEnd = optionLoader.getAudioCodecsShortNames().end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
