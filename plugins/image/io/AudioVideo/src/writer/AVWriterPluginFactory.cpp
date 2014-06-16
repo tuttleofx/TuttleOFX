@@ -78,6 +78,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 {
 	LibAVVideoWriter writer;
 
+	avtranscoder::OptionLoader optionLoader;
+	
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -164,8 +166,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	format->setDefault( default_format );
 	format->setParent( formatGroup );
 	
-	avtranscoder::OptionLoader optionLoader;
-	
 	avtranscoder::OptionLoader::OptionArray formatGroupOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_ENCODING_PARAM );
 	common::addOptionsToGroup( desc, formatGroup, formatGroupOptions );
 	
@@ -175,7 +175,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatDetailledGroup->setAsTab( );
 	formatDetailledGroup->setParent( formatGroup );
 	
-	//addOptionsFromAVOption( desc, formatDetailledGroup, writer.getFormatPrivOpts() );
 	avtranscoder::OptionLoader::OptionMap formatDetailledGroupOptions = optionLoader.loadOutputFormatOptions();
 	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions );
 	
@@ -245,7 +244,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoDetailledGroup->setAsTab( );
 	videoDetailledGroup->setParent( videoGroup );
 	
-	addOptionsFromAVOption( desc, videoDetailledGroup, writer.getVideoCodecPrivOpts() );
+	avtranscoder::OptionLoader::OptionMap videoDetailledGroupOptions = optionLoader.loadVideoCodecOptions(); 
+	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions );
 	
 	/// AUDIO PARAMETERS
 	/// audio codec preset
@@ -289,7 +289,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioDetailledGroup->setAsTab( );
 	audioDetailledGroup->setParent( audioGroup );
 	
-	addOptionsFromAVOption( desc, audioDetailledGroup, writer.getAudioCodecPrivOpts() );
+	avtranscoder::OptionLoader::OptionMap audioDetailledGroupOptions = optionLoader.loadAudioCodecOptions();
+	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions );
 	
 	/// METADATA PARAMETERS
 	std::map<std::string, std::string> keys;
