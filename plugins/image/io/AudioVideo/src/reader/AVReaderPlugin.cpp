@@ -69,7 +69,7 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 	catch( std::exception& e )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to open file : " + e.what()
+		    << exception::user() + "unable to open input file : " + e.what()
 		    << exception::filename( filepath ) );
 	}
 }

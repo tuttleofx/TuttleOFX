@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_AV_READER_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_AV_READER_PROCESS_HPP_
 
+#include "AVReaderPlugin.hpp"
+
 #include <AvTranscoder/DatasStructures/Image.hpp>
 
 #include <terry/globals.hpp>
@@ -35,7 +37,7 @@ public:
 	View& readImage( View& dst, avtranscoder::Image& image );
 	
 private:
-	boost::scoped_ptr<avtranscoder::Image> _imageToEncode;
+	boost::scoped_ptr<avtranscoder::Image> _imageToDecode;
 };
 
 }
