@@ -2,7 +2,10 @@
 #define _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 
 #include <libav/LibAVPresetDefinitions.hpp>
-#include <libav/LibAVVideoWriter.hpp>
+
+#include <AvTranscoder/OutputFile.hpp>
+#include <AvTranscoder/OutputStreamVideo.hpp>
+#include <AvTranscoder/ColorTransform.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
@@ -20,14 +23,20 @@ namespace writer {
 struct AVProcessParams
 {
 	std::string _filepath;    ///< Filepath
+	
 	int         _format;      ///< Format
+	std::string _formatName;      ///< Format name
+	
 	int         _videoCodec;  ///< Video codec
+	std::string _videoCodecName;  ///< Video codec name
+	
 	int         _audioCodec;  ///< Audio codec
+	std::string _audioCodecName;  ///< Audio codec name
 	
 	int         _videoPreset; ///< video configuration (based on the video codec)
 	int         _audioPreset; ///< video configuration (based on the video codec)
 	
-	PixelFormat _videoPixelFormat; /// videoPixelFormat
+	AVPixelFormat _videoPixelFormat; /// videoPixelFormat
 
 	std::map< std::string, std::string > _metadatas;
 };
@@ -35,7 +44,7 @@ struct AVProcessParams
 /**
  * @brief LibAV plugin
  */
-class AVWriterPlugin : public AVOptionPlugin< WriterPlugin >
+class AVWriterPlugin : public WriterPlugin
 {
 public:
 	AVWriterPlugin( OfxImageEffectHandle handle );
@@ -51,9 +60,9 @@ public:
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
-
-	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
+	
+	void ensureWriterIsInit( const OFX::RenderArguments& args );
+	
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 	
@@ -73,10 +82,19 @@ public:
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
 	std::vector<OFX::StringParam*> _paramMetadatas;
-
-	LibAVVideoWriter    _writer;
-	bool                _initWriter;
+	
+	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
+	boost::scoped_ptr<avtranscoder::OutputStreamVideo> _outputStreamVideo;
+	
+	avtranscoder::ColorTransform _colorTransform;
+	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // between gil and avTranscoder convert
+	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // betwwen avTranscoder convert and avTranscoder encode 
+	
 	avtranscoder::OptionLoader _optionLoader;
+	
+	bool _initWriter;
+	
+	std::string _lastOutputFilePath;
 };
 
 }

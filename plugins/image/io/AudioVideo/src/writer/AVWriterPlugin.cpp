@@ -6,8 +6,16 @@
 #include <libav/LibAVFormatPreset.hpp>
 #include <libav/LibAVVideoPreset.hpp>
 #include <libav/LibAVAudioPreset.hpp>
-#include <libav/LibAVVideoWriter.hpp>
-#include <libav/LibAVOptions.hpp>
+
+#include <AvTranscoder/DatasStructures/AudioDesc.hpp>
+#include <AvTranscoder/DatasStructures/VideoDesc.hpp>
+
+extern "C" {
+#ifndef __STDC_CONSTANT_MACROS
+	#define __STDC_CONSTANT_MACROS
+#endif
+#include <libavutil/pixdesc.h>
+}
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/foreach.hpp>
@@ -128,13 +136,16 @@ void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 }
 
 AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
-	: AVOptionPlugin( handle )
-	, _initWriter ( false )
+	: WriterPlugin( handle )
+	, _outputFile( NULL )
+	, _outputStreamVideo( NULL )
+	, _initWriter( false )
+	, _lastOutputFilePath( "" )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_paramFormat     = AVOptionPlugin::fetchChoiceParam( kParamFormat );
+	_paramFormat     = fetchChoiceParam( kParamFormat );
 	_paramVideoCodec = fetchChoiceParam( kParamVideoCodec );
 	_paramAudioCodec = fetchChoiceParam( kParamAudioCodec );
 	
@@ -198,11 +209,19 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	AVProcessParams params;
 
 	params._filepath = _paramFilepath->getValue();
+	
 	params._format = _paramFormat->getValue();
-	params._videoCodec                     = _paramVideoCodec        ->getValue();
-	params._audioCodec                     = _paramAudioCodec        ->getValue();
-	params._videoPixelFormat               = static_cast<PixelFormat>( _paramVideoPixelFormat->getValue() );
-
+	params._formatName = _optionLoader.getFormatsShortNames().at( params._format );
+	
+	params._videoCodec = _paramVideoCodec->getValue();
+	params._videoCodecName = _optionLoader.getVideoCodecsShortNames().at( params._videoCodec );
+	
+	params._audioCodec = _paramAudioCodec->getValue();
+	params._audioCodecName = _optionLoader.getAudioCodecsShortNames().at( params._audioCodec );
+	
+	// av_get_pix_fmt( _paramVideoPixelFormat->getValue() )
+	params._videoPixelFormat = static_cast<AVPixelFormat>( _paramVideoPixelFormat->getValue() );
+	
 	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
 	{
 		if( parameter->getValue().size() > 0 )
@@ -212,9 +231,6 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 			params._metadatas[ ffmpegKey ] = parameter->getValue();
 		}
 	}
-
-	_writer.setVideoCodec( params._videoCodec );
-
 	return params;
 }
 
@@ -308,8 +324,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		std::vector<std::string> idFormatList;
 		LibAVFormatPreset::getPresetList( idFormatList );
 		
-		LibAVFormatPreset p( idFormatList.at( _paramFormatPreset->getValue() - 1 ) );
-		setParameters( p.getParameters() );
+		//LibAVFormatPreset p( idFormatList.at( _paramFormatPreset->getValue() - 1 ) );
+		//setParameters( p.getParameters() );
 	}
 	else if( paramName == kParamVideoPreset )
 	{
@@ -318,8 +334,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		std::vector<std::string> idVideoList;
 		LibAVVideoPreset::getPresetList( idVideoList );
 		
-		LibAVVideoPreset p( idVideoList.at( _paramVideoCodecPreset->getValue() - 1 ) );
-		setParameters( p.getParameters() );
+		//LibAVVideoPreset p( idVideoList.at( _paramVideoCodecPreset->getValue() - 1 ) );
+		//setParameters( p.getParameters() );
 	}
 	else if( paramName == kParamAudioPreset )
 	{
@@ -328,8 +344,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		std::vector<std::string> idAudioList;
 		LibAVAudioPreset::getPresetList( idAudioList);
 		
-		LibAVAudioPreset p( idAudioList.at( _paramAudioCodecPreset->getValue() - 1 ) );
-		setParameters( p.getParameters() );
+		//LibAVAudioPreset p( idAudioList.at( _paramAudioCodecPreset->getValue() - 1 ) );
+		//setParameters( p.getParameters() );
 	}
 	else if( paramName == kParamUseCustomFps )
 	{
@@ -350,34 +366,74 @@ void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	clipPreferences.setOutputFrameVarying( true );
 }
 
-bool AVWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, OfxTime& identityTime )
+void AVWriterPlugin::ensureWriterIsInit( const OFX::RenderArguments& args )
 {
-	return WriterPlugin::isIdentity( args, identityClip, identityTime );
-}
-
-void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
-{
-	_initWriter = false;
-	WriterPlugin::beginSequenceRender( args );
-	
 	AVProcessParams params = getProcessParams();
 	
-	//TUTTLE_LOG_VAR( TUTTLE_WARNING, _clipSrc->getFrameRate() );
+	if( _lastOutputFilePath == params._filepath && // path already set
+		! _lastOutputFilePath.empty() ) // not the first time...
+		return;
 	
-	_writer.setFilename    ( params._filepath );
-	_writer.setFormat      ( params._format );
-	_writer.setVideoCodec  ( params._videoCodec );
+	// create output file
+	try
+	{
+		_outputFile.reset( new avtranscoder::OutputFile( params._filepath ) );
+		_lastOutputFilePath = params._filepath;
+		_outputFile->setup(); //guess format from filename
+	}
+	catch( std::exception& e )
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to open output file : " + e.what()
+		    << exception::filename( params._filepath ) );
+	}
+	
+	// create video stream
+	try
+	{
+		_outputStreamVideo.reset( new avtranscoder::OutputStreamVideo() );
 
-	if( _paramUseCustomFps->getValue() )
-	{
-		_writer.setFps( _paramCustomFps->getValue() );
+		avtranscoder::VideoDesc& videoOutputDesc = _outputStreamVideo->getVideoDesc(); 
+		videoOutputDesc.setVideoCodec( params._videoCodecName );
+
+		//OfxRangeD range = args.frameRange;
+		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
+		int width = bounds.x2 - bounds.x1;
+		int height = bounds.y2 - bounds.y1;
+
+		avtranscoder::ImageDesc imageDesc;
+		avtranscoder::Pixel pixel( params._videoPixelFormat );
+		imageDesc.setPixel( pixel );
+		imageDesc.setWidth( width );
+		imageDesc.setHeight( height );
+		imageDesc.setDar( _clipSrc->getPixelAspectRatio(), 1 );
+		videoOutputDesc.setImageParameters( imageDesc );
+
+		if( _paramUseCustomFps->getValue() )
+		{
+			videoOutputDesc.setTimeBase( 1, _paramCustomFps->getValue() );
+		}
+		else
+		{
+			videoOutputDesc.setTimeBase( 1, _clipSrc->getFrameRate() );
+		}
+
+		if( ! _outputStreamVideo->setup( ) )
+		{
+			throw std::runtime_error( "error during initialising video output stream" );
+		}
+		
+		_outputFile->addVideoStream( videoOutputDesc );
 	}
-	else
+	catch( std::exception& e )
 	{
-		_writer.setFps( _clipSrc->getFrameRate() );
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to create video stream : " + e.what() );
 	}
-	_writer.setAspectRatio ( _clipSrc->getPixelAspectRatio() );
-	_writer.setPixelFormat ( params._videoPixelFormat );
+	
+	_outputFile->beginWrap();
+	
+	_initWriter = true;
 }
 
 /**
@@ -388,55 +444,25 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
 	
-	//OfxRangeD range = args.frameRange;
-	const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
-	_writer.setWidth ( bounds.x2 - bounds.x1 );
-	_writer.setHeight( bounds.y2 - bounds.y1 );
-	
-	if( !_initWriter )
-	{
-		_writer.start( getProcessParams()._metadatas );
-	
-		// set Format parameters
-		AVFormatContext* avFormatContext;
-		avFormatContext = avformat_alloc_context();
-		setParameters( _writer, eAVParamFormat, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
-		
-		std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
-		setParameters( _writer, eAVParamFormat, _writer.getFormatPrivOpts(), formatName );
-		
-		// set Video Codec parameters
-		AVCodecContext* avCodecContext;
-		
-	#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
-		avCodecContext = avcodec_alloc_context();
-		// deprecated in the same version
-		//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
-	#else
-		AVCodec* avCodec = NULL;
-		avCodecContext = avcodec_alloc_context3( avCodec );
-	#endif
-		setParameters( _writer, eAVParamVideo, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
-		
-		std::string codecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-		setParameters( _writer, eAVParamVideo, _writer.getVideoCodecPrivOpts(), codecName );
-		
-		// set Audio Codec parameters
-		//codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
-		//setParameters( _writer, eAVParamAudio, _writer.getAudioCodecPrivOpts(), codecName );
-		
-		_writer.finishInit();
-		
-		_initWriter = true;
-	}
+	ensureWriterIsInit( args );
 	
 	doGilRender<AVWriterProcess>( *this, args );
 }
 
 void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
-{
-	_writer.finish();
-	_initWriter = false;
+{	
+	if( ! _initWriter )
+		return;
+	
+	avtranscoder::DataStream codedImage;
+	
+	// if latency
+	while( _outputStreamVideo->encodeFrame( codedImage ) )
+	{
+		_outputFile->wrap( codedImage, 0 );
+	}
+	
+	_outputFile->endWrap();
 }
 
 }
