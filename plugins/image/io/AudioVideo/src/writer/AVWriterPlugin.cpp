@@ -19,120 +19,83 @@ namespace plugin {
 namespace av {
 namespace writer {
 
-void AVWriterPlugin::disableAVOptionsForCodecOrFormat( const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec )
+void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec )
 {
-	std::vector<OFX::GroupParam*> groups;
-
-	BOOST_FOREACH( AVPrivOption opt, avPrivOpts )
+	// iterate on map keys
+	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
 	{
-		if( opt.o.unit && opt.o.type == AV_OPT_TYPE_FLAGS )
+		std::string subGroupName = subGroupOption.first;
+		std::vector<avtranscoder::Option>& options = subGroupOption.second;
+				
+		// iterate on options
+		BOOST_FOREACH( avtranscoder::Option& option, options )
 		{
-			std::string name = "g_";
-			name += opt.class_name;
+			std::string name = subGroupName;
 			name += "_";
-			name += opt.o.unit;
+			name += option.getName();
 			
-			OFX::GroupParam* curOpt = fetchGroupParam( name );
-			curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-			
-			groups.push_back( curOpt );
-			continue;
-		}
-		if( opt.o.unit && opt.o.type == AV_OPT_TYPE_INT )
-		{
-			std::string name = opt.class_name;
-			name += "_";
-			name += opt.o.name;
-			
-			OFX::ChoiceParam* curOpt = fetchChoiceParam( name );
-			curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-			continue;
-		}
-		
-		std::string name = opt.class_name;
-		name += "_";
-		name += opt.o.name;
-		
-		switch( opt.o.type )
-		{
-			case AV_OPT_TYPE_FLAGS:
+			switch( option.getType() )
 			{
-				OFX::BooleanParam* curOpt = fetchBooleanParam( name );
-				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-				break;
-			}
-			case AV_OPT_TYPE_INT:
-			case AV_OPT_TYPE_INT64:
-			{
-				OFX::IntParam* curOpt = fetchIntParam( name );
-				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-				break;
-			}
-			case AV_OPT_TYPE_DOUBLE:
-			case AV_OPT_TYPE_FLOAT:
-			{
-				OFX::DoubleParam* curOpt = fetchDoubleParam( name );
-				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-				break;
-			}
-			case AV_OPT_TYPE_STRING:
-			{
-				OFX::StringParam* curOpt = fetchStringParam( name );
-				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-				break;
-			}
-			case AV_OPT_TYPE_RATIONAL:
-			{
-				OFX::Int2DParam* curOpt = fetchInt2DParam( name );
-				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-				break;
-			}
-			case AV_OPT_TYPE_BINARY:
-			{
-				OFX::StringParam* curOpt = fetchStringParam( name );
-				curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-				break;
-			}
-			case AV_OPT_TYPE_CONST:
-			{
-				break;
-			}
-			default:
-			{
-				TUTTLE_LOG_WARNING( "AudioVideo: undefined type for " << opt.o.name );
-			}
-		}
-	}
-	
-	BOOST_FOREACH( AVPrivOption opt, avPrivOpts )
-	{
-		switch( opt.o.type )
-		{
-			case AV_OPT_TYPE_CONST:
-			{
-				BOOST_FOREACH( OFX::GroupParam* g, groups )
+				case avtranscoder::TypeBool:
 				{
-					std::string name = "g_";
-					name += opt.class_name;
-					name += "_";
-					name += opt.o.unit;
-					if( name == g->getName() )
-					{
-						std::string name = "flags_";
-						name += opt.class_name;
-						name += "_";
-						name += opt.o.name;
-						
-						OFX::BooleanParam* curOpt = fetchBooleanParam( name );
-						curOpt->setIsSecretAndDisabled( !( opt.class_name == codec ) );
-						break;
-					}
+					OFX::BooleanParam* curOpt = fetchBooleanParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					break;
 				}
-				break;
-			}
-			default:
-			{
-				break;
+				case avtranscoder::TypeInt:
+				{
+					OFX::IntParam* curOpt = fetchIntParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					break;
+				}
+				case avtranscoder::TypeDouble:
+				{
+					OFX::DoubleParam* curOpt = fetchDoubleParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					break;
+				}
+				case avtranscoder::TypeString:
+				{
+					OFX::StringParam* curOpt = fetchStringParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					break;
+				}
+				case avtranscoder::TypeRatio:
+				{
+					OFX::Int2DParam* curOpt = fetchInt2DParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					break;
+				}
+				case avtranscoder::TypeChoice:
+				{
+					OFX::ChoiceParam* curOpt = fetchChoiceParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					break;
+				}
+				case avtranscoder::TypeGroup:
+				{
+					std::string groupName = "g_";
+					groupName += subGroupName;
+					groupName += "_";
+					groupName += option.getName();
+					
+					OFX::GroupParam* curOpt = fetchGroupParam( groupName );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					
+					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+					{
+						std::string ChildName = "flags_";
+						ChildName += subGroupName;
+						ChildName += "_";
+						ChildName += child.getName();
+						
+						OFX::BooleanParam* curOpt = fetchBooleanParam( ChildName );
+						curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
+					}
+					break;
+				}
+				default:
+					break;
 			}
 		}
 	}
@@ -185,17 +148,20 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	
-	std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
-	disableAVOptionsForCodecOrFormat( _writer.getFormatPrivOpts(), formatName );
+	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
+	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
+	disableAVOptionsForCodecOrFormat( optionsFormatMap, formatName );
 	
-	std::string videoCodecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-	disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), videoCodecName );
+	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
+	const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at(_paramVideoCodec->getValue() );
+	disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName );
 	
 	updatePixelFormat( videoCodecName );
 	
-	std::string audioCodecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
-	disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), audioCodecName );
-
+	avtranscoder::OptionLoader::OptionMap optionsAudioCodecMap = _optionLoader.loadAudioCodecOptions();
+	const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
+	disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName );
+	
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbum           ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbumArtist     ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaArtist          ) );
@@ -258,19 +224,22 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	
 	if( paramName == kParamFormat )
 	{
-		std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
-		disableAVOptionsForCodecOrFormat( _writer.getFormatPrivOpts(), formatName );
+		avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
+		const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
+		disableAVOptionsForCodecOrFormat( optionsFormatMap, formatName );
 	}
 	else if( paramName == kParamVideoCodec )
 	{
-		std::string videoCodecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
-		disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), videoCodecName );
+		avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
+		const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at(_paramVideoCodec->getValue() );
+		disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName );
 		updatePixelFormat( videoCodecName );
 	}
 	else if( paramName == kParamAudioCodec )
 	{
-		std::string codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
-		disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), codecName );
+		avtranscoder::OptionLoader::OptionMap optionsAudioCodecMap = _optionLoader.loadAudioCodecOptions();
+		const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
+		disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName );
 	}
 	else if( paramName == kParamMainPreset )
 	{
@@ -313,7 +282,6 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 				break;
 			}
 		}
-		
 		
 		for( unsigned int id = 0; id < idAudioList.size(); id++ )
 		{

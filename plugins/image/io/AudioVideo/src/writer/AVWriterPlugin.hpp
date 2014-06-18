@@ -3,7 +3,7 @@
 
 #include <libav/LibAVPresetDefinitions.hpp>
 #include <libav/LibAVVideoWriter.hpp>
-#include <libav/LibAVOptions.hpp>
+#include <AvTranscoder/OptionLoader.hpp>
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
@@ -45,8 +45,8 @@ private:
 
 public:
 	AVProcessParams getProcessParams();
-
-	void disableAVOptionsForCodecOrFormat( const std::vector<AVPrivOption>& avPrivOpts, const std::string& codec );
+	
+	void disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec );
 	void updatePixelFormat( const std::string& videoCodecName );
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
@@ -76,6 +76,7 @@ public:
 
 	LibAVVideoWriter    _writer;
 	bool                _initWriter;
+	avtranscoder::OptionLoader _optionLoader;
 };
 
 }
