@@ -1,6 +1,7 @@
 #include "AVWriterProcess.hpp"
 
 #include <AvTranscoder/DatasStructures/Pixel.hpp>
+#include <AvTranscoder/DatasStructures/AudioFrame.hpp>
 #include <AvTranscoder/DatasStructures/DataStreamDesc.hpp>
 
 #include <tuttle/plugin/exceptions.hpp>
@@ -76,6 +77,23 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	if( _plugin._outputStreamVideo->encodeFrame( *_plugin._imageToEncode, codedImage ) )
 	{
 		_plugin._outputFile->wrap( codedImage, 0 );
+	}
+	
+	// encode audio
+	if( _plugin._initAudio )
+	{
+		avtranscoder::DataStream codedAudioFrame;
+		avtranscoder::AudioFrame audioFrameSource( _plugin._inputAudioFile->getStream( _plugin._idAudioStream ).getAudioDesc().getFrameDesc() );
+		avtranscoder::AudioFrame audioFrameToEncode( _plugin._outputStreamAudio->getAudioDesc().getFrameDesc() );
+
+		_plugin._inputStreamAudio->readNextFrame( audioFrameSource );
+
+		_plugin._audioTransform.convert( audioFrameSource, audioFrameToEncode );
+
+		if( _plugin._outputStreamAudio->encodeFrame( audioFrameSource, codedAudioFrame ) )
+		{
+			_plugin._outputFile->wrap( codedAudioFrame, 0 );
+		}
 	}
 }
 

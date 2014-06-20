@@ -19,6 +19,7 @@ extern "C" {
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/foreach.hpp>
+#include <boost/filesystem.hpp>
 
 #include <cctype>
 
@@ -124,10 +125,15 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 	, _outputFile( NULL )
 	, _outputStreamVideo( NULL )
+	, _inputAudioFile( NULL )
+	, _inputStreamAudio( NULL )
+	, _outputStreamAudio( NULL )
 	, _rgbImage( NULL )
 	, _imageToEncode( NULL )
+	, _lastInputAudioFilePath( "" )
 	, _lastOutputFilePath( "" )
 	, _initWriter( false )
+	, _initAudio( false )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
@@ -145,6 +151,10 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramCustomFps        = fetchDoubleParam( kParamCustomFps );
 	
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
+	
+	_paramAudioNbStream = fetchIntParam( kParamAudioNbStream );
+	_paramAudioFilePath = fetchStringParam( kParamAudioFilePath );
+	_paramAudioStreamIndex = fetchIntParam( kParamAudioStreamId );
 	
 	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
@@ -196,6 +206,7 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	AVProcessParams params;
 
 	params._outputFilePath = _paramFilepath->getValue();
+	params._inputAudioFilePath = _paramAudioFilePath->getValue();
 	
 	params._format = _paramFormat->getValue();
 	params._formatName = _optionLoader.getFormatsShortNames().at( params._format );
@@ -354,26 +365,96 @@ void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	clipPreferences.setOutputFrameVarying( true );
 }
 
-void AVWriterPlugin::ensureWriterIsInit( const OFX::RenderArguments& args )
+void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 {
-	AVProcessParams params = getProcessParams();
+	if( _lastInputAudioFilePath == params._inputAudioFilePath && // already opened
+		! _lastInputAudioFilePath.empty() ) // not the first time...
+		return;
 	
-	if( _lastOutputFilePath == params._filepath && // path already set
+	if( params._inputAudioFilePath == "" ) // no audio file indicated
+		return;
+	
+	if( ! boost::filesystem::exists( params._inputAudioFilePath ) )
+	{
+		_initAudio = false;
+		_inputAudioFile.reset();
+		_lastInputAudioFilePath = "";
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+		    << exception::filename( params._inputAudioFilePath ) );
+	}
+	
+	// create audio stream
+	try
+	{
+		// set and analyse inputAudioFile
+		_inputAudioFile.reset( new avtranscoder::InputFile( _paramAudioFilePath->getValue() ) );
+		_lastInputAudioFilePath = _paramAudioFilePath->getValue();
+		_inputAudioFile->analyse();
+		
+		// set range of the OFX param
+		_paramAudioNbStream->setRange( 0, _inputAudioFile->getProperties().videoStreams.size() );
+		
+		// get streamId of the audio stream
+		_idAudioStream = _inputAudioFile->getProperties().audioStreams.at( _paramAudioStreamIndex->getValue() ).streamId;
+		
+		// buffered audio stream at _idAudioStream (to seek)
+		_inputAudioFile->readStream( _idAudioStream );
+		
+		// set input stream audio
+		_inputStreamAudio.reset( new avtranscoder::InputStreamAudio( _inputAudioFile->getStream( _idAudioStream ) ) );
+		
+		// set output stream audio
+		_outputStreamAudio.reset( new avtranscoder::OutputStreamAudio() );
+		avtranscoder::AudioDesc& audioOutputDesc = _outputStreamAudio->getAudioDesc();
+		audioOutputDesc.setAudioCodec( params._audioCodecName );
+		// currently same sample rate, channels, and sample format in au output (the audioTransform does nothing)
+		audioOutputDesc.setAudioParameters( 
+			_inputAudioFile->getStream( _idAudioStream ).getAudioDesc().getSampleRate(),
+			_inputAudioFile->getStream( _idAudioStream ).getAudioDesc().getChannels(),
+			_inputAudioFile->getStream( _idAudioStream ).getAudioDesc().getSampleFormat()
+			);
+
+		if( ! _outputStreamAudio->setup( ) )
+		{
+			throw std::runtime_error( "error during initialising audio output stream" );
+		}
+
+		_outputFile->addAudioStream( audioOutputDesc );
+	}
+	catch( std::exception& e )
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to create audio stream: " + e.what() );
+	}
+	
+	_initAudio = true;
+}
+
+void AVWriterPlugin::ensureWriterIsInit( const OFX::RenderArguments& args, AVProcessParams& params )
+{
+	if( _lastOutputFilePath == params._outputFilePath && // path already set
 		! _lastOutputFilePath.empty() ) // not the first time...
 		return;
+	
+	if( params._outputFilePath == "" ) // no output file indicated
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "no output file indicated"
+		    << exception::filename( params._outputFilePath ) );
+	}
 	
 	// create output file
 	try
 	{
-		_outputFile.reset( new avtranscoder::OutputFile( params._filepath ) );
-		_lastOutputFilePath = params._filepath;
+		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
+		_lastOutputFilePath = params._outputFilePath;
 		_outputFile->setup(); //guess format from filename
 	}
 	catch( std::exception& e )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to open output file : " + e.what()
-		    << exception::filename( params._filepath ) );
+		    << exception::user() + "unable to open output file: " + e.what()
+		    << exception::filename( params._outputFilePath ) );
 	}
 	
 	// create video stream
@@ -412,14 +493,12 @@ void AVWriterPlugin::ensureWriterIsInit( const OFX::RenderArguments& args )
 		}
 		
 		_outputFile->addVideoStream( videoOutputDesc );
-	}
+	}	
 	catch( std::exception& e )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to create video stream : " + e.what() );
+		    << exception::user() + "unable to create video stream: " + e.what() );
 	}
-	
-	_outputFile->beginWrap();
 	
 	_initWriter = true;
 }
@@ -431,8 +510,13 @@ void AVWriterPlugin::ensureWriterIsInit( const OFX::RenderArguments& args )
 void AVWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
+
+	AVProcessParams params = getProcessParams();
+
+	ensureWriterIsInit( args, params );
+	ensureAudioIsInit( params );
 	
-	ensureWriterIsInit( args );
+	_outputFile->beginWrap();
 	
 	doGilRender<AVWriterProcess>( *this, args );
 }
@@ -447,6 +531,16 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	while( _outputStreamVideo->encodeFrame( codedImage ) )
 	{
 		_outputFile->wrap( codedImage, 0 );
+	}
+	
+	if( _initAudio )
+	{
+		// if audio latency
+		avtranscoder::DataStream codedAudioFrame;
+		while( _outputStreamAudio->encodeFrame( codedAudioFrame ) )
+		{
+			_outputFile->wrap( codedAudioFrame, 0 );
+		}
 	}
 	
 	_outputFile->endWrap();

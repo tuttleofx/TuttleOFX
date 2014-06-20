@@ -23,6 +23,7 @@ extern "C" {
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <vector>
 #include <string>
@@ -249,23 +250,46 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions );
 	
 	/// AUDIO PARAMETERS
-	/// audio codec preset
-	OFX::ChoiceParamDescriptor* audioPreset = desc.defineChoiceParam( kParamAudioPreset );
-	audioPreset->setLabel( "Audio Preset" );
-	audioPreset->appendOption( "custom", "Customized configuration" );
+	// number of audio stream
+	int nbStreamAudioValue = 16;
+	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
+	audioNbStream->setLabel( "Number of audio stream" );
+	audioNbStream->setRange( 0, nbStreamAudioValue );
+	audioNbStream->setDefault( nbStreamAudioValue );
+	audioNbStream->setParent( audioGroup );
 	
+	// add audio file path
+	OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( kParamAudioFilePath );
+	audioFilePathParam->setLabel( "Audio file path" );
+	audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
+	audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	audioFilePathParam->setParent( audioGroup );
+	
+	// add audio stream id
+	OFX::IntParamDescriptor* audioStreamIdParam = desc.defineIntParam( kParamAudioStreamId );
+	audioStreamIdParam->setLabel( "Audio stream id" );
+	audioStreamIdParam->setRange( 0, nbStreamAudioValue );
+	audioStreamIdParam->setDefault( 0 );
+	audioStreamIdParam->setParent( audioGroup );
+	
+	// add audio codec preset
+	OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( kParamAudioPreset );
+	audioCodecPresetParam->setLabel( "Audio Preset" );
+	audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
+	audioCodecPresetParam->setParent( audioGroup );
+
 	std::vector<std::string> idAudioList;
 	std::vector<std::string> idAudioLabelList;
 	LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
 	for( unsigned int it = 0; it < idAudioList.size(); ++it )
 	{
-		audioPreset->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
+		audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 	}
-	audioPreset->setParent( audioGroup );
-	
-	/// audio codec list
+
+	// add audio codec list
 	int default_audio_codec = 0;
-	OFX::ChoiceParamDescriptor* audioCodec = desc.defineChoiceParam( kParamAudioCodec );
+	std::string defaultAudioCodec( "pcm_s16le" );
+	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
 	for( std::vector<std::string>::const_iterator itShort = optionLoader.getAudioCodecsShortNames().begin(),
 		itLong  = optionLoader.getAudioCodecsLongNames().begin(),
 		itEnd = optionLoader.getAudioCodecsShortNames().end();
@@ -273,15 +297,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		++itShort,
 		++itLong )
 	{
-		audioCodec->appendOption( *itShort, *itLong );
-		if( (*itShort) == "pcm_s24be" )
-			default_audio_codec = audioCodec->getNOptions() - 1;
+		audioCodecParam->appendOption( *itShort, *itLong );
+		if( (*itShort) == defaultAudioCodec )
+			default_audio_codec = audioCodecParam->getNOptions() - 1;
 	}
-	audioCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	audioCodec->setDefault( default_audio_codec );
-	audioCodec->setParent( audioGroup );
-	
-	/// audio codec parameters
+	audioCodecParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	audioCodecParam->setDefault( default_audio_codec );
+	audioCodecParam->setParent( audioGroup );
+
+	// add audio codec parameters
 	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	common::addOptionsToGroup( desc, audioGroup, audioGroupOptions );
 	

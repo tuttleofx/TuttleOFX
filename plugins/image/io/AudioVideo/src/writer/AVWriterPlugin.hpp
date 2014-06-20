@@ -1,10 +1,15 @@
 #ifndef _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 
+#include <AvTranscoder/InputFile.hpp>
 #include <AvTranscoder/OutputFile.hpp>
 #include <AvTranscoder/OutputStreamVideo.hpp>
-#include <AvTranscoder/ColorTransform.hpp>
+#include <AvTranscoder/InputStreamAudio.hpp>
+#include <AvTranscoder/OutputStreamAudio.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/ColorTransform.hpp>
+#include <AvTranscoder/AudioTransform.hpp>
+
 #include <AvTranscoder/DatasStructures/Image.hpp>
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
@@ -22,6 +27,7 @@ namespace writer {
 struct AVProcessParams
 {
 	std::string _outputFilePath; ///< Filepath
+	std::string _inputAudioFilePath; ///< Filepath of audio input
 	
 	int         _format;      ///< Format
 	std::string _formatName;      ///< Format name
@@ -60,7 +66,8 @@ public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	
-	void ensureWriterIsInit( const OFX::RenderArguments& args );
+	void ensureWriterIsInit( const OFX::RenderArguments& args, AVProcessParams& params );
+	void ensureAudioIsInit( AVProcessParams& params );
 	
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
@@ -80,11 +87,18 @@ public:
 	OFX::DoubleParam*   _paramCustomFps;
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
+	OFX::IntParam*      _paramAudioNbStream;
+	OFX::StringParam*   _paramAudioFilePath;
+	OFX::IntParam*      _paramAudioStreamIndex;
+	
 	std::vector<OFX::StringParam*> _paramMetadatas;
 	
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
 	boost::scoped_ptr<avtranscoder::OutputStreamVideo> _outputStreamVideo;
 	
+	boost::scoped_ptr<avtranscoder::InputFile> _inputAudioFile;
+	boost::scoped_ptr<avtranscoder::InputStreamAudio> _inputStreamAudio;
+	boost::scoped_ptr<avtranscoder::OutputStreamAudio> _outputStreamAudio;
 	
 	avtranscoder::OptionLoader _optionLoader;
 	
@@ -92,9 +106,16 @@ public:
 	avtranscoder::ColorTransform _colorTransform;
 	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // Between gil and avTranscoder convert
 	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // Between avTranscoder convert and avTranscoder encode
+	// to process audio encode
+	avtranscoder::AudioTransform _audioTransform;
 	
+	std::string _lastInputAudioFilePath;
 	std::string _lastOutputFilePath;
+	
+	size_t _idAudioStream;
+	
 	bool _initWriter;
+	bool _initAudio;
 };
 
 }
