@@ -71,7 +71,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	
 	_plugin._colorTransform.convert( *_plugin._rgbImage, *_plugin._imageToEncode );
 	
-	// encode
+	// encode video
 	avtranscoder::DataStream codedImage;
 	if( _plugin._outputStreamVideo->encodeFrame( *_plugin._imageToEncode, codedImage ) )
 	{

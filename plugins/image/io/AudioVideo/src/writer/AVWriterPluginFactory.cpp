@@ -209,6 +209,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	/// video codec list
 	int default_codec = 0;
+	std::string defaultVideoCodec( "mpeg4" );
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
 	for( std::vector<std::string>::const_iterator itShort = optionLoader.getVideoCodecsShortNames().begin(),
 		itLong  = optionLoader.getVideoCodecsLongNames().begin(),
@@ -218,7 +219,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		++itLong )
 	{
 		videoCodec->appendOption( *itShort, *itLong );
-		if( (*itShort) == "mpeg4" )
+		if( (*itShort) == defaultVideoCodec )
 			default_codec = videoCodec->getNOptions() - 1;
 	}
 	videoCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
@@ -227,15 +228,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	/// video codec parameters
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
-	videoCodecPixelFmt->setLabel( kParamVideoCodecPixelFmt );
-	videoCodecPixelFmt->setLabel( "Select the output video pixel type." );
+	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
 	
-	for( int pix_fmt = 0; pix_fmt < PIX_FMT_NB; pix_fmt++ )
+	std::vector<std::string> pixelFormats = optionLoader.getPixelFormats( defaultVideoCodec );
+	for( size_t i = 0; i < pixelFormats.size(); ++i )
 	{
-		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
-		if(!pix_desc->name)
-			continue;
-		videoCodecPixelFmt->appendOption( pix_desc->name );
+		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );
 	}
 	videoCodecPixelFmt->setParent( videoGroup );
 	

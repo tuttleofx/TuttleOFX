@@ -116,7 +116,7 @@ void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 	std::vector<std::string> pixelsFormat( _optionLoader.getPixelFormats( videoCodecName ) );
 	for( std::vector<std::string>::iterator it = pixelsFormat.begin(); it != pixelsFormat.end(); ++it )
 	{
-		_paramVideoPixelFormat->appendOption(*it);
+		_paramVideoPixelFormat->appendOption( *it );
 	}
 }
 
@@ -124,8 +124,10 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 	, _outputFile( NULL )
 	, _outputStreamVideo( NULL )
-	, _initWriter( false )
+	, _rgbImage( NULL )
+	, _imageToEncode( NULL )
 	, _lastOutputFilePath( "" )
+	, _initWriter( false )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
@@ -193,7 +195,7 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 {
 	AVProcessParams params;
 
-	params._filepath = _paramFilepath->getValue();
+	params._outputFilePath = _paramFilepath->getValue();
 	
 	params._format = _paramFormat->getValue();
 	params._formatName = _optionLoader.getFormatsShortNames().at( params._format );
@@ -232,8 +234,9 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName == kParamVideoCodec )
 	{
 		avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
-		const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at(_paramVideoCodec->getValue() );
+		const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at( _paramVideoCodec->getValue() );
 		disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName );
+		
 		updatePixelFormat( videoCodecName );
 	}
 	else if( paramName == kParamAudioCodec )
@@ -439,9 +442,8 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	if( ! _initWriter )
 		return;
 	
+	// if video latency
 	avtranscoder::DataStream codedImage;
-	
-	// if latency
 	while( _outputStreamVideo->encodeFrame( codedImage ) )
 	{
 		_outputFile->wrap( codedImage, 0 );

@@ -1,12 +1,11 @@
 #ifndef _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 
-#include <libav/LibAVPresetDefinitions.hpp>
-
 #include <AvTranscoder/OutputFile.hpp>
 #include <AvTranscoder/OutputStreamVideo.hpp>
 #include <AvTranscoder/ColorTransform.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/DatasStructures/Image.hpp>
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
@@ -22,7 +21,7 @@ namespace writer {
 
 struct AVProcessParams
 {
-	std::string _filepath;    ///< Filepath
+	std::string _outputFilePath; ///< Filepath
 	
 	int         _format;      ///< Format
 	std::string _formatName;      ///< Format name
@@ -86,15 +85,16 @@ public:
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
 	boost::scoped_ptr<avtranscoder::OutputStreamVideo> _outputStreamVideo;
 	
-	avtranscoder::ColorTransform _colorTransform;
-	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // between gil and avTranscoder convert
-	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // betwwen avTranscoder convert and avTranscoder encode 
 	
 	avtranscoder::OptionLoader _optionLoader;
 	
-	bool _initWriter;
+	// to process video encode
+	avtranscoder::ColorTransform _colorTransform;
+	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // Between gil and avTranscoder convert
+	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // Between avTranscoder convert and avTranscoder encode
 	
 	std::string _lastOutputFilePath;
+	bool _initWriter;
 };
 
 }
