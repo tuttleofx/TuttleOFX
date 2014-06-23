@@ -13,7 +13,6 @@ template<class View>
 AVReaderProcess<View>::AVReaderProcess( AVReaderPlugin& instance )
 	: ImageGilProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
-	, _imageToDecode( NULL )
 {
 	this->setNoMultiThreading();
 }
@@ -22,26 +21,6 @@ template<class View>
 void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {	
 	ImageGilProcessor<View>::setup( args );
-	
-	// get source image
-	avtranscoder::ImageDesc sourceImageDesc = _plugin._inputFile->getStream( _plugin._idVideoStream ).getVideoDesc().getImageDesc();
-	avtranscoder::Image sourceImage( sourceImageDesc );
-	
-	// get pixel data of image to decode
-	avtranscoder::Pixel oPixel;
-	size_t pixelComponents = sourceImageDesc.getPixelDesc().getComponents(); // get this from gil view
-	size_t pixelDepth = 8; // waiting for getMaxBitPerChannel() in avTranscoder
-	oPixel.setBitsPerPixel( pixelDepth * pixelComponents );
-	oPixel.setComponents( pixelComponents );
-	oPixel.setColorComponents( avtranscoder::eComponentRgb );
-	oPixel.setSubsampling( avtranscoder::eSubsamplingNone );
-	oPixel.setAlpha( false );
-	oPixel.setPlanar( false );
-	
-	// get image to decode
-	avtranscoder::ImageDesc imageToDecodeDesc( sourceImageDesc );
-	imageToDecodeDesc.setPixel( oPixel.findPixel() );
-	_imageToDecode.reset( new avtranscoder::Image( imageToDecodeDesc ) );
 
 	TUTTLE_LOG_ERROR( "Read at frame : " << _plugin._lastFrame << " / " << args.time );
 	// optimization for seek
@@ -56,14 +35,14 @@ void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	_plugin._lastFrame = args.time;
 	
 	// Fetch output image	
-	if( ! _plugin._inputStreamVideo->readNextFrame( sourceImage ) )
+	if( ! _plugin._inputStreamVideo->readNextFrame( *_plugin._sourceImage ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "Can't open the frame at time " + args.time
 		    << exception::filename( _plugin._paramFilepath->getValue() ) );
 	}
 	
-	_plugin._colorTransform.convert( sourceImage, *_imageToDecode );
+	_plugin._colorTransform.convert( *_plugin._sourceImage, *_plugin._imageToDecode );
 }
 
 /**
@@ -76,7 +55,7 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 		
-	size_t components = _imageToDecode->desc().getPixelDesc().getComponents();
+	size_t components = _plugin._imageToDecode->desc().getPixelDesc().getComponents();
 	size_t bitDepth = 8; // waiting for getMaxBitPerChannel() in avTranscoder
 	
 	switch( bitDepth )
@@ -85,13 +64,13 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 			switch( components )
 			{
 				case 3:
-					readImage<rgb8c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<rgb8c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 				case 4:
-					readImage<rgba8c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<rgba8c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 				default:
-					readImage<gray8c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<gray8c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 			}
 			break;
@@ -99,13 +78,13 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 			switch( components )
 			{
 				case 3:
-					readImage<rgb16c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<rgb16c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 				case 4:
-					readImage<rgba16c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<rgba16c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 				default:
-					readImage<gray16c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<gray16c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 			}
 			break;
@@ -113,18 +92,18 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 			switch( components )
 			{
 				case 3:
-					readImage<rgb32c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<rgb32c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 				case 4:
-					readImage<rgba32c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<rgba32c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 				default:
-					readImage<gray32c_view_t>( this->_dstView, *_imageToDecode );
+					readImage<gray32c_view_t>( this->_dstView, *_plugin._imageToDecode );
 					break;
 			}
 			break;
 		default:
-			readImage<gray16c_view_t>( this->_dstView, *_imageToDecode );
+			readImage<gray16c_view_t>( this->_dstView, *_plugin._imageToDecode );
 			break;
 			
 	}

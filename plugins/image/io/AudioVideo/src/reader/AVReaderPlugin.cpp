@@ -1,5 +1,6 @@
 #include <AvTranscoder/common.hpp>
 #include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
+#include <AvTranscoder/DatasStructures/Pixel.hpp>
 
 #include "AVReaderPlugin.hpp"
 #include "AVReaderProcess.hpp"
@@ -20,8 +21,10 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
 	, _inputFile( NULL )
 	, _inputStreamVideo( NULL )
-	, _idVideoStream( 0 )
+	, _sourceImage( NULL )
+	, _imageToDecode( NULL )
 	, _lastInputFilePath( "" )
+	, _idVideoStream( 0 )
 	, _lastFrame( 0 )
 {
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
@@ -210,6 +213,32 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 	rod.y2 = height;
 
 	return true;
+}
+/**
+ * @brief The overridden begin render function
+ * @param[in]   args     Begin Rendering parameters
+ */
+void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
+{
+	// get source image
+	avtranscoder::ImageDesc sourceImageDesc = _inputFile->getStream( _idVideoStream ).getVideoDesc().getImageDesc();
+	_sourceImage.reset( new avtranscoder::Image( sourceImageDesc ) );
+	
+	// get pixel data of image to decode
+	avtranscoder::Pixel dstPixel;
+	size_t pixelComponents = sourceImageDesc.getPixelDesc().getComponents(); // get this from gil view
+	size_t pixelDepth = 8; // waiting for getMaxBitPerChannel() in avTranscoder
+	dstPixel.setBitsPerPixel( pixelDepth * pixelComponents );
+	dstPixel.setComponents( pixelComponents );
+	dstPixel.setColorComponents( avtranscoder::eComponentRgb );
+	dstPixel.setSubsampling( avtranscoder::eSubsamplingNone );
+	dstPixel.setAlpha( false );
+	dstPixel.setPlanar( false );
+	
+	// get image to decode
+	avtranscoder::ImageDesc imageToDecodeDesc( sourceImageDesc );
+	imageToDecodeDesc.setPixel( dstPixel.findPixel() );
+	_imageToDecode.reset( new avtranscoder::Image( imageToDecodeDesc ) );
 }
 
 /**

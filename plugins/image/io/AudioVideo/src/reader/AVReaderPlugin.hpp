@@ -1,9 +1,10 @@
 #ifndef _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
-#include <AvTranscoder/ColorTransform.hpp>
 #include <AvTranscoder/InputFile.hpp>
 #include <AvTranscoder/InputStreamVideo.hpp>
+#include <AvTranscoder/DatasStructures/Image.hpp>
+#include <AvTranscoder/ColorTransform.hpp>
 
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
@@ -40,6 +41,7 @@ public:
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool getTimeDomain( OfxRangeD& range );
 
+	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
 
 public:
@@ -52,10 +54,13 @@ public:
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
 	boost::scoped_ptr<avtranscoder::InputStreamVideo> _inputStreamVideo;
-	size_t _idVideoStream;
+	boost::scoped_ptr<avtranscoder::Image> _sourceImage;
+	boost::scoped_ptr<avtranscoder::Image> _imageToDecode;
+	
 	avtranscoder::ColorTransform _colorTransform;
 	
 	std::string _lastInputFilePath;
+	size_t _idVideoStream;
 	size_t _lastFrame;
 };
 

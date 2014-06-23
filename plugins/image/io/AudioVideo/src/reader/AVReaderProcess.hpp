@@ -35,9 +35,6 @@ public:
 	
 	template<typename FileView>
 	View& readImage( View& dst, avtranscoder::Image& image );
-	
-private:
-	boost::scoped_ptr<avtranscoder::Image> _imageToDecode;
 };
 
 }
