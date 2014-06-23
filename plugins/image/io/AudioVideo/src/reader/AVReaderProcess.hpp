@@ -3,14 +3,10 @@
 
 #include "AVReaderPlugin.hpp"
 
-#include <AvTranscoder/DatasStructures/Image.hpp>
-
 #include <terry/globals.hpp>
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {

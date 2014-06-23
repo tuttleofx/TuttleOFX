@@ -1,7 +1,5 @@
 #include "AVReaderProcess.hpp"
 
-#include <AvTranscoder/DatasStructures/Pixel.hpp>
-
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {

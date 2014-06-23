@@ -1,5 +1,3 @@
-#include <AvTranscoder/common.hpp>
-#include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
 #include <AvTranscoder/DatasStructures/Pixel.hpp>
 
 #include "AVReaderPlugin.hpp"
