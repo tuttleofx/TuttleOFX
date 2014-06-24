@@ -196,18 +196,18 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	/// VIDEO PARAMETERS
 	/// video codec preset
-	OFX::ChoiceParamDescriptor* videoPreset = desc.defineChoiceParam( kParamMainVideoPreset );
-	videoPreset->setLabel( "Video Preset" );
-	videoPreset->appendOption( "custom", "Customized configuration" );
+	OFX::ChoiceParamDescriptor* videoMainPresetParam = desc.defineChoiceParam( kParamMainVideoPreset );
+	videoMainPresetParam->setLabel( "Video Preset" );
+	videoMainPresetParam->appendOption( "custom", "Customized configuration" );
 	
 	std::vector<std::string> idVideoList;
 	std::vector<std::string> idVideoLabelList;
 	LibAVVideoPreset::getPresetList( idVideoList, idVideoLabelList );
 	for( unsigned int it = 0; it < idVideoList.size(); ++it )
 	{
-		videoPreset->appendOption( idVideoList.at( it ), idVideoLabelList.at( it ) );
+		videoMainPresetParam->appendOption( idVideoList.at( it ), idVideoLabelList.at( it ) );
 	}
-	videoPreset->setParent( videoGroup );
+	videoMainPresetParam->setParent( videoGroup );
 	
 	/// video codec list
 	int default_codec = 0;
@@ -252,17 +252,17 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	/// AUDIO PARAMETERS
 	// add main audio codec preset
-	OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( kParamMainAudioPreset );
-	audioCodecPresetParam->setLabel( "Main audio Preset" );
-	audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
-	audioCodecPresetParam->setParent( audioGroup );
+	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamMainAudioPreset );
+	audioMainPresetParam->setLabel( "Main audio Preset" );
+	audioMainPresetParam->appendOption( "custom", "Customized configuration" );
+	audioMainPresetParam->setParent( audioGroup );
 
 	std::vector<std::string> idAudioList;
 	std::vector<std::string> idAudioLabelList;
 	LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
 	for( unsigned int it = 0; it < idAudioList.size(); ++it )
 	{
-		audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
+		audioMainPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 	}
 	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
