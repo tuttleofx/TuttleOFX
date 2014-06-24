@@ -37,6 +37,7 @@ public:
 
 	void updateVisibleTools();
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool getTimeDomain( OfxRangeD& range );

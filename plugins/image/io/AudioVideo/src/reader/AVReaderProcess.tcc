@@ -54,7 +54,7 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 		
 	size_t components = _plugin._imageToDecode->desc().getPixelDesc().getComponents();
-	size_t bitDepth = 8; // waiting for getMaxBitPerChannel() in avTranscoder
+	size_t bitDepth = 8; // @todo: waiting for getMaxBitPerChannel() in avTranscoder
 	
 	switch( bitDepth )
 	{
@@ -113,9 +113,10 @@ View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::Image& image )
 {
 	typedef typename FileView::value_type Pixel;
 	
-	std::size_t width = image.desc().getWidth();
-	std::size_t height = image.desc().getHeight();
-	std::size_t rowSize = image.desc().getPixelDesc().getComponents() * 1 * image.desc().getWidth(); //in bytes
+	size_t width = image.desc().getWidth();
+	size_t height = image.desc().getHeight();
+	size_t pixelDepthInBytes = 1; // @todo: need to be dynamic to support images with pixelDepth > 8bits
+	size_t rowSize = image.desc().getPixelDesc().getComponents() * pixelDepthInBytes * image.desc().getWidth(); //in bytes
 	
 	FileView avSrcView = interleaved_view( 
 		width, height,
