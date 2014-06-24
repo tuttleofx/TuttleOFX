@@ -218,6 +218,8 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
  */
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	ensureVideoIsOpen( _paramFilepath->getValue() );
+	
 	// get source image
 	avtranscoder::ImageDesc sourceImageDesc = _inputFile->getStream( _idVideoStream ).getVideoDesc().getImageDesc();
 	_sourceImage.reset( new avtranscoder::Image( sourceImageDesc ) );
