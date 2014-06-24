@@ -189,6 +189,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	
+	_paramAudioCustomGroup = fetchGroupParam( kParamAudioCustomGroup );
+	
 	_paramAudioNbStream = fetchIntParam( kParamAudioNbStream );
 	
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
@@ -402,8 +404,14 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamMainAudioPreset )
 	{
+		// if custom preset
 		if( _paramMainAudioPreset->getValue() == 0 )
+		{
+			_paramAudioCustomGroup->setIsSecretAndDisabled( false );
 			return;
+		}
+		_paramAudioCustomGroup->setIsSecretAndDisabled( true );
+		
 		std::vector<std::string> idAudioList;
 		LibAVAudioPreset::getPresetList( idAudioList);
 		

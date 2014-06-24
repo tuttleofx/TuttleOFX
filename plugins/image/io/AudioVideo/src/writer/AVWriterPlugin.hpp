@@ -96,6 +96,8 @@ public:
 	OFX::DoubleParam*   _paramCustomFps;
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
+	OFX::GroupParam*    _paramAudioCustomGroup;
+	
 	OFX::IntParam*      _paramAudioNbStream;
 	
 	std::vector<OFX::GroupParam*> _paramAudioSubGroup;

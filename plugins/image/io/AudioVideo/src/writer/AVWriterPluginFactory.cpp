@@ -264,6 +264,32 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	{
 		audioMainPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 	}
+	
+	// add group to manage option when custom preset
+	OFX::GroupParamDescriptor* audioCustomGroupParam = desc.defineGroupParam( kParamAudioCustomGroup );
+	audioCustomGroupParam->setLabel( "Audio custom group" );
+	audioCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
+	audioCustomGroupParam->setParent( audioGroup );
+	
+	// add audio codec list
+	int default_audio_codec = 0;
+	std::string defaultAudioCodec( "pcm_s16le" );
+	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
+	for( std::vector<std::string>::const_iterator itShort = optionLoader.getAudioCodecsShortNames().begin(),
+		itLong  = optionLoader.getAudioCodecsLongNames().begin(),
+		itEnd = optionLoader.getAudioCodecsShortNames().end();
+		itShort != itEnd;
+		++itShort,
+		++itLong )
+	{
+		audioCodecParam->appendOption( *itShort, *itLong );
+		if( (*itShort) == defaultAudioCodec )
+			default_audio_codec = audioCodecParam->getNOptions() - 1;
+	}
+	audioCodecParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	audioCodecParam->setDefault( default_audio_codec );
+	audioCodecParam->setParent( audioCustomGroupParam );
+	
 	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
 	audioNbStream->setLabel( "Number of audio stream" );
@@ -318,25 +344,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 			audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 		}
 	}
-
-	// add audio codec list
-	int default_audio_codec = 0;
-	std::string defaultAudioCodec( "pcm_s16le" );
-	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
-	for( std::vector<std::string>::const_iterator itShort = optionLoader.getAudioCodecsShortNames().begin(),
-		itLong  = optionLoader.getAudioCodecsLongNames().begin(),
-		itEnd = optionLoader.getAudioCodecsShortNames().end();
-		itShort != itEnd;
-		++itShort,
-		++itLong )
-	{
-		audioCodecParam->appendOption( *itShort, *itLong );
-		if( (*itShort) == defaultAudioCodec )
-			default_audio_codec = audioCodecParam->getNOptions() - 1;
-	}
-	audioCodecParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	audioCodecParam->setDefault( default_audio_codec );
-	audioCodecParam->setParent( audioGroup );
 
 	// add audio codec parameters
 	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
