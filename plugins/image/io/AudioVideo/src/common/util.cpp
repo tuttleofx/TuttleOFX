@@ -11,16 +11,19 @@ namespace plugin {
 namespace av {
 namespace common {
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix )
 {
 	OFX::ParamDescriptor* param = NULL;
 	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
 	{
+		std::string name = prefix;
+		name += option.getName();
+		
 		switch( option.getType() )
 		{
 			case avtranscoder::TypeBool:
 			{
-				OFX::BooleanParamDescriptor* boolParam = desc.defineBooleanParam( option.getName() );
+				OFX::BooleanParamDescriptor* boolParam = desc.defineBooleanParam( name );
 				boolParam->setDefault( option.getDefaultValueBool() );
 				param = boolParam;
 				break;
@@ -36,7 +39,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 			case avtranscoder::TypeDouble:
 			{
-				OFX::DoubleParamDescriptor* doubleParam = desc.defineDoubleParam( option.getName() );
+				OFX::DoubleParamDescriptor* doubleParam = desc.defineDoubleParam( name );
 				doubleParam->setDefault( option.getDefaultValueDouble() );
 				doubleParam->setRange( option.getMin(), option.getMax() );
 				doubleParam->setDisplayRange( option.getMin(), option.getMax() );
@@ -45,21 +48,21 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 			case avtranscoder::TypeString:
 			{
-				OFX::StringParamDescriptor* strParam = desc.defineStringParam( option.getName() );
+				OFX::StringParamDescriptor* strParam = desc.defineStringParam( name );
 				strParam->setDefault( option.getDefaultValueString() );
 				param = strParam;
 				break;
 			}
 			case avtranscoder::TypeRatio:
 			{
-				OFX::Int2DParamDescriptor* ratioParam = desc.defineInt2DParam( option.getName() );
+				OFX::Int2DParamDescriptor* ratioParam = desc.defineInt2DParam( name );
 				ratioParam->setDefault( option.getDefaultValueRatio().first, option.getDefaultValueRatio().second );
 				param = ratioParam;
 				break;
 			}
 			case avtranscoder::TypeChoice:
 			{
-				OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam( option.getName() );
+				OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam( name );
 				choiceParam->setDefault( option.getDefaultChildIndex() );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
@@ -70,7 +73,8 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 			case avtranscoder::TypeGroup:
 			{
-				std::string groupName = "g_";
+				std::string groupName = prefix;
+				groupName += "g_";
 				groupName += option.getName();
 				OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )

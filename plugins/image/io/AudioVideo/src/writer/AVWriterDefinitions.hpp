@@ -49,27 +49,27 @@ static const std::string kParamAudioPreset               = "audioPreset";
 
 static const size_t maxNbAudioStream                     = 16;
 
-static const std::string kParamMetaAlbum           = "meta_album";
-static const std::string kParamMetaAlbumArtist     = "meta_album_artist";
-static const std::string kParamMetaArtist          = "meta_artist";
-static const std::string kParamMetaComment         = "meta_comment";
-static const std::string kParamMetaComposer        = "meta_composer";
-static const std::string kParamMetaCopyright       = "meta_copyright";
-static const std::string kParamMetaCreationTime    = "meta_creation_time";
-static const std::string kParamMetaDate            = "meta_date";
-static const std::string kParamMetaDisc            = "meta_disc";
-static const std::string kParamMetaEncoder         = "meta_encoder";
-static const std::string kParamMetaEncodedBy       = "meta_encoded_by";
-static const std::string kParamMetaFilename        = "meta_filename";
-static const std::string kParamMetaGenre           = "meta_genre";
-static const std::string kParamMetaLanguage        = "meta_language";
-static const std::string kParamMetaPerformer       = "meta_performer";
-static const std::string kParamMetaPublisher       = "meta_publisher";
-static const std::string kParamMetaServiceName     = "meta_service_name";
-static const std::string kParamMetaServiceProvider = "meta_service_provider";
-static const std::string kParamMetaTitle           = "meta_title";
-static const std::string kParamMetaTrack           = "meta_track";
-static const std::string kParamMetaVariantBitrate  = "meta_variant_bitrate";
+static const std::string kParamMetaAlbum           = "m_album";
+static const std::string kParamMetaAlbumArtist     = "m_album_artist";
+static const std::string kParamMetaArtist          = "m_artist";
+static const std::string kParamMetaComment         = "m_comment";
+static const std::string kParamMetaComposer        = "m_composer";
+static const std::string kParamMetaCopyright       = "m_copyright";
+static const std::string kParamMetaCreationTime    = "m_creation_time";
+static const std::string kParamMetaDate            = "m_date";
+static const std::string kParamMetaDisc            = "m_disc";
+static const std::string kParamMetaEncoder         = "m_encoder";
+static const std::string kParamMetaEncodedBy       = "m_encoded_by";
+static const std::string kParamMetaFilename        = "m_filename";
+static const std::string kParamMetaGenre           = "m_genre";
+static const std::string kParamMetaLanguage        = "m_language";
+static const std::string kParamMetaPerformer       = "m_performer";
+static const std::string kParamMetaPublisher       = "m_publisher";
+static const std::string kParamMetaServiceName     = "m_service_name";
+static const std::string kParamMetaServiceProvider = "m_service_provider";
+static const std::string kParamMetaTitle           = "m_title";
+static const std::string kParamMetaTrack           = "m_track";
+static const std::string kParamMetaVariantBitrate  = "m_variant_bitrate";
 
 }
 }

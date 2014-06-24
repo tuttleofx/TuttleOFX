@@ -172,7 +172,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	format->setParent( formatGroup );
 	
 	avtranscoder::OptionLoader::OptionArray formatGroupOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_ENCODING_PARAM );
-	common::addOptionsToGroup( desc, formatGroup, formatGroupOptions );
+	common::addOptionsToGroup( desc, formatGroup, formatGroupOptions, "f_" );
 	
 	/// format parameters
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
@@ -239,8 +239,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	}
 	videoCodecPixelFmt->setParent( videoGroup );
 	
+	// add video codec parameters
 	avtranscoder::OptionLoader::OptionArray videoGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	common::addOptionsToGroup( desc, videoGroup, videoGroupOptions );
+	common::addOptionsToGroup( desc, videoGroup, videoGroupOptions, "v_" );
 	
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
@@ -267,7 +268,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	// add group to manage option when custom preset
 	OFX::GroupParamDescriptor* audioCustomGroupParam = desc.defineGroupParam( kParamAudioCustomGroup );
-	audioCustomGroupParam->setLabel( "Audio custom preset" );
+	audioCustomGroupParam->setLabel( "Audio custom parameters" );
 	audioCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
 	audioCustomGroupParam->setParent( audioGroup );
 	
@@ -289,6 +290,10 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioCodecParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	audioCodecParam->setDefault( default_audio_codec );
 	audioCodecParam->setParent( audioCustomGroupParam );
+	
+	// add audio codec parameters
+	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
+	common::addOptionsToGroup( desc, audioCustomGroupParam, audioGroupOptions, "a_" );
 	
 	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
@@ -344,10 +349,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 			audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 		}
 	}
-
-	// add audio codec parameters
-	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	//common::addOptionsToGroup( desc, audioGroup, audioGroupOptions );
 	
 	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
 	audioDetailledGroup->setLabel( "Detailled" );
