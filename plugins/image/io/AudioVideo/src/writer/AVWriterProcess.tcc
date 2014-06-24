@@ -31,7 +31,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	
 	// Get image to encode
-	avtranscoder::ImageDesc imageToEncodeDesc = _plugin._outputStreamVideo->getVideoDesc().getImageDesc();
+	avtranscoder::ImageDesc imageToEncodeDesc = _plugin._outputStreamVideo.getVideoDesc().getImageDesc();
 	if( _plugin._imageToEncode == NULL )
 	{
 		_plugin._imageToEncode.reset( new avtranscoder::Image( imageToEncodeDesc ) );
@@ -43,7 +43,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 		// get pixel data of image rgb
 		avtranscoder::Pixel oPixel;
 		size_t pixelComponents = imageToEncodeDesc.getPixelDesc().getComponents(); // get this from gil view
-		size_t pixelDepth = 8; // waiting for getMaxBitPerChannel() in avTranscoder
+		size_t pixelDepth = 8; // @todo: waiting for getMaxBitPerChannel() in avTranscoder
 		oPixel.setBitsPerPixel( pixelDepth * pixelComponents );
 		oPixel.setComponents( pixelComponents );
 		oPixel.setColorComponents( avtranscoder::eComponentRgb );
@@ -74,7 +74,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	
 	// encode video
 	avtranscoder::DataStream codedImage;
-	if( _plugin._outputStreamVideo->encodeFrame( *_plugin._imageToEncode, codedImage ) )
+	if( _plugin._outputStreamVideo.encodeFrame( *_plugin._imageToEncode, codedImage ) )
 	{
 		_plugin._outputFile->wrap( codedImage, 0 );
 	}
@@ -83,14 +83,21 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	if( _plugin._initAudio )
 	{
 		avtranscoder::DataStream codedAudioFrame;
-		avtranscoder::AudioFrame audioFrameSource( _plugin._inputAudioFile->getStream( _plugin._idAudioStream ).getAudioDesc().getFrameDesc() );
-		avtranscoder::AudioFrame audioFrameToEncode( _plugin._outputStreamAudio->getAudioDesc().getFrameDesc() );
+		// audio from files
+		for( size_t i = 0; i < _plugin._inputAudioFile.size(); ++i )
+		{
+			avtranscoder::AudioFrame audioFrameSource( _plugin._inputAudioFile.at( i ).getStream( _plugin._audioStreamId.at( i ) ).getAudioDesc().getFrameDesc() );
+			avtranscoder::AudioFrame audioFrameToEncode( _plugin._outputStreamAudio.at( i ).getAudioDesc().getFrameDesc() );
 
-		_plugin._inputStreamAudio->readNextFrame( audioFrameSource );
+			_plugin._inputStreamAudio.at( i ).readNextFrame( audioFrameSource );
 
-		_plugin._audioTransform.convert( audioFrameSource, audioFrameToEncode );
+			_plugin._audioTransform.convert( audioFrameSource, audioFrameToEncode );
 
-		if( _plugin._outputStreamAudio->encodeFrame( audioFrameSource, codedAudioFrame ) )
+			if( _plugin._outputStreamAudio.at( i ).encodeFrame( audioFrameSource, codedAudioFrame ) )
+			{
+				_plugin._outputFile->wrap( codedAudioFrame, 0 );
+			}
+		}
 		{
 			_plugin._outputFile->wrap( codedAudioFrame, 0 );
 		}

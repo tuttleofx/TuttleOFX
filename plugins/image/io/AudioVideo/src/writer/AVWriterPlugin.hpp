@@ -15,6 +15,7 @@
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <string>
 #include <vector>
@@ -27,7 +28,7 @@ namespace writer {
 struct AVProcessParams
 {
 	std::string _outputFilePath; ///< Filepath
-	std::string _inputAudioFilePath; ///< Filepath of audio input
+	std::vector<std::string> _inputAudioFilePath; ///< Filepath of audio input
 	
 	int         _format;      ///< Format
 	std::string _formatName;      ///< Format name
@@ -62,13 +63,20 @@ public:
 	
 	void disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec );
 	void updatePixelFormat( const std::string& videoCodecName );
+	void updateAudioStreamParams();
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	
-	void ensureWriterIsInit( const OFX::RenderArguments& args, AVProcessParams& params );
+
+	void ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params );
 	void ensureAudioIsInit( AVProcessParams& params );
+
+	/**
+	 * @brief Called before each new render.
+     */
+	void cleanVideoAndAudio();
 	
+	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 	
@@ -88,34 +96,39 @@ public:
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
 	OFX::IntParam*      _paramAudioNbStream;
-	OFX::StringParam*   _paramAudioFilePath;
-	OFX::IntParam*      _paramAudioStreamIndex;
+	
+	std::vector<OFX::GroupParam*> _paramAudioSubGroup;
+	std::vector<OFX::StringParam*> _paramAudioFilePath;
+	std::vector<OFX::IntParam*> _paramAudioStreamIndex;
+	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
 	
 	std::vector<OFX::StringParam*> _paramMetadatas;
 	
+	// to manage video
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
-	boost::scoped_ptr<avtranscoder::OutputStreamVideo> _outputStreamVideo;
+	avtranscoder::OutputStreamVideo _outputStreamVideo;
 	
-	boost::scoped_ptr<avtranscoder::InputFile> _inputAudioFile;
-	boost::scoped_ptr<avtranscoder::InputStreamAudio> _inputStreamAudio;
-	boost::scoped_ptr<avtranscoder::OutputStreamAudio> _outputStreamAudio;
-	
-	avtranscoder::OptionLoader _optionLoader;
+	// to manage audio
+	boost::ptr_vector<avtranscoder::InputFile> _inputAudioFile;
+	boost::ptr_vector<avtranscoder::InputStreamAudio> _inputStreamAudio;
+	std::vector<avtranscoder::OutputStreamAudio> _outputStreamAudio; // For audio from input files
 	
 	// to process video encode
-	avtranscoder::ColorTransform _colorTransform;
 	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // Between gil and avTranscoder convert
 	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // Between avTranscoder convert and avTranscoder encode
+	avtranscoder::ColorTransform _colorTransform;
+	
 	// to process audio encode
 	avtranscoder::AudioTransform _audioTransform;
 	
-	std::string _lastInputAudioFilePath;
-	std::string _lastOutputFilePath;
+	// to manage OFX params depending on AVOptions
+	avtranscoder::OptionLoader _optionLoader;
 	
-	size_t _idAudioStream;
-	
-	bool _initWriter;
+	std::vector<size_t> _audioStreamId;
+		
+	bool _initVideo;
 	bool _initAudio;
+	bool _initOutpuFile;
 };
 
 }

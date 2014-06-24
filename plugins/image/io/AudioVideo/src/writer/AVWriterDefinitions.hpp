@@ -39,8 +39,11 @@ static const std::string kParamCustomFps                 = "customFps";
 static const std::string kParamVideoCodecPixelFmt        = "videoPixelFormat";
 
 static const std::string kParamAudioNbStream             = "audioNbStream";
+static const std::string kParamAudioSubGroup             = "audioSubGroup";
 static const std::string kParamAudioFilePath             = "audioFilePath";
 static const std::string kParamAudioStreamId             = "audioStreamId";
+
+static const size_t maxNbAudioStream                     = 16;
 
 static const std::string kParamMetaAlbum           = "meta_album";
 static const std::string kParamMetaAlbumArtist     = "meta_album_artist";

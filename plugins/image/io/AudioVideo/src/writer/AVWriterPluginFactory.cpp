@@ -28,6 +28,7 @@ extern "C" {
 #include <vector>
 #include <string>
 #include <utility> //pair
+#include <sstream>
 
 namespace tuttle {
 namespace plugin {
@@ -251,26 +252,56 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	/// AUDIO PARAMETERS
 	// number of audio stream
-	int nbStreamAudioValue = 16;
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
 	audioNbStream->setLabel( "Number of audio stream" );
-	audioNbStream->setRange( 0, nbStreamAudioValue );
-	audioNbStream->setDefault( nbStreamAudioValue );
+	audioNbStream->setRange( 0, 16 );
+	audioNbStream->setDisplayRange( 0, 16 );
+	audioNbStream->setDefault( 0 );
 	audioNbStream->setParent( audioGroup );
 	
-	// add audio file path
-	OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( kParamAudioFilePath );
-	audioFilePathParam->setLabel( "Audio file path" );
-	audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
-	audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	audioFilePathParam->setParent( audioGroup );
-	
-	// add audio stream id
-	OFX::IntParamDescriptor* audioStreamIdParam = desc.defineIntParam( kParamAudioStreamId );
-	audioStreamIdParam->setLabel( "Audio stream id" );
-	audioStreamIdParam->setRange( 0, nbStreamAudioValue );
-	audioStreamIdParam->setDefault( 0 );
-	audioStreamIdParam->setParent( audioGroup );
+	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	{
+		std::ostringstream audioSubGroupName( kParamAudioSubGroup );
+		audioSubGroupName << idAudioStream;
+		OFX::GroupParamDescriptor* audioSubGroupParam = desc.defineGroupParam( audioSubGroupName.str() );
+		audioSubGroupParam->setLabel( "Audio SubGroup" );
+		audioSubGroupParam->setParent( audioGroup );
+		
+		// add audio file path
+		std::ostringstream audioFilePathName( kParamAudioFilePath );
+		audioFilePathName << idAudioStream;
+		OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( audioFilePathName.str() );
+		audioFilePathParam->setLabel( "Audio file path" );
+		audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
+		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+		audioFilePathParam->setParent( audioSubGroupParam );
+
+		// add audio stream id
+		std::ostringstream audioStreamIdName( kParamAudioStreamId );
+		audioStreamIdName << idAudioStream;
+		OFX::IntParamDescriptor* audioStreamIdParam = desc.defineIntParam( audioStreamIdName.str() );
+		audioStreamIdParam->setLabel( "Audio stream id" );
+		audioStreamIdParam->setRange( -1, INT_MAX );
+		audioStreamIdParam->setDisplayRange( -1, 16 );
+		audioStreamIdParam->setDefault( 0 );
+		audioStreamIdParam->setParent( audioSubGroupParam );
+
+		// add audio codec preset
+		std::ostringstream audioCodecPresetName( kParamAudioPreset );
+		audioCodecPresetName << idAudioStream;
+		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
+		audioCodecPresetParam->setLabel( "Audio Preset" );
+		audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
+		audioCodecPresetParam->setParent( audioSubGroupParam );
+
+		std::vector<std::string> idAudioList;
+		std::vector<std::string> idAudioLabelList;
+		LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
+		for( unsigned int it = 0; it < idAudioList.size(); ++it )
+		{
+			audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
+		}
+	}
 	
 	// add audio codec preset
 	OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( kParamAudioPreset );
