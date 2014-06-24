@@ -259,36 +259,39 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioNbStream->setDefault( 0 );
 	audioNbStream->setParent( audioGroup );
 	
+	// add a list of audioSubGroup (managed dynamically by the plugin)
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
 	{
-		std::ostringstream audioSubGroupName( kParamAudioSubGroup );
-		audioSubGroupName << idAudioStream;
+		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
+		audioSubGroupName << "_" << idAudioStream;
 		OFX::GroupParamDescriptor* audioSubGroupParam = desc.defineGroupParam( audioSubGroupName.str() );
-		audioSubGroupParam->setLabel( "Audio SubGroup" );
+		audioSubGroupParam->setLabel( "Audio stream group" );
+		audioSubGroupParam->setHint( "Indicate streams you want to add to the output file." );
 		audioSubGroupParam->setParent( audioGroup );
 		
 		// add audio file path
-		std::ostringstream audioFilePathName( kParamAudioFilePath );
-		audioFilePathName << idAudioStream;
+		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
+		audioFilePathName << "_" << idAudioStream;
 		OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( audioFilePathName.str() );
 		audioFilePathParam->setLabel( "Audio file path" );
+		audioSubGroupParam->setHint( "Add a silent track if it is empty." );
 		audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
 		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 		audioFilePathParam->setParent( audioSubGroupParam );
 
 		// add audio stream id
-		std::ostringstream audioStreamIdName( kParamAudioStreamId );
-		audioStreamIdName << idAudioStream;
+		std::ostringstream audioStreamIdName( kParamAudioStreamId, std::ios_base::in | std::ios_base::ate );
+		audioStreamIdName << "_" << idAudioStream;
 		OFX::IntParamDescriptor* audioStreamIdParam = desc.defineIntParam( audioStreamIdName.str() );
-		audioStreamIdParam->setLabel( "Audio stream id" );
+		audioStreamIdParam->setLabel( "Audio file stream id" );
 		audioStreamIdParam->setRange( -1, INT_MAX );
 		audioStreamIdParam->setDisplayRange( -1, 16 );
 		audioStreamIdParam->setDefault( 0 );
 		audioStreamIdParam->setParent( audioSubGroupParam );
 
 		// add audio codec preset
-		std::ostringstream audioCodecPresetName( kParamAudioPreset );
-		audioCodecPresetName << idAudioStream;
+		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
+		audioCodecPresetName << "_" << idAudioStream;
 		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
 		audioCodecPresetParam->setLabel( "Audio Preset" );
 		audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
