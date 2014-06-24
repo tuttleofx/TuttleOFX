@@ -88,8 +88,8 @@ public:
 	
 	OFX::ChoiceParam*   _paramMainPreset;
 	OFX::ChoiceParam*   _paramFormatPreset;
-	OFX::ChoiceParam*   _paramVideoCodecPreset;
-	OFX::ChoiceParam*   _paramAudioCodecPreset;
+	OFX::ChoiceParam*   _paramMainVideoPreset;
+	OFX::ChoiceParam*   _paramMainAudioPreset;
 	
 	OFX::IntParam*      _paramBitRate;
 	OFX::BooleanParam*  _paramUseCustomFps;

@@ -181,8 +181,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	_paramMainPreset       = fetchChoiceParam( kParamMainPreset );
 	_paramFormatPreset     = fetchChoiceParam( kParamFormatPreset );
-	_paramVideoCodecPreset = fetchChoiceParam( kParamVideoPreset );
-	_paramAudioCodecPreset = fetchChoiceParam( kParamAudioPreset );
+	_paramMainVideoPreset = fetchChoiceParam( kParamMainVideoPreset );
+	_paramMainAudioPreset = fetchChoiceParam( kParamMainAudioPreset );
 	
 	_paramUseCustomFps     = fetchBooleanParam( kParamUseCustomFps );
 	_paramCustomFps        = fetchDoubleParam( kParamCustomFps );
@@ -376,8 +376,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		TUTTLE_LOG_INFO( "set audio at " << formatIndex );*/
 		
 		_paramFormatPreset->setValue( formatIndex );
-		_paramVideoCodecPreset->setValue( videoIndex );
-		_paramAudioCodecPreset->setValue( audioIndex );
+		_paramMainVideoPreset->setValue( videoIndex );
+		_paramMainAudioPreset->setValue( audioIndex );
 	}
 	else if( paramName == kParamFormatPreset )
 	{
@@ -390,9 +390,9 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		//LibAVFormatPreset p( idFormatList.at( _paramFormatPreset->getValue() - 1 ) );
 		//setParameters( p.getParameters() );
 	}
-	else if( paramName == kParamVideoPreset )
+	else if( paramName == kParamMainVideoPreset )
 	{
-		if( _paramVideoCodecPreset->getValue() == 0 )
+		if( _paramMainVideoPreset->getValue() == 0 )
 			return;
 		std::vector<std::string> idVideoList;
 		LibAVVideoPreset::getPresetList( idVideoList );
@@ -400,9 +400,9 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		//LibAVVideoPreset p( idVideoList.at( _paramVideoCodecPreset->getValue() - 1 ) );
 		//setParameters( p.getParameters() );
 	}
-	else if( paramName == kParamAudioPreset )
+	else if( paramName == kParamMainAudioPreset )
 	{
-		if( _paramAudioCodecPreset->getValue() == 0 )
+		if( _paramMainAudioPreset->getValue() == 0 )
 			return;
 		std::vector<std::string> idAudioList;
 		LibAVAudioPreset::getPresetList( idAudioList);

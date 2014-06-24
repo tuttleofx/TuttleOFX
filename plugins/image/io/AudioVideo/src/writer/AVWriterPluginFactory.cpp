@@ -196,7 +196,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	/// VIDEO PARAMETERS
 	/// video codec preset
-	OFX::ChoiceParamDescriptor* videoPreset = desc.defineChoiceParam( kParamVideoPreset );
+	OFX::ChoiceParamDescriptor* videoPreset = desc.defineChoiceParam( kParamMainVideoPreset );
 	videoPreset->setLabel( "Video Preset" );
 	videoPreset->appendOption( "custom", "Customized configuration" );
 	
@@ -251,7 +251,20 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions );
 	
 	/// AUDIO PARAMETERS
-	// number of audio stream
+	// add main audio codec preset
+	OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( kParamMainAudioPreset );
+	audioCodecPresetParam->setLabel( "Main audio Preset" );
+	audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
+	audioCodecPresetParam->setParent( audioGroup );
+
+	std::vector<std::string> idAudioList;
+	std::vector<std::string> idAudioLabelList;
+	LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
+	for( unsigned int it = 0; it < idAudioList.size(); ++it )
+	{
+		audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
+	}
+	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
 	audioNbStream->setLabel( "Number of audio stream" );
 	audioNbStream->setRange( 0, 16 );
@@ -304,20 +317,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		{
 			audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 		}
-	}
-	
-	// add audio codec preset
-	OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( kParamAudioPreset );
-	audioCodecPresetParam->setLabel( "Audio Preset" );
-	audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
-	audioCodecPresetParam->setParent( audioGroup );
-
-	std::vector<std::string> idAudioList;
-	std::vector<std::string> idAudioLabelList;
-	LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
-	for( unsigned int it = 0; it < idAudioList.size(); ++it )
-	{
-		audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
 	}
 
 	// add audio codec list

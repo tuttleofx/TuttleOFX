@@ -31,8 +31,8 @@ static const std::string kParamMetaDetailledGroup        = "metaDetailledGroup";
 static const std::string kParamMainPreset                = "mainPreset";
 
 static const std::string kParamFormatPreset              = "formatPreset";
-static const std::string kParamVideoPreset               = "videoPreset";
-static const std::string kParamAudioPreset               = "audioPreset";
+static const std::string kParamMainVideoPreset           = "mainVideoPreset";
+static const std::string kParamMainAudioPreset           = "mainAudioPreset";
 
 static const std::string kParamUseCustomFps              = "useCustomFps";
 static const std::string kParamCustomFps                 = "customFps";
@@ -42,6 +42,7 @@ static const std::string kParamAudioNbStream             = "audioNbStream";
 static const std::string kParamAudioSubGroup             = "audioSubGroup";
 static const std::string kParamAudioFilePath             = "audioFilePath";
 static const std::string kParamAudioStreamId             = "audioStreamId";
+static const std::string kParamAudioPreset               = "audioPreset";
 
 static const size_t maxNbAudioStream                     = 16;
 
