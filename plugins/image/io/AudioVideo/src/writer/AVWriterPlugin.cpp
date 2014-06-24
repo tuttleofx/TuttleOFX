@@ -553,6 +553,28 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 			// silent audio track
 			else
 			{
+				// set silent track
+				_dummyStreamAudio.push_back( avtranscoder::DummyInputStream() );
+
+				// set output stream audio
+				_outputStreamAudioSilent.push_back( avtranscoder::OutputStreamAudio() );
+				avtranscoder::AudioDesc& audioOutputDesc = _outputStreamAudioSilent.back().getAudioDesc();
+				audioOutputDesc.setAudioCodec( params._audioCodecName );
+
+				// set sample rate, channels, and sample format in output
+				// @todo: get it from first audio stream if exists
+				audioOutputDesc.setAudioParameters( 
+					48000,
+					1,
+					AV_SAMPLE_FMT_S16
+					);
+
+				if( ! _outputStreamAudioSilent.back().setup( ) )
+				{
+					throw std::runtime_error( "error during initialising audio output stream" );
+				}
+
+				_outputFile->addAudioStream( audioOutputDesc );
 			}
 		}
 	}
@@ -636,11 +658,21 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	
 	if( _initAudio )
 	{
+		// if audio latency in audio streams from audio files
 		for( size_t i = 0; i < _outputStreamAudio.size(); ++i )
 		{
-			// if audio latency
 			avtranscoder::DataStream codedAudioFrame;
 			while( _outputStreamAudio.at( i ).encodeFrame( codedAudioFrame ) )
+			{
+				_outputFile->wrap( codedAudioFrame, 0 );
+			}
+		}
+		
+		// if audio latency in audio streams from silent tracks
+		for( size_t i = 0; i < _dummyStreamAudio.size(); ++i )
+		{
+			avtranscoder::DataStream codedAudioFrame;
+			while( _outputStreamAudioSilent.at( i ).encodeFrame( codedAudioFrame ) )
 			{
 				_outputFile->wrap( codedAudioFrame, 0 );
 			}

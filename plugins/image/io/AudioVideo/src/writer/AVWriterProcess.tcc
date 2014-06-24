@@ -98,8 +98,17 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 				_plugin._outputFile->wrap( codedAudioFrame, 0 );
 			}
 		}
+		// silence track
+		for( size_t i = 0; i < _plugin._dummyStreamAudio.size(); ++i )
 		{
-			_plugin._outputFile->wrap( codedAudioFrame, 0 );
+			avtranscoder::DataStream dataStreamSource;
+			
+			_plugin._dummyStreamAudio.at( i ).readNextPacket( dataStreamSource );
+
+			if( _plugin._outputStreamAudioSilent.at( i ).encodeFrame( dataStreamSource ) )
+			{
+				_plugin._outputFile->wrap( codedAudioFrame, 0 );
+			}
 		}
 	}
 }

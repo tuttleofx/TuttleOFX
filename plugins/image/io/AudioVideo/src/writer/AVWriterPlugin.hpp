@@ -6,6 +6,7 @@
 #include <AvTranscoder/OutputStreamVideo.hpp>
 #include <AvTranscoder/InputStreamAudio.hpp>
 #include <AvTranscoder/OutputStreamAudio.hpp>
+#include <AvTranscoder/DummyInputStream.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 #include <AvTranscoder/ColorTransform.hpp>
 #include <AvTranscoder/AudioTransform.hpp>
@@ -111,7 +112,9 @@ public:
 	// to manage audio
 	boost::ptr_vector<avtranscoder::InputFile> _inputAudioFile;
 	boost::ptr_vector<avtranscoder::InputStreamAudio> _inputStreamAudio;
+	std::vector<avtranscoder::DummyInputStream> _dummyStreamAudio; // For silent audio tracks
 	std::vector<avtranscoder::OutputStreamAudio> _outputStreamAudio; // For audio from input files
+	std::vector<avtranscoder::OutputStreamAudio> _outputStreamAudioSilent; // For silent audio tracks
 	
 	// to process video encode
 	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // Between gil and avTranscoder convert
