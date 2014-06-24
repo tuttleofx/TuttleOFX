@@ -111,19 +111,19 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader optionLoader;
 	/// FORMAT PARAMETERS
 	avtranscoder::OptionLoader::OptionArray formatOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
-	common::addOptionsToGroup( desc, formatGroup, formatOptions );
+	common::addOptionsToGroup( desc, formatGroup, formatOptions, "f_" );
 	
 	/// VIDEO PARAMETERS
 	avtranscoder::OptionLoader::OptionArray videoOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	common::addOptionsToGroup( desc, videoGroup, videoOptions );
+	common::addOptionsToGroup( desc, videoGroup, videoOptions, "v_" );
 	
 	/// AUDIO PARAMETERS
 	avtranscoder::OptionLoader::OptionArray audioOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	common::addOptionsToGroup( desc, audioGroup, audioOptions );
+	common::addOptionsToGroup( desc, audioGroup, audioOptions, "a_" );
 	
 	/// METADATA PARAMETERS
 	avtranscoder::OptionLoader::OptionArray metadataOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
-	common::addOptionsToGroup( desc, metaGroup, metadataOptions );
+	common::addOptionsToGroup( desc, metaGroup, metadataOptions, "m_" );
 	
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
