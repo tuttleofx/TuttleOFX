@@ -231,7 +231,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
 	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
 	
-	std::vector<std::string> pixelFormats = optionLoader.getPixelFormats( defaultVideoCodec );
+	std::vector<std::string> pixelFormats = optionLoader.getPixelFormats();
 	for( size_t i = 0; i < pixelFormats.size(); ++i )
 	{
 		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );

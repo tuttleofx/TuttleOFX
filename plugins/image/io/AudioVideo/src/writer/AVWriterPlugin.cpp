@@ -110,11 +110,21 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
 	}
 }
 
+/**
+ * @brief Update the list of pixel format supported depending on the video codec.
+ * Warning: the function does not update the list correctly in Nuke.
+ * @param videoCodecName
+ */
 void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 {
 	_paramVideoPixelFormat->resetOptions();
 	
 	std::vector<std::string> pixelsFormat( _optionLoader.getPixelFormats( videoCodecName ) );
+	// get all pixel formats if the list is empty with the video codec indicated
+	if( pixelsFormat.empty() )
+	{
+		pixelsFormat = _optionLoader.getPixelFormats();
+	}
 	for( std::vector<std::string>::iterator it = pixelsFormat.begin(); it != pixelsFormat.end(); ++it )
 	{
 		_paramVideoPixelFormat->appendOption( *it );
