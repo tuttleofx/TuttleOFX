@@ -195,7 +195,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
 	
 	/// VIDEO PARAMETERS
-	/// video codec preset
+	/// video preset
 	OFX::ChoiceParamDescriptor* videoMainPresetParam = desc.defineChoiceParam( kParamMainVideoPreset );
 	videoMainPresetParam->setLabel( "Video Preset" );
 	videoMainPresetParam->appendOption( "custom", "Customized configuration" );
@@ -251,9 +251,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions );
 	
 	/// AUDIO PARAMETERS
-	// add main audio codec preset
+	// add main audio preset
 	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamMainAudioPreset );
-	audioMainPresetParam->setLabel( "Main audio Preset" );
+	audioMainPresetParam->setLabel( "Main Preset" );
 	audioMainPresetParam->appendOption( "custom", "Customized configuration" );
 	audioMainPresetParam->setParent( audioGroup );
 
@@ -267,7 +267,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	// add group to manage option when custom preset
 	OFX::GroupParamDescriptor* audioCustomGroupParam = desc.defineGroupParam( kParamAudioCustomGroup );
-	audioCustomGroupParam->setLabel( "Audio custom group" );
+	audioCustomGroupParam->setLabel( "Audio custom preset" );
 	audioCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
 	audioCustomGroupParam->setParent( audioGroup );
 	
@@ -293,8 +293,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
 	audioNbStream->setLabel( "Number of audio stream" );
-	audioNbStream->setRange( 0, 16 );
-	audioNbStream->setDisplayRange( 0, 16 );
+	audioNbStream->setRange( 0, maxNbAudioStream );
+	audioNbStream->setDisplayRange( 0, maxNbAudioStream );
 	audioNbStream->setDefault( 0 );
 	audioNbStream->setParent( audioGroup );
 	
@@ -312,8 +312,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
 		audioFilePathName << "_" << idAudioStream;
 		OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( audioFilePathName.str() );
-		audioFilePathParam->setLabel( "Audio file path" );
-		audioSubGroupParam->setHint( "Add a silent track if it is empty." );
+		audioFilePathParam->setLabel( "Input file path" );
+		audioFilePathParam->setHint( "Add a silent track if it is empty." );
 		audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
 		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 		audioFilePathParam->setParent( audioSubGroupParam );
@@ -322,7 +322,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		std::ostringstream audioStreamIdName( kParamAudioStreamId, std::ios_base::in | std::ios_base::ate );
 		audioStreamIdName << "_" << idAudioStream;
 		OFX::IntParamDescriptor* audioStreamIdParam = desc.defineIntParam( audioStreamIdName.str() );
-		audioStreamIdParam->setLabel( "Audio file stream id" );
+		audioStreamIdParam->setLabel( "Input stream id" );
 		audioStreamIdParam->setRange( -1, INT_MAX );
 		audioStreamIdParam->setDisplayRange( -1, 16 );
 		audioStreamIdParam->setDefault( 0 );
@@ -332,7 +332,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
 		audioCodecPresetName << "_" << idAudioStream;
 		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
-		audioCodecPresetParam->setLabel( "Audio Preset" );
+		audioCodecPresetParam->setLabel( "Output Preset" );
 		audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
 		audioCodecPresetParam->setParent( audioSubGroupParam );
 
