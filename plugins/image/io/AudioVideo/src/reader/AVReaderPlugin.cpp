@@ -1,8 +1,9 @@
-#include <AvTranscoder/DatasStructures/Pixel.hpp>
-
 #include "AVReaderPlugin.hpp"
 #include "AVReaderProcess.hpp"
 #include "AVReaderDefinitions.hpp"
+
+#include <AvTranscoder/DatasStructures/Pixel.hpp>
+#include <AvTranscoder/ProgressListener.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
@@ -53,7 +54,9 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 		// set and analyse inputFile
 		_inputFile.reset( new avtranscoder::InputFile( filepath ) );
 		_lastInputFilePath = filepath;
-		_inputFile->analyse();
+		avtranscoder::ProgressListener progress;
+		// using fast analyse ( do not extract gop structure )
+		_inputFile->analyse( progress, avtranscoder::InputFile::eAnalyseLevelFast );
 		
 		// set range of the OFX param
 		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
@@ -66,6 +69,7 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 		
 		// set video stream
 		_inputStreamVideo.reset( new avtranscoder::InputStreamVideo( _inputFile->getStream( _idVideoStream ) ) );
+		_inputStreamVideo->setup();
 	}
 	catch( std::exception& e )
 	{

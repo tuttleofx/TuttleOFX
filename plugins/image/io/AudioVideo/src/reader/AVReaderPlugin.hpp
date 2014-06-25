@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
-#include <AvTranscoder/InputFile.hpp>
+#include <AvTranscoder/File/InputFile.hpp>
 #include <AvTranscoder/InputStreamVideo.hpp>
 #include <AvTranscoder/DatasStructures/Image.hpp>
 #include <AvTranscoder/ColorTransform.hpp>
