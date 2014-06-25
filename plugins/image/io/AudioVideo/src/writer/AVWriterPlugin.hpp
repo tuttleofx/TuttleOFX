@@ -65,6 +65,7 @@ public:
 	void disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec );
 	void updatePixelFormat( const std::string& videoCodecName );
 	void updateAudioStreamParams();
+	void updateAudioPresetParams();
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
@@ -103,6 +104,7 @@ public:
 	std::vector<OFX::GroupParam*> _paramAudioSubGroup;
 	std::vector<OFX::StringParam*> _paramAudioFilePath;
 	std::vector<OFX::IntParam*> _paramAudioStreamIndex;
+	std::vector<OFX::BooleanParam*> _paramAudioCopyStream;
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
 	
 	std::vector<OFX::StringParam*> _paramMetadatas;

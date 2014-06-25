@@ -141,6 +141,7 @@ void AVWriterPlugin::updateAudioStreamParams()
 			_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( false );
 			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( false );
 			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
+			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( false );
 			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
 		}
 		else
@@ -148,7 +149,28 @@ void AVWriterPlugin::updateAudioStreamParams()
 			_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( true );
 			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( true );
 			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
+			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( true );
 			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
+		}
+	}
+}
+
+void AVWriterPlugin::updateAudioPresetParams()
+{
+	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	{
+		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
+			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() )
+		{
+			// if copy stream
+			if( _paramAudioCopyStream.at( idAudioStream )->getValue() )
+			{
+				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
+			}
+			else
+			{
+				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
+			}
 		}
 	}
 }
@@ -157,6 +179,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 	, _paramAudioFilePath()
 	, _paramAudioStreamIndex()
+	, _paramAudioCopyStream()
 	, _paramAudioPreset()
 	, _paramMetadatas()
 	, _outputFile( NULL )
@@ -210,12 +233,18 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioStreamIndex.push_back( fetchIntParam( audioStreamIdName.str() ) );
 		_paramAudioStreamIndex.back()->setIsSecretAndDisabled( false );
 		
+		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );
+		audioCopyStreamName << "_" << idAudioStream;
+		_paramAudioCopyStream.push_back( fetchBooleanParam( audioCopyStreamName.str() ) );
+		_paramAudioCopyStream.back()->setIsSecretAndDisabled( false );
+		
 		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
 		audioCodecPresetName << "_" << idAudioStream;
 		_paramAudioPreset.push_back( fetchChoiceParam( audioCodecPresetName.str() ) );
 		_paramAudioPreset.back()->setIsSecretAndDisabled( false );
 	}
 	updateAudioStreamParams();
+	updateAudioPresetParams();
 	
 	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
@@ -432,6 +461,11 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName == kParamAudioNbStream )
 	{
 		updateAudioStreamParams();
+		updateAudioPresetParams();
+	}
+	else if( paramName.find( kParamAudioCopyStream ) != std::string::npos )
+	{
+		updateAudioPresetParams();
 	}
 }
 

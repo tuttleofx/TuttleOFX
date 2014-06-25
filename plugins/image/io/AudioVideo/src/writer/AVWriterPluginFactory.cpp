@@ -333,6 +333,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioStreamIdParam->setDefault( 0 );
 		audioStreamIdParam->setParent( audioSubGroupParam );
 
+		// add flag to copy stream
+		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );
+		audioCopyStreamName << "_" << idAudioStream;
+		OFX::BooleanParamDescriptor* audioCopyStreamParam = desc.defineBooleanParam( audioCopyStreamName.str() );
+		audioCopyStreamParam->setLabel( "Only copy stream" );
+		audioCopyStreamParam->setHint( "Only rewrap the audio stream whithout transcode it." );
+		audioCopyStreamParam->setDefault( true );
+		audioCopyStreamParam->setParent( audioSubGroupParam );
+		
 		// add audio codec preset
 		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
 		audioCodecPresetName << "_" << idAudioStream;

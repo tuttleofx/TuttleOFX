@@ -45,6 +45,7 @@ static const std::string kParamAudioNbStream             = "audioNbStream";
 static const std::string kParamAudioSubGroup             = "audioSubGroup";
 static const std::string kParamAudioFilePath             = "audioFilePath";
 static const std::string kParamAudioStreamId             = "audioStreamId";
+static const std::string kParamAudioCopyStream           = "audioCopyStream";
 static const std::string kParamAudioPreset               = "audioPreset";
 
 static const size_t maxNbAudioStream                     = 16;

@@ -82,33 +82,48 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	// encode audio
 	if( _plugin._initAudio )
 	{
-		avtranscoder::DataStream codedAudioFrame;
+		size_t audioStreamId = 1;
+		
 		// audio from files
 		for( size_t i = 0; i < _plugin._inputAudioFile.size(); ++i )
 		{
-			avtranscoder::AudioFrame audioFrameSource( _plugin._inputAudioFile.at( i ).getStream( _plugin._audioStreamId.at( i ) ).getAudioDesc().getFrameDesc() );
-			avtranscoder::AudioFrame audioFrameToEncode( _plugin._outputStreamAudio.at( i ).getAudioDesc().getFrameDesc() );
-
-			_plugin._inputStreamAudio.at( i ).readNextFrame( audioFrameSource );
-
-			_plugin._audioTransform.convert( audioFrameSource, audioFrameToEncode );
-
-			if( _plugin._outputStreamAudio.at( i ).encodeFrame( audioFrameSource, codedAudioFrame ) )
+			// if transcode
+			if( ! _plugin._paramAudioCopyStream.at( i )->getValue() )
 			{
-				_plugin._outputFile->wrap( codedAudioFrame, 0 );
+				avtranscoder::AudioFrame audioFrameSource( _plugin._inputAudioFile.at( i ).getStream( _plugin._audioStreamId.at( i ) ).getAudioDesc().getFrameDesc() );
+				avtranscoder::AudioFrame audioFrameToEncode( _plugin._outputStreamAudio.at( i ).getAudioDesc().getFrameDesc() );
+
+				if( _plugin._inputStreamAudio.at( i ).readNextFrame( audioFrameSource ) )
+				{
+					_plugin._audioTransform.convert( audioFrameSource, audioFrameToEncode );
+
+					avtranscoder::DataStream data;
+					if( _plugin._outputStreamAudio.at( i ).encodeFrame( audioFrameToEncode, data ) )
+					{
+						_plugin._outputFile->wrap( data, audioStreamId );
+					}
+				}
 			}
+			// only wrap
+			else
+			{
+				avtranscoder::DataStream data;
+				if( _plugin._inputAudioFile.at( i ).getStream( _plugin._audioStreamId.at( i ) ).readNextPacket( data ) )
+				{
+					_plugin._outputFile->wrap( data, audioStreamId );
+				}
+			}
+			++audioStreamId;
 		}
 		// silence track
 		for( size_t i = 0; i < _plugin._dummyStreamAudio.size(); ++i )
 		{
-			avtranscoder::DataStream dataStreamSource;
-			
-			_plugin._dummyStreamAudio.at( i ).readNextPacket( dataStreamSource );
-
-			if( _plugin._outputStreamAudioSilent.at( i ).encodeFrame( dataStreamSource ) )
+			avtranscoder::DataStream data;
+			if( _plugin._dummyStreamAudio.at( i ).readNextPacket( data ) )
 			{
-				_plugin._outputFile->wrap( codedAudioFrame, 0 );
+				_plugin._outputFile->wrap( data, audioStreamId );
 			}
+			++audioStreamId;
 		}
 	}
 }
