@@ -633,23 +633,19 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 void AVWriterPlugin::cleanVideoAndAudio()
 {
 	// clean output file if necessary
-	if( _initVideo )
-	{
-		_outputFile.reset();
-		
-		_rgbImage.reset();
-		_imageToEncode.reset();
-	}
+	_outputFile.reset();
+
+	_rgbImage.reset();
+	_imageToEncode.reset();
+	
 	// clean audio
-	if( _initAudio )
-	{
-		_inputAudioFile.clear();
-		_audioStreamId.clear();
-		_dummyStreamAudio.clear();
-		_inputStreamAudio.clear();
-		_outputStreamAudio.clear();
-		_outputStreamAudioSilent.clear();
-	}
+	_inputAudioFile.clear();
+	_audioStreamId.clear();
+	_dummyStreamAudio.clear();
+	_inputStreamAudio.clear();
+	_outputStreamAudio.clear();
+	_outputStreamAudioSilent.clear();
+	
 	_initVideo = false;
 	_initAudio = false;
 	_initOutpuFile = false;
