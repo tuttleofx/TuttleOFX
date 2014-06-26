@@ -24,7 +24,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _imageToDecode( NULL )
 	, _lastInputFilePath( "" )
 	, _idVideoStream( 0 )
-	, _lastFrame( 0 )
+	, _lastFrame( -1 )
 {
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
