@@ -183,14 +183,9 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioPreset()
 	, _paramMetadatas()
 	, _outputFile( NULL )
-	, _inputAudioFile()
-	, _inputStreamAudio()
-	, _dummyStreamAudio()
-	, _outputStreamAudio()
-	, _outputStreamAudioSilent()
+	, _transcoder( NULL )
 	, _rgbImage( NULL )
 	, _imageToEncode( NULL )
-	, _audioStreamId()
 	, _initVideo( false )
 	, _initAudio( false )
 	, _initOutpuFile( false )
@@ -489,7 +484,9 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 	try
 	{
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
-		_outputFile->setup(); //guess format from filename
+		_outputFile->setup();
+		
+		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
 	}
 	catch( std::exception& e )
 	{
@@ -555,69 +552,12 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 	{
 		for( size_t i = 0; i < params._inputAudioFilePath.size(); ++i )
 		{
-			// a file path is indicated
-			std::string audioFilePath( params._inputAudioFilePath.at( i ) );
-			if( audioFilePath != "" )
-			{
-				// set and analyse inputAudioFile
-				// @todo: no need to have as many inputFile as inputAudioStream
-				_inputAudioFile.push_back( new avtranscoder::InputFile( audioFilePath ) );
-				_inputAudioFile.back().analyse();
-				
-				// get streamId of the audio stream
-				_audioStreamId.push_back( _inputAudioFile.back().getProperties().audioStreams.at( _paramAudioStreamIndex.at( i )->getValue() ).streamId );
-				
-				// buffered audio stream
-				_inputAudioFile.back().readStream( _audioStreamId.back() ); // @todo: -1 => buffered all stream
-				
-				// set input stream audio
-				_inputStreamAudio.push_back( new avtranscoder::InputStreamAudio( _inputAudioFile.back().getStream( _audioStreamId.back() ) ) );
+			std::string inputFileName( params._inputAudioFilePath.at( i ) );
+			size_t inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
 			
-				// set output stream audio
-				_outputStreamAudio.push_back( avtranscoder::OutputStreamAudio() );
-				avtranscoder::AudioDesc& audioOutputDesc = _outputStreamAudio.back().getAudioDesc();
-				audioOutputDesc.setAudioCodec( params._audioCodecName );
-
-				// currently same sample rate, channels, and sample format in output (the audioTransform does nothing)
-				audioOutputDesc.setAudioParameters( 
-					_inputAudioFile.back().getStream( _audioStreamId.back() ).getAudioDesc().getSampleRate(),
-					_inputAudioFile.back().getStream( _audioStreamId.back() ).getAudioDesc().getChannels(),
-					_inputAudioFile.back().getStream( _audioStreamId.back() ).getAudioDesc().getSampleFormat()
-					);
-
-				if( ! _outputStreamAudio.back().setup( ) )
-				{
-					throw std::runtime_error( "error during initialising audio output stream" );
-				}
-
-				_outputFile->addAudioStream( audioOutputDesc );
-			}
-			// silent audio track
-			else
-			{
-				// set silent track
-				_dummyStreamAudio.push_back( avtranscoder::DummyInputStream() );
-
-				// set output stream audio
-				_outputStreamAudioSilent.push_back( avtranscoder::OutputStreamAudio() );
-				avtranscoder::AudioDesc& audioOutputDesc = _outputStreamAudioSilent.back().getAudioDesc();
-				audioOutputDesc.setAudioCodec( params._audioCodecName );
-
-				// set sample rate, channels, and sample format in output
-				// @todo: get it from first audio stream if exists
-				audioOutputDesc.setAudioParameters( 
-					48000,
-					1,
-					AV_SAMPLE_FMT_S16
-					);
-
-				if( ! _outputStreamAudioSilent.back().setup( ) )
-				{
-					throw std::runtime_error( "error during initialising audio output stream" );
-				}
-
-				_outputFile->addAudioStream( audioOutputDesc );
-			}
+			// @todo: get audio profile name
+			// @todo: get an audio profile if custom profile is set
+			_transcoder->add( inputFileName, inputStreamIndex, "" );
 		}
 	}
 	catch( std::exception& e )
@@ -632,19 +572,14 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 
 void AVWriterPlugin::cleanVideoAndAudio()
 {
-	// clean output file if necessary
 	_outputFile.reset();
 
+	// clean video
 	_rgbImage.reset();
 	_imageToEncode.reset();
 	
 	// clean audio
-	_inputAudioFile.clear();
-	_audioStreamId.clear();
-	_dummyStreamAudio.clear();
-	_inputStreamAudio.clear();
-	_outputStreamAudio.clear();
-	_outputStreamAudioSilent.clear();
+	_transcoder.reset();
 	
 	_initVideo = false;
 	_initAudio = false;
@@ -692,29 +627,6 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	while( _outputStreamVideo.encodeFrame( codedImage ) )
 	{
 		_outputFile->wrap( codedImage, 0 );
-	}
-	
-	if( _initAudio )
-	{
-		// if audio latency in audio streams from audio files
-		for( size_t i = 0; i < _outputStreamAudio.size(); ++i )
-		{
-			avtranscoder::DataStream codedAudioFrame;
-			while( _outputStreamAudio.at( i ).encodeFrame( codedAudioFrame ) )
-			{
-				_outputFile->wrap( codedAudioFrame, 0 );
-			}
-		}
-		
-		// if audio latency in audio streams from silent tracks
-		for( size_t i = 0; i < _dummyStreamAudio.size(); ++i )
-		{
-			avtranscoder::DataStream codedAudioFrame;
-			while( _outputStreamAudioSilent.at( i ).encodeFrame( codedAudioFrame ) )
-			{
-				_outputFile->wrap( codedAudioFrame, 0 );
-			}
-		}
 	}
 	
 	_outputFile->endWrap();
