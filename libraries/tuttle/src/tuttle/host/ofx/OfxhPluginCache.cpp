@@ -408,46 +408,56 @@ void OfxhPluginCache::scanPluginFiles()
 		{
 			const bool binChanged = i->hasBinaryChanged();
 
-			// the binary was in the cache, but the binary has changed and thus we need to reload
-			if( binChanged )
+			try
 			{
-				i->loadPluginInfo( this );
-				setDirty();
-			}
-
-			for( int j = 0; j < i->getNPlugins(); ++j )
-			{
-				OfxhPlugin& plug                   = i->getPlugin( j );
-				try
+				// the binary was in the cache, but the binary has changed and thus we need to reload
+				if( binChanged )
 				{
-					APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
+					i->loadPluginInfo( this );
+					setDirty();
+				}
 
-					if( binChanged )
+				for( int j = 0; j < i->getNPlugins(); ++j )
+				{
+					OfxhPlugin& plug                   = i->getPlugin( j );
+					try
 					{
-						api.loadFromPlugin( plug ); // may throw
+						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
+
+						if( binChanged )
+						{
+							api.loadFromPlugin( plug ); // may throw
+						}
+
+						std::string reason;
+
+						if( api.pluginSupported( plug, reason ) )
+						{
+							addPlugin( &plug );
+							api.confirmPlugin( plug );
+						}
+						else
+						{
+							TUTTLE_LOG_INFO(
+								"Ignoring plugin " << quotes(plug.getIdentifier()) <<
+								": unsupported, " << reason << "." );
+						}
 					}
-
-					std::string reason;
-
-					if( api.pluginSupported( plug, reason ) )
+					catch(...)
 					{
-						addPlugin( &plug );
-						api.confirmPlugin( plug );
-					}
-					else
-					{
-						TUTTLE_LOG_WARNING(
+						TUTTLE_LOG_INFO(
 							"Ignoring plugin " << quotes(plug.getIdentifier()) <<
-							": unsupported, " << reason << "." );
+							": loading error." );
+						TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
 					}
 				}
-				catch(...)
-				{
-					TUTTLE_LOG_WARNING(
-						"Ignoring plugin " << quotes(plug.getIdentifier()) <<
-						": loading error." );
-					
-				}
+			}
+			catch(...)
+			{
+				TUTTLE_LOG_INFO(
+					"Ignoring ofx bundle " << quotes(i->getBundlePath()) <<
+					": loading error." );
+				TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
 			}
 
 			++i;
