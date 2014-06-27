@@ -5,6 +5,12 @@ project.UnitTest(
 	dirs = ['.'],
 	libraries = [
 		libs.tuttleTest,
-		]
+		],
+	execLibraries = [
+		libs.pluginJpeg,
+		libs.pluginPng,
+		libs.pluginExr,
+		libs.pluginInvert,
+		],
 	)
 
