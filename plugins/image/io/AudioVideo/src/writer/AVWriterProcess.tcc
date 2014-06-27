@@ -32,18 +32,18 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	
 	// Get image to encode
 	avtranscoder::ImageDesc imageToEncodeDesc = _plugin._outputStreamVideo.getVideoDesc().getImageDesc();
-	if( _plugin._imageToEncode == NULL )
+	if( _plugin._imageToEncode.get() == NULL )
 	{
 		_plugin._imageToEncode.reset( new avtranscoder::Image( imageToEncodeDesc ) );
 	}
 	
 	// Get image image rgb
-	if( _plugin._rgbImage == NULL )
+	if( _plugin._rgbImage.get() == NULL )
 	{
 		// get pixel data of image rgb
 		avtranscoder::Pixel oPixel;
 		size_t pixelComponents = imageToEncodeDesc.getPixelDesc().getComponents(); // get this from gil view
-		size_t pixelDepth = 8; // @todo: waiting for getMaxBitPerChannel() in avTranscoder
+		size_t pixelDepth = 8; // @todo: get it from src clip (only 8 or 16)
 		oPixel.setBitsPerPixel( pixelDepth * pixelComponents );
 		oPixel.setComponents( pixelComponents );
 		oPixel.setColorComponents( avtranscoder::eComponentRgb );

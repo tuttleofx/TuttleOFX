@@ -26,7 +26,6 @@ namespace writer {
 struct AVProcessParams
 {
 	std::string _outputFilePath; ///< Filepath
-	std::vector<std::string> _inputAudioFilePath; ///< Filepath of audio input
 	
 	int         _format;      ///< Format
 	std::string _formatName;      ///< Format name

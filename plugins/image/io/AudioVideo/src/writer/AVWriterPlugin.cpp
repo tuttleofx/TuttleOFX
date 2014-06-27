@@ -292,12 +292,6 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 
 	params._outputFilePath = _paramFilepath->getValue();
 	
-	params._inputAudioFilePath.clear();
-	for( int idAudioStream = 0; idAudioStream < _paramAudioNbStream->getValue(); ++idAudioStream )
-	{
-		params._inputAudioFilePath.push_back( _paramAudioFilePath.at( idAudioStream )->getValue() );
-	}
-	
 	params._format = _paramFormat->getValue();
 	params._formatName = _optionLoader.getFormatsShortNames().at( params._format );
 	
@@ -541,7 +535,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 
 void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 {
-	if( params._inputAudioFilePath.empty() ) // no audio specified
+	if( ! _paramAudioNbStream->getValue() ) // no audio specified
 	{
 		_initAudio = false;
 		return;
@@ -550,9 +544,9 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 	// create audio streams
 	try
 	{
-		for( size_t i = 0; i < params._inputAudioFilePath.size(); ++i )
+		for( size_t i = 0; i < _paramAudioFilePath.size(); ++i )
 		{
-			std::string inputFileName( params._inputAudioFilePath.at( i ) );
+			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
 			size_t inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
 			
 			// @todo: get audio profile name
