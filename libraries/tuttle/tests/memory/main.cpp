@@ -5,7 +5,7 @@
 #include <iostream>
 
 #define BOOST_TEST_MODULE tuttle_memory
-#include <boost/test/unit_test.hpp>
+#include <tuttle/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 using namespace std;

@@ -123,7 +123,7 @@ void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<Te
 }
 
 #define BOOST_TEST_MODULE tuttle_boostgraph
-#include <boost/test/unit_test.hpp>
+#include <tuttle/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE( tuttle_boostgraph_suite )
 
