@@ -4,7 +4,7 @@
 #include <AvTranscoder/File/InputFile.hpp>
 #include <AvTranscoder/InputStreamVideo.hpp>
 #include <AvTranscoder/DatasStructures/Image.hpp>
-#include <AvTranscoder/ColorTransform.hpp>
+#include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
 
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
@@ -58,7 +58,7 @@ public:
 	boost::scoped_ptr<avtranscoder::Image> _sourceImage;
 	boost::scoped_ptr<avtranscoder::Image> _imageToDecode;
 	
-	avtranscoder::ColorTransform _colorTransform;
+	avtranscoder::VideoEssenceTransform _colorTransform;
 	
 	std::string _lastInputFilePath;
 	size_t _idVideoStream;

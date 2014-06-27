@@ -5,7 +5,7 @@
 #include <AvTranscoder/File/OutputFile.hpp>
 #include <AvTranscoder/OutputStreamVideo.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
-#include <AvTranscoder/ColorTransform.hpp>
+#include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
 #include <AvTranscoder/Transcoder.hpp>
 
 #include <AvTranscoder/DatasStructures/Image.hpp>
@@ -117,7 +117,7 @@ public:
 	// to process video
 	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // Between gil and avTranscoder convert
 	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // Between avTranscoder convert and avTranscoder encode
-	avtranscoder::ColorTransform _colorTransform;
+	avtranscoder::VideoEssenceTransform _colorTransform;
 	
 	// to manage OFX params depending on AVOptions
 	avtranscoder::OptionLoader _optionLoader;
