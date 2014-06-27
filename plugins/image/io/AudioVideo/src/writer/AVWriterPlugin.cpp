@@ -23,6 +23,7 @@ extern "C" {
 
 #include <cctype>
 #include <sstream>
+#include <utility> // pair
 
 namespace tuttle {
 namespace plugin {
@@ -278,6 +279,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
 
 	updateVisibleTools();
+	
+	_presets.loadProfiles();
 }
 
 void AVWriterPlugin::updateVisibleTools()
@@ -544,14 +547,46 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 	// create audio streams
 	try
 	{
-		for( size_t i = 0; i < _paramAudioFilePath.size(); ++i )
+		for( int i = 0; i < _paramAudioNbStream->getValue(); ++i )
 		{
 			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
 			size_t inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
+			std::string presetName( "" );
 			
-			// @todo: get audio profile name
-			// @todo: get an audio profile if custom profile is set
-			_transcoder->add( inputFileName, inputStreamIndex, "" );
+			if( ! _paramAudioCopyStream.at( i )->getValue() )
+			{
+				size_t presetIndex = _paramAudioPreset.at( i )->getValue();
+				
+				// custom audio profile
+				if( presetIndex == 0 )
+				{
+					// @todo: create a custom profile
+					//avtranscoder::Profile::ProfileDesc customPreset;
+					//customPreset.insert( std::pair<std::string, std::string>( "codec", params._audioCodecName ) );
+					//customPreset.insert( std::pair<std::string, std::string>( "sample_fmt",  ) );
+				}
+				// main audio preset
+				else if( presetIndex == 1 )
+				{
+					size_t  mainPresetIndex = _paramMainAudioPreset->getValue();
+					
+					if( mainPresetIndex == 0 )
+					{
+						// @todo: create a custom profile
+					}
+					else
+					{
+						// at( mainPresetIndex - 1 ): subtract the index of the custom path
+						presetName = _presets.getAudioProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+					}
+				}
+				else
+				{
+					// at( presetIndex - 2 ): subtract the index of the custom path + the index of the main preset
+					presetName = _presets.getAudioProfiles().at( presetIndex - 2 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+				}
+			}
+			_transcoder->add( inputFileName, inputStreamIndex, presetName );
 		}
 	}
 	catch( std::exception& e )

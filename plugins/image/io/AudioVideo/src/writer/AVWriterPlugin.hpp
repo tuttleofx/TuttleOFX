@@ -5,6 +5,7 @@
 #include <AvTranscoder/File/OutputFile.hpp>
 #include <AvTranscoder/OutputStreamVideo.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/Profile.hpp>
 #include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
 #include <AvTranscoder/Transcoder.hpp>
 
@@ -120,6 +121,7 @@ public:
 	
 	// to manage OFX params depending on AVOptions
 	avtranscoder::OptionLoader _optionLoader;
+	avtranscoder::Profile _presets;
 		
 	bool _initVideo;
 	bool _initAudio;
