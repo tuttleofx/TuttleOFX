@@ -6,11 +6,10 @@
 
 #include <libav/LibAVPreset.hpp>
 #include <libav/LibAVFormatPreset.hpp>
-#include <libav/LibAVVideoPreset.hpp>
-#include <libav/LibAVAudioPreset.hpp>
 
 #include <AvTranscoder/Description.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/Profile.hpp>
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
@@ -85,6 +84,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 {
 	avtranscoder::OptionLoader optionLoader;
 	
+	avtranscoder::Profile presets;
+	presets.loadProfiles();
+	
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -144,6 +146,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* formatPreset = desc.defineChoiceParam( kParamFormatPreset );
 	formatPreset->setLabel( "Format Preset" );
 	formatPreset->appendOption( "custom", "Customized configuration" );
+	
 	std::vector<std::string> idFormatList;
 	std::vector<std::string> idFormatLabelList;
 	LibAVFormatPreset::getPresetList( idFormatList, idFormatLabelList );
@@ -199,15 +202,16 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* videoMainPresetParam = desc.defineChoiceParam( kParamMainVideoPreset );
 	videoMainPresetParam->setLabel( "Video Preset" );
 	videoMainPresetParam->appendOption( "custom", "Customized configuration" );
-	
-	std::vector<std::string> idVideoList;
-	std::vector<std::string> idVideoLabelList;
-	LibAVVideoPreset::getPresetList( idVideoList, idVideoLabelList );
-	for( unsigned int it = 0; it < idVideoList.size(); ++it )
-	{
-		videoMainPresetParam->appendOption( idVideoList.at( it ), idVideoLabelList.at( it ) );
-	}
 	videoMainPresetParam->setParent( videoGroup );
+	
+	avtranscoder::Profile::ProfilesDesc videoPresets = presets.getVideoProfiles();
+	for( avtranscoder::Profile::ProfilesDesc::iterator it = videoPresets.begin(); it != videoPresets.end(); ++it )
+	{
+		videoMainPresetParam->appendOption( 
+			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+		);
+	}
 	
 	/// video codec list
 	int default_codec = 0;
@@ -258,12 +262,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioMainPresetParam->appendOption( "custom", "Customized configuration" );
 	audioMainPresetParam->setParent( audioGroup );
 
-	std::vector<std::string> idAudioList;
-	std::vector<std::string> idAudioLabelList;
-	LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
-	for( unsigned int it = 0; it < idAudioList.size(); ++it )
+	avtranscoder::Profile::ProfilesDesc audioPresets = presets.getAudioProfiles();
+	for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 	{
-		audioMainPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
+		audioMainPresetParam->appendOption( 
+			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+		);
 	}
 	
 	// add group to manage option when custom preset
@@ -348,14 +353,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
 		audioCodecPresetParam->setLabel( "Output Preset" );
 		audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
+		audioCodecPresetParam->appendOption( "main", "Main preset" );
 		audioCodecPresetParam->setParent( audioSubGroupParam );
 
-		std::vector<std::string> idAudioList;
-		std::vector<std::string> idAudioLabelList;
-		LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
-		for( unsigned int it = 0; it < idAudioList.size(); ++it )
+		for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 		{
-			audioCodecPresetParam->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
+			audioCodecPresetParam->appendOption( 
+				(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+				(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+			);
 		}
 	}
 	
