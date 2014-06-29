@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace tuttle {
 namespace plugin {
