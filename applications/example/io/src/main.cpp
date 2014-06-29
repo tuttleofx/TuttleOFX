@@ -18,7 +18,7 @@ void sam_unexpected( void )
 
 int main( int argc, char** argv )
 {
-	tuttle::common::formatters::Formatter::get();
+	tuttle::common::Formatter::get();
 
 	std::set_terminate( &sam_terminate );
 	std::set_unexpected( &sam_unexpected );

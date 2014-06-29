@@ -5,7 +5,7 @@
 
 #include <ofxCore.h>
 
-#include <tuttle/common/utils/formatters.hpp>
+#include <tuttle/common/utils/Formatter.hpp>
 
 #include <boost/atomic.hpp>
 #include <boost/shared_ptr.hpp>
@@ -222,7 +222,7 @@ public:
 	 */
 	This& setVerboseLevel( const EVerboseLevel level )
 	{
-		tuttle::common::formatters::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
+		tuttle::common::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
 		return *this;
 	}
 	

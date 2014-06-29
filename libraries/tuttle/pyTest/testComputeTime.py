@@ -5,6 +5,7 @@ import time
 
 def setUp():
 	print("testComputeTime setUp")
+	tuttle.core().getFormatter().setLogLevel_int(0)
 	tuttle.core().preload(False)
 
 def testComputeTime():

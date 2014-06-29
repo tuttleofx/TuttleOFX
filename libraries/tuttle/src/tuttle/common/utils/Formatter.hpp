@@ -1,5 +1,5 @@
-#ifndef _COMMON_FORMATTERS_HPP_
-#define _COMMON_FORMATTERS_HPP_
+#ifndef _TUTTLE_COMMON_FORMATTERS_HPP_
+#define _TUTTLE_COMMON_FORMATTERS_HPP_
 
 #include "color.hpp"
 
@@ -45,7 +45,6 @@ enum severity_level
 
 namespace tuttle {
 namespace common {
-namespace formatters {
 
 class Formatter : boost::noncopyable
 {
@@ -80,5 +79,5 @@ public:
 
 }
 }
-}
+
 #endif

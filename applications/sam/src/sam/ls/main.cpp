@@ -53,7 +53,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 
-	formatters::Formatter::get();
+	Formatter::get();
 	boost::shared_ptr<Color> color( Color::get() );
 	
 	sequenceParser::EType filterByType = sequenceParser::eTypeFolder | sequenceParser::eTypeFile | sequenceParser::eTypeSequence; // by default show directories, files and sequences

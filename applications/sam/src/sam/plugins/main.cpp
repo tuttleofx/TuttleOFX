@@ -237,7 +237,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	formatters::Formatter::get();
+	Formatter::get();
 	boost::shared_ptr<Color> color( Color::get() );
 	
 	std::vector<std::string> plugins;

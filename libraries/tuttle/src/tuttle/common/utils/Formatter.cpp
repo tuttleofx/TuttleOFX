@@ -1,4 +1,4 @@
-#include "formatters.hpp"
+#include "Formatter.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/exceptions.hpp>
@@ -10,7 +10,6 @@
 
 namespace tuttle {
 namespace common {
-namespace formatters {
 
 boost::shared_ptr<Formatter> Formatter::get()
 {
@@ -140,6 +139,5 @@ void Formatter::displayLogLevel( bool display )
 #endif
 }
 
-}
 }
 }

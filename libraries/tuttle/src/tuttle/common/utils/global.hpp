@@ -2,7 +2,7 @@
 #define _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 
 #include "color.hpp"
-#include "formatters.hpp"
+#include "Formatter.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // System stuff

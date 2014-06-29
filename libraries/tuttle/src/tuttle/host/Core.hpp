@@ -10,16 +10,12 @@
 #include <tuttle/host/ofx/OfxhImageEffectPluginCache.hpp>
 
 #include <tuttle/common/patterns/Singleton.hpp>
+#include <tuttle/common/utils/Formatter.hpp>
 
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/shared_ptr.hpp>
 
 namespace tuttle {
-namespace common {
-namespace formatters {
-class Formatter;
-}
-}
 namespace host {
 
 class Core : public Singleton<Core>
@@ -39,7 +35,7 @@ private:
 	memory::IMemoryPool& _memoryPool;
 	memory::IMemoryCache& _memoryCache;
 	bool _isPreloaded;
-	boost::shared_ptr<tuttle::common::formatters::Formatter> _formatter;
+	boost::shared_ptr<tuttle::common::Formatter> _formatter;
 	
 	Preferences _preferences;
 
@@ -50,6 +46,8 @@ public:
 	const std::list<ofx::OfxhPlugin*>& getPlugins() const { return getPluginCache().getPlugins(); }
 
 	const Host&                 getHost() const        { return _host; }
+	
+	tuttle::common::Formatter& getFormatter() { return *_formatter; }
 
 	      Preferences& getPreferences()       { return _preferences; }
 	const Preferences& getPreferences() const { return _preferences; }
