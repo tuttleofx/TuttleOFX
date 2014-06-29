@@ -7,7 +7,7 @@
 
 #include <tuttle/common/utils/Formatter.hpp>
 
-#include <boost/atomic.hpp>
+#include <tuttle/common/atomic.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <limits>

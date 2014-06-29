@@ -8,7 +8,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/tss.hpp>
-#include <boost/atomic.hpp>
+#include <tuttle/common/atomic.hpp>
 #include <boost/bind.hpp>
 
 #include <boost/signals2.hpp>
