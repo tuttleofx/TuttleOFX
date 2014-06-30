@@ -133,7 +133,7 @@ void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 	}
 }
 
-void AVWriterPlugin::updateAudioStreamParams()
+void AVWriterPlugin::updateAudioParams()
 {
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
 	{
@@ -158,7 +158,7 @@ void AVWriterPlugin::updateAudioStreamParams()
 	}
 }
 
-void AVWriterPlugin::updateAudioPresetParams()
+void AVWriterPlugin::updateAudioCopyStream()
 {
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
 	{
@@ -276,9 +276,9 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioPreset.push_back( fetchChoiceParam( audioCodecPresetName.str() ) );
 		_paramAudioPreset.back()->setIsSecretAndDisabled( false );
 	}
-	updateAudioStreamParams();
-	updateAudioPresetParams();
+	updateAudioParams();
 	updateAudioSilent();
+	updateAudioCopyStream();
 	
 	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
@@ -488,13 +488,13 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamAudioNbStream )
 	{
-		updateAudioStreamParams();
-		updateAudioPresetParams();
+		updateAudioParams();
 		updateAudioSilent();
+		updateAudioCopyStream();
 	}
 	else if( paramName.find( kParamAudioCopyStream ) != std::string::npos )
 	{
-		updateAudioPresetParams();
+		updateAudioCopyStream();
 	}
 	else if( paramName.find( kParamAudioSilent ) != std::string::npos )
 	{

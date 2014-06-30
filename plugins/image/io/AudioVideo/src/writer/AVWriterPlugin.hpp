@@ -61,8 +61,8 @@ public:
 	
 	void disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec );
 	void updatePixelFormat( const std::string& videoCodecName );
-	void updateAudioStreamParams();
-	void updateAudioPresetParams();
+	void updateAudioParams();
+	void updateAudioCopyStream();
 	void updateAudioSilent();
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
