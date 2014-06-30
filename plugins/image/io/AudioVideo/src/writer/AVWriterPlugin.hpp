@@ -3,11 +3,11 @@
 
 #include <AvTranscoder/File/InputFile.hpp>
 #include <AvTranscoder/File/OutputFile.hpp>
-#include <AvTranscoder/OutputStreamVideo.hpp>
+#include <AvTranscoder/EssenceStream/OutputVideo.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 #include <AvTranscoder/Profile.hpp>
 #include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
-#include <AvTranscoder/Transcoder.hpp>
+#include <AvTranscoder/Transcoder/Transcoder.hpp>
 
 #include <AvTranscoder/DatasStructures/Image.hpp>
 
@@ -110,7 +110,7 @@ public:
 	 * The output file.
 	 */
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
-	avtranscoder::OutputStreamVideo _outputStreamVideo;
+	avtranscoder::OutputVideo _outputStreamVideo;
 	
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
 	

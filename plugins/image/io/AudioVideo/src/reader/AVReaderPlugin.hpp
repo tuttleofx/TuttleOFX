@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
 #include <AvTranscoder/File/InputFile.hpp>
-#include <AvTranscoder/InputStreamVideo.hpp>
+#include <AvTranscoder/EssenceStream/InputVideo.hpp>
 #include <AvTranscoder/DatasStructures/Image.hpp>
 #include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
 
@@ -54,7 +54,7 @@ public:
 	OFX::DoubleParam*  _paramCustomSAR;    ///< Custom SAR to use
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
-	boost::scoped_ptr<avtranscoder::InputStreamVideo> _inputStreamVideo;
+	boost::scoped_ptr<avtranscoder::InputVideo> _inputStreamVideo;
 	boost::scoped_ptr<avtranscoder::Image> _sourceImage;
 	boost::scoped_ptr<avtranscoder::Image> _imageToDecode;
 	

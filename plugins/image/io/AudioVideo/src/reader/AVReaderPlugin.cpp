@@ -68,7 +68,7 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 		_inputFile->readStream( _idVideoStream );
 		
 		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::InputStreamVideo( _inputFile->getStream( _idVideoStream ) ) );
+		_inputStreamVideo.reset( new avtranscoder::InputVideo( _inputFile->getStream( _idVideoStream ) ) );
 		_inputStreamVideo->setup();
 	}
 	catch( std::exception& e )
