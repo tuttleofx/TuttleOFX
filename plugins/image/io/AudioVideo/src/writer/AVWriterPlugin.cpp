@@ -648,7 +648,7 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 
 void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
 {	
-	if( ! _initVideo )
+	if( ! _initOutpuFile || ! _initVideo )
 		return;
 	
 	// if video latency
