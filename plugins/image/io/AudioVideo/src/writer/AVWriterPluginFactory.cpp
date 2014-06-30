@@ -322,7 +322,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
 		audioSubGroupName << "_" << idAudioStream;
 		OFX::GroupParamDescriptor* audioSubGroupParam = desc.defineGroupParam( audioSubGroupName.str() );
-		audioSubGroupParam->setLabel( "Audio stream group" );
+		std::ostringstream audioSubGroupLabel( "Stream ", std::ios_base::in | std::ios_base::ate );
+		audioSubGroupLabel << idAudioStream;
+		audioSubGroupParam->setLabel( audioSubGroupLabel.str() );
 		audioSubGroupParam->setHint( "Indicate streams you want to add to the output file." );
 		audioSubGroupParam->setParent( audioGroup );
 		
