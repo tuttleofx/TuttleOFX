@@ -300,6 +300,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	common::addOptionsToGroup( desc, audioCustomGroupParam, audioGroupOptions, "a_" );
 	
+	// add audio details
+	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
+	audioDetailledGroup->setLabel( "Detailled" );
+	audioDetailledGroup->setAsTab( );
+	audioDetailledGroup->setParent( audioGroup );
+	
+	avtranscoder::OptionLoader::OptionMap audioDetailledGroupOptions = optionLoader.loadAudioCodecOptions();
+	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions );
+	
 	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
 	audioNbStream->setLabel( "Number of audio stream" );
@@ -364,14 +373,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 			);
 		}
 	}
-	
-	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
-	audioDetailledGroup->setLabel( "Detailled" );
-	audioDetailledGroup->setAsTab( );
-	audioDetailledGroup->setParent( audioGroup );
-	
-	avtranscoder::OptionLoader::OptionMap audioDetailledGroupOptions = optionLoader.loadAudioCodecOptions();
-	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions );
 	
 	/// METADATA PARAMETERS
 	std::map<std::string, std::string> keys;
