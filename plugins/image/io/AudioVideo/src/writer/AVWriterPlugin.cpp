@@ -140,6 +140,7 @@ void AVWriterPlugin::updateAudioStreamParams()
 		if( idAudioStream < (size_t)_paramAudioNbStream->getValue() )
 		{
 			_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( false );
+			_paramAudioSilent.at( idAudioStream )->setIsSecretAndDisabled( false );
 			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( false );
 			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
 			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( false );
@@ -148,6 +149,7 @@ void AVWriterPlugin::updateAudioStreamParams()
 		else
 		{
 			_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( true );
+			_paramAudioSilent.at( idAudioStream )->setIsSecretAndDisabled( true );
 			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( true );
 			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
 			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( true );
@@ -176,8 +178,37 @@ void AVWriterPlugin::updateAudioPresetParams()
 	}
 }
 
+void AVWriterPlugin::updateAudioSilent()
+{
+	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	{
+		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
+			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() )
+		{
+			// if silent stream
+			if( _paramAudioSilent.at( idAudioStream )->getValue() )
+			{
+				_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( true );
+				_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
+				_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( true );
+				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
+			}
+			else
+			{
+				_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( false );
+				_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
+				_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( false );
+				if( ! _paramAudioCopyStream.at( idAudioStream )->getValue() )
+					_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
+			}
+		}
+	}
+}
+
 AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
+	, _paramAudioSubGroup()
+	, _paramAudioSilent()
 	, _paramAudioFilePath()
 	, _paramAudioStreamIndex()
 	, _paramAudioCopyStream()
@@ -220,6 +251,11 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioSubGroup.push_back( fetchGroupParam( audioSubGroupName.str() ) );
 		_paramAudioSubGroup.back()->setIsSecretAndDisabled( false );
 		
+		std::ostringstream audioSilentName( kParamAudioSilent, std::ios_base::in | std::ios_base::ate );
+		audioSilentName << "_" << idAudioStream;
+		_paramAudioSilent.push_back( fetchBooleanParam( audioSilentName.str() ) );
+		_paramAudioSilent.back()->setIsSecretAndDisabled( false );
+		
 		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
 		audioFilePathName << "_" << idAudioStream;
 		_paramAudioFilePath.push_back( fetchStringParam( audioFilePathName.str() ) );
@@ -242,6 +278,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	}
 	updateAudioStreamParams();
 	updateAudioPresetParams();
+	updateAudioSilent();
 	
 	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
@@ -453,10 +490,15 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	{
 		updateAudioStreamParams();
 		updateAudioPresetParams();
+		updateAudioSilent();
 	}
 	else if( paramName.find( kParamAudioCopyStream ) != std::string::npos )
 	{
 		updateAudioPresetParams();
+	}
+	else if( paramName.find( kParamAudioSilent ) != std::string::npos )
+	{
+		updateAudioSilent();
 	}
 }
 
@@ -550,10 +592,23 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 		{
 			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
 			size_t inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
-			std::string presetName( "" );
 			
-			if( ! _paramAudioCopyStream.at( i )->getValue() )
+			// dummy
+			if( _paramAudioSilent.at( i )->getValue() )
 			{
+				// @todo: avTranscoder ; can set a profile to a dummy (and so can have a dummy without an existing audio stream)
+				_transcoder->add( "", 0, "" );
+			}
+			// rewrap
+			else if( ! _paramAudioSilent.at( i )->getValue() &&  _paramAudioCopyStream.at( i )->getValue() )
+			{
+				_transcoder->add( inputFileName, inputStreamIndex, "" );
+			}
+			// transcode
+			else
+			{
+				std::string presetName( "" );
+				
 				size_t  mainPresetIndex = _paramMainAudioPreset->getValue();
 				size_t presetIndex = _paramAudioPreset.at( i )->getValue();
 				
@@ -570,22 +625,25 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 					customPreset[ "sample_fmt" ] = "s16";
 					
 					_transcoder->add( inputFileName, inputStreamIndex, customPreset );
-					
-					continue;
 				}
-				// main audio preset
-				else if( presetIndex == 1 )
-				{
-					// at( mainPresetIndex - 1 ): subtract the index of the custom path
-					presetName = _presets.getAudioProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
-				}
+				// existing audio preset
 				else
 				{
-					// at( presetIndex - 2 ): subtract the index of the custom path + the index of the main preset
-					presetName = _presets.getAudioProfiles().at( presetIndex - 2 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+					// main audio preset
+					if( presetIndex == 1 )
+					{
+						// at( mainPresetIndex - 1 ): subtract the index of the custom path
+						presetName = _presets.getAudioProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+					}
+					// specific audio preset
+					else
+					{
+						// at( presetIndex - 2 ): subtract the index of the custom path + the index of the main preset
+						presetName = _presets.getAudioProfiles().at( presetIndex - 2 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+					}
+					_transcoder->add( inputFileName, inputStreamIndex, presetName );
 				}
 			}
-			_transcoder->add( inputFileName, inputStreamIndex, presetName );
 		}
 	}
 	catch( std::exception& e )

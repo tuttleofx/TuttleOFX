@@ -43,6 +43,7 @@ static const std::string kParamAudioCustomGroup          = "audioCustomGroup";
 static const std::string kParamAudioNbStream             = "audioNbStream";
 
 static const std::string kParamAudioSubGroup             = "audioSubGroup";
+static const std::string kParamAudioSilent               = "audioSilent";
 static const std::string kParamAudioFilePath             = "audioFilePath";
 static const std::string kParamAudioStreamId             = "audioStreamId";
 static const std::string kParamAudioCopyStream           = "audioCopyStream";

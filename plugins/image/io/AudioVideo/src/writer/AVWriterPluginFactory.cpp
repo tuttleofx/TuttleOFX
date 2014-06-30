@@ -326,6 +326,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioSubGroupParam->setHint( "Indicate streams you want to add to the output file." );
 		audioSubGroupParam->setParent( audioGroup );
 		
+		// add flag to audio silent
+		std::ostringstream audioSilentName( kParamAudioSilent, std::ios_base::in | std::ios_base::ate );
+		audioSilentName << "_" << idAudioStream;
+		OFX::BooleanParamDescriptor* audioSilentParam = desc.defineBooleanParam( audioSilentName.str() );
+		audioSilentParam->setLabel( "Silent stream" );
+		audioSilentParam->setHint( "Write a silent audio stream" );
+		audioSilentParam->setDefault( true );
+		audioSilentParam->setParent( audioSubGroupParam );
+		
 		// add audio file path
 		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
 		audioFilePathName << "_" << idAudioStream;

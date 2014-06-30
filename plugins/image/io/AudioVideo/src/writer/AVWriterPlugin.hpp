@@ -63,6 +63,7 @@ public:
 	void updatePixelFormat( const std::string& videoCodecName );
 	void updateAudioStreamParams();
 	void updateAudioPresetParams();
+	void updateAudioSilent();
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
@@ -99,6 +100,7 @@ public:
 	OFX::IntParam*      _paramAudioNbStream;
 	
 	std::vector<OFX::GroupParam*> _paramAudioSubGroup;
+	std::vector<OFX::BooleanParam*> _paramAudioSilent;
 	std::vector<OFX::StringParam*> _paramAudioFilePath;
 	std::vector<OFX::IntParam*> _paramAudioStreamIndex;
 	std::vector<OFX::BooleanParam*> _paramAudioCopyStream;
