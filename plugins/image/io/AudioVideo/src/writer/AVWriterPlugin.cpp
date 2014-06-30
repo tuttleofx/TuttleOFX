@@ -555,30 +555,30 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 			
 			if( ! _paramAudioCopyStream.at( i )->getValue() )
 			{
+				size_t  mainPresetIndex = _paramMainAudioPreset->getValue();
 				size_t presetIndex = _paramAudioPreset.at( i )->getValue();
 				
 				// custom audio profile
-				if( presetIndex == 0 )
+				if( presetIndex == 0 ||
+					( presetIndex == 1 && mainPresetIndex == 0 ) )
 				{
-					// @todo: create a custom profile
-					//avtranscoder::Profile::ProfileDesc customPreset;
-					//customPreset.insert( std::pair<std::string, std::string>( "codec", params._audioCodecName ) );
-					//customPreset.insert( std::pair<std::string, std::string>( "sample_fmt",  ) );
+					avtranscoder::Profile::ProfileDesc customPreset;
+					customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customPreset";
+					customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom preset";
+					customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
+					// @todo: get it from OFX params
+					customPreset[ "codec" ] = params._audioCodecName;
+					customPreset[ "sample_fmt" ] = "s16";
+					
+					_transcoder->add( inputFileName, inputStreamIndex, customPreset );
+					
+					continue;
 				}
 				// main audio preset
 				else if( presetIndex == 1 )
 				{
-					size_t  mainPresetIndex = _paramMainAudioPreset->getValue();
-					
-					if( mainPresetIndex == 0 )
-					{
-						// @todo: create a custom profile
-					}
-					else
-					{
-						// at( mainPresetIndex - 1 ): subtract the index of the custom path
-						presetName = _presets.getAudioProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
-					}
+					// at( mainPresetIndex - 1 ): subtract the index of the custom path
+					presetName = _presets.getAudioProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
 				}
 				else
 				{
