@@ -30,7 +30,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 			case avtranscoder::TypeInt:
 			{
-				OFX::IntParamDescriptor* intParam = desc.defineIntParam( option.getName() );
+				OFX::IntParamDescriptor* intParam = desc.defineIntParam( name );
 				intParam->setDefault( option.getDefaultValueInt() );
 				intParam->setRange( option.getMin(), option.getMax() );
 				intParam->setDisplayRange( option.getMin(), option.getMax() );
@@ -79,7 +79,10 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
-					OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( child.getName() );
+					std::string childName = prefix;
+					childName += child.getName();
+					
+					OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( childName );
 					param->setLabel( child.getName() );
 					param->setDefault( child.getOffset() );
 					param->setHint( child.getHelp() );
@@ -179,12 +182,12 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 					OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
 					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 					{
-						std::string ChildName = "flags_";
-						ChildName += subGroupName;
-						ChildName += "_";
-						ChildName += child.getName();
+						std::string childName = "flags_";
+						childName += subGroupName;
+						childName += "_";
+						childName += child.getName();
 						
-						OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( ChildName );
+						OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( childName );
 						param->setLabel( child.getName() );
 						param->setDefault( child.getOffset() );
 						param->setHint( child.getHelp() );
