@@ -84,8 +84,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 {
 	avtranscoder::OptionLoader optionLoader;
 	
-	avtranscoder::Profile presets;
-	presets.loadProfiles();
+	avtranscoder::Profile presets( true );
 	
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 

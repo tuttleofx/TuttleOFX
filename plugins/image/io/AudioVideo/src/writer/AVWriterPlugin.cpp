@@ -187,6 +187,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _transcoder( NULL )
 	, _rgbImage( NULL )
 	, _imageToEncode( NULL )
+	, _presets( true ) 
 	, _initVideo( false )
 	, _initAudio( false )
 	, _initOutpuFile( false )
@@ -279,8 +280,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
 
 	updateVisibleTools();
-	
-	_presets.loadProfiles();
 }
 
 void AVWriterPlugin::updateVisibleTools()
