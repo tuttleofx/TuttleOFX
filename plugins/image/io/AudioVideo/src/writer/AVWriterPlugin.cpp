@@ -222,6 +222,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _rgbImage( NULL )
 	, _imageToEncode( NULL )
 	, _presets( true ) 
+	, _lastOutputFilePath()
 	, _initVideo( false )
 	, _initAudio( false )
 	, _initOutpuFile( false )
@@ -513,6 +514,11 @@ void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 
 void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params )
 {
+	// ouput file path already set
+	if( _lastOutputFilePath != "" &&
+		_lastOutputFilePath == params._outputFilePath )
+		return;
+	
 	if( params._outputFilePath == "" ) // no output file indicated
 	{
 		_initVideo = false;
@@ -528,6 +534,8 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		_outputFile->setup();
 		
 		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
+		
+		_lastOutputFilePath = params._outputFilePath;
 	}
 	catch( std::exception& e )
 	{

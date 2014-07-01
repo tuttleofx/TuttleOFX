@@ -124,6 +124,8 @@ public:
 	// to manage OFX params depending on AVOptions
 	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;
+	
+	std::string _lastOutputFilePath;
 		
 	bool _initVideo;
 	bool _initAudio;
