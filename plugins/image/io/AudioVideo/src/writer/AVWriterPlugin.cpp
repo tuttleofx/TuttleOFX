@@ -8,13 +8,6 @@
 #include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
 #include <AvTranscoder/ProgressListener.hpp>
 
-extern "C" {
-#ifndef __STDC_CONSTANT_MACROS
-	#define __STDC_CONSTANT_MACROS
-#endif
-#include <libavutil/pixdesc.h>
-}
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
