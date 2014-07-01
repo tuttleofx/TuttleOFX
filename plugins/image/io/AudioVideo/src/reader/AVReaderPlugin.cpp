@@ -59,6 +59,7 @@ void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
 		_inputFile->analyse( progress, avtranscoder::InputFile::eAnalyseLevelFast );
 		
 		// set range of the OFX param
+		// @todo: move it when update params
 		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
 		
 		// get streamId of the video stream

@@ -37,9 +37,6 @@ struct AVProcessParams
 	int         _audioCodec;  ///< Audio codec
 	std::string _audioCodecName;  ///< Audio codec name
 	
-	int         _videoPreset; ///< video configuration (based on the video codec)
-	int         _audioMainPreset; ///< audio main configuration
-	
 	AVPixelFormat _videoPixelFormat; /// videoPixelFormat
 
 	std::map< std::string, std::string > _metadatas;

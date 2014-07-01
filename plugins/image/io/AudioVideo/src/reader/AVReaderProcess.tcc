@@ -32,7 +32,7 @@ void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	
 	_plugin._lastFrame = args.time;
 	
-	// Fetch output image	
+	// Fetch output image
 	if( ! _plugin._inputStreamVideo->readNextFrame( *_plugin._sourceImage ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()

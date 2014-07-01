@@ -653,10 +653,10 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 				// transcode
 				else
 				{
-					size_t  mainPresetIndex = _paramMainAudioPreset->getValue();
+					size_t mainPresetIndex = _paramMainAudioPreset->getValue();
 					size_t presetIndex = _paramAudioPreset.at( i )->getValue();
 
-					// custom audio profile
+					// custom audio preset
 					if( presetIndex == 0 ||
 						( presetIndex == 1 && mainPresetIndex == 0 ) )
 					{
@@ -686,13 +686,13 @@ void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
 						// main audio preset
 						if( presetIndex == 1 )
 						{
-							// at( mainPresetIndex - 1 ): subtract the index of the custom path
+							// at( mainPresetIndex - 1 ): subtract the index of the custom preset
 							presetName = _presets.getAudioProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
 						}
 						// specific audio preset
 						else
 						{
-							// at( presetIndex - 2 ): subtract the index of the custom path + the index of the main preset
+							// at( presetIndex - 2 ): subtract the index of the custom preset + the index of the main preset
 							presetName = _presets.getAudioProfiles().at( presetIndex - 2 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
 						}
 						if( inputStreamIndex != -1 )
