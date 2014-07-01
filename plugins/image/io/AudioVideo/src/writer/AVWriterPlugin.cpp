@@ -548,36 +548,50 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 	// create video stream
 	try
 	{
-		avtranscoder::VideoDesc& videoOutputDesc = _outputStreamVideo.getVideoDesc(); 
-		videoOutputDesc.setVideoCodec( params._videoCodecName );
+		size_t mainPresetIndex = _paramMainVideoPreset->getValue();
+		
+		// custom video preset
+		if( mainPresetIndex == 0 )
+		{			
+			avtranscoder::VideoDesc& videoOutputDesc = _outputStreamVideo.getVideoDesc();
+			
+			videoOutputDesc.setVideoCodec( params._videoCodecName );
 
-		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
-		int width = bounds.x2 - bounds.x1;
-		int height = bounds.y2 - bounds.y1;
+			const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
+			int width = bounds.x2 - bounds.x1;
+			int height = bounds.y2 - bounds.y1;
 
-		avtranscoder::ImageDesc imageDesc;
-		avtranscoder::Pixel pixel( params._videoPixelFormat );
-		imageDesc.setPixel( pixel );
-		imageDesc.setWidth( width );
-		imageDesc.setHeight( height );
-		imageDesc.setDar( _clipSrc->getPixelAspectRatio(), 1 );
-		videoOutputDesc.setImageParameters( imageDesc );
-
-		if( _paramUseCustomFps->getValue() )
-		{
-			videoOutputDesc.setTimeBase( 1, _paramCustomFps->getValue() );
+			avtranscoder::ImageDesc imageDesc;
+			avtranscoder::Pixel pixel( params._videoPixelFormat );
+			imageDesc.setPixel( pixel );
+			imageDesc.setWidth( width );
+			imageDesc.setHeight( height );
+			imageDesc.setDar( _clipSrc->getPixelAspectRatio(), 1 );
+			videoOutputDesc.setImageParameters( imageDesc );
+			
+			if( _paramUseCustomFps->getValue() )
+			{
+				videoOutputDesc.setTimeBase( 1, _paramCustomFps->getValue() );
+			}
+			else
+			{
+				videoOutputDesc.setTimeBase( 1, _clipSrc->getFrameRate() );
+			}
+			
+			if( ! _outputStreamVideo.setup( ) )
+			{
+				throw std::runtime_error( "error during initialising video output stream" );
+			}
 		}
+		// existing video preset
 		else
 		{
-			videoOutputDesc.setTimeBase( 1, _clipSrc->getFrameRate() );
-		}
-
-		if( ! _outputStreamVideo.setup( ) )
-		{
-			throw std::runtime_error( "error during initialising video output stream" );
+			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
+			std::string presetName( _presets.getVideoProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second );
+			_outputStreamVideo.setProfile( _presets.getProfile( presetName ) );
 		}
 		
-		_outputFile->addVideoStream( videoOutputDesc );
+		_outputFile->addVideoStream( _outputStreamVideo.getVideoDesc() );
 	}	
 	catch( std::exception& e )
 	{
