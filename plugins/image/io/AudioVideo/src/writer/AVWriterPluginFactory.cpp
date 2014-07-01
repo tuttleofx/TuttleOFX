@@ -212,6 +212,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		);
 	}
 	
+	// add group to manage option when custom preset
+	OFX::GroupParamDescriptor* videoCustomGroupParam = desc.defineGroupParam( kParamVideoCustomGroup );
+	videoCustomGroupParam->setLabel( "Video custom parameters" );
+	videoCustomGroupParam->setHint( "Contains expert params, use to write video streams when custom preset is specified." );
+	videoCustomGroupParam->setParent( videoGroup );
+	
 	/// video codec list
 	int default_codec = 0;
 	std::string defaultVideoCodec( "mpeg4" );
@@ -229,7 +235,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	}
 	videoCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	videoCodec->setDefault( default_codec );
-	videoCodec->setParent( videoGroup );
+	videoCodec->setParent( videoCustomGroupParam );
 	
 	/// video codec parameters
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
@@ -240,11 +246,11 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	{
 		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );
 	}
-	videoCodecPixelFmt->setParent( videoGroup );
+	videoCodecPixelFmt->setParent( videoCustomGroupParam );
 	
 	// add video codec parameters
 	avtranscoder::OptionLoader::OptionArray videoGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	common::addOptionsToGroup( desc, videoGroup, videoGroupOptions, "v_" );
+	common::addOptionsToGroup( desc, videoCustomGroupParam, videoGroupOptions, "v_" );
 	
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );

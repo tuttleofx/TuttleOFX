@@ -92,6 +92,7 @@ public:
 	OFX::DoubleParam*   _paramCustomFps;
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
+	OFX::GroupParam*    _paramVideoCustomGroup;
 	OFX::GroupParam*    _paramAudioCustomGroup;
 	
 	OFX::IntParam*      _paramAudioNbStream;

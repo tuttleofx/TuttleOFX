@@ -232,6 +232,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	
+	_paramVideoCustomGroup = fetchGroupParam( kParamVideoCustomGroup );
 	_paramAudioCustomGroup = fetchGroupParam( kParamAudioCustomGroup );
 	
 	_paramAudioNbStream = fetchIntParam( kParamAudioNbStream );
@@ -384,7 +385,11 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName == kParamMainVideoPreset )
 	{
 		if( _paramMainVideoPreset->getValue() == 0 )
+		{
+			_paramVideoCustomGroup->setIsSecretAndDisabled( false );
 			return;
+		}
+		_paramVideoCustomGroup->setIsSecretAndDisabled( true );
 	}
 	else if( paramName == kParamMainAudioPreset )
 	{
