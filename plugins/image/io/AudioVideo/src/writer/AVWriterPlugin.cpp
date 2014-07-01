@@ -2,11 +2,6 @@
 #include "AVWriterProcess.hpp"
 #include "AVWriterDefinitions.hpp"
 
-#include <libav/LibAVPreset.hpp>
-#include <libav/LibAVFormatPreset.hpp>
-#include <libav/LibAVVideoPreset.hpp>
-#include <libav/LibAVAudioPreset.hpp>
-
 #include <AvTranscoder/DatasStructures/AudioDesc.hpp>
 #include <AvTranscoder/DatasStructures/VideoDesc.hpp>
 
@@ -385,83 +380,18 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamMainPreset )
 	{
-		//TUTTLE_LOG_TRACE( "preset change " << _paramMainPreset->getValue() );
 		if( _paramMainPreset->getValue() == 0 )
 			return;
-		
-		std::vector<std::string> idList;
-		std::vector<std::string> idLabelList;
-		LibAVPreset::getPresetList( idList, idLabelList );
-		
-		LibAVPreset p( idList.at( _paramMainPreset->getValue() - 1 ) );
-		
-		std::vector<std::string> idFormatList;
-		LibAVFormatPreset::getPresetList( idFormatList );
-
-		std::vector<std::string> idVideoList;
-		LibAVVideoPreset::getPresetList( idVideoList );
-		
-		std::vector<std::string> idAudioList;
-		LibAVAudioPreset::getPresetList( idAudioList);
-		
-		int formatIndex = 0;
-		int videoIndex  = 0;
-		int audioIndex  = 0;
-		for( unsigned int id = 0; id < idFormatList.size(); id++ )
-		{
-			if( idFormatList.at( id ) == p.getFormatID() )
-			{
-				formatIndex = id + 1;
-				break;
-			}
-		}
-		
-		for( unsigned int id = 0; id < idVideoList.size(); id++ )
-		{
-			if( idVideoList.at( id ) == p.getVideoID() )
-			{
-				videoIndex = id + 1;
-				break;
-			}
-		}
-		
-		for( unsigned int id = 0; id < idAudioList.size(); id++ )
-		{
-			if( idAudioList.at( id ) == p.getAudioID() )
-			{
-				audioIndex = id + 1;
-				break;
-			}
-		}
-		/*
-		TUTTLE_LOG_INFO( "set format at " << formatIndex );
-		TUTTLE_LOG_INFO( "set video at " << formatIndex );
-		TUTTLE_LOG_INFO( "set audio at " << formatIndex );*/
-		
-		_paramFormatPreset->setValue( formatIndex );
-		_paramMainVideoPreset->setValue( videoIndex );
-		_paramMainAudioPreset->setValue( audioIndex );
 	}
 	else if( paramName == kParamFormatPreset )
 	{
-		//TUTTLE_LOG_INFO( "preset change " << _paramFormatPreset->getValue() );
 		if( _paramFormatPreset->getValue() == 0 )
 			return;
-		std::vector<std::string> idFormatList;
-		LibAVFormatPreset::getPresetList( idFormatList );
-		
-		//LibAVFormatPreset p( idFormatList.at( _paramFormatPreset->getValue() - 1 ) );
-		//setParameters( p.getParameters() );
 	}
 	else if( paramName == kParamMainVideoPreset )
 	{
 		if( _paramMainVideoPreset->getValue() == 0 )
 			return;
-		std::vector<std::string> idVideoList;
-		LibAVVideoPreset::getPresetList( idVideoList );
-		
-		//LibAVVideoPreset p( idVideoList.at( _paramVideoCodecPreset->getValue() - 1 ) );
-		//setParameters( p.getParameters() );
 	}
 	else if( paramName == kParamMainAudioPreset )
 	{
@@ -472,12 +402,6 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			return;
 		}
 		_paramAudioCustomGroup->setIsSecretAndDisabled( true );
-		
-		std::vector<std::string> idAudioList;
-		LibAVAudioPreset::getPresetList( idAudioList);
-		
-		//LibAVAudioPreset p( idAudioList.at( _paramAudioCodecPreset->getValue() - 1 ) );
-		//setParameters( p.getParameters() );
 	}
 	else if( paramName == kParamUseCustomFps )
 	{
