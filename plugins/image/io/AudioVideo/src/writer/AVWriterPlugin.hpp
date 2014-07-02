@@ -138,6 +138,7 @@ public:
 	OFX::ChoiceParam* _paramVideoPixelFormat;
 	
 	CustomParams _paramVideoCustom;
+	CustomParams _paramAudioCustom;
 	
 	// presets
 	OFX::ChoiceParam* _paramMainPreset;

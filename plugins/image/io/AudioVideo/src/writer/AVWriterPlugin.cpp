@@ -24,6 +24,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioCopyStream()
 	, _paramAudioPreset()
 	, _paramVideoCustom()
+	, _paramAudioCustom()
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
@@ -103,6 +104,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	updatePixelFormat( videoCodecName );
 	
 	avtranscoder::OptionLoader::OptionMap optionsAudioCodecMap = _optionLoader.loadAudioCodecOptions();
+	fetchCustomParams( optionsAudioCodecMap, kPrefixAudio );
 	const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName, kPrefixAudio );
 	
@@ -357,6 +359,8 @@ void AVWriterPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionMap& o
 	CustomParams* customParams;
 	if( prefix == kPrefixVideo )
 		customParams = &_paramVideoCustom;
+	if( prefix == kPrefixAudio )
+		customParams = &_paramAudioCustom;
 	else
 		return;
 	
@@ -684,9 +688,15 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 						customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customPreset";
 						customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom preset";
 						customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
-						// @todo: get it from OFX params
 						customPreset[ "codec" ] = params._audioCodecName;
+						// @todo: get sample_fmt from OFX params
 						customPreset[ "sample_fmt" ] = "s16";
+						
+						CustomParams::OptionsForPreset optionsForPreset = _paramAudioCustom.getOptionsNameAndValue( params._audioCodecName );
+						BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
+						{
+							customPreset[ nameAndValue.first ] = nameAndValue.second;
+						}
 
 						if( inputStreamIndex != -1 )
 						{
