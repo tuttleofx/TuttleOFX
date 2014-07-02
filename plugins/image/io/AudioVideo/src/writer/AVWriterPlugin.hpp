@@ -127,7 +127,6 @@ public:
 	std::string _lastOutputFilePath;
 		
 	bool _initVideo;
-	bool _initAudio;
 	bool _initWrap;
 };
 

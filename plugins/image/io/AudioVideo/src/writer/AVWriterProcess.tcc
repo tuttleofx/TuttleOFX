@@ -82,10 +82,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	}
 	
 	// encode audio
-	if( _plugin._initAudio ) 
-	{
-		_plugin._transcoder->processFrame();
-	}
+	_plugin._transcoder->processFrame();
 }
 
 }

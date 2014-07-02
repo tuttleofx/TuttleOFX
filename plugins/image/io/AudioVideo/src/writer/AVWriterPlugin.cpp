@@ -212,7 +212,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _presets( true ) 
 	, _lastOutputFilePath()
 	, _initVideo( false )
-	, _initAudio( false )
 	, _initWrap( false )
 {
 	// We want to render a sequence
@@ -547,10 +546,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 void AVWriterPlugin::initAudio( AVProcessParams& params )
 {
 	if( ! _paramAudioNbStream->getValue() ) // no audio specified
-	{
-		_initAudio = false;
 		return;
-	}
 	
 	// create audio streams
 	try
@@ -655,12 +651,9 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 	}
 	catch( std::exception& e )
 	{
-		_initAudio = false;
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "unable to create audio stream: " + e.what() );
 	}
-	
-	_initAudio = true;
 }
 
 void AVWriterPlugin::cleanVideoAndAudio()
@@ -675,7 +668,6 @@ void AVWriterPlugin::cleanVideoAndAudio()
 	_transcoder.reset();
 	
 	_initVideo = false;
-	_initAudio = false;
 	_initWrap = false;
 }
 
