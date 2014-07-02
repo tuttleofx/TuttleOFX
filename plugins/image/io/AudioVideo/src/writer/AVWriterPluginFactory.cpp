@@ -4,21 +4,11 @@
 
 #include <common/util.hpp>
 
-#include <libav/LibAVPreset.hpp>
-#include <libav/LibAVFormatPreset.hpp>
-
 #include <AvTranscoder/Description.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 #include <AvTranscoder/Profile.hpp>
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
-
-extern "C" {
-#ifndef __STDC_CONSTANT_MACROS
-	#define __STDC_CONSTANT_MACROS
-#endif
-	#include <libavutil/pixdesc.h>
-}
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
@@ -115,14 +105,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* mainPreset = desc.defineChoiceParam( kParamMainPreset );
 	mainPreset->setLabel( "Main Preset" );
 	mainPreset->appendOption( "custom", "Customized configuration" );
-	
-	std::vector<std::string> idList;
-	std::vector<std::string> idLabelList;
-	LibAVPreset::getPresetList( idList, idLabelList );
-	for( unsigned int it = 0; it < idList.size(); ++it )
-	{
-		mainPreset->appendOption( idList.at( it ), idLabelList.at( it ) );
-	}
+	// @todo: add presets
 	
 	// Groups
 	OFX::GroupParamDescriptor* formatGroup = desc.defineGroupParam( kParamFormatGroup );
@@ -145,14 +128,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* formatPreset = desc.defineChoiceParam( kParamFormatPreset );
 	formatPreset->setLabel( "Format Preset" );
 	formatPreset->appendOption( "custom", "Customized configuration" );
-	
-	std::vector<std::string> idFormatList;
-	std::vector<std::string> idFormatLabelList;
-	LibAVFormatPreset::getPresetList( idFormatList, idFormatLabelList );
-	for( unsigned int it = 0; it < idFormatList.size(); ++it )
-	{
-		formatPreset->appendOption( idFormatList.at( it ), idFormatLabelList.at( it ) );
-	}
+	// @todo: add presets
 	formatPreset->setParent( formatGroup );
 	
 	/// format list
