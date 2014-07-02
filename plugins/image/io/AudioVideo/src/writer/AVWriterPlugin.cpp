@@ -213,7 +213,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _lastOutputFilePath()
 	, _initVideo( false )
 	, _initAudio( false )
-	, _initOutpuFile( false )
+	, _initWrap( false )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
@@ -450,11 +450,31 @@ void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	clipPreferences.setOutputFrameVarying( true );
 }
 
+void AVWriterPlugin::initOutput( AVProcessParams& params )
+{
+	// create output file
+	try
+	{
+		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
+		_outputFile->setup();
+		
+		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
+	}
+	catch( std::exception& e )
+	{
+		_initVideo = false;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to open output file: " + e.what()
+		    << exception::filename( params._outputFilePath ) );
+	}
+}
+
 void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params )
 {
 	// ouput file path already set
-	if( _lastOutputFilePath != "" &&
-		_lastOutputFilePath == params._outputFilePath )
+	if( _initVideo ||
+		_outputFile.get() == NULL ||
+		_lastOutputFilePath != "" && _lastOutputFilePath == params._outputFilePath )
 		return;
 	
 	if( params._outputFilePath == "" ) // no output file indicated
@@ -465,23 +485,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		    << exception::filename( params._outputFilePath ) );
 	}
 	
-	// create output file
-	try
-	{
-		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
-		_outputFile->setup();
-		
-		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
-		
-		_lastOutputFilePath = params._outputFilePath;
-	}
-	catch( std::exception& e )
-	{
-		_initVideo = false;
-		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to open output file: " + e.what()
-		    << exception::filename( params._outputFilePath ) );
-	}
+	_lastOutputFilePath = params._outputFilePath;
 	
 	// create video stream
 	try
@@ -540,7 +544,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 	_initVideo = true;
 }
 
-void AVWriterPlugin::ensureAudioIsInit( AVProcessParams& params )
+void AVWriterPlugin::initAudio( AVProcessParams& params )
 {
 	if( ! _paramAudioNbStream->getValue() ) // no audio specified
 	{
@@ -672,7 +676,7 @@ void AVWriterPlugin::cleanVideoAndAudio()
 	
 	_initVideo = false;
 	_initAudio = false;
-	_initOutpuFile = false;
+	_initWrap = false;
 }
 
 /**
@@ -683,6 +687,10 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	// Before new render
 	cleanVideoAndAudio();
+	
+	AVProcessParams params = getProcessParams();
+	initOutput( params );
+	initAudio( params );
 }
 
 /**
@@ -695,12 +703,11 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 
 	AVProcessParams params = getProcessParams();
 	ensureVideoIsInit( args, params );
-	ensureAudioIsInit( params );
 
-	if( ! _initOutpuFile )
+	if( ! _initWrap )
 	{
 		_outputFile->beginWrap();
-		_initOutpuFile = true;
+		_initWrap = true;
 	}
 	
 	doGilRender<AVWriterProcess>( *this, args );
@@ -708,7 +715,7 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 
 void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
 {	
-	if( ! _initOutpuFile || ! _initVideo )
+	if( ! _initWrap || ! _initVideo )
 		return;
 	
 	// if video latency

@@ -65,8 +65,9 @@ public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
+	void initOutput( AVProcessParams& params );
+	void initAudio( AVProcessParams& params );
 	void ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params );
-	void ensureAudioIsInit( AVProcessParams& params );
 
 	/**
 	 * @brief Called before each new render.
@@ -127,7 +128,7 @@ public:
 		
 	bool _initVideo;
 	bool _initAudio;
-	bool _initOutpuFile;
+	bool _initWrap;
 };
 
 }
