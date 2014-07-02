@@ -49,7 +49,7 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		std::unique(supportedExtensions.begin(), supportedExtensions.end()),
 		supportedExtensions.end() );
 
-	desc.setDescription( "Video reader based on LibAV library\n\n"
+	desc.setDescription( "Video reader based on AvTranscoder library\n\n"
 			"Supported extensions: \n" +
 			boost::algorithm::join( supportedExtensions, ", " )
 		);

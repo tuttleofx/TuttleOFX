@@ -43,7 +43,7 @@ struct AVProcessParams
 };
 
 /**
- * @brief LibAV plugin
+ * @brief AudioVideo plugin
  */
 class AVWriterPlugin : public WriterPlugin
 {

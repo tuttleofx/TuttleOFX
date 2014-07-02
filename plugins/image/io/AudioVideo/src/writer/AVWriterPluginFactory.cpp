@@ -38,7 +38,7 @@ void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	std::vector<std::string> supportedExtensions( avtranscoder::getOutputExtensions() );
 	
-	desc.setDescription( "Video writer based on LibAV library\n\n"
+	desc.setDescription( "Video writer based on AvTranscoder library\n\n"
 			"Supported extensions: \n" +
 			boost::algorithm::join( supportedExtensions, ", " )
 		);

@@ -19,13 +19,10 @@ template<class View>
 void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {	
 	ImageGilProcessor<View>::setup( args );
-
-	TUTTLE_LOG_ERROR( "Read at frame : " << args.time );
+	
 	// optimization for seek
 	if( ( _plugin._lastFrame + 1 ) != args.time )
 	{
-		TUTTLE_LOG_ERROR( "Seek to : " << args.time );
-		
 		_plugin._inputFile->seekAtFrame( args.time );
 		_plugin._inputStreamVideo->flushDecoder();
 	}
