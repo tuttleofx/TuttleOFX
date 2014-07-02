@@ -448,16 +448,16 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	metaDetailledGroup->setParent( metaGroup );
 	
 	/// ABOUT PARAMETERS
-	avtranscoder::AvVersions versions( avtranscoder::getVersion() );
+	avtranscoder::Libraries librairies( avtranscoder::getLibraries() );
 
 	size_t libIndex = 0;
-	for( avtranscoder::AvVersions::iterator libVersion = versions.begin(); libVersion != versions.end(); ++libVersion )
+	for( avtranscoder::Libraries::iterator library = librairies.begin(); library != librairies.end(); ++library )
 	{
 		// add a group for the lib
 		std::ostringstream libGroupName( kParamAboutLibName, std::ios_base::in | std::ios_base::ate );
 		libGroupName << "_" << libIndex;
 		OFX::GroupParamDescriptor* libGroupParam = desc.defineGroupParam( libGroupName.str() );
-		libGroupParam->setLabel( (*libVersion).first );
+		libGroupParam->setLabel( (*library).getName() );
 		libGroupParam->setParent( aboutGroup );
 		
 		// add licence
@@ -465,21 +465,17 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		licenceName << "_" << libIndex;
 		OFX::StringParamDescriptor* licenceParam = desc.defineStringParam( licenceName.str() );
 		std::stringstream completeLicence;
-		completeLicence << "Licence: " << avtranscoder::getLicence();
+		completeLicence << "Licence: " << (*library).getLicence();
 		licenceParam->setDefault( completeLicence.str() );
 		licenceParam->setStringType( OFX::eStringTypeLabel );
 		licenceParam->setParent( libGroupParam );
 
 		// add complete version (major.minor.micro)
-		std::stringstream completeVersion;
-		completeVersion << "Version: ";
-		for( std::vector<size_t>::iterator version = (*libVersion).second.begin(); version != (*libVersion).second.end(); ++version )
-		{
-			completeVersion << *version << ".";
-		}
 		std::ostringstream versionName( kParamAboutVersion, std::ios_base::in | std::ios_base::ate );
 		versionName << "_" << libIndex;
 		OFX::StringParamDescriptor* versionParam = desc.defineStringParam( versionName.str() );
+		std::stringstream completeVersion;
+		completeVersion << "Version: " << (*library).getStringVersion();
 		versionParam->setDefault( completeVersion.str() );
 		versionParam->setStringType( OFX::eStringTypeLabel );
 		versionParam->setParent( libGroupParam );
