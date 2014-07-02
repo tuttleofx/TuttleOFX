@@ -496,36 +496,33 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		
 		// custom video preset
 		if( mainPresetIndex == 0 )
-		{			
-			avtranscoder::VideoDesc& videoOutputDesc = _outputStreamVideo.getVideoDesc();
+		{
+			avtranscoder::Profile::ProfileDesc customPreset;
+			customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customPreset";
+			customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom preset";
+			customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
 			
-			videoOutputDesc.setVideoCodec( params._videoCodecName );
-
+			customPreset[ "codec" ] = params._videoCodecName;
+			customPreset[ "pix_fmt" ] = boost::to_string( params._videoPixelFormat );
+			
 			const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
 			int width = bounds.x2 - bounds.x1;
 			int height = bounds.y2 - bounds.y1;
-
-			avtranscoder::ImageDesc imageDesc;
-			avtranscoder::Pixel pixel( params._videoPixelFormat );
-			imageDesc.setPixel( pixel );
-			imageDesc.setWidth( width );
-			imageDesc.setHeight( height );
-			imageDesc.setDar( _clipSrc->getPixelAspectRatio(), 1 );
-			videoOutputDesc.setImageParameters( imageDesc );
+			customPreset[ "width" ] = boost::to_string( width );
+			customPreset[ "height" ] = boost::to_string( height);
 			
 			if( _paramUseCustomFps->getValue() )
 			{
-				videoOutputDesc.setTimeBase( 1, _paramCustomFps->getValue() );
+				customPreset[ "r" ] = boost::to_string( _paramCustomFps->getValue() );
 			}
 			else
 			{
-				videoOutputDesc.setTimeBase( 1, _clipSrc->getFrameRate() );
+				customPreset[ "r" ] = boost::to_string( _clipSrc->getFrameRate() );
 			}
 			
-			if( ! _outputStreamVideo.setup( ) )
-			{
-				throw std::runtime_error( "error during initialising video output stream" );
-			}
+			customPreset[ "dar" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+			
+			_outputStreamVideo.setProfile( customPreset );
 		}
 		// existing video preset
 		else
