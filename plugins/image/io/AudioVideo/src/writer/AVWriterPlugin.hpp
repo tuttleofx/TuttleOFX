@@ -3,17 +3,15 @@
 
 #include <common/util.hpp>
 
-#include <AvTranscoder/File/InputFile.hpp>
+#include <tuttle/plugin/context/WriterPlugin.hpp>
+
 #include <AvTranscoder/File/OutputFile.hpp>
 #include <AvTranscoder/EssenceStream/OutputVideo.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 #include <AvTranscoder/Profile.hpp>
 #include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
 #include <AvTranscoder/Transcoder/Transcoder.hpp>
-
 #include <AvTranscoder/DatasStructures/Image.hpp>
-
-#include <tuttle/plugin/context/WriterPlugin.hpp>
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -115,25 +113,18 @@ public:
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 	
 public:
-	OFX::ChoiceParam*   _paramFormat;
-	OFX::ChoiceParam*   _paramVideoCodec;
-	OFX::ChoiceParam*   _paramAudioCodec;
+	// format
+	OFX::ChoiceParam* _paramFormat;
 	
-	OFX::ChoiceParam*   _paramMainPreset;
-	OFX::ChoiceParam*   _paramFormatPreset;
-	OFX::ChoiceParam*   _paramMainVideoPreset;
-	OFX::ChoiceParam*   _paramMainAudioPreset;
+	// video
+	OFX::GroupParam* _paramVideoCustomGroup;
+	OFX::ChoiceParam* _paramVideoCodec;
 	
-	OFX::IntParam*      _paramBitRate;
-	OFX::BooleanParam*  _paramUseCustomFps;
-	OFX::DoubleParam*   _paramCustomFps;
-	OFX::ChoiceParam*   _paramVideoPixelFormat;
+	// audio
+	OFX::GroupParam* _paramAudioCustomGroup;
+	OFX::ChoiceParam* _paramAudioCodec;
 	
-	OFX::GroupParam*    _paramVideoCustomGroup;
-	OFX::GroupParam*    _paramAudioCustomGroup;
-	
-	OFX::IntParam*      _paramAudioNbStream;
-	
+	OFX::IntParam* _paramAudioNbStream;
 	std::vector<OFX::GroupParam*> _paramAudioSubGroup;
 	std::vector<OFX::BooleanParam*> _paramAudioSilent;
 	std::vector<OFX::StringParam*> _paramAudioFilePath;
@@ -141,15 +132,24 @@ public:
 	std::vector<OFX::BooleanParam*> _paramAudioCopyStream;
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
 	
+	// custom params
+	OFX::BooleanParam* _paramUseCustomFps;
+	OFX::DoubleParam* _paramCustomFps;
+	OFX::ChoiceParam* _paramVideoPixelFormat;
+	
 	CustomParams _paramVideoCustom;
+	
+	// presets
+	OFX::ChoiceParam* _paramMainPreset;
+	OFX::ChoiceParam* _paramFormatPreset;
+	OFX::ChoiceParam* _paramMainVideoPreset;
+	OFX::ChoiceParam* _paramMainAudioPreset;
+	
+	// metadata
 	std::vector<OFX::StringParam*> _paramMetadatas;
 	
-	/**
-	 * The output file.
-	 */
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
 	avtranscoder::OutputVideo _outputStreamVideo;
-	
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
 	
 	// to process video
@@ -157,7 +157,6 @@ public:
 	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // Between avTranscoder convert and avTranscoder encode
 	avtranscoder::VideoEssenceTransform _colorTransform;
 	
-	// to manage OFX params depending on AVOptions
 	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;
 	

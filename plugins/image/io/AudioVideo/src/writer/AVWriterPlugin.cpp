@@ -2,24 +2,177 @@
 #include "AVWriterProcess.hpp"
 #include "AVWriterDefinitions.hpp"
 
-#include <AvTranscoder/DatasStructures/AudioDesc.hpp>
-#include <AvTranscoder/DatasStructures/VideoDesc.hpp>
-
 #include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
 #include <AvTranscoder/ProgressListener.hpp>
 
-#include <boost/gil/gil_all.hpp>
 #include <boost/foreach.hpp>
-#include <boost/filesystem.hpp>
 
 #include <cctype>
 #include <sstream>
-#include <utility> // pair
 
 namespace tuttle {
 namespace plugin {
 namespace av {
 namespace writer {
+
+AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
+	: WriterPlugin( handle )
+	, _paramAudioSubGroup()
+	, _paramAudioSilent()
+	, _paramAudioFilePath()
+	, _paramAudioStreamIndex()
+	, _paramAudioCopyStream()
+	, _paramAudioPreset()
+	, _paramVideoCustom()
+	, _paramMetadatas()
+	, _outputFile( NULL )
+	, _transcoder( NULL )
+	, _rgbImage( NULL )
+	, _imageToEncode( NULL )
+	, _presets( true ) 
+	, _lastOutputFilePath()
+	, _initVideo( false )
+	, _initWrap( false )
+{
+	// We want to render a sequence
+	setSequentialRender( true );
+
+	// format
+	_paramFormat = fetchChoiceParam( kParamFormat );
+	
+	// video
+	_paramVideoCustomGroup = fetchGroupParam( kParamVideoCustomGroup );
+	_paramVideoCodec = fetchChoiceParam( kParamVideoCodec );
+	
+	// audio
+	_paramAudioCustomGroup = fetchGroupParam( kParamAudioCustomGroup );
+	_paramAudioCodec = fetchChoiceParam( kParamAudioCodec );
+	
+	_paramAudioNbStream = fetchIntParam( kParamAudioNbStream );
+	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	{
+		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
+		audioSubGroupName << "_" << idAudioStream;
+		_paramAudioSubGroup.push_back( fetchGroupParam( audioSubGroupName.str() ) );
+		_paramAudioSubGroup.back()->setIsSecretAndDisabled( false );
+		
+		std::ostringstream audioSilentName( kParamAudioSilent, std::ios_base::in | std::ios_base::ate );
+		audioSilentName << "_" << idAudioStream;
+		_paramAudioSilent.push_back( fetchBooleanParam( audioSilentName.str() ) );
+		_paramAudioSilent.back()->setIsSecretAndDisabled( false );
+		
+		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
+		audioFilePathName << "_" << idAudioStream;
+		_paramAudioFilePath.push_back( fetchStringParam( audioFilePathName.str() ) );
+		_paramAudioFilePath.back()->setIsSecretAndDisabled( false );
+		
+		std::ostringstream audioStreamIdName( kParamAudioStreamId, std::ios_base::in | std::ios_base::ate );
+		audioStreamIdName << "_" << idAudioStream;
+		_paramAudioStreamIndex.push_back( fetchIntParam( audioStreamIdName.str() ) );
+		_paramAudioStreamIndex.back()->setIsSecretAndDisabled( false );
+		
+		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );
+		audioCopyStreamName << "_" << idAudioStream;
+		_paramAudioCopyStream.push_back( fetchBooleanParam( audioCopyStreamName.str() ) );
+		_paramAudioCopyStream.back()->setIsSecretAndDisabled( false );
+		
+		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
+		audioCodecPresetName << "_" << idAudioStream;
+		_paramAudioPreset.push_back( fetchChoiceParam( audioCodecPresetName.str() ) );
+		_paramAudioPreset.back()->setIsSecretAndDisabled( false );
+	}
+	updateAudioParams();
+	updateAudioSilent();
+	updateAudioCopyStream();
+	
+	// our custom params
+	_paramUseCustomFps = fetchBooleanParam( kParamUseCustomFps );
+	_paramCustomFps = fetchDoubleParam( kParamCustomFps );
+	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
+	
+	// all custom params
+	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
+	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
+	disableAVOptionsForCodecOrFormat( optionsFormatMap, formatName, kPrefixFormat );
+	
+	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
+	fetchCustomParams( optionsVideoCodecMap, kPrefixVideo );
+	const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at(_paramVideoCodec->getValue() );
+	disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName, kPrefixVideo );
+	
+	updatePixelFormat( videoCodecName );
+	
+	avtranscoder::OptionLoader::OptionMap optionsAudioCodecMap = _optionLoader.loadAudioCodecOptions();
+	const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
+	disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName, kPrefixAudio );
+	
+	// preset
+	_paramMainPreset = fetchChoiceParam( kParamMainPreset );
+	_paramFormatPreset = fetchChoiceParam( kParamFormatPreset );
+	_paramMainVideoPreset = fetchChoiceParam( kParamMainVideoPreset );
+	_paramMainAudioPreset = fetchChoiceParam( kParamMainAudioPreset );
+	
+	// metadata
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbum           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbumArtist     ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaArtist          ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaComment         ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaComposer        ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaCopyright       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaCreationTime    ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaDate            ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaDisc            ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncoder         ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncodedBy       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaFilename        ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaGenre           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaLanguage        ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaPerformer       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaPublisher       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaServiceName     ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaServiceProvider ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaTitle           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaTrack           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
+
+	updateVisibleTools();
+}
+
+void AVWriterPlugin::updateVisibleTools()
+{
+	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
+	changedParam( args, kParamUseCustomFps );
+}
+
+AVProcessParams AVWriterPlugin::getProcessParams()
+{
+	AVProcessParams params;
+
+	params._outputFilePath = _paramFilepath->getValue();
+	
+	params._format = _paramFormat->getValue();
+	params._formatName = _optionLoader.getFormatsShortNames().at( params._format );
+	
+	params._videoCodec = _paramVideoCodec->getValue();
+	params._videoCodecName = _optionLoader.getVideoCodecsShortNames().at( params._videoCodec );
+	
+	params._audioCodec = _paramAudioCodec->getValue();
+	params._audioCodecName = _optionLoader.getAudioCodecsShortNames().at( params._audioCodec );
+	
+	// av_get_pix_fmt( _paramVideoPixelFormat->getValue() )
+	params._videoPixelFormat = static_cast<AVPixelFormat>( _paramVideoPixelFormat->getValue() );
+	
+	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
+	{
+		if( parameter->getValue().size() > 0 )
+		{
+			std::string ffmpegKey = parameter->getName();
+			ffmpegKey.erase( 0, 5 );
+			params._metadatas[ ffmpegKey ] = parameter->getValue();
+		}
+	}
+	return params;
+}
 
 void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec, const std::string& prefix )
 {
@@ -100,81 +253,6 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
 					break;
 				}
 				default:
-					break;
-			}
-		}
-	}
-}
-
-void AVWriterPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
-{
-	CustomParams* customParams;
-	if( prefix == kPrefixVideo )
-		customParams = &_paramVideoCustom;
-	else
-		return;
-	
-	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
-	{
-		std::string subGroupName = subGroupOption.first;
-		std::vector<avtranscoder::Option>& options = subGroupOption.second;
-				
-		// iterate on options
-		BOOST_FOREACH( avtranscoder::Option& option, options )
-		{
-			std::string name = prefix;
-			name += subGroupName;
-			name += "_";
-			name += option.getName();
-			
-			switch( option.getType() )
-			{
-				case avtranscoder::TypeBool:
-				{
-					customParams->_paramBoolean.push_back( fetchBooleanParam( name ) );
-					break;
-				}
-				case avtranscoder::TypeInt:
-				{
-					customParams->_paramInt.push_back( fetchIntParam( name ) );
-					break;
-				}
-				case avtranscoder::TypeDouble:
-				{
-					customParams->_paramDouble.push_back( fetchDoubleParam( name ) );
-					break;
-				}
-				case avtranscoder::TypeString:
-				{
-					customParams->_paramString.push_back( fetchStringParam( name ) );
-					break;
-				}
-				case avtranscoder::TypeRatio:
-				{
-					customParams->_paramRatio.push_back( fetchInt2DParam( name ) );
-					break;
-				}
-				case avtranscoder::TypeChoice:
-				{
-					customParams->_paramChoice.push_back( fetchChoiceParam( name ) );
-					break;
-				}
-				case avtranscoder::TypeGroup:
-				{
-					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
-					{
-						std::string childName = prefix;
-						childName += "flags_";
-						childName += subGroupName;
-						childName += "_";
-						childName += child.getName();
-						
-						customParams->_paramBoolean.push_back( fetchBooleanParam( childName ) );
-					}
-					break;
-				}
-			default:
 					break;
 			}
 		}
@@ -274,157 +352,79 @@ void AVWriterPlugin::updateAudioSilent()
 	}
 }
 
-AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
-	: WriterPlugin( handle )
-	, _paramAudioSubGroup()
-	, _paramAudioSilent()
-	, _paramAudioFilePath()
-	, _paramAudioStreamIndex()
-	, _paramAudioCopyStream()
-	, _paramAudioPreset()
-	, _paramVideoCustom()
-	, _paramMetadatas()
-	, _outputFile( NULL )
-	, _transcoder( NULL )
-	, _rgbImage( NULL )
-	, _imageToEncode( NULL )
-	, _presets( true ) 
-	, _lastOutputFilePath()
-	, _initVideo( false )
-	, _initWrap( false )
+void AVWriterPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
 {
-	// We want to render a sequence
-	setSequentialRender( true );
-
-	_paramFormat     = fetchChoiceParam( kParamFormat );
-	_paramVideoCodec = fetchChoiceParam( kParamVideoCodec );
-	_paramAudioCodec = fetchChoiceParam( kParamAudioCodec );
+	CustomParams* customParams;
+	if( prefix == kPrefixVideo )
+		customParams = &_paramVideoCustom;
+	else
+		return;
 	
-	_paramMainPreset       = fetchChoiceParam( kParamMainPreset );
-	_paramFormatPreset     = fetchChoiceParam( kParamFormatPreset );
-	_paramMainVideoPreset = fetchChoiceParam( kParamMainVideoPreset );
-	_paramMainAudioPreset = fetchChoiceParam( kParamMainAudioPreset );
-	
-	_paramUseCustomFps     = fetchBooleanParam( kParamUseCustomFps );
-	_paramCustomFps        = fetchDoubleParam( kParamCustomFps );
-	
-	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
-	
-	_paramVideoCustomGroup = fetchGroupParam( kParamVideoCustomGroup );
-	_paramAudioCustomGroup = fetchGroupParam( kParamAudioCustomGroup );
-	
-	_paramAudioNbStream = fetchIntParam( kParamAudioNbStream );
-	
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	// iterate on map keys
+	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
 	{
-		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
-		audioSubGroupName << "_" << idAudioStream;
-		_paramAudioSubGroup.push_back( fetchGroupParam( audioSubGroupName.str() ) );
-		_paramAudioSubGroup.back()->setIsSecretAndDisabled( false );
-		
-		std::ostringstream audioSilentName( kParamAudioSilent, std::ios_base::in | std::ios_base::ate );
-		audioSilentName << "_" << idAudioStream;
-		_paramAudioSilent.push_back( fetchBooleanParam( audioSilentName.str() ) );
-		_paramAudioSilent.back()->setIsSecretAndDisabled( false );
-		
-		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
-		audioFilePathName << "_" << idAudioStream;
-		_paramAudioFilePath.push_back( fetchStringParam( audioFilePathName.str() ) );
-		_paramAudioFilePath.back()->setIsSecretAndDisabled( false );
-		
-		std::ostringstream audioStreamIdName( kParamAudioStreamId, std::ios_base::in | std::ios_base::ate );
-		audioStreamIdName << "_" << idAudioStream;
-		_paramAudioStreamIndex.push_back( fetchIntParam( audioStreamIdName.str() ) );
-		_paramAudioStreamIndex.back()->setIsSecretAndDisabled( false );
-		
-		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );
-		audioCopyStreamName << "_" << idAudioStream;
-		_paramAudioCopyStream.push_back( fetchBooleanParam( audioCopyStreamName.str() ) );
-		_paramAudioCopyStream.back()->setIsSecretAndDisabled( false );
-		
-		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
-		audioCodecPresetName << "_" << idAudioStream;
-		_paramAudioPreset.push_back( fetchChoiceParam( audioCodecPresetName.str() ) );
-		_paramAudioPreset.back()->setIsSecretAndDisabled( false );
-	}
-	updateAudioParams();
-	updateAudioSilent();
-	updateAudioCopyStream();
-	
-	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
-	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
-	disableAVOptionsForCodecOrFormat( optionsFormatMap, formatName, kPrefixFormat );
-	
-	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
-	fetchCustomParams( optionsVideoCodecMap, kPrefixVideo );
-	const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at(_paramVideoCodec->getValue() );
-	disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName, kPrefixVideo );
-	
-	updatePixelFormat( videoCodecName );
-	
-	avtranscoder::OptionLoader::OptionMap optionsAudioCodecMap = _optionLoader.loadAudioCodecOptions();
-	const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
-	disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName, kPrefixAudio );
-	
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbum           ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbumArtist     ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaArtist          ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaComment         ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaComposer        ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaCopyright       ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaCreationTime    ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaDate            ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaDisc            ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncoder         ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncodedBy       ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaFilename        ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaGenre           ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaLanguage        ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaPerformer       ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaPublisher       ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaServiceName     ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaServiceProvider ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaTitle           ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaTrack           ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
-
-	updateVisibleTools();
-}
-
-void AVWriterPlugin::updateVisibleTools()
-{
-	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
-	changedParam( args, kParamUseCustomFps );
-}
-
-AVProcessParams AVWriterPlugin::getProcessParams()
-{
-	AVProcessParams params;
-
-	params._outputFilePath = _paramFilepath->getValue();
-	
-	params._format = _paramFormat->getValue();
-	params._formatName = _optionLoader.getFormatsShortNames().at( params._format );
-	
-	params._videoCodec = _paramVideoCodec->getValue();
-	params._videoCodecName = _optionLoader.getVideoCodecsShortNames().at( params._videoCodec );
-	
-	params._audioCodec = _paramAudioCodec->getValue();
-	params._audioCodecName = _optionLoader.getAudioCodecsShortNames().at( params._audioCodec );
-	
-	// av_get_pix_fmt( _paramVideoPixelFormat->getValue() )
-	params._videoPixelFormat = static_cast<AVPixelFormat>( _paramVideoPixelFormat->getValue() );
-	
-	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
-	{
-		if( parameter->getValue().size() > 0 )
+		std::string subGroupName = subGroupOption.first;
+		std::vector<avtranscoder::Option>& options = subGroupOption.second;
+				
+		// iterate on options
+		BOOST_FOREACH( avtranscoder::Option& option, options )
 		{
-			std::string ffmpegKey = parameter->getName();
-			ffmpegKey.erase( 0, 5 );
-			params._metadatas[ ffmpegKey ] = parameter->getValue();
+			std::string name = prefix;
+			name += subGroupName;
+			name += "_";
+			name += option.getName();
+			
+			switch( option.getType() )
+			{
+				case avtranscoder::TypeBool:
+				{
+					customParams->_paramBoolean.push_back( fetchBooleanParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeInt:
+				{
+					customParams->_paramInt.push_back( fetchIntParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeDouble:
+				{
+					customParams->_paramDouble.push_back( fetchDoubleParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeString:
+				{
+					customParams->_paramString.push_back( fetchStringParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeRatio:
+				{
+					customParams->_paramRatio.push_back( fetchInt2DParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeChoice:
+				{
+					customParams->_paramChoice.push_back( fetchChoiceParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeGroup:
+				{
+					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+					{
+						std::string childName = prefix;
+						childName += "flags_";
+						childName += subGroupName;
+						childName += "_";
+						childName += child.getName();
+						
+						customParams->_paramBoolean.push_back( fetchBooleanParam( childName ) );
+					}
+					break;
+				}
+			default:
+					break;
+			}
 		}
 	}
-	return params;
 }
 
 void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -551,9 +551,8 @@ void AVWriterPlugin::initOutput( AVProcessParams& params )
 void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params )
 {
 	// ouput file path already set
-	if( _initVideo ||
-		_outputFile.get() == NULL ||
-		_lastOutputFilePath != "" && _lastOutputFilePath == params._outputFilePath )
+	if( _outputFile.get() == NULL ||
+		( _lastOutputFilePath != "" && _lastOutputFilePath == params._outputFilePath ) )
 		return;
 	
 	if( params._outputFilePath == "" ) // no output file indicated
@@ -597,7 +596,8 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 				customPreset[ "r" ] = boost::to_string( _clipSrc->getFrameRate() );
 			}
 			
-			customPreset[ "dar" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+			customPreset[ "par" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+			
 			CustomParams::OptionsForPreset optionsForPreset = _paramVideoCustom.getOptionsNameAndValue( params._videoCodecName );
 			BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
 			{
@@ -751,6 +751,8 @@ void AVWriterPlugin::cleanVideoAndAudio()
 	
 	_initVideo = false;
 	_initWrap = false;
+	
+	_lastOutputFilePath = "";
 }
 
 /**
