@@ -1,5 +1,7 @@
 #include "util.hpp"
 
+#include <writer/AVWriterDefinitions.hpp>
+
 #include <AvTranscoder/Option.hpp>
 
 #include <boost/foreach.hpp>
@@ -210,6 +212,42 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 		}
 	}
+}
+
+std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& codecName )
+{
+	std::string nameWithoutPrefix( optionName );
+	
+	size_t prefixPosition;
+	if( ( prefixPosition = nameWithoutPrefix.find( writer::kPrefixFormat ) ) != std::string::npos )
+		nameWithoutPrefix.erase( prefixPosition, writer::kPrefixFormat.size() );
+	else if( ( prefixPosition = nameWithoutPrefix.find( writer::kPrefixVideo ) ) != std::string::npos )
+		nameWithoutPrefix.erase( prefixPosition, writer::kPrefixVideo.size() );
+	else if( ( prefixPosition = nameWithoutPrefix.find( writer::kPrefixAudio ) ) != std::string::npos )
+		nameWithoutPrefix.erase( prefixPosition, writer::kPrefixAudio.size() );
+	
+	// groups
+	const std::string prefixGroup( "g_" );
+	if( ( prefixPosition = nameWithoutPrefix.find( prefixGroup ) ) != std::string::npos )
+	{
+		nameWithoutPrefix.erase( prefixPosition, prefixGroup.size() );
+	}
+	
+	// childs of groups
+	const std::string prefixChild( "flags_" );
+	if( ( prefixPosition = nameWithoutPrefix.find( prefixChild ) ) != std::string::npos )
+	{
+		nameWithoutPrefix.erase( prefixPosition, prefixChild.size() );
+	}
+	
+	// codec name
+	if( ( prefixPosition = nameWithoutPrefix.find( codecName ) ) != std::string::npos )
+	{
+		// codecName.size() + 1: also remove the "_"
+		nameWithoutPrefix.erase( prefixPosition, codecName.size() + 1 );
+	}
+	
+	return nameWithoutPrefix;
 }
 
 }

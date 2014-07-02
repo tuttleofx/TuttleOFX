@@ -30,6 +30,13 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
  */
 void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
 
+/**
+ * @brief Get the real name of the AVOption, without our prefix.
+ * @param optionName with prefix (g_, flag_...)
+ * @return the AVOption name
+ */
+std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& codecName="" );
+
 }
 }
 }

@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 
+#include <common/util.hpp>
+
 #include <AvTranscoder/File/InputFile.hpp>
 #include <AvTranscoder/File/OutputFile.hpp>
 #include <AvTranscoder/EssenceStream/OutputVideo.hpp>
@@ -18,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <utility> // pair
 
 namespace tuttle {
 namespace plugin {
@@ -43,6 +46,37 @@ struct AVProcessParams
 };
 
 /**
+ * @brief Use this struct to get custom Options for format, video, and audio.
+ * The Options will be used only if the custom preset is set in the corresponding list of presets.
+ */
+struct CustomParams
+{
+public:
+	typedef std::pair<std::string, std::string> OptionForPreset;
+	typedef std::vector< OptionForPreset > OptionsForPreset;
+
+public:
+	CustomParams()
+	: _paramBoolean()
+	, _paramInt()
+	, _paramDouble()
+	, _paramString()
+	, _paramRatio()
+	, _paramChoice()
+	{}
+
+	OptionsForPreset getOptionsNameAndValue( const std::string& codecName );
+
+public:
+	std::vector<OFX::BooleanParam*> _paramBoolean;
+	std::vector<OFX::IntParam*> _paramInt;
+	std::vector<OFX::DoubleParam*> _paramDouble;
+	std::vector<OFX::StringParam*> _paramString;
+	std::vector<OFX::Int2DParam*> _paramRatio;
+	std::vector<OFX::ChoiceParam*> _paramChoice;
+};
+
+/**
  * @brief AudioVideo plugin
  */
 class AVWriterPlugin : public WriterPlugin
@@ -61,6 +95,8 @@ public:
 	void updateAudioParams();
 	void updateAudioCopyStream();
 	void updateAudioSilent();
+	
+	void fetchCustomParams( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
@@ -105,6 +141,7 @@ public:
 	std::vector<OFX::BooleanParam*> _paramAudioCopyStream;
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
 	
+	CustomParams _paramVideoCustom;
 	std::vector<OFX::StringParam*> _paramMetadatas;
 	
 	/**

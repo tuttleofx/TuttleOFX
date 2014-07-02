@@ -106,6 +106,81 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
 	}
 }
 
+void AVWriterPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
+{
+	CustomParams* customParams;
+	if( prefix == kPrefixVideo )
+		customParams = &_paramVideoCustom;
+	else
+		return;
+	
+	// iterate on map keys
+	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
+	{
+		std::string subGroupName = subGroupOption.first;
+		std::vector<avtranscoder::Option>& options = subGroupOption.second;
+				
+		// iterate on options
+		BOOST_FOREACH( avtranscoder::Option& option, options )
+		{
+			std::string name = prefix;
+			name += subGroupName;
+			name += "_";
+			name += option.getName();
+			
+			switch( option.getType() )
+			{
+				case avtranscoder::TypeBool:
+				{
+					customParams->_paramBoolean.push_back( fetchBooleanParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeInt:
+				{
+					customParams->_paramInt.push_back( fetchIntParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeDouble:
+				{
+					customParams->_paramDouble.push_back( fetchDoubleParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeString:
+				{
+					customParams->_paramString.push_back( fetchStringParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeRatio:
+				{
+					customParams->_paramRatio.push_back( fetchInt2DParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeChoice:
+				{
+					customParams->_paramChoice.push_back( fetchChoiceParam( name ) );
+					break;
+				}
+				case avtranscoder::TypeGroup:
+				{
+					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+					{
+						std::string childName = prefix;
+						childName += "flags_";
+						childName += subGroupName;
+						childName += "_";
+						childName += child.getName();
+						
+						customParams->_paramBoolean.push_back( fetchBooleanParam( childName ) );
+					}
+					break;
+				}
+			default:
+					break;
+			}
+		}
+	}
+}
+
 /**
  * @brief Update the list of pixel format supported depending on the video codec.
  * Warning: the function does not update the list correctly in Nuke.
@@ -207,6 +282,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioStreamIndex()
 	, _paramAudioCopyStream()
 	, _paramAudioPreset()
+	, _paramVideoCustom()
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
@@ -280,6 +356,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	disableAVOptionsForCodecOrFormat( optionsFormatMap, formatName, kPrefixFormat );
 	
 	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
+	fetchCustomParams( optionsVideoCodecMap, kPrefixVideo );
 	const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at(_paramVideoCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName, kPrefixVideo );
 	
@@ -521,6 +598,11 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			}
 			
 			customPreset[ "dar" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+			CustomParams::OptionsForPreset optionsForPreset = _paramVideoCustom.getOptionsNameAndValue( params._videoCodecName );
+			BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
+			{
+				customPreset[ nameAndValue.first ] = nameAndValue.second;
+			}
 			
 			_outputStreamVideo.setProfile( customPreset );
 		}
@@ -718,6 +800,91 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	}
 	
 	_outputFile->endWrap();
+}
+
+CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& codecName )
+{
+	OptionsForPreset optionsNameAndValue;
+
+	BOOST_FOREACH( OFX::BooleanParam* param, _paramBoolean )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+
+		// FFMPEG exception with the flags
+		if( param->getName().find( "flags_" ) != std::string::npos )
+		{
+			std::string optionValue;
+			if( param->getValue() )
+				optionValue.append( "+" );
+			else
+				optionValue.append( "-" );
+			optionValue.append( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
+			optionsNameAndValue.push_back( std::pair<std::string, std::string>( "mpv_flags", optionValue ) );
+		}
+		else
+		{
+			std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
+			optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+		}
+	}
+
+	BOOST_FOREACH( OFX::IntParam* param, _paramInt )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+	}
+
+	BOOST_FOREACH( OFX::DoubleParam* param, _paramDouble )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+	}
+
+	BOOST_FOREACH( OFX::StringParam* param, _paramString )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+	}
+
+	BOOST_FOREACH( OFX::Int2DParam* param, _paramRatio )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		std::string optionValue( boost::to_string( param->getValue().x ) + ", " + boost::to_string( param->getValue().y ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
+	}
+
+	BOOST_FOREACH( OFX::ChoiceParam* param, _paramChoice )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		// @todo: get optionValue from the optionIndex
+		size_t optionIndex = param->getValue();
+		std::string optionValue( "not yet implemented" );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
+	}
+
+	// get all flags in a single Option
+	OptionForPreset mpv_flags( "mpv_flags", "" );
+	for( OptionsForPreset::iterator it = optionsNameAndValue.begin(); it != optionsNameAndValue.end(); ++it )
+	{
+		if( (*it).first == "mpv_flags" )
+		{
+			mpv_flags.second += (*it).second;
+			it = optionsNameAndValue.erase( it );
+		}
+	}
+
+	return optionsNameAndValue;
 }
 
 }
