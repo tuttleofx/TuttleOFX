@@ -112,16 +112,19 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::GroupParamDescriptor* videoGroup  = desc.defineGroupParam( kParamVideoGroup );
 	OFX::GroupParamDescriptor* audioGroup  = desc.defineGroupParam( kParamAudioGroup );
 	OFX::GroupParamDescriptor* metaGroup   = desc.defineGroupParam( kParamMetaGroup );
+	OFX::GroupParamDescriptor* aboutGroup = desc.defineGroupParam( kParamAboutGroup );
 	
 	formatGroup->setLabel( "Format" );
 	videoGroup->setLabel( "Video" );
 	audioGroup->setLabel( "Audio" );
 	metaGroup->setLabel( "Metadata" );
+	aboutGroup->setLabel( "About" );
 	
 	formatGroup->setAsTab( );
 	videoGroup->setAsTab( );
 	audioGroup->setAsTab( );
 	metaGroup->setAsTab( );
+	aboutGroup->setAsTab( );
 	
 	/// FORMAT PARAMETERS
 	/// format preset
@@ -443,6 +446,46 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	metaDetailledGroup->setLabel( "Detailled" );
 	metaDetailledGroup->setAsTab( );
 	metaDetailledGroup->setParent( metaGroup );
+	
+	/// ABOUT PARAMETERS
+	avtranscoder::AvVersions versions( avtranscoder::getVersion() );
+
+	size_t libIndex = 0;
+	for( avtranscoder::AvVersions::iterator libVersion = versions.begin(); libVersion != versions.end(); ++libVersion )
+	{
+		// add a group for the lib
+		std::ostringstream libGroupName( kParamAboutLibName, std::ios_base::in | std::ios_base::ate );
+		libGroupName << "_" << libIndex;
+		OFX::GroupParamDescriptor* libGroupParam = desc.defineGroupParam( libGroupName.str() );
+		libGroupParam->setLabel( (*libVersion).first );
+		libGroupParam->setParent( aboutGroup );
+		
+		// add licence
+		std::ostringstream licenceName( kParamAboutLicence, std::ios_base::in | std::ios_base::ate );
+		licenceName << "_" << libIndex;
+		OFX::StringParamDescriptor* licenceParam = desc.defineStringParam( licenceName.str() );
+		std::stringstream completeLicence;
+		completeLicence << "Licence: " << avtranscoder::getLicence();
+		licenceParam->setDefault( completeLicence.str() );
+		licenceParam->setStringType( OFX::eStringTypeLabel );
+		licenceParam->setParent( libGroupParam );
+
+		// add complete version (major.minor.micro)
+		std::stringstream completeVersion;
+		completeVersion << "Version: ";
+		for( std::vector<size_t>::iterator version = (*libVersion).second.begin(); version != (*libVersion).second.end(); ++version )
+		{
+			completeVersion << *version << ".";
+		}
+		std::ostringstream versionName( kParamAboutVersion, std::ios_base::in | std::ios_base::ate );
+		versionName << "_" << libIndex;
+		OFX::StringParamDescriptor* versionParam = desc.defineStringParam( versionName.str() );
+		versionParam->setDefault( completeVersion.str() );
+		versionParam->setStringType( OFX::eStringTypeLabel );
+		versionParam->setParent( libGroupParam );
+		
+		++libIndex;
+	}
 }
 
 /**

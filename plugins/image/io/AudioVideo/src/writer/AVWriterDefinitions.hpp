@@ -27,6 +27,7 @@ static const std::string kParamAudioGroup                = "audioGroup";
 static const std::string kParamAudioDetailledGroup       = "audioDetailledGroup";
 static const std::string kParamMetaGroup                 = "metaGroup";
 static const std::string kParamMetaDetailledGroup        = "metaDetailledGroup";
+static const std::string kParamAboutGroup                = "aboutGroup";
 
 static const std::string kParamMainPreset                = "mainPreset";
 
@@ -73,6 +74,10 @@ static const std::string kParamMetaServiceProvider = "m_service_provider";
 static const std::string kParamMetaTitle           = "m_title";
 static const std::string kParamMetaTrack           = "m_track";
 static const std::string kParamMetaVariantBitrate  = "m_variant_bitrate";
+
+static const std::string kParamAboutLibName        = "libName";
+static const std::string kParamAboutLicence        = "licence";
+static const std::string kParamAboutVersion        = "version";
 
 }
 }
