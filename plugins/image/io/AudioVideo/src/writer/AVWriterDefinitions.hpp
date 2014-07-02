@@ -79,6 +79,10 @@ static const std::string kParamAboutLibName        = "libName";
 static const std::string kParamAboutLicence        = "licence";
 static const std::string kParamAboutVersion        = "version";
 
+static const std::string kPrefixFormat    = "f_";
+static const std::string kPrefixVideo     = "v_";
+static const std::string kPrefixAudio     = "a_";
+
 }
 }
 }
