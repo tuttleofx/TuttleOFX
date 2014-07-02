@@ -17,7 +17,7 @@ namespace common {
  * @param desc: object to create OFX parameter descriptors
  * @param group: the group to add OFX params
  * @param optionsArray: options to add to the group
- * @param prefix: informaed this to add a prefix to the name of each OFX params create by the function
+ * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
  */
 void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="" );
 
@@ -26,8 +26,9 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
  * @param desc: object to create OFX parameter descriptors
  * @param group: the group to add OFX params
  * @param optionsMap: options to add to the group (organized by the keys in the map)
+ * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionLoader::OptionMap& optionsMap );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
 
 }
 }

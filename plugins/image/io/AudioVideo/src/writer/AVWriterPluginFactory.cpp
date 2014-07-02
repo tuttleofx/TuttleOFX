@@ -162,7 +162,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatDetailledGroup->setParent( formatGroup );
 	
 	avtranscoder::OptionLoader::OptionMap formatDetailledGroupOptions = optionLoader.loadOutputFormatOptions();
-	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions );
+	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, kPrefixFormat );
 	
 	// fps parameters
 	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
@@ -237,7 +237,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoDetailledGroup->setParent( videoGroup );
 	
 	avtranscoder::OptionLoader::OptionMap videoDetailledGroupOptions = optionLoader.loadVideoCodecOptions(); 
-	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions );
+	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
 	// add main audio preset
@@ -291,7 +291,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioDetailledGroup->setParent( audioGroup );
 	
 	avtranscoder::OptionLoader::OptionMap audioDetailledGroupOptions = optionLoader.loadAudioCodecOptions();
-	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions );
+	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions, kPrefixAudio );
 	
 	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );

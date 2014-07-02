@@ -103,7 +103,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 	}
 }
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionLoader::OptionMap& optionsMap )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
 {
 	// iterate on map keys
 	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
@@ -116,7 +116,8 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 		// iterate on options
 		BOOST_FOREACH( avtranscoder::Option& option, options )
 		{
-			std::string name = subGroupName;
+			std::string name = prefix;
+			name += subGroupName;
 			name += "_";
 			name += option.getName();
 			
@@ -174,7 +175,8 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				}
 				case avtranscoder::TypeGroup:
 				{
-					std::string groupName = "g_";
+					std::string groupName = prefix;
+					groupName += "g_";
 					groupName += subGroupName;
 					groupName += "_";
 					groupName += option.getName();
@@ -182,7 +184,8 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 					OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
 					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 					{
-						std::string childName = "flags_";
+						std::string childName = prefix;
+						childName += "flags_";
 						childName += subGroupName;
 						childName += "_";
 						childName += child.getName();
