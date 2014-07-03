@@ -647,12 +647,42 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 		{
 			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
 			int inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
+			std::string presetName( "" );
+			
+			size_t mainPresetIndex = _paramMainAudioPreset->getValue();
+			avtranscoder::Profile::ProfileDesc customPreset;
+			// custom audio preset
+			if( mainPresetIndex == 0 )
+			{
+				customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
+				customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
+				customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
+				customPreset[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
+				// @todo: get this from OFX params
+				customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = "s16";
+				customPreset[ avtranscoder::Profile::avProfileSampleRate ] = "48000";
+				customPreset[ avtranscoder::Profile::avProfileChannel ] = "1";
+				
+				CustomParams::OptionsForPreset optionsForPreset = _paramAudioCustom.getOptionsNameAndValue( params._audioCodecName );
+				BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
+				{
+					customPreset[ nameAndValue.first ] = nameAndValue.second;
+				}
+			}
 			
 			// dummy
 			if( _paramAudioSilent.at( i )->getValue() )
 			{
-				// @todo: avTranscoder ; can set a profile to a dummy (and so can have a dummy without an existing audio stream)
-				_transcoder->add( "", 0, "" );
+				// custom audio preset
+				if( mainPresetIndex == 0 )
+				{
+					_transcoder->add( "", 0, customPreset );
+				}
+				else
+				{
+					// at( mainPresetIndex - 1 ): subtract the index of the custom preset
+					_transcoder->add( "", 0,  _presets.getAudioProfiles().at( mainPresetIndex - 1 ) );
+				}
 			}
 			else
 			{
@@ -663,7 +693,6 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 					avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFileName, progress, avtranscoder::InputFile::eAnalyseLevelFast );
 					nbStream = properties.streamsCount;
 				}
-				std::string presetName( "" );
 				
 				// rewrap
 				if( ! _paramAudioSilent.at( i )->getValue() &&  _paramAudioCopyStream.at( i )->getValue() )
@@ -683,27 +712,12 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				// transcode
 				else
 				{
-					size_t mainPresetIndex = _paramMainAudioPreset->getValue();
 					size_t presetIndex = _paramAudioPreset.at( i )->getValue();
 
 					// custom audio preset
 					if( presetIndex == 0 ||
 						( presetIndex == 1 && mainPresetIndex == 0 ) )
 					{
-						avtranscoder::Profile::ProfileDesc customPreset;
-						customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customPreset";
-						customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom preset";
-						customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
-						customPreset[ "codec" ] = params._audioCodecName;
-						// @todo: get sample_fmt from OFX params
-						customPreset[ "sample_fmt" ] = "s16";
-						
-						CustomParams::OptionsForPreset optionsForPreset = _paramAudioCustom.getOptionsNameAndValue( params._audioCodecName );
-						BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
-						{
-							customPreset[ nameAndValue.first ] = nameAndValue.second;
-						}
-
 						if( inputStreamIndex != -1 )
 						{
 							_transcoder->add( inputFileName, inputStreamIndex, customPreset );
