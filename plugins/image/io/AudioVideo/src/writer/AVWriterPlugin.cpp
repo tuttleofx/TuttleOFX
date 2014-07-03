@@ -572,35 +572,41 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 	// create video stream
 	try
 	{
+		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
+		int width = bounds.x2 - bounds.x1;
+		int height = bounds.y2 - bounds.y1;
+
+		avtranscoder::ImageDesc imageDesc;
+		avtranscoder::Pixel pixel( params._videoPixelFormat );
+		// @todo: avTranscoder, set par of pixel
+		imageDesc.setPixel( pixel );
+		imageDesc.setWidth( width );
+		imageDesc.setHeight( height );
+		imageDesc.setDar( width, height );
+
 		size_t mainPresetIndex = _paramMainVideoPreset->getValue();
 		
 		// custom video preset
 		if( mainPresetIndex == 0 )
 		{
 			avtranscoder::Profile::ProfileDesc customPreset;
-			customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customPreset";
-			customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom preset";
+			customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
+			customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
 			customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
 			
-			customPreset[ "codec" ] = params._videoCodecName;
-			customPreset[ "pix_fmt" ] = boost::to_string( params._videoPixelFormat );
-			
-			const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
-			int width = bounds.x2 - bounds.x1;
-			int height = bounds.y2 - bounds.y1;
-			customPreset[ "width" ] = boost::to_string( width );
-			customPreset[ "height" ] = boost::to_string( height);
+			customPreset[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
+			customPreset[ avtranscoder::Profile::avProfilePixelFormat ] = boost::to_string( params._videoPixelFormat );
 			
 			if( _paramUseCustomFps->getValue() )
 			{
-				customPreset[ "r" ] = boost::to_string( _paramCustomFps->getValue() );
+				customPreset[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
 			}
 			else
 			{
-				customPreset[ "r" ] = boost::to_string( _clipSrc->getFrameRate() );
+				customPreset[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
 			}
 			
-			customPreset[ "par" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+			customPreset[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
 			
 			CustomParams::OptionsForPreset optionsForPreset = _paramVideoCustom.getOptionsNameAndValue( params._videoCodecName );
 			BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
@@ -608,14 +614,14 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 				customPreset[ nameAndValue.first ] = nameAndValue.second;
 			}
 			
-			_outputStreamVideo.setProfile( customPreset );
+			_outputStreamVideo.setProfile( customPreset, imageDesc );
 		}
 		// existing video preset
 		else
 		{
 			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
 			std::string presetName( _presets.getVideoProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second );
-			_outputStreamVideo.setProfile( _presets.getProfile( presetName ) );
+			_outputStreamVideo.setProfile( _presets.getProfile( presetName ), imageDesc );
 		}
 		
 		_outputFile->addVideoStream( _outputStreamVideo.getVideoDesc() );
