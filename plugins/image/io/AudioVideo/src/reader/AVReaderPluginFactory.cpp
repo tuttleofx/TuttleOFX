@@ -141,7 +141,9 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::IntParamDescriptor* streamIndex = desc.defineIntParam( kParamVideoStreamIndex );
 	streamIndex->setLabel( kParamVideoStreamIndexLabel );
 	streamIndex->setDefault( 0 );
-	streamIndex->setHint( "Choose a custom value to decode the video stream you want." );
+	streamIndex->setDisplayRange( 0., 16. );
+	streamIndex->setRange( 0., 100. );
+	streamIndex->setHint( "Choose a custom value to decode the video stream you want. Maximum value: 100." );
 }
 
 /**
