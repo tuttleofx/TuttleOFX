@@ -2,12 +2,13 @@
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
 #include <common/util.hpp>
+
+#include <tuttle/plugin/context/ReaderPlugin.hpp>
+
 #include <AvTranscoder/File/InputFile.hpp>
 #include <AvTranscoder/EssenceStream/InputVideo.hpp>
 #include <AvTranscoder/DatasStructures/Image.hpp>
 #include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
-
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 
 #include <boost/scoped_ptr.hpp>
@@ -78,8 +79,9 @@ public:
 	avtranscoder::OptionLoader _optionLoader;
 	
 	std::string _lastInputFilePath;
-	size_t _idVideoStream;
 	int _lastVideoStreamIndex;
+	
+	size_t _videoStreamId;
 	int _lastFrame;
 	
 	bool _initVideo;

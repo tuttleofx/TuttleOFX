@@ -5,7 +5,6 @@
 #include <AvTranscoder/DatasStructures/Pixel.hpp>
 #include <AvTranscoder/ProgressListener.hpp>
 
-#include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 
@@ -27,7 +26,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _imageToDecode( NULL )
 	, _lastInputFilePath( "" )
 	, _lastVideoStreamIndex( 0 )
-	, _idVideoStream( 0 )
+	, _videoStreamId( 0 )
 	, _lastFrame( -1 )
 	, _initVideo( false )
 {
@@ -83,14 +82,14 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		{
 			throw std::runtime_error( "the stream index doesn't exist in the input file" );
 		}
-		_idVideoStream = _inputFile->getProperties().videoStreams.at( _paramVideoStreamIndex->getValue() ).streamId;
+		_videoStreamId = _inputFile->getProperties().videoStreams.at( _paramVideoStreamIndex->getValue() ).streamId;
 		_lastVideoStreamIndex = _paramVideoStreamIndex->getValue();
 		
 		// buffered video stream at _indexVideoStream (to seek)
-		_inputFile->readStream( _idVideoStream );
+		_inputFile->readStream( _videoStreamId );
 		
 		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::InputVideo( _inputFile->getStream( _idVideoStream ) ) );
+		_inputStreamVideo.reset( new avtranscoder::InputVideo( _inputFile->getStream( _videoStreamId ) ) );
 		_inputStreamVideo->setup();
 	}
 	catch( std::exception& e )
@@ -240,7 +239,7 @@ double AVReaderPlugin::retrievePAR()
 		return _paramCustomSAR->getValue();
 	
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
+	avtranscoder::Ratio sar = properties.videoStreams.at( _videoStreamId ).sar;
 	const double videoRatio = sar.num / (double)sar.den;
 
 	return videoRatio;
@@ -279,16 +278,16 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
 	
 	// output frame rate
-	double fps = properties.videoStreams.at( _idVideoStream ).fps;
+	double fps = properties.videoStreams.at( _videoStreamId ).fps;
 	clipPreferences.setOutputFrameRate( fps );
 
 	clipPreferences.setPixelAspectRatio( *_clipDst, retrievePAR() );
 
 	// interlaced
-	bool isInterlaced = properties.videoStreams.at( _idVideoStream ).isInterlaced;
+	bool isInterlaced = properties.videoStreams.at( _videoStreamId ).isInterlaced;
 	if( isInterlaced )
 	{
-		bool topFieldFirst = properties.videoStreams.at( _idVideoStream ).topFieldFirst;
+		bool topFieldFirst = properties.videoStreams.at( _videoStreamId ).topFieldFirst;
 		clipPreferences.setOutputFielding( topFieldFirst ? OFX::eFieldUpper : OFX::eFieldLower );
 	}
 	else
@@ -302,7 +301,7 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 	ensureVideoIsOpen();
 
 	double duration = _inputFile->getProperties().duration;
-	double fps = _inputFile->getProperties().videoStreams.at( _idVideoStream ).fps;
+	double fps = _inputFile->getProperties().videoStreams.at( _videoStreamId ).fps;
 	double nbFrames = fps * duration;
 
 	range.min = 0.0;
@@ -317,8 +316,8 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 
 	// get metadata of video stream
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	size_t width = properties.videoStreams.at( _idVideoStream ).width;
-	size_t height = properties.videoStreams.at( _idVideoStream ).height;
+	size_t width = properties.videoStreams.at( _videoStreamId ).width;
+	size_t height = properties.videoStreams.at( _videoStreamId ).height;
 	
 	const double pixelAspectRatio = retrievePAR();
 
@@ -338,7 +337,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	ensureVideoIsOpen();
 	
 	// get source image
-	avtranscoder::ImageDesc sourceImageDesc = _inputFile->getStream( _idVideoStream ).getVideoDesc().getImageDesc();
+	avtranscoder::ImageDesc sourceImageDesc = _inputFile->getStream( _videoStreamId ).getVideoDesc().getImageDesc();
 	_sourceImage.reset( new avtranscoder::Image( sourceImageDesc ) );
 	
 	// get pixel data of image to decode
