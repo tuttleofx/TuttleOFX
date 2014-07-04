@@ -69,6 +69,8 @@ public:
 	size_t _idVideoStream;
 	int _lastVideoStreamIndex;
 	int _lastFrame;
+	
+	bool _initVideo;
 };
 
 }

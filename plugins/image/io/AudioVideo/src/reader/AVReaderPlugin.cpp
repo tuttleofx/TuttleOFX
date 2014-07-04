@@ -28,6 +28,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _lastVideoStreamIndex( 0 )
 	, _idVideoStream( 0 )
 	, _lastFrame( -1 )
+	, _initVideo( false )
 {
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
@@ -52,6 +53,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 	{
 		_inputFile.reset();
 		_lastInputFilePath = "";
+		_initVideo = false;
 		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 		    << exception::filename( filepath ) );
 	}
@@ -86,10 +88,12 @@ void AVReaderPlugin::ensureVideoIsOpen()
 	}
 	catch( std::exception& e )
 	{
+		_initVideo = false;
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "unable to open input file : " + e.what()
 		    << exception::filename( filepath ) );
 	}
+	_initVideo = true;
 }
 
 void AVReaderPlugin::updateVisibleTools()
@@ -265,6 +269,9 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
  */
 void AVReaderPlugin::render( const OFX::RenderArguments& args )
 {
+	if( ! _initVideo )
+		return;
+	
 	ReaderPlugin::render(args);
 	doGilRender<AVReaderProcess>( *this, args );
 }
