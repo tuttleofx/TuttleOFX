@@ -13,6 +13,91 @@ namespace plugin {
 namespace av {
 namespace common {
 
+CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& codecName )
+{
+	OptionsForPreset optionsNameAndValue;
+
+	BOOST_FOREACH( OFX::BooleanParam* param, _paramBoolean )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+
+		// FFMPEG exception with the flags
+		if( param->getName().find( "flags_" ) != std::string::npos )
+		{
+			std::string optionValue;
+			if( param->getValue() )
+				optionValue.append( "+" );
+			else
+				optionValue.append( "-" );
+			optionValue.append( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+			optionsNameAndValue.push_back( std::pair<std::string, std::string>( "mpv_flags", optionValue ) );
+		}
+		else
+		{
+			std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+			optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+		}
+	}
+
+	BOOST_FOREACH( OFX::IntParam* param, _paramInt )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+	}
+
+	BOOST_FOREACH( OFX::DoubleParam* param, _paramDouble )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+	}
+
+	BOOST_FOREACH( OFX::StringParam* param, _paramString )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+	}
+
+	BOOST_FOREACH( OFX::Int2DParam* param, _paramRatio )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		std::string optionValue( boost::to_string( param->getValue().x ) + ", " + boost::to_string( param->getValue().y ) );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
+	}
+
+	BOOST_FOREACH( OFX::ChoiceParam* param, _paramChoice )
+	{
+		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+			continue;
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		// @todo: get optionValue from the optionIndex
+		size_t optionIndex = param->getValue();
+		std::string optionValue( "not yet implemented" );
+		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
+	}
+
+	// get all flags in a single Option
+	OptionForPreset mpv_flags( "mpv_flags", "" );
+	for( OptionsForPreset::iterator it = optionsNameAndValue.begin(); it != optionsNameAndValue.end(); ++it )
+	{
+		if( (*it).first == "mpv_flags" )
+		{
+			mpv_flags.second += (*it).second;
+			it = optionsNameAndValue.erase( it );
+		}
+	}
+
+	return optionsNameAndValue;
+}
+
 void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix )
 {
 	OFX::ParamDescriptor* param = NULL;

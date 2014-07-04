@@ -356,7 +356,7 @@ void AVWriterPlugin::updateAudioSilent()
 
 void AVWriterPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
 {
-	CustomParams* customParams;
+	common::CustomParams* customParams;
 	if( prefix == kPrefixVideo )
 		customParams = &_paramVideoCustom;
 	if( prefix == kPrefixAudio )
@@ -608,8 +608,8 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			
 			customPreset[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
 			
-			CustomParams::OptionsForPreset optionsForPreset = _paramVideoCustom.getOptionsNameAndValue( params._videoCodecName );
-			BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
+			common::CustomParams::OptionsForPreset optionsForPreset = _paramVideoCustom.getOptionsNameAndValue( params._videoCodecName );
+			BOOST_FOREACH( common::CustomParams::OptionForPreset nameAndValue, optionsForPreset )
 			{
 				customPreset[ nameAndValue.first ] = nameAndValue.second;
 			}
@@ -663,8 +663,8 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				customPreset[ avtranscoder::Profile::avProfileSampleRate ] = "48000";
 				customPreset[ avtranscoder::Profile::avProfileChannel ] = "1";
 				
-				CustomParams::OptionsForPreset optionsForPreset = _paramAudioCustom.getOptionsNameAndValue( params._audioCodecName );
-				BOOST_FOREACH( CustomParams::OptionForPreset nameAndValue, optionsForPreset )
+				common::CustomParams::OptionsForPreset optionsForPreset = _paramAudioCustom.getOptionsNameAndValue( params._audioCodecName );
+				BOOST_FOREACH( common::CustomParams::OptionForPreset nameAndValue, optionsForPreset )
 				{
 					customPreset[ nameAndValue.first ] = nameAndValue.second;
 				}
@@ -832,91 +832,6 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	}
 	
 	_outputFile->endWrap();
-}
-
-CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& codecName )
-{
-	OptionsForPreset optionsNameAndValue;
-
-	BOOST_FOREACH( OFX::BooleanParam* param, _paramBoolean )
-	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
-			continue;
-
-		// FFMPEG exception with the flags
-		if( param->getName().find( "flags_" ) != std::string::npos )
-		{
-			std::string optionValue;
-			if( param->getValue() )
-				optionValue.append( "+" );
-			else
-				optionValue.append( "-" );
-			optionValue.append( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
-			optionsNameAndValue.push_back( std::pair<std::string, std::string>( "mpv_flags", optionValue ) );
-		}
-		else
-		{
-			std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
-			optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
-		}
-	}
-
-	BOOST_FOREACH( OFX::IntParam* param, _paramInt )
-	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
-			continue;
-		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
-	}
-
-	BOOST_FOREACH( OFX::DoubleParam* param, _paramDouble )
-	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
-			continue;
-		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
-	}
-
-	BOOST_FOREACH( OFX::StringParam* param, _paramString )
-	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
-			continue;
-		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
-	}
-
-	BOOST_FOREACH( OFX::Int2DParam* param, _paramRatio )
-	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
-			continue;
-		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		std::string optionValue( boost::to_string( param->getValue().x ) + ", " + boost::to_string( param->getValue().y ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
-	}
-
-	BOOST_FOREACH( OFX::ChoiceParam* param, _paramChoice )
-	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
-			continue;
-		std::string optionName( common::getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		// @todo: get optionValue from the optionIndex
-		size_t optionIndex = param->getValue();
-		std::string optionValue( "not yet implemented" );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
-	}
-
-	// get all flags in a single Option
-	OptionForPreset mpv_flags( "mpv_flags", "" );
-	for( OptionsForPreset::iterator it = optionsNameAndValue.begin(); it != optionsNameAndValue.end(); ++it )
-	{
-		if( (*it).first == "mpv_flags" )
-		{
-			mpv_flags.second += (*it).second;
-			it = optionsNameAndValue.erase( it );
-		}
-	}
-
-	return optionsNameAndValue;
 }
 
 }
