@@ -67,6 +67,7 @@ public:
 	
 	std::string _lastInputFilePath;
 	size_t _idVideoStream;
+	int _lastVideoStreamIndex;
 	int _lastFrame;
 };
 

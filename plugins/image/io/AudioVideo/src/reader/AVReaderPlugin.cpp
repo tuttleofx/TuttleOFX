@@ -8,6 +8,8 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 
+#include <stdexcept>
+
 namespace tuttle {
 namespace plugin {
 namespace av {
@@ -23,6 +25,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _sourceImage( NULL )
 	, _imageToDecode( NULL )
 	, _lastInputFilePath( "" )
+	, _lastVideoStreamIndex( 0 )
 	, _idVideoStream( 0 )
 	, _lastFrame( -1 )
 {
@@ -38,9 +41,11 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 void AVReaderPlugin::ensureVideoIsOpen()
 {
 	const std::string& filepath = _paramFilepath->getValue();
+	const int videoStreamIndex = _paramVideoStreamIndex->getValue();
 	 
 	if( _lastInputFilePath == filepath && // already opened
-		! _lastInputFilePath.empty() ) // not the first time...
+		! _lastInputFilePath.empty() && // not the first time...
+		_lastVideoStreamIndex == videoStreamIndex )
 		return;
 	
 	if( filepath == "" || ! boost::filesystem::exists( filepath ) )
@@ -65,7 +70,12 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
 		
 		// get streamId of the video stream
+		if( _paramVideoStreamIndex->getValue() >= _inputFile->getProperties().videoStreams.size() )
+		{
+			throw std::runtime_error( "the stream index doesn't exist in the input file" );
+		}
 		_idVideoStream = _inputFile->getProperties().videoStreams.at( _paramVideoStreamIndex->getValue() ).streamId;
+		_lastVideoStreamIndex = _paramVideoStreamIndex->getValue();
 		
 		// buffered video stream at _indexVideoStream (to seek)
 		_inputFile->readStream( _idVideoStream );
