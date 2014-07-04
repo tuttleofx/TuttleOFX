@@ -134,7 +134,9 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::DoubleParamDescriptor* customSAR = desc.defineDoubleParam( kParamCustomSAR );
 	customSAR->setLabel( "Custom SAR" );
 	customSAR->setDefault( 1.0 );
-	customSAR->setHint( "Choose a custom value to override the file SAR (Storage Aspect Ratio)." );
+	customSAR->setDisplayRange( 0., 3. );
+	customSAR->setRange( 0., 10. );
+	customSAR->setHint( "Choose a custom value to override the file SAR (Storage Aspect Ratio). Maximum value: 10." );
 	
 	OFX::IntParamDescriptor* streamIndex = desc.defineIntParam( kParamVideoStreamIndex );
 	streamIndex->setLabel( kParamVideoStreamIndexLabel );
