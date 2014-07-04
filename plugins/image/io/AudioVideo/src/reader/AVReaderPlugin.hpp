@@ -31,7 +31,7 @@ public:
 	AVReaderPlugin( OfxImageEffectHandle handle );
 
 public:
-	void ensureVideoIsOpen( const std::string& path );
+	void ensureVideoIsOpen();
 	
 	AVReaderParams getProcessParams() const;
 

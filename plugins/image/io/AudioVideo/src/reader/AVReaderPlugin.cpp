@@ -35,8 +35,10 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	updateVisibleTools();
 }
 
-void AVReaderPlugin::ensureVideoIsOpen( const std::string& filepath )
+void AVReaderPlugin::ensureVideoIsOpen()
 {
+	const std::string& filepath = _paramFilepath->getValue();
+	 
 	if( _lastInputFilePath == filepath && // already opened
 		! _lastInputFilePath.empty() ) // not the first time...
 		return;
@@ -137,7 +139,7 @@ double AVReaderPlugin::retrievePAR()
 
 void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	ensureVideoIsOpen( _paramFilepath->getValue() );
+	ensureVideoIsOpen();
 	
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	
@@ -188,7 +190,7 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 
 bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
-	ensureVideoIsOpen( _paramFilepath->getValue() );
+	ensureVideoIsOpen();
 
 	double duration = _inputFile->getProperties().duration;
 	double fps = _inputFile->getProperties().videoStreams.at( _idVideoStream ).fps;
@@ -202,7 +204,7 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	ensureVideoIsOpen( _paramFilepath->getValue() );
+	ensureVideoIsOpen();
 
 	// get metadata of video stream
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
@@ -224,7 +226,7 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
  */
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
-	ensureVideoIsOpen( _paramFilepath->getValue() );
+	ensureVideoIsOpen();
 	
 	// get source image
 	avtranscoder::ImageDesc sourceImageDesc = _inputFile->getStream( _idVideoStream ).getVideoDesc().getImageDesc();
