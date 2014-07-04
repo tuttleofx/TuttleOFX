@@ -79,6 +79,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				groupName += "g_";
 				groupName += option.getName();
 				OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
+				groupParam->setOpen( false );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
 					std::string childName = prefix;
@@ -184,6 +185,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 					groupName += option.getName();
 					
 					OFX::GroupParamDescriptor* groupParam = desc.defineGroupParam( groupName );
+					groupParam->setOpen( false );
 					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 					{
 						std::string childName = prefix;
