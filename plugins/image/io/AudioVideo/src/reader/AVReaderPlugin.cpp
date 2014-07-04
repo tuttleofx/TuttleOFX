@@ -141,9 +141,6 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	
-	// frame varying
-	clipPreferences.setOutputFrameVarying( true );
-	
 	// conversion of bitdepth
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{

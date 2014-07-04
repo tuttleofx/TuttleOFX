@@ -45,6 +45,8 @@ public:
 	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
 
+	inline bool varyOnTime() const { return true; }
+
 private:
 	double retrievePAR();
 	
