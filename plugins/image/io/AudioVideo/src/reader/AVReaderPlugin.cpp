@@ -51,9 +51,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 	
 	if( filepath == "" || ! boost::filesystem::exists( filepath ) )
 	{
-		_inputFile.reset();
-		_lastInputFilePath = "";
-		_initVideo = false;
+		cleanInputFile();
 		BOOST_THROW_EXCEPTION( exception::FileNotExist()
 		    << exception::filename( filepath ) );
 	}
@@ -88,12 +86,23 @@ void AVReaderPlugin::ensureVideoIsOpen()
 	}
 	catch( std::exception& e )
 	{
-		_initVideo = false;
+		cleanInputFile();
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "unable to open input file : " + e.what()
 		    << exception::filename( filepath ) );
 	}
 	_initVideo = true;
+}
+
+void AVReaderPlugin::cleanInputFile()
+{
+	_inputFile.reset();
+	_inputStreamVideo.reset();
+	_sourceImage.reset();
+	_imageToDecode.reset();
+	_lastInputFilePath = "";
+	_lastVideoStreamIndex = 0;
+	_initVideo = false;
 }
 
 void AVReaderPlugin::updateVisibleTools()

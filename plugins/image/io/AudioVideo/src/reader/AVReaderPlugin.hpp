@@ -32,6 +32,7 @@ public:
 
 public:
 	void ensureVideoIsOpen();
+	void cleanInputFile();
 	
 	AVReaderParams getProcessParams() const;
 
