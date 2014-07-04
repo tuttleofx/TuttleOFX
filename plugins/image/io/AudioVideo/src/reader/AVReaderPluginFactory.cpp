@@ -72,6 +72,7 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsMultipleClipDepths( true );
+	desc.setSupportsMultipleClipPARs( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 

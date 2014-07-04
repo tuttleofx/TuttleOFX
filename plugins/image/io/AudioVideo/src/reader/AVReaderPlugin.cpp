@@ -116,6 +116,25 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 }
 
+/**
+ * @brief Retrieve Pixel Aspect Ratio from parameters (if custom) or from video file.
+ * @warning video have to be open (see ensureVideoIsOpen)
+ */
+double AVReaderPlugin::retrievePAR()
+{
+	if( ! OFX::getImageEffectHostDescription()->supportsMultipleClipPARs )
+		return 1.0;
+	
+	if( _paramUseCustomSAR->getValue() )
+		return _paramCustomSAR->getValue();
+	
+	const avtranscoder::Properties& properties = _inputFile->getProperties();
+	avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
+	const double videoRatio = sar.num / (double)sar.den;
+
+	return videoRatio;
+}
+
 void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ensureVideoIsOpen( _paramFilepath->getValue() );
@@ -155,19 +174,7 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	double fps = properties.videoStreams.at( _idVideoStream ).fps;
 	clipPreferences.setOutputFrameRate( fps );
 
-	// sar
-	if( _paramUseCustomSAR->getValue() )
-	{
-		clipPreferences.setPixelAspectRatio( *_clipDst, _paramCustomSAR->getValue() );
-	}
-	else
-	{
-		const avtranscoder::Properties& properties = _inputFile->getProperties();
-		avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
-		const double videoRatio = sar.num / (double)sar.den;
-
-		clipPreferences.setPixelAspectRatio( *_clipDst, videoRatio );
-	}
+	clipPreferences.setPixelAspectRatio( *_clipDst, retrievePAR() );
 
 	// interlaced
 	bool isInterlaced = properties.videoStreams.at( _idVideoStream ).isInterlaced;
@@ -204,14 +211,11 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
 	size_t width = properties.videoStreams.at( _idVideoStream ).width;
 	size_t height = properties.videoStreams.at( _idVideoStream ).height;
-	avtranscoder::Ratio sar = properties.videoStreams.at( _idVideoStream ).sar;
-	const double videoRatio = sar.num / (double)sar.den;
-
-	const bool useCustomSAR = _paramUseCustomSAR->getValue();
-	const double customSAR = _paramCustomSAR->getValue();
+	
+	const double pixelAspectRatio = retrievePAR();
 
 	rod.x1 = 0;
-	rod.x2 = width * ( useCustomSAR ? customSAR : videoRatio );
+	rod.x2 = width * pixelAspectRatio;
 	rod.y1 = 0;
 	rod.y2 = height;
 

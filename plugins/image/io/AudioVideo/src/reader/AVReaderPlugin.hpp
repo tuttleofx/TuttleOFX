@@ -45,6 +45,9 @@ public:
 	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
 
+private:
+	double retrievePAR();
+	
 public:
 	// do not need to delete these, the ImageEffect is managing them for us
 	OFX::Clip*         _clipDst;           ///< Destination image clip
