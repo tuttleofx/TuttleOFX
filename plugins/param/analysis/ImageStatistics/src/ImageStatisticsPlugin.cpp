@@ -35,6 +35,7 @@ ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 	_paramOutputSkewness      = fetchRGBAParam( kParamOutputSkewness );
 
 	_paramOutputAverageHSL       = fetchDouble3DParam( kParamOutputAverageHSL );
+	_paramOutputVarianceHSL      = fetchDouble3DParam( kParamOutputVarianceHSL );
 	_paramOutputChannelMinHSL    = fetchDouble3DParam( kParamOutputChannelMinHSL );
 	_paramOutputChannelMaxHSL    = fetchDouble3DParam( kParamOutputChannelMaxHSL );
 	_paramOutputLuminosityMinHSL = fetchDouble3DParam( kParamOutputLuminosityMinHSL );

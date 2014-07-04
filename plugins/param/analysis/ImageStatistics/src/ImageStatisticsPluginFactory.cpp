@@ -195,6 +195,13 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	outputAverageHSL->setParent( hslGroup );
 	outputAverageHSL->setEvaluateOnChange( false );
 
+	OFX::Double3DParamDescriptor* outputVarianceHSL = desc.defineDouble3DParam( kParamOutputVarianceHSL );
+	outputVarianceHSL->setLabel( "Variance" );
+	outputVarianceHSL->setHint( hintVariance );
+	outputVarianceHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputVarianceHSL->setDimensionLabels( "h", "s", "l" );
+	outputVarianceHSL->setParent( hslGroup );
+	outputVarianceHSL->setEvaluateOnChange( false );
 	OFX::Double3DParamDescriptor* outputChannelMinHSL = desc.defineDouble3DParam( kParamOutputChannelMinHSL );
 	outputChannelMinHSL->setLabel( "Channels' min" );
 	outputChannelMinHSL->setHint( "Minimum value per channel" );

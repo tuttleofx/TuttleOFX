@@ -35,6 +35,7 @@ static const std::string kParamOutputSkewness      = "outputSkewness";
 
 static const std::string kParamOutputGroupHSL         = "outputGroupHSL";
 static const std::string kParamOutputAverageHSL       = "outputAverageHSL";
+static const std::string kParamOutputVarianceHSL      = "outputVarianceHSL";
 static const std::string kParamOutputChannelMinHSL    = "outputChannelMinHSL";
 static const std::string kParamOutputChannelMaxHSL    = "outputChannelMaxHSL";
 static const std::string kParamOutputLuminosityMinHSL = "outputLuminosityMinHSL";

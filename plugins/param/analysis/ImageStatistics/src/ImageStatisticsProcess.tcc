@@ -343,22 +343,23 @@ void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputPara
 	
 	plugin._paramOutputNbPixels->setValueAtTime( time, outputParamsRGBA._nbPixels );
 	
-	setRGBAParamValuesAtTime( *plugin._paramOutputAverage, time, outputParamsRGBA._average );
-	setRGBAParamValuesAtTime( *plugin._paramOutputVariance, time, outputParamsRGBA._variance );
-	setRGBAParamValuesAtTime( *plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
-	setRGBAParamValuesAtTime( *plugin._paramOutputChannelMax, time, outputParamsRGBA._channelMax );
-	setRGBAParamValuesAtTime( *plugin._paramOutputLuminosityMin, time, outputParamsRGBA._luminosityMin );
-	setRGBAParamValuesAtTime( *plugin._paramOutputLuminosityMax, time, outputParamsRGBA._luminosityMax );
-	setRGBAParamValuesAtTime( *plugin._paramOutputKurtosis, time, outputParamsRGBA._kurtosis );
-	setRGBAParamValuesAtTime( *plugin._paramOutputSkewness, time, outputParamsRGBA._skewness );
+	setRGBAParamValuesAtTime( plugin._paramOutputAverage, time, outputParamsRGBA._average );
+	setRGBAParamValuesAtTime( plugin._paramOutputVariance, time, outputParamsRGBA._variance );
+	setRGBAParamValuesAtTime( plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
+	setRGBAParamValuesAtTime( plugin._paramOutputChannelMax, time, outputParamsRGBA._channelMax );
+	setRGBAParamValuesAtTime( plugin._paramOutputLuminosityMin, time, outputParamsRGBA._luminosityMin );
+	setRGBAParamValuesAtTime( plugin._paramOutputLuminosityMax, time, outputParamsRGBA._luminosityMax );
+	setRGBAParamValuesAtTime( plugin._paramOutputKurtosis, time, outputParamsRGBA._kurtosis );
+	setRGBAParamValuesAtTime( plugin._paramOutputSkewness, time, outputParamsRGBA._skewness );
 
 	set012ParamValuesAtTime( plugin._paramOutputAverageHSL, time, outputParamsHSL._average );
-	set012ParamValuesAtTime( *plugin._paramOutputChannelMinHSL, time, outputParamsHSL._channelMin );
-	set012ParamValuesAtTime( *plugin._paramOutputChannelMaxHSL, time, outputParamsHSL._channelMax );
-	set012ParamValuesAtTime( *plugin._paramOutputLuminosityMinHSL, time, outputParamsHSL._luminosityMin );
-	set012ParamValuesAtTime( *plugin._paramOutputLuminosityMaxHSL, time, outputParamsHSL._luminosityMax );
-	set012ParamValuesAtTime( *plugin._paramOutputKurtosisHSL, time, outputParamsHSL._kurtosis );
-	set012ParamValuesAtTime( *plugin._paramOutputSkewnessHSL, time, outputParamsHSL._skewness );
+	set012ParamValuesAtTime( plugin._paramOutputVarianceHSL, time, outputParamsHSL._variance );
+	set012ParamValuesAtTime( plugin._paramOutputChannelMinHSL, time, outputParamsHSL._channelMin );
+	set012ParamValuesAtTime( plugin._paramOutputChannelMaxHSL, time, outputParamsHSL._channelMax );
+	set012ParamValuesAtTime( plugin._paramOutputLuminosityMinHSL, time, outputParamsHSL._luminosityMin );
+	set012ParamValuesAtTime( plugin._paramOutputLuminosityMaxHSL, time, outputParamsHSL._luminosityMax );
+	set012ParamValuesAtTime( plugin._paramOutputKurtosisHSL, time, outputParamsHSL._kurtosis );
+	set012ParamValuesAtTime( plugin._paramOutputSkewnessHSL, time, outputParamsHSL._skewness );
 }
 
 template<class View>

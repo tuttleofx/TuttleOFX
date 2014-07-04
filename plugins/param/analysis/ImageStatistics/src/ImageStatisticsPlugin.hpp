@@ -48,6 +48,7 @@ public:
 	OFX::RGBAParam* _paramOutputSkewness;
 
 	OFX::Double3DParam* _paramOutputAverageHSL;
+	OFX::Double3DParam* _paramOutputVarianceHSL;
 	OFX::Double3DParam* _paramOutputChannelMinHSL;
 	OFX::Double3DParam* _paramOutputChannelMaxHSL;
 	OFX::Double3DParam* _paramOutputLuminosityMinHSL;
