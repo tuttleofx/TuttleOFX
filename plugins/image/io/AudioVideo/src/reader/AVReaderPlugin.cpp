@@ -7,6 +7,7 @@
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 #include <stdexcept>
 
@@ -35,6 +36,18 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramVideoStreamIndex = fetchIntParam( kParamVideoStreamIndex );
 	_paramUseCustomSAR = fetchBooleanParam( kParamUseCustomSAR );
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
+	
+	avtranscoder::OptionLoader::OptionArray formatsOptions = _optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
+	fetchCustomParams( formatsOptions, common::kPrefixFormat );
+	
+	avtranscoder::OptionLoader::OptionArray videoOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	fetchCustomParams( videoOptions, common::kPrefixVideo );
+	
+	avtranscoder::OptionLoader::OptionArray audioOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
+	fetchCustomParams( audioOptions, common::kPrefixAudio );
+	
+	avtranscoder::OptionLoader::OptionArray metadataOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	fetchCustomParams( metadataOptions, common::kPrefixMetaData );
 
 	updateVisibleTools();
 }
@@ -142,6 +155,75 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		// set range of the OFX param
 		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
 		_paramVideoStreamIndex->setDisplayRange( 0, _inputFile->getProperties().videoStreams.size() );
+	}
+}
+
+void AVReaderPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix )
+{
+	common::CustomParams* customParams;
+	if( prefix == common::kPrefixFormat )
+		customParams = &_paramFormatCustom;
+	else if( prefix == common::kPrefixVideo )
+		customParams = &_paramVideoCustom;
+	else if( prefix == common::kPrefixAudio )
+		customParams = &_paramAudioCustom;
+	else if( prefix == common::kPrefixMetaData )
+		customParams = &_paramMetaDataCustom;
+	else
+		return;
+
+	// iterate on options
+	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
+	{
+		std::string name = prefix;
+		name += option.getName();
+
+		switch( option.getType() )
+		{
+			case avtranscoder::TypeBool:
+			{
+				customParams->_paramBoolean.push_back( fetchBooleanParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeInt:
+			{
+				customParams->_paramInt.push_back( fetchIntParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeDouble:
+			{
+				customParams->_paramDouble.push_back( fetchDoubleParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeString:
+			{
+				customParams->_paramString.push_back( fetchStringParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeRatio:
+			{
+				customParams->_paramRatio.push_back( fetchInt2DParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeChoice:
+			{
+				customParams->_paramChoice.push_back( fetchChoiceParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeGroup:
+			{
+				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+				{
+					std::string childName = prefix;
+					childName += child.getName();
+
+					customParams->_paramBoolean.push_back( fetchBooleanParam( childName ) );
+				}
+				break;
+			}
+		default:
+				break;
+		}
 	}
 }
 
