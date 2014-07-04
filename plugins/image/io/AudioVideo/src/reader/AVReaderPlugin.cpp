@@ -65,10 +65,6 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		// using fast analyse ( do not extract gop structure )
 		_inputFile->analyse( progress, avtranscoder::InputFile::eAnalyseLevelFast );
 		
-		// set range of the OFX param
-		// @todo: move it when update params
-		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
-		
 		// get streamId of the video stream
 		if( _paramVideoStreamIndex->getValue() >= _inputFile->getProperties().videoStreams.size() )
 		{
@@ -138,6 +134,14 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			// This could not happen in a UI application, but only from command line or from API.
 			_paramUseCustomSAR->setValue( true );
 		}
+	}
+	else if( paramName == kTuttlePluginFilename )
+	{
+		ensureVideoIsOpen();
+		
+		// set range of the OFX param
+		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
+		_paramVideoStreamIndex->setDisplayRange( 0, _inputFile->getProperties().videoStreams.size() );
 	}
 }
 
