@@ -7,6 +7,8 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
+static const std::string kClipMask = "mask";
+
 static const std::string kParamCoordinateSystem           = "coordinateSystem";
 static const std::string kParamCoordinateSystemNormalized = "coordinateSystemNormalized";
 static const std::string kParamCoordinateSystemCanonical  = "coordinateSystemCanonical";
@@ -39,6 +41,8 @@ static const std::string kParamOutputLuminosityMinHSL = "outputLuminosityMinHSL"
 static const std::string kParamOutputLuminosityMaxHSL = "outputLuminosityMaxHSL";
 static const std::string kParamOutputKurtosisHSL      = "outputKurtosisHSL";
 static const std::string kParamOutputSkewnessHSL      = "outputSkewnessHSL";
+
+static const std::string kParamOutputNbPixels         = "outputNbPixels";
 
 static const std::string kParamChooseOutput              = "chooseOutput";
 static const std::string kParamChooseOutputSource        = "source";

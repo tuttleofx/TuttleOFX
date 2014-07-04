@@ -4,6 +4,7 @@
 #include <terry/globals.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
 #include <terry/typedefs.hpp>
+#include <terry/channel_view.hpp>
 
 #include <terry/numeric/operations.hpp>
 #include <terry/numeric/operations_assign.hpp>
@@ -192,12 +193,13 @@ struct OutputParams
 	Pixel _luminosityMax;
 	Pixel _kurtosis;
 	Pixel _skewness;
+
+	std::size_t _nbPixels;
 };
 
-template<class View, typename CType = boost::gil::bits64f>
+template<class View, class MaskView, typename CType = boost::gil::bits64f>
 struct ComputeOutputParams
 {
-
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::color_space_type<View>::type Colorspace;
 	typedef boost::gil::pixel<typename boost::gil::channel_type<View>::type, boost::gil::layout<boost::gil::gray_t> > PixelGray; // grayscale pixel type (using the input channel_type)
@@ -205,24 +207,19 @@ struct ComputeOutputParams
 
 	typedef OutputParams<CPixel> Output;
 
-	Output operator()( const View& image, ImageStatisticsPlugin& plugin )
+	static Output run( const View& image, const MaskView& maskView, const bool useMask, ImageStatisticsPlugin& plugin )
 	{
 		using namespace terry::numeric;
 		OutputParams<CPixel> output;
 
-		const std::size_t nbPixels = image.width() * image.height();
+		std::size_t nbProcPixels = 0;
 
-		// declare values and init
-		Pixel firstPixel = *image.begin(); // for initialization only
-		PixelGray firstPixelGray;
-		color_convert( firstPixel, firstPixelGray );
-
-		Pixel channelMin            = firstPixel;
-		Pixel channelMax            = firstPixel;
-		Pixel luminosityMin         = firstPixel;
-		PixelGray luminosityMinGray = firstPixelGray;
-		Pixel luminosityMax         = firstPixel;
-		PixelGray luminosityMaxGray = firstPixelGray;
+		Pixel channelMin;
+		Pixel channelMax;
+		Pixel luminosityMin;
+		PixelGray luminosityMinGray;
+		Pixel luminosityMax;
+		PixelGray luminosityMaxGray;
 
 		CPixel sum;
 		CPixel varianceSum;
@@ -238,11 +235,31 @@ struct ComputeOutputParams
 		for( int y = 0; y < image.height(); ++y )
 		{
 			typename View::x_iterator src_it = image.x_at( 0, y );
-			CPixel lineAverage;
-			pixel_zeros_t<CPixel>( )( lineAverage );
+			typename MaskView::x_iterator mask_it = maskView.x_at( 0, y );
 
-			for( int x = 0; x < image.width(); ++x, ++src_it )
+			for( int x = 0; x < image.width(); ++x, ++src_it, ++mask_it )
 			{
+				if( useMask && get_color( *mask_it, gray_color_t() ) == 0.0 )
+					continue;
+				
+				
+				PixelGray grayCurrentPixel; // current pixel in gray colorspace
+				color_convert( * src_it, grayCurrentPixel );
+
+				if( nbProcPixels == 0 )
+				{
+					// It's the first pixel we visit.
+					// So initialize statistics!
+					channelMin = *src_it;
+					channelMax = *src_it;
+					luminosityMin = *src_it;
+					luminosityMinGray = grayCurrentPixel;
+					luminosityMax = *src_it;
+					luminosityMaxGray = grayCurrentPixel;
+				}
+				// Count the number of pixels taken into account
+				++nbProcPixels;
+				
 				CPixel pix;
 				pixel_assigns_t<Pixel, CPixel>( )( * src_it, pix ); // pix = src_it;
 
@@ -264,9 +281,6 @@ struct ComputeOutputParams
 				// search max for each channel
 				pixel_assign_max_t<Pixel, Pixel>( )( * src_it, channelMax );
 
-				PixelGray grayCurrentPixel; // current pixel in gray colorspace
-				color_convert( * src_it, grayCurrentPixel );
-
 				// search min luminosity
 				if( get_color( grayCurrentPixel, gray_color_t() ) < get_color( luminosityMinGray, gray_color_t() ) )
 				{
@@ -282,14 +296,16 @@ struct ComputeOutputParams
 			}
 		}
 
+		output._nbPixels = nbProcPixels;
+
 		output._channelMin    = channelMin;
 		output._channelMax    = channelMax;
 		output._luminosityMin = luminosityMin;
 		output._luminosityMax = luminosityMax;
 
-		CPixel stdDeriv = pixel_standard_deviation( sum, sum_p2, nbPixels );
-		output._average  = pixel_divides_scalar_t<CPixel, double>() ( sum, nbPixels );
-		
+		CPixel stdDeriv = pixel_standard_deviation( sum, sum_p2, nbProcPixels );
+		output._average  = pixel_divides_scalar_t<CPixel, double>() ( sum, nbProcPixels );
+
 		for( int y = 0; y < image.height(); ++y )
 		{
 			typename View::x_iterator src_it = image.x_at( 0, y );
@@ -308,11 +324,11 @@ struct ComputeOutputParams
 				pixel_plus_assign_t<CPixel, CPixel>( )( pix_diff2, varianceSum ); // varianceSum += pix_diff2;
 			}
 		}
-		
-		CPixel varianceSquare = pixel_divides_scalar_t<CPixel, double>() ( varianceSum, nbPixels );
+
+		CPixel varianceSquare = pixel_divides_scalar_t<CPixel, double>() ( varianceSum, nbProcPixels );
 		output._variance = pixel_sqrt_t<CPixel, Pixel>()( varianceSquare );
-		output._kurtosis = pixel_kurtosis( output._average, stdDeriv, sum, sum_p2, sum_p3, sum_p4, nbPixels );
-		output._skewness = pixel_skewness( output._average, stdDeriv, sum, sum_p2, sum_p3, nbPixels );
+		output._kurtosis = pixel_kurtosis( output._average, stdDeriv, sum, sum_p2, sum_p3, sum_p4, nbProcPixels );
+		output._skewness = pixel_skewness( output._average, stdDeriv, sum, sum_p2, sum_p3, nbProcPixels );
 
 		return output;
 	}
@@ -323,11 +339,13 @@ struct ComputeOutputParams
 template <typename OutputParamsRGBA, typename OutputParamsHSL>
 void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputParamsHSL& outputParamsHSL, const OfxTime time, ImageStatisticsPlugin& plugin )
 {
+	BOOST_ASSERT( outputParamsRGBA._nbPixels == outputParamsHSL._nbPixels );
+	
+	plugin._paramOutputNbPixels->setValueAtTime( time, outputParamsRGBA._nbPixels );
+	
 	setRGBAParamValuesAtTime( *plugin._paramOutputAverage, time, outputParamsRGBA._average );
 	setRGBAParamValuesAtTime( *plugin._paramOutputVariance, time, outputParamsRGBA._variance );
-	//	TUTTLE_LOG_VAR4( TUTTLE_INFO, outputParamsRGBA._average[0], outputParamsRGBA._average[1], outputParamsRGBA._average[2], outputParamsRGBA._average[3] );
 	setRGBAParamValuesAtTime( *plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
-	//	TUTTLE_LOG_VAR4( TUTTLE_INFO, outputParamsRGBA._channelMin[0], outputParamsRGBA._channelMin[1], outputParamsRGBA._channelMin[2], outputParamsRGBA._channelMin[3] );
 	setRGBAParamValuesAtTime( *plugin._paramOutputChannelMax, time, outputParamsRGBA._channelMax );
 	setRGBAParamValuesAtTime( *plugin._paramOutputLuminosityMin, time, outputParamsRGBA._luminosityMin );
 	setRGBAParamValuesAtTime( *plugin._paramOutputLuminosityMax, time, outputParamsRGBA._luminosityMax );
@@ -335,9 +353,7 @@ void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputPara
 	setRGBAParamValuesAtTime( *plugin._paramOutputSkewness, time, outputParamsRGBA._skewness );
 
 	set012ParamValuesAtTime( plugin._paramOutputAverageHSL, time, outputParamsHSL._average );
-	//	TUTTLE_LOG_VAR4( TUTTLE_INFO, outputParamsHSL._average[0], outputParamsHSL._average[1], outputParamsHSL._average[2], outputParamsHSL._average[3] );
 	set012ParamValuesAtTime( *plugin._paramOutputChannelMinHSL, time, outputParamsHSL._channelMin );
-	//	TUTTLE_LOG_VAR4( TUTTLE_INFO, outputParamsHSL._channelMin[0], outputParamsHSL._channelMin[1], outputParamsHSL._channelMin[2], outputParamsHSL._channelMin[3] );
 	set012ParamValuesAtTime( *plugin._paramOutputChannelMaxHSL, time, outputParamsHSL._channelMax );
 	set012ParamValuesAtTime( *plugin._paramOutputLuminosityMinHSL, time, outputParamsHSL._luminosityMin );
 	set012ParamValuesAtTime( *plugin._paramOutputLuminosityMaxHSL, time, outputParamsHSL._luminosityMax );
@@ -351,29 +367,75 @@ ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin& ins
 	, _plugin( instance )
 {
 	this->setNoMultiThreading();
+
+	_clipMask = instance.fetchClip( kClipMask );
+	_clipMaskConnected = _clipMask->isConnected();
+
+	if( _clipMaskConnected && (_clipMask->getPixelComponents() != this->_clipSrc->getPixelComponents()) )
+		BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user("Can't mix different input Pixel Components.") );
 }
 
 template<class View>
 void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
+	using namespace terry;
 
 	ImageGilFilterProcessor<View>::setup( args );
-	_processParams = _plugin.getProcessParams( this->_srcPixelRod );
 
+	// mask view
+	if( _clipMaskConnected )
+	{
+		this->_mask.reset( _clipMask->fetchImage( args.time ) );
+		if( !this->_mask.get( ) )
+			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
+		if( this->_mask->getRowDistanceBytes( ) <= 0 )
+			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+		this->_maskView = this->getView( this->_mask.get(), _clipMask->getPixelRod(args.time, args.renderScale) );
+		
+		if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
+		{
+			// bug in nuke, getRegionOfDefinition() on OFX::Image returns bounds
+			_maskPixelRod   = _clipMask->getPixelRod( args.time, args.renderScale );
+		}
+		else
+		{
+			_maskPixelRod = _mask->getRegionOfDefinition();
+		}
+	}
+	
+	_processParams = _plugin.getProcessParams( args.time, args.renderScale );
+
+	OfxRectI srcRoI = translateRegion( _processParams._rect, this->_srcPixelRod );
 	View image = subimage_view( this->_srcView,
-	                            _processParams._rect.x1,
-	                            _processParams._rect.y1,
-	                            _processParams._rect.x2 - _processParams._rect.x1,
-	                            _processParams._rect.y2 - _processParams._rect.y1 );
+	                            srcRoI.x1, srcRoI.y1,
+	                            srcRoI.x2 - srcRoI.x1, srcRoI.y2 - srcRoI.y1 );
 
-	typedef ComputeOutputParams<View, boost::gil::bits64f> ComputeRGBA;
-	typename ComputeRGBA::Output outputRGBA = ComputeRGBA() ( image, this->_plugin );
+	typedef View MaskView; /// @todo add a MaskView template parameter...
+	
+	OfxRectI maskRoI = translateRegion( _processParams._rect, _maskPixelRod );
+	View maskView = subimage_view( this->_maskView,
+	                            maskRoI.x1, maskRoI.y1,
+	                            maskRoI.x2 - maskRoI.x1, maskRoI.y2 - maskRoI.y1 );
+
+	// choose the mask channel to use
+	// alpha_t if the image contains an alpha channel like rgba
+	// gray_t if grayscale image
+	typedef typename MaskView::value_type MaskPixel;
+	typedef typename boost::mpl::if_<contains_color<MaskPixel, alpha_t>,
+		alpha_t,
+		gray_t>::type MaskColorChannel;
+	typedef channel_view_type<MaskColorChannel, MaskView> KthChannelView;
+	typename KthChannelView::type channelMaskView = KthChannelView::make(maskView); // gray or alpha channel
+
+	typedef ComputeOutputParams<View, typename KthChannelView::type, boost::gil::bits64f> ComputeRGBA;
+	typename ComputeRGBA::Output outputRGBA = ComputeRGBA::run( image, channelMaskView, _clipMaskConnected, this->_plugin );
 
 	typedef pixel<typename channel_type<View>::type, layout<hsl_t> > HSLPixel;
 	typedef color_converted_view_type<View, HSLPixel> HSLConverter;
-	typedef ComputeOutputParams<typename HSLConverter::type, boost::gil::bits64f> ComputeHSL;
-	typename ComputeHSL::Output outputHSL = ComputeHSL() ( color_converted_view<HSLPixel>( image ), this->_plugin );
+	typedef ComputeOutputParams<typename HSLConverter::type, typename KthChannelView::type, boost::gil::bits64f> ComputeHSL;
+	typename ComputeHSL::Output outputHSL = ComputeHSL::run( color_converted_view<HSLPixel>( image ), channelMaskView, _clipMaskConnected, this->_plugin );
 
 	setOutputParams( outputRGBA, outputHSL, args.time, this->_plugin );
 

@@ -44,10 +44,16 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
                                                       OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
+
+	OFX::ClipDescriptor* maskClip = desc.defineClip( kClipMask );
+	maskClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	maskClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	maskClip->setSupportsTiles( kSupportTiles );
+	maskClip->setIsMask(true);
+	maskClip->setOptional(true);
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -84,10 +90,22 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	chooseOutput->appendOption( kParamChooseOutputLuminosityMax );
 	chooseOutput->setDefault( 0 );
 
+	// -----------------------------------------------------------------------------
+	
 	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kParamOutputGroup );
 	outputGroup->setLabel( "Output" );
 	outputGroup->setAsTab();
 	
+	OFX::IntParamDescriptor* outputNbPixels = desc.defineIntParam( kParamOutputNbPixels );
+	outputNbPixels->setLabel( "Nb Pixels" );
+	outputNbPixels->setHint(
+		"Number of pixels used to compute statistics.\n"
+		"It depends on the number of non 0 values in the input mask and "
+		"the intersection between: input image RoD, input mask RoD and "
+		"user defined region." );
+	outputNbPixels->setEvaluateOnChange( false );
+	outputNbPixels->setParent( outputGroup );
+
 	// -----------------------------------------------------------------------------
 
 	OFX::GroupParamDescriptor* rgbaGroup = desc.defineGroupParam( kParamOutputGroupRGBA );

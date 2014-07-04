@@ -27,6 +27,12 @@ private:
 	Pixel _outputPixel;
 	ImageStatisticsProcessParams _processParams;
 
+    OFX::Clip* _clipMask;       ///< Source image clip
+	bool _clipMaskConnected;
+	boost::scoped_ptr<OFX::Image> _mask;
+	OfxRectI _maskPixelRod;
+	View _maskView;
+
 public:
 	ImageStatisticsProcess( ImageStatisticsPlugin& instance );
 

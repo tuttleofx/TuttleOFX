@@ -16,11 +16,15 @@ namespace imageStatistics {
 ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
+	_clipMask = fetchClip( kClipMask );
+
 	_paramCoordinateSystem = fetchChoiceParam( kParamCoordinateSystem );
 	_paramRectCenter       = fetchDouble2DParam( kParamRectCenter );
 	_paramRectSize         = fetchDouble2DParam( kParamRectSize );
 	_paramChooseOutput     = fetchChoiceParam( kParamChooseOutput );
 
+	_paramOutputNbPixels = fetchIntParam( kParamOutputNbPixels );
+	
 	_paramOutputAverage       = fetchRGBAParam( kParamOutputAverage );
 	_paramOutputVariance      = fetchRGBAParam( kParamOutputVariance );
 	_paramOutputChannelMin    = fetchRGBAParam( kParamOutputChannelMin );
@@ -39,7 +43,7 @@ ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 	_paramOutputSkewnessHSL      = fetchDouble3DParam( kParamOutputSkewnessHSL );
 }
 
-ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectI& srcRod ) const
+ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
 {
 	ImageStatisticsProcessParams params;
 	OfxPointD rectCenter = _paramRectCenter->getValue();
@@ -54,11 +58,19 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 		rectSize   *= projectSize;
 	}
 
-	params._rect.x1      = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
-	params._rect.y1      = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
-	params._rect.x2      = boost::numeric_cast<int>( std::ceil( rectCenter.x + rectSize.x ) );
-	params._rect.y2      = boost::numeric_cast<int>( std::ceil( rectCenter.y + rectSize.y ) );
-	params._rect         = rectanglesIntersection( params._rect, srcRod );
+	// User region
+	params._rect.x1 = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
+	params._rect.y1 = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
+	params._rect.x2 = boost::numeric_cast<int>( std::ceil( rectCenter.x + rectSize.x ) );
+	params._rect.y2 = boost::numeric_cast<int>( std::ceil( rectCenter.y + rectSize.y ) );
+	// Intersection with input image RoD
+	params._rect = rectanglesIntersection( params._rect, _clipSrc->getPixelRod(time) );
+	// Intersection with input mask RoD
+	if( _clipMask->isConnected() )
+		params._rect = rectanglesIntersection( params._rect, _clipMask->getPixelRod(time) );
+
+	params._rect *= renderScale;
+
 	params._chooseOutput = static_cast<EParamChooseOutput>( _paramChooseOutput->getValue() );
 
 	return params;
@@ -66,16 +78,18 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 
 void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	OfxRectI srcRealRoi = getProcessParams( _clipSrc->getPixelRod( args.time ) )._rect; // we need the selected rectangle
-	OfxRectD srcRealRoiD;
+	ImageStatisticsProcessParams params = getProcessParams( args.time, args.renderScale );
+	if( params._chooseOutput == eParamChooseOutputSource )
+	{
+		// In that case we need the full image input...
+		// Not to compute statistics, but to copy the image.
+		return;
+	}
+	OfxRectI inputRoi = params._rect; // we need the selected rectangle
+	OfxRectD inputRoi_d = rectIntToDouble( inputRoi );
 
-	srcRealRoiD.x1 = srcRealRoi.x1;
-	srcRealRoiD.y1 = srcRealRoi.y1;
-	srcRealRoiD.x2 = srcRealRoi.x2;
-	srcRealRoiD.y2 = srcRealRoi.y2;
-//	TUTTLE_LOG_VAR( TUTTLE_INFO, srcRealRoiD );
-	
-	rois.setRegionOfInterest( *_clipSrc, srcRealRoiD );
+	rois.setRegionOfInterest( *_clipSrc, inputRoi_d );
+	rois.setRegionOfInterest( *_clipMask, inputRoi_d );
 }
 
 /**

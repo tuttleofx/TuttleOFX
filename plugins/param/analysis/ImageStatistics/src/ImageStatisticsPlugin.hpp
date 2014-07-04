@@ -28,7 +28,7 @@ public:
 
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 
-	ImageStatisticsProcessParams getProcessParams( const OfxRectI& srcRod ) const;
+	ImageStatisticsProcessParams getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const;
 
 public:
 	OFX::ChoiceParam* _paramCoordinateSystem;
@@ -36,6 +36,8 @@ public:
 	OFX::Double2DParam* _paramRectSize;
 	OFX::ChoiceParam* _paramChooseOutput;
 
+	OFX::IntParam* _paramOutputNbPixels;
+	
 	OFX::RGBAParam* _paramOutputAverage;
 	OFX::RGBAParam* _paramOutputVariance;
 	OFX::RGBAParam* _paramOutputChannelMin;
@@ -52,6 +54,8 @@ public:
 	OFX::Double3DParam* _paramOutputLuminosityMaxHSL;
 	OFX::Double3DParam* _paramOutputKurtosisHSL;
 	OFX::Double3DParam* _paramOutputSkewnessHSL;
+
+    OFX::Clip *_clipMask; ///< Source image clip
 };
 
 }
