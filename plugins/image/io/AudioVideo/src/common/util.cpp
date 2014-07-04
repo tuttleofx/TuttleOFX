@@ -306,12 +306,12 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 	std::string nameWithoutPrefix( optionName );
 	
 	size_t prefixPosition;
-	if( ( prefixPosition = nameWithoutPrefix.find( writer::kPrefixFormat ) ) != std::string::npos )
-		nameWithoutPrefix.erase( prefixPosition, writer::kPrefixFormat.size() );
-	else if( ( prefixPosition = nameWithoutPrefix.find( writer::kPrefixVideo ) ) != std::string::npos )
-		nameWithoutPrefix.erase( prefixPosition, writer::kPrefixVideo.size() );
-	else if( ( prefixPosition = nameWithoutPrefix.find( writer::kPrefixAudio ) ) != std::string::npos )
-		nameWithoutPrefix.erase( prefixPosition, writer::kPrefixAudio.size() );
+	if( ( prefixPosition = nameWithoutPrefix.find(kPrefixFormat ) ) != std::string::npos )
+		nameWithoutPrefix.erase( prefixPosition, kPrefixFormat.size() );
+	else if( ( prefixPosition = nameWithoutPrefix.find( kPrefixVideo ) ) != std::string::npos )
+		nameWithoutPrefix.erase( prefixPosition, kPrefixVideo.size() );
+	else if( ( prefixPosition = nameWithoutPrefix.find( kPrefixAudio ) ) != std::string::npos )
+		nameWithoutPrefix.erase( prefixPosition, kPrefixAudio.size() );
 	
 	// groups
 	const std::string prefixGroup( "g_" );

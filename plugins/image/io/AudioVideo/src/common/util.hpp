@@ -14,6 +14,11 @@ namespace plugin {
 namespace av {
 namespace common {
 
+static const std::string kPrefixFormat    = "f_";
+static const std::string kPrefixVideo     = "v_";
+static const std::string kPrefixAudio     = "a_";
+static const std::string kPrefixMetaData  = "m_";
+
 /**
  * @brief Use this struct to get custom Options for format, video, and audio.
  * The Options will be used only if the custom preset is set in the corresponding list of presets.

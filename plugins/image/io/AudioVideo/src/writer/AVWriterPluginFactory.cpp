@@ -153,7 +153,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	format->setParent( formatGroup );
 	
 	avtranscoder::OptionLoader::OptionArray formatGroupOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_ENCODING_PARAM );
-	common::addOptionsToGroup( desc, formatGroup, formatGroupOptions, kPrefixFormat );
+	common::addOptionsToGroup( desc, formatGroup, formatGroupOptions, common::kPrefixFormat );
 	
 	/// format parameters
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
@@ -162,7 +162,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatDetailledGroup->setParent( formatGroup );
 	
 	avtranscoder::OptionLoader::OptionMap formatDetailledGroupOptions = optionLoader.loadOutputFormatOptions();
-	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, kPrefixFormat );
+	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
 	
 	// fps parameters
 	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
@@ -229,7 +229,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	// add video codec parameters
 	avtranscoder::OptionLoader::OptionArray videoGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	common::addOptionsToGroup( desc, videoCustomGroupParam, videoGroupOptions, kPrefixVideo );
+	common::addOptionsToGroup( desc, videoCustomGroupParam, videoGroupOptions, common::kPrefixVideo );
 	
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
@@ -237,7 +237,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoDetailledGroup->setParent( videoGroup );
 	
 	avtranscoder::OptionLoader::OptionMap videoDetailledGroupOptions = optionLoader.loadVideoCodecOptions(); 
-	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, kPrefixVideo );
+	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
 	// add main audio preset
@@ -282,7 +282,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	// add audio codec parameters
 	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	common::addOptionsToGroup( desc, audioCustomGroupParam, audioGroupOptions, kPrefixAudio );
+	common::addOptionsToGroup( desc, audioCustomGroupParam, audioGroupOptions, common::kPrefixAudio );
 	
 	// add audio details
 	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
@@ -291,7 +291,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioDetailledGroup->setParent( audioGroup );
 	
 	avtranscoder::OptionLoader::OptionMap audioDetailledGroupOptions = optionLoader.loadAudioCodecOptions();
-	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions, kPrefixAudio );
+	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions, common::kPrefixAudio );
 	
 	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
