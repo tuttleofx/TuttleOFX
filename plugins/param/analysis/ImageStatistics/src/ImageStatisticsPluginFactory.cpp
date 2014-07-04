@@ -83,24 +83,6 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::ChoiceParamDescriptor* coordSystem = desc.defineChoiceParam( kParamCoordinateSystem );
-	coordSystem->setLabel( "Coordinate system" );
-	coordSystem->appendOption( kParamCoordinateSystemNormalized );
-	coordSystem->appendOption( kParamCoordinateSystemCanonical );
-	coordSystem->setDefault( 0 );
-
-	OFX::Double2DParamDescriptor* rectCenter = desc.defineDouble2DParam( kParamRectCenter );
-	rectCenter->setLabel( "Center" );
-	rectCenter->setDoubleType( OFX::eDoubleTypePlain );
-	//	rectCenter->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-	rectCenter->setDefault( 0.5, 0.5 );
-
-	OFX::Double2DParamDescriptor* rectSize = desc.defineDouble2DParam( kParamRectSize );
-	rectSize->setLabel( "Size" );
-	rectSize->setDoubleType( OFX::eDoubleTypePlain );
-	//	rectSize->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-	rectSize->setDefault( 0.5, 0.5 );
-
 	OFX::ChoiceParamDescriptor* chooseOutput = desc.defineChoiceParam( kParamChooseOutput );
 	chooseOutput->setLabel( "Choose output" );
 	chooseOutput->appendOption( kParamChooseOutputSource );
@@ -112,6 +94,36 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	chooseOutput->appendOption( kParamChooseOutputLuminosityMax );
 	chooseOutput->setDefault( 0 );
 
+	OFX::GroupParamDescriptor* selectRegionGroup = desc.defineGroupParam( kParamSelectRegionGroup );
+	selectRegionGroup->setOpen( false );
+	selectRegionGroup->setLabel( "Select Custom Region" );
+
+	OFX::BooleanParamDescriptor* restrictToRegion = desc.defineBooleanParam( kParamRestrictToRegion );
+	restrictToRegion->setLabel( "Restrict To Custom Region" );
+	restrictToRegion->setDefault( false );
+	restrictToRegion->setParent( selectRegionGroup );
+
+	OFX::ChoiceParamDescriptor* coordSystem = desc.defineChoiceParam( kParamCoordinateSystem );
+	coordSystem->setLabel( "Coordinate system" );
+	coordSystem->appendOption( kParamCoordinateSystemNormalized );
+	coordSystem->appendOption( kParamCoordinateSystemCanonical );
+	coordSystem->setDefault( 0 );
+	coordSystem->setParent(selectRegionGroup);
+
+	OFX::Double2DParamDescriptor* rectCenter = desc.defineDouble2DParam( kParamRectCenter );
+	rectCenter->setLabel( "Center" );
+	rectCenter->setDoubleType( OFX::eDoubleTypePlain );
+	//	rectCenter->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+	rectCenter->setDefault( 0.5, 0.5 );
+	rectCenter->setParent(selectRegionGroup);
+
+	OFX::Double2DParamDescriptor* rectSize = desc.defineDouble2DParam( kParamRectSize );
+	rectSize->setLabel( "Size" );
+	rectSize->setDoubleType( OFX::eDoubleTypePlain );
+	//	rectSize->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+	rectSize->setDefault( 0.5, 0.5 );
+	rectSize->setParent(selectRegionGroup);
+	
 	// -----------------------------------------------------------------------------
 	
 	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kParamOutputGroup );
@@ -202,6 +214,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	outputVarianceHSL->setDimensionLabels( "h", "s", "l" );
 	outputVarianceHSL->setParent( hslGroup );
 	outputVarianceHSL->setEvaluateOnChange( false );
+
 	OFX::Double3DParamDescriptor* outputChannelMinHSL = desc.defineDouble3DParam( kParamOutputChannelMinHSL );
 	outputChannelMinHSL->setLabel( "Channels' min" );
 	outputChannelMinHSL->setHint( "Minimum value per channel" );

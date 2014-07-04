@@ -18,6 +18,8 @@ ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 {
 	_clipMask = fetchClip( kClipMask );
 
+	_paramRestrictToRegion = fetchBooleanParam( kParamRestrictToRegion );
+
 	_paramCoordinateSystem = fetchChoiceParam( kParamCoordinateSystem );
 	_paramRectCenter       = fetchDouble2DParam( kParamRectCenter );
 	_paramRectSize         = fetchDouble2DParam( kParamRectSize );
@@ -42,6 +44,9 @@ ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 	_paramOutputLuminosityMaxHSL = fetchDouble3DParam( kParamOutputLuminosityMaxHSL );
 	_paramOutputKurtosisHSL      = fetchDouble3DParam( kParamOutputKurtosisHSL );
 	_paramOutputSkewnessHSL      = fetchDouble3DParam( kParamOutputSkewnessHSL );
+	
+	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
+	changedParam( args, kParamRestrictToRegion );
 }
 
 ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
@@ -59,16 +64,24 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxT
 		rectSize   *= projectSize;
 	}
 
-	// User region
-	params._rect.x1 = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
-	params._rect.y1 = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
-	params._rect.x2 = boost::numeric_cast<int>( std::ceil( rectCenter.x + rectSize.x ) );
-	params._rect.y2 = boost::numeric_cast<int>( std::ceil( rectCenter.y + rectSize.y ) );
-	// Intersection with input image RoD
-	params._rect = rectanglesIntersection( params._rect, _clipSrc->getPixelRod(time) );
-	// Intersection with input mask RoD
+	// Region is input image RoD
+	params._rect = _clipSrc->getPixelRod(time);
+	if( _paramRestrictToRegion->getValue() )
+	{
+		// Intersection with user custom region
+		OfxRectI userRect;
+		userRect.x1 = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
+		userRect.y1 = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
+		userRect.x2 = boost::numeric_cast<int>( std::ceil( rectCenter.x + rectSize.x ) );
+		userRect.y2 = boost::numeric_cast<int>( std::ceil( rectCenter.y + rectSize.y ) );
+		
+		params._rect = rectanglesIntersection( params._rect, userRect );
+	}
 	if( _clipMask->isConnected() )
+	{
+		// Intersection with input mask RoD
 		params._rect = rectanglesIntersection( params._rect, _clipMask->getPixelRod(time) );
+	}
 
 	params._rect *= renderScale;
 
@@ -163,6 +176,21 @@ void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs& args, 
 		}
 		_paramRectCenter->setValue( rectCenter );
 		_paramRectSize->setValue( rectSize );
+	}
+	else if( paramName == kParamRestrictToRegion )
+	{
+		const bool useRegion = _paramRestrictToRegion->getValue();
+
+		_paramCoordinateSystem->setEnabled( useRegion );
+		_paramRectCenter->setEnabled( useRegion );
+		_paramRectSize->setEnabled( useRegion );
+	}
+
+	if( paramName == kParamCoordinateSystem ||
+		paramName == kParamRectCenter ||
+		paramName == kParamRectSize )
+	{
+		_paramRestrictToRegion->setValue( true );
 	}
 }
 

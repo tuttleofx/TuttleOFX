@@ -31,6 +31,8 @@ public:
 	ImageStatisticsProcessParams getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const;
 
 public:
+	OFX::BooleanParam* _paramRestrictToRegion;
+	
 	OFX::ChoiceParam* _paramCoordinateSystem;
 	OFX::Double2DParam* _paramRectCenter;
 	OFX::Double2DParam* _paramRectSize;

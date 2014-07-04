@@ -9,6 +9,9 @@ namespace imageStatistics {
 
 static const std::string kClipMask = "mask";
 
+static const std::string kParamSelectRegionGroup = "selectRegionGroup";
+static const std::string kParamRestrictToRegion = "retrictToRegion";
+
 static const std::string kParamCoordinateSystem           = "coordinateSystem";
 static const std::string kParamCoordinateSystemNormalized = "coordinateSystemNormalized";
 static const std::string kParamCoordinateSystemCanonical  = "coordinateSystemCanonical";
