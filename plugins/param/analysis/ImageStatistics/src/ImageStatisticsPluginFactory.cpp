@@ -9,6 +9,28 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
+static const std::string hintAverage =
+	"Arithmetic mean\n"
+	"The measure of central tendency of a set of values computed by dividing "
+	"the sum of the values by their number; commonly called the mean or the average.";
+
+static const std::string hintVariance =
+	"Variance measures how far a set of numbers is spread out.\n"
+	"A variance of zero indicates that all the values are identical. "
+	"Variance is always non-negative: a small variance indicates that the data tend to be very "
+	"close to the mean (expected value) and hence to each other, while a high variance indicates "
+	"that the data are very spread out around the mean and from each other.";
+
+static const std::string hintKurtosis =
+	"Kurtosis is a descriptor of the shape of a probability distribution.\n"
+	"Kurtosis is any measure of the 'peakedness' of the probability distribution "
+	"of a real-valued random variable.\n";
+
+static const std::string hintSkewness =
+	"Skewness is a measure of the asymmetry of the probability distribution of "
+	"a real-valued random variable about its mean. The skewness value can be "
+	"positive or negative, or even undefined.";
+
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -115,11 +137,13 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 
 	OFX::RGBAParamDescriptor* outputAverage = desc.defineRGBAParam( kParamOutputAverage );
 	outputAverage->setLabel( "Average" );
+	outputAverage->setHint( hintAverage );
 	outputAverage->setParent( rgbaGroup );
 	outputAverage->setEvaluateOnChange( false );
 	
 	OFX::RGBAParamDescriptor* outputVariance = desc.defineRGBAParam( kParamOutputVariance );
 	outputVariance->setLabel( "Variance" );
+	outputVariance->setHint( hintVariance );
 	outputVariance->setParent( rgbaGroup );
 	outputVariance->setEvaluateOnChange( false );
 	
@@ -146,11 +170,13 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 
 	OFX::RGBAParamDescriptor* outputKurtosis = desc.defineRGBAParam( kParamOutputKurtosis );
 	outputKurtosis->setLabel( "Kurtosis" );
+	outputKurtosis->setHint( hintKurtosis );
 	outputKurtosis->setParent( rgbaGroup );
 	outputKurtosis->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputSkewness = desc.defineRGBAParam( kParamOutputSkewness );
 	outputSkewness->setLabel( "Skewness" );
+	outputSkewness->setHint( hintSkewness );
 	outputSkewness->setParent( rgbaGroup );
 	outputSkewness->setEvaluateOnChange( false );
 
@@ -163,6 +189,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 
 	OFX::Double3DParamDescriptor* outputAverageHSL = desc.defineDouble3DParam( kParamOutputAverageHSL );
 	outputAverageHSL->setLabel( "Average" );
+	outputAverageHSL->setHint( hintAverage );
 	outputAverageHSL->setDoubleType( OFX::eDoubleTypePlain );
 	outputAverageHSL->setDimensionLabels( "h", "s", "l" );
 	outputAverageHSL->setParent( hslGroup );
@@ -199,6 +226,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 
 	OFX::Double3DParamDescriptor* outputKurtosisHSL = desc.defineDouble3DParam( kParamOutputKurtosisHSL );
 	outputKurtosisHSL->setLabel( "Kurtosis" );
+	outputKurtosisHSL->setHint( hintKurtosis );
 	outputKurtosisHSL->setDoubleType( OFX::eDoubleTypePlain );
 	outputKurtosisHSL->setDimensionLabels( "h", "s", "l" );
 	outputKurtosisHSL->setParent( hslGroup );
@@ -206,6 +234,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 
 	OFX::Double3DParamDescriptor* outputSkewnessHSL = desc.defineDouble3DParam( kParamOutputSkewnessHSL );
 	outputSkewnessHSL->setLabel( "Skewness" );
+	outputSkewnessHSL->setHint( hintSkewness );
 	outputSkewnessHSL->setDoubleType( OFX::eDoubleTypePlain );
 	outputSkewnessHSL->setDimensionLabels( "h", "s", "l" );
 	outputSkewnessHSL->setParent( hslGroup );
