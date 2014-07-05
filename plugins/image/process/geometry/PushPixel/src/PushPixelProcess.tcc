@@ -27,7 +27,11 @@ PushPixelProcess<View>::PushPixelProcess( PushPixelPlugin &effect )
 , _plugin( effect )
 {
 	_clipMask = effect.fetchClip( kClipMask );
-	_clipMaskConnected = this->_clipMask->isConnected();
+	_clipMaskConnected = _clipMask->isConnected();
+
+	if( _clipMaskConnected && (_clipMask->getPixelComponents() != this->_clipSrc->getPixelComponents()) )
+		BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user("Can't mix different input Pixel Components.") );
 }
 
 template <class View>

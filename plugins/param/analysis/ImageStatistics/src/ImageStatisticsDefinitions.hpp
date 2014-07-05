@@ -7,6 +7,11 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
+static const std::string kClipMask = "mask";
+
+static const std::string kParamSelectRegionGroup = "selectRegionGroup";
+static const std::string kParamRestrictToRegion = "retrictToRegion";
+
 static const std::string kParamCoordinateSystem           = "coordinateSystem";
 static const std::string kParamCoordinateSystemNormalized = "coordinateSystemNormalized";
 static const std::string kParamCoordinateSystemCanonical  = "coordinateSystemCanonical";
@@ -33,12 +38,15 @@ static const std::string kParamOutputSkewness      = "outputSkewness";
 
 static const std::string kParamOutputGroupHSL         = "outputGroupHSL";
 static const std::string kParamOutputAverageHSL       = "outputAverageHSL";
+static const std::string kParamOutputVarianceHSL      = "outputVarianceHSL";
 static const std::string kParamOutputChannelMinHSL    = "outputChannelMinHSL";
 static const std::string kParamOutputChannelMaxHSL    = "outputChannelMaxHSL";
 static const std::string kParamOutputLuminosityMinHSL = "outputLuminosityMinHSL";
 static const std::string kParamOutputLuminosityMaxHSL = "outputLuminosityMaxHSL";
 static const std::string kParamOutputKurtosisHSL      = "outputKurtosisHSL";
 static const std::string kParamOutputSkewnessHSL      = "outputSkewnessHSL";
+
+static const std::string kParamOutputNbPixels         = "outputNbPixels";
 
 static const std::string kParamChooseOutput              = "chooseOutput";
 static const std::string kParamChooseOutputSource        = "source";
