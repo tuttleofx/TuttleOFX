@@ -341,14 +341,16 @@ void AVWriterPlugin::updateAudioSilent()
 				_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( true );
 				_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
 				_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
+				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
 			}
 			else
 			{
 				_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( false );
 				_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
 				_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( false );
-				if( ! _paramAudioCopyStream.at( idAudioStream )->getValue() )
+				if( _paramAudioCopyStream.at( idAudioStream )->getValue() )
+					_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
+				else
 					_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
 			}
 		}
@@ -659,6 +661,8 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 			std::string presetName( "" );
 			
 			size_t mainPresetIndex = _paramMainAudioPreset->getValue();
+			size_t presetIndex = _paramAudioPreset.at( i )->getValue();
+			
 			avtranscoder::Profile::ProfileDesc customPreset;
 			// custom audio preset
 			if( mainPresetIndex == 0 )
@@ -683,14 +687,25 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 			if( _paramAudioSilent.at( i )->getValue() )
 			{
 				// custom audio preset
-				if( mainPresetIndex == 0 )
+				if( presetIndex == 0 && mainPresetIndex == 0 )
 				{
 					_transcoder->add( "", 0, customPreset );
 				}
+				// existing audio preset
 				else
 				{
-					// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-					_transcoder->add( "", 0,  _presets.getAudioProfiles().at( mainPresetIndex - 1 ) );
+					// main audio preset
+					if( presetIndex == 0 && mainPresetIndex != 0 )
+					{
+						// at( mainPresetIndex - 1 ): subtract the index of the custom preset
+						_transcoder->add( "", 0,  _presets.getAudioProfiles().at( mainPresetIndex - 1 ) );
+					}
+					// specific audio preset
+					else
+					{
+						// at( presetIndex - 1 ): subtract the index of the index of the main preset
+						presetName = _presets.getAudioProfiles().at( presetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+					}
 				}
 			}
 			else
@@ -721,11 +736,8 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				// transcode
 				else
 				{
-					size_t presetIndex = _paramAudioPreset.at( i )->getValue();
-
 					// custom audio preset
-					if( presetIndex == 0 ||
-						( presetIndex == 1 && mainPresetIndex == 0 ) )
+					if( presetIndex == 0 && mainPresetIndex == 0 )
 					{
 						if( inputStreamIndex != -1 )
 						{
@@ -743,7 +755,7 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 					else
 					{
 						// main audio preset
-						if( presetIndex == 1 )
+						if( presetIndex == 0 && mainPresetIndex != 0 )
 						{
 							// at( mainPresetIndex - 1 ): subtract the index of the custom preset
 							presetName = _presets.getAudioProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
@@ -751,9 +763,10 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 						// specific audio preset
 						else
 						{
-							// at( presetIndex - 2 ): subtract the index of the custom preset + the index of the main preset
-							presetName = _presets.getAudioProfiles().at( presetIndex - 2 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+							// at( presetIndex - 1 ): subtract the index of the index of the main preset
+							presetName = _presets.getAudioProfiles().at( presetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
 						}
+						
 						if( inputStreamIndex != -1 )
 						{
 							_transcoder->add( inputFileName, inputStreamIndex, presetName );

@@ -356,8 +356,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioCodecPresetName << "_" << idAudioStream;
 		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
 		audioCodecPresetParam->setLabel( "Output Preset" );
-		audioCodecPresetParam->appendOption( "custom", "Customized configuration" );
-		audioCodecPresetParam->appendOption( "main", "Main preset" );
+		audioCodecPresetParam->appendOption( "main preset", "Main preset" );
 		audioCodecPresetParam->setParent( audioSubGroupParam );
 
 		for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
