@@ -39,7 +39,7 @@ public:
 	, _paramChoice()
 	{}
 
-	OptionsForPreset getOptionsNameAndValue( const std::string& codecName );
+	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" );
 
 public:
 	std::vector<OFX::BooleanParam*> _paramBoolean;
@@ -74,7 +74,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
  * @param optionName with prefix (g_, flag_...)
  * @return the AVOption name
  */
-std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& codecName="" );
+std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& subGroupName="" );
 
 }
 }

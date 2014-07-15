@@ -13,13 +13,13 @@ namespace plugin {
 namespace av {
 namespace common {
 
-CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& codecName )
+CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& subGroupName )
 {
 	OptionsForPreset optionsNameAndValue;
 
 	BOOST_FOREACH( OFX::BooleanParam* param, _paramBoolean )
 	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
 
 		// FFMPEG exception with the flags
@@ -30,61 +30,63 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 				optionValue.append( "+" );
 			else
 				optionValue.append( "-" );
-			optionValue.append( getOptionNameWithoutPrefix( param->getName(), codecName ) );
-			optionsNameAndValue.push_back( std::pair<std::string, std::string>( "mpv_flags", optionValue ) );
+			optionValue.append( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+			// @todo: get the correct flag name
+			optionsNameAndValue.push_back( OptionForPreset( "mpv_flags", optionValue ) );
 		}
 		else
 		{
-			std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
-			optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+			std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+			optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
 		}
 	}
 
 	BOOST_FOREACH( OFX::IntParam* param, _paramInt )
 	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
 	}
 
 	BOOST_FOREACH( OFX::DoubleParam* param, _paramDouble )
 	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
 	}
 
 	BOOST_FOREACH( OFX::StringParam* param, _paramString )
 	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, boost::to_string( param->getValue() ) ) );
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
 	}
 
 	BOOST_FOREACH( OFX::Int2DParam* param, _paramRatio )
 	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
 		std::string optionValue( boost::to_string( param->getValue().x ) + ", " + boost::to_string( param->getValue().y ) );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
+		optionsNameAndValue.push_back( OptionForPreset( optionName, optionValue ) );
 	}
 
 	BOOST_FOREACH( OFX::ChoiceParam* param, _paramChoice )
 	{
-		if( param->getName().find( "_" + codecName + "_" ) == std::string::npos )
+		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), codecName ) );
+		//std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
 		// @todo: get optionValue from the optionIndex
-		size_t optionIndex = param->getValue();
-		std::string optionValue( "not yet implemented" );
-		optionsNameAndValue.push_back( std::pair<std::string, std::string>( optionName, optionValue ) );
+		//size_t optionIndex = param->getValue();
+		//std::string optionValue( "not yet implemented" );
+		//optionsNameAndValue.push_back( OptionForPreset( optionName, optionValue ) );
 	}
 
 	// get all flags in a single Option
+	// @todo: get the correct flag name
 	OptionForPreset mpv_flags( "mpv_flags", "" );
 	for( OptionsForPreset::iterator it = optionsNameAndValue.begin(); it != optionsNameAndValue.end(); ++it )
 	{
@@ -220,12 +222,12 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 	}
 }
 
-std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& codecName )
+std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& subGroupName )
 {
 	std::string nameWithoutPrefix( optionName );
 	
 	size_t prefixPosition;
-	if( ( prefixPosition = nameWithoutPrefix.find(kPrefixFormat ) ) != std::string::npos )
+	if( ( prefixPosition = nameWithoutPrefix.find( kPrefixFormat ) ) != std::string::npos )
 		nameWithoutPrefix.erase( prefixPosition, kPrefixFormat.size() );
 	else if( ( prefixPosition = nameWithoutPrefix.find( kPrefixVideo ) ) != std::string::npos )
 		nameWithoutPrefix.erase( prefixPosition, kPrefixVideo.size() );
@@ -247,10 +249,10 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 	}
 	
 	// codec name
-	if( ( prefixPosition = nameWithoutPrefix.find( codecName ) ) != std::string::npos )
+	if( ! subGroupName.empty() && ( prefixPosition = nameWithoutPrefix.find( subGroupName ) ) != std::string::npos )
 	{
-		// codecName.size() + 1: also remove the "_"
-		nameWithoutPrefix.erase( prefixPosition, codecName.size() + 1 );
+		// subGroupName.size() + 1: also remove the "_"
+		nameWithoutPrefix.erase( prefixPosition, subGroupName.size() + 1 );
 	}
 	
 	return nameWithoutPrefix;
