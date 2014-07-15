@@ -110,9 +110,6 @@ View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::Image& image )
 {
 	typedef typename FileView::value_type Pixel;
 	
-	if( ! image.getSize() )
-		return dst;
-	
 	size_t width = image.desc().getWidth();
 	size_t height = image.desc().getHeight();
 	size_t pixelDepthInBytes = 1; // @todo: need to be dynamic to support images with pixelDepth > 8bits
