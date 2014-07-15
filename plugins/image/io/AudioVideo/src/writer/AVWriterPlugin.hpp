@@ -111,6 +111,9 @@ public:
 	common::CustomParams _paramVideoCustom;
 	common::CustomParams _paramAudioCustom;
 	
+	common::CustomParams _paramVideoCodecCustom;
+	common::CustomParams _paramAudioCodecCustom;
+	
 	// presets
 	OFX::ChoiceParam* _paramMainPreset;
 	OFX::ChoiceParam* _paramFormatPreset;

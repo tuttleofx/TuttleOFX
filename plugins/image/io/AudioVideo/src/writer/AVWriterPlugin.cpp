@@ -25,6 +25,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioPreset()
 	, _paramVideoCustom()
 	, _paramAudioCustom()
+	, _paramVideoCodecCustom()
+	, _paramAudioCodecCustom()
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
@@ -93,6 +95,12 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
 	disableAVOptionsForCodecOrFormat( optionsFormatMap, formatName, common::kPrefixFormat );
+	
+	avtranscoder::OptionLoader::OptionArray optionsVideoArray = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	fetchCustomParams( _paramVideoCustom, optionsVideoArray, common::kPrefixVideo );
+	
+	avtranscoder::OptionLoader::OptionArray optionsAudioArray = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
+	fetchCustomParams( _paramAudioCustom, optionsAudioArray, common::kPrefixAudio );
 	
 	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
 	fetchCustomParams( _paramVideoCodecCustom, optionsVideoCodecMap, common::kPrefixVideo );
@@ -622,8 +630,9 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			
 			customPreset[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
 			
-			common::CustomParams::OptionsForPreset optionsForPreset = _paramVideoCustom.getOptionsNameAndValue( params._videoCodecName );
-			BOOST_FOREACH( common::CustomParams::OptionForPreset nameAndValue, optionsForPreset )
+			// video options related to a codec from avTranscoder
+			common::CustomParams::OptionsForPreset videoCodecOptionsForPreset = _paramVideoCodecCustom.getOptionsNameAndValue( params._videoCodecName );
+			BOOST_FOREACH( common::CustomParams::OptionForPreset nameAndValue, videoCodecOptionsForPreset )
 			{
 				customPreset[ nameAndValue.first ] = nameAndValue.second;
 			}
@@ -679,8 +688,9 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				customPreset[ avtranscoder::Profile::avProfileSampleRate ] = "48000";
 				customPreset[ avtranscoder::Profile::avProfileChannel ] = "1";
 				
-				common::CustomParams::OptionsForPreset optionsForPreset = _paramAudioCustom.getOptionsNameAndValue( params._audioCodecName );
-				BOOST_FOREACH( common::CustomParams::OptionForPreset nameAndValue, optionsForPreset )
+				// audio options related to a codec from avTranscoder
+				common::CustomParams::OptionsForPreset audioCodecOptionsForPreset = _paramAudioCodecCustom.getOptionsNameAndValue( params._audioCodecName );
+				BOOST_FOREACH( common::CustomParams::OptionForPreset nameAndValue, audioCodecOptionsForPreset )
 				{
 					customPreset[ nameAndValue.first ] = nameAndValue.second;
 				}
