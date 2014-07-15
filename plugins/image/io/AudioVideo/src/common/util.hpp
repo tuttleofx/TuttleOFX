@@ -56,8 +56,9 @@ public:
  * @param group: the group to add OFX params
  * @param optionsArray: options to add to the group
  * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
+ * @param subGroupName: informed this to add an other prefix (the codec name) to the name of each OFX params created by the function
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="" );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 
 /**
  * @brief: Create OFX parameters depending on the list of Options.
