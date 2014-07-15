@@ -79,7 +79,7 @@ public:
 	avtranscoder::OptionLoader _optionLoader;
 	
 	std::string _lastInputFilePath;
-	int _lastVideoStreamIndex;
+	size_t _lastVideoStreamIndex;
 	
 	size_t _videoStreamId;
 	int _lastFrame;

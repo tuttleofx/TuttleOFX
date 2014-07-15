@@ -54,7 +54,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 void AVReaderPlugin::ensureVideoIsOpen()
 {
 	const std::string& filepath = _paramFilepath->getValue();
-	const int videoStreamIndex = _paramVideoStreamIndex->getValue();
+	const size_t videoStreamIndex = _paramVideoStreamIndex->getValue();
 	 
 	if( _lastInputFilePath == filepath && // already opened
 		! _lastInputFilePath.empty() && // not the first time...
@@ -78,12 +78,12 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_inputFile->analyse( progress, avtranscoder::InputFile::eAnalyseLevelFast );
 		
 		// get streamId of the video stream
-		if( _paramVideoStreamIndex->getValue() >= _inputFile->getProperties().videoStreams.size() )
+		if( videoStreamIndex >= _inputFile->getProperties().videoStreams.size() )
 		{
 			throw std::runtime_error( "the stream index doesn't exist in the input file" );
 		}
-		_videoStreamId = _inputFile->getProperties().videoStreams.at( _paramVideoStreamIndex->getValue() ).streamId;
-		_lastVideoStreamIndex = _paramVideoStreamIndex->getValue();
+		_videoStreamId = _inputFile->getProperties().videoStreams.at( videoStreamIndex ).streamId;
+		_lastVideoStreamIndex = videoStreamIndex;
 		
 		// buffered video stream at _indexVideoStream (to seek)
 		_inputFile->readStream( _videoStreamId );
