@@ -83,8 +83,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioPreset.back()->setIsSecretAndDisabled( false );
 	}
 	updateAudioParams();
-	updateAudioSilent();
-	updateAudioCopyStream();
 	
 	// our custom params
 	_paramUseCustomFps = fetchBooleanParam( kParamUseCustomFps );
@@ -277,6 +275,7 @@ void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 	{
 		pixelsFormat = _optionLoader.getPixelFormats();
 	}
+	
 	for( std::vector<std::string>::iterator it = pixelsFormat.begin(); it != pixelsFormat.end(); ++it )
 	{
 		_paramVideoPixelFormat->appendOption( *it );
@@ -306,6 +305,8 @@ void AVWriterPlugin::updateAudioParams()
 			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
 		}
 	}
+	updateAudioCopyStream();
+	updateAudioSilent();
 }
 
 void AVWriterPlugin::updateAudioCopyStream()
@@ -313,7 +314,8 @@ void AVWriterPlugin::updateAudioCopyStream()
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
 	{
 		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
-			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() )
+			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
+			! _paramAudioSilent.at( idAudioStream )->getValue() )
 		{
 			// if copy stream
 			if( _paramAudioCopyStream.at( idAudioStream )->getValue() )
@@ -517,8 +519,6 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName == kParamAudioNbStream )
 	{
 		updateAudioParams();
-		updateAudioSilent();
-		updateAudioCopyStream();
 	}
 	else if( paramName.find( kParamAudioCopyStream ) != std::string::npos )
 	{
