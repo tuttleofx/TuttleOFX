@@ -64,7 +64,8 @@ public:
 	void updateAudioCopyStream();
 	void updateAudioSilent();
 	
-	void fetchCustomParams( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
+	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
+	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
