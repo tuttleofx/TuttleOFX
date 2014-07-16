@@ -635,6 +635,12 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			
 			customPreset[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
 			
+			// video options from avTranscoder
+			common::CustomParams::OptionsForPreset videoOptionsForPreset = _paramVideoCustom.getOptionsNameAndValue();
+			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoOptionsForPreset )
+			{
+				customPreset[ nameAndValue.first ] = nameAndValue.second;
+			}
 			// video options related to a codec from avTranscoder
 			common::CustomParams::OptionsForPreset videoCodecOptionsForPreset = _paramVideoCodecCustom.getOptionsNameAndValue( params._videoCodecName );
 			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoCodecOptionsForPreset )
@@ -690,15 +696,25 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				customPreset[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
 				// @todo: get this from OFX params
 				customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = "s16";
-				customPreset[ avtranscoder::Profile::avProfileSampleRate ] = "48000";
-				customPreset[ avtranscoder::Profile::avProfileChannel ] = "1";
 				
+				// audio options from avTranscoder
+				common::CustomParams::OptionsForPreset audioOptionsForPreset = _paramAudioCustom.getOptionsNameAndValue();
+				BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioOptionsForPreset )
+				{
+					customPreset[ nameAndValue.first ] = nameAndValue.second;
+				}
 				// audio options related to a codec from avTranscoder
 				common::CustomParams::OptionsForPreset audioCodecOptionsForPreset = _paramAudioCodecCustom.getOptionsNameAndValue( params._audioCodecName );
 				BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioCodecOptionsForPreset )
 				{
 					customPreset[ nameAndValue.first ] = nameAndValue.second;
 				}
+				
+				// @todo: change default value of the corresponding options
+				if( customPreset[ avtranscoder::Profile::avProfileSampleRate ] == "0" )
+					customPreset[ avtranscoder::Profile::avProfileSampleRate ] = "48000";
+				if( customPreset[ avtranscoder::Profile::avProfileChannel ] == "0" )
+					customPreset[ avtranscoder::Profile::avProfileChannel ] = "1";
 			}
 			
 			// dummy
