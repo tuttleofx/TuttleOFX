@@ -717,12 +717,6 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				{
 					customPreset[ nameAndValue.first ] = nameAndValue.second;
 				}
-				
-				// @todo: change default value of the corresponding options
-				if( customPreset[ avtranscoder::Profile::avProfileSampleRate ] == "0" )
-					customPreset[ avtranscoder::Profile::avProfileSampleRate ] = "48000";
-				if( customPreset[ avtranscoder::Profile::avProfileChannel ] == "0" )
-					customPreset[ avtranscoder::Profile::avProfileChannel ] = "1";
 			}
 			
 			// dummy
