@@ -61,7 +61,8 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 			continue;
 		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
 		const std::string optionValue( boost::to_string( param->getValue() ) );
-		optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+		if( ! optionValue.empty() )
+			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
 	}
 
 	BOOST_FOREACH( OFX::Int2DParam* param, _paramRatio )
