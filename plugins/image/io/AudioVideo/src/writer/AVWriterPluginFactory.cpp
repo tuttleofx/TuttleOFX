@@ -283,18 +283,18 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// audio sample formats list
 	int default_audio_sample_format = 0;
 	std::string defaultAudioSampleFormat( "s16" );
-	OFX::ChoiceParamDescriptor* audioCodecSampleFmt = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
-	audioCodecSampleFmt->setLabel( "Select the output audio sample type" );
+	OFX::ChoiceParamDescriptor* audioSampleFmtParam = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
+	audioSampleFmtParam->setLabel( "Select the output audio sample type" );
 	
 	std::vector<std::string> sampleFormats = optionLoader.getSampleFormats();
 	for( size_t i = 0; i < sampleFormats.size(); ++i )
 	{
-		audioCodecSampleFmt->appendOption( sampleFormats.at( i ) );
+		audioSampleFmtParam->appendOption( sampleFormats.at( i ) );
 		if( sampleFormats.at( i ) == defaultAudioSampleFormat )
-			default_audio_sample_format = audioCodecSampleFmt->getNOptions() - 1;
+			default_audio_sample_format = audioSampleFmtParam->getNOptions() - 1;
 	}
-	audioCodecSampleFmt->setDefault( default_audio_sample_format );
-	audioCodecSampleFmt->setParent( audioCustomGroupParam );
+	audioSampleFmtParam->setDefault( default_audio_sample_format );
+	audioSampleFmtParam->setParent( audioCustomGroupParam );
 	
 	// add audio codec parameters
 	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
