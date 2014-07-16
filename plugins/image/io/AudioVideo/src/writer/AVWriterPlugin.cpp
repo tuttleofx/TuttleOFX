@@ -119,8 +119,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at( _paramAudioCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
 	
-	updatePixelFormat( videoCodecName );
-	updateSampleFormat( audioCodecName );
+	updatePixelFormats( videoCodecName );
+	updateSampleFormats( audioCodecName );
 	
 	// preset
 	_paramMainPreset = fetchChoiceParam( kParamMainPreset );
@@ -287,18 +287,18 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
  * Warning: the function does not update the list correctly in Nuke.
  * @param videoCodecName
  */
-void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
+void AVWriterPlugin::updatePixelFormats( const std::string& videoCodecName )
 {
 	_paramVideoPixelFormat->resetOptions();
 	
-	std::vector<std::string> pixelsFormat( _optionLoader.getPixelFormats( videoCodecName ) );
+	std::vector<std::string> pixelFormats( _optionLoader.getPixelFormats( videoCodecName ) );
 	// get all pixel formats if the list is empty with the video codec indicated
-	if( pixelsFormat.empty() )
+	if( pixelFormats.empty() )
 	{
-		pixelsFormat = _optionLoader.getPixelFormats();
+		pixelFormats = _optionLoader.getPixelFormats();
 	}
 	
-	for( std::vector<std::string>::iterator it = pixelsFormat.begin(); it != pixelsFormat.end(); ++it )
+	for( std::vector<std::string>::iterator it = pixelFormats.begin(); it != pixelFormats.end(); ++it )
 	{
 		_paramVideoPixelFormat->appendOption( *it );
 	}
@@ -309,7 +309,7 @@ void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
  * Warning: the function does not update the list correctly in Nuke.
  * @param audioCodecName
  */
-void AVWriterPlugin::updateSampleFormat( const std::string& audioCodecName )
+void AVWriterPlugin::updateSampleFormats( const std::string& audioCodecName )
 {
 	_paramAudioSampleFormat->resetOptions();
 	
@@ -500,7 +500,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at( _paramVideoCodec->getValue() );
 		disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 		
-		updatePixelFormat( videoCodecName );
+		updatePixelFormats( videoCodecName );
 	}
 	else if( paramName == kParamAudioCodec )
 	{
@@ -508,7 +508,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
 		disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
 		
-		updateSampleFormat( audioCodecName );
+		updateSampleFormats( audioCodecName );
 	}
 	else if( paramName == kParamMainPreset )
 	{
@@ -632,8 +632,8 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		avtranscoder::ImageDesc imageDesc;
 		
 		// check pixel format
-		std::vector<std::string> pixelsFormat( _optionLoader.getPixelFormats( params._videoCodecName ) );
-		if( std::find( pixelsFormat.begin(), pixelsFormat.end(), params._videoPixelFormatName ) == pixelsFormat.end() )
+		std::vector<std::string> pixelFormats( _optionLoader.getPixelFormats( params._videoCodecName ) );
+		if( std::find( pixelFormats.begin(), pixelFormats.end(), params._videoPixelFormatName ) == pixelFormats.end() )
 		{
 			throw std::runtime_error( params._videoPixelFormatName + " is a wrong video pixel format for the codec " + params._videoCodecName );
 		}
