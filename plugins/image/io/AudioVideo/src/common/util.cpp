@@ -23,7 +23,7 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 			continue;
 
 		// FFMPEG exception with the flags
-		if( param->getName().find( "flags_" ) != std::string::npos )
+		if( param->getName().find( kPrefixFlag ) != std::string::npos )
 		{
 			std::string optionValue;
 			if( param->getValue() )
@@ -168,7 +168,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			case avtranscoder::TypeGroup:
 			{
 				std::string groupName = prefix;
-				groupName += "g_";
+				groupName += kPrefixGroup;
 				if( ! subGroupName.empty() )
 				{
 					groupName += subGroupName;
@@ -187,7 +187,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 						childName += "_";
 					}
 					childName += child.getUnit();
-					childName += "flags_";
+					childName += kPrefixFlag;
 					childName += child.getName();
 					
 					OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( childName );
@@ -227,6 +227,7 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 {
 	std::string nameWithoutPrefix( optionName );
 	
+	// prefix
 	if( nameWithoutPrefix.find( kPrefixFormat ) != std::string::npos )
 		nameWithoutPrefix.erase( 0, kPrefixFormat.size() );
 	else if( nameWithoutPrefix.find( kPrefixVideo ) != std::string::npos )
@@ -241,13 +242,11 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 		nameWithoutPrefix.erase( 0, subGroupName.size() + 1 );
 	}
 	
-	// childs of groups
-	const std::string prefixChild( "flags_" );
-	if( nameWithoutPrefix.find( prefixChild ) != std::string::npos )
+	// childs of groups (flag)
+	size_t endedPosition;
+	if( ( endedPosition = nameWithoutPrefix.find( kPrefixFlag ) ) != std::string::npos )
 	{
-		// remove xxxflags at the beginning og the string
-		size_t endedPosition = nameWithoutPrefix.find( prefixChild );
-		nameWithoutPrefix.erase( 0, endedPosition + prefixChild.size() );
+		nameWithoutPrefix.erase( 0, endedPosition + kPrefixFlag.size() );
 	}
 	
 	return nameWithoutPrefix;
@@ -258,19 +257,17 @@ std::string getOptionFlagName( const std::string& optionName, const std::string&
 {
 	std::string flagName;
 	
-	const std::string prefixChild( "flags_" );
-	if( optionName.find( prefixChild ) != std::string::npos )
+	if( optionName.find( kPrefixFlag ) != std::string::npos )
 	{
 		size_t startedPosition;
 		if( subGroupName.empty() )
 			startedPosition = optionName.find( "_" );
 		else
 		{
-			// skip the first prefix (f_, v_, a_, or m_)
-			startedPosition = optionName.find( "_", 2 );
+			startedPosition = optionName.find( "_", prefixSize );
 		}
 		++startedPosition; // started after the "_"
-		size_t endedPosition = optionName.find( prefixChild );
+		size_t endedPosition = optionName.find( kPrefixFlag, startedPosition );
 		
 		flagName = optionName.substr( startedPosition, endedPosition - startedPosition );
 	}

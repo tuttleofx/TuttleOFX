@@ -14,10 +14,14 @@ namespace plugin {
 namespace av {
 namespace common {
 
+static const size_t prefixSize            = 2;
 static const std::string kPrefixFormat    = "f_";
 static const std::string kPrefixVideo     = "v_";
 static const std::string kPrefixAudio     = "a_";
 static const std::string kPrefixMetaData  = "m_";
+
+static const std::string kPrefixGroup     = "g_";
+static const std::string kPrefixFlag      = "_flag_";
 
 /**
  * @brief Use this struct to get custom Options for format, video, and audio.

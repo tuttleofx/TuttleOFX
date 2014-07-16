@@ -197,7 +197,7 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
 	// iterate on map keys
 	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
 	{
-		std::string subGroupName = subGroupOption.first;
+		const std::string subGroupName = subGroupOption.first;
 		std::vector<avtranscoder::Option>& options = subGroupOption.second;
 				
 		// iterate on options
@@ -249,7 +249,7 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
 				case avtranscoder::TypeGroup:
 				{
 					std::string groupName = prefix;
-					groupName += "g_";
+					groupName += common::kPrefixGroup;
 					groupName += subGroupName;
 					groupName += "_";
 					groupName += option.getName();
@@ -266,7 +266,7 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
 							childName += "_";
 						}
 						childName += child.getUnit();
-						childName += "flags_";
+						childName += common::kPrefixFlag;
 						childName += child.getName();
 						
 						OFX::BooleanParam* curOpt = fetchBooleanParam( childName );
@@ -436,7 +436,7 @@ void AVWriterPlugin::fetchCustomParams( common::CustomParams& ofxParam, avtransc
 						childName += "_";
 					}
 					childName += child.getUnit();
-					childName += "flags_";
+					childName += common::kPrefixFlag;
 					childName += child.getName();
 
 					ofxParam._paramBoolean.push_back( fetchBooleanParam( childName ) );
@@ -631,7 +631,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
 			
 			customPreset[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
-			customPreset[ avtranscoder::Profile::avProfilePixelFormat ] = boost::to_string( params._videoPixelFormat );
+			customPreset[ avtranscoder::Profile::avProfilePixelFormat ] = params._videoPixelFormatName;
 			
 			if( _paramUseCustomFps->getValue() )
 			{

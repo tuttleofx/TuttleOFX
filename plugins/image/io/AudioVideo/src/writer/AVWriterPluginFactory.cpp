@@ -216,7 +216,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoCodec->setDefault( default_codec );
 	videoCodec->setParent( videoCustomGroupParam );
 	
-	/// video codec parameters
+	/// video pixel formats list
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
 	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
 	
