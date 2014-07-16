@@ -183,10 +183,11 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 					std::string childName = prefix;
 					if( ! subGroupName.empty() )
 					{
-						childName += "flags_";
 						childName += subGroupName;
 						childName += "_";
 					}
+					childName += child.getUnit();
+					childName += "flags_";
 					childName += child.getName();
 					
 					OFX::BooleanParamDescriptor* param = desc.defineBooleanParam( childName );
@@ -226,33 +227,27 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 {
 	std::string nameWithoutPrefix( optionName );
 	
-	size_t prefixPosition;
-	if( ( prefixPosition = nameWithoutPrefix.find( kPrefixFormat ) ) != std::string::npos )
-		nameWithoutPrefix.erase( prefixPosition, kPrefixFormat.size() );
-	else if( ( prefixPosition = nameWithoutPrefix.find( kPrefixVideo ) ) != std::string::npos )
-		nameWithoutPrefix.erase( prefixPosition, kPrefixVideo.size() );
-	else if( ( prefixPosition = nameWithoutPrefix.find( kPrefixAudio ) ) != std::string::npos )
-		nameWithoutPrefix.erase( prefixPosition, kPrefixAudio.size() );
+	if( nameWithoutPrefix.find( kPrefixFormat ) != std::string::npos )
+		nameWithoutPrefix.erase( 0, kPrefixFormat.size() );
+	else if( nameWithoutPrefix.find( kPrefixVideo ) != std::string::npos )
+		nameWithoutPrefix.erase( 0, kPrefixVideo.size() );
+	else if( nameWithoutPrefix.find( kPrefixAudio ) != std::string::npos )
+		nameWithoutPrefix.erase( 0, kPrefixAudio.size() );
 	
-	// groups
-	const std::string prefixGroup( "g_" );
-	if( ( prefixPosition = nameWithoutPrefix.find( prefixGroup ) ) != std::string::npos )
+	// sub group name
+	if( ! subGroupName.empty() && nameWithoutPrefix.find( subGroupName ) != std::string::npos )
 	{
-		nameWithoutPrefix.erase( prefixPosition, prefixGroup.size() );
+		// subGroupName.size() + 1: also remove the "_"
+		nameWithoutPrefix.erase( 0, subGroupName.size() + 1 );
 	}
 	
 	// childs of groups
 	const std::string prefixChild( "flags_" );
-	if( ( prefixPosition = nameWithoutPrefix.find( prefixChild ) ) != std::string::npos )
+	if( nameWithoutPrefix.find( prefixChild ) != std::string::npos )
 	{
-		nameWithoutPrefix.erase( prefixPosition, prefixChild.size() );
-	}
-	
-	// codec name
-	if( ! subGroupName.empty() && ( prefixPosition = nameWithoutPrefix.find( subGroupName ) ) != std::string::npos )
-	{
-		// subGroupName.size() + 1: also remove the "_"
-		nameWithoutPrefix.erase( prefixPosition, subGroupName.size() + 1 );
+		// remove xxxflags at the beginning og the string
+		size_t endedPosition = nameWithoutPrefix.find( prefixChild );
+		nameWithoutPrefix.erase( 0, endedPosition + prefixChild.size() );
 	}
 	
 	return nameWithoutPrefix;

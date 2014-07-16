@@ -71,7 +71,8 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 
 /**
  * @brief Get the real name of the AVOption, without our prefix.
- * @param optionName with prefix (g_, flag_...)
+ * @param optionName with various prefixes (flags_, sub group name...)
+ * @param subGroupName a specific prefix (the codec name...)
  * @return the AVOption name
  */
 std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& subGroupName="" );

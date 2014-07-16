@@ -251,9 +251,13 @@ void AVWriterPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoade
 					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 					{
 						std::string childName = prefix;
+						if( ! subGroupName.empty() )
+						{
+							childName += subGroupName;
+							childName += "_";
+						}
+						childName += child.getUnit();
 						childName += "flags_";
-						childName += subGroupName;
-						childName += "_";
 						childName += child.getName();
 						
 						OFX::BooleanParam* curOpt = fetchBooleanParam( childName );
@@ -419,10 +423,11 @@ void AVWriterPlugin::fetchCustomParams( common::CustomParams& ofxParam, avtransc
 					std::string childName = prefix;
 					if( ! subGroupName.empty() )
 					{
-						childName += "flags_";
 						childName += subGroupName;
 						childName += "_";
 					}
+					childName += child.getUnit();
+					childName += "flags_";
 					childName += child.getName();
 
 					ofxParam._paramBoolean.push_back( fetchBooleanParam( childName ) );
