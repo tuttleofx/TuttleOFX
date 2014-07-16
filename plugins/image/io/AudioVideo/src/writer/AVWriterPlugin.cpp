@@ -23,8 +23,10 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioStreamIndex()
 	, _paramAudioCopyStream()
 	, _paramAudioPreset()
+	, _paramFormatCustom()
 	, _paramVideoCustom()
 	, _paramAudioCustom()
+	, _paramFormatDetailCustom()
 	, _paramVideoCodecCustom()
 	, _paramAudioCodecCustom()
 	, _paramMetadatas()
@@ -93,15 +95,19 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramAudioSampleFormat = fetchChoiceParam( kParamAudioCodecSampleFmt );
 	
 	// all custom params
-	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
-	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
-	disableAVOptionsForCodecOrFormat( optionsFormatMap, formatName, common::kPrefixFormat );
+	avtranscoder::OptionLoader::OptionArray optionsFormatArray = _optionLoader.loadFormatContextOptions( AV_OPT_FLAG_ENCODING_PARAM );
+	fetchCustomParams( _paramFormatCustom, optionsFormatArray, common::kPrefixFormat );
 	
 	avtranscoder::OptionLoader::OptionArray optionsVideoArray = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	fetchCustomParams( _paramVideoCustom, optionsVideoArray, common::kPrefixVideo );
 	
 	avtranscoder::OptionLoader::OptionArray optionsAudioArray = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	fetchCustomParams( _paramAudioCustom, optionsAudioArray, common::kPrefixAudio );
+	
+	avtranscoder::OptionLoader::OptionMap optionsFormatDetailMap = _optionLoader.loadOutputFormatOptions();
+	fetchCustomParams( _paramFormatDetailCustom, optionsFormatDetailMap, common::kPrefixFormat );
+	const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
+	disableAVOptionsForCodecOrFormat( optionsFormatDetailMap, formatName, common::kPrefixFormat );
 	
 	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
 	fetchCustomParams( _paramVideoCodecCustom, optionsVideoCodecMap, common::kPrefixVideo );
