@@ -38,6 +38,7 @@ static const std::string kParamMainAudioPreset           = "mainAudioPreset";
 static const std::string kParamUseCustomFps              = "useCustomFps";
 static const std::string kParamCustomFps                 = "customFps";
 static const std::string kParamVideoCodecPixelFmt        = "videoPixelFormat";
+static const std::string kParamAudioCodecSampleFmt       = "audioSampleFormat";
 
 static const std::string kParamVideoCustomGroup          = "videoCustomGroup";
 static const std::string kParamAudioCustomGroup          = "audioCustomGroup";

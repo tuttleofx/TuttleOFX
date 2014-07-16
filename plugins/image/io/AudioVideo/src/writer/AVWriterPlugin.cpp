@@ -90,6 +90,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramUseCustomFps = fetchBooleanParam( kParamUseCustomFps );
 	_paramCustomFps = fetchDoubleParam( kParamCustomFps );
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
+	_paramAudioSampleFormat = fetchChoiceParam( kParamAudioCodecSampleFmt );
 	
 	// all custom params
 	avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
@@ -167,9 +168,11 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	params._audioCodec = _paramAudioCodec->getValue();
 	params._audioCodecName = _optionLoader.getAudioCodecsShortNames().at( params._audioCodec );
 	
-	// av_get_pix_fmt( _paramVideoPixelFormat->getValue() )
 	params._videoPixelFormat = static_cast<AVPixelFormat>( _paramVideoPixelFormat->getValue() );
 	params._videoPixelFormatName = _optionLoader.getPixelFormats().at( _paramVideoPixelFormat->getValue() );
+	
+	params._audioSampleFormat = static_cast<AVSampleFormat>( _paramAudioSampleFormat->getValue() );
+	params._audioSampleFormatName = _optionLoader.getSampleFormats().at( _paramAudioSampleFormat->getValue() );
 	
 	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
 	{
@@ -694,8 +697,7 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
 				customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
 				customPreset[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
-				// @todo: get this from OFX params
-				customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = "s16";
+				customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
 				
 				// audio options from avTranscoder
 				common::CustomParams::OptionsForPreset audioOptionsForPreset = _paramAudioCustom.getOptionsNameAndValue();

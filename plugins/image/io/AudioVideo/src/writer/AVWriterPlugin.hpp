@@ -40,6 +40,9 @@ struct AVProcessParams
 	
 	AVPixelFormat _videoPixelFormat; /// videoPixelFormat
 	std::string _videoPixelFormatName; /// videoPixelFormat name
+	
+	AVSampleFormat _audioSampleFormat; /// audioSampleFormat
+	std::string _audioSampleFormatName; /// audioSampleFormat name
 
 	std::map< std::string, std::string > _metadatas;
 };
@@ -107,6 +110,7 @@ public:
 	OFX::BooleanParam* _paramUseCustomFps;
 	OFX::DoubleParam* _paramCustomFps;
 	OFX::ChoiceParam* _paramVideoPixelFormat;
+	OFX::ChoiceParam* _paramAudioSampleFormat;
 	
 	common::CustomParams _paramVideoCustom;
 	common::CustomParams _paramAudioCustom;
