@@ -214,6 +214,8 @@ void AVReaderPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionArray&
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
 					std::string childName = prefix;
+					childName += child.getUnit();
+					childName += common::kPrefixFlag;
 					childName += child.getName();
 
 					customParams->_paramBoolean.push_back( fetchBooleanParam( childName ) );
