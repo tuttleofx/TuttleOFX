@@ -62,6 +62,7 @@ public:
 	AVProcessParams getProcessParams();
 	
 	void disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec, const std::string& prefix="" );
+	void updateSampleFormat( const std::string& audioCodecName );
 	void updatePixelFormat( const std::string& videoCodecName );
 	void updateAudioParams();
 	void updateAudioCopyStream();

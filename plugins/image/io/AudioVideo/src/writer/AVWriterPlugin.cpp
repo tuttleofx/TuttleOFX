@@ -114,12 +114,13 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	const std::string videoCodecName = _optionLoader.getVideoCodecsShortNames().at( _paramVideoCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 	
-	updatePixelFormat( videoCodecName );
-	
 	avtranscoder::OptionLoader::OptionMap optionsAudioCodecMap = _optionLoader.loadAudioCodecOptions();
 	fetchCustomParams( _paramAudioCodecCustom, optionsAudioCodecMap, common::kPrefixAudio );
 	const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at( _paramAudioCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
+	
+	updatePixelFormat( videoCodecName );
+	updateSampleFormat( audioCodecName );
 	
 	// preset
 	_paramMainPreset = fetchChoiceParam( kParamMainPreset );
@@ -300,6 +301,28 @@ void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 	for( std::vector<std::string>::iterator it = pixelsFormat.begin(); it != pixelsFormat.end(); ++it )
 	{
 		_paramVideoPixelFormat->appendOption( *it );
+	}
+}
+
+/**
+ * @brief Update the list of sample format supported depending on the audio codec.
+ * Warning: the function does not update the list correctly in Nuke.
+ * @param audioCodecName
+ */
+void AVWriterPlugin::updateSampleFormat( const std::string& audioCodecName )
+{
+	_paramAudioSampleFormat->resetOptions();
+	
+	std::vector<std::string> sampleFormats( _optionLoader.getSampleFormats( audioCodecName ) );
+	// get all sample formats if the list is empty with the audio codec indicated
+	if( sampleFormats.empty() )
+	{
+		sampleFormats = _optionLoader.getSampleFormats();
+	}
+	
+	for( std::vector<std::string>::iterator it = sampleFormats.begin(); it != sampleFormats.end(); ++it )
+	{
+		_paramAudioSampleFormat->appendOption( *it );
 	}
 }
 
@@ -484,6 +507,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		avtranscoder::OptionLoader::OptionMap optionsAudioCodecMap = _optionLoader.loadAudioCodecOptions();
 		const std::string audioCodecName = _optionLoader.getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
 		disableAVOptionsForCodecOrFormat( optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
+		
+		updateSampleFormat( audioCodecName );
 	}
 	else if( paramName == kParamMainPreset )
 	{
@@ -699,6 +724,13 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 			// custom audio preset
 			if( mainPresetIndex == 0 )
 			{
+				// check sample format
+				std::vector<std::string> sampleFormats( _optionLoader.getSampleFormats( params._audioCodecName ) );
+				if( std::find( sampleFormats.begin(), sampleFormats.end(), params._audioSampleFormatName ) == sampleFormats.end() )
+				{
+					throw std::runtime_error( params._audioSampleFormatName + " is a wrong audio sample format for the codec " + params._audioCodecName );
+				}
+				
 				customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
 				customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
 				customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
