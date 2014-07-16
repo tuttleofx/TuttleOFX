@@ -31,6 +31,18 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 			else
 				optionValue.append( "-" );
 			optionValue.append( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+			
+			const std::string flagName( getOptionFlagName( param->getName(), subGroupName ) );
+			// if first flag with this flagName
+			if( optionsNameAndValue.find( flagName ) == optionsNameAndValue.end() )
+			{
+				optionsNameAndValue.insert( OptionForPreset( flagName, optionValue ) );
+			}
+			// get all flags with the same flagName in a single Option
+			else
+			{
+				optionsNameAndValue.at( flagName ) += optionValue;
+			}
 		}
 		else
 		{
@@ -239,6 +251,31 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 	}
 	
 	return nameWithoutPrefix;
+}
+
+
+std::string getOptionFlagName( const std::string& optionName, const std::string& subGroupName )
+{
+	std::string flagName;
+	
+	const std::string prefixChild( "flags_" );
+	if( optionName.find( prefixChild ) != std::string::npos )
+	{
+		size_t startedPosition;
+		if( subGroupName.empty() )
+			startedPosition = optionName.find( "_" );
+		else
+		{
+			// skip the first prefix (f_, v_, a_, or m_)
+			startedPosition = optionName.find( "_", 2 );
+		}
+		++startedPosition; // started after the "_"
+		size_t endedPosition = optionName.find( prefixChild );
+		
+		flagName = optionName.substr( startedPosition, endedPosition - startedPosition );
+	}
+	
+	return flagName;
 }
 
 }
