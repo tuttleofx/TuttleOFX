@@ -31,13 +31,11 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 			else
 				optionValue.append( "-" );
 			optionValue.append( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-			// @todo: get the correct flag name
-			optionsNameAndValue.push_back( OptionForPreset( "mpv_flags", optionValue ) );
 		}
 		else
 		{
-			std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-			optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
+			const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+			optionsNameAndValue.insert( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
 		}
 	}
 
@@ -45,56 +43,45 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
+		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		optionsNameAndValue.insert( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
 	}
 
 	BOOST_FOREACH( OFX::DoubleParam* param, _paramDouble )
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
+		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		optionsNameAndValue.insert( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
 	}
 
 	BOOST_FOREACH( OFX::StringParam* param, _paramString )
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		optionsNameAndValue.push_back( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
+		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		const std::string optionValue( boost::to_string( param->getValue() ) );
+		optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
 	}
 
 	BOOST_FOREACH( OFX::Int2DParam* param, _paramRatio )
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		std::string optionValue( boost::to_string( param->getValue().x ) + ", " + boost::to_string( param->getValue().y ) );
-		optionsNameAndValue.push_back( OptionForPreset( optionName, optionValue ) );
+		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		const std::string optionValue( boost::to_string( param->getValue().x ) + "." + boost::to_string( param->getValue().y ) );
+		optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
 	}
 
 	BOOST_FOREACH( OFX::ChoiceParam* param, _paramChoice )
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		//std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		// @todo: get optionValue from the optionIndex
-		//size_t optionIndex = param->getValue();
-		//std::string optionValue( "not yet implemented" );
-		//optionsNameAndValue.push_back( OptionForPreset( optionName, optionValue ) );
-	}
-
-	// get all flags in a single Option
-	// @todo: get the correct flag name
-	OptionForPreset mpv_flags( "mpv_flags", "" );
-	for( OptionsForPreset::iterator it = optionsNameAndValue.begin(); it != optionsNameAndValue.end(); ++it )
-	{
-		if( (*it).first == "mpv_flags" )
-		{
-			mpv_flags.second += (*it).second;
-			it = optionsNameAndValue.erase( it );
-		}
+//		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+//		// @todo: get optionValue from the optionIndex
+//		size_t optionIndex = param->getValue();
+//		std::string optionValue( "not yet implemented" );
+//		optionsNameAndValue.push_back( OptionForPreset( optionName, optionValue ) );
 	}
 
 	return optionsNameAndValue;

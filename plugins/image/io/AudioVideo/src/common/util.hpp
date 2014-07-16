@@ -27,7 +27,7 @@ struct CustomParams
 {
 public:
 	typedef std::pair<std::string, std::string> OptionForPreset;
-	typedef std::vector< OptionForPreset > OptionsForPreset;
+	typedef std::map< std::string, std::string > OptionsForPreset;
 
 public:
 	CustomParams()
