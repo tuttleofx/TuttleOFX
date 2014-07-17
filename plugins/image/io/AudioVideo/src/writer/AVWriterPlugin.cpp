@@ -886,7 +886,6 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	
 	AVProcessParams params = getProcessParams();
 	initOutput( params );
-	initAudio( params );
 }
 
 /**
@@ -902,6 +901,7 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 
 	if( ! _initWrap )
 	{
+		initAudio( params );
 		_outputFile->beginWrap();
 		_initWrap = true;
 	}
