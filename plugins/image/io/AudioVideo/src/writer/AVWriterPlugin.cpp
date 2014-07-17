@@ -772,7 +772,7 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 					else
 					{
 						// at( presetIndex - 1 ): subtract the index of the index of the main preset
-						presetName = _presets.getAudioProfiles().at( presetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second;
+						_transcoder->add( "", 0,  _presets.getAudioProfiles().at( presetIndex - 1 ) );
 					}
 				}
 			}
