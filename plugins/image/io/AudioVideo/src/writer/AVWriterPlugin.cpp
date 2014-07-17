@@ -71,9 +71,9 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioFilePath.push_back( fetchStringParam( audioFilePathName.str() ) );
 		_paramAudioFilePath.back()->setIsSecretAndDisabled( false );
 		
-		std::ostringstream audioStreamIdName( kParamAudioStreamId, std::ios_base::in | std::ios_base::ate );
-		audioStreamIdName << "_" << idAudioStream;
-		_paramAudioStreamIndex.push_back( fetchIntParam( audioStreamIdName.str() ) );
+		std::ostringstream audioStreamIndexName( kParamAudioStreamIndex, std::ios_base::in | std::ios_base::ate );
+		audioStreamIndexName << "_" << idAudioStream;
+		_paramAudioStreamIndex.push_back( fetchIntParam( audioStreamIndexName.str() ) );
 		_paramAudioStreamIndex.back()->setIsSecretAndDisabled( false );
 		
 		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );

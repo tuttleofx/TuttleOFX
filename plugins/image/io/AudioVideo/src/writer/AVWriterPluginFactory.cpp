@@ -349,14 +349,14 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioFilePathParam->setParent( audioSubGroupParam );
 
 		// add audio stream id
-		std::ostringstream audioStreamIdName( kParamAudioStreamId, std::ios_base::in | std::ios_base::ate );
-		audioStreamIdName << "_" << idAudioStream;
-		OFX::IntParamDescriptor* audioStreamIdParam = desc.defineIntParam( audioStreamIdName.str() );
-		audioStreamIdParam->setLabel( "Input stream id" );
-		audioStreamIdParam->setRange( -1, INT_MAX );
-		audioStreamIdParam->setDisplayRange( -1, 16 );
-		audioStreamIdParam->setDefault( 0 );
-		audioStreamIdParam->setParent( audioSubGroupParam );
+		std::ostringstream audioStreamIndexName( kParamAudioStreamIndex, std::ios_base::in | std::ios_base::ate );
+		audioStreamIndexName << "_" << idAudioStream;
+		OFX::IntParamDescriptor* audioStreamIndexParam = desc.defineIntParam( audioStreamIndexName.str() );
+		audioStreamIndexParam->setLabel( "Input stream index" );
+		audioStreamIndexParam->setRange( -1, INT_MAX );
+		audioStreamIndexParam->setDisplayRange( -1, 16 );
+		audioStreamIndexParam->setDefault( 0 );
+		audioStreamIndexParam->setParent( audioSubGroupParam );
 
 		// add flag to copy stream
 		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );
