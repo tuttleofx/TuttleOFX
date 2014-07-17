@@ -711,45 +711,45 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 	// create audio streams
 	try
 	{
+		size_t mainPresetIndex = _paramMainAudioPreset->getValue();
+		
+		avtranscoder::Profile::ProfileDesc customPreset;
+		if( mainPresetIndex == 0  )
+		{
+			customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
+			customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
+			customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
+			customPreset[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
+
+			// check sample format
+			std::vector<std::string> sampleFormats( _optionLoader.getSampleFormats( params._audioCodecName ) );
+			if( std::find( sampleFormats.begin(), sampleFormats.end(), params._audioSampleFormatName ) == sampleFormats.end() )
+			{
+				throw std::runtime_error( params._audioSampleFormatName + " is a wrong audio sample format for the codec " + params._audioCodecName );
+			}
+			customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
+
+			// audio options from avTranscoder
+			common::CustomParams::OptionsForPreset audioOptionsForPreset = _paramAudioCustom.getOptionsNameAndValue();
+			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioOptionsForPreset )
+			{
+				customPreset[ nameAndValue.first ] = nameAndValue.second;
+			}
+			// audio options related to a codec from avTranscoder
+			common::CustomParams::OptionsForPreset audioCodecOptionsForPreset = _paramAudioDetailCustom.getOptionsNameAndValue( params._audioCodecName );
+			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioCodecOptionsForPreset )
+			{
+				customPreset[ nameAndValue.first ] = nameAndValue.second;
+			}
+		}
+		
 		for( int i = 0; i < _paramAudioNbStream->getValue(); ++i )
 		{
 			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
 			int inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
 			std::string presetName( "" );
 			
-			size_t mainPresetIndex = _paramMainAudioPreset->getValue();
 			size_t presetIndex = _paramAudioPreset.at( i )->getValue();
-			
-			avtranscoder::Profile::ProfileDesc customPreset;
-			// custom audio preset
-			if( mainPresetIndex == 0 )
-			{
-				// check sample format
-				std::vector<std::string> sampleFormats( _optionLoader.getSampleFormats( params._audioCodecName ) );
-				if( std::find( sampleFormats.begin(), sampleFormats.end(), params._audioSampleFormatName ) == sampleFormats.end() )
-				{
-					throw std::runtime_error( params._audioSampleFormatName + " is a wrong audio sample format for the codec " + params._audioCodecName );
-				}
-				
-				customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
-				customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
-				customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
-				customPreset[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
-				customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
-				
-				// audio options from avTranscoder
-				common::CustomParams::OptionsForPreset audioOptionsForPreset = _paramAudioCustom.getOptionsNameAndValue();
-				BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioOptionsForPreset )
-				{
-					customPreset[ nameAndValue.first ] = nameAndValue.second;
-				}
-				// audio options related to a codec from avTranscoder
-				common::CustomParams::OptionsForPreset audioCodecOptionsForPreset = _paramAudioDetailCustom.getOptionsNameAndValue( params._audioCodecName );
-				BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioCodecOptionsForPreset )
-				{
-					customPreset[ nameAndValue.first ] = nameAndValue.second;
-				}
-			}
 			
 			// dummy
 			if( _paramAudioSilent.at( i )->getValue() )
