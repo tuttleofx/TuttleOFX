@@ -791,13 +791,13 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				{
 					if( inputStreamIndex != -1 )
 					{
-						_transcoder->add( inputFileName, inputStreamIndex, presetName );
+						_transcoder->add( inputFileName, inputStreamIndex, "" );
 					}
 					else
 					{
 						for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 						{
-							_transcoder->add( inputFileName, streamIndex, presetName );
+							_transcoder->add( inputFileName, streamIndex, "" );
 						}
 					}
 				}
