@@ -630,14 +630,6 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		int height = bounds.y2 - bounds.y1;
 
 		avtranscoder::ImageDesc imageDesc;
-		
-		// check pixel format
-		std::vector<std::string> pixelFormats( avtranscoder::OptionLoader::getPixelFormats( params._videoCodecName ) );
-		if( std::find( pixelFormats.begin(), pixelFormats.end(), params._videoPixelFormatName ) == pixelFormats.end() )
-		{
-			throw std::runtime_error( params._videoPixelFormatName + " is a wrong video pixel format for the codec " + params._videoCodecName );
-		}
-		
 		avtranscoder::Pixel pixel( params._videoPixelFormat );
 		// @todo: avTranscoder, set par of pixel
 		imageDesc.setPixel( pixel );
