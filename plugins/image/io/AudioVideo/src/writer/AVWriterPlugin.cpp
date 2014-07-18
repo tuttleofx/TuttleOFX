@@ -176,10 +176,10 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	params._audioCodecName = _optionLoader.getAudioCodecsShortNames().at( params._audioCodec );
 	
 	params._videoPixelFormat = static_cast<AVPixelFormat>( _paramVideoPixelFormat->getValue() );
-	params._videoPixelFormatName = _optionLoader.getPixelFormats().at( _paramVideoPixelFormat->getValue() );
+	params._videoPixelFormatName = avtranscoder::OptionLoader::getPixelFormats().at( _paramVideoPixelFormat->getValue() );
 	
 	params._audioSampleFormat = static_cast<AVSampleFormat>( _paramAudioSampleFormat->getValue() );
-	params._audioSampleFormatName = _optionLoader.getSampleFormats().at( _paramAudioSampleFormat->getValue() );
+	params._audioSampleFormatName = avtranscoder::OptionLoader::getSampleFormats().at( _paramAudioSampleFormat->getValue() );
 	
 	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
 	{
@@ -291,11 +291,11 @@ void AVWriterPlugin::updatePixelFormats( const std::string& videoCodecName )
 {
 	_paramVideoPixelFormat->resetOptions();
 	
-	std::vector<std::string> pixelFormats( _optionLoader.getPixelFormats( videoCodecName ) );
+	std::vector<std::string> pixelFormats( avtranscoder::OptionLoader::getPixelFormats( videoCodecName ) );
 	// get all pixel formats if the list is empty with the video codec indicated
 	if( pixelFormats.empty() )
 	{
-		pixelFormats = _optionLoader.getPixelFormats();
+		pixelFormats = avtranscoder::OptionLoader::getPixelFormats();
 	}
 	
 	for( std::vector<std::string>::iterator it = pixelFormats.begin(); it != pixelFormats.end(); ++it )
@@ -632,7 +632,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		avtranscoder::ImageDesc imageDesc;
 		
 		// check pixel format
-		std::vector<std::string> pixelFormats( _optionLoader.getPixelFormats( params._videoCodecName ) );
+		std::vector<std::string> pixelFormats( avtranscoder::OptionLoader::getPixelFormats( params._videoCodecName ) );
 		if( std::find( pixelFormats.begin(), pixelFormats.end(), params._videoPixelFormatName ) == pixelFormats.end() )
 		{
 			throw std::runtime_error( params._videoPixelFormatName + " is a wrong video pixel format for the codec " + params._videoCodecName );

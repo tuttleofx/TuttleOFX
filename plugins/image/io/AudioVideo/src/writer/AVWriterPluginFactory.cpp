@@ -220,7 +220,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
 	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
 	
-	std::vector<std::string> pixelFormats = optionLoader.getPixelFormats();
+	std::vector<std::string> pixelFormats = avtranscoder::OptionLoader::getPixelFormats();
 	for( size_t i = 0; i < pixelFormats.size(); ++i )
 	{
 		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );
@@ -286,7 +286,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* audioSampleFmtParam = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
 	audioSampleFmtParam->setLabel( "Select the output audio sample type" );
 	
-	std::vector<std::string> sampleFormats = optionLoader.getSampleFormats();
+	std::vector<std::string> sampleFormats = avtranscoder::OptionLoader::getSampleFormats();
 	for( size_t i = 0; i < sampleFormats.size(); ++i )
 	{
 		audioSampleFmtParam->appendOption( sampleFormats.at( i ) );
