@@ -630,9 +630,6 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		int height = bounds.y2 - bounds.y1;
 
 		avtranscoder::ImageDesc imageDesc;
-		avtranscoder::Pixel pixel( params._videoPixelFormat );
-		// @todo: avTranscoder, set par of pixel
-		imageDesc.setPixel( pixel );
 		imageDesc.setWidth( width );
 		imageDesc.setHeight( height );
 		imageDesc.setDar( width, height );
@@ -674,13 +671,21 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 				customPreset[ nameAndValue.first ] = nameAndValue.second;
 			}
 			
+			avtranscoder::Pixel pixel( params._videoPixelFormat );
+			imageDesc.setPixel( pixel );
+			
 			_outputStreamVideo.setProfile( customPreset, imageDesc );
 		}
 		// existing video preset
 		else
 		{
 			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-			std::string presetName( _presets.getVideoProfiles().at( mainPresetIndex - 1 ).find( avtranscoder::Profile::avProfileIdentificator )->second );
+			avtranscoder::Profile::ProfileDesc& profileDesc = _presets.getVideoProfiles().at( mainPresetIndex - 1 );
+			std::string presetName( profileDesc.find( avtranscoder::Profile::avProfileIdentificator )->second );
+			
+			avtranscoder::Pixel pixel( avtranscoder::OptionLoader::getAVPixelFormat( profileDesc.find( avtranscoder::Profile::avProfilePixelFormat )->second ) );
+			imageDesc.setPixel( pixel );
+			
 			_outputStreamVideo.setProfile( _presets.getProfile( presetName ), imageDesc );
 		}
 		
