@@ -20,15 +20,10 @@ AVWriterProcess<View>::AVWriterProcess( AVWriterPlugin& instance )
 	this->setNoMultiThreading();
 }
 
-/**
- * @brief Function called by rendering thread each time a process must be done.
- * @param[in] procWindowRoW  Processing window in RoW
- */
 template<class View>
-void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
-{
-	using namespace terry;
-	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
+void AVWriterProcess<View>::setup( const OFX::RenderArguments& args )
+{	
+	ImageGilFilterProcessor<View>::setup( args );
 	
 	// Get image to encode
 	avtranscoder::ImageDesc imageToEncodeDesc = _plugin._outputStreamVideo.getVideoDesc().getImageDesc();
@@ -55,6 +50,18 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 		imageRGBDesc.setPixel( oPixel.findPixel() );
 		_plugin._rgbImage.reset( new avtranscoder::Image( imageRGBDesc ) );
 	}
+}
+
+/**
+ * @brief Function called by rendering thread each time a process must be done.
+ * @param[in] procWindowRoW  Processing window in RoW
+ */
+template<class View>
+void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+{
+	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
+	
+	using namespace terry;
 	
 	rgb8_image_t img ( this->_srcView.dimensions() );
 	rgb8_view_t  vw  ( view( img ) );

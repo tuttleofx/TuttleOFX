@@ -28,6 +28,7 @@ protected:
 public:
 	AVWriterProcess( AVWriterPlugin& instance );
 
+	void setup( const OFX::RenderArguments& args );
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
