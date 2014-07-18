@@ -32,7 +32,7 @@ void AVWriterProcess<View>::setup( const OFX::RenderArguments& args )
 		_plugin._imageToEncode.reset( new avtranscoder::Image( imageToEncodeDesc ) );
 	}
 	
-	// Get image image rgb
+	// Get image rgb
 	if( _plugin._rgbImage.get() == NULL )
 	{
 		// get pixel data of image rgb
@@ -48,6 +48,7 @@ void AVWriterProcess<View>::setup( const OFX::RenderArguments& args )
 		
 		avtranscoder::ImageDesc imageRGBDesc( imageToEncodeDesc );
 		imageRGBDesc.setPixel( oPixel.findPixel() );
+		
 		_plugin._rgbImage.reset( new avtranscoder::Image( imageRGBDesc ) );
 	}
 }
