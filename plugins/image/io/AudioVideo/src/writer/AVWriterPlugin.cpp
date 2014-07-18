@@ -712,13 +712,6 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 			customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
 			customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
 			customPreset[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
-
-			// check sample format
-			std::vector<std::string> sampleFormats( _optionLoader.getSampleFormats( params._audioCodecName ) );
-			if( std::find( sampleFormats.begin(), sampleFormats.end(), params._audioSampleFormatName ) == sampleFormats.end() )
-			{
-				throw std::runtime_error( params._audioSampleFormatName + " is a wrong audio sample format for the codec " + params._audioCodecName );
-			}
 			customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
 
 			// audio options from avTranscoder
