@@ -7,7 +7,7 @@
 
 #include <AvTranscoder/File/InputFile.hpp>
 #include <AvTranscoder/EssenceStream/InputVideo.hpp>
-#include <AvTranscoder/DatasStructures/Image.hpp>
+#include <AvTranscoder/EssenceStructures/VideoFrame.hpp>
 #include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 
@@ -71,8 +71,8 @@ public:
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
 	boost::scoped_ptr<avtranscoder::InputVideo> _inputStreamVideo;
-	boost::scoped_ptr<avtranscoder::Image> _sourceImage;
-	boost::scoped_ptr<avtranscoder::Image> _imageToDecode;
+	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
+	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	
 	avtranscoder::VideoEssenceTransform _colorTransform;
 	

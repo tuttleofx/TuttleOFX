@@ -108,7 +108,7 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 
 template<class View>
 template<typename FileView>
-View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::Image& image )
+View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::VideoFrame& image )
 {
 	typedef typename FileView::value_type Pixel;
 	

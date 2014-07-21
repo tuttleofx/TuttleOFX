@@ -30,7 +30,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 	
 	template<typename FileView>
-	View& readImage( View& dst, avtranscoder::Image& image );
+	View& readImage( View& dst, avtranscoder::VideoFrame& image );
 };
 
 }

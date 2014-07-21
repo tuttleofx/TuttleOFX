@@ -1,8 +1,8 @@
 #include "AVWriterProcess.hpp"
 
-#include <AvTranscoder/DatasStructures/Pixel.hpp>
-#include <AvTranscoder/DatasStructures/AudioFrame.hpp>
-#include <AvTranscoder/DatasStructures/DataStreamDesc.hpp>
+#include <AvTranscoder/EssenceStructures/Pixel.hpp>
+#include <AvTranscoder/EssenceStructures/AudioFrame.hpp>
+#include <AvTranscoder/CodedStructures/DataStreamDesc.hpp>
 
 #include <tuttle/plugin/exceptions.hpp>
 
@@ -49,7 +49,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	uint8_t* imageData = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	
 	// set video stream next frame
-	const size_t bufferSize = _plugin._dummyVideo.getVideoDesc().getImageDesc().getDataSize();
+	const size_t bufferSize = _plugin._dummyVideo.getVideoDesc().getVideoFrameDesc().getDataSize();
 	if( _plugin._videoFrame.getSize() != bufferSize )
 		_plugin._videoFrame.getBuffer().resize( bufferSize );
 	std::memcpy( _plugin._videoFrame.getPtr(), imageData, bufferSize );

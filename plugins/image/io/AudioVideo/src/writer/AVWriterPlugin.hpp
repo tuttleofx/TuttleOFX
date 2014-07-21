@@ -8,7 +8,7 @@
 #include <AvTranscoder/File/OutputFile.hpp>
 #include <AvTranscoder/Transcoder/Transcoder.hpp>
 #include <AvTranscoder/EssenceStream/DummyVideo.hpp>
-#include <AvTranscoder/DatasStructures/Frame.hpp>
+#include <AvTranscoder/EssenceStructures/Frame.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 #include <AvTranscoder/Profile.hpp>
 

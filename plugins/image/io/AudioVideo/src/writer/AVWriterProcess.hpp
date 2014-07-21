@@ -3,7 +3,7 @@
 
 #include "AVWriterPlugin.hpp"
 
-#include <AvTranscoder/DatasStructures/Image.hpp>
+#include <AvTranscoder/EssenceStructures/VideoFrame.hpp>
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 

@@ -2,7 +2,7 @@
 #include "AVReaderProcess.hpp"
 #include "AVReaderDefinitions.hpp"
 
-#include <AvTranscoder/DatasStructures/Pixel.hpp>
+#include <AvTranscoder/EssenceStructures/Pixel.hpp>
 #include <AvTranscoder/ProgressListener.hpp>
 
 #include <boost/filesystem.hpp>
@@ -339,8 +339,8 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	ensureVideoIsOpen();
 	
 	// get source image
-	avtranscoder::ImageDesc sourceImageDesc = _inputFile->getStream( _videoStreamId ).getVideoDesc().getImageDesc();
-	_sourceImage.reset( new avtranscoder::Image( sourceImageDesc ) );
+	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _videoStreamId ).getVideoDesc().getVideoFrameDesc();
+	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 	
 	// get pixel data of image to decode
 	avtranscoder::Pixel dstPixel;
@@ -354,9 +354,9 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	dstPixel.setPlanar( false );
 	
 	// get image to decode
-	avtranscoder::ImageDesc imageToDecodeDesc( sourceImageDesc );
+	avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc );
 	imageToDecodeDesc.setPixel( dstPixel.findPixel() );
-	_imageToDecode.reset( new avtranscoder::Image( imageToDecodeDesc ) );
+	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
 }
 
 /**

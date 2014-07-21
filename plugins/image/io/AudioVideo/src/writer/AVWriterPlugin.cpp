@@ -628,7 +628,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		int width = bounds.x2 - bounds.x1;
 		int height = bounds.y2 - bounds.y1;
 
-		avtranscoder::ImageDesc imageDesc;
+		avtranscoder::VideoFrameDesc imageDesc;
 		imageDesc.setWidth( width );
 		imageDesc.setHeight( height );
 		imageDesc.setDar( width, height );
