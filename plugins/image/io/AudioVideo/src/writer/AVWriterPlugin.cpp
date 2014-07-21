@@ -705,7 +705,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 
 void AVWriterPlugin::initAudio( AVProcessParams& params )
 {
-	if( ! _paramAudioNbStream->getValue() ) // no audio specified
+	if( ! _paramAudioNbStream->getValue() ) // no audio stream specified
 		return;
 	
 	// create audio streams
@@ -855,8 +855,6 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 void AVWriterPlugin::cleanVideoAndAudio()
 {
 	_outputFile.reset();
-	
-	// clean audio
 	_transcoder.reset();
 	
 	_initVideo = false;
