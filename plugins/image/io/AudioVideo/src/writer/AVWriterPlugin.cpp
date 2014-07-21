@@ -631,75 +631,67 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		imageDesc.setWidth( width );
 		imageDesc.setHeight( height );
 		imageDesc.setDar( width, height );
+		avtranscoder::Pixel pixel;
+		avtranscoder::VideoDesc videoDesc;
 
 		size_t mainPresetIndex = _paramMainVideoPreset->getValue();
 		
+		avtranscoder::Profile::ProfileDesc profile;
 		// custom video preset
 		if( mainPresetIndex == 0 )
 		{
-			avtranscoder::Profile::ProfileDesc customPreset;
-			customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
-			customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
-			customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
 			
-			customPreset[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
-			customPreset[ avtranscoder::Profile::avProfilePixelFormat ] = params._videoPixelFormatName;
+			profile[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
+			profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
+			profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
+			
+			profile[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
+			profile[ avtranscoder::Profile::avProfilePixelFormat ] = params._videoPixelFormatName;
 			
 			if( _paramUseCustomFps->getValue() )
 			{
-				customPreset[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
+				profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
 			}
 			else
 			{
-				customPreset[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
+				profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
 			}
 			
-			customPreset[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+			profile[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
 			
 			// video options from avTranscoder
 			common::CustomParams::OptionsForPreset videoOptionsForPreset = _paramVideoCustom.getOptionsNameAndValue();
 			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoOptionsForPreset )
 			{
-				customPreset[ nameAndValue.first ] = nameAndValue.second;
+				profile[ nameAndValue.first ] = nameAndValue.second;
 			}
 			// video options related to a codec from avTranscoder
 			common::CustomParams::OptionsForPreset videoCodecOptionsForPreset = _paramVideoDetailCustom.getOptionsNameAndValue( params._videoCodecName );
 			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoCodecOptionsForPreset )
 			{
-				customPreset[ nameAndValue.first ] = nameAndValue.second;
+				profile[ nameAndValue.first ] = nameAndValue.second;
 			}
 			
-			avtranscoder::Pixel pixel( params._videoPixelFormat );
-			imageDesc.setPixel( pixel );
-			
-			avtranscoder::VideoDesc videoDesc( params._videoCodecName );
-			videoDesc.setImageParameters( imageDesc );
-			
-			_dummyVideo.setVideoDesc( videoDesc );
-			
-			// the streamTranscoder is deleted by avTranscoder
-			avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, customPreset );
-			_transcoder->add( *stream );
+			pixel = avtranscoder::Pixel( params._videoPixelFormat );
+			videoDesc = avtranscoder::VideoDesc(params._videoCodecName );
 		}
 		// existing video preset
 		else
 		{
 			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-			avtranscoder::Profile::ProfileDesc& profileDesc = _presets.getVideoProfiles().at( mainPresetIndex - 1 );
-			std::string presetName( profileDesc.find( avtranscoder::Profile::avProfileIdentificator )->second );
+			profile = _presets.getVideoProfiles().at( mainPresetIndex - 1 );
 			
-			avtranscoder::Pixel pixel( avtranscoder::OptionLoader::getAVPixelFormat( profileDesc.find( avtranscoder::Profile::avProfilePixelFormat )->second ) );
-			imageDesc.setPixel( pixel );
-			
-			avtranscoder::VideoDesc videoDesc( profileDesc.find( avtranscoder::Profile::avProfileCodec )->second );
-			videoDesc.setImageParameters( imageDesc );
-			
-			_dummyVideo.setVideoDesc( videoDesc );
-			
-			// the streamTranscoder is deleted by avTranscoder
-			avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, _presets.getProfile( presetName ) );
-			_transcoder->add( *stream );
+			pixel = avtranscoder::Pixel( avtranscoder::OptionLoader::getAVPixelFormat( profile[ avtranscoder::Profile::avProfilePixelFormat ] ) );
+			videoDesc = avtranscoder::VideoDesc( profile[ avtranscoder::Profile::avProfileCodec ] );
 		}
+		
+		imageDesc.setPixel( pixel );
+		videoDesc.setImageParameters( imageDesc );
+		_dummyVideo.setVideoDesc( videoDesc );
+			
+		// the streamTranscoder is deleted by avTranscoder
+		avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, profile );
+		_transcoder->add( *stream );
 	}	
 	catch( std::exception& e )
 	{
