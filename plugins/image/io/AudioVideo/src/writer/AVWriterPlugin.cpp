@@ -6,6 +6,7 @@
 #include <AvTranscoder/ProgressListener.hpp>
 
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <cctype>
 #include <sstream>
@@ -712,26 +713,26 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 	{
 		size_t mainPresetIndex = _paramMainAudioPreset->getValue();
 		
-		avtranscoder::Profile::ProfileDesc customPreset;
+		avtranscoder::Profile::ProfileDesc profile;
 		if( mainPresetIndex == 0  )
 		{
-			customPreset[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
-			customPreset[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
-			customPreset[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
-			customPreset[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
-			customPreset[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
+			profile[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
+			profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
+			profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
+			profile[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
+			profile[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
 
 			// audio options from avTranscoder
 			common::CustomParams::OptionsForPreset audioOptionsForPreset = _paramAudioCustom.getOptionsNameAndValue();
 			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioOptionsForPreset )
 			{
-				customPreset[ nameAndValue.first ] = nameAndValue.second;
+				profile[ nameAndValue.first ] = nameAndValue.second;
 			}
 			// audio options related to a codec from avTranscoder
 			common::CustomParams::OptionsForPreset audioCodecOptionsForPreset = _paramAudioDetailCustom.getOptionsNameAndValue( params._audioCodecName );
 			BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioCodecOptionsForPreset )
 			{
-				customPreset[ nameAndValue.first ] = nameAndValue.second;
+				profile[ nameAndValue.first ] = nameAndValue.second;
 			}
 		}
 		
@@ -746,27 +747,28 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 			// dummy
 			if( _paramAudioSilent.at( i )->getValue() )
 			{
-				// custom audio preset
-				if( presetIndex == 0 && mainPresetIndex == 0 )
+				// main audio preset
+				if( presetIndex == 0 && mainPresetIndex != 0 )
 				{
-					_transcoder->add( "", 0, customPreset );
+					// at( mainPresetIndex - 1 ): subtract the index of the custom preset
+					profile = _presets.getAudioProfiles().at( mainPresetIndex - 1 );
 				}
-				// existing audio preset
-				else
+				// specific audio preset
+				if( presetIndex != 0 )
 				{
-					// main audio preset
-					if( presetIndex == 0 && mainPresetIndex != 0 )
-					{
-						// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-						_transcoder->add( "", 0,  _presets.getAudioProfiles().at( mainPresetIndex - 1 ) );
-					}
-					// specific audio preset
-					else
-					{
-						// at( presetIndex - 1 ): subtract the index of the index of the main preset
-						_transcoder->add( "", 0,  _presets.getAudioProfiles().at( presetIndex - 1 ) );
-					}
+					// at( presetIndex - 1 ): subtract the index of the index of the main preset
+					profile = _presets.getAudioProfiles().at( presetIndex - 1 );
 				}
+				
+				avtranscoder::AudioDesc audioDesc( profile[ avtranscoder::Profile::avProfileCodec ] );
+				const size_t sampleRate = boost::lexical_cast<size_t>( profile[ avtranscoder::Profile::avProfileSampleRate ] );
+				const size_t channels = boost::lexical_cast<size_t>( profile[ avtranscoder::Profile::avProfileChannel ] );
+				audioDesc.setAudioParameters( 
+					sampleRate, 
+					channels, 
+					avtranscoder::OptionLoader::getAVSampleFormat( profile[ avtranscoder::Profile::avProfileSampleFormat ] ) );
+				
+				_transcoder->add( "", 1, profile, audioDesc );
 			}
 			else
 			{
@@ -801,13 +803,13 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, customPreset );
+							_transcoder->add( inputFileName, inputStreamIndex, profile );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, inputStreamIndex, customPreset );
+								_transcoder->add( inputFileName, inputStreamIndex, profile );
 							}
 						}
 					}
