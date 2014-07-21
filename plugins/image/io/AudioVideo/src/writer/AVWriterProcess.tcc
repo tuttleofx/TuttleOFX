@@ -24,33 +24,6 @@ template<class View>
 void AVWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {	
 	ImageGilFilterProcessor<View>::setup( args );
-	
-	// Get image to encode
-	avtranscoder::ImageDesc imageToEncodeDesc = _plugin._outputStreamVideo.getVideoDesc().getImageDesc();
-	if( _plugin._imageToEncode.get() == NULL )
-	{
-		_plugin._imageToEncode.reset( new avtranscoder::Image( imageToEncodeDesc ) );
-	}
-	
-	// Get image rgb
-	if( _plugin._rgbImage.get() == NULL )
-	{
-		// get pixel data of image rgb
-		avtranscoder::Pixel oPixel;
-		size_t pixelComponents = imageToEncodeDesc.getPixelDesc().getComponents(); // get this from gil view
-		size_t pixelDepth = 8; // @todo: get it from src clip (only 8 or 16)
-		oPixel.setBitsPerPixel( pixelDepth * pixelComponents );
-		oPixel.setComponents( pixelComponents );
-		oPixel.setColorComponents( avtranscoder::eComponentRgb );
-		oPixel.setSubsampling( avtranscoder::eSubsamplingNone );
-		oPixel.setAlpha( false );
-		oPixel.setPlanar( false );
-		
-		avtranscoder::ImageDesc imageRGBDesc( imageToEncodeDesc );
-		imageRGBDesc.setPixel( oPixel.findPixel() );
-		
-		_plugin._rgbImage.reset( new avtranscoder::Image( imageRGBDesc ) );
-	}
 }
 
 /**
@@ -75,21 +48,14 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	
 	uint8_t* imageData = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	
-	// Set buffer of image rgb
-	std::memcpy( _plugin._rgbImage->getPtr(), imageData, _plugin._rgbImage->getSize() );
+	// set video stream next frame
+	const size_t bufferSize = _plugin._dummyVideo.getVideoDesc().getImageDesc().getDataSize();
+	if( _plugin._videoFrame.getSize() != bufferSize )
+		_plugin._videoFrame.getBuffer().resize( bufferSize );
+	std::memcpy( _plugin._videoFrame.getPtr(), imageData, bufferSize );
+	_plugin._dummyVideo.setFrame( _plugin._videoFrame );
 	
-	// @todo: waiting for avTranscoder to encode video AND audio with _transcoder
-	//_plugin._colorTransform.convert( *_plugin._rgbImage, *_plugin._imageToEncode );
-	
-	// encode video
-	avtranscoder::DataStream codedImage;
-	//if( _plugin._outputStreamVideo.encodeFrame( *_plugin._imageToEncode, codedImage ) )
-	if( _plugin._outputStreamVideo.encodeFrame( *_plugin._rgbImage, codedImage ) )
-	{
-		_plugin._outputFile->wrap( codedImage, 0 );
-	}
-	
-	// encode audio
+	// process
 	_plugin._transcoder->processFrame();
 }
 

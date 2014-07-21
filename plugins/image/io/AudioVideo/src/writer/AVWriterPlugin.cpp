@@ -32,8 +32,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
-	, _rgbImage( NULL )
-	, _imageToEncode( NULL )
 	, _presets( true ) 
 	, _lastOutputFilePath()
 	, _initVideo( false )
@@ -674,7 +672,14 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			avtranscoder::Pixel pixel( params._videoPixelFormat );
 			imageDesc.setPixel( pixel );
 			
-			_outputStreamVideo.setProfile( customPreset, imageDesc );
+			avtranscoder::VideoDesc videoDesc( params._videoCodecName );
+			videoDesc.setImageParameters( imageDesc );
+			
+			_dummyVideo.setVideoDesc( videoDesc );
+			
+			// the streamTranscoder is deleted by avTranscoder
+			avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, customPreset );
+			_transcoder->add( *stream );
 		}
 		// existing video preset
 		else
@@ -686,10 +691,15 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			avtranscoder::Pixel pixel( avtranscoder::OptionLoader::getAVPixelFormat( profileDesc.find( avtranscoder::Profile::avProfilePixelFormat )->second ) );
 			imageDesc.setPixel( pixel );
 			
-			_outputStreamVideo.setProfile( _presets.getProfile( presetName ), imageDesc );
+			avtranscoder::VideoDesc videoDesc( profileDesc.find( avtranscoder::Profile::avProfileCodec )->second );
+			videoDesc.setImageParameters( imageDesc );
+			
+			_dummyVideo.setVideoDesc( videoDesc );
+			
+			// the streamTranscoder is deleted by avTranscoder
+			avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, _presets.getProfile( presetName ) );
+			_transcoder->add( *stream );
 		}
-		
-		_outputFile->addVideoStream( _outputStreamVideo.getVideoDesc() );
 	}	
 	catch( std::exception& e )
 	{
@@ -851,10 +861,6 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 void AVWriterPlugin::cleanVideoAndAudio()
 {
 	_outputFile.reset();
-
-	// clean video
-	_rgbImage.reset();
-	_imageToEncode.reset();
 	
 	// clean audio
 	_transcoder.reset();
@@ -903,13 +909,6 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 {	
 	if( ! _initWrap || ! _initVideo )
 		return;
-	
-	// if video latency
-	avtranscoder::DataStream codedImage;
-	while( _outputStreamVideo.encodeFrame( codedImage ) )
-	{
-		_outputFile->wrap( codedImage, 0 );
-	}
 	
 	_outputFile->endWrap();
 }

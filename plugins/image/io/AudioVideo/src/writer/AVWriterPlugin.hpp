@@ -6,12 +6,11 @@
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
 #include <AvTranscoder/File/OutputFile.hpp>
-#include <AvTranscoder/EssenceStream/OutputVideo.hpp>
+#include <AvTranscoder/Transcoder/Transcoder.hpp>
+#include <AvTranscoder/EssenceStream/DummyVideo.hpp>
+#include <AvTranscoder/DatasStructures/Frame.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
 #include <AvTranscoder/Profile.hpp>
-#include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
-#include <AvTranscoder/Transcoder/Transcoder.hpp>
-#include <AvTranscoder/DatasStructures/Image.hpp>
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -130,14 +129,13 @@ public:
 	// metadata
 	std::vector<OFX::StringParam*> _paramMetadatas;
 	
+	// to process transcode
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
-	avtranscoder::OutputVideo _outputStreamVideo;
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
 	
 	// to process video
-	boost::scoped_ptr<avtranscoder::Image> _rgbImage; // Between gil and avTranscoder convert
-	boost::scoped_ptr<avtranscoder::Image> _imageToEncode; // Between avTranscoder convert and avTranscoder encode
-	avtranscoder::VideoEssenceTransform _colorTransform;
+	avtranscoder::Frame _videoFrame;
+	avtranscoder::DummyVideo _dummyVideo;
 	
 	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;
