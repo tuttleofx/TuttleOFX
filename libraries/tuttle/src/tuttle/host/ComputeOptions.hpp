@@ -21,12 +21,12 @@ class IProgressHandle
 public:
 	virtual ~IProgressHandle() = 0;
 
-	virtual void beginSequence() = 0;
-	virtual void beginFrame() = 0;
-	virtual void setupAtTime() = 0;
-	virtual void processAtTime() = 0;
-	virtual void endFrame() = 0;
-	virtual void endSequence() = 0;
+	virtual void beginSequence() {}
+	virtual void beginFrame() {}
+	virtual void setupAtTime() {}
+	virtual void processAtTime() {}
+	virtual void endFrame() {}
+	virtual void endSequence() {}
 };
 
 struct TimeRange
