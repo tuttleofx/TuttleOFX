@@ -116,6 +116,13 @@ public:
 	 * This will remove all the connections.
 	 */
 	void deleteNode( Node& node );
+	
+	/**
+	 * @brief Delete all nodes from the current graph.
+	 * This will remove all the connections.
+	 */
+	void clear();
+	
 	/**
 	 * @brief Connect nodes (using there unique name in this graph).
 	 */
