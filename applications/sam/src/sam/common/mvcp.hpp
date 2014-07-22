@@ -1,6 +1,7 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
+#include <tuttle/host/version.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -124,10 +125,11 @@ int sammvcp(int argc, char** argv)
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Formatter> formatter( Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 	
-	sequenceParser::EMaskOptions descriptionMask = sequenceParser::eMaskOptionsNone; // by default show nothing
+	sequenceParser::EDetection detectionOptions = (sequenceParser::eDetectionSequenceNeedAtLeastTwoFiles | sequenceParser::eDetectionIgnoreDotFile | sequenceParser::eDetectionSequenceFromFilename);
+	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayNone;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
@@ -150,15 +152,13 @@ int sammvcp(int argc, char** argv)
 	} EOffsetMode;
 	EOffsetMode offsetMode = eOffsetModeNotSet;
 
-	formatter->init_logging();
-	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
 			( kHelpOptionString,  kHelpOptionMessage )
 			( kOffsetOptionString,      bpo::value<std::ssize_t>(), kOffsetOptionMessage ) 
 			//		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" )
-			( kVerboseOptionString,     bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+			( kVerboseOptionString,     bpo::value<std::string>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 			( kQuietOptionString, kQuietOptionMessage )
 			( kInputFirstOptionString,  bpo::value<std::ssize_t>(), kInputFirstOptionMessage )
 			( kInputLastOptionString,   bpo::value<std::ssize_t>(), kInputLastOptionMessage )
@@ -238,9 +238,9 @@ int sammvcp(int argc, char** argv)
 	if( vm.count( kBriefOptionLongName ) )
 	{
 #ifndef SAM_MOVEFILES
-		TUTTLE_LOG_INFO( color->_green << "copy sequence(s) in a directory" << color->_std);
+		TUTTLE_COUT( color->_green << "copy sequence(s) in a directory" << color->_std);
 #else
-		TUTTLE_LOG_INFO( color->_green << "move sequence(s) in a directory" << color->_std );
+		TUTTLE_COUT( color->_green << "move sequence(s) in a directory" << color->_std );
 #endif
 		return 0;
 	}
@@ -251,35 +251,35 @@ int sammvcp(int argc, char** argv)
 		if( isPathSizeTooSmall && !vm.count( kHelpOptionLongName ) )
 			TUTTLE_LOG_ERROR( "Two sequences and/or directories must be specified." );
 		
-		TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
 #ifndef SAM_MOVEFILES
-		TUTTLE_LOG_INFO( color->_blue <<"NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-cp - copy sequence(s) in a directory" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
+		TUTTLE_COUT( color->_blue <<"NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-cp - copy sequence(s) in a directory" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
 #else
-		TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-mv - move sequence(s) in a directory" << color->_std);
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
+		TUTTLE_COUT( color->_blue << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-mv - move sequence(s) in a directory" << color->_std);
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << color->_std );
 #endif
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "DESCRIPTION" << color->_std );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "DESCRIPTION" << color->_std );
+		TUTTLE_COUT( "" );
 #ifndef SAM_MOVEFILES
-		TUTTLE_LOG_INFO( "Copy sequence of image files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_COUT( "Copy sequence of image files, and could remove trees (folder, files and sequences)." );
 #else
-		TUTTLE_LOG_INFO( "Move sequence of image files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_COUT( "Move sequence of image files, and could remove trees (folder, files and sequences)." );
 #endif
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue << "OPTIONS" << color->_std );
-		TUTTLE_LOG_INFO( mainOptions );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue << "OPTIONS" << color->_std );
+		TUTTLE_COUT( mainOptions );
 		/////Examples
 		
-		TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std << std::left );
+		TUTTLE_COUT( color->_blue << "EXAMPLES" << color->_std << std::left );
 		SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: " );
 		SAM_EXAMPLE_LINE_COUT ( "Auto-detect padding : ", "seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (usual style): ", "seq.########.jpg" );
@@ -317,7 +317,7 @@ int sammvcp(int argc, char** argv)
 	if( vm.count(kAllOptionLongName) )
 	{
 		// add .* files
-		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
+		detectionOptions &= ~sequenceParser::eDetectionIgnoreDotFile;
 	}
 	
 	if( vm.count(kOffsetOptionLongName) )
@@ -360,16 +360,8 @@ int sammvcp(int argc, char** argv)
 		offsetMode = eOffsetModeLastTime;
 	}
 	
-	switch( vm[ kVerboseOptionLongName ].as< int >() )
-	{
-		case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
-		case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
-		case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
-		case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
-		case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
-		case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-		default : formatter->setLogLevel( boost::log::trivial::warning ); break;
-	}
+	formatter->setLogLevel_string( vm[ kVerboseOptionLongName ].as<std::string>() );
+	
 	if( vm.count(kQuietOptionLongName) )
 	{
 		formatter->setLogLevel( boost::log::trivial::fatal );
@@ -400,11 +392,11 @@ int sammvcp(int argc, char** argv)
 		sequencePattern = "";
 	}
 
-	sequenceParser::Sequence dstSeq( dstPath, descriptionMask );
+	sequenceParser::Sequence dstSeq( dstPath, displayOptions );
 	
 	if( sequencePattern.size() > 0 )
 	{
-		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, sequenceParser::Sequence::ePatternAll );
+		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, sequenceParser::Sequence::ePatternAll );
 		if( !dstIsSeq ) // there is a pattern, but it's not valid.
 		{
 			TUTTLE_LOG_ERROR("Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." );
@@ -416,7 +408,7 @@ int sammvcp(int argc, char** argv)
 	{
 		BOOST_FOREACH( const bfs::path& srcPath, paths )
 		{
-			sequenceParser::Sequence srcSeq( srcPath.branch_path(), descriptionMask );
+			sequenceParser::Sequence srcSeq( srcPath.branch_path(), displayOptions );
 			const bool srcIsSeq = srcSeq.initFromDetection( srcPath.string(), sequenceParser::Sequence::ePatternDefault );
 			if( ! srcIsSeq )
 			{

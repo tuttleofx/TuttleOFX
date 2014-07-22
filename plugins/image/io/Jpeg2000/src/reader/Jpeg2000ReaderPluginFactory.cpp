@@ -40,6 +40,7 @@ void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
     desc.addSupportedExtension( "j2k" );
     //desc.addSupportedExtension( "jp2" );
     //desc.addSupportedExtension( "j2c" );
+	desc.setPluginEvaluation( 90 );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );

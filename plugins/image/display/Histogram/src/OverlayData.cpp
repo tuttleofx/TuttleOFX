@@ -13,10 +13,9 @@ namespace histogram {
  * Create a new empty data structure from scratch (data is null)
  * @param size : size of the current source clip (width*height) 
  */
-OverlayData::OverlayData( const OfxPointI& size, const int nbSteps, const int nbStepsCurvesFromSelection)
+OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
 : _currentTime( 0 )
 , _vNbStep( nbSteps )
-, _vNbStepCurveFromSelection( nbStepsCurvesFromSelection )
 , _isComputing( false )
 , _isDataInvalid( true )
 , _size( size )
@@ -158,29 +157,18 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 		return;
 	}
 	
-	//TUTTLE_TLOG_INFOS;
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, "computeHistogramBufferData - fetchImage " << time );
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
-	//TUTTLE_TLOG_INFOS;
-	
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getPixelRod(time, renderScale) );
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getCanonicalRod(time, renderScale) );
-	
-	// Compatibility tests
-	if( !src.get() ) // source isn't accessible
-	{
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage( time ) );
+	if( ! src.get() )
+	{	
 		_isComputing = false;
-		std::cout << "src is not accessible" << std::endl;
 		return;
 	}
-	
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getBounds() );
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getRegionOfDefinition() );
-
-	if( src->getRowDistanceBytes() == 0 )//if source is wrong
-	{
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+	if( src->getRowDistanceBytes() == 0 )
+	{	
+		_isComputing = false;
+		return;
 	}
+
 	OfxRectI srcPixelRod = clipSrc->getPixelRod( time, renderScale ); //get current RoD
 	if( (clipSrc->getPixelDepth() != OFX::eBitDepthFloat) ||
 		(!clipSrc->getPixelComponents()) )
@@ -249,17 +237,6 @@ void OverlayData::resetHistogramData()
  * Reset the data (all values to 0)
  * @param size size of the current source clip
  */
-void OverlayData::resetCurvesFromSelectionData()
-{
-	// Reset Histogram buffers
-	this->_curveFromSelection._step = _vNbStepCurveFromSelection;
-	this->resetHistogramBufferData(this->_curveFromSelection);
-}
-
-/**
- * Reset the data (all values to 0)
- * @param size size of the current source clip
- */
 void OverlayData::resetHistogramSelectionData()
 {
 	//Reset Histogram selection buffers
@@ -312,71 +289,6 @@ bool OverlayData::isCurrentTimeModified(const OfxTime time) const
 {
 		return( _currentTime != time );
 }	
-
-/**
- * Compute only curve from selection data (averages,histograms buffer and selection buffer)
- * @param clipSrc	source of the plugin
- * @param time	current time
- * @param renderScale	current renderScale
- */
-void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale)
-{
-	_isComputing = true;
-
-	resetCurvesFromSelectionData();
-	
-	if( ! clipSrc->isConnected() )
-	{	
-		_isComputing = false;
-		return;
-	}
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_currentTime, clipSrc->getCanonicalRod(_currentTime)) );	//scoped pointer of current source clip
-
-	// Compatibility tests
-	if( !src.get() ) // source isn't accessible
-	{
-		_isComputing = false;
-		std::cout << "src is not accessible" << std::endl;
-		return;
-	}
-
-	if( src->getRowDistanceBytes() == 0 )//if source is wrong
-	{
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	}
-	OfxRectI srcPixelRod = clipSrc->getPixelRod( _currentTime, renderScale ); //get current RoD
-	if( (clipSrc->getPixelDepth() != OFX::eBitDepthFloat) ||
-		(!clipSrc->getPixelComponents()) )
-	{
-		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
-        return;
-	}
-
-	if( srcPixelRod != src->getBounds() )
-	{
-		// the host does bad things !
-		// remove overlay... but do not crash.
-		TUTTLE_LOG_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
-		return;
-	}
-	
-	// Compute if source is OK
-	SView srcView = tuttle::plugin::getGilView<SView>( src.get(), srcPixelRod, eImageOrientationIndependant );	// get current view from source clip
-	
-	OfxPointI imgSize;
-	imgSize.x = srcView.width();
-	imgSize.y = srcView.height();
-	
-	if( isImageSizeModified( imgSize ) )
-	{
-		clearAll( imgSize );
-	}
-	//Compute histogram buffer
-	Pixel_compute_histograms funct( _imgBool,_curveFromSelection, true);			//functor declaration
-	terry::algorithm::transform_pixels( srcView, funct );		//(USED functor reference)
-	
-	this->correctHistogramBufferData(_curveFromSelection);				//correct Histogram data to make up for discretization (average)
-}
 
 }
 }

@@ -1,6 +1,8 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
+#include <tuttle/host/version.hpp>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -132,40 +134,39 @@ void printImageProperties( std::string path )
 			case 7                     : interlaceType = "PNG interlacing"; break; // PNGInterlace
 		}
 
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "width"                 << image->columns                                                                         );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "height"                << image->rows                                                                            );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"             << image->depth  << " bits"                                                               );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"   << image->quality                                                                         );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "image type"            << imageType                                                                              );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"          << image->x_resolution  << resolutionType                                                 );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"          << image->y_resolution  << resolutionType                                                 );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"           << interlaceType                                                                          );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		//TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "format"                << image->format()                                                                        );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "channels"              << colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" )  );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "color space"           << colorSpaceType                                                                         );
-		TUTTLE_LOG_INFO( std::setw(FIRST_COLUMN_WIDTH) << "gamma"                 << image->gamma                                                                           );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "width"                 << image->columns                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "height"                << image->rows                                                                            );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"             << image->depth  << " bits"                                                               );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"   << image->quality                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "image type"            << imageType                                                                              );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"          << image->x_resolution  << resolutionType                                                 );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"          << image->y_resolution  << resolutionType                                                 );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"           << interlaceType                                                                          );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
+		//TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "format"                << image->format()                                                                        );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "channels"              << colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" )  );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "color space"           << colorSpaceType                                                                         );
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "gamma"                 << image->gamma                                                                           );
 
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( "" );
 	}
 	catch( ... )
 	{
-		TUTTLE_LOG_ERROR( "Caught exception" << "\n" );
+		TUTTLE_LOG_ERROR( "Caught exception\n" );
 	}
-	
 }
 
 void dumpImageProperties( const sequenceParser::File& s )
 {
-	TUTTLE_LOG_INFO(s);
+	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFilename() );
 	sam::wasSthgDumped = true;
 }
 
 void dumpImageProperties( const sequenceParser::Sequence& s )
 {
-	TUTTLE_LOG_INFO(s);
+	TUTTLE_COUT(s);
 	printImageProperties( s.getAbsoluteFirstFilename() );
 	sam::wasSthgDumped = true;
 }
@@ -173,14 +174,20 @@ void dumpImageProperties( const sequenceParser::Sequence& s )
 
 void dumpImageProperties( boost::ptr_vector<sequenceParser::FileObject>& listing )
 {
-	BOOST_FOREACH( const sequenceParser::FileObject& sequence, listing )
+	BOOST_FOREACH( const sequenceParser::FileObject& item, listing )
 	{
-		switch( sequence.getMaskType () )
+		switch( item.getType() )
 		{
-			case sequenceParser::eMaskTypeSequence	: dumpImageProperties( static_cast<const sequenceParser::Sequence&>( sequence ) ); break;
-			case sequenceParser::eMaskTypeFile		: dumpImageProperties( static_cast<const sequenceParser::File&>( sequence ) ); break;
-			case sequenceParser::eMaskTypeDirectory	: break;
-			case sequenceParser::eMaskTypeUndefined	: break;
+			case sequenceParser::eTypeSequence:
+				dumpImageProperties( static_cast<const sequenceParser::Sequence&>( item ) );
+				break;
+			case sequenceParser::eTypeFile:
+				dumpImageProperties( static_cast<const sequenceParser::File&>( item ) );
+				break;
+			case sequenceParser::eTypeFolder:
+			case sequenceParser::eTypeUndefined:
+			case sequenceParser::eTypeAll:
+				break;
 		}
 	}
 	listing.clear();
@@ -194,18 +201,17 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Formatter> formatter( Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 
-	sequenceParser::EMaskType researchMask       = sequenceParser::eMaskTypeSequence; // by default show sequences
-	sequenceParser::EMaskOptions descriptionMask = sequenceParser::eMaskOptionsColor; // by default show nothing
+	sequenceParser::EType filterByType = sequenceParser::eTypeSequence; // by default show sequences
+	sequenceParser::EDetection detectionOptions = (sequenceParser::eDetectionSequenceNeedAtLeastTwoFiles | sequenceParser::eDetectionIgnoreDotFile | sequenceParser::eDetectionSequenceFromFilename);
+	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayColor;
 	bool recursiveListing = false;
-	std::string availableExtensions;
+	int returnCode = 0;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
-	formatter->init_logging();
-	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
@@ -216,7 +222,7 @@ int main( int argc, char** argv )
 		( kIgnoreOptionString,     kIgnoreOptionMessage )
 		( kPathOptionString,       kPathOptionMessage )
 		( kRecursiveOptionString,  kRecursiveOptionMessage )
-		( kVerboseOptionString,    bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+		( kVerboseOptionString,    bpo::value<std::string>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 		( kQuietOptionString,      kQuietOptionMessage )
 		( kColorOptionString,      kColorOptionMessage )
 		( kFirstImageOptionString, bpo::value<unsigned int>(), kFirstImageOptionMessage )
@@ -291,26 +297,26 @@ int main( int argc, char** argv )
 
 	if( vm.count( kHelpOptionLongName ) )
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-info - get informations about a sequence" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-info [options] [sequences]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION\n" << color->_std );
-		TUTTLE_LOG_INFO( "Print informations from Sequence (or file) like resolution, colorspace, etc." );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std);
-		TUTTLE_LOG_INFO( mainOptions );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-info - get informations about a sequence" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-info [options] [sequences]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "DESCRIPTION\n" << color->_std );
+		TUTTLE_COUT( "Print informations from Sequence (or file) like resolution, colorspace, etc." );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "OPTIONS" << color->_std);
+		TUTTLE_COUT( mainOptions );
+		TUTTLE_COUT( "" );
 		return 0;
 	}
 
 	if ( vm.count(kBriefOptionLongName) )
 	{
-		TUTTLE_LOG_INFO( color->_green << "get informations about a sequence" << color->_std );
+		TUTTLE_COUT( color->_green << "get informations about a sequence" << color->_std );
 		return 0;
 	}
 
@@ -321,29 +327,21 @@ int main( int argc, char** argv )
 
 	if (vm.count(kDirectoriesOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
+		filterByType |= sequenceParser::eTypeFolder;
 	}
 
 	if (vm.count(kFilesOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeFile;
+		filterByType |= sequenceParser::eTypeFile;
 	}
 
 	if (vm.count(kIgnoreOptionLongName))
 	{
-		researchMask &= ~sequenceParser::eMaskTypeSequence;
+		filterByType &= ~sequenceParser::eTypeSequence;
 	}
 
-	switch( vm[ kVerboseOptionLongName ].as< int >() )
-	{
-		case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
-		case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
-		case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
-		case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
-		case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
-		case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-		default : formatter->setLogLevel( boost::log::trivial::warning ); break;
-	}
+	formatter->setLogLevel_string( vm[ kVerboseOptionLongName ].as<std::string>() );
+	
 	if( vm.count(kQuietOptionLongName) )
 	{
 		formatter->setLogLevel( boost::log::trivial::fatal );
@@ -361,20 +359,20 @@ int main( int argc, char** argv )
 
 	if (vm.count(kFullRMPathOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
-		researchMask |= sequenceParser::eMaskTypeFile;
-		researchMask |= sequenceParser::eMaskTypeSequence;
+		filterByType |= sequenceParser::eTypeFolder;
+		filterByType |= sequenceParser::eTypeFile;
+		filterByType |= sequenceParser::eTypeSequence;
 	}
 
 	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
-		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
+		detectionOptions &= ~sequenceParser::eDetectionIgnoreDotFile;
 	}
 
 	if (vm.count(kPathOptionLongName))
 	{
-		 descriptionMask |= sequenceParser::eMaskOptionsPath;
+		 displayOptions |= sequenceParser::eDisplayPath;
 	}
 
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -396,19 +394,15 @@ int main( int argc, char** argv )
 // 	TUTTLE_LOG_TRACE( "research mask = " << researchMask );
 // 	TUTTLE_LOG_TRACE( "options  mask = " << descriptionMask );
 
-
 	try
 	{
-		std::vector<boost::filesystem::path> pathsNoRemoved;
-		
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-//			TUTTLE_LOG_TRACE( "path: "<< path );
+//			TUTTLE_LOG_TRACE( "------> " << path );
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )
 				{
-//					TUTTLE_LOG_TRACE( "is a directory" );
 					if( recursiveListing )
 					{
 						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
@@ -416,37 +410,53 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 //								TUTTLE_LOG_TRACE *dir );
-								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path)*dir ).string() , filters, researchMask, descriptionMask );
+								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path)*dir ).string() , filters, filterByType, detectionOptions, displayOptions );
 								dumpImageProperties( listing );
 							}
 						}
 					}
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
-					dumpImageProperties( listing );
+					else
+					{
+						boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, filterByType, detectionOptions, displayOptions );
+						dumpImageProperties( listing );
+					}
 				}
 				else
 				{
-					if( std::strcmp( path.branch_path().string().c_str(),"" ) == 0 )
-						path = "."/path.leaf();
-					//TUTTLE_LOG_TRACE( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
-					filters.push_back( path.leaf().string() );
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
+					// Filter by the filename
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory(
+							path.string(), filters,
+							sequenceParser::eTypeAll,
+							detectionOptions, displayOptions );
 					dumpImageProperties( listing );
-					filters.pop_back( );
 				}
 			}
 			else
 			{
-//				TUTTLE_LOG_TRACE( "not exist ...." );
 				try
 				{
-					sequenceParser::Sequence s(path.branch_path(), descriptionMask );
-					s.initFromDetection( path.string(), sequenceParser::Sequence::ePatternDefault );
-					if( s.getNbFiles() )
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory(
+							path.string(), filters,
+							sequenceParser::eTypeAll,
+							detectionOptions, displayOptions );
+					if( listing.empty() )
 					{
-						//TUTTLE_LOG_TRACE(s);
-						dumpImageProperties( s );
+//						const bool isPattern = boost::algorithm::contains( pattern, boost::is_any_of("#@*?") );
+						std::string pattern = path.leaf().string();
+						std::vector<std::string> tmp;
+						boost::split( tmp, pattern, boost::is_any_of("#@*?") );
+						const bool isPattern = tmp.size() != 1;
+						if( isPattern )
+						{
+							TUTTLE_LOG_ERROR( "Pattern \"" << pattern << "\" not found." );
+						}
+						else
+						{
+							TUTTLE_LOG_ERROR( "File \"" << pattern << "\" not found." );
+						}
+						++returnCode;
 					}
+					dumpImageProperties( listing );
 				}
 				catch(... )
 				{
@@ -463,12 +473,7 @@ int main( int argc, char** argv )
 	{
 		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
 	}
-	
-	if( !wasSthgDumped )
-	{
-		TUTTLE_LOG_ERROR( "No sequence found here." );
-	}
-	
-	return 0;
+
+	return returnCode;
 }
 

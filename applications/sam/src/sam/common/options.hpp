@@ -1,13 +1,13 @@
-#ifndef OPTIONS_HPP_
-#define OPTIONS_HPP_
+#ifndef _SAM_OPTIONS_HPP_
+#define _SAM_OPTIONS_HPP_
 
 namespace sam {
 
 #define SAM_HELP_MARGING 35
-#define SAM_EXAMPLE_TITLE_COUT( ... )   TUTTLE_LOG_INFO( std::endl << color->_yellow << "  " << __VA_ARGS__ << color->_std );
-#define SAM_EXAMPLE_LINE_COUT( x, ... ) TUTTLE_LOG_INFO( color->_green << "    " << std::setw(SAM_HELP_MARGING) << x << __VA_ARGS__ << color->_std );
+#define SAM_EXAMPLE_TITLE_COUT( ... )   TUTTLE_COUT( std::endl << color->_yellow << "  " << __VA_ARGS__ << color->_std );
+#define SAM_EXAMPLE_LINE_COUT( x, ... ) TUTTLE_COUT( color->_green << "    " << std::setw(SAM_HELP_MARGING) << x << __VA_ARGS__ << color->_std );
 
-static const char* const kUrlTuttleofxProject = "http://sites.google.com/site/tuttleofx";
+static const char* const kUrlTuttleofxProject = "http://www.tuttleofx.org";
 
 /// options with short-cut
 
@@ -30,7 +30,7 @@ static const char* const kCommandsOptionMessage = "show list of all available sa
 static const char* const kDirectoriesOptionLongName = "directories";
 static const char* const kDirectoriesOptionString = "directories,d";
 static const char* const kDirectoriesOptionMessage = "handle directories";
-//
+
 //-e, --expression
 static const char* const kExpressionOptionLongName = "expression";
 static const char* const kExpressionOptionString = "expression,e";
@@ -50,12 +50,6 @@ static const char* const kFilterOptionMessage = "filtering the output for resear
 static const char* const kHelpOptionLongName = "help";
 static const char* const kHelpOptionString = "help,h";
 static const char* const kHelpOptionMessage = "display help";
-/*
- * options.hpp
- *
- *  Created on: Apr 16, 2012
- *      Author: mfe
- */
 
 //-i, --input
 static const char* const kInputOptionLongName = "input";
@@ -115,7 +109,8 @@ static const char* const kVersionOptionMessage = "display version";
 //-V, --verbose
 static const char* const kVerboseOptionLongName = "verbose";
 static const char* const kVerboseOptionString =  "verbose,V";
-static const char* const kVerboseOptionMessage = "verbose level (trace=0, debug=1, warning=2, error=3, fatal=4)";
+static const char* const kVerboseOptionMessage = "verbose level (trace=0, debug=1, info=2, warning=3, error=4, fatal=5)";
+static const char* const kVerboseOptionDefaultValue = "warning";
 
 /// options without short-cut
 
@@ -316,7 +311,7 @@ static const char* const kRenderScaleOptionMessage = "specify render scale";
 
 //--script
 static const char* const kScriptOptionLongName = "script";
-static const char* const kScriptOptionString = kScriptOptionLongName;
+static const char* const kScriptOptionString = "script,S";
 static const char* const kScriptOptionMessage = "format the output such as it could be dump in a file and be used as a script";
 
 }

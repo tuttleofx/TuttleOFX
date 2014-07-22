@@ -392,7 +392,7 @@ struct File : virtual public Value
 {
 	File()
 	{}
-	File( const std::string path )
+	File( const std::string& path )
 	{
 		*this << user("File error.");
 		*this << filename(path);
@@ -400,13 +400,13 @@ struct File : virtual public Value
 };
 
 /**
- * @brief File doesn't exists.
+ * @brief File doesn't exist.
  */
 struct FileNotExist : virtual public File
 {
 	FileNotExist()
 	{}
-	FileNotExist( const std::string path )
+	FileNotExist( const std::string& path )
 	{
 		*this << user("No such file.");
 		*this << filename(path);
@@ -414,13 +414,27 @@ struct FileNotExist : virtual public File
 };
 
 /**
- * @brief File In a sequence doesn't exists.
+ * @brief File already exists.
+ */
+struct FileExist : virtual public File
+{
+	FileExist()
+	{}
+	FileExist( const std::string& path )
+	{
+		*this << user("File already exists.");
+		*this << filename(path);
+	}
+};
+
+/**
+ * @brief File in sequence doesn't exist.
  */
 struct FileInSequenceNotExist : virtual public File
 {
 	FileInSequenceNotExist()
 	{}
-	FileInSequenceNotExist( const std::string path )
+	FileInSequenceNotExist( const std::string& path )
 	{
 		*this << user("No such file.");
 		*this << filename(path);
@@ -428,13 +442,13 @@ struct FileInSequenceNotExist : virtual public File
 };
 
 /**
- * @brief Directory doesn't exists.
+ * @brief Directory doesn't exist.
  */
 struct NoDirectory : virtual public File
 {
 	NoDirectory()
 	{}
-	NoDirectory( const std::string path )
+	NoDirectory( const std::string& path )
 	{
 		*this << user("No such directory.");
 		*this << filename(path);
@@ -448,13 +462,17 @@ struct ReadOnlyFile : virtual public File
 {
 	ReadOnlyFile()
 	{}
-	ReadOnlyFile( const std::string path )
+	ReadOnlyFile( const std::string& path )
 	{
 		*this << user("Read-only file.");
 		*this << filename(path);
 	}
 };
 /// @}
+
+std::string format_exception_message( const ::boost::exception& e );
+std::string format_exception_info( const ::boost::exception& e );
+std::string format_current_exception();
 
 }
 }

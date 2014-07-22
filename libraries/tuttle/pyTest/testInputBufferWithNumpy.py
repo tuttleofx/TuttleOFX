@@ -1,14 +1,17 @@
-# scons: Png Component Merge
+# scons: pluginPng pluginComponent pluginMerge
 
 from pyTuttle import tuttle
-from nose.tools import *
-from tempfile import *
+import tempfile
 
 import numpy
-import Image
+from PIL import Image
+
+from nose.tools import *
+
 
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testInputBuffer_loadImageWithPIL():
 	"""
@@ -21,7 +24,7 @@ def testInputBuffer_loadImageWithPIL():
 	img = numpy.asarray(Image.open('TuttleOFX-data/image/jpeg/MatrixLarge.jpg'))
 	ib.set3DArrayBuffer( img )
 
-	filepath = NamedTemporaryFile( prefix="inputBufferWithNumpyTest-", suffix=".png" )
+	filepath = tempfile.NamedTemporaryFile( prefix="inputBufferWithNumpyTest-", suffix=".png" )
 	w = g.createNode("tuttle.pngwriter", filename=filepath.name )
 
 	g.connect( ib.getNode(), w )
@@ -39,7 +42,7 @@ def testInputBuffer_generateImageBufferWithNumpy():
 	x = numpy.array([[.9, .1, .9], [.8, .2, .9]], numpy.float32)
 	ib.set2DArrayBuffer( x )
 
-	filepath = NamedTemporaryFile( prefix="inputBufferWithNumpyTest-", suffix=".png" )
+	filepath = tempfile.NamedTemporaryFile( prefix="inputBufferWithNumpyTest-", suffix=".png" )
 	w = g.createNode("tuttle.pngwriter", filename=filepath.name )
 
 	g.connect( ib.getNode(), w )
@@ -63,7 +66,7 @@ def testInputBuffer_MergeInputBufferNodes():
 
 	c = g.createNode("tuttle.component", to="rgb")
 	m = g.createNode("tuttle.merge", mergingFunction="average", rod="union")
-	filepath = NamedTemporaryFile( prefix="inputBufferWithNumpyTest-", suffix=".png" )
+	filepath = tempfile.NamedTemporaryFile( prefix="inputBufferWithNumpyTest-", suffix=".png" )
 	w = g.createNode("tuttle.pngwriter", filename=filepath.name )
 
 	g.connect( ib.getNode(), c )
@@ -74,3 +77,4 @@ def testInputBuffer_MergeInputBufferNodes():
 	# @todo: fix this test, it doesn't work.
 	#        Maybe a bug on the host side.
 	#g.compute( w )
+

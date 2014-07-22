@@ -1,0 +1,18 @@
+incdir_qt4 = '/usr/include/qt4'
+incdir_half = '/usr/include/OpenEXR'
+incdir_ilmbase = incdir_half
+incdir_freetype = '/usr/include/freetype2'
+
+lib_imagemagick = 'MagickCore-6.Q16'
+incdir_imagemagick = '/usr/include/ImageMagick-6'
+
+lib_freeglut = 'glut'
+
+lib_python = 'python2.7'
+incdir_python = [
+        join( '/usr/include', lib_python ),
+        join( '/usr/lib', lib_python, 'site-packages/numpy/core/include' ),
+        join( '/usr/lib64', lib_python, 'site-packages/numpy/core/include' ),
+]
+
+

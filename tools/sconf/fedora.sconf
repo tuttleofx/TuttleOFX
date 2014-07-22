@@ -1,7 +1,10 @@
 ## use system libraries
 incdir_openexr = '/usr/include/OpenEXR'
 incdir_freetype = '/usr/include/freetype2'
-incdir_imagemagick = '/usr/include/ImageMagick'
+
+lib_imagemagick = 'MagickCore-6.Q16'
+incdir_imagemagick = '/usr/include/ImageMagick-6'
+
 lib_python = 'python2.7'
 incdir_python = '/usr/include/python2.7'
 

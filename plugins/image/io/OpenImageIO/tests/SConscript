@@ -4,7 +4,10 @@ project.UnitTest(
 	dirs = ['.'],
 	libraries = [
 		libs.tuttleTest,
-		libs.openimageio,
+		],
+	execLibraries = [
+		libs.pluginOpenImageIO,
+		libs.pluginConstant,
 		],
 	)
 

@@ -1,8 +1,9 @@
-Import( 'project', 'libs' )
+Import('project', 'libs')
 
 project.createOfxPlugin(
-	dirs = ['src'],
-	libraries = [
+	dirs=['src'],
+	includes=['src'],
+	libraries=[
 		libs.tuttlePlugin,
 		libs.openexr,
 		libs.boost_gil,

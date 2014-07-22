@@ -70,6 +70,9 @@ public:
 	attribute::ClipImage&       getClip( const std::string& name, const bool acceptPartialName = false )       { return dynamic_cast<attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
 	const attribute::ClipImage& getClip( const std::string& name, const bool acceptPartialName = false ) const { return dynamic_cast<const attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name, acceptPartialName ) ); }
 
+	attribute::ClipImage&       getOutputClip()       { return getClip( kOfxImageEffectOutputClipName ); }
+	const attribute::ClipImage& getOutputClip() const { return getClip( kOfxImageEffectOutputClipName ); }
+	
 	attribute::Attribute& getAttribute( const std::string& name ) { return getClip( name ); }
 	attribute::Attribute& getSingleInputAttribute();
 
@@ -132,7 +135,7 @@ public:
 
 	/// get default output fielding. This is passed into the clip prefs action
 	/// and  might be mapped (if the host allows such a thing)
-	const std::string& getDefaultOutputFielding() const;
+	inline const std::string& getDefaultOutputFielding() const { return _defaultOutputFielding; }
 
 	/**
 	 * @return 1 to abort processing
@@ -259,7 +262,7 @@ public:
 	                        OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 private:
-	void checkClipsConnections() const;
+	void checkClipsConnected() const;
 
 	void initComponents();
 	void initInputClipsPixelAspectRatio();
@@ -270,7 +273,11 @@ private:
 	void maximizeBitDepthFromReadsToWrites();
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;
-	void validBitDepthConnections() const;
+	void validInputClipsConnections() const;
+
+	/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
+	std::string _defaultOutputFielding;
+
 };
 
 }

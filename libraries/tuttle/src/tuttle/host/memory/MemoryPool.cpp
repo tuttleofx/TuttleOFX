@@ -260,21 +260,20 @@ void MemoryPool::clearOne()
 {
 	/// @todo tuttle
 }
-/*
+
 std::ostream& operator<<( std::ostream& os, const MemoryPool& memoryPool )
 {
-	os << "[Memory Pool] Used data:             " << memoryPool._dataUsed.size() << " bytes";
-	os << "[Memory Pool] Unused data:           " << memoryPool.getDataUnusedSize() << " bytes";
-	os << "[Memory Pool] All datas:             " << memoryPool.getDataUsedSize() << " bytes";
-	os << "[Memory Pool] Memory authorized:     " << memoryPool.updateMemoryAuthorizedWithRAM() << " bytes";
-	os << "";
-	os << "[Memory Pool] Used memory:           " << memoryPool.getUsedMemorySize() << " bytes";
-	os << "[Memory Pool] Allocated memory:      " << memoryPool.getAllocatedMemorySize() << " bytes";
-	os << "[Memory Pool] Max memory:            " << memoryPool.getMaxMemorySize() << " bytes";
-	os << "[Memory Pool] Available memory size: " << memoryPool.getAvailableMemorySize() << " bytes";
-	os << "[Memory Pool] Wasted memory:         " << memoryPool.getWastedMemorySize() << " bytes";
-	return ostream;
-}*/
+	os << "[Memory Pool] Unused data:           " << memoryPool.getDataUnusedSize() << " bytes\n";
+	os << "[Memory Pool] All datas:             " << memoryPool.getDataUsedSize() << " bytes\n";
+	os << "[Memory Pool] Total RAM:             " << getMemoryInfo()._totalRam << " bytes\n";
+	os << "\n";
+	os << "[Memory Pool] Used memory:           " << memoryPool.getUsedMemorySize() << " bytes\n";
+	os << "[Memory Pool] Allocated memory:      " << memoryPool.getAllocatedMemorySize() << " bytes\n";
+	os << "[Memory Pool] Max memory:            " << memoryPool.getMaxMemorySize() << " bytes\n";
+	os << "[Memory Pool] Available memory size: " << memoryPool.getAvailableMemorySize() << " bytes\n";
+	os << "[Memory Pool] Wasted memory:         " << memoryPool.getWastedMemorySize() << " bytes\n";
+	return os;
+}
 
 }
 }

@@ -2,7 +2,7 @@
 #define _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 
 #include "color.hpp"
-#include "formatters.hpp"
+#include "Formatter.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // System stuff
@@ -32,11 +32,26 @@
 #  define TUTTLE_FORCEINLINE inline
 #endif
 
+#define TUTTLE_COUT( ... ) std::cout << __VA_ARGS__ << std::endl
+
+
+#ifdef WITH_BOOST_LOG
+#define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
+
 #define TUTTLE_TRACE   BOOST_LOG_TRIVIAL(trace)
 #define TUTTLE_INFO    BOOST_LOG_TRIVIAL(info)
 #define TUTTLE_WARNING BOOST_LOG_TRIVIAL(warning)
 #define TUTTLE_ERROR   BOOST_LOG_TRIVIAL(error)
 #define TUTTLE_FATAL   BOOST_LOG_TRIVIAL(fatal)
+#else
+#define TUTTLE_LOG( MODE, ... ) TUTTLE_COUT(MODE << __VA_ARGS__)
+
+#define TUTTLE_TRACE   "Trace: "
+#define TUTTLE_INFO    "Info: "
+#define TUTTLE_WARNING "Warning: "
+#define TUTTLE_ERROR   "Error: "
+#define TUTTLE_FATAL   "Fatal: "
+#endif
 
 /**
  * @def   TUTTLE_INFOS
@@ -54,17 +69,15 @@
 
 
 /**
- * @param[in] ... : all parameters with an operator << defined
+ * @param[in] ... : all parameters with an output stream operator defined
  * @brief terminal display
  **/
 
-#define TUTTLE_LOG_TRACE( ... )   BOOST_LOG_TRIVIAL(trace) << __VA_ARGS__
-#define TUTTLE_LOG_INFO( ... )    BOOST_LOG_TRIVIAL(info)  << __VA_ARGS__
-#define TUTTLE_LOG_WARNING( ... ) BOOST_LOG_TRIVIAL(warning) << tuttle::common::Color::get()->_yellow << __VA_ARGS__ << tuttle::common::Color::get()->_std
-#define TUTTLE_LOG_ERROR( ... )   BOOST_LOG_TRIVIAL(error)   << tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std
-#define TUTTLE_LOG_FATAL( ... )   BOOST_LOG_TRIVIAL(fatal)   << tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std
-
-#define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
+#define TUTTLE_LOG_TRACE( ... )   TUTTLE_LOG( TUTTLE_TRACE, __VA_ARGS__ )
+#define TUTTLE_LOG_INFO( ... )    TUTTLE_LOG( TUTTLE_INFO, __VA_ARGS__ )
+#define TUTTLE_LOG_WARNING( ... ) TUTTLE_LOG( TUTTLE_WARNING, tuttle::common::Color::get()->_yellow << __VA_ARGS__ << tuttle::common::Color::get()->_std )
+#define TUTTLE_LOG_ERROR( ... )   TUTTLE_LOG( TUTTLE_ERROR, tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std )
+#define TUTTLE_LOG_FATAL( ... )   TUTTLE_LOG( TUTTLE_FATAL, tuttle::common::Color::get()->_error  << __VA_ARGS__ << tuttle::common::Color::get()->_std )
 
 #define TUTTLE_LOG_VAR( MODE, a )           TUTTLE_LOG( MODE, TUTTLE_GET_VAR ( a ) )
 #define TUTTLE_LOG_VAR2( MODE, a, b )       TUTTLE_LOG( MODE, TUTTLE_GET_VAR2( a, b ) )
@@ -89,6 +102,8 @@
 // They are removed in production mode.
 #ifndef TUTTLE_PRODUCTION
 	#define TUTTLE_TLOG TUTTLE_LOG
+	#define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE
+	#define TUTTLE_TLOG_INFO TUTTLE_LOG_INFO
 	#define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR
 	#define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2
 	#define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3
@@ -98,6 +113,8 @@
 	#define TUTTLE_TLOG_EXCEPTION TUTTLE_LOG_EXCEPTION
 #else
 	#define TUTTLE_TLOG TUTTLE_LOG_DEBUG
+	#define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE_DEBUG
+	#define TUTTLE_TLOG_INFO TUTTLE_LOG_INFO_DEBUG
 	#define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR_DEBUG
 	#define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2_DEBUG
 	#define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3_DEBUG

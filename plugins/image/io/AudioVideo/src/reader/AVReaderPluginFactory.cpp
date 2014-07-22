@@ -30,6 +30,9 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		"Audio Video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
+	av_register_all();
+	//av_log_set_level( AV_LOG_ERROR );
+
 	std::vector<std::string> supportedExtensions;
 	{
 		AVInputFormat* iFormat = av_iformat_next( NULL );
@@ -38,15 +41,36 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 			if( iFormat->extensions != NULL )
 			{
 				using namespace boost::algorithm;
-				const std::string extStr( iFormat->extensions );
+				std::string extStr( iFormat->extensions );
 				std::vector<std::string> exts;
+				split( exts, extStr, is_any_of(",") );
+				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
+
+				// name's format defines (in general) extensions
+				// require to fix extension in LibAV/FFMpeg to don't use it.
+				extStr = iFormat->name;
 				split( exts, extStr, is_any_of(",") );
 				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
 			}
 			iFormat = av_iformat_next( iFormat );
 		}
 	}
+
+	// Hack: Add basic video container extensions
+	// as some versions of LibAV doesn't declare properly all extensions...
+	supportedExtensions.push_back("mov");
+	supportedExtensions.push_back("avi");
+	supportedExtensions.push_back("mpg");
+	supportedExtensions.push_back("mkv");
+	supportedExtensions.push_back("flv");
+	supportedExtensions.push_back("m2ts");
 	
+	// sort / unique
+	std::sort(supportedExtensions.begin(), supportedExtensions.end());
+	supportedExtensions.erase(
+		std::unique(supportedExtensions.begin(), supportedExtensions.end()),
+		supportedExtensions.end() );
+
 	desc.setDescription( "Video reader based on LibAV library\n\n"
 			"Supported extensions: \n" +
 			boost::algorithm::join( supportedExtensions, ", " )
@@ -63,6 +87,7 @@ void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
+	desc.setPluginEvaluation( 30 );
 	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );

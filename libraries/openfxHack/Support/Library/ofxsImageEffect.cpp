@@ -641,6 +641,12 @@ void ImageEffectDescriptor::addSupportedExtensions( const std::vector<std::strin
 	}
 }
 
+void ImageEffectDescriptor::setPluginEvaluation( double evaluation )
+{
+	// This property is an extension, so it's optional.
+	_effectProps.propSetDouble( kTuttleOfxImageEffectPropEvaluation, evaluation, false );
+}
+
 /** @brief Is the plugin single instance only ? */
 void ImageEffectDescriptor::setSingleInstance( bool v )
 {
@@ -1233,6 +1239,12 @@ ImageEffect::~ImageEffect()
 		iter->second = NULL;
 	}
 	}
+}
+
+/// name of the imageEffect
+const std::string& ImageEffect::getName() const
+{
+	return getPropertySet().propGetString( kOfxPropName );
 }
 
 /** @brief the context this effect was instantiate in */
@@ -2064,11 +2076,12 @@ bool isIdentityAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, OFX
 	double identityTime = args.time;
 	bool v              = effectInstance->isIdentity( args, identityClip, identityTime );
 
-	if( v && identityClip )
+	if( v )
 	{
-	outArgs.propSetString( kOfxPropName, identityClip->name() );
-	outArgs.propSetDouble( kOfxPropTime, identityTime );
-	return true;
+		// This is not possible to put an empty clip in the OpenFX standard, but it's allowed in TuttleOFX.
+		outArgs.propSetString( kOfxPropName, identityClip ? identityClip->name() : "" );
+		outArgs.propSetDouble( kOfxPropTime, identityTime );
+		return true;
 	}
 	return false;
 }
@@ -2644,6 +2657,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	}
 	catch( boost::exception& e )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << tuttle::common::Color::get()->_error;
 		std::cerr << "__________" << std::endl;
 		/*
@@ -2664,7 +2678,6 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 			std::cerr << "filename: \"" << *filenameException << "\"" << std::endl;
 		}
 
-	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "__________" << std::endl;
 		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
 	#ifndef BOOST_EXCEPTION_DISABLE
@@ -2674,10 +2687,10 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		std::cerr << "----------" << std::endl;
 		std::cerr << "* Backtrace" << std::endl;
 		std::cerr << boost::trace(e);
-	#endif
 		std::cerr << "__________" << std::endl;
 		std::cerr << tuttle::common::Color::get()->_std;
-		
+	#endif
+
 		/// @todo there is an assert in boost::get_error_info here. Why?
 		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )
 		{
@@ -2692,28 +2705,36 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
+	#endif
 		stat = e.status();
 	}
 
 	// catch host inadequate exceptions
 	catch( OFX::Exception::HostInadequate& e )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "Caught OFX::Exception::HostInadequate (" << e.what() << ")" << std::endl;
+	#endif
 		stat = kOfxStatErrMissingHostFeature;
 	}
 
 	// catch exception due to a property being unknown to the host, implies something wrong with host if not caught further down
 	catch( OFX::Exception::PropertyUnknownToHost& e )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" << std::endl;
+	#endif
 		stat = kOfxStatErrMissingHostFeature;
 	}
 
 	// catch memory
 	catch( std::bad_alloc& e )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "Caught std::bad_alloc (" << e.what() << ")" << std::endl;
+	#endif
 		stat = kOfxStatErrMemory;
 	}
 
@@ -2721,7 +2742,9 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	#ifdef OFX_CLIENT_EXCEPTION_TYPE
 	catch( OFX_CLIENT_EXCEPTION_TYPE& e )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" << std::endl;
+	#endif
 		stat = OFX_CLIENT_EXCEPTION_HANDLER( e, plugname );
 	}
 	#endif
@@ -2729,14 +2752,18 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	// catch all exceptions
 	catch( std::exception& e )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
+	#endif
 		stat = kOfxStatFailed;
 	}
 
 	// Catch anything else, unknown
 	catch( ... )
 	{
+	#ifndef TUTTLE_PRODUCTION
 		std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
+	#endif
 		stat = kOfxStatFailed;
 	}
 

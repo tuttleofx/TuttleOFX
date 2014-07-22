@@ -1,16 +1,19 @@
-# scons: Checkerboard Blur Png
+# scons: pluginCheckerboard pluginBlur pluginPng
 
-from pyTuttle.tuttle import *
+from pyTuttle import tuttle
+
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
+
 
 def testCheckerBlurWrite():
 
-	g = Graph()
+	g = tuttle.Graph()
 	read = g.createNode( "tuttle.checkerboard", size=[20,20] )
 	blur = g.createNode( "tuttle.blur", size=[0.03, 0.05] )
 	write = g.createNode( "tuttle.pngwriter", filename=".tests/output.png" )
 
 	g.connect( [read, blur, write] )
 	g.compute( write )
+

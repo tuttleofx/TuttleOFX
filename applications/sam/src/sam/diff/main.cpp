@@ -266,7 +266,7 @@ void displayHelp(bpo::options_description &desc)
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 	TUTTLE_LOG_INFO( "" );
 	TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std);
 	TUTTLE_LOG_INFO( color->_green << "\tsam-diff - compute difference between 2 images/sequences" << color->_std );
@@ -303,7 +303,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Formatter> formatter( Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 
     try {
@@ -318,15 +318,13 @@ int main( int argc, char** argv )
         bpo::options_description desc;
         bpo::options_description hidden;
 
-		formatter->init_logging();
-		
 		desc.add_options()
 				( kHelpOptionString,   kHelpOptionMessage )
 				( kReaderOptionString, bpo::value(&nodeId), kReaderOptionMessage )
 				( kInputOptionString,  bpo::value(&inputs), kInputOptionMessage )
 				( kRangeOptionString,  bpo::value(&range)->multitoken(), kRangeOptionMessage )
 				( kGeneratorArgsOptionString, bpo::value(&generator)->multitoken(),  kGeneratorArgsOptionMessage )
-				( kVerboseOptionString,       bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+				( kVerboseOptionString, bpo::value<std::string>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 				( kQuietOptionString,  kQuietOptionMessage )
 				( kBriefOptionString,  kBriefOptionMessage )
 				( kColorOptionString,  kColorOptionMessage )
@@ -371,16 +369,8 @@ int main( int argc, char** argv )
 			script = true;
 		}
 		
-		switch( vm[ kVerboseOptionLongName ].as< int >() )
-		{
-			case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
-			case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
-			case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
-			case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
-			case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
-			case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-			default : formatter->setLogLevel( boost::log::trivial::warning ); break;
-		}
+		formatter->setLogLevel_string( vm[ kVerboseOptionLongName ].as<std::string>() );
+		
 		if( vm.count(kQuietOptionLongName) )
 		{
 			formatter->setLogLevel( boost::log::trivial::fatal );
@@ -406,7 +396,7 @@ int main( int argc, char** argv )
 
         if( vm.count( kBriefOptionLongName ) )
 		{
-            TUTTLE_LOG_INFO( color->_green << "diff image files" << color->_std );
+            TUTTLE_COUT( color->_green << "diff image files" << color->_std );
             return 0;
         }
 
@@ -510,21 +500,21 @@ int main( int argc, char** argv )
 					 fObjects = fileObjectsInDir( path );
 					 BOOST_FOREACH( const boost::shared_ptr<FileObject> fObj, fObjects )
 					 {
-					 switch( fObj->getMaskType() )
+					 switch( fObj->getType() )
 					 {
-					 case eMaskTypeSequence:
+					 case eTypeSequence:
 					 {
 					 diffSequence( read1, read2, stat, graph, dynamic_cast<const Sequence&>( *fObj ) );
 					 break;
 					 }
-					 case eMaskTypeFile:
+					 case eTypeFile:
 					 {
 					 const File fFile = dynamic_cast<const File&>( *fObj );
 					 diffFile( read1, read2, stat, graph, fFile.getAbsoluteFilename(), fFile.getAbsoluteFilename() );
 					 break;
 					 }
-					 case eMaskTypeDirectory:
-					 case eMaskTypeUndefined:
+					 case eTypeFolder:
+					 case eTypeUndefined:
 					 break;
 					 }
 					 }

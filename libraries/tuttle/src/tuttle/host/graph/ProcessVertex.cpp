@@ -11,14 +11,15 @@ namespace host {
 namespace graph {
 
 
-ProcessVertex::ProcessVertex( const std::string& name )
-: IVertex( name )
+ProcessVertex::ProcessVertex()
+: IVertex( "Undefined" )
+, _data( NULL )
 {
 }
 
-ProcessVertex::ProcessVertex( const UVertex& v )
-: IVertex( v )
-, _data( v.getProcessNode().getNodeType() )
+ProcessVertex::ProcessVertex( const ProcessVertexData& defaultVertexData, const std::string& name )
+: IVertex( name )
+, _data( defaultVertexData )
 {
 }
 
@@ -27,8 +28,6 @@ ProcessVertex::ProcessVertex( const ProcessVertex& v )
 , _data( v._data )
 {
 }
-
-
 
 std::ostream& ProcessVertex::exportDotDebug( std::ostream& os ) const
 {

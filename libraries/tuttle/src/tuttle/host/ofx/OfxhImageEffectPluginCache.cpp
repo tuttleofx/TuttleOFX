@@ -101,7 +101,7 @@ const std::vector<OfxhImageEffectPlugin*>& OfxhImageEffectPluginCache::getPlugin
 	return _plugins;
 }
 
-const std::map<std::string, OfxhImageEffectPlugin*>& OfxhImageEffectPluginCache::getPluginsByID() const
+const OfxhImageEffectPluginCache::MapPluginsByID& OfxhImageEffectPluginCache::getPluginsByID() const
 {
 	return _pluginsByID;
 }
@@ -120,12 +120,13 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	OfxhImageEffectPlugin& p = dynamic_cast<OfxhImageEffectPlugin&>( op );
 
-	OfxhPluginHandle plug( p, getHost() );
+	OfxhPluginLoadGuard plug( p, getHost() );
 
 	int rval = plug->mainEntry( kOfxActionLoad, 0, 0, 0 );
 	
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
+		op.setIsSupported(false);
 		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
 		    << exception::user( "Loading plugin failed." )
 		    << exception::dev( "kOfxActionLoad failed." )
@@ -136,6 +137,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
+		op.setIsSupported(false);
 		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
 		    << exception::user( "Loading plugin failed." )
 		    << exception::dev( "kOfxActionDescribe failed." )
@@ -153,6 +155,8 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 		p.addContext( context );
 	}
 
+	op.setIsSupported(true);
+	
 	rval = plug->mainEntry( kOfxActionUnload, 0, 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
@@ -245,7 +249,7 @@ std::ostream& operator<<( std::ostream& os, const OfxhImageEffectPluginCache& v 
 	os << "Nb Plugins:" << v._pluginsByID.size() << std::endl;
 	
 	os << "________________________________________________________________________________" << std::endl;
-	for( std::map<std::string, OfxhImageEffectPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
+	for( OfxhImageEffectPluginCache::MapPluginsByID::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
 	{
 		os << "Plug-in:" << it->first << std::endl;
 		os << "  " << "Filepath: " << it->second->getBinary().getFilePath();

@@ -98,7 +98,6 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.no_auto_bright    = 0;
 		
 		_out.four_color_rgb = _params._fourColorRgb;
-		_out.document_mode = _params._documentMode;
 		
 		_out.exp_correc = 1; // every time correct exposure (use default parameters to don't change)
 		_out.exp_shift  = _params._exposure;
@@ -204,11 +203,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		// from main image settings
 
 		// Data unpacking
-		int ret = 0;
-		if( _out.document_mode )
-			ret = _rawProcessor.dcraw_document_mode_processing();
-		else
-			ret = _rawProcessor.dcraw_process();
+		int ret = _rawProcessor.dcraw_process();
 		
 		if( LIBRAW_SUCCESS != ret )
 		{

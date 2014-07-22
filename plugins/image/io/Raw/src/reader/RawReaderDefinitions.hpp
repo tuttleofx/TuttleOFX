@@ -90,20 +90,6 @@ static const std::string kParamFourColorRgb      = "fourcolorrgb";
 static const std::string kParamFourColorRgbLabel = "4 color RGB";
 static const std::string kParamFourColorRgbHint  = "Switches on separate interpolations for two green components.";
 
-static const std::string kParamDocumentMode      = "documentmode";
-static const std::string kParamDocumentModeLabel = "Document Mode";
-static const std::string kParamDocumentModeHint  = "Switches on separate interpolations for two green components.";
-static const std::string kParamDocumentModeStd   = "standard         (with white balance)";
-static const std::string kParamDocumentModeWwb   = "withwhitebalance (without color processing or debayer)";
-static const std::string kParamDocumentModeWall  = "withoutall       (without color processing or debayer and white balance)";
-
-enum EDocumentMode
-{
-	eDocumentModeStd = 0,
-	eDocumentModeWwb,
-	eDocumentModeWall
-};
-
 static const std::string kParamHighlight         = "highlight";
 static const std::string kParamHighlightLabel    = "Highlight";
 static const std::string kParamHighlightHint     = "Highlight mode\t rebuild : Low  numbers favor whites; high numbers favor colors. 5 as a compromise.";

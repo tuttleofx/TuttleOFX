@@ -376,33 +376,71 @@ public:
 		{
 			try
 			{
-				if( inputClip.size() == 0 )
-				{
-					BOOST_THROW_EXCEPTION( exception::Logic()
-						<< exception::dev() + "There is an error in the plugin: The plugin declares to be identity but don't give the name of the input clip to use." );
-				}
 				IdentityNodeConnection<TGraph> reconnect;
-				reconnect._identityVertex = _graph.instance(vd).getKey();
+				reconnect._identityVertex = vertex.getKey();
 				reconnect._input._inputClip = inputClip;
-				BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+				
+				if( ! inputClip.empty() )
 				{
-					const Edge& e = _graph.instance( ed );
-					if( ( e.getInAttrName() == inputClip ) &&
-					    ( e.getOutTime() == atTime )
-					  )
+					// The inputClip should not be empty in the OpenFX standard,
+					// but it's used in TuttleOFX to disable the process of the node
+					// and all the graph branch behind.
+					
+					bool clipFound = false;
+					bool clipFoundAtTime = false;
+					BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
 					{
-						vertex_descriptor in = _graph.target( ed );
-						reconnect._input._srcNode = _graph.instance(in).getKey();
+						const Edge& e = _graph.instance( ed );
+						if( e.getInAttrName() == inputClip )
+						{
+							clipFound = true;
+							if( e.getOutTime() == atTime )
+							{
+								clipFoundAtTime = true;
+								vertex_descriptor in = _graph.target( ed );
+								reconnect._input._srcNode = _graph.instance(in).getKey();
+							}
+						}
 					}
-				}
-				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
-				{
-					const Edge& e = _graph.instance( ed );
-					vertex_descriptor out = _graph.source( ed );
-					typename IdentityNodeConnection<TGraph>::OutputClipConnection c;
-					c._dstNode = _graph.instance(out).getKey();
-					c._dstNodeClip = e.getInAttrName();
-					reconnect._outputs.push_back(c);
+					if( ! clipFound )
+					{
+						std::stringstream existingClips;
+						BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+						{
+							const Edge& e = _graph.instance( ed );
+							existingClips << e.getInAttrName() << ", ";
+						}
+						BOOST_THROW_EXCEPTION( exception::Bug()
+								<< exception::dev() + "Plugin declares itself as identity, but gives a non existing input clip. "
+									"(node: " + vertex.getName() + ", input clip:" + inputClip + ", existing clips: (" + existingClips.str() + "))"
+								);
+					}
+					if( ! clipFoundAtTime )
+					{
+						std::stringstream framesNeeded;
+						BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( vd ) )
+						{
+							const Edge& e = _graph.instance( ed );
+							if( e.getInAttrName() == inputClip )
+							{
+								framesNeeded << e.getOutTime() << ", ";
+							}
+						}
+						BOOST_THROW_EXCEPTION( exception::Bug()
+								<< exception::dev() + "Plugin declares itself as identity, but gives a time on the input clip different from declared framesNeeded. "
+									"(node: " + vertex.getName() + ", input clip:" + inputClip + ", time:" + atTime + ", framesNeeded:(" + framesNeeded.str() + "))"
+								);
+					}
+					
+					BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
+					{
+						const Edge& e = _graph.instance( ed );
+						vertex_descriptor out = _graph.source( ed );
+						typename IdentityNodeConnection<TGraph>::OutputClipConnection c;
+						c._dstNode = _graph.instance(out).getKey();
+						c._dstNodeClip = e.getInAttrName();
+						reconnect._outputs.push_back(c);
+					}
 				}
 				TUTTLE_TLOG( TUTTLE_TRACE, "isIdentity => " << vertex.getName() << " - " << inputClip << " at time " << atTime );
 				_toRemove.push_back( reconnect );
@@ -410,7 +448,7 @@ public:
 			}
 			catch( boost::exception& e )
 			{
-				e << exception::user() + "A node is declared identity without given a valid input clip ("+quotes(inputClip)+", "+atTime+ ")."
+				e << exception::user() + "Error on the node " + quotes(vertex.getName()) + ". It fails to declare itself as an identity node."
 				  << exception::nodeName( vertex.getName() )
 				  << exception::time( vertex.getProcessDataAtTime()._time );
 				throw;
@@ -484,46 +522,63 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 		identityNodes[connection._identityVertex] = &connection;
 	}
 	
+	bool disabledBranch = false;
 	BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, nodesToRemove )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, boost::lexical_cast<std::string>(connection._identityVertex) );
-		TUTTLE_TLOG( TUTTLE_TRACE, "IN: "
-			<< boost::lexical_cast<std::string>(connection._identityVertex) << "::" << boost::lexical_cast<std::string>(connection._input._inputClip)
-			<< " <<-- "
-			<< boost::lexical_cast<std::string>(connection._input._srcNode) << "::" kOfxOutputAttributeName );
-		const typename TGraph::VertexKey* searchIn = &( connection._input._srcNode );
+		if( connection._input._inputClip.empty() )
 		{
-			// search a non-identity node to replace the connection
-			typename IdentityMap::const_iterator it = identityNodes.find( *searchIn );
-			typename IdentityMap::const_iterator itEnd = identityNodes.end();
-			while( it != itEnd )
-			{
-				searchIn = &( it->second->_input._srcNode );
-				it = identityNodes.find( *searchIn );
-			}
+			// The input clip is empty, this not in the OpenFX standard.
+			// In Tuttle, it means that the branch is disabled.
+			disabledBranch = true;
 		}
-		const typename TGraph::VertexKey& in = *searchIn;
-		const typename TGraph::vertex_descriptor descIn  = graph.getVertexDescriptor( in );
-		
-		// replace all input/output connections of the identity node by one edge
-		BOOST_FOREACH( const typename IdentityNodeConnection<TGraph>::OutputClipConnection& outputClipConnection, connection._outputs )
+		else
 		{
-			//TUTTLE_LOG( TUTTLE_TRACE, "OUT: "
-			//	<< connection._identityVertex << "::" kOfxOutputAttributeName
-			//	<< " -->> "
-			//	<< outputClipConnection._dstNode << "::" << outputClipConnection._dstNodeClip );
-			const typename TGraph::VertexKey& out = outputClipConnection._dstNode;
-			const std::string inAttr = outputClipConnection._dstNodeClip;
+			// Create new connections if the input clip name is not empty
+			TUTTLE_TLOG_TRACE( boost::lexical_cast<std::string>(connection._identityVertex) );
+			TUTTLE_TLOG_TRACE( "IN: "
+				<< boost::lexical_cast<std::string>(connection._identityVertex) << "::" << boost::lexical_cast<std::string>(connection._input._inputClip)
+				<< " <<-- "
+				<< boost::lexical_cast<std::string>(connection._input._srcNode) << "::" kOfxOutputAttributeName );
+			const typename TGraph::VertexKey* searchIn = &( connection._input._srcNode );
+			{
+				// search a non-identity node to replace the connection
+				typename IdentityMap::const_iterator it = identityNodes.find( *searchIn );
+				typename IdentityMap::const_iterator itEnd = identityNodes.end();
+				while( it != itEnd )
+				{
+					searchIn = &( it->second->_input._srcNode );
+					it = identityNodes.find( *searchIn );
+				}
+			}
+			const typename TGraph::VertexKey& in = *searchIn;
+			const typename TGraph::vertex_descriptor descIn  = graph.getVertexDescriptor( in );
 
-			const typename TGraph::vertex_descriptor descOut = graph.getVertexDescriptor( out );
+			// replace all input/output connections of the identity node by one edge
+			BOOST_FOREACH( const typename IdentityNodeConnection<TGraph>::OutputClipConnection& outputClipConnection, connection._outputs )
+			{
+				//TUTTLE_TLOG_TRACE( "OUT: "
+				//	<< connection._identityVertex << "::" kOfxOutputAttributeName
+				//	<< " -->> "
+				//	<< outputClipConnection._dstNode << "::" << outputClipConnection._dstNodeClip );
+				const typename TGraph::VertexKey& out = outputClipConnection._dstNode;
+				const std::string inAttr = outputClipConnection._dstNodeClip;
 
-			const typename TGraph::Edge e( in, out, inAttr );
-			graph.addEdge( descOut, descIn, e );
+				const typename TGraph::vertex_descriptor descOut = graph.getVertexDescriptor( out );
+
+				const typename TGraph::Edge e( in, out, inAttr );
+				graph.addEdge( descOut, descIn, e );
+			}
 		}
 		// Warning: We don't remove the vertex itself to not invalidate vertex_descriptors but only remove edges.
 //		graph.removeVertex( graph.getVertexDescriptor(connection._identityVertex) );
 		// remove all node connections
 		graph.clearVertex( graph.getVertexDescriptor(connection._identityVertex) );
+	}
+	
+	if( disabledBranch )
+	{
+		// @todo: Remove connections of all vertices not connected to the output.
+		// These unconnected branches have been created by identity nodes without source clip.
 	}
 }
 
@@ -696,6 +751,7 @@ public:
 			{
 				BOOST_THROW_EXCEPTION( exception::Logic()
 					<< exception::user() + "Output buffer not found in memoryCache at the end of the node process."
+					<< exception::dev() + vertex._clipName + "." kOfxOutputAttributeName + " at time " + vertex._data._time
 					<< exception::nodeName( vertex._name )
 					<< exception::time( vertex._data._time ) );
 			}

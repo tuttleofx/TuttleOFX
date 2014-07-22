@@ -174,7 +174,8 @@ void ParamDescriptor::setEnabled( bool v )
 
 void ParamDescriptor::setLayoutHint( const ELayoutHint layoutHint )
 {
-    getProps().propSetInt( kOfxParamPropLayoutHint, static_cast<int>(layoutHint) );
+    // This is a nuke ofx extension property, so it's optional.
+    getProps().propSetInt( kOfxParamPropLayoutHint, static_cast<int>(layoutHint), false );
 }
 
 
@@ -614,7 +615,28 @@ void ChoiceParamDescriptor::appendOption( const std::string& shortName, const st
     const int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
 
     getProps().propSetString( kOfxParamPropChoiceOption, shortName, nCurrentValues );
-    getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues, false ); // this option is optional extension, don't throw if not present.
+	
+	if( ! label.empty() )
+	{
+		try
+		{
+			// this property is an optional extension.
+			getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues );
+		} catch( std::exception& )
+		{
+			// If the kOfxParamPropChoiceLabelOption doesn't exist, we put that information into the Hint.
+			// It's better than nothing...
+			std::string hint = getProps().propGetString( kOfxParamPropHint );
+			if( ! hint.empty() )
+			{
+				hint += "\n";
+				if( nCurrentValues == 0 )
+					hint += "\n";
+			}
+			hint += shortName + ": " + label;
+			getProps().propSetString( kOfxParamPropHint, hint );
+		}
+	}
 }
 
 /** @brief set the default value */
@@ -695,11 +717,8 @@ void GroupParamDescriptor::setOpen( const bool open )
 
 void GroupParamDescriptor::setAsTab()
 {
-    // only anable on supported Nuke
-    if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" )
-    {
-        getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
-    }
+    // PropGroupIdTab is a nuke extension
+	getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1, false ); // this property is an optional extension, don't throw if not present.
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2253,7 +2272,7 @@ void ChoiceParam::appendOption( const std::string& shortName, const std::string&
     const int nCurrentValues = getProps().propGetDimension( kOfxParamPropChoiceOption );
 
     getProps().propSetString( kOfxParamPropChoiceOption, shortName, nCurrentValues );
-    getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues, false ); // this option is optional extension, don't throw if not present.
+    getProps().propSetString( kOfxParamPropChoiceLabelOption, label, nCurrentValues, false ); // this property is an optional extension, don't throw if not present.
 }
 
 /** @brief set the default value */

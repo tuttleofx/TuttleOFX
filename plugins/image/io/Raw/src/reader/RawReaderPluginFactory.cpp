@@ -53,6 +53,7 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
     // add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
+	desc.setPluginEvaluation( 70 );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -129,14 +130,6 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	fourColorRGB->setLabel( kParamFourColorRgbLabel );
 	fourColorRGB->setHint( kParamFourColorRgbHint );
 	fourColorRGB->setDefault( false );
-	
-	OFX::ChoiceParamDescriptor* documentMode = desc.defineChoiceParam( kParamDocumentMode );
-	documentMode->setLabel( kParamDocumentModeLabel );
-	documentMode->setHint( kParamDocumentModeHint );
-	documentMode->appendOption( kParamDocumentModeStd );
-	documentMode->appendOption( kParamDocumentModeWwb );
-	documentMode->appendOption( kParamDocumentModeWall );
-	documentMode->setDefault( eDocumentModeStd );
 	
 	OFX::ChoiceParamDescriptor* highlight = desc.defineChoiceParam( kParamHighlight );
 	highlight->setLabel( kParamHighlightLabel );

@@ -195,6 +195,36 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	std::string audioCodecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
 	disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), audioCodecName );
+
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbum           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbumArtist     ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaArtist          ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaComment         ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaComposer        ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaCopyright       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaCreationTime    ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaDate            ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaDisc            ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncoder         ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncodedBy       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaFilename        ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaGenre           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaLanguage        ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaPerformer       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaPublisher       ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaServiceName     ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaServiceProvider ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaTitle           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaTrack           ) );
+	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
+
+	updateVisibleTools();
+}
+
+void AVWriterPlugin::updateVisibleTools()
+{
+	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
+	changedParam( args, kParamUseCustomFps );
 }
 
 AVProcessParams AVWriterPlugin::getProcessParams()
@@ -206,7 +236,17 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	params._videoCodec                     = _paramVideoCodec        ->getValue();
 	params._audioCodec                     = _paramAudioCodec        ->getValue();
 	params._videoPixelFormat               = static_cast<PixelFormat>( _paramVideoPixelFormat->getValue() );
-	
+
+	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
+	{
+		if( parameter->getValue().size() > 0 )
+		{
+			std::string ffmpegKey = parameter->getName();
+			ffmpegKey.erase( 0, 5 );
+			params._metadatas[ ffmpegKey ] = parameter->getValue();
+		}
+	}
+
 	_writer.setVideoCodec( params._videoCodec );
 
 	return params;
@@ -221,19 +261,18 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		std::string formatName = _writer.getFormatsShort( ).at(_paramFormat->getValue() );
 		disableAVOptionsForCodecOrFormat( _writer.getFormatPrivOpts(), formatName );
 	}
-	if( paramName == kParamVideoCodec )
+	else if( paramName == kParamVideoCodec )
 	{
 		std::string videoCodecName = _writer.getVideoCodecsShort( ).at(_paramVideoCodec->getValue() );
 		disableAVOptionsForCodecOrFormat( _writer.getVideoCodecPrivOpts(), videoCodecName );
 		updatePixelFormat( videoCodecName );
 	}
-	if( paramName == kParamAudioCodec )
+	else if( paramName == kParamAudioCodec )
 	{
 		std::string codecName = _writer.getAudioCodecsShort( ).at(_paramAudioCodec->getValue() );
 		disableAVOptionsForCodecOrFormat( _writer.getAudioCodecPrivOpts(), codecName );
 	}
-	
-	if( paramName == kParamMainPreset )
+	else if( paramName == kParamMainPreset )
 	{
 		//TUTTLE_LOG_TRACE( "preset change " << _paramMainPreset->getValue() );
 		if( _paramMainPreset->getValue() == 0 )
@@ -293,8 +332,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		_paramVideoCodecPreset->setValue( videoIndex );
 		_paramAudioCodecPreset->setValue( audioIndex );
 	}
-	
-	if( paramName == kParamFormatPreset )
+	else if( paramName == kParamFormatPreset )
 	{
 		//TUTTLE_LOG_INFO( "preset change " << _paramFormatPreset->getValue() );
 		if( _paramFormatPreset->getValue() == 0 )
@@ -305,8 +343,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		LibAVFormatPreset p( idFormatList.at( _paramFormatPreset->getValue() - 1 ) );
 		setParameters( p.getParameters() );
 	}
-	
-	if( paramName == kParamVideoPreset )
+	else if( paramName == kParamVideoPreset )
 	{
 		if( _paramVideoCodecPreset->getValue() == 0 )
 			return;
@@ -316,8 +353,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		LibAVVideoPreset p( idVideoList.at( _paramVideoCodecPreset->getValue() - 1 ) );
 		setParameters( p.getParameters() );
 	}
-	
-	if( paramName == kParamAudioPreset )
+	else if( paramName == kParamAudioPreset )
 	{
 		if( _paramAudioCodecPreset->getValue() == 0 )
 			return;
@@ -326,6 +362,17 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		
 		LibAVAudioPreset p( idAudioList.at( _paramAudioCodecPreset->getValue() - 1 ) );
 		setParameters( p.getParameters() );
+	}
+	else if( paramName == kParamUseCustomFps )
+	{
+		_paramCustomFps->setIsSecretAndDisabled( ! _paramUseCustomFps->getValue() );
+	}
+	else if( paramName == kParamCustomFps )
+	{
+		if( ! _paramUseCustomFps->getValue() )
+		{
+			_paramUseCustomFps->setValue(true);
+		}
 	}
 }
 
@@ -352,6 +399,7 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_writer.setFilename    ( params._filepath );
 	_writer.setFormat      ( params._format );
 	_writer.setVideoCodec  ( params._videoCodec );
+
 	if( _paramUseCustomFps->getValue() )
 	{
 		_writer.setFps( _paramCustomFps->getValue() );
@@ -379,7 +427,7 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 	
 	if( !_initWriter )
 	{
-		_writer.start( );
+		_writer.start( getProcessParams()._metadatas );
 	
 		// set Format parameters
 		AVFormatContext* avFormatContext;

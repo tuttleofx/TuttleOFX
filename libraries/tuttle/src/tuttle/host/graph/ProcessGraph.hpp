@@ -49,7 +49,8 @@ public:
 	typedef Graph::InstanceCountMap InstanceCountMap;
 
 public:
-	ProcessGraph( const ComputeOptions& options, Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
+	ProcessGraph( const ComputeOptions& options, Graph& graph,
+			const std::list<std::string>& nodes, memory::IMemoryCache& internMemoryCache ); ///@ todo: const Graph, no ?
 	~ProcessGraph();
 
 private:
@@ -68,10 +69,10 @@ public:
 
 	void beginSequence( const TimeRange& timeRange );
 	void setupAtTime( const OfxTime time );
-	void processAtTime( memory::MemoryCache& outCache, const OfxTime time );
+	void processAtTime( memory::IMemoryCache& outCache, const OfxTime time );
 	void endSequence();
 
-	bool process( memory::MemoryCache& outCache );
+	bool process( memory::IMemoryCache& outCache );
 
 private:
 	InternalGraphImpl _renderGraph;
@@ -82,6 +83,7 @@ private:
 	static const std::string _outputId;
 	
 	const ComputeOptions& _options;
+	memory::IMemoryCache& _internMemoryCache;
 	ProcessVertexData _procOptions;
 };
 

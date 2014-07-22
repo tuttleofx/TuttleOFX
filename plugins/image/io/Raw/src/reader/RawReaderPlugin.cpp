@@ -33,7 +33,6 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramThreshold  = fetchDoubleParam( kParamThreshold );
 	
 	_paramFourColorRgb = fetchBooleanParam( kParamFourColorRgb );
-	_paramDocumentMode = fetchChoiceParam( kParamDocumentMode );
 	
 	_paramExposure         = fetchDoubleParam( kParamExposure );
 	_paramExposurePreserve = fetchDoubleParam( kParamExposurePreserve );
@@ -71,7 +70,6 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._threshold  = _paramThreshold->getValue();
 	
 	params._fourColorRgb = _paramFourColorRgb->getValue();
-	params._documentMode = static_cast<EDocumentMode>( _paramDocumentMode->getValue() );
 	
 	params._greyboxPoint.x = _paramGreyboxPoint->getValue().x;
 	params._greyboxPoint.y = _paramGreyboxPoint->getValue().y;
@@ -133,8 +131,9 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 	if( p2.artist[0] )
 		_paramArtist->setValue( p2.artist );
 	
+	// https://github.com/LibRaw/LibRaw/blob/master/samples/raw-identify.cpp
+	
 	std::ostringstream ss;
-
 	ss << "Filename: " << params._filepath << "\n";
 	ss << "Timestamp: " << ctime( &( p2.timestamp ) ) << "\n";
 	ss << "Camera: " << p1.make << " " << p1.model << "\n";
@@ -176,7 +175,13 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		if( !p1.cdesc[3] )
 			p1.cdesc[3] = 'G';
 		for( int i = 0; i < 16; ++i )
+		{
+#if LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0,15)
+			putchar( p1.cdesc[rawProcessor.fcol( i >> 1, i & 1 )] );
+#else
 			putchar( p1.cdesc[rawProcessor.fc( i >> 1, i & 1 )] );
+#endif
+		}
 		ss << "\n";
 	}
 	ss << "Daylight multipliers: ";
@@ -192,11 +197,6 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 	}
 	const char* csl[] = { "U", "I", "CO", "L", "CA" };
 	ss << "Color sources /Legend: (U)nknown, (I)nit, (CO)nstant, (L)oaded, (CA)lculated/:" << "\n";
-	ss << "\tcurve=" << csl[color.color_flags.curve_state] << ",";
-	ss << " rgb_cam=" << csl[color.color_flags.rgb_cam_state] << ",";
-	ss << " cmatrix=" << csl[color.color_flags.cmatrix_state] << ",";
-	ss << " pre_mul=" << csl[color.color_flags.pre_mul_state] << ",";
-	ss << " cam_mul=" << csl[color.color_flags.cam_mul_state] << "\n";
 	ss << "Cam->XYZ matrix:" << "\n";
 	for( int i = 0; i < 4; ++i )
 		ss << color.cam_xyz[i][0] << "\t" << color.cam_xyz[i][1] << "\t" << color.cam_xyz[i][2] << "\n"; // %6.4f

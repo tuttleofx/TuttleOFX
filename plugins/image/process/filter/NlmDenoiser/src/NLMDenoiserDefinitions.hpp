@@ -34,7 +34,7 @@ const int kParamDefaultPatchSizeValue = 2;
 const int kParamDefaultBandwidthValueR = 3;
 const int kParamDefaultBandwidthValueG = 4;
 const int kParamDefaultBandwidthValueB = 10;
-const int kParamDefaultRegionValue = 15;
+const int kParamDefaultRegionValue = 8;
 const int kParamDefaultDepth = 1;
 
 }

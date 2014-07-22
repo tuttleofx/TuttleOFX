@@ -150,10 +150,10 @@ void MemoryCache::clearAll()
 
 std::ostream& operator<<( std::ostream& os, const MemoryCache& v )
 {
-	os << "size:" << v.size() << std::endl;
+	os << "[MemoryCache] size:" << v.size() << std::endl;
 	BOOST_FOREACH( const MemoryCache::MAP::value_type& i, v._map )
 	{
-		os << i.first
+		os  << "[MemoryCache] " << i.first
 			<< " id:" << i.second->getId()
 			<< " ref host:" << i.second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost )
 			<< " ref plugins:" << i.second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerPlugin ) << std::endl;

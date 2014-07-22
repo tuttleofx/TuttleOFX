@@ -28,6 +28,8 @@ struct AVProcessParams
 	int         _audioPreset; ///< video configuration (based on the video codec)
 	
 	PixelFormat _videoPixelFormat; /// videoPixelFormat
+
+	std::map< std::string, std::string > _metadatas;
 };
 
 /**
@@ -37,6 +39,9 @@ class AVWriterPlugin : public AVOptionPlugin< WriterPlugin >
 {
 public:
 	AVWriterPlugin( OfxImageEffectHandle handle );
+
+private:
+	void updateVisibleTools();
 
 public:
 	AVProcessParams getProcessParams();
@@ -67,6 +72,8 @@ public:
 	OFX::DoubleParam*   _paramCustomFps;
 	OFX::ChoiceParam*   _paramVideoPixelFormat;
 	
+	std::vector<OFX::StringParam*> _paramMetadatas;
+
 	LibAVVideoWriter    _writer;
 	bool                _initWriter;
 };

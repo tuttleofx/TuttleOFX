@@ -24,9 +24,11 @@ namespace graph {
 
 const std::string ProcessGraph::_outputId( "TUTTLE_FAKE_OUTPUT" );
 
-ProcessGraph::ProcessGraph( const ComputeOptions& options, Graph& userGraph, const std::list<std::string>& outputNodes )
+ProcessGraph::ProcessGraph( const ComputeOptions& options, Graph& userGraph, const std::list<std::string>& outputNodes, memory::IMemoryCache& internMemoryCache )
 	: _instanceCount( userGraph.getInstanceCount() )
 	, _options(options)
+	, _internMemoryCache(internMemoryCache)
+	, _procOptions(&_internMemoryCache)
 {
 	_procOptions._interactive = _options.getIsInteractive();
 	// imageEffect specific...
@@ -41,8 +43,9 @@ ProcessGraph::~ProcessGraph()
 
 ProcessGraph::VertexAtTime::Key ProcessGraph::getOutputKeyAtTime( const OfxTime time )
 {
-	return VertexAtTime(Vertex(_outputId), time).getKey();
+	return VertexAtTime(Vertex(_procOptions, _outputId), time).getKey();
 }
+
 ProcessGraph::InternalGraphAtTimeImpl::vertex_descriptor ProcessGraph::getOutputVertexAtTime( const OfxTime time )
 {
 	return _renderGraphAtTime.getVertexDescriptor( getOutputKeyAtTime( time ) );
@@ -156,7 +159,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		
 		TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] node: " << v.getName() );
 
-		vData._outDegree = _renderGraphAtTime.getInDegree( vd ) - vData._isFinalNode;
+		vData._outDegree = _renderGraphAtTime.getInDegree( vd );
 		vData._inDegree = _renderGraphAtTime.getOutDegree( vd );
 
 		vData._outEdges.clear();
@@ -164,10 +167,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, _renderGraphAtTime.getInEdges( vd ) )
 		{
 			const ProcessEdgeAtTime* e = &_renderGraphAtTime.instance(ed);
-			VertexAtTime& v = _renderGraphAtTime.sourceInstance( ed );
-			if( v.isFake() )
-				continue;
-			
+
 			TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] in edge " << e->getInAttrName() << ", at time " << e->getInTime() );
 			vData._outEdges.push_back( e );
 		}
@@ -176,7 +176,8 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		{
 			const ProcessEdgeAtTime* e = &_renderGraphAtTime.instance(ed);
 			TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] out edge " << e->getInAttrName() << ", at time " << e->getInTime() );
-			vData._inEdges[e->getInAttrName()] = e;
+			std::pair<std::string, OfxTime> key( e->getInAttrName(), e->getInTime() );
+			vData._inEdges[key] = e;
 		}
 	}
 	TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] connect clips" );
@@ -217,7 +218,7 @@ void ProcessGraph::updateGraph( Graph& userGraph, const std::list<std::string>& 
 {
 	_renderGraph.copyTransposed( userGraph.getGraph() );
 
-	Vertex outputVertex( _outputId );
+	Vertex outputVertex( _procOptions, _outputId );
 
 	if( outputNodes.size() )
 	{
@@ -283,6 +284,12 @@ void ProcessGraph::setup()
 	}
 	
 	connectClips<InternalGraphImpl>( _renderGraph );
+	
+	{
+		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] Time domain propagation" );
+		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( _renderGraph );
+		_renderGraph.depthFirstVisit( timeDomainPropagationVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
+	}
 
 	{	
 		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] setup visitors" );
@@ -292,12 +299,6 @@ void ProcessGraph::setup()
 		_renderGraph.depthFirstVisit( setup2Visitor, _renderGraph.getVertexDescriptor( _outputId ) );
 		graph::visitor::Setup3<InternalGraphImpl> setup3Visitor( _renderGraph );
 		_renderGraph.depthFirstVisit( setup3Visitor, _renderGraph.getVertexDescriptor( _outputId ) );
-	}
-	
-	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] Time domain propagation" );
-		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( _renderGraph );
-		_renderGraph.depthFirstVisit( timeDomainPropagationVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
 	}
 }
 
@@ -345,16 +346,17 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	boost::timer::cpu_timer timer;
 #endif
 	
-	TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] start" );
+	TUTTLE_LOG_TRACE( "[Setup at time " << time << "] start" );
 	graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( _renderGraph, time );
 	_renderGraph.depthFirstVisit( deployTimeVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
 #ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportDebugAsDOT( "graphProcess_c.dot", _renderGraph );
 #endif
 
-	TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] build render graph" );
+	TUTTLE_LOG_TRACE( "[Setup at time " << time << "] build render graph" );
 	// create a new graph with time information
 	_renderGraphAtTime.clear();
+	
 	{
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, _renderGraph.getVertices() )
 		{
@@ -428,13 +430,13 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 	if( ! _options.getForceIdentityNodesProcess() )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] remove identity nodes" );
+		TUTTLE_LOG_TRACE( "[Setup at time " << time << "] remove identity nodes" );
 		// The "Remove identity nodes" step need to be done after preprocess steps, because the RoI need to be computed.
 		std::vector<graph::visitor::IdentityNodeConnection<InternalGraphAtTimeImpl> > toRemove;
 
 		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> vis( _renderGraphAtTime, toRemove );
 		_renderGraphAtTime.depthFirstVisit( vis, outputAtTime );
-		TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] removing " << toRemove.size() << "nodes" );
+		TUTTLE_LOG_TRACE( "[Setup at time " << time << "] removing " << toRemove.size() << " nodes" );
 		if( toRemove.size() )
 		{
 			graph::visitor::removeIdentityNodes( _renderGraphAtTime, toRemove );
@@ -449,16 +451,13 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 #endif
 
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] preprocess 1" );
-		TUTTLE_TLOG_INFOS;
+		TUTTLE_LOG_TRACE( "[Setup at time " << time << "] preprocess 1" );
 		graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( _renderGraphAtTime );
-		TUTTLE_TLOG_INFOS;
 		_renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
-		TUTTLE_TLOG_INFOS;
 	}
 
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] preprocess 2" );
+		TUTTLE_LOG_TRACE( "[Setup at time " << time << "] preprocess 2" );
 		graph::visitor::PreProcess2<InternalGraphAtTimeImpl> preProcess2Visitor( _renderGraphAtTime );
 		_renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
 	}
@@ -536,7 +535,7 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 	TUTTLE_TLOG( TUTTLE_INFO, "[Compute hash at time] end" );
 }
 
-void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime time )
+void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime time )
 {
 	_options.processAtTimeHandle();
 #ifdef TUTTLE_EXPORT_WITH_TIMER
@@ -544,14 +543,11 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 #endif
 	
 	///@todo callback
-	TUTTLE_TLOG( TUTTLE_INFO, common::Color::get()->_blue << "process at time " << time << common::Color::get()->_std );
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] output node : " << _renderGraph.getVertex( _outputId ).getName() );
-
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Output node : " << _renderGraph.getVertex( _outputId ).getName() );
 	InternalGraphAtTimeImpl::vertex_descriptor outputAtTime = getOutputVertexAtTime( time );
 
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] process" );
 	// do the process
-	graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( _renderGraphAtTime, core().getMemoryCache() );
+	graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( _renderGraphAtTime, _internMemoryCache );
 	if( _options.getReturnBuffers() )
 	{
 		// accumulate output nodes buffers into the @p outCache MemoryCache
@@ -560,12 +556,12 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 
 	_renderGraphAtTime.depthFirstVisit( processVisitor, outputAtTime );
 
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] post process" );
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Post process" );
 	graph::visitor::PostProcess<InternalGraphAtTimeImpl> postProcessVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( postProcessVisitor, outputAtTime );
 
 	///@todo clean datas...
-	TUTTLE_TLOG( TUTTLE_INFO, "---------------------------------------- clear data at time" );
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Clear data at time" );
 	// give a link to the node on its attached process data
 	BOOST_FOREACH( const InternalGraphAtTimeImpl::vertex_descriptor vd, _renderGraphAtTime.getVertices() )
 	{
@@ -578,13 +574,12 @@ void ProcessGraph::processAtTime( memory::MemoryCache& outCache, const OfxTime t
 
 	// end of one frame
 	// do some clean: memory clean, as temporary solution...
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] clear unused buffers" );
-	core().getMemoryCache().clearUnused();
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] Memory cache size: " << core().getMemoryCache().size() );
-	//TUTTLE_TLOG( TUTTLE_INFO, "[Process at time " << time << "] Out cache size: " << outCache );
+	_internMemoryCache.clearUnused();
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Memory cache size: " << _internMemoryCache.size() );
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Out cache size: " << outCache );
 }
 
-bool ProcessGraph::process( memory::MemoryCache& outCache )
+bool ProcessGraph::process( memory::IMemoryCache& outCache )
 {
 #ifdef TUTTLE_EXPORT_WITH_TIMER
 	boost::timer::cpu_timer all_process_timer;
@@ -593,10 +588,9 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 #ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportAsDOT( "graphProcess_a.dot", _renderGraph );
 #endif
-	
+
 	setup();
-	
-	TUTTLE_TLOG_INFOS;
+
 	std::list<TimeRange> timeRanges = computeTimeRange();
 
 #ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
@@ -605,27 +599,29 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 
 	/// @todo Bug: need to use a map 'OutputNode': 'timeRanges'
 	/// And check if all Output nodes share a common timeRange
-	
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process render] start" );
+
+	TUTTLE_LOG_INFO( "[Process render] start" );
+
 	//--- RENDER
 	// at each frame
-	
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
-		
+		TUTTLE_LOG_TRACE( "[Process render] timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
+
 		beginSequence( timeRange );
-		
+
+		if( _options.getAbort() )
+		{
+			TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED before first frame." );
+			endSequence();
+			_internMemoryCache.clearUnused();
+			return false;
+		}
+
 		for( int time = timeRange._begin; time <= timeRange._end; time += timeRange._step )
 		{
-			if( _options.getAbort() )
-			{
-				TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED at time " << time << "." );
-				endSequence();
-				core().getMemoryCache().clearUnused();
-				return false;
-			}
-			
+			_options.beginFrameHandle();
+
 			try
 			{
 #ifdef TUTTLE_EXPORT_WITH_TIMER
@@ -633,7 +629,7 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 #endif
 				setupAtTime( time );
 #ifdef TUTTLE_EXPORT_WITH_TIMER
-				TUTTLE_LOG_WARNING( "[process timer] setup " << boost::timer::format(setup_timer.elapsed()) );
+				TUTTLE_LOG_INFO( "[process timer] setup " << boost::timer::format(setup_timer.elapsed()) );
 #endif
 
 #ifdef TUTTLE_EXPORT_WITH_TIMER
@@ -641,53 +637,86 @@ bool ProcessGraph::process( memory::MemoryCache& outCache )
 #endif
 				processAtTime( outCache, time );
 #ifdef TUTTLE_EXPORT_WITH_TIMER
-				TUTTLE_LOG_WARNING( "[process timer] took " << boost::timer::format(processAtTime_timer.elapsed()) );
+				TUTTLE_LOG_INFO( "[process timer] took " << boost::timer::format(processAtTime_timer.elapsed()) );
 #endif
 			}
 			catch( tuttle::exception::FileInSequenceNotExist& e ) // @todo tuttle: change that.
 			{
-				if( _options.getContinueOnMissingFile() && ! _options.getAbort() )
+				e << tuttle::exception::time(time);
+				if( _options.getContinueOnError() || _options.getContinueOnMissingFile() )
 				{
-					TUTTLE_LOG_ERROR( "[Process render] Undefined input at time " << time << "." );
-		#ifndef TUTTLE_PRODUCTION
-					TUTTLE_LOG_ERROR( boost::diagnostic_information(e) );
-		#endif
+					TUTTLE_LOG_WARNING( "[Process render] Missing input file at frame " << time << "." << std::endl
+							<< tuttle::exception::format_exception_message(e) << std::endl
+							<< tuttle::exception::format_exception_info(e)
+						);
 				}
 				else
 				{
-					TUTTLE_TLOG( TUTTLE_ERROR, "[Process render] Undefined input at time " << time << "." );
+					TUTTLE_LOG_ERROR( "[Process render] Missing input file at frame " << time << "." << std::endl );
+					_options.endFrameHandle();
 					endSequence();
-					core().getMemoryCache().clearUnused();
+					_renderGraphAtTime.clear();
+					_internMemoryCache.clearUnused();
 					throw;
 				}
 			}
-			catch( ... )
+			catch( ::boost::exception& e )
 			{
-				if( _options.getContinueOnError() && ! _options.getAbort() )
+				e << tuttle::exception::time(time);
+				if( _options.getContinueOnError() )
 				{
-					TUTTLE_LOG_ERROR( "[Process render] Skip frame " << time << "." );
-		#ifndef TUTTLE_PRODUCTION
-					TUTTLE_LOG_ERROR( "Skip frame " << time << "." );
-					TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
-		#endif
+					TUTTLE_LOG_ERROR( "[Process render] Skip frame " << time << "." << std::endl
+							<< tuttle::exception::format_exception_message(e) << std::endl
+							<< tuttle::exception::format_exception_info(e)
+						);
 				}
 				else
 				{
-					TUTTLE_TLOG( TUTTLE_ERROR, "[Process render] Skip frame " << time << "." );
+					TUTTLE_LOG_ERROR( "[Process render] Stopped at frame " << time << "." << std::endl );
+					_options.endFrameHandle();
 					endSequence();
-					core().getMemoryCache().clearUnused();
+					_renderGraphAtTime.clear();
+					_internMemoryCache.clearUnused();
 					throw;
 				}
 			}
+			catch(...)
+			{
+				if( _options.getContinueOnError() )
+				{
+					TUTTLE_LOG_ERROR( "[Process render] Skip frame " << time << "." << std::endl
+							<< tuttle::exception::format_current_exception()
+						);
+				}
+				else
+				{
+					TUTTLE_LOG_ERROR( "[Process render] Error at frame " << time << "." << std::endl );
+					_options.endFrameHandle();
+					endSequence();
+					_renderGraphAtTime.clear();
+					_internMemoryCache.clearUnused();
+					throw;
+				}
+			}
+
+			if( _options.getAbort() )
+			{
+				TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED at time " << time << "." );
+				_options.endFrameHandle();
+				endSequence();
+				_renderGraphAtTime.clear();
+				_internMemoryCache.clearUnused();
+				return false;
+			}
+			_options.endFrameHandle();
 		}
-		
+
 		endSequence();
 	}
-	
+
 #ifdef TUTTLE_EXPORT_WITH_TIMER
-	TUTTLE_LOG_WARNING( "[all process timer] " << boost::timer::format(all_process_timer.elapsed()) );
+	TUTTLE_LOG_INFO( "[all process timer] " << boost::timer::format(all_process_timer.elapsed()) );
 #endif
-	
 	return true;
 }
 

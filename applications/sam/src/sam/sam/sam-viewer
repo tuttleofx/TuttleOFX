@@ -32,7 +32,7 @@ for arg in args:
 		showBrief=True;
 
 if( showHelp ):
-	print( BLUE + 'TuttleOFX project [http:/ / sites.google.com/site/tuttleofx]' + NC );
+	print( BLUE + 'TuttleOFX project [http://www.tuttleofx.org]' + NC );
 	print( '' );
 	print( BLUE + 'NAME' + NC );
 	print( green + '\tsam-viewer - view images or sequences' + NC );

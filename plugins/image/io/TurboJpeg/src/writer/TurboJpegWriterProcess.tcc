@@ -38,7 +38,6 @@ void TurboJpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 	using namespace boost::gil;
 
 	View srcView = this->_srcView;	
-	copy_pixels( this->_srcView, this->_dstView );
 	
 	try
 	{

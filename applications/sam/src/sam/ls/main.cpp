@@ -1,6 +1,8 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
+#include <tuttle/host/version.hpp>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -38,7 +40,7 @@ void coutVec( const boost::ptr_vector<T>& v )
 {
 	BOOST_FOREACH( const T& f, v )
 	{
-		TUTTLE_LOG_INFO( f );
+		TUTTLE_COUT( f );
 		sam::wasSthgDumped = true;
 	}
 }
@@ -51,19 +53,18 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
+	Formatter::get();
+	boost::shared_ptr<Color> color( Color::get() );
 	
-	sequenceParser::EMaskType    researchMask        = sequenceParser::eMaskTypeDirectory | sequenceParser::eMaskTypeFile | sequenceParser::eMaskTypeSequence ; // by default show directories, files and sequences
-	sequenceParser::EMaskOptions descriptionMask     = sequenceParser::eMaskOptionsNone;   // by default show nothing
-	bool             recursiveListing    = false;
-	bool             script              = false;
-	std::string      availableExtensions;
+	sequenceParser::EType filterByType = sequenceParser::eTypeFolder | sequenceParser::eTypeFile | sequenceParser::eTypeSequence; // by default show directories, files and sequences
+	sequenceParser::EDetection detectionOptions = (sequenceParser::eDetectionSequenceNeedAtLeastTwoFiles | sequenceParser::eDetectionIgnoreDotFile | sequenceParser::eDetectionSequenceFromFilename);
+	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayNone;
+	bool recursiveListing = false;
+	bool script = false;
+	std::string availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
 
-	formatter->init_logging();
-	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
@@ -135,13 +136,13 @@ int main( int argc, char** argv )
 	{
 		// disable color, disable directory printing and set relative path by default
 		script = true;
-		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
+		displayOptions |= sequenceParser::eDisplayAbsolutePath;
 	}
 
 	if ( vm.count(kColorOptionLongName) && !script )
 	{
 		color->enable();
-		descriptionMask |= sequenceParser::eMaskOptionsColor;
+		displayOptions |= sequenceParser::eDisplayColor;
 	}
 	if ( vm.count(kEnableColorOptionLongName) && !script )
 	{
@@ -149,40 +150,40 @@ int main( int argc, char** argv )
 		if( string_to_boolean( str ) )
 		{
 			color->enable();
-			descriptionMask |= sequenceParser::eMaskOptionsColor;
+			displayOptions |= sequenceParser::eDisplayColor;
 		}
 		else
 		{
 			color->disable();
-			remove( descriptionMask, sequenceParser::eMaskOptionsColor );
+			displayOptions &= ~sequenceParser::eDisplayColor;
 		}
 	}
 	
 	if (vm.count(kHelpOptionLongName))
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-ls - list directory contents" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-ls [options] [directories]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( "List information about the sequences, files and folders." );
-		TUTTLE_LOG_INFO( "List the current directory by default, and only sequences." );
-		TUTTLE_LOG_INFO( "The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default." );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( mainOptions );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-ls - list directory contents" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-ls [options] [directories]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "DESCRIPTION" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( "List information about the sequences, files and folders." );
+		TUTTLE_COUT( "List the current directory by default, and only sequences." );
+		TUTTLE_COUT( "The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default." );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "OPTIONS" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( mainOptions );
 		return 0;
 	}
 
 	if ( vm.count(kBriefOptionLongName) )
 	{
-		TUTTLE_LOG_INFO( color->_green << "list directory contents" << color->_std );
+		TUTTLE_COUT( color->_green << "list directory contents" << color->_std );
 		return 0;
 	}
 
@@ -192,52 +193,52 @@ int main( int argc, char** argv )
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
-	if( vm.count(kDirectoriesOptionLongName ) | vm.count(kFilesOptionLongName) | vm.count(kSequencesOptionLongName) )
+	if( vm.count(kDirectoriesOptionLongName ) || vm.count(kFilesOptionLongName) || vm.count(kSequencesOptionLongName) )
 	{
-		researchMask &= ~sequenceParser::eMaskTypeDirectory;
-		researchMask &= ~sequenceParser::eMaskTypeFile;
-		researchMask &= ~sequenceParser::eMaskTypeSequence;
+		filterByType &= ~sequenceParser::eTypeFolder;
+		filterByType &= ~sequenceParser::eTypeFile;
+		filterByType &= ~sequenceParser::eTypeSequence;
 	}
 		
 	if( vm.count(kDirectoriesOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
+		filterByType |= sequenceParser::eTypeFolder;
 	}
 	if (vm.count(kFilesOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeFile;
+		filterByType |= sequenceParser::eTypeFile;
 	}
 	if (vm.count(kSequencesOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeSequence;
+		filterByType |= sequenceParser::eTypeSequence;
 	}
 	
 	if (vm.count(kFullDisplayOptionLongName))
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
-		researchMask |= sequenceParser::eMaskTypeFile;
-		researchMask |= sequenceParser::eMaskTypeSequence;
+		filterByType |= sequenceParser::eTypeFolder;
+		filterByType |= sequenceParser::eTypeFile;
+		filterByType |= sequenceParser::eTypeSequence;
 	}
 	
 	if (vm.count(kAllOptionLongName))
 	{
 		// add .* files
-		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
+		detectionOptions &= ~sequenceParser::eDetectionIgnoreDotFile;
 	}
 	
 	if (vm.count(kLongListingOptionLongName))
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsProperties;
+		displayOptions |= sequenceParser::eDisplayProperties;
 	}
 	
 	if (vm.count(kRelativePathOptionLongName) )
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsPath;
+		displayOptions |= sequenceParser::eDisplayPath;
 	}
 
 	if(vm.count(kPathOptionLongName))
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsAbsolutePath;
+		displayOptions |= sequenceParser::eDisplayAbsolutePath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -275,13 +276,13 @@ int main( int argc, char** argv )
 			{
 				if( index > 0 )
 				{
-					TUTTLE_LOG_INFO( "" );
+					TUTTLE_COUT( "" );
 				}
-				TUTTLE_LOG_INFO( path.string() << ":");
+				TUTTLE_COUT( path.string() << ":");
 				wasSthgDumped = true;
 			}
 
-			coutVec( sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask ) );
+			coutVec( sequenceParser::fileObjectInDirectory( path.string(), filters, filterByType, detectionOptions, displayOptions ) );
 
 			if(recursiveListing)
 			{
@@ -291,9 +292,9 @@ int main( int argc, char** argv )
 					{
 						bfs::path currentPath = (bfs::path)*dir;
 						if( !script )
-							TUTTLE_LOG_INFO( "\n" << currentPath.string() << ":" );
+							TUTTLE_COUT( "\n" << currentPath.string() << ":" );
 
-						coutVec( sequenceParser::fileObjectInDirectory( currentPath.string(), filters, researchMask, descriptionMask ) );
+						coutVec( sequenceParser::fileObjectInDirectory( currentPath.string(), filters, filterByType, detectionOptions, displayOptions ) );
 
 					}
 				}

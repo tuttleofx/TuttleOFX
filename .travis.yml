@@ -1,0 +1,21 @@
+os:
+  - linux
+
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+
+before_script:
+  - date -u
+  - uname -a
+  - export J='-j3'
+  - tools/travis/install_dependencies.sh
+
+script:
+  - git submodule update --init --recursive
+  - tools/travis/build.sh
+
+after_failure:
+  - cat config.log

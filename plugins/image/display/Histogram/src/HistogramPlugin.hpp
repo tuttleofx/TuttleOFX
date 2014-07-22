@@ -3,6 +3,8 @@
 
 #include "OverlayData.hpp"
 
+#include <tuttle/common/atomic.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace histogram {
@@ -13,16 +15,9 @@ namespace histogram {
 template<typename Scalar>
 struct HistogramProcessParams
 {
-    OFX::ParametricParam* _paramColorRGB;		//curve RGB
-    OFX::ParametricParam* _paramColorHSL;		//curve HSL
     OfxTime _time;								//current time
-	OFX::ChoiceParam* _paramOutputSetting;		//ouput display (BW/alpha)
-	OFX::BooleanParam* _boolReverseMask;		//is mask revert
 	boost::array<OFX::BooleanParam*, 3> _boolRGB;	//check boxes RGB selection
 	boost::array<OFX::BooleanParam*, 3> _boolHSL;	//check boxes HSL selection
-	boost::array<OFX::DoubleParam*, 3> _multiplierRGB;	//multiplier RGB channels
-	boost::array<OFX::DoubleParam*, 3> _multiplierHSL;	//multiplier HSL channels
-	OFX::BooleanParam* _boolClampCurveValues;			//clamp curve values (Advanced group)
 };
 
 /**
@@ -38,10 +33,8 @@ public:
 	bool _isHistogramRefresh;						//do we have to recompute selection histograms (other reason)
 	
 	/*Plugin parameters*/	
-	OFX::BooleanParam* _paramGlobalDisplaySelection;//global display 
-	OFX::ParametricParam* _paramColorHSLSelection;	//curve HSL
-    OFX::ParametricParam* _paramColorRGBSelection;	//curve	RGB
-	
+	OFX::BooleanParam* _paramGlobalDisplaySelection;//global display
+
 	OFX::BooleanParam* _paramOverlayRSelection;		//R
 	OFX::DoubleParam* _paramMutliplierR;			//multiplier R
 	
@@ -51,8 +44,6 @@ public:
 	OFX::BooleanParam* _paramOverlayBSelection;		//B
 	OFX::DoubleParam* _paramMutliplierB;			//multiplier B
 	
-	OFX::PushButtonParam* _resetRGB;				//Reset RGB button
-	
 	OFX::BooleanParam* _paramOverlayHSelection;		//H
 	OFX::DoubleParam* _paramMutliplierH;			//multiplier H
 	
@@ -61,38 +52,30 @@ public:
 	
 	OFX::BooleanParam* _paramOverlayLSelection;		//L
 	OFX::DoubleParam* _paramMutliplierL;			//multiplier L
-	
-	OFX::PushButtonParam* _resetHSL;				//Reset HSL button
-	
+
     OFX::ChoiceParam* _paramDisplayTypeSelection;	//display option list global/adapted to channel (Histogram overlay group)
-	OFX::PushButtonParam* _paramResetAll;			//clear all button (Histogram overlay group)
 	
 	OFX::BooleanParam* _paramDisplaySelection;		//display selection on clip source (Selection group)
-	OFX::IntParam* _paramSelectionFromCurve;		//precision of selection to curve (Selection group)
 	OFX::ChoiceParam* _paramSelectionMode;			//selection mode unique/additive/subtractive (Selection group)
-	
+
 	OFX::IntParam* _paramNbStepSelection;				//step selection (Advanced group)
 	OFX::DoubleParam* _paramSelectionMultiplierSelection;//selection multiplier (Advanced group)
 	OFX::PushButtonParam* _paramRefreshOverlaySelection; //refresh overlay button (Advanced group)
-	OFX::BooleanParam* _paramClampCurveValues;			//clamp curve values (Advanced group)
-	
-	OFX::ChoiceParam* _paramOutputSettingSelection;	//output display list (BW/Alpha)
-	OFX::BooleanParam* _paramReverseMaskSelection;	//revert mask check box
-	
-	OFX::PushButtonParam* _paramButtonAppendToSelectionHSL;	//append to selection HSL - Push button
-	OFX::PushButtonParam* _paramButtonAppendToSelectionRGB;	//append to selection RGB - Push button
-	
-	bool _isRendering;							//is plugin rendering ? (if rendering don't modify data)
-	
+
 	/*Overlay data parameters*/
 	boost::scoped_ptr<OverlayData> _overlayData;	//scoped pointer points the overlay data (or NULL)
 	std::size_t _overlayDataCount;					//count (class calling scoped pointer)
+
+	inline bool getIsRendering() const { return _isRendering.load( boost::memory_order_relaxed ); }	
+	inline void setIsRendering( const bool v ) { _isRendering.store( v, boost::memory_order_relaxed ); }
 	
-	
-	/*Creators*/
+private:
+	boost::atomic_bool _isRendering;							//is plugin rendering ? (if rendering don't modify data)
+
+public:
     HistogramPlugin( OfxImageEffectHandle handle );
 	HistogramProcessParams<Scalar> getProcessParams( const OfxTime time, const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
-	
+
 	/*Input function*/
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
     void changedClip( const OFX::InstanceChangedArgs& args, const std::string& clipName );

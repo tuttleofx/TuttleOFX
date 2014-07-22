@@ -4,10 +4,8 @@
 #include "IMemoryCache.hpp"
 #include "IMemoryPool.hpp"
 
-//#include <boost/ptr_container/ptr_map.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/thread.hpp>
-//#include <map>
 
 namespace tuttle {
 namespace host {
@@ -56,6 +54,9 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const MemoryCache& v );
 };
 
+#ifndef SWIG
+std::ostream& operator<<( std::ostream& os, const MemoryCache& memoryCache );
+#endif
 }
 }
 }

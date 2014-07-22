@@ -13,6 +13,7 @@
 #include <typeinfo>
 #include <vector>
 #include <iosfwd>
+#include <string>
 
 namespace boost {
 

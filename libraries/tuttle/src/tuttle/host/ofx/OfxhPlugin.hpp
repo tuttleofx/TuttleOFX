@@ -28,16 +28,23 @@ private:
 protected:
 	OfxhPluginBinary* _binary; ///< the file I live inside
 	int _index; ///< where I live inside that file
+	bool _isSupported; ///< Indicates if the plugin can be loaded (actions: Load and Describe)
 
 public:
-	OfxhPlugin() {}
+	OfxhPlugin()
+		: _binary( NULL )
+		, _index( -1 )
+		, _isSupported(false)
+	{}
 
 	/**
 	 * construct this based on the struct returned by the getNthPlugin() in the binary
 	 */
 	OfxhPlugin( OfxhPluginBinary& bin, int idx, OfxPlugin& o ) : OfxhPluginDesc( o )
 		, _binary( &bin )
-		, _index( idx ) {}
+		, _index( idx )
+		, _isSupported(false)
+	{}
 
 	/**
 	 * construct me from the cache
@@ -48,7 +55,9 @@ public:
 	            int majorVersion, int minorVersion )
 		: OfxhPluginDesc( api, apiVersion, identifier, rawIdentifier, majorVersion, minorVersion )
 		, _binary( &bin )
-		, _index( idx ) {}
+		, _index( idx )
+		, _isSupported(false)
+	{}
 
 	virtual ~OfxhPlugin() = 0;
 
@@ -58,6 +67,15 @@ public:
 	void                    setBinary( OfxhPluginBinary& binary ) { _binary = &binary; }
 	OfxhPluginBinary&       getBinary()                           { return *_binary; }
 	const OfxhPluginBinary& getBinary() const                     { return *_binary; }
+
+	void setIsSupported( bool isSupported )
+	{
+		_isSupported = isSupported;
+	}
+	bool isSupported() const
+	{
+		return _isSupported;
+	}
 
 	int getIndex() const
 	{
@@ -98,6 +116,7 @@ private:
 		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhPluginDesc );
 		//		ar & BOOST_SERIALIZATION_NVP(_binary); // just a link, don't save
 		ar& BOOST_SERIALIZATION_NVP( _index );
+		ar& BOOST_SERIALIZATION_NVP( _isSupported );
 	}
 
 	#endif

@@ -9,11 +9,14 @@
 
 import os
 
-homebrew_base = '/usr/local'
-homebrew_include = os.path.join(homebrew_base, 'include')
+homebrew_base = os.environ.get('HOMEBREW_PREFIX', '/usr/local')
+homebrew_include = join(homebrew_base, 'include')
+
+X11 = '/opt/X11'
+X11_include = join(X11, 'include')
 
 ##
-## Customizing default values 
+## Customizing default values
 ##
 
 #todo make the incdir specification worthless for frameworks
@@ -36,31 +39,21 @@ lib_boost_log = 'boost_log-mt'
 dir_caca = homebrew_base
 
 dir_ctl = homebrew_base
-incdir_ctl = [ os.path.join(dir_ctl, 'include'),
-               os.path.join(dir_ctl, 'include', 'CTL') ]
+incdir_ctl = [ join(dir_ctl, 'include'),
+               join(dir_ctl, 'include', 'CTL') ]
 
 dir_ffmpeg = homebrew_base
 
-dir_freetype = homebrew_base
-incdir_freetype = [ homebrew_include,
-                    os.path.join(homebrew_include, 'freetype2') ]
-
-dir_gl = '/usr/X11'
-lib_gl = 'GL'
-
-dir_GLU = '/usr/X11'
-
-dir_glut = homebrew_base
 
 dir_glew = homebrew_base
 
 dir_half = homebrew_base
-incdir_half = [ homebrew_include, os.path.join(homebrew_include, 'OpenExr') ]
+incdir_half = [ homebrew_include, join(homebrew_include, 'OpenExr') ]
 
 dir_ilmbase = homebrew_base
 
-incdir_imagemagick = os.path.join(homebrew_include, "ImageMagick-6")
-libdir_imagemagick = os.path.join(homebrew_base, "lib/ImageMagick")
+incdir_imagemagick = join(homebrew_include, "ImageMagick-6")
+libdir_imagemagick = join(homebrew_base, "lib/ImageMagick")
 lib_imagemagick = "libMagickCore-6.Q16"
 
 dir_jpeg = homebrew_base
@@ -68,22 +61,17 @@ dir_jpeg = homebrew_base
 dir_littlecms = homebrew_base
 dir_lcms = homebrew_base
 
-dir_numpy = os.path.join(homebrew_base, 'lib/python2.7/site-packages/numpy/core')
-
 dir_opencolorio = homebrew_base
 
-incdir_openexr = os.path.join(homebrew_include, 'OpenEXR/')
+incdir_openexr = join(homebrew_include, 'OpenEXR/')
 
 dir_openimageio = homebrew_base
-incdir_openimageio = [ os.path.join(dir_openimageio, 'include'),
-                       os.path.join(dir_openimageio, 'include', 'OpenImageIO') ]
+incdir_openimageio = [ join(dir_openimageio, 'include'),
+                       join(dir_openimageio, 'include', 'OpenImageIO') ]
 
 incdir_openjpeg = '/usr/local/include/openjpeg-1.5/'
 libdir_openjpeg = '/usr/local/lib/'
 
-dir_png = homebrew_base
-
-incdir_python = '/usr/local/Frameworks/Python.framework/Versions/2.7/include/python2.7/'
 
 dir_raw = homebrew_base
 
@@ -91,4 +79,21 @@ dir_tiff = homebrew_base
 
 dir_turbojpeg = '/usr/local/opt/jpeg-turbo/'
 
-dir_xlibs = '/usr/X11'
+dir_xlibs = X11
+
+dir_png = X11
+
+dir_freetype = X11
+incdir_freetype = [ X11_include,
+                    join(X11_include, 'freetype2') ]
+
+dir_fontconfig = X11
+
+dir_gl = X11
+lib_gl = 'GL'
+
+dir_GLU = X11
+
+dir_glut = X11
+
+dir_freeglut = X11

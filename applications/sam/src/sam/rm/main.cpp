@@ -1,6 +1,8 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
+#include <tuttle/host/version.hpp>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -80,11 +82,13 @@ void removeFileObject( boost::ptr_vector<sequenceParser::FileObject> &listing, s
 //	TUTTLE_TCOUT( "removeFileObject." );
 	BOOST_FOREACH( const sequenceParser::FileObject& s, listing )
 	{
-		if( !(s.getMaskType () == sequenceParser::eMaskTypeDirectory))
+		if( !(s.getType() == sequenceParser::eTypeFolder))
 		{
 			TUTTLE_LOG_TRACE( "remove: " << s );
-			if( s.getMaskType () == sequenceParser::eMaskTypeSequence )
+			if( s.getType() == sequenceParser::eTypeSequence )
+			{
 				removeSequence( static_cast<const sequenceParser::Sequence&>( s ) );
+			}
 			else
 			{
 				std::vector<bfs::path> paths = s.getFiles();
@@ -137,17 +141,16 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
+	boost::shared_ptr<Formatter> formatter( Formatter::get() );
+	boost::shared_ptr<Color> color( Color::get() );
 
-	sequenceParser::EMaskType                researchMask      = sequenceParser::eMaskTypeSequence;	// by default show sequences
-	sequenceParser::EMaskOptions             descriptionMask   = sequenceParser::eMaskOptionsColor;	// by default show nothing
-	bool                         recursiveListing  = false;
-	std::vector<std::string>     paths;
-	std::vector<std::string>     filters;
+	sequenceParser::EType filterByType = sequenceParser::eTypeSequence;	// by default show sequences
+	sequenceParser::EDetection detectionOptions = sequenceParser::eDetectionDefault;
+	sequenceParser::EDisplay displayOptions = sequenceParser::eDisplayColor;
+	bool recursiveListing = false;
+	std::vector<std::string> paths;
+	std::vector<std::string> filters;
 
-	formatter->init_logging();
-	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
@@ -159,7 +162,7 @@ int main( int argc, char** argv )
 			( kIgnoreOptionString,      kIgnoreOptionMessage )
 			( kPathOptionString,        kPathOptionMessage )
 			( kRecursiveOptionString,   kRecursiveOptionMessage )
-			( kVerboseOptionString,     bpo::value<int>()->default_value( 2 ), kVerboseOptionMessage )
+			( kVerboseOptionString,     bpo::value<std::string>()->default_value( kVerboseOptionDefaultValue ), kVerboseOptionMessage )
 			( kQuietOptionString,       kQuietOptionMessage )
 			( kColorOptionString,       kColorOptionMessage )
 			( kFirstImageOptionString,  bpo::value<std::ssize_t>(), kFirstImageOptionMessage )
@@ -235,23 +238,23 @@ int main( int argc, char** argv )
 
 	if( vm.count( kHelpOptionLongName ) )
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-rm - remove file sequences" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-rm [options] [sequence_pattern]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( "Remove sequence of files, and could remove trees (folder, files and sequences)." );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( mainOptions );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-rm - remove file sequences" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-rm [options] [sequence_pattern]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( "Remove sequence of files, and could remove trees (folder, files and sequences)." );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "OPTIONS" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( mainOptions );
 
-		TUTTLE_LOG_INFO( color->_blue << "EXAMPLES" << color->_std );
+		TUTTLE_COUT( color->_blue << "EXAMPLES" << color->_std );
 		SAM_EXAMPLE_TITLE_COUT( "Sequence possible definitions: " );
 		SAM_EXAMPLE_LINE_COUT ( "Auto-detect padding : ", "seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Padding of 8 (usual style): ", "seq.########.jpg" );
@@ -259,14 +262,14 @@ int main( int argc, char** argv )
 		SAM_EXAMPLE_TITLE_COUT( "Delete: " );
 		SAM_EXAMPLE_LINE_COUT ( "A sequence:", "sam-rm /path/to/sequence/seq.@.jpg" );
 		SAM_EXAMPLE_LINE_COUT ( "Sequences in a directory:", "sam-rm /path/to/sequence/" );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( "" );
 
 		return 0;
 	}
 
 	if( vm.count( kBriefOptionLongName) )
 	{
-		TUTTLE_LOG_INFO( color->_green << "remove file sequences" << color->_std );
+		TUTTLE_COUT( color->_green << "remove file sequences" << color->_std );
 		return 0;
 	}
 
@@ -277,29 +280,21 @@ int main( int argc, char** argv )
 
 	if( vm.count( kDirectoriesOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
+		filterByType |= sequenceParser::eTypeFolder;
 	}
 	
 	if( vm.count( kFilesOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeFile;
+		filterByType |= sequenceParser::eTypeFile;
 	}
 	
 	if( vm.count( kIgnoreOptionLongName ) )
 	{
-		researchMask &= ~sequenceParser::eMaskTypeSequence;
+		filterByType &= ~sequenceParser::eTypeSequence;
 	}
 	
-	switch( vm[ kVerboseOptionLongName ].as< int >() )
-	{
-		case 0 :  formatter->setLogLevel( boost::log::trivial::trace   ); break;
-		case 1 :  formatter->setLogLevel( boost::log::trivial::debug   ); break;
-		case 2 :  formatter->setLogLevel( boost::log::trivial::info    ); break;
-		case 3 :  formatter->setLogLevel( boost::log::trivial::warning ); break;
-		case 4 :  formatter->setLogLevel( boost::log::trivial::error   ); break;
-		case 5 :  formatter->setLogLevel( boost::log::trivial::fatal   ); break;
-		default : formatter->setLogLevel( boost::log::trivial::warning ); break;
-	}
+	formatter->setLogLevel_string( vm[ kVerboseOptionLongName ].as<std::string>() );
+	
 	if( vm.count(kQuietOptionLongName) )
 	{
 		formatter->setLogLevel( boost::log::trivial::fatal );
@@ -319,20 +314,20 @@ int main( int argc, char** argv )
 
 	if( vm.count( kFullRMPathOptionLongName ) )
 	{
-		researchMask |= sequenceParser::eMaskTypeDirectory;
-		researchMask |= sequenceParser::eMaskTypeFile;
-		researchMask |= sequenceParser::eMaskTypeSequence;
+		filterByType |= sequenceParser::eTypeFolder;
+		filterByType |= sequenceParser::eTypeFile;
+		filterByType |= sequenceParser::eTypeSequence;
 	}
 	
 	if( vm.count( kAllOptionLongName ) )
 	{
 		// add .* files
-		descriptionMask |= sequenceParser::eMaskOptionsDotFile;
+		detectionOptions &= ~sequenceParser::eDetectionIgnoreDotFile;
 	}
 	
 	if( vm.count( kPathOptionLongName ) )
 	{
-		descriptionMask |= sequenceParser::eMaskOptionsPath;
+		displayOptions |= sequenceParser::eDisplayPath;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -374,19 +369,19 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 								//TUTTLE_TCOUT( *dir );
-								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, researchMask, descriptionMask );
+								boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( ( (bfs::path) *dir ).string(), filters, filterByType, detectionOptions, displayOptions );
 								removeFileObject( listing, pathsNoRemoved );
 							}
 						}
 					}
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.string(), filters, filterByType, detectionOptions, displayOptions );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 				else
 				{
 					//TUTTLE_TCOUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, researchMask, descriptionMask );
+					boost::ptr_vector<sequenceParser::FileObject> listing = sequenceParser::fileObjectInDirectory( path.branch_path().string(), filters, filterByType, detectionOptions, displayOptions );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 			}
@@ -395,7 +390,7 @@ int main( int argc, char** argv )
 //				TUTTLE_TCOUT( "not exist ...." );
 				try
 				{
-					sequenceParser::Sequence s(path.branch_path(), descriptionMask );
+					sequenceParser::Sequence s(path.branch_path(), displayOptions );
 					s.initFromDetection( path.string(), sequenceParser::Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{

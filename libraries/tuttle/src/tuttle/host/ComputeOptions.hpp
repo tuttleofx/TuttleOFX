@@ -5,13 +5,12 @@
 
 #include <ofxCore.h>
 
-#include <tuttle/common/utils/formatters.hpp>
+#include <tuttle/common/utils/Formatter.hpp>
 
-#include <boost/atomic.hpp>
+#include <tuttle/common/atomic.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <limits>
-
 #include <list>
 
 namespace tuttle {
@@ -19,11 +18,15 @@ namespace host {
 
 class IProgressHandle
 {
-	public:
-		virtual void beginSequence() = 0;
-		virtual void setupAtTime() = 0;
-		virtual void processAtTime() = 0;
-		virtual void endSequence() = 0;
+public:
+	virtual ~IProgressHandle() = 0;
+
+	virtual void beginSequence() = 0;
+	virtual void beginFrame() = 0;
+	virtual void setupAtTime() = 0;
+	virtual void processAtTime() = 0;
+	virtual void endFrame() = 0;
+	virtual void endSequence() = 0;
 };
 
 struct TimeRange
@@ -219,7 +222,7 @@ public:
 	 */
 	This& setVerboseLevel( const EVerboseLevel level )
 	{
-		tuttle::common::formatters::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
+		tuttle::common::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
 		return *this;
 	}
 	
@@ -276,30 +279,37 @@ public:
 	}
 	bool isProgressHandleSet() const
 	{
-		if (_progressHandle.get() == NULL)
-			return false;
-		else
-			return true;
+		return _progressHandle.get() != NULL;
 	}
 	void beginSequenceHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->beginSequence();
+		if( isProgressHandleSet() )
+			_progressHandle->beginSequence();
+	}
+	void beginFrameHandle() const
+	{
+		if( isProgressHandleSet() )
+			_progressHandle->beginFrame();
 	}
 	void setupAtTimeHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->setupAtTime();
+		if( isProgressHandleSet() )
+			_progressHandle->setupAtTime();
 	}
 	void processAtTimeHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->processAtTime();
+		if( isProgressHandleSet() )
+			_progressHandle->processAtTime();
+	}
+	void endFrameHandle() const
+	{
+		if( isProgressHandleSet() )
+			_progressHandle->endFrame();
 	}
 	void endSequenceHandle() const
 	{
-		if (isProgressHandleSet())
-			_progressHandle.get()->endSequence();
+		if( isProgressHandleSet() )
+			_progressHandle->endSequence();
 	}
 
 private:

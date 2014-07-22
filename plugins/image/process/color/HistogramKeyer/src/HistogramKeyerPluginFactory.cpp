@@ -124,19 +124,20 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		curvesRGB->setParent(groupRGB);	//add RGB curves to RGB group
 		curvesHSL->setParent(groupHSL); //add HSL curves to HSL group 
 		
-		//Set each curves to initial value
-		curvesRGB->setIdentity();
-		curvesHSL->setIdentity();
-		//add 2 control points (0,1) and (1,1) for each channel
+		//Default curve
 		for(unsigned int i=0; i< nbCurvesRGB; ++i)
 		{
-			//curvesRGB->addControlPoint( i, 0.0, 0.0, 1.0, false );
-			curvesRGB->addControlPoint( i, 0.0, 1.0, 1.0, false );
+			curvesRGB->addControlPoint( i, 0.0, 0.0, 0.0, false );
+			curvesRGB->addControlPoint( i, 0.0, 0.2, 1.0, false );
+			curvesRGB->addControlPoint( i, 0.0, 0.6, 1.0, false );
+			curvesRGB->addControlPoint( i, 0.0, 1.0, 0.0, false );
 		}
 		for(unsigned int i=0; i< nbCurvesHSL; ++i)
 		{
-			//curvesHSL->addControlPoint( i, 0.0, 0.0, 1.0, false );
-			curvesHSL->addControlPoint( i, 0.0, 1.0, 1.0, false );
+			curvesHSL->addControlPoint( i, 0.0, 0.0, 0.0, false );
+			curvesHSL->addControlPoint( i, 0.0, 0.2, 1.0, false );
+			curvesHSL->addControlPoint( i, 0.0, 0.6, 1.0, false );
+			curvesHSL->addControlPoint( i, 0.0, 1.0, 0.0, false );
 		}
 		
 		//Channels checkboxes (RGB)

@@ -63,34 +63,34 @@ namespace imageEffect {
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin()
 	: OfxhPlugin()
-	, _pc( NULL )
-	, _pluginHandle( NULL )
+	, _imageEffectPluginCache( NULL )
+	, _pluginLoadGuard( NULL )
 	, _baseDescriptor( NULL )
 {
 	/// @todo tuttle
 }
 
-OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary& pb, int pi, OfxPlugin& pl )
-	: OfxhPlugin( pb, pi, pl )
-	, _pc( &pc )
-	, _pluginHandle( 0 )
+OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& imageEffectPluginCache, OfxhPluginBinary& pluginBinary, int pluginIndex, OfxPlugin& plugin )
+	: OfxhPlugin( pluginBinary, pluginIndex, plugin )
+	, _imageEffectPluginCache( &imageEffectPluginCache )
+	, _pluginLoadGuard( NULL )
 	, _baseDescriptor( core().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
 }
 
-OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
-                                              OfxhPluginBinary&           pb,
-                                              int                         pi,
+OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& imageEffectPluginCache,
+                                              OfxhPluginBinary&           pluginBinary,
+                                              int                         pluginIndex,
                                               const std::string&          api,
                                               int                         apiVersion,
                                               const std::string&          pluginId,
                                               const std::string&          rawId,
                                               int                         pluginMajorVersion,
                                               int                         pluginMinorVersion )
-	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
-	, _pc( &pc )
-	, _pluginHandle( NULL )
+	: OfxhPlugin( pluginBinary, pluginIndex, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
+	, _imageEffectPluginCache( &imageEffectPluginCache )
+	, _pluginLoadGuard( NULL )
 	, _baseDescriptor( core().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
@@ -102,9 +102,9 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 
 OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 {
-	if( getPluginHandle() )
+	if( _pluginLoadGuard )
 	{
-		getPluginHandle()->getOfxPlugin()->mainEntry( kOfxActionUnload, 0, 0, 0 );
+		_pluginLoadGuard->getOfxPlugin()->mainEntry( kOfxActionUnload, 0, 0, 0 );
 	}
 }
 
@@ -118,17 +118,17 @@ bool OfxhImageEffectPlugin::operator==( const OfxhImageEffectPlugin& other ) con
 
 void OfxhImageEffectPlugin::setApiHandler( APICache::OfxhPluginAPICacheI& api )
 {
-	_pc = &dynamic_cast<OfxhImageEffectPluginCache&>( api );
+	_imageEffectPluginCache = &dynamic_cast<OfxhImageEffectPluginCache&>( api );
 }
 
 APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler()
 {
-	return *_pc;
+	return *_imageEffectPluginCache;
 }
 
 const APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler() const
 {
-	return *_pc;
+	return *_imageEffectPluginCache;
 }
 
 /// get the image effect descriptor
@@ -165,13 +165,10 @@ const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 {
 	/*
-	TUTTLE_TLOG( TUTTLE_TRACE, context << " supportsContext? " << _knownContexts.size() << std::endl;
-	
-	for( ContextSet::iterator it = _knownContexts.begin(),
-		 it != _knownContexts.end();
-		 ++it )
+	TUTTLE_LOG( TUTTLE_TRACE, context << " supportsContext? " << _knownContexts.size() );
+	BOOST_FOREACH( const std::string& c, _knownContexts )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "context " << *it );
+		TUTTLE_LOG( TUTTLE_TRACE, "context " << c );
 	}
 	*/
 	return _knownContexts.find( context ) != _knownContexts.end();
@@ -191,18 +188,18 @@ void OfxhImageEffectPlugin::initContexts()
 
 void OfxhImageEffectPlugin::loadAndDescribeActions()
 {
-	if( getPluginHandle() )
+	if( _pluginLoadGuard )
 	{
 		//TUTTLE_TLOG( TUTTLE_TRACE, "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
 		return;
 	}
-	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( *this, getApiHandler().getHost() ) );
+	_pluginLoadGuard.reset( new tuttle::host::ofx::OfxhPluginLoadGuard( *this, getApiHandler().getHost() ) );
 
-	OfxPlugin* op = _pluginHandle->getOfxPlugin();
+	OfxPlugin* op = _pluginLoadGuard->getOfxPlugin();
 
 	if( op == NULL )
 	{
-		_pluginHandle.reset( NULL );
+		_pluginLoadGuard.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
 		    << exception::dev( "loadAndDescribeAction: OfxPlugin is NULL." )
 		    << exception::ofxApi( getApiHandler()._apiName ) );
@@ -212,7 +209,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		_pluginHandle.reset( NULL );
+		_pluginLoadGuard.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
 		    << exception::dev( "Load Action failed." )
 		    << exception::ofxApi( getApiHandler()._apiName ) );
@@ -222,7 +219,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		_pluginHandle.reset( NULL );
+		_pluginLoadGuard.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
 		    << exception::dev( "Describe Action failed." )
 		    << exception::ofxApi( getApiHandler()._apiName ) );
@@ -259,12 +256,10 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 
 	tuttle::host::ofx::property::OfxhSet inarg( inargspec );
 
-	OfxhPluginHandle* ph = getPluginHandle();
-
 	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor> newContext( core().getHost().makeDescriptor( getDescriptor(), *this ) );
 	int rval = kOfxStatFailed;
-	if( ph->getOfxPlugin() )
-		rval = ph->getOfxPlugin()->mainEntry( kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0 );
+	if( _pluginLoadGuard->getOfxPlugin() )
+		rval = _pluginLoadGuard->getOfxPlugin()->mainEntry( kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
@@ -283,10 +278,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	 * might get confused otherwise), then a describe_in_context
 	 */
 	loadAndDescribeActions();
-	if( getPluginHandle() == NULL )
-	{
-		BOOST_THROW_EXCEPTION( exception::BadHandle() );
-	}
+	
 	OfxhImageEffectNodeDescriptor& desc        = getDescriptorInContext( context );
 	imageEffect::OfxhImageEffectNode* instance = core().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
 	instance->createInstanceAction(); // Is it not possible to move this in a constructor ? In some cases it's interesting to initialize host side values before creation of plugin side objets (eg. node duplication or creation from file).
@@ -295,9 +287,9 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 
 void OfxhImageEffectPlugin::unloadAction()
 {
-	if( getPluginHandle() )
+	if( _pluginLoadGuard )
 	{
-		( *_pluginHandle )->mainEntry( kOfxActionUnload, 0, 0, 0 );
+		_pluginLoadGuard->getOfxPlugin()->mainEntry( kOfxActionUnload, 0, 0, 0 );
 	}
 }
 

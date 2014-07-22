@@ -1,6 +1,6 @@
+#include <EXRDefinitions.hpp>
 #include "EXRWriterPluginFactory.hpp"
 #include "EXRWriterPlugin.hpp"
-#include "EXRWriterDefinitions.hpp"
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
@@ -33,6 +33,7 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add supported extensions
 	desc.addSupportedExtension( "exr" );
+	desc.setPluginEvaluation( 90 );
 
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -78,7 +79,29 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth16f );
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 	bitDepth->appendOption( kTuttlePluginBitDepth32f );
-	bitDepth->setDefault( eTuttlePluginBitDepth32f );
+	bitDepth->setDefault( eTuttlePluginFileBitDepth32f );
+
+	OFX::ChoiceParamDescriptor* fileBitDepth = desc.defineChoiceParam( kParamFileBitDepth );
+	fileBitDepth->setLabel( "File Bit Depth" );
+	fileBitDepth->appendOption( kTuttlePluginBitDepth16f );
+	fileBitDepth->appendOption( kTuttlePluginBitDepth32 );
+	fileBitDepth->appendOption( kTuttlePluginBitDepth32f );
+	fileBitDepth->setDefault( eTuttlePluginFileBitDepth32f );
+	fileBitDepth->setHint(
+		"Read-only information about the image bit depth stored in the file.\n"
+		"Data type is per channel in EXR. So we read the type of the first channel.");
+
+	OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam( kParamCompression );
+	compression->setLabel( "Compression" );
+	compression->appendOption( kParamCompressionNone, kParamCompressionHintNone );
+	compression->appendOption( kParamCompressionRLE, kParamCompressionHintRLE );
+	compression->appendOption( kParamCompressionZIPS, kParamCompressionHintZIPS );
+	compression->appendOption( kParamCompressionZIP, kParamCompressionHintZIP );
+	compression->appendOption( kParamCompressionPIZ, kParamCompressionHintPIZ );
+	compression->appendOption( kParamCompressionPXR24, kParamCompressionHintPXR24 );
+	compression->appendOption( kParamCompressionB44, kParamCompressionHintB44 );
+	compression->appendOption( kParamCompressionB44A, kParamCompressionHintB44A );
+	compression->setDefault( eParamCompression_ZIP );
 }
 
 /**

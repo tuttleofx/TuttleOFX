@@ -208,7 +208,7 @@ public:
 	virtual void reset() = 0;
 
 	// get a string representing the value of this property at element nth
-	virtual std::string getStringValue( int nth ) const = 0;
+	virtual std::string getStringValue( int index = 0 ) const = 0;
 
 private:
 	friend class boost::serialization::access;

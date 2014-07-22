@@ -1,4 +1,4 @@
-# scons: Checkerboard Blur Png Constant Gamma ImageStatistics Pinning Constant
+# scons: pluginCheckerboard pluginBlur pluginPng pluginConstant pluginGamma pluginImageStatistics pluginPinning pluginConstant
 
 from pyTuttle import tuttle
 
@@ -16,11 +16,11 @@ def testDoubleParamAnimation():
 
 	# Read arbitrary blur values, to see the interpolation
 	s = blur.getParam("size")
-	for i in xrange(0, 10*5):
+	for i in range(0, 10*5):
 		t = i/5.0 # step is 0.2
-		print "blur size at ", t, ":", \
+		print("blur size at ", t, ":", \
 		    "(", s.getDoubleValueAtTimeAndIndex(t, 0), ", ", \
-		         s.getDoubleValueAtTimeAndIndex(t, 1), ")"
+		         s.getDoubleValueAtTimeAndIndex(t, 1), ")")
 		assert( s.getDoubleValueAtTimeAndIndex(t, 0) <= 80. )
 		assert( s.getDoubleValueAtTimeAndIndex(t, 0) >=  0. )
 		assert( s.getDoubleValueAtTimeAndIndex(t, 1) <= 40. )

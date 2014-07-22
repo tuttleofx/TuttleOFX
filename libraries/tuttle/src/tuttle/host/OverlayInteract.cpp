@@ -9,7 +9,7 @@ OverlayInteract::OverlayInteract( Graph& userGraph, ImageEffectNode& effect, int
 	, _bitDepthPerComponent( bitDepthPerComponent )
 	, _hasAlpha( hasAlpha )
 	, _time(0)
-	, _procGraph( ComputeOptions().setReturnBuffers( false ), userGraph, std::list<std::string>() )
+	, _procGraph( ComputeOptions().setReturnBuffers( false ), userGraph, std::list<std::string>(), core().getMemoryCache() )
 {
 	effect.initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
 	createInstanceAction();
@@ -23,4 +23,3 @@ void OverlayInteract::draw( const OfxPointD& renderScale )
 }
 }
 
-   

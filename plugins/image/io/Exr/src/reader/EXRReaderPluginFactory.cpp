@@ -40,6 +40,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add supported extensions
 	desc.addSupportedExtension( "exr" );
+	desc.setPluginEvaluation( 90 );
 	
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
@@ -96,12 +97,35 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	outAlphaIs->appendOption( "3" );
 	outAlphaIs->setLabel( "Alpha is" );
 	outAlphaIs->setDefault( 0 );
-	
+
 	OFX::ChoiceParamDescriptor* outputData = desc.defineChoiceParam( kParamOutputData );
 	outputData->appendOption( "display" );
 	outputData->appendOption( "data" );
 	outputData->setLabel( "Output Data" );
 	outputData->setDefault( 0 );
+
+	OFX::ChoiceParamDescriptor* fileBitDepth = desc.defineChoiceParam( kParamFileBitDepth );
+	fileBitDepth->setLabel( "File Bit Depth" );
+	fileBitDepth->appendOption( kTuttlePluginBitDepth16f );
+	fileBitDepth->appendOption( kTuttlePluginBitDepth32 );
+	fileBitDepth->appendOption( kTuttlePluginBitDepth32f );
+	fileBitDepth->appendOption( kTuttlePluginBitDepthNone );
+	fileBitDepth->setDefault( eTuttlePluginFileBitDepthNone );
+	fileBitDepth->setHint(
+		"Read-only information about the image bit depth stored in the file.\n"
+		"Data type is per channel in EXR. So we read the type of the first channel.");
+
+	OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam( kParamCompression );
+	compression->setLabel( "Compression" );
+	compression->appendOption( kParamCompressionNone, kParamCompressionHintNone );
+	compression->appendOption( kParamCompressionRLE, kParamCompressionHintRLE );
+	compression->appendOption( kParamCompressionZIPS, kParamCompressionHintZIPS );
+	compression->appendOption( kParamCompressionZIP, kParamCompressionHintZIP );
+	compression->appendOption( kParamCompressionPIZ, kParamCompressionHintPIZ );
+	compression->appendOption( kParamCompressionPXR24, kParamCompressionHintPXR24 );
+	compression->appendOption( kParamCompressionB44, kParamCompressionHintB44 );
+	compression->appendOption( kParamCompressionB44A, kParamCompressionHintB44A );
+	compression->setDefault( eParamCompression_None );
 }
 
 /**

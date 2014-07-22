@@ -13,6 +13,7 @@ class NodeAtTimeKey
 {
 public:
 	NodeAtTimeKey()
+	: _time(-9876.54321)
 	{}
 	NodeAtTimeKey( const std::string& name, const OfxTime& time )
 	: _name(name)

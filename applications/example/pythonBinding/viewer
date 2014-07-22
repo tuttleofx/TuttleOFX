@@ -1,35 +1,37 @@
 #!/usr/bin/python
+from __future__ import print_function
 import sys
 import os
+
 import envTuttle
-envTuttle.setEnvTuttle()
-
-from pyTuttle.tuttle import *
+from pyTuttle import tuttle
 import getBestPlugin
-core().preload(False)
 
-pluginCache = core().getPluginCache()
+tuttle.core().preload(False)
 
-if len( sys.argv) < 2 :
-	print "ERROR: no such input file"
-	exit()
+pluginCache = tuttle.core().getPluginCache()
 
-print sys.argv[1]
-( base, ext ) = os.path.splitext( sys.argv[1] )
+if len(sys.argv) < 2 :
+	print("ERROR: no such input file")
+	exit(-1)
 
-plugin = getBestPlugin.getBestReader( ext )
+print(sys.argv[1])
+(base, ext) = os.path.splitext(sys.argv[1])
 
-if len( plugin ) == 0 :
-	print "ERROR: unsupported input file"
-	exit()
+plugin = getBestPlugin.getBestReader(ext)
 
-g = Graph()
-reader = g.createNode( plugin, filename=sys.argv[1] )
-viewer = g.createNode( "tuttle.viewer" )
+if not plugin:
+	print("ERROR: unsupported input file")
+	exit(-1)
 
-co = ComputeOptions()
-co.setVerboseLevel( eVerboseLevelError )
+graph = tuttle.Graph()
+reader = graph.createNode(plugin, filename=sys.argv[1])
+viewer = graph.createNode("tuttle.viewer")
 
-g.connect( [reader, viewer ] )
+options = tuttle.ComputeOptions()
+options.setVerboseLevel(tuttle.eVerboseLevelError)
 
-g.compute( viewer, co )
+graph.connect([reader, viewer])
+
+graph.compute(viewer, options)
+

@@ -1,15 +1,16 @@
-# scons: Checkerboard Invert AudioVideo Png
+# scons: pluginCheckerboard pluginInvert pluginAudioVideo pluginPng
 
-from pyTuttle.tuttle import *
+from pyTuttle import tuttle
+
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
+
 
 def testSimpleNodeList():
-
-	compute( [
-		NodeInit( "tuttle.checkerboard", size=[50,50], explicitConversion="8i" ),
-		NodeInit( "tuttle.invert" ),
-		NodeInit( "tuttle.swscale", height=500 ),
-		NodeInit( "tuttle.pngwriter", filename=".tests/output.png" ),
+	tuttle.compute( [
+		tuttle.NodeInit( "tuttle.checkerboard", size=[50,50], explicitConversion="8i" ),
+		tuttle.NodeInit( "tuttle.invert" ),
+		tuttle.NodeInit( "tuttle.swscale", height=500 ),
+		tuttle.NodeInit( "tuttle.pngwriter", filename=".tests/output.png" ),
 		] )

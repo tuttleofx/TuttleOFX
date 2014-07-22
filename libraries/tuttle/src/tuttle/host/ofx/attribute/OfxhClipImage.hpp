@@ -50,7 +50,6 @@ public:
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	virtual OfxhClipImage* clone() const                    = 0;
-	virtual std::string    getFullName() const              = 0;
 	virtual std::string    getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
 	virtual std::string    getClipIdentifier() const = 0;
 

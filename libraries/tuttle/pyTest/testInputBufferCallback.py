@@ -1,35 +1,41 @@
-# scons: MemoryBuffer Png
+# scons: pluginMemoryBuffer pluginPng
 
-from pyTuttle.tuttle import *
-from nose.tools import *
-from tempfile import *
+from pyTuttle import tuttle
+import tempfile
 
 import numpy
-import Image
+from PIL import Image
+
+from nose.tools import *
+
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
 
 
 # This is called by Tuttle as an input of the graph
 def getImage(time):
-	img = numpy.asarray( Image.open("TuttleOFX-data/image/jpeg/MatrixLarge.jpg") )
+	img = numpy.asarray(Image.open("TuttleOFX-data/image/jpeg/MatrixLarge.jpg"))
 	return (img.tostring(), img.shape[1], img.shape[0], img.strides[0])
 
 
 def testInputBufferCallback():
 
-	g = Graph()
-
+	g = tuttle.Graph()
+	
 	ib = g.createInputBuffer()
-	ib.setComponents( InputBufferWrapper.ePixelComponentRGB )
-	ib.setBitDepth( InputBufferWrapper.eBitDepthUByte )
-	ib.setOrientation( InputBufferWrapper.eImageOrientationFromTopToBottom )
-	ib.setPyCallback( getImage )
+	ib.setComponents(tuttle.InputBufferWrapper.ePixelComponentRGB)
+	ib.setBitDepth(tuttle.InputBufferWrapper.eBitDepthUByte)
+	# Should be eImageOrientationFromTopToBottom, but it doesn't work currently.
+	# ib.setOrientation(tuttle.InputBufferWrapper.eImageOrientationFromTopToBottom)
+	ib.setOrientation(tuttle.InputBufferWrapper.eImageOrientationFromBottomToTop)
+	ib.setPyCallback(getImage)
 
-	filepath = NamedTemporaryFile( prefix="inputBufferCallback-", suffix=".png" )
-	w = g.createNode("tuttle.pngwriter", filename = filepath.name )
-
-	g.connect( ib.getNode(), w )
-	g.compute( w )
+	filepath = tempfile.NamedTemporaryFile(prefix="inputBufferCallback-", suffix=".png")
+	
+	w = g.createNode("tuttle.pngwriter", filename=filepath.name)
+	
+	g.connect(ib.getNode(), w)
+	
+	g.compute(w)
 

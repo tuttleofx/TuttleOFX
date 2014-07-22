@@ -1,4 +1,4 @@
-# scons: Checkerboard Blur Png
+# scons: pluginCheckerboard pluginBlur pluginPng
 
 from pyTuttle import tuttle
 from nose.tools import *
@@ -16,15 +16,15 @@ def testBasic():
 	read2 = g.createNode( "tuttle.checkerboard", size=[50,49] )
 	read2b = g.createNode( "tuttle.checkerboard", size=[50,49] )
 
-	print "dir:", dir(read1)
+	print("dir:", dir(read1))
 	#print "dir:", dir(read1.getLocalHashAtTime)
 	#print "help:", help(read1)
 	#print "read1   0.0:", read1.getLocalHashAtTime()
 	#print "read1   0.0:", read1.getLocalHashAtTime("oo")
-	print "read1   0.0:", read1.asImageEffectNode().getLocalHashAtTime(0.0)
-	print "read1   0.0:", read1.getLocalHashAtTime(0.0)
-	print "read2  12.0:", read2.getLocalHashAtTime(12.0)
-	print "read2b  0.0:", read2b.getLocalHashAtTime(0.0)
+	print("read1   0.0:", read1.asImageEffectNode().getLocalHashAtTime(0.0))
+	print("read1   0.0:", read1.getLocalHashAtTime(0.0))
+	print("read2  12.0:", read2.getLocalHashAtTime(12.0))
+	print("read2b  0.0:", read2b.getLocalHashAtTime(0.0))
 	assert_equal( read1.getLocalHashAtTime(0.0), read1.getLocalHashAtTime(12.0) )
 	assert_equal( read2.getLocalHashAtTime(0.0), read2b.getLocalHashAtTime(12.0) )
 	
@@ -66,13 +66,13 @@ def testFilenameLastWriteTimeChanged():
 	open(filepath.name, "w").write("Not empty\n")
 	# Cast to long, because in C++ we see it as a long.
 	
-	last_modification_time = long(os.stat(filepath.name).st_ctime)
+	last_modification_time = int(os.stat(filepath.name).st_ctime)
 	hash_with_file = read_filename.getLocalHashAtTime(0.0)
 	assert_equal( read_filename.getLocalHashAtTime(0.0), read_filename.getLocalHashAtTime(0.0) )
 	
 	# Modify the timestamp, until the last write time change becames visible
 	i = 0
-	while last_modification_time == long(os.stat(filepath.name).st_ctime):
+	while last_modification_time == int(os.stat(filepath.name).st_ctime):
 		open( filepath.name, "w").write("Adding data to modify the last wite time: " + str(i) + "\n")
 		i += 1
 	hash_with_modified_file = read_filename.getLocalHashAtTime(0.0)

@@ -159,6 +159,14 @@ public:
 	{
 		boost::clear_vertex( vd, _graph ); // remove in and out edges
 	}
+	void clearVertexInputs( const vertex_descriptor& vd )
+	{
+		boost::clear_in_edges( vd, _graph ); // remove in and out edges
+	}
+	void clearVertexOutputs( const vertex_descriptor& vd )
+	{
+		boost::clear_out_edges( vd, _graph ); // remove in and out edges
+	}
 	
 	/**
 	 * @brief Remove a Vertex.

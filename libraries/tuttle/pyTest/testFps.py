@@ -1,16 +1,17 @@
-# scons: AudioVideo Invert
+# scons: pluginAudioVideo pluginInvert
 
-from pyTuttle.tuttle import *
+from pyTuttle import tuttle
+
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
 
 
 def testFpsPropagation():
 
 	return # TODO
 
-	compute( [
+	tuttle.compute( [
 		NodeInit( "tuttle.ffmpegreader", filename="TuttleOFX-data/video/morgen-20030714.avi" ),
 		NodeInit( "tuttle.invert" ),
 		NodeInit( "tuttle.invert" ),

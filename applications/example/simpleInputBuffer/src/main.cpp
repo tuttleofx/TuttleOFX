@@ -1,11 +1,11 @@
-#include <tuttle/host/Graph.hpp>
+#define int_p_NULL (int*)NULL
+// Should be included first to avoid setjmp.h include troubles
+#include <boost/gil/extension/io/png_io.hpp>
 
 #include <boost/gil/gil_all.hpp>
-
-#define int_p_NULL (int*)NULL
-
-#include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/image_view_factory.hpp>
+
+#include <tuttle/host/Graph.hpp>
 
 #include <boost/lexical_cast.hpp>
 

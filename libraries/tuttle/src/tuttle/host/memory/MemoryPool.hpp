@@ -34,6 +34,9 @@ class MemoryPool : public IMemoryPool
 	, public IPool
 {
 public:
+	typedef MemoryPool This;
+
+public:
 	MemoryPool( const std::size_t maxSize = 0 );
 	~MemoryPool();
 
@@ -57,6 +60,8 @@ public:
 	void clear();
 	void clearOne();
 
+	friend std::ostream& operator<<( std::ostream& os, const This& v );
+
 private:
 	typedef boost::unordered_set<PoolData*> DataList;
 	boost::ptr_list<PoolData> _allDatas; // the owner
@@ -66,11 +71,11 @@ private:
 	std::size_t _memoryAuthorized;
 	mutable boost::mutex _mutex;
 };
-/*
+
 #ifndef SWIG
 std::ostream& operator<<( std::ostream& os, const MemoryPool& memoryPool );
 #endif
-*/
+
 }
 }
 }

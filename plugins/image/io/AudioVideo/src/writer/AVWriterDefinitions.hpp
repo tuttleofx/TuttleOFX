@@ -38,6 +38,28 @@ static const std::string kParamUseCustomFps              = "useCustomFps";
 static const std::string kParamCustomFps                 = "customFps";
 static const std::string kParamVideoCodecPixelFmt        = "videoPixelFormat";
 
+static const std::string kParamMetaAlbum           = "meta_album";
+static const std::string kParamMetaAlbumArtist     = "meta_album_artist";
+static const std::string kParamMetaArtist          = "meta_artist";
+static const std::string kParamMetaComment         = "meta_comment";
+static const std::string kParamMetaComposer        = "meta_composer";
+static const std::string kParamMetaCopyright       = "meta_copyright";
+static const std::string kParamMetaCreationTime    = "meta_creation_time";
+static const std::string kParamMetaDate            = "meta_date";
+static const std::string kParamMetaDisc            = "meta_disc";
+static const std::string kParamMetaEncoder         = "meta_encoder";
+static const std::string kParamMetaEncodedBy       = "meta_encoded_by";
+static const std::string kParamMetaFilename        = "meta_filename";
+static const std::string kParamMetaGenre           = "meta_genre";
+static const std::string kParamMetaLanguage        = "meta_language";
+static const std::string kParamMetaPerformer       = "meta_performer";
+static const std::string kParamMetaPublisher       = "meta_publisher";
+static const std::string kParamMetaServiceName     = "meta_service_name";
+static const std::string kParamMetaServiceProvider = "meta_service_provider";
+static const std::string kParamMetaTitle           = "meta_title";
+static const std::string kParamMetaTrack           = "meta_track";
+static const std::string kParamMetaVariantBitrate  = "meta_variant_bitrate";
+
 }
 }
 }

@@ -2,6 +2,7 @@
 #define _TUTTLE_HOST_PROCESSVERTEXDATA_HPP_
 
 #include <tuttle/host/INode.hpp>
+#include <tuttle/host/memory/IMemoryCache.hpp>
 
 #include <tuttle/host/ofx/OfxhCore.hpp>
 
@@ -16,8 +17,9 @@ class ProcessVertexData
 typedef ProcessVertexData This;
 
 public:
-	ProcessVertexData( const INode::ENodeType apiType = INode::eNodeTypeUnknown )
-		: _apiType( apiType )
+	ProcessVertexData( memory::IMemoryCache* internMemoryCache, const INode::ENodeType apiType = INode::eNodeTypeUnknown )
+		: _internMemoryCache( internMemoryCache )
+		, _apiType( apiType )
 		, _step( 1 )
 		, _interactive( 0 )
 		, _outDegree( 0 )
@@ -45,7 +47,12 @@ public:
 public:
 	friend std::ostream& operator<<( std::ostream& os, const This& vData );
 
+	// const function that give access to an external non-const object
+	memory::IMemoryCache& getInternMemoryCache() const { return *_internMemoryCache; }
+
 public:
+	memory::IMemoryCache* _internMemoryCache;
+	
 	// const GraphProcessData& _data; /// @todo tuttle: graph common datas, like renderScale
 	OfxPointD _renderScale;
 

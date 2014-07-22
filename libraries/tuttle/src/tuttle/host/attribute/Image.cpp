@@ -1,19 +1,21 @@
 #include "Image.hpp"
+
+#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
+#define int_p_NULL (int *)NULL
+ // Should be included first to avoid setjmp.h include troubles
+ #include <boost/gil/extension/io/png_io.hpp>
+#endif
+#endif
+
 #include <tuttle/host/attribute/ClipImage.hpp>
 #include <tuttle/host/Core.hpp>
-
 #include <tuttle/common/utils/global.hpp>
 
 #include <boost/gil/image.hpp>
 #include <boost/gil/image_view.hpp>
 #include <boost/gil/typedefs.hpp>
 
-#ifndef TUTTLE_PRODUCTION
-#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
-#define int_p_NULL (int *)NULL
- #include <boost/gil/extension/io/png_io.hpp>
-#endif
-#endif
 
 namespace tuttle {
 namespace host {

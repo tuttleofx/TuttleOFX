@@ -35,8 +35,7 @@ public:
 	OfxPointI _squareEnd;					//end of square selection			
 	
 	bool _isFirstTime;						//temporary
-	
-	/* temporary when Nuke doesn't support parametric parameter overlay */
+
 	HSLOverlay _hslParam;
 	RGBOverlay _rgbParam;
 

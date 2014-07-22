@@ -4,12 +4,12 @@ Tuttle binding scripts samples
 envTuttle.py
 ------------
 
-> setEnvTuttle()
+> import envTuttle
 
 Set pyTuttle environment.
 Edit this script to set your TUTTLE_ROOT path.  
 
-setEnvTuttle() **should be call before using the binding**.
+envTuttle **should be imported before using the binding**.
 
 loadTuttleLibraries.py
 ----------------------
@@ -25,8 +25,8 @@ List avalaible OpenFX plugins
 getBestPlugin.py
 ----------------
 
-> string getBestReader ( ext )  
-> string getBestWriter ( ext )
+> readIdentifier = getBestReader(ext)  
+> writerIdentifier = getBestWriter(ext)
 
 Functions to choose the best reader or writer according to an extension.
 Required by seq-info.

@@ -12,8 +12,10 @@ namespace reader {
 struct EXRReaderProcessParams
 {
 	std::string _filepath;       ///< filepath
-	int         _fileComponents; ///< File Component type
+	int         _fileNbChannels; ///< Number of channels in the Exr file
+	int         _userNbComponents; ///< Number of channel asked by user
 	int         _outComponents;  ///< Components type
+	
 	int         _redChannelIndex;
 	int         _greenChannelIndex;
 	int         _blueChannelIndex;
@@ -31,29 +33,30 @@ public:
 	EXRReaderProcessParams getProcessParams( const OfxTime time );
 
 public:
-	void changedParam         ( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	void getClipPreferences   ( OFX::ClipPreferencesSetter& clipPreferences );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 
 	void render( const OFX::RenderArguments& args );
 
-	const std::vector<std::string>&       channelNames() const  { return _vChannelNames; }
-	const std::vector<OFX::ChoiceParam*>& channelChoice() const { return _vChannelChoice; }
+	const std::vector<std::string>& channelNames() const { return _channelNames; }
+	const std::vector<OFX::ChoiceParam*>& channelChoice() const { return _paramsChannelChoice; }
 
 private:
 	void updateCombos();
 
 protected:
-	std::vector<OFX::ChoiceParam*> _vChannelChoice;  ///< Channel choice
-	std::vector<std::string>       _vChannelNames;   ///< Channel names
-	OFX::ChoiceParam*              _outComponents;   ///< Components list
-	OFX::ChoiceParam*              _redComponents;   ///< index of Red components
-	OFX::ChoiceParam*              _greenComponents; ///< index of Green components
-	OFX::ChoiceParam*              _blueComponents;  ///< index of Blue components
-	OFX::ChoiceParam*              _alphaComponents; ///< index of Alpha components
-	OFX::ChoiceParam*              _outputData;      ///< Output data
-	int                            _channels;        ///< number of channels in file
-	float                          _par;             ///< pixel aspect ratio
+	std::vector<OFX::ChoiceParam*> _paramsChannelChoice;  ///< Channel choice
+	std::vector<std::string> _channelNames;  ///< Channel names
+	OFX::ChoiceParam* _paramOutComponents;  ///< Components list
+	OFX::ChoiceParam* _paramRedComponents;  ///< index of Red components
+	OFX::ChoiceParam* _paramGreenComponents;  ///< index of Green components
+	OFX::ChoiceParam* _paramBlueComponents;  ///< index of Blue components
+	OFX::ChoiceParam* _paramAlphaComponents;  ///< index of Alpha components
+	OFX::ChoiceParam* _paramOutputData;  ///< Output data
+	OFX::ChoiceParam* _paramFileCompression;
+	OFX::ChoiceParam* _paramFileBitDepth;
+	float _par;  ///< pixel aspect ratio
 };
 
 }

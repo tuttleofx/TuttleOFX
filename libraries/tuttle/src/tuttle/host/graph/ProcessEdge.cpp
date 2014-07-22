@@ -27,15 +27,17 @@ std::ostream& ProcessEdge::exportDotDebug( std::ostream& os ) const
 	s << subDotEntry( "label", getName() );
 	s << subDotEntry( "id", _localId );
 	std::ostringstream timesNeeded;
+	timesNeeded << "{";
 	BOOST_FOREACH( const TimeMap::value_type& m, _timesNeeded )
 	{
-		timesNeeded << "(" << m.first << ":";
+		timesNeeded << m.first << ": (";
 		std::copy(
 			m.second.begin(),
 			m.second.end(),
 			std::ostream_iterator<OfxTime>(timesNeeded, "," ) );
-		timesNeeded << ")";
+		timesNeeded << "), ";
 	}
+	timesNeeded << "}";
 	s << subDotEntry( "timesNeeded", timesNeeded.str() );
 
 	os << "[" << std::endl;

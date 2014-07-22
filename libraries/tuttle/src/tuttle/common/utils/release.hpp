@@ -7,6 +7,10 @@
 
 /// @see TUTTLE_LOG
 #define TUTTLE_LOG_DEBUG(... )
+
+#define TUTTLE_LOG_TRACE_DEBUG(... )
+#define TUTTLE_LOG_INFO_DEBUG(... )
+
 /// @see  TUTTLE_LOG_INFOS
 #define TUTTLE_LOG_INFOS_DEBUG
 /// @see  TUTTLE_LOG_INFOS

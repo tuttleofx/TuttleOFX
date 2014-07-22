@@ -12,7 +12,7 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-class OfxhPluginHandle;
+class OfxhPluginLoadGuard;
 class OfxhPluginCache;
 
 /**
@@ -26,7 +26,7 @@ public:
 	typedef OfxhPluginBinary This;
 	typedef boost::ptr_vector<OfxhPlugin> PluginVector;
 
-	friend class OfxhPluginHandle;
+	friend class OfxhPluginLoadGuard;
 
 protected:
 	OfxhBinary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.hpp

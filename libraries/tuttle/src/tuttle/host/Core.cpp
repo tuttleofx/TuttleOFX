@@ -5,6 +5,7 @@
 #include <tuttle/host/memory/MemoryCache.hpp>
 
 #include <tuttle/common/system/system.hpp>
+#include <tuttle/common/utils/Formatter.hpp>
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -46,6 +47,7 @@ Core::Core()
 	, _memoryPool( pool )
 	, _memoryCache( cache )
 	, _isPreloaded( false )
+	, _formatter( tuttle::common::Formatter::get() )
 {
 #ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	Py_Initialize( );
@@ -69,7 +71,6 @@ void Core::preload( const bool useCache )
 	
 	_isPreloaded = true;
 	
-#ifndef __WINDOWS__
 	//	typedef boost::archive::binary_oarchive OArchive;
 	//	typedef boost::archive::binary_iarchive IArchive;
 	//	typedef boost::archive::text_oarchive OArchive;
@@ -84,25 +85,29 @@ void Core::preload( const bool useCache )
 		
 		TUTTLE_LOG_DEBUG( TUTTLE_INFO, "plugin cache file = " << cacheFile );
 
-		try
+		if( boost::filesystem::exists(cacheFile) )
 		{
-			std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
-			if( ifsb.is_open() )
+			try
 			{
-				TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Read plugins cache." );
-				IArchive iArchive( ifsb );
-				iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
-				ifsb.close();
+				std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
+				{
+					TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Read plugins cache." );
+					IArchive iArchive( ifsb );
+					iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
+					// Destructor for an archive should be called before the stream is closed. It restores any altered stream facets to thier state before the the archive was opened.
+				}
+			}
+			catch( std::exception& e )
+			{
+				TUTTLE_LOG_WARNING( "Error when reading plugins cache file (" << e.what()  << ")." );
+				// Clear the plugins cache to be sure that we don't stay in an unknown state.
+				_pluginCache.clearPluginFiles();
+
+				// As the plugins cache will be declared dirty, the cache file will be recreated.
 			}
 		}
-		catch( std::exception& e )
-		{
-			TUTTLE_LOG_ERROR( "Exception when reading cache file (" << e.what()  << ")." );
-		}
 	}
-#endif
 	_pluginCache.scanPluginFiles();
-#ifndef __WINDOWS__
 	if( useCache && _pluginCache.isDirty() )
 	{
 		// generate unique name for writing
@@ -111,18 +116,35 @@ void Core::preload( const bool useCache )
 		const std::string tmpCacheFile( cacheFile + ".writing." + boost::uuids::to_string(u) + ".xml" );
 		
 		TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Write plugins cache " << tmpCacheFile );
-		// serialize into a temporary file
-		std::ofstream ofsb( tmpCacheFile.c_str(), std::ios::out );
-		if( ofsb.is_open() )
+		try
 		{
-			OArchive oArchive( ofsb );
-			oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
-			ofsb.close();
-			// replace the cache file
+			// Serialize into a temporary file
+			{
+				std::ofstream ofsb( tmpCacheFile.c_str(), std::ios::out );
+				{
+					OArchive oArchive( ofsb );
+					oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
+					// Destructor for an archive should be called before the stream is closed. It restores any altered stream facets to thier state before the the archive was opened.
+				}
+			}
+			// Replace the cache file
 			boost::filesystem::rename( tmpCacheFile, cacheFile );
 		}
+		catch( std::exception& e )
+		{
+			TUTTLE_LOG_WARNING( "Error when writing plugins cache file (" << e.what()  << ")." );
+			try
+			{
+				// Try to remove the bad temporary cache file.
+				if( boost::filesystem::exists(tmpCacheFile) )
+				{
+					boost::filesystem::remove(tmpCacheFile);
+				}
+			}
+			catch( std::exception& e )
+			{}
+		}
 	}
-#endif
 }
 
 std::ostream& operator<<( std::ostream& os, const Core& v )

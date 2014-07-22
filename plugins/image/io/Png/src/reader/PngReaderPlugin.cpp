@@ -7,7 +7,7 @@
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <boost/exception/all.hpp>
 
 namespace tuttle {

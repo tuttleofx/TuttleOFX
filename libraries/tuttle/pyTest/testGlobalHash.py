@@ -1,4 +1,4 @@
-# scons: Checkerboard Merge TimeShift Fade
+# scons: pluginCheckerboard pluginMerge pluginTimeShift pluginFade
 
 from pyTuttle import tuttle
 

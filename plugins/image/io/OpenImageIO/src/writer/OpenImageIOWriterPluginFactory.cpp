@@ -54,7 +54,8 @@ void OpenImageIOWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	
 	// add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
-	
+	desc.setPluginEvaluation( 40 );
+
 	// plugin flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setHostFrameThreading         ( false );

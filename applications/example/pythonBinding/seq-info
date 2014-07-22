@@ -1,14 +1,13 @@
-#!/usr/bin/python
+from __future__ import print_function
 import sys
 import os
-import envTuttle
-envTuttle.setEnvTuttle()
 import argparse
 
-from pyTuttle.tuttle import *
-from getBestPlugin import *
+import envTuttle
+from pyTuttle import tuttle
+import getBestPlugin
 
-core().preload(False)
+tuttle.core().preload()
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('input', help='input file or sequence')
@@ -16,37 +15,35 @@ parser.add_argument('input', help='input file or sequence')
 args = parser.parse_args()
 inputSequence = args.input
 
-fileName, fileExtension = os.path.splitext( inputSequence )
+fileName, fileExtension = os.path.splitext(inputSequence)
 
-core().preload( True )
-
-readerPlugin = getBestReader( fileExtension )
+readerPlugin = getBestPlugin.getBestReader(fileExtension)
 
 if readerPlugin == "":
-	print "ERROR: unsuported file format"
+	print("ERROR: unsuported file format")
 	exit()
 
-g = Graph()
-read = g.createNode( readerPlugin, filename=inputSequence ).asImageEffectNode()
+graph = tuttle.Graph()
+read = graph.createNode(readerPlugin, filename=inputSequence).asImageEffectNode()
 
 try:
-	g.setup()
+	graph.setup()
 	td = read.getTimeDomain()
 
-	g.setupAtTime( td.min, [read] )
+	graph.setupAtTime( td.min, [read] )
 
-except :
-	print "ERROR: ", sys.exc_info()[0]
-	exit()
+except Exception as e:
+	print("ERROR: ", str(e))
+	exit(1)
 
-rodA = read.getRegionOfDefinition( td.min )
-width  = rodA.x2 - rodA.x1
-height = rodA.y2 - rodA.y1
+rod = read.getRegionOfDefinition( td.min )
+width  = rod.x2 - rod.x1
+height = rod.y2 - rod.y1
 
-clips = read.getClipImageSet().getClips()
-print "Input                    : " + inputSequence
-print "Width                    : " + str( int( width ) )
-print "Height                   : " + str( int( height ) )
+print("Input                    : %s" % inputSequence)
+print("Width                    : %d" % int(width))
+print("Height                   : %d" % int(height))
+print("RoD                      : %d, %d, %d, %d" % (int(rod.x1), int(rod.x2), int(rod.y1), int(rod.y2)))
 
 def getComponents( componentString ):
 	if componentString == "OfxImageComponentNone":
@@ -71,11 +68,12 @@ def getBitDetph( bitDepthString ):
 	if bitDepthString == "kOfxBitDepthFloat":
 		return "32 bits floating point"
 
-for clip in clips:
-	if clip.isOutput():		
-		print "Bit depth                :", getBitDetph( clip.getBitDepthString() )
-		print "Pixel Aspect Ratio (par) :", clip.getPixelAspectRatio()
-		print "Components               :", getComponents( clip.getComponentsString() )
-		print "Number of components     :", clip.getNbComponents()
-		print "frame rate (fps)         :", clip.getFrameRate()
-		print "frame range              : ["+ str( int( clip.getFrameRange().min ) )+ ", "+ str( int( clip.getFrameRange().max ) )+ "]"
+clip = read.getOutputClip()
+
+print("Bit depth                :", getBitDetph(clip.getBitDepthString()))
+print("Pixel Aspect Ratio (par) :", clip.getPixelAspectRatio())
+print("Components               :", getComponents(clip.getComponentsString()))
+print("Number of components     :", clip.getNbComponents())
+print("frame rate (fps)         :", clip.getFrameRate())
+print("frame range              : %d, %d" % (int(clip.getFrameRange().min), int(clip.getFrameRange().max)))
+

@@ -1,18 +1,19 @@
-# scons: OpenImageIO Invert TimeShift Gamma Jpeg
+# scons: pluginOpenImageIO pluginInvert pluginTimeShift pluginGamma pluginJpeg
 
-from pyTuttle.tuttle import *
+from pyTuttle import tuttle
+
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
+
 
 def testTimeShift():
-
-	compute( [
-		#NodeInit( "tuttle.oiioreader", filename="/home/fab/imgTests/seqTga/###.tga" ),
-		NodeInit( "tuttle.oiioreader", filename="TuttleOFX-data/image/openexr/DisplayWindow/t##.exr" ),
-		NodeInit( "tuttle.invert" ),
-		NodeInit( "tuttle.timeshift", 12 ),
-		NodeInit( "tuttle.gamma", master=.5 ),
-		NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
+	tuttle.compute( [
+		#tuttle.NodeInit( "tuttle.oiioreader", filename="/home/fab/imgTests/seqTga/###.tga" ),
+		tuttle.NodeInit( "tuttle.oiioreader", filename="TuttleOFX-data/image/openexr/DisplayWindow/t##.exr" ),
+		tuttle.NodeInit( "tuttle.invert" ),
+		tuttle.NodeInit( "tuttle.timeshift", 12 ),
+		tuttle.NodeInit( "tuttle.gamma", master=.5 ),
+		tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
 		] )
 

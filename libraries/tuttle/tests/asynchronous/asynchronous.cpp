@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <tuttle/test/unit_test.hpp>
 
 #include <tuttle/host/ThreadEnv.hpp>
 #include <tuttle/host/Graph.hpp>
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( computeAsynchronous )
 	env.join();
 	
 	// the process result is not successful, because it has been aborted.
-	BOOST_CHECK( env.getResult() == false );
+	BOOST_CHECK( ! env.getResult() );
 	
 	TUTTLE_LOG_INFO( "----------------- DONE -----------------" );
 }

@@ -1,6 +1,6 @@
 #include "EXRWriterPlugin.hpp"
 #include "EXRWriterProcess.hpp"
-#include "EXRWriterDefinitions.hpp"
+#include <EXRDefinitions.hpp>
 
 #include <boost/gil/gil_all.hpp>
 
@@ -14,18 +14,22 @@ using namespace boost::gil;
 EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_componentsType = fetchChoiceParam( kTuttlePluginChannel );
-	_storageType    = fetchChoiceParam( kParamStorageType );
+	_paramComponentsType = fetchChoiceParam( kTuttlePluginChannel );
+	_paramStorageType = fetchChoiceParam( kParamStorageType );
+	
+	_paramFileBitDepth = fetchChoiceParam( kParamFileBitDepth );
+	_paramCompression = fetchChoiceParam( kParamCompression );
 }
 
 EXRWriterProcessParams EXRWriterPlugin::getProcessParams( const OfxTime time )
 {
 	EXRWriterProcessParams params;
 
-	params._bitDepth       = ( ETuttlePluginBitDepth )   this->_paramBitDepth->getValue();
-	params._componentsType = ( ETuttlePluginComponents ) _componentsType->getValue();
-	params._storageType    = ( EParamStorage )    _storageType->getValue();
-	params._filepath       = getAbsoluteFilenameAt( time );
+	params._filepath = getAbsoluteFilenameAt( time );
+	params._fileBitDepth = ( ETuttlePluginFileBitDepth ) this->_paramFileBitDepth->getValue();
+	params._componentsType = ( ETuttlePluginComponents ) _paramComponentsType->getValue();
+	params._storageType = ( EParamStorage ) _paramStorageType->getValue();
+	params._compression = (EParamCompression) _paramCompression->getValue();
 
 	return params;
 }

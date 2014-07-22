@@ -431,6 +431,8 @@ public:
     void addSupportedExtension( const std::string& extension );
     void addSupportedExtensions( const std::vector<std::string>& extensions );
 
+    void setPluginEvaluation( double evaluation );
+    
     /** @brief Is the plugin single instance only ? defaults to false */
     void setSingleInstance( bool v );
 
@@ -944,7 +946,7 @@ private:
     /** @brief The effect handle */
     OfxImageEffectHandle _effectHandle;
 
-    /** @brief properties for this clip */
+    /** @brief properties for this node */
     PropertySet _effectProps;
 
     /** @brief the context of the effect */
@@ -971,6 +973,8 @@ public:
     PropertySet& getPropertySet() { return _effectProps; }
 
     OfxImageEffectHandle getHandle( void ) const { return _effectHandle; }
+
+	const std::string& getName() const;
 
     /** @brief the context this effect was instantiate in */
     EContext getContext( void ) const;

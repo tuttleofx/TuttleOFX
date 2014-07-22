@@ -21,13 +21,29 @@ void HistogramPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	// describe the plugin
 	desc.setLabels( "TuttleHistogram", "Histogram",
 		            "Histogram" );
-	desc.setPluginGrouping( "tuttle/image/process/color" );
+	desc.setPluginGrouping( "tuttle/image/display" );
 
 	desc.setDescription(
 		"Histogram\n"
-		"This histogram  plugin allows user to create an alpha mask using HSL & RGB curves. Output can be in gray scale or directly in alpha channel (RGBA)."
-		"There are some selection parameters which could help you to refine your maniplulation (control points unders histograms and quantity)."
-		"A reverse output mask is also implemented.\n"
+		"\n"
+		"An image histogram is a type of histogram that acts as a graphical representation "
+		"of the tonal distribution in a digital image.[1] It plots the number of pixels "
+		"for each tonal value. By looking at the histogram for a specific image a viewer "
+		"will be able to judge the entire tonal distribution at a glance.\n"
+		"Image histograms are present on many modern digital cameras. Photographers can "
+		"use them as an aid to show the distribution of tones captured, and whether image "
+		"detail has been lost to blown-out highlights or blacked-out shadows.\n"
+		"The horizontal axis of the graph represents the tonal variations, while the vertical "
+		"axis represents the number of pixels in that particular tone.[1] The left side "
+		"of the horizontal axis represents the black and dark areas, the middle represents "
+		"medium grey and the right hand side represents light and pure white areas. The vertical "
+		"axis represents the size of the area that is captured in each one of these zones. "
+		"Thus, the histogram for a very dark image will have the majority of its data points "
+		"on the left side and center of the graph. Conversely, the histogram for a very "
+		"bright image with few dark areas and/or shadows will have most of its data points "
+		"on the right side and center of the graph.\n"
+		"\n"
+		"See http://en.wikipedia.org/wiki/Image_histogram"
 		"\n"
 	);
 
@@ -45,11 +61,6 @@ void HistogramPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 
 	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<HistogramOverlayDescriptor>() );
-
-	if( ! OFX::getImageEffectHostDescription()->supportsParametricParameter )
-	{
-		BOOST_THROW_EXCEPTION( exception::MissingHostFeature( "Parametric parameter" ) );
-	}
 }
 
 /**
@@ -76,72 +87,18 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	OFX::BooleanParamDescriptor* boolGLOBAL = desc.defineBooleanParam(kGlobalDisplay);
 	boolGLOBAL->setHint("Display global overlay on screen.");
 	boolGLOBAL->setDefault(true);
-		
-    // if parametric parameters are supported
-	if( OFX::getImageEffectHostDescription()->supportsParametricParameter )
+	
+    // RGB / HSL
 	{
-		OFX::ParametricParamDescriptor* curvesRGB = desc.defineParametricParam( kParamRGBColorSelection );
-		OFX::ParametricParamDescriptor* curvesHSL = desc.defineParametricParam( kParamHSLColorSelection );
-		
 		//Group Param (RGB & HSL)
 		OFX::GroupParamDescriptor *groupRGB = desc.defineGroupParam(kGroupRGB);
 		groupRGB->setLabel(kGroupRGBLabel);
 		OFX::GroupParamDescriptor *groupHSL = desc.defineGroupParam(kGroupHSL);
 		groupHSL->setLabel(kGroupHSLLabel);
 
-		//define the graphic aspect
-		curvesRGB->setRange( 0.0, 1.0 );		//set range on RGB curve
-		curvesHSL->setRange( 0.0, 1.0 );		//set range on HSL curve
-		curvesRGB->setDimension(nbCurvesRGB);	//3 curves on RGB
-		curvesHSL->setDimension(nbCurvesHSL);	//3 curves on HSL
-
-		//Add curves RGB
-		curvesRGB->setDimensionLabel( kParamColorSelectionRed, 0 );			// 0 on RGB is red
-		curvesRGB->setDimensionLabel( kParamColorSelectionGreen, 1 );		// 1 on RGB is green
-		curvesRGB->setDimensionLabel( kParamColorSelectionBlue, 2 );		// 2 on RGB is blue
-		//Add curves HSL
-		curvesHSL->setDimensionLabel( kParamColorSelectionHue, 0 );			// 0 on HSL is hue
-		curvesHSL->setDimensionLabel( kParamColorSelectionSaturation, 1 );	// 1 on HSL is saturation
-		curvesHSL->setDimensionLabel( kParamColorSelectionLightness, 2 );	// 2 on HSK is lightness
-		//define curves color RGB 
-		curvesRGB->setHint( "Color selection" );		
-		static const OfxRGBColourD red   = {1,0,0};		//set red color to red curve
-		static const OfxRGBColourD green = {0,1,0};		//set green color to green curve
-		static const OfxRGBColourD blue  = {0,0,1};		//set blue color to blue curve
-		curvesRGB->setUIColour( 0, red );
-		curvesRGB->setUIColour( 1, green );
-		curvesRGB->setUIColour( 2, blue );
-		//define curves color HSL 
-		curvesHSL->setHint( "Color selection" );
-		curvesHSL->setUIColour( 0, red );		//set red color on hue curve
-		curvesHSL->setUIColour( 1, green );		//set green color on saturation curve
-		curvesHSL->setUIColour( 2, blue );		//set lightness color on saturation curve
-		
-		curvesRGB->setInteractDescriptor( new OFX::DefaultParamInteractWrap<RGBParamOverlayDescriptor>() );	//attach parametric curve to RGBOverlay
-		curvesHSL->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HSLParamOverlayDescriptor>() );	//attach parametric curve to HSLOverlay
-		
-		//add curves to their groups
-		curvesRGB->setParent(groupRGB);	//add RGB curves to RGB group
-		curvesHSL->setParent(groupHSL); //add HSL curves to HSL group 
-		
-		//Set each curves to initial value
-		curvesRGB->setIdentity();
-		curvesHSL->setIdentity();
-		//add 2 control points (0,1) and (1,1) for each channel
-		for(unsigned int i=0; i< nbCurvesRGB; ++i)
-		{
-			//curvesRGB->addControlPoint( i, 0.0, 0.0, 1.0, false );
-			curvesRGB->addControlPoint( i, 0.0, 1.0, 1.0, false );
-		}
-		for(unsigned int i=0; i< nbCurvesHSL; ++i)
-		{
-			//curvesHSL->addControlPoint( i, 0.0, 0.0, 1.0, false );
-			curvesHSL->addControlPoint( i, 0.0, 1.0, 1.0, false );
-		}
-		
 		//Channels checkboxes (RGB)
 		OFX::BooleanParamDescriptor* boolR = desc.defineBooleanParam(kBoolRed);
-		boolR->setDefault(false);							//red channel is not selected by default
+		boolR->setDefault(true);							//red channel is not selected by default
 		boolR->setHint("Activate Red channel");
 		boolR->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolR->setParent(groupRGB);
@@ -154,9 +111,8 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		redMultiplier->setDefault(1);
 		redMultiplier->setParent(groupRGB);
 		
-		
 		OFX::BooleanParamDescriptor* boolG = desc.defineBooleanParam(kBoolGreen);
-		boolG->setDefault(false);						//green channel is not selected by default
+		boolG->setDefault(true);						//green channel is not selected by default
 		boolG->setHint("Activate Green channel");
 		boolG->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolG->setParent(groupRGB);
@@ -169,11 +125,10 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		greenMultiplier->setDefault(1);
 		greenMultiplier->setParent(groupRGB);
 		
-		
 		OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
 		boolB->setHint("Activate Blue channel");
 		boolB->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-		boolB->setDefault(false);						   //blue channel is not selected by default
+		boolB->setDefault(true);						   //blue channel is not selected by default
 		boolB->setParent(groupRGB);
 		//blue multiplier
 		OFX::DoubleParamDescriptor* blueMultiplier = desc.defineDoubleParam(kMultiplierBlue);
@@ -184,11 +139,9 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		blueMultiplier->setDefault(1);
 		blueMultiplier->setParent(groupRGB);
 		
-		
-		
 		//Channels check box (HSL)
 		OFX::BooleanParamDescriptor* boolH = desc.defineBooleanParam(kBoolHue);
-		boolH->setDefault(false);
+		boolH->setDefault(true);
 		boolH->setHint("Activate Hue channel");
 		boolH->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolH->setParent(groupHSL);
@@ -201,9 +154,8 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		hueMultiplier->setDefault(1);
 		hueMultiplier->setParent(groupHSL);
 		
-		
 		OFX::BooleanParamDescriptor* boolS = desc.defineBooleanParam(kBoolSaturation);
-		boolS->setDefault(false);
+		boolS->setDefault(true);
 		boolS->setHint("Activate Saturation channel");
 		boolS->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolS->setParent(groupHSL);
@@ -219,7 +171,7 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		OFX::BooleanParamDescriptor* boolL = desc.defineBooleanParam(kBoolLightness);
 		boolL->setHint("Activate Lightness channel");
 		boolL->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-		boolL->setDefault(false);
+		boolL->setDefault(true);
 		boolL->setParent(groupHSL);
 		//Lightness multiplier
 		OFX::DoubleParamDescriptor* lightnessMultiplier = desc.defineDoubleParam(kMultiplierLightness);
@@ -230,48 +182,52 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		lightnessMultiplier->setDefault(1);
 		lightnessMultiplier->setParent(groupHSL);
 		
-		//Clean Button (RGB)
-		OFX::PushButtonParamDescriptor* resetButtonRGB = desc.definePushButtonParam(kButtonResetRGB);
-		resetButtonRGB->setLabel(kButtonResetRGBLabel);
-		resetButtonRGB->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-		resetButtonRGB->setHint("Reset the selected RGB curves. \n Warning : the curves may not be refreshed click on overlay to refresh.");
-		resetButtonRGB->setParent(groupRGB);
-		
-		//Selection To Curves Button (RGB)
-		OFX::PushButtonParamDescriptor* selectionToCurveButtonRGB = desc.definePushButtonParam(kButtonSelectionToCurveRGB);
-		selectionToCurveButtonRGB->setLabel(kButtonSelectionToCurveRGBLabel);
-		selectionToCurveButtonRGB->setHint("Load selected RGB curves with selection data. \n Warning : the curves may not be refreshed click on overlay to refresh.");
-		selectionToCurveButtonRGB->setParent(groupRGB);
-		
-		//Append selection to curves button (RGB)
-		OFX::PushButtonParamDescriptor* appendSelectionToCurveRGB = desc.definePushButtonParam(kButtonAppendSelectionToCurveRGB);
-		appendSelectionToCurveRGB->setLabel(kButtonAppendSelectionToCurveRGBLabel);				//add label
-		appendSelectionToCurveRGB->setHint("Append current selection to selected RGB channels");//help
-		appendSelectionToCurveRGB->setParent(groupRGB);											//add to RGB group
-		
-		//Clean Button (HSL)
-		OFX::PushButtonParamDescriptor* resetButtonHSL = desc.definePushButtonParam(kButtonResetHSL);
-		resetButtonHSL->setLabel(kButtonResetHSLLabel);
-		resetButtonHSL->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-		resetButtonHSL->setHint("Reset the selected HSL curves \n Warning : the curves may not be refreshed click on overlay to refresh.");
-		resetButtonHSL->setParent(groupHSL);
-		
-		//Selection To Curves Button (HSL)
-		OFX::PushButtonParamDescriptor* selectionToCurveButtonHSL = desc.definePushButtonParam(kButtonSelectionToCurveHSL);
-		selectionToCurveButtonHSL->setLabel(kButtonSelectionToCurveHSLLabel);
-		selectionToCurveButtonHSL->setHint("Load selected HSL curves with selection data. \n Warning : the curves may not be refreshed click on overlay to refresh.");
-		selectionToCurveButtonHSL->setParent(groupHSL);
-		
-		//Append selection to curves button (HSL)
-		OFX::PushButtonParamDescriptor* appendSelectionToCurveHSL = desc.definePushButtonParam(kButtonAppendSelectionToCurveHSL);
-		appendSelectionToCurveHSL->setLabel(kButtonAppendSelectionToCurveHSLLabel);				//add label
-		appendSelectionToCurveHSL->setHint("Append current selection to selected HSL channels");//help
-		appendSelectionToCurveHSL->setParent(groupHSL);											//add to HSL group
-		
-		
 		//Close RGB group (group states by default on screen)
-		groupRGB->setOpen(false);
+		groupRGB->setOpen(true);
 		groupHSL->setOpen(true);
+	}
+	
+	//Histogram overlay group
+	{
+		OFX::GroupParamDescriptor *groupHistogramOverlay = desc.defineGroupParam(kGroupHistogramOverlay);
+		groupHistogramOverlay->setLabel(kGroupHistogramOverlayLabel);
+		groupHistogramOverlay->setOpen(true);
+//		groupHistogramOverlay->setAsTab();
+
+		//Histogram display settings
+		OFX::ChoiceParamDescriptor* gammaType = desc.defineChoiceParam(kHistoDisplayListParamLabel);
+		gammaType->setLabel(kHistoDisplayListParamLabel);
+		gammaType->setEvaluateOnChange(false); // don't need to recompute on change
+		gammaType->setHint("Histogram display \n -global : normalize all of channels \n -by channel : keep proportions between channels");
+		gammaType->appendOption(kHistoDisplayListParamOpt2);
+		gammaType->appendOption(kHistoDisplayListParamOpt1);
+		gammaType->setParent(groupHistogramOverlay);	
+
+		//nbOfstep (advanced group)
+		OFX::IntParamDescriptor* nbStepRange = desc.defineIntParam(knbStepRange);
+		nbStepRange->setLabel(knbStepRangeLabel);
+		nbStepRange->setHint("Determinate histogram overlay precision.");
+		nbStepRange->setRange(1, 1000);
+		nbStepRange->setDisplayRange(1, 600.0 );
+		nbStepRange->setDefault(255);
+		nbStepRange->setEvaluateOnChange(false); // don't need to recompute on change
+		nbStepRange->setParent(groupHistogramOverlay);
+
+		//selection multiplier (advanced group)
+		OFX::DoubleParamDescriptor* selectionMultiplier = desc.defineDoubleParam(kselectionMultiplier);
+		selectionMultiplier->setLabel(kselectionMultiplierLabel);
+		selectionMultiplier->setHint("With high values, small selection are more visible.");
+		selectionMultiplier->setRange(0.001,1000.0);
+		selectionMultiplier->setDisplayRange(0.0, 100.0 );
+		selectionMultiplier->setDefault(2.0);
+		selectionMultiplier->setEvaluateOnChange(false); // don't need to recompute on change
+		selectionMultiplier->setParent(groupHistogramOverlay);
+
+		//Refresh histograms overlay Button
+		OFX::PushButtonParamDescriptor* refreshOverlayButton = desc.definePushButtonParam(kButtonRefreshOverlay);
+		refreshOverlayButton->setLabel(kButtonRefreshOverlayLabel);
+		refreshOverlayButton->setHint("Refresh histogram overlay.");
+		refreshOverlayButton->setParent(groupHistogramOverlay);
 	}
 	
 	//Selection group
@@ -279,7 +235,7 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		OFX::GroupParamDescriptor *groupSelection = desc.defineGroupParam(kGroupSelection);
 		groupSelection->setLabel(kGroupSelectionLabel);
 		groupSelection->setOpen(false);
-		groupSelection->setAsTab();
+//		groupSelection->setAsTab();
 		//display selection
 		OFX::BooleanParamDescriptor* boolDisplaySelection = desc.defineBooleanParam(kBoolSelection);
 		boolDisplaySelection->setDefault(true);
@@ -299,90 +255,7 @@ void HistogramPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		selectionMode->appendOption(kSelectionModeListParamOpt1);
 		selectionMode->appendOption(kSelectionModeListParamOpt3);
 		selectionMode->setParent(groupSelection);
-		//Precision of selection to curve
-		OFX::IntParamDescriptor* precisionSelectionToCurve = desc.defineIntParam(kprecisionCurveFromSelection);
-		precisionSelectionToCurve->setLabel(kprecisionCurveFromSelectionLabel);
-		precisionSelectionToCurve->setHint("Determinate curve from selection precision.");
-		precisionSelectionToCurve->setRange(1, 1000);
-		precisionSelectionToCurve->setDisplayRange(1, 300.0 );
-		precisionSelectionToCurve->setDefault(curveFromSelection);
-		precisionSelectionToCurve->setEvaluateOnChange(false); // don't need to recompute on change
-		precisionSelectionToCurve->setParent(groupSelection);
 	}
-	
-	//Histogram overlay group
-	{
-		OFX::GroupParamDescriptor *groupHistogramOverlay = desc.defineGroupParam(kGroupHistogramOverlay);
-		groupHistogramOverlay->setLabel(kGroupHistogramOverlayLabel);
-		groupHistogramOverlay->setOpen(true);
-		groupHistogramOverlay->setAsTab();
-
-		//Histogram display settings
-		OFX::ChoiceParamDescriptor* gammaType = desc.defineChoiceParam(kHistoDisplayListParamLabel);
-		gammaType->setLabel(kHistoDisplayListParamLabel);
-		gammaType->setEvaluateOnChange(false); // don't need to recompute on change
-		gammaType->setHint("Histogram display \n -global : normalize all of channels \n -by channel : keep proportions between channels");
-		gammaType->appendOption(kHistoDisplayListParamOpt2);
-		gammaType->appendOption(kHistoDisplayListParamOpt1);
-		gammaType->setParent(groupHistogramOverlay);	
-
-		//Clean all Button
-		OFX::PushButtonParamDescriptor* resetButtonAll = desc.definePushButtonParam(kButtonResetAll);
-		resetButtonAll->setLabel(kButtonResetAllLabel);
-		resetButtonAll->setHint("Reset all curves. \n Waring : the curves may not be refreshed click on overlay to refresh.");
-		resetButtonAll->setParent(groupHistogramOverlay);
-	}
-	
-	///Advanced group
-	{
-		OFX::GroupParamDescriptor *groupAdvanced = desc.defineGroupParam(kGroupAdvanced);
-		groupAdvanced->setLabel(kGroupAdvancedLabel);
-		groupAdvanced->setOpen(false);
-		groupAdvanced->setAsTab();
-		
-		//nbOfstep (advanced group)
-		OFX::IntParamDescriptor* nbStepRange = desc.defineIntParam(knbStepRange);
-		nbStepRange->setLabel(knbStepRangeLabel);
-		nbStepRange->setHint("Determinate histogram overlay precision.");
-		nbStepRange->setRange(1, 1000);
-		nbStepRange->setDisplayRange(1, 600.0 );
-		nbStepRange->setDefault(255);
-		nbStepRange->setEvaluateOnChange(false); // don't need to recompute on change
-		nbStepRange->setParent(groupAdvanced);
-		//selection multiplier (advanced group)
-		OFX::DoubleParamDescriptor* selectionMultiplier = desc.defineDoubleParam(kselectionMultiplier);
-		selectionMultiplier->setLabel(kselectionMultiplierLabel);
-		selectionMultiplier->setHint("With high values, small selection are more visible.");
-		selectionMultiplier->setRange(0.001,1000.0);
-		selectionMultiplier->setDisplayRange(0.0, 100.0 );
-		selectionMultiplier->setDefault(2.0);
-		selectionMultiplier->setEvaluateOnChange(false); // don't need to recompute on change
-		selectionMultiplier->setParent(groupAdvanced);
-
-		//Refresh histograms overlay Button
-		OFX::PushButtonParamDescriptor* refreshOverlayButton = desc.definePushButtonParam(kButtonRefreshOverlay);
-		refreshOverlayButton->setLabel(kButtonRefreshOverlayLabel);
-		refreshOverlayButton->setHint("Refresh histogram overlay.");
-		refreshOverlayButton->setParent(groupAdvanced);
-		
-		//clamp values to 0 and 1
-		OFX::BooleanParamDescriptor* clampCurveValues = desc.defineBooleanParam(kBoolClampValues);
-		clampCurveValues->setHint("Clamp curve value : values superior to 1 or inferior to 0 will be clamp in process.");
-		clampCurveValues->setDefault(true);
-		clampCurveValues->setParent(groupAdvanced);
-	}
-	//Output settings
-	OFX::ChoiceParamDescriptor* outputType = desc.defineChoiceParam(kOutputListParamLabel);
-	outputType->setLabel(kOutputListParamLabel);
-	outputType->setHint( "Output type \n Alpha channel or Black and White");
-	outputType->appendOption(kOutputListParamOpt1);
-	outputType->appendOption(kOutputListParamOpt2);
-	outputType->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-
-	//Reverse mask
-	OFX::BooleanParamDescriptor* boolReverseMask = desc.defineBooleanParam(kBoolReverseMask);
-	boolReverseMask->setDefault(false);
-	boolReverseMask->setHint("Revert alpha mask");
 }
 
 /**

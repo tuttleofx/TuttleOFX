@@ -42,7 +42,7 @@ namespace std {
 		
 		def setValueAtIndex(self, index, value, change = eChangeUserEdited):
 			if isinstance(value, dict):
-				for time, v in value.iteritems():
+				for time, v in value.items():
 					self.setValueAtTimeAndIndex(time, index, v, eChangeNone)
 				if change != eChangeNone:
 					self.paramChanged(change)
@@ -58,7 +58,7 @@ namespace std {
 				if change != eChangeNone:
 					self.paramChanged(change)
 			elif isinstance(value, dict):
-				for time, v in value.iteritems():
+				for time, v in value.items():
 					self.setValueAtTime(time, v, eChangeNone)
 				if change != eChangeNone:
 					self.paramChanged(change)

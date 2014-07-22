@@ -14,10 +14,11 @@ class ProcessVertex : public IVertex
 public:
 	typedef std::string Key;
 public:
-	ProcessVertex( const std::string& name = "Undefined" );
-	ProcessVertex( const UVertex& v );
+	ProcessVertex();
+	ProcessVertex( const ProcessVertexData& defaultVertexData, const std::string& name = "Undefined" );
 	ProcessVertex( const ProcessVertex& v );
 
+public:
 	ProcessVertex& operator=( const ProcessVertex& v )
 	{
 		IVertex::operator=(v);

@@ -60,7 +60,6 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 			<< exception::dev( boost::current_exception_diagnostic_information() )
 			<< exception::filename( _params._filepath ) );
 	}
-	copy_pixels( this->_srcView, this->_dstView ); // @todo ?
 }
 
 /**

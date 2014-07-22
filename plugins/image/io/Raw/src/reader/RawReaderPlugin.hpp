@@ -23,7 +23,6 @@ struct RawReaderProcessParams
 	double         _bright;
 	double         _threshold;
 	bool           _fourColorRgb;
-	EDocumentMode  _documentMode;
 	
 	EHighlight     _hightlight;
 	
@@ -74,7 +73,6 @@ public:
 	OFX::DoubleParam*    _paramBright;
 	OFX::DoubleParam*    _paramThreshold;
 	OFX::BooleanParam*   _paramFourColorRgb;
-	OFX::ChoiceParam*    _paramDocumentMode;
 	
 	OFX::ChoiceParam*    _paramHighlight;
 	

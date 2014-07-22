@@ -121,6 +121,28 @@ inline bool operator==( const OfxRectI& a, const OfxRectI& b ) { return a.x1 == 
 inline bool operator!=( const OfxRectI& a, const OfxRectI& b ) { return a.x1 != b.x1 || a.y1 != b.y1 ||
 	                                                                    a.x2 != b.x2 || a.y2 != b.y2; }
 
+inline OfxRectI& operator*=( OfxRectI& rect, const OfxPointD& scale )
+{
+	rect.x1 *= scale.x;
+	rect.x2 *= scale.x;
+	
+	rect.y1 *= scale.y;
+	rect.y2 *= scale.y;
+	
+	return rect;
+}
+
+inline OfxRectD& operator*=( OfxRectD& rect, const OfxPointD& scale )
+{
+	rect.x1 *= scale.x;
+	rect.x2 *= scale.x;
+	
+	rect.y1 *= scale.y;
+	rect.y2 *= scale.y;
+	
+	return rect;
+}
+
 inline bool operator==( const OfxRangeI& a, const OfxRangeI& b ) { return a.min == b.min && a.max == b.max; }
 inline bool operator!=( const OfxRangeI& a, const OfxRangeI& b ) { return a.min != b.min || a.max != b.max; }
 
@@ -240,10 +262,10 @@ protected:
 
 public:
 	explicit Suite( OfxStatus s )
-		: std::runtime_error( mapStatusToString( _status ) )
+		: std::runtime_error( mapStatusToString( s ) )
 		, _status( s ) {}
 	explicit Suite( OfxStatus s, const std::string& what )
-		: std::runtime_error( mapStatusToString( _status ) + " : " + what )
+		: std::runtime_error( mapStatusToString( s ) + " : " + what )
 		, _status( s ) {}
 	OfxStatus status( void ) { return _status; }
 	operator OfxStatus() { return _status; }

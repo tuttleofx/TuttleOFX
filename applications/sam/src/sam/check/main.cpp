@@ -57,7 +57,7 @@ EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& grap
 			if( stat.getParam( "outputChannelMin" ).getDoubleValueAtIndex(i) != 0 )
 				return eImageStatusOK;
 		}
-		TUTTLE_LOG_INFO( "stat:" << stat );
+		TUTTLE_COUT( "stat:" << stat );
 		return eImageStatusBlack;
 	}
 	catch( ... )
@@ -92,7 +92,7 @@ EImageStatus checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, cons
 			++_corruptedImage;
 			break;
 	}
-	TUTTLE_LOG_INFO( message << filename );
+	TUTTLE_COUT( message << filename );
 	return s;
 }
 
@@ -118,9 +118,9 @@ int main( int argc, char** argv )
 
 	using namespace tuttle::common;
 	using namespace sam;
-	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
-	boost::shared_ptr<Color>                 color( Color::get() );
+
+	Formatter::get();
+	boost::shared_ptr<Color> color( Color::get() );
 
 	std::vector<std::string> inputs;
 	std::string readerId;
@@ -130,8 +130,6 @@ int main( int argc, char** argv )
 	
 	bpo::options_description desc;
 	bpo::options_description hidden;
-	
-	formatter->init_logging();
 	
 	desc.add_options()
 			( kHelpOptionString,   kHelpOptionMessage )
@@ -209,30 +207,30 @@ int main( int argc, char** argv )
 	
 	if( vm.count(kBriefOptionLongName) )
 	{
-		TUTTLE_LOG_INFO( color->_green << "check image files" << color->_std );
+		TUTTLE_COUT( color->_green << "check image files" << color->_std );
 		std::cout.rdbuf(0);
 		return 0;
 	}
 	
 	if( vm.count(kHelpOptionLongName) || vm.count(kInputDirOptionLongName) == 0 )
 	{
-		TUTTLE_LOG_INFO( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "NAME" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-check - detect black images in sequences" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "SYNOPSIS" << color->_std );
-		TUTTLE_LOG_INFO( color->_green << "\tsam-check [reader] [input] [options]" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
-		TUTTLE_LOG_INFO( "" );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-check - detect black images in sequences" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "SYNOPSIS" << color->_std );
+		TUTTLE_COUT( color->_green << "\tsam-check [reader] [input] [options]" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( color->_blue  << "DESCRIPTION" << color->_std << std::endl );
+		TUTTLE_COUT( "" );
 		
-		TUTTLE_LOG_INFO( "Check if sequence have black images." );
-		TUTTLE_LOG_INFO( "This tools process the PSNR of an image, and if it's null, the image is considered black." );
+		TUTTLE_COUT( "Check if sequence have black images." );
+		TUTTLE_COUT( "This tools process the PSNR of an image, and if it's null, the image is considered black." );
 		
-		TUTTLE_LOG_INFO( color->_blue  << "OPTIONS" << color->_std );
-		TUTTLE_LOG_INFO( "" );
-		TUTTLE_LOG_INFO( desc );
+		TUTTLE_COUT( color->_blue  << "OPTIONS" << color->_std );
+		TUTTLE_COUT( "" );
+		TUTTLE_COUT( desc );
 		return 0;
 	}
 	if( !vm.count(kReaderOptionLongName) )
@@ -277,21 +275,22 @@ int main( int argc, char** argv )
 					fObjects = sequenceParser::fileObjectInDirectory( path.string() );
 					BOOST_FOREACH( sequenceParser::FileObject& fObj, fObjects )
 					{
-						switch( fObj.getMaskType() )
+						switch( fObj.getType() )
 						{
-							case sequenceParser::eMaskTypeSequence:
+							case sequenceParser::eTypeSequence:
 							{
 								checkSequence( read, stat, graph, dynamic_cast<const sequenceParser::Sequence&>( fObj ) );
 								break;
 							}
-							case sequenceParser::eMaskTypeFile:
+							case sequenceParser::eTypeFile:
 							{
 								const sequenceParser::File fFile = dynamic_cast<const sequenceParser::File&>( fObj );
 								checkFile( read, stat, graph, fFile.getAbsoluteFilename() );
 								break;
 							}
-							case sequenceParser::eMaskTypeDirectory:
-							case sequenceParser::eMaskTypeUndefined:
+							case sequenceParser::eTypeFolder:
+							case sequenceParser::eTypeUndefined:
+							case sequenceParser::eTypeAll:
 								break;
 						}
 					}

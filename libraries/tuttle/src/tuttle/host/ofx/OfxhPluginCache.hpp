@@ -39,6 +39,7 @@
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/ptr_container/serialize_ptr_list.hpp>
+#include <boost/foreach.hpp>
 
 #include <string>
 #include <set>
@@ -49,26 +50,7 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-/**
- * for later
- */
-struct PluginCacheSupportedApi
-{
-	APICache::OfxhPluginAPICacheI* _handler;
-
-	PluginCacheSupportedApi( APICache::OfxhPluginAPICacheI* handler )
-		: _handler( handler ) {}
-
-	bool matches( std::string api, int version ) const
-	{
-		if( api == _handler->_apiName && version >= _handler->_apiVersionMin && version <= _handler->_apiVersionMax )
-		{
-			return true;
-		}
-		return false;
-	}
-
-};
+struct PluginCacheSupportedApi;
 
 /**
  * Where we keep our plugins.
@@ -80,11 +62,10 @@ public:
 	typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
 
 protected:
-	tuttle::host::ofx::property::OfxhPropSpec* _hostSpec;
-
 	std::list<std::string> _pluginPath; ///< list of directories to look in
 	std::set<std::string> _nonrecursePath; ///< list of directories to look in (non-recursively)
 	std::list<std::string> _pluginDirs; ///< list of directories we found
+	
 	OfxhPluginBinaryList _binaries; ///< all the binaries we know about, we own these
 	std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
 	std::map<std::string, OfxhPlugin*> _pluginsByID;
@@ -109,32 +90,7 @@ public:
 protected:
 	void scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse );
 
-	void addPlugin( OfxhPlugin* plugin )
-	{
-		// Check if the same plugin has already been loaded
-		if( _loadedMap.find( plugin->getIdentity() ) == _loadedMap.end() )
-		{
-			_loadedMap[plugin->getIdentity()] = true;
-		}
-		else
-		{
-			TUTTLE_LOG_WARNING( "Plugin: " << plugin->getRawIdentifier() << " loaded twice! (" << plugin->getBinary().getFilePath() << ")" );
-		}
-		_plugins.push_back( plugin );
-
-		if( _pluginsByID.find( plugin->getIdentifier() ) != _pluginsByID.end() )
-		{
-			OfxhPlugin& otherPlugin = *_pluginsByID[plugin->getIdentifier()];
-			if( plugin->trumps( otherPlugin ) )
-			{
-				_pluginsByID[plugin->getIdentifier()] = plugin;
-			}
-		}
-		else
-		{
-			_pluginsByID[plugin->getIdentifier()] = plugin;
-		}
-	}
+	void addPlugin( OfxhPlugin* plugin );
 
 public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
@@ -146,7 +102,7 @@ public:
 	const OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>( *this ).getPluginById( id, vermaj, vermin ); }
 
 	/// get the list in which plugins are sought
-	const std::list<std::string>& getPluginPath()
+	const std::list<std::string>& getPluginPath() const
 	{
 		return _pluginPath;
 	}
@@ -199,12 +155,12 @@ public:
 
 	/// scan for plugins
 	void scanPluginFiles();
+	
+	/// Remove all plugins
+	void clearPluginFiles();
 
 	/// register an API cache handler
-	void registerAPICache( APICache::OfxhPluginAPICacheI& apiCache )
-	{
-		_apiHandlers.push_back( PluginCacheSupportedApi( &apiCache ) );
-	}
+	void registerAPICache( APICache::OfxhPluginAPICacheI& apiCache );
 
 	/// find the API cache handler for the given api/apiverson
 	APICache::OfxhPluginAPICacheI* findApiHandler( const std::string& api, int apiver );
@@ -225,26 +181,23 @@ private:
 	template<class Archive>
 	void serialize( Archive& ar, const unsigned int version )
 	{
-		//		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
-		//		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
-		//		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
+		// ar & BOOST_SERIALIZATION_NVP(_pluginPath);
+		// ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
+		// ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
 		ar& BOOST_SERIALIZATION_NVP( _binaries );
-		//		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
-		ar& BOOST_SERIALIZATION_NVP( _knownBinFiles );
+		// ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
+		// ar& BOOST_SERIALIZATION_NVP( _knownBinFiles );
 
 		if( typename Archive::is_loading() )
 		{
-			for( ofx::OfxhPluginCache::OfxhPluginBinaryList::iterator it = getBinaries().begin(), itEnd = getBinaries().end();
-			     it != itEnd;
-			     ++it )
+			BOOST_FOREACH( OfxhPluginBinary& pluginBinary, _binaries )
 			{
-				for( ofx::OfxhPluginBinary::PluginVector::iterator i = it->getPlugins().begin(), iEnd = it->getPlugins().end();
-				     i != iEnd;
-				     ++i )
+				_knownBinFiles.insert( pluginBinary.getFilePath() );
+				BOOST_FOREACH( OfxhPlugin& plugin, pluginBinary.getPlugins() )
 				{
-					APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( i->getPluginApi(), i->getApiVersion() );
-					i->setApiHandler( *apiCache );
-					_plugins.push_back( &( *i ) );
+					APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( plugin.getPluginApi(), plugin.getApiVersion() );
+					plugin.setApiHandler( *apiCache );
+					_plugins.push_back( &plugin );
 				}
 			}
 		}

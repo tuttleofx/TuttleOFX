@@ -7,6 +7,8 @@
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/exception/all.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -303,21 +305,23 @@ void Graph::setup()
 {
 	const ComputeOptions options;
 	const std::list<std::string> outputNodes;
-	graph::ProcessGraph procGraph( options, *this, outputNodes );
-	return procGraph.setup();
+	graph::ProcessGraph procGraph( options, *this, outputNodes, core().getMemoryCache() );
+	procGraph.setup();
 }
 
 void Graph::setupAtTime( const OfxTime time, const NodeListArg& outputNodes )
 {
 	const ComputeOptions options;
-	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
-	return procGraph.setupAtTime( time );
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes(), core().getMemoryCache() );
+	procGraph.setupAtTime( time );
 }
 
 void Graph::computeGlobalHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time, const NodeListArg& outputNodes )
 {
 	const ComputeOptions options;
-	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes() );
+	graph::ProcessGraph procGraph( options, *this, outputNodes.getNodes(), core().getMemoryCache() );
+	procGraph.setup();
+	procGraph.setupAtTime( time );
 	procGraph.computeHashAtTime( outNodesHash, time );
 }
 
@@ -334,18 +338,24 @@ bool Graph::compute( const NodeListArg& nodes, const ComputeOptions& options )
 	return compute( emptyMemoryCache, nodes, options );
 }
 
-bool Graph::compute( memory::MemoryCache& memoryCache, const ComputeOptions& options )
+bool Graph::compute( memory::IMemoryCache& memoryCache, const ComputeOptions& options )
 {
 	return compute( memoryCache, NodeListArg(), options );
 }
 
-bool Graph::compute( memory::MemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
+bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes, const ComputeOptions& options )
+{
+	return compute( memoryCache, nodes, options, core().getMemoryCache() );
+}
+
+bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes,
+		const ComputeOptions& options, memory::IMemoryCache& internMemoryCache )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	
-	graph::ProcessGraph procGraph( options, *this, nodes.getNodes() );
+	graph::ProcessGraph procGraph( options, *this, nodes.getNodes(), internMemoryCache );
 	return procGraph.process( memoryCache );
 }
 

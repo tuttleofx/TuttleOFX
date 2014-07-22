@@ -16,11 +16,17 @@ namespace imageStatistics {
 ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
+	_clipMask = fetchClip( kClipMask );
+
+	_paramRestrictToRegion = fetchBooleanParam( kParamRestrictToRegion );
+
 	_paramCoordinateSystem = fetchChoiceParam( kParamCoordinateSystem );
 	_paramRectCenter       = fetchDouble2DParam( kParamRectCenter );
 	_paramRectSize         = fetchDouble2DParam( kParamRectSize );
 	_paramChooseOutput     = fetchChoiceParam( kParamChooseOutput );
 
+	_paramOutputNbPixels = fetchIntParam( kParamOutputNbPixels );
+	
 	_paramOutputAverage       = fetchRGBAParam( kParamOutputAverage );
 	_paramOutputVariance      = fetchRGBAParam( kParamOutputVariance );
 	_paramOutputChannelMin    = fetchRGBAParam( kParamOutputChannelMin );
@@ -31,15 +37,19 @@ ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
 	_paramOutputSkewness      = fetchRGBAParam( kParamOutputSkewness );
 
 	_paramOutputAverageHSL       = fetchDouble3DParam( kParamOutputAverageHSL );
+	_paramOutputVarianceHSL      = fetchDouble3DParam( kParamOutputVarianceHSL );
 	_paramOutputChannelMinHSL    = fetchDouble3DParam( kParamOutputChannelMinHSL );
 	_paramOutputChannelMaxHSL    = fetchDouble3DParam( kParamOutputChannelMaxHSL );
 	_paramOutputLuminosityMinHSL = fetchDouble3DParam( kParamOutputLuminosityMinHSL );
 	_paramOutputLuminosityMaxHSL = fetchDouble3DParam( kParamOutputLuminosityMaxHSL );
 	_paramOutputKurtosisHSL      = fetchDouble3DParam( kParamOutputKurtosisHSL );
 	_paramOutputSkewnessHSL      = fetchDouble3DParam( kParamOutputSkewnessHSL );
+	
+	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
+	changedParam( args, kParamRestrictToRegion );
 }
 
-ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectI& srcRod ) const
+ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
 {
 	ImageStatisticsProcessParams params;
 	OfxPointD rectCenter = _paramRectCenter->getValue();
@@ -54,11 +64,27 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 		rectSize   *= projectSize;
 	}
 
-	params._rect.x1      = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
-	params._rect.y1      = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
-	params._rect.x2      = boost::numeric_cast<int>( std::ceil( rectCenter.x + rectSize.x ) );
-	params._rect.y2      = boost::numeric_cast<int>( std::ceil( rectCenter.y + rectSize.y ) );
-	params._rect         = rectanglesIntersection( params._rect, srcRod );
+	// Region is input image RoD
+	params._rect = _clipSrc->getPixelRod(time);
+	if( _paramRestrictToRegion->getValue() )
+	{
+		// Intersection with user custom region
+		OfxRectI userRect;
+		userRect.x1 = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
+		userRect.y1 = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
+		userRect.x2 = boost::numeric_cast<int>( std::ceil( rectCenter.x + rectSize.x ) );
+		userRect.y2 = boost::numeric_cast<int>( std::ceil( rectCenter.y + rectSize.y ) );
+		
+		params._rect = rectanglesIntersection( params._rect, userRect );
+	}
+	if( _clipMask->isConnected() )
+	{
+		// Intersection with input mask RoD
+		params._rect = rectanglesIntersection( params._rect, _clipMask->getPixelRod(time) );
+	}
+
+	params._rect *= renderScale;
+
 	params._chooseOutput = static_cast<EParamChooseOutput>( _paramChooseOutput->getValue() );
 
 	return params;
@@ -66,16 +92,18 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 
 void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	OfxRectI srcRealRoi = getProcessParams( _clipSrc->getPixelRod( args.time ) )._rect; // we need the selected rectangle
-	OfxRectD srcRealRoiD;
+	ImageStatisticsProcessParams params = getProcessParams( args.time, args.renderScale );
+	if( params._chooseOutput == eParamChooseOutputSource )
+	{
+		// In that case we need the full image input...
+		// Not to compute statistics, but to copy the image.
+		return;
+	}
+	OfxRectI inputRoi = params._rect; // we need the selected rectangle
+	OfxRectD inputRoi_d = rectIntToDouble( inputRoi );
 
-	srcRealRoiD.x1 = srcRealRoi.x1;
-	srcRealRoiD.y1 = srcRealRoi.y1;
-	srcRealRoiD.x2 = srcRealRoi.x2;
-	srcRealRoiD.y2 = srcRealRoi.y2;
-//	TUTTLE_LOG_VAR( TUTTLE_INFO, srcRealRoiD );
-	
-	rois.setRegionOfInterest( *_clipSrc, srcRealRoiD );
+	rois.setRegionOfInterest( *_clipSrc, inputRoi_d );
+	rois.setRegionOfInterest( *_clipMask, inputRoi_d );
 }
 
 /**
@@ -148,6 +176,21 @@ void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs& args, 
 		}
 		_paramRectCenter->setValue( rectCenter );
 		_paramRectSize->setValue( rectSize );
+	}
+	else if( paramName == kParamRestrictToRegion )
+	{
+		const bool useRegion = _paramRestrictToRegion->getValue();
+
+		_paramCoordinateSystem->setEnabled( useRegion );
+		_paramRectCenter->setEnabled( useRegion );
+		_paramRectSize->setEnabled( useRegion );
+	}
+
+	if( paramName == kParamCoordinateSystem ||
+		paramName == kParamRectCenter ||
+		paramName == kParamRectSize )
+	{
+		_paramRestrictToRegion->setValue( true );
 	}
 }
 

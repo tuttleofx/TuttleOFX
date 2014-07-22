@@ -1,22 +1,22 @@
-# scons: OpenImageIO Invert TimeShift Gamma Jpeg
+# scons: pluginOpenImageIO pluginInvert pluginTimeShift pluginGamma pluginJpeg
 
-from pyTuttle.tuttle import *
+from pyTuttle import tuttle
+
 
 def setUp():
-	core().preload(False)
+	tuttle.core().preload(False)
 
 
 def testLinearGraph():
 
 	nodes = [
-			NodeInit( "tuttle.oiioreader", filename="TuttleOFX-data/image/openexr/DisplayWindow/t##.exr" ),
-			NodeInit( "tuttle.invert" ),
-			NodeInit( "tuttle.timeshift", 12 ),
-			NodeInit( "tuttle.gamma", master=.5 ),
+			tuttle.NodeInit( "tuttle.oiioreader", filename="TuttleOFX-data/image/openexr/DisplayWindow/t##.exr" ),
+			tuttle.NodeInit( "tuttle.invert" ),
+			tuttle.NodeInit( "tuttle.timeshift", 12 ),
+			tuttle.NodeInit( "tuttle.gamma", master=.5 ),
 		]
-	for i in xrange(100):
-		nodes.append( NodeInit( "tuttle.timeshift", 0 ) )
-	nodes.append( NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ) )
+	for i in range(100):
+		nodes.append( tuttle.NodeInit( "tuttle.timeshift", 0 ) )
+	nodes.append( tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ) )
 	
-	compute( nodes )
-
+	tuttle.compute( nodes )

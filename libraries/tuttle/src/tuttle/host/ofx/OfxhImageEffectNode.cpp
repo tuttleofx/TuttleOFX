@@ -91,7 +91,7 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin&         p
 {
 	_properties.setChainedSet( &descriptor.getProperties() );
 
-	_properties.setPointerProperty( kOfxImageEffectPropPluginHandle, const_cast<OfxPlugin*>( _plugin.getPluginHandle()->getOfxPlugin() ) );
+	_properties.setPointerProperty( kOfxImageEffectPropPluginHandle, const_cast<OfxPlugin*>( _plugin.getPluginLoadGuardPtr()->getOfxPlugin() ) );
 
 	_properties.setStringProperty( kOfxImageEffectPropContext, context );
 	_properties.setIntProperty( kOfxPropIsInteractive, interactive );
@@ -415,7 +415,7 @@ OfxStatus OfxhImageEffectNode::mainEntry( const char*        action,
 					  property::OfxhSet* inArgs,
 					  property::OfxhSet* outArgs ) const
 {
-	const OfxhPluginHandle* pHandle = _plugin.getPluginHandle();
+	const OfxhPluginLoadGuard* pHandle = _plugin.getPluginLoadGuardPtr();
 
 	if( !pHandle )
 		return kOfxStatFailed;

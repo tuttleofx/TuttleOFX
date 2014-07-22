@@ -4,6 +4,10 @@ project.UnitTest(
 	dirs = ['.'],
 	libraries = [
 		libs.tuttleTest,
-		]
+		],
+	execLibraries = [
+		libs.pluginTurboJpeg,
+		libs.pluginConstant,
+		],
 	)
 

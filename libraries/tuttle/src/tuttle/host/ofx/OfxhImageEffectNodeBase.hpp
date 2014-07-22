@@ -47,19 +47,19 @@ public:
 	const property::OfxhSet& getProperties() const   { return _properties; }
 	property::OfxhSet&       getEditableProperties() { return _properties; }
 
-	/// name of the clip
+	/// name of the Node
 	const std::string& getShortLabel() const;
 
-	/// name of the clip
+	/// name of the Node
 	const std::string& getLabel() const;
 
-	/// name of the clip
+	/// name of the Node
 	const std::string& getName() const;
 
-	/// name of the clip
+	/// name of the Node
 	void setName( const std::string& name );
 
-	/// name of the clip
+	/// Description of the Node
 	const std::string& getLongLabel() const;
 
 	/// is the given context supported

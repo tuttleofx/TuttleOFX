@@ -6,6 +6,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
 #include <boost/gil/image.hpp>
+#include <boost/gil/typedefs.hpp>
 #include <terry/numeric/operations.hpp>
 #include <terry/numeric/assign.hpp>
 #include <terry/numeric/operations_assign.hpp>
@@ -72,14 +73,14 @@ inline
 void copy_and_convert_alpha_blended_pixels( const GlyphView& glyphView, const typename View::value_type& glyphColor, const View& dstView )
 {
 	using namespace boost::gil;
-	//	typedef typename GlyphView::value_type GlyphPixel;
+	// typedef typename GlyphView::value_type GlyphPixel;
 	typedef typename View::value_type Pixel;
 
-	//	typedef pixel<bits32f, layout<typename color_space_type<GlyphView>::type> > GlyphPixel32f;
-	//	typedef pixel<typename channel_type<view_t>::type, layout<gray_t> > PixelGray;
+	// typedef pixel<bits32f, layout<typename color_space_type<GlyphView>::type> > GlyphPixel32f;
+	// typedef pixel<typename channel_type<view_t>::type, layout<gray_t> > PixelGray;
 
-	//	BOOST_STATIC_ASSERT(( boost::is_same<typename color_space_type<glyphView>::type, gray_t>::value ));
-	//	BOOST_STATIC_ASSERT(( boost::is_same<typename channel_type<glyphView>::type, bits32f>::value ));
+	BOOST_STATIC_ASSERT(( boost::is_same<typename color_space_type<GlyphView>::type, gray_t>::value ));
+	// BOOST_STATIC_ASSERT(( boost::is_same<typename channel_type<GlyphView>::type, bits32f>::value ));
 
 	for( int y = 0;
 	     y < dstView.height();
@@ -92,14 +93,17 @@ void copy_and_convert_alpha_blended_pixels( const GlyphView& glyphView, const ty
 		     ++x, ++it_glyph, ++it_img )
 		{
 			Pixel pColor = glyphColor;
+			const bits32f mask =
+				channel_convert<bits32f>(get_color( *it_glyph, gray_color_t() )) *
+				channel_convert<bits32f>(alpha_or_max(pColor));
 			numeric::pixel_multiplies_scalar_assign_t<float, Pixel>()
 			(
-			    get_color( *it_glyph, gray_color_t() ),
+			    mask,
 			    pColor
 			);
 			numeric::pixel_multiplies_scalar_assign_t<float, Pixel>()
 			(
-			    channel_invert( get_color( *it_glyph, gray_color_t() ) ),
+			    channel_invert( mask ),
 			    *it_img
 			);
 			numeric::pixel_plus_assign_t<Pixel, Pixel>()
@@ -107,10 +111,6 @@ void copy_and_convert_alpha_blended_pixels( const GlyphView& glyphView, const ty
 			    pColor,
 			    *it_img
 			);
-//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, get_color( *it_glyph, gray_color_t() ) );
-//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, (*it_img)[0] );
-//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, (int)(color[0]) );
-//			TUTTLE_CLOG_VAR( TUTTLE_TRACE, (int)(pColor[0]) );
 		}
 	}
 }
