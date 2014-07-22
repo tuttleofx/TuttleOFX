@@ -6,9 +6,9 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-OfxhPluginDesc::OfxhPluginDesc() {}
-
-OfxhPluginDesc::~OfxhPluginDesc() {}
+OfxhPluginDesc::OfxhPluginDesc()
+	: _apiVersion(-1)
+{}
 
 OfxhPluginDesc::OfxhPluginDesc( const std::string& api,
                                 int                apiVersion,
@@ -19,6 +19,9 @@ OfxhPluginDesc::OfxhPluginDesc( const std::string& api,
 	: _pluginApi( api )
 	, _apiVersion( apiVersion )
 	, _ident( identifier, rawIdentifier, versionMinor, versionMajor )
+{}
+
+OfxhPluginDesc::~OfxhPluginDesc()
 {}
 
 /**

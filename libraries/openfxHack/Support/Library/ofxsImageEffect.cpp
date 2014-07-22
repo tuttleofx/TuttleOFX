@@ -1242,7 +1242,7 @@ ImageEffect::~ImageEffect()
 }
 
 /// name of the imageEffect
-const std::string& ImageEffect::getName() const
+std::string ImageEffect::getName() const
 {
 	return getPropertySet().propGetString( kOfxPropName );
 }
@@ -2125,7 +2125,6 @@ bool regionsOfInterestAction( OfxImageEffectHandle handle, OFX::PropertySet inAr
 	bool doneSomething_;
 	OFX::PropertySet& outArgs_;
 	const std::map<std::string, std::string>& clipROIPropNames_;
-	const char* _plugname;
 
 	public:
 	/** @brief ctor */
@@ -2182,9 +2181,7 @@ bool regionsOfInterestAction( OfxImageEffectHandle handle, OFX::PropertySet inAr
 	effectInstance->getRegionsOfInterest( args, setRoIs );
 
 	// did we do anything ?
-	if( setRoIs.didSomething() )
-	return true;
-	return false;
+	return setRoIs.didSomething();
 }
 
 /** @brief Library side frames needed action */

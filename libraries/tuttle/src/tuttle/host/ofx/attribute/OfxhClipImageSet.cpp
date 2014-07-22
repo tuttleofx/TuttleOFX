@@ -16,6 +16,7 @@ OfxhClipImageSet::OfxhClipImageSet()
 
 OfxhClipImageSet::OfxhClipImageSet( const OfxhClipImageSet& other )
 	: _clipsByOrder( other._clipsByOrder.clone() )
+	, _clipPrefsDirty( true )
 {
 	initMapFromList();
 }

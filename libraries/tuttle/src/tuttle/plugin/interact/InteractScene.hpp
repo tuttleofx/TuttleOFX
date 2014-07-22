@@ -75,7 +75,7 @@ public:
 	}
 
 
-	bool draw( const OFX::DrawArgs& args );
+	bool draw( const OFX::DrawArgs& args ) const;
 
 	bool penMotion( const OFX::PenArgs& args );
 
@@ -87,7 +87,7 @@ private:
 	SelectedObjectVector&       getSelectedObjects()       { return _selected; }
 	const SelectedObjectVector& getSelectedObjects() const { return _selected; }
 
-	bool drawSelection( const OFX::DrawArgs& args );
+	bool drawSelection( const OFX::DrawArgs& args ) const;
 
 	void translate( const Point2& vec );
 	void rotate( const Point2& center, const Point2& from, const Point2& vec );

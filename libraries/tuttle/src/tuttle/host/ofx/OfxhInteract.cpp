@@ -155,7 +155,12 @@ OfxhInteract::OfxhInteract( const OfxhInteractDescriptor& desc, void* effectInst
 OfxhInteract::~OfxhInteract()
 {
 	/// call it directly incase CI failed and we should always tidy up after create instance
-	callEntry( kOfxActionDestroyInstance,  NULL );
+	OfxStatus status = callEntry( kOfxActionDestroyInstance,  NULL );
+	if( status != kOfxStatOK &&
+		status != kOfxStatReplyDefault )
+	{
+		TUTTLE_LOG_TRACE( "OFXh: Failed to destroy the effect instance. Status is " << mapStatusToString(status) << "." );
+	}
 }
 
 /// call the entry point in the descriptor with action and the given args
@@ -164,7 +169,7 @@ OfxStatus OfxhInteract::callEntry( const char* action, property::OfxhSet* inArgs
 	if( _state == eFailed )
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
 	
-	OfxPropertySetHandle inHandle = inArgs ? inArgs->getHandle() : NULL ;
+	OfxPropertySetHandle inHandle = inArgs ? inArgs->getHandle() : NULL;
 	return _descriptor.callEntry( action, getHandle(), inHandle, NULL );
 }
 

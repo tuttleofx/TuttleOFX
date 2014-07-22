@@ -6,6 +6,7 @@ namespace host {
 namespace graph {
 
 IEdge::IEdge()
+	: _localId( 0 )
 {
 }
 
