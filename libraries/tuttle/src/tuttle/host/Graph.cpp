@@ -137,13 +137,22 @@ void Graph::removeFromInternalGraph( Node& node )
 void Graph::deleteNode( Node& node )
 {
 	NodeMap::iterator it = _nodes.find( node.getName() );
-	if( it != _nodes.end() )
+	if( it == _nodes.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
 			<< exception::user("Node not found.") );
 	}
 	removeFromInternalGraph( node );
 	_nodes.erase( it ); // will delete the node
+}
+
+void Graph::clear()
+{
+	BOOST_FOREACH( const NodeMap::value_type node, _nodes )
+	{
+		removeFromInternalGraph( *node.second );
+	}
+	_nodes.clear();
 }
 
 void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr )
