@@ -137,7 +137,7 @@ void Graph::removeFromInternalGraph( Node& node )
 void Graph::deleteNode( Node& node )
 {
 	NodeMap::iterator it = _nodes.find( node.getName() );
-	if( it != _nodes.end() )
+	if( it == _nodes.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
 			<< exception::user("Node not found.") );
