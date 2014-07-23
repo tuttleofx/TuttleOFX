@@ -82,7 +82,7 @@ void InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::rebuildVert
 }
 
 template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
-std::size_t InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::removeUnconnectedVertices( const vertex_descriptor& vroot )
+std::list<std::string> InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::getUnconnectedVertices( const vertex_descriptor& vroot )
 {
 	visitor::MarkUsed<This> vis( *this );
 	this->depthFirstVisit( vis, vroot );
@@ -97,6 +97,14 @@ std::size_t InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::remo
 			toRemove.push_back( v.getName() );
 		}
 	}
+	return toRemove;
+}
+
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+std::size_t InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::removeUnconnectedVertices( const vertex_descriptor& vroot )
+{
+	std::list<std::string> toRemove = getUnconnectedVertices( vroot );
+	
 	BOOST_FOREACH( const std::string & vs, toRemove )
 	{
 		//TUTTLE_TLOG( TUTTLE_TRACE, "removeVertex: " << vs );

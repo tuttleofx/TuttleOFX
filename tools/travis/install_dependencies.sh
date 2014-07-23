@@ -18,6 +18,9 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
 
     cp tools/sconf/ubuntu_travis.sconf host.sconf
 
+    sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu precise main restricted universe multiverse"
+    sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu precise-security main restricted universe multiverse"
+    sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu precise-updates main restricted universe multiverse"
     sudo add-apt-repository -y ppa:boost-latest/ppa
     sudo add-apt-repository -y ppa:irie/openimageio
     sudo add-apt-repository -y ppa:kubuntu-ppa/backports

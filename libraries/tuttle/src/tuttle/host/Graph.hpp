@@ -118,6 +118,12 @@ public:
 	void deleteNode( Node& node );
 	
 	/**
+	 * @brief Delete all unconnected nodes from the current graph.
+	 * @return the number of nodes deleted.
+	 */
+	std::size_t deleteUnconnectedNodes();
+	
+	/**
 	 * @brief Delete all nodes from the current graph.
 	 * This will remove all the connections.
 	 */
@@ -177,6 +183,10 @@ public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }
 	inline const NodeMap&           getNodes() const { return _nodes; }
 	inline NodeMap&                 getNodes()       { return _nodes; }
+	
+	inline std::size_t getNbNodes() const { return _nodes.size(); }
+	inline std::size_t getNbConnections() const { return _graph.getEdgeCount(); }
+	
 	std::vector<Node*>         getNodesByContext( const std::string& type );
 	std::vector<Node*>         getNodesByPlugin( const std::string& pluginId );
 	//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
@@ -197,6 +207,7 @@ private:
 	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
+	static const std::string _outputId;
 
 private:
 	void addToInternalGraph( Node& node );

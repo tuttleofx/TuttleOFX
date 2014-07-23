@@ -18,6 +18,8 @@
 namespace tuttle {
 namespace host {
 
+const std::string Graph::_outputId( "TUTTLE_FAKE_OUTPUT" );
+
 Graph::Graph()
 {}
 
@@ -146,13 +148,21 @@ void Graph::deleteNode( Node& node )
 	_nodes.erase( it ); // will delete the node
 }
 
+std::size_t Graph::deleteUnconnectedNodes()
+{
+	std::list<std::string> toRemove = _graph.getUnconnectedVertices( _graph.getVertexDescriptor( _outputId ) );
+	BOOST_FOREACH( const std::string& nodeName, toRemove )
+	{
+		deleteNode( getNode( nodeName ) );
+	}
+	return toRemove.size();
+}
+
 void Graph::clear()
 {
-	BOOST_FOREACH( const NodeMap::value_type node, _nodes )
-	{
-		removeFromInternalGraph( *node.second );
-	}
+	_graph.clear();
 	_nodes.clear();
+	_instanceCount.clear();
 }
 
 void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr )
