@@ -148,11 +148,9 @@ void Graph::deleteNode( Node& node )
 
 void Graph::clear()
 {
-	BOOST_FOREACH( const NodeMap::value_type node, _nodes )
-	{
-		removeFromInternalGraph( *node.second );
-	}
+	_graph.clear();
 	_nodes.clear();
+	_instanceCount.clear();
 }
 
 void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr )
