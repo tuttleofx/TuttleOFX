@@ -861,7 +861,7 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 						{
 							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, inputStreamIndex, subStream, profile );
+								_transcoder->add( inputFileName, streamIndex, subStream, profile );
 							}
 						}
 					}
@@ -889,7 +889,7 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 						{
 							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName );
+								_transcoder->add( inputFileName, streamIndex, subStream, presetName );
 							}
 						}
 					}
