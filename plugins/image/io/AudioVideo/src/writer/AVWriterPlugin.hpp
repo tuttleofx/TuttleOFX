@@ -66,6 +66,7 @@ public:
 	void updateAudioParams();
 	void updateAudioCopyStream();
 	void updateAudioSilent();
+	void updateAllChannels();
 	
 	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
 	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
@@ -105,6 +106,8 @@ public:
 	std::vector<OFX::IntParam*> _paramAudioStreamIndex;
 	std::vector<OFX::BooleanParam*> _paramAudioCopyStream;
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
+	std::vector<OFX::BooleanParam*> _paramAudioAllChannels;
+	std::vector<OFX::IntParam*> _paramAudioChannelIndex;
 	
 	// custom params
 	OFX::BooleanParam* _paramUseCustomFps;

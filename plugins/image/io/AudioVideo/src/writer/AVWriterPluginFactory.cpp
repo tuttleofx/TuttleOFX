@@ -382,6 +382,26 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 				(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
 			);
 		}
+		
+		// add flag to transcode all channels
+		std::ostringstream audioAllChannelsName( kParamAudioAllChannels, std::ios_base::in | std::ios_base::ate );
+		audioAllChannelsName << "_" << idAudioStream;
+		OFX::BooleanParamDescriptor* audioAllChannelsParam = desc.defineBooleanParam( audioAllChannelsName.str() );
+		audioAllChannelsParam->setLabel( "Transcode all channels" );
+		audioAllChannelsParam->setHint( "Transcode all channels of the stream. Beware of the number of channels in your output file, because downmix is not supported" );
+		audioAllChannelsParam->setDefault( true );
+		audioAllChannelsParam->setParent( audioSubGroupParam );
+		
+		// add audio channel index
+		std::ostringstream audioChannelIndexName( kParamAudioChannelIndex, std::ios_base::in | std::ios_base::ate );
+		audioChannelIndexName << "_" << idAudioStream;
+		OFX::IntParamDescriptor* audioChannelIndexParam = desc.defineIntParam( audioChannelIndexName.str() );
+		audioChannelIndexParam->setLabel( "Input channel index" );
+		audioChannelIndexParam->setHint( "Select a specific channel of the selected input stream." );
+		audioChannelIndexParam->setRange( 0, INT_MAX );
+		audioChannelIndexParam->setDisplayRange( 0, 10 );
+		audioChannelIndexParam->setDefault( 0 );
+		audioChannelIndexParam->setParent( audioSubGroupParam );
 	}
 	
 	/// METADATA PARAMETERS
