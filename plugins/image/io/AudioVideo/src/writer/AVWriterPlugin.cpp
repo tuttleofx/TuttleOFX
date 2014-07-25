@@ -637,6 +637,12 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos, indexPos ) );
 		_paramAudioSilent.at( audioStreamIndex )->setValue( false );
 	}
+	else if( paramName.find( kParamAudioPreset ) != std::string::npos )
+	{
+		const size_t indexPos = kParamAudioPreset.size() + 1; // add "_"
+		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos, indexPos ) );
+		_paramAudioCopyStream.at( audioStreamIndex )->setValue( false );
+	}
 }
 
 void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
