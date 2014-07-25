@@ -844,18 +844,24 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 				// transcode
 				else
 				{
+					size_t subStream = -1;
+					if( ! _paramAudioAllChannels.at( i )->getValue() )
+					{
+						subStream = _paramAudioChannelIndex.at( i )->getValue();
+					}
+					
 					// custom audio preset
 					if( presetIndex == 0 && mainPresetIndex == 0 )
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, profile );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, inputStreamIndex, profile );
+								_transcoder->add( inputFileName, inputStreamIndex, subStream, profile );
 							}
 						}
 					}
@@ -877,13 +883,13 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 						
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, presetName );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, inputStreamIndex, presetName );
+								_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName );
 							}
 						}
 					}
