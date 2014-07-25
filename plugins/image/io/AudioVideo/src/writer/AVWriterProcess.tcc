@@ -2,7 +2,7 @@
 
 #include <AvTranscoder/EssenceStructures/Pixel.hpp>
 #include <AvTranscoder/EssenceStructures/AudioFrame.hpp>
-#include <AvTranscoder/CodedStructures/DataStreamDesc.hpp>
+#include <AvTranscoder/CodedStructures/DataStream.hpp>
 
 #include <tuttle/plugin/exceptions.hpp>
 
