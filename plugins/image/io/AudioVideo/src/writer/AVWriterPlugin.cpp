@@ -362,7 +362,6 @@ void AVWriterPlugin::updateAudioParams()
 			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
 		}
 	}
-	updateAudioCopyStream();
 	updateAudioSilent();
 }
 
@@ -389,6 +388,7 @@ void AVWriterPlugin::updateAudioCopyStream()
 			}
 		}
 	}
+	updateAllChannels();
 }
 
 void AVWriterPlugin::updateAudioSilent()
@@ -413,21 +413,13 @@ void AVWriterPlugin::updateAudioSilent()
 				_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( false );
 				_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
 				_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( false );
-				if( _paramAudioCopyStream.at( idAudioStream )->getValue() )
-				{
-					_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
-					_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( true );
-					_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-				}
-				else
-				{
-					_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
-					_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( false );
-					_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-				}
+				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
+				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( false );
+				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
 			}
 		}
 	}
+	updateAudioCopyStream();
 }
 
 void AVWriterPlugin::updateAllChannels()
