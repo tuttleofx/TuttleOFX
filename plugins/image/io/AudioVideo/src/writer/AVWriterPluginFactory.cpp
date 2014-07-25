@@ -348,11 +348,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 		audioFilePathParam->setParent( audioSubGroupParam );
 
-		// add audio stream id
+		// add audio stream index
 		std::ostringstream audioStreamIndexName( kParamAudioStreamIndex, std::ios_base::in | std::ios_base::ate );
 		audioStreamIndexName << "_" << idAudioStream;
 		OFX::IntParamDescriptor* audioStreamIndexParam = desc.defineIntParam( audioStreamIndexName.str() );
 		audioStreamIndexParam->setLabel( "Input stream index" );
+		audioStreamIndexParam->setHint( "Select a specific stream of the input file. Set -1 to select all streams." );
 		audioStreamIndexParam->setRange( -1, INT_MAX );
 		audioStreamIndexParam->setDisplayRange( -1, 16 );
 		audioStreamIndexParam->setDefault( 0 );
@@ -363,7 +364,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioCopyStreamName << "_" << idAudioStream;
 		OFX::BooleanParamDescriptor* audioCopyStreamParam = desc.defineBooleanParam( audioCopyStreamName.str() );
 		audioCopyStreamParam->setLabel( "Only copy stream" );
-		audioCopyStreamParam->setHint( "Only rewrap the audio stream whithout transcode it." );
+		audioCopyStreamParam->setHint( "Only rewrap the audio stream whithout transcode it" );
 		audioCopyStreamParam->setDefault( true );
 		audioCopyStreamParam->setParent( audioSubGroupParam );
 		
@@ -372,6 +373,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioCodecPresetName << "_" << idAudioStream;
 		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
 		audioCodecPresetParam->setLabel( "Output Preset" );
+		audioCodecPresetParam->setHint( "Choose a preset to easily get your output file, and to skip all audio settings" );
 		audioCodecPresetParam->appendOption( "main preset", "Main preset" );
 		audioCodecPresetParam->setParent( audioSubGroupParam );
 
