@@ -42,6 +42,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	setSequentialRender( true );
 
 	// format
+	_paramFormatCustomGroup = fetchGroupParam( kParamFormatCustomGroup );
 	_paramFormat = fetchChoiceParam( kParamFormat );
 	
 	// video
@@ -558,8 +559,15 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamFormatPreset )
 	{
+		// if custom preset
 		if( _paramFormatPreset->getValue() == 0 )
-			return;
+		{	
+			_paramFormatCustomGroup->setIsSecretAndDisabled( false );
+		}
+		else
+		{
+			_paramFormatCustomGroup->setIsSecretAndDisabled( true );
+		}
 	}
 	else if( paramName == kParamMainVideoPreset )
 	{

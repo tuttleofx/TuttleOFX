@@ -89,6 +89,7 @@ public:
 	
 public:
 	// format
+	OFX::GroupParam* _paramFormatCustomGroup;
 	OFX::ChoiceParam* _paramFormat;
 	
 	// video

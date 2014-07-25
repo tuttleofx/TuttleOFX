@@ -134,6 +134,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	// @todo: add presets
 	formatPreset->setParent( formatGroup );
 	
+	// add group to manage option when custom preset
+	OFX::GroupParamDescriptor* formatCustomGroupParam = desc.defineGroupParam( kParamFormatCustomGroup );
+	formatCustomGroupParam->setLabel( "Format custom parameters" );
+	formatCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
+	formatCustomGroupParam->setOpen( false );
+	formatCustomGroupParam->setParent( formatGroup );
+	
 	/// format list
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
@@ -150,10 +157,10 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	}
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( default_format );
-	format->setParent( formatGroup );
+	format->setParent( formatCustomGroupParam );
 	
 	avtranscoder::OptionLoader::OptionArray formatGroupOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_ENCODING_PARAM );
-	common::addOptionsToGroup( desc, formatGroup, formatGroupOptions, common::kPrefixFormat );
+	common::addOptionsToGroup( desc, formatCustomGroupParam, formatGroupOptions, common::kPrefixFormat );
 	
 	/// format parameters
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
