@@ -202,6 +202,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::GroupParamDescriptor* videoCustomGroupParam = desc.defineGroupParam( kParamVideoCustomGroup );
 	videoCustomGroupParam->setLabel( "Video custom parameters" );
 	videoCustomGroupParam->setHint( "Contains expert params, use to write video streams when custom preset is specified." );
+	videoCustomGroupParam->setOpen( false );
 	videoCustomGroupParam->setParent( videoGroup );
 	
 	/// video codec list
@@ -266,6 +267,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::GroupParamDescriptor* audioCustomGroupParam = desc.defineGroupParam( kParamAudioCustomGroup );
 	audioCustomGroupParam->setLabel( "Audio custom parameters" );
 	audioCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
+	audioCustomGroupParam->setOpen( false );
 	audioCustomGroupParam->setParent( audioGroup );
 	
 	// add audio codec list
