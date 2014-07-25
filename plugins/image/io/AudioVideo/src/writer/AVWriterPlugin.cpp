@@ -366,32 +366,6 @@ void AVWriterPlugin::updateAudioParams()
 	updateAudioSilent();
 }
 
-void AVWriterPlugin::updateAudioCopyStream()
-{
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
-	{
-		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
-			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
-			! _paramAudioSilent.at( idAudioStream )->getValue() )
-		{
-			// if copy stream
-			if( _paramAudioCopyStream.at( idAudioStream )->getValue() )
-			{
-				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-			}
-			else
-			{
-				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-			}
-		}
-	}
-	updateAllChannels();
-}
-
 void AVWriterPlugin::updateAudioSilent()
 {
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
@@ -421,6 +395,32 @@ void AVWriterPlugin::updateAudioSilent()
 		}
 	}
 	updateAudioCopyStream();
+}
+
+void AVWriterPlugin::updateAudioCopyStream()
+{
+	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	{
+		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
+			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
+			! _paramAudioSilent.at( idAudioStream )->getValue() )
+		{
+			// if copy stream
+			if( _paramAudioCopyStream.at( idAudioStream )->getValue() )
+			{
+				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
+				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( true );
+				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
+			}
+			else
+			{
+				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
+				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( false );
+				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
+			}
+		}
+	}
+	updateAllChannels();
 }
 
 void AVWriterPlugin::updateAllChannels()
@@ -728,7 +728,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 			}
 			
 			pixel = avtranscoder::Pixel( params._videoPixelFormat );
-			videoDesc = avtranscoder::VideoDesc(params._videoCodecName );
+			videoDesc = avtranscoder::VideoDesc( params._videoCodecName );
 		}
 		// existing video preset
 		else
@@ -793,7 +793,6 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 		for( int i = 0; i < _paramAudioNbStream->getValue(); ++i )
 		{
 			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
-			int inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
 			std::string presetName( "" );
 			
 			size_t presetIndex = _paramAudioPreset.at( i )->getValue();
@@ -826,6 +825,8 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 			}
 			else
 			{
+				int inputStreamIndex = _paramAudioStreamIndex.at( i )->getValue();
+				
 				size_t nbStream = 1;
 				if( inputStreamIndex == -1 )
 				{

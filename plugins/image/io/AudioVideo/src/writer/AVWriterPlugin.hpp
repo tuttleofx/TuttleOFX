@@ -64,8 +64,8 @@ public:
 	void updateSampleFormats( const std::string& audioCodecName );
 	void updatePixelFormats( const std::string& videoCodecName );
 	void updateAudioParams();
-	void updateAudioCopyStream();
 	void updateAudioSilent();
+	void updateAudioCopyStream();
 	void updateAllChannels();
 	
 	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
