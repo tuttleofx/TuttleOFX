@@ -643,6 +643,12 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos, indexPos ) );
 		_paramAudioCopyStream.at( audioStreamIndex )->setValue( false );
 	}
+	else if( paramName.find( kParamAudioChannelIndex ) != std::string::npos )
+	{
+		const size_t indexPos = kParamAudioChannelIndex.size() + 1; // add "_"
+		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos, indexPos ) );
+		_paramAudioAllChannels.at( audioStreamIndex )->setValue( false );
+	}
 }
 
 void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
