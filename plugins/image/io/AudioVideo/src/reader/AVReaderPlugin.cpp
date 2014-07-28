@@ -49,6 +49,10 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	fetchCustomParams( _paramMetaDataCustom, metadataOptions, common::kPrefixMetaData );
 
 	updateVisibleTools();
+	
+	_videoProfile[ avtranscoder::Profile::avProfileIdentificator ] = "readerVideoPreset";
+	_videoProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Reader video preset";
+	_videoProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
 }
 
 void AVReaderPlugin::ensureVideoIsOpen()
@@ -100,6 +104,17 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		    << exception::filename( filepath ) );
 	}
 	_initVideo = true;
+}
+
+void AVReaderPlugin::updateVideoProfile()
+{
+	common::CustomParams::OptionsForPreset videoOptionsForPreset = _paramVideoCustom.getOptionsNameAndValue();
+	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoOptionsForPreset )
+	{
+		_videoProfile[ nameAndValue.first ] = nameAndValue.second;
+	}
+	
+	_inputStreamVideo->setProfile( _videoProfile );
 }
 
 void AVReaderPlugin::cleanInputFile()
@@ -325,6 +340,7 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	ensureVideoIsOpen();
+	updateVideoProfile();
 	
 	// get source image
 	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _videoStreamId ).getVideoDesc().getVideoFrameDesc();

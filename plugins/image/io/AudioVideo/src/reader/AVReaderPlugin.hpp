@@ -10,6 +10,7 @@
 #include <AvTranscoder/EssenceStructures/VideoFrame.hpp>
 #include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
 #include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/Profile.hpp>
 
 #include <boost/scoped_ptr.hpp>
 
@@ -35,6 +36,7 @@ public:
 
 public:
 	void ensureVideoIsOpen();
+	void updateVideoProfile();
 	void cleanInputFile();
 	
 	AVReaderParams getProcessParams() const;
@@ -71,12 +73,14 @@ public:
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
 	boost::scoped_ptr<avtranscoder::InputVideo> _inputStreamVideo;
+	avtranscoder::Profile::ProfileDesc _videoProfile;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	
 	avtranscoder::VideoEssenceTransform _colorTransform;
 	
 	avtranscoder::OptionLoader _optionLoader;
+	avtranscoder::Profile _presets;
 	
 	std::string _lastInputFilePath;
 	size_t _lastVideoStreamIndex;
