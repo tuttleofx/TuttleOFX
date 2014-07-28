@@ -365,6 +365,8 @@ public:
 
 	vertex_range_t getVertices() const { return vertices( _graph ); }
 
+	std::list<std::string> getUnconnectedVertices( const vertex_descriptor& vroot );
+
 	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const { return adjacent_vertices( v, _graph ); }
 
 	std::size_t getVertexCount() const { return boost::num_vertices( _graph ); }
