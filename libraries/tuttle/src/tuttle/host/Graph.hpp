@@ -119,9 +119,10 @@ public:
 	
 	/**
 	 * @brief Delete all unconnected nodes from the current graph.
+	 * @param node: delete the unconnected nodes from this node
 	 * @return the number of nodes deleted.
 	 */
-	std::size_t deleteUnconnectedNodes();
+	std::size_t deleteUnconnectedNodes( const Node& node );
 	
 	/**
 	 * @brief Delete all nodes from the current graph.
@@ -207,7 +208,6 @@ private:
 	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
-	static const std::string _outputId;
 
 private:
 	void addToInternalGraph( Node& node );

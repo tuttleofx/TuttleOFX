@@ -96,7 +96,7 @@ def testDeleteUnconnectedNodes():
 	assert_equals(g.getNbNodes(), 6)
 	assert_equals(g.getNbConnections(), 5)
 
-	g.deleteUnconnectedNodes()
+	g.deleteUnconnectedNodes( nodes[-1] )
 
 	assert_equals(g.getNbNodes(), 6)
 	assert_equals(g.getNbConnections(), 5)
@@ -107,7 +107,7 @@ def testDeleteUnconnectedNodes():
 	assert_equals(g.getNbNodes(), 8)
 	assert_equals(g.getNbConnections(), 5)
 
-	g.deleteUnconnectedNodes()
+	g.deleteUnconnectedNodes( nodes[-1] )
 
 	assert_equals(g.getNbNodes(), 6)
 	assert_equals(g.getNbConnections(), 5)
