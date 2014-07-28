@@ -42,7 +42,7 @@ public:
 	void updateVisibleTools();
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	
-	void fetchCustomParams( avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="" );
+	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="" );
 	
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );

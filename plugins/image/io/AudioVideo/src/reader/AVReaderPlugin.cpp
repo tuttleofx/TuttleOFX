@@ -37,16 +37,16 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
 	
 	avtranscoder::OptionLoader::OptionArray formatsOptions = _optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
-	fetchCustomParams( formatsOptions, common::kPrefixFormat );
+	fetchCustomParams( _paramFormatCustom, formatsOptions, common::kPrefixFormat );
 	
 	avtranscoder::OptionLoader::OptionArray videoOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	fetchCustomParams( videoOptions, common::kPrefixVideo );
+	fetchCustomParams( _paramVideoCustom, videoOptions, common::kPrefixVideo );
 	
 	avtranscoder::OptionLoader::OptionArray audioOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	fetchCustomParams( audioOptions, common::kPrefixAudio );
+	fetchCustomParams( _paramAudioCustom, audioOptions, common::kPrefixAudio );
 	
 	avtranscoder::OptionLoader::OptionArray metadataOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
-	fetchCustomParams( metadataOptions, common::kPrefixMetaData );
+	fetchCustomParams( _paramMetaDataCustom, metadataOptions, common::kPrefixMetaData );
 
 	updateVisibleTools();
 }
@@ -157,20 +157,8 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 }
 
-void AVReaderPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix )
+void AVReaderPlugin::fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix )
 {
-	common::CustomParams* customParams;
-	if( prefix == common::kPrefixFormat )
-		customParams = &_paramFormatCustom;
-	else if( prefix == common::kPrefixVideo )
-		customParams = &_paramVideoCustom;
-	else if( prefix == common::kPrefixAudio )
-		customParams = &_paramAudioCustom;
-	else if( prefix == common::kPrefixMetaData )
-		customParams = &_paramMetaDataCustom;
-	else
-		return;
-
 	// iterate on options
 	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
 	{
@@ -181,32 +169,32 @@ void AVReaderPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionArray&
 		{
 			case avtranscoder::TypeBool:
 			{
-				customParams->_paramBoolean.push_back( fetchBooleanParam( name ) );
+				ofxParam._paramBoolean.push_back( fetchBooleanParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeInt:
 			{
-				customParams->_paramInt.push_back( fetchIntParam( name ) );
+				ofxParam._paramInt.push_back( fetchIntParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeDouble:
 			{
-				customParams->_paramDouble.push_back( fetchDoubleParam( name ) );
+				ofxParam._paramDouble.push_back( fetchDoubleParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeString:
 			{
-				customParams->_paramString.push_back( fetchStringParam( name ) );
+				ofxParam._paramString.push_back( fetchStringParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeRatio:
 			{
-				customParams->_paramRatio.push_back( fetchInt2DParam( name ) );
+				ofxParam._paramRatio.push_back( fetchInt2DParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeChoice:
 			{
-				customParams->_paramChoice.push_back( fetchChoiceParam( name ) );
+				ofxParam._paramChoice.push_back( fetchChoiceParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeGroup:
@@ -218,7 +206,7 @@ void AVReaderPlugin::fetchCustomParams( avtranscoder::OptionLoader::OptionArray&
 					childName += common::kPrefixFlag;
 					childName += child.getName();
 
-					customParams->_paramBoolean.push_back( fetchBooleanParam( childName ) );
+					ofxParam._paramBoolean.push_back( fetchBooleanParam( childName ) );
 				}
 				break;
 			}
