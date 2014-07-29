@@ -70,7 +70,6 @@ public:
 	
 	common::CustomParams _paramFormatCustom;
 	common::CustomParams _paramVideoCustom;
-	common::CustomParams _paramAudioCustom;
 	common::CustomParams _paramMetaDataCustom;
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;

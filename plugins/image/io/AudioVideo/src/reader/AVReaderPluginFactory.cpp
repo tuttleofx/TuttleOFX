@@ -96,20 +96,18 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	// Groups
 	OFX::GroupParamDescriptor* formatGroup = desc.defineGroupParam( kParamFormatGroup );
 	OFX::GroupParamDescriptor* videoGroup  = desc.defineGroupParam( kParamVideoGroup );
-	OFX::GroupParamDescriptor* audioGroup  = desc.defineGroupParam( kParamAudioGroup );
 	OFX::GroupParamDescriptor* metaGroup   = desc.defineGroupParam( kParamMetaGroup );
 	
 	formatGroup->setLabel( "Format" );
 	videoGroup->setLabel( "Video" );
-	audioGroup->setLabel( "Audio" );
 	metaGroup->setLabel( "Metadata" );
 	
 	formatGroup->setAsTab( );
 	videoGroup->setAsTab( );
-	audioGroup->setAsTab( );
 	metaGroup->setAsTab( );
 	
 	avtranscoder::OptionLoader optionLoader;
+
 	/// FORMAT PARAMETERS
 	avtranscoder::OptionLoader::OptionArray formatOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
 	common::addOptionsToGroup( desc, formatGroup, formatOptions, common::kPrefixFormat );
@@ -117,10 +115,6 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// VIDEO PARAMETERS
 	avtranscoder::OptionLoader::OptionArray videoOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	common::addOptionsToGroup( desc, videoGroup, videoOptions, common::kPrefixVideo );
-	
-	/// AUDIO PARAMETERS
-	avtranscoder::OptionLoader::OptionArray audioOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	common::addOptionsToGroup( desc, audioGroup, audioOptions, common::kPrefixAudio );
 	
 	/// METADATA PARAMETERS
 	avtranscoder::OptionLoader::OptionArray metadataOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );

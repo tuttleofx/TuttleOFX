@@ -42,9 +42,6 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	avtranscoder::OptionLoader::OptionArray videoOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	fetchCustomParams( _paramVideoCustom, videoOptions, common::kPrefixVideo );
 	
-	avtranscoder::OptionLoader::OptionArray audioOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	fetchCustomParams( _paramAudioCustom, audioOptions, common::kPrefixAudio );
-	
 	avtranscoder::OptionLoader::OptionArray metadataOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
 	fetchCustomParams( _paramMetaDataCustom, metadataOptions, common::kPrefixMetaData );
 
