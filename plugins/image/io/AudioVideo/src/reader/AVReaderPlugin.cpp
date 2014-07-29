@@ -113,8 +113,6 @@ void AVReaderPlugin::updateVideoProfile()
 	{
 		_videoProfile[ nameAndValue.first ] = nameAndValue.second;
 	}
-	
-	_inputStreamVideo->setProfile( _videoProfile );
 }
 
 void AVReaderPlugin::cleanInputFile()
@@ -345,7 +343,9 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	ensureVideoIsOpen();
+
 	updateVideoProfile();
+	_inputStreamVideo->setProfile( _videoProfile );
 	
 	// get source image
 	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _videoStreamId ).getVideoDesc().getVideoFrameDesc();
