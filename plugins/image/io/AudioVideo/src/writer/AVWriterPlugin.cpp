@@ -704,8 +704,23 @@ void AVWriterPlugin::initOutput()
 	{
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
 		
-		updateFormatProfile();
-		_outputFile->setProfile( _formatProfile );
+		size_t mainPresetIndex = _paramFormatPreset->getValue();
+		avtranscoder::Profile::ProfileDesc profile;
+
+		// custom format preset
+		if( mainPresetIndex == 0 )
+		{
+			updateFormatProfile();
+			profile = _formatProfile;
+		}
+		// existing format preset
+		else
+		{
+			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
+			profile = _presets.getFormatProfiles().at( mainPresetIndex - 1 );
+		}
+		
+		_outputFile->setProfile( profile );
 		
 		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
 	}
