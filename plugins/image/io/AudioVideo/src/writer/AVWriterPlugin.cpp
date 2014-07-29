@@ -728,8 +728,7 @@ void AVWriterPlugin::initOutput()
 	{
 		_initVideo = false;
 		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to open output file: " + e.what()
-		    << exception::filename( params._outputFilePath ) );
+		    << exception::user() + "unable to open output file: " + e.what() );
 	}
 }
 
