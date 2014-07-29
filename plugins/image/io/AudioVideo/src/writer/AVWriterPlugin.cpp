@@ -685,8 +685,10 @@ void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	clipPreferences.setOutputFrameVarying( true );
 }
 
-void AVWriterPlugin::initOutput( AVProcessParams& params )
+void AVWriterPlugin::initOutput()
 {
+	AVProcessParams params = getProcessParams();
+	
 	// create output file
 	try
 	{
@@ -706,8 +708,10 @@ void AVWriterPlugin::initOutput( AVProcessParams& params )
 	}
 }
 
-void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params )
+void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 {
+	AVProcessParams params = getProcessParams();
+	
 	// ouput file path already set
 	if( _lastOutputFilePath != "" && _lastOutputFilePath == params._outputFilePath )
 		return;
@@ -777,7 +781,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 	_initVideo = true;
 }
 
-void AVWriterPlugin::initAudio( AVProcessParams& params )
+void AVWriterPlugin::initAudio()
 {
 	// no audio stream specified
 	if( ! _paramAudioNbStream->getValue() )
@@ -1018,8 +1022,7 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	// Before new render
 	cleanVideoAndAudio();
 	
-	AVProcessParams params = getProcessParams();
-	initOutput( params );
+	initOutput();
 }
 
 /**
@@ -1030,12 +1033,11 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
 
-	AVProcessParams params = getProcessParams();
-	ensureVideoIsInit( args, params );
+	ensureVideoIsInit( args );
 
 	if( ! _initWrap )
 	{
-		initAudio( params );
+		initAudio();
 		_outputFile->beginWrap();
 		_initWrap = true;
 	}
