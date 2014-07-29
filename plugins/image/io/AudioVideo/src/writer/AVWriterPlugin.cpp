@@ -587,7 +587,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamFormatPreset )
 	{
-		// if custom preset
+		// if custom format preset
 		if( _paramFormatPreset->getValue() == 0 )
 		{
 			int defaultFormatIndex;
@@ -607,7 +607,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamMainVideoPreset )
 	{
-		// if custom preset
+		// if custom video preset
 		if( _paramMainVideoPreset->getValue() == 0 )
 		{	
 			int defaultVideoCodecIndex;
@@ -618,6 +618,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		}
 		else
 		{
+			// hack to have nothing display in detailled group
 			int videoCodecWithNoOptionDetailsIndex = 0;
 			_paramVideoCodec->setValue( videoCodecWithNoOptionDetailsIndex );
 			
@@ -626,13 +627,14 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamMainAudioPreset )
 	{
-		// if custom preset
+		// if custom audio preset
 		if( _paramMainAudioPreset->getValue() == 0 )
 		{
 			_paramAudioCustomGroup->setIsSecretAndDisabled( false );
 		}
 		else
 		{
+			// hack to have nothing display in detailled group
 			int defaultAudioCodecIndex;
 			_paramAudioCodec->getDefault( defaultAudioCodecIndex );
 			_paramAudioCodec->setValue( defaultAudioCodecIndex );
