@@ -120,6 +120,82 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionArray metadataOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
 	common::addOptionsToGroup( desc, metaGroup, metadataOptions, common::kPrefixMetaData );
 	
+	OFX::GroupParamDescriptor* wrapper = desc.defineGroupParam( kParamWrapper );
+	wrapper->setLabel( "Wrapper" );
+	wrapper->setOpen( false );
+	wrapper->setParent( metaGroup );
+	
+	OFX::StringParamDescriptor* fileName = desc.defineStringParam( kParamFileName );
+	fileName->setLabel( "File name" );
+	fileName->setEnabled( false );
+	fileName->setParent( wrapper );
+	
+	OFX::StringParamDescriptor* formatName = desc.defineStringParam( kParamFormatName );
+	formatName->setLabel( "Format name" );
+	formatName->setEnabled( false );
+	formatName->setParent( wrapper );
+	
+	OFX::StringParamDescriptor* formatLongName = desc.defineStringParam( kParamFormatLongName );
+	formatLongName->setLabel( "Format long name" );
+	formatLongName->setEnabled( false );
+	formatLongName->setParent( wrapper );
+	
+	OFX::DoubleParamDescriptor* startTime = desc.defineDoubleParam( kParamStartTime );
+	startTime->setLabel( "Start time" );
+	startTime->setEnabled( false );
+	startTime->setParent( wrapper );
+	
+	OFX::DoubleParamDescriptor* duration = desc.defineDoubleParam( kParamDuration );
+	duration->setLabel( "Duration" );
+	duration->setEnabled( false );
+	duration->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kParamBitrate );
+	bitrate->setLabel( "Bitrate" );
+	bitrate->setEnabled( false );
+	bitrate->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbStream = desc.defineIntParam( kParamNbStream );
+	nbStream->setLabel( "Number of stream" );
+	nbStream->setEnabled( false );
+	nbStream->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbProgram = desc.defineIntParam( kParamNbProgram );
+	nbProgram->setLabel( "Number of program" );
+	nbProgram->setEnabled( false );
+	nbProgram->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbVideoStream = desc.defineIntParam( kParamNbVideoStream );
+	nbVideoStream->setLabel( "Number of video stream" );
+	nbVideoStream->setEnabled( false );
+	nbVideoStream->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbAudioStream = desc.defineIntParam( kParamNbAudioStream );
+	nbAudioStream->setLabel( "Number of audio stream" );
+	nbAudioStream->setEnabled( false );
+	nbAudioStream->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbDataStream = desc.defineIntParam( kParamNbDataStream );
+	nbDataStream->setLabel( "Number of data stream" );
+	nbDataStream->setEnabled( false );
+	nbDataStream->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbSubtitleStream = desc.defineIntParam( kParamNbSubtitleStream );
+	nbSubtitleStream->setLabel( "Number of subtitle stream" );
+	nbSubtitleStream->setEnabled( false );
+	nbSubtitleStream->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbAttachementStream = desc.defineIntParam( kParamNbAttachementStream );
+	nbAttachementStream->setLabel( "Number of attachement stream" );
+	nbAttachementStream->setEnabled( false );
+	nbAttachementStream->setParent( wrapper );
+	
+	OFX::IntParamDescriptor* nbUnknownStream = desc.defineIntParam( kParamNbUnknownStream );
+	nbUnknownStream->setLabel( "Number of unknown stream" );
+	nbUnknownStream->setEnabled( false );
+	nbUnknownStream->setParent( wrapper );
+	
+	// OTHER
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
 	useCustomSAR->setDefault( false );

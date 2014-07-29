@@ -22,6 +22,22 @@ static const std::string kParamCustomSAR = "customSAR";
 static const std::string kParamVideoStreamIndex      = "videoStreamIndex";
 static const std::string kParamVideoStreamIndexLabel = "Video stream index";
 
+static const std::string kParamWrapper = "wrapper";
+static const std::string kParamFileName =  "fileName";
+static const std::string kParamFormatName = "formatName";
+static const std::string kParamFormatLongName = "formatLongName";
+static const std::string kParamStartTime = "startTime";
+static const std::string kParamDuration = "duration";
+static const std::string kParamBitrate = "bitrate";
+static const std::string kParamNbStream = "nbStream";
+static const std::string kParamNbProgram = "nbProgram";
+static const std::string kParamNbVideoStream = "nbVideoStream";
+static const std::string kParamNbAudioStream = "nbAudioStream";
+static const std::string kParamNbDataStream = "nbDataStream";
+static const std::string kParamNbSubtitleStream = "nbSubTitleStream";
+static const std::string kParamNbAttachementStream = "nbAttachementStream";
+static const std::string kParamNbUnknownStream = "nbUnknownStream";
+
 }
 }
 }

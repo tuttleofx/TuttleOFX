@@ -44,6 +44,21 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	
 	avtranscoder::OptionLoader::OptionArray metadataOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
 	fetchCustomParams( _paramMetaDataCustom, metadataOptions, common::kPrefixMetaData );
+	
+	_paramMetaDataFileName = fetchStringParam( kParamFileName );
+	_paramMetaDataFormatName = fetchStringParam( kParamFormatName );
+	_paramMetaDataFormatLongName = fetchStringParam( kParamFormatLongName );
+	_paramMetaDataStartTime = fetchDoubleParam( kParamStartTime );
+	_paramMetaDataDuration = fetchDoubleParam( kParamDuration );
+	_paramMetaDataBitrate = fetchIntParam( kParamBitrate );
+	_paramMetaDataNbStream = fetchIntParam( kParamNbStream );
+	_paramMetaDataNbProgram = fetchIntParam( kParamNbProgram );
+	_paramMetaDataNbVideoStream = fetchIntParam( kParamNbVideoStream );
+	_paramMetaDataNbAudioStream = fetchIntParam( kParamNbAudioStream );
+	_paramMetaDataNbDataStream = fetchIntParam( kParamNbDataStream );
+	_paramMetaDataNbSubtitleStream = fetchIntParam( kParamNbSubtitleStream );
+	_paramMetaDataNbAttachementStream = fetchIntParam( kParamNbAttachementStream );
+	_paramMetaDataNbUnknownStream = fetchIntParam( kParamNbUnknownStream );
 
 	updateVisibleTools();
 	
@@ -159,11 +174,52 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kTuttlePluginFilename )
 	{
-		ensureVideoIsOpen();
-		
-		// set range of the OFX param
-		_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
-		_paramVideoStreamIndex->setDisplayRange( 0, _inputFile->getProperties().videoStreams.size() );
+		try
+		{
+			ensureVideoIsOpen();
+
+			const avtranscoder::Properties& inputProperties = _inputFile->getProperties();
+
+			// set range of the OFX param
+			_paramVideoStreamIndex->setRange( 0, _inputFile->getProperties().videoStreams.size() );
+			_paramVideoStreamIndex->setDisplayRange( 0, _inputFile->getProperties().videoStreams.size() );
+
+			// update MetaData tab
+			_paramMetaDataFileName->setValue( inputProperties.filename );
+			_paramMetaDataFormatName->setValue( inputProperties.formatName );
+			_paramMetaDataFormatLongName->setValue( inputProperties.formatLongName );
+			_paramMetaDataStartTime->setValue( inputProperties.startTime );
+			_paramMetaDataDuration->setValue( inputProperties.duration );
+			_paramMetaDataBitrate->setValue( inputProperties.bitRate );
+			_paramMetaDataNbStream->setValue( inputProperties.streamsCount );
+			_paramMetaDataNbProgram->setValue( inputProperties.programsCount );
+			_paramMetaDataNbVideoStream->setValue( inputProperties.videoStreams.size() );
+			_paramMetaDataNbAudioStream->setValue( inputProperties.audioStreams.size() );
+			_paramMetaDataNbDataStream->setValue( inputProperties.dataStreams.size() );
+			_paramMetaDataNbSubtitleStream->setValue( inputProperties.subtitleStreams.size() );
+			_paramMetaDataNbAttachementStream->setValue( inputProperties.attachementStreams.size() );
+			_paramMetaDataNbUnknownStream->setValue( inputProperties.unknownStreams.size() );
+		}
+		catch( std::exception& e )
+		{
+			_paramVideoStreamIndex->setRange( 0, 100. );
+			_paramVideoStreamIndex->setDisplayRange( 0, 16 );
+
+			_paramMetaDataFileName->setValue( "" );
+			_paramMetaDataFormatName->setValue( "" );
+			_paramMetaDataFormatLongName->setValue( "" );
+			_paramMetaDataStartTime->setValue( 0 );
+			_paramMetaDataDuration->setValue( 0 );
+			_paramMetaDataBitrate->setValue( 0 );
+			_paramMetaDataNbStream->setValue( 0 );
+			_paramMetaDataNbProgram->setValue( 0 );
+			_paramMetaDataNbVideoStream->setValue( 0 );
+			_paramMetaDataNbAudioStream->setValue( 0 );
+			_paramMetaDataNbDataStream->setValue( 0 );
+			_paramMetaDataNbSubtitleStream->setValue( 0 );
+			_paramMetaDataNbAttachementStream->setValue( 0 );
+			_paramMetaDataNbUnknownStream->setValue( 0 );
+		}
 	}
 }
 
