@@ -106,6 +106,15 @@ void AVReaderPlugin::ensureVideoIsOpen()
 	_initVideo = true;
 }
 
+void AVReaderPlugin::updateFormatProfile()
+{
+	common::CustomParams::OptionsForPreset formatOptionsForPreset = _paramFormatCustom.getOptionsNameAndValue();
+	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, formatOptionsForPreset )
+	{
+		_formatProfile[ nameAndValue.first ] = nameAndValue.second;
+	}
+}
+
 void AVReaderPlugin::updateVideoProfile()
 {
 	common::CustomParams::OptionsForPreset videoOptionsForPreset = _paramVideoCustom.getOptionsNameAndValue();
@@ -344,6 +353,9 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	ensureVideoIsOpen();
 
+	updateFormatProfile();
+	_inputFile->setProfile( _formatProfile );
+	
 	updateVideoProfile();
 	_inputStreamVideo->setProfile( _videoProfile );
 	

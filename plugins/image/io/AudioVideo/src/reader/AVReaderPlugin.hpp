@@ -36,8 +36,10 @@ public:
 
 public:
 	void ensureVideoIsOpen();
-	void updateVideoProfile();
 	void cleanInputFile();
+	
+	void updateFormatProfile();
+	void updateVideoProfile();
 	
 	AVReaderParams getProcessParams() const;
 
@@ -73,7 +75,6 @@ public:
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
 	boost::scoped_ptr<avtranscoder::InputVideo> _inputStreamVideo;
-	avtranscoder::Profile::ProfileDesc _videoProfile;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	
@@ -81,6 +82,9 @@ public:
 	
 	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;
+	
+	avtranscoder::Profile::ProfileDesc _formatProfile;
+	avtranscoder::Profile::ProfileDesc _videoProfile;
 	
 	std::string _lastInputFilePath;
 	size_t _lastVideoStreamIndex;
