@@ -589,11 +589,19 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	{
 		// if custom preset
 		if( _paramFormatPreset->getValue() == 0 )
-		{	
+		{
+			int defaultFormatIndex;
+			_paramFormat->getDefault( defaultFormatIndex );
+			_paramFormat->setValue( defaultFormatIndex );
+			
 			_paramFormatCustomGroup->setIsSecretAndDisabled( false );
 		}
 		else
 		{
+			// hack to have nothing display in detailled group
+			int formatWithNoOptionDetailsIndex = 0;
+			_paramFormat->setValue( formatWithNoOptionDetailsIndex );
+			
 			_paramFormatCustomGroup->setIsSecretAndDisabled( true );
 		}
 	}

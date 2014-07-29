@@ -131,8 +131,16 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* formatPreset = desc.defineChoiceParam( kParamFormatPreset );
 	formatPreset->setLabel( "Format Preset" );
 	formatPreset->appendOption( "custom", "Customized configuration" );
-	// @todo: add presets
 	formatPreset->setParent( formatGroup );
+	
+	avtranscoder::Profile::ProfilesDesc formatPresets = presets.getFormatProfiles();
+	for( avtranscoder::Profile::ProfilesDesc::iterator it = formatPresets.begin(); it != formatPresets.end(); ++it )
+	{
+		formatPreset->appendOption( 
+			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+		);
+	}
 	
 	// add group to manage option when custom preset
 	OFX::GroupParamDescriptor* formatCustomGroupParam = desc.defineGroupParam( kParamFormatCustomGroup );
