@@ -210,6 +210,11 @@ void AVReaderPlugin::fetchCustomParams( common::CustomParams& ofxParam, avtransc
 			case avtranscoder::TypeChoice:
 			{
 				ofxParam._paramChoice.push_back( fetchChoiceParam( name ) );
+				ofxParam._childsPerChoice.insert( common::CustomParams::ChildsForChoice( name, common::CustomParams::ChildList() ) );
+				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+				{
+					ofxParam._childsPerChoice.at( name ).push_back( child.getName() );
+				}
 				break;
 			}
 			case avtranscoder::TypeGroup:

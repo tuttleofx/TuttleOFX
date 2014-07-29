@@ -32,6 +32,10 @@ struct CustomParams
 public:
 	typedef std::pair<std::string, std::string> OptionForPreset;
 	typedef std::map< std::string, std::string > OptionsForPreset;
+	
+	typedef std::vector<std::string> ChildList;
+	typedef std::pair< std::string, ChildList > ChildsForChoice;
+	typedef std::map< std::string, ChildList > ChildsPerChoice;
 
 public:
 	CustomParams()
@@ -41,6 +45,7 @@ public:
 	, _paramString()
 	, _paramRatio()
 	, _paramChoice()
+	, _childsPerChoice()
 	{}
 
 	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" );
@@ -52,6 +57,8 @@ public:
 	std::vector<OFX::StringParam*> _paramString;
 	std::vector<OFX::Int2DParam*> _paramRatio;
 	std::vector<OFX::ChoiceParam*> _paramChoice;
+	
+	ChildsPerChoice _childsPerChoice;
 };
 
 /**

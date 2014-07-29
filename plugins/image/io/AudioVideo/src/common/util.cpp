@@ -90,11 +90,15 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-//		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-//		// @todo: get optionValue from the optionIndex
-//		size_t optionIndex = param->getValue();
-//		std::string optionValue( "not yet implemented" );
-//		optionsNameAndValue.push_back( OptionForPreset( optionName, optionValue ) );
+		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		
+		size_t optionIndex = param->getValue();
+		ChildList childs( _childsPerChoice.at( param->getName() ) );
+		if( childs.size() > 0 )
+		{
+			std::string optionValue( childs.at( optionIndex ) );
+			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+		}
 	}
 
 	return optionsNameAndValue;
