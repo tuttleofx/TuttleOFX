@@ -956,6 +956,8 @@ void AVWriterPlugin::updateFormatProfile()
 {
 	AVProcessParams params = getProcessParams();
 	
+	_formatProfile[ avtranscoder::Profile::avProfileFormat ] = params._formatName;
+	
 	// format options from avTranscoder
 	common::CustomParams::OptionsForPreset formatOptionsForPreset = _paramFormatCustom.getOptionsNameAndValue();
 	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, formatOptionsForPreset )
