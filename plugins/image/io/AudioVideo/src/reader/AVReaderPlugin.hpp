@@ -38,8 +38,10 @@ public:
 	void ensureVideoIsOpen();
 	void cleanInputFile();
 	
-	void updateFormatProfile();
-	void updateVideoProfile();
+	/**
+	 * @brief Get value of OFX parameters related to format, and return the corresponding profileDesc.
+     */
+	void updateProfileFromCustomParams( const common::CustomParams& customParams, avtranscoder::Profile::ProfileDesc& profile );
 	
 	AVReaderParams getProcessParams() const;
 

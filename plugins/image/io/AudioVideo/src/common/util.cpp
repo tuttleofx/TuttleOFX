@@ -13,7 +13,7 @@ namespace plugin {
 namespace av {
 namespace common {
 
-CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& subGroupName )
+CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& subGroupName ) const
 {
 	OptionsForPreset optionsNameAndValue;
 

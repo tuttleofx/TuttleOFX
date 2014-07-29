@@ -103,21 +103,12 @@ void AVReaderPlugin::ensureVideoIsOpen()
 	_initVideo = true;
 }
 
-void AVReaderPlugin::updateFormatProfile()
+void AVReaderPlugin::updateProfileFromCustomParams( const common::CustomParams& customParams, avtranscoder::Profile::ProfileDesc& profile )
 {
-	common::CustomParams::OptionsForPreset formatOptionsForPreset = _paramFormatCustom.getOptionsNameAndValue();
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, formatOptionsForPreset )
+	common::CustomParams::OptionsForPreset optionsForPreset = customParams.getOptionsNameAndValue();
+	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, optionsForPreset )
 	{
-		_formatProfile[ nameAndValue.first ] = nameAndValue.second;
-	}
-}
-
-void AVReaderPlugin::updateVideoProfile()
-{
-	common::CustomParams::OptionsForPreset videoOptionsForPreset = _paramVideoCustom.getOptionsNameAndValue();
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoOptionsForPreset )
-	{
-		_videoProfile[ nameAndValue.first ] = nameAndValue.second;
+		profile[ nameAndValue.first ] = nameAndValue.second;
 	}
 }
 
@@ -350,10 +341,10 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	ensureVideoIsOpen();
 
-	updateFormatProfile();
+	updateProfileFromCustomParams( _paramFormatCustom, _formatProfile );
 	_inputFile->setProfile( _formatProfile );
 	
-	updateVideoProfile();
+	updateProfileFromCustomParams( _paramVideoCustom, _videoProfile );
 	_inputStreamVideo->setProfile( _videoProfile );
 	
 	// get source image

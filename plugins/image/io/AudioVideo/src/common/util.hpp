@@ -48,7 +48,7 @@ public:
 	, _childsPerChoice()
 	{}
 
-	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" );
+	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" ) const ;
 
 public:
 	std::vector<OFX::BooleanParam*> _paramBoolean;
