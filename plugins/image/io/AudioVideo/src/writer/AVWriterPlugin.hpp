@@ -78,6 +78,8 @@ public:
 	void initAudio( AVProcessParams& params );
 	void ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params );
 
+	bool isOutputInit();
+	
 	void updateFormatProfile();
 	void updateVideoProfile();
 	void updateAudioProfile();

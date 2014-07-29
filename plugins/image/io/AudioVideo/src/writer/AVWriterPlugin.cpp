@@ -709,8 +709,7 @@ void AVWriterPlugin::initOutput( AVProcessParams& params )
 void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params )
 {
 	// ouput file path already set
-	if( _outputFile.get() == NULL ||
-		( _lastOutputFilePath != "" && _lastOutputFilePath == params._outputFilePath ) )
+	if( _lastOutputFilePath != "" && _lastOutputFilePath == params._outputFilePath )
 		return;
 	
 	if( params._outputFilePath == "" ) // no output file indicated
@@ -719,6 +718,13 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "no output file indicated"
 		    << exception::filename( params._outputFilePath ) );
+	}
+	
+	if( ! isOutputInit() )
+	{
+		_initVideo = false;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "the output is not init. Can't process." );
 	}
 	
 	_lastOutputFilePath = params._outputFilePath;
@@ -773,8 +779,16 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args, AVProc
 
 void AVWriterPlugin::initAudio( AVProcessParams& params )
 {
-	if( ! _paramAudioNbStream->getValue() ) // no audio stream specified
+	// no audio stream specified
+	if( ! _paramAudioNbStream->getValue() )
 		return;
+
+	if( ! isOutputInit() )
+	{
+		_initVideo = false;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "the output is not init. Can't process." );
+	}
 	
 	// create audio streams
 	try
@@ -899,6 +913,14 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "unable to create audio stream: " + e.what() );
 	}
+}
+
+bool AVWriterPlugin::isOutputInit()
+{
+	if( _outputFile.get() == NULL ||
+		_transcoder.get() == NULL )
+		return false;
+	return true;
 }
 
 void AVWriterPlugin::updateFormatProfile()
