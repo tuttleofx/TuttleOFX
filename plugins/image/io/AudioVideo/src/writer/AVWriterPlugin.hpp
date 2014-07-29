@@ -78,6 +78,7 @@ public:
 	void initAudio( AVProcessParams& params );
 	void ensureVideoIsInit( const OFX::RenderArguments& args, AVProcessParams& params );
 
+	void updateFormatProfile();
 	void updateVideoProfile();
 	void updateAudioProfile();
 	
@@ -147,6 +148,7 @@ public:
 	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;
 	
+	avtranscoder::Profile::ProfileDesc _formatProfile;
 	avtranscoder::Profile::ProfileDesc _videoProfile;
 	avtranscoder::Profile::ProfileDesc _audioProfile;
 	

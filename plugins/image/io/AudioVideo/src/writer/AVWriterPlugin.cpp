@@ -163,6 +163,10 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 
 	updateVisibleTools();
 	
+	_formatProfile[ avtranscoder::Profile::avProfileIdentificator ] = "customFormatPreset";
+	_formatProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom format preset";
+	_formatProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeFormat;
+	
 	_videoProfile[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
 	_videoProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
 	_videoProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
@@ -543,7 +547,18 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 {
 	WriterPlugin::changedParam( args, paramName );
 	
-	if( paramName == kParamFormat )
+	if( paramName == kTuttlePluginFilename )
+	{
+		const std::string& extension = common::getExtension( _paramFilepath->getValue() );
+		std::vector<std::string>::iterator itFormat = std::find( _optionLoader.getFormatsShortNames().begin(), _optionLoader.getFormatsShortNames().end(), extension );
+		if( itFormat != _optionLoader.getFormatsShortNames().end() )
+		{
+			size_t indexFormat = itFormat - _optionLoader.getFormatsShortNames().begin();
+			_paramFormat->setValue( indexFormat );
+		}
+		cleanVideoAndAudio();
+	}
+	else if( paramName == kParamFormat )
 	{
 		avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 		const std::string formatName = _optionLoader.getFormatsShortNames().at( _paramFormat->getValue() );
@@ -676,7 +691,9 @@ void AVWriterPlugin::initOutput( AVProcessParams& params )
 	try
 	{
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
-		_outputFile->setup();
+		
+		updateFormatProfile();
+		_outputFile->setProfile( _formatProfile );
 		
 		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
 	}
@@ -881,6 +898,25 @@ void AVWriterPlugin::initAudio( AVProcessParams& params )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "unable to create audio stream: " + e.what() );
+	}
+}
+
+void AVWriterPlugin::updateFormatProfile()
+{
+	AVProcessParams params = getProcessParams();
+	
+	// format options from avTranscoder
+	common::CustomParams::OptionsForPreset formatOptionsForPreset = _paramFormatCustom.getOptionsNameAndValue();
+	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, formatOptionsForPreset )
+	{
+		_formatProfile[ nameAndValue.first ] = nameAndValue.second;
+	}
+	
+	// format options related to a codec from avTranscoder
+	common::CustomParams::OptionsForPreset formatCodecOptionsForPreset = _paramFormatDetailCustom.getOptionsNameAndValue( params._formatName );
+	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, formatCodecOptionsForPreset )
+	{
+		_formatProfile[ nameAndValue.first ] = nameAndValue.second;
 	}
 }
 

@@ -96,6 +96,12 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
  */
 std::string getOptionFlagName( const std::string& optionName, const std::string& subGroupName );
 
+
+/**
+ * @brief Get the extension of the given file name.
+ * @param fileName: could be a path
+ */
+std::string getExtension( const std::string& fileName );
 }
 }
 }
