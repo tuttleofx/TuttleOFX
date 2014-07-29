@@ -279,12 +279,6 @@ std::string getOptionFlagName( const std::string& optionName, const std::string&
 	return flagName;
 }
 
-std::string getExtension( const std::string& fileName )
-{
-	const size_t posExtension = fileName.find(".");
-	return fileName.substr( posExtension + 1, posExtension + 1 );
-}
-
 }
 }
 }
