@@ -175,17 +175,19 @@ public:
 	
 public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }
-	inline const NodeMap&           getNodes() const { return _nodes; }
-	inline NodeMap&                 getNodes()       { return _nodes; }
-	
-	inline std::size_t getNbNodes() const { return _nodes.size(); }
+
+	inline const NodeMap& getNodesMap() const { return _nodesMap; }
+	inline NodeMap& getNodesMap() { return _nodesMap; }
+	inline std::size_t getNbNodes() const { return _nodesMap.size(); }
 	inline std::size_t getNbConnections() const { return _graph.getEdgeCount(); }
 	
 	std::vector<Node*>         getNodesByContext( const std::string& type );
 	std::vector<Node*>         getNodesByPlugin( const std::string& pluginId );
-	//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
-	inline const Node&             getNode( const std::string& name ) const { return _nodes.at( name ); }
-	inline Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
+
+	//	const Node& getNode( const std::string& name ) const { return getNodesMap()[name]; }
+	inline const Node& getNode( const std::string& name ) const { return _nodesMap.at( name ); }
+	inline Node& getNode( const std::string& name ) { return getNodesMap().at( name ); }
+
 	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
 public:
@@ -199,7 +201,7 @@ public:
 
 private:
 	InternalGraphImpl _graph;
-	NodeMap _nodes;
+	NodeMap _nodesMap;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
 
 private:
