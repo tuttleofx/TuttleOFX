@@ -367,6 +367,31 @@ bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes
 	return procGraph.process( memoryCache );
 }
 
+std::vector<const Graph::Node*> Graph::getNodes() const
+{
+	std::vector<const Graph::Node*> nodes;
+	nodes.reserve( getNodesMap().size() );
+	for( NodeMap::const_iterator it = getNodesMap().cbegin(), itEnd = getNodesMap().cend();
+	     it != itEnd;
+	     ++it )
+	{
+		nodes.push_back( it->second );
+	}
+	return nodes;
+}
+
+std::vector<Graph::Node*> Graph::getNodes()
+{
+	std::vector<Graph::Node*> nodes;
+	nodes.reserve( getNodesMap().size() );
+	for( NodeMap::iterator it = getNodesMap().begin(), itEnd = getNodesMap().end();
+	     it != itEnd;
+	     ++it )
+	{
+		nodes.push_back( it->second );
+	}
+	return nodes;
+}
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
 {
 	std::vector<Node*> selectedNodes;

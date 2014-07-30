@@ -178,6 +178,9 @@ public:
 
 	inline const NodeMap& getNodesMap() const { return _nodesMap; }
 	inline NodeMap& getNodesMap() { return _nodesMap; }
+
+	std::vector<const Node*> getNodes() const;
+	std::vector<Node*> getNodes();
 	inline std::size_t getNbNodes() const { return _nodesMap.size(); }
 	inline std::size_t getNbConnections() const { return _graph.getEdgeCount(); }
 	
