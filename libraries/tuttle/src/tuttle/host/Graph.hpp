@@ -118,6 +118,13 @@ public:
 	void deleteNode( Node& node );
 	
 	/**
+	 * @brief Delete all unconnected nodes from the current graph.
+	 * @param node: delete all unconnected nodes from this node.
+	 * @return the number of nodes deleted.
+	 */
+	std::size_t deleteUnconnectedNodes( const Node& node );
+	
+	/**
 	 * @brief Delete all nodes from the current graph.
 	 * This will remove all the connections.
 	 */

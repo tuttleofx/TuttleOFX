@@ -145,6 +145,15 @@ void Graph::deleteNode( Node& node )
 	removeFromInternalGraph( node );
 	_nodesMap.erase( it ); // will delete the node
 }
+
+std::size_t Graph::deleteUnconnectedNodes( const Node& node )
+{
+	std::vector<vertex_descriptor> toRemove = _graph.getUnconnectedVertices( _graph.getVertexDescriptor( node.getName() ) );
+	BOOST_FOREACH( const vertex_descriptor nodeId, toRemove )
+	{
+		deleteNode( _graph.instance( nodeId ).getProcessNode() );
+	}
+	return toRemove.size();
 }
 
 void Graph::clear()
