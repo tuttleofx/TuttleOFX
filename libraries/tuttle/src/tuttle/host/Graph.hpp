@@ -181,6 +181,10 @@ public:
 
 	std::vector<const Node*> getNodes() const;
 	std::vector<Node*> getNodes();
+
+	std::vector<Node*> getConnectedNodes( const Node& node );
+	std::vector<Node*> getUnconnectedNodes( const Node& node );
+
 	inline std::size_t getNbNodes() const { return _nodesMap.size(); }
 	inline std::size_t getNbConnections() const { return _graph.getEdgeCount(); }
 	

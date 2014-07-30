@@ -392,6 +392,35 @@ std::vector<Graph::Node*> Graph::getNodes()
 	}
 	return nodes;
 }
+
+std::vector<Graph::Node*> Graph::getConnectedNodes( const Node& node )
+{
+	std::vector<Node*> connectedNodes;
+	std::vector<vertex_descriptor> toRemove = _graph.getConnectedVertices( _graph.getVertexDescriptor( node.getName() ) );
+	connectedNodes.reserve( toRemove.size() );
+	
+	BOOST_FOREACH( const vertex_descriptor nodeId, toRemove )
+	{
+		connectedNodes.push_back( &_graph.instance( nodeId ).getProcessNode() );
+	}
+	
+	return connectedNodes;
+}
+
+std::vector<Graph::Node*> Graph::getUnconnectedNodes( const Node& node )
+{
+	std::vector<Node*> unconnectedNodes;
+	std::vector<vertex_descriptor> toRemove = _graph.getUnconnectedVertices( _graph.getVertexDescriptor( node.getName() ) );
+	unconnectedNodes.reserve( toRemove.size() );
+	
+	BOOST_FOREACH( const vertex_descriptor nodeId, toRemove )
+	{
+		unconnectedNodes.push_back( &_graph.instance( nodeId ).getProcessNode() );
+	}
+	
+	return unconnectedNodes;
+}
+
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
 {
 	std::vector<Node*> selectedNodes;
