@@ -74,20 +74,7 @@ public:
 	common::CustomParams _paramVideoCustom;
 	common::CustomParams _paramMetaDataCustom;
 	
-	OFX::StringParam* _paramMetaDataFileName;
-	OFX::StringParam* _paramMetaDataFormatName;
-	OFX::StringParam* _paramMetaDataFormatLongName;
-	OFX::DoubleParam* _paramMetaDataStartTime;
-	OFX::DoubleParam* _paramMetaDataDuration;
-	OFX::IntParam* _paramMetaDataBitrate;
-	OFX::IntParam* _paramMetaDataNbStream;
-	OFX::IntParam* _paramMetaDataNbProgram;
-	OFX::IntParam* _paramMetaDataNbVideoStream;
-	OFX::IntParam* _paramMetaDataNbAudioStream;
-	OFX::IntParam* _paramMetaDataNbDataStream;
-	OFX::IntParam* _paramMetaDataNbSubtitleStream;
-	OFX::IntParam* _paramMetaDataNbAttachementStream;
-	OFX::IntParam* _paramMetaDataNbUnknownStream;
+	OFX::StringParam* _paramMetaDataInputFile;
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
 	boost::scoped_ptr<avtranscoder::InputVideo> _inputStreamVideo;
