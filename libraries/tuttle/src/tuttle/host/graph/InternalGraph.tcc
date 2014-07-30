@@ -3,6 +3,7 @@
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/connected_components.hpp>
 
+
 namespace tuttle {
 namespace host {
 namespace graph {
@@ -12,7 +13,7 @@ void InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::toDominator
 {
 	typedef typename boost::property_map<GraphContainer, boost::vertex_index_t>::type IndexMap;
 	typedef typename std::vector<vertex_descriptor >::iterator VectorDescIter;
-	typedef typename boost::iterator_property_map<VectorDescIter, IndexMap > PredMap;
+	typedef boost::iterator_property_map<VectorDescIter, IndexMap > PredMap;
 
 	std::vector<vertex_descriptor> domTreePredVector;
 	IndexMap indexMap( get( boost::vertex_index, _graph ) );
