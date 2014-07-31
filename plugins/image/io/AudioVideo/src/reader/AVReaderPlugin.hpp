@@ -38,6 +38,7 @@ public:
 	void ensureVideoIsOpen();
 	void cleanInputFile();
 	
+	void disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec, const std::string& prefix );
 	/**
 	 * @brief Get value of OFX parameters related to format, and return the corresponding profileDesc.
      */
@@ -48,7 +49,8 @@ public:
 	void updateVisibleTools();
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	
-	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="" );
+	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
+	void fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 	
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
@@ -73,6 +75,9 @@ public:
 	common::CustomParams _paramFormatCustom;
 	common::CustomParams _paramVideoCustom;
 	common::CustomParams _paramMetaDataCustom;
+	
+	common::CustomParams _paramFormatDetailCustom;
+	common::CustomParams _paramVideoDetailCustom;
 	
 	OFX::StringParam* _paramMetaDataInputFile;
 	
