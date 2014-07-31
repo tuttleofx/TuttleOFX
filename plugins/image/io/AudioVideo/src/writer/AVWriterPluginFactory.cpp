@@ -149,7 +149,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatCustomGroupParam->setOpen( false );
 	formatCustomGroupParam->setParent( formatGroup );
 	
-	/// format list
+	/// FORMAT PARAMETERS
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
 	for( std::vector<std::string>::const_iterator itShort = optionLoader.getFormatsShortNames().begin(),
@@ -170,7 +170,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionArray formatGroupOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_ENCODING_PARAM );
 	common::addOptionsToGroup( desc, formatCustomGroupParam, formatGroupOptions, common::kPrefixFormat );
 	
-	/// format parameters
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
 	formatDetailledGroup->setLabel( "Detailled" );
 	formatDetailledGroup->setAsTab( );
@@ -179,7 +178,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionMap formatDetailledGroupOptions = optionLoader.loadOutputFormatOptions();
 	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
 	
-	// fps parameters
 	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
 	useCustomFps->setLabel( "Override Fps" );
 	useCustomFps->setDefault( false );
@@ -191,7 +189,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
 	
 	/// VIDEO PARAMETERS
-	/// video preset
 	OFX::ChoiceParamDescriptor* videoMainPresetParam = desc.defineChoiceParam( kParamMainVideoPreset );
 	videoMainPresetParam->setLabel( "Video Preset" );
 	videoMainPresetParam->appendOption( "custom", "Customized configuration" );
@@ -206,14 +203,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		);
 	}
 	
-	// add group to manage option when custom preset
 	OFX::GroupParamDescriptor* videoCustomGroupParam = desc.defineGroupParam( kParamVideoCustomGroup );
 	videoCustomGroupParam->setLabel( "Video custom parameters" );
 	videoCustomGroupParam->setHint( "Contains expert params, use to write video streams when custom preset is specified." );
 	videoCustomGroupParam->setOpen( false );
 	videoCustomGroupParam->setParent( videoGroup );
 	
-	/// video codec list
 	int default_codec = 0;
 	std::string defaultVideoCodec( "mpeg4" );
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
@@ -232,10 +227,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoCodec->setDefault( default_codec );
 	videoCodec->setParent( videoCustomGroupParam );
 	
-	/// video pixel formats list
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
 	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
-	
 	std::vector<std::string> pixelFormats = avtranscoder::OptionLoader::getPixelFormats();
 	for( size_t i = 0; i < pixelFormats.size(); ++i )
 	{
@@ -243,7 +236,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	}
 	videoCodecPixelFmt->setParent( videoCustomGroupParam );
 	
-	// add video codec parameters
 	avtranscoder::OptionLoader::OptionArray videoGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	common::addOptionsToGroup( desc, videoCustomGroupParam, videoGroupOptions, common::kPrefixVideo );
 	
@@ -256,7 +248,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
-	// add main audio preset
 	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamMainAudioPreset );
 	audioMainPresetParam->setLabel( "Main Preset" );
 	audioMainPresetParam->appendOption( "custom", "Customized configuration" );
@@ -271,14 +262,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		);
 	}
 	
-	// add group to manage option when custom preset
 	OFX::GroupParamDescriptor* audioCustomGroupParam = desc.defineGroupParam( kParamAudioCustomGroup );
 	audioCustomGroupParam->setLabel( "Audio custom parameters" );
 	audioCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
 	audioCustomGroupParam->setOpen( false );
 	audioCustomGroupParam->setParent( audioGroup );
 	
-	// add audio codec list
 	int default_audio_codec = 0;
 	std::string defaultAudioCodec( "pcm_s16le" );
 	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
@@ -297,12 +286,10 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioCodecParam->setDefault( default_audio_codec );
 	audioCodecParam->setParent( audioCustomGroupParam );
 	
-	/// audio sample formats list
 	int default_audio_sample_format = 0;
 	std::string defaultAudioSampleFormat( "s16" );
 	OFX::ChoiceParamDescriptor* audioSampleFmtParam = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
 	audioSampleFmtParam->setLabel( "Select the output audio sample type" );
-	
 	std::vector<std::string> sampleFormats = avtranscoder::OptionLoader::getSampleFormats();
 	for( size_t i = 0; i < sampleFormats.size(); ++i )
 	{
@@ -313,11 +300,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioSampleFmtParam->setDefault( default_audio_sample_format );
 	audioSampleFmtParam->setParent( audioCustomGroupParam );
 	
-	// add audio codec parameters
 	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	common::addOptionsToGroup( desc, audioCustomGroupParam, audioGroupOptions, common::kPrefixAudio );
 	
-	// add audio details
 	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
 	audioDetailledGroup->setLabel( "Detailled" );
 	audioDetailledGroup->setAsTab( );
@@ -326,7 +311,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionMap audioDetailledGroupOptions = optionLoader.loadAudioCodecOptions();
 	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions, common::kPrefixAudio );
 	
-	// add number of audio stream
 	OFX::IntParamDescriptor* audioNbStream = desc.defineIntParam( kParamAudioNbStream );
 	audioNbStream->setLabel( "Number of audio stream" );
 	audioNbStream->setRange( 0, maxNbAudioStream );
