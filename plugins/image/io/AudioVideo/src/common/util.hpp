@@ -99,6 +99,16 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
  */
 std::string getOptionFlagName( const std::string& optionName, const std::string& subGroupName );
 
+/**
+ * @brief Disable the OFX parameters named in the optionMap.
+ * Use this function to manage the display of OFX custom parameters which are fecth to AVOption of a specific format or codec (video and audio).
+ * @param plugin: the plugin which contains the OFX parameters.
+ * @param optionsMap: the keys are the name of the subgroup (the format or the codec), and the values are array of Option.
+ * @param filter: could be the format or the codec name.
+ * @param prefix: prefix of the related OFX parameters.
+ */
+void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& filter, const std::string& prefix );
+
 }
 }
 }

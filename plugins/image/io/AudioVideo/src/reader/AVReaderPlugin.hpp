@@ -38,7 +38,6 @@ public:
 	void ensureVideoIsOpen();
 	void cleanInputFile();
 	
-	void disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec, const std::string& prefix );
 	/**
 	 * @brief Get value of OFX parameters related to format, and return the corresponding profileDesc.
      */

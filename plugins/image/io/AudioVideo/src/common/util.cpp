@@ -365,6 +365,95 @@ std::string getOptionFlagName( const std::string& optionName, const std::string&
 	return flagName;
 }
 
+void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& filter, const std::string& prefix )
+{
+	// iterate on map keys
+	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
+	{
+		const std::string subGroupName = subGroupOption.first;
+		std::vector<avtranscoder::Option>& options = subGroupOption.second;
+
+		// iterate on options
+		BOOST_FOREACH( avtranscoder::Option& option, options )
+		{
+			std::string name = prefix;
+			name += subGroupName;
+			name += "_";
+			name += option.getName();
+
+			switch( option.getType() )
+			{
+				case avtranscoder::TypeBool:
+				{
+					OFX::BooleanParam* curOpt = plugin.fetchBooleanParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					break;
+				}
+				case avtranscoder::TypeInt:
+				{
+					OFX::IntParam* curOpt = plugin.fetchIntParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					break;
+				}
+				case avtranscoder::TypeDouble:
+				{
+					OFX::DoubleParam* curOpt = plugin.fetchDoubleParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					break;
+				}
+				case avtranscoder::TypeString:
+				{
+					OFX::StringParam* curOpt = plugin.fetchStringParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					break;
+				}
+				case avtranscoder::TypeRatio:
+				{
+					OFX::Int2DParam* curOpt = plugin.fetchInt2DParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					break;
+				}
+				case avtranscoder::TypeChoice:
+				{
+					OFX::ChoiceParam* curOpt = plugin.fetchChoiceParam( name );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					break;
+				}
+				case avtranscoder::TypeGroup:
+				{
+					std::string groupName = prefix;
+					groupName += common::kPrefixGroup;
+					groupName += subGroupName;
+					groupName += "_";
+					groupName += option.getName();
+					
+					OFX::GroupParam* curOpt = plugin.fetchGroupParam( groupName );
+					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					
+					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+					{
+						std::string childName = prefix;
+						if( ! subGroupName.empty() )
+						{
+							childName += subGroupName;
+							childName += "_";
+						}
+						childName += child.getUnit();
+						childName += common::kPrefixFlag;
+						childName += child.getName();
+						
+						OFX::BooleanParam* curOpt = plugin.fetchBooleanParam( childName );
+						curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
+					}
+					break;
+				}
+				default:
+					break;
+			}
+		}
+	}
+}
+
 }
 }
 }

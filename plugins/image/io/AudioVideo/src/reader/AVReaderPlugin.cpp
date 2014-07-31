@@ -53,11 +53,11 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	
 	avtranscoder::OptionLoader::OptionMap optionsFormatDetailMap = _optionLoader.loadOutputFormatOptions();
 	_paramFormatDetailCustom.fetchCustomParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
-	disableAVOptionsForCodecOrFormat( optionsFormatDetailMap, "", common::kPrefixFormat );
+	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, "", common::kPrefixFormat );
 	
 	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
 	_paramVideoDetailCustom.fetchCustomParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
-	disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, "", common::kPrefixVideo );
+	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 	
 	_paramMetaDataInputFile = fetchStringParam( kParamMetaDataInputFile );
 
@@ -66,95 +66,6 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_videoProfile[ avtranscoder::Profile::avProfileIdentificator ] = "readerVideoPreset";
 	_videoProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Reader video preset";
 	_videoProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
-}
-
-void AVReaderPlugin::disableAVOptionsForCodecOrFormat( avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& codec, const std::string& prefix )
-{
-	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
-	{
-		const std::string subGroupName = subGroupOption.first;
-		std::vector<avtranscoder::Option>& options = subGroupOption.second;
-				
-		// iterate on options
-		BOOST_FOREACH( avtranscoder::Option& option, options )
-		{
-			std::string name = prefix;
-			name += subGroupName;
-			name += "_";
-			name += option.getName();
-			
-			switch( option.getType() )
-			{
-				case avtranscoder::TypeBool:
-				{
-					OFX::BooleanParam* curOpt = fetchBooleanParam( name );
-					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					break;
-				}
-				case avtranscoder::TypeInt:
-				{
-					OFX::IntParam* curOpt = fetchIntParam( name );
-					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					break;
-				}
-				case avtranscoder::TypeDouble:
-				{
-					OFX::DoubleParam* curOpt = fetchDoubleParam( name );
-					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					break;
-				}
-				case avtranscoder::TypeString:
-				{
-					OFX::StringParam* curOpt = fetchStringParam( name );
-					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					break;
-				}
-				case avtranscoder::TypeRatio:
-				{
-					OFX::Int2DParam* curOpt = fetchInt2DParam( name );
-					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					break;
-				}
-				case avtranscoder::TypeChoice:
-				{
-					OFX::ChoiceParam* curOpt = fetchChoiceParam( name );
-					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					break;
-				}
-				case avtranscoder::TypeGroup:
-				{
-					std::string groupName = prefix;
-					groupName += common::kPrefixGroup;
-					groupName += subGroupName;
-					groupName += "_";
-					groupName += option.getName();
-					
-					OFX::GroupParam* curOpt = fetchGroupParam( groupName );
-					curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					
-					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
-					{
-						std::string childName = prefix;
-						if( ! subGroupName.empty() )
-						{
-							childName += subGroupName;
-							childName += "_";
-						}
-						childName += child.getUnit();
-						childName += common::kPrefixFlag;
-						childName += child.getName();
-						
-						OFX::BooleanParam* curOpt = fetchBooleanParam( childName );
-						curOpt->setIsSecretAndDisabled( !( subGroupName == codec ) );
-					}
-					break;
-				}
-				default:
-					break;
-			}
-		}
-	}
 }
 
 void AVReaderPlugin::ensureVideoIsOpen()
@@ -279,12 +190,12 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			// update format details parameters
 			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
-			disableAVOptionsForCodecOrFormat( optionsFormatMap, inputProperties.formatName, common::kPrefixFormat );
+			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, inputProperties.formatName, common::kPrefixFormat );
 			
 			// update video details parameters
 			avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
 			const std::string videoCodecName = inputProperties.videoStreams.at( _paramVideoStreamIndex->getValue() ).codecName;
-			disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
+			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 		}
 		catch( std::exception& e )
 		{
@@ -294,10 +205,10 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramMetaDataInputFile->setValue( _paramMetaDataInputFile->getDefault() );
 			
 			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
-			disableAVOptionsForCodecOrFormat( optionsFormatMap, "", common::kPrefixFormat );
+			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, "", common::kPrefixFormat );
 			
 			avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
-			disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, "", common::kPrefixVideo );
+			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 		}
 	}
 }
