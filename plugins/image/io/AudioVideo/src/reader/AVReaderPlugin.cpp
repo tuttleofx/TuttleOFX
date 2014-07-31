@@ -43,20 +43,20 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
 	
 	avtranscoder::OptionLoader::OptionArray formatsOptions = _optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
-	fetchCustomParams( _paramFormatCustom, formatsOptions, common::kPrefixFormat );
+	_paramFormatCustom.fetchCustomParams( *this, formatsOptions, common::kPrefixFormat );
 	
 	avtranscoder::OptionLoader::OptionArray videoOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	fetchCustomParams( _paramVideoCustom, videoOptions, common::kPrefixVideo );
+	_paramVideoCustom.fetchCustomParams( *this, videoOptions, common::kPrefixVideo );
 	
 	avtranscoder::OptionLoader::OptionArray metadataOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
-	fetchCustomParams( _paramMetaDataCustom, metadataOptions, common::kPrefixMetaData );
+	_paramMetaDataCustom.fetchCustomParams( *this, metadataOptions, common::kPrefixMetaData );
 	
 	avtranscoder::OptionLoader::OptionMap optionsFormatDetailMap = _optionLoader.loadOutputFormatOptions();
-	fetchCustomParams( _paramFormatDetailCustom, optionsFormatDetailMap, common::kPrefixFormat );
+	_paramFormatDetailCustom.fetchCustomParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
 	disableAVOptionsForCodecOrFormat( optionsFormatDetailMap, "", common::kPrefixFormat );
 	
 	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
-	fetchCustomParams( _paramVideoDetailCustom, optionsVideoCodecMap, common::kPrefixVideo );
+	_paramVideoDetailCustom.fetchCustomParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
 	disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, "", common::kPrefixVideo );
 	
 	_paramMetaDataInputFile = fetchStringParam( kParamMetaDataInputFile );
@@ -298,92 +298,6 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
 			disableAVOptionsForCodecOrFormat( optionsVideoCodecMap, "", common::kPrefixVideo );
-		}
-	}
-}
-
-void AVReaderPlugin::fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
-{
-	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
-	{
-		const std::string subGroupName = subGroupOption.first;
-		std::vector<avtranscoder::Option>& options = subGroupOption.second;
-				
-		fetchCustomParams( ofxParam, options, prefix, subGroupName );
-	}
-}
-
-void AVReaderPlugin::fetchCustomParams( common::CustomParams& ofxParam, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
-{
-	// iterate on options
-	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
-	{
-		std::string name = prefix;
-		if( ! subGroupName.empty() )
-		{
-			name += subGroupName;
-			name += "_";
-		}
-		name += option.getName();
-
-		switch( option.getType() )
-		{
-			case avtranscoder::TypeBool:
-			{
-				ofxParam._paramBoolean.push_back( fetchBooleanParam( name ) );
-				break;
-			}
-			case avtranscoder::TypeInt:
-			{
-				ofxParam._paramInt.push_back( fetchIntParam( name ) );
-				break;
-			}
-			case avtranscoder::TypeDouble:
-			{
-				ofxParam._paramDouble.push_back( fetchDoubleParam( name ) );
-				break;
-			}
-			case avtranscoder::TypeString:
-			{
-				ofxParam._paramString.push_back( fetchStringParam( name ) );
-				break;
-			}
-			case avtranscoder::TypeRatio:
-			{
-				ofxParam._paramRatio.push_back( fetchInt2DParam( name ) );
-				break;
-			}
-			case avtranscoder::TypeChoice:
-			{
-				ofxParam._paramChoice.push_back( fetchChoiceParam( name ) );
-				ofxParam._childsPerChoice.insert( common::CustomParams::ChildsForChoice( name, common::CustomParams::ChildList() ) );
-				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
-				{
-					ofxParam._childsPerChoice.at( name ).push_back( child.getName() );
-				}
-				break;
-			}
-			case avtranscoder::TypeGroup:
-			{
-				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
-				{
-					std::string childName = prefix;
-					if( ! subGroupName.empty() )
-					{
-						childName += subGroupName;
-						childName += "_";
-					}
-					childName += child.getUnit();
-					childName += common::kPrefixFlag;
-					childName += child.getName();
-
-					ofxParam._paramBoolean.push_back( fetchBooleanParam( childName ) );
-				}
-				break;
-			}
-		default:
-				break;
 		}
 	}
 }

@@ -50,6 +50,9 @@ public:
 
 	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" ) const ;
 
+	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
+	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
+
 public:
 	std::vector<OFX::BooleanParam*> _paramBoolean;
 	std::vector<OFX::IntParam*> _paramInt;

@@ -104,6 +104,92 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 	return optionsNameAndValue;
 }
 
+void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
+{
+	// iterate on map keys
+	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
+	{
+		const std::string subGroupName = subGroupOption.first;
+		std::vector<avtranscoder::Option>& options = subGroupOption.second;
+				
+		fetchCustomParams( plugin, options, prefix, subGroupName );
+	}
+}
+
+void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
+{
+	// iterate on options
+	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
+	{
+		std::string name = prefix;
+		if( ! subGroupName.empty() )
+		{
+			name += subGroupName;
+			name += "_";
+		}
+		name += option.getName();
+
+		switch( option.getType() )
+		{
+			case avtranscoder::TypeBool:
+			{
+				_paramBoolean.push_back( plugin.fetchBooleanParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeInt:
+			{
+				_paramInt.push_back( plugin.fetchIntParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeDouble:
+			{
+				_paramDouble.push_back( plugin.fetchDoubleParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeString:
+			{
+				_paramString.push_back( plugin.fetchStringParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeRatio:
+			{
+				_paramRatio.push_back( plugin.fetchInt2DParam( name ) );
+				break;
+			}
+			case avtranscoder::TypeChoice:
+			{
+				_paramChoice.push_back( plugin.fetchChoiceParam( name ) );
+				_childsPerChoice.insert( common::CustomParams::ChildsForChoice( name, common::CustomParams::ChildList() ) );
+				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+				{
+					_childsPerChoice.at( name ).push_back( child.getName() );
+				}
+				break;
+			}
+			case avtranscoder::TypeGroup:
+			{
+				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
+				{
+					std::string childName = prefix;
+					if( ! subGroupName.empty() )
+					{
+						childName += subGroupName;
+						childName += "_";
+					}
+					childName += child.getUnit();
+					childName += common::kPrefixFlag;
+					childName += child.getName();
+
+					_paramBoolean.push_back( plugin.fetchBooleanParam( childName ) );
+				}
+				break;
+			}
+		default:
+				break;
+		}
+	}
+}
+
 void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
 {
 	OFX::ParamDescriptor* param = NULL;
