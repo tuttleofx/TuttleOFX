@@ -59,7 +59,13 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramVideoDetailCustom.fetchCustomParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 	
-	_paramMetaDataInputFile = fetchStringParam( kParamMetaDataInputFile );
+	_paramMetaDataWrapper = fetchStringParam( kParamMetaDataWrapper );
+	_paramMetaDataVideo = fetchStringParam( kParamMetaDataVideo );
+	_paramMetaDataAudio = fetchStringParam( kParamMetaDataAudio );
+	_paramMetaDataData = fetchStringParam( kParamMetaDataData );
+	_paramMetaDataSubtitle = fetchStringParam( kParamMetaDataSubtitle );
+	_paramMetaDataAttachement = fetchStringParam( kParamMetaDataAttachement );
+	_paramMetaDataUnknown = fetchStringParam( kParamMetaDataUnknown );
 
 	updateVisibleTools();
 	
@@ -186,8 +192,53 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramVideoStreamIndex->setDisplayRange( 0, inputProperties.videoStreams.size() );
 
 			// update MetaData tab
-			_paramMetaDataInputFile->setValue( avtranscoder::getMetadatasToDisplay( *_inputFile ) );
-			
+			std::ostringstream flux( std::ios_base::ate );
+
+			flux << _inputFile->getProperties();
+			_paramMetaDataWrapper->setValue( flux.str() );
+
+			flux.str( "" ); flux.clear();
+			for( size_t videoStreamIndex = 0; videoStreamIndex < inputProperties.videoStreams.size(); ++videoStreamIndex )
+			{
+				flux << inputProperties.videoStreams.at( videoStreamIndex ) << std::endl;
+			}
+			_paramMetaDataVideo->setValue( flux.str() );
+
+			flux.str( "" ); flux.clear();
+			for( size_t audioStreamIndex = 0; audioStreamIndex < inputProperties.audioStreams.size(); ++audioStreamIndex )
+			{
+				flux << inputProperties.audioStreams.at( audioStreamIndex ) << std::endl;
+			}
+			_paramMetaDataAudio->setValue( flux.str() );
+
+			flux.str( "" ); flux.clear();
+			for( size_t dataStreamIndex = 0; dataStreamIndex < inputProperties.dataStreams.size(); ++dataStreamIndex )
+			{
+				flux << inputProperties.dataStreams.at( dataStreamIndex ) << std::endl;
+			}
+			_paramMetaDataData->setValue( flux.str() );
+
+			flux.str( "" ); flux.clear();
+			for( size_t subtitleStreamIndex = 0; subtitleStreamIndex < inputProperties.subtitleStreams.size(); ++subtitleStreamIndex )
+			{
+				flux << inputProperties.subtitleStreams.at( subtitleStreamIndex ) << std::endl;
+			}
+			_paramMetaDataSubtitle->setValue( flux.str() );
+
+			flux.str( "" ); flux.clear();
+			for( size_t attachementStreamIndex = 0; attachementStreamIndex < inputProperties.attachementStreams.size(); ++attachementStreamIndex )
+			{
+				flux << inputProperties.attachementStreams.at( attachementStreamIndex ) << std::endl;
+			}
+			_paramMetaDataAttachement->setValue( flux.str() );
+
+			flux.str( "" ); flux.clear();
+			for( size_t unknownStreamIndex = 0; unknownStreamIndex < inputProperties.unknownStreams.size(); ++unknownStreamIndex )
+			{
+				flux << inputProperties.unknownStreams.at( unknownStreamIndex ) << std::endl;
+			}
+			_paramMetaDataUnknown->setValue( flux.str() );
+
 			// update format details parameters
 			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, inputProperties.formatName, common::kPrefixFormat );
@@ -202,7 +253,13 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramVideoStreamIndex->setRange( 0, 100. );
 			_paramVideoStreamIndex->setDisplayRange( 0, 16 );
 
-			_paramMetaDataInputFile->setValue( _paramMetaDataInputFile->getDefault() );
+			_paramMetaDataWrapper->setValue( _paramMetaDataWrapper->getDefault() );
+			_paramMetaDataVideo->setValue( _paramMetaDataVideo->getDefault() );
+			_paramMetaDataAudio->setValue( _paramMetaDataAudio->getDefault() );
+			_paramMetaDataData->setValue( _paramMetaDataData->getDefault() );
+			_paramMetaDataSubtitle->setValue( _paramMetaDataSubtitle->getDefault() );
+			_paramMetaDataAttachement->setValue( _paramMetaDataAttachement->getDefault() );
+			_paramMetaDataUnknown->setValue( _paramMetaDataUnknown->getDefault() );
 			
 			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, "", common::kPrefixFormat );
