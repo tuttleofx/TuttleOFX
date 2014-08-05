@@ -263,28 +263,15 @@ void AVWriterPlugin::updateAudioParams()
 {
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
 	{
-		if( idAudioStream < (size_t)_paramAudioNbStream->getValue() )
-		{
-			_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioSilent.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-		}
-		else
-		{
-			_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( true );
-			_paramAudioSilent.at( idAudioStream )->setIsSecretAndDisabled( true );
-			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( true );
-			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( true );
-			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
-			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( true );
-			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-		}
+		bool flag = idAudioStream < (size_t)_paramAudioNbStream->getValue();
+		_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
+		_paramAudioSilent.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
+		_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
+		_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
+		_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
+		_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
+		_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
+		_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( ! flag );
 	}
 	updateAudioSilent();
 }
@@ -297,24 +284,12 @@ void AVWriterPlugin::updateAudioSilent()
 			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() )
 		{
 			// if silent stream
-			if( _paramAudioSilent.at( idAudioStream )->getValue() )
-			{
-				_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-			}
-			else
-			{
-				_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-			}
+			bool flag = _paramAudioSilent.at( idAudioStream )->getValue();
+			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( flag );
+			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( flag );
+			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( flag );
+			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( flag );
+			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( flag );
 		}
 	}
 	updateAudioCopyStream();
@@ -329,18 +304,10 @@ void AVWriterPlugin::updateAudioCopyStream()
 			! _paramAudioSilent.at( idAudioStream )->getValue() )
 		{
 			// if copy stream
-			if( _paramAudioCopyStream.at( idAudioStream )->getValue() )
-			{
-				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( true );
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-			}
-			else
-			{
-				_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( false );
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-			}
+			bool flag = _paramAudioCopyStream.at( idAudioStream )->getValue();
+			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( flag );
+			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( flag );
+			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( flag );
 		}
 	}
 	updateAllChannels();
@@ -356,14 +323,8 @@ void AVWriterPlugin::updateAllChannels()
 			! _paramAudioCopyStream.at( idAudioStream )->getValue() )
 		{
 			// if transcode all channels of the stream
-			if( _paramAudioAllChannels.at( idAudioStream )->getValue() )
-			{
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( true );
-			}
-			else
-			{
-				_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( false );
-			}
+			bool flag = _paramAudioAllChannels.at( idAudioStream )->getValue();
+			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( flag );
 		}
 	}
 }
