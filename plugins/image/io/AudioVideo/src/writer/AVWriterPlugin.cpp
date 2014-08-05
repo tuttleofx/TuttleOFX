@@ -197,12 +197,11 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	params._audioCodec = _paramAudioCodec->getValue();
 	params._audioCodecName = _optionLoader.getAudioCodecsShortNames().at( params._audioCodec );
 	
-	params._videoPixelFormat = static_cast<AVPixelFormat>( _paramVideoPixelFormat->getValue() );
-	params._videoPixelFormatName = avtranscoder::OptionLoader::getPixelFormats().at( _paramVideoPixelFormat->getValue() );
-	
 	params._audioSampleFormat = static_cast<AVSampleFormat>( _paramAudioSampleFormat->getValue() );
 	params._audioSampleFormatName = avtranscoder::OptionLoader::getSampleFormats().at( _paramAudioSampleFormat->getValue() );
 	
+	std::vector<std::string> supportedPixelFormats( avtranscoder::OptionLoader::getPixelFormats( params._videoCodecName ) );
+	params._videoPixelFormatName = supportedPixelFormats.at( _paramVideoPixelFormat->getValue() );
 	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
 	{
 		if( parameter->getValue().size() > 0 )
