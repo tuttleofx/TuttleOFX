@@ -566,18 +566,25 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		int width = bounds.x2 - bounds.x1;
 		int height = bounds.y2 - bounds.y1;
 
+		// describe the input of transcode
 		avtranscoder::VideoFrameDesc imageDesc;
 		imageDesc.setWidth( width );
 		imageDesc.setHeight( height );
 		imageDesc.setDar( width, height );
-		avtranscoder::Pixel pixel = avtranscoder::Pixel( avtranscoder::OptionLoader::getAVPixelFormat( profile[ avtranscoder::Profile::avProfilePixelFormat ] ) );
-		imageDesc.setPixel( pixel );
-		
-		avtranscoder::VideoDesc videoDesc = avtranscoder::VideoDesc( profile[ avtranscoder::Profile::avProfileCodec ] );
-		videoDesc.setImageParameters( imageDesc );
-		
-		_dummyVideo.setVideoDesc( videoDesc );
-		
+
+		avtranscoder::Pixel inputPixel;
+		inputPixel.setComponents( 3 );
+		inputPixel.setColorComponents( avtranscoder::eComponentRgb );
+		inputPixel.setBitsPerPixel( 24 );
+		inputPixel.setPlanar( false );
+
+		imageDesc.setPixel( inputPixel );
+
+		avtranscoder::VideoDesc inputVideoDesc = avtranscoder::VideoDesc( profile[ avtranscoder::Profile::avProfileCodec ] );
+		inputVideoDesc.setImageParameters( imageDesc );
+
+		_dummyVideo.setVideoDesc( inputVideoDesc );
+
 		// the streamTranscoder is deleted by avTranscoder
 		avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, profile );
 		_transcoder->add( *stream );
