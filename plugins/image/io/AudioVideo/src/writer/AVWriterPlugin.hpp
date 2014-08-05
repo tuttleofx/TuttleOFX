@@ -38,8 +38,6 @@ struct AVProcessParams
 	std::string _audioCodecName;  ///< Audio codec name
 	
 	std::string _videoPixelFormatName; /// videoPixelFormat name
-	
-	AVSampleFormat _audioSampleFormat; /// audioSampleFormat
 	std::string _audioSampleFormatName; /// audioSampleFormat name
 
 	std::map< std::string, std::string > _metadatas;

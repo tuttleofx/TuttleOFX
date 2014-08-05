@@ -286,18 +286,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioCodecParam->setDefault( default_audio_codec );
 	audioCodecParam->setParent( audioCustomGroupParam );
 	
-	int default_audio_sample_format = 0;
-	std::string defaultAudioSampleFormat( "s16" );
 	OFX::ChoiceParamDescriptor* audioSampleFmtParam = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
 	audioSampleFmtParam->setLabel( "Select the output audio sample type" );
 	std::vector<std::string> sampleFormats = avtranscoder::OptionLoader::getSampleFormats();
 	for( size_t i = 0; i < sampleFormats.size(); ++i )
 	{
 		audioSampleFmtParam->appendOption( sampleFormats.at( i ) );
-		if( sampleFormats.at( i ) == defaultAudioSampleFormat )
-			default_audio_sample_format = audioSampleFmtParam->getNOptions() - 1;
 	}
-	audioSampleFmtParam->setDefault( default_audio_sample_format );
 	audioSampleFmtParam->setParent( audioCustomGroupParam );
 	
 	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
