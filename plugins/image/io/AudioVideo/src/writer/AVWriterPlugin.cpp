@@ -290,6 +290,7 @@ void AVWriterPlugin::updateAudioSilent()
 			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( flag );
 			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( flag );
 			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( flag );
+			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
 		}
 	}
 	updateAudioCopyStream();
