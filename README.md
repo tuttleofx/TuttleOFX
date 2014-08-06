@@ -29,13 +29,7 @@ Compilation
 
 - External libraries
 >
->    1. Build from source code  
->       You can get all external libraries source code using a python script:  
->       `cd 3rdParty`  
->       `python init.py`  
->       And follow build instructions for each library.
->
->    2. Use packaging tools or installers
+>    1. Use packaging tools or installers
 >    See the website instructions to install all dependencies. There are command lines (apt-get, macports, ...) to install all dependencies for some standard distributions, and links to windows installers.  
 >    [Extern libraries](http://www.tuttleofx.org/development/build/libraries)
 

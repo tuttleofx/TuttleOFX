@@ -7,9 +7,7 @@ We call $TUTTLEOFX the TuttleOFX root directory.
 ___
 ### A - External libraries  
 
-You have the choice between:
 > 1. install libraries on your system using standard packages.  
-> 2. download all external libraries, with a dedicated script.  
 ___
 
 **A - 1 install libraries on your system using standard packages**  
@@ -22,15 +20,6 @@ Use the precreated configuration file, depending on your operating system:
 > cp $TUTTLEOFX/tools/sconf/macos.sconf host.sconf  
 > cp $TUTTLEOFX/tools/sconf/windows.sconf host.sconf  
 
-**A - 2 download all external libraries**  
-> cd $TUTTLEOFX/3rdParty  
-
-and download libraries  
-> python init.py  
-
-now you need to compile all these libraries by yourself,  
-because all these libraries have their own build system,  
-their own dependencies, their own flags you may want to choose, etc.  
 
 copy the configuration file to use local libraries
 > cp $TUTTLEOFX/tools/sconf/local.sconf host.sconf
