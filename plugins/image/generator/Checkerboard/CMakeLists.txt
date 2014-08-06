@@ -14,7 +14,7 @@ find_package(Boost 1.55.0)
 include_directories(${Boost_INCLUDE_DIRS}) 
 
 # OpenFX
-include(UseOFXPP)
+include(UseOfxpp)
 
 # Terry image library
 include(UseTerry)

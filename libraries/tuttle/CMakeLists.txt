@@ -18,7 +18,7 @@ if (Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS}) 
   
   # OpenFX
-  include(UseOFXPP)
+  include(UseOfxpp)
   
   # Terry
   include(UseTerry)
