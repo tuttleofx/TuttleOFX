@@ -7,7 +7,6 @@
 #include <AvTranscoder/Metadatas/Print.hpp>
 
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 
 #include <stdexcept>
 
@@ -68,10 +67,6 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramMetaDataUnknown = fetchStringParam( kParamMetaDataUnknown );
 
 	updateVisibleTools();
-	
-	_videoProfile[ avtranscoder::Profile::avProfileIdentificator ] = "readerVideoPreset";
-	_videoProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Reader video preset";
-	_videoProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
 }
 
 void AVReaderPlugin::ensureVideoIsOpen()
@@ -123,15 +118,6 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		    << exception::filename( filepath ) );
 	}
 	_initVideo = true;
-}
-
-void AVReaderPlugin::updateProfileFromCustomParams( const common::CustomParams& customParams, avtranscoder::Profile::ProfileDesc& profile )
-{
-	common::CustomParams::OptionsForPreset optionsForPreset = customParams.getOptionsNameAndValue();
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, optionsForPreset )
-	{
-		profile[ nameAndValue.first ] = nameAndValue.second;
-	}
 }
 
 void AVReaderPlugin::cleanInputFile()
@@ -380,11 +366,8 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	ensureVideoIsOpen();
 
-	updateProfileFromCustomParams( _paramFormatCustom, _formatProfile );
-	_inputFile->setProfile( _formatProfile );
-	
-	updateProfileFromCustomParams( _paramVideoCustom, _videoProfile );
-	_inputStreamVideo->setProfile( _videoProfile );
+	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfileDesc() );
+	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfileDesc() );
 	
 	// get source image
 	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _videoStreamId ).getVideoDesc().getVideoFrameDesc();

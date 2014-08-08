@@ -190,6 +190,17 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 	}
 }
 
+avtranscoder::Profile::ProfileDesc CustomParams::getCorrespondingProfileDesc( const std::string& subGroupName ) const
+{
+	avtranscoder::Profile::ProfileDesc profileDesc;
+	OptionsForPreset optionsForPreset = getOptionsNameAndValue( subGroupName );
+	BOOST_FOREACH( OptionsForPreset::value_type& nameAndValue, optionsForPreset )
+	{
+		profileDesc[ nameAndValue.first ] = nameAndValue.second;
+	}
+	return profileDesc;
+}
+
 void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
 {
 	OFX::ParamDescriptor* param = NULL;

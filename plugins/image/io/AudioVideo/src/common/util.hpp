@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
 
 #include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/Profile.hpp>
 
 #include <ofxsImageEffect.h>
 
@@ -52,6 +53,11 @@ public:
 
 	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
 	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
+
+	/**
+	 * @brief Get value of OFX parameters contained in customParams, and return the corresponding profileDesc.
+     */
+	avtranscoder::Profile::ProfileDesc getCorrespondingProfileDesc( const std::string& subGroupName="" ) const;
 
 public:
 	std::vector<OFX::BooleanParam*> _paramBoolean;
