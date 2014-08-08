@@ -248,7 +248,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
-	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamMainAudioPreset );
+	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamAudioMainPreset );
 	audioMainPresetParam->setLabel( "Main Preset" );
 	audioMainPresetParam->appendOption( "custom", "Customized configuration" );
 	audioMainPresetParam->setParent( audioGroup );

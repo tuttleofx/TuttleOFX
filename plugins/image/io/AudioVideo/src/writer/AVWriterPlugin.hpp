@@ -127,7 +127,7 @@ public:
 	OFX::ChoiceParam* _paramMainPreset;
 	OFX::ChoiceParam* _paramFormatPreset;
 	OFX::ChoiceParam* _paramVideoPreset;
-	OFX::ChoiceParam* _paramMainAudioPreset;
+	OFX::ChoiceParam* _paramAudioMainPreset;
 	
 	// metadata
 	std::vector<OFX::StringParam*> _paramMetadatas;

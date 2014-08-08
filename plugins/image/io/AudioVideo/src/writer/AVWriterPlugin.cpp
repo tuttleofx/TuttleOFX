@@ -136,7 +136,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramMainPreset = fetchChoiceParam( kParamMainPreset );
 	_paramFormatPreset = fetchChoiceParam( kParamFormatPreset );
 	_paramVideoPreset = fetchChoiceParam( kParamVideoPreset );
-	_paramMainAudioPreset = fetchChoiceParam( kParamMainAudioPreset );
+	_paramAudioMainPreset = fetchChoiceParam( kParamAudioMainPreset );
 	
 	// metadata
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaAlbum           ) );
@@ -409,10 +409,10 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramVideoCustomGroup->setIsSecretAndDisabled( true );
 		}
 	}
-	else if( paramName == kParamMainAudioPreset )
+	else if( paramName == kParamAudioMainPreset )
 	{
 		// if custom audio preset
-		if( _paramMainAudioPreset->getValue() == 0 )
+		if( _paramAudioMainPreset->getValue() == 0 )
 		{
 			_paramAudioCustomGroup->setIsSecretAndDisabled( false );
 		}
@@ -610,7 +610,7 @@ void AVWriterPlugin::initAudio()
 	// create audio streams
 	try
 	{
-		size_t mainPresetIndex = _paramMainAudioPreset->getValue();
+		size_t mainPresetIndex = _paramAudioMainPreset->getValue();
 		avtranscoder::Profile::ProfileDesc profile;
 		std::string presetName( "" );
 		
