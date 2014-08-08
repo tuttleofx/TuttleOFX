@@ -392,13 +392,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	
 	// get pixel data of image to decode
 	avtranscoder::Pixel dstPixel;
-	size_t pixelComponents = sourceImageDesc.getPixelDesc().getComponents(); // get this from gil view
-	size_t pixelDepth = 8; // @todo: waiting for getMaxBitPerChannel() in avTranscoder
-	dstPixel.setBitsPerPixel( pixelDepth * pixelComponents );
-	dstPixel.setComponents( pixelComponents );
 	dstPixel.setColorComponents( avtranscoder::eComponentRgb );
-	dstPixel.setSubsampling( avtranscoder::eSubsamplingNone );
-	dstPixel.setAlpha( false );
 	dstPixel.setPlanar( false );
 	
 	// get image to decode
