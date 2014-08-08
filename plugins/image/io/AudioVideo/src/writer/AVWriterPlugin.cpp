@@ -884,6 +884,7 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 	if( ! _initWrap )
 	{
 		initAudio();
+		_transcoder->setProcessMethod( avtranscoder::eProcessMethodInfinity );
 		_outputFile->beginWrap();
 		_initWrap = true;
 	}
