@@ -390,14 +390,14 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 			);
 		}
 		
-		// add flag to transcode all channels
-		std::ostringstream audioAllChannelsName( kParamAudioAllChannels, std::ios_base::in | std::ios_base::ate );
-		audioAllChannelsName << "_" << idAudioStream;
-		OFX::BooleanParamDescriptor* audioAllChannelsParam = desc.defineBooleanParam( audioAllChannelsName.str() );
-		audioAllChannelsParam->setLabel( "Transcode all channels" );
-		audioAllChannelsParam->setHint( "Transcode all channels of the stream. Beware of the number of channels in your output file, because downmix is not supported" );
-		audioAllChannelsParam->setDefault( true );
-		audioAllChannelsParam->setParent( audioSubGroupParam );
+		// add flag to select a stream
+		std::ostringstream audioSelectChannelName( kParamAudioSelectChannel, std::ios_base::in | std::ios_base::ate );
+		audioSelectChannelName << "_" << idAudioStream;
+		OFX::BooleanParamDescriptor* audioSelectChannelParam = desc.defineBooleanParam( audioSelectChannelName.str() );
+		audioSelectChannelParam->setLabel( "Select one channel" );
+		audioSelectChannelParam->setHint( "By default select all channels." );
+		audioSelectChannelParam->setDefault( false );
+		audioSelectChannelParam->setParent( audioSubGroupParam );
 		
 		// add audio channel index
 		std::ostringstream audioChannelIndexName( kParamAudioChannelIndex, std::ios_base::in | std::ios_base::ate );

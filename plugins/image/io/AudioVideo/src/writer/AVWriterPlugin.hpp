@@ -63,7 +63,7 @@ public:
 	void updateAudioSilent();
 	void updateAudioSelectStream();
 	void updateAudioTranscodeStream();
-	void updateAllChannels();
+	void updateAudioSelectChannel();
 	
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
@@ -108,7 +108,7 @@ public:
 	std::vector<OFX::IntParam*> _paramAudioStreamIndex;
 	std::vector<OFX::BooleanParam*> _paramAudioTranscodeStream;
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
-	std::vector<OFX::BooleanParam*> _paramAudioAllChannels;
+	std::vector<OFX::BooleanParam*> _paramAudioSelectChannel;
 	std::vector<OFX::IntParam*> _paramAudioChannelIndex;
 	
 	// custom params
