@@ -189,15 +189,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
 	
 	/// VIDEO PARAMETERS
-	OFX::ChoiceParamDescriptor* videoMainPresetParam = desc.defineChoiceParam( kParamMainVideoPreset );
-	videoMainPresetParam->setLabel( "Video Preset" );
-	videoMainPresetParam->appendOption( "custom", "Customized configuration" );
-	videoMainPresetParam->setParent( videoGroup );
+	OFX::ChoiceParamDescriptor* videoPresetParam = desc.defineChoiceParam( kParamVideoPreset );
+	videoPresetParam->setLabel( "Video Preset" );
+	videoPresetParam->appendOption( "custom", "Customized configuration" );
+	videoPresetParam->setParent( videoGroup );
 	
 	avtranscoder::Profile::ProfilesDesc videoPresets = presets.getVideoProfiles();
 	for( avtranscoder::Profile::ProfilesDesc::iterator it = videoPresets.begin(); it != videoPresets.end(); ++it )
 	{
-		videoMainPresetParam->appendOption( 
+		videoPresetParam->appendOption( 
 			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
 			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
 		);

@@ -135,7 +135,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	// preset
 	_paramMainPreset = fetchChoiceParam( kParamMainPreset );
 	_paramFormatPreset = fetchChoiceParam( kParamFormatPreset );
-	_paramMainVideoPreset = fetchChoiceParam( kParamMainVideoPreset );
+	_paramVideoPreset = fetchChoiceParam( kParamVideoPreset );
 	_paramMainAudioPreset = fetchChoiceParam( kParamMainAudioPreset );
 	
 	// metadata
@@ -389,10 +389,10 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramFormatCustomGroup->setIsSecretAndDisabled( true );
 		}
 	}
-	else if( paramName == kParamMainVideoPreset )
+	else if( paramName == kParamVideoPreset )
 	{
 		// if custom video preset
-		if( _paramMainVideoPreset->getValue() == 0 )
+		if( _paramVideoPreset->getValue() == 0 )
 		{	
 			int defaultVideoCodecIndex;
 			_paramVideoCodec->getDefault( defaultVideoCodecIndex );
@@ -544,11 +544,11 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 	// create video stream
 	try
 	{
-		size_t mainPresetIndex = _paramMainVideoPreset->getValue();
+		size_t presetIndex = _paramVideoPreset->getValue();
 		avtranscoder::Profile::ProfileDesc profile;
 		
 		// custom video preset
-		if( mainPresetIndex == 0 )
+		if( presetIndex == 0 )
 		{
 			updateVideoProfile();
 			profile = _videoProfile;
@@ -557,7 +557,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		else
 		{
 			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-			profile = _presets.getVideoProfiles().at( mainPresetIndex - 1 );
+			profile = _presets.getVideoProfiles().at( presetIndex - 1 );
 		}
 		
 		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );

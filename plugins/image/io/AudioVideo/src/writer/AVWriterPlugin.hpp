@@ -126,7 +126,7 @@ public:
 	// presets
 	OFX::ChoiceParam* _paramMainPreset;
 	OFX::ChoiceParam* _paramFormatPreset;
-	OFX::ChoiceParam* _paramMainVideoPreset;
+	OFX::ChoiceParam* _paramVideoPreset;
 	OFX::ChoiceParam* _paramMainAudioPreset;
 	
 	// metadata

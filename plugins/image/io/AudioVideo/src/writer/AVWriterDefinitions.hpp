@@ -32,7 +32,7 @@ static const std::string kParamAboutGroup                = "aboutGroup";
 static const std::string kParamMainPreset                = "mainPreset";
 
 static const std::string kParamFormatPreset              = "formatPreset";
-static const std::string kParamMainVideoPreset           = "mainVideoPreset";
+static const std::string kParamVideoPreset               = "videoPreset";
 static const std::string kParamMainAudioPreset           = "mainAudioPreset";
 
 static const std::string kParamUseCustomFps              = "useCustomFps";
