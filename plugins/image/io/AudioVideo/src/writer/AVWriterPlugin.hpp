@@ -74,9 +74,9 @@ public:
 
 	bool isOutputInit();
 	
-	void updateFormatProfile();
-	void updateVideoProfile();
-	void updateAudioProfile();
+	avtranscoder::Profile::ProfileDesc getCustomFormatProfile();
+	avtranscoder::Profile::ProfileDesc getCustomVideoProfile();
+	avtranscoder::Profile::ProfileDesc getCustomAudioProfile();
 	
 	/**
 	 * @brief Called before each new render.
@@ -144,11 +144,7 @@ public:
 	
 	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;
-	
-	avtranscoder::Profile::ProfileDesc _formatProfile;
-	avtranscoder::Profile::ProfileDesc _videoProfile;
-	avtranscoder::Profile::ProfileDesc _audioProfile;
-	
+
 	std::string _lastOutputFilePath;
 		
 	bool _initVideo;

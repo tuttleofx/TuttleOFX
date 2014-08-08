@@ -167,18 +167,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
 
 	updateVisibleTools();
-	
-	_formatProfile[ avtranscoder::Profile::avProfileIdentificator ] = "customFormatPreset";
-	_formatProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom format preset";
-	_formatProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeFormat;
-	
-	_videoProfile[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
-	_videoProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
-	_videoProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
-	
-	_audioProfile[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
-	_audioProfile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
-	_audioProfile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
 }
 
 void AVWriterPlugin::updateVisibleTools()
@@ -527,8 +515,7 @@ void AVWriterPlugin::initOutput()
 		// custom format preset
 		if( mainPresetIndex == 0 )
 		{
-			updateFormatProfile();
-			profile = _formatProfile;
+			profile = getCustomFormatProfile();
 		}
 		// existing format preset
 		else
@@ -583,8 +570,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		// custom video preset
 		if( presetIndex == 0 )
 		{
-			updateVideoProfile();
-			profile = _videoProfile;
+			profile = getCustomVideoProfile();
 		}
 		// existing video preset
 		else
@@ -655,8 +641,7 @@ void AVWriterPlugin::initAudio()
 			// custom audio preset
 			if( presetIndex == 0 && mainPresetIndex == 0 )
 			{
-				updateAudioProfile();
-				profile = _audioProfile;
+				profile = getCustomAudioProfile();
 				presetName = "";
 			}
 			// main audio preset
@@ -771,80 +756,70 @@ bool AVWriterPlugin::isOutputInit()
 	return true;
 }
 
-void AVWriterPlugin::updateFormatProfile()
+avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomFormatProfile()
 {
+	avtranscoder::Profile::ProfileDesc profile;
+	profile[ avtranscoder::Profile::avProfileIdentificator ] = "customFormatPreset";
+	profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom format preset";
+	profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeFormat;
+
 	AVProcessParams params = getProcessParams();
-	
-	_formatProfile[ avtranscoder::Profile::avProfileFormat ] = params._formatName;
-	
-	// format options from avTranscoder
-	common::CustomParams::OptionsForPreset formatOptionsForPreset = _paramFormatCustom.getOptionsNameAndValue();
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, formatOptionsForPreset )
-	{
-		_formatProfile[ nameAndValue.first ] = nameAndValue.second;
-	}
-	
-	// format options related to a codec from avTranscoder
-	common::CustomParams::OptionsForPreset formatCodecOptionsForPreset = _paramFormatDetailCustom.getOptionsNameAndValue( params._formatName );
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, formatCodecOptionsForPreset )
-	{
-		_formatProfile[ nameAndValue.first ] = nameAndValue.second;
-	}
+	profile[ avtranscoder::Profile::avProfileFormat ] = params._formatName;
+
+	avtranscoder::Profile::ProfileDesc formatDesc = _paramFormatCustom.getCorrespondingProfileDesc();
+	profile.insert( formatDesc.begin(), formatDesc.end() );
+
+	avtranscoder::Profile::ProfileDesc formatDetailDesc = _paramFormatDetailCustom.getCorrespondingProfileDesc( params._formatName );
+	profile.insert( formatDetailDesc.begin(), formatDetailDesc.end() );
+
+	return profile;
 }
 
-void AVWriterPlugin::updateVideoProfile()
+avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomVideoProfile()
 {
+	avtranscoder::Profile::ProfileDesc profile;
+	profile[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
+	profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
+	profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
+
 	AVProcessParams params = getProcessParams();
-	
-	_videoProfile[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
-	_videoProfile[ avtranscoder::Profile::avProfilePixelFormat ] = params._videoPixelFormatName;
+	profile[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
+	profile[ avtranscoder::Profile::avProfilePixelFormat ] = params._videoPixelFormatName;
 
 	if( _paramUseCustomFps->getValue() )
-	{
-		_videoProfile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
-	}
+		profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
 	else
-	{
-		_videoProfile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
-	}
+		profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
 
-	_videoProfile[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+	profile[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
 
-	// video options from avTranscoder
-	common::CustomParams::OptionsForPreset videoOptionsForPreset = _paramVideoCustom.getOptionsNameAndValue();
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoOptionsForPreset )
-	{
-		_videoProfile[ nameAndValue.first ] = nameAndValue.second;
-	}
-	
-	// video options related to a codec from avTranscoder
-	common::CustomParams::OptionsForPreset videoCodecOptionsForPreset = _paramVideoDetailCustom.getOptionsNameAndValue( params._videoCodecName );
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, videoCodecOptionsForPreset )
-	{
-		_videoProfile[ nameAndValue.first ] = nameAndValue.second;
-	}
+	avtranscoder::Profile::ProfileDesc videoDesc = _paramVideoCustom.getCorrespondingProfileDesc();
+	profile.insert( videoDesc.begin(), videoDesc.end() );
+
+	avtranscoder::Profile::ProfileDesc videoDetailDesc = _paramVideoDetailCustom.getCorrespondingProfileDesc( params._videoCodecName );
+	profile.insert( videoDetailDesc.begin(), videoDetailDesc.end() );
+
+	return profile;
 }
 
-void AVWriterPlugin::updateAudioProfile()
+avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomAudioProfile()
 {
-	AVProcessParams params = getProcessParams();
-	
-	_audioProfile[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
-	_audioProfile[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
+	avtranscoder::Profile::ProfileDesc profile;
+	profile[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
+	profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
+	profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
 
-	// audio options from avTranscoder
-	common::CustomParams::OptionsForPreset audioOptionsForPreset = _paramAudioCustom.getOptionsNameAndValue();
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioOptionsForPreset )
-	{
-		_audioProfile[ nameAndValue.first ] = nameAndValue.second;
-	}
-	
-	// audio options related to a codec from avTranscoder
-	common::CustomParams::OptionsForPreset audioCodecOptionsForPreset = _paramAudioDetailCustom.getOptionsNameAndValue( params._audioCodecName );
-	BOOST_FOREACH( common::CustomParams::OptionsForPreset::value_type& nameAndValue, audioCodecOptionsForPreset )
-	{
-		_audioProfile[ nameAndValue.first ] = nameAndValue.second;
-	}
+	AVProcessParams params = getProcessParams();
+	profile[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
+	profile[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
+
+	avtranscoder::Profile::ProfileDesc audioDesc = _paramAudioCustom.getCorrespondingProfileDesc();
+	profile.insert( audioDesc.begin(), audioDesc.end() );
+
+	avtranscoder::Profile::ProfileDesc audioDetailDesc = _paramAudioDetailCustom.getCorrespondingProfileDesc( params._audioCodecName );
+	profile.insert( audioDetailDesc.begin(), audioDetailDesc.end() );
+
+	return profile;
 }
 
 
