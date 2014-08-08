@@ -339,7 +339,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioFilePathName << "_" << idAudioStream;
 		OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( audioFilePathName.str() );
 		audioFilePathParam->setLabel( "Input file path" );
-		audioFilePathParam->setHint( "Add a silent track if it is empty." );
 		audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
 		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 		audioFilePathParam->setParent( audioSubGroupParam );
@@ -349,7 +348,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioSelectStreamName << "_" << idAudioStream;
 		OFX::BooleanParamDescriptor* audioSelectStreamParam = desc.defineBooleanParam( audioSelectStreamName.str() );
 		audioSelectStreamParam->setLabel( "Select one stream" );
-		audioSelectStreamParam->setHint( "By default select all the streams of the input file." );
+		audioSelectStreamParam->setHint( "By default select all streams of the input file." );
 		audioSelectStreamParam->setDefault( false );
 		audioSelectStreamParam->setParent( audioSubGroupParam );
 		
@@ -369,7 +368,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioEncodeStreamName << "_" << idAudioStream;
 		OFX::BooleanParamDescriptor* audioEncodeStreamParam = desc.defineBooleanParam( audioEncodeStreamName.str() );
 		audioEncodeStreamParam->setLabel( "Change encoding" );
-		audioEncodeStreamParam->setHint( "By default rewrap all the streams of the input file." );
+		audioEncodeStreamParam->setHint( "By default rewrap all streams of the input file." );
 		audioEncodeStreamParam->setDefault( false );
 		audioEncodeStreamParam->setParent( audioSubGroupParam );
 		
@@ -378,7 +377,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioCodecPresetName << "_" << idAudioStream;
 		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
 		audioCodecPresetParam->setLabel( "Output Preset" );
-		audioCodecPresetParam->setHint( "Choose a preset to easily get your output file, and to skip all audio settings" );
+		audioCodecPresetParam->setHint( "Choose a preset to easily get a configuration for the audio stream. Main preset refered to the list of presets at the top of the 'Audio' tab." );
 		audioCodecPresetParam->appendOption( "main preset", "Main preset" );
 		audioCodecPresetParam->setParent( audioSubGroupParam );
 
@@ -404,7 +403,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioChannelIndexName << "_" << idAudioStream;
 		OFX::IntParamDescriptor* audioChannelIndexParam = desc.defineIntParam( audioChannelIndexName.str() );
 		audioChannelIndexParam->setLabel( "Input channel index" );
-		audioChannelIndexParam->setHint( "Select a specific channel of the selected input stream." );
+		audioChannelIndexParam->setHint( "Select a specific channel." );
 		audioChannelIndexParam->setRange( 0, INT_MAX );
 		audioChannelIndexParam->setDisplayRange( 0, 10 );
 		audioChannelIndexParam->setDefault( 0 );
