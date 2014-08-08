@@ -571,9 +571,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		imageDesc.setDar( width, height );
 
 		avtranscoder::Pixel inputPixel;
-		inputPixel.setComponents( 3 );
 		inputPixel.setColorComponents( avtranscoder::eComponentRgb );
-		inputPixel.setBitsPerPixel( 24 );
 		inputPixel.setPlanar( false );
 
 		imageDesc.setPixel( inputPixel );
