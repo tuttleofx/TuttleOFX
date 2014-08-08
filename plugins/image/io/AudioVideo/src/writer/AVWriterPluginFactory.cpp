@@ -344,14 +344,23 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 		audioFilePathParam->setParent( audioSubGroupParam );
 
+		// add flag to select a stream
+		std::ostringstream audioSelectStreamName( kParamAudioSelectStream, std::ios_base::in | std::ios_base::ate );
+		audioSelectStreamName << "_" << idAudioStream;
+		OFX::BooleanParamDescriptor* audioSelectStreamParam = desc.defineBooleanParam( audioSelectStreamName.str() );
+		audioSelectStreamParam->setLabel( "Select one stream" );
+		audioSelectStreamParam->setHint( "By default select all the streams of the input file." );
+		audioSelectStreamParam->setDefault( false );
+		audioSelectStreamParam->setParent( audioSubGroupParam );
+		
 		// add audio stream index
 		std::ostringstream audioStreamIndexName( kParamAudioStreamIndex, std::ios_base::in | std::ios_base::ate );
 		audioStreamIndexName << "_" << idAudioStream;
 		OFX::IntParamDescriptor* audioStreamIndexParam = desc.defineIntParam( audioStreamIndexName.str() );
 		audioStreamIndexParam->setLabel( "Input stream index" );
-		audioStreamIndexParam->setHint( "Select a specific stream of the input file. Set -1 to select all streams." );
-		audioStreamIndexParam->setRange( -1, INT_MAX );
-		audioStreamIndexParam->setDisplayRange( -1, 16 );
+		audioStreamIndexParam->setHint( "Select a specific stream of the input file." );
+		audioStreamIndexParam->setRange( 0, INT_MAX );
+		audioStreamIndexParam->setDisplayRange( 0, 16 );
 		audioStreamIndexParam->setDefault( 0 );
 		audioStreamIndexParam->setParent( audioSubGroupParam );
 

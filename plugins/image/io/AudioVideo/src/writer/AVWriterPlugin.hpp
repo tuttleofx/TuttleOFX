@@ -61,6 +61,7 @@ public:
 	void updatePixelFormats( const std::string& videoCodecName );
 	void updateAudioParams();
 	void updateAudioSilent();
+	void updateAudioSelectStream();
 	void updateAudioCopyStream();
 	void updateAllChannels();
 	
@@ -103,6 +104,7 @@ public:
 	std::vector<OFX::GroupParam*> _paramAudioSubGroup;
 	std::vector<OFX::BooleanParam*> _paramAudioSilent;
 	std::vector<OFX::StringParam*> _paramAudioFilePath;
+	std::vector<OFX::BooleanParam*> _paramAudioSelectStream;
 	std::vector<OFX::IntParam*> _paramAudioStreamIndex;
 	std::vector<OFX::BooleanParam*> _paramAudioCopyStream;
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
