@@ -22,7 +22,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioSilent()
 	, _paramAudioFilePath()
 	, _paramAudioStreamIndex()
-	, _paramAudioCopyStream()
+	, _paramAudioTranscodeStream()
 	, _paramAudioPreset()
 	, _paramFormatCustom()
 	, _paramVideoCustom()
@@ -81,10 +81,10 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioStreamIndex.push_back( fetchIntParam( audioStreamIndexName.str() ) );
 		_paramAudioStreamIndex.back()->setIsSecretAndDisabled( false );
 		
-		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );
-		audioCopyStreamName << "_" << idAudioStream;
-		_paramAudioCopyStream.push_back( fetchBooleanParam( audioCopyStreamName.str() ) );
-		_paramAudioCopyStream.back()->setIsSecretAndDisabled( false );
+		std::ostringstream audioTranscodeStreamName( kParamAudioTranscodeStream, std::ios_base::in | std::ios_base::ate );
+		audioTranscodeStreamName << "_" << idAudioStream;
+		_paramAudioTranscodeStream.push_back( fetchBooleanParam( audioTranscodeStreamName.str() ) );
+		_paramAudioTranscodeStream.back()->setIsSecretAndDisabled( false );
 		
 		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
 		audioCodecPresetName << "_" << idAudioStream;
@@ -274,7 +274,7 @@ void AVWriterPlugin::updateAudioParams()
 		_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioSelectStream.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
-		_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioTranscodeStream.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
@@ -293,7 +293,7 @@ void AVWriterPlugin::updateAudioSilent()
 			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 			_paramAudioSelectStream.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
-			_paramAudioCopyStream.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
+			_paramAudioTranscodeStream.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
@@ -315,10 +315,10 @@ void AVWriterPlugin::updateAudioSelectStream()
 			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isSelectStream );
 		}
 	}
-	updateAudioCopyStream();
+	updateAudioTranscodeStream();
 }
 
-void AVWriterPlugin::updateAudioCopyStream()
+void AVWriterPlugin::updateAudioTranscodeStream()
 {
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
 	{
@@ -326,10 +326,10 @@ void AVWriterPlugin::updateAudioCopyStream()
 			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
 			! _paramAudioSilent.at( idAudioStream )->getValue() )
 		{
-			bool isCopy = _paramAudioCopyStream.at( idAudioStream )->getValue();
-			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( isCopy );
-			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( isCopy );
-			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( isCopy );
+			bool isTranscode = _paramAudioTranscodeStream.at( idAudioStream )->getValue();
+			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( ! isTranscode );
+			_paramAudioAllChannels.at( idAudioStream )->setIsSecretAndDisabled( ! isTranscode );
+			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isTranscode );
 		}
 	}
 	updateAllChannels();
@@ -342,7 +342,7 @@ void AVWriterPlugin::updateAllChannels()
 		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
 			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
 			! _paramAudioSilent.at( idAudioStream )->getValue() &&
-			! _paramAudioCopyStream.at( idAudioStream )->getValue() )
+			_paramAudioTranscodeStream.at( idAudioStream )->getValue() )
 		{
 			bool isTranscodeAll = _paramAudioAllChannels.at( idAudioStream )->getValue();
 			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( isTranscodeAll );
@@ -472,9 +472,9 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	{
 		updateAudioSelectStream();
 	}
-	else if( paramName.find( kParamAudioCopyStream ) != std::string::npos )
+	else if( paramName.find( kParamAudioTranscodeStream ) != std::string::npos )
 	{
-		updateAudioCopyStream();
+		updateAudioTranscodeStream();
 	}
 	else if( paramName.find( kParamAudioAllChannels ) != std::string::npos )
 	{
@@ -490,7 +490,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	{
 		const size_t indexPos = kParamAudioPreset.size() + 1; // add "_"
 		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos, indexPos ) );
-		_paramAudioCopyStream.at( audioStreamIndex )->setValue( false );
+		_paramAudioTranscodeStream.at( audioStreamIndex )->setValue( true );
 	}
 	else if( paramName.find( kParamAudioChannelIndex ) != std::string::npos )
 	{
@@ -696,7 +696,7 @@ void AVWriterPlugin::initAudio()
 				}
 				
 				// rewrap
-				if( ! _paramAudioSilent.at( i )->getValue() &&  _paramAudioCopyStream.at( i )->getValue() )
+				if( ! _paramAudioSilent.at( i )->getValue() &&  ! _paramAudioTranscodeStream.at( i )->getValue() )
 				{
 					if( inputStreamIndex != -1 )
 					{

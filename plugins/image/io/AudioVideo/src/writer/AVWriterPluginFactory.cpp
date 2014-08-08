@@ -364,14 +364,14 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioStreamIndexParam->setDefault( 0 );
 		audioStreamIndexParam->setParent( audioSubGroupParam );
 
-		// add flag to copy stream
-		std::ostringstream audioCopyStreamName( kParamAudioCopyStream, std::ios_base::in | std::ios_base::ate );
-		audioCopyStreamName << "_" << idAudioStream;
-		OFX::BooleanParamDescriptor* audioCopyStreamParam = desc.defineBooleanParam( audioCopyStreamName.str() );
-		audioCopyStreamParam->setLabel( "Only copy stream" );
-		audioCopyStreamParam->setHint( "Only rewrap the audio stream whithout transcode it" );
-		audioCopyStreamParam->setDefault( true );
-		audioCopyStreamParam->setParent( audioSubGroupParam );
+		// add flag to transcode stream
+		std::ostringstream audioEncodeStreamName( kParamAudioTranscodeStream, std::ios_base::in | std::ios_base::ate );
+		audioEncodeStreamName << "_" << idAudioStream;
+		OFX::BooleanParamDescriptor* audioEncodeStreamParam = desc.defineBooleanParam( audioEncodeStreamName.str() );
+		audioEncodeStreamParam->setLabel( "Change encoding" );
+		audioEncodeStreamParam->setHint( "By default rewrap all the streams of the input file." );
+		audioEncodeStreamParam->setDefault( false );
+		audioEncodeStreamParam->setParent( audioSubGroupParam );
 		
 		// add audio codec preset
 		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
