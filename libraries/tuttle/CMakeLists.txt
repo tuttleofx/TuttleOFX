@@ -6,8 +6,10 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 # All libraries will be put in INSTALL_PREFIX/lib 
 # RPATH of host points INSTALL_PREFIX/lib
 # see: http://www.cmake.org/Wiki/CMake_RPATH_handling
+set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Tuttle source code
 include_directories(src)
@@ -38,6 +40,9 @@ if (Boost_FOUND)
   # Target is a shared library
   add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES}) 
   target_link_libraries(tuttleHost ${Boost_LIBRARIES})
+  if(APPLE)
+      set_target_properties(tuttleHost PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
+  endif(APPLE)
 
   # Adds a support library for plugins
   # only compile object files, and use them at link time
@@ -89,7 +94,10 @@ if (Boost_FOUND)
     swig_add_module(tuttle python ${TUTTLE_PYTHON_BINDING_FILE})
     swig_link_libraries(tuttle tuttleHost)
     swig_link_libraries(tuttle ${Boost_LIBRARIES})
-  
+    swig_link_libraries(tuttle ${PYTHON_LIBRARIES})
+    if (APPLE)
+      set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} PROPERTIES INSTALL_RPATH "@loader_path/../../lib")
+    endif(APPLE)
     # Install python libs and wrapper in INSTALL_PREFIX/share/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
                   DESTINATION share/python)

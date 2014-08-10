@@ -5,7 +5,7 @@ add_subdirectory(image/generator/Checkerboard)
 add_subdirectory(image/generator/ColorBars)
 add_subdirectory(image/io/Dpx)
 add_subdirectory(image/io/Exr)
-add_subdirectory(image/io/ImageMagick)
+#add_subdirectory(image/io/ImageMagick)
 
 
 # Current directory structure

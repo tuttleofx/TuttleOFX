@@ -1,9 +1,17 @@
 # Custom macros, UseOfxpp UseTerry
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+# Return OFX architecture
 function(tuttle_ofx_architecture ARCH)
     # use ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}
-    set(${ARCH} "Linux-x86-64" PARENT_SCOPE)
+    # message("ARCH=${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+    # TODO test all systems
+    if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+      set(${ARCH} "MacOS" PARENT_SCOPE)
+    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+      # Assume x86_64
+      set(${ARCH} "Linux-x86-64" PARENT_SCOPE)
+    endif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 endfunction(tuttle_ofx_architecture) 
 
 # Use this function to create a new plugin target
@@ -37,23 +45,30 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
     include(UseTerry)
     
     # Plugin target is a shared library
-    add_library(${PLUGIN_NAME} SHARED ${PLUGIN_SOURCES} $<TARGET_OBJECTS:tuttlePluginLib>)
+    add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES} $<TARGET_OBJECTS:tuttlePluginLib>)
     target_link_libraries(${PLUGIN_NAME} ${Boost_LIBRARIES})
     set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX .ofx)
     set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
+    # tuttlePluginLib depends on OpenGL ......
+    if(APPLE)
+        find_package(OpenGL)
+        target_link_libraries(${PLUGIN_NAME} ${OPENGL_LIBRARIES})
+        set_target_properties(${PLUGIN_NAME} PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
+    endif(APPLE)
  
     # Install OFX plugin as specified in
     # http://openfx.sourceforge.net/Documentation/1.3/Reference/ch02s02.html
     set(OFX_PLUGIN_ROOT ${CMAKE_INSTALL_PREFIX}/OFX/${PLUGIN_NAME}.ofx.bundle/Contents)
-    tuttle_ofx_architecture(OFX_ARCH )
+    tuttle_ofx_architecture(OFX_ARCH)
+    # TODO : should install Resources only if target is installed
     install(DIRECTORY Resources DESTINATION ${OFX_PLUGIN_ROOT})
     install(TARGETS ${PLUGIN_NAME} 
-            DESTINATION ${OFX_PLUGIN_ROOT}/${OFX_ARCH})
+        DESTINATION ${OFX_PLUGIN_ROOT}/${OFX_ARCH} OPTIONAL)
 
     # Set RPATH for boost 
     set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-    message("sources: ${PLUGIN_SOURCES}")
+    #message(STATUS "sources: ${PLUGIN_SOURCES}")
 
 endfunction(tuttle_ofx_plugin_target)
 
@@ -107,7 +122,7 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
         endforeach()
     else(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND)
         message("package ${PACKAGE_NAME} not found, plugin ${PLUGIN_TARGET} will not be built")
-        # Removes the target from the build if a lib is missing
+        # Removes the target from the build and install if a lib is missing
         set_target_properties(${PLUGIN_TARGET} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
     endif(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND)
 
