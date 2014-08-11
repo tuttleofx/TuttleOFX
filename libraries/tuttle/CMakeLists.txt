@@ -41,11 +41,16 @@ if (Boost_FOUND)
   add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES}) 
   target_link_libraries(tuttleHost ${Boost_LIBRARIES})
   if(APPLE)
-      set_target_properties(tuttleHost PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
+      set_target_properties(tuttleHost 
+            PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
+      set_target_properties(tuttleHost 
+            PROPERTIES INSTALL_RPATH "@loader_path")
   endif(APPLE)
-  if (UNIX)
+  if (UNIX AND NOT APPLE)
       target_link_libraries(tuttleHost dl)
-  endif(UNIX)
+      set_target_properties(tuttleHost
+            PROPERTIES INSTALL_RPATH "$ORIGIN")
+  endif(UNIX AND NOT APPLE)
 
   # Adds a support library for plugins
   # only compile object files, and use them at link time
