@@ -54,6 +54,11 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         find_package(OpenGL)
         target_link_libraries(${PLUGIN_NAME} ${OPENGL_LIBRARIES})
         set_target_properties(${PLUGIN_NAME} PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
+        set_target_properties(${PLUGIN_NAME} 
+            PROPERTIES INSTALL_RPATH "@loader_path/../../../../lib")
+    else(APPLE)
+        set_target_properties(${PLUGIN_NAME}
+            PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../lib:$ORIGIN")
     endif(APPLE)
  
     # Install OFX plugin as specified in
