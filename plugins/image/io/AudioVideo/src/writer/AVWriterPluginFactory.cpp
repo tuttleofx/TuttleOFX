@@ -502,16 +502,16 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		libGroupParam->setLabel( (*library).getName() );
 		libGroupParam->setParent( aboutGroup );
 		
-		// add licence
-		std::ostringstream licenceName( kParamAboutLicence, std::ios_base::in | std::ios_base::ate );
-		licenceName << "_" << (*library).getName();
-		OFX::StringParamDescriptor* licenceParam = desc.defineStringParam( licenceName.str() );
-		std::stringstream completeLicence;
-		completeLicence << (*library).getLicence();
-		licenceParam->setLabel( "License" );
-		licenceParam->setDefault( completeLicence.str() );
-		licenceParam->setStringType( OFX::eStringTypeLabel );
-		licenceParam->setParent( libGroupParam );
+		// add license
+		std::ostringstream licenseName( kParamAboutLicense, std::ios_base::in | std::ios_base::ate );
+		licenseName << "_" << (*library).getName();
+		OFX::StringParamDescriptor* licenseParam = desc.defineStringParam( licenseName.str() );
+		std::stringstream completeLicense;
+		completeLicense << (*library).getLicense();
+		licenseParam->setLabel( "License" );
+		licenseParam->setDefault( completeLicense.str() );
+		licenseParam->setStringType( OFX::eStringTypeLabel );
+		licenseParam->setParent( libGroupParam );
 
 		// add complete version (major.minor.micro)
 		std::ostringstream versionName( kParamAboutVersion, std::ios_base::in | std::ios_base::ate );
@@ -519,7 +519,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		OFX::StringParamDescriptor* versionParam = desc.defineStringParam( versionName.str() );
 		std::stringstream completeVersion;
 		completeVersion << (*library).getStringVersion();
-		licenceParam->setLabel( "Version" );
+		versionParam->setLabel( "Version" );
 		versionParam->setDefault( completeVersion.str() );
 		versionParam->setStringType( OFX::eStringTypeLabel );
 		versionParam->setParent( libGroupParam );

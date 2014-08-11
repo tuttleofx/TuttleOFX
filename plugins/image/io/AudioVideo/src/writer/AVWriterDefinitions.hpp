@@ -81,7 +81,7 @@ static const std::string kParamMetaTrack           = "m_track";
 static const std::string kParamMetaVariantBitrate  = "m_variant_bitrate";
 
 static const std::string kParamAboutLibName        = "libName";
-static const std::string kParamAboutLicence        = "licence";
+static const std::string kParamAboutLicense        = "license";
 static const std::string kParamAboutVersion        = "version";
 
 }
