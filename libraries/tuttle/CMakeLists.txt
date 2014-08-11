@@ -95,9 +95,15 @@ if (Boost_FOUND)
     swig_link_libraries(tuttle tuttleHost)
     swig_link_libraries(tuttle ${Boost_LIBRARIES})
     swig_link_libraries(tuttle ${PYTHON_LIBRARIES})
+    # Force the library to look in the project lib folder relatively
     if (APPLE)
-      set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} PROPERTIES INSTALL_RPATH "@loader_path/../../lib")
+      set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} 
+            PROPERTIES INSTALL_RPATH "@loader_path/../../lib")
+    else(APPLE)
+        set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME}
+            PROPERTIES INSTALL_RPATH "$ORIGIN/../../lib:$ORIGIN")
     endif(APPLE)
+
     # Install python libs and wrapper in INSTALL_PREFIX/share/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
                   DESTINATION share/python)
