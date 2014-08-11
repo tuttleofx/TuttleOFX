@@ -178,16 +178,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionMap formatDetailledGroupOptions = optionLoader.loadOutputFormatOptions();
 	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
 	
-	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
-	useCustomFps->setLabel( "Override Fps" );
-	useCustomFps->setDefault( false );
-	useCustomFps->setHint( "Override the input Fps (Frames Per Second) with a custom Fps value." );
-
-	OFX::DoubleParamDescriptor* customFps = desc.defineDoubleParam( kParamCustomFps );
-	customFps->setLabel( "Custom Fps" );
-	customFps->setDefault( 1.0 );
-	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
-	
 	/// VIDEO PARAMETERS
 	OFX::ChoiceParamDescriptor* videoPresetParam = desc.defineChoiceParam( kParamVideoPreset );
 	videoPresetParam->setLabel( "Video Preset" );
@@ -239,6 +229,20 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionArray videoGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	common::addOptionsToGroup( desc, videoCustomGroupParam, videoGroupOptions, common::kPrefixVideo );
 	
+	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
+	useCustomFps->setLabel( "Override Fps" );
+	useCustomFps->setDefault( false );
+	useCustomFps->setHint( "Override the input Fps (Frames Per Second) with a custom Fps value." );
+	useCustomFps->setParent( videoGroup );
+
+	OFX::DoubleParamDescriptor* customFps = desc.defineDoubleParam( kParamCustomFps );
+	customFps->setLabel( "Custom Fps" );
+	customFps->setRange( 0, INT_MAX );
+	customFps->setDisplayRange( 0, 100 );
+	customFps->setDefault( 1.0 );
+	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
+	customFps->setParent( videoGroup );
+
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
 	videoDetailledGroup->setAsTab( );

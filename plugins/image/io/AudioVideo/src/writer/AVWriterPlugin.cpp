@@ -410,6 +410,9 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramVideoCodec->setValue( defaultVideoCodecIndex );
 			
 			_paramVideoCustomGroup->setIsSecretAndDisabled( false );
+			_paramUseCustomFps->setIsSecretAndDisabled( false );
+			if( _paramUseCustomFps->getValue() )
+				_paramCustomFps->setIsSecretAndDisabled( false );
 		}
 		else
 		{
@@ -418,6 +421,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramVideoCodec->setValue( videoCodecWithNoOptionDetailsIndex );
 			
 			_paramVideoCustomGroup->setIsSecretAndDisabled( true );
+			_paramUseCustomFps->setIsSecretAndDisabled( true );
+			_paramCustomFps->setIsSecretAndDisabled( true );
 		}
 	}
 	else if( paramName == kParamAudioMainPreset )
