@@ -6,6 +6,7 @@
 #include <AvTranscoder/ProgressListener.hpp>
 #include <AvTranscoder/Metadatas/Print.hpp>
 
+#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 
 #include <stdexcept>
@@ -59,12 +60,19 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 	
 	_paramMetaDataWrapper = fetchStringParam( kParamMetaDataWrapper );
+	_paramMetaDataWrapper->setIsSecret( true );
 	_paramMetaDataVideo = fetchStringParam( kParamMetaDataVideo );
+	_paramMetaDataVideo->setIsSecret( true );
 	_paramMetaDataAudio = fetchStringParam( kParamMetaDataAudio );
+	_paramMetaDataAudio->setIsSecret( true );
 	_paramMetaDataData = fetchStringParam( kParamMetaDataData );
+	_paramMetaDataData->setIsSecret( true );
 	_paramMetaDataSubtitle = fetchStringParam( kParamMetaDataSubtitle );
+	_paramMetaDataSubtitle->setIsSecret( true );
 	_paramMetaDataAttachement = fetchStringParam( kParamMetaDataAttachement );
+	_paramMetaDataAttachement->setIsSecret( true );
 	_paramMetaDataUnknown = fetchStringParam( kParamMetaDataUnknown );
+	_paramMetaDataUnknown->setIsSecret( true );
 
 	updateVisibleTools();
 }
@@ -177,53 +185,119 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramVideoStreamIndex->setRange( 0, inputProperties.videoStreams.size() );
 			_paramVideoStreamIndex->setDisplayRange( 0, inputProperties.videoStreams.size() );
 
-			// update MetaData tab
-			std::ostringstream flux( std::ios_base::ate );
-
-			flux << _inputFile->getProperties();
-			_paramMetaDataWrapper->setValue( flux.str() );
-
-			flux.str( "" ); flux.clear();
-			for( size_t videoStreamIndex = 0; videoStreamIndex < inputProperties.videoStreams.size(); ++videoStreamIndex )
+			// update wrapper of Metadata tab
+			std::string wrapperValue( "" );
+			BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, inputProperties.getDataMap() )
 			{
-				flux << inputProperties.videoStreams.at( videoStreamIndex ) << std::endl;
+				wrapperValue += pair.first + ": " + pair.second + "\n";
 			}
-			_paramMetaDataVideo->setValue( flux.str() );
-
-			flux.str( "" ); flux.clear();
-			for( size_t audioStreamIndex = 0; audioStreamIndex < inputProperties.audioStreams.size(); ++audioStreamIndex )
+			if( ! wrapperValue.empty() )
 			{
-				flux << inputProperties.audioStreams.at( audioStreamIndex ) << std::endl;
+				_paramMetaDataWrapper->setIsSecret( false );
+				_paramMetaDataWrapper->setValue( wrapperValue );
 			}
-			_paramMetaDataAudio->setValue( flux.str() );
 
-			flux.str( "" ); flux.clear();
-			for( size_t dataStreamIndex = 0; dataStreamIndex < inputProperties.dataStreams.size(); ++dataStreamIndex )
+			// update video of Metadata tab
+			std::string videoValue( "" );
+			BOOST_FOREACH( const avtranscoder::VideoProperties& videoStream, inputProperties.videoStreams )
 			{
-				flux << inputProperties.dataStreams.at( dataStreamIndex ) << std::endl;
+				videoValue += "::::: VIDEO STREAM ::::: \n";
+				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, videoStream.getDataMap() )
+				{
+					videoValue += pair.first + ": " + pair.second + "\n";
+				}
+				videoValue += "\n\n";
 			}
-			_paramMetaDataData->setValue( flux.str() );
+			if( ! videoValue.empty() )
+			{
+				_paramMetaDataVideo->setIsSecret( false );
+				_paramMetaDataVideo->setValue( videoValue );
+			}
 
-			flux.str( "" ); flux.clear();
-			for( size_t subtitleStreamIndex = 0; subtitleStreamIndex < inputProperties.subtitleStreams.size(); ++subtitleStreamIndex )
+			// update audio of Metadata tab
+			std::string audioValue( "" );
+			BOOST_FOREACH( const avtranscoder::AudioProperties& audioStream, inputProperties.audioStreams )
 			{
-				flux << inputProperties.subtitleStreams.at( subtitleStreamIndex ) << std::endl;
+				audioValue += "::::: AUDIO STREAM ::::: \n";
+				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, audioStream.getDataMap() )
+				{
+					audioValue += pair.first + ": " + pair.second + "\n";
+				}
+				audioValue += "\n\n";
 			}
-			_paramMetaDataSubtitle->setValue( flux.str() );
-
-			flux.str( "" ); flux.clear();
-			for( size_t attachementStreamIndex = 0; attachementStreamIndex < inputProperties.attachementStreams.size(); ++attachementStreamIndex )
+			if( ! audioValue.empty() )
 			{
-				flux << inputProperties.attachementStreams.at( attachementStreamIndex ) << std::endl;
+				_paramMetaDataAudio->setIsSecret( false );
+				_paramMetaDataAudio->setValue( audioValue );
 			}
-			_paramMetaDataAttachement->setValue( flux.str() );
-
-			flux.str( "" ); flux.clear();
-			for( size_t unknownStreamIndex = 0; unknownStreamIndex < inputProperties.unknownStreams.size(); ++unknownStreamIndex )
+			
+			// update data of Metadata tab
+			std::string dataValue( "" );
+			BOOST_FOREACH( const avtranscoder::DataProperties& dataStream, inputProperties.dataStreams )
 			{
-				flux << inputProperties.unknownStreams.at( unknownStreamIndex ) << std::endl;
+				dataValue += "::::: DATA STREAM ::::: \n";
+				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, dataStream.getDataMap() )
+				{
+					dataValue += pair.first + ": " + pair.second + "\n";
+				}
+				dataValue += "\n\n";
 			}
-			_paramMetaDataUnknown->setValue( flux.str() );
+			if( ! dataValue.empty() )
+			{
+				_paramMetaDataData->setIsSecret( false );
+				_paramMetaDataData->setValue( dataValue );
+			}
+			
+			// update subtitle of Metadata tab
+			std::string subtitleValue( "" );
+			BOOST_FOREACH( const avtranscoder::SubtitleProperties& subtitleStream, inputProperties.subtitleStreams )
+			{
+				subtitleValue += "::::: SUBTITLE STREAM ::::: \n";
+				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, subtitleStream.getDataMap() )
+				{
+					subtitleValue += pair.first + ": " + pair.second + "\n";
+				}
+				subtitleValue += "\n\n";
+			}
+			if( ! subtitleValue.empty() )
+			{
+				_paramMetaDataSubtitle->setIsSecret( false );
+				_paramMetaDataSubtitle->setValue( subtitleValue );
+			}
+			
+			// update attachement of Metadata tab
+			std::string attachementValue( "" );
+			BOOST_FOREACH( const avtranscoder::AttachementProperties& attachementStream, inputProperties.attachementStreams )
+			{
+				attachementValue += "::::: ATTACHEMENT STREAM ::::: \n";
+				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, attachementStream.getDataMap() )
+				{
+					attachementValue += pair.first + ": " + pair.second + "\n";
+				}
+				attachementValue += "\n\n";
+			}
+			if( ! attachementValue.empty() )
+			{
+				_paramMetaDataAttachement->setIsSecret( false );
+				_paramMetaDataAttachement->setValue( attachementValue );
+			}
+			
+			// update unknown of Metadata tab
+			std::string unknownValue( "" );
+			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, inputProperties.unknownStreams )
+			{
+				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
+				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, unknownStream.getDataMap() )
+				{
+					unknownValue += pair.first + ": " + pair.second + "\n";
+				}
+				unknownValue += "\n\n";
+			}
+			if( ! unknownValue.empty() )
+			{
+				_paramMetaDataUnknown->setIsSecret( false );
+				_paramMetaDataUnknown->setValue( unknownValue );
+			}
 
 			// update format details parameters
 			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
@@ -239,14 +313,14 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramVideoStreamIndex->setRange( 0, 100. );
 			_paramVideoStreamIndex->setDisplayRange( 0, 16 );
 
-			_paramMetaDataWrapper->setValue( _paramMetaDataWrapper->getDefault() );
-			_paramMetaDataVideo->setValue( _paramMetaDataVideo->getDefault() );
-			_paramMetaDataAudio->setValue( _paramMetaDataAudio->getDefault() );
-			_paramMetaDataData->setValue( _paramMetaDataData->getDefault() );
-			_paramMetaDataSubtitle->setValue( _paramMetaDataSubtitle->getDefault() );
-			_paramMetaDataAttachement->setValue( _paramMetaDataAttachement->getDefault() );
-			_paramMetaDataUnknown->setValue( _paramMetaDataUnknown->getDefault() );
-			
+			_paramMetaDataWrapper->setIsSecret( true );
+			_paramMetaDataVideo->setIsSecret( true );
+			_paramMetaDataAudio->setIsSecret( true );
+			_paramMetaDataData->setIsSecret( true );
+			_paramMetaDataSubtitle->setIsSecret( true );
+			_paramMetaDataAttachement->setIsSecret( true );
+			_paramMetaDataUnknown->setIsSecret( true );
+
 			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
 			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, "", common::kPrefixFormat );
 			
