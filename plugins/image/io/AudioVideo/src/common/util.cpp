@@ -158,6 +158,10 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 			}
 			case avtranscoder::TypeChoice:
 			{
+				// avoid warning of Host when OFX Choice parameter with no choices
+				if( ! option.getNbChilds() )
+					continue;
+
 				_paramChoice.push_back( plugin.fetchChoiceParam( name ) );
 				_childsPerChoice.insert( common::CustomParams::ChildsForChoice( name, common::CustomParams::ChildList() ) );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
@@ -257,6 +261,10 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 			case avtranscoder::TypeChoice:
 			{
+				// avoid warning of Host when OFX Choice parameter with no choices
+				if( ! option.getNbChilds() )
+					continue;
+
 				OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam( name );
 				choiceParam->setDefault( option.getDefaultChildIndex() );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
