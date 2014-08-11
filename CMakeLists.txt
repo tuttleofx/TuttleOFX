@@ -4,3 +4,4 @@ project (TuttleOFX)
 
 add_subdirectory(libraries/tuttle)
 add_subdirectory(plugins)
+add_subdirectory(applications)

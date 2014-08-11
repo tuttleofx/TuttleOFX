@@ -43,6 +43,9 @@ if (Boost_FOUND)
   if(APPLE)
       set_target_properties(tuttleHost PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
   endif(APPLE)
+  if (UNIX)
+      target_link_libraries(tuttleHost dl)
+  endif(UNIX)
 
   # Adds a support library for plugins
   # only compile object files, and use them at link time
