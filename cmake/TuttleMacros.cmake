@@ -104,10 +104,6 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
         # QUIET mode cause the package name can be a target
         # defined previously.
         find_package(${PACKAGE_NAME} ${ARGN} QUIET)
-        #if(TARGET ${PACKAGE_NAME})
-        #    message("adding dependency ${PLUGIN_TARGET} ${PACKAGE_NAME}")
-        #    add_dependencies(${PLUGIN_TARGET} ${PACKAGE_NAME})
-        #endif(TARGET ${PACKAGE_NAME})
         
         # Test both lower and upper case FOUND variable ie.
         # MyLib_FOUND and MYLIB_FOUND 
@@ -198,9 +194,13 @@ endfunction(add_tuttle_executable)
 
 # Add libraries to an executable.
 function(tuttle_executable_add_library TARGET PACKAGE)
-    # Equivalent to plugin add library
-    # if package is a target
-    tuttle_ofx_plugin_add_library(${TARGET} ${PACKAGE} ${ARGN}) 
-
+    # FIXME: find a way of treating targets and internal package
+    # May be by removing sequenceParser as a external dep
+    if(${PACKAGE} STREQUAL "tuttleHost")
+        target_link_libraries(${TARGET} ${PACKAGE})
+    else(${PACKAGE} STREQUAL "tuttleHost")
+        # Equivalent to plugin add library
+        tuttle_ofx_plugin_add_library(${TARGET} ${PACKAGE} ${ARGN}) 
+    endif(${PACKAGE} STREQUAL "tuttleHost")
 endfunction(tuttle_executable_add_library)
 
