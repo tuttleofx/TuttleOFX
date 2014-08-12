@@ -5,6 +5,7 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
+#include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
 #include <AvTranscoder/File/OutputFile.hpp>
 #include <AvTranscoder/Transcoder/Transcoder.hpp>
 #include <AvTranscoder/EssenceStream/DummyVideo.hpp>
@@ -40,7 +41,7 @@ struct AVProcessParams
 	std::string _videoPixelFormatName; /// videoPixelFormat name
 	std::string _audioSampleFormatName; /// audioSampleFormat name
 
-	std::map< std::string, std::string > _metadatas;
+	avtranscoder::MetadatasMap _metadatas;
 };
 
 /**

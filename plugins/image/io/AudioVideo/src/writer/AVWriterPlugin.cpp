@@ -2,7 +2,6 @@
 #include "AVWriterProcess.hpp"
 #include "AVWriterDefinitions.hpp"
 
-#include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
 #include <AvTranscoder/ProgressListener.hpp>
 
 #include <boost/foreach.hpp>
@@ -10,6 +9,7 @@
 
 #include <cctype>
 #include <sstream>
+#include <utility>
 
 namespace tuttle {
 namespace plugin {
@@ -201,8 +201,8 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 		if( parameter->getValue().size() > 0 )
 		{
 			std::string ffmpegKey = parameter->getName();
-			ffmpegKey.erase( 0, 5 );
-			params._metadatas[ ffmpegKey ] = parameter->getValue();
+			ffmpegKey.erase( 0, 2 ); // remove prefix "m_"
+			params._metadatas.push_back( std::pair<std::string, std::string>( ffmpegKey, parameter->getValue() ) );
 		}
 	}
 	return params;
@@ -530,7 +530,9 @@ void AVWriterPlugin::initOutput()
 		}
 		
 		_outputFile->setProfile( profile );
-		
+
+		_outputFile->addMetadata( params._metadatas );
+
 		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
 	}
 	catch( std::exception& e )

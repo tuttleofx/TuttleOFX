@@ -474,6 +474,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		metaParam->setHint( ritHint->second );
 		metaParam->setParent( metaGroup );
 
+		// warning: value overwrite by ffmpeg (Lavfxx.xx.xxx)
 		if( ritKeys->first == kParamMetaEncoder )
 		{
 			std::ostringstream os;
