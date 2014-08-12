@@ -1,5 +1,5 @@
 # Macros used to create an openfx plugin with tuttle
-include(OFXPluginMacros)
+include(TuttleMacros)
 
 # Declare the plugin
 # TODO : the reader is not taken into account.

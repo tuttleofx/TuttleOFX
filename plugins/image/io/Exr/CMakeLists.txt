@@ -1,6 +1,6 @@
 
 # Macros used to create an openfx plugin with tuttle
-include(OFXPluginMacros)
+include(TuttleMacros)
 
 tuttle_ofx_plugin_target(Exr)
 

@@ -1,7 +1,8 @@
+
 # Custom macros, UseOfxpp UseTerry
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-# Return OFX architecture
+# Returns architecture as defined by the OFX standard
 function(tuttle_ofx_architecture ARCH)
     # use ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}
     # message("ARCH=${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
@@ -24,11 +25,6 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
     # FIXME: Why ? what are we including here ? common ??
     include_directories(${PROJECT_SOURCE_DIR}/libraries/tuttle/src/)
     include(UseTuttleBoost) 
-    # Use Boost as openfxHack depends on it
-    #set(Boost_USE_STATIC_LIBS OFF)
-    #set(Boost_USE_MULTITHREADED OFF) 
-    #find_package(Boost 1.53.0
-    #    COMPONENTS regex date_time chrono thread serialization system filesystem atomic log program_options timer)
     if(TuttleBoost_FOUND)
         include_directories(${Boost_INCLUDE_DIRS}) 
 
@@ -105,13 +101,19 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
     
     if(TARGET ${PLUGIN_TARGET})
         message("Looking for package ${PACKAGE_NAME}")
-        find_package(${PACKAGE_NAME} ${ARGN})
+        # QUIET mode cause the package name can be a target
+        # defined previously.
+        find_package(${PACKAGE_NAME} ${ARGN} QUIET)
+        #if(TARGET ${PACKAGE_NAME})
+        #    message("adding dependency ${PLUGIN_TARGET} ${PACKAGE_NAME}")
+        #    add_dependencies(${PLUGIN_TARGET} ${PACKAGE_NAME})
+        #endif(TARGET ${PACKAGE_NAME})
         
         # Test both lower and upper case FOUND variable ie.
         # MyLib_FOUND and MYLIB_FOUND 
         # as it seems that there is no norm
         string(TOUPPER ${PACKAGE_NAME} PACKAGE_UNAME)
-        if(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND)
+        if(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND OR TARGET ${PACKAGE_NAME})
             message("found ${PACKAGE_NAME}")
         
             tuttle_find_package_paths(${PACKAGE_NAME} incvars libpaths libvars)
@@ -128,11 +130,14 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
                 target_link_libraries(${PLUGIN_TARGET} ${${var}})
                 message("library: ${${var}}")
             endforeach()
-        else(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND)
-            message("package ${PACKAGE_NAME} not found, plugin ${PLUGIN_TARGET} will not be built")
+          
+        else(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND OR TARGET ${PACKAGE_NAME})
+            
+            message("package ${PACKAGE_NAME} not found, target ${PLUGIN_TARGET} will not be built")
             # Removes the target from the build and install if a lib is missing
             set_target_properties(${PLUGIN_TARGET} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
-        endif(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND)
+
+        endif(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND OR TARGET ${PACKAGE_NAME})
     else(TARGET ${PLUGIN_TARGET})
         message("${PLUGIN_TARGET} not found")
     endif(TARGET ${PLUGIN_TARGET})
@@ -144,3 +149,58 @@ function(tuttle_ofx_plugin_add_libraries PLUGIN_TARGET PLUGIN_LIBRARIES)
     tuttle_ofx_plugin_add_library(${PLUGIN_TARGET} ${lib})
   endforeach()
 endfunction(tuttle_ofx_plugin_add_libraries)
+
+
+# Add an executable using tuttle libraries
+
+function(add_tuttle_executable TARGET SOURCES)
+  
+  # It needs boost libraries
+  include(UseTuttleBoost)
+  
+  # Set RPATH flags
+  set(CMAKE_MACOSX_RPATH 1)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  if(TuttleBoost_FOUND)
+      include_directories(${Boost_INCLUDE_DIRS}) 
+      include_directories(${PROJECT_SOURCE_DIR}/libraries/tuttle/src) 
+
+      # OpenFX and Terry 
+      include(UseOfxpp)
+      include(UseTerry)
+
+      # to include applications/common folder.
+      # unfortunatelly common is in the prefix of all includes 
+      include_directories(${PROJECT_SOURCE_DIR}/applications/sam/src)
+
+      message("=== Executable ${TARGET} ===")
+      add_executable(${TARGET} ${SOURCES} $<TARGET_OBJECTS:tuttleCommon>)
+
+      # Link with libraries
+      target_link_libraries(${TARGET} ${Boost_LIBRARIES} dl)
+
+      # RPATH
+      if (APPLE)
+          set_target_properties(${TARGET} 
+            PROPERTIES INSTALL_RPATH "@loader_path/../lib")
+      else(APPLE)
+          set_target_properties(${TARGET}
+            PROPERTIES INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN")
+      endif(APPLE)
+
+      # Install
+      install(TARGETS ${TARGET} 
+                      DESTINATION bin)
+    endif(TuttleBoost_FOUND)
+endfunction(add_tuttle_executable)
+
+# Add libraries to an executable.
+function(tuttle_executable_add_library TARGET PACKAGE)
+    # Equivalent to plugin add library
+    # if package is a target
+    tuttle_ofx_plugin_add_library(${TARGET} ${PACKAGE} ${ARGN}) 
+
+endfunction(tuttle_executable_add_library)
+

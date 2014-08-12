@@ -1,6 +1,6 @@
 
 # Macros used to create an openfx plugin with tuttle
-include(OFXPluginMacros)
+include(TuttleMacros)
 
 # Declare the plugin
 tuttle_ofx_plugin_target(CheckerBoard)

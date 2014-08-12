@@ -57,6 +57,9 @@ if (TuttleBoost_FOUND)
   set_target_properties(tuttlePluginLib
                         PROPERTIES COMPILE_FLAGS "-fPIC")
 
+  # Add a target with only object files to avoid recompiling sequence parser
+  # multiple times
+  add_library(sequenceParser STATIC ${SEQUENCEPARSER_FILES}) 
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/)
@@ -70,8 +73,6 @@ if (TuttleBoost_FOUND)
   install(FILES ${Boost_REALPATH_LIBRARIES}
           DESTINATION lib/
           NAMELINK_SKIP)
-  # Is CPack needed ?
-  #include(CPack)
 
   # Python bindings with Swig 
   find_package(SWIG)
