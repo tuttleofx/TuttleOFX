@@ -16,12 +16,8 @@ include_directories(src)
 file(GLOB_RECURSE TUTTLE_HOST_SRC_FILES src/tuttle/host/*.?pp src/tuttle/common/*.?pp)
 
 # Boost dependencies
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED OFF) 
-find_package(Boost 1.55.0 
-    COMPONENTS regex date_time chrono thread serialization system filesystem atomic log program_options timer)
-
-if (Boost_FOUND) 
+include(UseTuttleBoost)
+if (TuttleBoost_FOUND) 
   include_directories(${Boost_INCLUDE_DIRS}) 
   
   # OpenFX and Terry rely on boost
@@ -52,11 +48,15 @@ if (Boost_FOUND)
             PROPERTIES INSTALL_RPATH "$ORIGIN")
   endif(UNIX AND NOT APPLE)
 
-  # Adds a support library for plugins
+  # Adds a support library for common and plugins
   # only compile object files, and use them at link time
+  add_library(tuttleCommon OBJECT ${TUTTLE_COMMON_FILES}) 
+  set_target_properties(tuttleCommon
+                        PROPERTIES COMPILE_FLAGS "-fPIC")
   add_library(tuttlePluginLib OBJECT ${OFXPP_FILES} ${SEQUENCEPARSER_FILES}) 
   set_target_properties(tuttlePluginLib
                         PROPERTIES COMPILE_FLAGS "-fPIC")
+
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/)
@@ -85,7 +85,7 @@ if (Boost_FOUND)
     include_directories(${PYTHON_INCLUDE_DIRS})
   
     # Find numpy headers
-    # TODO is numpy is not found, remove source files using it
+    # TODO is numpy is not found, remove source files using it from build
     find_package(Numpy)
     include_directories(${NUMPY_INCLUDE_DIR})
   
@@ -93,8 +93,6 @@ if (Boost_FOUND)
     set(CMAKE_SWIG_FLAGS -c++ -threads)
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
     # FIXME : do we need a python package as before ?
-    #list(APPEND options --package pyTuttle)
-    #set_source_files_properties(${TUTTLE_PYTHON_BINDING_FILE} PROPERTIES SWIG_FLAGS "${options}") 
     set_source_files_properties(${TUTTLE_PYTHON_BINDING_FILE} PROPERTIES CPLUSPLUS ON) 
 
     # Create the output dir as it's not done automatically by cmake
@@ -122,4 +120,4 @@ if (Boost_FOUND)
     message("SWIG not found, will not build python bindings")
   endif(SWIG_FOUND)
 
-endif(Boost_FOUND)
+endif(TuttleBoost_FOUND)

@@ -16,7 +16,7 @@ if(TuttleBoost_FOUND)
   # OpenFX and Terry rely on boost
   include(UseOfxpp)
   include(UseTerry)
-  
+
   # to include common folder, we include current folder.
   # unfortunatelly common is prefixed in all include<> 
   include_directories(${PROJECT_SOURCE_DIR}/applications/sam/src)
@@ -27,10 +27,10 @@ function(add_tuttle_executable TARGET SOURCES)
 
   if(TuttleBoost_FOUND)
       message("=== Executable ${TARGET} ===")
-      add_executable(${TARGET} ${SOURCES})
+      add_executable(${TARGET} ${SOURCES} $<TARGET_OBJECTS:tuttleCommon>)
 
       # Link with libraries
-      target_link_libraries(${TARGET} tuttleHost)
+      target_link_libraries(${TARGET} ${Boost_LIBRARIES} dl)
 
       # RPATH
       if (APPLE)

@@ -8,4 +8,6 @@ find_package(Boost 1.55.0
 
 if (Boost_FOUND) 
   set(TuttleBoost_FOUND 1)
+else(Boost_FOUND)
+    message("please set BOOST_ROOT environment variable to a proper boost install")
 endif(Boost_FOUND)
