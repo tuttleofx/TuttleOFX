@@ -55,6 +55,7 @@ static const std::string kParamAudioTranscodeStream      = "audioTranscodeStream
 static const std::string kParamAudioPreset               = "audioPreset";
 static const std::string kParamAudioSelectChannel        = "audioSelectChannel";
 static const std::string kParamAudioChannelIndex         = "audioChannelIndex";
+static const std::string kParamAudioOffset               = "audioOffset";
 
 static const size_t maxNbAudioStream                     = 16;
 

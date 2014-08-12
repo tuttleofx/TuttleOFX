@@ -100,6 +100,11 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		audioChannelIndexName << "_" << idAudioStream;
 		_paramAudioChannelIndex.push_back( fetchIntParam( audioChannelIndexName.str() ) );
 		_paramAudioChannelIndex.back()->setIsSecretAndDisabled( false );
+
+		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
+		audioOffsetName << "_" << idAudioStream;
+		_paramAudioOffset.push_back( fetchIntParam( audioOffsetName.str() ) );
+		_paramAudioOffset.back()->setIsSecretAndDisabled( false );
 	}
 	updateAudioParams();
 	
@@ -266,6 +271,7 @@ void AVWriterPlugin::updateAudioParams()
 		_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioSelectChannel.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioOffset.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
 	}
 	updateAudioSilent();
 }
@@ -285,6 +291,7 @@ void AVWriterPlugin::updateAudioSilent()
 			_paramAudioSelectChannel.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
+			_paramAudioOffset.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
 		}
 	}
 	updateAudioSelectStream();
@@ -318,6 +325,7 @@ void AVWriterPlugin::updateAudioTranscodeStream()
 			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( ! isTranscode );
 			_paramAudioSelectChannel.at( idAudioStream )->setIsSecretAndDisabled( ! isTranscode );
 			_paramAudioChannelIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isTranscode );
+			_paramAudioOffset.at( idAudioStream )->setIsSecretAndDisabled( ! isTranscode );
 		}
 	}
 	updateAudioSelectChannel();
@@ -713,19 +721,20 @@ void AVWriterPlugin::initAudio()
 				{
 					bool selectOneChannel = _paramAudioSelectChannel.at( i )->getValue();
 					size_t subStream = selectOneChannel ? _paramAudioChannelIndex.at( i )->getValue() : -1;
-					
+					size_t offset = _paramAudioOffset.at( i )->getValue();
+
 					// custom audio preset
 					if( presetIndex == 0 && mainPresetIndex == 0 )
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile, offset );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, profile );
+								_transcoder->add( inputFileName, streamIndex, subStream, profile, offset );
 							}
 						}
 					}
@@ -734,13 +743,13 @@ void AVWriterPlugin::initAudio()
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName, offset );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, presetName );
+								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offset );
 							}
 						}
 					}

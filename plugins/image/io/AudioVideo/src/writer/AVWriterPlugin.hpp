@@ -111,6 +111,7 @@ public:
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
 	std::vector<OFX::BooleanParam*> _paramAudioSelectChannel;
 	std::vector<OFX::IntParam*> _paramAudioChannelIndex;
+	std::vector<OFX::IntParam*> _paramAudioOffset;
 	
 	// custom params
 	OFX::BooleanParam* _paramUseCustomFps;
