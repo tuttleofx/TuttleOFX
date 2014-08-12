@@ -14,11 +14,9 @@
 #include <AvTranscoder/Profile.hpp>
 
 #include <boost/scoped_ptr.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <string>
 #include <vector>
-#include <utility> // pair
 
 namespace tuttle {
 namespace plugin {
