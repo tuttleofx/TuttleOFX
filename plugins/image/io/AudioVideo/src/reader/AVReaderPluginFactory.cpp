@@ -124,6 +124,28 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionLoader::OptionArray videoOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	common::addOptionsToGroup( desc, videoGroup, videoOptions, common::kPrefixVideo );
 	
+	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
+	useCustomSAR->setLabel( "Override SAR" );
+	useCustomSAR->setDefault( false );
+	useCustomSAR->setHint( "Override the file SAR (Storage Aspect Ratio) with a custom SAR value." );
+	useCustomSAR->setParent( videoGroup );
+
+	OFX::DoubleParamDescriptor* customSAR = desc.defineDoubleParam( kParamCustomSAR );
+	customSAR->setLabel( "Custom SAR" );
+	customSAR->setDefault( 1.0 );
+	customSAR->setDisplayRange( 0., 3. );
+	customSAR->setRange( 0., 10. );
+	customSAR->setHint( "Choose a custom value to override the file SAR (Storage Aspect Ratio). Maximum value: 10." );
+	customSAR->setParent( videoGroup );
+
+	OFX::IntParamDescriptor* streamIndex = desc.defineIntParam( kParamVideoStreamIndex );
+	streamIndex->setLabel( kParamVideoStreamIndexLabel );
+	streamIndex->setDefault( 0 );
+	streamIndex->setDisplayRange( 0., 16. );
+	streamIndex->setRange( 0., 100. );
+	streamIndex->setHint( "Choose a custom value to decode the video stream you want. Maximum value: 100." );
+	streamIndex->setParent( videoGroup );
+
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
 	videoDetailledGroup->setAsTab( );
@@ -177,26 +199,6 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	metaDataUnknown->setEnabled( false );
 	metaDataUnknown->setStringType( OFX::eStringTypeMultiLine );
 	metaDataUnknown->setParent( metaGroup );
-
-	// OTHER
-	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
-	useCustomSAR->setLabel( "Override SAR" );
-	useCustomSAR->setDefault( false );
-	useCustomSAR->setHint( "Override the file SAR (Storage Aspect Ratio) with a custom SAR value." );
-
-	OFX::DoubleParamDescriptor* customSAR = desc.defineDoubleParam( kParamCustomSAR );
-	customSAR->setLabel( "Custom SAR" );
-	customSAR->setDefault( 1.0 );
-	customSAR->setDisplayRange( 0., 3. );
-	customSAR->setRange( 0., 10. );
-	customSAR->setHint( "Choose a custom value to override the file SAR (Storage Aspect Ratio). Maximum value: 10." );
-	
-	OFX::IntParamDescriptor* streamIndex = desc.defineIntParam( kParamVideoStreamIndex );
-	streamIndex->setLabel( kParamVideoStreamIndexLabel );
-	streamIndex->setDefault( 0 );
-	streamIndex->setDisplayRange( 0., 16. );
-	streamIndex->setRange( 0., 100. );
-	streamIndex->setHint( "Choose a custom value to decode the video stream you want. Maximum value: 100." );
 }
 
 /**
