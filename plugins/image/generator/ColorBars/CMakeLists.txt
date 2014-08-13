@@ -1,4 +1,3 @@
-
 # Macros used to create an openfx plugin with tuttle
 include(TuttleMacros)
 

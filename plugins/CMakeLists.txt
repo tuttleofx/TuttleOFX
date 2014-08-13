@@ -3,9 +3,18 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 add_subdirectory(image/generator/Checkerboard)
 add_subdirectory(image/generator/ColorBars)
+add_subdirectory(image/generator/ColorCube)
+add_subdirectory(image/generator/ColorGradient)
 add_subdirectory(image/io/Dpx)
 add_subdirectory(image/io/Exr)
+add_subdirectory(image/io/Jpeg)
+add_subdirectory(image/io/Jpeg2000)
 add_subdirectory(image/io/ImageMagick)
+add_subdirectory(image/io/MemoryBuffer)
+add_subdirectory(image/io/OpenImageIO)
+
+# FIXME: Check with Clement
+#add_subdirectory(image/io/AudioVideo)
 
 
 # Current directory structure
