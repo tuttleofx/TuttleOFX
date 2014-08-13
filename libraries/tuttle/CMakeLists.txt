@@ -1,4 +1,6 @@
 # CMakeLists.txt for Tuttle host library 
+# This file needs to be split in several simple one
+# The folder tree must be reorganized
 
 # Add custom cmake macros
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -48,31 +50,29 @@ if (TuttleBoost_FOUND)
             PROPERTIES INSTALL_RPATH "$ORIGIN")
   endif(UNIX AND NOT APPLE)
 
-  # Adds a support library for common and plugins
-  # only compile object files, and use them at link time
-  add_library(tuttleCommon OBJECT ${TUTTLE_COMMON_FILES}) 
-  set_target_properties(tuttleCommon
-                        PROPERTIES COMPILE_FLAGS "-fPIC")
-  add_library(tuttlePluginLib OBJECT ${OFXPP_FILES} ${SEQUENCEPARSER_FILES}) 
-  set_target_properties(tuttlePluginLib
-                        PROPERTIES COMPILE_FLAGS "-fPIC")
-
   # Add a target with only object files to avoid recompiling sequence parser
   # multiple times
   add_library(sequenceParser STATIC ${SEQUENCEPARSER_FILES}) 
+  set_target_properties(sequenceParser
+                        PROPERTIES COMPILE_FLAGS "-fPIC")
+  # Adds a support library for common and plugins
+  # only compile object files, and use them at link time
+  add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES}) 
+  set_target_properties(tuttleCommon
+                        PROPERTIES COMPILE_FLAGS "-fPIC")
+  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
+  target_link_libraries(tuttlePluginLib sequenceParser) 
+  set_target_properties(tuttlePluginLib
+                        PROPERTIES COMPILE_FLAGS "-fPIC")
+
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/)
 
   # Install boost library along with tuttle library
   # Need to copy the files pointed by symlinks instead of the symlinks
-  foreach(lib ${Boost_LIBRARIES})
-     get_filename_component(realpath ${lib} REALPATH) 
-     list(APPEND Boost_REALPATH_LIBRARIES ${realpath})
-  endforeach()
-  install(FILES ${Boost_REALPATH_LIBRARIES}
-          DESTINATION lib/
-          NAMELINK_SKIP)
+  include(TuttleMacros)
+  tuttle_install_shared_libs("${Boost_LIBRARIES}")
 
   # Python bindings with Swig 
   find_package(SWIG)
