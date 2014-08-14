@@ -61,7 +61,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
 
         # OpenFX and Terry are used by default
         include(UseOfxpp)
-        include(UseTerry)        
+        include(UseTerry)
 
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} 

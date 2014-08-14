@@ -1,297 +1,69 @@
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+#add_subdirectory(image/io/AudioVideo)
+add_subdirectory(image/Dummy)
+add_subdirectory(image/display/ColorCubeViewer)
+add_subdirectory(image/display/Histogram)
+add_subdirectory(image/display/Viewer)
 add_subdirectory(image/generator/Checkerboard)
 add_subdirectory(image/generator/ColorBars)
 add_subdirectory(image/generator/ColorCube)
 add_subdirectory(image/generator/ColorGradient)
+add_subdirectory(image/generator/ColorWheel)
+add_subdirectory(image/generator/Constant)
+add_subdirectory(image/generator/Ramp)
+add_subdirectory(image/generator/SeExpr)
+add_subdirectory(image/generator/Text)
 add_subdirectory(image/io/Dpx)
 add_subdirectory(image/io/Exr)
+add_subdirectory(image/io/ImageMagick)
 add_subdirectory(image/io/Jpeg)
 add_subdirectory(image/io/Jpeg2000)
-add_subdirectory(image/io/ImageMagick)
 add_subdirectory(image/io/MemoryBuffer)
 add_subdirectory(image/io/OpenImageIO)
-
-# FIXME: Check with Clement
-#add_subdirectory(image/io/AudioVideo)
-
-
-# Current directory structure
-#
-#── image
-#   ├── display
-#   │   ├── ColorCubeViewer
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   ├── Histogram
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   └── Viewer
-#   │       ├── Resources
-#   │       └── src
-#   ├── Dummy
-#   │   ├── Resources
-#   │   └── src
-#   ├── generator
-#   │   ├── Checkerboard
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   ├── ColorBars
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   ├── ColorCube
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   ├── ColorGradient
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   │       └── algorithm
-#   │   ├── ColorWheel
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   ├── Constant
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   ├── Ramp
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   ├── SeExpr
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   └── Text
-#   │       ├── Resources
-#   │       └── src
-#   ├── io
-#   │   ├── AudioVideo
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   │       ├── libav
-#   │   │       ├── reader
-#   │   │       ├── swscale
-#   │   │       └── writer
-#   │   ├── Dpx
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   ├── dpx-google-code
-#   │   │   │   │   └── libdpx
-#   │   │   │   ├── reader
-#   │   │   │   │   └── gil_fixes
-#   │   │   │   └── writer
-#   │   │   └── tests
-#   │   ├── Exr
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   ├── reader
-#   │   │   │   │   └── gil_fixes
-#   │   │   │   └── writer
-#   │   │   └── tests
-#   │   ├── ImageMagick
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   ├── reader
-#   │   │   │   └── writer
-#   │   │   └── tests
-#   │   ├── Jpeg
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   ├── reader
-#   │   │   │   └── writer
-#   │   │   └── tests
-#   │   ├── Jpeg2000
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   ├── openjpeg
-#   │   │   │   ├── reader
-#   │   │   │   └── writer
-#   │   │   └── tests
-#   │   ├── MemoryBuffer
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   │       ├── inputBuffer
-#   │   │       └── outputBuffer
-#   │   ├── OpenImageIO
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   ├── reader
-#   │   │   │   └── writer
-#   │   │   └── tests
-#   │   ├── Png
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   ├── PngEngine
-#   │   │   │   ├── reader
-#   │   │   │   └── writer
-#   │   │   └── tests
-#   │   ├── Raw
-#   │   │   ├── Resources
-#   │   │   ├── src
-#   │   │   │   └── reader
-#   │   │   └── tests
-#   │   ├── test
-#   │   └── TurboJpeg
-#   │       ├── Resources
-#   │       ├── src
-#   │       │   ├── reader
-#   │       │   └── writer
-#   │       └── tests
-#   └── process
-#       ├── channel
-#       │   ├── ChannelShuffle
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   └── Component
-#       │       ├── Resources
-#       │       └── src
-#       ├── color
-#       │   ├── BasicKeyer
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── BitDepth
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── ColorGradation
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Colorspace
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── ColorSpaceKeyer
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── ColorSuppress
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── ColorTransfer
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── ColorTransform
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── CTL
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Gamma
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── HistogramKeyer
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── IdKeyer
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Invert
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Lut
-#       │   │   ├── Resources
-#       │   │   ├── src
-#       │   │   │   └── lutEngine
-#       │   │   └── tests
-#       │   │       └── test1
-#       │   ├── Normalize
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── OCIO
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   │       ├── OCIOColorSpace
-#       │   │       └── OCIOLut
-#       │   └── Print
-#       │       ├── Resources
-#       │       └── src
-#       ├── filter
-#       │   ├── AnisotropicDiffusion
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   │       ├── anisotropicDiffusion
-#       │   │       ├── anisotropicTensors
-#       │   │       └── imageUtils
-#       │   │           └── filters
-#       │   ├── Blur
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Convolution
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── FloodFill
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── LocalMaxima
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── NlmDenoiser
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   │       └── imageUtils
-#       │   ├── Sobel
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   └── Thinning
-#       │       ├── Resources
-#       │       └── src
-#       ├── geometry
-#       │   ├── Crop
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Flip
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── LensDistort
-#       │   │   ├── Resources
-#       │   │   ├── src
-#       │   │   └── tests
-#       │   │       └── src
-#       │   ├── Move2D
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Pinning
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── PushPixel
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   ├── Resize
-#       │   │   ├── Resources
-#       │   │   └── src
-#       │   └── Warp
-#       │       ├── Resources
-#       │       └── src
-#       │           ├── Bezier
-#       │           └── TPS
-#       ├── math
-#       │   └── MathOperator
-#       │       ├── Resources
-#       │       └── src
-#       ├── time
-#       │   └── TimeShift
-#       │       ├── Resources
-#       │       └── src
-#       └── transition
-#           ├── Fade
-#           │   ├── Resources
-#           │   └── src
-#           └── Merge
-#               ├── Resources
-#               └── src
-#── param
-#   ├── analysis
-#   │   ├── Diff
-#   │   │   ├── Resources
-#   │   │   └── src
-#   │   └── ImageStatistics
-#   │       ├── Resources
-#   │       └── src
-#   ├── debug
-#   │   └── DebugImageEffectApi
-#   │       ├── Resources
-#   │       └── src
-#   └── Math
-#       └── src
-#── private
-#── _scripts
-#   └── ImageEffectApi
-#       ├── Resources
-#       └── src
-
-#74 directories
+add_subdirectory(image/io/Png)
+add_subdirectory(image/io/Raw)
+add_subdirectory(image/io/TurboJpeg)
+add_subdirectory(image/process/channel/ChannelShuffle)
+add_subdirectory(image/process/channel/Component)
+add_subdirectory(image/process/color/BasicKeyer)
+add_subdirectory(image/process/color/BitDepth)
+add_subdirectory(image/process/color/CTL)
+add_subdirectory(image/process/color/ColorGradation)
+add_subdirectory(image/process/color/ColorSpaceKeyer)
+add_subdirectory(image/process/color/ColorSuppress)
+add_subdirectory(image/process/color/ColorTransfer)
+add_subdirectory(image/process/color/ColorTransform)
+add_subdirectory(image/process/color/Colorspace)
+add_subdirectory(image/process/color/Gamma)
+add_subdirectory(image/process/color/HistogramKeyer)
+add_subdirectory(image/process/color/IdKeyer)
+add_subdirectory(image/process/color/Invert)
+add_subdirectory(image/process/color/Lut)
+add_subdirectory(image/process/color/Normalize)
+add_subdirectory(image/process/color/OCIO)
+add_subdirectory(image/process/color/Print)
+add_subdirectory(image/process/filter/AnisotropicDiffusion)
+add_subdirectory(image/process/filter/Blur)
+add_subdirectory(image/process/filter/Convolution)
+add_subdirectory(image/process/filter/FloodFill)
+add_subdirectory(image/process/filter/LocalMaxima)
+add_subdirectory(image/process/filter/NlmDenoiser)
+add_subdirectory(image/process/filter/Sobel)
+add_subdirectory(image/process/filter/Thinning)
+add_subdirectory(image/process/geometry/Crop)
+add_subdirectory(image/process/geometry/Flip)
+add_subdirectory(image/process/geometry/LensDistort)
+add_subdirectory(image/process/geometry/Move2D)
+add_subdirectory(image/process/geometry/Pinning)
+add_subdirectory(image/process/geometry/PushPixel)
+add_subdirectory(image/process/geometry/Resize)
+add_subdirectory(image/process/geometry/Warp)
+add_subdirectory(image/process/math/MathOperator)
+add_subdirectory(image/process/time/TimeShift)
+add_subdirectory(image/process/transition/Fade)
+add_subdirectory(image/process/transition/Merge)
+add_subdirectory(param/analysis/Diff)
+add_subdirectory(param/analysis/ImageStatistics)
+add_subdirectory(param/debug/DebugImageEffectApi)
