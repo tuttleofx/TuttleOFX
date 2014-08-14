@@ -64,9 +64,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         include(UseTerry)
 
         # Plugin target is a shared library
-        add_library(${PLUGIN_NAME} 
-            MODULE ${PLUGIN_SOURCES})
-        #MODULE ${PLUGIN_SOURCES} $<TARGET_OBJECTS:tuttlePluginLib> $<TARGET_OBJECTS:tuttleCommon>)
+        add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
         target_link_libraries(${PLUGIN_NAME} ${Boost_LIBRARIES} tuttlePluginLib tuttleCommon)
         set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX .ofx)
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
@@ -87,8 +85,6 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # http://openfx.sourceforge.net/Documentation/1.3/Reference/ch02s02.html
         set(OFX_PLUGIN_ROOT ${CMAKE_INSTALL_PREFIX}/OFX/${PLUGIN_NAME}.ofx.bundle/Contents)
         tuttle_ofx_architecture(OFX_ARCH)
-        # TODO : should install Resources only if target is installed, not always
-        # may be a separate install command should be used ?
         install(DIRECTORY Resources DESTINATION ${OFX_PLUGIN_ROOT})
         install(TARGETS ${PLUGIN_NAME} 
             DESTINATION ${OFX_PLUGIN_ROOT}/${OFX_ARCH} OPTIONAL)
@@ -97,7 +93,6 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
         set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
         set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-        #message(STATUS "sources: ${PLUGIN_SOURCES}")
 
     endif(TuttleBoost_FOUND)
 endfunction(tuttle_ofx_plugin_target)
@@ -128,7 +123,6 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
         message("Looking for package ${PACKAGE_NAME}")
         # QUIET mode cause the package name can be a target
         # defined previously.
-        #find_package(${PACKAGE_NAME} ${ARGN} QUIET)
         find_package(${PACKAGE_NAME} ${ARGN})
         
         # Test both lower and upper case FOUND variable ie.
@@ -151,9 +145,7 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
                 message("lib path: ${${var}}")
             endforeach()
             foreach(var ${libvars})
-                #foreach(lib ${${var}})
-                    tuttle_install_shared_libs("${${var}}") 
-                    #endforeach(lib ${var})
+                tuttle_install_shared_libs("${${var}}") 
                 message("libraries: ${${var}}")
                 target_link_libraries(${PLUGIN_TARGET} ${${var}})
             endforeach()
@@ -163,7 +155,7 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
             message("package ${PACKAGE_NAME} not found, target ${PLUGIN_TARGET} will not be built")
             # Removes the target from the build and install if a lib is missing
             set_target_properties(${PLUGIN_TARGET} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
-
+            set_directory_properties(DIRECTORY Resources PROPERTIES EXCLUDE_FROM_ALL 1)
         endif(${PACKAGE_UNAME}_FOUND OR ${PACKAGE_NAME}_FOUND)
     else(TARGET ${PLUGIN_TARGET})
         message("${PLUGIN_TARGET} not found")
@@ -179,7 +171,6 @@ endfunction(tuttle_ofx_plugin_add_libraries)
 
 
 # Add an executable using tuttle libraries
-
 function(add_tuttle_executable TARGET SOURCES)
     # It needs boost libraries
     include(UseTuttleBoost)
@@ -202,7 +193,6 @@ function(add_tuttle_executable TARGET SOURCES)
         include_directories(${PROJECT_SOURCE_DIR}/applications/sam/src)
 
         message("=== Executable ${TARGET} ===")
-        #add_executable(${TARGET} ${SOURCES} $<TARGET_OBJECTS:tuttleCommon>)
         add_executable(${TARGET} ${SOURCES})
 
         # Link with libraries
