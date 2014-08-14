@@ -1,6 +1,7 @@
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+# Discuss with Clement for avTranscoder AudioVideo plugin
 #add_subdirectory(image/io/AudioVideo)
 add_subdirectory(image/Dummy)
 add_subdirectory(image/display/ColorCubeViewer)
@@ -14,7 +15,9 @@ add_subdirectory(image/generator/ColorWheel)
 add_subdirectory(image/generator/Constant)
 add_subdirectory(image/generator/Ramp)
 add_subdirectory(image/generator/SeExpr)
-add_subdirectory(image/generator/Text)
+# Discuss with Fabien as Text plugins depends on
+# python and boost::python
+#add_subdirectory(image/generator/Text)
 add_subdirectory(image/io/Dpx)
 add_subdirectory(image/io/Exr)
 add_subdirectory(image/io/ImageMagick)
