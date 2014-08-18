@@ -4,7 +4,6 @@
 #include "SwscaleDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <libav/LibAV.hpp>
 
 namespace tuttle {
 namespace plugin {
