@@ -13,7 +13,6 @@ namespace text {
 struct TextProcessParams
 {
 	std::string    _text;
-	bool           _isExpression;
 
 	std::string    _fontPath;
 	int            _font;
@@ -58,7 +57,6 @@ private:
 
 public:
 	OFX::StringParam*   _paramText; ///< the text to rasterize in the image
-	OFX::BooleanParam*  _paramIsExpression;
 
 	OFX::StringParam*   _paramFontPath;
 #ifndef __WINDOWS__

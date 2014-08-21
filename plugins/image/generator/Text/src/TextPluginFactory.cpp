@@ -61,16 +61,6 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	text->setLabel( "Text" );
 	text->setStringType( OFX::eStringTypeMultiLine );
 
-	OFX::BooleanParamDescriptor* isExpression = desc.defineBooleanParam( kParamIsExpression );
-	isExpression->setLabel( "Expression" );
-	isExpression->setHint( "If you check this parameter the text must be a python code.\n"
-	                       "The final result must be in a variable with the name of the parameter.\n"
-	                       "Example:\n"
-	                       "text = 'text=\"str(tuttleArgs().time)\"\n"
-	                       "or\n"
-	                       "text = 'text=\"tuttleArgs().timecode()\"\n"
-	                       );
-	isExpression->setDefault( false );
 	
 
 	OFX::StringParamDescriptor* fontFile = desc.defineStringParam( kParamFontPath );

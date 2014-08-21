@@ -70,10 +70,7 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	
 	_params = _plugin.getProcessParams( args.renderScale );
 	
-	if( ! _params._isExpression )
-	{
-		_text = _params._text;
-	}
+	_text = _params._text;
 	
 	//Step 1. Create terry image
 	//Step 2. Initialize freetype
