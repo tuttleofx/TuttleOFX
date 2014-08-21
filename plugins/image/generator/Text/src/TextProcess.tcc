@@ -1,9 +1,3 @@
-//#include <boost/python.hpp>
-// From Boost.Python:
-// The rule is that <Python.h> must be included before any system
-// headers (so it can get control over some awful macros).
-//#include <Python.h> // Need to be included, because it is not always included by "boost/python.hpp".
-
 #include "TextPlugin.hpp"
 #include "TextProcess.hpp"
 #include "TextDefinitions.hpp"
@@ -80,96 +74,6 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	{
 		_text = _params._text;
 	}
-	//else
-	//{
-	//	try
-	//	{
-	//		std::ostringstream context;
-	//		context << "def _timecode(time_sec, time_frame, fps):" << std::endl;
-	//		context << "    return '{0:02d}:{1:02d}:{2:02d}:{3:02d}'.format(int(time_sec / 3600), "
-	//																		"int(time_sec / 60) % 60, "
-	//																		"int(time_sec) % 60, "
-	//																		"int(time_frame % fps) )" << std::endl;
-	//		context << "def timecode_sec(time_sec, fps):" << std::endl;
-	//		context << "    time_frame = int(time_sec * float(fps))" << std::endl;
-	//		context << "    return _timecode(time_sec, time_frame, fps)" << std::endl;
-	//		context << "def timecode_frame(time_frame, fps):" << std::endl;
-	//		context << "    time_sec = time_frame / float(fps) if fps else time_frame" << std::endl;
-	//		context << "    return _timecode(time_sec, time_frame, fps)" << std::endl;
-	//		
-	//		context << "class TuttleArgs:" << std::endl;
-	//		context << "    time_frame = " << args.time << std::endl;
-	//		context << "    renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
-	//		context << "    renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
-	//				                      << args.renderWindow.x2 << "," << args.renderWindow.y2 << "]" << std::endl;
-
-	//		OfxRectD dstCanonicalRod = this->_clipDst->getCanonicalRod( args.time );
-	//		context << "    dstCanonicalRod = [" << dstCanonicalRod.x1 << "," << dstCanonicalRod.y1 << ","
-	//				                         << dstCanonicalRod.x2 << "," << dstCanonicalRod.y2 << "]" << std::endl;
-	//		OfxRectI dstPixelRod = this->_clipDst->getPixelRod( args.time );
-	//		context << "    dstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
-	//										 << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
-	//		context << "    fps = " << _clipSrc->getFrameRate() << std::endl;
-
-	//		context << "    @property" << std::endl;
-	//		context << "    def time_sec(self):" << std::endl;
-	//		context << "        return self.time_frame / float(self.fps) if self.fps else self.time_frame" << std::endl;
-
-	//		context << "    @property" << std::endl;
-	//		context << "    def timecode(self):" << std::endl;
-	//		context << "        return timecode_frame(self.time_frame, self.fps)" << std::endl;
-	//		
-	//		context << "args = TuttleArgs()" << std::endl;
-
-	//		// TUTTLE_TLOG_INFO( "TEXT exec:\n" << context.str().c_str() );
-	//		// TUTTLE_TLOG_INFO( "TEXT eval:\n" << _params._text.c_str() );
-
-    //        // Inject above python code 
-	//		Py_Initialize();
-	//		boost::python::object main_module = boost::python::import( "__main__" );
-	//		boost::python::object main_namespace = main_module.attr( "__dict__" );
-	//		boost::python::exec( context.str().c_str(), main_namespace );
-	//	
-    //        PyRun_SimpleString(context.str().c_str());
-
-
-    //        // Evaluate code passed in parameter
-	//		std::ostringstream toEval;
-	//		toEval << "str(" << _params._text << ")";
-	//		boost::python::object returnText = boost::python::eval( toEval.str().c_str(), main_namespace );
-
-    //        // Convert returnText to c++ string
-	//		_text = boost::python::extract<std::string>( returnText );
-	//	}
-	//	catch( boost::python::error_already_set const & )
-	//	{
-	//		// if we can't evaluate the expression
-	//		// use the text without interpretation
-
-	//		//Get error message from python
-	//		PyObject *ptype, *pvalue, *ptraceback;
-	//		PyErr_Fetch(&ptype, &pvalue, &ptraceback);
-//#if PY_MAJOR_VERSION < 3
-	//		// Python version is < 3.0
-	//		char *pStrErrorMessage = PyString_AsString(pvalue);
-//#elif PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 3
-	//		// PYTHON version is < 3.3
-	//		PyObject* stringObj = PyUnicode_AsUTF8String(pvalue);
-	//		char *pStrErrorMessage = PyBytes_AsString(stringObj);;
-//#else
-	//		// PYTHON version is >= 3.3
-	//		char *pStrErrorMessage = PyUnicode_AsUTF8(pvalue);
-//#endif
-	//		TUTTLE_LOG_ERROR("Python error : " << pStrErrorMessage);
-//#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 3
-	//		Py_DECREF(stringObj);
-//#endif
-
-	//		_text = _params._text;
-	//	}
-//	//	Py_Finalize();
-	//}
-	
 	
 	//Step 1. Create terry image
 	//Step 2. Initialize freetype
