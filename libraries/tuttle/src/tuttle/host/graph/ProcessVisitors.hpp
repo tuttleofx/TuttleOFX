@@ -257,7 +257,9 @@ public:
 	void discover_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
-		
+	    
+
+
 		TUTTLE_TLOG( TUTTLE_TRACE, "[Deploy Time] " << vertex );
 		if( vertex.isFake() )
 		{
@@ -292,6 +294,7 @@ public:
 		{
 			TUTTLE_TLOG( TUTTLE_TRACE, "[Deploy Time] time: " << boost::lexical_cast< std::string >(t) );
 			INode::ClipTimesSetMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
+            // TEST
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
 //				TUTTLE_TLOG_VAR( TUTTLE_TRACE, v.first );
@@ -802,6 +805,31 @@ public:
 private:
 	TGraph& _graph;
 };
+
+
+template<class TGraph>
+class BeforeRenderCallbackVisitor : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::Vertex Vertex;
+    BeforeRenderCallbackVisitor( TGraph& graph )
+        : _graph( graph )
+    {}
+
+    template<class VertexDescriptor, class Graph>
+    void finish_vertex( VertexDescriptor v, Graph& g )
+    {
+        Vertex& vertex = _graph.instance( v );
+		if( !vertex.isFake() )
+		{
+            vertex.getProcessNode().beforeRenderCallback( vertex.getProcessNode(), vertex.getProcessDataAtTime() );
+        }
+    }
+
+private:
+	TGraph& _graph;
+};
+
 
 }
 }

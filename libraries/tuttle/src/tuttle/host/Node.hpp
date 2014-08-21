@@ -74,7 +74,9 @@ public:
 	
 	void setNode( INode& node ) { _node.reset(&node); }
 	INode& release() const { return *_node.release(); }
-	
+
+    void setBeforeRenderCallback(Callback *cb);
+
 private:
 	mutable std::auto_ptr<INode> _node;
 };
