@@ -294,7 +294,6 @@ public:
 		{
 			TUTTLE_TLOG( TUTTLE_TRACE, "[Deploy Time] time: " << boost::lexical_cast< std::string >(t) );
 			INode::ClipTimesSetMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
-            // TEST
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
 //				TUTTLE_TLOG_VAR( TUTTLE_TRACE, v.first );
