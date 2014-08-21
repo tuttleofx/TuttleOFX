@@ -17,7 +17,7 @@ add_subdirectory(image/generator/Ramp)
 add_subdirectory(image/generator/SeExpr)
 # Discuss with Fabien as Text plugins depends on
 # python and boost::python
-#add_subdirectory(image/generator/Text)
+add_subdirectory(image/generator/Text)
 add_subdirectory(image/io/Dpx)
 add_subdirectory(image/io/Exr)
 add_subdirectory(image/io/ImageMagick)
