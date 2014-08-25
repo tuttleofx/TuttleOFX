@@ -7,6 +7,7 @@
 #include <boost/foreach.hpp>
 
 #include <iostream>
+#include <limits>
 
 namespace tuttle {
 namespace plugin {
@@ -231,8 +232,10 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			{
 				OFX::IntParamDescriptor* intParam = desc.defineIntParam( name );
 				intParam->setDefault( option.getDefaultValueInt() );
-				intParam->setRange( option.getMin(), option.getMax() );
-				intParam->setDisplayRange( option.getMin(), option.getMax() );
+				const int min = option.getMin() > std::numeric_limits<int>::min() ? option.getMin() : std::numeric_limits<int>::min();
+				const int max = option.getMax() < std::numeric_limits<int>::max() ? option.getMax() : std::numeric_limits<int>::max();
+				intParam->setRange( min, max );
+				intParam->setDisplayRange( min, max );
 				param = intParam;
 				break;
 			}
