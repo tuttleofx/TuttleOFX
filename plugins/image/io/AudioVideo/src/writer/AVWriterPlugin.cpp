@@ -222,7 +222,7 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 		if( parameter->getValue().size() > 0 )
 		{
 			std::string ffmpegKey = parameter->getName();
-			ffmpegKey.erase( 0, 2 ); // remove prefix "m_"
+			ffmpegKey.erase( 0, common::prefixSize );
 			params._metadatas.push_back( std::pair<std::string, std::string>( ffmpegKey, parameter->getValue() ) );
 		}
 	}
