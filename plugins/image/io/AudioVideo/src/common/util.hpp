@@ -20,6 +20,7 @@ static const std::string kPrefixFormat    = "f_";
 static const std::string kPrefixVideo     = "v_";
 static const std::string kPrefixAudio     = "a_";
 static const std::string kPrefixMetaData  = "m_";
+static const std::string kPrefixAbout     = "l_";
 
 static const std::string kPrefixGroup     = "g_";
 static const std::string kPrefixFlag      = "_flag_";

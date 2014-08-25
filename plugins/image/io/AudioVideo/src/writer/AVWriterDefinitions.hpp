@@ -32,7 +32,7 @@ static const std::string kParamAudioGroup                = common::kPrefixAudio 
 static const std::string kParamAudioDetailledGroup       = common::kPrefixAudio + "detailledGroup";
 static const std::string kParamMetaGroup                 = common::kPrefixMetaData + "group";
 static const std::string kParamMetaDetailledGroup        = common::kPrefixMetaData + "detailledGroup";
-static const std::string kParamAboutGroup                = "aboutGroup";
+static const std::string kParamAboutGroup                = common::kPrefixAbout + "group";
 
 static const std::string kParamMainPreset                = "mainPreset";
 
@@ -86,9 +86,9 @@ static const std::string kParamMetaTitle           = common::kPrefixMetaData + "
 static const std::string kParamMetaTrack           = common::kPrefixMetaData + "track";
 static const std::string kParamMetaVariantBitrate  = common::kPrefixMetaData + "variant_bitrate";
 
-static const std::string kParamAboutLibName        = "libName";
-static const std::string kParamAboutLicense        = "license";
-static const std::string kParamAboutVersion        = "version";
+static const std::string kParamAboutLibName        = common::kPrefixAbout + "name";
+static const std::string kParamAboutLicense        = common::kPrefixAbout + "license";
+static const std::string kParamAboutVersion        = common::kPrefixAbout + "version";
 
 }
 }
