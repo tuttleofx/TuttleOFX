@@ -8,6 +8,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/math/special_functions/trunc.hpp>
 
 #include <stdexcept>
 
@@ -406,10 +407,10 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 	double duration = _inputFile->getProperties().duration;
 	double fps = _inputFile->getProperties().videoStreams.at( _videoStreamId ).fps;
-	double nbFrames = fps * duration;
+	double nbFrames = boost::math::trunc( fps * duration );
 
 	range.min = 0.0;
-	range.max = nbFrames - 1;
+	range.max = nbFrames - 1.0;
 
 	return true;
 }
