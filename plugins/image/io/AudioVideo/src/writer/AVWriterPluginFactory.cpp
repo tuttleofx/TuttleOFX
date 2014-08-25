@@ -517,7 +517,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		std::ostringstream libGroupName( kParamAboutLibName, std::ios_base::in | std::ios_base::ate );
 		libGroupName << "_" << (*library).getName();
 		OFX::GroupParamDescriptor* libGroupParam = desc.defineGroupParam( libGroupName.str() );
-		libGroupParam->setLabel( "Name" );
 		libGroupParam->setLabel( (*library).getName() );
 		libGroupParam->setParent( aboutGroup );
 		
@@ -527,7 +526,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		OFX::StringParamDescriptor* licenseParam = desc.defineStringParam( licenseName.str() );
 		std::stringstream completeLicense;
 		completeLicense << (*library).getLicense();
-		licenseParam->setLabel( "License" );
+		licenseParam->setLabel( kParamAboutLicenseLabel );
 		licenseParam->setDefault( completeLicense.str() );
 		licenseParam->setStringType( OFX::eStringTypeLabel );
 		licenseParam->setParent( libGroupParam );
@@ -538,7 +537,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		OFX::StringParamDescriptor* versionParam = desc.defineStringParam( versionName.str() );
 		std::stringstream completeVersion;
 		completeVersion << (*library).getStringVersion();
-		versionParam->setLabel( "Version" );
+		versionParam->setLabel( kParamAboutVersionLabel );
 		versionParam->setDefault( completeVersion.str() );
 		versionParam->setStringType( OFX::eStringTypeLabel );
 		versionParam->setParent( libGroupParam );

@@ -88,7 +88,9 @@ static const std::string kParamMetaVariantBitrate  = common::kPrefixMetaData + "
 
 static const std::string kParamAboutLibName        = common::kPrefixAbout + "name";
 static const std::string kParamAboutLicense        = common::kPrefixAbout + "license";
+static const std::string kParamAboutLicenseLabel   = "License";
 static const std::string kParamAboutVersion        = common::kPrefixAbout + "version";
+static const std::string kParamAboutVersionLabel   = "Version";
 
 }
 }
