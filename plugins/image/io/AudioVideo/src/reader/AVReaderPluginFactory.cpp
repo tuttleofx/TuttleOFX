@@ -159,43 +159,43 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, metaGroup, metadataOptions, common::kPrefixMetaData );
 	
 	OFX::StringParamDescriptor* metaDataWrapper = desc.defineStringParam( kParamMetaDataWrapper );
-	metaDataWrapper->setLabel( "Wrapper" );
+	metaDataWrapper->setLabel( kParamMetaDataWrapperLabel );
 	metaDataWrapper->setEnabled( false );
 	metaDataWrapper->setStringType( OFX::eStringTypeMultiLine );
 	metaDataWrapper->setParent( metaGroup );
 
 	OFX::StringParamDescriptor* metaDataVideo = desc.defineStringParam( kParamMetaDataVideo );
-	metaDataVideo->setLabel( "Video" );
+	metaDataVideo->setLabel( kParamMetaDataVideoLabel );
 	metaDataVideo->setEnabled( false );
 	metaDataVideo->setStringType( OFX::eStringTypeMultiLine );
 	metaDataVideo->setParent( metaGroup );
 
 	OFX::StringParamDescriptor* metaDataAudio = desc.defineStringParam( kParamMetaDataAudio );
-	metaDataAudio->setLabel( "Audio" );
+	metaDataAudio->setLabel( kParamMetaDataAudioLabel );
 	metaDataAudio->setEnabled( false );
 	metaDataAudio->setStringType( OFX::eStringTypeMultiLine );
 	metaDataAudio->setParent( metaGroup );
 
 	OFX::StringParamDescriptor* metaDataData = desc.defineStringParam( kParamMetaDataData );
-	metaDataData->setLabel( "Data" );
+	metaDataData->setLabel( kParamMetaDataDataLabel );
 	metaDataData->setEnabled( false );
 	metaDataData->setStringType( OFX::eStringTypeMultiLine );
 	metaDataData->setParent( metaGroup );
 
 	OFX::StringParamDescriptor* metaDataSubtitle = desc.defineStringParam( kParamMetaDataSubtitle );
-	metaDataSubtitle->setLabel( "Subtitle" );
+	metaDataSubtitle->setLabel( kParamMetaDataSubtitleLabel );
 	metaDataSubtitle->setEnabled( false );
 	metaDataSubtitle->setStringType( OFX::eStringTypeMultiLine );
 	metaDataSubtitle->setParent( metaGroup );
 
 	OFX::StringParamDescriptor* metaDataAttachement = desc.defineStringParam( kParamMetaDataAttachement );
-	metaDataAttachement->setLabel( "Attachement" );
+	metaDataAttachement->setLabel( kParamMetaDataAttachementLabel );
 	metaDataAttachement->setEnabled( false );
 	metaDataAttachement->setStringType( OFX::eStringTypeMultiLine );
 	metaDataAttachement->setParent( metaGroup );
 
 	OFX::StringParamDescriptor* metaDataUnknown = desc.defineStringParam( kParamMetaDataUnknown );
-	metaDataUnknown->setLabel( "Unknown" );
+	metaDataUnknown->setLabel( kParamMetaDataUnknownLabel );
 	metaDataUnknown->setEnabled( false );
 	metaDataUnknown->setStringType( OFX::eStringTypeMultiLine );
 	metaDataUnknown->setParent( metaGroup );

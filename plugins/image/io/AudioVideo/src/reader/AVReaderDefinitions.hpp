@@ -25,12 +25,19 @@ static const std::string kParamVideoStreamIndex      = common::kPrefixVideo + "s
 static const std::string kParamVideoStreamIndexLabel = "Video stream index";
 
 static const std::string kParamMetaDataWrapper = common::kPrefixMetaData + "wrapper";
+static const std::string kParamMetaDataWrapperLabel = "Wrapper";
 static const std::string kParamMetaDataVideo = common::kPrefixMetaData + "video";
+static const std::string kParamMetaDataVideoLabel = "Video";
 static const std::string kParamMetaDataAudio = common::kPrefixMetaData + "audio";
+static const std::string kParamMetaDataAudioLabel = "Audio";
 static const std::string kParamMetaDataData = common::kPrefixMetaData + "data";
+static const std::string kParamMetaDataDataLabel = "Data";
 static const std::string kParamMetaDataSubtitle = common::kPrefixMetaData + "subtitle";
+static const std::string kParamMetaDataSubtitleLabel = "Subtitle";
 static const std::string kParamMetaDataAttachement = common::kPrefixMetaData + "attachement";
+static const std::string kParamMetaDataAttachementLabel = "Attachement";
 static const std::string kParamMetaDataUnknown = common::kPrefixMetaData + "unknown";
+static const std::string kParamMetaDataUnknownLabel = "Unknown";
 
 }
 }
