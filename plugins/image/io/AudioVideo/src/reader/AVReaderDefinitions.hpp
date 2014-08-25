@@ -4,31 +4,33 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
+#include <common/util.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace av {
 namespace reader {
 
-static const std::string kParamFormatGroup               = "f_group";
-static const std::string kParamFormatDetailledGroup      = "f_detailledGroup";
-static const std::string kParamVideoGroup                = "v_group";
-static const std::string kParamVideoDetailledGroup       = "v_detailledGroup";
-static const std::string kParamMetaGroup                 = "m_group";
-static const std::string kParamMetaDetailledGroup        = "m_detailledGroup";
+static const std::string kParamFormatGroup               = common::kPrefixFormat + "group";
+static const std::string kParamFormatDetailledGroup      = common::kPrefixFormat + "detailledGroup";
+static const std::string kParamVideoGroup                = common::kPrefixVideo + "group";
+static const std::string kParamVideoDetailledGroup       = common::kPrefixVideo + "detailledGroup";
+static const std::string kParamMetaGroup                 = common::kPrefixMetaData + "group";
+static const std::string kParamMetaDetailledGroup        = common::kPrefixMetaData + "detailledGroup";
 
-static const std::string kParamUseCustomSAR = "v_useCustomSAR";
-static const std::string kParamCustomSAR = "v_customSAR";
+static const std::string kParamUseCustomSAR = common::kPrefixVideo + "useCustomSAR";
+static const std::string kParamCustomSAR = common::kPrefixVideo + "customSAR";
 
-static const std::string kParamVideoStreamIndex      = "v_streamIndex";
+static const std::string kParamVideoStreamIndex      = common::kPrefixVideo + "streamIndex";
 static const std::string kParamVideoStreamIndexLabel = "Video stream index";
 
-static const std::string kParamMetaDataWrapper = "m_wrapper";
-static const std::string kParamMetaDataVideo = "m_video";
-static const std::string kParamMetaDataAudio = "m_audio";
-static const std::string kParamMetaDataData = "m_data";
-static const std::string kParamMetaDataSubtitle = "m_subtitle";
-static const std::string kParamMetaDataAttachement = "m_attachement";
-static const std::string kParamMetaDataUnknown = "m_unknown";
+static const std::string kParamMetaDataWrapper = common::kPrefixMetaData + "wrapper";
+static const std::string kParamMetaDataVideo = common::kPrefixMetaData + "video";
+static const std::string kParamMetaDataAudio = common::kPrefixMetaData + "audio";
+static const std::string kParamMetaDataData = common::kPrefixMetaData + "data";
+static const std::string kParamMetaDataSubtitle = common::kPrefixMetaData + "subtitle";
+static const std::string kParamMetaDataAttachement = common::kPrefixMetaData + "attachement";
+static const std::string kParamMetaDataUnknown = common::kPrefixMetaData + "unknown";
 
 }
 }
