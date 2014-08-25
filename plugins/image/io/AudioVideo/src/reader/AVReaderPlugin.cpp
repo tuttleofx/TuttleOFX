@@ -33,7 +33,6 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _imageToDecode( NULL )
 	, _lastInputFilePath( "" )
 	, _lastVideoStreamIndex( 0 )
-	, _videoStreamId( 0 )
 	, _lastFrame( -1 )
 	, _initVideo( false )
 {
@@ -109,14 +108,13 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		{
 			throw std::runtime_error( "the stream index doesn't exist in the input file" );
 		}
-		_videoStreamId = _inputFile->getProperties().videoStreams.at( videoStreamIndex ).streamId;
 		_lastVideoStreamIndex = videoStreamIndex;
 		
 		// buffered video stream at _indexVideoStream (to seek)
-		_inputFile->readStream( _videoStreamId );
+		_inputFile->readStream( _paramVideoStreamIndex->getValue() );
 		
 		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::InputVideo( _inputFile->getStream( _videoStreamId ) ) );
+		_inputStreamVideo.reset( new avtranscoder::InputVideo( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
 		_inputStreamVideo->setup();
 	}
 	catch( std::exception& e )
@@ -344,7 +342,7 @@ double AVReaderPlugin::retrievePAR()
 		return _paramCustomSAR->getValue();
 	
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	avtranscoder::Ratio sar = properties.videoStreams.at( _videoStreamId ).sar;
+	avtranscoder::Ratio sar = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).sar;
 	const double videoRatio = sar.num / (double)sar.den;
 
 	return videoRatio;
@@ -383,16 +381,16 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
 	
 	// output frame rate
-	double fps = properties.videoStreams.at( _videoStreamId ).fps;
+	double fps = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).fps;
 	clipPreferences.setOutputFrameRate( fps );
 
 	clipPreferences.setPixelAspectRatio( *_clipDst, retrievePAR() );
 
 	// interlaced
-	bool isInterlaced = properties.videoStreams.at( _videoStreamId ).isInterlaced;
+	bool isInterlaced = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).isInterlaced;
 	if( isInterlaced )
 	{
-		bool topFieldFirst = properties.videoStreams.at( _videoStreamId ).topFieldFirst;
+		bool topFieldFirst = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).topFieldFirst;
 		clipPreferences.setOutputFielding( topFieldFirst ? OFX::eFieldUpper : OFX::eFieldLower );
 	}
 	else
@@ -406,7 +404,7 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 	ensureVideoIsOpen();
 
 	double duration = _inputFile->getProperties().duration;
-	double fps = _inputFile->getProperties().videoStreams.at( _videoStreamId ).fps;
+	double fps = _inputFile->getProperties().videoStreams.at( _paramVideoStreamIndex->getValue() ).fps;
 	double nbFrames = boost::math::trunc( fps * duration );
 
 	range.min = 0.0;
@@ -421,8 +419,8 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 
 	// get metadata of video stream
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	size_t width = properties.videoStreams.at( _videoStreamId ).width;
-	size_t height = properties.videoStreams.at( _videoStreamId ).height;
+	size_t width = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).width;
+	size_t height = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).height;
 	
 	const double pixelAspectRatio = retrievePAR();
 
@@ -445,7 +443,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfileDesc() );
 	
 	// get source image
-	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _videoStreamId ).getVideoDesc().getVideoFrameDesc();
+	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoDesc().getVideoFrameDesc();
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 	
 	// get pixel data of image to decode

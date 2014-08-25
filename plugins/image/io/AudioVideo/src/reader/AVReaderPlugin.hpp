@@ -91,7 +91,6 @@ public:
 	std::string _lastInputFilePath;
 	size_t _lastVideoStreamIndex;
 	
-	size_t _videoStreamId;
 	int _lastFrame;
 	
 	bool _initVideo;
