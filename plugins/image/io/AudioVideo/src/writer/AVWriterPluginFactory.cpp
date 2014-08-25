@@ -163,6 +163,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		if( (*itShort) == "mp4" )
 			default_format = format->getNOptions() - 1;
 	}
+	format->setLabel( kParamFormatLabel );
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( default_format );
 	format->setParent( formatCustomGroupParam );
@@ -227,6 +228,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		if( (*itShort) == defaultVideoCodec )
 			default_codec = videoCodec->getNOptions() - 1;
 	}
+	videoCodec->setLabel( kParamVideoCodecLabel );
 	videoCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	videoCodec->setDefault( default_codec );
 	videoCodec->setParent( videoCustomGroupParam );
@@ -286,6 +288,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		if( (*itShort) == defaultAudioCodec )
 			default_audio_codec = audioCodecParam->getNOptions() - 1;
 	}
+	audioCodecParam->setLabel( kParamAudioCodecLabel );
 	audioCodecParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	audioCodecParam->setDefault( default_audio_codec );
 	audioCodecParam->setParent( audioCustomGroupParam );

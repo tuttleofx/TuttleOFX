@@ -4,6 +4,8 @@
 #include <tuttle/plugin/context/WriterDefinition.hpp>
 #include <tuttle/plugin/global.hpp>
 
+#include <common/util.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace av {
@@ -15,71 +17,74 @@ enum ETuttlePluginBitDepth
 };
 
 
-static const std::string kParamFormat                    = "f_format";
-static const std::string kParamVideoCodec                = "v_codec";
-static const std::string kParamAudioCodec                = "a_codec";
+static const std::string kParamFormat                    = common::kPrefixFormat + "format";
+static const std::string kParamFormatLabel               = "Format";
+static const std::string kParamVideoCodec                = common::kPrefixVideo + "codec";
+static const std::string kParamVideoCodecLabel           = "Video codec";
+static const std::string kParamAudioCodec                = common::kPrefixAudio + "codec";
+static const std::string kParamAudioCodecLabel           = "Audio codec";
 
-static const std::string kParamFormatGroup               = "f_group";
-static const std::string kParamFormatDetailledGroup      = "f_detailledGroup";
-static const std::string kParamVideoGroup                = "v_group";
-static const std::string kParamVideoDetailledGroup       = "v_detailledGroup";
-static const std::string kParamAudioGroup                = "a_group";
-static const std::string kParamAudioDetailledGroup       = "a_detailledGroup";
-static const std::string kParamMetaGroup                 = "m_group";
-static const std::string kParamMetaDetailledGroup        = "m_detailledGroup";
+static const std::string kParamFormatGroup               = common::kPrefixFormat + "group";
+static const std::string kParamFormatDetailledGroup      = common::kPrefixFormat + "detailledGroup";
+static const std::string kParamVideoGroup                = common::kPrefixVideo + "group";
+static const std::string kParamVideoDetailledGroup       = common::kPrefixVideo + "detailledGroup";
+static const std::string kParamAudioGroup                = common::kPrefixAudio + "group";
+static const std::string kParamAudioDetailledGroup       = common::kPrefixAudio + "detailledGroup";
+static const std::string kParamMetaGroup                 = common::kPrefixMetaData + "group";
+static const std::string kParamMetaDetailledGroup        = common::kPrefixMetaData + "detailledGroup";
 static const std::string kParamAboutGroup                = "aboutGroup";
 
 static const std::string kParamMainPreset                = "mainPreset";
 
-static const std::string kParamFormatPreset              = "f_preset";
-static const std::string kParamVideoPreset               = "v_preset";
-static const std::string kParamAudioMainPreset           = "a_mainPreset";
+static const std::string kParamFormatPreset              = common::kPrefixFormat + "preset";
+static const std::string kParamVideoPreset               = common::kPrefixVideo + "preset";
+static const std::string kParamAudioMainPreset           = common::kPrefixAudio + "mainPreset";
 
-static const std::string kParamUseCustomFps              = "v_useCustomFps";
-static const std::string kParamCustomFps                 = "v_customFps";
-static const std::string kParamVideoCodecPixelFmt        = "v_pixelFormat";
-static const std::string kParamAudioCodecSampleFmt       = "a_sampleFormat";
+static const std::string kParamUseCustomFps              = common::kPrefixVideo + "useCustomFps";
+static const std::string kParamCustomFps                 = common::kPrefixVideo + "customFps";
+static const std::string kParamVideoCodecPixelFmt        = common::kPrefixVideo + "pixelFormat";
+static const std::string kParamAudioCodecSampleFmt       = common::kPrefixAudio + "sampleFormat";
 
-static const std::string kParamFormatCustomGroup         = "f_customGroup";
-static const std::string kParamVideoCustomGroup          = "v_customGroup";
-static const std::string kParamAudioCustomGroup          = "a_customGroup";
+static const std::string kParamFormatCustomGroup         = common::kPrefixFormat + "customGroup";
+static const std::string kParamVideoCustomGroup          = common::kPrefixVideo + "customGroup";
+static const std::string kParamAudioCustomGroup          = common::kPrefixAudio + "customGroup";
 
-static const std::string kParamAudioNbStream             = "a_nbStream";
+static const std::string kParamAudioNbStream             = common::kPrefixAudio + "nbStream";
 
-static const std::string kParamAudioSubGroup             = "a_subGroup";
-static const std::string kParamAudioSilent               = "a_silent";
-static const std::string kParamAudioFilePath             = "a_filePath";
-static const std::string kParamAudioSelectStream         = "a_selectStream";
-static const std::string kParamAudioStreamIndex          = "a_streamIndex";
-static const std::string kParamAudioTranscodeStream      = "a_transcodeStream";
-static const std::string kParamAudioPreset               = "a_preset";
-static const std::string kParamAudioSelectChannel        = "a_selectChannel";
-static const std::string kParamAudioChannelIndex         = "a_channelIndex";
-static const std::string kParamAudioOffset               = "a_offset";
+static const std::string kParamAudioSubGroup             = common::kPrefixAudio + "subGroup";
+static const std::string kParamAudioSilent               = common::kPrefixAudio + "silent";
+static const std::string kParamAudioFilePath             = common::kPrefixAudio + "filePath";
+static const std::string kParamAudioSelectStream         = common::kPrefixAudio + "selectStream";
+static const std::string kParamAudioStreamIndex          = common::kPrefixAudio + "streamIndex";
+static const std::string kParamAudioTranscodeStream      = common::kPrefixAudio + "transcodeStream";
+static const std::string kParamAudioPreset               = common::kPrefixAudio + "preset";
+static const std::string kParamAudioSelectChannel        = common::kPrefixAudio + "selectChannel";
+static const std::string kParamAudioChannelIndex         = common::kPrefixAudio + "channelIndex";
+static const std::string kParamAudioOffset               = common::kPrefixAudio + "offset";
 
 static const size_t maxNbAudioStream                     = 16;
 
-static const std::string kParamMetaAlbum           = "m_album";
-static const std::string kParamMetaAlbumArtist     = "m_album_artist";
-static const std::string kParamMetaArtist          = "m_artist";
-static const std::string kParamMetaComment         = "m_comment";
-static const std::string kParamMetaComposer        = "m_composer";
-static const std::string kParamMetaCopyright       = "m_copyright";
-static const std::string kParamMetaCreationTime    = "m_creation_time";
-static const std::string kParamMetaDate            = "m_date";
-static const std::string kParamMetaDisc            = "m_disc";
-static const std::string kParamMetaEncoder         = "m_encoder";
-static const std::string kParamMetaEncodedBy       = "m_encoded_by";
-static const std::string kParamMetaFilename        = "m_filename";
-static const std::string kParamMetaGenre           = "m_genre";
-static const std::string kParamMetaLanguage        = "m_language";
-static const std::string kParamMetaPerformer       = "m_performer";
-static const std::string kParamMetaPublisher       = "m_publisher";
-static const std::string kParamMetaServiceName     = "m_service_name";
-static const std::string kParamMetaServiceProvider = "m_service_provider";
-static const std::string kParamMetaTitle           = "m_title";
-static const std::string kParamMetaTrack           = "m_track";
-static const std::string kParamMetaVariantBitrate  = "m_variant_bitrate";
+static const std::string kParamMetaAlbum           = common::kPrefixMetaData + "album";
+static const std::string kParamMetaAlbumArtist     = common::kPrefixMetaData + "album_artist";
+static const std::string kParamMetaArtist          = common::kPrefixMetaData + "artist";
+static const std::string kParamMetaComment         = common::kPrefixMetaData + "comment";
+static const std::string kParamMetaComposer        = common::kPrefixMetaData + "composer";
+static const std::string kParamMetaCopyright       = common::kPrefixMetaData + "copyright";
+static const std::string kParamMetaCreationTime    = common::kPrefixMetaData + "creation_time";
+static const std::string kParamMetaDate            = common::kPrefixMetaData + "date";
+static const std::string kParamMetaDisc            = common::kPrefixMetaData + "disc";
+static const std::string kParamMetaEncoder         = common::kPrefixMetaData + "encoder";
+static const std::string kParamMetaEncodedBy       = common::kPrefixMetaData + "encoded_by";
+static const std::string kParamMetaFilename        = common::kPrefixMetaData + "filename";
+static const std::string kParamMetaGenre           = common::kPrefixMetaData + "genre";
+static const std::string kParamMetaLanguage        = common::kPrefixMetaData + "language";
+static const std::string kParamMetaPerformer       = common::kPrefixMetaData + "performer";
+static const std::string kParamMetaPublisher       = common::kPrefixMetaData + "publisher";
+static const std::string kParamMetaServiceName     = common::kPrefixMetaData + "service_name";
+static const std::string kParamMetaServiceProvider = common::kPrefixMetaData + "service_provider";
+static const std::string kParamMetaTitle           = common::kPrefixMetaData + "title";
+static const std::string kParamMetaTrack           = common::kPrefixMetaData + "track";
+static const std::string kParamMetaVariantBitrate  = common::kPrefixMetaData + "variant_bitrate";
 
 static const std::string kParamAboutLibName        = "libName";
 static const std::string kParamAboutLicense        = "license";
