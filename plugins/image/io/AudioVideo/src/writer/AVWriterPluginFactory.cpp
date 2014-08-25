@@ -502,11 +502,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		}
 	}
 
-	OFX::GroupParamDescriptor* metaDetailledGroup   = desc.defineGroupParam( kParamMetaDetailledGroup );
-	metaDetailledGroup->setLabel( "Detailled" );
-	metaDetailledGroup->setAsTab( );
-	metaDetailledGroup->setParent( metaGroup );
-	
 	/// ABOUT PARAMETERS
 	avtranscoder::Libraries librairies( avtranscoder::getLibraries() );
 

@@ -31,7 +31,6 @@ static const std::string kParamVideoDetailledGroup       = common::kPrefixVideo 
 static const std::string kParamAudioGroup                = common::kPrefixAudio + "group";
 static const std::string kParamAudioDetailledGroup       = common::kPrefixAudio + "detailledGroup";
 static const std::string kParamMetaGroup                 = common::kPrefixMetaData + "group";
-static const std::string kParamMetaDetailledGroup        = common::kPrefixMetaData + "detailledGroup";
 static const std::string kParamAboutGroup                = common::kPrefixAbout + "group";
 
 static const std::string kParamMainPreset                = "mainPreset";
