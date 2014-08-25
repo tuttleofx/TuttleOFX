@@ -15,47 +15,47 @@ enum ETuttlePluginBitDepth
 };
 
 
-static const std::string kParamFormat                    = "format";
-static const std::string kParamVideoCodec                = "videoCodec";
-static const std::string kParamAudioCodec                = "audioCodec";
+static const std::string kParamFormat                    = "f_format";
+static const std::string kParamVideoCodec                = "v_codec";
+static const std::string kParamAudioCodec                = "a_codec";
 
-static const std::string kParamFormatGroup               = "formatGroup";
-static const std::string kParamFormatDetailledGroup      = "formatDetailledGroup";
-static const std::string kParamVideoGroup                = "videoGroup";
-static const std::string kParamVideoDetailledGroup       = "videoDetailledGroup";
-static const std::string kParamAudioGroup                = "audioGroup";
-static const std::string kParamAudioDetailledGroup       = "audioDetailledGroup";
-static const std::string kParamMetaGroup                 = "metaGroup";
-static const std::string kParamMetaDetailledGroup        = "metaDetailledGroup";
+static const std::string kParamFormatGroup               = "f_group";
+static const std::string kParamFormatDetailledGroup      = "f_detailledGroup";
+static const std::string kParamVideoGroup                = "v_group";
+static const std::string kParamVideoDetailledGroup       = "v_detailledGroup";
+static const std::string kParamAudioGroup                = "a_group";
+static const std::string kParamAudioDetailledGroup       = "a_detailledGroup";
+static const std::string kParamMetaGroup                 = "m_group";
+static const std::string kParamMetaDetailledGroup        = "m_detailledGroup";
 static const std::string kParamAboutGroup                = "aboutGroup";
 
 static const std::string kParamMainPreset                = "mainPreset";
 
-static const std::string kParamFormatPreset              = "formatPreset";
-static const std::string kParamVideoPreset               = "videoPreset";
-static const std::string kParamAudioMainPreset           = "audioMainPreset";
+static const std::string kParamFormatPreset              = "f_preset";
+static const std::string kParamVideoPreset               = "v_preset";
+static const std::string kParamAudioMainPreset           = "a_mainPreset";
 
-static const std::string kParamUseCustomFps              = "useCustomFps";
-static const std::string kParamCustomFps                 = "customFps";
-static const std::string kParamVideoCodecPixelFmt        = "videoPixelFormat";
-static const std::string kParamAudioCodecSampleFmt       = "audioSampleFormat";
+static const std::string kParamUseCustomFps              = "v_useCustomFps";
+static const std::string kParamCustomFps                 = "v_customFps";
+static const std::string kParamVideoCodecPixelFmt        = "v_pixelFormat";
+static const std::string kParamAudioCodecSampleFmt       = "a_sampleFormat";
 
-static const std::string kParamFormatCustomGroup         = "formatCustomGroup";
-static const std::string kParamVideoCustomGroup          = "videoCustomGroup";
-static const std::string kParamAudioCustomGroup          = "audioCustomGroup";
+static const std::string kParamFormatCustomGroup         = "f_customGroup";
+static const std::string kParamVideoCustomGroup          = "v_customGroup";
+static const std::string kParamAudioCustomGroup          = "a_customGroup";
 
-static const std::string kParamAudioNbStream             = "audioNbStream";
+static const std::string kParamAudioNbStream             = "a_nbStream";
 
-static const std::string kParamAudioSubGroup             = "audioSubGroup";
-static const std::string kParamAudioSilent               = "audioSilent";
-static const std::string kParamAudioFilePath             = "audioFilePath";
-static const std::string kParamAudioSelectStream         = "audioSelectStream";
-static const std::string kParamAudioStreamIndex          = "audioStreamIndex";
-static const std::string kParamAudioTranscodeStream      = "audioTranscodeStream";
-static const std::string kParamAudioPreset               = "audioPreset";
-static const std::string kParamAudioSelectChannel        = "audioSelectChannel";
-static const std::string kParamAudioChannelIndex         = "audioChannelIndex";
-static const std::string kParamAudioOffset               = "audioOffset";
+static const std::string kParamAudioSubGroup             = "a_subGroup";
+static const std::string kParamAudioSilent               = "a_silent";
+static const std::string kParamAudioFilePath             = "a_filePath";
+static const std::string kParamAudioSelectStream         = "a_selectStream";
+static const std::string kParamAudioStreamIndex          = "a_streamIndex";
+static const std::string kParamAudioTranscodeStream      = "a_transcodeStream";
+static const std::string kParamAudioPreset               = "a_preset";
+static const std::string kParamAudioSelectChannel        = "a_selectChannel";
+static const std::string kParamAudioChannelIndex         = "a_channelIndex";
+static const std::string kParamAudioOffset               = "a_offset";
 
 static const size_t maxNbAudioStream                     = 16;
 
