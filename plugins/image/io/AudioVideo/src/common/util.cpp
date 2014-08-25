@@ -258,7 +258,12 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			case avtranscoder::TypeRatio:
 			{
 				OFX::Int2DParamDescriptor* ratioParam = desc.defineInt2DParam( name );
+				// @todo: minX, minY, maxX, maxY could be different
 				ratioParam->setDefault( option.getDefaultValueRatio().first, option.getDefaultValueRatio().second );
+				const int min = option.getMin() > std::numeric_limits<int>::min() ? option.getMin() : std::numeric_limits<int>::min();
+				const int max = option.getMax() < std::numeric_limits<int>::max() ? option.getMax() : std::numeric_limits<int>::max();
+				ratioParam->setRange( min, min, max, max );
+				ratioParam->setDisplayRange( min, min, max, max );
 				param = ratioParam;
 				break;
 			}
