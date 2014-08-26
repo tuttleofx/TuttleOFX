@@ -1,52 +1,63 @@
-# - Find Ampas Color Transform Language
-# Find CTL headers and libraries.
+# - Find CTL library 
+# CTL stands for Color transform language 
+# http://ampasctl.sourceforge.net/
+# Find the native CTL includes and library
+# This module defines
+#  CTL_INCLUDE_DIRS, where to find openimageio.h, Set when
+#                            CTL_INCLUDE_DIR is found.
+#  CTL_LIBRARIES, libraries to link against to use CTL.
+#  CTL_ROOT_DIR, The base directory to search for CTL.
+#                        This can also be an environment variable.
+#  CTL_FOUND, If false, do not try to use CTL.
 #
-#  CTL_INCLUDE_DIRS - Where ctl includes are.
-#  CTL_LIBRARIES    - List of libraries to compile with.
-#  CTL_FOUND        - ctl is found.
+# also defined, but not for general use are
+#  CTL_LIBRARY, where to find the CTL library.
 
-# If CTL_ROOT_DIR was defined in the environment, use it.
-if(NOT CTL_ROOT_DIR AND NOT $ENV{CTL_ROOT_DIR} STREQUAL "")
-  set(CTL_ROOT_DIR $ENV{CTL_ROOT_DIR})
+
+# If CTL_ROOT was defined in the environment, use it, otherwise 
+# try to use pkgconfig
+if(NOT CTL_ROOT_DIR AND NOT $ENV{CTL_ROOT} STREQUAL "")
+  set(CTL_ROOT_DIR $ENV{CTL_ROOT})
+else()
+    find_package(PkgConfig)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(CTLPKG QUIET CTL)
+    endif()
 endif()
 
-# Sets a list of path to look into
-set(ctl_search_dirs
+set(_ctl_SEARCH_DIRS
   ${CTL_ROOT_DIR}
   /usr/local
-  /sw 
-  /opt/local 
-  /opt/csw 
+  /sw # Fink
+  /opt/local # DarwinPorts
+  /opt/csw # Blastwave
+  /opt/lib/ocio
 )
 
-# Look for the header file.
-find_path(CTL_INCLUDE_DIR 
-    NAMES CtlSimdInterpreter.h
-    HINTS ${ctl_search_dirs}
-    PATH_SUFFIXES include/CTL)
+find_path(CTL_INCLUDE_DIR
+    NAMES         CTL/CtlVersion.h
+    HINTS         ${_ctl_SEARCH_DIRS} ${CTLPKG_INCLUDE_DIRS}
+  PATH_SUFFIXES include
+)
 
-find_path(CTLEXR_INCLUDE_DIR 
-    NAMES ImfCtlApplyTransforms.h 
-    HINTS ${ctl_search_dirs}
-    PATH_SUFFIXES include/OpenEXR)
+find_library(CTL_LIBRARY
+  NAMES       IlmImfCtl IlmCtl IlmCtlMath IlmCtlSimd
+  HINTS         ${_ctl_SEARCH_DIRS} ${CTLPKG_LIBRARY_DIRS}
+  PATH_SUFFIXES lib64 lib
+)
 
-# Look for the library.
-find_library(CTL_LIBRARY NAMES IlmCtl HINTS ${ctl_search_dirs} PATH_SUFFIXES lib)
-find_library(CTL_MATH_LIBRARY NAMES IlmCtlMath HINTS ${ctl_search_dirs} PATH_SUFFIXES lib)
-find_library(CTL_SIMD_LIBRARY NAMES IlmCtlSimd HINTS ${ctl_search_dirs} PATH_SUFFIXES lib)
-
+# handle the QUIETLY and REQUIRED arguments and set CTL_FOUND to TRUE if 
+# all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(CTL 
-    DEFAULT_MSG CTL_LIBRARY CTL_MATH_LIBRARY CTL_SIMD_LIBRARY CTL_INCLUDE_DIR CTLEXR_INCLUDE_DIR)
+find_package_handle_standard_args(CTL DEFAULT_MSG
+    CTL_LIBRARY CTL_INCLUDE_DIR)
 
-# Copy the results to the output variables.
 if(CTL_FOUND)
-  set(CTL_LIBRARIES ${CTL_LIBRARY} ${CTL_MATH_LIBRARY} ${CTL_SIMD_LIBRARY})
-  set(CTL_INCLUDE_DIRS ${CTL_INCLUDE_DIR} ${CTLEXR_INCLUDE_DIR})
-else(CTL_FOUND)
-  set(CTL_LIBRARIES)
-  set(CTL_INCLUDE_DIRS)
+  set(CTL_LIBRARIES ${CTL_LIBRARY})
+  set(CTL_INCLUDE_DIRS ${CTL_INCLUDE_DIR} ${CTL_INCLUDE_DIR}/CTL)
 endif(CTL_FOUND)
 
-mark_as_advanced(CTL_INCLUDE_DIR CTL_LIBRARY CTL_MATH_LIBRARY CTL_SIMD_LIBRARY)
-
+mark_as_advanced(
+  CTL_INCLUDE_DIR
+  CTL_LIBRARY
+)
