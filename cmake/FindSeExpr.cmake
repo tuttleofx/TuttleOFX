@@ -23,7 +23,6 @@ SET(_seexpr_SEARCH_DIRS
   /sw # Fink
   /opt/local # DarwinPorts
   /opt/csw # Blastwave
-  /opt/lib/ocio
 )
 
 FIND_PATH(SEEXPR_INCLUDE_DIR
