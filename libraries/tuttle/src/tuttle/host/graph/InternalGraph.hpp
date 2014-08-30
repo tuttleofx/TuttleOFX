@@ -364,6 +364,8 @@ public:
 	const out_edge_range_t getOutEdges( const vertex_descriptor& v ) const { return out_edges( v, _graph ); }
 
 	vertex_range_t getVertices() const { return vertices( _graph ); }
+	std::vector<vertex_descriptor> getConnectedVertices( const vertex_descriptor& vroot );
+	std::vector<vertex_descriptor> getUnconnectedVertices( const vertex_descriptor& vroot );
 
 	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const { return adjacent_vertices( v, _graph ); }
 
