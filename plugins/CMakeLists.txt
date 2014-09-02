@@ -15,7 +15,9 @@ add_subdirectory(image/generator/ColorWheel)
 add_subdirectory(image/generator/Constant)
 add_subdirectory(image/generator/Ramp)
 add_subdirectory(image/generator/SeExpr)
-add_subdirectory(image/generator/Text)
+# In this version Text plugin is deactivated because of
+# the boostpython dependency 
+#add_subdirectory(image/generator/Text)
 add_subdirectory(image/io/Dpx)
 add_subdirectory(image/io/Exr)
 add_subdirectory(image/io/ImageMagick)
