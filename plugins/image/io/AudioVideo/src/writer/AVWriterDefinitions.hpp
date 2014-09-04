@@ -57,8 +57,6 @@ static const std::string kParamAudioSelectStream         = common::kPrefixAudio 
 static const std::string kParamAudioStreamIndex          = common::kPrefixAudio + "streamIndex";
 static const std::string kParamAudioTranscodeStream      = common::kPrefixAudio + "transcodeStream";
 static const std::string kParamAudioPreset               = common::kPrefixAudio + "preset";
-static const std::string kParamAudioSelectChannel        = common::kPrefixAudio + "selectChannel";
-static const std::string kParamAudioChannelIndex         = common::kPrefixAudio + "channelIndex";
 static const std::string kParamAudioOffset               = common::kPrefixAudio + "offset";
 
 static const size_t maxNbAudioStream                     = 16;

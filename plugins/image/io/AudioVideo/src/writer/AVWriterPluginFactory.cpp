@@ -396,26 +396,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 			);
 		}
 		
-		// add flag to select a stream
-		std::ostringstream audioSelectChannelName( kParamAudioSelectChannel, std::ios_base::in | std::ios_base::ate );
-		audioSelectChannelName << "_" << idAudioStream;
-		OFX::BooleanParamDescriptor* audioSelectChannelParam = desc.defineBooleanParam( audioSelectChannelName.str() );
-		audioSelectChannelParam->setLabel( "Select one channel" );
-		audioSelectChannelParam->setHint( "By default select all channels." );
-		audioSelectChannelParam->setDefault( false );
-		audioSelectChannelParam->setParent( audioSubGroupParam );
-		
-		// add audio channel index
-		std::ostringstream audioChannelIndexName( kParamAudioChannelIndex, std::ios_base::in | std::ios_base::ate );
-		audioChannelIndexName << "_" << idAudioStream;
-		OFX::IntParamDescriptor* audioChannelIndexParam = desc.defineIntParam( audioChannelIndexName.str() );
-		audioChannelIndexParam->setLabel( "Input channel index" );
-		audioChannelIndexParam->setHint( "Select a specific channel." );
-		audioChannelIndexParam->setRange( 0, INT_MAX );
-		audioChannelIndexParam->setDisplayRange( 0, 10 );
-		audioChannelIndexParam->setDefault( 0 );
-		audioChannelIndexParam->setParent( audioSubGroupParam );
-		
 		// add audio channel index
 		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
 		audioOffsetName << "_" << idAudioStream;
