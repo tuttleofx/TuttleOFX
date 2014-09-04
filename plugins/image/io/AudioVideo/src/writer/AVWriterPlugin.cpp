@@ -52,7 +52,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramAudioCustomGroup = fetchGroupParam( kParamAudioCustomGroup );
 	_paramAudioCodec = fetchChoiceParam( kParamAudioCodec );
 	
-	_paramAudioNbStream = fetchIntParam( kParamAudioNbStream );
+	_paramAudioNbStream = fetchIntParam( kParamAudioNbInputs );
 	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
 	{
 		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
@@ -420,7 +420,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramUseCustomFps->setValue(true);
 		}
 	}
-	else if( paramName == kParamAudioNbStream )
+	else if( paramName == kParamAudioNbInputs )
 	{
 		updateAudioParams();
 	}
