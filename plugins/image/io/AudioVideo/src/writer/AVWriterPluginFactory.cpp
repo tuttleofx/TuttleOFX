@@ -338,7 +338,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		OFX::BooleanParamDescriptor* audioSilentParam = desc.defineBooleanParam( audioSilentName.str() );
 		audioSilentParam->setLabel( "Silent stream" );
 		audioSilentParam->setHint( "Write a silent audio stream" );
-		audioSilentParam->setDefault( true );
+		audioSilentParam->setDefault( false );
 		audioSilentParam->setParent( audioSubGroupParam );
 		
 		// add audio file path
