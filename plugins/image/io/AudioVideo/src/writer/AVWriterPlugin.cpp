@@ -625,7 +625,12 @@ void AVWriterPlugin::initAudio()
 		{
 			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
 			size_t presetIndex = _paramAudioPreset.at( i )->getValue();
+			bool isSilent = _paramAudioSilent.at( i )->getValue();
 			
+			// No effect if file path is empty
+			if( ! isSilent && inputFileName.empty() )
+				continue;
+
 			// custom audio preset
 			if( presetIndex == 0 && mainPresetIndex == 0 )
 			{
@@ -649,7 +654,7 @@ void AVWriterPlugin::initAudio()
 			}
 			
 			// dummy
-			if( _paramAudioSilent.at( i )->getValue() )
+			if( isSilent )
 			{	
 				avtranscoder::AudioDesc audioDesc( profile[ avtranscoder::Profile::avProfileCodec ] );
 				const size_t sampleRate = boost::lexical_cast<size_t>( profile[ avtranscoder::Profile::avProfileSampleRate ] );

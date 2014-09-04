@@ -317,7 +317,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioNbStream->setLabel( "Number of audio stream" );
 	audioNbStream->setRange( 0, maxNbAudioStream );
 	audioNbStream->setDisplayRange( 0, maxNbAudioStream );
-	audioNbStream->setDefault( 0 );
+	audioNbStream->setDefault( 1 );
 	audioNbStream->setParent( audioGroup );
 	
 	// add a list of audioSubGroup (managed dynamically by the plugin)
