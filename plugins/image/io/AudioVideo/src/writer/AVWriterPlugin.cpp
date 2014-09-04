@@ -148,7 +148,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaCreationTime    ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaDate            ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaDisc            ) );
-	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncoder         ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaEncodedBy       ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaFilename        ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaGenre           ) );

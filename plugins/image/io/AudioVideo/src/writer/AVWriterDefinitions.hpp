@@ -70,7 +70,6 @@ static const std::string kParamMetaCopyright       = common::kPrefixMetaData + "
 static const std::string kParamMetaCreationTime    = common::kPrefixMetaData + "creation_time";
 static const std::string kParamMetaDate            = common::kPrefixMetaData + "date";
 static const std::string kParamMetaDisc            = common::kPrefixMetaData + "disc";
-static const std::string kParamMetaEncoder         = common::kPrefixMetaData + "encoder";
 static const std::string kParamMetaEncodedBy       = common::kPrefixMetaData + "encoded_by";
 static const std::string kParamMetaFilename        = common::kPrefixMetaData + "filename";
 static const std::string kParamMetaGenre           = common::kPrefixMetaData + "genre";

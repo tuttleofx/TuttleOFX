@@ -421,7 +421,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	keys[ kParamMetaCreationTime    ] = "Creation Time";
 	keys[ kParamMetaDate            ] = "Date";
 	keys[ kParamMetaDisc            ] = "Disc";
-	keys[ kParamMetaEncoder         ] = "Encoder";
 	keys[ kParamMetaEncodedBy       ] = "Encoded by";
 	keys[ kParamMetaFilename        ] = "Filename";
 	keys[ kParamMetaGenre           ] = "Genre";
@@ -443,7 +442,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	hints[ kParamMetaCreationTime    ] = "time when the file was created, preferably in ISO 8601.";
 	hints[ kParamMetaDate            ] = "date when the file was created, preferably in ISO 8601.";
 	hints[ kParamMetaDisc            ] = "number of a subset, e.g. disc in a multi-disc collection.";
-	hints[ kParamMetaEncoder         ] = "name/settings of the software/hardware that produced the file.";
 	hints[ kParamMetaEncodedBy       ] = "person/group who created the file.";
 	hints[ kParamMetaFilename        ] = "original name of the file.";
 	hints[ kParamMetaGenre           ] = "self-evident>.";
@@ -467,19 +465,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		metaParam->setLabel( ritKeys->second );
 		metaParam->setHint( ritHint->second );
 		metaParam->setParent( metaGroup );
-
-		// warning: value overwrite by ffmpeg (Lavfxx.xx.xxx)
-		if( ritKeys->first == kParamMetaEncoder )
-		{
-			std::ostringstream os;
-			os << "TuttleOFX AudioVideo ";
-			os << getMajorVersion();
-			os << ".";
-			os << getMinorVersion();
-
-			metaParam->setDefault( os.str() );
-			metaParam->setEnabled( false );
-		}
 	}
 
 	/// ABOUT PARAMETERS
