@@ -36,6 +36,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _transcoder( NULL )
 	, _presets( true ) 
 	, _lastOutputFilePath()
+	, _outputFps( 0 )
 	, _initVideo( false )
 	, _initWrap( false )
 {
@@ -632,6 +633,8 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		// the streamTranscoder is deleted by avTranscoder
 		avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, profile );
 		_transcoder->add( *stream );
+
+		_outputFps = boost::lexical_cast<double>( profile[ avtranscoder::Profile::avProfileFrameRate ] );
 	}	
 	catch( std::exception& e )
 	{
@@ -745,20 +748,21 @@ void AVWriterPlugin::initAudio()
 				{
 					// select all channels of the stream
 					size_t subStream = -1;
-					size_t offset = _paramAudioOffset.at( i )->getValue();
+					size_t offsetMillisecond = _paramAudioOffset.at( i )->getValue();
+					size_t offsetFrame = ( offsetMillisecond * _outputFps ) / 1000;
 
 					// custom audio preset
 					if( presetIndex == 0 && mainPresetIndex == 0 )
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile, offset );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile, offsetFrame );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, profile, offset );
+								_transcoder->add( inputFileName, streamIndex, subStream, profile, offsetFrame );
 							}
 						}
 					}
@@ -767,13 +771,13 @@ void AVWriterPlugin::initAudio()
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName, offset );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName, offsetFrame );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offset );
+								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offsetFrame );
 							}
 						}
 					}

@@ -144,7 +144,9 @@ public:
 	avtranscoder::Profile _presets;
 
 	std::string _lastOutputFilePath;
-		
+
+	double _outputFps;
+
 	bool _initVideo;
 	bool _initWrap;
 };

@@ -407,9 +407,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioOffsetName << "_" << indexAudioInput;
 		OFX::IntParamDescriptor* audioOffsetParam = desc.defineIntParam( audioOffsetName.str() );
 		audioOffsetParam->setLabel( "Offset" );
-		audioOffsetParam->setHint( "Add an offset (in frame) at the beginning of the stream. By default 0 offset." );
+		audioOffsetParam->setHint( "Add an offset (in milliseconds) at the beginning of the stream. By default 0." );
 		audioOffsetParam->setRange( 0, INT_MAX );
-		audioOffsetParam->setDisplayRange( 0, 100 );
+		audioOffsetParam->setDisplayRange( 0, 10000 );
 		audioOffsetParam->setDefault( 0 );
 		audioOffsetParam->setParent( audioSubGroupParam );
 	}
