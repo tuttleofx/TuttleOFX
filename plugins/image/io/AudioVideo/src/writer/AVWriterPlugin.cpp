@@ -6,6 +6,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 
 #include <cctype>
 #include <sstream>
@@ -297,6 +298,18 @@ void AVWriterPlugin::updateAudioSelectStream( size_t indexAudioOutput )
 	{
 		bool isSelectStream = _paramAudioSelectStream.at( indexAudioOutput )->getValue();
 		_paramAudioStreamIndex.at( indexAudioOutput )->setIsSecretAndDisabled( ! isSelectStream );
+		if( isSelectStream )
+		{
+			std::string inputFilePath = _paramAudioFilePath.at( indexAudioOutput )->getValue();
+			if( boost::filesystem::exists( inputFilePath ) )
+			{
+				avtranscoder::ProgressListener progress;
+				avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::InputFile::eAnalyseLevelFast );
+				size_t nbAudioStream = properties.audioStreams.size();
+				_paramAudioStreamIndex.at( indexAudioOutput )->setRange( 0, nbAudioStream );
+				_paramAudioStreamIndex.at( indexAudioOutput )->setDisplayRange( 0, nbAudioStream );
+			}
+		}
 	}
 	updateAudioRewrap( indexAudioOutput );
 }
