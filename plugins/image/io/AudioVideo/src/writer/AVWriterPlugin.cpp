@@ -609,13 +609,17 @@ void AVWriterPlugin::initAudio()
 				// at( mainPresetIndex - 1 ): subtract the index of the custom preset
 				profile = _presets.getAudioProfiles().at( mainPresetIndex - 1 );
 				presetName = profile.find( avtranscoder::Profile::avProfileIdentificator )->second;
-				
+			}
+			// Rewrap
+			else if( presetIndex == 1 )
+			{
+				presetName = "";
 			}
 			// specific audio preset
 			else
 			{
-				// at( presetIndex - 1 ): subtract the index of the index of the main preset
-				profile = _presets.getAudioProfiles().at( presetIndex - 1 );
+				// at( presetIndex - 2 ): subtract the index of main preset and rewrap
+				profile = _presets.getAudioProfiles().at( presetIndex - 2 );
 				presetName = profile.find( avtranscoder::Profile::avProfileIdentificator )->second;
 			}
 			
@@ -635,8 +639,8 @@ void AVWriterPlugin::initAudio()
 			else
 			{
 				bool selectOneStream = _paramAudioSelectStream.at( i )->getValue();
-				int inputStreamIndex = selectOneStream ? _paramAudioStreamIndex.at( i )->getValue() : -1;
-				
+				int inputStreamIndex = selectOneStream ? _paramAudioStreamIndex.at( i )->getValue() : -1;				
+
 				// Get number of audio stream
 				size_t nbAudioStream = 1;
 				if( inputStreamIndex == -1 )
@@ -647,20 +651,20 @@ void AVWriterPlugin::initAudio()
 				}
 				
 				// rewrap
-//				if( ! isSilent )
-//				{
-//					if( inputStreamIndex != -1 )
-//					{
-//						_transcoder->add( inputFileName, inputStreamIndex, "" );
-//					}
-//					else
-//					{
-//						for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
-//						{
-//							_transcoder->add( inputFileName, streamIndex, "" );
-//						}
-//					}
-//				}
+				if( ! isSilent && presetIndex == 1 )
+				{
+					if( inputStreamIndex != -1 )
+					{
+						_transcoder->add( inputFileName, inputStreamIndex, presetName );
+					}
+					else
+					{
+						for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
+						{
+							_transcoder->add( inputFileName, streamIndex, presetName );
+						}
+					}
+				}
 				// transcode
 				else
 				{
