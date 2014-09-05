@@ -282,8 +282,8 @@ void AVWriterPlugin::updateAudioSilent( size_t indexAudioOutput )
 		_paramAudioFilePath.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
 		_paramAudioSelectStream.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
 		_paramAudioStreamIndex.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
-		_paramAudioPreset.at( indexAudioOutput )->setIsSecretAndDisabled( false );
 		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
+		_paramAudioPreset.at( indexAudioOutput )->setIsSecretAndDisabled( false );
 	}
 	updateAudioSelectStream( indexAudioOutput );
 }
@@ -452,13 +452,13 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName.find( kParamAudioFilePath ) != std::string::npos )
 	{
 		const size_t indexPos = kParamAudioFilePath.size() + 1; // add "_"
-		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos, indexPos ) );
+		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
 		_paramAudioSilent.at( audioStreamIndex )->setValue( false );
 	}
 	else if( paramName.find( kParamAudioStreamIndex ) != std::string::npos )
 	{
 		const size_t indexPos = kParamAudioStreamIndex.size() + 1; // add "_"
-		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos, indexPos ) );
+		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
 		_paramAudioSelectStream.at( audioStreamIndex )->setValue( true );
 	}
 }
