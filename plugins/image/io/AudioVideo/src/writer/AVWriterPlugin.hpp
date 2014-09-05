@@ -61,6 +61,7 @@ public:
 	void updateAudioParams();
 	void updateAudioSilent();
 	void updateAudioSelectStream();
+	void updateAudioRewrap();
 	
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );

@@ -303,6 +303,21 @@ void AVWriterPlugin::updateAudioSelectStream()
 			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isSelectStream );
 		}
 	}
+	updateAudioRewrap();
+}
+
+void AVWriterPlugin::updateAudioRewrap()
+{
+	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	{
+		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
+			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
+			! _paramAudioSilent.at( idAudioStream )->getValue() )
+		{
+			bool isRewrap = _paramAudioPreset.at( idAudioStream )->getValue() == 1;
+			_paramAudioOffset.at( idAudioStream )->setIsSecretAndDisabled( isRewrap );
+		}
+	}
 }
 
 void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -431,6 +446,10 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName.find( kParamAudioSelectStream ) != std::string::npos )
 	{
 		updateAudioSelectStream();
+	}
+	else if( paramName.find( kParamAudioPreset ) != std::string::npos )
+	{
+		updateAudioRewrap();
 	}
 	else if( paramName.find( kParamAudioFilePath ) != std::string::npos )
 	{
