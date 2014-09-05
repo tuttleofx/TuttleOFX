@@ -637,12 +637,13 @@ void AVWriterPlugin::initAudio()
 				bool selectOneStream = _paramAudioSelectStream.at( i )->getValue();
 				int inputStreamIndex = selectOneStream ? _paramAudioStreamIndex.at( i )->getValue() : -1;
 				
-				size_t nbStream = 1;
+				// Get number of audio stream
+				size_t nbAudioStream = 1;
 				if( inputStreamIndex == -1 )
 				{
 					avtranscoder::ProgressListener progress;
 					avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFileName, progress, avtranscoder::InputFile::eAnalyseLevelFast );
-					nbStream = properties.streamsCount;
+					nbAudioStream = properties.audioStreams.size();
 				}
 				
 				// rewrap
@@ -676,7 +677,7 @@ void AVWriterPlugin::initAudio()
 						}
 						else
 						{
-							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
+							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
 							{
 								_transcoder->add( inputFileName, streamIndex, subStream, profile, offset );
 							}
@@ -691,7 +692,7 @@ void AVWriterPlugin::initAudio()
 						}
 						else
 						{
-							for( size_t streamIndex = 0; streamIndex < nbStream; ++streamIndex )
+							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
 							{
 								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offset );
 							}
