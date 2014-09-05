@@ -22,6 +22,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioSubGroup()
 	, _paramAudioSilent()
 	, _paramAudioFilePath()
+	, _paramAudioFileInfo()
 	, _paramAudioStreamIndex()
 	, _paramAudioPreset()
 	, _paramFormatCustom()
@@ -71,6 +72,11 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioFilePath.push_back( fetchStringParam( audioFilePathName.str() ) );
 		_paramAudioFilePath.back()->setIsSecretAndDisabled( false );
 		
+		std::ostringstream audioFileNbStreamName( kParamAudioFileInfo, std::ios_base::in | std::ios_base::ate );
+		audioFileNbStreamName << "_" << idAudioStream;
+		_paramAudioFileInfo.push_back( fetchStringParam( audioFileNbStreamName.str() ) );
+		_paramAudioFileInfo.back()->setIsSecret( false );
+
 		std::ostringstream audioSelectStreamName( kParamAudioSelectStream, std::ios_base::in | std::ios_base::ate );
 		audioSelectStreamName << "_" << idAudioStream;
 		_paramAudioSelectStream.push_back( fetchBooleanParam( audioSelectStreamName.str() ) );
@@ -265,6 +271,7 @@ void AVWriterPlugin::updateAudioParams()
 		_paramAudioSubGroup.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioSilent.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioFilePath.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioFileInfo.at( indexAudioOutput )->setIsSecret( ! isStreamConcerned );
 		_paramAudioSelectStream.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioStreamIndex.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioPreset.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
@@ -281,6 +288,7 @@ void AVWriterPlugin::updateAudioSilent( size_t indexAudioOutput )
 	{
 		bool isSilent = _paramAudioSilent.at( indexAudioOutput )->getValue();
 		_paramAudioFilePath.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
+		_paramAudioFileInfo.at( indexAudioOutput )->setIsSecret( isSilent );
 		_paramAudioSelectStream.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
 		_paramAudioStreamIndex.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
 		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
@@ -324,6 +332,41 @@ void AVWriterPlugin::updateAudioRewrap( size_t indexAudioOutput )
 		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( isRewrap );
 	}
 }
+
+
+void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
+{
+	if( _paramAudioSubGroup.at( indexAudioOutput )->getIsEnable() &&
+		! _paramAudioSubGroup.at( indexAudioOutput )->getIsSecret() &&
+		! _paramAudioSilent.at( indexAudioOutput )->getValue() )
+	{
+		std::string inputFilePath = _paramAudioFilePath.at( indexAudioOutput )->getValue();
+		if( boost::filesystem::exists( inputFilePath ) )
+		{
+			avtranscoder::ProgressListener progress;
+			avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::InputFile::eAnalyseLevelFast );
+			size_t nbAudioStream = properties.audioStreams.size();
+			std::string audioInfo = "Audio streams: ";
+			audioInfo += boost::lexical_cast<std::string>( nbAudioStream );
+			audioInfo += "\n";
+			for( size_t audioStreamIndex = 0; audioStreamIndex < nbAudioStream; ++audioStreamIndex )
+			{
+				audioInfo += "Stream ";
+				audioInfo += boost::lexical_cast<std::string>( audioStreamIndex );
+				audioInfo += ": ";
+				audioInfo += boost::lexical_cast<std::string>( properties.audioStreams.at( audioStreamIndex ).channels );
+				audioInfo += " channels";
+				audioInfo += "\n";
+			}
+			_paramAudioFileInfo.at( indexAudioOutput )->setValue( audioInfo );
+		}
+		else
+		{
+			_paramAudioFileInfo.at( indexAudioOutput )->setValue( "" );
+		}
+	}
+}
+	
 
 void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
@@ -465,8 +508,10 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName.find( kParamAudioFilePath ) != std::string::npos )
 	{
 		const size_t indexPos = kParamAudioFilePath.size() + 1; // add "_"
-		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
-		_paramAudioSilent.at( audioStreamIndex )->setValue( false );
+		const size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
+		_paramAudioSilent.at( indexAudioOutput )->setValue( false );
+		
+		updateAudioFileInfo( indexAudioOutput );
 	}
 	else if( paramName.find( kParamAudioStreamIndex ) != std::string::npos )
 	{

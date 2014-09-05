@@ -353,6 +353,16 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 		audioFilePathParam->setParent( audioSubGroupParam );
 
+		// display number of audio streams
+		std::ostringstream audioFileInfoName( kParamAudioFileInfo, std::ios_base::in | std::ios_base::ate );
+		audioFileInfoName << "_" << idAudioStream;
+		OFX::StringParamDescriptor* audioFileInfoParam = desc.defineStringParam( audioFileInfoName.str() );
+		audioFileInfoParam->setStringType( OFX::eStringTypeMultiLine );
+		audioFileInfoParam->setLabel( "File info" );
+		audioFileInfoParam->setHint( "Audio information about input file indicated." );
+		audioFileInfoParam->setEnabled( false );
+		audioFileInfoParam->setParent( audioSubGroupParam );
+
 		// add flag to select a stream
 		std::ostringstream audioSelectStreamName( kParamAudioSelectStream, std::ios_base::in | std::ios_base::ate );
 		audioSelectStreamName << "_" << idAudioStream;

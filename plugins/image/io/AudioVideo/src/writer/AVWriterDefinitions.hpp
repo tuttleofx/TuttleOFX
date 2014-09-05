@@ -53,6 +53,7 @@ static const std::string kParamAudioNbInputs             = common::kPrefixAudio 
 static const std::string kParamAudioSubGroup             = common::kPrefixAudio + "subGroup";
 static const std::string kParamAudioSilent               = common::kPrefixAudio + "silent";
 static const std::string kParamAudioFilePath             = common::kPrefixAudio + "filePath";
+static const std::string kParamAudioFileInfo             = common::kPrefixAudio + "fileInfo";
 static const std::string kParamAudioSelectStream         = common::kPrefixAudio + "selectStream";
 static const std::string kParamAudioStreamIndex          = common::kPrefixAudio + "streamIndex";
 static const std::string kParamAudioPreset               = common::kPrefixAudio + "preset";
