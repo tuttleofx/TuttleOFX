@@ -258,65 +258,57 @@ void AVWriterPlugin::updateSampleFormats( const std::string& audioCodecName )
 
 void AVWriterPlugin::updateAudioParams()
 {
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	for( size_t indexAudioOutput = 0; indexAudioOutput < maxNbAudioStream; ++indexAudioOutput )
 	{
-		bool isStreamConcerned = idAudioStream < (size_t)_paramAudioNbStream->getValue();
-		_paramAudioSubGroup.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
-		_paramAudioSilent.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
-		_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
-		_paramAudioSelectStream.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
-		_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
-		_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
-		_paramAudioOffset.at( idAudioStream )->setIsSecretAndDisabled( ! isStreamConcerned );
+		bool isStreamConcerned = indexAudioOutput < (size_t)_paramAudioNbStream->getValue();
+		_paramAudioSubGroup.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioSilent.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioFilePath.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioSelectStream.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioStreamIndex.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioPreset.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
+
+		updateAudioSilent( indexAudioOutput );
 	}
-	updateAudioSilent();
 }
 
-void AVWriterPlugin::updateAudioSilent()
+void AVWriterPlugin::updateAudioSilent( size_t indexAudioOutput )
 {
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	if( _paramAudioSubGroup.at( indexAudioOutput )->getIsEnable() &&
+		! _paramAudioSubGroup.at( indexAudioOutput )->getIsSecret() )
 	{
-		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
-			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() )
-		{
-			bool isSilent = _paramAudioSilent.at( idAudioStream )->getValue();
-			_paramAudioFilePath.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
-			_paramAudioSelectStream.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
-			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
-			_paramAudioPreset.at( idAudioStream )->setIsSecretAndDisabled( false );
-			_paramAudioOffset.at( idAudioStream )->setIsSecretAndDisabled( isSilent );
-		}
+		bool isSilent = _paramAudioSilent.at( indexAudioOutput )->getValue();
+		_paramAudioFilePath.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
+		_paramAudioSelectStream.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
+		_paramAudioStreamIndex.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
+		_paramAudioPreset.at( indexAudioOutput )->setIsSecretAndDisabled( false );
+		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( isSilent );
 	}
-	updateAudioSelectStream();
+	updateAudioSelectStream( indexAudioOutput );
 }
 
 
-void AVWriterPlugin::updateAudioSelectStream()
+void AVWriterPlugin::updateAudioSelectStream( size_t indexAudioOutput )
 {
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	if( _paramAudioSubGroup.at( indexAudioOutput )->getIsEnable() &&
+		! _paramAudioSubGroup.at( indexAudioOutput )->getIsSecret() &&
+		! _paramAudioSilent.at( indexAudioOutput )->getValue() )
 	{
-		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
-			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
-			! _paramAudioSilent.at( idAudioStream )->getValue() )
-		{
-			bool isSelectStream = _paramAudioSelectStream.at( idAudioStream )->getValue();
-			_paramAudioStreamIndex.at( idAudioStream )->setIsSecretAndDisabled( ! isSelectStream );
-		}
+		bool isSelectStream = _paramAudioSelectStream.at( indexAudioOutput )->getValue();
+		_paramAudioStreamIndex.at( indexAudioOutput )->setIsSecretAndDisabled( ! isSelectStream );
 	}
-	updateAudioRewrap();
+	updateAudioRewrap( indexAudioOutput );
 }
 
-void AVWriterPlugin::updateAudioRewrap()
+void AVWriterPlugin::updateAudioRewrap( size_t indexAudioOutput )
 {
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	if( _paramAudioSubGroup.at( indexAudioOutput )->getIsEnable() &&
+		! _paramAudioSubGroup.at( indexAudioOutput )->getIsSecret() &&
+		! _paramAudioSilent.at( indexAudioOutput )->getValue() )
 	{
-		if( _paramAudioSubGroup.at( idAudioStream )->getIsEnable() &&
-			! _paramAudioSubGroup.at( idAudioStream )->getIsSecret() &&
-			! _paramAudioSilent.at( idAudioStream )->getValue() )
-		{
-			bool isRewrap = _paramAudioPreset.at( idAudioStream )->getValue() == 1;
-			_paramAudioOffset.at( idAudioStream )->setIsSecretAndDisabled( isRewrap );
-		}
+		bool isRewrap = _paramAudioPreset.at( indexAudioOutput )->getValue() == 1;
+		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( isRewrap );
 	}
 }
 
@@ -441,15 +433,21 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName.find( kParamAudioSilent ) != std::string::npos )
 	{
-		updateAudioSilent();
+		const size_t indexPos = kParamAudioSilent.size() + 1; // add "_"
+		size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
+		updateAudioSilent( indexAudioOutput );
 	}
 	else if( paramName.find( kParamAudioSelectStream ) != std::string::npos )
 	{
-		updateAudioSelectStream();
+		const size_t indexPos = kParamAudioSelectStream.size() + 1; // add "_"
+		size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
+		updateAudioSelectStream( indexAudioOutput );
 	}
 	else if( paramName.find( kParamAudioPreset ) != std::string::npos )
 	{
-		updateAudioRewrap();
+		const size_t indexPos = kParamAudioPreset.size() + 1; // add "_"
+		size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
+		updateAudioRewrap( indexAudioOutput );
 	}
 	else if( paramName.find( kParamAudioFilePath ) != std::string::npos )
 	{

@@ -59,9 +59,9 @@ public:
 	void updateSampleFormats( const std::string& audioCodecName );
 	void updatePixelFormats( const std::string& videoCodecName );
 	void updateAudioParams();
-	void updateAudioSilent();
-	void updateAudioSelectStream();
-	void updateAudioRewrap();
+	void updateAudioSilent( size_t indexAudioOutput );
+	void updateAudioSelectStream( size_t indexAudioOutput );
+	void updateAudioRewrap( size_t indexAudioOutput );
 	
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
