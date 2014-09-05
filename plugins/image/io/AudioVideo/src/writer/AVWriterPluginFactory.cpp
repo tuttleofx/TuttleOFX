@@ -319,25 +319,25 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::IntParamDescriptor* audioNbInputs = desc.defineIntParam( kParamAudioNbInputs );
 	audioNbInputs->setLabel( "Number Of Audio Inputs" );
 	audioNbInputs->setHint( "An 'Input' allow you to create one of several audio streams in your output file. It could be by rewrap or transcode one or several audio streams of an input file, or by generate a dummy audio stream." );
-	audioNbInputs->setRange( 0, maxNbAudioStream );
-	audioNbInputs->setDisplayRange( 0, maxNbAudioStream );
+	audioNbInputs->setRange( 0, maxNbAudioInput );
+	audioNbInputs->setDisplayRange( 0, maxNbAudioInput );
 	audioNbInputs->setDefault( 1 );
 	audioNbInputs->setParent( audioGroup );
 	
 	// add a list of audioSubGroup (managed dynamically by the plugin)
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	for( size_t indexAudioInput = 0; indexAudioInput < maxNbAudioInput; ++indexAudioInput )
 	{
 		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
-		audioSubGroupName << "_" << idAudioStream;
+		audioSubGroupName << "_" << indexAudioInput;
 		OFX::GroupParamDescriptor* audioSubGroupParam = desc.defineGroupParam( audioSubGroupName.str() );
 		std::ostringstream audioSubGroupLabel( "Input ", std::ios_base::in | std::ios_base::ate );
-		audioSubGroupLabel << idAudioStream;
+		audioSubGroupLabel << indexAudioInput;
 		audioSubGroupParam->setLabel( audioSubGroupLabel.str() );
 		audioSubGroupParam->setParent( audioGroup );
 		
 		// add flag to audio silent
 		std::ostringstream audioSilentName( kParamAudioSilent, std::ios_base::in | std::ios_base::ate );
-		audioSilentName << "_" << idAudioStream;
+		audioSilentName << "_" << indexAudioInput;
 		OFX::BooleanParamDescriptor* audioSilentParam = desc.defineBooleanParam( audioSilentName.str() );
 		audioSilentParam->setLabel( "Silent stream" );
 		audioSilentParam->setHint( "Write a silent audio stream" );
@@ -346,7 +346,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		
 		// add audio file path
 		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
-		audioFilePathName << "_" << idAudioStream;
+		audioFilePathName << "_" << indexAudioInput;
 		OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( audioFilePathName.str() );
 		audioFilePathParam->setLabel( "Input File Path" );
 		audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
@@ -355,7 +355,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 		// display number of audio streams
 		std::ostringstream audioFileInfoName( kParamAudioFileInfo, std::ios_base::in | std::ios_base::ate );
-		audioFileInfoName << "_" << idAudioStream;
+		audioFileInfoName << "_" << indexAudioInput;
 		OFX::StringParamDescriptor* audioFileInfoParam = desc.defineStringParam( audioFileInfoName.str() );
 		audioFileInfoParam->setStringType( OFX::eStringTypeMultiLine );
 		audioFileInfoParam->setLabel( "File info" );
@@ -365,7 +365,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 		// add flag to select a stream
 		std::ostringstream audioSelectStreamName( kParamAudioSelectStream, std::ios_base::in | std::ios_base::ate );
-		audioSelectStreamName << "_" << idAudioStream;
+		audioSelectStreamName << "_" << indexAudioInput;
 		OFX::BooleanParamDescriptor* audioSelectStreamParam = desc.defineBooleanParam( audioSelectStreamName.str() );
 		audioSelectStreamParam->setLabel( "Select One Stream" );
 		audioSelectStreamParam->setHint( "By default select all streams of the input file." );
@@ -374,7 +374,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		
 		// add audio stream index
 		std::ostringstream audioStreamIndexName( kParamAudioStreamIndex, std::ios_base::in | std::ios_base::ate );
-		audioStreamIndexName << "_" << idAudioStream;
+		audioStreamIndexName << "_" << indexAudioInput;
 		OFX::IntParamDescriptor* audioStreamIndexParam = desc.defineIntParam( audioStreamIndexName.str() );
 		audioStreamIndexParam->setLabel( "Input Stream Index" );
 		audioStreamIndexParam->setHint( "Select a specific stream of the input file." );
@@ -385,7 +385,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		
 		// add audio codec preset
 		std::ostringstream audioPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
-		audioPresetName << "_" << idAudioStream;
+		audioPresetName << "_" << indexAudioInput;
 		OFX::ChoiceParamDescriptor* audioPresetParam = desc.defineChoiceParam( audioPresetName.str() );
 		audioPresetParam->setLabel( "Output Encoding" );
 		audioPresetParam->setHint( "Choose a preset to easily get a configuration for the audio 'Output'." );
@@ -404,7 +404,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		
 		// add audio channel index
 		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
-		audioOffsetName << "_" << idAudioStream;
+		audioOffsetName << "_" << indexAudioInput;
 		OFX::IntParamDescriptor* audioOffsetParam = desc.defineIntParam( audioOffsetName.str() );
 		audioOffsetParam->setLabel( "Offset" );
 		audioOffsetParam->setHint( "Add an offset (in frame) at the beginning of the stream. By default 0 offset." );

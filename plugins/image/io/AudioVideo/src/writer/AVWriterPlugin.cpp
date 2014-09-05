@@ -54,48 +54,48 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramAudioCustomGroup = fetchGroupParam( kParamAudioCustomGroup );
 	_paramAudioCodec = fetchChoiceParam( kParamAudioCodec );
 	
-	_paramAudioNbStream = fetchIntParam( kParamAudioNbInputs );
-	for( size_t idAudioStream = 0; idAudioStream < maxNbAudioStream; ++idAudioStream )
+	_paramAudioNbInput = fetchIntParam( kParamAudioNbInputs );
+	for( size_t indexAudioInput = 0; indexAudioInput < maxNbAudioInput; ++indexAudioInput )
 	{
 		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
-		audioSubGroupName << "_" << idAudioStream;
+		audioSubGroupName << "_" << indexAudioInput;
 		_paramAudioSubGroup.push_back( fetchGroupParam( audioSubGroupName.str() ) );
-		_paramAudioSubGroup.back()->setIsSecretAndDisabled( false );
+		_paramAudioSubGroup.back()->setIsSecretAndDisabled( true );
 		
 		std::ostringstream audioSilentName( kParamAudioSilent, std::ios_base::in | std::ios_base::ate );
-		audioSilentName << "_" << idAudioStream;
+		audioSilentName << "_" << indexAudioInput;
 		_paramAudioSilent.push_back( fetchBooleanParam( audioSilentName.str() ) );
-		_paramAudioSilent.back()->setIsSecretAndDisabled( false );
+		_paramAudioSilent.back()->setIsSecretAndDisabled( true );
 		
 		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
-		audioFilePathName << "_" << idAudioStream;
+		audioFilePathName << "_" << indexAudioInput;
 		_paramAudioFilePath.push_back( fetchStringParam( audioFilePathName.str() ) );
-		_paramAudioFilePath.back()->setIsSecretAndDisabled( false );
+		_paramAudioFilePath.back()->setIsSecretAndDisabled( true );
 		
 		std::ostringstream audioFileNbStreamName( kParamAudioFileInfo, std::ios_base::in | std::ios_base::ate );
-		audioFileNbStreamName << "_" << idAudioStream;
+		audioFileNbStreamName << "_" << indexAudioInput;
 		_paramAudioFileInfo.push_back( fetchStringParam( audioFileNbStreamName.str() ) );
-		_paramAudioFileInfo.back()->setIsSecret( false );
+		_paramAudioFileInfo.back()->setIsSecret( true );
 
 		std::ostringstream audioSelectStreamName( kParamAudioSelectStream, std::ios_base::in | std::ios_base::ate );
-		audioSelectStreamName << "_" << idAudioStream;
+		audioSelectStreamName << "_" << indexAudioInput;
 		_paramAudioSelectStream.push_back( fetchBooleanParam( audioSelectStreamName.str() ) );
-		_paramAudioSelectStream.back()->setIsSecretAndDisabled( false );
+		_paramAudioSelectStream.back()->setIsSecretAndDisabled( true );
 
 		std::ostringstream audioStreamIndexName( kParamAudioStreamIndex, std::ios_base::in | std::ios_base::ate );
-		audioStreamIndexName << "_" << idAudioStream;
+		audioStreamIndexName << "_" << indexAudioInput;
 		_paramAudioStreamIndex.push_back( fetchIntParam( audioStreamIndexName.str() ) );
-		_paramAudioStreamIndex.back()->setIsSecretAndDisabled( false );
+		_paramAudioStreamIndex.back()->setIsSecretAndDisabled( true );
 		
 		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
-		audioCodecPresetName << "_" << idAudioStream;
+		audioCodecPresetName << "_" << indexAudioInput;
 		_paramAudioPreset.push_back( fetchChoiceParam( audioCodecPresetName.str() ) );
-		_paramAudioPreset.back()->setIsSecretAndDisabled( false );
+		_paramAudioPreset.back()->setIsSecretAndDisabled( true );
 
 		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
-		audioOffsetName << "_" << idAudioStream;
+		audioOffsetName << "_" << indexAudioInput;
 		_paramAudioOffset.push_back( fetchIntParam( audioOffsetName.str() ) );
-		_paramAudioOffset.back()->setIsSecretAndDisabled( false );
+		_paramAudioOffset.back()->setIsSecretAndDisabled( true );
 	}
 	updateAudioParams();
 	
@@ -265,9 +265,9 @@ void AVWriterPlugin::updateSampleFormats( const std::string& audioCodecName )
 
 void AVWriterPlugin::updateAudioParams()
 {
-	for( size_t indexAudioOutput = 0; indexAudioOutput < maxNbAudioStream; ++indexAudioOutput )
+	for( size_t indexAudioOutput = 0; indexAudioOutput < maxNbAudioInput; ++indexAudioOutput )
 	{
-		bool isStreamConcerned = indexAudioOutput < (size_t)_paramAudioNbStream->getValue();
+		bool isStreamConcerned = indexAudioOutput < (size_t)_paramAudioNbInput->getValue();
 		_paramAudioSubGroup.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioSilent.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
 		_paramAudioFilePath.at( indexAudioOutput )->setIsSecretAndDisabled( ! isStreamConcerned );
@@ -516,8 +516,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName.find( kParamAudioStreamIndex ) != std::string::npos )
 	{
 		const size_t indexPos = kParamAudioStreamIndex.size() + 1; // add "_"
-		const size_t audioStreamIndex = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
-		_paramAudioSelectStream.at( audioStreamIndex )->setValue( true );
+		const size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
+		_paramAudioSelectStream.at( indexAudioOutput )->setValue( true );
 	}
 }
 
@@ -645,7 +645,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 void AVWriterPlugin::initAudio()
 {
 	// no audio stream specified
-	if( ! _paramAudioNbStream->getValue() )
+	if( ! _paramAudioNbInput->getValue() )
 		return;
 
 	if( ! isOutputInit() )
@@ -662,7 +662,7 @@ void AVWriterPlugin::initAudio()
 		avtranscoder::Profile::ProfileDesc profile;
 		std::string presetName( "" );
 		
-		for( int i = 0; i < _paramAudioNbStream->getValue(); ++i )
+		for( int i = 0; i < _paramAudioNbInput->getValue(); ++i )
 		{
 			std::string inputFileName( _paramAudioFilePath.at( i )->getValue() );
 			size_t presetIndex = _paramAudioPreset.at( i )->getValue();

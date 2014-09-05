@@ -99,7 +99,7 @@ public:
 	OFX::GroupParam* _paramAudioCustomGroup;
 	OFX::ChoiceParam* _paramAudioCodec;
 	
-	OFX::IntParam* _paramAudioNbStream;
+	OFX::IntParam* _paramAudioNbInput;
 	std::vector<OFX::GroupParam*> _paramAudioSubGroup;
 	std::vector<OFX::BooleanParam*> _paramAudioSilent;
 	std::vector<OFX::StringParam*> _paramAudioFilePath;

@@ -59,7 +59,7 @@ static const std::string kParamAudioStreamIndex          = common::kPrefixAudio 
 static const std::string kParamAudioPreset               = common::kPrefixAudio + "preset";
 static const std::string kParamAudioOffset               = common::kPrefixAudio + "offset";
 
-static const size_t maxNbAudioStream                     = 16;
+static const size_t maxNbAudioInput                      = 16;
 
 static const std::string kParamMetaAlbum           = common::kPrefixMetaData + "album";
 static const std::string kParamMetaAlbumArtist     = common::kPrefixMetaData + "album_artist";
