@@ -277,7 +277,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				choiceParam->setDefault( option.getDefaultChildIndex() );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
-					choiceParam->appendOption( child.getName(), child.getHelp() );
+					choiceParam->appendOption( child.getName() + " " + child.getHelp() );
 				}
 				param = choiceParam;
 				break;

@@ -104,7 +104,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// MAIN PRESET SELECTOR
 	OFX::ChoiceParamDescriptor* mainPreset = desc.defineChoiceParam( kParamMainPreset );
 	mainPreset->setLabel( "Main Preset" );
-	mainPreset->appendOption( "custom", "Customized configuration" );
+	mainPreset->appendOption( "custom: Customized configuration" );
 	// @todo: add presets
 	
 	// Groups
@@ -130,14 +130,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// format preset
 	OFX::ChoiceParamDescriptor* formatPreset = desc.defineChoiceParam( kParamFormatPreset );
 	formatPreset->setLabel( "Format Preset" );
-	formatPreset->appendOption( "custom", "Customized configuration" );
+	formatPreset->appendOption( "custom: Customized configuration" );
 	formatPreset->setParent( formatGroup );
 	
 	avtranscoder::Profile::ProfilesDesc formatPresets = presets.getFormatProfiles();
 	for( avtranscoder::Profile::ProfilesDesc::iterator it = formatPresets.begin(); it != formatPresets.end(); ++it )
 	{
 		formatPreset->appendOption( 
-			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second +
+			": " +
 			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
 		);
 	}
@@ -159,7 +160,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		++itShort,
 		++itLong )
 	{
-		format->appendOption( *itShort, *itLong );
+		format->appendOption( *itShort + ": " + *itLong );
 		if( (*itShort) == "mp4" )
 			default_format = format->getNOptions() - 1;
 	}
@@ -182,14 +183,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// VIDEO PARAMETERS
 	OFX::ChoiceParamDescriptor* videoPresetParam = desc.defineChoiceParam( kParamVideoPreset );
 	videoPresetParam->setLabel( "Video Preset" );
-	videoPresetParam->appendOption( "custom", "Customized configuration" );
+	videoPresetParam->appendOption( "custom: Customized configuration" );
 	videoPresetParam->setParent( videoGroup );
 	
 	avtranscoder::Profile::ProfilesDesc videoPresets = presets.getVideoProfiles();
 	for( avtranscoder::Profile::ProfilesDesc::iterator it = videoPresets.begin(); it != videoPresets.end(); ++it )
 	{
 		videoPresetParam->appendOption( 
-			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second +
+			": " + 
 			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
 		);
 	}
@@ -224,7 +226,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		++itShort,
 		++itLong )
 	{
-		videoCodec->appendOption( *itShort, *itLong );
+		videoCodec->appendOption( *itShort + ": " + *itLong );
 		if( (*itShort) == defaultVideoCodec )
 			default_codec = videoCodec->getNOptions() - 1;
 	}
@@ -256,14 +258,15 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// AUDIO PARAMETERS
 	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamAudioMainPreset );
 	audioMainPresetParam->setLabel( "Main Preset" );
-	audioMainPresetParam->appendOption( "custom", "Customized configuration" );
+	audioMainPresetParam->appendOption( "custom: Customized configuration" );
 	audioMainPresetParam->setParent( audioGroup );
 
 	avtranscoder::Profile::ProfilesDesc audioPresets = presets.getAudioProfiles();
 	for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 	{
 		audioMainPresetParam->appendOption( 
-			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second +
+			": " +
 			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
 		);
 	}
@@ -284,7 +287,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		++itShort,
 		++itLong )
 	{
-		audioCodecParam->appendOption( *itShort, *itLong );
+		audioCodecParam->appendOption( *itShort + ": " + *itLong );
 		if( (*itShort) == defaultAudioCodec )
 			default_audio_codec = audioCodecParam->getNOptions() - 1;
 	}
@@ -371,19 +374,20 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioStreamIndexParam->setParent( audioSubGroupParam );
 		
 		// add audio codec preset
-		std::ostringstream audioCodecPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
-		audioCodecPresetName << "_" << idAudioStream;
-		OFX::ChoiceParamDescriptor* audioCodecPresetParam = desc.defineChoiceParam( audioCodecPresetName.str() );
-		audioCodecPresetParam->setLabel( "Output Encoding" );
-		audioCodecPresetParam->setHint( "Choose a preset to easily get a configuration for the audio 'Output'." );
-		audioCodecPresetParam->appendOption( "main preset", "Main Preset refers to the list of presets at the top of the 'Audio' tab" );
-		audioCodecPresetParam->appendOption( "rewrap", "Rewrap (no transcode)" );
-		audioCodecPresetParam->setParent( audioSubGroupParam );
+		std::ostringstream audioPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
+		audioPresetName << "_" << idAudioStream;
+		OFX::ChoiceParamDescriptor* audioPresetParam = desc.defineChoiceParam( audioPresetName.str() );
+		audioPresetParam->setLabel( "Output Encoding" );
+		audioPresetParam->setHint( "Choose a preset to easily get a configuration for the audio 'Output'." );
+		audioPresetParam->appendOption( "main preset: Refers to the list of Main Presets" );
+		audioPresetParam->appendOption( "rewrap: Copy audio data (no transcode)" );
+		audioPresetParam->setParent( audioSubGroupParam );
 
 		for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 		{
-			audioCodecPresetParam->appendOption( 
-				(*it).find( avtranscoder::Profile::avProfileIdentificator )->second, 
+			audioPresetParam->appendOption( 
+				(*it).find( avtranscoder::Profile::avProfileIdentificator )->second + 
+				": " +
 				(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
 			);
 		}
