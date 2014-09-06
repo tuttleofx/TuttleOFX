@@ -344,7 +344,12 @@ OfxhImageEffectNode::~OfxhImageEffectNode()
 	// destroy the instance, only if succesfully created
 	if( _created )
 	{
-		mainEntry( kOfxActionDestroyInstance, this->getHandle(), 0, 0 );
+		OfxStatus status = mainEntry( kOfxActionDestroyInstance, this->getHandle(), 0, 0 );
+		if( status != kOfxStatOK &&
+			status != kOfxStatReplyDefault )
+		{
+			TUTTLE_LOG_TRACE( "OFXh: Failed to destroy the effect instance. Status is " << mapStatusToString(status) << "." );
+		}
 	}
 }
 

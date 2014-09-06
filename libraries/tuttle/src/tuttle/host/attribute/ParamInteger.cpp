@@ -10,9 +10,8 @@ ParamInteger::ParamInteger( INode&                           effect,
                             const std::string&                         name,
                             const ofx::attribute::OfxhParamDescriptor& descriptor,
                             const std::size_t                          index )
-  : AnimatedParamInteger( effect, name, descriptor, index )
+  : AnimatedParamInteger( effect, name, descriptor, index, getDefault() )
 {
-	_value = getDefault();
 }
 
 int ParamInteger::getDefault() const

@@ -59,8 +59,12 @@ public:
 	};
 	
 public:
-	INode() {}
-	INode( const INode& e ) {}
+	INode()
+	: _data(NULL)
+	{}
+	INode( const INode& e )
+	: _data(NULL)
+	{}
 	
 	virtual ~INode() = 0;
 	virtual INode* clone() const = 0;

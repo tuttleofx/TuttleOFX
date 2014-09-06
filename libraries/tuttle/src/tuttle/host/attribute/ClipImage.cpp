@@ -36,6 +36,7 @@ ClipImage::ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescript
 	, tuttle::host::ofx::attribute::OfxhClipImage( desc )
 	, _isConnected( false )
 	, _continuousSamples( false )
+	, _connectedClip( NULL )
 {
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleIdentifier", 1, 1, "" ) );

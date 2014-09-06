@@ -48,9 +48,11 @@ public:
 		INode& effect,
 		const std::string& name,
 		const ofx::attribute::OfxhParamDescriptor& descriptor,
-		const std::size_t index )
+		const std::size_t index,
+		const T value )
 	: Param( effect )
 	, OFX_PARAM( descriptor, name, effect.getParamSet( ), index )
+	, _value( value )
 	, _interpolator( new LinearInterpolator<T>() )
 	{
 	}
@@ -58,6 +60,7 @@ public:
 	AnimatedParam( const AnimatedParam<T, OFX_PARAM>& other )
 	: Param( other )
 	, OFX_PARAM( other )
+	, _value( other._value )
 	, _interpolator( other._interpolator->clone() )
 	{
 	}
@@ -363,8 +366,9 @@ public:
 		INode& effect,
 		const std::string& name,
 		const ofx::attribute::OfxhParamDescriptor& descriptor,
-		const std::size_t index )
-	: Parent( effect, name, descriptor, index )
+		const std::size_t index,
+		const double value )
+	: Parent( effect, name, descriptor, index, value )
 	{}
 	
 	inline void setValue( const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC

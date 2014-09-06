@@ -736,8 +736,12 @@ OfxRangeD ImageEffectNode::computeTimeDomain()
 	{
 		range = defaultRange;
 	}
-	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setFrameRange( range.min, range.max );
-	dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName])->setUnmappedFrameRange( range.min, range.max );
+	attribute::ClipImage* clip = dynamic_cast<attribute::ClipImage*>(_clipImages[kOfxImageEffectOutputClipName]);
+	if( clip )
+	{
+		clip->setFrameRange( range.min, range.max );
+		clip->setUnmappedFrameRange( range.min, range.max );
+	}
 	return range;
 }
 

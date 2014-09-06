@@ -50,6 +50,9 @@ public:
 		, _imageOrientation( imageOrientation )
 		, _nbThreads( 0 ) // auto, maximum allowable number of CPUs will be used
 	{
+		_dstPixelRod = {0, 0, 0, 0};
+		_dstPixelRodSize = {0, 0};
+		_renderWindowSize = {0, 0};
 		_renderArgs.renderWindow.x1 = _renderArgs.renderWindow.y1 = _renderArgs.renderWindow.x2 = _renderArgs.renderWindow.y2 = 0;
 		_renderArgs.renderScale.x   = _renderArgs.renderScale.y = 0;
 		_renderArgs.time            = -1;

@@ -6,6 +6,8 @@ namespace host {
 namespace graph {
 
 ProcessEdgeAtTime::ProcessEdgeAtTime()
+: _inTime( 0.0 )
+, _outTime( 0.0 )
 {
 }
 
@@ -18,6 +20,8 @@ ProcessEdgeAtTime::ProcessEdgeAtTime( const ProcessVertexAtTime::Key& out, const
 
 ProcessEdgeAtTime::ProcessEdgeAtTime( const ProcessEdge& e )
 : IEdge( e )
+, _inTime( 0.0 )
+, _outTime( 0.0 )
 {
 }
 

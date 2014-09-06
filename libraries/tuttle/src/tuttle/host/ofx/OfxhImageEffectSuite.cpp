@@ -64,14 +64,12 @@ OfxStatus clipDefine( OfxImageEffectHandle  h1,
 
 	imageEffect::OfxhImageEffectNodeDescriptor* effectDescriptor = dynamic_cast<imageEffect::OfxhImageEffectNodeDescriptor*>( effectBase );
 
-	if( effectDescriptor )
-	{
-		attribute::OfxhClipImageDescriptor* clip = effectDescriptor->defineClip( name );
-		*h2 = clip->getPropHandle();
-		return kOfxStatOK;
-	}
-
-	return kOfxStatErrBadHandle;
+	if( !effectDescriptor )
+		return kOfxStatErrBadHandle;
+	
+	attribute::OfxhClipImageDescriptor* clip = effectDescriptor->defineClip( name );
+	*h2 = clip->getPropHandle();
+	return kOfxStatOK;
 }
 
 OfxStatus clipGetPropertySet( OfxImageClipHandle    clip,
@@ -84,13 +82,8 @@ OfxStatus clipGetPropertySet( OfxImageClipHandle    clip,
 		return kOfxStatErrBadHandle;
 	}
 
-	if( clipInstance )
-	{
-		*propHandle = clipInstance->getPropHandle();
-		return kOfxStatOK;
-	}
-
-	return kOfxStatErrBadHandle;
+	*propHandle = clipInstance->getPropHandle();
+	return kOfxStatOK;
 }
 
 OfxStatus clipGetImage( OfxImageClipHandle    h1,
@@ -129,9 +122,8 @@ OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
 
 	OfxhImage* image = dynamic_cast<OfxhImage*>( pset );
 	if( !image )
-	{
 		return kOfxStatErrBadHandle;
-	}
+	
 	// clip::image has a virtual destructor for derived classes
 	image->releaseReference( OfxhImage::eReferenceOwnerPlugin );
 	return kOfxStatOK;
@@ -145,22 +137,19 @@ OfxStatus clipGetHandle( OfxImageEffectHandle  imageEffect,
 	imageEffect::OfxhImageEffectNodeBase* effectBase = reinterpret_cast<imageEffect::OfxhImageEffectNodeBase*>( imageEffect );
 
 	if( !effectBase || !effectBase->verifyMagic() )
-	{
 		return kOfxStatErrBadHandle;
-	}
 
-	imageEffect::OfxhImageEffectNode* effectInstance = reinterpret_cast<imageEffect::OfxhImageEffectNode*>( effectBase );
+	imageEffect::OfxhImageEffectNode* effectInstance = dynamic_cast<imageEffect::OfxhImageEffectNode*>( effectBase );
 
-	if( effectInstance )
-	{
-		attribute::OfxhClipImage& instance = effectInstance->getClip( name );
-		*clip = instance.getOfxImageClipHandle();
-		if( propertySet )
-			*propertySet = instance.getPropHandle();
-		return kOfxStatOK;
-	}
+	if( !effectInstance )
+		return kOfxStatErrBadHandle;
 
-	return kOfxStatErrBadHandle;
+	attribute::OfxhClipImage& instance = effectInstance->getClip( name );
+	*clip = instance.getOfxImageClipHandle();
+	if( propertySet )
+		*propertySet = instance.getPropHandle();
+	
+	return kOfxStatOK;
 }
 
 OfxStatus clipGetRegionOfDefinition( OfxImageClipHandle clip,
@@ -170,17 +159,10 @@ OfxStatus clipGetRegionOfDefinition( OfxImageClipHandle clip,
 	attribute::OfxhClipImage* clipInstance = reinterpret_cast<attribute::OfxhClipImage*>( clip );
 
 	if( !clipInstance || !clipInstance->verifyMagic() )
-	{
 		return kOfxStatErrBadHandle;
-	}
 
-	if( clipInstance )
-	{
-		*bounds = clipInstance->fetchRegionOfDefinition( time );
-		return kOfxStatOK;
-	}
-
-	return kOfxStatErrBadHandle;
+	*bounds = clipInstance->fetchRegionOfDefinition( time );
+	return kOfxStatOK;
 }
 
 // should processing be aborted?
@@ -190,16 +172,14 @@ int abort( OfxImageEffectHandle imageEffect )
 	imageEffect::OfxhImageEffectNodeBase* effectBase = reinterpret_cast<imageEffect::OfxhImageEffectNodeBase*>( imageEffect );
 
 	if( !effectBase || !effectBase->verifyMagic() )
-	{
 		return kOfxStatErrBadHandle;
-	}
 
 	imageEffect::OfxhImageEffectNode* effectInstance = dynamic_cast<imageEffect::OfxhImageEffectNode*>( effectBase );
 
-	if( effectInstance )
-		return effectInstance->abort();
-	else
+	if( !effectInstance )
 		return kOfxStatErrBadHandle;
+	
+	return effectInstance->abort();
 }
 
 OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
@@ -207,16 +187,16 @@ OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
 			    OfxImageMemoryHandle* memoryHandle )
 {
 	imageEffect::OfxhImageEffectNodeBase* effectBase = reinterpret_cast<imageEffect::OfxhImageEffectNodeBase*>( instanceHandle );
-	imageEffect::OfxhImageEffectNode* effectInstance = reinterpret_cast<imageEffect::OfxhImageEffectNode*>( effectBase );
+	if( !effectBase || !effectBase->verifyMagic() )
+		return kOfxStatErrBadHandle;
+
+	imageEffect::OfxhImageEffectNode* effectInstance = dynamic_cast<imageEffect::OfxhImageEffectNode*>( effectBase );
 	OfxhMemory* memory;
 
 	if( effectInstance )
 	{
-
 		if( !effectInstance->verifyMagic() )
-		{
 			return kOfxStatErrBadHandle;
-		}
 
 		memory = effectInstance->imageMemoryAlloc( nBytes );
 	}
@@ -234,42 +214,36 @@ OfxStatus imageMemoryFree( OfxImageMemoryHandle memoryHandle )
 {
 	OfxhMemory* memoryInstance = reinterpret_cast<OfxhMemory*>( memoryHandle );
 
-	if( memoryInstance && memoryInstance->verifyMagic() )
-	{
-		memoryInstance->freeMem();
-		delete memoryInstance;
-		return kOfxStatOK;
-	}
-	else
+	if( !memoryInstance || !memoryInstance->verifyMagic() )
 		return kOfxStatErrBadHandle;
+	
+	memoryInstance->freeMem();
+	delete memoryInstance;
+	return kOfxStatOK;
 }
 
 OfxStatus imageMemoryLock( OfxImageMemoryHandle memoryHandle,
-			   void**               returnedPtr )
+			   void** returnedPtr )
 {
 	OfxhMemory* memoryInstance = reinterpret_cast<OfxhMemory*>( memoryHandle );
 
-	if( memoryInstance && memoryInstance->verifyMagic() )
-	{
-		memoryInstance->lock();
-		*returnedPtr = memoryInstance->getPtr();
-		return kOfxStatOK;
-	}
-
-	return kOfxStatErrBadHandle;
+	if( !memoryInstance || !memoryInstance->verifyMagic() )
+		return kOfxStatErrBadHandle;
+	
+	memoryInstance->lock();
+	*returnedPtr = memoryInstance->getPtr();
+	return kOfxStatOK;
 }
 
 OfxStatus imageMemoryUnlock( OfxImageMemoryHandle memoryHandle )
 {
 	OfxhMemory* memoryInstance = reinterpret_cast<OfxhMemory*>( memoryHandle );
 
-	if( memoryInstance && memoryInstance->verifyMagic() )
-	{
-		memoryInstance->unlock();
-		return kOfxStatOK;
-	}
-
-	return kOfxStatErrBadHandle;
+	if( !memoryInstance || !memoryInstance->verifyMagic() )
+		return kOfxStatErrBadHandle;
+	
+	memoryInstance->unlock();
+	return kOfxStatOK;
 }
 
 struct OfxImageEffectSuiteV1 gImageEffectSuite =

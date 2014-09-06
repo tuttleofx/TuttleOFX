@@ -751,6 +751,8 @@ PushButtonParamDescriptor::PushButtonParamDescriptor( const std::string& name, O
 /** @brief hidden constructor */
 ParametricParamDescriptor::ParametricParamDescriptor( const std::string& name, OfxPropertySetHandle props )
     : ParamDescriptor( name, eParametricParam, props )
+	, _ofxParamHandle(NULL)
+	, _paramSet(NULL)
 {
 }
 

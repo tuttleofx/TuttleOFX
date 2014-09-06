@@ -128,12 +128,38 @@ struct ValueHolder
 	double vDouble;
 	void* vPointer;
 
-	ValueHolder( void ) {}
-	ValueHolder( char* s ) : vString( s ) {}
-	ValueHolder( const std::string& s ) : vString( s ) {}
-	ValueHolder( int i ) : vInt( i ) {}
-	ValueHolder( double d ) : vDouble( d ) {}
-	ValueHolder( void* p ) : vPointer( p ) {}
+	ValueHolder( void )
+	: vInt(0)
+	, vDouble(0)
+	, vPointer(NULL)
+	{}
+	ValueHolder( char* s )
+	: vString( s )
+	, vInt(0)
+	, vDouble(0)
+	, vPointer(NULL)
+	{}
+	ValueHolder( const std::string& s )
+	: vString( s )
+	, vInt(0)
+	, vDouble(0)
+	, vPointer(NULL)
+	{}
+	ValueHolder( int i )
+	: vInt( i )
+	, vDouble(0)
+	, vPointer(NULL)
+	{}
+	ValueHolder( double d )
+	: vInt(0)
+	, vDouble( d )
+	, vPointer(NULL)
+	{}
+	ValueHolder( void* p )
+	: vInt(0)
+	, vDouble(0)
+	, vPointer( p )
+	{}
 
 	ValueHolder& operator =( char* v )       { vString = v; return *this; }
 	ValueHolder& operator =( std::string v ) { vString = v; return *this; }
