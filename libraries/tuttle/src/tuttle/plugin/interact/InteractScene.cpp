@@ -18,8 +18,8 @@ InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos 
 	, _manipulator( NULL )
 	, _manipulatorColor( NULL )
 	, _hasSelection( false )
-	, _selectionRect( {.0, .0, .0, .0} )
 {
+	_selectionRect.x1 = _selectionRect.y1 = _selectionRect.x2 = _selectionRect.y2 = .0;
 }
 
 InteractScene::~InteractScene()

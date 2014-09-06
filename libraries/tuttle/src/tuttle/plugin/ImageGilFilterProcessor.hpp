@@ -31,7 +31,7 @@ template<class SView, class DView>
 ImageGilFilterProcessor<SView, DView>::ImageGilFilterProcessor( OFX::ImageEffect& effect, const EImageOrientation imageOrientation )
 	: ImageGilProcessor<DView>( effect, imageOrientation )
 {
-	_srcPixelRod = {0, 0, 0, 0};
+	_srcPixelRod.x1 = _srcPixelRod.y1 = _srcPixelRod.x2 = _srcPixelRod.y2 = 0;
 
 	_clipSrc = effect.fetchClip( kOfxImageEffectSimpleSourceClipName );
 	
