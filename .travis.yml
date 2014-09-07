@@ -3,6 +3,11 @@ env:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "NvoMZI1lDLmdoKMgAJnNp3RzdRMYGfWL4buwPdIRyjJ522AIceVrT59x0//JB2bdbrABibo/o5TPP1dUGBJlVp9N250R0pjKz8zlehTL++6Y5z0zGWF9WRXOzrvTOCDpUAjJ24zwIREFy02qHmhcEbAy5+IE8aw9s3eZxsngL54="
+  matrix:
+    - BUILD_MODE=debug BUILD_TARGET=plugin
+    - BUILD_MODE=debug BUILD_TARGET=host
+    - BUILD_MODE=production BUILD_TARGET=plugin
+    - BUILD_MODE=production BUILD_TARGET=host
 
 os:
   - linux
@@ -14,11 +19,33 @@ compiler:
   - gcc
   - clang
 
-before_script:
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+    - os: osx
+      env: BUILD_MODE=debug BUILD_TARGET=plugin
+    - os: osx
+      env: BUILD_MODE=debug BUILD_TARGET=host
+    - compiler: clang
+      env: BUILD_MODE=debug BUILD_TARGET=plugin
+    - compiler: clang
+      env: BUILD_MODE=debug BUILD_TARGET=host
+  fast_finish: true
+
+
+cache: apt
+
+
+before_install:
   - date -u
   - uname -a
   - export J='-j3'
+
+
+install:
   - tools/travis/install_dependencies.sh
+
 
 script:
   - if [[ "${COVERITY_SCAN_BRANCH}" == 1 ]];
@@ -28,8 +55,10 @@ script:
     fi
   - tools/travis/build.sh
 
+
 after_failure:
   - cat config.log
+
 
 addons:
   coverity_scan:
