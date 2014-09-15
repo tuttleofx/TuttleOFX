@@ -59,6 +59,20 @@ public:
 	 * @brief Get value of OFX parameters contained in customParams, and return the corresponding profileDesc.
      */
 	avtranscoder::Profile::ProfileDesc getCorrespondingProfileDesc( const std::string& subGroupName="" ) const;
+	
+	/**
+     * @param optionName: the option whithout all prefixes.
+     * @param value: the value will be cast to the corresponding type (int, double...).
+     * @param subGroupName
+     * @return if the option exists
+     */
+	bool setOption( const std::string& optionName, const std::string& value, const std::string& subGroupName="" );
+
+	/**
+	 * @brief Get the OFX parameter which corresponds to the FFmpeg option name (whithout any prefixes).
+	 * @note return NULL if not found.
+	 */
+	OFX::ValueParam* getOFXParameter( const std::string& optionName ) ;
 
 public:
 	std::vector<OFX::BooleanParam*> _paramBoolean;

@@ -5,6 +5,7 @@
 #include <AvTranscoder/Option.hpp>
 
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <iostream>
 #include <limits>
@@ -204,6 +205,93 @@ avtranscoder::Profile::ProfileDesc CustomParams::getCorrespondingProfileDesc( co
 		profileDesc[ nameAndValue.first ] = nameAndValue.second;
 	}
 	return profileDesc;
+}
+
+bool CustomParams::setOption( const std::string& optionName, const std::string& value, const std::string& subGroupName )
+{	
+	OptionsForPreset options = getOptionsNameAndValue( subGroupName );
+	BOOST_FOREACH( const OptionsForPreset::value_type& option, options )
+	{
+		if( option.first == optionName )
+		{
+			OFX::ValueParam* param = getOFXParameter( optionName );
+			if( ! param)
+				return false;
+			
+			OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
+			OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
+			OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
+			OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
+			OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
+			OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+
+			try
+			{
+				// @todo flags
+				if( paramBoolean )
+					paramBoolean->setValue( boost::lexical_cast<bool>( value ) );
+				else if( paramInt )
+					paramInt->setValue( boost::lexical_cast<int>( value ) );
+				else if( paramDouble )
+					paramDouble->setValue( boost::lexical_cast<double>( value ) );
+				else if( paramString )
+					paramString->setValue( value );
+				else if( paramRatio )
+				{
+					if( value.find( "." ) != std::string::npos )
+					{
+						std::string valueX = value.substr( 0, value.find( "." ) );
+						std::string valueY = value.substr( value.find( "." ) );
+						paramRatio->setValue( boost::lexical_cast<int>( valueX ), boost::lexical_cast<int>( valueY ) );
+					}
+				}
+				else if( paramChoice )
+					paramChoice->setValue( boost::lexical_cast<int>( value ) );
+			}
+			catch( const std::exception& e )
+			{
+				return false;
+			}
+
+			return true;
+		}
+	}
+	return false;
+}
+
+OFX::ValueParam* CustomParams::getOFXParameter( const std::string& optionName )
+{
+	BOOST_FOREACH( OFX::ValueParam* param, _paramBoolean )
+	{
+		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
+			return param;
+	}
+	BOOST_FOREACH( OFX::ValueParam* param, _paramInt )
+	{
+		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
+			return param;
+	}
+	BOOST_FOREACH( OFX::ValueParam* param, _paramDouble )
+	{
+		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
+			return param;
+	}
+	BOOST_FOREACH( OFX::ValueParam* param, _paramString )
+	{
+		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
+			return param;
+	}
+	BOOST_FOREACH( OFX::ValueParam* param, _paramRatio )
+	{
+		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
+			return param;
+	}
+	BOOST_FOREACH( OFX::ValueParam* param, _paramChoice )
+	{
+		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
+			return param;
+	}
+	return NULL;
 }
 
 void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )

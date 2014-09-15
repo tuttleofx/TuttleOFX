@@ -77,6 +77,8 @@ public:
 	avtranscoder::Profile::ProfileDesc getCustomVideoProfile();
 	avtranscoder::Profile::ProfileDesc getCustomAudioProfile();
 	
+	void updateVideoFromExistingProfile();
+
 	/**
 	 * @brief Called before each new render.
      */

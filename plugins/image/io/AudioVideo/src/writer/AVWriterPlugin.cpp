@@ -447,13 +447,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		}
 		else
 		{
-			// hack to have nothing display in detailled group
-			int videoCodecWithNoOptionDetailsIndex = 0;
-			_paramVideoCodec->setValue( videoCodecWithNoOptionDetailsIndex );
-			
-			_paramVideoCustomGroup->setIsSecretAndDisabled( true );
-			_paramUseCustomFps->setIsSecretAndDisabled( true );
-			_paramCustomFps->setIsSecretAndDisabled( true );
+			updateVideoFromExistingProfile();
 		}
 	}
 	else if( paramName == kParamAudioMainPreset )
@@ -594,21 +588,8 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 	// create video stream
 	try
 	{
-		size_t presetIndex = _paramVideoPreset->getValue();
-		avtranscoder::Profile::ProfileDesc profile;
-		
-		// custom video preset
-		if( presetIndex == 0 )
-		{
-			profile = getCustomVideoProfile();
-		}
-		// existing video preset
-		else
-		{
-			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-			profile = _presets.getVideoProfiles().at( presetIndex - 1 );
-		}
-		
+		avtranscoder::Profile::ProfileDesc profile = getCustomVideoProfile();
+
 		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
 		int width = bounds.x2 - bounds.x1;
 		int height = bounds.y2 - bounds.y1;
@@ -866,6 +847,51 @@ avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomAudioProfile()
 	return profile;
 }
 
+void AVWriterPlugin::updateVideoFromExistingProfile()
+{
+	size_t presetIndex = _paramVideoPreset->getValue();
+	
+	// existing video preset
+	if( presetIndex != 0 )
+	{
+		avtranscoder::Profile::ProfileDesc existingProfile = _presets.getVideoProfiles().at( presetIndex - 1 );
+
+		// video codec
+		std::vector<std::string> codecs = _optionLoader.getVideoCodecsShortNames();
+		std::vector<std::string>::iterator iterCodec = std::find( codecs.begin(), codecs.end(), existingProfile[ avtranscoder::Profile::avProfileCodec ] );
+		size_t codecIndex = std::distance( codecs.begin(), iterCodec);
+		if( codecIndex != codecs.size() )
+		{
+			_paramVideoCodec->setValue( codecIndex );
+		}
+
+		// pixel format
+		std::vector<std::string> pixelFormats = _optionLoader.getPixelFormats( *iterCodec );
+		std::vector<std::string>::iterator iterPixelFormat = std::find( pixelFormats.begin(), pixelFormats.end(), existingProfile[ avtranscoder::Profile::avProfilePixelFormat ] );
+		size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
+		if( pixelFomatIndex != pixelFormats.size() )
+		{
+			_paramVideoPixelFormat->setValue( pixelFomatIndex );
+		}
+
+		// frame rate
+		_paramCustomFps->setValue( boost::lexical_cast<double>( existingProfile[ avtranscoder::Profile::avProfileFrameRate ] ) );
+
+		// other options
+		BOOST_FOREACH( avtranscoder::Profile::ProfileDesc::value_type& option, existingProfile )
+		{
+			if( option.first == avtranscoder::Profile::avProfileIdentificator ||
+				option.first == avtranscoder::Profile::avProfileIdentificatorHuman ||
+				option.first == avtranscoder::Profile::avProfileType ||
+				option.first == avtranscoder::Profile::avProfileCodec ||
+				option.first == avtranscoder::Profile::avProfilePixelFormat ||
+				option.first == avtranscoder::Profile::avProfileFrameRate )
+				continue;
+
+			_paramVideoCustom.setOption( option.first, option.second );
+		}
+	}
+}
 
 void AVWriterPlugin::cleanVideoAndAudio()
 {
