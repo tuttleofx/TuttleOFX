@@ -517,6 +517,20 @@ void AVWriterPlugin::initOutput()
 	{
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
 
+		// update format depending on the output file extension
+		boost::filesystem::path path( params._outputFilePath );
+		std::string formatFromFile = avtranscoder::getFormat( path.filename().string() );
+		if( ! formatFromFile.empty() )
+		{
+			std::vector<std::string> formats = _optionLoader.getFormatsShortNames();
+			std::vector<std::string>::iterator iterFormat = std::find( formats.begin(), formats.end(), formatFromFile );
+			size_t formatIndex = std::distance( formats.begin(), iterFormat);
+			if( formatIndex != formats.size() )
+			{
+				_paramFormat->setValue( formatIndex );
+			}
+		}
+
 		// Get format profile
 		avtranscoder::Profile::ProfileDesc profile;
 		profile[ avtranscoder::Profile::avProfileIdentificator ] = "customFormatPreset";
