@@ -419,16 +419,10 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			int defaultFormatIndex;
 			_paramFormat->getDefault( defaultFormatIndex );
 			_paramFormat->setValue( defaultFormatIndex );
-			
-			_paramFormatCustomGroup->setIsSecretAndDisabled( false );
 		}
 		else
 		{
-			// hack to have nothing display in detailled group
-			int formatWithNoOptionDetailsIndex = 0;
-			_paramFormat->setValue( formatWithNoOptionDetailsIndex );
-			
-			_paramFormatCustomGroup->setIsSecretAndDisabled( true );
+			updateFormatFromExistingProfile();
 		}
 	}
 	else if( paramName == kParamVideoPreset )
@@ -522,22 +516,9 @@ void AVWriterPlugin::initOutput()
 	try
 	{
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
-		
-		size_t mainPresetIndex = _paramFormatPreset->getValue();
-		avtranscoder::Profile::ProfileDesc profile;
 
-		// custom format preset
-		if( mainPresetIndex == 0 )
-		{
-			profile = getCustomFormatProfile();
-		}
-		// existing format preset
-		else
-		{
-			// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-			profile = _presets.getFormatProfiles().at( mainPresetIndex - 1 );
-		}
-		
+
+		avtranscoder::Profile::ProfileDesc profile = getCustomFormatProfile();
 		_outputFile->setProfile( profile );
 
 		_outputFile->addMetadata( params._metadatas );
@@ -829,6 +810,37 @@ avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomAudioProfile()
 	profile.insert( audioDetailDesc.begin(), audioDetailDesc.end() );
 
 	return profile;
+}
+
+void AVWriterPlugin::updateFormatFromExistingProfile()
+{
+	size_t presetIndex = _paramFormatPreset->getValue();
+	
+	// existing format preset
+	if( presetIndex != 0 )
+	{
+		avtranscoder::Profile::ProfileDesc existingProfile = _presets.getFormatProfiles().at( presetIndex - 1 );
+
+		// format
+		std::vector<std::string> formats = _optionLoader.getFormatsShortNames();
+		std::vector<std::string>::iterator iterFormat = std::find( formats.begin(), formats.end(), existingProfile[ avtranscoder::Profile::avProfileFormat ] );
+		size_t fomatIndex = std::distance( formats.begin(), iterFormat );
+		if( fomatIndex != formats.size() )
+		{
+			_paramFormat->setValue( fomatIndex );
+		}
+
+		// other options
+		BOOST_FOREACH( avtranscoder::Profile::ProfileDesc::value_type& option, existingProfile )
+		{
+			if( option.first == avtranscoder::Profile::avProfileIdentificator ||
+				option.first == avtranscoder::Profile::avProfileIdentificatorHuman ||
+				option.first == avtranscoder::Profile::avProfileType )
+				continue;
+
+			_paramFormatCustom.setOption( option.first, option.second );
+		}
+	}
 }
 
 void AVWriterPlugin::updateVideoFromExistingProfile()

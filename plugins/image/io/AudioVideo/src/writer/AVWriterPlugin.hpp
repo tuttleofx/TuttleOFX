@@ -77,6 +77,7 @@ public:
 	avtranscoder::Profile::ProfileDesc getCustomVideoProfile();
 	avtranscoder::Profile::ProfileDesc getCustomAudioProfile();
 	
+	void updateFormatFromExistingProfile();
 	void updateVideoFromExistingProfile();
 	void updateAudiotFromExistingProfile();
 
