@@ -456,15 +456,13 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		if( _paramAudioMainPreset->getValue() == 0 )
 		{
 			_paramAudioCustomGroup->setIsSecretAndDisabled( false );
-		}
-		else
-		{
-			// hack to have nothing display in detailled group
 			int defaultAudioCodecIndex;
 			_paramAudioCodec->getDefault( defaultAudioCodecIndex );
 			_paramAudioCodec->setValue( defaultAudioCodecIndex );
-			
-			_paramAudioCustomGroup->setIsSecretAndDisabled( true );
+		}
+		else
+		{
+			updateAudiotFromExistingProfile();
 		}
 	}
 	else if( paramName == kParamUseCustomFps )
@@ -656,18 +654,10 @@ void AVWriterPlugin::initAudio()
 			if( ! isSilent && inputFileName.empty() )
 				continue;
 
-			// custom audio preset
+			// main audio preset
 			if( presetIndex == 0 && mainPresetIndex == 0 )
 			{
 				profile = getCustomAudioProfile();
-				presetName = "";
-			}
-			// main audio preset
-			else if( presetIndex == 0 && mainPresetIndex != 0 )
-			{
-				// at( mainPresetIndex - 1 ): subtract the index of the custom preset
-				profile = _presets.getAudioProfiles().at( mainPresetIndex - 1 );
-				presetName = profile.find( avtranscoder::Profile::avProfileIdentificator )->second;
 			}
 			// Rewrap
 			else if( presetIndex == 1 )
@@ -889,6 +879,48 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 				continue;
 
 			_paramVideoCustom.setOption( option.first, option.second );
+		}
+	}
+}
+
+void AVWriterPlugin::updateAudiotFromExistingProfile()
+{
+	size_t presetIndex = _paramAudioMainPreset->getValue();
+	
+	// existing audio preset
+	if( presetIndex != 0 )
+	{
+		avtranscoder::Profile::ProfileDesc existingProfile = _presets.getAudioProfiles().at( presetIndex - 1 );
+
+		// audio codec
+		std::vector<std::string> codecs = _optionLoader.getAudioCodecsShortNames();
+		std::vector<std::string>::iterator iterCodec = std::find( codecs.begin(), codecs.end(), existingProfile[ avtranscoder::Profile::avProfileCodec ] );
+		size_t codecIndex = std::distance( codecs.begin(), iterCodec);
+		if( codecIndex != codecs.size() )
+		{
+			_paramAudioCodec->setValue( codecIndex );
+		}
+
+		// sample format
+		std::vector<std::string> sampleFormats = _optionLoader.getSampleFormats( *iterCodec );
+		std::vector<std::string>::iterator iterSampleFormat = std::find( sampleFormats.begin(), sampleFormats.end(), existingProfile[ avtranscoder::Profile::avProfileSampleFormat ] );
+		size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
+		if( sampleFomatIndex != sampleFormats.size() )
+		{
+			_paramAudioSampleFormat->setValue( sampleFomatIndex );
+		}
+
+		// other options
+		BOOST_FOREACH( avtranscoder::Profile::ProfileDesc::value_type& option, existingProfile )
+		{
+			if( option.first == avtranscoder::Profile::avProfileIdentificator ||
+				option.first == avtranscoder::Profile::avProfileIdentificatorHuman ||
+				option.first == avtranscoder::Profile::avProfileType ||
+				option.first == avtranscoder::Profile::avProfileCodec ||
+				option.first == avtranscoder::Profile::avProfileSampleFormat )
+				continue;
+
+			_paramAudioCustom.setOption( option.first, option.second );
 		}
 	}
 }
