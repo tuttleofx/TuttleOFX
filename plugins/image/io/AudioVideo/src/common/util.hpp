@@ -41,15 +41,13 @@ public:
 
 public:
 	CustomParams()
-	: _paramBoolean()
-	, _paramInt()
-	, _paramDouble()
-	, _paramString()
-	, _paramRatio()
-	, _paramChoice()
+	: _paramOFX()
 	, _childsPerChoice()
 	{}
 
+	/**
+	 * @brief Get all FFmpeg options and values corresponding to the OFX parameters contains in the object.
+	 */
 	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" ) const ;
 
 	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
@@ -72,15 +70,19 @@ public:
 	 * @brief Get the OFX parameter which corresponds to the FFmpeg option name (whithout any prefixes).
 	 * @note return NULL if not found.
 	 */
-	OFX::ValueParam* getOFXParameter( const std::string& optionName ) ;
+	OFX::ValueParam* getOFXParameter( const std::string& optionName, const std::string& subGroupName="" ) ;
 
 public:
-	std::vector<OFX::BooleanParam*> _paramBoolean;
-	std::vector<OFX::IntParam*> _paramInt;
-	std::vector<OFX::DoubleParam*> _paramDouble;
-	std::vector<OFX::StringParam*> _paramString;
-	std::vector<OFX::Int2DParam*> _paramRatio;
-	std::vector<OFX::ChoiceParam*> _paramChoice;
+	/**
+	 * Contains several OFX parameters with different type:
+	 * BooleanParam
+	 * IntParam
+	 * DoubleParam
+	 * StringParam
+	 * Int2DParam
+	 * ChoiceParam
+	 */
+	std::vector<OFX::ValueParam*> _paramOFX;
 	
 	ChildsPerChoice _childsPerChoice;
 };

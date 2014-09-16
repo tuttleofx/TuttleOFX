@@ -19,90 +19,99 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 {
 	OptionsForPreset optionsNameAndValue;
 
-	BOOST_FOREACH( OFX::BooleanParam* param, _paramBoolean )
+	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
 
-		// FFMPEG exception with the flags
-		if( param->getName().find( kPrefixFlag ) != std::string::npos )
+		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		std::string optionValue( "" );
+
+		// Manage OFX Boolean
+		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
+		if( paramBoolean )
 		{
-			std::string optionValue;
-			if( param->getValue() )
-				optionValue.append( "+" );
-			else
-				optionValue.append( "-" );
-			optionValue.append( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-			
-			const std::string flagName( getOptionFlagName( param->getName(), subGroupName ) );
-			// if first flag with this flagName
-			if( optionsNameAndValue.find( flagName ) == optionsNameAndValue.end() )
+			// FFMPEG flags
+			if( param->getName().find( kPrefixFlag ) != std::string::npos )
 			{
-				optionsNameAndValue.insert( OptionForPreset( flagName, optionValue ) );
+				std::string optionValue;
+				if( paramBoolean->getValue() )
+					optionValue.append( "+" );
+				else
+					optionValue.append( "-" );
+				optionValue.append( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+
+				const std::string flagName( getOptionFlagName( param->getName(), subGroupName ) );
+				// if first flag with this flagName
+				if( optionsNameAndValue.find( flagName ) == optionsNameAndValue.end() )
+				{
+					optionsNameAndValue.insert( OptionForPreset( flagName, optionValue ) );
+				}
+				// get all flags with the same flagName in a single Option
+				else
+				{
+					optionsNameAndValue.at( flagName ) += optionValue;
+				}
 			}
-			// get all flags with the same flagName in a single Option
 			else
 			{
-				optionsNameAndValue.at( flagName ) += optionValue;
+				optionValue = boost::to_string( paramBoolean->getValue() );
+				optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
 			}
+			continue;
 		}
-		else
+
+		// Manage OFX Int
+		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
+		if( paramInt )
 		{
-			const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-			optionsNameAndValue.insert( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
-		}
-	}
-
-	BOOST_FOREACH( OFX::IntParam* param, _paramInt )
-	{
-		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
-			continue;
-		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		optionsNameAndValue.insert( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
-	}
-
-	BOOST_FOREACH( OFX::DoubleParam* param, _paramDouble )
-	{
-		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
-			continue;
-		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		optionsNameAndValue.insert( OptionForPreset( optionName, boost::to_string( param->getValue() ) ) );
-	}
-
-	BOOST_FOREACH( OFX::StringParam* param, _paramString )
-	{
-		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
-			continue;
-		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		const std::string optionValue( boost::to_string( param->getValue() ) );
-		if( ! optionValue.empty() )
+			optionValue = boost::to_string( paramInt->getValue() );
 			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
-	}
-
-	BOOST_FOREACH( OFX::Int2DParam* param, _paramRatio )
-	{
-		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
-		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		const std::string optionValue( boost::to_string( param->getValue().x ) + "." + boost::to_string( param->getValue().y ) );
-		optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
-	}
+		}
 
-	BOOST_FOREACH( OFX::ChoiceParam* param, _paramChoice )
-	{
-		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
-			continue;
-		std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		
-		size_t optionIndex = param->getValue();
-		ChildList childs( _childsPerChoice.at( param->getName() ) );
-		if( childs.size() > 0 )
+		// Manage OFX Double
+		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
+		if( paramDouble )
 		{
-			std::string optionValue( childs.at( optionIndex ) );
+			optionValue = boost::to_string( paramDouble->getValue() );
 			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+			continue;
+		}
+
+		// Manage OFX String
+		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
+		if( paramString )
+		{
+			optionValue = paramString->getValue();
+			if( ! optionValue.empty() )
+				optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+			continue;
+		}
+
+		// Manage OFX Int2D
+		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
+		if( paramRatio )
+		{
+			optionValue = boost::to_string( paramRatio->getValue().x ) + "." + boost::to_string( paramRatio->getValue().y );
+			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+			continue;
+		}
+
+		// Manage OFX Choice
+		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+		if( paramChoice )
+		{
+			size_t optionIndex = paramChoice->getValue();
+			ChildList childs( _childsPerChoice.at( param->getName() ) );
+			if( childs.size() > optionIndex )
+			{
+				optionValue = childs.at( optionIndex );
+				optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+			}
+			continue;
 		}
 	}
-
 	return optionsNameAndValue;
 }
 
@@ -135,27 +144,27 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 		{
 			case avtranscoder::TypeBool:
 			{
-				_paramBoolean.push_back( plugin.fetchBooleanParam( name ) );
+				_paramOFX.push_back( plugin.fetchBooleanParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeInt:
 			{
-				_paramInt.push_back( plugin.fetchIntParam( name ) );
+				_paramOFX.push_back( plugin.fetchIntParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeDouble:
 			{
-				_paramDouble.push_back( plugin.fetchDoubleParam( name ) );
+				_paramOFX.push_back( plugin.fetchDoubleParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeString:
 			{
-				_paramString.push_back( plugin.fetchStringParam( name ) );
+				_paramOFX.push_back( plugin.fetchStringParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeRatio:
 			{
-				_paramRatio.push_back( plugin.fetchInt2DParam( name ) );
+				_paramOFX.push_back( plugin.fetchInt2DParam( name ) );
 				break;
 			}
 			case avtranscoder::TypeChoice:
@@ -164,7 +173,7 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 				if( ! option.getNbChilds() )
 					continue;
 
-				_paramChoice.push_back( plugin.fetchChoiceParam( name ) );
+				_paramOFX.push_back( plugin.fetchChoiceParam( name ) );
 				_childsPerChoice.insert( common::CustomParams::ChildsForChoice( name, common::CustomParams::ChildList() ) );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
@@ -186,7 +195,7 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 					childName += common::kPrefixFlag;
 					childName += child.getName();
 
-					_paramBoolean.push_back( plugin.fetchBooleanParam( childName ) );
+					_paramOFX.push_back( plugin.fetchBooleanParam( childName ) );
 				}
 				break;
 			}
@@ -214,7 +223,7 @@ bool CustomParams::setOption( const std::string& optionName, const std::string& 
 	{
 		if( option.first == optionName )
 		{
-			OFX::ValueParam* param = getOFXParameter( optionName );
+			OFX::ValueParam* param = getOFXParameter( optionName, subGroupName );
 			if( ! param)
 				return false;
 			
@@ -252,43 +261,17 @@ bool CustomParams::setOption( const std::string& optionName, const std::string& 
 			{
 				return false;
 			}
-
 			return true;
 		}
 	}
 	return false;
 }
 
-OFX::ValueParam* CustomParams::getOFXParameter( const std::string& optionName )
+OFX::ValueParam* CustomParams::getOFXParameter( const std::string& optionName, const std::string& subGroupName )
 {
-	BOOST_FOREACH( OFX::ValueParam* param, _paramBoolean )
+	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{
-		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
-			return param;
-	}
-	BOOST_FOREACH( OFX::ValueParam* param, _paramInt )
-	{
-		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
-			return param;
-	}
-	BOOST_FOREACH( OFX::ValueParam* param, _paramDouble )
-	{
-		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
-			return param;
-	}
-	BOOST_FOREACH( OFX::ValueParam* param, _paramString )
-	{
-		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
-			return param;
-	}
-	BOOST_FOREACH( OFX::ValueParam* param, _paramRatio )
-	{
-		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
-			return param;
-	}
-	BOOST_FOREACH( OFX::ValueParam* param, _paramChoice )
-	{
-		if( getOptionNameWithoutPrefix( param->getName() ) == optionName )
+		if( getOptionNameWithoutPrefix( param->getName(), subGroupName ) == optionName )
 			return param;
 	}
 	return NULL;
