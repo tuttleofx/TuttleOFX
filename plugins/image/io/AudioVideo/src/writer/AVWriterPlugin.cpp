@@ -517,8 +517,21 @@ void AVWriterPlugin::initOutput()
 	{
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
 
+		// Get format profile
+		avtranscoder::Profile::ProfileDesc profile;
+		profile[ avtranscoder::Profile::avProfileIdentificator ] = "customFormatPreset";
+		profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom format preset";
+		profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeFormat;
 
-		avtranscoder::Profile::ProfileDesc profile = getCustomFormatProfile();
+		AVProcessParams params = getProcessParams();
+		profile[ avtranscoder::Profile::avProfileFormat ] = params._formatName;
+
+		avtranscoder::Profile::ProfileDesc formatDesc = _paramFormatCustom.getCorrespondingProfileDesc();
+		profile.insert( formatDesc.begin(), formatDesc.end() );
+
+		avtranscoder::Profile::ProfileDesc formatDetailDesc = _paramFormatDetailCustom.getCorrespondingProfileDesc( params._formatName );
+		profile.insert( formatDetailDesc.begin(), formatDetailDesc.end() );
+
 		_outputFile->setProfile( profile );
 
 		_outputFile->addMetadata( params._metadatas );
@@ -561,7 +574,28 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 	// create video stream
 	try
 	{
-		avtranscoder::Profile::ProfileDesc profile = getCustomVideoProfile();
+		// Get video profile
+		avtranscoder::Profile::ProfileDesc profile;
+		profile[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
+		profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
+		profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
+
+		AVProcessParams params = getProcessParams();
+		profile[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
+		profile[ avtranscoder::Profile::avProfilePixelFormat ] = params._videoPixelFormatName;
+
+		if( _paramUseCustomFps->getValue() )
+			profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
+		else
+			profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
+
+		profile[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
+
+		avtranscoder::Profile::ProfileDesc videoDesc = _paramVideoCustom.getCorrespondingProfileDesc();
+		profile.insert( videoDesc.begin(), videoDesc.end() );
+
+		avtranscoder::Profile::ProfileDesc videoDetailDesc = _paramVideoDetailCustom.getCorrespondingProfileDesc( params._videoCodecName );
+		profile.insert( videoDetailDesc.begin(), videoDetailDesc.end() );
 
 		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
 		int width = bounds.x2 - bounds.x1;
@@ -632,7 +666,19 @@ void AVWriterPlugin::initAudio()
 			// main audio preset
 			if( presetIndex == 0 && mainPresetIndex == 0 )
 			{
-				profile = getCustomAudioProfile();
+				profile[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
+				profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
+				profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
+
+				AVProcessParams params = getProcessParams();
+				profile[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
+				profile[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
+
+				avtranscoder::Profile::ProfileDesc audioDesc = _paramAudioCustom.getCorrespondingProfileDesc();
+				profile.insert( audioDesc.begin(), audioDesc.end() );
+
+				avtranscoder::Profile::ProfileDesc audioDetailDesc = _paramAudioDetailCustom.getCorrespondingProfileDesc( params._audioCodecName );
+				profile.insert( audioDetailDesc.begin(), audioDetailDesc.end() );
 			}
 			// Rewrap
 			else if( presetIndex == 1 )
@@ -744,72 +790,6 @@ bool AVWriterPlugin::isOutputInit()
 		_transcoder.get() == NULL )
 		return false;
 	return true;
-}
-
-avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomFormatProfile()
-{
-	avtranscoder::Profile::ProfileDesc profile;
-	profile[ avtranscoder::Profile::avProfileIdentificator ] = "customFormatPreset";
-	profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom format preset";
-	profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeFormat;
-
-	AVProcessParams params = getProcessParams();
-	profile[ avtranscoder::Profile::avProfileFormat ] = params._formatName;
-
-	avtranscoder::Profile::ProfileDesc formatDesc = _paramFormatCustom.getCorrespondingProfileDesc();
-	profile.insert( formatDesc.begin(), formatDesc.end() );
-
-	avtranscoder::Profile::ProfileDesc formatDetailDesc = _paramFormatDetailCustom.getCorrespondingProfileDesc( params._formatName );
-	profile.insert( formatDetailDesc.begin(), formatDetailDesc.end() );
-
-	return profile;
-}
-
-avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomVideoProfile()
-{
-	avtranscoder::Profile::ProfileDesc profile;
-	profile[ avtranscoder::Profile::avProfileIdentificator ] = "customVideoPreset";
-	profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom video preset";
-	profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeVideo;
-
-	AVProcessParams params = getProcessParams();
-	profile[ avtranscoder::Profile::avProfileCodec ] = params._videoCodecName;
-	profile[ avtranscoder::Profile::avProfilePixelFormat ] = params._videoPixelFormatName;
-
-	if( _paramUseCustomFps->getValue() )
-		profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
-	else
-		profile[ avtranscoder::Profile::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
-
-	profile[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
-
-	avtranscoder::Profile::ProfileDesc videoDesc = _paramVideoCustom.getCorrespondingProfileDesc();
-	profile.insert( videoDesc.begin(), videoDesc.end() );
-
-	avtranscoder::Profile::ProfileDesc videoDetailDesc = _paramVideoDetailCustom.getCorrespondingProfileDesc( params._videoCodecName );
-	profile.insert( videoDetailDesc.begin(), videoDetailDesc.end() );
-
-	return profile;
-}
-
-avtranscoder::Profile::ProfileDesc AVWriterPlugin::getCustomAudioProfile()
-{
-	avtranscoder::Profile::ProfileDesc profile;
-	profile[ avtranscoder::Profile::avProfileIdentificator ] = "customAudioPreset";
-	profile[ avtranscoder::Profile::avProfileIdentificatorHuman ] = "Custom audio preset";
-	profile[ avtranscoder::Profile::avProfileType ] = avtranscoder::Profile::avProfileTypeAudio;
-
-	AVProcessParams params = getProcessParams();
-	profile[ avtranscoder::Profile::avProfileCodec ] = params._audioCodecName;
-	profile[ avtranscoder::Profile::avProfileSampleFormat ] = params._audioSampleFormatName;
-
-	avtranscoder::Profile::ProfileDesc audioDesc = _paramAudioCustom.getCorrespondingProfileDesc();
-	profile.insert( audioDesc.begin(), audioDesc.end() );
-
-	avtranscoder::Profile::ProfileDesc audioDetailDesc = _paramAudioDetailCustom.getCorrespondingProfileDesc( params._audioCodecName );
-	profile.insert( audioDetailDesc.begin(), audioDetailDesc.end() );
-
-	return profile;
 }
 
 void AVWriterPlugin::updateFormatFromExistingProfile()

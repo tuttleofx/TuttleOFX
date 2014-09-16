@@ -73,10 +73,6 @@ public:
 
 	bool isOutputInit();
 	
-	avtranscoder::Profile::ProfileDesc getCustomFormatProfile();
-	avtranscoder::Profile::ProfileDesc getCustomVideoProfile();
-	avtranscoder::Profile::ProfileDesc getCustomAudioProfile();
-	
 	void updateFormatFromExistingProfile();
 	void updateVideoFromExistingProfile();
 	void updateAudiotFromExistingProfile();
