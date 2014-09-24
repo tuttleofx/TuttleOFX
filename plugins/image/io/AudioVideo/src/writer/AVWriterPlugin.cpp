@@ -2,7 +2,7 @@
 #include "AVWriterProcess.hpp"
 #include "AVWriterDefinitions.hpp"
 
-#include <AvTranscoder/ProgressListener.hpp>
+#include <AvTranscoder/progress/NoDisplayProgress.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
@@ -312,7 +312,7 @@ void AVWriterPlugin::updateAudioSelectStream( size_t indexAudioOutput )
 			std::string inputFilePath = _paramAudioFilePath.at( indexAudioOutput )->getValue();
 			if( boost::filesystem::exists( inputFilePath ) )
 			{
-				avtranscoder::ProgressListener progress;
+				avtranscoder::NoDisplayProgress progress;
 				avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::InputFile::eAnalyseLevelFast );
 				size_t nbAudioStream = properties.audioStreams.size();
 				_paramAudioStreamIndex.at( indexAudioOutput )->setRange( 0, nbAudioStream );
@@ -344,7 +344,7 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 		std::string inputFilePath = _paramAudioFilePath.at( indexAudioOutput )->getValue();
 		if( boost::filesystem::exists( inputFilePath ) )
 		{
-			avtranscoder::ProgressListener progress;
+			avtranscoder::NoDisplayProgress progress;
 			avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::InputFile::eAnalyseLevelFast );
 			size_t nbAudioStream = properties.audioStreams.size();
 			std::string audioInfo = "Audio streams: ";
@@ -630,10 +630,10 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		avtranscoder::VideoDesc inputVideoDesc = avtranscoder::VideoDesc( profile[ avtranscoder::Profile::avProfileCodec ] );
 		inputVideoDesc.setImageParameters( imageDesc );
 
-		_dummyVideo.setVideoDesc( inputVideoDesc );
+		_generatorVideo.setVideoDesc( inputVideoDesc );
 
 		// the streamTranscoder is deleted by avTranscoder
-		avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _dummyVideo, *_outputFile, profile );
+		avtranscoder::StreamTranscoder* stream = new avtranscoder::StreamTranscoder( _generatorVideo, *_outputFile, profile );
 		_transcoder->add( *stream );
 
 		_outputFps = boost::lexical_cast<double>( profile[ avtranscoder::Profile::avProfileFrameRate ] );
@@ -707,7 +707,7 @@ void AVWriterPlugin::initAudio()
 				presetName = profile.find( avtranscoder::Profile::avProfileIdentificator )->second;
 			}
 			
-			// dummy
+			// generator
 			if( isSilent )
 			{	
 				avtranscoder::AudioDesc audioDesc( profile[ avtranscoder::Profile::avProfileCodec ] );
@@ -729,7 +729,7 @@ void AVWriterPlugin::initAudio()
 				size_t nbAudioStream = 1;
 				if( inputStreamIndex == -1 )
 				{
-					avtranscoder::ProgressListener progress;
+					avtranscoder::NoDisplayProgress progress;
 					avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFileName, progress, avtranscoder::InputFile::eAnalyseLevelFast );
 					nbAudioStream = properties.audioStreams.size();
 				}

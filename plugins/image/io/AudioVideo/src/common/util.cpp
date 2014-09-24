@@ -2,7 +2,7 @@
 
 #include <writer/AVWriterDefinitions.hpp>
 
-#include <AvTranscoder/Option.hpp>
+#include <AvTranscoder/option/Option.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>

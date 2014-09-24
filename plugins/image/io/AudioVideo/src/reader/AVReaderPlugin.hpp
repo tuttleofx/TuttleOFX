@@ -5,11 +5,11 @@
 
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
-#include <AvTranscoder/File/InputFile.hpp>
-#include <AvTranscoder/EssenceStream/InputVideo.hpp>
-#include <AvTranscoder/EssenceStructures/VideoFrame.hpp>
-#include <AvTranscoder/EssenceTransform/VideoEssenceTransform.hpp>
-#include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/file/InputFile.hpp>
+#include <AvTranscoder/essenceStream/AvInputVideo.hpp>
+#include <AvTranscoder/essenceStructures/VideoFrame.hpp>
+#include <AvTranscoder/essenceTransform/VideoEssenceTransform.hpp>
+#include <AvTranscoder/option/OptionLoader.hpp>
 #include <AvTranscoder/Profile.hpp>
 
 #include <boost/scoped_ptr.hpp>
@@ -79,7 +79,7 @@ public:
 	OFX::StringParam* _paramMetaDataUnknown;
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
-	boost::scoped_ptr<avtranscoder::InputVideo> _inputStreamVideo;
+	boost::scoped_ptr<avtranscoder::AvInputVideo> _inputStreamVideo;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	

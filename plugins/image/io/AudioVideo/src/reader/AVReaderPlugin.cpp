@@ -2,9 +2,9 @@
 #include "AVReaderProcess.hpp"
 #include "AVReaderDefinitions.hpp"
 
-#include <AvTranscoder/EssenceStructures/Pixel.hpp>
-#include <AvTranscoder/ProgressListener.hpp>
-#include <AvTranscoder/Metadatas/Print.hpp>
+#include <AvTranscoder/essenceStructures/Pixel.hpp>
+#include <AvTranscoder/progress/NoDisplayProgress.hpp>
+#include <AvTranscoder/mediaProperty/printMediaProperty.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
@@ -99,7 +99,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		// set and analyse inputFile
 		_inputFile.reset( new avtranscoder::InputFile( filepath ) );
 		_lastInputFilePath = filepath;
-		avtranscoder::ProgressListener progress;
+		avtranscoder::NoDisplayProgress progress;
 		// using fast analyse ( do not extract gop structure )
 		_inputFile->analyse( progress, avtranscoder::InputFile::eAnalyseLevelFast );
 		
@@ -114,7 +114,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_inputFile->readStream( _paramVideoStreamIndex->getValue() );
 		
 		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::InputVideo( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
+		_inputStreamVideo.reset( new avtranscoder::AvInputVideo( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
 		_inputStreamVideo->setup();
 	}
 	catch( std::exception& e )
@@ -342,7 +342,7 @@ double AVReaderPlugin::retrievePAR()
 		return _paramCustomSAR->getValue();
 	
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	avtranscoder::Ratio sar = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).sar;
+	AVRational sar = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).sar;
 	const double videoRatio = sar.num / (double)sar.den;
 
 	return videoRatio;

@@ -5,12 +5,12 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
-#include <AvTranscoder/Metadatas/MediaMetadatasStructures.hpp>
-#include <AvTranscoder/File/OutputFile.hpp>
-#include <AvTranscoder/Transcoder/Transcoder.hpp>
-#include <AvTranscoder/EssenceStream/DummyVideo.hpp>
-#include <AvTranscoder/EssenceStructures/Frame.hpp>
-#include <AvTranscoder/OptionLoader.hpp>
+#include <AvTranscoder/mediaProperty/mediaProperty.hpp>
+#include <AvTranscoder/file/OutputFile.hpp>
+#include <AvTranscoder/transcoder/Transcoder.hpp>
+#include <AvTranscoder/essenceStream/GeneratorVideo.hpp>
+#include <AvTranscoder/essenceStructures/Frame.hpp>
+#include <AvTranscoder/option/OptionLoader.hpp>
 #include <AvTranscoder/Profile.hpp>
 
 #include <boost/scoped_ptr.hpp>
@@ -138,7 +138,7 @@ public:
 	
 	// to process video
 	avtranscoder::Frame _videoFrame;
-	avtranscoder::DummyVideo _dummyVideo;
+	avtranscoder::GeneratorVideo _generatorVideo;
 	
 	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;

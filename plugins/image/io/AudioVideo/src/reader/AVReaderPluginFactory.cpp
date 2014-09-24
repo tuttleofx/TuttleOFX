@@ -4,8 +4,8 @@
 
 #include <common/util.hpp>
 
-#include <AvTranscoder/OptionLoader.hpp>
-#include <AvTranscoder/Description.hpp>
+#include <AvTranscoder/option/OptionLoader.hpp>
+#include <AvTranscoder/Library.hpp>
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
