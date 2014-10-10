@@ -105,17 +105,17 @@ if (TuttleBoost_FOUND)
     # Force the library to look in the project lib folder relatively
     if (APPLE)
       set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} 
-            PROPERTIES INSTALL_RPATH "@loader_path/../../lib")
+            PROPERTIES INSTALL_RPATH "@loader_path/../..")
     else(APPLE)
         set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME}
-            PROPERTIES INSTALL_RPATH "$ORIGIN/../../lib:$ORIGIN")
+            PROPERTIES INSTALL_RPATH "$ORIGIN/../..:$ORIGIN")
     endif(APPLE)
 
-    # Install python libs and wrapper in INSTALL_PREFIX/share/python
+    # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
-                  DESTINATION share/python)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py 
-                  DESTINATION share/python)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages)
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")
