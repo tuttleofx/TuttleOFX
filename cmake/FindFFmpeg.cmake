@@ -47,18 +47,11 @@ macro(find_component COMPONENT PKGCONFIG LIBRARY HEADER)
         endif()
     endif()
 
-    message(DEBUG "component is ${COMPONENT}")
-
-    message(DEBUG "header is ${HEADER}")
-    message(DEBUG "looking in ${PC_${COMPONENT}_INCLUDEDIR} ${PC_${COMPONENT}_INCLUDE_DIR}")
     find_path(${COMPONENT}_INCLUDE_DIR
         ${HEADER}
         HINTS ${PC_${COMPONENT}_INCLUDEDIR} ${PC_${COMPONENT}_INCLUDE_DIR}
     )
 
-
-    message(DEBUG "library is ${LIBRARY}")
-    message(DEBUG "looking in ${PC_${COMPONENT}_LIBDIR} ${PC_${COMPONENT}_LIBRARY_DIRS}")
     find_library(${COMPONENT}_LIBRARIES 
         NAMES ${LIBRARY}
         HINTS ${PC_${COMPONENT}_LIBDIR} ${PC_${COMPONENT}_LIBRARY_DIRS}
