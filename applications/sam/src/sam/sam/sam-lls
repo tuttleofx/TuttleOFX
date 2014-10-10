@@ -11,8 +11,9 @@ TUTTLE_ROOT = os.getenv('TUTTLE_ROOT')
 if TUTTLE_ROOT is None:
     # sam-ls should be in TUTTLE_ROOT/bin
     CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-    os.environ['TUTTLE_ROOT'] = os.path.abspath(
-                                    os.path.join(CURRENT_PATH, "..")) 
+    TUTTLE_ROOT = os.path.abspath(os.path.join(CURRENT_PATH, ".."))
+    os.environ['TUTTLE_ROOT'] = TUTTLE_ROOT 
+                               
 
 TUTTLE_HOME = os.path.join(TUTTLE_ROOT, '.tuttleofx')
 if not os.path.exists(TUTTLE_HOME):
