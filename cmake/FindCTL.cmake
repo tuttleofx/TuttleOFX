@@ -10,8 +10,6 @@
 #                        This can also be an environment variable.
 #  CTL_FOUND, If false, do not try to use CTL.
 #
-# also defined, but not for general use are
-#  CTL_LIBRARY, where to find the CTL library.
 
 
 # If CTL_ROOT was defined in the environment, use it, otherwise 
@@ -40,24 +38,44 @@ find_path(CTL_INCLUDE_DIR
   PATH_SUFFIXES include
 )
 
-find_library(CTL_LIBRARY
-  NAMES       IlmImfCtl IlmCtl IlmCtlMath IlmCtlSimd
+find_library(CTL_ILMIMF_LIB
+  NAMES       IlmImfCtl 
   HINTS         ${_ctl_SEARCH_DIRS} ${CTLPKG_LIBRARY_DIRS}
   PATH_SUFFIXES lib64 lib
 )
+
+find_library(CTL_ILMCTL_LIB
+  NAMES       IlmCtl 
+  HINTS         ${_ctl_SEARCH_DIRS} ${CTLPKG_LIBRARY_DIRS}
+  PATH_SUFFIXES lib64 lib
+)
+
+find_library(CTL_ILMCTLMATH_LIB
+  NAMES       IlmCtlMath 
+  HINTS         ${_ctl_SEARCH_DIRS} ${CTLPKG_LIBRARY_DIRS}
+  PATH_SUFFIXES lib64 lib
+)
+
+find_library(CTL_ILMCTLSIMD_LIB
+  NAMES       IlmCtlSimd
+  HINTS         ${_ctl_SEARCH_DIRS} ${CTLPKG_LIBRARY_DIRS}
+  PATH_SUFFIXES lib64 lib
+)
+
+set(CTL_LIBS ${CTL_ILMIMF_LIB} ${CTL_ILMCTL_LIB} ${CTL_ILMCTLMATH_LIB} ${CTL_ILMCTLSIMD_LIB})
 
 # handle the QUIETLY and REQUIRED arguments and set CTL_FOUND to TRUE if 
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(CTL DEFAULT_MSG
-    CTL_LIBRARY CTL_INCLUDE_DIR)
+    CTL_LIBS CTL_INCLUDE_DIR)
 
 if(CTL_FOUND)
-  set(CTL_LIBRARIES ${CTL_LIBRARY})
+  set(CTL_LIBRARIES ${CTL_LIBS})
   set(CTL_INCLUDE_DIRS ${CTL_INCLUDE_DIR} ${CTL_INCLUDE_DIR}/CTL)
 endif(CTL_FOUND)
 
 mark_as_advanced(
   CTL_INCLUDE_DIR
-  CTL_LIBRARY
+  CTL_LIBRARIES
 )
