@@ -1,27 +1,26 @@
 #!/usr/bin/python
+"""
+Set environment and call sam-ls -s
+"""
 import os
 import sys
 import subprocess
 
-RED='\033[1;31m'
-NC='\033[0;0m'  # No Color
 
 TUTTLE_ROOT = os.getenv('TUTTLE_ROOT')
-if( TUTTLE_ROOT == None ):
-	print( RED + 'error : TUTTLE_ROOT is not set.' + NC );
-	exit();
+if TUTTLE_ROOT is None:
+    # sam-ls should be in TUTTLE_ROOT/bin
+    CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+    os.environ['TUTTLE_ROOT'] = os.path.abspath(
+                                    os.path.join(CURRENT_PATH, "..")) 
 
 TUTTLE_HOME = os.path.join( TUTTLE_ROOT, '.tuttleofx')
 if( not os.path.exists( TUTTLE_HOME ) ):
 	os.mkdir( TUTTLE_HOME )
 
-os.environ['TUTTLE_ROOT']= TUTTLE_ROOT 
 os.environ['TUTTLE_HOME']= TUTTLE_HOME
 os.environ['LD_LIBRARY_PATH']= os.path.join( TUTTLE_ROOT, 'lib')
 os.environ['PATH']= os.path.join( TUTTLE_ROOT, 'bin')
 os.environ['SAM_PATH']= os.path.join( TUTTLE_ROOT, 'bin')
 
-args = sys.argv
-args.pop(0)
-
-subprocess.call( 'sam-ls -s ' + " ".join(args) , shell=True )
+subprocess.call( 'sam-ls -s ' + " ".join(sys.argv[1:]) , shell=True )
