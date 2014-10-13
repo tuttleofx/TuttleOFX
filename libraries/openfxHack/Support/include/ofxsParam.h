@@ -1750,7 +1750,7 @@ public:
     void setNthControlPoints( const int curveIndex,
                                            const OfxTime time,
                                             const int nthCtl,
-                                            const std::pair<double, double> ctrlPoint,
+                                            const std::pair<double, double>& ctrlPoint,
                                             const bool addAnimationKey );
     void addControlPoint( const int curveIndex,
                                              const OfxTime time,
