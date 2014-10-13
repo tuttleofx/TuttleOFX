@@ -285,10 +285,11 @@ namespace tuttle
               }
           }
         else if (paramName == kParamRatio)
-          {
-//		if( ??? )
-//		{
-            _paramPreset->setValue(eParamPreset_custom);
+        {
+			if( ! _paramFixedRatio->getValue() )
+				_paramFixedRatio->setValue(true);
+			if( _paramPreset->getValue() != eParamPreset_custom )
+				_paramPreset->setValue(eParamPreset_custom);
 //		}
 //		bool fixedRatio = _paramFixedRatio->getValue();
 //
@@ -345,11 +346,8 @@ namespace tuttle
             || paramName == kParamAxis || paramName == kParamSymmetric
             || paramName == kParamRatio)
           {
-//		bool fixedRatio = _paramFixedRatio->getValue();
             const OfxRectI cropRegionParams = getCropRegionValue();
             const OfxRectI cropRegion = computeCropRegion(args.time);
-//		if( fixedRatio )
-//		{
             if (cropRegionParams.x1 != cropRegion.x1)
               _paramXMin->setValue(cropRegion.x1);
             if (cropRegionParams.y1 != cropRegion.y1)
@@ -358,15 +356,15 @@ namespace tuttle
               _paramXMax->setValue(cropRegion.x2);
             if (cropRegionParams.y2 != cropRegion.y2)
               _paramYMax->setValue(cropRegion.y2);
-//		}
-//		else
-//		{
+			
+			if(paramName != kParamRatio)
+			{
             const double x = cropRegion.x2 - cropRegion.x1;
             const double y = cropRegion.y2 - cropRegion.y1;
             const double nRatio = (y != 0) ? (x / y) : 0;
             if (nRatio != _paramRatio->getValue())
               _paramRatio->setValue(nRatio);
-//		}
+			}
           }
       }
 
