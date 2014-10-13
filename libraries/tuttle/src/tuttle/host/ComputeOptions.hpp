@@ -107,6 +107,8 @@ public:
 	{
 		_timeRanges = other._timeRanges;
 
+		_begin = other._begin;
+		_end = other._end;
 		_renderScale = other._renderScale;
 		_continueOnError = other._continueOnError;
 		_continueOnMissingFile = other._continueOnMissingFile;
