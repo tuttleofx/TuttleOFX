@@ -125,8 +125,7 @@ public:
 			return getLocalSize() + _chainedSet->getSize();
 	}
 
-	/// hide assignment
-	void operator=( const This& );
+	OfxhSet& operator=( const This& );
 
 	bool operator==( const This& ) const;
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }

@@ -44,7 +44,7 @@ public:
 
 	virtual ~OfxhParamSet() = 0;
 
-	void operator=( const OfxhParamSet& other );
+	OfxhParamSet& operator=( const OfxhParamSet& other );
 
 	void copyParamsValues( const OfxhParamSet& other );
 
