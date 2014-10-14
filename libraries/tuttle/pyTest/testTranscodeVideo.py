@@ -5,7 +5,7 @@ from pyTuttle import tuttle
 def setUp():
 	tuttle.core().preload(False)
 
-def testTrancodeToDefaultCodec():
+def testTranscodeToDefaultCodec():
 	tuttle.compute(
 		[
 			tuttle.NodeInit( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" ), # video with PAR 16/15=1.066667
@@ -14,7 +14,7 @@ def testTrancodeToDefaultCodec():
 		], tuttle.ComputeOptions(0,20) )
 
 
-def testTrancodeToMpegpipe():
+def testTranscodeToMpegpipe():
 	tuttle.compute(
 		[
 			tuttle.NodeInit( "tuttle.avreader", filename="TuttleOFX-data/video/flame.avi", colorspace="bt709" ),
