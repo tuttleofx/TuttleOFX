@@ -101,16 +101,16 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     brew install bottles/jasper-1.900.1.mavericks.bottle.tar.gz
     brew install bottles/little-cms2-2.6.mavericks.bottle.tar.gz
     # brew install bottles/doxygen-1.8.7.mavericks.bottle.tar.gz
-    brew install gmp  # bottles/gmp-6.0.0a.mavericks.bottle.tar.gz
-    brew install mpfr  # bottles/mpfr-3.1.2-p8.mavericks.bottle.tar.gz
+    # brew install gmp  # bottles/gmp-6.0.0a.mavericks.bottle.tar.gz
+    # brew install mpfr  # bottles/mpfr-3.1.2-p8.mavericks.bottle.tar.gz
     brew install libmpc  # bottles/libmpc-1.0.2.mavericks.bottle.tar.gz
     brew install isl  # bottles/isl-0.12.2.mavericks.bottle.tar.gz
     brew install cloog  # bottles/cloog-0.18.1.mavericks.bottle.1.tar.gz
-    brew unlink gcc  # need to get gcc installed by homebrew
-    brew install gcc  # bottles/gcc-4.8.3_1.mavericks.bottle.tar.gz
+    # brew unlink gcc || true  # need to get gcc installed by homebrew
+    # brew install gcc  # bottles/gcc-4.8.3_1.mavericks.bottle.tar.gz
     brew install bottles/webp-0.4.0_1.mavericks.bottle.tar.gz
     brew install glew  # bottles/glew-1.10.0.mavericks.bottle.tar.gz
-    brew install bottles/qt-4.8.6.mavericks.bottle.5.tar.gz
+    # brew install bottles/qt-4.8.6.mavericks.bottle.5.tar.gz
     brew install bottles/freetype-2.5.3_1.mavericks.bottle.1.tar.gz
     brew install bottles/pcre-8.35.mavericks.bottle.tar.gz
     brew install bottles/swig-3.0.2.mavericks.bottle.tar.gz
@@ -124,7 +124,8 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     brew install scons  # bottles/scons-2.3.1.mavericks.bottle.3.tar.gz || true
 
     # selfbuilt bottles
-    brew uninstall boost && brew install bottles/boost-1.55.0_2.mavericks.bottle.4.tar.gz
+    # brew uninstall boost && brew install bottles/boost-1.55.0_2.mavericks.bottle.4.tar.gz
+    # brew install boost
     brew install bottles/aces_container-1.0.mavericks.bottle.tar.gz
     brew install bottles/ctl-1.5.2.mavericks.bottle.tar.gz
     brew install bottles/jpeg-turbo-1.3.1.mavericks.bottle.tar.gz
