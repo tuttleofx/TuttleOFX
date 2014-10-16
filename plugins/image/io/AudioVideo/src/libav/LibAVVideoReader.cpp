@@ -21,8 +21,7 @@ LibAVVideoReader::LibAVVideoReader()
 	, _avFrame( NULL )
 	, _videoCodec( NULL )
 	, _sws_context( NULL )
-	, _fpsNum( 0 )
-	, _fpsDen( 0 )
+	, _fps( AVRational() )
 	, _currVideoIdx( -1 )
 	, _nbFrames( 0 )
 	, _width( 0 )
@@ -260,34 +259,67 @@ bool LibAVVideoReader::setupStreamInfo()
 		_interlacment = eInterlacmentNone;
 	}
 
-	if( stream->avg_frame_rate.num != 0 && stream->avg_frame_rate.den != 0 )
+	// Guess frame rate using same logic as av_guess_frame_rate
+	const AVRational fr = stream->r_frame_rate;
+	AVRational codec_fr = av_inv_q(stream->codec->time_base);
+	const AVRational avg_fr = stream->avg_frame_rate;
+
+	if ( avg_fr.num > 0 && avg_fr.den > 0 && fr.num > 0 && fr.den > 0 && av_q2d(avg_fr) < 70 && av_q2d(fr) > 210 )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "fps " << stream->avg_frame_rate.num << " / " << stream->avg_frame_rate.den );
-		_fpsNum = stream->avg_frame_rate.num;
-		_fpsDen = stream->avg_frame_rate.den;
+		// Use average frame rate
+		_fps = avg_fr;
+	}
+	else if ( stream->codec->ticks_per_frame > 1 )
+	{
+		// Usecodec frame rate
+		codec_fr.den *= stream->codec->ticks_per_frame;	
+		if ( codec_fr.num > 0 && codec_fr.den > 0 && av_q2d(codec_fr) < av_q2d(fr)*0.7 && fabs(1.0 - av_q2d(av_div_q(avg_fr, fr))) > 0.1)
+		{
+			_fps = codec_fr;
+		}
+	}
+	else
+	{
+		// Use time base and ticks per frame
+		const uint64_t den = stream->codec->ticks_per_frame*stream->time_base.num; 
+		if( den )
+		{
+			_fps.num = stream->time_base.den;
+			_fps.den = den;
+		}
 	}
 
+	if( _fps.num != 0 && _fps.den != 0 )
+	{
+		TUTTLE_TLOG( TUTTLE_INFO, "fps " << _fps.num << " / " << _fps.den );
+	} 
+	else
+	{
+		TUTTLE_TLOG( TUTTLE_INFO, "unable to guess fps" );
+	}
 	openVideoCodec();
 
 	// Set the duration
-	if( _avFormatOptions->duration > 0 )
+	// nb_frames will be set if that information is present in the container,
+	// otherwise it will be zero.
+	if ( stream->nb_frames )
 	{
+		_nbFrames = stream->nb_frames;	
+	}
+	else if( _avFormatOptions->duration > 0 && _fps.den && _fps.num )
+	{
+		// Use duration if nb_frames is not set
 		_nbFrames = boost::numeric_cast<boost::uint64_t>( ( fps() * (double) _avFormatOptions->duration / (double) AV_TIME_BASE ) );
 	}
 	else
 	{
-		_nbFrames = 1 << 29;
-	}
-
-	// try to calculate the number of frames
-	if( !_nbFrames )
-	{
+		// Last option, count the number of frames
 		seek( 0 );
 		av_init_packet( &_pkt );
 		av_read_frame( _avFormatOptions, &_pkt );
 		boost::uint64_t firstPts = _pkt.pts;
 		boost::uint64_t maxPts   = firstPts;
-		seek( 1 << 29 );
+		seek( 1 << 29 ); 
 		av_init_packet( &_pkt );
 		while( stream && av_read_frame( _avFormatOptions, &_pkt ) >= 0 )
 		{
@@ -297,18 +329,6 @@ bool LibAVVideoReader::setupStreamInfo()
 		}
 
 		_nbFrames = maxPts;
-	}
-
-	// nb_frames will be set if that information is present in the container,
-	// otherwise it will be zero.
-	if ( stream->nb_frames )
-	{
-		if ( (int64_t)_nbFrames != stream->nb_frames )
-		{
-			std::cerr << "Warning: calculated number of frames ("   <<
-			_nbFrames << ") does not match container information (" <<
-			stream->nb_frames << ")" << std::endl;
-		}
 	}
 
 	return true;

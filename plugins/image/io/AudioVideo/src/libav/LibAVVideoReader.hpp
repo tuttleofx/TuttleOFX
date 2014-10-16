@@ -83,9 +83,9 @@ public:
 
 	double fps() const
 	{
-		if( _fpsDen )
+		if( _fps.den )
 		{
-			return _fpsNum / (double) _fpsDen;
+			return av_q2d(_fps); 	
 		}
 		return 1.0f;
 	}
@@ -161,8 +161,7 @@ public: // private:
 
 	struct SwsContext* _sws_context;  ///< contexte de transformation swscale
 	std::vector<int> _videoIdx;
-	int _fpsNum;
-	int _fpsDen;
+	AVRational _fps;
 	int _currVideoIdx;
 	uint64_t _nbFrames;
 	int _width;
