@@ -24,9 +24,11 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     sudo apt-get install -qq swig swig2.0 libboost1.55-all-dev python-dev python-numpy libfreetype6-dev libXt-dev libbz2-dev liblcms-dev libopenctl0.8 libltdl-dev libpng-dev libcaca-dev libjpeg-dev libglew-dev libtiff-dev libilmbase-dev libopenexr-dev libMagickCore-dev libraw-dev libopenjpeg-dev libglui-dev libglew-dev graphviz graphviz-dev python-nose python-imaging libtinyxml-dev libyaml-cpp-dev libopenimageio-dev libturbojpeg libxmu-dev yasm libmp3lame-dev libx264-dev libxvidcore-dev liblzma-dev
 
     cd $TRAVIS_BUILD_DIR
-    git clone git://github.com/MarcAntoine-Arnaud/libav.git
-    cd libav
-    ./configure --enable-shared && make $J && sudo make install
+    wget https://www.ffmpeg.org/releases/ffmpeg-2.2.9.tar.bz2
+    bunzip2 ffmpeg-2.2.9.tar.bz2
+    tar -xvf ffmpeg-2.2.9.tar
+    cd ffmpeg-2.2.9
+    ./configure --enable-shared --disable-static && make $J && sudo make install
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
