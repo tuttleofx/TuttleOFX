@@ -28,34 +28,34 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     cd $TRAVIS_BUILD_DIR
     wget https://www.ffmpeg.org/releases/ffmpeg-2.2.9.tar.bz2
     bunzip2 ffmpeg-2.2.9.tar.bz2
-    tar -xvf ffmpeg-2.2.9.tar
+    tar -xvf ffmpeg-2.2.9.tar > /dev/null 2>&1
     cd ffmpeg-2.2.9
     ./configure --enable-shared --disable-static > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
-    tar -xzvf /tmp/aces_container-1.0.tar.gz
+    tar -xzvf /tmp/aces_container-1.0.tar.gz > /dev/null 2>&1
     mkdir aces_container-1.0/build
     cd aces_container-1.0/build
     cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/ampas/CTL/archive/ctl-1.5.2.tar.gz -O /tmp/ctl-1.5.2.tar.gz
-    tar -xzvf /tmp/ctl-1.5.2.tar.gz
+    tar -xzvf /tmp/ctl-1.5.2.tar.gz > /dev/null 2>&1
     mkdir CTL-ctl-1.5.2/build
     cd CTL-ctl-1.5.2/build
     cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/wdas/SeExpr/archive/rel-1.0.1.tar.gz -O /tmp/SeExpr-1.0.1.tar.gz
-    tar -xzvf /tmp/SeExpr-1.0.1.tar.gz
+    tar -xzvf /tmp/SeExpr-1.0.1.tar.gz > /dev/null 2>&1
     mkdir SeExpr-rel-1.0.1/build
     cd SeExpr-rel-1.0.1/build
     cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/imageworks/OpenColorIO/archive/v1.0.9.tar.gz -O /tmp/ocio-1.0.9.tar.gz
-    tar -xzvf /tmp/ocio-1.0.9.tar.gz
+    tar -xzvf /tmp/ocio-1.0.9.tar.gz > /dev/null 2>&1
     mkdir OpenColorIO-1.0.9/build
     cd OpenColorIO-1.0.9/build
     cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
