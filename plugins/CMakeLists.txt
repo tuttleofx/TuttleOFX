@@ -37,7 +37,7 @@ add_subdirectory(image/process/color/ColorTransfer)
 add_subdirectory(image/process/color/ColorTransform)
 add_subdirectory(image/process/color/Colorspace)
 add_subdirectory(image/process/color/Gamma)
-#add_subdirectory(image/process/color/HistogramKeyer) # deactivated cause it needs "Parametric Parameter" functionality
+add_subdirectory(image/process/color/HistogramKeyer)
 add_subdirectory(image/process/color/IdKeyer)
 add_subdirectory(image/process/color/Invert)
 add_subdirectory(image/process/color/Lut)
