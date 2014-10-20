@@ -6,6 +6,7 @@ include(TuttleMacros)
 
 tuttle_add_executable(sam main.cpp)
 tuttle_executable_add_library(sam sequenceParser)
+tuttle_executable_add_library(sam Boost)
 
 # install extra shell wrappers
 install(FILES sam-ll sam-lls sam-lss sam-viewer 

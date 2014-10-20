@@ -6,5 +6,5 @@ include(TuttleMacros)
 
 tuttle_add_executable(sam-mv main.cpp)
 tuttle_executable_add_library(sam-mv sequenceParser)
-
+tuttle_executable_add_library(sam-mv Boost)
 

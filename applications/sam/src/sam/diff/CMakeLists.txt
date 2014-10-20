@@ -7,5 +7,6 @@ include(TuttleMacros)
 tuttle_add_executable(sam-diff main.cpp)
 tuttle_executable_add_library(sam-diff sequenceParser)
 tuttle_executable_add_library(sam-diff tuttleHost)
+tuttle_executable_add_library(sam-diff Boost)
 
 
