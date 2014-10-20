@@ -13,10 +13,7 @@ fi
 
 (wget --quiet https://www.dropbox.com/s/0wkebzn5zyshlh8/testfiles.tar && tar -xf testfiles.tar) &
 
-if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
-    scons $J CC=$CC CXX=$CXX compiler=$CC
-    # scons $J CC=$CC CXX=$CXX compiler=$CC test
-elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
-    scons $J CC=$CC CXX=$CXX compiler=$CC incdir_python=/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 incdir_python_numpy=/usr/local/Cellar/numpy/1.8.1/lib/python2.7/site-packages/numpy/core/include
-    # scons $J CC=$CC CXX=$CXX compiler=$CC incdir_python=/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 incdir_python_numpy=/usr/local/Cellar/numpy/1.8.1/lib/python2.7/site-packages/numpy/core/include test
-fi
+mkdir build_travis
+cd build_travis
+cmake ..
+make install

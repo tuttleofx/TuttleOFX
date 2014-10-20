@@ -16,8 +16,6 @@ fi
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     lsb_release -a
 
-    cp tools/sconf/ubuntu_travis.sconf host.sconf
-
     sudo add-apt-repository -y ppa:boost-latest/ppa
     sudo add-apt-repository -y ppa:irie/openimageio
     sudo add-apt-repository -y ppa:kubuntu-ppa/backports
