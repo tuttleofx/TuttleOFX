@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit immediately if a command exits with a non-zero status
 set -e
+# Print commands and their arguments as they are executed.
 set -x
 
 # enable testing locally or on forks without multi-os enabled
@@ -28,35 +30,35 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     bunzip2 ffmpeg-2.2.9.tar.bz2
     tar -xvf ffmpeg-2.2.9.tar
     cd ffmpeg-2.2.9
-    ./configure --enable-shared --disable-static && make $J && sudo make install
+    ./configure --enable-shared --disable-static > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
     tar -xzvf /tmp/aces_container-1.0.tar.gz
     mkdir aces_container-1.0/build
     cd aces_container-1.0/build
-    cmake .. && make $J && sudo make install
+    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/ampas/CTL/archive/ctl-1.5.2.tar.gz -O /tmp/ctl-1.5.2.tar.gz
     tar -xzvf /tmp/ctl-1.5.2.tar.gz
     mkdir CTL-ctl-1.5.2/build
     cd CTL-ctl-1.5.2/build
-    cmake .. && make $J && sudo make install
+    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/wdas/SeExpr/archive/rel-1.0.1.tar.gz -O /tmp/SeExpr-1.0.1.tar.gz
     tar -xzvf /tmp/SeExpr-1.0.1.tar.gz
     mkdir SeExpr-rel-1.0.1/build
     cd SeExpr-rel-1.0.1/build
-    cmake .. && make $J && sudo make install
+    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
     cd $TRAVIS_BUILD_DIR
     wget https://github.com/imageworks/OpenColorIO/archive/v1.0.9.tar.gz -O /tmp/ocio-1.0.9.tar.gz
     tar -xzvf /tmp/ocio-1.0.9.tar.gz
     mkdir OpenColorIO-1.0.9/build
     cd OpenColorIO-1.0.9/build
-    cmake .. && make $J && sudo make install
+    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
 elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     sw_vers -productVersion

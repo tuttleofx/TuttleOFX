@@ -15,6 +15,6 @@ fi
 
 mkdir build_travis
 cd build_travis
-cmake ..
-make VERBOSE=1
+cmake .. 2> /dev/null
+make 
 make install
