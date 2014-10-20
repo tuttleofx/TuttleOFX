@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(TuttleMacros)
 
 set(SAMDO_FILES main.cpp nodeDummy.cpp nodeDummy.hpp global.hpp commandLine.hpp)
-add_tuttle_executable(sam-do "${SAMDO_FILES}")
+tuttle_add_executable(sam-do "${SAMDO_FILES}")
 tuttle_executable_add_library(sam-do sequenceParser)
 tuttle_executable_add_library(sam-do tuttleHost)
 

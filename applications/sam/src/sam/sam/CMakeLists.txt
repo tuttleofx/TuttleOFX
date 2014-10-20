@@ -4,7 +4,7 @@
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(TuttleMacros)
 
-add_tuttle_executable(sam main.cpp)
+tuttle_add_executable(sam main.cpp)
 tuttle_executable_add_library(sam sequenceParser)
 
 # install extra shell wrappers

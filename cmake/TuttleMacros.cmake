@@ -171,7 +171,7 @@ endfunction(tuttle_ofx_plugin_add_libraries)
 
 
 # Add an executable using tuttle libraries
-function(add_tuttle_executable TARGET SOURCES)
+function(tuttle_add_executable TARGET SOURCES)
     # It needs boost libraries
     include(UseTuttleBoost)
   
@@ -210,7 +210,7 @@ function(add_tuttle_executable TARGET SOURCES)
         # Install
         install(TARGETS ${TARGET} DESTINATION bin)
     endif(TuttleBoost_FOUND)
-endfunction(add_tuttle_executable)
+endfunction(tuttle_add_executable)
 
 # Add libraries to an executable.
 function(tuttle_executable_add_library TARGET PACKAGE)
