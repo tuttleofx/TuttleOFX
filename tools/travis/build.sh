@@ -15,6 +15,6 @@ fi
 
 mkdir build_travis
 cd build_travis
-cmake .. 2> /dev/null
-make 
+cmake -DCMAKE_INSTALL_PREFIX=/tmp/tuttle-ci .. 2> /dev/null
+make $J VERBOSE=1 
 make install
