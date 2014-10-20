@@ -16,4 +16,4 @@ fi
 mkdir build_travis
 cd build_travis
 cmake ..
-make install
+make $J install
