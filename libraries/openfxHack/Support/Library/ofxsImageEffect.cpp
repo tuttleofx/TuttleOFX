@@ -1242,7 +1242,7 @@ ImageEffect::~ImageEffect()
 }
 
 /// name of the imageEffect
-const std::string& ImageEffect::getName() const
+const std::string ImageEffect::getName() const
 {
 	return getPropertySet().propGetString( kOfxPropName );
 }
