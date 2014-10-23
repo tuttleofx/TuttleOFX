@@ -7,4 +7,4 @@ include(TuttleMacros)
 tuttle_add_executable(sam-check main.cpp)
 tuttle_executable_add_library(sam-check sequenceParser)
 tuttle_executable_add_library(sam-check tuttleHost)
-tuttle_executable_add_library(sam-check Boost)
+
