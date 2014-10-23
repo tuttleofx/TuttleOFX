@@ -55,6 +55,7 @@ if (TuttleBoost_FOUND)
   add_library(sequenceParser STATIC ${SEQUENCEPARSER_FILES}) 
   set_target_properties(sequenceParser
                         PROPERTIES COMPILE_FLAGS "-fPIC")
+  target_link_libraries(sequenceParser ${Boost_LIBRARIES})
   # Adds a support library for common and plugins
   # only compile object files, and use them at link time
   add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES}) 
