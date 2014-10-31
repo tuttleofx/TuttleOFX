@@ -8,7 +8,7 @@ project.createOfxPlugin(
 		libs.boost_gil,
 		libs.boost_filesystem,
 		libs.boost_regex,
-		libs.avTranscoder,
+		libs.avtranscoder,
 		]
 	)
 
