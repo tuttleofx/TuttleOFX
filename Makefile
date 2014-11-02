@@ -1,24 +1,28 @@
-
+.PHONY: distclean all configure
 
 SHELL := /bin/bash
 RM    := rm -rf
+CONFIGURE_CMD := ./configure 2> cmake_pass.log
 
-# keep one processor for system tasks
+# Automatically select the number of processors (keep one for system tasks).
+# You can override that on the command line: "make NPROC=1".
 NPROC := $(shell nproc --ignore=1)
 
 all: ./build/Makefile
 	$(MAKE) -C build -j$(NPROC)
 
-build/Makefile: build
-	@ (cd build >/dev/null 2>&1 && cmake .. 2> cmake_pass.log)
+build/Makefile:
+	@ ($(CONFIGURE_CMD))
 
-build:
-	@ (mkdir build)
-
-clean: ./build/Makefile
-	$(MAKE) -C build clean 
+configure:
+	@ ($(CONFIGURE_CMD))
 
 distclean:
 	@- $(RM) ./build/
 
-.PHONY: clean distclean all
+SUBTARGETS := $(filter-out configure distclean, $(MAKECMDGOALS))
+ifneq ($(SUBTARGETS),)
+    $(SUBTARGETS): ./build/Makefile
+	$(MAKE) -C build -j$(NPROC) $(MAKECMDGOALS)
+endif
+
