@@ -70,7 +70,7 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	mode->appendOption( kParamModeCrop );
 	mode->appendOption( kParamModeFillColor );
 //	mode->appendOption( kParamModeResize ); // good idea or not?
-	mode->setDefault( eParamModeFillColor );
+	mode->setDefault( eParamModeCrop );
 
 	OFX::RGBAParamDescriptor* fillColor = desc.defineRGBAParam( kParamFillColor );
 	fillColor->setLabel( "Color" );
