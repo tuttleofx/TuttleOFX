@@ -62,8 +62,14 @@ public:
 	};
 	
 public:
-	INode() : _beforeRenderCallback(0) {}
-	INode( const INode& e ) : _beforeRenderCallback(0) {}
+	INode()
+		: _data(NULL)
+		, _beforeRenderCallback(0)
+	{}
+	INode( const INode& e )
+		: _data(NULL)
+		, _beforeRenderCallback(0)
+	{}
 	
 	virtual ~INode();
 	virtual INode* clone() const = 0;

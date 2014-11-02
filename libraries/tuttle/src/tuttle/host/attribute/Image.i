@@ -45,8 +45,6 @@ namespace attribute {
 			import numpy
 			(data, width, height, rowSizeBytes, bitDepth, components) = self.getImage()
 			
-			# print('(width, height, rowSizeBytes, bitDepth, components)', (width, height, rowSizeBytes, bitDepth, components))
-			
 			numpyBitDepth = None
 			if bitDepth == eBitDepthUByte:
 				numpyBitDepth = numpy.uint8
@@ -67,18 +65,9 @@ namespace attribute {
 				print('self.getBitDepthMemorySize():', self.getBitDepthMemorySize())
 				raise NotImplementedError('The image padding is unsupported in the pyTuttle binding.')
 
-			# print('numpyBitDepth:', numpyBitDepth)
-			# print('len(data):', len(d))
-			# print('rowSizeBytes:', rowSizeBytes)
-			# print('size: %dx%d' % (width, height))
-			# print('nbComponents():', self.getNbComponents())
-			# print('arraySize:', arraySize)
-			
 			flatarray = numpy.frombuffer( d, numpyBitDepth, arraySize )
 
-			# print('flatarray:', flatarray)
 			nArray = numpy.array( numpy.flipud( numpy.reshape( flatarray, ( height, width, self.getNbComponents() ) ) ) )
-			# print('nArray:', nArray)
 			return nArray
 
 		def getNumpyImage(self):

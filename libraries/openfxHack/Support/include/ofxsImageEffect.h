@@ -974,7 +974,7 @@ public:
 
     OfxImageEffectHandle getHandle( void ) const { return _effectHandle; }
 
-	const std::string getName() const;
+	std::string getName() const;
 
     /** @brief the context this effect was instantiate in */
     EContext getContext( void ) const;

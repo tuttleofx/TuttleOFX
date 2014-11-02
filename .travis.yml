@@ -1,5 +1,12 @@
+env:
+  global:
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "NvoMZI1lDLmdoKMgAJnNp3RzdRMYGfWL4buwPdIRyjJ522AIceVrT59x0//JB2bdbrABibo/o5TPP1dUGBJlVp9N250R0pjKz8zlehTL++6Y5z0zGWF9WRXOzrvTOCDpUAjJ24zwIREFy02qHmhcEbAy5+IE8aw9s3eZxsngL54="
+
 os:
   - linux
+  - osx
 
 language: cpp
 
@@ -14,8 +21,22 @@ before_script:
   - tools/travis/install_dependencies.sh
 
 script:
-  - git submodule update --init --recursive
+  - if [[ "${COVERITY_SCAN_BRANCH}" == 1 ]];
+    then
+      echo "Don't build on coverty_scan branch.";
+      exit 0;
+    fi
   - tools/travis/build.sh
 
 after_failure:
   - cat config.log
+
+addons:
+  coverity_scan:
+    project:
+      name: "tuttleofx/TuttleOFX"
+      description: "TuttleOFX Build submitted via Travis CI"
+    notification_email: "tuttleofx-team@googlegroups.com"
+    build_command: "scons check_libs=0 $J CC=$CC CXX=$CXX compiler=$CC"
+    branch_pattern: coverity_scan
+

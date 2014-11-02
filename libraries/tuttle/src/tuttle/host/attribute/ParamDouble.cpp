@@ -10,10 +10,10 @@ ParamDouble::ParamDouble( INode&                           effect,
                           const std::string&                         name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor,
                           const std::size_t                          index )
-  : AnimatedParamDouble( effect, name, descriptor, index )
+  : AnimatedParamDouble( effect, name, descriptor, index, getDefault() )
 {
-  _value = getDefault();
 }
+
 double ParamDouble::getDefault() const
 {
 	return getProperties().getDoubleProperty( kOfxParamPropDefault, _index );

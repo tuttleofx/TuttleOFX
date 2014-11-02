@@ -41,6 +41,11 @@ std::ostream& ProcessVertex::exportDotDebug( std::ostream& os ) const
 			case INode::eNodeTypeImageEffect:
 			{
 				const ImageEffectNode* ieNode = dynamic_cast<const ImageEffectNode*>( & getProcessNode() );
+				if( !ieNode )
+				{
+					subDotEntry( "ImageEffectNode", "Bad pointer" );
+					break;
+				}
 				s << subDotEntry( "bitdepth",  ieNode->getOutputClip().getBitDepthString()   );
 				s << subDotEntry( "component", ieNode->getOutputClip().getComponentsString() );
 				{
@@ -69,7 +74,7 @@ std::ostream& ProcessVertex::exportDotDebug( std::ostream& os ) const
 	os << dotEntry( "type", "Node" ) << ", " << std::endl;
 	os << dotEntry( "label", s.str() ) << ", " << std::endl;
 	os << "]" << std::endl;
-	return os;
+
 	return os;
 }
 

@@ -11,6 +11,14 @@ namespace invert {
 
 struct InvertProcessParams
 {
+	InvertProcessParams()
+	: _red(false)
+	, _green(false)
+	, _blue(false)
+	, _alpha(false)
+	, _gray(false)
+	{}
+	
 	bool _red;
 	bool _green;
 	bool _blue;
