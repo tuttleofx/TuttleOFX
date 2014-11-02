@@ -14,19 +14,26 @@ compiler:
   - gcc
   - clang
 
+
 before_script:
   - date -u
   - uname -a
   - export J='-j3'
+  - tools/travis/coverity_env.sh
+  - if [[ ${BUILD_DISABLED} == 1 ]];
+    then
+        exit 0;
+    fi
   - tools/travis/install_dependencies.sh
 
 script:
-  - if [[ "${COVERITY_SCAN_BRANCH}" == 1 ]];
+  - if [[ ${COVERITY_SCAN_BRANCH} == 1 ]];
     then
       echo "Don't build on coverty_scan branch.";
       exit 0;
     fi
   - tools/travis/build.sh
+
 
 after_failure:
   - cat config.log
@@ -37,6 +44,6 @@ addons:
       name: "tuttleofx/TuttleOFX"
       description: "TuttleOFX Build submitted via Travis CI"
     notification_email: "tuttleofx-team@googlegroups.com"
-    build_command: "scons check_libs=0 $J CC=$CC CXX=$CXX compiler=$CC"
+    build_command: "tools/travis/coverity_build.sh"
     branch_pattern: coverity_scan
 
