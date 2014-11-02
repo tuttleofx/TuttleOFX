@@ -20,7 +20,7 @@ before_script:
   - uname -a
   - export J='-j3'
   - tools/travis/coverity_env.sh
-  - if [[ ${BUILD_DISABLED} == 1 ]];
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]];
     then
         exit 0;
     fi
@@ -44,6 +44,6 @@ addons:
       name: "tuttleofx/TuttleOFX"
       description: "TuttleOFX Build submitted via Travis CI"
     notification_email: "tuttleofx-team@googlegroups.com"
-    build_command: "tools/travis/coverity_build.sh"
+    build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
 

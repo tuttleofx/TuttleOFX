@@ -11,6 +11,12 @@ if [[ "${TRAVIS_OS_NAME:-false}" == false ]]; then
     fi
 fi
 
+if [[ ${COVERITY_BUILD_DISABLED} == 1 ]];
+then
+    echo "Coverity is not executed on this build variant."
+    exit 0;
+fi
+
 # (wget --quiet https://www.dropbox.com/s/0wkebzn5zyshlh8/testfiles.tar && tar -xf testfiles.tar) &
 
 mkdir build_travis
