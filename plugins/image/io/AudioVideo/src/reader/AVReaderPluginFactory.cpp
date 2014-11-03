@@ -4,10 +4,13 @@
 
 #include <common/util.hpp>
 
-#include <AvTranscoder/option/OptionLoader.hpp>
-#include <AvTranscoder/Library.hpp>
-
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
+
+#include <AvTranscoder/util.hpp>
+#include <AvTranscoder/Library.hpp>
+#include <AvTranscoder/option/Option.hpp>
+#include <AvTranscoder/option/CodecContext.hpp>
+#include <AvTranscoder/option/FormatContext.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
@@ -106,10 +109,9 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoGroup->setAsTab( );
 	metaGroup->setAsTab( );
 	
-	avtranscoder::OptionLoader optionLoader;
-
 	/// FORMAT PARAMETERS
-	avtranscoder::OptionLoader::OptionArray formatOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
+	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_DECODING_PARAM );
+	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
 	common::addOptionsToGroup( desc, formatGroup, formatOptions, common::kPrefixFormat );
 	
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
@@ -117,11 +119,12 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatDetailledGroup->setAsTab( );
 	formatDetailledGroup->setParent( formatGroup );
 	
-	avtranscoder::OptionLoader::OptionMap formatDetailledGroupOptions = optionLoader.loadOutputFormatOptions();
+	avtranscoder::OptionArrayMap formatDetailledGroupOptions = avtranscoder::getOutputFormatOptions();
 	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
 	
 	/// VIDEO PARAMETERS
-	avtranscoder::OptionLoader::OptionArray videoOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
 	common::addOptionsToGroup( desc, videoGroup, videoOptions, common::kPrefixVideo );
 	
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
@@ -151,11 +154,12 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoDetailledGroup->setAsTab( );
 	videoDetailledGroup->setParent( videoGroup );
 	
-	avtranscoder::OptionLoader::OptionMap videoDetailledGroupOptions = optionLoader.loadVideoCodecOptions(); 
+	avtranscoder::OptionArrayMap videoDetailledGroupOptions =  avtranscoder::getVideoCodecOptions(); 
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
 	
 	/// METADATA PARAMETERS
-	avtranscoder::OptionLoader::OptionArray metadataOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	avtranscoder::CodecContext metadataCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	avtranscoder::OptionArray metadataOptions = metadataCodecContext.getOptions();
 	common::addOptionsToGroup( desc, metaGroup, metadataOptions, common::kPrefixMetaData );
 	
 	OFX::StringParamDescriptor* metaDataWrapper = desc.defineStringParam( kParamMetaDataWrapper );

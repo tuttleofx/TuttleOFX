@@ -1,10 +1,7 @@
 #include "AVWriterProcess.hpp"
 
-#include <AvTranscoder/essenceStructures/Pixel.hpp>
-#include <AvTranscoder/essenceStructures/AudioFrame.hpp>
-#include <AvTranscoder/codedStructures/DataStream.hpp>
-
 #include <tuttle/plugin/exceptions.hpp>
+#include <AvTranscoder/codec/VideoCodec.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -49,12 +46,13 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	uint8_t* imageData = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	
 	// set video stream next frame
-	const size_t bufferSize = _plugin._generatorVideo.getVideoDesc().getVideoFrameDesc().getDataSize();
+	const size_t bufferSize = _plugin._videoStream->getVideoFrameDesc().getDataSize();
 	if( _plugin._videoFrame.getSize() != bufferSize )
 		_plugin._videoFrame.getBuffer().resize( bufferSize );
+
 	std::memcpy( _plugin._videoFrame.getPtr(), imageData, bufferSize );
-	_plugin._generatorVideo.setFrame( _plugin._videoFrame );
-	
+	_plugin._videoStream->setFrame( _plugin._videoFrame );
+
 	// process
 	_plugin._transcoder->processFrame();
 }

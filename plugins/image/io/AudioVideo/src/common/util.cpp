@@ -115,19 +115,19 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 	return optionsNameAndValue;
 }
 
-void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
+void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
 {
 	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
+	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
 	{
 		const std::string subGroupName = subGroupOption.first;
-		std::vector<avtranscoder::Option>& options = subGroupOption.second;
+		avtranscoder::OptionArray& options = subGroupOption.second;
 				
 		fetchCustomParams( plugin, options, prefix, subGroupName );
 	}
 }
 
-void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
+void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
 {
 	// iterate on options
 	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
@@ -142,35 +142,35 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 
 		switch( option.getType() )
 		{
-			case avtranscoder::TypeBool:
+			case avtranscoder::eOptionBaseTypeBool:
 			{
 				_paramOFX.push_back( plugin.fetchBooleanParam( name ) );
 				break;
 			}
-			case avtranscoder::TypeInt:
+			case avtranscoder::eOptionBaseTypeInt:
 			{
 				_paramOFX.push_back( plugin.fetchIntParam( name ) );
 				break;
 			}
-			case avtranscoder::TypeDouble:
+			case avtranscoder::eOptionBaseTypeDouble:
 			{
 				_paramOFX.push_back( plugin.fetchDoubleParam( name ) );
 				break;
 			}
-			case avtranscoder::TypeString:
+			case avtranscoder::eOptionBaseTypeString:
 			{
 				_paramOFX.push_back( plugin.fetchStringParam( name ) );
 				break;
 			}
-			case avtranscoder::TypeRatio:
+			case avtranscoder::eOptionBaseTypeRatio:
 			{
 				_paramOFX.push_back( plugin.fetchInt2DParam( name ) );
 				break;
 			}
-			case avtranscoder::TypeChoice:
+			case avtranscoder::eOptionBaseTypeChoice:
 			{
 				// avoid warning of Host when OFX Choice parameter with no choices
-				if( ! option.getNbChilds() )
+				if( option.getChilds().empty() )
 					continue;
 
 				_paramOFX.push_back( plugin.fetchChoiceParam( name ) );
@@ -181,7 +181,7 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 				}
 				break;
 			}
-			case avtranscoder::TypeGroup:
+			case avtranscoder::eOptionBaseTypeGroup:
 			{
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
@@ -277,7 +277,7 @@ OFX::ValueParam* CustomParams::getOFXParameter( const std::string& optionName, c
 	return NULL;
 }
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
 {
 	OFX::ParamDescriptor* param = NULL;
 	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
@@ -292,17 +292,17 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 		
 		switch( option.getType() )
 		{
-			case avtranscoder::TypeBool:
+			case avtranscoder::eOptionBaseTypeBool:
 			{
 				OFX::BooleanParamDescriptor* boolParam = desc.defineBooleanParam( name );
-				boolParam->setDefault( option.getDefaultValueBool() );
+				boolParam->setDefault( option.getDefaultBool() );
 				param = boolParam;
 				break;
 			}
-			case avtranscoder::TypeInt:
+			case avtranscoder::eOptionBaseTypeInt:
 			{
 				OFX::IntParamDescriptor* intParam = desc.defineIntParam( name );
-				intParam->setDefault( option.getDefaultValueInt() );
+				intParam->setDefault( option.getDefaultInt() );
 				const int min = option.getMin() > std::numeric_limits<int>::min() ? option.getMin() : std::numeric_limits<int>::min();
 				const int max = option.getMax() < std::numeric_limits<int>::max() ? option.getMax() : std::numeric_limits<int>::max();
 				intParam->setRange( min, max );
@@ -310,27 +310,27 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				param = intParam;
 				break;
 			}
-			case avtranscoder::TypeDouble:
+			case avtranscoder::eOptionBaseTypeDouble:
 			{
 				OFX::DoubleParamDescriptor* doubleParam = desc.defineDoubleParam( name );
-				doubleParam->setDefault( option.getDefaultValueDouble() );
+				doubleParam->setDefault( option.getDefaultDouble() );
 				doubleParam->setRange( option.getMin(), option.getMax() );
 				doubleParam->setDisplayRange( option.getMin(), option.getMax() );
 				param = doubleParam;
 				break;
 			}
-			case avtranscoder::TypeString:
+			case avtranscoder::eOptionBaseTypeString:
 			{
 				OFX::StringParamDescriptor* strParam = desc.defineStringParam( name );
-				strParam->setDefault( option.getDefaultValueString() );
+				strParam->setDefault( option.getDefaultString() );
 				param = strParam;
 				break;
 			}
-			case avtranscoder::TypeRatio:
+			case avtranscoder::eOptionBaseTypeRatio:
 			{
 				OFX::Int2DParamDescriptor* ratioParam = desc.defineInt2DParam( name );
 				// @todo: minX, minY, maxX, maxY could be different
-				ratioParam->setDefault( option.getDefaultValueRatio().first, option.getDefaultValueRatio().second );
+				ratioParam->setDefault( option.getDefaultRatio().first, option.getDefaultRatio().second );
 				const int min = option.getMin() > std::numeric_limits<int>::min() ? option.getMin() : std::numeric_limits<int>::min();
 				const int max = option.getMax() < std::numeric_limits<int>::max() ? option.getMax() : std::numeric_limits<int>::max();
 				ratioParam->setRange( min, min, max, max );
@@ -338,10 +338,10 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				param = ratioParam;
 				break;
 			}
-			case avtranscoder::TypeChoice:
+			case avtranscoder::eOptionBaseTypeChoice:
 			{
 				// avoid warning of Host when OFX Choice parameter with no choices
-				if( ! option.getNbChilds() )
+				if( option.getChilds().empty() )
 					continue;
 
 				OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam( name );
@@ -353,7 +353,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				param = choiceParam;
 				break;
 			}
-			case avtranscoder::TypeGroup:
+			case avtranscoder::eOptionBaseTypeGroup:
 			{
 				std::string groupName = prefix;
 				groupName += kPrefixGroup;
@@ -399,13 +399,13 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 	}
 }
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
 {
 	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
+	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
 	{
 		const std::string subGroupName = subGroupOption.first;
-		avtranscoder::OptionLoader::OptionArray& options = subGroupOption.second;
+		avtranscoder::OptionArray& options = subGroupOption.second;
 		
 		addOptionsToGroup( desc, group, options, prefix, subGroupName );
 	}
@@ -463,13 +463,13 @@ std::string getOptionFlagName( const std::string& optionName, const std::string&
 	return flagName;
 }
 
-void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& filter, const std::string& prefix )
+void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& filter, const std::string& prefix )
 {
 	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionLoader::OptionMap::value_type& subGroupOption, optionsMap )
+	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
 	{
 		const std::string subGroupName = subGroupOption.first;
-		std::vector<avtranscoder::Option>& options = subGroupOption.second;
+		avtranscoder::OptionArray& options = subGroupOption.second;
 
 		// iterate on options
 		BOOST_FOREACH( avtranscoder::Option& option, options )
@@ -481,43 +481,43 @@ void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::O
 
 			switch( option.getType() )
 			{
-				case avtranscoder::TypeBool:
+				case avtranscoder::eOptionBaseTypeBool:
 				{
 					OFX::BooleanParam* curOpt = plugin.fetchBooleanParam( name );
 					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
 					break;
 				}
-				case avtranscoder::TypeInt:
+				case avtranscoder::eOptionBaseTypeInt:
 				{
 					OFX::IntParam* curOpt = plugin.fetchIntParam( name );
 					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
 					break;
 				}
-				case avtranscoder::TypeDouble:
+				case avtranscoder::eOptionBaseTypeDouble:
 				{
 					OFX::DoubleParam* curOpt = plugin.fetchDoubleParam( name );
 					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
 					break;
 				}
-				case avtranscoder::TypeString:
+				case avtranscoder::eOptionBaseTypeString:
 				{
 					OFX::StringParam* curOpt = plugin.fetchStringParam( name );
 					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
 					break;
 				}
-				case avtranscoder::TypeRatio:
+				case avtranscoder::eOptionBaseTypeRatio:
 				{
 					OFX::Int2DParam* curOpt = plugin.fetchInt2DParam( name );
 					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
 					break;
 				}
-				case avtranscoder::TypeChoice:
+				case avtranscoder::eOptionBaseTypeChoice:
 				{
 					OFX::ChoiceParam* curOpt = plugin.fetchChoiceParam( name );
 					curOpt->setIsSecretAndDisabled( !( subGroupName == filter ) );
 					break;
 				}
-				case avtranscoder::TypeGroup:
+				case avtranscoder::eOptionBaseTypeGroup:
 				{
 					std::string groupName = prefix;
 					groupName += common::kPrefixGroup;

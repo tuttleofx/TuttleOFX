@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
 #define _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
 
-#include <AvTranscoder/option/OptionLoader.hpp>
+#include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Profile.hpp>
 
 #include <ofxsImageEffect.h>
@@ -50,8 +50,8 @@ public:
 	 */
 	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" ) const ;
 
-	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
-	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
+	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
+	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 
 	/**
 	 * @brief Get value of OFX parameters contained in customParams, and return the corresponding profileDesc.
@@ -95,16 +95,16 @@ public:
  * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
  * @param subGroupName: informed this to add an other prefix (the codec name) to the name of each OFX params created by the function
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionLoader::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 
 /**
  * @brief: Create OFX parameters depending on the list of Options.
  * @param desc: object to create OFX parameter descriptors
  * @param group: the group to add OFX params
- * @param optionsMap: options to add to the group (organized by the keys in the map)
+ * @param optionArrayMap: options to add to the group (organized by the keys in the map)
  * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& prefix="" );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
 
 /**
  * @brief Get the real name of the AVOption, without our prefix.
@@ -126,11 +126,11 @@ std::string getOptionFlagName( const std::string& optionName, const std::string&
  * @brief Disable the OFX parameters named in the optionMap.
  * Use this function to manage the display of OFX custom parameters which are fecth to AVOption of a specific format or codec (video and audio).
  * @param plugin: the plugin which contains the OFX parameters.
- * @param optionsMap: the keys are the name of the subgroup (the format or the codec), and the values are array of Option.
+ * @param optionArrayMap: the keys are the name of the subgroup (the format or the codec), and the values are array of Option.
  * @param filter: could be the format or the codec name.
  * @param prefix: prefix of the related OFX parameters.
  */
-void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionLoader::OptionMap& optionsMap, const std::string& filter, const std::string& prefix );
+void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& filter, const std::string& prefix );
 
 }
 }

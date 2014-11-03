@@ -2,8 +2,12 @@
 #include "AVReaderProcess.hpp"
 #include "AVReaderDefinitions.hpp"
 
-#include <AvTranscoder/essenceStructures/Pixel.hpp>
+#include <AvTranscoder/util.hpp>
+#include <AvTranscoder/option/Context.hpp>
+#include <AvTranscoder/option/FormatContext.hpp>
+#include <AvTranscoder/option/CodecContext.hpp>
 #include <AvTranscoder/progress/NoDisplayProgress.hpp>
+#include <AvTranscoder/frame/Pixel.hpp>
 #include <AvTranscoder/mediaProperty/printMediaProperty.hpp>
 
 #include <boost/foreach.hpp>
@@ -41,21 +45,24 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramVideoStreamIndex = fetchIntParam( kParamVideoStreamIndex );
 	_paramUseCustomSAR = fetchBooleanParam( kParamUseCustomSAR );
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
-	
-	avtranscoder::OptionLoader::OptionArray formatsOptions = _optionLoader.loadFormatContextOptions( AV_OPT_FLAG_DECODING_PARAM );
-	_paramFormatCustom.fetchCustomParams( *this, formatsOptions, common::kPrefixFormat );
-	
-	avtranscoder::OptionLoader::OptionArray videoOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+
+	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_DECODING_PARAM );
+	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
+	_paramFormatCustom.fetchCustomParams( *this, formatOptions, common::kPrefixFormat );
+
+	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
 	_paramVideoCustom.fetchCustomParams( *this, videoOptions, common::kPrefixVideo );
 	
-	avtranscoder::OptionLoader::OptionArray metadataOptions = _optionLoader.loadCodecContextOptions( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	avtranscoder::CodecContext metadataCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	avtranscoder::OptionArray metadataOptions = metadataCodecContext.getOptions();
 	_paramMetaDataCustom.fetchCustomParams( *this, metadataOptions, common::kPrefixMetaData );
 	
-	avtranscoder::OptionLoader::OptionMap optionsFormatDetailMap = _optionLoader.loadOutputFormatOptions();
+	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
 	_paramFormatDetailCustom.fetchCustomParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, "", common::kPrefixFormat );
 	
-	avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
+	avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
 	_paramVideoDetailCustom.fetchCustomParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 	
@@ -299,11 +306,11 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			}
 
 			// update format details parameters
-			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
+			avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
 			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, inputProperties.formatName, common::kPrefixFormat );
 			
 			// update video details parameters
-			avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
+			avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
 			const std::string videoCodecName = inputProperties.videoStreams.at( _paramVideoStreamIndex->getValue() ).codecName;
 			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 		}
@@ -320,10 +327,10 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramMetaDataAttachement->setIsSecret( true );
 			_paramMetaDataUnknown->setIsSecret( true );
 
-			avtranscoder::OptionLoader::OptionMap optionsFormatMap = _optionLoader.loadOutputFormatOptions();
+			avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
 			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, "", common::kPrefixFormat );
 			
-			avtranscoder::OptionLoader::OptionMap optionsVideoCodecMap = _optionLoader.loadVideoCodecOptions();
+			avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
 			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 		}
 	}
@@ -342,7 +349,7 @@ double AVReaderPlugin::retrievePAR()
 		return _paramCustomSAR->getValue();
 	
 	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	AVRational sar = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).sar;
+	avtranscoder::Rational sar = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).sar;
 	const double videoRatio = sar.num / (double)sar.den;
 
 	return videoRatio;
@@ -443,7 +450,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfileDesc() );
 	
 	// get source image
-	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoDesc().getVideoFrameDesc();
+	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc();
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 	
 	// get pixel data of image to decode

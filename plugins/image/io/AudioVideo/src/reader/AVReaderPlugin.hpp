@@ -5,11 +5,11 @@
 
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
+#include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/InputFile.hpp>
 #include <AvTranscoder/essenceStream/AvInputVideo.hpp>
-#include <AvTranscoder/essenceStructures/VideoFrame.hpp>
-#include <AvTranscoder/essenceTransform/VideoEssenceTransform.hpp>
-#include <AvTranscoder/option/OptionLoader.hpp>
+#include <AvTranscoder/frame/VideoFrame.hpp>
+#include <AvTranscoder/transform/VideoTransform.hpp>
 #include <AvTranscoder/Profile.hpp>
 
 #include <boost/scoped_ptr.hpp>
@@ -83,9 +83,8 @@ public:
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	
-	avtranscoder::VideoEssenceTransform _colorTransform;
+	avtranscoder::VideoTransform _colorTransform;
 	
-	avtranscoder::OptionLoader _optionLoader;
 	avtranscoder::Profile _presets;
 	
 	std::string _lastInputFilePath;

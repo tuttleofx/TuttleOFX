@@ -4,11 +4,13 @@
 
 #include <common/util.hpp>
 
-#include <AvTranscoder/Library.hpp>
-#include <AvTranscoder/option/OptionLoader.hpp>
-#include <AvTranscoder/Profile.hpp>
-
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
+
+#include <AvTranscoder/util.hpp>
+#include <AvTranscoder/Library.hpp>
+#include <AvTranscoder/option/CodecContext.hpp>
+#include <AvTranscoder/option/FormatContext.hpp>
+#include <AvTranscoder/Profile.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
@@ -72,8 +74,6 @@ void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
                                                OFX::EContext               context )
 {
-	avtranscoder::OptionLoader optionLoader;
-	
 	avtranscoder::Profile presets( true );
 	
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -137,9 +137,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	for( avtranscoder::Profile::ProfilesDesc::iterator it = formatPresets.begin(); it != formatPresets.end(); ++it )
 	{
 		formatPreset->appendOption( 
-			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second +
+			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
 			": " +
-			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+			(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
 		);
 	}
 	
@@ -153,9 +153,11 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// FORMAT PARAMETERS
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-	for( std::vector<std::string>::const_iterator itShort = optionLoader.getFormatsShortNames().begin(),
-		itLong = optionLoader.getFormatsLongNames().begin(),
-		itEnd = optionLoader.getFormatsShortNames().end();
+	std::vector<std::string> formatsShortNames( avtranscoder::getFormatsShortNames() );
+	std::vector<std::string> formatsLongNames( avtranscoder::getFormatsLongNames() );
+	for( std::vector<std::string>::const_iterator itShort = formatsShortNames.begin(),
+		itLong  = formatsLongNames.begin(),
+		itEnd = formatsShortNames.end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
@@ -168,16 +170,17 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( default_format );
 	format->setParent( formatCustomGroupParam );
-	
-	avtranscoder::OptionLoader::OptionArray formatGroupOptions = optionLoader.loadFormatContextOptions( AV_OPT_FLAG_ENCODING_PARAM );
-	common::addOptionsToGroup( desc, formatCustomGroupParam, formatGroupOptions, common::kPrefixFormat );
+
+	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_ENCODING_PARAM );
+	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
+	common::addOptionsToGroup( desc, formatCustomGroupParam, formatOptions, common::kPrefixFormat );
 	
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
 	formatDetailledGroup->setLabel( "Detailled" );
 	formatDetailledGroup->setAsTab( );
 	formatDetailledGroup->setParent( formatGroup );
 	
-	avtranscoder::OptionLoader::OptionMap formatDetailledGroupOptions = optionLoader.loadOutputFormatOptions();
+	avtranscoder::OptionArrayMap formatDetailledGroupOptions = avtranscoder::getOutputFormatOptions();
 	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
 	
 	/// VIDEO PARAMETERS
@@ -190,9 +193,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	for( avtranscoder::Profile::ProfilesDesc::iterator it = videoPresets.begin(); it != videoPresets.end(); ++it )
 	{
 		videoPresetParam->appendOption( 
-			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second +
+			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
 			": " + 
-			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+			(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
 		);
 	}
 	
@@ -219,9 +222,11 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	int default_codec = 0;
 	std::string defaultVideoCodec( "mpeg4" );
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
-	for( std::vector<std::string>::const_iterator itShort = optionLoader.getVideoCodecsShortNames().begin(),
-		itLong  = optionLoader.getVideoCodecsLongNames().begin(),
-		itEnd = optionLoader.getVideoCodecsShortNames().end();
+	std::vector<std::string> videoCodecsShortNames( avtranscoder::getVideoCodecsShortNames() );
+	std::vector<std::string> videoCodecsLongNames( avtranscoder::getVideoCodecsLongNames() );
+	for( std::vector<std::string>::const_iterator itShort = videoCodecsShortNames.begin(),
+		itLong  = videoCodecsLongNames.begin(),
+		itEnd = videoCodecsShortNames.end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
@@ -237,22 +242,23 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
 	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
-	std::vector<std::string> pixelFormats = avtranscoder::OptionLoader::getPixelFormats();
+	std::vector<std::string> pixelFormats = avtranscoder::getPixelFormats();
 	for( size_t i = 0; i < pixelFormats.size(); ++i )
 	{
 		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );
 	}
 	videoCodecPixelFmt->setParent( videoCustomGroupParam );
 	
-	avtranscoder::OptionLoader::OptionArray videoGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	common::addOptionsToGroup( desc, videoCustomGroupParam, videoGroupOptions, common::kPrefixVideo );
+	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
+	common::addOptionsToGroup( desc, videoCustomGroupParam, videoOptions, common::kPrefixVideo );
 
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
 	videoDetailledGroup->setAsTab( );
 	videoDetailledGroup->setParent( videoGroup );
 	
-	avtranscoder::OptionLoader::OptionMap videoDetailledGroupOptions = optionLoader.loadVideoCodecOptions(); 
+	avtranscoder::OptionArrayMap videoDetailledGroupOptions = avtranscoder::getVideoCodecOptions(); 
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
@@ -265,9 +271,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 	{
 		audioMainPresetParam->appendOption( 
-			(*it).find( avtranscoder::Profile::avProfileIdentificator )->second +
+			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
 			": " +
-			(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+			(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
 		);
 	}
 	
@@ -280,9 +286,11 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	int default_audio_codec = 0;
 	std::string defaultAudioCodec( "pcm_s16le" );
 	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
-	for( std::vector<std::string>::const_iterator itShort = optionLoader.getAudioCodecsShortNames().begin(),
-		itLong  = optionLoader.getAudioCodecsLongNames().begin(),
-		itEnd = optionLoader.getAudioCodecsShortNames().end();
+	std::vector<std::string> audioCodecsShortNames( avtranscoder::getAudioCodecsShortNames() );
+	std::vector<std::string> audioCodecsLongNames( avtranscoder::getAudioCodecsLongNames() );
+	for( std::vector<std::string>::const_iterator itShort = audioCodecsShortNames.begin(),
+		itLong  = audioCodecsLongNames.begin(),
+		itEnd = audioCodecsShortNames.end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
@@ -298,22 +306,23 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	OFX::ChoiceParamDescriptor* audioSampleFmtParam = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
 	audioSampleFmtParam->setLabel( "Select the output audio sample type" );
-	std::vector<std::string> sampleFormats = avtranscoder::OptionLoader::getSampleFormats();
+	std::vector<std::string> sampleFormats = avtranscoder::getSampleFormats();
 	for( size_t i = 0; i < sampleFormats.size(); ++i )
 	{
 		audioSampleFmtParam->appendOption( sampleFormats.at( i ) );
 	}
 	audioSampleFmtParam->setParent( audioCustomGroupParam );
 	
-	avtranscoder::OptionLoader::OptionArray audioGroupOptions = optionLoader.loadCodecContextOptions( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	common::addOptionsToGroup( desc, audioCustomGroupParam, audioGroupOptions, common::kPrefixAudio );
+	avtranscoder::CodecContext audioCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
+	avtranscoder::OptionArray audioOptions = audioCodecContext.getOptions();
+	common::addOptionsToGroup( desc, audioCustomGroupParam, audioOptions, common::kPrefixAudio );
 	
 	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
 	audioDetailledGroup->setLabel( "Detailled" );
 	audioDetailledGroup->setAsTab( );
 	audioDetailledGroup->setParent( audioGroup );
 	
-	avtranscoder::OptionLoader::OptionMap audioDetailledGroupOptions = optionLoader.loadAudioCodecOptions();
+	avtranscoder::OptionArrayMap audioDetailledGroupOptions = avtranscoder::getAudioCodecOptions();
 	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions, common::kPrefixAudio );
 	
 	OFX::IntParamDescriptor* audioNbInputs = desc.defineIntParam( kParamAudioNbInputs );
@@ -396,9 +405,9 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 		{
 			audioPresetParam->appendOption( 
-				(*it).find( avtranscoder::Profile::avProfileIdentificator )->second + 
+				(*it).find( avtranscoder::constants::avProfileIdentificator )->second + 
 				": " +
-				(*it).find( avtranscoder::Profile::avProfileIdentificatorHuman )->second
+				(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
 			);
 		}
 		

@@ -5,13 +5,12 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
-#include <AvTranscoder/mediaProperty/mediaProperty.hpp>
-#include <AvTranscoder/file/OutputFile.hpp>
-#include <AvTranscoder/transcoder/Transcoder.hpp>
-#include <AvTranscoder/essenceStream/GeneratorVideo.hpp>
-#include <AvTranscoder/essenceStructures/Frame.hpp>
-#include <AvTranscoder/option/OptionLoader.hpp>
+#include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Profile.hpp>
+#include <AvTranscoder/transcoder/Transcoder.hpp>
+#include <AvTranscoder/file/OutputFile.hpp>
+#include <AvTranscoder/codec/VideoCodec.hpp>
+#include <AvTranscoder/frame/Frame.hpp>
 
 #include <boost/scoped_ptr.hpp>
 
@@ -137,18 +136,18 @@ public:
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
 	
 	// to process video
+	boost::scoped_ptr<avtranscoder::GeneratorVideo> _videoStream;
 	avtranscoder::Frame _videoFrame;
-	avtranscoder::GeneratorVideo _generatorVideo;
-	
-	avtranscoder::OptionLoader _optionLoader;
+	avtranscoder::VideoCodec _videoCodec;
+
 	avtranscoder::Profile _presets;
 
-	std::string _lastOutputFilePath;
+	std::string _lastOutputFilePath;  ///< To check if output file path has changed.
 
 	double _outputFps;
 
-	bool _initVideo;
-	bool _initWrap;
+	bool _initVideo;  ///< To check if video stream is init.
+	bool _initWrap;  ///< To check if initial wrap of output file is done.
 };
 
 }
