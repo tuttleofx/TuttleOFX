@@ -15,16 +15,16 @@ namespace plugin {
 namespace av {
 namespace common {
 
-LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::string& subGroupName ) const
+LibAVParams::LibAVOptions LibAVParams::getLibAVOptions( const std::string& subGroupName ) const
 {
-	OptionsForPreset optionsNameAndValue;
+	LibAVOptions optionsNameAndValue;
 
 	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{
 		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
 			continue;
 
-		const std::string optionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		const std::string libavOptionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
 		std::string optionValue( "" );
 
 		// Manage OFX Boolean
@@ -45,7 +45,7 @@ LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::st
 				// if first flag with this flagName
 				if( optionsNameAndValue.find( flagName ) == optionsNameAndValue.end() )
 				{
-					optionsNameAndValue.insert( OptionForPreset( flagName, optionValue ) );
+					optionsNameAndValue.insert( std::make_pair( flagName, optionValue ) );
 				}
 				// get all flags with the same flagName in a single Option
 				else
@@ -56,7 +56,7 @@ LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::st
 			else
 			{
 				optionValue = boost::to_string( paramBoolean->getValue() );
-				optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
 			}
 			continue;
 		}
@@ -66,7 +66,7 @@ LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::st
 		if( paramInt )
 		{
 			optionValue = boost::to_string( paramInt->getValue() );
-			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
 			continue;
 		}
 
@@ -75,7 +75,7 @@ LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::st
 		if( paramDouble )
 		{
 			optionValue = boost::to_string( paramDouble->getValue() );
-			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
 			continue;
 		}
 
@@ -85,7 +85,7 @@ LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::st
 		{
 			optionValue = paramString->getValue();
 			if( ! optionValue.empty() )
-				optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
 			continue;
 		}
 
@@ -94,7 +94,7 @@ LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::st
 		if( paramRatio )
 		{
 			optionValue = boost::to_string( paramRatio->getValue().x ) + "." + boost::to_string( paramRatio->getValue().y );
-			optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
 			continue;
 		}
 
@@ -103,11 +103,11 @@ LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::st
 		if( paramChoice )
 		{
 			size_t optionIndex = paramChoice->getValue();
-			ChildList childs( _childsPerChoice.at( param->getName() ) );
+			std::vector<std::string> childs( _childsPerChoice.at( paramChoice ) );
 			if( childs.size() > optionIndex )
 			{
 				optionValue = childs.at( optionIndex );
-				optionsNameAndValue.insert( OptionForPreset( optionName, optionValue ) );
+				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
 			}
 			continue;
 		}
@@ -173,11 +173,12 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::Opti
 				if( option.getChilds().empty() )
 					continue;
 
-				_paramOFX.push_back( plugin.fetchChoiceParam( name ) );
-				_childsPerChoice.insert( common::LibAVParams::ChildsForChoice( name, common::LibAVParams::ChildList() ) );
+				OFX::ChoiceParam* choice = plugin.fetchChoiceParam( name );
+				_paramOFX.push_back( choice );
+				_childsPerChoice.insert( std::make_pair( choice, std::vector<std::string>() ) );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
-					_childsPerChoice.at( name ).push_back( child.getName() );
+					_childsPerChoice.at( choice ).push_back( child.getName() );
 				}
 				break;
 			}
@@ -208,22 +209,22 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::Opti
 avtranscoder::Profile::ProfileDesc LibAVParams::getCorrespondingProfileDesc( const std::string& subGroupName ) const
 {
 	avtranscoder::Profile::ProfileDesc profileDesc;
-	OptionsForPreset optionsForPreset = getOptionsNameAndValue( subGroupName );
-	BOOST_FOREACH( OptionsForPreset::value_type& nameAndValue, optionsForPreset )
+	LibAVOptions optionsForPreset = getLibAVOptions( subGroupName );
+	BOOST_FOREACH( LibAVOptions::value_type& nameAndValue, optionsForPreset )
 	{
 		profileDesc[ nameAndValue.first ] = nameAndValue.second;
 	}
 	return profileDesc;
 }
 
-bool LibAVParams::setOption( const std::string& optionName, const std::string& value, const std::string& subGroupName )
+bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& subGroupName )
 {	
-	OptionsForPreset options = getOptionsNameAndValue( subGroupName );
-	BOOST_FOREACH( const OptionsForPreset::value_type& option, options )
+	LibAVOptions options = getLibAVOptions( subGroupName );
+	BOOST_FOREACH( const LibAVOptions::value_type& option, options )
 	{
-		if( option.first == optionName )
+		if( option.first == libAVOptionName )
 		{
-			OFX::ValueParam* param = getOFXParameter( optionName, subGroupName );
+			OFX::ValueParam* param = getOFXParameter( libAVOptionName, subGroupName );
 			if( ! param)
 				return false;
 			
@@ -267,11 +268,11 @@ bool LibAVParams::setOption( const std::string& optionName, const std::string& v
 	return false;
 }
 
-OFX::ValueParam* LibAVParams::getOFXParameter( const std::string& optionName, const std::string& subGroupName )
+OFX::ValueParam* LibAVParams::getOFXParameter( const std::string& libAVOptionName, const std::string& subGroupName )
 {
 	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{
-		if( getOptionNameWithoutPrefix( param->getName(), subGroupName ) == optionName )
+		if( getOptionNameWithoutPrefix( param->getName(), subGroupName ) == libAVOptionName )
 			return param;
 	}
 	return NULL;

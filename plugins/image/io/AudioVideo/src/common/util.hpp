@@ -31,12 +31,7 @@ static const std::string kPrefixFlag      = "_flag_";
 class LibAVParams
 {
 public:
-	typedef std::pair<std::string, std::string> OptionForPreset;
-	typedef std::map< std::string, std::string > OptionsForPreset;
-	
-	typedef std::vector<std::string> ChildList;
-	typedef std::pair< std::string, ChildList > ChildsForChoice;
-	typedef std::map< std::string, ChildList > ChildsPerChoice;
+	typedef std::map< std::string, std::string > LibAVOptions;  ///< Key: libav option's name / Value : libav option's value
 
 public:
 	LibAVParams()
@@ -47,7 +42,7 @@ public:
 	/**
 	 * @brief Get all FFmpeg options and values corresponding to the OFX parameters contains in the object.
 	 */
-	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" ) const ;
+	LibAVOptions getLibAVOptions( const std::string& subGroupName="" ) const ;
 
 	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
 	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
@@ -58,32 +53,33 @@ public:
 	avtranscoder::Profile::ProfileDesc getCorrespondingProfileDesc( const std::string& subGroupName="" ) const;
 	
 	/**
-     * @param optionName: the option whithout all prefixes.
+     * @param libAVOptionName: the option whithout all prefixes.
      * @param value: the value will be cast to the corresponding type (int, double...).
      * @param subGroupName
      * @return if the option exists
      */
-	bool setOption( const std::string& optionName, const std::string& value, const std::string& subGroupName="" );
+	bool setOption( const std::string& libAVOptionName, const std::string& value, const std::string& subGroupName="" );
 
 	/**
 	 * @brief Get the OFX parameter which corresponds to the FFmpeg option name (whithout any prefixes).
 	 * @note return NULL if not found.
 	 */
-	OFX::ValueParam* getOFXParameter( const std::string& optionName, const std::string& subGroupName="" ) ;
+	OFX::ValueParam* getOFXParameter( const std::string& libAVOptionName, const std::string& subGroupName="" ) ;
 
 public:
 	/**
-	 * Contains several OFX parameters with different type:
-	 * BooleanParam
-	 * IntParam
-	 * DoubleParam
-	 * StringParam
-	 * Int2DParam
-	 * ChoiceParam
+	 * @brief Contains several OFX parameters with different type.
+	 * Real type could be:
+	 * - BooleanParam
+	 * - IntParam
+	 * - DoubleParam
+	 * - StringParam
+	 * - Int2DParam
+	 * - ChoiceParam
 	 */
 	std::vector<OFX::ValueParam*> _paramOFX;
-	
-	ChildsPerChoice _childsPerChoice;
+
+	std::map< OFX::ChoiceParam*, std::vector<std::string> > _childsPerChoice;  ///< List of values per OFX Choice
 };
 
 /**
