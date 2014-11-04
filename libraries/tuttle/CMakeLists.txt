@@ -52,7 +52,7 @@ if (TuttleBoost_FOUND)
 
   # Add a target with only object files to avoid recompiling sequence parser
   # multiple times
-  add_library(sequenceParser STATIC ${SEQUENCEPARSER_FILES}) 
+  add_library(sequenceParser SHARED ${SEQUENCEPARSER_FILES}) 
   set_target_properties(sequenceParser
                         PROPERTIES COMPILE_FLAGS "-fPIC")
   target_link_libraries(sequenceParser ${Boost_LIBRARIES})
@@ -69,6 +69,7 @@ if (TuttleBoost_FOUND)
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/)
+  install(TARGETS sequenceParser DESTINATION lib/)
 
   # Install boost library along with tuttle library
   # Need to copy the files pointed by symlinks instead of the symlinks
@@ -93,6 +94,8 @@ if (TuttleBoost_FOUND)
   
     # Swig to compile c++ -> python
     set(CMAKE_SWIG_FLAGS -c++ -threads)
+
+    # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
     # FIXME : do we need a python package as before ?
     set_source_files_properties(${TUTTLE_PYTHON_BINDING_FILE} PROPERTIES CPLUSPLUS ON) 
@@ -121,7 +124,33 @@ if (TuttleBoost_FOUND)
     install(FILES "__init__.py" 
         DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
 
+    # pySequenceParser
+    set(SEQUENCEPARSER_PYTHON_BINDING_FILE ../sequenceParser/src/sequenceParser.i)
+    set_source_files_properties(${SEQUENCEPARSER_PYTHON_BINDING_FILE} PROPERTIES CPLUSPLUS ON) 
 
+    # Create the output dir as it's not done automatically by cmake
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../sequenceParser/src)
+    swig_add_module(sequenceParser python ${SEQUENCEPARSER_PYTHON_BINDING_FILE})
+    swig_link_libraries(sequenceParser sequenceParser)
+    swig_link_libraries(sequenceParser ${Boost_LIBRARIES})
+    swig_link_libraries(sequenceParser ${PYTHON_LIBRARIES})
+    # Force the library to look in the project lib folder relatively
+    if (APPLE)
+      set_target_properties(${SWIG_MODULE_sequenceParser_REAL_NAME} 
+            PROPERTIES INSTALL_RPATH "@loader_path/../../..")
+    else(APPLE)
+        set_target_properties(${SWIG_MODULE_sequenceParser_REAL_NAME}
+            PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
+    endif(APPLE)
+
+    # Install python libs and wrapper in INSTALL_PREFIX/lib/python
+    install(TARGETS ${SWIG_MODULE_sequenceParser_REAL_NAME} 
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+    install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/sequenceParser.py 
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+    file(WRITE "__init__.py" "")
+    install(FILES "__init__.py" 
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")
