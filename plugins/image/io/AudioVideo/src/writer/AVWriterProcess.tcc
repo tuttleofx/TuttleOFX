@@ -46,12 +46,13 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	uint8_t* imageData = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	
 	// set video stream next frame
-	const size_t bufferSize = _plugin._videoStream->getVideoFrameDesc().getDataSize();
+	avtranscoder::GeneratorVideo* videoStream = &static_cast<avtranscoder::GeneratorVideo&>( _plugin._transcoder->getStreamTranscoder( 0 ).getCurrentEssence() );
+	const size_t bufferSize = videoStream->getVideoFrameDesc().getDataSize();
 	if( _plugin._videoFrame.getSize() != bufferSize )
 		_plugin._videoFrame.getBuffer().resize( bufferSize );
 
 	std::memcpy( _plugin._videoFrame.getPtr(), imageData, bufferSize );
-	_plugin._videoStream->setFrame( _plugin._videoFrame );
+	videoStream->setFrame( _plugin._videoFrame );
 
 	// process
 	_plugin._transcoder->processFrame();

@@ -38,7 +38,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
-	, _videoStream( NULL )
 	, _videoCodec( avtranscoder::eCodecTypeEncoder )
 	, _presets( true ) 
 	, _lastOutputFilePath()
@@ -647,7 +646,6 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 
 		// add video stream
 		_transcoder->add( "", 0, profile, _videoCodec );
-		_videoStream.reset( &static_cast<avtranscoder::GeneratorVideo&>( _transcoder->getStreamTranscoder( 0 ).getCurrentEssence() ) );
 
 		_outputFps = boost::lexical_cast<double>( profile[ avtranscoder::constants::avProfileFrameRate ] );
 	}	

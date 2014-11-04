@@ -136,7 +136,6 @@ public:
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
 	
 	// to process video
-	boost::scoped_ptr<avtranscoder::GeneratorVideo> _videoStream;
 	avtranscoder::Frame _videoFrame;
 	avtranscoder::VideoCodec _videoCodec;
 
