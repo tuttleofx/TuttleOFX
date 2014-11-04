@@ -5,7 +5,8 @@ Usage: ./`basename $0` [-h] [CMAKE_ARGS]
 See: cmake -h
 
 Example:
-./configure -DCMAKE_INSTALL_PREFIX=\$PWD/install -DCMAKE_PREFIX_PATH=\"/custom/external/libs/path;/other/path\"
+./configure -DCMAKE_INSTALL_PREFIX=\$PWD/install -DCMAKE_PREFIX_PATH=\"/custom/external/libs/path;/other/path\" -DCMAKE_BUILD_TYPE=DEBUG
+
 
 "
 
