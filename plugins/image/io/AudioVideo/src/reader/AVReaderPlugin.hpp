@@ -63,12 +63,12 @@ public:
 	OFX::BooleanParam* _paramUseCustomSAR; ///< Keep sample aspect ratio
 	OFX::DoubleParam*  _paramCustomSAR;    ///< Custom SAR to use
 	
-	common::CustomParams _paramFormatCustom;
-	common::CustomParams _paramVideoCustom;
-	common::CustomParams _paramMetaDataCustom;
+	common::LibAVParams _paramFormatCustom;
+	common::LibAVParams _paramVideoCustom;
+	common::LibAVParams _paramMetaDataCustom;
 	
-	common::CustomParams _paramFormatDetailCustom;
-	common::CustomParams _paramVideoDetailCustom;
+	common::LibAVParams _paramFormatDetailCustom;
+	common::LibAVParams _paramVideoDetailCustom;
 	
 	OFX::StringParam* _paramMetaDataWrapper;
 	OFX::StringParam* _paramMetaDataVideo;

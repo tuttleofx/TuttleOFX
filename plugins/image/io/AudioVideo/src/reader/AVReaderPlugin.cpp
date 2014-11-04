@@ -48,22 +48,22 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 
 	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_DECODING_PARAM );
 	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
-	_paramFormatCustom.fetchCustomParams( *this, formatOptions, common::kPrefixFormat );
+	_paramFormatCustom.fetchLibAVParams( *this, formatOptions, common::kPrefixFormat );
 
 	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
-	_paramVideoCustom.fetchCustomParams( *this, videoOptions, common::kPrefixVideo );
+	_paramVideoCustom.fetchLibAVParams( *this, videoOptions, common::kPrefixVideo );
 	
 	avtranscoder::CodecContext metadataCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
 	avtranscoder::OptionArray metadataOptions = metadataCodecContext.getOptions();
-	_paramMetaDataCustom.fetchCustomParams( *this, metadataOptions, common::kPrefixMetaData );
+	_paramMetaDataCustom.fetchLibAVParams( *this, metadataOptions, common::kPrefixMetaData );
 	
 	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
-	_paramFormatDetailCustom.fetchCustomParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
+	_paramFormatDetailCustom.fetchLibAVParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, "", common::kPrefixFormat );
 	
 	avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-	_paramVideoDetailCustom.fetchCustomParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
+	_paramVideoDetailCustom.fetchLibAVParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 	
 	_paramMetaDataWrapper = fetchStringParam( kParamMetaDataWrapper );

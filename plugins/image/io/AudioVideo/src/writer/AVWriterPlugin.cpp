@@ -114,28 +114,28 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	// all custom params
 	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_ENCODING_PARAM );
 	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
-	_paramFormatCustom.fetchCustomParams( *this, formatOptions, common::kPrefixFormat );
+	_paramFormatCustom.fetchLibAVParams( *this, formatOptions, common::kPrefixFormat );
 
 	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
-	_paramVideoCustom.fetchCustomParams( *this, videoOptions, common::kPrefixVideo );
+	_paramVideoCustom.fetchLibAVParams( *this, videoOptions, common::kPrefixVideo );
 	
 	avtranscoder::CodecContext audioCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	avtranscoder::OptionArray audioOptions = audioCodecContext.getOptions();
-	_paramAudioCustom.fetchCustomParams( *this, audioOptions, common::kPrefixAudio );
+	_paramAudioCustom.fetchLibAVParams( *this, audioOptions, common::kPrefixAudio );
 	
 	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
-	_paramFormatDetailCustom.fetchCustomParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
+	_paramFormatDetailCustom.fetchLibAVParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
 	const std::string formatName = avtranscoder::getFormatsShortNames().at( _paramFormat->getValue() );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, formatName, common::kPrefixFormat );
 	
 	avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-	_paramVideoDetailCustom.fetchCustomParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
+	_paramVideoDetailCustom.fetchLibAVParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
 	const std::string videoCodecName = avtranscoder::getVideoCodecsShortNames().at( _paramVideoCodec->getValue() );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 	
 	avtranscoder::OptionArrayMap optionsAudioCodecMap = avtranscoder::getAudioCodecOptions();
-	_paramAudioDetailCustom.fetchCustomParams( *this, optionsAudioCodecMap, common::kPrefixAudio );
+	_paramAudioDetailCustom.fetchLibAVParams( *this, optionsAudioCodecMap, common::kPrefixAudio );
 	const std::string audioCodecName = avtranscoder::getAudioCodecsShortNames().at( _paramAudioCodec->getValue() );
 	common::disableOFXParamsForFormatOrCodec( *this, optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
 	

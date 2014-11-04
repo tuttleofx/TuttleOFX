@@ -114,13 +114,13 @@ public:
 	OFX::ChoiceParam* _paramVideoPixelFormat;
 	OFX::ChoiceParam* _paramAudioSampleFormat;
 	
-	common::CustomParams _paramFormatCustom;
-	common::CustomParams _paramVideoCustom;
-	common::CustomParams _paramAudioCustom;
+	common::LibAVParams _paramFormatCustom;
+	common::LibAVParams _paramVideoCustom;
+	common::LibAVParams _paramAudioCustom;
 	
-	common::CustomParams _paramFormatDetailCustom;
-	common::CustomParams _paramVideoDetailCustom;
-	common::CustomParams _paramAudioDetailCustom;
+	common::LibAVParams _paramFormatDetailCustom;
+	common::LibAVParams _paramVideoDetailCustom;
+	common::LibAVParams _paramAudioDetailCustom;
 	
 	// presets
 	OFX::ChoiceParam* _paramMainPreset;

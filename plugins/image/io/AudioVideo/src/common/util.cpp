@@ -15,7 +15,7 @@ namespace plugin {
 namespace av {
 namespace common {
 
-CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::string& subGroupName ) const
+LibAVParams::OptionsForPreset LibAVParams::getOptionsNameAndValue( const std::string& subGroupName ) const
 {
 	OptionsForPreset optionsNameAndValue;
 
@@ -115,7 +115,7 @@ CustomParams::OptionsForPreset CustomParams::getOptionsNameAndValue( const std::
 	return optionsNameAndValue;
 }
 
-void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
+void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
 {
 	// iterate on map keys
 	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
@@ -123,11 +123,11 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 		const std::string subGroupName = subGroupOption.first;
 		avtranscoder::OptionArray& options = subGroupOption.second;
 				
-		fetchCustomParams( plugin, options, prefix, subGroupName );
+		fetchLibAVParams( plugin, options, prefix, subGroupName );
 	}
 }
 
-void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
+void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& subGroupName )
 {
 	// iterate on options
 	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
@@ -174,7 +174,7 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 					continue;
 
 				_paramOFX.push_back( plugin.fetchChoiceParam( name ) );
-				_childsPerChoice.insert( common::CustomParams::ChildsForChoice( name, common::CustomParams::ChildList() ) );
+				_childsPerChoice.insert( common::LibAVParams::ChildsForChoice( name, common::LibAVParams::ChildList() ) );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
 					_childsPerChoice.at( name ).push_back( child.getName() );
@@ -205,7 +205,7 @@ void CustomParams::fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::Op
 	}
 }
 
-avtranscoder::Profile::ProfileDesc CustomParams::getCorrespondingProfileDesc( const std::string& subGroupName ) const
+avtranscoder::Profile::ProfileDesc LibAVParams::getCorrespondingProfileDesc( const std::string& subGroupName ) const
 {
 	avtranscoder::Profile::ProfileDesc profileDesc;
 	OptionsForPreset optionsForPreset = getOptionsNameAndValue( subGroupName );
@@ -216,7 +216,7 @@ avtranscoder::Profile::ProfileDesc CustomParams::getCorrespondingProfileDesc( co
 	return profileDesc;
 }
 
-bool CustomParams::setOption( const std::string& optionName, const std::string& value, const std::string& subGroupName )
+bool LibAVParams::setOption( const std::string& optionName, const std::string& value, const std::string& subGroupName )
 {	
 	OptionsForPreset options = getOptionsNameAndValue( subGroupName );
 	BOOST_FOREACH( const OptionsForPreset::value_type& option, options )
@@ -267,7 +267,7 @@ bool CustomParams::setOption( const std::string& optionName, const std::string& 
 	return false;
 }
 
-OFX::ValueParam* CustomParams::getOFXParameter( const std::string& optionName, const std::string& subGroupName )
+OFX::ValueParam* LibAVParams::getOFXParameter( const std::string& optionName, const std::string& subGroupName )
 {
 	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{

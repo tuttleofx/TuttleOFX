@@ -26,10 +26,9 @@ static const std::string kPrefixGroup     = "g_";
 static const std::string kPrefixFlag      = "_flag_";
 
 /**
- * @brief Use this struct to get custom Options for format, video, and audio.
- * The Options will be used only if the custom preset is set in the corresponding list of presets.
+ * @brief Use this class to get libav Options about format, video, and audio.
  */
-struct CustomParams
+class LibAVParams
 {
 public:
 	typedef std::pair<std::string, std::string> OptionForPreset;
@@ -40,7 +39,7 @@ public:
 	typedef std::map< std::string, ChildList > ChildsPerChoice;
 
 public:
-	CustomParams()
+	LibAVParams()
 	: _paramOFX()
 	, _childsPerChoice()
 	{}
@@ -50,11 +49,11 @@ public:
 	 */
 	OptionsForPreset getOptionsNameAndValue( const std::string& subGroupName="" ) const ;
 
-	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
-	void fetchCustomParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
+	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
+	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 
 	/**
-	 * @brief Get value of OFX parameters contained in customParams, and return the corresponding profileDesc.
+	 * @brief Get value of OFX parameters contained in the object, and return the corresponding profileDesc.
      */
 	avtranscoder::Profile::ProfileDesc getCorrespondingProfileDesc( const std::string& subGroupName="" ) const;
 	
