@@ -32,7 +32,7 @@ set(_openjpeg_SEARCH_DIRS
 find_path(OPENJPEG_INCLUDE_DIR
     NAMES         openjpeg.h
     HINTS         ${_openjpeg_SEARCH_DIRS}
-  PATH_SUFFIXES  include
+  PATH_SUFFIXES  include include/openjpeg-1.0 include/openjpeg-1.5 include/openjpeg-2.0 include/openjpeg-2.1
 )
 
 # Looking for library path
