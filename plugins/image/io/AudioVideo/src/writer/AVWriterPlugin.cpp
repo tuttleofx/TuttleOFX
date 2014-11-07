@@ -197,7 +197,7 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	// pixel format
 	try
 	{
-		// Works the Host can updatePixelFormats()
+		// Works if Host can updatePixelFormats()
 		std::vector<std::string> supportedPixelFormats( avtranscoder::getPixelFormats( params._videoCodecName ) );
 		params._videoPixelFormatName = supportedPixelFormats.at( _paramVideoPixelFormat->getValue() );
 	}
@@ -210,7 +210,7 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	// sample format
 	try
 	{
-		// Works the Host can updateSampleFormats()
+		// Works if Host can updateSampleFormats()
 		std::vector<std::string> supportedSampleFormats( avtranscoder::getSampleFormats( params._audioCodecName ) );
 		params._audioSampleFormatName = supportedSampleFormats.at( _paramAudioSampleFormat->getValue() );
 	}
