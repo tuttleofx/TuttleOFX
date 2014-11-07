@@ -6,7 +6,7 @@
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
 #include <AvTranscoder/util.hpp>
-#include <AvTranscoder/Profile.hpp>
+#include <AvTranscoder/ProfileLoader.hpp>
 #include <AvTranscoder/transcoder/Transcoder.hpp>
 #include <AvTranscoder/file/OutputFile.hpp>
 #include <AvTranscoder/codec/VideoCodec.hpp>
@@ -139,7 +139,7 @@ public:
 	avtranscoder::Frame _videoFrame;
 	avtranscoder::VideoCodec _videoCodec;
 
-	avtranscoder::Profile _presets;
+	avtranscoder::ProfileLoader _presetLoader;
 
 	std::string _lastOutputFilePath;  ///< To check if output file path has changed.
 

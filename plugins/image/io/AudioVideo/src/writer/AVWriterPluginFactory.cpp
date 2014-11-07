@@ -8,9 +8,9 @@
 
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Library.hpp>
+#include <AvTranscoder/ProfileLoader.hpp>
 #include <AvTranscoder/option/CodecContext.hpp>
 #include <AvTranscoder/option/FormatContext.hpp>
-#include <AvTranscoder/Profile.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
@@ -74,7 +74,7 @@ void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
                                                OFX::EContext               context )
 {
-	avtranscoder::Profile presets( true );
+	avtranscoder::ProfileLoader presetLoader( true );
 	
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
@@ -133,8 +133,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatPreset->appendOption( "custom: Customized configuration" );
 	formatPreset->setParent( formatGroup );
 	
-	avtranscoder::Profile::ProfilesDesc formatPresets = presets.getFormatProfiles();
-	for( avtranscoder::Profile::ProfilesDesc::iterator it = formatPresets.begin(); it != formatPresets.end(); ++it )
+	avtranscoder::ProfileLoader::Profiles formatPresets = presetLoader.getFormatProfiles();
+	for( avtranscoder::ProfileLoader::Profiles::iterator it = formatPresets.begin(); it != formatPresets.end(); ++it )
 	{
 		formatPreset->appendOption( 
 			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
@@ -189,8 +189,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoPresetParam->appendOption( "custom: Customized configuration" );
 	videoPresetParam->setParent( videoGroup );
 	
-	avtranscoder::Profile::ProfilesDesc videoPresets = presets.getVideoProfiles();
-	for( avtranscoder::Profile::ProfilesDesc::iterator it = videoPresets.begin(); it != videoPresets.end(); ++it )
+	avtranscoder::ProfileLoader::Profiles videoPresets = presetLoader.getVideoProfiles();
+	for( avtranscoder::ProfileLoader::Profiles::iterator it = videoPresets.begin(); it != videoPresets.end(); ++it )
 	{
 		videoPresetParam->appendOption( 
 			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
@@ -267,8 +267,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioMainPresetParam->appendOption( "custom: Customized configuration" );
 	audioMainPresetParam->setParent( audioGroup );
 
-	avtranscoder::Profile::ProfilesDesc audioPresets = presets.getAudioProfiles();
-	for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
+	avtranscoder::ProfileLoader::Profiles audioPresets = presetLoader.getAudioProfiles();
+	for( avtranscoder::ProfileLoader::Profiles::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 	{
 		audioMainPresetParam->appendOption( 
 			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
@@ -402,7 +402,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioPresetParam->appendOption( "rewrap: Copy audio data (no transcode)" );
 		audioPresetParam->setParent( audioSubGroupParam );
 
-		for( avtranscoder::Profile::ProfilesDesc::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
+		for( avtranscoder::ProfileLoader::Profiles::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 		{
 			audioPresetParam->appendOption( 
 				(*it).find( avtranscoder::constants::avProfileIdentificator )->second + 

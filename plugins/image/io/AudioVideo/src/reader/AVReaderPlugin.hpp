@@ -10,7 +10,6 @@
 #include <AvTranscoder/essenceStream/AvInputVideo.hpp>
 #include <AvTranscoder/frame/VideoFrame.hpp>
 #include <AvTranscoder/transform/VideoTransform.hpp>
-#include <AvTranscoder/Profile.hpp>
 
 #include <boost/scoped_ptr.hpp>
 
@@ -84,8 +83,6 @@ public:
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	
 	avtranscoder::VideoTransform _colorTransform;
-	
-	avtranscoder::Profile _presets;
 	
 	std::string _lastInputFilePath;
 	size_t _lastVideoStreamIndex;

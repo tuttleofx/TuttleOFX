@@ -206,15 +206,15 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::Opti
 	}
 }
 
-avtranscoder::Profile::ProfileDesc LibAVParams::getCorrespondingProfileDesc( const std::string& subGroupName ) const
+avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const std::string& subGroupName ) const
 {
-	avtranscoder::Profile::ProfileDesc profileDesc;
+	avtranscoder::ProfileLoader::Profile profile;
 	LibAVOptions optionsForPreset = getLibAVOptions( subGroupName );
 	BOOST_FOREACH( LibAVOptions::value_type& nameAndValue, optionsForPreset )
 	{
-		profileDesc[ nameAndValue.first ] = nameAndValue.second;
+		profile[ nameAndValue.first ] = nameAndValue.second;
 	}
-	return profileDesc;
+	return profile;
 }
 
 bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& subGroupName )

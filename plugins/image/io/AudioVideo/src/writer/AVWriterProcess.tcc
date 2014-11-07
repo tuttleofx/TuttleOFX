@@ -1,7 +1,9 @@
 #include "AVWriterProcess.hpp"
 
 #include <tuttle/plugin/exceptions.hpp>
+
 #include <AvTranscoder/codec/VideoCodec.hpp>
+#include <AvTranscoder/essenceStream/GeneratorVideo.hpp>
 
 namespace tuttle {
 namespace plugin {

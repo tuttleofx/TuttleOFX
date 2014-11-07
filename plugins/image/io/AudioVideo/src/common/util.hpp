@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
 
 #include <AvTranscoder/util.hpp>
-#include <AvTranscoder/Profile.hpp>
+#include <AvTranscoder/ProfileLoader.hpp>
 
 #include <ofxsImageEffect.h>
 
@@ -49,8 +49,8 @@ public:
 
 	/**
 	 * @brief Get value of OFX parameters contained in the object, and return the corresponding profileDesc.
-     */
-	avtranscoder::Profile::ProfileDesc getCorrespondingProfileDesc( const std::string& subGroupName="" ) const;
+	 */
+	avtranscoder::ProfileLoader::Profile getCorrespondingProfile( const std::string& subGroupName="" ) const;
 	
 	/**
      * @param libAVOptionName: the option whithout all prefixes.
