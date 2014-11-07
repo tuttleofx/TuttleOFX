@@ -265,6 +265,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamAudioMainPreset );
 	audioMainPresetParam->setLabel( "Main Preset" );
 	audioMainPresetParam->appendOption( "custom: Customized configuration" );
+	audioMainPresetParam->appendOption( "rewrap: Copy audio data (no transcode)" );
+	audioMainPresetParam->setDefault( 1 ); // Set default behavior to rewrap
 	audioMainPresetParam->setParent( audioGroup );
 
 	avtranscoder::ProfileLoader::Profiles audioPresets = presetLoader.getAudioProfiles();
