@@ -220,13 +220,14 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 		    << exception::user() + "unable to get supported sample format choosen for audio codec " + params._audioCodecName + e.what() );
 	}
 
-	BOOST_FOREACH( OFX::StringParam* parameter, _paramMetadatas )
+	BOOST_FOREACH( OFX::StringParam* ofxParam, _paramMetadatas )
 	{
-		if( parameter->getValue().size() > 0 )
+		if( ofxParam->getValue().size() > 0 )
 		{
-			std::string ffmpegKey = parameter->getName();
+			std::string ffmpegKey = ofxParam->getName();
+			std::string ffmpegValue = ofxParam->getValue();
 			ffmpegKey.erase( 0, common::prefixSize );
-			params._metadatas.push_back( std::pair<std::string, std::string>( ffmpegKey, parameter->getValue() ) );
+			params._metadatas.push_back( std::make_pair( ffmpegKey, ffmpegValue ) );
 		}
 	}
 	return params;
