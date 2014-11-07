@@ -591,6 +591,16 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( params._videoCodecName );
 		profile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
 
+		// Warning: Fix FFmpeg options which can make the encoder failed if bad value
+		avtranscoder::ProfileLoader::Profile::iterator itProfile = profile.begin();
+		while( itProfile != profile.end() )
+		{
+			if( itProfile->second == "unknown" )
+				profile.erase( itProfile++ );
+			else
+				++itProfile;
+		}
+
 		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
 		int width = bounds.x2 - bounds.x1;
 		int height = bounds.y2 - bounds.y1;
