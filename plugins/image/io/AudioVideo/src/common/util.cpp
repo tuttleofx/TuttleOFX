@@ -2,10 +2,13 @@
 
 #include <writer/AVWriterDefinitions.hpp>
 
+#include <AvTranscoder/option/FormatContext.hpp>
+#include <AvTranscoder/option/CodecContext.hpp>
 #include <AvTranscoder/option/Option.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/scoped_ptr.hpp>
 
 #include <iostream>
 #include <limits>
@@ -217,55 +220,59 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	return profile;
 }
 
-bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& subGroupName )
-{	
-	LibAVOptions options = getLibAVOptions( subGroupName );
-	BOOST_FOREACH( const LibAVOptions::value_type& option, options )
-	{
-		if( option.first == libAVOptionName )
-		{
-			OFX::ValueParam* param = getOFXParameter( libAVOptionName, subGroupName );
-			if( ! param)
-				return false;
-			
-			OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
-			OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
-			OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
-			OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
-			OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
-			OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value,  const std::string& prefix, const std::string& subGroupName )
+{
+	// Create context
+	boost::scoped_ptr<avtranscoder::Context> context;
+	if( prefix == kPrefixFormat )
+		context.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_ENCODING_PARAM ) ); 
+	else if( prefix == kPrefixVideo )
+		context.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
+	else if( prefix == kPrefixAudio )
+		context.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
+	else
+		return false;
 
-			try
-			{
-				// @todo flags
-				if( paramBoolean )
-					paramBoolean->setValue( boost::lexical_cast<bool>( value ) );
-				else if( paramInt )
-					paramInt->setValue( boost::lexical_cast<int>( value ) );
-				else if( paramDouble )
-					paramDouble->setValue( boost::lexical_cast<double>( value ) );
-				else if( paramString )
-					paramString->setValue( value );
-				else if( paramRatio )
-				{
-					if( value.find( "." ) != std::string::npos )
-					{
-						std::string valueX = value.substr( 0, value.find( "." ) );
-						std::string valueY = value.substr( value.find( "." ) );
-						paramRatio->setValue( boost::lexical_cast<int>( valueX ), boost::lexical_cast<int>( valueY ) );
-					}
-				}
-				else if( paramChoice )
-					paramChoice->setValue( boost::lexical_cast<int>( value ) );
-			}
-			catch( const std::exception& e )
-			{
-				return false;
-			}
-			return true;
-		}
+	try
+	{
+		// Get Option from Context
+		avtranscoder::Option& option = context->getOption( libAVOptionName );
+
+		// Set Option's value
+		option.setString( value );
+
+		// Get corresponding OFX parameter
+		OFX::ValueParam* param = getOFXParameter( libAVOptionName, subGroupName );
+		if( ! param)
+			return false;
+		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
+		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
+		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
+		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
+		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
+		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+
+		// Set OFX parameter's value
+		if( paramBoolean )
+			paramBoolean->setValue( option.getDefaultBool() );
+		else if( paramInt )
+			paramInt->setValue( option.getDefaultInt() );
+		else if( paramDouble )
+			paramDouble->setValue( option.getDefaultDouble() );
+		else if( paramString )
+			paramString->setValue( option.getDefaultString() );
+		else if( paramRatio )
+			paramRatio->setValue( option.getDefaultRatio().first, option.getDefaultRatio().second );
+		else if( paramChoice )
+			paramChoice->setValue( option.getDefaultInt() );
+
+		return true;
 	}
-	return false;
+	catch( std::exception& e )
+	{
+		// Option not found
+		return false;
+	}
 }
 
 OFX::ValueParam* LibAVParams::getOFXParameter( const std::string& libAVOptionName, const std::string& subGroupName )
