@@ -442,7 +442,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	{
 		// if custom video preset
 		if( _paramVideoPreset->getValue() == 0 )
-		{	
+		{
 			int defaultVideoCodecIndex;
 			_paramVideoCodec->getDefault( defaultVideoCodecIndex );
 			_paramVideoCodec->setValue( defaultVideoCodecIndex );
@@ -831,7 +831,7 @@ void AVWriterPlugin::updateFormatFromExistingProfile()
 		std::vector<std::string> formats = avtranscoder::getFormatsShortNames();
 		std::vector<std::string>::iterator iterFormat = std::find( formats.begin(), formats.end(), existingProfile[ avtranscoder::constants::avProfileFormat ] );
 		size_t fomatIndex = std::distance( formats.begin(), iterFormat );
-		if( fomatIndex != formats.size() )
+		if( fomatIndex < formats.size() )
 		{
 			_paramFormat->setValue( fomatIndex );
 		}
@@ -862,7 +862,7 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		std::vector<std::string> codecs = avtranscoder::getVideoCodecsShortNames();
 		std::vector<std::string>::iterator iterCodec = std::find( codecs.begin(), codecs.end(), existingProfile[ avtranscoder::constants::avProfileCodec ] );
 		size_t codecIndex = std::distance( codecs.begin(), iterCodec);
-		if( codecIndex != codecs.size() )
+		if( codecIndex < codecs.size() )
 		{
 			_paramVideoCodec->setValue( codecIndex );
 		}
@@ -908,7 +908,7 @@ void AVWriterPlugin::updateAudiotFromExistingProfile()
 		std::vector<std::string> codecs = avtranscoder::getAudioCodecsShortNames();
 		std::vector<std::string>::iterator iterCodec = std::find( codecs.begin(), codecs.end(), existingProfile[ avtranscoder::constants::avProfileCodec ] );
 		size_t codecIndex = std::distance( codecs.begin(), iterCodec);
-		if( codecIndex != codecs.size() )
+		if( codecIndex < codecs.size() )
 		{
 			_paramAudioCodec->setValue( codecIndex );
 		}
