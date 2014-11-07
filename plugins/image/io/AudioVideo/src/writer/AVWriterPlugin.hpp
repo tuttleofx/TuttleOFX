@@ -85,6 +85,11 @@ public:
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 	
+	std::string getFormatName( const int format ) const;
+	std::string getVideoCodecName( const int codec ) const;
+	std::string getAudioCodecName( const int codec ) const;
+	std::string getPixelFormatName( const std::string& videoCodecName ) const;
+	std::string getSampleFormatName( const std::string& audioCodecName ) const;
 public:
 	// format
 	OFX::GroupParam* _paramFormatCustomGroup;

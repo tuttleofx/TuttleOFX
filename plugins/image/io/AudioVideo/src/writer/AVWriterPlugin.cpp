@@ -186,39 +186,16 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	params._outputFilePath = _paramFilepath->getValue();
 	
 	params._format = _paramFormat->getValue();
-	params._formatName = avtranscoder::getFormatsShortNames().at( params._format );
+	params._formatName = getFormatName( params._format );
 	
 	params._videoCodec = _paramVideoCodec->getValue();
-	params._videoCodecName = avtranscoder::getVideoCodecsShortNames().at( params._videoCodec );
+	params._videoCodecName = getVideoCodecName( params._videoCodec );
 	
 	params._audioCodec = _paramAudioCodec->getValue();
-	params._audioCodecName = avtranscoder::getAudioCodecsShortNames().at( params._audioCodec );
+	params._audioCodecName = getAudioCodecName( params._audioCodec );
 
-	// pixel format
-	try
-	{
-		// Works if Host can updatePixelFormats()
-		std::vector<std::string> supportedPixelFormats( avtranscoder::getPixelFormats( params._videoCodecName ) );
-		params._videoPixelFormatName = supportedPixelFormats.at( _paramVideoPixelFormat->getValue() );
-	}
-	catch( const std::exception& e )
-	{
-		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to get supported pixel format choosen for video codec " + params._videoCodecName + e.what() );
-	}
-
-	// sample format
-	try
-	{
-		// Works if Host can updateSampleFormats()
-		std::vector<std::string> supportedSampleFormats( avtranscoder::getSampleFormats( params._audioCodecName ) );
-		params._audioSampleFormatName = supportedSampleFormats.at( _paramAudioSampleFormat->getValue() );
-	}
-	catch( const std::exception& e )
-	{
-		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to get supported sample format choosen for audio codec " + params._audioCodecName + e.what() );
-	}
+	params._videoPixelFormatName = getPixelFormatName( params._videoCodecName );
+	params._audioSampleFormatName = getSampleFormatName( params._audioCodecName );
 
 	BOOST_FOREACH( OFX::StringParam* ofxParam, _paramMetadatas )
 	{
@@ -400,13 +377,13 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName == kParamFormat )
 	{
 		avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
-		const std::string formatName = avtranscoder::getFormatsShortNames().at( _paramFormat->getValue() );
+		const std::string formatName = getFormatName( _paramFormat->getValue() );
 		common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, formatName, common::kPrefixFormat );
 	}
 	else if( paramName == kParamVideoCodec )
 	{
 		avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-		const std::string videoCodecName = avtranscoder::getVideoCodecsShortNames().at( _paramVideoCodec->getValue() );
+		const std::string videoCodecName = getVideoCodecName( _paramVideoCodec->getValue() );
 		common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 		
 		updatePixelFormats( videoCodecName );
@@ -414,7 +391,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName == kParamAudioCodec )
 	{
 		avtranscoder::OptionArrayMap optionsAudioCodecMap = avtranscoder::getAudioCodecOptions();
-		const std::string audioCodecName = avtranscoder::getAudioCodecsShortNames().at(_paramAudioCodec->getValue() );
+		const std::string audioCodecName = getAudioCodecName(_paramAudioCodec->getValue() );
 		common::disableOFXParamsForFormatOrCodec( *this, optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
 		
 		updateSampleFormats( audioCodecName );
@@ -987,6 +964,87 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 		return;
 	
 	_outputFile->endWrap();
+}
+
+std::string AVWriterPlugin::getFormatName( const int format ) const
+{
+	try
+	{
+		return avtranscoder::getFormatsShortNames().at( format );
+	}
+	catch( std::exception& e )
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to get format " + format + " - " + e.what() );
+	}
+}
+
+std::string AVWriterPlugin::getVideoCodecName( const int codec ) const
+{
+	try
+	{
+		return avtranscoder::getVideoCodecsShortNames().at( codec );
+	}
+	catch( std::exception& e )
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to get video codec " + codec + " - " + e.what() );
+	}
+}
+
+std::string AVWriterPlugin::getAudioCodecName( const int codec ) const
+{
+	try
+	{
+		return avtranscoder::getAudioCodecsShortNames().at( codec );
+	}
+	catch( std::exception& e )
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to get audio codec " + codec + " - " + e.what() );
+	}
+}
+
+std::string AVWriterPlugin::getPixelFormatName( const std::string& videoCodecName ) const
+{
+	std::vector<std::string> supportedPixelFormats( avtranscoder::getPixelFormats( videoCodecName ) );
+	try
+	{
+		// Works if Host can updatePixelFormats()
+		return supportedPixelFormats.at( _paramVideoPixelFormat->getValue() );
+	}
+	catch( const std::exception& e )
+	{
+		std::string supportedPixelFormatList( "" );
+		for( std::vector<std::string>::iterator it = supportedPixelFormats.begin(); it != supportedPixelFormats.end(); ++it )
+		{
+			supportedPixelFormatList.append( *it + " " );
+		}
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to get supported pixel format choosen for video codec " + videoCodecName + 
+				" - Supported pixel format are: " + supportedPixelFormatList + "- " + e.what() );
+	}
+}
+
+std::string AVWriterPlugin::getSampleFormatName( const std::string& audioCodecName ) const
+{
+	std::vector<std::string> supportedSampleFormats( avtranscoder::getSampleFormats( audioCodecName ) );
+	try
+	{
+		// Works if Host can updateSampleFormats()
+		return supportedSampleFormats.at( _paramAudioSampleFormat->getValue() );
+	}
+	catch( const std::exception& e )
+	{
+		std::string supportedSampleFormatList( "" );
+		for( std::vector<std::string>::iterator it = supportedSampleFormats.begin(); it != supportedSampleFormats.end(); ++it )
+		{
+			supportedSampleFormatList.append( *it + " " );
+		}
+		BOOST_THROW_EXCEPTION( exception::Failed()
+		    << exception::user() + "unable to get supported sample format choosen for audio codec " + audioCodecName + 
+				" - Supported sample format are: " + supportedSampleFormatList + "- " + e.what() );
+	}
 }
 
 }
