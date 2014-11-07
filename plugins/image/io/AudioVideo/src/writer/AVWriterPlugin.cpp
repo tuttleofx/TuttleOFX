@@ -210,11 +210,6 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	return params;
 }
 
-/**
- * @brief Update the list of pixel format supported depending on the video codec.
- * Warning: the function does not update the list correctly in Nuke.
- * @param videoCodecName
- */
 void AVWriterPlugin::updatePixelFormats( const std::string& videoCodecName )
 {
 	_paramVideoPixelFormat->resetOptions();
@@ -232,11 +227,6 @@ void AVWriterPlugin::updatePixelFormats( const std::string& videoCodecName )
 	}
 }
 
-/**
- * @brief Update the list of sample format supported depending on the audio codec.
- * Warning: the function does not update the list correctly in Nuke.
- * @param audioCodecName
- */
 void AVWriterPlugin::updateSampleFormats( const std::string& audioCodecName )
 {
 	_paramAudioSampleFormat->resetOptions();

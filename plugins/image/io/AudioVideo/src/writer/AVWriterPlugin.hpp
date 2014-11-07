@@ -54,42 +54,59 @@ private:
 
 public:
 	AVProcessParams getProcessParams();
-	
-	void updateSampleFormats( const std::string& audioCodecName );
+
+	/**
+	* @brief Update the list of pixel format supported depending on the video codec.
+	* Warning: the function does not update the list correctly in Nuke.
+	*/
 	void updatePixelFormats( const std::string& videoCodecName );
+
+	/**
+	* @brief Update the list of sample format supported depending on the audio codec.
+	* Warning: the function does not update the list correctly in Nuke.
+	*/
+	void updateSampleFormats( const std::string& audioCodecName );
+
+	//@{
+	/** Update display of OFX parameters releated to audio. */
 	void updateAudioParams();
 	void updateAudioSilent( size_t indexAudioOutput );
 	void updateAudioSelectStream( size_t indexAudioOutput );
 	void updateAudioRewrap( size_t indexAudioOutput );
 	void updateAudioFileInfo( size_t indexAudioOutput );
-	
+	//@}
+
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
-	void initOutput();
-	void initAudio();
-	void ensureVideoIsInit( const OFX::RenderArguments& args );
+	void initOutput();  ///< Initialize output file and transcoder
+	void initAudio();  ///< Initialize output audio streams
+	void ensureVideoIsInit( const OFX::RenderArguments& args );  ///< Initialize output video stream
 
-	bool isOutputInit();
-	
+	bool isOutputInit();  ///< Check if output file and transcoder are initialized before render
+
+	//@{
+	/** Update OFX parameters from an existing profile (format, video, or audio). */
 	void updateFormatFromExistingProfile();
 	void updateVideoFromExistingProfile();
 	void updateAudiotFromExistingProfile();
+	//@}
 
-	/**
-	 * @brief Called before each new render.
-     */
-	void cleanVideoAndAudio();
-	
+	void cleanVideoAndAudio();  ///< Called before each new render.
+
 	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
-	
+
+	//@{
+	/** Getters which throw exception if format or codec are not found. */
 	std::string getFormatName( const int format ) const;
 	std::string getVideoCodecName( const int codec ) const;
 	std::string getAudioCodecName( const int codec ) const;
 	std::string getPixelFormatName( const std::string& videoCodecName ) const;
 	std::string getSampleFormatName( const std::string& audioCodecName ) const;
+	//@}
+
 public:
 	// format
 	OFX::GroupParam* _paramFormatCustomGroup;
