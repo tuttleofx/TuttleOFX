@@ -656,7 +656,7 @@ void AVWriterPlugin::initAudio()
 			if( ! isSilent && inputFileName.empty() )
 				continue;
 
-			// main audio preset
+			// No preset
 			if( presetIndex == 0 && mainPresetIndex == 0 )
 			{
 				profile[ avtranscoder::constants::avProfileIdentificator ] = "customAudioPreset";
@@ -678,12 +678,23 @@ void AVWriterPlugin::initAudio()
 			{
 				presetName = "";
 			}
-			// specific audio preset
+			// Audio preset
 			else
 			{
-				// at( presetIndex - 2 ): subtract the index of main preset and rewrap
-				profile = _presetLoader.getAudioProfiles().at( presetIndex - 2 );
-				presetName = profile.find( avtranscoder::constants::avProfileIdentificator )->second;
+				// from main preset
+				if( mainPresetIndex != 0 && presetIndex == 0 )
+				{
+					// at( presetIndex - 1 ): subtract the index of custom preset
+					profile = _presetLoader.getAudioProfiles().at( mainPresetIndex - 1 );
+					presetName = profile.find( avtranscoder::constants::avProfileIdentificator )->second;
+				}
+				// from specific preset
+				else
+				{
+					// at( presetIndex - 2 ): subtract the index of main preset and rewrap
+					profile = _presetLoader.getAudioProfiles().at( presetIndex - 2 );
+					presetName = profile.find( avtranscoder::constants::avProfileIdentificator )->second;
+				}
 			}
 			
 			// generator
