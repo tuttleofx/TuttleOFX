@@ -684,7 +684,7 @@ void AVWriterPlugin::initAudio()
 				profile.insert( audioDetailProfile.begin(), audioDetailProfile.end() );
 			}
 			// Rewrap
-			else if( presetIndex == 1 )
+			else if( presetIndex == 1 || ( presetIndex == 0 && mainPresetIndex == 1 ) )
 			{
 				presetName = "";
 			}
@@ -694,8 +694,8 @@ void AVWriterPlugin::initAudio()
 				// from main preset
 				if( mainPresetIndex != 0 && presetIndex == 0 )
 				{
-					// at( presetIndex - 1 ): subtract the index of custom preset
-					profile = _presetLoader.getAudioProfiles().at( mainPresetIndex - 1 );
+					// at( mainPresetIndex - 2 ): subtract the index of custom preset and rewrap
+					profile = _presetLoader.getAudioProfiles().at( mainPresetIndex - 2 );
 					presetName = profile.find( avtranscoder::constants::avProfileIdentificator )->second;
 				}
 				// from specific preset
