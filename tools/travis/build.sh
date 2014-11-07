@@ -19,9 +19,13 @@ fi
 
 # (wget --quiet https://www.dropbox.com/s/0wkebzn5zyshlh8/testfiles.tar && tar -xf testfiles.tar) &
 
-mkdir build_travis
+mkdir -p build_travis
 cd build_travis
-cmake -DCMAKE_INSTALL_PREFIX=/tmp/tuttle-ci .. 2> /dev/null
+
+# Ask cmake to search in all homebrew packages
+CMAKE_PREFIX_PATH=$(echo /usr/local/Cellar/*/* | sed 's/ /;/g')
+
+cmake -DCMAKE_INSTALL_PREFIX=/tmp/tuttle-ci -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH ..
 make $J VERBOSE=1 -k
 make install
 
