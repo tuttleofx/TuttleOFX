@@ -471,7 +471,11 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		const size_t indexPos = kParamAudioFilePath.size() + 1; // add "_"
 		const size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
 		_paramAudioSilent.at( indexAudioOutput )->setValue( false );
-		
+
+		// Update number of audio input
+		if( ( indexAudioOutput + 1 ) > _paramAudioNbInput->getValue() )
+			_paramAudioNbInput->setValue( indexAudioOutput + 1 );
+
 		updateAudioFileInfo( indexAudioOutput );
 	}
 	else if( paramName.find( kParamAudioStreamIndex ) != std::string::npos )
