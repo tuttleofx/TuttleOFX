@@ -96,7 +96,15 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     # tar -xvf bottles.tar
 
     echo "Install Packages"
-    brew install scons swig ilmbase openexr jasper little-cms2 glew freetype ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr numpy openjpeg opencolorio openimageio
+    # echo "brew deps gcc"
+    # echo `brew deps gcc`
+    # echo "brew reinstall"
+    # brew reinstall `brew deps gcc` || true
+    echo "pip install numpy"
+    pip install numpy
+    # brew install numpy
+    echo "Install TuttleOFX dependencies"
+    brew install scons swig ilmbase openexr jasper little-cms2 glew freetype ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr openjpeg opencolorio openimageio
 #    echo "Install official bottles"
 #    brew install bottles/ilmbase-2.1.0.mavericks.bottle.tar.gz
 #    brew install bottles/openexr-2.1.0.mavericks.bottle.tar.gz
