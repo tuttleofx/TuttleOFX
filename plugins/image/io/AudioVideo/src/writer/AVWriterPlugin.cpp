@@ -573,7 +573,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 	// create video stream
 	try
 	{
-		// Get video profile
+		// Get custom video profile
 		avtranscoder::ProfileLoader::Profile profile;
 		profile[ avtranscoder::constants::avProfileIdentificator ] = "customVideoPreset";
 		profile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom video preset";
@@ -671,7 +671,7 @@ void AVWriterPlugin::initAudio()
 			if( ! isSilent && inputFileName.empty() )
 				continue;
 
-			// No preset
+			// Get custom audio profile
 			if( presetIndex == 0 && mainPresetIndex == 0 )
 			{
 				profile[ avtranscoder::constants::avProfileIdentificator ] = "customAudioPreset";
@@ -693,7 +693,7 @@ void AVWriterPlugin::initAudio()
 			{
 				presetName = "";
 			}
-			// Audio preset
+			// Audio profile
 			else
 			{
 				// from main preset
@@ -818,6 +818,7 @@ void AVWriterPlugin::updateFormatFromExistingProfile()
 	// existing format preset
 	if( presetIndex != 0 )
 	{
+		// at( presetIndex - 1 ): subtract the index of custom preset
 		avtranscoder::ProfileLoader::Profile existingProfile = _presetLoader.getFormatProfiles().at( presetIndex - 1 );
 
 		// format
@@ -849,6 +850,7 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 	// existing video preset
 	if( presetIndex != 0 )
 	{
+		// at( presetIndex - 1 ): subtract the index of custom preset
 		avtranscoder::ProfileLoader::Profile existingProfile = _presetLoader.getVideoProfiles().at( presetIndex - 1 );
 
 		// video codec
@@ -864,7 +866,7 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( *iterCodec ) );
 		std::vector<std::string>::iterator iterPixelFormat = std::find( pixelFormats.begin(), pixelFormats.end(), existingProfile[ avtranscoder::constants::avProfilePixelFormat ] );
 		size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
-		if( pixelFomatIndex != pixelFormats.size() )
+		if( pixelFomatIndex < pixelFormats.size() )
 		{
 			_paramVideoPixelFormat->setValue( pixelFomatIndex );
 		}
@@ -911,7 +913,7 @@ void AVWriterPlugin::updateAudiotFromExistingProfile()
 		std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( *iterCodec ) );
 		std::vector<std::string>::iterator iterSampleFormat = std::find( sampleFormats.begin(), sampleFormats.end(), existingProfile[ avtranscoder::constants::avProfileSampleFormat ] );
 		size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
-		if( sampleFomatIndex != sampleFormats.size() )
+		if( sampleFomatIndex < sampleFormats.size() )
 		{
 			_paramAudioSampleFormat->setValue( sampleFomatIndex );
 		}
