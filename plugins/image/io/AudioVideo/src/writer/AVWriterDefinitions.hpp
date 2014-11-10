@@ -48,7 +48,7 @@ static const std::string kParamFormatCustomGroup         = common::kPrefixFormat
 static const std::string kParamVideoCustomGroup          = common::kPrefixVideo + "customGroup";
 static const std::string kParamAudioCustomGroup          = common::kPrefixAudio + "customGroup";
 
-static const std::string kParamAudioNbInputs             = common::kPrefixAudio + "nbStream";
+static const std::string kParamAudioNbInputs             = common::kPrefixAudio + "nbInput";
 
 static const std::string kParamAudioSubGroup             = common::kPrefixAudio + "subGroup";
 static const std::string kParamAudioSilent               = common::kPrefixAudio + "silent";
