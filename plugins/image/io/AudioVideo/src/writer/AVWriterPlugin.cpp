@@ -422,7 +422,8 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	else if( paramName == kParamAudioMainPreset )
 	{
 		// if custom audio preset
-		if( _paramAudioMainPreset->getValue() == 0 )
+		if( _paramAudioMainPreset->getValue() == 0 || 
+			_paramAudioMainPreset->getValue() == 1 )
 		{
 			int defaultAudioCodecIndex;
 			_paramAudioCodec->getDefault( defaultAudioCodecIndex );
@@ -696,7 +697,7 @@ void AVWriterPlugin::initAudio()
 			else
 			{
 				// from main preset
-				if( mainPresetIndex != 0 && presetIndex == 0 )
+				if( presetIndex == 0 )
 				{
 					// at( mainPresetIndex - 2 ): subtract the index of custom preset and rewrap
 					profile = _presetLoader.getAudioProfiles().at( mainPresetIndex - 2 );
@@ -892,9 +893,10 @@ void AVWriterPlugin::updateAudiotFromExistingProfile()
 	size_t presetIndex = _paramAudioMainPreset->getValue();
 	
 	// existing audio preset
-	if( presetIndex != 0 )
+	if( presetIndex > 1 )
 	{
-		avtranscoder::ProfileLoader::Profile existingProfile = _presetLoader.getAudioProfiles().at( presetIndex - 1 );
+		// at( presetIndex - 2 ): subtract the index of custom preset and rewrap
+		avtranscoder::ProfileLoader::Profile existingProfile = _presetLoader.getAudioProfiles().at( presetIndex - 2 );
 
 		// audio codec
 		std::vector<std::string> codecs = avtranscoder::getAudioCodecsShortNames();
