@@ -588,8 +588,6 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		else
 			profile[ avtranscoder::constants::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
 
-		profile[ "aspect" ] = boost::to_string( _clipSrc->getPixelAspectRatio() );
-
 		avtranscoder::ProfileLoader::Profile videoProfile = _paramVideoCustom.getCorrespondingProfile();
 		profile.insert( videoProfile.begin(), videoProfile.end() );
 
