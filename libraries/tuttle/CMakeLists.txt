@@ -36,7 +36,33 @@ if (TuttleBoost_FOUND)
   add_definitions(-DWITH_BOOST_ATOMIC)
   
   # Target is a shared library
-  add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES}) 
+  add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
+
+  # Extract tuttleHost_VERSION_MAJOR/MINOR/MICRO from version.hpp
+  file(STRINGS "src/tuttle/host/version.hpp" _tuttleHost_VERSION_HPP_CONTENTS REGEX "#define TUTTLE_HOST_VERSION_")
+  foreach(v MAJOR MINOR MICRO)
+    if("${_tuttleHost_VERSION_HPP_CONTENTS}" MATCHES "#define TUTTLE_HOST_VERSION_${v} ([0-9]+)")
+      set(tuttleHost_VERSION_${v} "${CMAKE_MATCH_1}")
+    else()
+      set(tuttleHost_RETRIEVE_VERSION_FAILED 1)
+    endif()
+  endforeach()
+  unset(_tuttleHost_VERSION_HPP_CONTENTS)
+
+  if(tuttleHost_RETRIEVE_VERSION_FAILED)
+    message(WARNING "Failed to retrieve tuttleHost version (from version.hpp): "
+		   "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}")
+  else()
+    message(STATUS "tuttleHost version is "
+                 "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO} (retrieved from version.hpp)")
+
+    set_target_properties(
+      tuttleHost
+    PROPERTIES
+      VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}"
+  )
+  endif()
+
   target_link_libraries(tuttleHost ${Boost_LIBRARIES})
   if(APPLE)
       set_target_properties(tuttleHost 
