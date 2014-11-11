@@ -3,7 +3,7 @@ PHONY_TARGETS := distclean all configure
 
 SHELL := /bin/bash
 RM    := rm -rf
-CONFIGURE_CMD := ./configure 2> cmake_pass.log
+CONFIGURE_CMD := ./configure
 
 # Automatically select the number of processors.
 # You can override that on the command line: "make NPROC=1".
