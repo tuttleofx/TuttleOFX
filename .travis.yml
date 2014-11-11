@@ -18,6 +18,7 @@ matrix:
   exclude:
     - os: osx
       compiler: gcc
+  fast_finish: true
 
 before_script:
   - date -u
