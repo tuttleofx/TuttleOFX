@@ -82,9 +82,6 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     #     echo "XQuartz end"
     # }
 
-    # wget --quiet https://www.dropbox.com/s/7qwo3jzmdsugtis/bottles.tar &
-    # WGET_PID=$!
-
     # sudo install_xquartz &
     # XQ_INSTALL_PID=$!
 
@@ -92,72 +89,15 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     brew tap homebrew/python
     brew tap homebrew/science
 
-    # wait $WGET_PID
-    # tar -xvf bottles.tar
-
-    echo "Install Packages"
-    # echo "brew deps gcc"
-    # echo `brew deps gcc`
-    # echo "brew reinstall"
-    # brew reinstall `brew deps gcc` || true
-    echo "pip install numpy"
-    pip install numpy
-    # brew install numpy
     echo "Install TuttleOFX dependencies"
-    brew install scons swig ilmbase openexr jasper little-cms2 glew freetype ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr openjpeg opencolorio openimageio
-#    echo "Install official bottles"
-#    brew install bottles/ilmbase-2.1.0.mavericks.bottle.tar.gz
-#    brew install bottles/openexr-2.1.0.mavericks.bottle.tar.gz
-#    # cmake is installed by default on travis
-#    # brew install bottles/cmake-2.8.12.2.mavericks.bottle.2.tar.gz
-#    brew install bottles/jasper-1.900.1.mavericks.bottle.tar.gz
-#    brew install bottles/little-cms2-2.6.mavericks.bottle.tar.gz
-#    # brew install bottles/doxygen-1.8.7.mavericks.bottle.tar.gz
-#    # brew install gmp  # bottles/gmp-6.0.0a.mavericks.bottle.tar.gz
-#    # brew install mpfr  # bottles/mpfr-3.1.2-p8.mavericks.bottle.tar.gz
-#    brew install libmpc  # bottles/libmpc-1.0.2.mavericks.bottle.tar.gz
-#    brew install isl  # bottles/isl-0.12.2.mavericks.bottle.tar.gz
-#    brew install cloog  # bottles/cloog-0.18.1.mavericks.bottle.1.tar.gz
-#    # brew unlink gcc || true  # need to get gcc installed by homebrew
-#    # brew install gcc  # bottles/gcc-4.8.3_1.mavericks.bottle.tar.gz
-#    brew install bottles/webp-0.4.0_1.mavericks.bottle.tar.gz
-#    brew install glew  # bottles/glew-1.10.0.mavericks.bottle.tar.gz
-#    # brew install bottles/qt-4.8.6.mavericks.bottle.5.tar.gz
-#    brew install bottles/freetype-2.5.3_1.mavericks.bottle.1.tar.gz
-#    brew install bottles/pcre-8.35.mavericks.bottle.tar.gz
-#    brew install bottles/swig-3.0.2.mavericks.bottle.tar.gz
-#    brew install x264  # bottles/x264-r2412.mavericks.bottle.1.tar.gz
-#    brew install bottles/faac-1.28.mavericks.bottle.tar.gz || true
-#    brew install bottles/lame-3.99.5.mavericks.bottle.tar.gz || true
-#    brew install bottles/xvid-1.3.2.mavericks.bottle.tar.gz || true
-#    brew install ffmpeg  # bottles/ffmpeg-2.2.3.mavericks.bottle.tar.gz || true
-#    brew install imagemagick  # bottles/imagemagick-6.8.9-1.mavericks.bottle.tar.gz || true
-#    brew install bottles/libcaca-0.99b19.mavericks.bottle.tar.gz || true
-#    brew install scons  # bottles/scons-2.3.1.mavericks.bottle.3.tar.gz || true
-#
-#    # selfbuilt bottles
-#    # brew uninstall boost && brew install bottles/boost-1.55.0_2.mavericks.bottle.4.tar.gz
-#    # brew install boost
-#    brew install bottles/aces_container-1.0.mavericks.bottle.tar.gz
-#    brew install bottles/ctl-1.5.2.mavericks.bottle.tar.gz
-#    brew install bottles/jpeg-turbo-1.3.1.mavericks.bottle.tar.gz
-#    brew install bottles/libraw-0.15.4.mavericks.bottle.tar.gz
-#    brew install bottles/seexpr-1.0.1.mavericks.bottle.tar.gz
-#    brew install tbb  # bottles/tbb-4.2.4.mavericks.bottle.tar.gz
-#    brew install bottles/suite-sparse-4.2.1.mavericks.bottle.tar.gz
-#    brew install numpy  # bottles/numpy-1.8.1.mavericks.bottle.tar.gz || true
-#    brew install bottles/openjpeg-1.5.1_1.mavericks.bottle.tar.gz
-#    # brew install bottles/cfitsio-3.360.mavericks.bottle.tar.gz || true
-#    brew install bottles/szip-2.1.mavericks.bottle.tar.gz
-#    brew install bottles/hdf5-1.8.13.mavericks.bottle.tar.gz
-#    brew install bottles/field3d-1.4.3.mavericks.bottle.tar.gz
-#    brew install bottles/opencolorio-1.0.9.mavericks.bottle.tar.gz
-#    brew install bottles/openimageio-1.4.8.mavericks.bottle.tar.gz
-
-    cp tools/sconf/macos_homebrew.sconf host.sconf
+    echo " - pip install numpy"
+    pip install numpy
+    # brew install numpy  # Compilation errors with gfortran
+    echo " - install brew packages"
+    brew install scons swig ilmbase openexr jasper little-cms2 glew freetype fontconfig ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr openjpeg opencolorio openimageio
 
     # wait $XQ_INSTALL_PID || true
 
     echo "End dependencies installation."
-
 fi
+
