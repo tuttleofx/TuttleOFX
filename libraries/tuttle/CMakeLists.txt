@@ -120,7 +120,7 @@ if (TuttleBoost_FOUND)
     include_directories(${NUMPY_INCLUDE_DIR})
   
     # Swig to compile c++ -> python
-    set(CMAKE_SWIG_FLAGS -c++ -threads)
+    set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern) #-doxygen
 
     # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
