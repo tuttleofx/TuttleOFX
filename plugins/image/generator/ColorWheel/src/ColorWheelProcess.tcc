@@ -24,7 +24,7 @@ void ColorWheelProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( );
 
-	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
+	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time, args.renderScale );
 
 	int xshift = 0.0;
 	int yshift = 0.0;

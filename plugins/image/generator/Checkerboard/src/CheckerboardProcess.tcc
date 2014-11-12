@@ -40,7 +40,7 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments& args )
 	// params
 	CheckerboardParams<View> params = getParams();
 
-	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
+	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time, args.renderScale );
 	
 	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	Point tileSize( dims.x / params._boxes.x, dims.y / params._boxes.y );

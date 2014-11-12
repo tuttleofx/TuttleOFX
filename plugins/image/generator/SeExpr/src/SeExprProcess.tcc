@@ -16,7 +16,7 @@ void SeExprProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 
-	rod = _plugin._clipDst->getCanonicalRod( args.time );
+	rod = _plugin._clipDst->getCanonicalRod( args.time, args.renderScale );
 
 	_time = args.time;
 	

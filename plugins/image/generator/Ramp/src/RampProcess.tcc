@@ -39,7 +39,7 @@ void RampProcess<View>::setup( const OFX::RenderArguments& args )
 	boost::function_requires<PixelLocatorConcept<Locator> >();
 	gil_function_requires < StepIteratorConcept<typename Locator::x_iterator> >();
 	
-	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
+	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time, args.renderScale );
 	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	
 	// create a ramp view
