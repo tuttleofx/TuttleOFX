@@ -167,7 +167,7 @@ public:
 	bool hasProperty( const std::string& propName, bool followChain = true ) const;
 	bool hasLocalProperty( const std::string& propName ) const;
 
-	inline OfxhSet& operator+( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
+	inline OfxhSet& operator+=( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
 
 	/// add one new property
 	void createProperty( const OfxhPropSpec& s );
