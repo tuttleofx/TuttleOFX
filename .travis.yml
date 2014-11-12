@@ -20,10 +20,12 @@ matrix:
       compiler: gcc
   fast_finish: true
 
-before_script:
-  - date -u
-  - uname -a
-  - export J='-j3'
+before_install:
+   - date -u
+   - uname -a
+   - export J='-j3'
+
+install:
   - tools/travis/coverity_env.sh
   - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]];
     then
