@@ -30,11 +30,6 @@ if (TuttleBoost_FOUND)
   find_package(sequenceParser)
   include_directories(${SEQUENCEPARSER_INCLUDE_DIR})
   
-  # Atomic -> FIXME in the code, there is a 
-  # redefinition of boost atomic to change
-  # libraries/tuttle/src/tuttle/common/atomic.hpp
-  add_definitions(-DWITH_BOOST_ATOMIC)
-  
   # Target is a shared library
   add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
 
@@ -75,6 +70,11 @@ if (TuttleBoost_FOUND)
       set_target_properties(tuttleHost
             PROPERTIES INSTALL_RPATH "$ORIGIN")
   endif(UNIX AND NOT APPLE)
+  
+  # Atomic -> FIXME in the code, there is a 
+  # redefinition of boost atomic to change
+  # libraries/tuttle/src/tuttle/common/atomic.hpp
+  target_compile_definitions(tuttleHost PUBLIC WITH_BOOST_ATOMIC)
 
   # Add a target with only object files to avoid recompiling sequence parser
   # multiple times
