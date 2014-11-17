@@ -35,7 +35,7 @@
 #define TUTTLE_COUT( ... ) std::cout << __VA_ARGS__ << std::endl
 
 
-#ifdef WITH_BOOST_LOG
+#ifndef WITHOUT_BOOST_LOG
 #define TUTTLE_LOG( MODE, ... ) MODE << __VA_ARGS__
 
 #define TUTTLE_TRACE   BOOST_LOG_TRIVIAL(trace)
