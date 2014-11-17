@@ -71,10 +71,11 @@ if (TuttleBoost_FOUND)
             PROPERTIES INSTALL_RPATH "$ORIGIN")
   endif(UNIX AND NOT APPLE)
   
-  # Atomic -> FIXME in the code, there is a 
-  # redefinition of boost atomic to change
+  # TODO: if cmake >= 2.8.11
+  # TODO: declare BOOST Atomic optional.
+  # There is a basic fallback implementation for boost_atomic:
   # libraries/tuttle/src/tuttle/common/atomic.hpp
-  target_compile_definitions(tuttleHost PUBLIC WITH_BOOST_ATOMIC)
+  # target_compile_definitions(tuttleHost PUBLIC WITHOUT_BOOST_ATOMIC)
 
   # Add a target with only object files to avoid recompiling sequence parser
   # multiple times
