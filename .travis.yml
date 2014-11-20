@@ -20,6 +20,11 @@ matrix:
       compiler: gcc
   fast_finish: true
 
+cache:
+  apt: true
+  directories:
+  - /usr/local/Cellar
+
 before_install:
    - date -u
    - uname -a
