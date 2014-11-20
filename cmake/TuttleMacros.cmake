@@ -59,6 +59,31 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
             include_directories(src)
         endif ()
 
+        # Extract plugin VERSION_MAJOR/MINOR from "src/mainEntry.cpp"
+        file(STRINGS "src/mainEntry.cpp" _plugin_VERSION_HPP_CONTENTS REGEX "#define OFXPLUGIN_VERSION_")
+        foreach(v MAJOR MINOR)
+          if("${_plugin_VERSION_HPP_CONTENTS}" MATCHES "#define OFXPLUGIN_VERSION_${v} ([0-9]+)")
+            set(plugin_VERSION_${v} "${CMAKE_MATCH_1}")
+          else()
+            set(plugin_VERSION_${v} "")
+            set(plugin_RETRIEVE_VERSION_FAILED 1)
+          endif()
+        endforeach()
+        unset(_plugin_VERSION_HPP_CONTENTS)
+
+        if(plugin_RETRIEVE_VERSION_FAILED)
+          message(WARNING "Failed to retrieve ${PLUGIN_NAME} plugin version (from mainEntry.cpp): "
+                 "${plugin_VERSION_MAJOR}.${plugin_VERSION_MINOR}")
+          set(_plugin_version_suffix "")
+        else()
+          message(STATUS "${PLUGIN_NAME} plugin version is "
+                       "${plugin_VERSION_MAJOR}.${plugin_VERSION_MINOR} (retrieved from mainEntry.cpp)")
+
+          set(_plugin_version_suffix "-${plugin_VERSION_MAJOR}.${plugin_VERSION_MINOR}")
+        
+        endif()
+
+
         # OpenFX and Terry are used by default
         include(UseOfxpp)
         include(UseTerry)
@@ -83,7 +108,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
      
         # Install OFX plugin as specified in
         # http://openfx.sourceforge.net/Documentation/1.3/Reference/ch02s02.html
-        set(OFX_PLUGIN_ROOT ${CMAKE_INSTALL_PREFIX}/OFX/${PLUGIN_NAME}.ofx.bundle/Contents)
+        set(OFX_PLUGIN_ROOT "${CMAKE_INSTALL_PREFIX}/OFX/${PLUGIN_NAME}${_plugin_version_suffix}.ofx.bundle/Contents")
         tuttle_ofx_architecture(OFX_ARCH)
         install(DIRECTORY Resources DESTINATION ${OFX_PLUGIN_ROOT})
         install(TARGETS ${PLUGIN_NAME} 
