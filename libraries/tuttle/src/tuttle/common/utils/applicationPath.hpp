@@ -9,6 +9,11 @@ namespace common {
 
 boost::filesystem::path applicationFilepath( const std::string& argv0, const boost::filesystem::path& currentPath = boost::filesystem::current_path() );
 
+inline boost::filesystem::path applicationFolder( const std::string& argv0, const boost::filesystem::path& currentPath = boost::filesystem::current_path() )
+{
+	return applicationFilepath( argv0, currentPath ).parent_path();
+}
+
 }
 }
 

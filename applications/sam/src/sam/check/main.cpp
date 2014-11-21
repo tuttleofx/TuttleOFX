@@ -2,6 +2,7 @@
 #include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
+#include <tuttle/common/utils/applicationPath.hpp>
 
 #include <detector.hpp>
 
@@ -257,6 +258,8 @@ int main( int argc, char** argv )
 
 	try
 	{
+		const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+		core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 		core().preload();
 		Graph graph;
 		Graph::Node& read = graph.createNode( readerId );
