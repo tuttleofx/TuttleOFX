@@ -91,7 +91,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
         target_link_libraries(${PLUGIN_NAME} ${Boost_LIBRARIES} tuttlePluginLib tuttleCommon)
-        set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX .ofx)
+        set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX "${_plugin_version_suffix}.ofx")
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
 
         # FIXME: why tuttlePluginLib depends on OpenGL ? is it necessary ?
