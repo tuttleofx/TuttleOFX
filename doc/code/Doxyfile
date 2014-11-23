@@ -4,7 +4,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = TuttleOFX
 PROJECT_NUMBER         = 1
-OUTPUT_DIRECTORY       = ../../dist/doc/code
+OUTPUT_DIRECTORY       = @CMAKE_BINARY_DIR@/share/tuttle/doc
 CREATE_SUBDIRS         = YES
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO
@@ -83,9 +83,9 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = .                  \
-                         ../../applications \
-                         ../../plugins      \
-                         ../../libraries    \
+                         @CMAKE_CURRENT_SOURCE_DIR@/applications \
+                         @CMAKE_CURRENT_SOURCE_DIR@/plugins      \
+                         @CMAKE_CURRENT_SOURCE_DIR@/libraries    \
 
 
 FILE_PATTERNS          = *.c \
