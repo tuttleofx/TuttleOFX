@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 2.8)
 project (TuttleOFX)
 
 # Add a variable for production or development
-set(TUTTLE_PRODUCTION FALSE CACHE BOOL "activate logs")
+set(TUTTLE_PRODUCTION TRUE CACHE BOOL "Fully optimized for production usage.")
 if(TUTTLE_PRODUCTION)
   add_definitions(-DTUTTLE_PRODUCTION)
 endif()
