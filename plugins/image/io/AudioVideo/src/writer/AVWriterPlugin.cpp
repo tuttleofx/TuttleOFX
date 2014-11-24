@@ -293,8 +293,8 @@ void AVWriterPlugin::updateAudioSelectStream( size_t indexAudioOutput )
 			if( boost::filesystem::exists( inputFilePath ) )
 			{
 				avtranscoder::NoDisplayProgress progress;
-				avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::InputFile::eAnalyseLevelFast );
-				size_t nbAudioStream = properties.audioStreams.size();
+				avtranscoder::FileProperties fileProperties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::eAnalyseLevelHeader );
+				size_t nbAudioStream = fileProperties.getAudioProperties().size();
 				_paramAudioStreamIndex.at( indexAudioOutput )->setRange( 0, nbAudioStream );
 				_paramAudioStreamIndex.at( indexAudioOutput )->setDisplayRange( 0, nbAudioStream );
 			}
@@ -325,8 +325,8 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 		if( boost::filesystem::exists( inputFilePath ) )
 		{
 			avtranscoder::NoDisplayProgress progress;
-			avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::InputFile::eAnalyseLevelFast );
-			size_t nbAudioStream = properties.audioStreams.size();
+			avtranscoder::FileProperties fileProperties = avtranscoder::InputFile::analyseFile( inputFilePath, progress, avtranscoder::eAnalyseLevelHeader );
+			size_t nbAudioStream = fileProperties.getAudioProperties().size();
 			std::string audioInfo = "Audio streams: ";
 			audioInfo += boost::lexical_cast<std::string>( nbAudioStream );
 			audioInfo += "\n";
@@ -335,7 +335,7 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 				audioInfo += "Stream ";
 				audioInfo += boost::lexical_cast<std::string>( audioStreamIndex );
 				audioInfo += ": ";
-				audioInfo += boost::lexical_cast<std::string>( properties.audioStreams.at( audioStreamIndex ).channels );
+				audioInfo += fileProperties.getAudioProperties().at( audioStreamIndex ).getChannelName();
 				audioInfo += " channels";
 				audioInfo += "\n";
 			}
@@ -733,8 +733,8 @@ void AVWriterPlugin::initAudio()
 				if( inputStreamIndex == -1 )
 				{
 					avtranscoder::NoDisplayProgress progress;
-					avtranscoder::Properties properties = avtranscoder::InputFile::analyseFile( inputFileName, progress, avtranscoder::InputFile::eAnalyseLevelFast );
-					nbAudioStream = properties.audioStreams.size();
+					avtranscoder::FileProperties fileProperties = avtranscoder::InputFile::analyseFile( inputFileName, progress, avtranscoder::eAnalyseLevelHeader );
+					nbAudioStream = fileProperties.getAudioProperties().size();
 				}
 				
 				// rewrap

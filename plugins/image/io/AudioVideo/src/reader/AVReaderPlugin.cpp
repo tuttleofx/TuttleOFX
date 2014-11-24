@@ -8,7 +8,7 @@
 #include <AvTranscoder/option/CodecContext.hpp>
 #include <AvTranscoder/progress/NoDisplayProgress.hpp>
 #include <AvTranscoder/frame/Pixel.hpp>
-#include <AvTranscoder/mediaProperty/printMediaProperty.hpp>
+#include <AvTranscoder/mediaProperty/FileProperties.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
@@ -108,10 +108,10 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_lastInputFilePath = filepath;
 		avtranscoder::NoDisplayProgress progress;
 		// using fast analyse ( do not extract gop structure )
-		_inputFile->analyse( progress, avtranscoder::InputFile::eAnalyseLevelFast );
+		_inputFile->analyse( progress, avtranscoder::eAnalyseLevelHeader );
 		
 		// get streamId of the video stream
-		if( videoStreamIndex >= _inputFile->getProperties().videoStreams.size() )
+		if( videoStreamIndex >= _inputFile->getProperties().getVideoProperties().size() )
 		{
 			throw std::runtime_error( "the stream index doesn't exist in the input file" );
 		}
@@ -185,11 +185,11 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		{
 			ensureVideoIsOpen();
 
-			const avtranscoder::Properties& inputProperties = _inputFile->getProperties();
+			const avtranscoder::FileProperties& inputProperties = _inputFile->getProperties();
 
 			// set range of the OFX param
-			_paramVideoStreamIndex->setRange( 0, inputProperties.videoStreams.size() );
-			_paramVideoStreamIndex->setDisplayRange( 0, inputProperties.videoStreams.size() );
+			_paramVideoStreamIndex->setRange( 0, inputProperties.getVideoProperties().size() );
+			_paramVideoStreamIndex->setDisplayRange( 0, inputProperties.getVideoProperties().size() );
 
 			// update wrapper of Metadata tab
 			std::string wrapperValue( "" );
@@ -205,7 +205,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 			// update video of Metadata tab
 			std::string videoValue( "" );
-			BOOST_FOREACH( const avtranscoder::VideoProperties& videoStream, inputProperties.videoStreams )
+			BOOST_FOREACH( const avtranscoder::VideoProperties& videoStream, inputProperties.getVideoProperties() )
 			{
 				videoValue += "::::: VIDEO STREAM ::::: \n";
 				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, videoStream.getDataMap() )
@@ -222,7 +222,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 			// update audio of Metadata tab
 			std::string audioValue( "" );
-			BOOST_FOREACH( const avtranscoder::AudioProperties& audioStream, inputProperties.audioStreams )
+			BOOST_FOREACH( const avtranscoder::AudioProperties& audioStream, inputProperties.getAudioProperties() )
 			{
 				audioValue += "::::: AUDIO STREAM ::::: \n";
 				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, audioStream.getDataMap() )
@@ -239,7 +239,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			// update data of Metadata tab
 			std::string dataValue( "" );
-			BOOST_FOREACH( const avtranscoder::DataProperties& dataStream, inputProperties.dataStreams )
+			BOOST_FOREACH( const avtranscoder::DataProperties& dataStream, inputProperties.getDataProperties() )
 			{
 				dataValue += "::::: DATA STREAM ::::: \n";
 				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, dataStream.getDataMap() )
@@ -256,7 +256,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			// update subtitle of Metadata tab
 			std::string subtitleValue( "" );
-			BOOST_FOREACH( const avtranscoder::SubtitleProperties& subtitleStream, inputProperties.subtitleStreams )
+			BOOST_FOREACH( const avtranscoder::SubtitleProperties& subtitleStream, inputProperties.getSubtitleProperties() )
 			{
 				subtitleValue += "::::: SUBTITLE STREAM ::::: \n";
 				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, subtitleStream.getDataMap() )
@@ -273,7 +273,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			// update attachement of Metadata tab
 			std::string attachementValue( "" );
-			BOOST_FOREACH( const avtranscoder::AttachementProperties& attachementStream, inputProperties.attachementStreams )
+			BOOST_FOREACH( const avtranscoder::AttachementProperties& attachementStream, inputProperties.getAttachementProperties() )
 			{
 				attachementValue += "::::: ATTACHEMENT STREAM ::::: \n";
 				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, attachementStream.getDataMap() )
@@ -290,7 +290,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			// update unknown of Metadata tab
 			std::string unknownValue( "" );
-			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, inputProperties.unknownStreams )
+			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, inputProperties.getUnknownPropertiesProperties() )
 			{
 				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
 				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, unknownStream.getDataMap() )
@@ -307,11 +307,11 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 			// update format details parameters
 			avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, inputProperties.formatName, common::kPrefixFormat );
+			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, inputProperties.getFormatName(), common::kPrefixFormat );
 			
 			// update video details parameters
 			avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-			const std::string videoCodecName = inputProperties.videoStreams.at( _paramVideoStreamIndex->getValue() ).codecName;
+			const std::string videoCodecName = inputProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getCodecName();
 			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 		}
 		catch( std::exception& e )
@@ -348,8 +348,8 @@ double AVReaderPlugin::retrievePAR()
 	if( _paramUseCustomSAR->getValue() )
 		return _paramCustomSAR->getValue();
 	
-	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	avtranscoder::Rational sar = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).sar;
+	const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
+	avtranscoder::Rational sar = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getSar();
 	const double videoRatio = sar.num / (double)sar.den;
 
 	return videoRatio;
@@ -385,19 +385,19 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 			clipPreferences.setClipComponents( *_clipDst, OFX::getImageEffectHostDescription()->getDefaultPixelComponent() );
 	}
 	
-	const avtranscoder::Properties& properties = _inputFile->getProperties();
+	const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
 	
 	// output frame rate
-	double fps = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).fps;
+	double fps = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getFps();
 	clipPreferences.setOutputFrameRate( fps );
 
 	clipPreferences.setPixelAspectRatio( *_clipDst, retrievePAR() );
 
 	// interlaced
-	bool isInterlaced = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).isInterlaced;
+	bool isInterlaced = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).isInterlaced();
 	if( isInterlaced )
 	{
-		bool topFieldFirst = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).topFieldFirst;
+		bool topFieldFirst = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).isTopFieldFirst();
 		clipPreferences.setOutputFielding( topFieldFirst ? OFX::eFieldUpper : OFX::eFieldLower );
 	}
 	else
@@ -410,8 +410,8 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	ensureVideoIsOpen();
 
-	double duration = _inputFile->getProperties().duration;
-	double fps = _inputFile->getProperties().videoStreams.at( _paramVideoStreamIndex->getValue() ).fps;
+	double duration = _inputFile->getProperties().getDuration();
+	double fps = _inputFile->getProperties().getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getFps();
 	double nbFrames = boost::math::trunc( fps * duration );
 
 	range.min = 0.0;
@@ -425,9 +425,9 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 	ensureVideoIsOpen();
 
 	// get metadata of video stream
-	const avtranscoder::Properties& properties = _inputFile->getProperties();
-	size_t width = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).width;
-	size_t height = properties.videoStreams.at( _paramVideoStreamIndex->getValue() ).height;
+	const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
+	size_t width = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getWidth();
+	size_t height = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getHeight();
 	
 	const double pixelAspectRatio = retrievePAR();
 
