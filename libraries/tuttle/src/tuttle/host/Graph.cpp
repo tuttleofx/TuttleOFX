@@ -7,6 +7,8 @@
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/exception/all.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -56,7 +58,7 @@ Graph::Node& Graph::addNode( INode& node )
 	node.setName( uniqueName.str() );
 
 	std::string key( node.getName() ); // for constness
-	_nodes.insert( key, &node ); // acquire the ownership
+	_nodesMap.insert( key, &node ); // acquire the ownership
 	addToInternalGraph( node );
 	
 	return node;
@@ -90,15 +92,15 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 	TUTTLE_TLOG( TUTTLE_INFO, "Graph::renameNode: from: " << node.getName() << " -> to: " << newUniqueName );
 	{
 		// check if newUniqueName is not already in the graph
-		NodeMap::iterator itNew = _nodes.find( newUniqueName );
-		if( itNew != _nodes.end() )
+		NodeMap::iterator itNew = _nodesMap.find( newUniqueName );
+		if( itNew != _nodesMap.end() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Value()
 				<< exception::user() + "New node name " + quotes(newUniqueName) + " already exists." );
 		}
 	}
-	NodeMap::iterator it = _nodes.find( node.getName() );
-	if( it == _nodes.end() )
+	NodeMap::iterator it = _nodesMap.find( node.getName() );
+	if( it == _nodesMap.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
 			<< exception::user() + "Node " + quotes(node.getName()) + " is not in the graph." );
@@ -108,10 +110,10 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 	removeFromInternalGraph( node );
 	
 	// rename the key into the map
-	NodeMap::auto_type n = _nodes.release( it );
+	NodeMap::auto_type n = _nodesMap.release( it );
 	n->setName( newUniqueName );
 	std::string key( newUniqueName ); // for constness
-	_nodes.insert( key, n.release() );
+	_nodesMap.insert( key, n.release() );
 	
 	addToInternalGraph( node );
 	
@@ -134,14 +136,31 @@ void Graph::removeFromInternalGraph( Node& node )
 
 void Graph::deleteNode( Node& node )
 {
-	NodeMap::iterator it = _nodes.find( node.getName() );
-	if( it != _nodes.end() )
+	NodeMap::iterator it = _nodesMap.find( node.getName() );
+	if( it == _nodesMap.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
 			<< exception::user("Node not found.") );
 	}
 	removeFromInternalGraph( node );
-	_nodes.erase( it ); // will delete the node
+	_nodesMap.erase( it ); // will delete the node
+}
+
+std::size_t Graph::deleteUnconnectedNodes( const Node& node )
+{
+	std::vector<vertex_descriptor> toRemove = _graph.getUnconnectedVertices( _graph.getVertexDescriptor( node.getName() ) );
+	BOOST_FOREACH( const vertex_descriptor nodeId, toRemove )
+	{
+		deleteNode( _graph.instance( nodeId ).getProcessNode() );
+	}
+	return toRemove.size();
+}
+
+void Graph::clear()
+{
+	_graph.clear();
+	_nodesMap.clear();
+	_instanceCount.clear();
 }
 
 void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr )
@@ -357,10 +376,64 @@ bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes
 	return procGraph.process( memoryCache );
 }
 
+std::vector<const Graph::Node*> Graph::getNodes() const
+{
+	std::vector<const Graph::Node*> nodes;
+	nodes.reserve( getNodesMap().size() );
+	for( NodeMap::const_iterator it = getNodesMap().cbegin(), itEnd = getNodesMap().cend();
+	     it != itEnd;
+	     ++it )
+	{
+		nodes.push_back( it->second );
+	}
+	return nodes;
+}
+
+std::vector<Graph::Node*> Graph::getNodes()
+{
+	std::vector<Graph::Node*> nodes;
+	nodes.reserve( getNodesMap().size() );
+	for( NodeMap::iterator it = getNodesMap().begin(), itEnd = getNodesMap().end();
+	     it != itEnd;
+	     ++it )
+	{
+		nodes.push_back( it->second );
+	}
+	return nodes;
+}
+
+std::vector<Graph::Node*> Graph::getConnectedNodes( const Node& node )
+{
+	std::vector<Node*> connectedNodes;
+	std::vector<vertex_descriptor> toRemove = _graph.getConnectedVertices( _graph.getVertexDescriptor( node.getName() ) );
+	connectedNodes.reserve( toRemove.size() );
+	
+	BOOST_FOREACH( const vertex_descriptor nodeId, toRemove )
+	{
+		connectedNodes.push_back( &_graph.instance( nodeId ).getProcessNode() );
+	}
+	
+	return connectedNodes;
+}
+
+std::vector<Graph::Node*> Graph::getUnconnectedNodes( const Node& node )
+{
+	std::vector<Node*> unconnectedNodes;
+	std::vector<vertex_descriptor> toRemove = _graph.getUnconnectedVertices( _graph.getVertexDescriptor( node.getName() ) );
+	unconnectedNodes.reserve( toRemove.size() );
+	
+	BOOST_FOREACH( const vertex_descriptor nodeId, toRemove )
+	{
+		unconnectedNodes.push_back( &_graph.instance( nodeId ).getProcessNode() );
+	}
+	
+	return unconnectedNodes;
+}
+
 std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
 {
 	std::vector<Node*> selectedNodes;
-	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
+	for( NodeMap::iterator it = getNodesMap().begin(), itEnd = getNodesMap().end();
 	     it != itEnd;
 	     ++it )
 	{
@@ -382,7 +455,7 @@ std::vector<Graph::Node*> Graph::getNodesByContext( const std::string& context )
 std::vector<Graph::Node*> Graph::getNodesByPlugin( const std::string& pluginId )
 {
 	std::vector<Node*> selectedNodes;
-	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
+	for( NodeMap::iterator it = getNodesMap().begin(), itEnd = getNodesMap().end();
 	     it != itEnd;
 	     ++it )
 	{

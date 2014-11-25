@@ -13,4 +13,8 @@
 %include "ThreadEnv.i"
 %include "Node.i"
 %include "OverlayInteract.i"
+%include "io.i"
+%include "thumbnail/ThumbnailDiskCache.i"
+%include "Callback.i"
+%include <tuttle/common/utils/Formatter.i>
 

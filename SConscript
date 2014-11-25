@@ -53,12 +53,19 @@ SConscript(
 			], accept=['SConscript'] ) +
 		['libraries/tuttle/SConscript'] +
 		project.scanFiles( [
-				'plugins',
+				# Generators are included first,
+				# as some other plugins use them for tests.
+				'plugins/image/generator',
+				'plugins/image/Dummy',
+				'plugins/image/io',
+				'plugins/image/process',
+				'plugins/param',
+				'plugins/private',
 				'applications',
 				'libraries/tuttle/tests',
 				'libraries/tuttle/pyTest',
 				'doc',
-			], accept=['SConscript'] )
+			], accept=['SConscript'])
 	)
 
 

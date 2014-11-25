@@ -229,7 +229,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 	}
 	#endif
 
-	_pluginDirs.push_back( dir.c_str() );
+	_pluginDirs.push_back( dir );
 
 	#if defined ( UNIX )
 	while( dirent * de = readdir( d ) )
@@ -261,7 +261,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 
 			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
 			{
-				TUTTLE_LOG_TRACE( "Found binary not in cache: " << quotes(binpath) );
+				TUTTLE_LOG_TRACE( "Binary does not exist in the cache: " << quotes(binpath) );
 				try
 				{
 					// Creating the binary may throw, if there are some missing
@@ -275,7 +275,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 					setDirty();  // the cache has to be rewrite
 					_knownBinFiles.insert( binpath );
 					
-					TUTTLE_LOG_TRACE( quotes(barename) << " constains " << pb->getNPlugins() <<  " plugins." );
+					TUTTLE_LOG_TRACE( quotes(barename) << " contains " << pb->getNPlugins() <<  " plugins." );
 					
 					// Now, if there is an error that's because the plugin
 					// is not supported by the host.
@@ -408,46 +408,56 @@ void OfxhPluginCache::scanPluginFiles()
 		{
 			const bool binChanged = i->hasBinaryChanged();
 
-			// the binary was in the cache, but the binary has changed and thus we need to reload
-			if( binChanged )
+			try
 			{
-				i->loadPluginInfo( this );
-				setDirty();
-			}
-
-			for( int j = 0; j < i->getNPlugins(); ++j )
-			{
-				OfxhPlugin& plug                   = i->getPlugin( j );
-				try
+				// the binary was in the cache, but the binary has changed and thus we need to reload
+				if( binChanged )
 				{
-					APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
+					i->loadPluginInfo( this );
+					setDirty();
+				}
 
-					if( binChanged )
+				for( int j = 0; j < i->getNPlugins(); ++j )
+				{
+					OfxhPlugin& plug                   = i->getPlugin( j );
+					try
 					{
-						api.loadFromPlugin( plug ); // may throw
+						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
+
+						if( binChanged )
+						{
+							api.loadFromPlugin( plug ); // may throw
+						}
+
+						std::string reason;
+
+						if( api.pluginSupported( plug, reason ) )
+						{
+							addPlugin( &plug );
+							api.confirmPlugin( plug );
+						}
+						else
+						{
+							TUTTLE_LOG_INFO(
+								"Ignoring plugin " << quotes(plug.getIdentifier()) <<
+								": unsupported, " << reason << "." );
+						}
 					}
-
-					std::string reason;
-
-					if( api.pluginSupported( plug, reason ) )
+					catch(...)
 					{
-						addPlugin( &plug );
-						api.confirmPlugin( plug );
-					}
-					else
-					{
-						TUTTLE_LOG_WARNING(
+						TUTTLE_LOG_INFO(
 							"Ignoring plugin " << quotes(plug.getIdentifier()) <<
-							": unsupported, " << reason << "." );
+							": loading error." );
+						TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
 					}
 				}
-				catch(...)
-				{
-					TUTTLE_LOG_WARNING(
-						"Ignoring plugin " << quotes(plug.getIdentifier()) <<
-						": loading error." );
-					
-				}
+			}
+			catch(...)
+			{
+				TUTTLE_LOG_INFO(
+					"Ignoring ofx bundle " << quotes(i->getBundlePath()) <<
+					": loading error." );
+				TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
 			}
 
 			++i;

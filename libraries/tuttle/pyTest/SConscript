@@ -1,7 +1,7 @@
 Import( 'project', 'libs' )
 
 project.ScriptTests(
-		target = project.getDirs(2),
+		target = 'tuttle',
 		dirs = ['.'],
 		libraries = [libs.pyTuttle],
 		procEnvFlags = {

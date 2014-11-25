@@ -10,7 +10,9 @@ def setUp():
 def testBrowsePlugins():
 	pluginCache = tuttle.core().getPluginCache()
 
-	print([p for p in pluginCache.getPluginPath()])
+	pluginPath = pluginCache.getPluginPath()
+	print([p for p in pluginPath])
+#	print([p for p in pluginCache.getPluginPath()])  # BUG binding: TODO
 	print([p.getIdentifier() for p in pluginCache.getPlugins()])
 
 
@@ -21,12 +23,3 @@ def testBrowseIEPlugins():
 	print([p.getDescriptor().getLabel() for p in pluginCache.getPlugins()])
 	print([p.getDescriptor().getLongLabel() for p in pluginCache.getPlugins()])
 	print([p.getDescriptor().getPluginGrouping() for p in pluginCache.getPlugins()])
-
-#def testPluginInfos():
-#	g = tuttle.Graph()
-#	p = g.createNode( plugin )
-#	node = p.asImageEffectNode()
-#
-#	grouping = node.getProperties().fetchProperty("OfxImageEffectPluginPropGrouping").getStringValue(0)
-#	grouping = grouping.split('/')
-#

@@ -2,6 +2,7 @@
 #include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
+#include <tuttle/common/utils/applicationPath.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -266,7 +267,7 @@ void displayHelp(bpo::options_description &desc)
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_LOG_INFO( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 	TUTTLE_LOG_INFO( "" );
 	TUTTLE_LOG_INFO( color->_blue << "NAME" << color->_std);
 	TUTTLE_LOG_INFO( color->_green << "\tsam-diff - compute difference between 2 images/sequences" << color->_std );
@@ -303,7 +304,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Formatter> formatter( Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 
     try {
@@ -434,6 +435,8 @@ int main( int argc, char** argv )
 			hasRange = (range.size() == 2);
 		}
 
+		const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+		core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 		core().preload();
 		Graph graph;
 		

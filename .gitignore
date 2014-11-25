@@ -14,6 +14,7 @@ Thumbs.db # Windows
 # removing dist folder : folder receiving the compilation products
 /dist
 /.dist
+/build*
 
 # datas or personal files
 /data

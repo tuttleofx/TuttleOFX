@@ -3,7 +3,7 @@
 
 #include "OverlayData.hpp"
 
-#include <boost/atomic.hpp>
+#include <tuttle/common/atomic.hpp>
 
 namespace tuttle {
 namespace plugin {

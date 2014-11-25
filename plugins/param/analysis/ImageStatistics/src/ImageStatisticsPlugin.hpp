@@ -28,14 +28,18 @@ public:
 
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 
-	ImageStatisticsProcessParams getProcessParams( const OfxRectI& srcRod ) const;
+	ImageStatisticsProcessParams getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const;
 
 public:
+	OFX::BooleanParam* _paramRestrictToRegion;
+	
 	OFX::ChoiceParam* _paramCoordinateSystem;
 	OFX::Double2DParam* _paramRectCenter;
 	OFX::Double2DParam* _paramRectSize;
 	OFX::ChoiceParam* _paramChooseOutput;
 
+	OFX::IntParam* _paramOutputNbPixels;
+	
 	OFX::RGBAParam* _paramOutputAverage;
 	OFX::RGBAParam* _paramOutputVariance;
 	OFX::RGBAParam* _paramOutputChannelMin;
@@ -46,12 +50,15 @@ public:
 	OFX::RGBAParam* _paramOutputSkewness;
 
 	OFX::Double3DParam* _paramOutputAverageHSL;
+	OFX::Double3DParam* _paramOutputVarianceHSL;
 	OFX::Double3DParam* _paramOutputChannelMinHSL;
 	OFX::Double3DParam* _paramOutputChannelMaxHSL;
 	OFX::Double3DParam* _paramOutputLuminosityMinHSL;
 	OFX::Double3DParam* _paramOutputLuminosityMaxHSL;
 	OFX::Double3DParam* _paramOutputKurtosisHSL;
 	OFX::Double3DParam* _paramOutputSkewnessHSL;
+
+    OFX::Clip *_clipMask; ///< Source image clip
 };
 
 }

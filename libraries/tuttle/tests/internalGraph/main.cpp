@@ -5,7 +5,7 @@
 #include <tuttle/host/graph/InternalGraph.hpp>
 
 #define BOOST_TEST_MODULE internalGraph_tests
-#include <boost/test/unit_test.hpp>
+#include <tuttle/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE( tuttle_internalGraph_suite )
 

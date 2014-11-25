@@ -51,6 +51,19 @@ void INode::clearProcessDataAtTime()
 	_dataAtTime.clear();
 }
 
+void INode::setBeforeRenderCallback( Callback *cb )
+{
+    _beforeRenderCallback = cb;
+}
+
+void INode::beforeRenderCallback( INode &node, DataAtTime &data )
+{
+    if( _beforeRenderCallback )
+    {
+        _beforeRenderCallback->call(node, data._time);
+    }
+}
+
 INode::Data& INode::getData()
 {
 	if( !_data )

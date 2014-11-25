@@ -1,6 +1,7 @@
 #include <sam/common/utility.hpp>
 #include <sam/common/options.hpp>
 
+#include <tuttle/host/version.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -124,7 +125,7 @@ int sammvcp(int argc, char** argv)
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Formatter> formatter( Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 	
 	sequenceParser::EDetection detectionOptions = (sequenceParser::eDetectionSequenceNeedAtLeastTwoFiles | sequenceParser::eDetectionIgnoreDotFile | sequenceParser::eDetectionSequenceFromFilename);
@@ -250,7 +251,7 @@ int sammvcp(int argc, char** argv)
 		if( isPathSizeTooSmall && !vm.count( kHelpOptionLongName ) )
 			TUTTLE_LOG_ERROR( "Two sequences and/or directories must be specified." );
 		
-		TUTTLE_COUT( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_COUT( "" );
 #ifndef SAM_MOVEFILES
 		TUTTLE_COUT( color->_blue <<"NAME" << color->_std );

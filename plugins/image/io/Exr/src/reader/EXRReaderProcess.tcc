@@ -10,6 +10,8 @@
 #include <terry/numeric/assign.hpp>
 
 #include <terry/globals.hpp>
+#include <terry/draw/fill.hpp>
+#include <terry/numeric/init.hpp>
 #include <terry/basic_colors.hpp>
 #include <terry/openexr/half.hpp>
 
@@ -75,47 +77,13 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	using namespace terry;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	
+
+	// TODO: Exr can contain a background color
+	terry::draw::fill_pixels(this->_dstView, terry::numeric::pixel_zeros<Pixel>());
+
 	try
 	{
-		View dst = this->_dstView;
-		
-		//TUTTLE_LOG_VAR( TUTTLE_INFO, _params._fileComponents );
-		switch( _params._fileComponents )
-		{
-			case 1:
-			{
-				gray32f_image_t img( this->_dstView.width(), this->_dstView.height() );
-				typename gray32f_image_t::view_t dv( view( img ) );
-				terry::algorithm::transform_pixels( dv, terry::numeric::pixel_assigns_color_t<gray32f_pixel_t>( gray32f_pixel_t( 0.0 ) ) );
-				readImage( dv, _params._filepath );
-				copy_and_convert_pixels( dv, dst );
-				break;
-			}
-			case 3:
-			{
-				rgb32f_image_t img( this->_dstView.width(), this->_dstView.height() );
-				typename rgb32f_image_t::view_t dv( view( img ) );
-				terry::algorithm::transform_pixels( dv, terry::numeric::pixel_assigns_color_t<rgb32f_pixel_t>( rgb32f_pixel_t( 0.0, 0.0, 0.0 ) ) );
-				readImage( dv, _params._filepath );
-				copy_and_convert_pixels( dv, dst );
-				break;
-			}
-			case 4:
-			{
-				rgba32f_image_t img( this->_dstView.width(), this->_dstView.height() );
-				typename rgba32f_image_t::view_t dv( view( img ) );
-				terry::algorithm::transform_pixels( dv, terry::numeric::pixel_assigns_color_t<rgba32f_pixel_t>( rgba32f_pixel_t( 0.0, 0.0, 0.0, 0.0 ) ) );
-				readImage( dv, _params._filepath );
-				copy_and_convert_pixels( dv, dst );
-				break;
-			}
-			default:
-			{
-				BOOST_THROW_EXCEPTION( exception::Unsupported()
-				    << exception::user( "ExrWriter: file channel not supported" ) );
-			}
-		}
+		readImage( _params._filepath );
 	}
 	catch( boost::exception& e )
 	{
@@ -132,11 +100,8 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	}
 }
 
-/**
- */
 template<class View>
-template<class DView>
-void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
+void EXRReaderProcess<View>::readImage( const std::string& filepath )
 {
 	using namespace boost;
 	using namespace mpl;
@@ -145,60 +110,34 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 
 	EXRReaderProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 	Imf::InputFile in( filepath.c_str() );
-	Imf::FrameBuffer frameBuffer;
-	const Imf::Header& header = in.header();
-	const Imath::Box2i& dw    = header.dataWindow();
-	typename Imath::V2i imageDims = dw.size();
-	imageDims.x++;  // Width
-	imageDims.y++;  // Height
 	
-	// Get number of output components
-	switch( (EParamReaderChannel)params._outComponents )
+	int nbChannels = std::min(_params._fileNbChannels, int(num_channels<View>::type::value));
+	nbChannels = std::min(nbChannels, _params._userNbComponents);
+
+	if( nbChannels == 0 )
 	{
-		case eParamReaderChannelGray:
-		{
-			// Copy 1 channel seletected by alpha channel ( index 3 )
-			channelCopy( in, frameBuffer, params, dst, imageDims.x, imageDims.y, 1 );
-			break;
-		}
-		case eParamReaderChannelRGB:
-		{
-			// Copy 3 channels starting by the first channel (0, 1, 2)
-			channelCopy( in, frameBuffer, params, dst, imageDims.x, imageDims.y, 3 );
-			break;
-		}
-		case eParamReaderChannelRGBA:
-		{
-			// Copy 4 channels starting by the first channel (0, 1, 2, 3)
-			channelCopy( in, frameBuffer, params, dst, imageDims.x, imageDims.y, 4 );
-			break;
-		}
-		case eParamReaderChannelAuto:
-		{
-			if( ! ( _params._fileComponents == 1 || _params._fileComponents == 3 || _params._fileComponents == 4 ) )
-			{
-				std::string msg = "EXR: not support ";
-				msg += _params._fileComponents;
-				msg += " channels.";
-				BOOST_THROW_EXCEPTION( exception::FileNotExist()
-									   << exception::user( msg ) );
-			}
-			
-			channelCopy( in, frameBuffer, params, dst, imageDims.x, imageDims.y, _params._fileComponents );
-		}
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+							   << exception::user() + "EXR: doesn't support " + _params._fileNbChannels + " channels." );
 	}
+
+	channelCopy( in, params, this->_dstView, nbChannels );
 }
 
 template<class View>
 template< typename PixelType >
-void EXRReaderProcess<View>::initExrChannel( DataVector& data, Imf::Slice& slice, Imf::FrameBuffer& frameBuffer, Imf::PixelType pixelType, std::string channelID, const Imath::Box2i& dw, int w, int h )
+void EXRReaderProcess<View>::initExrChannel( DataVector& data, Imf::Slice& slice, Imf::FrameBuffer& frameBuffer, Imf::PixelType pixelType, std::string channelID, const Imath::Box2i& dw )
 {
-	data.resize( sizeof( PixelType ) * w * h );
+	Imath::V2i s = dw.size();
+	s.x += 1;
+	s.y += 1;
+	
+	const std::size_t allocSize = sizeof( PixelType ) * s.x * s.y;
+	data.resize( allocSize );
 	
 	slice.type = pixelType;
-	slice.base = (char*) (&data[0] - sizeof( PixelType ) * ( dw.min.x + dw.min.y * w ) );
-	slice.xStride   = sizeof( PixelType ) * 1;
-	slice.yStride   = sizeof( PixelType ) * w;
+	slice.base = (char*) (&data[0] - sizeof( PixelType ) * ( dw.min.x + dw.min.y * s.x ) );
+	slice.xStride   = sizeof( PixelType );
+	slice.yStride   = sizeof( PixelType ) * s.x;
 	slice.xSampling = 1;
 	slice.ySampling = 1;
 	slice.fillValue = 1.0;
@@ -207,36 +146,36 @@ void EXRReaderProcess<View>::initExrChannel( DataVector& data, Imf::Slice& slice
 }
 
 template<class View>
-template<class DView>
-void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer, const EXRReaderProcessParams& params,
-										  DView& dst, int w, int h, size_t nc )
+void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, const EXRReaderProcessParams& params, View& dst, const std::size_t nbChannels )
 {
 	using namespace boost::gil;
+
 	const Imf::Header& header = input.header();
-	const Imath::Box2i& dw    = header.dataWindow();
+	const Imath::Box2i& dataWindow = header.dataWindow();
 
-	std::vector<DataVector> data(nc);
-	std::vector<Imf::Slice> slices(nc);
+	Imf::FrameBuffer frameBuffer;
+	std::vector<DataVector> data(nbChannels);
+	std::vector<Imf::Slice> slices(nbChannels);
 
-	for( size_t layer = 0; layer < nc; ++layer )
+	for( size_t channelIndex = 0; channelIndex < nbChannels; ++channelIndex )
 	{
 		const Imf::ChannelList& cl( header.channels() );
-		const Imf::Channel& ch = cl[ getChannelName( layer ).c_str() ];
+		const Imf::Channel& ch = cl[ getChannelName( channelIndex ).c_str() ];
 		switch( ch.type )
 		{
 			case Imf::HALF:
 			{
-				initExrChannel<half>( data[layer], slices[layer], frameBuffer, ch.type, getChannelName( layer ), dw, w, h );
+				initExrChannel<half>( data[channelIndex], slices[channelIndex], frameBuffer, ch.type, getChannelName( channelIndex ), dataWindow );
 				break;
 			}
 			case Imf::FLOAT:
 			{
-				initExrChannel<float>( data[layer], slices[layer], frameBuffer, ch.type, getChannelName( layer ), dw, w, h );
+				initExrChannel<float>( data[channelIndex], slices[channelIndex], frameBuffer, ch.type, getChannelName( channelIndex ), dataWindow );
 				break;
 			}
 			case Imf::UINT:
 			{
-				initExrChannel<boost::uint32_t>( data[layer], slices[layer], frameBuffer, ch.type, getChannelName( layer ), dw, w, h );
+				initExrChannel<boost::uint32_t>( data[channelIndex], slices[channelIndex], frameBuffer, ch.type, getChannelName( channelIndex ), dataWindow );
 				break;
 			}
 			case Imf::NUM_PIXELTYPES:
@@ -249,25 +188,25 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffe
 	}
 	
 	input.setFrameBuffer( frameBuffer );
-	input.readPixels( dw.min.y, dw.max.y );
+	input.readPixels( dataWindow.min.y, dataWindow.max.y );
 
-	for( size_t layer = 0; layer < nc; ++layer )
+	for( size_t channelIndex = 0; channelIndex < nbChannels; ++channelIndex )
 	{
-		switch( slices[layer].type )
+		switch( slices[channelIndex].type )
 		{
 			case Imf::HALF:
 			{
-				sliceCopy<DView, gray16h_view_t>( input, &slices[layer], dst, params, w, h, layer );
+				sliceCopy<gray16h_view_t>( input, &slices[channelIndex], dst, params, channelIndex );
 				break;
 			}
 			case Imf::FLOAT:
 			{
-				sliceCopy<DView, gray32f_view_t>( input, &slices[layer], dst, params, w, h, layer );
+				sliceCopy<gray32f_view_t>( input, &slices[channelIndex], dst, params, channelIndex );
 				break;
 			}
 			case Imf::UINT:
 			{
-				sliceCopy<DView, gray32_view_t>( input, &slices[layer], dst, params, w, h, layer );
+				sliceCopy<gray32_view_t>( input, &slices[channelIndex], dst, params, channelIndex );
 				break;
 			}
 			case Imf::NUM_PIXELTYPES:
@@ -280,55 +219,65 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input, Imf::FrameBuffe
 	}
 }
 
+Imath::Box2i boxIntersection( const Imath::Box2i& a, const Imath::Box2i& b )
+{
+	Imath::Box2i res;
+	
+	res.min.x = std::max( a.min.x, b.min.x );
+	res.min.y = std::max( a.min.y, b.min.y );
+	
+	res.max.x = std::min( a.max.x, b.max.x );
+	res.max.y = std::min( a.max.y, b.max.y );
+	
+	return res;
+}
+
 template<class View>
-template<class DView, typename workingView>
-void EXRReaderProcess<View>::sliceCopy( Imf::InputFile& input, const Imf::Slice* slice, DView& dst, const EXRReaderProcessParams& params, int w, int h, int n )
+template<typename workingView>
+void EXRReaderProcess<View>::sliceCopy( Imf::InputFile& input, const Imf::Slice* slice, View& dst, const EXRReaderProcessParams& params, const std::size_t channelIndex )
 {
 	using namespace terry;
-	const Imath::Box2i& dataw    = input.header().dataWindow();
-	const Imath::Box2i& dispw    = input.header().displayWindow();
-	
-	workingView vw( interleaved_view( w, h, ( typename workingView::value_type*)slice->base, w * sizeof( typename workingView::value_type ) ) );
-	workingView subView;
-	
+	const Imath::Box2i dataWindow = input.header().dataWindow();
+	Imath::V2i dataWindowSize = dataWindow.size();
+	dataWindowSize.x += 1;
+	dataWindowSize.y += 1;
+
+	if( dataWindowSize.x <= 0 || dataWindowSize.y <= 0 )
+		return;
+
+	workingView dataView( interleaved_view( dataWindowSize.x, dataWindowSize.y, ( typename workingView::value_type*)slice->base, dataWindowSize.x * sizeof( typename workingView::value_type ) ) );
+
 	if( params._displayWindow )
 	{
-		size_t xoffsetData = dataw.min.x + std::max( 0, dispw.min.x );
-		size_t yoffsetData = dataw.min.y + std::max( 0, dispw.min.y );
-		size_t xoffsetDisp = dataw.min.x - std::min( 0, dispw.min.x );
-		size_t yoffsetDisp = dataw.min.y - std::min( 0, dispw.min.y );
+		const Imath::Box2i displayWindow = input.header().displayWindow();
+		const Imath::Box2i croppedDisplayWindow = boxIntersection( displayWindow, dataWindow );
+		Imath::V2i croppedDisplayWindowSize = croppedDisplayWindow.size();
+		croppedDisplayWindowSize.x += 1;
+		croppedDisplayWindowSize.y += 1;
 		
-		size_t wView = std::min( dataw.max.x, dispw.max.x ) - std::max( dataw.min.x, dispw.min.x ) + 1;
-		size_t hView = std::min( dataw.max.y, dispw.max.y ) - std::max( dataw.min.y, dispw.min.y ) + 1;
-
-		TUTTLE_TLOG_VAR4( TUTTLE_WARNING, dataw.min.x, dataw.min.y, dataw.max.x, dataw.max.y );
-		TUTTLE_TLOG_VAR4( TUTTLE_WARNING, dispw.min.x, dispw.min.y, dispw.max.x, dispw.max.y );
-		TUTTLE_TLOG_VAR4( TUTTLE_WARNING, xoffsetData, yoffsetData, xoffsetDisp, yoffsetDisp );
-		TUTTLE_TLOG_VAR2( TUTTLE_WARNING, wView, hView );
+		if( croppedDisplayWindowSize.x <= 0 || croppedDisplayWindowSize.y <= 0 )
+			return;
 		
-		subView = subimage_view( vw,
-								 xoffsetData,
-								 yoffsetData,
-								 wView,
-								 hView
+		workingView dataSubView = subimage_view( dataView,
+								 croppedDisplayWindow.min.x,
+								 croppedDisplayWindow.min.y,
+								 croppedDisplayWindowSize.x,
+								 croppedDisplayWindowSize.y
 								 );
 
-		DView dstView = subimage_view( dst,
-								 xoffsetDisp,
-								 yoffsetDisp,
-								 wView,
-								 hView
+		View dstSubView = subimage_view( dst,
+								 croppedDisplayWindow.min.x - displayWindow.min.x,
+								 croppedDisplayWindow.min.y - displayWindow.min.y,
+								 croppedDisplayWindowSize.x,
+								 croppedDisplayWindowSize.y
 								 );
 		
-		if( wView > 0 && hView > 0 )
-		{
-			copy_and_convert_pixels( subView, nth_channel_view( dstView, n ) );
-		}
+		copy_and_convert_pixels( dataSubView, nth_channel_view( dstSubView, channelIndex ) );
 	}
 	else
 	{
-		subView = subimage_view( vw, dataw.min.x, dataw.min.y, w, h );
-		copy_and_convert_pixels( subView, nth_channel_view( dst, n ) );
+		workingView dataSubView = subimage_view( dataView, dataWindow.min.x, dataWindow.min.y, dataWindowSize.x, dataWindowSize.y );
+		copy_and_convert_pixels( dataSubView, nth_channel_view( dst, channelIndex ) );
 	}
 }
 

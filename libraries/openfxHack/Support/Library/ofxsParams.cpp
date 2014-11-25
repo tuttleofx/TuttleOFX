@@ -751,6 +751,8 @@ PushButtonParamDescriptor::PushButtonParamDescriptor( const std::string& name, O
 /** @brief hidden constructor */
 ParametricParamDescriptor::ParametricParamDescriptor( const std::string& name, OfxPropertySetHandle props )
     : ParamDescriptor( name, eParametricParam, props )
+	, _ofxParamHandle(NULL)
+	, _paramSet(NULL)
 {
 }
 
@@ -2475,7 +2477,7 @@ void ParametricParam::setNthControlPoints( const int curveIndex,
 void ParametricParam::setNthControlPoints( const int curveIndex,
                                        const OfxTime time,
                                         const int nthCtl,
-                                        const std::pair<double, double> ctrlPoint,
+                                        const std::pair<double, double>& ctrlPoint,
                                         const bool addAnimationKey )
 {
     setNthControlPoints( curveIndex,

@@ -111,5 +111,8 @@ NodeInit& NodeInit::setParamExp( const std::string& paramName, const std::string
 	return *this;
 }
 
+
+void NodeInit::setBeforeRenderCallback(Callback *cb){_node->setBeforeRenderCallback(cb);}
+
 }
 }

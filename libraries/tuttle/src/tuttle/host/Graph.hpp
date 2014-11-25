@@ -19,8 +19,6 @@
 #include <tuttle/common/utils/global.hpp>
 
 #include <boost/ptr_container/ptr_map.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/exception/all.hpp>
 
 #include <stdexcept>
 #include <string>
@@ -118,6 +116,20 @@ public:
 	 * This will remove all the connections.
 	 */
 	void deleteNode( Node& node );
+	
+	/**
+	 * @brief Delete all unconnected nodes from the current graph.
+	 * @param node: delete all unconnected nodes from this node.
+	 * @return the number of nodes deleted.
+	 */
+	std::size_t deleteUnconnectedNodes( const Node& node );
+	
+	/**
+	 * @brief Delete all nodes from the current graph.
+	 * This will remove all the connections.
+	 */
+	void clear();
+	
 	/**
 	 * @brief Connect nodes (using there unique name in this graph).
 	 */
@@ -170,13 +182,26 @@ public:
 	
 public:
 	inline const InternalGraphImpl& getGraph() const { return _graph; }
-	inline const NodeMap&           getNodes() const { return _nodes; }
-	inline NodeMap&                 getNodes()       { return _nodes; }
+
+	inline const NodeMap& getNodesMap() const { return _nodesMap; }
+	inline NodeMap& getNodesMap() { return _nodesMap; }
+
+	std::vector<const Node*> getNodes() const;
+	std::vector<Node*> getNodes();
+
+	std::vector<Node*> getConnectedNodes( const Node& node );
+	std::vector<Node*> getUnconnectedNodes( const Node& node );
+
+	inline std::size_t getNbNodes() const { return _nodesMap.size(); }
+	inline std::size_t getNbConnections() const { return _graph.getEdgeCount(); }
+	
 	std::vector<Node*>         getNodesByContext( const std::string& type );
 	std::vector<Node*>         getNodesByPlugin( const std::string& pluginId );
-	//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
-	inline const Node&             getNode( const std::string& name ) const { return _nodes.at( name ); }
-	inline Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
+
+	//	const Node& getNode( const std::string& name ) const { return getNodesMap()[name]; }
+	inline const Node& getNode( const std::string& name ) const { return _nodesMap.at( name ); }
+	inline Node& getNode( const std::string& name ) { return getNodesMap().at( name ); }
+
 	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
 public:
@@ -190,7 +215,7 @@ public:
 
 private:
 	InternalGraphImpl _graph;
-	NodeMap _nodes;
+	NodeMap _nodesMap;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
 
 private:

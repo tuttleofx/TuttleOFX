@@ -5,9 +5,9 @@
 
 #include <ofxCore.h>
 
-#include <tuttle/common/utils/formatters.hpp>
+#include <tuttle/common/utils/Formatter.hpp>
 
-#include <boost/atomic.hpp>
+#include <tuttle/common/atomic.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <limits>
@@ -21,12 +21,12 @@ class IProgressHandle
 public:
 	virtual ~IProgressHandle() = 0;
 
-	virtual void beginSequence() = 0;
-	virtual void beginFrame() = 0;
-	virtual void setupAtTime() = 0;
-	virtual void processAtTime() = 0;
-	virtual void endFrame() = 0;
-	virtual void endSequence() = 0;
+	virtual void beginSequence() {}
+	virtual void beginFrame() {}
+	virtual void setupAtTime() {}
+	virtual void processAtTime() {}
+	virtual void endFrame() {}
+	virtual void endSequence() {}
 };
 
 struct TimeRange
@@ -107,6 +107,8 @@ public:
 	{
 		_timeRanges = other._timeRanges;
 
+		_begin = other._begin;
+		_end = other._end;
 		_renderScale = other._renderScale;
 		_continueOnError = other._continueOnError;
 		_continueOnMissingFile = other._continueOnMissingFile;
@@ -222,7 +224,7 @@ public:
 	 */
 	This& setVerboseLevel( const EVerboseLevel level )
 	{
-		tuttle::common::formatters::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
+		tuttle::common::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
 		return *this;
 	}
 	

@@ -3,6 +3,7 @@
 
 #include <tuttle/host/Core.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
+#include <tuttle/common/utils/applicationPath.hpp>
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
@@ -237,7 +238,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	
-	formatters::Formatter::get();
+	Formatter::get();
 	boost::shared_ptr<Color> color( Color::get() );
 	
 	std::vector<std::string> plugins;
@@ -320,7 +321,7 @@ int main( int argc, char** argv )
 
 	if( vm.count(kHelpOptionLongName) )
 	{
-		TUTTLE_COUT( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_COUT( "" );
 		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
 		TUTTLE_COUT( color->_green << "\tsam-plugins - show informations about OpenFX plugins" << color->_std );
@@ -353,7 +354,10 @@ int main( int argc, char** argv )
 	{
 		bal::split( filters, vm[kFilterOptionLongName].as<std::string>(), bal::is_any_of(","));
 	}
-	
+
+	const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+	tth::core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
+
 	if( vm.count(kAllOptionLongName) | (plugins.size() == 0) )
 	{
 		tth::core().preload();

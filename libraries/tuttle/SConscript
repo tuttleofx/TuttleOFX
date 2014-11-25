@@ -87,10 +87,8 @@ pyTuttle = project.pySwigBinding(
 		libraries = [libs.tuttleHost, libs.python_numpy],
     )
 
-
 pythonInstallDir = project.inOutputDir('python')
 pythonFiles = project.scanFiles("python", accept=['*.py'])
 pythonInstall = Install(pythonInstallDir, pythonFiles)
 
-# project.env.
-Requires(pyTuttle, pythonInstall)
+project.env.Alias('all', pythonInstall)

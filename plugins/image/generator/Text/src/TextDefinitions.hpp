@@ -8,7 +8,6 @@ namespace plugin {
 namespace text {
 
 static const std::string kParamText          = "text";
-static const std::string kParamIsExpression  = "expression";
 
 static const std::string kParamFont          = "font";
 static const std::string kParamFontPath      = "fontFile";

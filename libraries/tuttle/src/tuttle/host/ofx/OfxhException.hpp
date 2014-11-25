@@ -27,6 +27,7 @@ OfxStatus _stat;
 public:
 	explicit OfxhException( const std::string& what )
 		: ::boost::exception()
+		, _stat( kOfxStatErrUnknown )
 	{
 		*this << ::tuttle::exception::dev() + what;
 	}

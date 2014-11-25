@@ -22,13 +22,14 @@ class OfxhImageEffectPluginCache : public APICache::OfxhPluginAPICacheI
 {
 public:
 	typedef OfxhImageEffectPluginCache This;
+	typedef std::map<std::string, OfxhImageEffectPlugin*> MapPluginsByID;
 
 private:
 	/// all plugins
 	std::vector<OfxhImageEffectPlugin*> _plugins;
 
 	/// latest version of each plugin by ID
-	std::map<std::string, OfxhImageEffectPlugin*> _pluginsByID;
+	MapPluginsByID _pluginsByID;
 
 	/// latest minor version of each plugin by (ID,major)
 	std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*> _pluginsByIDMajor;
@@ -54,9 +55,7 @@ public:
 
 	const std::vector<OfxhImageEffectPlugin*>& getPlugins() const;
 
-	const std::map<std::string, OfxhImageEffectPlugin*>& getPluginsByID() const;
-
-	const std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*>& getPluginsByIDMajor() const { return _pluginsByIDMajor; }
+	const MapPluginsByID& getPluginsByID() const;
 
 	/// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
 	void loadFromPlugin( OfxhPlugin& p );

@@ -36,7 +36,7 @@ namespace common {
 #endif
 
 /*!
-	Returns the directory that contains the application executable.
+	Returns the absolute path to the application executable.
 
 	On Mac OS X this will point to the directory actually containing the
 	executable, which may be inside of an application bundle (if the

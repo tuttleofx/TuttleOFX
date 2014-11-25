@@ -17,22 +17,24 @@ InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos 
 	, _creatingSelection( false )
 	, _manipulator( NULL )
 	, _manipulatorColor( NULL )
+	, _hasSelection( false )
 {
+	_selectionRect.x1 = _selectionRect.y1 = _selectionRect.x2 = _selectionRect.y2 = .0;
 }
 
 InteractScene::~InteractScene()
 {}
 
-bool InteractScene::draw( const OFX::DrawArgs& args )
+bool InteractScene::draw( const OFX::DrawArgs& args ) const
 {
 	bool result = false;
 
 	result |= drawSelection( args );
 
-	IsActiveFunctorVector::iterator itActive = _isActive.begin();
-	ColorVector::iterator itColor = _colors.begin();
+	IsActiveFunctorVector::const_iterator itActive = _isActive.begin();
+	ColorVector::const_iterator itColor = _colors.begin();
 
-	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
+	for( InteractObjectsVector::const_iterator it = _objects.begin(), itEnd = _objects.end();
 	     it != itEnd;
 	     ++it, ++itActive, ++itColor )
 	{
@@ -273,7 +275,7 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 	return result;
 }
 
-bool InteractScene::drawSelection( const OFX::DrawArgs& args )
+bool InteractScene::drawSelection( const OFX::DrawArgs& args ) const
 {
 	bool result = false;
 	if( _creatingSelection )

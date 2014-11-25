@@ -19,6 +19,7 @@ public:
 	
 	void setTuttleHomePath( const boost::filesystem::path& home ) { _home = home; }
 	boost::filesystem::path getTuttleHomePath() const { return _home; }
+	std::string getTuttleHomeStr() const { return getTuttleHomePath().string(); }
 	
 	boost::filesystem::path getTuttleTempPath() const { return _temp; }
 	

@@ -1,6 +1,6 @@
 #include <iostream>
 #define BOOST_TEST_MODULE test_function
-#include <boost/test/unit_test.hpp>
+#include <tuttle/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 

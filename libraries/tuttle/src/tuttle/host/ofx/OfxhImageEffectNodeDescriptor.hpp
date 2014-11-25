@@ -32,7 +32,6 @@ protected:
 	ClipImageDescriptorMap _clips;        ///< clips descriptors by name
 	ClipImageDescriptorVector _clipsByOrder; ///< clip descriptors in order of declaration
 	mutable interact::OfxhInteractDescriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description @todo tuttle: remove mutable
-	int _built;
 
 private:
 	// private CC

@@ -8,6 +8,7 @@
 #include <sam/common/utility.hpp>
 
 #include <tuttle/common/exceptions.hpp>
+#include <tuttle/common/utils/applicationPath.hpp>
 
 #include <tuttle/host/attribute/expression.hpp>
 #include <tuttle/host/Graph.hpp>
@@ -32,7 +33,7 @@ void displayHelp( bpo::options_description &infoOptions, bpo::options_descriptio
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_COUT( std::left << color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_COUT( std::left << color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color->_blue << "NAME" << color->_std );
 	TUTTLE_COUT( color->_green << "\tsam do - A command line to execute a list of OpenFX nodes." << color->_std << std::endl );
@@ -119,10 +120,10 @@ void displayNodeHelp( std::string& nodeFullName, ttl::Graph::Node& currentNode, 
 	using namespace sam;
 	boost::shared_ptr<tuttle::common::Color>  color( tuttle::common::Color::get() );
 	
-	TUTTLE_COUT( color->_blue << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+	TUTTLE_COUT( color->_blue << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color->_blue << "NODE" << color->_std );
-	TUTTLE_COUT( color->_green << "\tsam do " << nodeFullName << " - OpenFX node." << color->_std );
+	TUTTLE_COUT( color->_green << "\t" << nodeFullName << " " << currentNode.getVersionStr() << color->_std );
 	TUTTLE_COUT( "" );
 	TUTTLE_COUT( color->_blue << "DESCRIPTION" << color->_std );
 	TUTTLE_COUT( color->_green << "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) << color->_std );
@@ -250,7 +251,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 	using namespace sam::samdo;
-	boost::shared_ptr<formatters::Formatter> formatter( formatters::Formatter::get() );
+	boost::shared_ptr<Formatter> formatter( Formatter::get() );
 	boost::shared_ptr<Color>                 color( Color::get() );
 
 	try
@@ -417,6 +418,8 @@ int main( int argc, char** argv )
 				// start to analyse and execute all sub-commands //
 				
 				// Load plugins
+				const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+				ttl::core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 				ttl::core().preload();
 
 				const std::string logFilename = ( ttl::core().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();

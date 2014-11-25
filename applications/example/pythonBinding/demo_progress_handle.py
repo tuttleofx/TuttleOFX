@@ -6,7 +6,6 @@ from sys import argv
 # Set Tuttle env
 import envTuttle
 from pyTuttle import tuttle
-import getBestPlugin
 
 # Preload pyTuttle
 tuttle.core().preload(False)
@@ -77,8 +76,8 @@ else:
     # Create nodes
     extIn = os.path.splitext(pathIn)[1]
     extOut = os.path.splitext(pathOut)[1]
-    readerInPlug = getBestPlugin.getBestReader(extIn)
-    writerOutPlug = getBestPlugin.getBestWriter(extOut)
+    readerInPlug = tuttle.getBestReader(extIn)
+    writerOutPlug = tuttle.getBestWriter(extOut)
     if len(readerInPlug) == 0:
         print "ERROR: unsupported input file : " + extIn
         exit()

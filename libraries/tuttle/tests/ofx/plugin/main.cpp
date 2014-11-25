@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE imageeffectplugin_tests
-#include <boost/test/unit_test.hpp>
+#include <tuttle/test/unit_test.hpp>
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/Core.hpp>
@@ -32,6 +32,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 
 	core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 	core().preload();
+
 	OfxhImageEffectPlugin* plugin = core().getImageEffectPluginById( "tuttle.invert" );
 
 	//	typedef boost::archive::binary_oarchive OArchive;

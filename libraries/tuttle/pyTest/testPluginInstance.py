@@ -5,8 +5,10 @@ import os
 
 from nose.tools import *
 
+
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testNodeInfos():
 	graph = tuttle.Graph()
@@ -17,30 +19,15 @@ def testNodeInfos():
 	node = graph.createNode( "tuttle.lensdistort" )
 	node = node.asImageEffectNode()
 
-	print("plugin: ", node.getName())
-	print("version: ", node.getVersion())
-	print("nbParams: ", node.getNbParams())
-	print("paramSet: ", node.getParamSet())
+	print("plugin:", node.getName())
+	print("version:", node.getVersion())
+	print("nbParams:", node.getNbParams())
+	print("paramSet:", node.getParamSet())
 	print([p for p in node.getParams()])
 	print([p.getName() for p in node.getParams()])
 
-	pref = tuttle.Preferences()
-	print(dir(pref))
-	testPath = pref.buildTuttleTestPathStr()
-
-	filenameSimple = os.path.join(testPath, "testNodeInfos_exportDot_simple.dot")
-	filenameDetailed = os.path.join(testPath, "testNodeInfos_exportDot_detailed.dot")
-	graph.exportDot(filenameSimple)
-	graph.exportDot(filenameDetailed, tuttle.Graph.eDotExportLevelDetailed)
-	
-	assert os.path.isfile(filenameSimple)
-	assert os.path.isfile(filenameDetailed)
-	
-	print("filenameSimple:", filenameSimple)
-	print("filenameDetailed:", filenameDetailed)
-	
-	os.remove(filenameSimple)
-	os.remove(filenameDetailed)
+	grouping = node.getProperties().fetchProperty("OfxImageEffectPluginPropGrouping").getStringValue()
+	print("group:", grouping.split('/'))
 
 
 def testParamInfos():
@@ -146,22 +133,22 @@ def testParamInfos():
 def testNodeComputeInfos():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" ).asImageEffectNode()
+	node = graph.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace=2 ).asImageEffectNode()
 
 	graph.setup()
 	td = node.getTimeDomain()
-	print("node timeDomain: ", td.min, td.max)
+	print("node timeDomain:", td.min, td.max)
 	assert td.min == 0.0
 	assert td.max == 100.0
 	# Duration is 101, the last frame is included
 	assert_equal((td.max-td.min)+1, 101.0)
 	
 	framerate = node.getOutputFrameRate()
-	print("framerate: ", framerate)
+	print("framerate:", framerate)
 	assert_equal(framerate, 25.0)
 	
 	pixelAspectRatio = node.getOutputPixelAspectRatio()
-	print("pixel aspect ratio: ", pixelAspectRatio)
+	print("pixel aspect ratio:", pixelAspectRatio)
 	assert_almost_equal(pixelAspectRatio, 16.0/15.0)
 	
 	# modify input SAR
@@ -169,14 +156,14 @@ def testNodeComputeInfos():
 	graph.setup()
 	
 	pixelAspectRatio = node.getOutputPixelAspectRatio()
-	print("pixel aspect ratio: ", pixelAspectRatio)
+	print("pixel aspect ratio:", pixelAspectRatio)
 	assert_equal(pixelAspectRatio, 2.0)
 
 
 def testPushButton():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.avwriter", filename=".tests/plop.avi", colorspace="bt709" )
+	node = graph.createNode( "tuttle.avwriter", filename=".tests/plop.avi", colorspace=2 )
 	node = node.asImageEffectNode()
 
 	render = node.getParam("render")

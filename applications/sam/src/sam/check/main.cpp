@@ -2,6 +2,7 @@
 #include <sam/common/options.hpp>
 
 #include <tuttle/host/Graph.hpp>
+#include <tuttle/common/utils/applicationPath.hpp>
 
 #include <detector.hpp>
 
@@ -119,7 +120,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 	using namespace sam;
 
-	formatters::Formatter::get();
+	Formatter::get();
 	boost::shared_ptr<Color> color( Color::get() );
 
 	std::vector<std::string> inputs;
@@ -214,7 +215,7 @@ int main( int argc, char** argv )
 	
 	if( vm.count(kHelpOptionLongName) || vm.count(kInputDirOptionLongName) == 0 )
 	{
-		TUTTLE_COUT( color->_blue  << "TuttleOFX project [" << kUrlTuttleofxProject << "]" << color->_std );
+		TUTTLE_COUT( color->_blue  << "TuttleOFX " TUTTLE_HOST_VERSION_STR " [" << kUrlTuttleofxProject << "]" << color->_std );
 		TUTTLE_COUT( "" );
 		TUTTLE_COUT( color->_blue  << "NAME" << color->_std );
 		TUTTLE_COUT( color->_green << "\tsam-check - detect black images in sequences" << color->_std );
@@ -257,6 +258,8 @@ int main( int argc, char** argv )
 
 	try
 	{
+		const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+		core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 		core().preload();
 		Graph graph;
 		Graph::Node& read = graph.createNode( readerId );

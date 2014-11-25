@@ -15,7 +15,8 @@ namespace ofx {
 
 struct OfxhPluginIdent
 {
-	OfxhPluginIdent() : _versionMinor( 0 )
+	OfxhPluginIdent()
+		: _versionMinor( 0 )
 		, _versionMajor( 0 ) {}
 	OfxhPluginIdent( const std::string& identifier, const std::string& rawId, int verMin, int verMax )
 		: _identifier( identifier )

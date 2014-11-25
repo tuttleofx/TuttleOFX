@@ -1,0 +1,62 @@
+env:
+  global:
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "NvoMZI1lDLmdoKMgAJnNp3RzdRMYGfWL4buwPdIRyjJ522AIceVrT59x0//JB2bdbrABibo/o5TPP1dUGBJlVp9N250R0pjKz8zlehTL++6Y5z0zGWF9WRXOzrvTOCDpUAjJ24zwIREFy02qHmhcEbAy5+IE8aw9s3eZxsngL54="
+
+os:
+  - linux
+  - osx
+
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+  fast_finish: true
+
+cache:
+  apt: true
+  directories:
+  - /usr/local/Cellar
+
+before_install:
+   - date -u
+   - uname -a
+   - export J='-j3'
+
+install:
+  - tools/travis/coverity_env.sh
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]];
+    then
+        exit 0;
+    fi
+  - tools/travis/install_dependencies.sh > install_dependencies.log 2>&1
+
+script:
+  - if [[ ${COVERITY_SCAN_BRANCH} == 1 ]];
+    then
+      echo "Don't build on coverty_scan branch.";
+      exit 0;
+    fi
+  - tools/travis/build.sh
+
+
+after_failure:
+  - cat install_dependencies.log || true
+  - cat build_travis/CMakeFiles/CMakeOutput.log
+
+addons:
+  coverity_scan:
+    project:
+      name: "tuttleofx/TuttleOFX"
+      description: "TuttleOFX Build submitted via Travis CI"
+    notification_email: "tuttleofx-team@googlegroups.com"
+    build_command: "tools/travis/build.sh"
+    branch_pattern: coverity_scan
+

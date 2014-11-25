@@ -8,7 +8,8 @@ import argparse
 import subprocess
 import sys
 import platform
-import os, errno
+import os
+import errno
 import shutil
 import ntpath
 
@@ -53,7 +54,7 @@ def copytree_verbose_condition(path):
 
     """
     return (os.path.isfile(path) and not path.endswith(".png")
-            and not  path.endswith(".svg"))
+            and not path.endswith(".svg"))
 
 
 def copytree(src, dst, symlinks=False, ignore=None, verbose=False):
@@ -100,7 +101,7 @@ def copytree(src, dst, symlinks=False, ignore=None, verbose=False):
                 print "Copy {0}".format(src)
     except OSError, why:
         if (shutil.WindowsError is not None
-            and isinstance(why, shutil.WindowsError)):
+           and isinstance(why, shutil.WindowsError)):
             # Copying file access times may fail on Windows
             pass
         else:
@@ -132,7 +133,7 @@ def ignored_pyc(directory, filenames):
         filenames: list of filenames
 
     """
-    return ignored_ext(filenames,".pyc")
+    return ignored_ext(filenames, ".pyc")
 
 
 def copy_tree(source_dir, dest_dir, overwrite=False, ignore=None,
@@ -205,16 +206,16 @@ def get_ofx_platform_name():
     Stolen from :
     https://github.com/tuttleofx/TuttleOFX/blob/master/SConstruct#L19
     """
-    if OS_NAME == "posix" :
-        if SYS_PLATFORM.find("linux") >= 0 :
+    if OS_NAME == "posix":
+        if SYS_PLATFORM.find("linux") >= 0:
             if OS_ARCH == 64:
                 return 'Linux-x86-64'
             return 'Linux-x86'
-        elif SYS_PLATFORM.find("cygwin") >= 0 :
+        elif SYS_PLATFORM.find("cygwin") >= 0:
             if OS_ARCH == 64:
                 return 'Linux-x86-64'
             return 'Linux-x86'
-        elif SYS_PLATFORM.find("darwin") >= 0 :
+        elif SYS_PLATFORM.find("darwin") >= 0:
             return 'MacOS'
         elif SYS_PLATFORM.find("irix") >= 0:
             if OS_ARCH == 64:
@@ -237,7 +238,7 @@ def get_ofx_bin_path(plugins_dir):
     """
     plugin_pathes = []
     for item in os.listdir(plugins_dir):
-        path = os.path.join(plugins_dir,item)
+        path = os.path.join(plugins_dir, item)
         if not os.path.isdir(path):
             continue
         # construct the path to the .ofx
@@ -262,7 +263,7 @@ def get_exe_bin_path(bin_dir):
     """
     bin_pathes = []
     for item in os.listdir(bin_dir):
-        path = os.path.join(bin_dir,item)
+        path = os.path.join(bin_dir, item)
         if os.path.isfile(path):
             bin_pathes.append(path)
     return bin_pathes
@@ -284,7 +285,7 @@ def get_py_bin_path(py_dir):
     return bin_pathes
 
 
-def get_shared_libs_path(output_dir, exclude_sys_lib=False):
+def get_shared_libs_path(output_dir, exclude_sys_lib, exclude_usr_lib):
     """Inspect binaries location to get shared dependencies
 
     Args:
@@ -327,16 +328,25 @@ def get_shared_libs_path(output_dir, exclude_sys_lib=False):
                 if len(split_str) == 2:
                     if os.path.isfile(split_str[0]):
                         shared_libs.append(split_str[0])
+    # get glic dependcies
+    process = subprocess.Popen(["rpm", "-ql", "glibc"],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    result = process.stdout.readlines()
+    for lib in result:
+        if ".so" in lib and "/lib64" in lib:
+            shared_libs.append(lib.rstrip())
     # remove duplicates
     shared_libs = sorted(set(shared_libs))
-
     # filter if asked
-    if not exclude_sys_lib:
+    if not exclude_sys_lib and not exclude_usr_lib:
         return shared_libs
     filtered_shared_libs = []
     for lib in shared_libs:
-        if (lib.startswith('/usr/lib64') or lib.startswith('/lib64') or
-            lib.startswith('/usr/lib')):
+        if (exclude_sys_lib and lib.startswith('/lib64')):
+            continue
+        if (exclude_usr_lib and
+           (lib.startswith('/usr/lib64') or lib.startswith('/usr/lib'))):
             continue
         filtered_shared_libs.append(lib)
     return filtered_shared_libs
@@ -420,7 +430,7 @@ to `OFX_PLUGIN_PATH` var env and Tuttle's lib directory to your env.
 
 
 def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
-                  exclude_sys_lib=False, verbose=False):
+                  exclude_sys_lib=False, exclude_usr_lib=False, verbose=False):
     """Create bundle by copying pertinent files in output_dir
 
     Args:
@@ -435,8 +445,8 @@ def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
     """
     # get system infos
     python_version = "{0}.{1}.{2}".format(sys.version_info[0],
-                                         sys.version_info[1],
-                                         sys.version_info[2])
+                                          sys.version_info[1],
+                                          sys.version_info[2])
     os_type = platform.system()
     if 'Linux' in os_type:
         os_type = platform.linux_distribution()[0].rstrip()
@@ -452,7 +462,7 @@ def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
 
     # create bundle directory
     bundle_name = "TuttleOFX_{0}_{1}_python{2}".format(version, os_full_name,
-                                                 python_version)
+                                                       python_version)
     output_dir = os.path.join(output_dir, bundle_name)
     create_dir(output_dir, overwrite)
 
@@ -490,7 +500,8 @@ def create_bundle(source_dir, build_dir, output_dir, overwrite=False,
     if verbose:
         print_with_deco("Copy shared libraries")
     shared_libs = get_shared_libs_path(output_dir,
-                                       exclude_sys_lib)
+                                       exclude_sys_lib,
+                                       exclude_usr_lib)
     lib_dir = os.path.join(output_dir, "lib")
     create_dir(lib_dir, overwrite)
     for lib in shared_libs:
@@ -521,8 +532,10 @@ def __get_options():
                                                   "this directory"), type=str)
     parser.add_argument("-o", "--overwrite", action="store_true",
                         help="Overwrite output directory")
-    parser.add_argument("-e", "--exclude-sys-lib", action="store_true",
+    parser.add_argument("-s", "--exclude-sys-lib", action="store_true",
                         help="Do not bundle system libs")
+    parser.add_argument("-u", "--exclude-usr-lib", action="store_true",
+                        help="Do not bundle usr libs")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Print log")
     return parser.parse_args()
@@ -531,4 +544,5 @@ if __name__ == '__main__':
     ARGS = __get_options()
     create_bundle(ARGS.source_directory, ARGS.build_directory,
                   ARGS.output_directory, ARGS.overwrite,
-                  exclude_sys_lib=ARGS.exclude_sys_lib, verbose=ARGS.verbose)
+                  exclude_sys_lib=ARGS.exclude_sys_lib,
+                  exclude_usr_lib=ARGS.exclude_usr_lib, verbose=ARGS.verbose)

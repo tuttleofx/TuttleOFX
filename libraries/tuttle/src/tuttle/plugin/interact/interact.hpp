@@ -29,6 +29,11 @@ enum EAxis
 
 struct MotionType
 {
+	MotionType()
+	: _mode(eMotionNone)
+	, _axis(eAxisNone)
+	{}
+	
 	EMotion _mode;
 	EAxis _axis;
 };

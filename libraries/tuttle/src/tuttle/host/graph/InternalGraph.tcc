@@ -1,6 +1,8 @@
 #include "GraphExporter.hpp"
 
 #include <boost/graph/graphviz.hpp>
+#include <boost/graph/connected_components.hpp>
+
 
 namespace tuttle {
 namespace host {
@@ -11,7 +13,7 @@ void InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::toDominator
 {
 	typedef typename boost::property_map<GraphContainer, boost::vertex_index_t>::type IndexMap;
 	typedef typename std::vector<vertex_descriptor >::iterator VectorDescIter;
-	typedef typename boost::iterator_property_map<VectorDescIter, IndexMap > PredMap;
+	typedef boost::iterator_property_map<VectorDescIter, IndexMap > PredMap;
 
 	std::vector<vertex_descriptor> domTreePredVector;
 	IndexMap indexMap( get( boost::vertex_index, _graph ) );
@@ -79,6 +81,51 @@ void InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::rebuildVert
 	{
 		_vertexDescriptorMap[instance( vd ).getKey()] = vd;
 	}
+}
+
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+std::vector<typename InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::vertex_descriptor>
+InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::getConnectedVertices( const vertex_descriptor& vroot )
+{
+	std::vector<vertex_descriptor> connectedVertices;
+	
+    std::vector<int> componentId( getNbVertices() );
+    boost::connected_components( _graph, &componentId[0] );
+	
+	int rootComponentId = componentId[vroot];
+
+	for( size_t i = 0; i < componentId.size(); ++i )
+	{
+		int id = componentId[i];
+		if( id == rootComponentId )
+		{
+			connectedVertices.push_back( i );
+		}
+	}
+
+	return connectedVertices;
+}
+
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+std::vector<typename InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::vertex_descriptor>
+InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::getUnconnectedVertices( const vertex_descriptor& vroot )
+{
+	std::vector<vertex_descriptor> unconnectedVertices;
+	
+    std::vector<int> componentId( getNbVertices() );
+    boost::connected_components( _graph, &componentId[0] );
+	
+	int rootComponentId = componentId[vroot];
+
+	for( size_t i = 0; i < componentId.size(); ++i )
+	{
+		int id = componentId[i];
+		if( id != rootComponentId )
+		{
+			unconnectedVertices.push_back( i );
+		}
+	}
+	return unconnectedVertices;
 }
 
 template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >

@@ -5,14 +5,15 @@ import time
 
 def setUp():
 	print("testComputeTime setUp")
+	tuttle.core().getFormatter().setLogLevel_int(0)
 	tuttle.core().preload(False)
 
 def testComputeTime():
-	nbFrames = 30
+	nbFrames = 10
 	N = 0
 	print("testComputeTime %d" % N); N += 1
 	gA = tuttle.Graph()
-	gA.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" )
+	gA.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace=2 )
 
 	print("testComputeTime %d" % N); N += 1
 	t0 = time.clock()
@@ -29,8 +30,8 @@ def testComputeTime():
 	print("testComputeTime %d" % N); N += 1
 
 	gB = tuttle.Graph()
-	gB.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace="bt709" )
 	
+	gB.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace=2 )
 	print("testComputeTime %d" % N); N += 1
 	t0 = time.clock()
 	time0 = time.time()
