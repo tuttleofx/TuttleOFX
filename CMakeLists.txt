@@ -8,6 +8,8 @@ set(TUTTLE_PRODUCTION FALSE CACHE BOOL "activate logs")
 if(TUTTLE_PRODUCTION)
   add_definitions(-DTUTTLE_PRODUCTION)
 endif()
+
 add_subdirectory(libraries/tuttle)
+add_subdirectory(libraries/avTranscoder)
 add_subdirectory(plugins)
 add_subdirectory(applications)
