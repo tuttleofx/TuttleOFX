@@ -345,14 +345,22 @@ double AVReaderPlugin::retrievePAR()
 	if( ! OFX::getImageEffectHostDescription()->supportsMultipleClipPARs )
 		return 1.0;
 	
+	double par = 1.0;
 	if( _paramUseCustomSAR->getValue() )
-		return _paramCustomSAR->getValue();
-	
-	const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
-	avtranscoder::Rational sar = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getSar();
-	const double videoRatio = sar.num / (double)sar.den;
+	{
+		par = _paramCustomSAR->getValue();
+	}
+	else
+	{
+		const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
+		avtranscoder::Rational sar = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getSar();
+		par = sar.num / (double)sar.den;
+	}
 
-	return videoRatio;
+	if( par == 0.0 )
+		return 1.0;
+
+	return par;
 }
 
 void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
