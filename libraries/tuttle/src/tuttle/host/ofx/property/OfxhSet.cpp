@@ -46,6 +46,44 @@ namespace host {
 namespace ofx {
 namespace property {
 
+
+OfxhProperty& OfxhSet::localAt( const int index )
+{
+	if( index >= getLocalSize() )
+	{
+		if( index >= getSize() )
+		{
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue)
+				<< exception::dev() + "OfxhSet::at: " + index + ", property not found." );
+		}
+		else
+		{
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue)
+				<< exception::dev() + "OfxhSet::at: " + index + " is a non-local property." );
+		}
+	}
+	
+	PropertyMap::iterator it = _props.begin();
+	std::advance(it, index);
+	return * it->second;
+}
+
+const OfxhProperty& OfxhSet::at( const int index ) const
+{
+	if( index < getLocalSize() )
+	{
+		PropertyMap::const_iterator it = _props.begin();
+		std::advance(it, index);
+		return * it->second;
+	}
+	if( _chainedSet == NULL )
+	{
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue)
+			<< exception::dev() + "OfxhSet::at: " + index + ", property not found." );
+	}
+	return _chainedSet->at(index - getLocalSize());
+}
+
 void OfxhSet::setGetHook( const std::string& s, OfxhGetHook* ghook )
 {
 	fetchLocalProperty( s ).setGetHook( ghook );

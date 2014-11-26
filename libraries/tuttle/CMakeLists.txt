@@ -83,12 +83,17 @@ if (TuttleBoost_FOUND)
   set_target_properties(sequenceParser
                         PROPERTIES COMPILE_FLAGS "-fPIC")
   target_link_libraries(sequenceParser ${Boost_LIBRARIES})
+  
   # Adds a support library for common and plugins
   # only compile object files, and use them at link time
   add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES}) 
   set_target_properties(tuttleCommon
                         PROPERTIES COMPILE_FLAGS "-fPIC")
   add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
+  find_package(Threads)
+  target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
+
+  # Utilities for OFX plugins
   target_link_libraries(tuttlePluginLib sequenceParser) 
   set_target_properties(tuttlePluginLib
                         PROPERTIES COMPILE_FLAGS "-fPIC")
@@ -120,7 +125,7 @@ if (TuttleBoost_FOUND)
     include_directories(${NUMPY_INCLUDE_DIR})
   
     # Swig to compile c++ -> python
-    set(CMAKE_SWIG_FLAGS -c++ -threads)
+    set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern) #-doxygen
 
     # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)

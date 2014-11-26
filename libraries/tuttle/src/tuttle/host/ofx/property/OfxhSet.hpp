@@ -136,28 +136,8 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 	#endif
 
-	#ifdef SWIG
-	%extend
-	{
-		//		const OfxhProperty& __getitem__( const std::string& name ) const
-		//		{
-		//			return self->fetchProperty(name);
-		//		}
-		OfxhProperty& __getitem__( const std::string& name )
-		{
-			return self->fetchLocalProperty( name );
-		}
-
-		std::string __str__() const
-		{
-			std::stringstream s;
-
-			s << *self;
-			return s.str();
-		}
-
-	}
-	#endif
+	OfxhProperty& localAt( const int index );
+	const OfxhProperty& at( const int index ) const;
 
 	/// adds a bunch of properties from PropSpec
 	void addProperties( const OfxhPropSpec* );
@@ -167,16 +147,18 @@ public:
 	bool hasProperty( const std::string& propName, bool followChain = true ) const;
 	bool hasLocalProperty( const std::string& propName ) const;
 
-	inline OfxhSet& operator+( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
+	inline OfxhSet& operator+=( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
 
 	/// add one new property
 	void createProperty( const OfxhPropSpec& s );
 
-	/// add one new property
+	/// add one new property (takes ownership)
 	void addProperty( OfxhProperty* prop );
 
 	/// set the chained property set
 	void setChainedSet( const OfxhSet* const s ) { _chainedSet = s; }
+
+	const OfxhSet& getChainedSet() const { return *_chainedSet; }
 
 	/// grab the internal properties map
 	const PropertyMap& getMap() const { return _props; }
