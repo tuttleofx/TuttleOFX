@@ -368,13 +368,25 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	ensureVideoIsOpen();
 	
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	
+
+	const avtranscoder::FileProperties fileProperties = _inputFile->getProperties();
+
 	// conversion of bitdepth
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
-		// @TODO get file info => if bitdetph = 10 or 16 => UShort
-		OFX::EBitDepth fileBitDepth = OFX::eBitDepthUByte;
-		
+		size_t bitDepth = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getBitDepth();
+		OFX::EBitDepth fileBitDepth;
+		if( bitDepth == 0 )
+			fileBitDepth = OFX::eBitDepthNone;
+		if( bitDepth == 8)
+			fileBitDepth = OFX::eBitDepthUByte;
+		else if( bitDepth == 16)
+			fileBitDepth = OFX::eBitDepthUShort;
+		else if( bitDepth == 24)
+			fileBitDepth = OFX::eBitDepthFloat;
+		else
+			fileBitDepth = OFX::eBitDepthCustom;
+
 		if( OFX::getImageEffectHostDescription()->supportsBitDepth( fileBitDepth ) )
 			clipPreferences.setClipBitDepth( *_clipDst, fileBitDepth );
 		else
@@ -392,9 +404,7 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 		else
 			clipPreferences.setClipComponents( *_clipDst, OFX::getImageEffectHostDescription()->getDefaultPixelComponent() );
 	}
-	
-	const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
-	
+
 	// output frame rate
 	double fps = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getFps();
 	clipPreferences.setOutputFrameRate( fps );
