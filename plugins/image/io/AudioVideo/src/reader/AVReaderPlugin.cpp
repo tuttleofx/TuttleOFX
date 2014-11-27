@@ -396,9 +396,19 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	// conversion of channel
 	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
-		// @TODO get file info => if components = rgba set RGBA
-		OFX::EPixelComponent filePixelComponent = OFX::ePixelComponentRGB;
-		
+		size_t nbComponents = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getComponentsCount();
+		OFX::EPixelComponent filePixelComponent;
+		if( nbComponents == 0 )
+			filePixelComponent = OFX::ePixelComponentNone;
+		else if( nbComponents == 1 )
+			filePixelComponent = OFX::ePixelComponentAlpha;
+		else if( nbComponents == 3 )
+			filePixelComponent = OFX::ePixelComponentRGB;
+		else if( nbComponents == 4 )
+			filePixelComponent = OFX::ePixelComponentRGBA;
+		else
+			filePixelComponent = OFX::ePixelComponentCustom;
+
 		if( OFX::getImageEffectHostDescription()->supportsPixelComponent( filePixelComponent ) )
 			clipPreferences.setClipComponents( *_clipDst, filePixelComponent );
 		else
