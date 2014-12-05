@@ -118,7 +118,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_lastVideoStreamIndex = videoStreamIndex;
 		
 		// buffered video stream at _indexVideoStream (to seek)
-		_inputFile->readStream( _paramVideoStreamIndex->getValue() );
+		_inputFile->activateStream( _paramVideoStreamIndex->getValue() );
 		
 		// set video stream
 		_inputStreamVideo.reset( new avtranscoder::AvInputVideo( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
@@ -193,7 +193,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 			// update wrapper of Metadata tab
 			std::string wrapperValue( "" );
-			BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, inputProperties.getDataMap() )
+			BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, inputProperties.getPropertiesAsMap() )
 			{
 				wrapperValue += pair.first + ": " + pair.second + "\n";
 			}
@@ -208,7 +208,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::VideoProperties& videoStream, inputProperties.getVideoProperties() )
 			{
 				videoValue += "::::: VIDEO STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, videoStream.getDataMap() )
+				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, videoStream.getPropertiesAsMap() )
 				{
 					videoValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -225,7 +225,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AudioProperties& audioStream, inputProperties.getAudioProperties() )
 			{
 				audioValue += "::::: AUDIO STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, audioStream.getDataMap() )
+				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, audioStream.getPropertiesAsMap() )
 				{
 					audioValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -242,7 +242,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::DataProperties& dataStream, inputProperties.getDataProperties() )
 			{
 				dataValue += "::::: DATA STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, dataStream.getDataMap() )
+				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, dataStream.getPropertiesAsMap() )
 				{
 					dataValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -259,7 +259,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::SubtitleProperties& subtitleStream, inputProperties.getSubtitleProperties() )
 			{
 				subtitleValue += "::::: SUBTITLE STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, subtitleStream.getDataMap() )
+				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, subtitleStream.getPropertiesAsMap() )
 				{
 					subtitleValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -276,7 +276,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AttachementProperties& attachementStream, inputProperties.getAttachementProperties() )
 			{
 				attachementValue += "::::: ATTACHEMENT STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, attachementStream.getDataMap() )
+				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, attachementStream.getPropertiesAsMap() )
 				{
 					attachementValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -293,7 +293,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, inputProperties.getUnknownPropertiesProperties() )
 			{
 				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::MetadatasMap::value_type& pair, unknownStream.getDataMap() )
+				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, unknownStream.getPropertiesAsMap() )
 				{
 					unknownValue += pair.first + ": " + pair.second + "\n";
 				}

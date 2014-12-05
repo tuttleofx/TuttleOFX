@@ -17,9 +17,9 @@ AVReaderProcess<View>::AVReaderProcess( AVReaderPlugin& instance )
 
 template<class View>
 void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
-{	
+{
 	ImageGilProcessor<View>::setup( args );
-	
+
 	// if need to support interlace, use args.fieldToRender
 	
 	// optimization for seek

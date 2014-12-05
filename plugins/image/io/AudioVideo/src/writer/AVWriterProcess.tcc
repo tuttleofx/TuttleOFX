@@ -50,10 +50,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	// set video stream next frame
 	avtranscoder::GeneratorVideo* videoStream = &static_cast<avtranscoder::GeneratorVideo&>( _plugin._transcoder->getStreamTranscoder( 0 ).getCurrentEssence() );
 	const size_t bufferSize = videoStream->getVideoFrameDesc().getDataSize();
-	if( _plugin._videoFrame.getSize() != bufferSize )
-		_plugin._videoFrame.getBuffer().resize( bufferSize );
-
-	std::memcpy( _plugin._videoFrame.getPtr(), imageData, bufferSize );
+	_plugin._videoFrame.setData( imageData, bufferSize );
 	videoStream->setFrame( _plugin._videoFrame );
 
 	// process

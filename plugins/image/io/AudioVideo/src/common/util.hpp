@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
 
 #include <AvTranscoder/util.hpp>
+#include <AvTranscoder/option/Context.hpp>
 #include <AvTranscoder/ProfileLoader.hpp>
 
 #include <ofxsImageEffect.h>
