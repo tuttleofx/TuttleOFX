@@ -536,6 +536,7 @@ void AVWriterPlugin::initOutput()
 		_outputFile->addMetadata( params._metadatas );
 
 		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
+		_transcoder->setProcessMethod( avtranscoder::eProcessMethodBasedOnStream, 0 );
 	}
 	catch( std::exception& e )
 	{
@@ -967,7 +968,6 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 	if( ! _initWrap )
 	{
 		initAudio();
-		_transcoder->setProcessMethod( avtranscoder::eProcessMethodBasedOnStream, 0 );
 		_outputFile->beginWrap();
 		_initWrap = true;
 	}
