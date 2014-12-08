@@ -50,7 +50,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	// set video stream next frame
 	avtranscoder::GeneratorVideo* videoStream = &static_cast<avtranscoder::GeneratorVideo&>( _plugin._transcoder->getStreamTranscoder( 0 ).getCurrentEssence() );
 	const size_t bufferSize = videoStream->getVideoFrameDesc().getDataSize();
-	_plugin._videoFrame.setData( imageData, bufferSize );
+	_plugin._videoFrame.copyData( imageData, bufferSize );
 	videoStream->setFrame( _plugin._videoFrame );
 
 	// process
