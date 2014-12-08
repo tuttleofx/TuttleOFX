@@ -516,13 +516,14 @@ void AVWriterPlugin::initOutput()
 			}
 		}
 
+		// update format
+		params = getProcessParams();
+
 		// Get format profile
 		avtranscoder::ProfileLoader::Profile profile;
 		profile[ avtranscoder::constants::avProfileIdentificator ] = "customFormatPreset";
 		profile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom format preset";
 		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
-
-		AVProcessParams params = getProcessParams();
 		profile[ avtranscoder::constants::avProfileFormat ] = params._formatName;
 
 		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile();
@@ -579,8 +580,6 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		profile[ avtranscoder::constants::avProfileIdentificator ] = "customVideoPreset";
 		profile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom video preset";
 		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeVideo;
-
-		AVProcessParams params = getProcessParams();
 		profile[ avtranscoder::constants::avProfileCodec ] = params._videoCodecName;
 		profile[ avtranscoder::constants::avProfilePixelFormat ] = params._videoPixelFormatName;
 
