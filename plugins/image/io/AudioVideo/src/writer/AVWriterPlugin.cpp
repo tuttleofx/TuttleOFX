@@ -674,13 +674,15 @@ void AVWriterPlugin::initAudio()
 			// Get custom audio profile
 			if( presetIndex == 0 && mainPresetIndex == 0 )
 			{
+				AVProcessParams params = getProcessParams();
+
 				profile[ avtranscoder::constants::avProfileIdentificator ] = "customAudioPreset";
 				profile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom audio preset";
 				profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeAudio;
-
-				AVProcessParams params = getProcessParams();
 				profile[ avtranscoder::constants::avProfileCodec ] = params._audioCodecName;
-				profile[ avtranscoder::constants::avProfileSampleFormat ] = params._audioSampleFormatName;
+
+				if( ! params._videoPixelFormatName.empty() )
+					profile[ avtranscoder::constants::avProfileSampleFormat ] = params._audioSampleFormatName;
 
 				avtranscoder::ProfileLoader::Profile audioProfile = _paramAudioCustom.getCorrespondingProfile();
 				profile.insert( audioProfile.begin(), audioProfile.end() );
@@ -914,12 +916,15 @@ void AVWriterPlugin::updateAudiotFromExistingProfile()
 		}
 
 		// sample format
-		std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( *iterCodec ) );
-		std::vector<std::string>::iterator iterSampleFormat = std::find( sampleFormats.begin(), sampleFormats.end(), existingProfile[ avtranscoder::constants::avProfileSampleFormat ] );
-		size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
-		if( sampleFomatIndex < sampleFormats.size() )
+		if( existingProfile.find( avtranscoder::constants::avProfileSampleFormat ) != existingProfile.end() )
 		{
-			_paramAudioSampleFormat->setValue( sampleFomatIndex );
+			std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( *iterCodec ) );
+			std::vector<std::string>::iterator iterSampleFormat = std::find( sampleFormats.begin(), sampleFormats.end(), existingProfile[ avtranscoder::constants::avProfileSampleFormat ] );
+			size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
+			if( sampleFomatIndex < sampleFormats.size() )
+			{
+				_paramAudioSampleFormat->setValue( sampleFomatIndex );
+			}
 		}
 
 		// other options
@@ -1056,6 +1061,11 @@ std::string AVWriterPlugin::getPixelFormatName( const std::string& videoCodecNam
 std::string AVWriterPlugin::getSampleFormatName( const std::string& audioCodecName ) const
 {
 	std::vector<std::string> supportedSampleFormats( avtranscoder::getSampleFormats( audioCodecName ) );
+
+	// no sample format
+	if( supportedSampleFormats.empty() )
+		return "";
+
 	try
 	{
 		// Works if Host can updateSampleFormats()
