@@ -581,7 +581,9 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		profile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom video preset";
 		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeVideo;
 		profile[ avtranscoder::constants::avProfileCodec ] = params._videoCodecName;
-		profile[ avtranscoder::constants::avProfilePixelFormat ] = params._videoPixelFormatName;
+
+		if( ! params._videoPixelFormatName.empty() )
+			profile[ avtranscoder::constants::avProfilePixelFormat ] = params._videoPixelFormatName;
 
 		if( _paramUseCustomFps->getValue() )
 			profile[ avtranscoder::constants::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
@@ -861,12 +863,15 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		}
 
 		// pixel format
-		std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( *iterCodec ) );
-		std::vector<std::string>::iterator iterPixelFormat = std::find( pixelFormats.begin(), pixelFormats.end(), existingProfile[ avtranscoder::constants::avProfilePixelFormat ] );
-		size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
-		if( pixelFomatIndex < pixelFormats.size() )
+		if( existingProfile.find( avtranscoder::constants::avProfilePixelFormat ) != existingProfile.end() )
 		{
-			_paramVideoPixelFormat->setValue( pixelFomatIndex );
+			std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( *iterCodec ) );
+			std::vector<std::string>::iterator iterPixelFormat = std::find( pixelFormats.begin(), pixelFormats.end(), existingProfile[ avtranscoder::constants::avProfilePixelFormat ] );
+			size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
+			if( pixelFomatIndex < pixelFormats.size() )
+			{
+				_paramVideoPixelFormat->setValue( pixelFomatIndex );
+			}
 		}
 
 		// frame rate
@@ -1025,6 +1030,11 @@ std::string AVWriterPlugin::getAudioCodecName( const int codec ) const
 std::string AVWriterPlugin::getPixelFormatName( const std::string& videoCodecName ) const
 {
 	std::vector<std::string> supportedPixelFormats( avtranscoder::getPixelFormats( videoCodecName ) );
+
+	// no pixel format
+	if( supportedPixelFormats.empty() )
+		return "";
+
 	try
 	{
 		// Works if Host can updatePixelFormats()
