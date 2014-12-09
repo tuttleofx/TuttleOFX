@@ -870,7 +870,8 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		}
 
 		// frame rate
-		_paramCustomFps->setValue( boost::lexical_cast<double>( existingProfile[ avtranscoder::constants::avProfileFrameRate ] ) );
+		if( existingProfile.find( avtranscoder::constants::avProfileFrameRate ) != existingProfile.end() )
+			_paramCustomFps->setValue( boost::lexical_cast<double>( existingProfile[ avtranscoder::constants::avProfileFrameRate ] ) );
 
 		// other options
 		BOOST_FOREACH( avtranscoder::ProfileLoader::Profile::value_type& option, existingProfile )
