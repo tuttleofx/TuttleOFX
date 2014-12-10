@@ -252,7 +252,59 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	LibAVOptions optionsForPreset = getLibAVOptions( subGroupName );
 	BOOST_FOREACH( LibAVOptions::value_type& nameAndValue, optionsForPreset )
 	{
-		profile[ nameAndValue.first ] = nameAndValue.second;
+		try
+		{
+			// Skip options with a current value equals to their default value
+			const avtranscoder::Option& option = _avContext->getOption( nameAndValue.first );
+			switch( option.getType() )
+			{
+				case avtranscoder::eOptionBaseTypeBool:
+				{
+					if( option.getDefaultBool() == option.getBool() )
+						continue;
+					break;
+				}
+				case avtranscoder::eOptionBaseTypeInt:
+				{
+					int defaultValue = option.getDefaultInt();
+					int value = option.getInt();
+					if( option.getDefaultInt() == option.getInt() )
+						continue;
+					break;
+				}
+				case avtranscoder::eOptionBaseTypeDouble:
+				{
+					if( boost::test_tools::check_is_close( option.getDefaultDouble(), option.getDouble(), boost::test_tools::percent_tolerance( 0.5 ) ) )
+						continue;
+					break;
+				}
+				case avtranscoder::eOptionBaseTypeString:
+				{
+					if( option.getDefaultString() == option.getString() )
+						continue;
+					break;
+				}
+				case avtranscoder::eOptionBaseTypeRatio:
+				{
+					if( option.getDefaultRatio() == option.getRatio() )
+						continue;
+					break;
+				}
+				case avtranscoder::eOptionBaseTypeChoice:
+				{
+					if( option.getDefaultInt() == option.getInt() )
+						continue;
+					break;
+				}
+				default:
+					continue;
+			}
+			profile[ nameAndValue.first ] = nameAndValue.second;
+		}
+		catch( std::exception& e )
+		{
+			TUTTLE_TLOG( TUTTLE_INFO, "Can't get option " << nameAndValue.first << ": " << e.what() );
+		}
 	}
 	return profile;
 }
@@ -263,8 +315,6 @@ void LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 	{
 		// Get option from context
 		avtranscoder::Option& option = _avContext->getOption( libAVOptionName );
-
-		// TODO: do not set option value if equal to default
 
 		// Set FFmpeg option's value
 		option.setString( value );

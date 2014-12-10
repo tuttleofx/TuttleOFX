@@ -56,6 +56,7 @@ public:
 
 	/**
 	 * @brief Get value of OFX parameters contained in the object, and return the corresponding profileDesc.
+	 * @note the result does not contain options which have a current value equals to the default value
 	 */
 	avtranscoder::ProfileLoader::Profile getCorrespondingProfile( const std::string& subGroupName="" ) const;
 	
