@@ -29,12 +29,12 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioFileInfo()
 	, _paramAudioStreamIndex()
 	, _paramAudioPreset()
-	, _paramFormatCustom()
-	, _paramVideoCustom()
-	, _paramAudioCustom()
-	, _paramFormatDetailCustom()
-	, _paramVideoDetailCustom()
-	, _paramAudioDetailCustom()
+	, _paramFormatCustom( common::kPrefixFormat, common::kPrefixEncoding )
+	, _paramVideoCustom( common::kPrefixVideo, common::kPrefixEncoding )
+	, _paramAudioCustom( common::kPrefixAudio, common::kPrefixEncoding )
+	, _paramFormatDetailCustom( common::kPrefixFormat, common::kPrefixEncoding )
+	, _paramVideoDetailCustom( common::kPrefixVideo, common::kPrefixEncoding )
+	, _paramAudioDetailCustom( common::kPrefixAudio, common::kPrefixEncoding )
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
@@ -347,7 +347,7 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 		}
 	}
 }
-	
+
 
 void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {

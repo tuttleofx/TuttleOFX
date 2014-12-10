@@ -7,6 +7,8 @@
 
 #include <ofxsImageEffect.h>
 
+#include <boost/scoped_ptr.hpp>
+
 #include <string>
 #include <utility> //pair
 #include <vector>
@@ -23,6 +25,9 @@ static const std::string kPrefixAudio     = "a_";
 static const std::string kPrefixMetaData  = "m_";
 static const std::string kPrefixAbout     = "l_";
 
+static const std::string kPrefixEncoding  = "e_";
+static const std::string kPrefixDecoding  = "d_";
+
 static const std::string kPrefixGroup     = "g_";
 static const std::string kPrefixFlag      = "_flag_";
 
@@ -35,10 +40,11 @@ public:
 	typedef std::map< std::string, std::string > LibAVOptions;  ///< Key: libav option's name / Value : libav option's value
 
 public:
-	LibAVParams()
-	: _paramOFX()
-	, _childsPerChoice()
-	{}
+	/** 
+	 * @param prefixScope: format, video, audio, metadata
+	 * @param prefixOperation: encoding, decoding
+	 */
+	LibAVParams( const std::string& prefixScope, const std::string& prefixOperation );
 
 	/**
 	 * @brief Get all FFmpeg options and values corresponding to the OFX parameters contains in the object.
@@ -82,6 +88,11 @@ public:
 	std::vector<OFX::ValueParam*> _paramOFX;
 
 	std::map< OFX::ChoiceParam*, std::vector<std::string> > _childsPerChoice;  ///< List of values per OFX Choice
+
+	/**
+	 * @brief Hold the libav options.
+	 */
+	boost::scoped_ptr<avtranscoder::Context> _avContext;
 };
 
 /**

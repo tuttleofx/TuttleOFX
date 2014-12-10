@@ -7,7 +7,7 @@
 #include <AvTranscoder/option/Option.hpp>
 
 #include <boost/foreach.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <boost/test/floating_point_comparison.hpp>
 
 #include <iostream>
 #include <limits>
@@ -16,6 +16,44 @@ namespace tuttle {
 namespace plugin {
 namespace av {
 namespace common {
+
+LibAVParams::LibAVParams( const std::string& prefixScope, const std::string& prefixOperation )
+	: _paramOFX()
+	, _childsPerChoice()
+	, _avContext( NULL )
+	{
+	    // Create context
+	    if( prefixScope == kPrefixFormat )
+		{
+			if( prefixOperation == kPrefixEncoding )
+				_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_ENCODING_PARAM ) ); 
+			else if( prefixOperation == kPrefixDecoding )
+				_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_DECODING_PARAM ) ); 
+		}
+	    else if( prefixScope == kPrefixVideo )
+		{
+			if( prefixOperation == kPrefixEncoding )
+				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
+			else if( prefixOperation == kPrefixDecoding )
+				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
+		}
+	    else if( prefixScope == kPrefixAudio )
+		{
+			if( prefixOperation == kPrefixEncoding )
+				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
+			else if( prefixOperation == kPrefixDecoding )
+				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
+		}
+		else if( prefixScope == kPrefixMetaData )
+		{
+			_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_METADATA ) ); 
+		}
+	    else
+	    {
+			BOOST_THROW_EXCEPTION( exception::Failed()
+				<< exception::user() + ": Can't create a context with the given scope " + prefixScope + " and the given operation " + prefixOperation );
+	    }
+	}
 
 LibAVParams::LibAVOptions LibAVParams::getLibAVOptions( const std::string& subGroupName ) const
 {
@@ -221,22 +259,14 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 
 void LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value,  const std::string& prefix, const std::string& subGroupName )
 {
-	// Create context
-	boost::scoped_ptr<avtranscoder::Context> context;
-	if( prefix == kPrefixFormat )
-		context.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_ENCODING_PARAM ) ); 
-	else if( prefix == kPrefixVideo )
-		context.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
-	else if( prefix == kPrefixAudio )
-		context.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
-	else
-		return;
 	try
 	{
-		// Get Option from Context
-		avtranscoder::Option& option = context->getOption( libAVOptionName );
+		// Get option from context
+		avtranscoder::Option& option = _avContext->getOption( libAVOptionName );
 
-		// Set Option's value
+		// TODO: do not set option value if equal to default
+
+		// Set FFmpeg option's value
 		option.setString( value );
 
 		// Get corresponding OFX parameter
