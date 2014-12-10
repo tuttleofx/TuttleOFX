@@ -117,7 +117,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		}
 		_lastVideoStreamIndex = videoStreamIndex;
 		
-		// buffered video stream at _indexVideoStream (to seek)
+		// buffered video stream at _indexVideoStream
 		_inputFile->activateStream( _paramVideoStreamIndex->getValue() );
 		
 		// set video stream
@@ -482,9 +482,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 	
 	// get pixel data of image to decode
-	avtranscoder::Pixel dstPixel;
-	dstPixel.setColorComponents( avtranscoder::eComponentRgb );
-	dstPixel.setPlanar( false );
+	avtranscoder::Pixel dstPixel( "rgb24" );
 	
 	// get image to decode
 	avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc );
