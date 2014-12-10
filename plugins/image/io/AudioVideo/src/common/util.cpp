@@ -219,7 +219,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	return profile;
 }
 
-bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value,  const std::string& prefix, const std::string& subGroupName )
+void LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value,  const std::string& prefix, const std::string& subGroupName )
 {
 	// Create context
 	boost::scoped_ptr<avtranscoder::Context> context;
@@ -230,8 +230,7 @@ bool LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 	else if( prefix == kPrefixAudio )
 		context.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
 	else
-		return false;
-
+		return;
 	try
 	{
 		// Get Option from Context
@@ -243,34 +242,51 @@ bool LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 		// Get corresponding OFX parameter
 		OFX::ValueParam* param = getOFXParameter( libAVOptionName, subGroupName );
 		if( ! param)
-			return false;
-		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
-		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
-		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
-		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
-		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
-		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+		{
+			TUTTLE_TLOG( TUTTLE_INFO, "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << subGroupName << ": " << e.what() );
+		}
 
 		// Set OFX parameter's value
+		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
 		if( paramBoolean )
-			paramBoolean->setValue( option.getDefaultBool() );
-		else if( paramInt )
-			paramInt->setValue( option.getDefaultInt() );
-		else if( paramDouble )
-			paramDouble->setValue( option.getDefaultDouble() );
-		else if( paramString )
-			paramString->setValue( option.getDefaultString() );
-		else if( paramRatio )
-			paramRatio->setValue( option.getDefaultRatio().first, option.getDefaultRatio().second );
-		else if( paramChoice )
-			paramChoice->setValue( option.getDefaultInt() );
-
-		return true;
+		{
+			paramBoolean->setValue( option.getBool() );
+			return;
+		}
+		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
+		if( paramInt )
+		{
+			paramInt->setValue( option.getInt() );
+			return;
+		}
+		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
+		if( paramDouble )
+		{
+			paramDouble->setValue( option.getDouble() );
+			return;
+		}
+		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
+		if( paramString )
+		{
+			paramString->setValue( option.getString() );
+			return;
+		}
+		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
+		if( paramRatio )
+		{
+			paramRatio->setValue( option.getRatio().first, option.getRatio().second );
+			return;
+		}
+		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+		if( paramChoice )
+		{
+			paramChoice->setValue( option.getInt() );
+			return;
+		}
 	}
 	catch( std::exception& e )
 	{
-		// Option not found
-		return false;
+		TUTTLE_TLOG( TUTTLE_INFO, "Can't set option " << libAVOptionName << " to " << value << ": " << e.what() );
 	}
 }
 
