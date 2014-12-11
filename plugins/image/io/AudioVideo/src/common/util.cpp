@@ -55,106 +55,6 @@ LibAVParams::LibAVParams( const std::string& prefixScope, const std::string& pre
 	}
 }
 
-LibAVParams::LibAVOptions LibAVParams::getLibAVOptions( const std::string& subGroupName ) const
-{
-	LibAVOptions optionsNameAndValue;
-
-	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
-	{
-		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
-			continue;
-
-		const std::string libavOptionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-		std::string optionValue( "" );
-
-		// Manage OFX Boolean
-		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
-		if( paramBoolean )
-		{
-			// FFMPEG flags
-			if( param->getName().find( kPrefixFlag ) != std::string::npos )
-			{
-				std::string optionValue;
-				if( paramBoolean->getValue() )
-					optionValue.append( "+" );
-				else
-					optionValue.append( "-" );
-				optionValue.append( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
-
-				const std::string flagName( getOptionFlagName( param->getName(), subGroupName ) );
-				// if first flag with this flagName
-				if( optionsNameAndValue.find( flagName ) == optionsNameAndValue.end() )
-				{
-					optionsNameAndValue.insert( std::make_pair( flagName, optionValue ) );
-				}
-				// get all flags with the same flagName in a single Option
-				else
-				{
-					optionsNameAndValue.at( flagName ) += optionValue;
-				}
-			}
-			else
-			{
-				optionValue = boost::to_string( paramBoolean->getValue() );
-				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
-			}
-			continue;
-		}
-
-		// Manage OFX Int
-		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
-		if( paramInt )
-		{
-			optionValue = boost::to_string( paramInt->getValue() );
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
-			continue;
-		}
-
-		// Manage OFX Double
-		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
-		if( paramDouble )
-		{
-			optionValue = boost::to_string( paramDouble->getValue() );
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
-			continue;
-		}
-
-		// Manage OFX String
-		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
-		if( paramString )
-		{
-			optionValue = paramString->getValue();
-			if( ! optionValue.empty() )
-				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
-			continue;
-		}
-
-		// Manage OFX Int2D
-		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
-		if( paramRatio )
-		{
-			optionValue = boost::to_string( paramRatio->getValue().x ) + ":" + boost::to_string( paramRatio->getValue().y );
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
-			continue;
-		}
-
-		// Manage OFX Choice
-		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
-		if( paramChoice )
-		{
-			size_t optionIndex = paramChoice->getValue();
-			std::vector<std::string> childs( _childsPerChoice.at( paramChoice ) );
-			if( childs.size() > optionIndex )
-			{
-				optionValue = childs.at( optionIndex );
-				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
-			}
-			continue;
-		}
-	}
-	return optionsNameAndValue;
-}
-
 void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
 {
 	// iterate on map keys
@@ -248,9 +148,105 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::Opti
 
 avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const std::string& subGroupName ) const
 {
+	// Get all libav options and values corresponding to the OFX parameters contains in the object
+	LibAVOptions optionsNameAndValue;
+	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
+	{
+		if( ! subGroupName.empty() && param->getName().find( "_" + subGroupName + "_" ) == std::string::npos )
+			continue;
+
+		const std::string libavOptionName( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+		std::string optionValue( "" );
+
+		// Manage OFX Boolean
+		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
+		if( paramBoolean )
+		{
+			// FFMPEG flags
+			if( param->getName().find( kPrefixFlag ) != std::string::npos )
+			{
+				std::string optionValue;
+				if( paramBoolean->getValue() )
+					optionValue.append( "+" );
+				else
+					optionValue.append( "-" );
+				optionValue.append( getOptionNameWithoutPrefix( param->getName(), subGroupName ) );
+
+				const std::string flagName( getOptionFlagName( param->getName(), subGroupName ) );
+				// if first flag with this flagName
+				if( optionsNameAndValue.find( flagName ) == optionsNameAndValue.end() )
+				{
+					optionsNameAndValue.insert( std::make_pair( flagName, optionValue ) );
+				}
+				// get all flags with the same flagName in a single Option
+				else
+				{
+					optionsNameAndValue.at( flagName ) += optionValue;
+				}
+			}
+			else
+			{
+				optionValue = boost::to_string( paramBoolean->getValue() );
+				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
+			}
+			continue;
+		}
+
+		// Manage OFX Int
+		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
+		if( paramInt )
+		{
+			optionValue = boost::to_string( paramInt->getValue() );
+			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
+			continue;
+		}
+
+		// Manage OFX Double
+		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
+		if( paramDouble )
+		{
+			optionValue = boost::to_string( paramDouble->getValue() );
+			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
+			continue;
+		}
+
+		// Manage OFX String
+		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
+		if( paramString )
+		{
+			optionValue = paramString->getValue();
+			if( ! optionValue.empty() )
+				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
+			continue;
+		}
+
+		// Manage OFX Int2D
+		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
+		if( paramRatio )
+		{
+			optionValue = boost::to_string( paramRatio->getValue().x ) + ":" + boost::to_string( paramRatio->getValue().y );
+			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
+			continue;
+		}
+
+		// Manage OFX Choice
+		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+		if( paramChoice )
+		{
+			size_t optionIndex = paramChoice->getValue();
+			std::vector<std::string> childs( _childsPerChoice.at( paramChoice ) );
+			if( childs.size() > optionIndex )
+			{
+				optionValue = childs.at( optionIndex );
+				optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
+			}
+			continue;
+		}
+	}
+
+	// Create the corresponding profile
 	avtranscoder::ProfileLoader::Profile profile;
-	LibAVOptions optionsForPreset = getLibAVOptions( subGroupName );
-	BOOST_FOREACH( LibAVOptions::value_type& nameAndValue, optionsForPreset )
+	BOOST_FOREACH( LibAVOptions::value_type& nameAndValue, optionsNameAndValue )
 	{
 		try
 		{

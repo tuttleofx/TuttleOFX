@@ -46,11 +46,6 @@ public:
 	 */
 	LibAVParams( const std::string& prefixScope, const std::string& prefixOperation );
 
-	/**
-	 * @brief Get all FFmpeg options and values corresponding to the OFX parameters contains in the object.
-	 */
-	LibAVOptions getLibAVOptions( const std::string& subGroupName="" ) const ;
-
 	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
 	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 
@@ -75,7 +70,7 @@ public:
 	 */
 	OFX::ValueParam* getOFXParameter( const std::string& libAVOptionName, const std::string& subGroupName="" ) ;
 
-public:
+private:
 	/**
 	 * @brief Contains several OFX parameters with different type.
 	 * Real type could be:
