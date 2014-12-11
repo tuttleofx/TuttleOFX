@@ -21,39 +21,39 @@ LibAVParams::LibAVParams( const std::string& prefixScope, const std::string& pre
 	: _paramOFX()
 	, _childsPerChoice()
 	, _avContext( NULL )
+{
+	// Create context
+	if( prefixScope == kPrefixFormat )
 	{
-	    // Create context
-	    if( prefixScope == kPrefixFormat )
-		{
-			if( prefixOperation == kPrefixEncoding )
-				_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_ENCODING_PARAM ) ); 
-			else if( prefixOperation == kPrefixDecoding )
-				_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_DECODING_PARAM ) ); 
-		}
-	    else if( prefixScope == kPrefixVideo )
-		{
-			if( prefixOperation == kPrefixEncoding )
-				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
-			else if( prefixOperation == kPrefixDecoding )
-				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
-		}
-	    else if( prefixScope == kPrefixAudio )
-		{
-			if( prefixOperation == kPrefixEncoding )
-				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
-			else if( prefixOperation == kPrefixDecoding )
-				_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
-		}
-		else if( prefixScope == kPrefixMetaData )
-		{
-			_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_METADATA ) ); 
-		}
-	    else
-	    {
-			BOOST_THROW_EXCEPTION( exception::Failed()
-				<< exception::user() + ": Can't create a context with the given scope " + prefixScope + " and the given operation " + prefixOperation );
-	    }
+		if( prefixOperation == kPrefixEncoding )
+			_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_ENCODING_PARAM ) ); 
+		else if( prefixOperation == kPrefixDecoding )
+			_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_DECODING_PARAM ) ); 
 	}
+	else if( prefixScope == kPrefixVideo )
+	{
+		if( prefixOperation == kPrefixEncoding )
+			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
+		else if( prefixOperation == kPrefixDecoding )
+			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
+	}
+	else if( prefixScope == kPrefixAudio )
+	{
+		if( prefixOperation == kPrefixEncoding )
+			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
+		else if( prefixOperation == kPrefixDecoding )
+			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
+	}
+	else if( prefixScope == kPrefixMetaData )
+	{
+		_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_METADATA ) ); 
+	}
+	else
+	{
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user() + ": Can't create a context with the given scope " + prefixScope + " and the given operation " + prefixOperation );
+	}
+}
 
 LibAVParams::LibAVOptions LibAVParams::getLibAVOptions( const std::string& subGroupName ) const
 {
@@ -266,8 +266,6 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 				}
 				case avtranscoder::eOptionBaseTypeInt:
 				{
-					int defaultValue = option.getDefaultInt();
-					int value = option.getInt();
 					if( option.getDefaultInt() == option.getInt() )
 						continue;
 					break;
