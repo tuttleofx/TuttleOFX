@@ -133,7 +133,7 @@ LibAVParams::LibAVOptions LibAVParams::getLibAVOptions( const std::string& subGr
 		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
 		if( paramRatio )
 		{
-			optionValue = boost::to_string( paramRatio->getValue().x ) + "." + boost::to_string( paramRatio->getValue().y );
+			optionValue = boost::to_string( paramRatio->getValue().x ) + ":" + boost::to_string( paramRatio->getValue().y );
 			optionsNameAndValue.insert( std::make_pair( libavOptionName, optionValue ) );
 			continue;
 		}
