@@ -467,8 +467,8 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	ensureVideoIsOpen();
 
-	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile() );
-	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfile() );
+	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile( true ) );
+	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfile( true ) );
 	
 	// get source image
 	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc();

@@ -526,10 +526,10 @@ void AVWriterPlugin::initOutput()
 		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
 		profile[ avtranscoder::constants::avProfileFormat ] = params._formatName;
 
-		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile();
+		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile( false );
 		profile.insert( formatProfile.begin(), formatProfile.end() );
 
-		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._formatName );
+		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( false, params._formatName );
 		profile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
 
 		_outputFile->setProfile( profile );
@@ -590,10 +590,10 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		else
 			profile[ avtranscoder::constants::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
 
-		avtranscoder::ProfileLoader::Profile videoProfile = _paramVideoCustom.getCorrespondingProfile();
+		avtranscoder::ProfileLoader::Profile videoProfile = _paramVideoCustom.getCorrespondingProfile( false );
 		profile.insert( videoProfile.begin(), videoProfile.end() );
 
-		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( params._videoCodecName );
+		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( false, params._videoCodecName );
 		profile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
 
 		// Warning: Fix libav options which can make the encoder failed if bad value
@@ -684,10 +684,10 @@ void AVWriterPlugin::initAudio()
 				if( ! params._videoPixelFormatName.empty() )
 					profile[ avtranscoder::constants::avProfileSampleFormat ] = params._audioSampleFormatName;
 
-				avtranscoder::ProfileLoader::Profile audioProfile = _paramAudioCustom.getCorrespondingProfile();
+				avtranscoder::ProfileLoader::Profile audioProfile = _paramAudioCustom.getCorrespondingProfile( false );
 				profile.insert( audioProfile.begin(), audioProfile.end() );
 
-				avtranscoder::ProfileLoader::Profile audioDetailProfile = _paramAudioDetailCustom.getCorrespondingProfile( params._audioCodecName );
+				avtranscoder::ProfileLoader::Profile audioDetailProfile = _paramAudioDetailCustom.getCorrespondingProfile( false, params._audioCodecName );
 				profile.insert( audioDetailProfile.begin(), audioDetailProfile.end() );
 			}
 			// Rewrap

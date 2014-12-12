@@ -146,7 +146,7 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::Opti
 	}
 }
 
-avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const std::string& subGroupName ) const
+avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const bool returnFullProfile , const std::string& subGroupName ) const
 {
 	// Get all libav options and values corresponding to the OFX parameters contains in the object
 	LibAVOptions optionsNameAndValue;
@@ -248,57 +248,61 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	avtranscoder::ProfileLoader::Profile profile;
 	BOOST_FOREACH( LibAVOptions::value_type& nameAndValue, optionsNameAndValue )
 	{
-		try
+		if( ! returnFullProfile )
 		{
-			// Skip options with a current value equals to their default value
-			const avtranscoder::Option& option = _avContext->getOption( nameAndValue.first );
-			switch( option.getType() )
+			try
 			{
-				case avtranscoder::eOptionBaseTypeBool:
+				// Skip options with a current value equals to their default value
+				const avtranscoder::Option& option = _avContext->getOption( nameAndValue.first );
+				switch( option.getType() )
 				{
-					if( option.getDefaultBool() == option.getBool() )
+					case avtranscoder::eOptionBaseTypeBool:
+					{
+						if( option.getDefaultBool() == option.getBool() )
+							continue;
+						break;
+					}
+					case avtranscoder::eOptionBaseTypeInt:
+					{
+						if( option.getDefaultInt() == option.getInt() )
+							continue;
+						break;
+					}
+					case avtranscoder::eOptionBaseTypeDouble:
+					{
+						if( boost::test_tools::check_is_close( option.getDefaultDouble(), option.getDouble(), boost::test_tools::percent_tolerance( 0.5 ) ) )
+							continue;
+						break;
+					}
+					case avtranscoder::eOptionBaseTypeString:
+					{
+						if( option.getDefaultString() == option.getString() )
+							continue;
+						break;
+					}
+					case avtranscoder::eOptionBaseTypeRatio:
+					{
+						if( option.getDefaultRatio() == option.getRatio() )
+							continue;
+						break;
+					}
+					case avtranscoder::eOptionBaseTypeChoice:
+					{
+						if( option.getDefaultInt() == option.getInt() )
+							continue;
+						break;
+					}
+					default:
 						continue;
-					break;
 				}
-				case avtranscoder::eOptionBaseTypeInt:
-				{
-					if( option.getDefaultInt() == option.getInt() )
-						continue;
-					break;
-				}
-				case avtranscoder::eOptionBaseTypeDouble:
-				{
-					if( boost::test_tools::check_is_close( option.getDefaultDouble(), option.getDouble(), boost::test_tools::percent_tolerance( 0.5 ) ) )
-						continue;
-					break;
-				}
-				case avtranscoder::eOptionBaseTypeString:
-				{
-					if( option.getDefaultString() == option.getString() )
-						continue;
-					break;
-				}
-				case avtranscoder::eOptionBaseTypeRatio:
-				{
-					if( option.getDefaultRatio() == option.getRatio() )
-						continue;
-					break;
-				}
-				case avtranscoder::eOptionBaseTypeChoice:
-				{
-					if( option.getDefaultInt() == option.getInt() )
-						continue;
-					break;
-				}
-				default:
-					continue;
 			}
-			profile[ nameAndValue.first ] = nameAndValue.second;
+			catch( std::exception& e )
+			{
+				TUTTLE_TLOG( TUTTLE_INFO, "Can't get option " << nameAndValue.first << ": " << e.what() );
+			}
 		}
-		catch( std::exception& e )
-		{
-			TUTTLE_TLOG( TUTTLE_INFO, "Can't get option " << nameAndValue.first << ": " << e.what() );
-		}
+		// add value to profile
+		profile[ nameAndValue.first ] = nameAndValue.second;
 	}
 	return profile;
 }
