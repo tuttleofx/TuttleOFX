@@ -336,10 +336,6 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 }
 
-/**
- * @brief Retrieve Pixel Aspect Ratio from parameters (if custom) or from video file.
- * @warning video have to be open (see ensureVideoIsOpen)
- */
 double AVReaderPlugin::retrievePAR()
 {
 	if( ! OFX::getImageEffectHostDescription()->supportsMultipleClipPARs )
@@ -466,10 +462,7 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 
 	return true;
 }
-/**
- * @brief The overridden begin render function
- * @param[in]   args     Begin Rendering parameters
- */
+
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	ensureVideoIsOpen();
@@ -490,10 +483,6 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
 }
 
-/**
- * @brief The overridden render function
- * @param[in]   args     Rendering parameters
- */
 void AVReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	if( ! _initVideo )

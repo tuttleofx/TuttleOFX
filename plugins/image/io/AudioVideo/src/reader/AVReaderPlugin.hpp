@@ -22,7 +22,7 @@ namespace reader {
 
 struct AVReaderParams
 {
-	std::string _filepath;      ///< Ffmpeg filepath
+	std::string _filepath;
 };
 
 /**
@@ -52,6 +52,10 @@ public:
 	inline bool varyOnTime() const { return true; }
 
 private:
+	/**
+	* @brief Retrieve Pixel Aspect Ratio from parameters (if custom) or from video file.
+	* @warning video have to be open (see ensureVideoIsOpen)
+	*/
 	double retrievePAR();
 	
 public:

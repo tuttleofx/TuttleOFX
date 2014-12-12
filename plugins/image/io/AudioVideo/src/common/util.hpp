@@ -56,7 +56,7 @@ public:
 	avtranscoder::ProfileLoader::Profile getCorrespondingProfile( const std::string& subGroupName="" ) const;
 	
 	/**
-	 * @brief Set the FFmpeg option and use its value to set the corresponding OFX parameter
+	 * @brief Set the libav option and use its value to set the corresponding OFX parameter
 	 * @param libAVOptionName: the option whithout all prefixes.
 	 * @param value: the value will be cast to the corresponding type (int, double...).
 	 * @param subGroupName
@@ -65,7 +65,7 @@ public:
 	void setOption( const std::string& libAVOptionName, const std::string& value, const std::string& prefix, const std::string& subGroupName="" );
 
 	/**
-	 * @brief Get the OFX parameter which corresponds to the FFmpeg option name (whithout any prefixes).
+	 * @brief Get the OFX parameter which corresponds to the libav option name (whithout any prefixes).
 	 * @note return NULL if not found.
 	 */
 	OFX::ValueParam* getOFXParameter( const std::string& libAVOptionName, const std::string& subGroupName="" ) ;

@@ -162,7 +162,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
 		if( paramBoolean )
 		{
-			// FFMPEG flags
+			// libav flags
 			if( param->getName().find( kPrefixFlag ) != std::string::npos )
 			{
 				std::string optionValue;
@@ -310,7 +310,7 @@ void LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 		// Get option from context
 		avtranscoder::Option& option = _avContext->getOption( libAVOptionName );
 
-		// Set FFmpeg option's value
+		// Set libav option's value
 		option.setString( value );
 
 		// Get corresponding OFX parameter

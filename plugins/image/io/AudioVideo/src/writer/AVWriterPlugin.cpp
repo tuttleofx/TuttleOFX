@@ -201,10 +201,10 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 	{
 		if( ofxParam->getValue().size() > 0 )
 		{
-			std::string ffmpegKey = ofxParam->getName();
-			std::string ffmpegValue = ofxParam->getValue();
-			ffmpegKey.erase( 0, common::prefixSize );
-			params._metadatas.push_back( std::make_pair( ffmpegKey, ffmpegValue ) );
+			std::string libavKey = ofxParam->getName();
+			std::string libavValue = ofxParam->getValue();
+			libavKey.erase( 0, common::prefixSize );
+			params._metadatas.push_back( std::make_pair( libavKey, libavValue ) );
 		}
 	}
 	return params;
@@ -596,7 +596,7 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( params._videoCodecName );
 		profile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
 
-		// Warning: Fix FFmpeg options which can make the encoder failed if bad value
+		// Warning: Fix libav options which can make the encoder failed if bad value
 		avtranscoder::ProfileLoader::Profile::iterator itProfile = profile.begin();
 		while( itProfile != profile.end() )
 		{
