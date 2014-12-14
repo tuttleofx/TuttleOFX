@@ -207,8 +207,13 @@ public:
 	/// reset this property to the default
 	virtual void reset() = 0;
 
-	// get a string representing the value of this property at element nth
-	virtual std::string getStringValue( int index = 0 ) const = 0;
+	/// get a string representing the value of this property at element nth
+	virtual std::string getStringValueAt( int index = 0 ) const = 0;
+
+	std::vector<std::string> getStringValues() const;
+
+	/// get a string representing all the values of this property
+	std::string getStringValue() const;
 
 private:
 	friend class boost::serialization::access;

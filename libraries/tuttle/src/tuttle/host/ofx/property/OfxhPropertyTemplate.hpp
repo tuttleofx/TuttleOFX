@@ -119,7 +119,7 @@ public:
 		return new OfxhPropertyTemplate( *this );
 	}
 
-	virtual ~OfxhPropertyTemplate()
+	~OfxhPropertyTemplate()
 	{}
 
 	bool operator==( const OfxhProperty& other ) const
@@ -213,7 +213,7 @@ public:
 	size_t getDimension() const OFX_EXCEPTION_SPEC;
 
 	/// return the value as a string
-	inline std::string getStringValue( int index = 0 ) const
+	inline std::string getStringValueAt( int index = 0 ) const
 	{
 		return boost::lexical_cast<std::string>( _value[index] );
 	}

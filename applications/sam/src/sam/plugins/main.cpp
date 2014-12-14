@@ -32,12 +32,12 @@ std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)
 		int n = 0;
 		for( ; n < (int)( prop.getDimension() ) - 1; ++n )
 		{
-			s += prop.getStringValue( n );
+			s += prop.getStringValueAt( n );
 			s += ", ";
 		}
 		if( prop.getDimension() > 0 )
 		{
-			s += prop.getStringValue( n );
+			s += prop.getStringValueAt( n );
 		}
 	}
 	return s;

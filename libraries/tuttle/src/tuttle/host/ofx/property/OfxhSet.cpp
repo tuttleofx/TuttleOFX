@@ -385,10 +385,10 @@ std::ostream& operator<<( std::ostream& os, const OfxhSet& v )
 		int i = 0;
 		for( ; i < (int)( prop.getDimension() ) - 1; ++i )
 		{
-			os << prop.getStringValue( i ) << ", ";
+			os << prop.getStringValueAt( i ) << ", ";
 		}
 		if( prop.getDimension() > 0 )
-			os << prop.getStringValue( i );
+			os << prop.getStringValueAt( i );
 		os << "] " << std::endl;
 	}
 	os << "}" << std::endl;
