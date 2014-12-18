@@ -165,13 +165,13 @@ void AVWriterPlugin::updatePixelFormat( const std::string& videoCodecName )
 }
 
 AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
-	: AVOptionPlugin( handle )
+	: AVOptionPlugin<WriterPlugin>( handle )
 	, _initWriter ( false )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_paramFormat     = AVOptionPlugin::fetchChoiceParam( kParamFormat );
+	_paramFormat     = AVOptionPlugin<WriterPlugin>::fetchChoiceParam( kParamFormat );
 	_paramVideoCodec = fetchChoiceParam( kParamVideoCodec );
 	_paramAudioCodec = fetchChoiceParam( kParamAudioCodec );
 	
