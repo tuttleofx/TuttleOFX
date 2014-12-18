@@ -16,7 +16,7 @@ using namespace boost::gil;
 namespace fs = boost::filesystem;
 
 AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
-	: AVOptionPlugin( handle )
+	: AVOptionPlugin<ReaderPlugin>( handle )
 	, _errorInFile( false )
 	, _initReader( false )
 {
