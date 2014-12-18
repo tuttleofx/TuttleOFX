@@ -230,6 +230,7 @@ function(tuttle_add_executable TARGET SOURCES)
         if (APPLE)
             set_target_properties(${TARGET} 
                     PROPERTIES INSTALL_RPATH "@loader_path/../lib")
+            set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
         else(APPLE)
           set_target_properties(${TARGET}
                     PROPERTIES INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN")
