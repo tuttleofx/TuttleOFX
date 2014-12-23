@@ -107,7 +107,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         else(APPLE)
             set_target_properties(${PLUGIN_NAME}
                 PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../lib:$ORIGIN")
-            set_target_properties(${PLUGIN_NAME} PROPERTIES LINK_FLAGS "-Wl,--version-script=,${PROJECT_SOURCE_DIR}/libraries/openfxHack/Support/include/linuxSymbols")
+            set_target_properties(${PLUGIN_NAME} PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/libraries/openfxHack/Support/include/linuxSymbols")
         endif(APPLE)
      
         # Install OFX plugin as specified in
