@@ -1,5 +1,5 @@
 PHONY_TARGETS := distclean all configure
-.PHONY: $(PHONY_TARGETS)
+.PHONY: install $(PHONY_TARGETS)
 
 SHELL := /bin/bash
 RM    := rm -rf
