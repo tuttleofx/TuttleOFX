@@ -418,7 +418,7 @@ int main( int argc, char** argv )
 				// start to analyse and execute all sub-commands //
 				
 				// Load plugins
-				const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+				const std::string relativePathToPlugins = (tuttle::common::canonicalApplicationFolder(argv[0]).parent_path() / "OFX").string();
 				ttl::core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 				ttl::core().preload();
 
