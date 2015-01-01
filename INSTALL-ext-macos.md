@@ -13,7 +13,9 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 # Register useful packages:
 
 ```bash
-brew tap Homebrew/homebrew-science
+brew tap homebrew/science
+brew tap homebrew/x11
+brew tap homebrew/python
 brew tap cbenhagen/video
 ```
 
