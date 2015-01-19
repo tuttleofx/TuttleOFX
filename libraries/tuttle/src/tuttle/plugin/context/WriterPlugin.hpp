@@ -49,7 +49,7 @@ public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
 		if( _isSequence )
-			return _filePattern.getAbsoluteFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) );
+			return _filePattern.getFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) );
 		else
 			return _paramFilepath->getValue();
 	}
@@ -59,7 +59,7 @@ public:
 		namespace bfs = boost::filesystem;
 		if( _isSequence )
 		{
-			return _filePattern.getAbsoluteDirectory().string();
+			return _filePattern.getFirstFilename();
 		}
 		else
 		{
@@ -71,7 +71,7 @@ public:
 	std::string getAbsoluteFirstFilename() const
 	{
 		if( _isSequence )
-			return _filePattern.getAbsoluteFirstFilename();
+			return _filePattern.getFirstFilename();
 		else
 			return _paramFilepath->getValue();
 	}
