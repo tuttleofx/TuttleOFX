@@ -3,7 +3,7 @@
 
 #include "AVWriterPlugin.hpp"
 
-#include <AvTranscoder/frame/VideoFrame.hpp>
+#include <AvTranscoder/decoder/VideoGenerator.hpp>
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
@@ -24,6 +24,7 @@ class AVWriterProcess : public ImageGilFilterProcessor<View>
 protected:
 	AVWriterPlugin& _plugin; ///< Rendering plugin
 	AVProcessParams _params;
+	avtranscoder::VideoGenerator& _videoStream; ///< The output video stream (has link, no ownership)
 
 public:
 	AVWriterProcess( AVWriterPlugin& instance );
