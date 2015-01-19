@@ -7,7 +7,7 @@
 
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/InputFile.hpp>
-#include <AvTranscoder/essenceStream/AvInputVideo.hpp>
+#include <AvTranscoder/decoder/VideoDecoder.hpp>
 #include <AvTranscoder/frame/VideoFrame.hpp>
 #include <AvTranscoder/transform/VideoTransform.hpp>
 
@@ -82,7 +82,7 @@ public:
 	OFX::StringParam* _paramMetaDataUnknown;
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
-	boost::scoped_ptr<avtranscoder::AvInputVideo> _inputStreamVideo;
+	boost::scoped_ptr<avtranscoder::VideoDecoder> _inputStreamVideo;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	

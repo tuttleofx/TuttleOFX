@@ -2,9 +2,9 @@
 
 #include <writer/AVWriterDefinitions.hpp>
 
-#include <AvTranscoder/option/FormatContext.hpp>
-#include <AvTranscoder/option/CodecContext.hpp>
-#include <AvTranscoder/option/Option.hpp>
+extern "C" {
+#include <libavformat/avformat.h>
+}
 
 #include <boost/foreach.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -20,39 +20,52 @@ namespace common {
 LibAVParams::LibAVParams( const std::string& prefixScope, const std::string& prefixOperation )
 	: _paramOFX()
 	, _childsPerChoice()
+	, _avOptions()
 	, _avContext( NULL )
 {
-	// Create context
+	int flags = 0;
 	if( prefixScope == kPrefixFormat )
 	{
+		_avContext = avformat_alloc_context();
+
 		if( prefixOperation == kPrefixEncoding )
-			_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_ENCODING_PARAM ) ); 
+			flags = AV_OPT_FLAG_ENCODING_PARAM;
 		else if( prefixOperation == kPrefixDecoding )
-			_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_DECODING_PARAM ) ); 
-	}
-	else if( prefixScope == kPrefixVideo )
-	{
-		if( prefixOperation == kPrefixEncoding )
-			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
-		else if( prefixOperation == kPrefixDecoding )
-			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM ) );
-	}
-	else if( prefixScope == kPrefixAudio )
-	{
-		if( prefixOperation == kPrefixEncoding )
-			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
-		else if( prefixOperation == kPrefixDecoding )
-			_avContext.reset( new avtranscoder::CodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM ) );
-	}
-	else if( prefixScope == kPrefixMetaData )
-	{
-		_avContext.reset( new avtranscoder::FormatContext( AV_OPT_FLAG_METADATA ) ); 
+			flags = AV_OPT_FLAG_DECODING_PARAM;
 	}
 	else
 	{
-		BOOST_THROW_EXCEPTION( exception::Failed()
-			<< exception::user() + ": Can't create a context with the given scope " + prefixScope + " and the given operation " + prefixOperation );
+		_avContext = avcodec_alloc_context3( NULL );
+
+		if( prefixScope == kPrefixVideo )
+		{
+			if( prefixOperation == kPrefixEncoding )
+				flags = AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM;
+			else if( prefixOperation == kPrefixDecoding )
+				flags = AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM;
+		}
+		else if( prefixScope == kPrefixAudio )
+		{
+			if( prefixOperation == kPrefixEncoding )
+				flags = AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM;
+			else if( prefixOperation == kPrefixDecoding )
+				flags = AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM;
+		}
+		else if( prefixScope == kPrefixMetaData )
+		{
+			if( prefixOperation == kPrefixEncoding )
+				flags = AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_METADATA;
+			else if( prefixOperation == kPrefixDecoding )
+				flags = AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA;
+		}
 	}
+
+	avtranscoder::loadOptions( _avOptions, _avContext, flags );
+}
+
+LibAVParams::~LibAVParams()
+{
+	av_free( _avContext );
 }
 
 void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
@@ -253,7 +266,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 			try
 			{
 				// Skip options with a current value equals to their default value
-				const avtranscoder::Option& option = _avContext->getOption( nameAndValue.first );
+				const avtranscoder::Option& option = _avOptions.at( nameAndValue.first );
 				switch( option.getType() )
 				{
 					case avtranscoder::eOptionBaseTypeBool:
@@ -312,7 +325,7 @@ void LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 	try
 	{
 		// Get option from context
-		avtranscoder::Option& option = _avContext->getOption( libAVOptionName );
+		avtranscoder::Option& option = _avOptions.at( libAVOptionName );
 
 		// Set libav option's value
 		option.setString( value );
@@ -321,7 +334,7 @@ void LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 		OFX::ValueParam* param = getOFXParameter( libAVOptionName, subGroupName );
 		if( ! param)
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << subGroupName << ": " << e.what() );
+			TUTTLE_TLOG( TUTTLE_INFO, "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << subGroupName );
 		}
 
 		// Set OFX parameter's value

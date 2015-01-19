@@ -32,7 +32,7 @@ void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	_plugin._lastFrame = args.time;
 	
 	// Fetch output image
-	if( ! _plugin._inputStreamVideo->readNextFrame( *_plugin._sourceImage ) )
+	if( ! _plugin._inputStreamVideo->decodeNextFrame( *_plugin._sourceImage ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "Can't open the frame at time " + args.time
@@ -51,8 +51,9 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 {	
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-		
-	size_t components = _plugin._imageToDecode->desc().getPixelDesc().getComponents();
+
+	avtranscoder::PixelProperties pixel( _plugin._inputFile->getProperties().getVideoProperties().at( _plugin._paramVideoStreamIndex->getValue() ).getPixelProperties() );
+	size_t components = pixel.getNbComponents();
 	size_t bitDepth = 8; // @todo: waiting for getMaxBitPerChannel() in avTranscoder
 	
 	switch( bitDepth )
@@ -111,16 +112,16 @@ template<typename FileView>
 View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::VideoFrame& image )
 {
 	typedef typename FileView::value_type Pixel;
-	
+
 	size_t width = image.desc().getWidth();
 	size_t height = image.desc().getHeight();
-	size_t pixelDepthInBytes = 1; // @todo: need to be dynamic to support images with pixelDepth > 8bits
-	size_t rowSize = image.desc().getPixelDesc().getComponents() * pixelDepthInBytes * image.desc().getWidth(); //in bytes
-	
+	avtranscoder::PixelProperties pixel = _plugin._inputFile->getProperties().getVideoProperties().at( _plugin._paramVideoStreamIndex->getValue() ).getPixelProperties();
+	size_t rowSizeInBytes = pixel.getNbComponents() * width;
+
 	FileView avSrcView = interleaved_view( 
 		width, height,
 		(const Pixel*)( image.getPtr() ),
-		rowSize );
+		rowSizeInBytes );
 	
 	copy_and_convert_pixels( avSrcView, dst );
 	

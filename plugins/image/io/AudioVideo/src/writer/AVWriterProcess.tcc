@@ -3,7 +3,7 @@
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <AvTranscoder/codec/VideoCodec.hpp>
-#include <AvTranscoder/essenceStream/GeneratorVideo.hpp>
+#include <AvTranscoder/decoder/VideoGenerator.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -48,10 +48,10 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	uint8_t* imageData = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	
 	// set video stream next frame
-	avtranscoder::GeneratorVideo* videoStream = &static_cast<avtranscoder::GeneratorVideo&>( _plugin._transcoder->getStreamTranscoder( 0 ).getCurrentEssence() );
+	avtranscoder::VideoGenerator* videoStream = &static_cast<avtranscoder::VideoGenerator&>( _plugin._transcoder->getStreamTranscoder( 0 ).getCurrentDecoder() );
 	const size_t bufferSize = videoStream->getVideoFrameDesc().getDataSize();
 	_plugin._videoFrame.copyData( imageData, bufferSize );
-	videoStream->setFrame( _plugin._videoFrame );
+	videoStream->setNextFrame( _plugin._videoFrame );
 
 	// process
 	_plugin._transcoder->processFrame();

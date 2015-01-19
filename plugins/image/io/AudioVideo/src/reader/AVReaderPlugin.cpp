@@ -3,11 +3,8 @@
 #include "AVReaderDefinitions.hpp"
 
 #include <AvTranscoder/util.hpp>
-#include <AvTranscoder/option/Context.hpp>
-#include <AvTranscoder/option/FormatContext.hpp>
-#include <AvTranscoder/option/CodecContext.hpp>
+#include <AvTranscoder/file/FormatContext.hpp>
 #include <AvTranscoder/progress/NoDisplayProgress.hpp>
-#include <AvTranscoder/frame/Pixel.hpp>
 #include <AvTranscoder/mediaProperty/FileProperties.hpp>
 
 #include <boost/foreach.hpp>
@@ -47,16 +44,20 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
 
 	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_DECODING_PARAM );
-	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
+	avtranscoder::OptionArray formatOptions( formatContext.getOptions() );
 	_paramFormatCustom.fetchLibAVParams( *this, formatOptions, common::kPrefixFormat );
 
-	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
+	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray videoOptions;
+	avtranscoder::loadOptions( videoOptions, videoContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	_paramVideoCustom.fetchLibAVParams( *this, videoOptions, common::kPrefixVideo );
-	
-	avtranscoder::CodecContext metadataCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
-	avtranscoder::OptionArray metadataOptions = metadataCodecContext.getOptions();
-	_paramMetaDataCustom.fetchLibAVParams( *this, metadataOptions, common::kPrefixMetaData );
+	av_free( videoContext );
+
+	AVCodecContext* metaDataContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray metaDataOptions;
+	avtranscoder::loadOptions( metaDataOptions, metaDataContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	_paramVideoCustom.fetchLibAVParams( *this, metaDataOptions, common::kPrefixMetaData );
+	av_free( metaDataContext );
 	
 	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
 	_paramFormatDetailCustom.fetchLibAVParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
@@ -107,8 +108,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_inputFile.reset( new avtranscoder::InputFile( filepath ) );
 		_lastInputFilePath = filepath;
 		avtranscoder::NoDisplayProgress progress;
-		// using fast analyse ( do not extract gop structure )
-		_inputFile->analyse( progress, avtranscoder::eAnalyseLevelHeader );
+		_inputFile->analyse( progress, avtranscoder::eAnalyseLevelFirstGop );
 		
 		// get streamId of the video stream
 		if( videoStreamIndex >= _inputFile->getProperties().getVideoProperties().size() )
@@ -121,7 +121,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_inputFile->activateStream( _paramVideoStreamIndex->getValue() );
 		
 		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::AvInputVideo( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
+		_inputStreamVideo.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
 		_inputStreamVideo->setup();
 	}
 	catch( std::exception& e )
@@ -365,12 +365,12 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	
 	ReaderPlugin::getClipPreferences( clipPreferences );
 
-	const avtranscoder::FileProperties fileProperties = _inputFile->getProperties();
+	const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
 
 	// conversion of bitdepth
 	if( getExplicitBitDepthConversion() == eParamReaderBitDepthAuto )
 	{
-		size_t bitDepth = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getBitDepth();
+		size_t bitDepth = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getPixelProperties().getBitsPerPixel();
 		OFX::EBitDepth fileBitDepth;
 		if( bitDepth == 0 )
 			fileBitDepth = OFX::eBitDepthNone;
@@ -392,7 +392,7 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	// conversion of channel
 	if( getExplicitChannelConversion() == eParamReaderChannelAuto )
 	{
-		size_t nbComponents = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getComponentsCount();
+		size_t nbComponents = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getPixelProperties().getNbComponents();
 		OFX::EPixelComponent filePixelComponent;
 		if( nbComponents == 0 )
 			filePixelComponent = OFX::ePixelComponentNone;
@@ -467,19 +467,15 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	ensureVideoIsOpen();
 
-	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile( true ) );
-	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfile( true ) );
-	
+	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile() );
+	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfile() );
+
 	// get source image
-	avtranscoder::VideoFrameDesc sourceImageDesc = _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc();
+	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc() );
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
-	
-	// get pixel data of image to decode
-	avtranscoder::Pixel dstPixel( "rgb24" );
-	
+
 	// get image to decode
-	avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc );
-	imageToDecodeDesc.setPixel( dstPixel.findPixel() );
+	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc.getWidth(), sourceImageDesc.getHeight(), "rgb24" );
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
 }
 

@@ -2,9 +2,6 @@
 #include "AVWriterProcess.hpp"
 #include "AVWriterDefinitions.hpp"
 
-#include <AvTranscoder/option/Context.hpp>
-#include <AvTranscoder/option/FormatContext.hpp>
-#include <AvTranscoder/option/CodecContext.hpp>
 #include <AvTranscoder/codec/AudioCodec.hpp>
 #include <AvTranscoder/progress/NoDisplayProgress.hpp>
 
@@ -38,7 +35,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
-	, _videoCodec( avtranscoder::eCodecTypeEncoder )
 	, _presetLoader( true ) 
 	, _lastOutputFilePath()
 	, _outputFps( 0 )
@@ -116,13 +112,17 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
 	_paramFormatCustom.fetchLibAVParams( *this, formatOptions, common::kPrefixFormat );
 
-	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
+	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray videoOptions;
+	avtranscoder::loadOptions( videoOptions, videoContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	_paramVideoCustom.fetchLibAVParams( *this, videoOptions, common::kPrefixVideo );
-	
-	avtranscoder::CodecContext audioCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	avtranscoder::OptionArray audioOptions = audioCodecContext.getOptions();
+	av_free( videoContext );
+
+	AVCodecContext* audioContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray audioOptions;
+	avtranscoder::loadOptions( audioOptions, audioContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	_paramAudioCustom.fetchLibAVParams( *this, audioOptions, common::kPrefixAudio );
+	av_free( audioContext );
 	
 	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
 	_paramFormatDetailCustom.fetchLibAVParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
@@ -610,25 +610,13 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		int width = bounds.x2 - bounds.x1;
 		int height = bounds.y2 - bounds.y1;
 
-		// describe input frame of transcode
-		avtranscoder::VideoFrameDesc imageDesc;
-		imageDesc.setWidth( width );
-		imageDesc.setHeight( height );
-		imageDesc.setDar( width, height );
-
-		// describe input pixel of transcode
-		avtranscoder::Pixel inputPixel;
-		inputPixel.setColorComponents( avtranscoder::eComponentRgb );
-		inputPixel.setPlanar( false );
-
-		imageDesc.setPixel( inputPixel );
-
-		// describe input codec of transcode
-		_videoCodec.setCodec( avtranscoder::eCodecTypeEncoder, profile[ avtranscoder::constants::avProfileCodec ] );
-		_videoCodec.setImageParameters( imageDesc );
+		// describe input frame and codec of transcode
+		avtranscoder::VideoCodec videoCodec( avtranscoder::eCodecTypeEncoder, profile[ avtranscoder::constants::avProfileCodec ] );
+		avtranscoder::VideoFrameDesc imageDesc( width, height, "rgb24" );
+		videoCodec.setImageParameters( imageDesc );
 
 		// add video stream
-		_transcoder->add( "", 0, profile, _videoCodec );
+		_transcoder->add( "", 0, profile, videoCodec );
 
 		_outputFps = boost::lexical_cast<double>( profile[ avtranscoder::constants::avProfileFrameRate ] );
 	}	
@@ -720,10 +708,8 @@ void AVWriterPlugin::initAudio()
 				avtranscoder::AudioCodec audioCodec( avtranscoder::eCodecTypeEncoder, profile[ avtranscoder::constants::avProfileCodec ] );
 				const size_t sampleRate = boost::lexical_cast<size_t>( profile[ avtranscoder::constants::avProfileSampleRate ] );
 				const size_t channels = boost::lexical_cast<size_t>( profile[ avtranscoder::constants::avProfileChannel ] );
-				audioCodec.setAudioParameters( 
-					sampleRate, 
-					channels, 
-					avtranscoder::getAVSampleFormat( profile[ avtranscoder::constants::avProfileSampleFormat ] ) );
+				avtranscoder::AudioFrameDesc audioDesc( sampleRate, channels, profile.at( avtranscoder::constants::avProfileSampleFormat ) );
+				audioCodec.setAudioParameters( audioDesc );
 				
 				_transcoder->add( "", 1, profile, audioCodec );
 			}

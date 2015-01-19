@@ -5,11 +5,9 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
-#include <AvTranscoder/util.hpp>
 #include <AvTranscoder/ProfileLoader.hpp>
 #include <AvTranscoder/transcoder/Transcoder.hpp>
 #include <AvTranscoder/file/OutputFile.hpp>
-#include <AvTranscoder/codec/VideoCodec.hpp>
 #include <AvTranscoder/frame/Frame.hpp>
 
 #include <boost/scoped_ptr.hpp>
@@ -159,8 +157,6 @@ public:
 	
 	// to process video
 	avtranscoder::Frame _videoFrame;
-	avtranscoder::VideoCodec _videoCodec;
-
 	avtranscoder::ProfileLoader _presetLoader;
 
 	std::string _lastOutputFilePath;  ///< To check if output file path has changed.

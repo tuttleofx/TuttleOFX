@@ -6,10 +6,11 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
+#include <AvTranscoder/common.hpp>
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Library.hpp>
-#include <AvTranscoder/option/CodecContext.hpp>
-#include <AvTranscoder/option/FormatContext.hpp>
+#include <AvTranscoder/Option.hpp>
+#include <AvTranscoder/file/FormatContext.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
@@ -28,6 +29,8 @@ namespace reader {
  */
 void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
+	avtranscoder::preloadCodecsAndFormats();
+
 	desc.setLabels(
 		"TuttleAVReader",
 		"AVReader",
@@ -122,10 +125,12 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
 	
 	/// VIDEO PARAMETERS
-	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
+	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray videoOptions;
+	avtranscoder::loadOptions( videoOptions, videoContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	common::addOptionsToGroup( desc, videoGroup, videoOptions, common::kPrefixVideo );
-	
+	av_free( videoContext );
+
 	OFX::BooleanParamDescriptor* useCustomSAR = desc.defineBooleanParam( kParamUseCustomSAR );
 	useCustomSAR->setLabel( "Override SAR" );
 	useCustomSAR->setDefault( false );
@@ -155,12 +160,14 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	avtranscoder::OptionArrayMap videoDetailledGroupOptions =  avtranscoder::getVideoCodecOptions(); 
 	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
-	
+
 	/// METADATA PARAMETERS
-	avtranscoder::CodecContext metadataCodecContext( AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
-	avtranscoder::OptionArray metadataOptions = metadataCodecContext.getOptions();
-	common::addOptionsToGroup( desc, metaGroup, metadataOptions, common::kPrefixMetaData );
-	
+	AVCodecContext* metaDataContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray metaDataOptions;
+	avtranscoder::loadOptions( metaDataOptions, metaDataContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
+	common::addOptionsToGroup( desc, metaGroup, metaDataOptions, common::kPrefixMetaData );
+	av_free( metaDataContext );
+
 	OFX::StringParamDescriptor* metaDataWrapper = desc.defineStringParam( kParamMetaDataWrapper );
 	metaDataWrapper->setLabel( kParamMetaDataWrapperLabel );
 	metaDataWrapper->setEnabled( false );

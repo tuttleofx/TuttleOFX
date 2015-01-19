@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
 
 #include <AvTranscoder/util.hpp>
-#include <AvTranscoder/option/Context.hpp>
+#include <AvTranscoder/Option.hpp>
 #include <AvTranscoder/ProfileLoader.hpp>
 
 #include <ofxsImageEffect.h>
@@ -46,12 +46,14 @@ public:
 	 */
 	LibAVParams( const std::string& prefixScope, const std::string& prefixOperation );
 
+	~LibAVParams();
+
 	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
 	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
 
 	/**
 	 * @brief Get value of OFX parameters contained in the object, and return the corresponding profileDesc.
-	 * @param returnFullProfile if the result contains options which have a current value equals to the default value
+	 * @param returnFullProfile: the result contains options which have a current value equals to the default value
 	 */
 	avtranscoder::ProfileLoader::Profile getCorrespondingProfile( const bool returnFullProfile=true , const std::string& subGroupName="" ) const;
 	
@@ -85,10 +87,8 @@ private:
 
 	std::map< OFX::ChoiceParam*, std::vector<std::string> > _childsPerChoice;  ///< List of values per OFX Choice
 
-	/**
-	 * @brief Hold the libav options.
-	 */
-	boost::scoped_ptr<avtranscoder::Context> _avContext;
+	avtranscoder::OptionMap _avOptions;  /// LibAV options to compute option value in libav and use the result for the corresponding OFX parameter
+	void* _avContext;  ///< LibAV context which is used to get and set options value
 };
 
 /**

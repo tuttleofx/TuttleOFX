@@ -6,11 +6,11 @@
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
+#include <AvTranscoder/common.hpp>
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Library.hpp>
 #include <AvTranscoder/ProfileLoader.hpp>
-#include <AvTranscoder/option/CodecContext.hpp>
-#include <AvTranscoder/option/FormatContext.hpp>
+#include <AvTranscoder/file/FormatContext.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
@@ -32,6 +32,8 @@ namespace writer {
  */
 void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
+	avtranscoder::preloadCodecsAndFormats();
+
 	desc.setLabels(
 		"TuttleAVWriter",
 		"AVWriter",
@@ -248,10 +250,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );
 	}
 	videoCodecPixelFmt->setParent( videoCustomGroupParam );
-	
-	avtranscoder::CodecContext videoCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	avtranscoder::OptionArray videoOptions = videoCodecContext.getOptions();
+
+	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray videoOptions;
+	avtranscoder::loadOptions( videoOptions, videoContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
 	common::addOptionsToGroup( desc, videoCustomGroupParam, videoOptions, common::kPrefixVideo );
+	av_free( videoContext );
 
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
@@ -314,10 +318,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		audioSampleFmtParam->appendOption( sampleFormats.at( i ) );
 	}
 	audioSampleFmtParam->setParent( audioCustomGroupParam );
-	
-	avtranscoder::CodecContext audioCodecContext( AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	avtranscoder::OptionArray audioOptions = audioCodecContext.getOptions();
+
+	AVCodecContext* audioContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray audioOptions;
+	avtranscoder::loadOptions( audioOptions, audioContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
 	common::addOptionsToGroup( desc, audioCustomGroupParam, audioOptions, common::kPrefixAudio );
+	av_free( audioContext );
 	
 	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
 	audioDetailledGroup->setLabel( "Detailled" );
