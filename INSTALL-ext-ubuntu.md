@@ -26,10 +26,12 @@ sudo apt-get install \
     libpng-dev \
     libcaca-dev \
     libjpeg-dev \
+    libturbojpeg \
     libglew-dev \
     libtiff-dev \
     libilmbase-dev \
     libopenexr-dev \
+    libopenimageio-dev \
     libMagickCore-dev \
     libraw-dev \
     libavdevice-dev \

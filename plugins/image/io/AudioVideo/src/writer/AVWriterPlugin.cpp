@@ -104,7 +104,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioOffset.back()->setIsSecretAndDisabled( true );
 	}
 	updateAudioParams();
-	
+
 	// our custom params
 	_paramUseCustomFps = fetchBooleanParam( kParamUseCustomFps );
 	_paramCustomFps = fetchDoubleParam( kParamCustomFps );

@@ -6,28 +6,33 @@ https://xquartz.macosforge.org
 # Install homebrew
 
 ```bash
-ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
 
-# Register useful packages:
+# Register useful packages
 
 ```bash
-brew tap Homebrew/homebrew-science
+brew tap homebrew/science
+brew tap homebrew/x11
+brew tap homebrew/python
 brew tap cbenhagen/video
 ```
 
 
-# With homebrew, you can get a full TuttleOFX installation:
+# With homebrew, you can get a full TuttleOFX installation
 
 ```bash
 brew install tuttleofx
-
 ```
 
-# To build it yourself, you can just install the dependencies:
+# To build TuttleOFX by yourself, you can use homebrew to install dependencies
 
 ```bash
-brew install cmake swig ilmbase openexr jasper little-cms2 glew freetype ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr numpy openjpeg opencolorio openimageio
+# Print dependencies
+brew deps tuttleofx
+
+# Install dependencies
+brew install tuttleofx --only-dependencies
 ```
 

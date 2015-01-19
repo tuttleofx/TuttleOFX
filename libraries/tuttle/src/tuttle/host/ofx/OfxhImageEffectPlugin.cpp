@@ -202,6 +202,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 		_pluginLoadGuard.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
 		    << exception::dev( "loadAndDescribeAction: OfxPlugin is NULL." )
+		    << exception::pluginIdentifier( getIdentifier() )
 		    << exception::ofxApi( getApiHandler()._apiName ) );
 	}
 
@@ -212,6 +213,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 		_pluginLoadGuard.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
 		    << exception::dev( "Load Action failed." )
+		    << exception::pluginIdentifier( getIdentifier() )
 		    << exception::ofxApi( getApiHandler()._apiName ) );
 	}
 
@@ -222,6 +224,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 		_pluginLoadGuard.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
 		    << exception::dev( "Describe Action failed." )
+		    << exception::pluginIdentifier( getIdentifier() )
 		    << exception::ofxApi( getApiHandler()._apiName ) );
 	}
 	initContexts();
@@ -242,6 +245,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
 		    << exception::dev( "Context not found." )
+		    << exception::pluginIdentifier( getIdentifier() )
 		    << exception::ofxContext( context ) );
 	}
 	return describeInContextAction( context );

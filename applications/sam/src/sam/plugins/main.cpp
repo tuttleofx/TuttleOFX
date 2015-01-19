@@ -32,12 +32,12 @@ std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)
 		int n = 0;
 		for( ; n < (int)( prop.getDimension() ) - 1; ++n )
 		{
-			s += prop.getStringValue( n );
+			s += prop.getStringValueAt( n );
 			s += ", ";
 		}
 		if( prop.getDimension() > 0 )
 		{
-			s += prop.getStringValue( n );
+			s += prop.getStringValueAt( n );
 		}
 	}
 	return s;
@@ -355,7 +355,7 @@ int main( int argc, char** argv )
 		bal::split( filters, vm[kFilterOptionLongName].as<std::string>(), bal::is_any_of(","));
 	}
 
-	const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+	const std::string relativePathToPlugins = (tuttle::common::canonicalApplicationFolder(argv[0]).parent_path() / "OFX").string();
 	tth::core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 
 	if( vm.count(kAllOptionLongName) | (plugins.size() == 0) )

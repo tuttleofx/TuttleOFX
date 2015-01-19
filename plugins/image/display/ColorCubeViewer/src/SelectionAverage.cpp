@@ -61,7 +61,7 @@ bool SelectionAverage::computeAverageSelection(OFX::Clip* clipColor, const OfxPo
 	{	
 		return false;
 	}
-	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time, renderScale)) );	//scoped pointer of current source clip
 
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
@@ -117,7 +117,7 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 		return;
 	}
 
-	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time, renderScale)) );	//scoped pointer of current source clip
 	
 	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipColor->getPixelRod(_time,renderScale)); 
 	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipColor->getCanonicalRod(_time, renderScale));

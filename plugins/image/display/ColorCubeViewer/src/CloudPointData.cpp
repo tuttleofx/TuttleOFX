@@ -44,7 +44,7 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 	{	
 		return false;
 	}
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_time, clipSrc->getCanonicalRod(_time)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_time, clipSrc->getCanonicalRod(_time, renderScale)) );	//scoped pointer of current source clip
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
 	{
@@ -147,7 +147,7 @@ bool CloudPointData::generateColorSelectionVBO(OFX::Clip* clipColor, const OfxPo
 		return false;
 	}
 	
-	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current color clip
+	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time, renderScale)) );	//scoped pointer of current color clip
 	
 	// Compatibility tests
 	if( !src.get() ) // color clip source isn't accessible
@@ -220,7 +220,7 @@ bool CloudPointData::generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPo
 		return false;
 	}
 	
-	boost::scoped_ptr<OFX::Image> src( clipSpill->fetchImage(_time, clipSpill->getCanonicalRod(_time)) );	//scoped pointer of current color clip
+	boost::scoped_ptr<OFX::Image> src( clipSpill->fetchImage(_time, clipSpill->getCanonicalRod(_time, renderScale)) );	//scoped pointer of current color clip
 	
 	// Compatibility tests
 	if( !src.get() ) // color clip source isn't accessible

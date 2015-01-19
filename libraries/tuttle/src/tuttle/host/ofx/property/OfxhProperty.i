@@ -1,5 +1,6 @@
 %include <tuttle/host/global.i>
 
+%include <std_vector.i>
 %include <std_string.i>
 
 %{

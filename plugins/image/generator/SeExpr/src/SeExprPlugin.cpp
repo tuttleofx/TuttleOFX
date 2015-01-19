@@ -57,8 +57,8 @@ SeExprProcessParams<SeExprPlugin::Scalar> SeExprPlugin::getProcessParams( const 
 	}
 	
 	OfxPointD textureOffset      = _paramTextureOffset->getValue();
-	params._paramTextureOffset.x = textureOffset.x;
-	params._paramTextureOffset.y = textureOffset.y;
+	params._paramTextureOffset.x = textureOffset.x * renderScale.x;
+	params._paramTextureOffset.y = textureOffset.y * renderScale.y;
 	
 	return params;
 }

@@ -435,7 +435,7 @@ int main( int argc, char** argv )
 			hasRange = (range.size() == 2);
 		}
 
-		const std::string relativePathToPlugins = (tuttle::common::applicationFolder(argv[0]).parent_path() / "OFX").string();
+		const std::string relativePathToPlugins = (tuttle::common::canonicalApplicationFolder(argv[0]).parent_path() / "OFX").string();
 		core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 		core().preload();
 		Graph graph;

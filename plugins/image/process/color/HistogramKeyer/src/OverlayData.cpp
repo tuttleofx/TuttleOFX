@@ -160,7 +160,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 	
 	//TUTTLE_TLOG_INFOS;
 	//TUTTLE_TLOG_VAR( TUTTLE_INFO, "computeHistogramBufferData - fetchImage " << time );
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time, renderScale)) );	//scoped pointer of current source clip
 	//TUTTLE_TLOG_INFOS;
 	
 	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getPixelRod(time, renderScale) );
@@ -330,7 +330,7 @@ void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTi
 		_isComputing = false;
 		return;
 	}
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_currentTime, clipSrc->getCanonicalRod(_currentTime)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_currentTime, clipSrc->getCanonicalRod(_currentTime, renderScale)) );	//scoped pointer of current source clip
 
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible

@@ -8,12 +8,12 @@
 
 
 if (NUMPY_INCLUDE_DIR)
-  message("numpy include dir was found in cache file")
+  message(WARNING, "numpy include dir was found in cache file")
 else(NUMPY_INCLUDE_DIR)
   find_package(PythonInterp)
   if (PYTHONINTERP_FOUND)
     exec_program ("${PYTHON_EXECUTABLE}" 
-      ARGS "-c 'import numpy; print numpy.get_include()'"
+      ARGS "-c 'import numpy; print(numpy.get_include())'"
       OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
       RETURN_VALUE NUMPY_NOT_FOUND)
   else(PYTHONINTERP_FOUND)
