@@ -16,7 +16,6 @@ add_custom_target(ofxplugins)
 # Include subdirs
 add_subdirectory(libraries/tuttle)
 add_subdirectory(plugins)
-add_subdirectory(applications)
 
 # Add a target to generate API documentation with Doxygen
 find_package(Doxygen)
