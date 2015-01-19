@@ -34,7 +34,7 @@ public:
 		if( _isSequence )
 		{
 			//TUTTLE_LOG_VAR( TUTTLE_INFO, _filePattern.getAbsoluteFilenameAt( time ) );
-			return _filePattern.getAbsoluteFilenameAt( static_cast<std::ssize_t>(time) );
+			return _filePattern.getFilenameAt( static_cast<std::ssize_t>(time) );
 		}
 		else
 		{
@@ -46,7 +46,7 @@ public:
 	std::string getAbsoluteFirstFilename() const
 	{
 		if( _isSequence )
-			return _filePattern.getAbsoluteFirstFilename();
+			return _filePattern.getFirstFilename();
 		else
 			return _paramFilepath->getValue();
 	}
