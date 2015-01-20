@@ -210,7 +210,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
 	useCustomFps->setLabel( "Override Fps" );
 	useCustomFps->setDefault( false );
-	useCustomFps->setHint( "Override the input Fps (Frames Per Second) with a custom Fps value." );
+	useCustomFps->setHint( "Override the Fps (Frames Per Second) with a custom value." );
 	useCustomFps->setParent( videoCustomGroupParam );
 
 	OFX::DoubleParamDescriptor* customFps = desc.defineDoubleParam( kParamCustomFps );
