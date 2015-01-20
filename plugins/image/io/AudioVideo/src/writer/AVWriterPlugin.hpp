@@ -131,6 +131,10 @@ public:
 	// custom params
 	OFX::BooleanParam* _paramUseCustomFps;
 	OFX::DoubleParam* _paramCustomFps;
+
+	OFX::BooleanParam* _paramUseCustomSize;
+	OFX::Int2DParam* _paramCustomSize;  ///< width / height
+
 	OFX::ChoiceParam* _paramVideoPixelFormat;
 	OFX::ChoiceParam* _paramAudioSampleFormat;
 	

@@ -41,6 +41,10 @@ static const std::string kParamAudioMainPreset           = common::kPrefixAudio 
 
 static const std::string kParamUseCustomFps              = common::kPrefixVideo + "useCustomFps";
 static const std::string kParamCustomFps                 = common::kPrefixVideo + "customFps";
+
+static const std::string kParamUseCustomSize             = common::kPrefixVideo + "useCustomSize";
+static const std::string kParamCustomSize                = common::kPrefixVideo + "customSize";
+
 static const std::string kParamVideoCodecPixelFmt        = common::kPrefixVideo + "pixelFormat";
 static const std::string kParamAudioCodecSampleFmt       = common::kPrefixAudio + "sampleFormat";
 

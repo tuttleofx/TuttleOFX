@@ -104,6 +104,10 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	// our custom params
 	_paramUseCustomFps = fetchBooleanParam( kParamUseCustomFps );
 	_paramCustomFps = fetchDoubleParam( kParamCustomFps );
+
+	_paramUseCustomSize = fetchBooleanParam( kParamUseCustomSize );
+	_paramCustomSize = fetchInt2DParam( kParamCustomSize );
+
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	_paramAudioSampleFormat = fetchChoiceParam( kParamAudioCodecSampleFmt );
 	
@@ -445,6 +449,17 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramUseCustomFps->setValue(true);
 		}
 	}
+	else if( paramName == kParamUseCustomSize )
+	{
+		_paramCustomSize->setIsSecretAndDisabled( ! _paramUseCustomSize->getValue() );
+	}
+	else if( paramName == kParamCustomSize )
+	{
+		if( ! _paramUseCustomSize->getValue() )
+		{
+			_paramUseCustomSize->setValue(true);
+		}
+	}
 	else if( paramName == kParamAudioNbInputs )
 	{
 		updateAudioParams();
@@ -590,6 +605,12 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		else
 			profile[ avtranscoder::constants::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
 
+		// size (width / height)
+		if( _paramUseCustomSize->getValue() )
+		{
+			profile[ avtranscoder::constants::avProfileWidth ] = boost::to_string( _paramCustomSize->getValue().x );
+			profile[ avtranscoder::constants::avProfileHeight ] = boost::to_string( _paramCustomSize->getValue().y );
+		}
 		avtranscoder::ProfileLoader::Profile videoProfile = _paramVideoCustom.getCorrespondingProfile( false );
 		profile.insert( videoProfile.begin(), videoProfile.end() );
 
@@ -872,6 +893,14 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		// frame rate
 		if( existingProfile.find( avtranscoder::constants::avProfileFrameRate ) != existingProfile.end() )
 			_paramCustomFps->setValue( boost::lexical_cast<double>( existingProfile[ avtranscoder::constants::avProfileFrameRate ] ) );
+
+		// size
+		if( existingProfile.find( avtranscoder::constants::avProfileWidth ) != existingProfile.end() &&
+			existingProfile.find( avtranscoder::constants::avProfileHeight ) != existingProfile.end() )
+			_paramCustomSize->setValue(
+				boost::lexical_cast<int>( existingProfile[ avtranscoder::constants::avProfileWidth ] ), 
+				boost::lexical_cast<int>( existingProfile[ avtranscoder::constants::avProfileHeight ] )
+			);
 
 		// other options
 		BOOST_FOREACH( avtranscoder::ProfileLoader::Profile::value_type& option, existingProfile )

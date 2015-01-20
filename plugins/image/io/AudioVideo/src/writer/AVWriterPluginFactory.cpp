@@ -221,6 +221,20 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
 	customFps->setParent( videoCustomGroupParam );
 
+	OFX::BooleanParamDescriptor* useCustomSize = desc.defineBooleanParam( kParamUseCustomSize );
+	useCustomSize->setLabel( "Override Size" );
+	useCustomSize->setDefault( false );
+	useCustomSize->setHint( "Override the size (width / height) with a custom value." );
+	useCustomSize->setParent( videoCustomGroupParam );
+
+	OFX::Int2DParamDescriptor* customWidth = desc.defineInt2DParam( kParamCustomSize );
+	customWidth->setLabel( "Custom size" );
+	customWidth->setRange( 0, 0, INT_MAX, INT_MAX );
+	customWidth->setDisplayRange( 0, 0, 3840, 2160 );
+	customWidth->setDefault( 0, 0 );
+	customWidth->setHint( "Choose a custom value to override the Size (width / height)." );
+	customWidth->setParent( videoCustomGroupParam );
+
 	int default_codec = 0;
 	std::string defaultVideoCodec( "mpeg4" );
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
