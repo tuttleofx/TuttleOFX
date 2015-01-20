@@ -356,7 +356,8 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	WriterPlugin::changedParam( args, paramName );
-	
+
+	// filename
 	if( paramName == kTuttlePluginFilename )
 	{
 		const std::string& extension = avtranscoder::getFormat( _paramFilepath->getValue() );
@@ -368,12 +369,14 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		}
 		cleanVideoAndAudio();
 	}
+	// format
 	else if( paramName == kParamFormat )
 	{
 		avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
 		const std::string formatName = getFormatName( _paramFormat->getValue() );
 		common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, formatName, common::kPrefixFormat );
 	}
+	// codecs
 	else if( paramName == kParamVideoCodec )
 	{
 		avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
@@ -390,6 +393,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		
 		updateSampleFormats( audioCodecName );
 	}
+	// presets
 	else if( paramName == kParamMainPreset )
 	{
 		if( _paramMainPreset->getValue() == 0 )
@@ -438,6 +442,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			updateAudiotFromExistingProfile();
 		}
 	}
+	// fps
 	else if( paramName == kParamUseCustomFps )
 	{
 		_paramCustomFps->setIsSecretAndDisabled( ! _paramUseCustomFps->getValue() );
@@ -449,6 +454,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramUseCustomFps->setValue(true);
 		}
 	}
+	// size
 	else if( paramName == kParamUseCustomSize )
 	{
 		_paramCustomSize->setIsSecretAndDisabled( ! _paramUseCustomSize->getValue() );
@@ -460,6 +466,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramUseCustomSize->setValue(true);
 		}
 	}
+	// audio parameters
 	else if( paramName == kParamAudioNbInputs )
 	{
 		updateAudioParams();
@@ -597,23 +604,28 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeVideo;
 		profile[ avtranscoder::constants::avProfileCodec ] = params._videoCodecName;
 
+		// pixel format
 		if( ! params._videoPixelFormatName.empty() )
 			profile[ avtranscoder::constants::avProfilePixelFormat ] = params._videoPixelFormatName;
 
+		// fps
 		if( _paramUseCustomFps->getValue() )
 			profile[ avtranscoder::constants::avProfileFrameRate ] = boost::to_string( _paramCustomFps->getValue() );
 		else
 			profile[ avtranscoder::constants::avProfileFrameRate ] = boost::to_string( _clipSrc->getFrameRate() );
 
-		// size (width / height)
+		// size
 		if( _paramUseCustomSize->getValue() )
 		{
 			profile[ avtranscoder::constants::avProfileWidth ] = boost::to_string( _paramCustomSize->getValue().x );
 			profile[ avtranscoder::constants::avProfileHeight ] = boost::to_string( _paramCustomSize->getValue().y );
 		}
+
+		// video options
 		avtranscoder::ProfileLoader::Profile videoProfile = _paramVideoCustom.getCorrespondingProfile( false );
 		profile.insert( videoProfile.begin(), videoProfile.end() );
 
+		// video detail options
 		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( false, params._videoCodecName );
 		profile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
 
@@ -693,9 +705,11 @@ void AVWriterPlugin::initAudio()
 				if( ! params._videoPixelFormatName.empty() )
 					profile[ avtranscoder::constants::avProfileSampleFormat ] = params._audioSampleFormatName;
 
+				// audio options
 				avtranscoder::ProfileLoader::Profile audioProfile = _paramAudioCustom.getCorrespondingProfile( false );
 				profile.insert( audioProfile.begin(), audioProfile.end() );
 
+				// audio detail options
 				avtranscoder::ProfileLoader::Profile audioDetailProfile = _paramAudioDetailCustom.getCorrespondingProfile( false, params._audioCodecName );
 				profile.insert( audioDetailProfile.begin(), audioDetailProfile.end() );
 			}
