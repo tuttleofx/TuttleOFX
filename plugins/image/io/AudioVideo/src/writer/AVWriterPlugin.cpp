@@ -704,14 +704,21 @@ void AVWriterPlugin::initAudio()
 			
 			// generator
 			if( isSilent )
-			{	
-				avtranscoder::AudioCodec audioCodec( avtranscoder::eCodecTypeEncoder, profile[ avtranscoder::constants::avProfileCodec ] );
-				const size_t sampleRate = boost::lexical_cast<size_t>( profile[ avtranscoder::constants::avProfileSampleRate ] );
-				const size_t channels = boost::lexical_cast<size_t>( profile[ avtranscoder::constants::avProfileChannel ] );
-				avtranscoder::AudioFrameDesc audioDesc( sampleRate, channels, profile.at( avtranscoder::constants::avProfileSampleFormat ) );
-				audioCodec.setAudioParameters( audioDesc );
-				
-				_transcoder->add( "", 1, profile, audioCodec );
+			{
+				try
+				{
+					avtranscoder::AudioCodec audioCodec( avtranscoder::eCodecTypeEncoder, profile.at( avtranscoder::constants::avProfileCodec ) );
+					const size_t sampleRate = boost::lexical_cast<size_t>( profile.at( avtranscoder::constants::avProfileSampleRate ) );
+					const size_t channels = boost::lexical_cast<size_t>( profile.at( avtranscoder::constants::avProfileChannel ) );
+					avtranscoder::AudioFrameDesc audioDesc( sampleRate, channels, profile.at( avtranscoder::constants::avProfileSampleFormat ) );
+					audioCodec.setAudioParameters( audioDesc );
+
+					_transcoder->add( "", 1, profile, audioCodec );
+				}
+				catch( std::out_of_range& e )
+				{
+					throw std::runtime_error( "unable to create an audio silent stream with no preset of encoding indicated" );
+				}
 			}
 			else
 			{
