@@ -702,7 +702,8 @@ void AVWriterPlugin::initAudio()
 				profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeAudio;
 				profile[ avtranscoder::constants::avProfileCodec ] = params._audioCodecName;
 
-				if( ! params._videoPixelFormatName.empty() )
+				// sample format
+				if( ! params._audioSampleFormatName.empty() )
 					profile[ avtranscoder::constants::avProfileSampleFormat ] = params._audioSampleFormatName;
 
 				// audio options
