@@ -8,16 +8,13 @@ Thumbs.db # Windows
 # python
 *.pyc
 
-# ignore scons config file (which is user specific)
-/*.sconf
-
-# removing dist folder : folder receiving the compilation products
-/dist
-/.dist
-/build*
+# folder receiving the compilation products
+/build
+/install
 
 # datas or personal files
 /data
+/TuttleOFX-data
 /scripts
 /*.sh
 
@@ -27,14 +24,12 @@ Thumbs.db # Windows
 # in case uncrustify.sh script fails, do not commit the temporary file
 /files_to_uncrustify_delete_me.txt
 
-# in case scons configure fails, do not commit the temporary file
-/config.log
-
 # do not keep tuttlePluginCache.xml in case you one executes sam
 /*.xml
 /*.dot
 /*.log
 
+# netbeans projects
 /nbproject
 
 # visual projects
@@ -47,7 +42,7 @@ Debug
 Release
 Production
 
-
+# plugins test files
 /plugins/image/io/test/process.txt
 /plugins/image/io/test/generate.txt
 /plugins/image/io/test/result.html
@@ -63,8 +58,3 @@ Production
 /plugins/image/io/test/*.tif
 /plugins/image/io/test/*.rgbe
 /plugins/image/io/test/*.hdr
-
-# data
-/TuttleOFX-data
-
-
