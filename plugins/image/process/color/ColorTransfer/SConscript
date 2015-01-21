@@ -1,9 +1,0 @@
-Import( 'project' )
-Import( 'libs' )
-
-project.createOfxPlugin( dirs = ['src'],
-                         libraries = [
-                                 libs.tuttlePlugin,
-                                 libs.gl,
-                                 ] )
-

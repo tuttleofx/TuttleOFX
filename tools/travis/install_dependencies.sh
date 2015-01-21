@@ -94,7 +94,7 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     pip install numpy
     # brew install numpy  # Compilation errors with gfortran
     echo " - install brew packages"
-    brew install scons swig ilmbase openexr jasper little-cms2 glew freetype fontconfig ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr openjpeg opencolorio openimageio
+    brew install swig ilmbase openexr jasper little-cms2 glew freetype fontconfig ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr openjpeg opencolorio openimageio
 
     # wait $XQ_INSTALL_PID || true
 
