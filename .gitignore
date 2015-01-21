@@ -8,9 +8,6 @@ Thumbs.db # Windows
 # python
 *.pyc
 
-# ignore scons config file (which is user specific)
-/*.sconf
-
 # removing dist folder : folder receiving the compilation products
 /dist
 /.dist
@@ -26,9 +23,6 @@ Thumbs.db # Windows
 
 # in case uncrustify.sh script fails, do not commit the temporary file
 /files_to_uncrustify_delete_me.txt
-
-# in case scons configure fails, do not commit the temporary file
-/config.log
 
 # do not keep tuttlePluginCache.xml in case you one executes sam
 /*.xml
