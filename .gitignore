@@ -8,13 +8,13 @@ Thumbs.db # Windows
 # python
 *.pyc
 
-# removing dist folder : folder receiving the compilation products
-/dist
-/.dist
-/build*
+# folder receiving the compilation products
+/build
+/install
 
 # datas or personal files
 /data
+/TuttleOFX-data
 /scripts
 /*.sh
 
@@ -29,6 +29,7 @@ Thumbs.db # Windows
 /*.dot
 /*.log
 
+# netbeans projects
 /nbproject
 
 # visual projects
@@ -41,7 +42,7 @@ Debug
 Release
 Production
 
-
+# plugins test files
 /plugins/image/io/test/process.txt
 /plugins/image/io/test/generate.txt
 /plugins/image/io/test/result.html
@@ -57,8 +58,3 @@ Production
 /plugins/image/io/test/*.tif
 /plugins/image/io/test/*.rgbe
 /plugins/image/io/test/*.hdr
-
-# data
-/TuttleOFX-data
-
-
