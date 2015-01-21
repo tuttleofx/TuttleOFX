@@ -1,4 +1,3 @@
 [submodule "libraries/sequenceParser"]
 	path = libraries/sequenceParser
 	url = http://github.com/mikrosimage/sequenceparser.git
-
