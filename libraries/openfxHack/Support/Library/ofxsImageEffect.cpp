@@ -1634,7 +1634,7 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, EBitDepth bitDepth )
 	// it's not clear what we need to to in this case...
 	// set the value supported by the host or set nothing
 	// by setting this value, we may have less problem depending on host implementations
-	outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getPixelDepth() ) );
+	outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getDefaultPixelDepth() ) );
 	}
 }
 
@@ -2596,11 +2596,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 			// call the instance changed action
 			if( getTimeDomainAction( handle, outArgs ) )
-			stat = kOfxStatOK;
-
-			// fetch our pointer out of the props on the handle
-			/*ImageEffect *instance = */ retrieveImageEffectPointer( handle );
-
+				stat = kOfxStatOK;
 		}
 		else if( action == kOfxActionBeginInstanceChanged )
 		{

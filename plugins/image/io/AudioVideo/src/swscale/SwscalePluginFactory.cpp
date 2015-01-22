@@ -24,7 +24,7 @@ void SwscalePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 	
 	desc.setDescription( "SwScale: fast resizing plugin\n"
-				"Plugin using swscale library from LibAV.\n"
+				"Plugin using swscale library from FFmpeg.\n"
 				"Warning: Could not run with floating point images and\n"
 				"			RGBA data different of 8 bit (32bpp).\n"
 	);

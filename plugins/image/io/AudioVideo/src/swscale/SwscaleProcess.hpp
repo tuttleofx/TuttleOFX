@@ -5,6 +5,13 @@
 
 #include <tuttle/plugin/ImageFilterProcessor.hpp>
 
+extern "C" {
+#ifndef __STDC_CONSTANT_MACROS
+	#define __STDC_CONSTANT_MACROS
+#endif
+	#include <libswscale/swscale.h>
+}
+
 namespace tuttle {
 namespace plugin {
 namespace swscale {

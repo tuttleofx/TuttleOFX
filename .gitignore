@@ -15,6 +15,7 @@ Thumbs.db # Windows
 # datas or personal files
 /data
 /TuttleOFX-data
+/TuttleOFX-Data-MXF
 /scripts
 /*.sh
 

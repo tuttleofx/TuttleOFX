@@ -1,6 +1,8 @@
-#include "AVWriterPlugin.hpp"
 #include "AVWriterProcess.hpp"
-#include <boost/filesystem.hpp>
+
+#include <tuttle/plugin/exceptions.hpp>
+
+#include <AvTranscoder/codec/VideoCodec.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -12,8 +14,15 @@ AVWriterProcess<View>::AVWriterProcess( AVWriterPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 	, _params( _plugin.getProcessParams() )
+	, _videoStream( static_cast<avtranscoder::VideoGenerator&>( _plugin._transcoder->getStreamTranscoder( 0 ).getCurrentDecoder() ) )
 {
 	this->setNoMultiThreading();
+}
+
+template<class View>
+void AVWriterProcess<View>::setup( const OFX::RenderArguments& args )
+{	
+	ImageGilFilterProcessor<View>::setup( args );
 }
 
 /**
@@ -23,24 +32,29 @@ AVWriterProcess<View>::AVWriterProcess( AVWriterPlugin& instance )
 template<class View>
 void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using namespace terry;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-
-	_plugin._writer.setWidth ( this->_srcView.width () );
-	_plugin._writer.setHeight( this->_srcView.height() );
-
-	rgba8_image_t img ( this->_srcView.dimensions() );
-	rgba8_view_t  vw  ( view( img ) );
-
-	// Convert pixels in PIX_FMT_RGB24
-	copy_and_convert_pixels( this->_srcView, vw );
-
+	
+	using namespace terry;
+	
+	rgb8_image_t img ( this->_srcView.dimensions() );
+	rgb8_view_t  vw  ( view( img ) );
+	
 	// Convert pixels to destination
 	copy_and_convert_pixels( this->_srcView, this->_dstView );
-	uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
+	
+	// Convert pixels in PIX_FMT_RGB24
+	copy_and_convert_pixels( this->_srcView, vw );
+	
+	uint8_t* imageData = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
+	
+	// set video stream next frame
+	
+	const size_t bufferSize = _videoStream.getVideoFrameDesc().getDataSize();
+	_plugin._videoFrame.copyData( imageData, bufferSize );
+	_videoStream.setNextFrame( _plugin._videoFrame );
 
-	// Execute writing
-	_plugin._writer.execute( pixels, this->_srcView.width(), this->_srcView.height(), PIX_FMT_RGBA );
+	// process
+	_plugin._transcoder->processFrame();
 }
 
 }
