@@ -620,17 +620,18 @@ void ImageEffectDescriptor::addSupportedBitDepth( EBitDepth v )
 void ImageEffectDescriptor::addSupportedExtension( const std::string& extension )
 {
 	// only Tuttle support this property ( out of standard )
-	if( OFX::Private::gHostDescription.hostName == "TuttleOfx" )
+	try
 	{
 		const int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
 		_effectProps.propSetString( kTuttleOfxImageEffectPropSupportedExtensions, extension, n );
 	}
+	catch( OFX::Exception::PropertyUnknownToHost ) {}
 }
 
 void ImageEffectDescriptor::addSupportedExtensions( const std::vector<std::string>& extensions )
 {
 	// only Tuttle support this property ( out of standard )
-	if( OFX::Private::gHostDescription.hostName == "TuttleOfx" )
+	try
 	{
 		int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
 
@@ -639,6 +640,7 @@ void ImageEffectDescriptor::addSupportedExtensions( const std::vector<std::strin
 			_effectProps.propSetString( kTuttleOfxImageEffectPropSupportedExtensions, ext, n++ );
 		}
 	}
+	catch( OFX::Exception::PropertyUnknownToHost ) {}
 }
 
 void ImageEffectDescriptor::setPluginEvaluation( double evaluation )
