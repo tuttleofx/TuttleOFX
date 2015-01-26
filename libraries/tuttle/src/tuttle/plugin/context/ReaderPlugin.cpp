@@ -1,5 +1,8 @@
 #include "ReaderPlugin.hpp"
 
+#include <filesystem.hpp>
+
+
 namespace tuttle {
 namespace plugin {
 
@@ -10,7 +13,7 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 {
 	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
-	_isSequence    = true;
+	_isSequence    = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
 	_paramChannel  = fetchChoiceParam( kTuttlePluginChannel );
 }
@@ -22,7 +25,7 @@ void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginFilename )
 	{
-		_isSequence = true;
+		_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 	}
 }
 

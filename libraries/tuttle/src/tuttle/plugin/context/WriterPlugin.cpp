@@ -1,11 +1,14 @@
 #include "WriterPlugin.hpp"
 
+#include <filesystem.hpp>
+
 #include <ofxCore.h>
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/scoped_ptr.hpp>
 
 #include <cstdio>
+
 
 namespace tuttle {
 namespace plugin {
@@ -26,7 +29,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_paramPremult = fetchBooleanParam( kParamPremultiplied );
 	_paramExistingFile = fetchChoiceParam( kParamWriterExistingFile );
 	_paramForceNewRender = fetchIntParam( kParamWriterForceNewRender );
-	_isSequence = true;
+	_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 }
 
 WriterPlugin::~WriterPlugin( )
@@ -37,7 +40,7 @@ void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginFilename )
 	{
-		_isSequence = true;
+		_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 	}
 	else if( paramName == kParamWriterRender )
 	{
