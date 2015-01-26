@@ -15,6 +15,7 @@ add_custom_target(ofxplugins)
 
 # Include subdirs
 add_subdirectory(libraries/tuttle)
+add_subdirectory(libraries/avTranscoder)
 add_subdirectory(plugins)
 
 # Add a target to generate API documentation with Doxygen

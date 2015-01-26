@@ -31,8 +31,6 @@ void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 
 void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	const std::string filename( getAbsoluteFirstFilename() );
-
 	// If pattern detected (frame varying on time)
 	clipPreferences.setOutputFrameVarying( varyOnTime() );
 

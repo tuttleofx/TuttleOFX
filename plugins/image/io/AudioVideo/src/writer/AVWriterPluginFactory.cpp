@@ -2,22 +2,24 @@
 #include "AVWriterPlugin.hpp"
 #include "AVWriterDefinitions.hpp"
 
-#include <libav/LibAVPreset.hpp>
-#include <libav/LibAVFormatPreset.hpp>
-#include <libav/LibAVVideoPreset.hpp>
-#include <libav/LibAVAudioPreset.hpp>
-#include <libav/LibAVVideoWriter.hpp>
-#include <libav/LibAVOptionsFactory.hpp>
-
+#include <common/util.hpp>
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
+#include <AvTranscoder/common.hpp>
+#include <AvTranscoder/util.hpp>
+#include <AvTranscoder/Library.hpp>
+#include <AvTranscoder/ProfileLoader.hpp>
+#include <AvTranscoder/file/FormatContext.hpp>
 
-#include <string>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include <vector>
+#include <string>
+#include <utility> //pair
+#include <sstream>
 
 namespace tuttle {
 namespace plugin {
@@ -30,39 +32,17 @@ namespace writer {
  */
 void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
+	avtranscoder::preloadCodecsAndFormats();
+
 	desc.setLabels(
 		"TuttleAVWriter",
 		"AVWriter",
 		"Audio Video writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	std::vector<std::string> supportedExtensions;
-	{
-		AVOutputFormat* oFormat = av_oformat_next( NULL );
-		while( oFormat != NULL )
-		{
-			if( oFormat->extensions != NULL )
-			{
-				using namespace boost::algorithm;
-				const std::string extStr( oFormat->extensions );
-				std::vector<std::string> exts;
-				split( exts, extStr, is_any_of(",") );
-				
-				// remove empty extensions...
-				for( std::vector<std::string>::iterator it = exts.begin(); it != exts.end(); )
-				{
-					if( it->size() == 0 )
-						it = exts.erase( it );
-					else
-						++it;
-				}
-				supportedExtensions.insert( supportedExtensions.end(), exts.begin(), exts.end() );
-			}
-			oFormat = av_oformat_next( oFormat );
-		}
-	}
+	std::vector<std::string> supportedExtensions( avtranscoder::getOutputExtensions() );
 	
-	desc.setDescription( "Video writer based on LibAV library\n\n"
+	desc.setDescription( "Video writer based on AvTranscoder library\n\n"
 			"Supported extensions: \n" +
 			boost::algorithm::join( supportedExtensions, ", " )
 		);
@@ -93,11 +73,11 @@ void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-						   OFX::EContext               context )
+void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, 
+                                               OFX::EContext               context )
 {
-	LibAVVideoWriter writer;
-
+	avtranscoder::ProfileLoader presetLoader( true );
+	
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -126,198 +106,344 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// MAIN PRESET SELECTOR
 	OFX::ChoiceParamDescriptor* mainPreset = desc.defineChoiceParam( kParamMainPreset );
 	mainPreset->setLabel( "Main Preset" );
-	mainPreset->appendOption( "custom", "Customized configuration" );
-	
-	std::vector<std::string> idList;
-	std::vector<std::string> idLabelList;
-	LibAVPreset::getPresetList( idList, idLabelList );
-	for( unsigned int it = 0; it < idList.size(); ++it )
-	{
-		mainPreset->appendOption( idList.at( it ), idLabelList.at( it ) );
-	}
+	mainPreset->appendOption( "custom: Customized configuration" );
+	// @todo: add presets
 	
 	// Groups
 	OFX::GroupParamDescriptor* formatGroup = desc.defineGroupParam( kParamFormatGroup );
 	OFX::GroupParamDescriptor* videoGroup  = desc.defineGroupParam( kParamVideoGroup );
 	OFX::GroupParamDescriptor* audioGroup  = desc.defineGroupParam( kParamAudioGroup );
 	OFX::GroupParamDescriptor* metaGroup   = desc.defineGroupParam( kParamMetaGroup );
+	OFX::GroupParamDescriptor* aboutGroup = desc.defineGroupParam( kParamAboutGroup );
 	
 	formatGroup->setLabel( "Format" );
 	videoGroup->setLabel( "Video" );
 	audioGroup->setLabel( "Audio" );
 	metaGroup->setLabel( "Metadata" );
+	aboutGroup->setLabel( "About" );
 	
 	formatGroup->setAsTab( );
 	videoGroup->setAsTab( );
 	audioGroup->setAsTab( );
 	metaGroup->setAsTab( );
+	aboutGroup->setAsTab( );
 	
 	/// FORMAT PARAMETERS
 	/// format preset
-	OFX::ChoiceParamDescriptor* formatPreset = desc.defineChoiceParam( kParamFormatPreset );
-	formatPreset->setLabel( "Format Preset" );
-	formatPreset->appendOption( "custom", "Customized configuration" );
-	std::vector<std::string> idFormatList;
-	std::vector<std::string> idFormatLabelList;
-	LibAVFormatPreset::getPresetList( idFormatList, idFormatLabelList );
-	for( unsigned int it = 0; it < idFormatList.size(); ++it )
-	{
-		formatPreset->appendOption( idFormatList.at( it ), idFormatLabelList.at( it ) );
-	}
-	formatPreset->setParent( formatGroup );
+	OFX::ChoiceParamDescriptor* formatPresetParam = desc.defineChoiceParam( kParamFormatPreset );
+	formatPresetParam->setLabel( "Format Preset" );
+	formatPresetParam->appendOption( "custom: Customized configuration" );
+	formatPresetParam->setParent( formatGroup );
 	
-	/// format list
+	avtranscoder::ProfileLoader::Profiles formatPresets = presetLoader.getFormatProfiles();
+	for( avtranscoder::ProfileLoader::Profiles::iterator it = formatPresets.begin(); it != formatPresets.end(); ++it )
+	{
+		formatPresetParam->appendOption( 
+			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
+			": " +
+			(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
+		);
+	}
+	
+	// add group to manage option when custom preset
+	OFX::GroupParamDescriptor* formatCustomGroupParam = desc.defineGroupParam( kParamFormatCustomGroup );
+	formatCustomGroupParam->setLabel( "Format custom parameters" );
+	formatCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
+	formatCustomGroupParam->setOpen( false );
+	formatCustomGroupParam->setParent( formatGroup );
+	
+	/// FORMAT PARAMETERS
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-	for( std::vector<std::string>::const_iterator itShort = writer.getFormatsShort().begin(),
-		itLong = writer.getFormatsLong().begin(),
-		itEnd = writer.getFormatsShort().end();
+	std::vector<std::string> formatsShortNames( avtranscoder::getFormatsShortNames() );
+	std::vector<std::string> formatsLongNames( avtranscoder::getFormatsLongNames() );
+	for( std::vector<std::string>::const_iterator itShort = formatsShortNames.begin(),
+		itLong  = formatsLongNames.begin(),
+		itEnd = formatsShortNames.end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
 	{
-		format->appendOption( *itShort, *itLong );
+		format->appendOption( *itShort + ": " + *itLong );
 		if( (*itShort) == "mp4" )
 			default_format = format->getNOptions() - 1;
 	}
+	format->setLabel( kParamFormatLabel );
 	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( default_format );
-	format->setParent( formatGroup );
+	format->setParent( formatCustomGroupParam );
+
+	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_ENCODING_PARAM );
+	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
+	common::addOptionsToGroup( desc, formatCustomGroupParam, formatOptions, common::kPrefixFormat );
 	
-	AVFormatContext* avFormatContext;
-	avFormatContext = avformat_alloc_context();
-	addOptionsFromAVOption( desc, formatGroup, (void*)avFormatContext, AV_OPT_FLAG_ENCODING_PARAM, 0 );
-	avformat_free_context( avFormatContext );
-	
-	/// format parameters
 	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
 	formatDetailledGroup->setLabel( "Detailled" );
 	formatDetailledGroup->setAsTab( );
 	formatDetailledGroup->setParent( formatGroup );
 	
-	addOptionsFromAVOption( desc, formatDetailledGroup, writer.getFormatPrivOpts() );
+	avtranscoder::OptionArrayMap formatDetailledGroupOptions = avtranscoder::getOutputFormatOptions();
+	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
 	
-	// fps parameters
+	/// VIDEO PARAMETERS
+	OFX::ChoiceParamDescriptor* videoPresetParam = desc.defineChoiceParam( kParamVideoPreset );
+	videoPresetParam->setLabel( "Video Preset" );
+	videoPresetParam->appendOption( "custom: Customized configuration" );
+	videoPresetParam->setParent( videoGroup );
+	
+	avtranscoder::ProfileLoader::Profiles videoPresets = presetLoader.getVideoProfiles();
+	for( avtranscoder::ProfileLoader::Profiles::iterator it = videoPresets.begin(); it != videoPresets.end(); ++it )
+	{
+		videoPresetParam->appendOption( 
+			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
+			": " + 
+			(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
+		);
+	}
+	
+	OFX::GroupParamDescriptor* videoCustomGroupParam = desc.defineGroupParam( kParamVideoCustomGroup );
+	videoCustomGroupParam->setLabel( "Video custom parameters" );
+	videoCustomGroupParam->setHint( "Contains expert params, use to write video streams when custom preset is specified." );
+	videoCustomGroupParam->setOpen( false );
+	videoCustomGroupParam->setParent( videoGroup );
+
 	OFX::BooleanParamDescriptor* useCustomFps = desc.defineBooleanParam( kParamUseCustomFps );
 	useCustomFps->setLabel( "Override Fps" );
 	useCustomFps->setDefault( false );
-	useCustomFps->setHint( "Override the input Fps (Frames Per Second) with a custom Fps value." );
+	useCustomFps->setHint( "Override the Fps (Frames Per Second) with a custom value." );
+	useCustomFps->setParent( videoCustomGroupParam );
 
 	OFX::DoubleParamDescriptor* customFps = desc.defineDoubleParam( kParamCustomFps );
 	customFps->setLabel( "Custom Fps" );
-	customFps->setDefault( 1.0 );
+	customFps->setRange( 0, INT_MAX );
+	customFps->setDisplayRange( 0, 100 );
+	customFps->setDefault( 25.0 );
 	customFps->setHint( "Choose a custom value to override the Fps (Frames Per Second)." );
-	
-	/// VIDEO PARAMETERS
-	/// video codec preset
-	OFX::ChoiceParamDescriptor* videoPreset = desc.defineChoiceParam( kParamVideoPreset );
-	videoPreset->setLabel( "Video Preset" );
-	videoPreset->appendOption( "custom", "Customized configuration" );
-	
-	std::vector<std::string> idVideoList;
-	std::vector<std::string> idVideoLabelList;
-	LibAVVideoPreset::getPresetList( idVideoList, idVideoLabelList );
-	for( unsigned int it = 0; it < idVideoList.size(); ++it )
-	{
-		videoPreset->appendOption( idVideoList.at( it ), idVideoLabelList.at( it ) );
-	}
-	videoPreset->setParent( videoGroup );
-	
-	/// video codec list
+	customFps->setParent( videoCustomGroupParam );
+
+	OFX::BooleanParamDescriptor* useCustomSize = desc.defineBooleanParam( kParamUseCustomSize );
+	useCustomSize->setLabel( "Override Size" );
+	useCustomSize->setDefault( false );
+	useCustomSize->setHint( "Override the size (width / height) with a custom value." );
+	useCustomSize->setParent( videoCustomGroupParam );
+
+	OFX::Int2DParamDescriptor* customWidth = desc.defineInt2DParam( kParamCustomSize );
+	customWidth->setLabel( "Custom size" );
+	customWidth->setRange( 0, 0, INT_MAX, INT_MAX );
+	customWidth->setDisplayRange( 0, 0, 3840, 2160 );
+	customWidth->setDefault( 0, 0 );
+	customWidth->setHint( "Choose a custom value to override the Size (width / height)." );
+	customWidth->setParent( videoCustomGroupParam );
+
 	int default_codec = 0;
+	std::string defaultVideoCodec( "mpeg4" );
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
-	for( std::vector<std::string>::const_iterator itShort = writer.getVideoCodecsShort().begin(),
-		itLong  = writer.getVideoCodecsLong().begin(),
-		itEnd = writer.getVideoCodecsShort().end();
+	std::vector<std::string> videoCodecsShortNames( avtranscoder::getVideoCodecsShortNames() );
+	std::vector<std::string> videoCodecsLongNames( avtranscoder::getVideoCodecsLongNames() );
+	for( std::vector<std::string>::const_iterator itShort = videoCodecsShortNames.begin(),
+		itLong  = videoCodecsLongNames.begin(),
+		itEnd = videoCodecsShortNames.end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
 	{
-		videoCodec->appendOption( *itShort, *itLong );
-		if( (*itShort) == "mpeg4" )
+		videoCodec->appendOption( *itShort + ": " + *itLong );
+		if( (*itShort) == defaultVideoCodec )
 			default_codec = videoCodec->getNOptions() - 1;
 	}
+	videoCodec->setLabel( kParamVideoCodecLabel );
 	videoCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	videoCodec->setDefault( default_codec );
-	videoCodec->setParent( videoGroup );
+	videoCodec->setParent( videoCustomGroupParam );
 	
-	/// video codec parameters
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
-	videoCodecPixelFmt->setLabel( kParamVideoCodecPixelFmt );
-	videoCodecPixelFmt->setLabel( "Select the output video pixel type." );
-	
-	for( int pix_fmt = 0; pix_fmt < PIX_FMT_NB; pix_fmt++ )
+	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
+	std::vector<std::string> pixelFormats = avtranscoder::getPixelFormats();
+	for( size_t i = 0; i < pixelFormats.size(); ++i )
 	{
-		const AVPixFmtDescriptor *pix_desc = &av_pix_fmt_descriptors[pix_fmt];
-		if(!pix_desc->name)
-			continue;
-		videoCodecPixelFmt->appendOption( pix_desc->name );
+		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );
 	}
-	videoCodecPixelFmt->setParent( videoGroup );
-	
-	AVCodecContext* avCodecContext;
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT( 53, 8, 0 )
-	avCodecContext = avcodec_alloc_context();
-	// deprecated in the same version
-	//avCodecContext = avcodec_alloc_context2( AVMEDIA_TYPE_UNKNOWN );
-#else
-	AVCodec* avCodec = NULL;
-	avCodecContext = avcodec_alloc_context3( avCodec );
-#endif
-	
-	addOptionsFromAVOption( desc, videoGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, 0 );
-	
+	videoCodecPixelFmt->setParent( videoCustomGroupParam );
+
+	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray videoOptions;
+	avtranscoder::loadOptions( videoOptions, videoContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
+	common::addOptionsToGroup( desc, videoCustomGroupParam, videoOptions, common::kPrefixVideo );
+	av_free( videoContext );
+
 	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
 	videoDetailledGroup->setLabel( "Detailled" );
 	videoDetailledGroup->setAsTab( );
 	videoDetailledGroup->setParent( videoGroup );
 	
-	addOptionsFromAVOption( desc, videoDetailledGroup, writer.getVideoCodecPrivOpts() );
+	avtranscoder::OptionArrayMap videoDetailledGroupOptions = avtranscoder::getVideoCodecOptions(); 
+	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
-	/// audio codec preset
-	OFX::ChoiceParamDescriptor* audioPreset = desc.defineChoiceParam( kParamAudioPreset );
-	audioPreset->setLabel( "Audio Preset" );
-	audioPreset->appendOption( "custom", "Customized configuration" );
-	
-	std::vector<std::string> idAudioList;
-	std::vector<std::string> idAudioLabelList;
-	LibAVAudioPreset::getPresetList( idAudioList, idAudioLabelList );
-	for( unsigned int it = 0; it < idAudioList.size(); ++it )
+	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamAudioMainPreset );
+	audioMainPresetParam->setLabel( "Main Preset" );
+	audioMainPresetParam->appendOption( "custom: Customized configuration" );
+	audioMainPresetParam->appendOption( "rewrap: Copy audio data (no transcode)" );
+	audioMainPresetParam->setDefault( 1 ); // Set default behavior to rewrap
+	audioMainPresetParam->setParent( audioGroup );
+
+	avtranscoder::ProfileLoader::Profiles audioPresets = presetLoader.getAudioProfiles();
+	for( avtranscoder::ProfileLoader::Profiles::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
 	{
-		audioPreset->appendOption( idAudioList.at( it ), idAudioLabelList.at( it ) );
+		audioMainPresetParam->appendOption( 
+			(*it).find( avtranscoder::constants::avProfileIdentificator )->second +
+			": " +
+			(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
+		);
 	}
-	audioPreset->setParent( audioGroup );
 	
-	/// audio codec list
+	OFX::GroupParamDescriptor* audioCustomGroupParam = desc.defineGroupParam( kParamAudioCustomGroup );
+	audioCustomGroupParam->setLabel( "Audio custom parameters" );
+	audioCustomGroupParam->setHint( "Contains expert params, use to write audio streams when custom preset is specified." );
+	audioCustomGroupParam->setOpen( false );
+	audioCustomGroupParam->setParent( audioGroup );
+	
 	int default_audio_codec = 0;
-	OFX::ChoiceParamDescriptor* audioCodec = desc.defineChoiceParam( kParamAudioCodec );
-	for( std::vector<std::string>::const_iterator itShort = writer.getAudioCodecsShort().begin(),
-		itLong  = writer.getAudioCodecsLong().begin(),
-		itEnd = writer.getAudioCodecsShort().end();
+	std::string defaultAudioCodec( "pcm_s16le" );
+	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
+	std::vector<std::string> audioCodecsShortNames( avtranscoder::getAudioCodecsShortNames() );
+	std::vector<std::string> audioCodecsLongNames( avtranscoder::getAudioCodecsLongNames() );
+	for( std::vector<std::string>::const_iterator itShort = audioCodecsShortNames.begin(),
+		itLong  = audioCodecsLongNames.begin(),
+		itEnd = audioCodecsShortNames.end();
 		itShort != itEnd;
 		++itShort,
 		++itLong )
 	{
-		audioCodec->appendOption( *itShort, *itLong );
-		if( (*itShort) == "pcm_s24be" )
-			default_audio_codec = audioCodec->getNOptions() - 1;
+		audioCodecParam->appendOption( *itShort + ": " + *itLong );
+		if( (*itShort) == defaultAudioCodec )
+			default_audio_codec = audioCodecParam->getNOptions() - 1;
 	}
-	audioCodec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	audioCodec->setDefault( default_audio_codec );
-	audioCodec->setParent( audioGroup );
+	audioCodecParam->setLabel( kParamAudioCodecLabel );
+	audioCodecParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	audioCodecParam->setDefault( default_audio_codec );
+	audioCodecParam->setParent( audioCustomGroupParam );
 	
-	/// audio codec parameters
-	addOptionsFromAVOption( desc, audioGroup, (void*)avCodecContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, AV_OPT_FLAG_VIDEO_PARAM );
+	OFX::ChoiceParamDescriptor* audioSampleFmtParam = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
+	audioSampleFmtParam->setLabel( "Select the output audio sample type" );
+	std::vector<std::string> sampleFormats = avtranscoder::getSampleFormats();
+	for( size_t i = 0; i < sampleFormats.size(); ++i )
+	{
+		audioSampleFmtParam->appendOption( sampleFormats.at( i ) );
+	}
+	audioSampleFmtParam->setParent( audioCustomGroupParam );
+
+	AVCodecContext* audioContext = avcodec_alloc_context3( NULL );
+	avtranscoder::OptionArray audioOptions;
+	avtranscoder::loadOptions( audioOptions, audioContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
+	common::addOptionsToGroup( desc, audioCustomGroupParam, audioOptions, common::kPrefixAudio );
+	av_free( audioContext );
 	
 	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
 	audioDetailledGroup->setLabel( "Detailled" );
 	audioDetailledGroup->setAsTab( );
 	audioDetailledGroup->setParent( audioGroup );
 	
-	addOptionsFromAVOption( desc, audioDetailledGroup, writer.getAudioCodecPrivOpts() );
+	avtranscoder::OptionArrayMap audioDetailledGroupOptions = avtranscoder::getAudioCodecOptions();
+	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions, common::kPrefixAudio );
 	
-	av_free( avCodecContext );
+	OFX::IntParamDescriptor* audioNbInputs = desc.defineIntParam( kParamAudioNbInputs );
+	audioNbInputs->setLabel( "Number Of Audio Inputs" );
+	audioNbInputs->setHint( "An 'Input' allow you to create one of several audio streams in your output file. It could be by rewrap or transcode one or several audio streams of an input file, or by generate a dummy audio stream." );
+	audioNbInputs->setRange( 0, maxNbAudioInput );
+	audioNbInputs->setDisplayRange( 0, maxNbAudioInput );
+	audioNbInputs->setDefault( 1 );
+	audioNbInputs->setParent( audioGroup );
+	
+	// add a list of audioSubGroup (managed dynamically by the plugin)
+	for( size_t indexAudioInput = 0; indexAudioInput < maxNbAudioInput; ++indexAudioInput )
+	{
+		std::ostringstream audioSubGroupName( kParamAudioSubGroup, std::ios_base::in | std::ios_base::ate );
+		audioSubGroupName << "_" << indexAudioInput;
+		OFX::GroupParamDescriptor* audioSubGroupParam = desc.defineGroupParam( audioSubGroupName.str() );
+		std::ostringstream audioSubGroupLabel( "Input ", std::ios_base::in | std::ios_base::ate );
+		audioSubGroupLabel << indexAudioInput;
+		audioSubGroupParam->setLabel( audioSubGroupLabel.str() );
+		audioSubGroupParam->setParent( audioGroup );
+		
+		// add flag to audio silent
+		std::ostringstream audioSilentName( kParamAudioSilent, std::ios_base::in | std::ios_base::ate );
+		audioSilentName << "_" << indexAudioInput;
+		OFX::BooleanParamDescriptor* audioSilentParam = desc.defineBooleanParam( audioSilentName.str() );
+		audioSilentParam->setLabel( "Silent stream" );
+		audioSilentParam->setHint( "Write a silent audio stream" );
+		audioSilentParam->setDefault( false );
+		audioSilentParam->setParent( audioSubGroupParam );
+		
+		// add audio file path
+		std::ostringstream audioFilePathName( kParamAudioFilePath, std::ios_base::in | std::ios_base::ate );
+		audioFilePathName << "_" << indexAudioInput;
+		OFX::StringParamDescriptor* audioFilePathParam = desc.defineStringParam( audioFilePathName.str() );
+		audioFilePathParam->setLabel( "Input File Path" );
+		audioFilePathParam->setStringType( OFX::eStringTypeFilePath );
+		audioFilePathParam->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+		audioFilePathParam->setParent( audioSubGroupParam );
+
+		// display number of audio streams
+		std::ostringstream audioFileInfoName( kParamAudioFileInfo, std::ios_base::in | std::ios_base::ate );
+		audioFileInfoName << "_" << indexAudioInput;
+		OFX::StringParamDescriptor* audioFileInfoParam = desc.defineStringParam( audioFileInfoName.str() );
+		audioFileInfoParam->setStringType( OFX::eStringTypeMultiLine );
+		audioFileInfoParam->setLabel( "File info" );
+		audioFileInfoParam->setHint( "Audio information about input file indicated." );
+		audioFileInfoParam->setEnabled( false );
+		audioFileInfoParam->setParent( audioSubGroupParam );
+
+		// add flag to select a stream
+		std::ostringstream audioSelectStreamName( kParamAudioSelectStream, std::ios_base::in | std::ios_base::ate );
+		audioSelectStreamName << "_" << indexAudioInput;
+		OFX::BooleanParamDescriptor* audioSelectStreamParam = desc.defineBooleanParam( audioSelectStreamName.str() );
+		audioSelectStreamParam->setLabel( "Select One Stream" );
+		audioSelectStreamParam->setHint( "By default select all streams of the input file." );
+		audioSelectStreamParam->setDefault( false );
+		audioSelectStreamParam->setParent( audioSubGroupParam );
+		
+		// add audio stream index
+		std::ostringstream audioStreamIndexName( kParamAudioStreamIndex, std::ios_base::in | std::ios_base::ate );
+		audioStreamIndexName << "_" << indexAudioInput;
+		OFX::IntParamDescriptor* audioStreamIndexParam = desc.defineIntParam( audioStreamIndexName.str() );
+		audioStreamIndexParam->setLabel( "Input Stream Index" );
+		audioStreamIndexParam->setHint( "Select a specific stream of the input file." );
+		audioStreamIndexParam->setRange( 0, INT_MAX );
+		audioStreamIndexParam->setDisplayRange( 0, 16 );
+		audioStreamIndexParam->setDefault( 0 );
+		audioStreamIndexParam->setParent( audioSubGroupParam );
+		
+		// add audio codec preset
+		std::ostringstream audioPresetName( kParamAudioPreset, std::ios_base::in | std::ios_base::ate );
+		audioPresetName << "_" << indexAudioInput;
+		OFX::ChoiceParamDescriptor* audioPresetParam = desc.defineChoiceParam( audioPresetName.str() );
+		audioPresetParam->setLabel( "Output Encoding" );
+		audioPresetParam->setHint( "Choose a preset to easily get a configuration for the audio 'Output'." );
+		audioPresetParam->appendOption( "main preset: Refers to the list of Main Presets" );
+		audioPresetParam->appendOption( "rewrap: Copy audio data (no transcode)" );
+		audioPresetParam->setParent( audioSubGroupParam );
+
+		for( avtranscoder::ProfileLoader::Profiles::iterator it = audioPresets.begin(); it != audioPresets.end(); ++it )
+		{
+			audioPresetParam->appendOption( 
+				(*it).find( avtranscoder::constants::avProfileIdentificator )->second + 
+				": " +
+				(*it).find( avtranscoder::constants::avProfileIdentificatorHuman )->second
+			);
+		}
+		
+		// add audio channel index
+		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
+		audioOffsetName << "_" << indexAudioInput;
+		OFX::IntParamDescriptor* audioOffsetParam = desc.defineIntParam( audioOffsetName.str() );
+		audioOffsetParam->setLabel( "Offset" );
+		audioOffsetParam->setHint( "Add an offset (in milliseconds) at the beginning of the stream. By default 0." );
+		audioOffsetParam->setRange( 0, INT_MAX );
+		audioOffsetParam->setDisplayRange( 0, 10000 );
+		audioOffsetParam->setDefault( 0 );
+		audioOffsetParam->setParent( audioSubGroupParam );
+	}
 	
 	/// METADATA PARAMETERS
 	std::map<std::string, std::string> keys;
@@ -332,7 +458,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	keys[ kParamMetaCreationTime    ] = "Creation Time";
 	keys[ kParamMetaDate            ] = "Date";
 	keys[ kParamMetaDisc            ] = "Disc";
-	keys[ kParamMetaEncoder         ] = "Encoder";
 	keys[ kParamMetaEncodedBy       ] = "Encoded by";
 	keys[ kParamMetaFilename        ] = "Filename";
 	keys[ kParamMetaGenre           ] = "Genre";
@@ -354,7 +479,6 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	hints[ kParamMetaCreationTime    ] = "time when the file was created, preferably in ISO 8601.";
 	hints[ kParamMetaDate            ] = "date when the file was created, preferably in ISO 8601.";
 	hints[ kParamMetaDisc            ] = "number of a subset, e.g. disc in a multi-disc collection.";
-	hints[ kParamMetaEncoder         ] = "name/settings of the software/hardware that produced the file.";
 	hints[ kParamMetaEncodedBy       ] = "person/group who created the file.";
 	hints[ kParamMetaFilename        ] = "original name of the file.";
 	hints[ kParamMetaGenre           ] = "self-evident>.";
@@ -378,24 +502,45 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		metaParam->setLabel( ritKeys->second );
 		metaParam->setHint( ritHint->second );
 		metaParam->setParent( metaGroup );
-
-		if( ritKeys->first == kParamMetaEncoder )
-		{
-			std::ostringstream os;
-			os << "TuttleOFX AudioVideo ";
-			os << getMajorVersion();
-			os << ".";
-			os << getMinorVersion();
-
-			metaParam->setDefault( os.str() );
-			metaParam->setEnabled( false );
-		}
 	}
 
-	OFX::GroupParamDescriptor* metaDetailledGroup   = desc.defineGroupParam( kParamMetaDetailledGroup );
-	metaDetailledGroup->setLabel( "Detailled" );
-	metaDetailledGroup->setAsTab( );
-	metaDetailledGroup->setParent( metaGroup );
+	/// ABOUT PARAMETERS
+	avtranscoder::Libraries librairies( avtranscoder::getLibraries() );
+
+	size_t libIndex = 0;
+	for( avtranscoder::Libraries::iterator library = librairies.begin(); library != librairies.end(); ++library )
+	{
+		// add a group for the lib
+		std::ostringstream libGroupName( kParamAboutLibName, std::ios_base::in | std::ios_base::ate );
+		libGroupName << "_" << (*library).getName();
+		OFX::GroupParamDescriptor* libGroupParam = desc.defineGroupParam( libGroupName.str() );
+		libGroupParam->setLabel( (*library).getName() );
+		libGroupParam->setParent( aboutGroup );
+		
+		// add license
+		std::ostringstream licenseName( kParamAboutLicense, std::ios_base::in | std::ios_base::ate );
+		licenseName << "_" << (*library).getName();
+		OFX::StringParamDescriptor* licenseParam = desc.defineStringParam( licenseName.str() );
+		std::stringstream completeLicense;
+		completeLicense << (*library).getLicense();
+		licenseParam->setLabel( kParamAboutLicenseLabel );
+		licenseParam->setDefault( completeLicense.str() );
+		licenseParam->setStringType( OFX::eStringTypeLabel );
+		licenseParam->setParent( libGroupParam );
+
+		// add complete version (major.minor.micro)
+		std::ostringstream versionName( kParamAboutVersion, std::ios_base::in | std::ios_base::ate );
+		versionName << "_" << (*library).getName();
+		OFX::StringParamDescriptor* versionParam = desc.defineStringParam( versionName.str() );
+		std::stringstream completeVersion;
+		completeVersion << (*library).getStringVersion();
+		versionParam->setLabel( kParamAboutVersionLabel );
+		versionParam->setDefault( completeVersion.str() );
+		versionParam->setStringType( OFX::eStringTypeLabel );
+		versionParam->setParent( libGroupParam );
+		
+		++libIndex;
+	}
 }
 
 /**

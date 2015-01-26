@@ -1,5 +1,12 @@
 #include "SwscaleProcess.hpp"
 
+extern "C" {
+#ifndef __STDC_CONSTANT_MACROS
+	#define __STDC_CONSTANT_MACROS
+#endif
+	#include <libavutil/pixfmt.h>
+}
+
 namespace tuttle {
 namespace plugin {
 namespace swscale {

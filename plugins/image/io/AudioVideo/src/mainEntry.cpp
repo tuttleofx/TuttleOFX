@@ -1,4 +1,4 @@
-#define OFXPLUGIN_VERSION_MAJOR 3
+#define OFXPLUGIN_VERSION_MAJOR 4
 #define OFXPLUGIN_VERSION_MINOR 0
 
 #include <tuttle/plugin/Plugin.hpp>

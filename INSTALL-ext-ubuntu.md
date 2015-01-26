@@ -39,6 +39,7 @@ sudo apt-get install \
     libavformat-dev \
     libavcodec-dev \
     libavutil-dev \
+    libavresample-dev \
     libopenjpeg-dev \
     libglui-dev \
     libglew-dev \
