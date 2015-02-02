@@ -265,7 +265,8 @@ void MemoryPool::clear()
 
 void MemoryPool::clearOne()
 {
-	/// @todo tuttle
+	boost::mutex::scoped_lock locker( _mutex );
+	_dataUnused.erase( _dataUnused.begin() );
 }
 
 std::ostream& operator<<( std::ostream& os, const MemoryPool& memoryPool )
