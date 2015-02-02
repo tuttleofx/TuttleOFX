@@ -47,6 +47,20 @@ CACHE_ELEMENT MemoryCache::get( const std::size_t& i ) const
 	return itr->second;
 }
 
+CACHE_ELEMENT MemoryCache::getUnusedWithSize( const std::size_t requestedSize ) const
+{
+	boost::mutex::scoped_lock lockerMap( _mutexMap );
+	for( MAP::const_iterator itr = _map.begin(); itr != _map.end(); ++itr )
+	{
+		if( itr->second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1 )
+		{
+			if( itr->second->getPoolData()->reservedSize() >= requestedSize )
+				return itr->second;
+		}
+	}
+	return CACHE_ELEMENT();
+}
+
 std::size_t MemoryCache::size() const
 {
 	boost::mutex::scoped_lock lockerMap( _mutexMap );

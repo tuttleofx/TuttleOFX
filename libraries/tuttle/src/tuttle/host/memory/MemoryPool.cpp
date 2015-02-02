@@ -1,7 +1,11 @@
 #include "MemoryPool.hpp"
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/system/memoryInfo.hpp>
+#include <tuttle/host/Core.hpp>
+
 #include <boost/throw_exception.hpp>
+
 #include <algorithm>
 
 namespace tuttle {
@@ -45,6 +49,8 @@ public:
 	const char*       data() const         { return _pData; }
 	const std::size_t size() const         { return _size; }
 	const std::size_t reservedSize() const { return _reservedSize; }
+
+	void setSize( const std::size_t newSize ) { _size = newSize; }
 
 private:
 	static std::size_t _count; ///< unique id generator
@@ -163,8 +169,9 @@ const double DataFitSize::_maxBufferRatio = 2.0;
 boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 {
 	TUTTLE_TLOG( TUTTLE_TRACE, "[Memory Pool] allocate " << size << " bytes" );
-	PoolData* pData = NULL;
+	IPoolData* pData = NULL;
 
+	// Try to reuse a buffer available in the MemoryPool
 	{
 		boost::mutex::scoped_lock locker( _mutex );
 		// checking within unused data
@@ -173,17 +180,46 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 
 	if( pData != NULL )
 	{
-		pData->_size = size;
+		pData->setSize( size );
 		return pData;
 	}
 
-	const std::size_t availableSize = getAvailableMemorySize();
+	// Try to reuse a buffer available in the MemoryCache
+	memory::IMemoryCache& memoryCache = core().getMemoryCache();
+	CACHE_ELEMENT cacheElement = memoryCache.getUnusedWithSize( size );
+	if( cacheElement.get() != NULL )
+		pData = cacheElement->getPoolData().get();
+
+	if( pData != NULL )
+	{
+		pData->setSize( size );
+		return pData;
+	}
+
+	// Try to allocate a new buffer in MemoryPool
+	std::size_t availableSize = getAvailableMemorySize();
 	if( size > availableSize )
 	{
-		std::stringstream s;
-		s << "[Memory Pool] can't allocate size:" << size << " because memory available is equal to " << availableSize << " bytes";
-		BOOST_THROW_EXCEPTION( std::length_error( s.str() ) );
+		// Try to release elements from the MemoryCache (make them available in the MemoryPool)
+		memoryCache.clearUnused();
+
+		availableSize = getAvailableMemorySize();
+		if( size > availableSize )
+		{
+			// Release elements from the MemoryPool (make them available to the OS)
+			clear();
+		}
+
+		availableSize = getAvailableMemorySize();
+		if( size > availableSize )
+		{
+			std::stringstream s;
+			s << "[Memory Pool] can't allocate size:" << size << " because memory available is equal to " << availableSize << " bytes";
+			BOOST_THROW_EXCEPTION( std::length_error( s.str() ) );
+		}
 	}
+
+	// Allocate a new buffer in MemoryPool
 	return new PoolData( *this, size );
 }
 
@@ -258,7 +294,6 @@ void MemoryPool::clear( std::size_t size )
 
 void MemoryPool::clear()
 {
-	/// @todo tuttle
 	boost::mutex::scoped_lock locker( _mutex );
 	_dataUnused.clear();
 }
