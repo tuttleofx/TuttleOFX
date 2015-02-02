@@ -122,7 +122,7 @@ namespace  {
 struct DataFitSize : public std::unary_function<PoolData*, void>
 {
 	DataFitSize( std::size_t size )
-		: _size( size )
+		: _sizeNeeded( size )
 		, _bestMatchDiff( ULONG_MAX )
 		, _pBestMatch( NULL )
 	{}
@@ -130,10 +130,14 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 	void operator()( PoolData* pData )
 	{
 		const std::size_t dataSize = pData->reservedSize();
-
-		if( _size > dataSize )
+		
+		// Check minimum amount of memory
+		if( _sizeNeeded > dataSize )
 			return;
-		const std::size_t diff = dataSize - _size;
+		// Do not reuse too big buffers
+		if( dataSize > _maxBufferRatio * _sizeNeeded )
+			return;
+		const std::size_t diff = dataSize - _sizeNeeded;
 		if( diff >= _bestMatchDiff )
 			return;
 		_bestMatchDiff = diff;
@@ -146,10 +150,13 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 	}
 
 	private:
-		const std::size_t _size;
+		static const double _maxBufferRatio;  //< max ratio between used and unused part of the buffer
+		const std::size_t _sizeNeeded;
 		std::size_t _bestMatchDiff;
 		PoolData* _pBestMatch;
 };
+
+const double DataFitSize::_maxBufferRatio = 2.0;
 
 }
 
