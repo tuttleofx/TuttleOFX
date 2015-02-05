@@ -120,7 +120,7 @@ View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::VideoFrame& ima
 
 	FileView avSrcView = interleaved_view( 
 		width, height,
-		(const Pixel*)( image.getPtr() ),
+		(const Pixel*)( image.getData() ),
 		rowSizeInBytes );
 	
 	copy_and_convert_pixels( avSrcView, dst );

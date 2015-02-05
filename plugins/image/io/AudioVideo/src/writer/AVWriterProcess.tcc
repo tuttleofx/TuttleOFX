@@ -50,7 +50,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	// set video stream next frame
 	
 	const size_t bufferSize = _videoStream.getVideoFrameDesc().getDataSize();
-	_plugin._videoFrame.copyData( imageData, bufferSize );
+	_plugin._videoFrame.refData( imageData, bufferSize );
 	_videoStream.setNextFrame( _plugin._videoFrame );
 
 	// process
