@@ -9,6 +9,50 @@ namespace tuttle {
 namespace host {
 namespace memory {
 
+namespace  {
+
+/// Functor to get the smallest unused element in cache
+struct UnusedDataFitSize : public std::unary_function<CACHE_ELEMENT*, void>
+{
+	UnusedDataFitSize( std::size_t size )
+		: _sizeNeeded( size )
+		, _bestMatchDiff( ULONG_MAX )
+		, _pBestMatch()
+	{}
+
+	void operator()( const std::pair<Key, CACHE_ELEMENT>& pData )
+	{
+		// used data
+		if( pData.second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) > 1 )
+			return;
+
+		const std::size_t bufferSize = pData.second->getPoolData()->reservedSize();
+
+		// Check minimum amount of memory
+		if( _sizeNeeded > bufferSize )
+			return;
+
+		const std::size_t diff = bufferSize - _sizeNeeded;
+		if( diff >= _bestMatchDiff )
+			return;
+		_bestMatchDiff = diff;
+		_pBestMatch    = pData.second;
+	}
+
+	CACHE_ELEMENT bestMatch()
+	{
+		return _pBestMatch;
+	}
+
+	private:
+		const std::size_t _sizeNeeded;
+		std::size_t _bestMatchDiff;
+		CACHE_ELEMENT _pBestMatch;
+};
+
+
+}
+
 MemoryCache& MemoryCache::operator=( const MemoryCache& cache )
 {
 	if( &cache == this )
@@ -50,14 +94,10 @@ CACHE_ELEMENT MemoryCache::get( const std::size_t& i ) const
 CACHE_ELEMENT MemoryCache::getUnusedWithSize( const std::size_t requestedSize ) const
 {
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
-	for( MAP::const_iterator itr = _map.begin(); itr != _map.end(); ++itr )
-	{
-		if( itr->second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1 )
-		{
-			if( itr->second->getPoolData()->reservedSize() >= requestedSize )
-				return itr->second;
-		}
-	}
+	CACHE_ELEMENT pData = std::for_each( _map.begin(), _map.end(), UnusedDataFitSize( requestedSize ) ).bestMatch();
+	if( pData.get() != NULL )
+		return pData;
+
 	return CACHE_ELEMENT();
 }
 

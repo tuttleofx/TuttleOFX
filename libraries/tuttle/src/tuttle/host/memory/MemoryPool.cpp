@@ -125,6 +125,7 @@ void MemoryPool::released( PoolData* pData )
 
 namespace  {
 
+/// Functor to get the smallest element in pool
 struct DataFitSize : public std::unary_function<PoolData*, void>
 {
 	DataFitSize( std::size_t size )
