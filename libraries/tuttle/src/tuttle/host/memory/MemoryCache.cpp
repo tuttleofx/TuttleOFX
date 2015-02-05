@@ -11,6 +11,12 @@ namespace memory {
 
 namespace  {
 
+/// Check if the cache element is kept in the cache, but is not required by someone else.
+bool isUnused( const CACHE_ELEMENT& cacheElement )
+{
+    return cacheElement->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1;
+}
+
 /// Functor to get the smallest unused element in cache
 struct UnusedDataFitSize : public std::unary_function<CACHE_ELEMENT*, void>
 {
@@ -23,7 +29,7 @@ struct UnusedDataFitSize : public std::unary_function<CACHE_ELEMENT*, void>
 	void operator()( const std::pair<Key, CACHE_ELEMENT>& pData )
 	{
 		// used data
-		if( pData.second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) > 1 )
+		if( ! isUnused( pData.second ) )
 			return;
 
 		const std::size_t bufferSize = pData.second->getPoolData()->reservedSize();
@@ -49,7 +55,6 @@ struct UnusedDataFitSize : public std::unary_function<CACHE_ELEMENT*, void>
 		std::size_t _bestMatchDiff;
 		CACHE_ELEMENT _pBestMatch;
 };
-
 
 }
 
@@ -184,7 +189,7 @@ void MemoryCache::clearUnused()
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
 	for( MAP::iterator it = _map.begin(); it != _map.end(); )
 	{
-		if( it->second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1 )
+		if( isUnused( it->second ) )
 		{
 			_map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
 		}
