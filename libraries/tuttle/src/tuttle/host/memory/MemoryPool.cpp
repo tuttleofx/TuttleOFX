@@ -92,11 +92,10 @@ MemoryPool::MemoryPool( const std::size_t maxSize )
 
 MemoryPool::~MemoryPool()
 {
-/*	if( !_dataUsed.empty() )
+	if( !_dataUsed.empty() )
 	{
-		TUTTLE_LOG_WARNING( "[Memory Pool] Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
+		TUTTLE_LOG_DEBUG( "[Memory Pool] Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
 	}
-*/
 }
 
 void MemoryPool::referenced( PoolData* pData )
