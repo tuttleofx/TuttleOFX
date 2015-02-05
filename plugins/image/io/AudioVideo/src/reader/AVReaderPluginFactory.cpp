@@ -30,6 +30,7 @@ namespace reader {
 void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	avtranscoder::preloadCodecsAndFormats();
+	avtranscoder::setLogLevel( AV_LOG_QUIET );
 
 	desc.setLabels(
 		"TuttleAVReader",

@@ -33,6 +33,7 @@ namespace writer {
 void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	avtranscoder::preloadCodecsAndFormats();
+	avtranscoder::setLogLevel( AV_LOG_QUIET );
 
 	desc.setLabels(
 		"TuttleAVWriter",
