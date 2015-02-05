@@ -576,11 +576,8 @@ void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime 
 		}
 	}
 
-	// end of one frame
-	// do some clean: memory clean, as temporary solution...
-	_internMemoryCache.clearUnused();
 	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Memory cache size: " << _internMemoryCache.size() );
-	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Out cache size: " << outCache );
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Out cache size: " << outCache.size() );
 }
 
 bool ProcessGraph::process( memory::IMemoryCache& outCache )
