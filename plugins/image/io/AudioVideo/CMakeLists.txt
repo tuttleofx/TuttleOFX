@@ -5,7 +5,6 @@ include(TuttleMacros)
 tuttle_ofx_plugin_target(AudioVideo)
 
 # Add external libraries
-tuttle_ofx_plugin_add_library(AudioVideo FFmpeg COMPONENTS swscale)
 tuttle_ofx_plugin_add_library(AudioVideo avTranscoder)
 tuttle_ofx_plugin_add_library(AudioVideo sequenceParser)
 
