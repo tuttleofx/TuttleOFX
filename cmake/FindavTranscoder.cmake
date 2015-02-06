@@ -3,8 +3,8 @@
 
 set(AVTRANSCODER_FOUND 1)
 
-set(AVTRANSCODER_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libraries/avTranscoder/src)
-file(GLOB_RECURSE AVTRANSCODER_FILES ${PROJECT_SOURCE_DIR}/libraries/avTranscoder/src/*.?pp)
+set(AVTRANSCODER_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/plugins/image/io/AudioVideo/avTranscoder/src)
+file(GLOB_RECURSE AVTRANSCODER_FILES ${PROJECT_SOURCE_DIR}/plugins/image/io/AudioVideo/avTranscoder/src/*.?pp)
 
 # Use target defined in avTranscoder project
 set(AVTRANSCODER_LIBRARIES avtranscoder-shared)

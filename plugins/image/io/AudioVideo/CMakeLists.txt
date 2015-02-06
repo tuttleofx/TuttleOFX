@@ -1,6 +1,9 @@
 # Macros used to create an openfx plugin with tuttle
 include(TuttleMacros)
 
+# Build avTranscoder library
+add_subdirectory(avTranscoder)
+
 # Create target AudioVideo
 tuttle_ofx_plugin_target(AudioVideo)
 
