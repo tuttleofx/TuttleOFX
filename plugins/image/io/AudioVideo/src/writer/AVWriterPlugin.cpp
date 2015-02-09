@@ -336,11 +336,21 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 			audioInfo += "\n";
 			for( size_t audioStreamIndex = 0; audioStreamIndex < nbAudioStream; ++audioStreamIndex )
 			{
+				avtranscoder::AudioProperties& audioProperties = fileProperties.getAudioProperties().at( audioStreamIndex );
+
+				// stream
 				audioInfo += "Stream ";
 				audioInfo += boost::lexical_cast<std::string>( audioStreamIndex );
 				audioInfo += ": ";
-				audioInfo += fileProperties.getAudioProperties().at( audioStreamIndex ).getChannelName();
+
+				// channels
+				audioInfo += boost::lexical_cast<std::string>( audioProperties.getChannels() );
 				audioInfo += " channels";
+
+				// channel layout
+				audioInfo += " (layout ";
+				audioInfo += audioProperties.getChannelLayout();
+				audioInfo += ")";
 				audioInfo += "\n";
 			}
 			_paramAudioFileInfo.at( indexAudioOutput )->setValue( audioInfo );
