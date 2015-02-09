@@ -126,6 +126,13 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::Opti
 				if( option.getChilds().empty() )
 					continue;
 
+				// manage exception of video threads parameter: we want to manipulate an OFX Int parameter
+				if( name == kVideoOptionThreads )
+				{
+					_paramOFX.push_back( plugin.fetchIntParam( name ) );
+					break;
+				}
+
 				OFX::ChoiceParam* choice = plugin.fetchChoiceParam( name );
 				_paramOFX.push_back( choice );
 				_childsPerChoice.insert( std::make_pair( choice, std::vector<std::string>() ) );
@@ -458,6 +465,17 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				if( option.getChilds().empty() )
 					continue;
 
+				// manage exception of video threads parameter: we want to manipulate an OFX Int parameter
+				if( name == kVideoOptionThreads )
+				{
+					OFX::IntParamDescriptor* intParam = desc.defineIntParam( name );
+					intParam->setDefault( 0 ); // 0 = threads auto (optimal)
+					intParam->setRange( 0, std::numeric_limits<int>::max() );
+					intParam->setDisplayRange( 0, 64 );
+					param = intParam;
+					break;
+				}
+
 				OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam( name );
 				choiceParam->setDefault( option.getDefaultChildIndex() );
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
@@ -509,6 +527,12 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			param->setLabel( option.getName() );
 			param->setHint( option.getHelp() );
 			param->setParent( group );
+
+			// add help for our custom video threads parameter
+			if( name == kVideoOptionThreads )
+			{
+				param->setHint( "set a number of threads for encoding (0 autodetect a suitable number of threads to use)" );
+			}
 		}
 	}
 }

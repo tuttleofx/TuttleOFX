@@ -31,6 +31,8 @@ static const std::string kPrefixDecoding  = "d_";
 static const std::string kPrefixGroup     = "g_";
 static const std::string kPrefixFlag      = "_flag_";
 
+static const std::string kVideoOptionThreads = "v_threads";
+
 /**
  * @brief Use this class to get libav Options about format, video, and audio.
  */
