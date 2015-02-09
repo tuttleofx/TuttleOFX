@@ -7,6 +7,11 @@ tuttle_ofx_plugin_target(AudioVideo)
 # Find ffmpeg libraries which are dependencies of avTranscoder
 find_package(FFmpeg COMPONENTS avformat avcodec avutil swscale swresample)
 if(FFMPEG_FOUND)
+    # Install ffmpeg libraries
+    tuttle_find_package_paths(FFmpeg incvars libpaths libvars)
+    foreach(var ${libvars})
+        tuttle_install_shared_libs("${${var}}") 
+    endforeach()
     # Build avTranscoder library
     add_subdirectory(avTranscoder)
 endif(FFMPEG_FOUND)
