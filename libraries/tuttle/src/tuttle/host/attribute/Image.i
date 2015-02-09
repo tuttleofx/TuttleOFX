@@ -22,6 +22,8 @@ namespace attribute {
 
 %include <tuttle/host/attribute/Image.hpp>
 
+#ifndef WITHOUT_NUMPY
+
 namespace tuttle {
 namespace host {
 namespace attribute {
@@ -79,3 +81,5 @@ namespace attribute {
 }
 }
 }
+
+#endif
