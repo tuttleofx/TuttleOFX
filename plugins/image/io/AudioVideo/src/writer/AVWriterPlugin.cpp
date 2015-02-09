@@ -371,10 +371,12 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	if( paramName == kTuttlePluginFilename )
 	{
 		const std::string& extension = avtranscoder::getFormat( _paramFilepath->getValue() );
-		std::vector<std::string>::iterator itFormat = std::find( avtranscoder::getFormatsShortNames().begin(), avtranscoder::getFormatsShortNames().end(), extension );
-		if( itFormat != avtranscoder::getFormatsShortNames().end() )
+
+		std::vector<std::string> formats( avtranscoder::getFormatsShortNames() );
+		std::vector<std::string>::iterator itFormat = std::find( formats.begin(), formats.end(), extension );
+		if( itFormat != formats.end() )
 		{
-			size_t indexFormat = itFormat - avtranscoder::getFormatsShortNames().begin();
+			size_t indexFormat = std::distance( formats.begin(), itFormat );
 			_paramFormat->setValue( indexFormat );
 		}
 		cleanVideoAndAudio();
