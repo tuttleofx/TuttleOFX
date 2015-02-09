@@ -1,7 +1,13 @@
 # Look for AvTranscoder.
-# In this project, AvTranscoder is retrieved as a submodule and built with TuttleOFX.
+# In this project, AvTranscoder is retrieved as a submodule and built with AudioVideo plugin.
 
-set(AVTRANSCODER_FOUND 1)
+# Find ffmpeg libraries which are dependencies of avTranscoder
+find_package(FFmpeg COMPONENTS avformat avcodec avutil swscale swresample)
+if(FFMPEG_FOUND)
+    set(AVTRANSCODER_FOUND 1)
+else(FFMPEG_FOUND)
+    set(AVTRANSCODER_FOUND 0)
+endif(FFMPEG_FOUND)
 
 set(AVTRANSCODER_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/plugins/image/io/AudioVideo/avTranscoder/src)
 file(GLOB_RECURSE AVTRANSCODER_FILES ${PROJECT_SOURCE_DIR}/plugins/image/io/AudioVideo/avTranscoder/src/*.?pp)
