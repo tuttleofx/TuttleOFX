@@ -99,11 +99,7 @@ CACHE_ELEMENT MemoryCache::get( const std::size_t& i ) const
 CACHE_ELEMENT MemoryCache::getUnusedWithSize( const std::size_t requestedSize ) const
 {
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
-	CACHE_ELEMENT pData = std::for_each( _map.begin(), _map.end(), UnusedDataFitSize( requestedSize ) ).bestMatch();
-	if( pData.get() != NULL )
-		return pData;
-
-	return CACHE_ELEMENT();
+	return std::for_each( _map.begin(), _map.end(), UnusedDataFitSize( requestedSize ) ).bestMatch();
 }
 
 std::size_t MemoryCache::size() const
