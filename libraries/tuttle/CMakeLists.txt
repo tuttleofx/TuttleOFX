@@ -103,6 +103,15 @@ if (TuttleBoost_FOUND)
   install(TARGETS tuttleHost DESTINATION lib/)
   install(TARGETS sequenceParser DESTINATION lib/)
 
+  # Install tuttle host headers
+  install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/tuttle"
+    DESTINATION "include"
+    FILES_MATCHING
+    PATTERN "*.hpp"
+    PATTERN "*.i"
+  )
+
   # Install boost library along with tuttle library
   # Need to copy the files pointed by symlinks instead of the symlinks
   include(TuttleMacros)
