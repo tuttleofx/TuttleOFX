@@ -793,13 +793,17 @@ void AVWriterPlugin::initAudio()
 				bool selectOneStream = _paramAudioSelectStream.at( i )->getValue();
 				int inputStreamIndex = selectOneStream ? _paramAudioStreamIndex.at( i )->getValue() : -1;				
 
-				// Get number of audio stream
-				size_t nbAudioStream = 1;
+				// Get index of audio streams
+				std::vector< int > indexAudioStreams;
 				if( inputStreamIndex == -1 )
 				{
 					avtranscoder::NoDisplayProgress progress;
 					avtranscoder::FileProperties fileProperties = avtranscoder::InputFile::analyseFile( inputFileName, progress, avtranscoder::eAnalyseLevelHeader );
-					nbAudioStream = fileProperties.getAudioProperties().size();
+					std::vector< avtranscoder::AudioProperties > audioProperties = fileProperties.getAudioProperties();
+					for( size_t propertiesIndex = 0; propertiesIndex < audioProperties.size(); ++propertiesIndex )
+					{
+						indexAudioStreams.push_back( audioProperties.at( propertiesIndex ).getStreamIndex() );
+					}
 				}
 				
 				// rewrap
@@ -811,9 +815,9 @@ void AVWriterPlugin::initAudio()
 					}
 					else
 					{
-						for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
+						for( std::vector< int >::iterator itStreamIndex = indexAudioStreams.begin(); itStreamIndex != indexAudioStreams.end(); ++itStreamIndex )
 						{
-							_transcoder->add( inputFileName, streamIndex, presetName );
+							_transcoder->add( inputFileName, *itStreamIndex, presetName );
 						}
 					}
 				}
@@ -833,9 +837,9 @@ void AVWriterPlugin::initAudio()
 						}
 						else
 						{
-							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
+							for( std::vector< int >::iterator itStreamIndex = indexAudioStreams.begin(); itStreamIndex != indexAudioStreams.end(); ++itStreamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, profile, offset );
+								_transcoder->add( inputFileName, *itStreamIndex, subStream, profile, offset );
 							}
 						}
 					}
@@ -848,9 +852,9 @@ void AVWriterPlugin::initAudio()
 						}
 						else
 						{
-							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
+							for( std::vector< int >::iterator itStreamIndex = indexAudioStreams.begin(); itStreamIndex != indexAudioStreams.end(); ++itStreamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offset );
+								_transcoder->add( inputFileName, *itStreamIndex, subStream, presetName, offset );
 							}
 						}
 					}
