@@ -87,7 +87,7 @@ public:
 	/** Update OFX parameters from an existing profile (format, video, or audio). */
 	void updateFormatFromExistingProfile();
 	void updateVideoFromExistingProfile();
-	void updateAudiotFromExistingProfile();
+	void updateAudioFromExistingProfile();
 	//@}
 
 	void cleanVideoAndAudio();  ///< Called before each new render.

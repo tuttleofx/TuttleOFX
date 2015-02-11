@@ -465,7 +465,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		}
 		else
 		{
-			updateAudiotFromExistingProfile();
+			updateAudioFromExistingProfile();
 		}
 
 		// update offset visibility of audio inputs
@@ -964,7 +964,7 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 	}
 }
 
-void AVWriterPlugin::updateAudiotFromExistingProfile()
+void AVWriterPlugin::updateAudioFromExistingProfile()
 {
 	size_t presetIndex = _paramAudioMainPreset->getValue();
 	
