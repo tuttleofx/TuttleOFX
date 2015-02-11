@@ -96,7 +96,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 
 		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
 		audioOffsetName << "_" << indexAudioInput;
-		_paramAudioOffset.push_back( fetchIntParam( audioOffsetName.str() ) );
+		_paramAudioOffset.push_back( fetchDoubleParam( audioOffsetName.str() ) );
 		_paramAudioOffset.back()->setIsSecretAndDisabled( true );
 	}
 	updateAudioParams();
@@ -802,21 +802,20 @@ void AVWriterPlugin::initAudio()
 				{
 					// select all channels of the stream
 					size_t subStream = -1;
-					size_t offsetMillisecond = _paramAudioOffset.at( i )->getValue();
-					size_t offsetFrame = ( offsetMillisecond * _outputFps ) / 1000;
+					double offset = _paramAudioOffset.at( i )->getValue();
 
 					// custom audio preset
 					if( presetIndex == 0 && mainPresetIndex == 0 )
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile, offsetFrame );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile, offset );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, profile, offsetFrame );
+								_transcoder->add( inputFileName, streamIndex, subStream, profile, offset );
 							}
 						}
 					}
@@ -825,13 +824,13 @@ void AVWriterPlugin::initAudio()
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName, offsetFrame );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName, offset );
 						}
 						else
 						{
 							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offsetFrame );
+								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offset );
 							}
 						}
 					}

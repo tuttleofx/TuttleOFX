@@ -434,14 +434,14 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 			);
 		}
 		
-		// add audio channel index
+		// add audio offset
 		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
 		audioOffsetName << "_" << indexAudioInput;
-		OFX::IntParamDescriptor* audioOffsetParam = desc.defineIntParam( audioOffsetName.str() );
+		OFX::DoubleParamDescriptor* audioOffsetParam = desc.defineDoubleParam( audioOffsetName.str() );
 		audioOffsetParam->setLabel( "Offset" );
 		audioOffsetParam->setHint( "Add an offset (in seconds) at the beginning of the stream. By default 0." );
 		audioOffsetParam->setRange( 0, INT_MAX );
-		audioOffsetParam->setDisplayRange( 0, 10000 );
+		audioOffsetParam->setDisplayRange( 0, 60 );
 		audioOffsetParam->setDefault( 0 );
 		audioOffsetParam->setParent( audioSubGroupParam );
 	}
