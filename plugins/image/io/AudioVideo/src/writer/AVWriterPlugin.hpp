@@ -70,7 +70,7 @@ public:
 	void updateAudioParams();
 	void updateAudioSilent( size_t indexAudioOutput );
 	void updateAudioSelectStream( size_t indexAudioOutput );
-	void updateAudioRewrap( size_t indexAudioOutput );
+	void updateAudioOffset( size_t indexAudioOutput );
 	void updateAudioFileInfo( size_t indexAudioOutput );
 	//@}
 

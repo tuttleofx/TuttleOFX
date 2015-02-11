@@ -99,7 +99,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 		_paramAudioOffset.push_back( fetchDoubleParam( audioOffsetName.str() ) );
 		_paramAudioOffset.back()->setIsSecretAndDisabled( true );
 	}
-	updateAudioParams();
 
 	// our custom params
 	_paramUseCustomFps = fetchBooleanParam( kParamUseCustomFps );
@@ -174,6 +173,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaTrack           ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
 
+	updateAudioParams();
 	updateVisibleTools();
 }
 
@@ -304,16 +304,30 @@ void AVWriterPlugin::updateAudioSelectStream( size_t indexAudioOutput )
 			}
 		}
 	}
-	updateAudioRewrap( indexAudioOutput );
+	updateAudioOffset( indexAudioOutput );
 }
 
-void AVWriterPlugin::updateAudioRewrap( size_t indexAudioOutput )
+void AVWriterPlugin::updateAudioOffset( size_t indexAudioOutput )
 {
 	if( _paramAudioSubGroup.at( indexAudioOutput )->getIsEnable() &&
 		! _paramAudioSubGroup.at( indexAudioOutput )->getIsSecret() &&
 		! _paramAudioSilent.at( indexAudioOutput )->getValue() )
 	{
-		bool isRewrap = _paramAudioPreset.at( indexAudioOutput )->getValue() == 1;
+		bool isRewrap = false;
+		switch( _paramAudioPreset.at( indexAudioOutput )->getValue() )
+		{
+			// check main audio preset
+			case 0:
+				if( _paramAudioMainPreset->getValue() == 1 )
+					isRewrap = true;
+				break;
+			// check audio preset at index
+			case 1:
+				isRewrap = true;
+				break;
+			default:
+				break;
+		}
 		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( isRewrap );
 	}
 }
@@ -441,7 +455,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamAudioMainPreset )
 	{
-		// if custom audio preset
+		// if custom audio preset or rewrap
 		if( _paramAudioMainPreset->getValue() == 0 || 
 			_paramAudioMainPreset->getValue() == 1 )
 		{
@@ -452,6 +466,12 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		else
 		{
 			updateAudiotFromExistingProfile();
+		}
+
+		// update offset visibility of audio inputs
+		for( size_t indexAudioInput = 0; indexAudioInput < _paramAudioNbInput->getValue(); ++indexAudioInput )
+		{
+			updateAudioOffset( indexAudioInput );
 		}
 	}
 	// fps
@@ -499,7 +519,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	{
 		const size_t indexPos = kParamAudioPreset.size() + 1; // add "_"
 		size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
-		updateAudioRewrap( indexAudioOutput );
+		updateAudioOffset( indexAudioOutput );
 	}
 	else if( paramName.find( kParamAudioFilePath ) != std::string::npos )
 	{
