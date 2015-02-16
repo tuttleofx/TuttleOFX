@@ -123,15 +123,15 @@ if (TuttleBoost_FOUND)
     if(WITHOUT_NUMPY)
         # Add swig flag to create binding without Numpy
         set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
-    else(WITHOUT_NUMPY)
+    else()
         # Find numpy headers
         find_package(Numpy)
         if(NUMPY_FOUND)
             include_directories(${NUMPY_INCLUDE_DIR})
-        else(NUMPY_FOUND)
+        else()
             set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
-        endif(NUMPY_FOUND)
-    endif(WITHOUT_NUMPY)
+        endif()
+    endif()
 
     # Swig to compile c++ -> python
     set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern ${SWIG_NUMPY_FLAG}) #-doxygen
