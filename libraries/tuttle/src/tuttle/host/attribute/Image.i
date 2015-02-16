@@ -22,8 +22,6 @@ namespace attribute {
 
 %include <tuttle/host/attribute/Image.hpp>
 
-#ifndef WITHOUT_NUMPY
-
 namespace tuttle {
 namespace host {
 namespace attribute {
@@ -42,6 +40,8 @@ namespace attribute {
 					self.getBitDepth(),
 					self.getComponentsType()
 				)
+
+#ifndef WITHOUT_NUMPY
 
 		def getNumpyArray(self):
 			import numpy
@@ -75,11 +75,12 @@ namespace attribute {
 		def getNumpyImage(self):
 			from PIL import Image
 			return Image.fromarray(self.getNumpyArray())
+
+#endif
+
 	}
 }
 
 }
 }
 }
-
-#endif
