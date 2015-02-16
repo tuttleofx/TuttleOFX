@@ -31,14 +31,14 @@ public:
 	virtual void setup( const OFX::RenderArguments& args )
 	{
 		ImageProcessor::setup( args );
-		_dstView           = getView( _dst.get(), _dstPixelRod );
+		_dstView = getView( _dst.get(), _dstPixelRod );
 
 		#ifndef TUTTLE_PRODUCTION
 		// init dst buffer with red to highlight uninitialized pixels
-		const OfxRectI dstBounds = this->translateRoWToOutputClipCoordinates( _dst->getBounds() );
-		View dstToFill           = boost::gil::subimage_view( _dstView,
-		                                                      dstBounds.x1, dstBounds.y1,
-		                                                      dstBounds.x2 - dstBounds.x1, dstBounds.y2 - dstBounds.y1 );
+		const OfxRectI dstRenderWin = this->translateRoWToOutputClipCoordinates( args.renderWindow );
+		View dstToFill = boost::gil::subimage_view( _dstView,
+			dstRenderWin.x1, dstRenderWin.y1,
+			dstRenderWin.x2 - dstRenderWin.x1, dstRenderWin.y2 - dstRenderWin.y1 );
 		const boost::gil::rgba32f_pixel_t errorColor( 1.0, 0.0, 0.0, 1.0 );
 		fill_pixels( dstToFill, errorColor );
 		#endif

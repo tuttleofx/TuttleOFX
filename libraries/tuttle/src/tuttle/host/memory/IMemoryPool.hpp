@@ -21,10 +21,13 @@ class IPoolData : public IUnknown
 {
 public:
 	virtual ~IPoolData ()                     = 0;
+
 	virtual char*        data()               = 0;
 	virtual const char*  data() const         = 0;
 	virtual const size_t size() const         = 0;
 	virtual const size_t reservedSize() const = 0;
+
+	virtual void setSize( const std::size_t newSize ) = 0;
 };
 
 void intrusive_ptr_add_ref( IPoolData* pData );

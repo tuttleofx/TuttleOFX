@@ -619,26 +619,27 @@ void ImageEffectDescriptor::addSupportedBitDepth( EBitDepth v )
 /** @brief Add a file extension to those supported */
 void ImageEffectDescriptor::addSupportedExtension( const std::string& extension )
 {
-	// only Tuttle support this property ( out of standard )
-	if( OFX::Private::gHostDescription.hostName == "TuttleOfx" )
+	try
 	{
+		// This property is a Tuttle extension (out of the OpenFX standard)
 		const int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
 		_effectProps.propSetString( kTuttleOfxImageEffectPropSupportedExtensions, extension, n );
 	}
+	catch( OFX::Exception::PropertyUnknownToHost ) {}
 }
 
 void ImageEffectDescriptor::addSupportedExtensions( const std::vector<std::string>& extensions )
 {
-	// only Tuttle support this property ( out of standard )
-	if( OFX::Private::gHostDescription.hostName == "TuttleOfx" )
+	try
 	{
+		// This property is a Tuttle extension (out of the OpenFX standard)
 		int n = _effectProps.propGetDimension( kTuttleOfxImageEffectPropSupportedExtensions );
-
 		BOOST_FOREACH( const std::string& ext, extensions )
 		{
 			_effectProps.propSetString( kTuttleOfxImageEffectPropSupportedExtensions, ext, n++ );
 		}
 	}
+	catch( OFX::Exception::PropertyUnknownToHost ) {}
 }
 
 void ImageEffectDescriptor::setPluginEvaluation( double evaluation )
@@ -1634,7 +1635,7 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, EBitDepth bitDepth )
 	// it's not clear what we need to to in this case...
 	// set the value supported by the host or set nothing
 	// by setting this value, we may have less problem depending on host implementations
-	outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getPixelDepth() ) );
+	outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getDefaultPixelDepth() ) );
 	}
 }
 
@@ -2596,11 +2597,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 			// call the instance changed action
 			if( getTimeDomainAction( handle, outArgs ) )
-			stat = kOfxStatOK;
-
-			// fetch our pointer out of the props on the handle
-			/*ImageEffect *instance = */ retrieveImageEffectPointer( handle );
-
+				stat = kOfxStatOK;
 		}
 		else if( action == kOfxActionBeginInstanceChanged )
 		{

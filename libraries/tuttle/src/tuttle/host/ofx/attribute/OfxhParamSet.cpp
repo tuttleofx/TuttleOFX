@@ -32,10 +32,11 @@ void OfxhParamSet::initMapFromList()
 OfxhParamSet::~OfxhParamSet()
 {}
 
-void OfxhParamSet::operator=( const OfxhParamSet& other )
+OfxhParamSet& OfxhParamSet::operator=( const OfxhParamSet& other )
 {
 	_paramVector = other._paramVector.clone();
 	initMapFromList();
+	return *this;
 }
 
 void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )

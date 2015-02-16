@@ -23,7 +23,7 @@ std::vector<std::string> getStringValues( const tuttle::host::ofx::property::Ofx
 	std::vector<std::string> s;
 	for( std::size_t n = 0; n < prop.getDimension(); ++n )
 	{
-		s.push_back( prop.getStringValue( n ) );
+		s.push_back( prop.getStringValueAt( n ) );
 	}
 	return s;
 }
@@ -121,7 +121,7 @@ void coutParameterValues( std::ostream& os, const ttl::ofx::attribute::OfxhParam
 		
 		for( std::size_t n = 0; n < prop.getDimension(); ++n )
 		{
-			os << prop.getStringValue( n ) << " ";
+			os << prop.getStringValueAt( n ) << " ";
 		}
 	}
 	else

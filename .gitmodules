@@ -1,6 +1,6 @@
-[submodule "tools/sconsProject"]
-	path = tools/sconsProject
-	url = http://github.com/tuttleofx/sconsProject.git
 [submodule "libraries/sequenceParser"]
 	path = libraries/sequenceParser
 	url = http://github.com/mikrosimage/sequenceparser.git
+[submodule "libraries/avTranscoder"]
+	path = libraries/avTranscoder
+	url = https://github.com/mikrosimage/avTranscoder.git

@@ -48,7 +48,7 @@ void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 	else
 	{
 		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
+		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getDefaultPixelDepth() ) );
 	}
 }
 

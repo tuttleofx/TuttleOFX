@@ -10,7 +10,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
-#ifdef WITH_BOOST_LOG
+#ifndef WITHOUT_BOOST_LOG
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -48,8 +48,10 @@ namespace common {
 
 class Formatter : boost::noncopyable
 {
-#ifdef WITH_BOOST_LOG
+#ifndef WITHOUT_BOOST_LOG
+#ifndef SWIG
 	typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend > sink_t;
+#endif
 #endif
 
 private:
@@ -72,8 +74,10 @@ public:
 
 public:
 	static boost::shared_ptr< Formatter > _formatter;
-#ifdef WITH_BOOST_LOG
+#ifndef WITHOUT_BOOST_LOG
+#ifndef SWIG
 	boost::shared_ptr< sink_t > _sink;
+#endif
 #endif
 };
 

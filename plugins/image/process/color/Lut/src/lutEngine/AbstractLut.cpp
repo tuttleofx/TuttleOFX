@@ -69,7 +69,7 @@ void AbstractLut::reset( size_t dimSize, double* data /* = NULL */ )
 {
 	if( _data && !_shared )
 		delete [] _data;
-	_dimSize = _dimSize;
+	_dimSize = dimSize;
 	if( _data == NULL )
 	{
 		_data = new double[ totalSize() * 3 ];

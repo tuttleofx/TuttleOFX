@@ -19,7 +19,7 @@ ParamBoolean::ParamBoolean( INode&                           effect,
 
 bool ParamBoolean::getDefault() const
 {
-	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault ) != 0 );
+	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault, this->_index ) != 0 );
 }
 
 void ParamBoolean::getValue( bool& v ) const OFX_EXCEPTION_SPEC

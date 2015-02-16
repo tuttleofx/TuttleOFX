@@ -21,8 +21,6 @@ public:
 	virtual void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	virtual bool getTimeDomain( OfxRangeD& range );
 
-	virtual void render( const OFX::RenderArguments& args );
-
 public:
 
 	EParamGeneratorExplicitConversion getExplicitConversion() const

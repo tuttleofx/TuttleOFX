@@ -218,7 +218,7 @@ std::vector<std::string> Dummy::getSupportedExtensions( const std::string& conte
 	
 					for( std::size_t n = 0; n < prop.getDimension(); ++n )
 					{
-						listOfExtensions.push_back( prop.getStringValue( n ) );
+						listOfExtensions.push_back( prop.getStringValueAt( n ) );
 					}
 				}
 			}
@@ -412,8 +412,8 @@ void Dummy::foundAssociateSpecificDummyNode( std::string& inputNode, const std::
 
 				for( std::size_t n = 0; n < prop.getDimension(); ++n )
 				{
-					//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, prop.getStringValue( n ), inputExtension );
-					if( prop.getStringValue( n ) == inputExtension )
+					//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, prop.getStringValueAt( n ), inputExtension );
+					if( prop.getStringValueAt( n ) == inputExtension )
 					{
 						//TUTTLE_TLOG( TUTTLE_TRACE, pluginName << " [" << prop.getDimension() << "] can read " << prop.getStringValue( n ) );
 						if( prop.getDimension() < numberOfSupportedExtension )

@@ -1,7 +1,7 @@
 # scons: pluginCheckerboard pluginBlur pluginPng
 
-from pyTuttle import tuttle
 from nose.tools import *
+from pyTuttle import tuttle
 from tempfile import *
 
 import os
@@ -55,32 +55,33 @@ def testFrameVarying():
 
 
 def testFilenameLastWriteTimeChanged():
-	filepath = NamedTemporaryFile( prefix="localHashTest-", suffix=".png" )
-	if os.path.exists(filepath.name):
-		os.remove(filepath.name)
+	tmp_file = NamedTemporaryFile(prefix="localHashTest-", suffix=".png", delete=False)
+
+	# First hash is computed without the file, 
+	# as NamedTemporaryFile creates it, we need to delete it
+	if os.path.exists(tmp_file.name):
+		os.remove(tmp_file.name)
+
 	g = tuttle.Graph()
-	read_filename = g.createNode( "tuttle.pngreader", filename=filepath.name )
+	read_filename = g.createNode("tuttle.pngreader", filename=tmp_file.name)
 	
 	hash_with_no_file = read_filename.getLocalHashAtTime(0.0)
-	assert_equal( read_filename.getLocalHashAtTime(0.0), read_filename.getLocalHashAtTime(0.0) )
-	open(filepath.name, "w").write("Not empty\n")
-	# Cast to long, because in C++ we see it as a long.
-	
-	last_modification_time = int(os.stat(filepath.name).st_ctime)
+
+	# second hash use the file
+	with open(tmp_file.name, "w") as f:
+		f.write("There is something in the file\n")
 	hash_with_file = read_filename.getLocalHashAtTime(0.0)
-	assert_equal( read_filename.getLocalHashAtTime(0.0), read_filename.getLocalHashAtTime(0.0) )
 	
-	# Modify the timestamp, until the last write time change becames visible
-	i = 0
-	while last_modification_time == int(os.stat(filepath.name).st_ctime):
-		open( filepath.name, "w").write("Adding data to modify the last wite time: " + str(i) + "\n")
-		i += 1
+	# last hash use a modified timestamp 
+	stat = os.stat(tmp_file.name)
+	os.utime(tmp_file.name, (stat.st_atime, stat.st_mtime+1))
 	hash_with_modified_file = read_filename.getLocalHashAtTime(0.0)
-	os.remove(filepath.name)
+
+	# cleanup
+	os.remove(tmp_file.name)
 
 	assert_not_equal( hash_with_no_file, hash_with_file )
 	assert_not_equal( hash_with_file, hash_with_modified_file )
-
 
 def testClipOrder():
 	a_g = tuttle.Graph()

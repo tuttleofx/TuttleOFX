@@ -1,14 +1,13 @@
-#ifndef _TUTTLE_PLUGIN_FFMPEG_WRITER_PROCESS_HPP_
-#define _TUTTLE_PLUGIN_FFMPEG_WRITER_PROCESS_HPP_
+#ifndef _TUTTLE_PLUGIN_AV_WRITER_PROCESS_HPP_
+#define _TUTTLE_PLUGIN_AV_WRITER_PROCESS_HPP_
 
-#include <libav/LibAVVideoWriter.hpp>
+#include "AVWriterPlugin.hpp"
+
+#include <AvTranscoder/decoder/VideoGenerator.hpp>
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
-#include <tuttle/plugin/exceptions.hpp>
 
 #include <terry/globals.hpp>
-
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -23,12 +22,14 @@ template<class View>
 class AVWriterProcess : public ImageGilFilterProcessor<View>
 {
 protected:
-	AVWriterPlugin& _plugin;        ///< Rendering plugin
+	AVWriterPlugin& _plugin; ///< Rendering plugin
 	AVProcessParams _params;
+	avtranscoder::VideoGenerator& _videoStream; ///< The output video stream (has link, no ownership)
 
 public:
 	AVWriterProcess( AVWriterPlugin& instance );
 
+	void setup( const OFX::RenderArguments& args );
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 

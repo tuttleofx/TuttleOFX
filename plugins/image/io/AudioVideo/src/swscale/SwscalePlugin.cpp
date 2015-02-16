@@ -2,7 +2,12 @@
 #include "SwscaleProcess.hpp"
 #include "SwscaleDefinitions.hpp"
 
-#include <libav/LibAV.hpp>
+extern "C" {
+#ifndef __STDC_CONSTANT_MACROS
+	#define __STDC_CONSTANT_MACROS
+#endif
+	#include <libswscale/swscale.h>
+}
 
 #include <tuttle/plugin/ofxToGil/point.hpp>
 #include <terry/point/operations.hpp>

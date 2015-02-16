@@ -319,7 +319,7 @@ struct ImageFormat : virtual public Common
  * @brief The class serves as the base class for all exceptions thrown to report errors presumably detectable before the program executes, such as violations of logical preconditions (cf. std::logic_error).
  * @remark With this exception, you normally have a "user" tag message.
  */
-struct Logic : virtual public Value {};
+struct Logic : virtual public Failed {};
 
 /**
  * @brief Something that should never appends.
@@ -327,10 +327,10 @@ struct Logic : virtual public Value {};
  *        but we prefer to keep a runtime check even in release (for the moment).
  * @remark With this exception, you should have a "dev" tag message.
  */
-struct Bug : virtual public Value {};
+struct Bug : virtual public Fatal {};
 
 /** @brief Unknown error inside a conversion. */
-struct BadConversion : virtual public Value {};
+struct BadConversion : virtual public Failed {};
 
 /** @brief Error with a NULL image buffer.
  * * plugin: The host launch a process, but the input clips are not filled (eg. NULL buffer pointer).
@@ -345,7 +345,7 @@ struct ImageNotReady : virtual public Value {};
  *           The error comes from host.
  * * host: We can't launch the render in this case.
  */
-struct ImageNotConnected : virtual public Value {};
+struct ImageNotConnected : virtual public Failed {};
 
 /**
  * @brief Input property don't satisfy descriptor requirements.
@@ -388,7 +388,7 @@ struct WrongParameter : virtual public Value {};
  * @brief File manipulation error.
  * eg. read only, file doesn't exists, etc.
  */
-struct File : virtual public Value
+struct File : virtual public Failed
 {
 	File()
 	{}

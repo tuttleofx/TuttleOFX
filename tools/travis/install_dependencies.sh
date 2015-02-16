@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit immediately if a command exits with a non-zero status
 set -e
+# Print commands and their arguments as they are executed.
 set -x
 
 # enable testing locally or on forks without multi-os enabled
@@ -17,22 +19,22 @@ echo "Start dependencies installation."
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     lsb_release -a
 
-    cp tools/sconf/ubuntu_travis.sconf host.sconf
-
     sudo add-apt-repository -y ppa:boost-latest/ppa
     sudo add-apt-repository -y ppa:irie/openimageio
     sudo add-apt-repository -y ppa:kubuntu-ppa/backports
     sudo apt-get update -qq
 
     if [[ ${BUILD_TARGET} == "host" ]]; then
-        sudo apt-get install -qq libboost1.55-all-dev swig swig2.0 libboost1.55-all-dev python-dev python-numpy libpng-dev graphviz graphviz-dev python-nose python-imaging
+        sudo apt-get install -qq cmake libboost1.55-all-dev swig swig2.0 libboost1.55-all-dev python-dev python-numpy libpng-dev graphviz graphviz-dev python-nose python-imaging
     elif [[ ${BUILD_TARGET} == "plugin" ]]; then
-        sudo apt-get install -qq libboost1.55-all-dev python-dev libfreetype6-dev libXt-dev libbz2-dev liblcms-dev libopenctl0.8 libltdl-dev libpng-dev libcaca-dev libjpeg-dev libglew-dev libtiff-dev libilmbase-dev libopenexr-dev libMagickCore-dev libraw-dev libopenjpeg-dev libglui-dev libglew-dev libtinyxml-dev libyaml-cpp-dev libopenimageio-dev libturbojpeg libxmu-dev yasm libmp3lame-dev libx264-dev libxvidcore-dev liblzma-dev
+        sudo apt-get install -qq cmake libboost1.55-all-dev python-dev libfreetype6-dev libXt-dev libbz2-dev liblcms-dev libopenctl0.8 libltdl-dev libpng-dev libcaca-dev libjpeg-dev libglew-dev libtiff-dev libilmbase-dev libopenexr-dev libMagickCore-dev libraw-dev libopenjpeg-dev libglui-dev libglew-dev libtinyxml-dev libyaml-cpp-dev libopenimageio-dev libturbojpeg libxmu-dev yasm libmp3lame-dev libx264-dev libxvidcore-dev liblzma-dev
 
         cd $TRAVIS_BUILD_DIR
-        git clone git://github.com/MarcAntoine-Arnaud/libav.git
-        cd libav
-        ./configure --enable-shared && make $J && sudo make install
+        wget https://www.ffmpeg.org/releases/ffmpeg-2.2.9.tar.bz2
+        bunzip2 ffmpeg-2.2.9.tar.bz2
+        tar -xvf ffmpeg-2.2.9.tar > /dev/null 2>&1
+        cd ffmpeg-2.2.9
+        ./configure --enable-shared --disable-static > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
@@ -103,13 +105,12 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     tar -xvf bottles.tar
 
     # cmake is installed by default on travis
-    # brew install bottles/cmake-2.8.12.2.mavericks.bottle.2.tar.gz
-    # brew install bottles/doxygen-1.8.7.mavericks.bottle.tar.gz
+    brew install bottles/cmake-2.8.12.2.mavericks.bottle.2.tar.gz
+    brew install bottles/doxygen-1.8.7.mavericks.bottle.tar.gz
 
     brew unlink gcc  # need to get gcc installed by homebrew
     brew install gcc  # bottles/gcc-4.8.3_1.mavericks.bottle.tar.gz
     # brew install bottles/qt-4.8.6.mavericks.bottle.5.tar.gz
-    brew install scons  # bottles/scons-2.3.1.mavericks.bottle.3.tar.gz || true
     brew uninstall boost && brew install bottles/boost-1.55.0_2.mavericks.bottle.4.tar.gz
     brew install tbb  # bottles/tbb-4.2.4.mavericks.bottle.tar.gz
 
@@ -157,9 +158,6 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
         brew install bottles/openimageio-1.4.8.mavericks.bottle.tar.gz
 
     fi
-
-    cp tools/sconf/macos_homebrew.sconf host.sconf
-
 fi
 
 echo "End dependencies installation."

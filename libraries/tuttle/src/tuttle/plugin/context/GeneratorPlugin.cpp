@@ -293,9 +293,5 @@ bool GeneratorPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	return false;
 }
 
-void GeneratorPlugin::render( const OFX::RenderArguments& args )
-{
-}
-
 }
 }

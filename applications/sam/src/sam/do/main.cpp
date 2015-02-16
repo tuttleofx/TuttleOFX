@@ -8,6 +8,7 @@
 #include <sam/common/utility.hpp>
 
 #include <tuttle/common/exceptions.hpp>
+#include <tuttle/common/utils/applicationPath.hpp>
 
 #include <tuttle/host/attribute/expression.hpp>
 #include <tuttle/host/Graph.hpp>
@@ -417,6 +418,8 @@ int main( int argc, char** argv )
 				// start to analyse and execute all sub-commands //
 				
 				// Load plugins
+				const std::string relativePathToPlugins = (tuttle::common::canonicalApplicationFolder(argv[0]).parent_path() / "OFX").string();
+				ttl::core().getPluginCache().addDirectoryToPath( relativePathToPlugins );
 				ttl::core().preload();
 
 				const std::string logFilename = ( ttl::core().getPreferences().getTuttleHomePath() / "sam-do.log" ).string();

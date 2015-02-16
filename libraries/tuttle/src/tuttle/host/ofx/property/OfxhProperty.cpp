@@ -39,6 +39,8 @@
 // ofx
 #include <ofxImageEffect.h>
 
+#include <boost/algorithm/string/join.hpp>
+
 #include <iostream>
 #include <cstring>
 
@@ -81,6 +83,24 @@ void OfxhProperty::notify( bool single, int indexOrN )
 	{
 		( *i )->notify( _name, single, indexOrN );
 	}
+}
+
+std::vector<std::string> OfxhProperty::getStringValues() const
+{
+	std::vector<std::string> res;
+	for( unsigned int i = 0; i < getDimension(); ++i )
+		res.push_back(getStringValueAt(i));
+	return res;
+}
+
+/// get a string representing all the values of this property
+std::string OfxhProperty::getStringValue() const
+{
+	if( getDimension() == 1 )
+		return getStringValueAt(0);
+	if( getDimension() == 0 )
+		return "";
+	return boost::algorithm::join(getStringValues(), ", ");
 }
 
 }

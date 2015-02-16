@@ -9,6 +9,55 @@ namespace tuttle {
 namespace host {
 namespace memory {
 
+namespace  {
+
+/// Check if the cache element is kept in the cache, but is not required by someone else.
+bool isUnused( const CACHE_ELEMENT& cacheElement )
+{
+    return cacheElement->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1;
+}
+
+/// Functor to get the smallest unused element in cache
+struct UnusedDataFitSize : public std::unary_function<CACHE_ELEMENT*, void>
+{
+	UnusedDataFitSize( std::size_t size )
+		: _sizeNeeded( size )
+		, _bestMatchDiff( ULONG_MAX )
+		, _pBestMatch()
+	{}
+
+	void operator()( const std::pair<Key, CACHE_ELEMENT>& pData )
+	{
+		// used data
+		if( ! isUnused( pData.second ) )
+			return;
+
+		const std::size_t bufferSize = pData.second->getPoolData()->reservedSize();
+
+		// Check minimum amount of memory
+		if( _sizeNeeded > bufferSize )
+			return;
+
+		const std::size_t diff = bufferSize - _sizeNeeded;
+		if( diff >= _bestMatchDiff )
+			return;
+		_bestMatchDiff = diff;
+		_pBestMatch    = pData.second;
+	}
+
+	CACHE_ELEMENT bestMatch()
+	{
+		return _pBestMatch;
+	}
+
+	private:
+		const std::size_t _sizeNeeded;
+		std::size_t _bestMatchDiff;
+		CACHE_ELEMENT _pBestMatch;
+};
+
+}
+
 MemoryCache& MemoryCache::operator=( const MemoryCache& cache )
 {
 	if( &cache == this )
@@ -45,6 +94,12 @@ CACHE_ELEMENT MemoryCache::get( const std::size_t& i ) const
 	if( itr == _map.end() )
 		return CACHE_ELEMENT();
 	return itr->second;
+}
+
+CACHE_ELEMENT MemoryCache::getUnusedWithSize( const std::size_t requestedSize ) const
+{
+	boost::mutex::scoped_lock lockerMap( _mutexMap );
+	return std::for_each( _map.begin(), _map.end(), UnusedDataFitSize( requestedSize ) ).bestMatch();
 }
 
 std::size_t MemoryCache::size() const
@@ -130,7 +185,7 @@ void MemoryCache::clearUnused()
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
 	for( MAP::iterator it = _map.begin(); it != _map.end(); )
 	{
-		if( it->second->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1 )
+		if( isUnused( it->second ) )
 		{
 			_map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
 		}

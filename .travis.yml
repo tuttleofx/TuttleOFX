@@ -57,7 +57,8 @@ script:
 
 
 after_failure:
-  - cat config.log
+  - cat install_dependencies.log || true
+  - cat build_travis/CMakeFiles/CMakeOutput.log
 
 
 addons:
@@ -66,6 +67,6 @@ addons:
       name: "tuttleofx/TuttleOFX"
       description: "TuttleOFX Build submitted via Travis CI"
     notification_email: "tuttleofx-team@googlegroups.com"
-    build_command: "scons check_libs=0 $J CC=$CC CXX=$CXX compiler=$CC"
+    build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
 

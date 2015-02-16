@@ -5,6 +5,7 @@
 
 #include <ofxCore.h>
 #include <ofxAttribute.h>
+#include <tuttle/host/Callback.hpp>
 
 #include <boost/noncopyable.hpp>
 
@@ -16,6 +17,8 @@
 
 namespace tuttle {
 namespace host {
+
+class Callback;
 
 namespace ofx {
 namespace attribute {
@@ -60,13 +63,15 @@ public:
 	
 public:
 	INode()
-	: _data(NULL)
+		: _data(NULL)
+		, _beforeRenderCallback(0)
 	{}
 	INode( const INode& e )
-	: _data(NULL)
+		: _data(NULL)
+		, _beforeRenderCallback(0)
 	{}
 	
-	virtual ~INode() = 0;
+	virtual ~INode();
 	virtual INode* clone() const = 0;
 	virtual bool operator==( const INode& ) const = 0;
 	
@@ -111,6 +116,8 @@ public:
 	virtual const ofx::attribute::OfxhClipImageSet& getClipImageSet() const = 0;
 
 	virtual std::size_t getLocalHashAtTime( const OfxTime time ) const = 0;
+
+
 
 #ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
@@ -191,18 +198,31 @@ public:
 	 * @remark called on each node without predefined order.
 	 */
 	virtual void endSequence( graph::ProcessVertexData& processData ) = 0;
+
+
+
 #endif
+
+    /** 
+     * Callback triggered before the render. The Node does not own the callback
+     * so the client has to set the callback to null and destroy it.
+     */
+    void setBeforeRenderCallback(Callback *cb);
 
 	virtual std::ostream& print( std::ostream& os ) const = 0;
 
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
 
 #ifndef SWIG
-protected:
 	typedef graph::ProcessVertexData Data;
 	typedef graph::ProcessVertexAtTimeData DataAtTime;
 	typedef std::map<OfxTime,DataAtTime*> DataAtTimeMap;
 
+    // Callbacks hidden from Swig and with the DataAtTime definition available
+    void beforeRenderCallback(INode &, DataAtTime &);
+    Callback *_beforeRenderCallback;
+
+protected:
 	Data* _data; ///< link to external datas
 	DataAtTimeMap _dataAtTime; ///< link to external datas at each time
 

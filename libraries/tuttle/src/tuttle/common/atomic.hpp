@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_ATOMIC_HPP_
 #define _TUTTLE_ATOMIC_HPP_
 
-#ifdef WITH_BOOST_ATOMIC
+#ifndef WITHOUT_BOOST_ATOMIC
 
 #include <boost/atomic/atomic.hpp>
 

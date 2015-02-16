@@ -229,7 +229,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 	}
 	#endif
 
-	_pluginDirs.push_back( dir.c_str() );
+	_pluginDirs.push_back( dir );
 
 	#if defined ( UNIX )
 	while( dirent * de = readdir( d ) )

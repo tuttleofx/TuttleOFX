@@ -45,6 +45,9 @@ public:
 	virtual ~Image();
 
 #ifndef SWIG
+	memory::IPoolDataPtr& getPoolData() { return _data; }
+	const memory::IPoolDataPtr& getPoolData() const { return _data; }
+
 	void setPoolData( const memory::IPoolDataPtr& pData )
 	{
 		_data = pData;

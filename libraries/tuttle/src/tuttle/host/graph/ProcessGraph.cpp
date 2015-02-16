@@ -66,9 +66,9 @@ void ProcessGraph::relink()
 		if( !v.isFake() )
 		{
 #ifdef PROCESSGRAPH_USE_LINK
-			tuttle::host::INode& origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+			tuttle::host::INode& origNode = v.getProcessNode(); // pointer of the copied graph, we don't own it !
 #else
-			const tuttle::host::INode& origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+			const tuttle::host::INode& origNode = v.getProcessNode(); // pointer of the copied graph, we don't own it !
 #endif
 			std::string key( origNode.getName() );
 			NodeMap::iterator it = _nodes.find( key );
@@ -542,9 +542,13 @@ void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime 
 	boost::timer::cpu_timer timer;
 #endif
 	
-	///@todo callback
 	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Output node : " << _renderGraph.getVertex( _outputId ).getName() );
 	InternalGraphAtTimeImpl::vertex_descriptor outputAtTime = getOutputVertexAtTime( time );
+
+    // Launch a pass of callbacks on the nodes
+    graph::visitor::BeforeRenderCallbackVisitor<InternalGraphAtTimeImpl> 
+        callbackRun( _renderGraphAtTime );
+    _renderGraphAtTime.depthFirstVisit( callbackRun, outputAtTime );
 
 	// do the process
 	graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( _renderGraphAtTime, _internMemoryCache );
@@ -572,11 +576,8 @@ void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime 
 		}
 	}
 
-	// end of one frame
-	// do some clean: memory clean, as temporary solution...
-	_internMemoryCache.clearUnused();
 	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Memory cache size: " << _internMemoryCache.size() );
-	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Out cache size: " << outCache );
+	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Out cache size: " << outCache.size() );
 }
 
 bool ProcessGraph::process( memory::IMemoryCache& outCache )
