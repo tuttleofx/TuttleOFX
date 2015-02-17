@@ -81,6 +81,8 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramMetaDataUnknown = fetchStringParam( kParamMetaDataUnknown );
 	_paramMetaDataUnknown->setIsSecret( true );
 
+	_paramVerbose = fetchBooleanParam( kParamVerbose );
+
 	updateVisibleTools();
 }
 
@@ -333,6 +335,13 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 		}
 	}
+	else if( paramName == kParamVerbose )
+	{
+		if( ! _paramVerbose->getValue() )
+		{
+			_paramVerbose->setValue(true);
+		}
+	}
 }
 
 double AVReaderPlugin::retrievePAR()
@@ -477,6 +486,12 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	// get image to decode
 	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc.getWidth(), sourceImageDesc.getHeight(), "rgb24" );
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
+
+	// manage verbose level
+	if( _paramVerbose->getValue() )
+		avtranscoder::setLogLevel( AV_LOG_DEBUG );
+	else
+		avtranscoder::setLogLevel( AV_LOG_QUIET );
 }
 
 void AVReaderPlugin::render( const OFX::RenderArguments& args )

@@ -39,6 +39,8 @@ static const std::string kParamMetaDataAttachementLabel = "Attachement";
 static const std::string kParamMetaDataUnknown = common::kPrefixMetaData + "unknown";
 static const std::string kParamMetaDataUnknownLabel = "Unknown";
 
+static const std::string kParamVerbose = "verbose";
+
 }
 }
 }
