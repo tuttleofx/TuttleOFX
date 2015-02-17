@@ -1,6 +1,6 @@
 [submodule "libraries/sequenceParser"]
 	path = libraries/sequenceParser
 	url = http://github.com/mikrosimage/sequenceparser.git
-[submodule "libraries/avTranscoder"]
-	path = libraries/avTranscoder
+[submodule "plugins/image/io/AudioVideo/avTranscoder"]
+	path = plugins/image/io/AudioVideo/avTranscoder
 	url = https://github.com/mikrosimage/avTranscoder.git
