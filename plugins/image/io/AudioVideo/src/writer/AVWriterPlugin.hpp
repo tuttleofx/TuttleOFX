@@ -145,7 +145,9 @@ public:
 	common::LibAVParams _paramFormatDetailCustom;
 	common::LibAVParams _paramVideoDetailCustom;
 	common::LibAVParams _paramAudioDetailCustom;
-	
+
+	OFX::BooleanParam* _paramVerbose;
+
 	// presets
 	OFX::ChoiceParam* _paramMainPreset;
 	OFX::ChoiceParam* _paramFormatPreset;

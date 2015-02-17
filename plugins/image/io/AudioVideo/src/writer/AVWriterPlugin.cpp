@@ -144,6 +144,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	updatePixelFormats( videoCodecName );
 	updateSampleFormats( audioCodecName );
+
+	_paramVerbose = fetchBooleanParam( kParamVerbose );
 	
 	// preset
 	_paramMainPreset = fetchChoiceParam( kParamMainPreset );
@@ -538,6 +540,14 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		const size_t indexPos = kParamAudioStreamIndex.size() + 1; // add "_"
 		const size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
 		_paramAudioSelectStream.at( indexAudioOutput )->setValue( true );
+	}
+	// verbose
+	else if( paramName == kParamVerbose )
+	{
+		if( ! _paramVerbose->getValue() )
+		{
+			_paramVerbose->setValue(true);
+		}
 	}
 }
 
@@ -1034,6 +1044,12 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	// Before new render
 	cleanVideoAndAudio();
 	initOutput();
+
+	// manage verbose level
+	if( _paramVerbose->getValue() )
+		avtranscoder::setLogLevel( AV_LOG_DEBUG );
+	else
+		avtranscoder::setLogLevel( AV_LOG_QUIET );
 }
 
 /**

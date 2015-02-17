@@ -542,6 +542,12 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		
 		++libIndex;
 	}
+
+	/// VERBOSE
+	OFX::BooleanParamDescriptor* useVerbose = desc.defineBooleanParam( kParamVerbose );
+	useVerbose->setLabel( "Set to verbose" );
+	useVerbose->setDefault( false );
+	useVerbose->setHint( "Set plugin to verbose to get debug informations." );
 }
 
 /**

@@ -92,6 +92,7 @@ static const std::string kParamAboutLicenseLabel   = "License";
 static const std::string kParamAboutVersion        = common::kPrefixAbout + "version";
 static const std::string kParamAboutVersionLabel   = "Version";
 
+static const std::string kParamVerbose             = "verbose";
 }
 }
 }
