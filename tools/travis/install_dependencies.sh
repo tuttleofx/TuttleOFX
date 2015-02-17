@@ -14,6 +14,7 @@ if [[ "${TRAVIS_OS_NAME:-false}" == false ]]; then
     fi
 fi
 
+echo "Start dependencies installation."
 
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     lsb_release -a
@@ -23,42 +24,46 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     sudo add-apt-repository -y ppa:kubuntu-ppa/backports
     sudo apt-get update -qq
 
-    sudo apt-get install -qq cmake swig swig2.0 libboost1.55-all-dev python-dev python-numpy libfreetype6-dev libXt-dev libbz2-dev liblcms-dev libopenctl0.8 libltdl-dev libpng-dev libcaca-dev libjpeg-dev libglew-dev libtiff-dev libilmbase-dev libopenexr-dev libMagickCore-dev libraw-dev libopenjpeg-dev libglui-dev libglew-dev graphviz graphviz-dev python-nose python-imaging libtinyxml-dev libyaml-cpp-dev libopenimageio-dev libturbojpeg libxmu-dev yasm libmp3lame-dev libx264-dev libxvidcore-dev liblzma-dev
+    if [[ ${BUILD_TARGET} == "host" ]]; then
+        sudo apt-get install -qq cmake libboost1.55-all-dev swig swig2.0 libboost1.55-all-dev python-dev python-numpy libpng-dev graphviz graphviz-dev python-nose python-imaging
+    elif [[ ${BUILD_TARGET} == "plugin" ]]; then
+        sudo apt-get install -qq cmake libboost1.55-all-dev python-dev libfreetype6-dev libXt-dev libbz2-dev liblcms-dev libopenctl0.8 libltdl-dev libpng-dev libcaca-dev libjpeg-dev libglew-dev libtiff-dev libilmbase-dev libopenexr-dev libMagickCore-dev libraw-dev libopenjpeg-dev libglui-dev libglew-dev libtinyxml-dev libyaml-cpp-dev libopenimageio-dev libturbojpeg libxmu-dev yasm libmp3lame-dev libx264-dev libxvidcore-dev liblzma-dev
 
-    cd $TRAVIS_BUILD_DIR
-    wget https://www.ffmpeg.org/releases/ffmpeg-2.2.9.tar.bz2
-    bunzip2 ffmpeg-2.2.9.tar.bz2
-    tar -xvf ffmpeg-2.2.9.tar > /dev/null 2>&1
-    cd ffmpeg-2.2.9
-    ./configure --enable-shared --disable-static > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
+        cd $TRAVIS_BUILD_DIR
+        wget https://www.ffmpeg.org/releases/ffmpeg-2.2.9.tar.bz2
+        bunzip2 ffmpeg-2.2.9.tar.bz2
+        tar -xvf ffmpeg-2.2.9.tar > /dev/null 2>&1
+        cd ffmpeg-2.2.9
+        ./configure --enable-shared --disable-static > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
 
-    cd $TRAVIS_BUILD_DIR
-    wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
-    tar -xzvf /tmp/aces_container-1.0.tar.gz > /dev/null 2>&1
-    mkdir aces_container-1.0/build
-    cd aces_container-1.0/build
-    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
+        cd $TRAVIS_BUILD_DIR
+        wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
+        tar -xzvf /tmp/aces_container-1.0.tar.gz
+        mkdir aces_container-1.0/build
+        cd aces_container-1.0/build
+        cmake .. && make $J && sudo make install
 
-    cd $TRAVIS_BUILD_DIR
-    wget https://github.com/ampas/CTL/archive/ctl-1.5.2.tar.gz -O /tmp/ctl-1.5.2.tar.gz
-    tar -xzvf /tmp/ctl-1.5.2.tar.gz > /dev/null 2>&1
-    mkdir CTL-ctl-1.5.2/build
-    cd CTL-ctl-1.5.2/build
-    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
+        cd $TRAVIS_BUILD_DIR
+        wget https://github.com/ampas/CTL/archive/ctl-1.5.2.tar.gz -O /tmp/ctl-1.5.2.tar.gz
+        tar -xzvf /tmp/ctl-1.5.2.tar.gz
+        mkdir CTL-ctl-1.5.2/build
+        cd CTL-ctl-1.5.2/build
+        cmake .. && make $J && sudo make install
 
-    cd $TRAVIS_BUILD_DIR
-    wget https://github.com/wdas/SeExpr/archive/rel-1.0.1.tar.gz -O /tmp/SeExpr-1.0.1.tar.gz
-    tar -xzvf /tmp/SeExpr-1.0.1.tar.gz > /dev/null 2>&1
-    mkdir SeExpr-rel-1.0.1/build
-    cd SeExpr-rel-1.0.1/build
-    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
+        cd $TRAVIS_BUILD_DIR
+        wget https://github.com/wdas/SeExpr/archive/rel-1.0.1.tar.gz -O /tmp/SeExpr-1.0.1.tar.gz
+        tar -xzvf /tmp/SeExpr-1.0.1.tar.gz
+        mkdir SeExpr-rel-1.0.1/build
+        cd SeExpr-rel-1.0.1/build
+        cmake .. && make $J && sudo make install
 
-    cd $TRAVIS_BUILD_DIR
-    wget https://github.com/imageworks/OpenColorIO/archive/v1.0.9.tar.gz -O /tmp/ocio-1.0.9.tar.gz
-    tar -xzvf /tmp/ocio-1.0.9.tar.gz > /dev/null 2>&1
-    mkdir OpenColorIO-1.0.9/build
-    cd OpenColorIO-1.0.9/build
-    cmake .. > /dev/null 2>&1 && make $J > /dev/null 2>&1 && sudo make install > /dev/null 2>&1
+        cd $TRAVIS_BUILD_DIR
+        wget https://github.com/imageworks/OpenColorIO/archive/v1.0.9.tar.gz -O /tmp/ocio-1.0.9.tar.gz
+        tar -xzvf /tmp/ocio-1.0.9.tar.gz
+        mkdir OpenColorIO-1.0.9/build
+        cd OpenColorIO-1.0.9/build
+        cmake .. && make $J && sudo make install
+    fi
 
 elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     sw_vers -productVersion
@@ -82,22 +87,77 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     #     echo "XQuartz end"
     # }
 
-    # sudo install_xquartz &
-    # XQ_INSTALL_PID=$!
+    wget --quiet https://www.dropbox.com/s/7qwo3jzmdsugtis/bottles.tar &
+    WGET_PID=$!
+    
+    g++ --version
+    g++-4.8 --version
+    clang++ --version
+    
+    which g++-4.8
+    ls -l `which g++-4.8`
 
     brew update
     brew tap homebrew/python
     brew tap homebrew/science
 
-    echo "Install TuttleOFX dependencies"
-    echo " - pip install numpy"
-    pip install numpy
-    # brew install numpy  # Compilation errors with gfortran
-    echo " - install brew packages"
-    brew install swig ilmbase openexr jasper little-cms2 glew freetype fontconfig ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr openjpeg opencolorio openimageio
+    wait $WGET_PID
+    tar -xvf bottles.tar
 
-    # wait $XQ_INSTALL_PID || true
+    # cmake is installed by default on travis
+    brew install bottles/cmake-2.8.12.2.mavericks.bottle.2.tar.gz
+    brew install bottles/doxygen-1.8.7.mavericks.bottle.tar.gz
 
-    echo "End dependencies installation."
+    brew unlink gcc  # need to get gcc installed by homebrew
+    brew install gcc  # bottles/gcc-4.8.3_1.mavericks.bottle.tar.gz
+    # brew install bottles/qt-4.8.6.mavericks.bottle.5.tar.gz
+    brew uninstall boost && brew install bottles/boost-1.55.0_2.mavericks.bottle.4.tar.gz
+    brew install tbb  # bottles/tbb-4.2.4.mavericks.bottle.tar.gz
+
+    if [[ ${BUILD_TARGET} == "host" ]]; then
+        echo "Install official bottles"
+        brew install bottles/swig-3.0.2.mavericks.bottle.tar.gz
+        brew install bottles/suite-sparse-4.2.1.mavericks.bottle.tar.gz
+        brew install numpy  # bottles/numpy-1.8.1.mavericks.bottle.tar.gz || true
+
+    elif [[ ${BUILD_TARGET} == "plugin" ]]; then
+        echo "Install official bottles"
+        brew install bottles/ilmbase-2.1.0.mavericks.bottle.tar.gz
+        brew install bottles/openexr-2.1.0.mavericks.bottle.tar.gz
+        brew install bottles/jasper-1.900.1.mavericks.bottle.tar.gz
+        brew install bottles/little-cms2-2.6.mavericks.bottle.tar.gz
+        brew install gmp  # bottles/gmp-6.0.0a.mavericks.bottle.tar.gz
+        brew install mpfr  # bottles/mpfr-3.1.2-p8.mavericks.bottle.tar.gz
+        brew install libmpc  # bottles/libmpc-1.0.2.mavericks.bottle.tar.gz
+        brew install isl  # bottles/isl-0.12.2.mavericks.bottle.tar.gz
+        brew install cloog  # bottles/cloog-0.18.1.mavericks.bottle.1.tar.gz
+        brew install bottles/webp-0.4.0_1.mavericks.bottle.tar.gz
+        brew install glew  # bottles/glew-1.10.0.mavericks.bottle.tar.gz
+        brew install bottles/freetype-2.5.3_1.mavericks.bottle.1.tar.gz
+        brew install bottles/pcre-8.35.mavericks.bottle.tar.gz
+        brew install x264  # bottles/x264-r2412.mavericks.bottle.1.tar.gz
+        brew install bottles/faac-1.28.mavericks.bottle.tar.gz || true
+        brew install bottles/lame-3.99.5.mavericks.bottle.tar.gz || true
+        brew install bottles/xvid-1.3.2.mavericks.bottle.tar.gz || true
+        brew install ffmpeg  # bottles/ffmpeg-2.2.3.mavericks.bottle.tar.gz || true
+        brew install imagemagick  # bottles/imagemagick-6.8.9-1.mavericks.bottle.tar.gz || true
+        brew install bottles/libcaca-0.99b19.mavericks.bottle.tar.gz || true
+
+        echo "Install selfbuilt bottles"
+        brew install bottles/aces_container-1.0.mavericks.bottle.tar.gz
+        brew install bottles/ctl-1.5.2.mavericks.bottle.tar.gz
+        brew install bottles/jpeg-turbo-1.3.1.mavericks.bottle.tar.gz
+        brew install bottles/libraw-0.15.4.mavericks.bottle.tar.gz
+        brew install bottles/seexpr-1.0.1.mavericks.bottle.tar.gz
+        brew install bottles/openjpeg-1.5.1_1.mavericks.bottle.tar.gz
+        # brew install bottles/cfitsio-3.360.mavericks.bottle.tar.gz || true
+        brew install bottles/szip-2.1.mavericks.bottle.tar.gz
+        brew install bottles/hdf5-1.8.13.mavericks.bottle.tar.gz
+        brew install bottles/field3d-1.4.3.mavericks.bottle.tar.gz
+        brew install bottles/opencolorio-1.0.9.mavericks.bottle.tar.gz
+        brew install bottles/openimageio-1.4.8.mavericks.bottle.tar.gz
+
+    fi
 fi
 
+echo "End dependencies installation."
