@@ -41,6 +41,8 @@ namespace attribute {
 					self.getComponentsType()
 				)
 
+#ifndef WITHOUT_NUMPY
+
 		def getNumpyArray(self):
 			import numpy
 			(data, width, height, rowSizeBytes, bitDepth, components) = self.getImage()
@@ -73,6 +75,9 @@ namespace attribute {
 		def getNumpyImage(self):
 			from PIL import Image
 			return Image.fromarray(self.getNumpyArray())
+
+#endif
+
 	}
 }
 

@@ -127,14 +127,23 @@ if (TuttleBoost_FOUND)
     # Find python c libs
     find_package(PythonLibs)
     include_directories(${PYTHON_INCLUDE_DIRS})
-  
-    # Find numpy headers
-    # TODO is numpy is not found, remove source files using it from build
-    find_package(Numpy)
-    include_directories(${NUMPY_INCLUDE_DIR})
-  
+
+    # Numpy
+    if(WITHOUT_NUMPY)
+        # Add swig flag to create binding without Numpy
+        set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
+    else()
+        # Find numpy headers
+        find_package(Numpy)
+        if(NUMPY_FOUND)
+            include_directories(${NUMPY_INCLUDE_DIR})
+        else()
+            set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
+        endif()
+    endif()
+
     # Swig to compile c++ -> python
-    set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern) #-doxygen
+    set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern ${SWIG_NUMPY_FLAG}) #-doxygen
 
     # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
