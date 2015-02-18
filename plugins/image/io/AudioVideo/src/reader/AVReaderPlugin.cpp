@@ -474,6 +474,8 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	ReaderPlugin::beginSequenceRender( args );
+
 	ensureVideoIsOpen();
 
 	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile() );
