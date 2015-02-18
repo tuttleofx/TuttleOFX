@@ -168,7 +168,6 @@ const double DataFitSize::_maxBufferRatio = 2.0;
 
 boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 {
-	TUTTLE_TLOG( TUTTLE_TRACE, "[Memory Pool] allocate " << size << " bytes" );
 	IPoolData* pData = NULL;
 
 	// Try to reuse a buffer available in the MemoryPool
@@ -176,22 +175,21 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 		boost::mutex::scoped_lock locker( _mutex );
 		// checking within unused data
 		pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
-	}
-
-	if( pData != NULL )
-	{
-		pData->setSize( size );
-		return pData;
+		if( pData != NULL )
+		{
+			TUTTLE_LOG_TRACE("[Memory Pool] Reuse a buffer available in the MemoryPool");
+			pData->setSize( size );
+			return pData;
+		}
 	}
 
 	// Try to reuse a buffer available in the MemoryCache
 	memory::IMemoryCache& memoryCache = core().getMemoryCache();
 	CACHE_ELEMENT cacheElement = memoryCache.getUnusedWithSize( size );
 	if( cacheElement.get() != NULL )
-		pData = cacheElement->getPoolData().get();
-
-	if( pData != NULL )
 	{
+		TUTTLE_LOG_TRACE("[Memory Pool] Reuse buffer available in the MemoryCache from " << cacheElement->getFullName());
+		pData = cacheElement->getPoolData().get();
 		pData->setSize( size );
 		return pData;
 	}
@@ -200,13 +198,15 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 	std::size_t availableSize = getAvailableMemorySize();
 	if( size > availableSize )
 	{
-		// Try to release elements from the MemoryCache (make them available in the MemoryPool)
+		// Try to release elements from the MemoryCache (make them available to the MemoryPool)
+		TUTTLE_LOG_TRACE("[Memory Pool] Release elements from the MemoryCache");
 		memoryCache.clearUnused();
 
 		availableSize = getAvailableMemorySize();
 		if( size > availableSize )
 		{
 			// Release elements from the MemoryPool (make them available to the OS)
+			TUTTLE_LOG_TRACE("[Memory Pool] Release elements from the MemoryPool");
 			clear();
 		}
 
@@ -220,6 +220,7 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 	}
 
 	// Allocate a new buffer in MemoryPool
+	TUTTLE_TLOG( TUTTLE_TRACE, "[Memory Pool] allocate " << size << " bytes" );
 	return new PoolData( *this, size );
 }
 
