@@ -50,7 +50,11 @@ public:
 	const std::size_t size() const         { return _size; }
 	const std::size_t reservedSize() const { return _reservedSize; }
 
-	void setSize( const std::size_t newSize ) { _size = newSize; }
+	void setSize( const std::size_t newSize )
+	{
+		assert( newSize <= _reservedSize );
+		_size = newSize;
+	}
 
 private:
 	static std::size_t _count; ///< unique id generator
