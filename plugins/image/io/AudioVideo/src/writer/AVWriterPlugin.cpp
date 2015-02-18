@@ -1041,6 +1041,8 @@ void AVWriterPlugin::cleanVideoAndAudio()
  */
 void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	WriterPlugin::beginSequenceRender( args );
+
 	// Before new render
 	cleanVideoAndAudio();
 	initOutput();
@@ -1078,6 +1080,7 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	if( ! _initWrap || ! _initVideo )
 		return;
 	
+	WriterPlugin::endSequenceRender( args );
 	_outputFile->endWrap();
 }
 
