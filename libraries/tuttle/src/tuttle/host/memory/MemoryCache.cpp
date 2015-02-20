@@ -14,7 +14,7 @@ namespace  {
 /// Check if the cache element is kept in the cache, but is not required by someone else.
 bool isUnused( const CACHE_ELEMENT& cacheElement )
 {
-    return cacheElement->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) <= 1;
+    return cacheElement->getReferenceCount( ofx::imageEffect::OfxhImage::eReferenceOwnerHost ) < 1;
 }
 
 /// Functor to get the smallest unused element in cache
