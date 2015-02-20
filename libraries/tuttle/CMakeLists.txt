@@ -170,9 +170,7 @@ if (TuttleBoost_FOUND)
         DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py 
         DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
-    file(WRITE "__init__.py" "")
-    install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+    install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle/__init__.py)")
 
     # pySequenceParser
     set(SEQUENCEPARSER_PYTHON_BINDING_FILE ../sequenceParser/src/sequenceParser.i)
@@ -198,9 +196,7 @@ if (TuttleBoost_FOUND)
         DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/sequenceParser.py 
         DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
-    file(WRITE "__init__.py" "")
-    install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+    install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser/__init__.py)")
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")
