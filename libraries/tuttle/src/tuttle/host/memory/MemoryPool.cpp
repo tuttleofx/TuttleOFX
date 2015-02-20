@@ -170,32 +170,32 @@ const double DataFitSize::_maxBufferRatio = 2.0;
 
 }
 
-boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
+IPoolDataPtr MemoryPool::allocate( const std::size_t size )
 {
-	IPoolData* pData = NULL;
-
 	// Try to reuse a buffer available in the MemoryPool
+	IPoolData* pData = getOneAvailableData( size );
+	if( pData != NULL )
 	{
-		boost::mutex::scoped_lock locker( _mutex );
-		// checking within unused data
-		pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
+		TUTTLE_LOG_TRACE("[Memory Pool] Reuse a buffer available in the MemoryPool");
+		pData->setSize( size );
+		return pData;
+	}
+
+	// Try to remove unused element in MemoryCache, and reuse the buffer available in the MemoryPool
+	memory::IMemoryCache& memoryCache = core().getMemoryCache();
+	CACHE_ELEMENT unusedCacheElement = memoryCache.getUnusedWithSize( size );
+	if( unusedCacheElement.get() != NULL )
+	{
+		TUTTLE_LOG_TRACE("[Memory Pool] Pop element in the MemoryCache from " << unusedCacheElement->getFullName() << " of size " << size);
+		memoryCache.remove( unusedCacheElement );
+
+		pData = getOneAvailableData( size );
 		if( pData != NULL )
 		{
 			TUTTLE_LOG_TRACE("[Memory Pool] Reuse a buffer available in the MemoryPool");
 			pData->setSize( size );
 			return pData;
 		}
-	}
-
-	// Try to reuse a buffer available in the MemoryCache
-	memory::IMemoryCache& memoryCache = core().getMemoryCache();
-	CACHE_ELEMENT cacheElement = memoryCache.getUnusedWithSize( size );
-	if( cacheElement.get() != NULL )
-	{
-		TUTTLE_LOG_TRACE("[Memory Pool] Reuse buffer available in the MemoryCache from " << cacheElement->getFullName());
-		pData = cacheElement->getPoolData().get();
-		pData->setSize( size );
-		return pData;
 	}
 
 	// Try to allocate a new buffer in MemoryPool
@@ -290,6 +290,12 @@ std::size_t MemoryPool::getDataUsedSize() const
 std::size_t MemoryPool::getDataUnusedSize() const
 {
 	return _dataUnused.size();
+}
+
+PoolData* MemoryPool::getOneAvailableData( const size_t size )
+{
+	boost::mutex::scoped_lock locker( _mutex );
+	return std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
 }
 
 void MemoryPool::clear( std::size_t size )
