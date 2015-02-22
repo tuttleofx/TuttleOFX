@@ -576,6 +576,10 @@ void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime 
 		}
 	}
 
+	// clear cache at each frame
+	// @todo: remove
+	_internMemoryCache.clearUnused();
+
 	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Memory cache size: " << _internMemoryCache.size() );
 	TUTTLE_LOG_TRACE( "[Process at time " << time << "] Out cache size: " << outCache.size() );
 }

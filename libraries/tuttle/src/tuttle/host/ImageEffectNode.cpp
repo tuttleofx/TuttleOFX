@@ -951,7 +951,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 				BOOST_THROW_EXCEPTION( exception::Memory()
 					<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier: " + quotes( clip.getClipIdentifier() ) + ", time: " + outTime + ")." );
 			}
-			TUTTLE_LOG_TRACE( ">>>>> - ImageEffectNode => releaseReference: " << imageCache->getFullName() );
+			TUTTLE_LOG_TRACE( "[ImageEffectNode] releaseReference: " << imageCache->getFullName() );
 			// TODO: use RAII technique for add/releaseReference...
 			imageCache->releaseReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost );
 		}
@@ -975,7 +975,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 				TUTTLE_TLOG( TUTTLE_INFO, "[Node Process] Declare future usages: " << clip.getClipIdentifier() << ", add reference: " << realOutDegree );
 				if( realOutDegree > 0 )
 				{
-					TUTTLE_LOG_TRACE( ">>>>> + ImageEffectNode => addReference: " << imageCache->getFullName() << ", degree=" << realOutDegree );
+					TUTTLE_LOG_TRACE( "[ImageEffectNode] addReference: " << imageCache->getFullName() << ", degree=" << realOutDegree );
 					// TODO: use RAII technique for add/releaseReference...
 					//       to properly declare image unused when an error occured
 					//       during the computation.
