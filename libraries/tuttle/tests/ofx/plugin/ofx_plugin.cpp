@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE imageeffectplugin_tests
-#include <tuttle/test/unit_test.hpp>
+#include <tuttle/test/main.hpp>
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/Core.hpp>

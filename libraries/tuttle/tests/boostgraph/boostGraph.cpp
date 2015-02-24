@@ -1,3 +1,6 @@
+#define BOOST_TEST_MODULE tuttle_boostgraph
+#include <tuttle/test/main.hpp>
+
 // custom host
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/graph/InternalGraph.hpp>
@@ -121,9 +124,6 @@ void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<Te
 }
 }
 }
-
-#define BOOST_TEST_MODULE tuttle_boostgraph
-#include <tuttle/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE( tuttle_boostgraph_suite )
 

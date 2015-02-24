@@ -202,4 +202,6 @@ if (TuttleBoost_FOUND)
     message("SWIG not found, will not build python bindings")
   endif(SWIG_FOUND)
 
+  add_subdirectory(tests)
+
 endif(TuttleBoost_FOUND)

@@ -1,9 +1,10 @@
+#define BOOST_TEST_MODULE tuttle_time
+#include <tuttle/test/main.hpp>
+
 #include <tuttle/host/Graph.hpp>
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE tuttle_time
-#include <tuttle/test/unit_test.hpp>
 //#include <boost/test/execution_monitor.hpp>
 //#include <boost/test/exception_safety.hpp>
 

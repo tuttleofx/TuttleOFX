@@ -1,13 +1,13 @@
+#define BOOST_TEST_MODULE properties_tests
+#include <tuttle/test/main.hpp>
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/exceptions.hpp>
 #include <tuttle/host/Core.hpp>
 #include <tuttle/host/ImageEffectNode.hpp>
 
-#include <iostream>
-
-#define BOOST_TEST_MODULE properties_tests
-#include <tuttle/test/unit_test.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>
+#include <iostream>
 
 using namespace boost::unit_test;
 

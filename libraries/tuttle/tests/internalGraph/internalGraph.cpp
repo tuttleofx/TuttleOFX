@@ -1,11 +1,120 @@
-#include <iostream>
+#define BOOST_TEST_MODULE internalGraph_tests
+#include <tuttle/test/main.hpp>
 
-#include "dummy/DummyEdge.hpp"
-#include "dummy/DummyVertex.hpp"
 #include <tuttle/host/graph/InternalGraph.hpp>
 
-#define BOOST_TEST_MODULE internalGraph_tests
-#include <tuttle/test/unit_test.hpp>
+#include <iostream>
+#include <string>
+
+namespace tuttle {
+namespace test {
+
+class DummyVertex
+{
+public:
+	typedef std::string Key;
+public:
+	DummyVertex() {}
+
+	DummyVertex( const std::string& name )
+		: _name( name ) {}
+
+	DummyVertex( const DummyVertex& v )
+		: _name( v.getName() ) {}
+
+	virtual ~DummyVertex()
+	{}
+
+	Key getKey() const { return _name; }
+	const std::string& getName() const { return _name; }
+	
+	// operators
+	DummyVertex& operator=( const DummyVertex& v )
+	{
+		if( this == &v )
+			return *this;
+		_name = v.getName();
+		return *this;
+	}
+
+	friend std::ostream& operator<<( std::ostream& os, const DummyVertex& v )
+	{
+		os << v.getName() ;
+		return os;
+	}
+
+private:
+	std::string _name;
+};
+
+class DummyEdge
+{
+public:
+	DummyEdge() {}
+
+	DummyEdge( const std::string& name )
+		: _name( name ) {}
+
+	DummyEdge( const DummyEdge& e )
+		: _name( e.getName() ) {}
+
+	virtual ~DummyEdge()
+	{}
+
+	const std::string& getName() const                { return _name; }
+	const std::string& getInAttrName() const          { return _inAttrName; }
+	void setName( const std::string s ) { _name = s; }
+
+	// operators
+	DummyEdge& operator=( const DummyEdge& e )
+	{
+		if( this == &e )
+			return *this;
+		_name = e.getName();
+		return *this;
+	}
+
+	friend std::ostream& operator<<( std::ostream& os, const DummyEdge& v )
+	{
+		os << v.getName() ;
+		return os;
+	}
+
+private:
+	std::string _name;
+	std::string _inAttrName;
+};
+
+class DummyAttribute
+{
+public:
+	DummyAttribute() {}
+
+	DummyAttribute( const std::string& name )
+		: _name( name ) {}
+
+	DummyAttribute( const DummyAttribute& e )
+		: _name( e.name() ) {}
+
+	virtual ~DummyAttribute()
+	{}
+
+	const std::string& name() const { return _name; }
+	void setName( const std::string s ) { _name = s; }
+
+	friend std::ostream& operator<<( std::ostream& os, const DummyAttribute& v )
+	{
+		os << v.name() ;
+		return os;
+	}
+
+private:
+	std::string _name;
+};
+
+}
+}
+
 
 BOOST_AUTO_TEST_SUITE( tuttle_internalGraph_suite )
 
