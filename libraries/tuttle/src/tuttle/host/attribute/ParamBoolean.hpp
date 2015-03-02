@@ -3,6 +3,7 @@
 
 #include "Param.hpp"
 
+#include <tuttle/host/ofx/attribute/OfxhParam.hpp>
 #include <tuttle/host/ofx/attribute/OfxhParamBoolean.hpp>
 
 namespace tuttle {
@@ -28,8 +29,10 @@ public:
 
 	void setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 
+#ifndef SWIG
 	void copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
+#endif
 };
 
 }

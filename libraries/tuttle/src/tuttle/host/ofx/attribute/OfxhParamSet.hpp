@@ -35,6 +35,12 @@ protected:
 	ParamMap _paramsByScriptName; ///< params by script name
 	ParamVector _paramVector;     ///< params list
 
+	/// @group Link to child parameters (no ownership)
+	/// @{
+	ParamMap _childParams;        ///< child params by name
+	std::vector<OfxhParam*> _childParamVector; ///< child params list
+	/// @}
+
 public:
 	/// The propery set being passed in belongs to the owning
 	/// plugin instance.
@@ -60,13 +66,20 @@ public:
 	const ParamMap& getParamsByName() const { return _params; }
 	ParamMap&       getParamsByName()       { return _params; }
 
+	const ParamMap& getChildParamsByName() const { return _childParams; }
+	ParamMap&       getChildParamsByName()       { return _childParams; }
+
 	const ParamMap& getParamsByScriptName() const { return _paramsByScriptName; }
 	ParamMap&       getParamsByScriptName()       { return _paramsByScriptName; }
 
 	const ParamVector& getParamVector() const { return _paramVector; }
 	ParamVector&       getParamVector()       { return _paramVector; }
 
+	const std::vector<OfxhParam*>& getChildParamVector() const { return _childParamVector; }
+	std::vector<OfxhParam*>&       getChildParamVector()       { return _childParamVector; }
+
 	std::size_t getNbParams() const { return _params.size(); }
+	std::size_t getNbChildParams() const { return _childParams.size(); }
 	
 	OfxhParam& getParam( const std::string& name );
 	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>( this )->getParam( name ); }
@@ -79,6 +92,8 @@ public:
 	// get the param
 	OfxhParam& getParam( const std::size_t index );
 	const OfxhParam& getParam( const std::size_t index ) const { return const_cast<This*>( this )->getParam( index ); }
+	OfxhParam& getChildParam( const std::size_t index );
+	const OfxhParam& getChildParam( const std::size_t index ) const { return const_cast<This*>( this )->getChildParam( index ); }
 
 	#ifndef SWIG
 	/// The inheriting plugin instance needs to set this up to deal with
@@ -95,17 +110,13 @@ public:
 	/// Client host code needs to implement this
 	virtual void editEnd() OFX_EXCEPTION_SPEC = 0;
 
-protected:
 	/// reference a param
 //	virtual void referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
+	void declareChildParam( OfxhParam& childParam );
 
+protected:
 	/// add a param
 	virtual void addParam( OfxhParam* instance ) OFX_EXCEPTION_SPEC;
-
-	/// make a parameter instance
-	///
-	/// Client host code needs to implement this
-	virtual OfxhParam* newParam( const OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC = 0;
 
 	void reserveParameters( const std::size_t size ) { _paramVector.reserve(size); }
 

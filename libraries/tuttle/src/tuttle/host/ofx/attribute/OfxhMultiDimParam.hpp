@@ -97,6 +97,7 @@ protected:
 	}
 
 public:
+#ifndef SWIG
 	void copy( const OfxhMultiDimParam& p ) OFX_EXCEPTION_SPEC
 	{
 		for( std::size_t index = 0; index < DIM; ++index )
@@ -111,7 +112,8 @@ public:
 
 		copy( param );
 	}
-	
+#endif
+
 	inline void setValue( const BaseType& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 	{
 		for( std::size_t i = 0; i < getSize(); ++i )

@@ -28,6 +28,7 @@ public:
 	virtual void setValue( const std::string&, const EChange change )                OFX_EXCEPTION_SPEC             = 0;
 	virtual void setValueAtTime( const OfxTime time, const std::string&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
 
+#ifndef SWIG
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
 
@@ -39,6 +40,7 @@ public:
 
 	/// implementation of var args function
 	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
+#endif
 
 	bool paramTypeHasData() const { return true; }
 

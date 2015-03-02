@@ -200,15 +200,13 @@ public:
 	/// renderScale
 	void getRenderScaleRecursive( double& x, double& y ) const;
 
+	/// Create a parameter instance
+	ofx::attribute::OfxhParam* newParam( const ofx::attribute::OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC;
+
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	// overridden for Param::SetInstance
-
-	/// make a parameter instance
-	///
-	/// Client host code needs to implement this
-	ofx::attribute::OfxhParam* newParam( const ofx::attribute::OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///
