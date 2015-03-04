@@ -13,6 +13,8 @@ if(FFMPEG_FOUND)
         tuttle_install_shared_libs("${${var}}") 
     endforeach()
     # Build avTranscoder library
+    set(DISABLE_APPS True)
+    set(DISABLE_BINDINGS True)
     add_subdirectory(avTranscoder)
 endif(FFMPEG_FOUND)
 
