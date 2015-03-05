@@ -5,8 +5,8 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
-#include <AvTranscoder/ProfileLoader.hpp>
 #include <AvTranscoder/transcoder/Transcoder.hpp>
+#include <AvTranscoder/profile/ProfileLoader.hpp>
 #include <AvTranscoder/file/OutputFile.hpp>
 #include <AvTranscoder/frame/Frame.hpp>
 
