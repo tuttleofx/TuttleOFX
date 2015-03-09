@@ -202,6 +202,7 @@ if (TuttleBoost_FOUND)
     message("SWIG not found, will not build python bindings")
   endif(SWIG_FOUND)
 
+  # Build boot unit tests of host and plugins
   add_subdirectory(tests)
 
 endif(TuttleBoost_FOUND)
