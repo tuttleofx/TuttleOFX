@@ -9,7 +9,7 @@ demo_progress_handle.py
 ----------------------
 Sample code that demonstrate progress handle.
 
-demo_text_burnin.py
+demo_seq_to_movie.py
 ----------------------
 Sample code that create a movie from an input sequence.
 
