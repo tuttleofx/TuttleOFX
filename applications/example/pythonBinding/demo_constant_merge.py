@@ -1,17 +1,19 @@
-""" Test Hud with a constant + merge and blurred text
+import os
+from sys import argv
 
-"""
-## Set here your args
-in_seq =
-out_seq =
+import getBestPlugin
+from pyTuttle import tuttle
+tuttle.core().preload(False)
+
+if len(argv) != 3:
+    print "Script args : seqIn@.ext seqOut@.ext"
+    exit()
+
+in_seq = argv[1]
+out_seq = argv[2]
 fontFile="/usr/share/fonts/truetype/arial.ttf"
 
-# set Tuttle env
-import envTuttle
-from pyTuttle import tuttle
-
 # Create graph
-tuttle.core().preload(False)
 g = tuttle.Graph()
 
 # Create constant node
@@ -34,18 +36,16 @@ td = reader.getTimeDomain()
 g.setupAtTime(td.min, [reader])
 
 # Create writer node
-writer = g.createNode('tuttle.pngwriter',
-                      filename=out_seq)
+(base, ext) = os.path.splitext(out_seq)
+writerName = getBestPlugin.getBestWriter(ext)
+writer = g.createNode(writerName, filename=out_seq)
 
 # Create text nodes
-######### /!\ In next release (Tuttle v9.0), tuttleArgs().time will not work
-#text_burnin = "'{args.time_frame}'.format(args=args)"
-text_burnin = "str(tuttleArgs().time)"
-######
+text_burnin = "blurred text"
 text_blur = g.createNode("tuttle.text", text=text_burnin, textSize=20,
-                         expression=1, fontFile=fontFile, color=(1,0,0,1),
+                         fontFile=fontFile, color=(1,0,0,1),
                          vAlign="bottom")
-text = g.createNode("tuttle.text", text=text_burnin, textSize=20, expression=1,
+text = g.createNode("tuttle.text", text=text_burnin, textSize=20,
                     fontFile=fontFile, color=(1,1,0,1), vAlign="bottom")
 blur = g.createNode('tuttle.blur', size=(4,4))
 
