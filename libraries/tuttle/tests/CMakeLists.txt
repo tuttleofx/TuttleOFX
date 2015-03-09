@@ -26,11 +26,11 @@ foreach(testSrc ${TEST_SRC})
     target_link_libraries(${testName} tuttleHost)
 
     # Move testing binary into a testBin directory
-    set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testBin)
+    set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/testBin)
 
     # Add it to test execution
     add_test(NAME ${testName}
-             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testBin 
-             COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/testBin/${testName} )
+             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testBin 
+             COMMAND ${PROJECT_SOURCE_DIR}/testBin/${testName} )
 
 endforeach(testSrc)
