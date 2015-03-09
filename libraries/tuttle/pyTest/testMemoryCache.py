@@ -31,28 +31,3 @@ def testOutputMemoryCache():
 	print('MemorySize:', imgRes.getMemorySize())
 
 	img = imgRes.getNumpyImage()
-
-
-def testCoreMemories():
-
-        core = tuttle.core()
-        memoryCache = core.getMemoryCache()
-        memoryPool = core.getMemoryPool()
-
-        # no cache
-        assert_equals( memoryCache.size(), 0 )
-        assert( memoryCache.empty() )
-
-        # no memory allocated in pool
-        assert_equals( memoryPool.getUsedMemorySize(), 0 )
-        assert_equals( memoryPool.getAllocatedAndUnusedMemorySize(), 0 )
-        assert_equals( memoryPool.getAllocatedMemorySize(), 0 )
-        assert_equals( memoryPool.getWastedMemorySize(), 0 )
-
-        # can allocate available memory size - 1
-        allocatedMemory = memoryPool.getAvailableMemorySize() - 1
-        memoryPool.allocate( allocatedMemory )
-
-        # can't allocate available memory size + 1
-        allocatedMemory = memoryPool.getAvailableMemorySize() + 1
-        assert_raises( Exception, memoryPool.allocate, allocatedMemory )
