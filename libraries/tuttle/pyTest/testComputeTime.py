@@ -13,7 +13,7 @@ def testComputeTime():
 	N = 0
 	print("testComputeTime %d" % N); N += 1
 	gA = tuttle.Graph()
-	gA.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace=2 )
+	gA.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", v_colorspace=2 )
 
 	print("testComputeTime %d" % N); N += 1
 	t0 = time.clock()
@@ -31,7 +31,7 @@ def testComputeTime():
 
 	gB = tuttle.Graph()
 	
-	gB.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace=2 )
+	gB.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", v_colorspace=2 )
 	print("testComputeTime %d" % N); N += 1
 	t0 = time.clock()
 	time0 = time.time()

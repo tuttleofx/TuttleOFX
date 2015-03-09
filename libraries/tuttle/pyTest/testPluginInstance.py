@@ -133,7 +133,7 @@ def testParamInfos():
 def testNodeComputeInfos():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", colorspace=2 ).asImageEffectNode()
+	node = graph.createNode( "tuttle.avreader", filename="TuttleOFX-data/video/bars_100.avi", v_colorspace=2 ).asImageEffectNode()
 
 	graph.setup()
 	td = node.getTimeDomain()
@@ -152,7 +152,7 @@ def testNodeComputeInfos():
 	assert_almost_equal(pixelAspectRatio, 16.0/15.0)
 	
 	# modify input SAR
-	node.getParam("customSAR").setValue(2.0)
+	node.getParam("v_customSAR").setValue(2.0)
 	graph.setup()
 	
 	pixelAspectRatio = node.getOutputPixelAspectRatio()
@@ -163,7 +163,7 @@ def testNodeComputeInfos():
 def testPushButton():
 	graph = tuttle.Graph()
 	
-	node = graph.createNode( "tuttle.avwriter", filename=".tests/plop.avi", colorspace=2 )
+	node = graph.createNode( "tuttle.avwriter", filename=".tests/plop.avi", v_colorspace=2 )
 	node = node.asImageEffectNode()
 
 	render = node.getParam("render")
