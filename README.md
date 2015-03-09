@@ -29,10 +29,7 @@ See [**INSTALL.md**](INSTALL.md)
 Plugin creation
 ---------------
 
-There is a script to help you making new plugins.
-> `python $TUTTLE_ROOT/plugins/_scripts/newPlugin.py`  
-
-This script asks you information about your plugin and create a new plugin source tree in your current directory.
+See [**plugins/_scripts/README.md**](plugins/_scripts/README.md)
 
 
 Tested compilers
