@@ -1,6 +1,10 @@
 Tuttle binding scripts samples
 ==============================
 
+demo_burn_timecode.py
+------------
+Sample code to burn timecode on generated bars.
+
 demo_constant_merge.py
 ------------
 Test Hud with a constant + merge and blurred text.
