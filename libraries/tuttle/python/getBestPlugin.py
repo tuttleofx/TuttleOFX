@@ -1,4 +1,8 @@
 #!/usr/bin/python
+"""
+Functions to choose the best reader/writer according to an extension.
+"""
+
 from pyTuttle import tuttle
 import sys
 
