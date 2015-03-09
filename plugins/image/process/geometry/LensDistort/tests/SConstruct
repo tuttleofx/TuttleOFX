@@ -1,8 +1,0 @@
-SConscript( '../../../SConsconf' )
-Import( 'project' )
-
-project.begin()
-
-project.SConscript()
-
-project.end()

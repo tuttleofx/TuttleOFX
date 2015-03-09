@@ -4,7 +4,10 @@ enable_testing()
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories (${Boost_INCLUDE_DIRS})
 
-file(GLOB_RECURSE TEST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+# Get tests of tuttle host and plugins
+file(GLOB_RECURSE TEST_HOST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+file(GLOB_RECURSE TEST_PLUGIN_SRC ${PROJECT_SOURCE_DIR}/plugins/*plugin_*.cpp)
+set(TEST_SRC ${TEST_HOST_SRC} ${TEST_PLUGIN_SRC})
 
 # Run through each source
 foreach(testSrc ${TEST_SRC})
