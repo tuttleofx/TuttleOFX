@@ -1,47 +1,22 @@
 %include <tuttle/host/global.i>
-%include <tuttle/host/ofx/attribute/allParams.i>
-%include <tuttle/host/ofx/attribute/OfxhParam.i>
-%include <tuttle/host/ofx/attribute/OfxhMultiDimParam.i>
-%include <tuttle/host/ofx/attribute/OfxhParamAccessor.i>
-%include <tuttle/host/ofx/attribute/OfxhParamDescriptor.i>
 
-%{
-#include <tuttle/host/ofx/attribute/OfxhParam.hpp>
-#include <tuttle/host/ofx/attribute/OfxhParamAccessor.hpp>
-#include <tuttle/host/ofx/attribute/OfxhParamDescriptor.hpp>
+%include <tuttle/host/attribute/AnimatedParamType.i>
+%include <tuttle/host/attribute/ValueInterpolator.i>
 
-#include <tuttle/host/attribute/Param.hpp>
-#include <tuttle/host/attribute/ParamBoolean.hpp>
-#include <tuttle/host/attribute/ParamChoice.hpp>
-#include <tuttle/host/attribute/ParamDouble.hpp>
-#include <tuttle/host/attribute/ParamDouble2D.hpp>
-#include <tuttle/host/attribute/ParamDouble3D.hpp>
-#include <tuttle/host/attribute/ParamGroup.hpp>
-#include <tuttle/host/attribute/ParamInteger.hpp>
-#include <tuttle/host/attribute/ParamInteger2D.hpp>
-#include <tuttle/host/attribute/ParamInteger3D.hpp>
-#include <tuttle/host/attribute/ParamPage.hpp>
-#include <tuttle/host/attribute/ParamPushButton.hpp>
-#include <tuttle/host/attribute/ParamRGB.hpp>
-#include <tuttle/host/attribute/ParamRGBA.hpp>
-#include <tuttle/host/attribute/ParamString.hpp>
-#include <tuttle/host/attribute/ParamCustom.hpp>
-%}
-
-%include <tuttle/host/attribute/Param.hpp>
-%include <tuttle/host/attribute/ParamBoolean.hpp>
-%include <tuttle/host/attribute/ParamChoice.hpp>
-%include <tuttle/host/attribute/ParamDouble.hpp>
-%include <tuttle/host/attribute/ParamDouble2D.hpp>
-%include <tuttle/host/attribute/ParamDouble3D.hpp>
-%include <tuttle/host/attribute/ParamGroup.hpp>
-%include <tuttle/host/attribute/ParamInteger.hpp>
-%include <tuttle/host/attribute/ParamInteger2D.hpp>
-%include <tuttle/host/attribute/ParamInteger3D.hpp>
-%include <tuttle/host/attribute/ParamPage.hpp>
-%include <tuttle/host/attribute/ParamPushButton.hpp>
-%include <tuttle/host/attribute/ParamRGB.hpp>
-%include <tuttle/host/attribute/ParamRGBA.hpp>
-%include <tuttle/host/attribute/ParamString.hpp>
-%include <tuttle/host/attribute/ParamCustom.hpp>
+%include <tuttle/host/attribute/Param.i>
+%include <tuttle/host/attribute/ParamBoolean.i>
+%include <tuttle/host/attribute/ParamChoice.i>
+%include <tuttle/host/attribute/ParamDouble.i>
+%include <tuttle/host/attribute/ParamDouble2D.i>
+%include <tuttle/host/attribute/ParamDouble3D.i>
+%include <tuttle/host/attribute/ParamGroup.i>
+%include <tuttle/host/attribute/ParamInteger.i>
+%include <tuttle/host/attribute/ParamInteger2D.i>
+%include <tuttle/host/attribute/ParamInteger3D.i>
+%include <tuttle/host/attribute/ParamPage.i>
+%include <tuttle/host/attribute/ParamPushButton.i>
+%include <tuttle/host/attribute/ParamRGB.i>
+%include <tuttle/host/attribute/ParamRGBA.i>
+%include <tuttle/host/attribute/ParamString.i>
+%include <tuttle/host/attribute/ParamCustom.i>
 

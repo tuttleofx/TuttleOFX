@@ -12,8 +12,9 @@ def testDoubleParamProps():
 	print("testDoubleParamProps")
 	g = tuttle.Graph()
 	print("--")
-	# checkerNode = g.createNode( "tuttle.checkerboard", size=[50,50] )
-	checkerNode = g.createNode("tuttle.checkerboard")
+	checkerNode = g.createNode( "tuttle.checkerboard", size=[50,50] )
+	sizeParam = checkerNode.getParam("size")
+	ratioParam = checkerNode.getParam("ratio")
 	print("--")
 	print("-- Node props:", checkerNode.getProperties().getSize())
 	print("-- Node props len:", len(checkerNode.getProperties()))
@@ -56,6 +57,7 @@ def testParamGroups():
 	assert_equals(checkerNode.getNbChildParams(), 13)
 	assert_equals(checkerNode.getNbParams(), 13)
 	print("--")
+
 
 # setUp()
 # testDoubleParamProps()
