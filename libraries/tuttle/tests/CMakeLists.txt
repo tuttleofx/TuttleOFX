@@ -4,6 +4,9 @@ enable_testing()
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories (${Boost_INCLUDE_DIRS})
 
+# Create custom target 'run_tests'
+add_custom_target(run_tests ${CMAKE_CTEST_COMMAND} -V)
+
 # Get tests of tuttle host and plugins
 file(GLOB_RECURSE TEST_HOST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 file(GLOB_RECURSE TEST_PLUGIN_SRC ${PROJECT_SOURCE_DIR}/plugins/*plugin_*.cpp)
