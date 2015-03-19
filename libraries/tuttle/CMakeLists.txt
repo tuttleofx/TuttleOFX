@@ -202,6 +202,12 @@ if (TuttleBoost_FOUND)
     install(FILES "__init__.py" 
         DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
 
+    # Install getBestPlugin.py script
+    install(
+        FILES "${CMAKE_CURRENT_SOURCE_DIR}/python/getBestPlugin.py"
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages
+      )
+
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")
   endif(SWIG_FOUND)
