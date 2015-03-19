@@ -1,7 +1,12 @@
 # Setup CMake to run tests
 enable_testing()
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework)
+if(NOT Boost_FOUND)
+    message(WARNING "Boost Unit Tests will not be built")
+    return()
+endif()
+
 include_directories (${Boost_INCLUDE_DIRS})
 
 # Create custom target 'run_tests'
