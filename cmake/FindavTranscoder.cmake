@@ -14,3 +14,10 @@ file(GLOB_RECURSE AVTRANSCODER_FILES ${PROJECT_SOURCE_DIR}/plugins/image/io/Audi
 
 # Use target defined in avTranscoder project
 set(AVTRANSCODER_LIBRARIES avtranscoder-shared)
+
+# Look for the submodule
+if(NOT EXISTS ${AVTRANSCODER_INCLUDE_DIR})
+    message(FATAL_ERROR
+            "\n'avTranscoder' submodule is missing, please update your repository:\n"
+            "  > git submodule update -i\n")
+endif()

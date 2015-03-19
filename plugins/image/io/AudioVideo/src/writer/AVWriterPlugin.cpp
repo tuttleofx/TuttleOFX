@@ -1041,15 +1041,17 @@ void AVWriterPlugin::cleanVideoAndAudio()
  */
 void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	WriterPlugin::beginSequenceRender( args );
+
 	// Before new render
 	cleanVideoAndAudio();
 	initOutput();
 
 	// manage verbose level
 	if( _paramVerbose->getValue() )
-		avtranscoder::setLogLevel( AV_LOG_DEBUG );
+		avtranscoder::Logger::setLogLevel( AV_LOG_DEBUG );
 	else
-		avtranscoder::setLogLevel( AV_LOG_QUIET );
+		avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 }
 
 /**
@@ -1078,6 +1080,7 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	if( ! _initWrap || ! _initVideo )
 		return;
 	
+	WriterPlugin::endSequenceRender( args );
 	_outputFile->endWrap();
 }
 

@@ -474,6 +474,8 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	ReaderPlugin::beginSequenceRender( args );
+
 	ensureVideoIsOpen();
 
 	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile() );
@@ -489,9 +491,9 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 
 	// manage verbose level
 	if( _paramVerbose->getValue() )
-		avtranscoder::setLogLevel( AV_LOG_DEBUG );
+		avtranscoder::Logger::setLogLevel( AV_LOG_DEBUG );
 	else
-		avtranscoder::setLogLevel( AV_LOG_QUIET );
+		avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 }
 
 void AVReaderPlugin::render( const OFX::RenderArguments& args )

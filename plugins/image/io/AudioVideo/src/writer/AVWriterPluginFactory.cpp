@@ -9,7 +9,7 @@
 #include <AvTranscoder/common.hpp>
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Library.hpp>
-#include <AvTranscoder/ProfileLoader.hpp>
+#include <AvTranscoder/profile/ProfileLoader.hpp>
 #include <AvTranscoder/file/FormatContext.hpp>
 
 #include <boost/algorithm/string/join.hpp>
@@ -33,7 +33,7 @@ namespace writer {
 void AVWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	avtranscoder::preloadCodecsAndFormats();
-	avtranscoder::setLogLevel( AV_LOG_QUIET );
+	avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 
 	desc.setLabels(
 		"TuttleAVWriter",

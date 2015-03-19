@@ -3,7 +3,7 @@
 
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Option.hpp>
-#include <AvTranscoder/ProfileLoader.hpp>
+#include <AvTranscoder/profile/ProfileLoader.hpp>
 
 #include <ofxsImageEffect.h>
 

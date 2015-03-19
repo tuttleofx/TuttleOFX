@@ -38,10 +38,7 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	
 	rgb8_image_t img ( this->_srcView.dimensions() );
 	rgb8_view_t  vw  ( view( img ) );
-	
-	// Convert pixels to destination
-	copy_and_convert_pixels( this->_srcView, this->_dstView );
-	
+
 	// Convert pixels in PIX_FMT_RGB24
 	copy_and_convert_pixels( this->_srcView, vw );
 	

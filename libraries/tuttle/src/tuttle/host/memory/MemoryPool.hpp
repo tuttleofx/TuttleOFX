@@ -56,6 +56,8 @@ public:
 	std::size_t getDataUsedSize() const;
 	std::size_t getDataUnusedSize() const;
 	
+	PoolData* getOneAvailableData( const size_t size );
+
 	void clear( std::size_t size );
 	void clear();
 	void clearOne();
