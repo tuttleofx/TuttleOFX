@@ -47,6 +47,7 @@ script:
       exit 0;
     fi
   - tools/travis/build.sh
+  - tools/travis/launch_tests.sh
 
 
 after_failure:
