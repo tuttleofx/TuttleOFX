@@ -101,8 +101,8 @@ if (TuttleBoost_FOUND)
 
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
-  install(TARGETS tuttleHost DESTINATION lib/)
-  install(TARGETS sequenceParser DESTINATION lib/)
+  install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
+  install(TARGETS sequenceParser DESTINATION lib/ OPTIONAL)
 
   # Install tuttle host headers
   install(
@@ -170,12 +170,12 @@ if (TuttleBoost_FOUND)
 
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
     file(WRITE "__init__.py" "")
     install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
 
     # pySequenceParser
     set(SEQUENCEPARSER_PYTHON_BINDING_FILE ../sequenceParser/src/sequenceParser.i)
@@ -198,12 +198,12 @@ if (TuttleBoost_FOUND)
 
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_sequenceParser_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/sequenceParser.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
     file(WRITE "__init__.py" "")
     install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")
