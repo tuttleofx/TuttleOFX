@@ -460,6 +460,9 @@ public:
 	}
 
 protected:
+	
+	virtual ofx::attribute::OfxhParam* newParam( const ofx::attribute::OfxhParamDescriptor& Descriptor ) = 0;
+	
 	/// find the best supported bit depth for the given one. Override this if you define
 	/// more depths
 	virtual const std::string& bestSupportedBitDepth( const std::string& depth ) const;

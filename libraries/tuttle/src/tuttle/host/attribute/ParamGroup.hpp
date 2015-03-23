@@ -16,8 +16,10 @@ public:
 	ParamGroup( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamGroup* clone() const { return new ParamGroup( *this ); }
 
+#ifndef SWIG
 	void copy( const ParamGroup& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
+#endif
 };
 
 }

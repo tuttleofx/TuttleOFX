@@ -16,8 +16,10 @@ public:
 	ParamPushButton( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamPushButton* clone() const { return new ParamPushButton( *this ); }
 
+#ifndef SWIG
 	void copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
+#endif
 };
 
 }

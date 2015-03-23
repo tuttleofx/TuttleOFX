@@ -147,8 +147,10 @@ public:
 
 	virtual ~OfxhParam() = 0;
 
+#ifndef SWIG
 	/// clone this parameter
 	virtual This* clone() const = 0;
+#endif
 
 	virtual bool paramTypeHasData() const = 0;
 

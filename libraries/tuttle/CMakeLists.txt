@@ -16,6 +16,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Tuttle source code
 include_directories(src)
 file(GLOB_RECURSE TUTTLE_HOST_SRC_FILES src/tuttle/host/*.?pp src/tuttle/common/*.?pp)
+file(GLOB_RECURSE TUTTLE_HOST_HEADER_FILES src/tuttle/host/*.hpp src/tuttle/common/*.hpp)
 
 # Boost dependencies
 include(UseTuttleBoost)
@@ -147,8 +148,10 @@ if (TuttleBoost_FOUND)
 
     # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
+    file(GLOB_RECURSE TUTTLE_PYTHON_ALL_BINDING_FILES src/tuttle/*.i)
     # FIXME : do we need a python package as before ?
     set_source_files_properties(${TUTTLE_PYTHON_BINDING_FILE} PROPERTIES CPLUSPLUS ON) 
+    set(SWIG_MODULE_tuttle_EXTRA_DEPS "${TUTTLE_PYTHON_ALL_BINDING_FILES};${TUTTLE_HOST_HEADER_FILES}")
 
     # Create the output dir as it's not done automatically by cmake
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/tuttle/host)

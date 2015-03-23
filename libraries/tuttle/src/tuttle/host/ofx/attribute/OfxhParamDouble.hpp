@@ -47,6 +47,7 @@ public:
 	virtual void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC                          = 0;
 	virtual void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC = 0;
 
+#ifndef SWIG
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
 
@@ -64,6 +65,7 @@ public:
 
 	/// implementation of var args function
 	virtual void integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC;
+#endif
 
 	std::ostream& displayValues( std::ostream& os ) const
 	{

@@ -3,6 +3,11 @@
 %include <std_string.i>
 
 %include <tuttle/host/INode.i>
+%include <tuttle/host/ImageEffectNode.i>
+
+%include <tuttle/host/attribute/allParams.i>
+
+%include <factory.i>
 
 %{
 #include <tuttle/host/Node.hpp>
@@ -15,6 +20,9 @@ namespace std {
 
 %rename(private_createNode) createNode;
 %rename(PrivateNodeInit) NodeInit;
+
+%newobject tuttle::host::createNode;
+%factory(tuttle::host::Graph::Node& tuttle::host::createNode, tuttle::host::ImageEffectNode);
 
 %include <tuttle/host/Node.hpp>
 
