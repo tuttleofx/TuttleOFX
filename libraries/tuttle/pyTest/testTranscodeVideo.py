@@ -1,5 +1,7 @@
 # scons: pluginAudioVideo pluginInvert
 
+from nose.tools import nottest
+
 from pyTuttle import tuttle
 
 def setUp():
@@ -14,6 +16,7 @@ def testTranscodeToDefaultCodec():
 		], tuttle.ComputeOptions(0,20) )
 
 
+@nottest
 def testTranscodeToMpegpipe():
 	tuttle.compute(
 		[
