@@ -47,9 +47,6 @@ class AVWriterPlugin : public WriterPlugin
 public:
 	AVWriterPlugin( OfxImageEffectHandle handle );
 
-private:
-	void updateVisibleTools();
-
 public:
 	AVProcessParams getProcessParams();
 
@@ -96,13 +93,22 @@ public:
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
+private:
+	void updateVisibleTools();
+
 	//@{
 	/** Getters which throw exception if format or codec are not found. */
-	std::string getFormatName( const int format ) const;
-	std::string getVideoCodecName( const int codec ) const;
-	std::string getAudioCodecName( const int codec ) const;
+	std::string getFormatName( const size_t formatIndex ) const;
+	std::string getVideoCodecName( const size_t codecIndex ) const;
+	std::string getAudioCodecName( const size_t codecIndex ) const;
 	std::string getPixelFormatName( const std::string& videoCodecName ) const;
 	std::string getSampleFormatName( const std::string& audioCodecName ) const;
+	//@}
+
+	//@{
+	void setFormatParam( const std::string& formatShortName );
+	void setVideoCodecParam( const std::string& videoCodecShortName );
+	void setAudioCodecParam( const std::string& audioCodecShortName );
 	//@}
 
 public:
