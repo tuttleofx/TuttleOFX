@@ -156,17 +156,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// FORMAT PARAMETERS
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-	std::vector<std::string> formatsShortNames( avtranscoder::getFormatsShortNames() );
-	std::vector<std::string> formatsLongNames( avtranscoder::getFormatsLongNames() );
-	for( std::vector<std::string>::const_iterator itShort = formatsShortNames.begin(),
-		itLong  = formatsLongNames.begin(),
-		itEnd = formatsShortNames.end();
-		itShort != itEnd;
-		++itShort,
-		++itLong )
+	avtranscoder::NamesArray formatsNames( avtranscoder::getFormatsNames() );
+	for( avtranscoder::NamesArray::const_iterator itName = formatsNames.begin();
+		itName != formatsNames.end();
+		++itName )
 	{
-		format->appendOption( *itShort + ": " + *itLong );
-		if( (*itShort) == "mp4" )
+		format->appendOption( itName->first + " " + itName->second );
+		if( itName->first == "mp4" )
 			default_format = format->getNOptions() - 1;
 	}
 	format->setLabel( kParamFormatLabel );
@@ -239,17 +235,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	int default_codec = 0;
 	std::string defaultVideoCodec( "mpeg4" );
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
-	std::vector<std::string> videoCodecsShortNames( avtranscoder::getVideoCodecsShortNames() );
-	std::vector<std::string> videoCodecsLongNames( avtranscoder::getVideoCodecsLongNames() );
-	for( std::vector<std::string>::const_iterator itShort = videoCodecsShortNames.begin(),
-		itLong  = videoCodecsLongNames.begin(),
-		itEnd = videoCodecsShortNames.end();
-		itShort != itEnd;
-		++itShort,
-		++itLong )
+	avtranscoder::NamesArray videoCodecsNames( avtranscoder::getVideoCodecsNames() );
+	for( avtranscoder::NamesArray::const_iterator itName = videoCodecsNames.begin();
+		itName != videoCodecsNames.end();
+		++itName )
 	{
-		videoCodec->appendOption( *itShort + ": " + *itLong );
-		if( (*itShort) == defaultVideoCodec )
+		videoCodec->appendOption( itName->first + " " + itName->second );
+		if( itName->first == defaultVideoCodec )
 			default_codec = videoCodec->getNOptions() - 1;
 	}
 	videoCodec->setLabel( kParamVideoCodecLabel );
@@ -307,17 +299,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	int default_audio_codec = 0;
 	std::string defaultAudioCodec( "pcm_s16le" );
 	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
-	std::vector<std::string> audioCodecsShortNames( avtranscoder::getAudioCodecsShortNames() );
-	std::vector<std::string> audioCodecsLongNames( avtranscoder::getAudioCodecsLongNames() );
-	for( std::vector<std::string>::const_iterator itShort = audioCodecsShortNames.begin(),
-		itLong  = audioCodecsLongNames.begin(),
-		itEnd = audioCodecsShortNames.end();
-		itShort != itEnd;
-		++itShort,
-		++itLong )
+	avtranscoder::NamesArray audioCodecsNames( avtranscoder::getAudioCodecsNames() );
+	for( avtranscoder::NamesArray::const_iterator itName = audioCodecsNames.begin();
+		itName != audioCodecsNames.end();
+		++itName )
 	{
-		audioCodecParam->appendOption( *itShort + ": " + *itLong );
-		if( (*itShort) == defaultAudioCodec )
+		audioCodecParam->appendOption( itName->first + " " + itName->second );
+		if( itName->first == defaultAudioCodec )
 			default_audio_codec = audioCodecParam->getNOptions() - 1;
 	}
 	audioCodecParam->setLabel( kParamAudioCodecLabel );

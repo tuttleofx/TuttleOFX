@@ -129,17 +129,17 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
 	_paramFormatDetailCustom.fetchLibAVParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
-	const std::string formatName = avtranscoder::getFormatsShortNames().at( _paramFormat->getValue() );
+	const std::string formatName = avtranscoder::getFormatsNames().at( _paramFormat->getValue() ).first;
 	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, formatName, common::kPrefixFormat );
 	
 	avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
 	_paramVideoDetailCustom.fetchLibAVParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
-	const std::string videoCodecName = avtranscoder::getVideoCodecsShortNames().at( _paramVideoCodec->getValue() );
+	const std::string videoCodecName = avtranscoder::getVideoCodecsNames().at( _paramVideoCodec->getValue() ).first;
 	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
 	
 	avtranscoder::OptionArrayMap optionsAudioCodecMap = avtranscoder::getAudioCodecOptions();
 	_paramAudioDetailCustom.fetchLibAVParams( *this, optionsAudioCodecMap, common::kPrefixAudio );
-	const std::string audioCodecName = avtranscoder::getAudioCodecsShortNames().at( _paramAudioCodec->getValue() );
+	const std::string audioCodecName = avtranscoder::getAudioCodecsNames().at( _paramAudioCodec->getValue() ).first;
 	common::disableOFXParamsForFormatOrCodec( *this, optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
 	
 	updatePixelFormats( videoCodecName );
@@ -386,15 +386,12 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	// filename
 	if( paramName == kTuttlePluginFilename )
 	{
-		const std::string& extension = avtranscoder::getFormat( _paramFilepath->getValue() );
-
-		std::vector<std::string> formats( avtranscoder::getFormatsShortNames() );
-		std::vector<std::string>::iterator itFormat = std::find( formats.begin(), formats.end(), extension );
-		if( itFormat != formats.end() )
+		const std::string extension = avtranscoder::getFormat( _paramFilepath->getValue() );
+		if( ! extension.empty() )
 		{
-			size_t indexFormat = std::distance( formats.begin(), itFormat );
-			_paramFormat->setValue( indexFormat );
+			setFormatParam( extension );
 		}
+
 		cleanVideoAndAudio();
 	}
 	// format
@@ -571,13 +568,7 @@ void AVWriterPlugin::initOutput()
 		std::string formatFromFile = avtranscoder::getFormat( path.filename().string() );
 		if( ! formatFromFile.empty() )
 		{
-			std::vector<std::string> formats( avtranscoder::getFormatsShortNames() );
-			std::vector<std::string>::iterator iterFormat = std::find( formats.begin(), formats.end(), formatFromFile );
-			size_t formatIndex = std::distance( formats.begin(), iterFormat);
-			if( formatIndex != formats.size() )
-			{
-				_paramFormat->setValue( formatIndex );
-			}
+			setFormatParam( formatFromFile );
 		}
 
 		// update format
@@ -898,13 +889,7 @@ void AVWriterPlugin::updateFormatFromExistingProfile()
 		avtranscoder::ProfileLoader::Profile existingProfile = _presetLoader.getFormatProfiles().at( presetIndex - 1 );
 
 		// format
-		std::vector<std::string> formats = avtranscoder::getFormatsShortNames();
-		std::vector<std::string>::iterator iterFormat = std::find( formats.begin(), formats.end(), existingProfile[ avtranscoder::constants::avProfileFormat ] );
-		size_t fomatIndex = std::distance( formats.begin(), iterFormat );
-		if( fomatIndex < formats.size() )
-		{
-			_paramFormat->setValue( fomatIndex );
-		}
+		setFormatParam( existingProfile[ avtranscoder::constants::avProfileFormat ] );
 
 		// other options
 		BOOST_FOREACH( avtranscoder::ProfileLoader::Profile::value_type& option, existingProfile )
@@ -930,18 +915,12 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		avtranscoder::ProfileLoader::Profile existingProfile = _presetLoader.getVideoProfiles().at( presetIndex - 1 );
 
 		// video codec
-		std::vector<std::string> codecs = avtranscoder::getVideoCodecsShortNames();
-		std::vector<std::string>::iterator iterCodec = std::find( codecs.begin(), codecs.end(), existingProfile[ avtranscoder::constants::avProfileCodec ] );
-		size_t codecIndex = std::distance( codecs.begin(), iterCodec);
-		if( codecIndex < codecs.size() )
-		{
-			_paramVideoCodec->setValue( codecIndex );
-		}
+		setVideoCodecParam( existingProfile[ avtranscoder::constants::avProfileCodec ] );
 
 		// pixel format
 		if( existingProfile.find( avtranscoder::constants::avProfilePixelFormat ) != existingProfile.end() )
 		{
-			std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( *iterCodec ) );
+			std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] ) );
 			std::vector<std::string>::iterator iterPixelFormat = std::find( pixelFormats.begin(), pixelFormats.end(), existingProfile[ avtranscoder::constants::avProfilePixelFormat ] );
 			size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
 			if( pixelFomatIndex < pixelFormats.size() )
@@ -989,18 +968,12 @@ void AVWriterPlugin::updateAudioFromExistingProfile()
 		avtranscoder::ProfileLoader::Profile existingProfile = _presetLoader.getAudioProfiles().at( presetIndex - 2 );
 
 		// audio codec
-		std::vector<std::string> codecs = avtranscoder::getAudioCodecsShortNames();
-		std::vector<std::string>::iterator iterCodec = std::find( codecs.begin(), codecs.end(), existingProfile[ avtranscoder::constants::avProfileCodec ] );
-		size_t codecIndex = std::distance( codecs.begin(), iterCodec);
-		if( codecIndex < codecs.size() )
-		{
-			_paramAudioCodec->setValue( codecIndex );
-		}
+		setAudioCodecParam( existingProfile[ avtranscoder::constants::avProfileCodec ] );
 
 		// sample format
 		if( existingProfile.find( avtranscoder::constants::avProfileSampleFormat ) != existingProfile.end() )
 		{
-			std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( *iterCodec ) );
+			std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] ) );
 			std::vector<std::string>::iterator iterSampleFormat = std::find( sampleFormats.begin(), sampleFormats.end(), existingProfile[ avtranscoder::constants::avProfileSampleFormat ] );
 			size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
 			if( sampleFomatIndex < sampleFormats.size() )
@@ -1084,42 +1057,42 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	_outputFile->endWrap();
 }
 
-std::string AVWriterPlugin::getFormatName( const int format ) const
+std::string AVWriterPlugin::getFormatName( const size_t formatIndex ) const
 {
 	try
 	{
-		return avtranscoder::getFormatsShortNames().at( format );
+		return avtranscoder::getFormatsNames().at( formatIndex ).first;
 	}
 	catch( std::exception& e )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to get format " + format + " - " + e.what() );
+		    << exception::user() + "unable to get format " + formatIndex + " - " + e.what() );
 	}
 }
 
-std::string AVWriterPlugin::getVideoCodecName( const int codec ) const
+std::string AVWriterPlugin::getVideoCodecName( const size_t codecIndex ) const
 {
 	try
 	{
-		return avtranscoder::getVideoCodecsShortNames().at( codec );
+		return avtranscoder::getVideoCodecsNames().at( codecIndex ).first;
 	}
 	catch( std::exception& e )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to get video codec " + codec + " - " + e.what() );
+		    << exception::user() + "unable to get video codec " + codecIndex + " - " + e.what() );
 	}
 }
 
-std::string AVWriterPlugin::getAudioCodecName( const int codec ) const
+std::string AVWriterPlugin::getAudioCodecName( const size_t codecIndex ) const
 {
 	try
 	{
-		return avtranscoder::getAudioCodecsShortNames().at( codec );
+		return avtranscoder::getAudioCodecsNames().at( codecIndex ).first;
 	}
 	catch( std::exception& e )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to get audio codec " + codec + " - " + e.what() );
+		    << exception::user() + "unable to get audio codec " + codecIndex + " - " + e.what() );
 	}
 }
 
@@ -1172,6 +1145,57 @@ std::string AVWriterPlugin::getSampleFormatName( const std::string& audioCodecNa
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "unable to get supported sample format choosen for audio codec " + audioCodecName + 
 				" - Supported sample format are: " + supportedSampleFormatList + "- " + e.what() );
+	}
+}
+
+void AVWriterPlugin::setFormatParam( const std::string& formatShortName )
+{
+	avtranscoder::NamesArray formats( avtranscoder::getFormatsNames() );
+	for( avtranscoder::NamesArray::iterator itFormat = formats.begin();
+		itFormat != formats.end();
+		++itFormat )
+	{
+		if( itFormat->first == formatShortName )
+		{
+			const size_t indexFormat = std::distance( formats.begin(), itFormat );
+			if( indexFormat < formats.size() )
+				_paramFormat->setValue( indexFormat );
+			break;
+		}
+	}
+}
+
+void AVWriterPlugin::setVideoCodecParam( const std::string& videoCodecShortName )
+{
+	avtranscoder::NamesArray codecs( avtranscoder::getVideoCodecsNames() );
+	for( avtranscoder::NamesArray::iterator itCodec = codecs.begin();
+		itCodec != codecs.end();
+		++itCodec )
+	{
+		if( itCodec->first == videoCodecShortName )
+		{
+			const size_t indexCodec = std::distance( codecs.begin(), itCodec );
+			if( indexCodec < codecs.size() )
+				_paramVideoCodec->setValue( indexCodec );
+			break;
+		}
+	}
+}
+
+void AVWriterPlugin::setAudioCodecParam( const std::string& audioCodecShortName )
+{
+	avtranscoder::NamesArray codecs( avtranscoder::getAudioCodecsNames() );
+	for( avtranscoder::NamesArray::iterator itCodec = codecs.begin();
+		itCodec != codecs.end();
+		++itCodec )
+	{
+		if( itCodec->first == audioCodecShortName )
+		{
+			const size_t indexCodec = std::distance( codecs.begin(), itCodec );
+			if( indexCodec < codecs.size() )
+				_paramAudioCodec->setValue( indexCodec );
+			break;
+		}
 	}
 }
 
