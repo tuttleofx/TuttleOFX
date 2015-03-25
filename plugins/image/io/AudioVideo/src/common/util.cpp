@@ -122,10 +122,6 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::Opti
 			}
 			case avtranscoder::eOptionBaseTypeChoice:
 			{
-				// avoid warning of Host when OFX Choice parameter with no choices
-				if( option.getChilds().empty() )
-					continue;
-
 				// manage exception of video threads parameter: we want to manipulate an OFX Int parameter
 				if( name == kVideoOptionThreads )
 				{
@@ -461,10 +457,6 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 			case avtranscoder::eOptionBaseTypeChoice:
 			{
-				// avoid warning of Host when OFX Choice parameter with no choices
-				if( option.getChilds().empty() )
-					continue;
-
 				// manage exception of video threads parameter: we want to manipulate an OFX Int parameter
 				if( name == kVideoOptionThreads )
 				{
