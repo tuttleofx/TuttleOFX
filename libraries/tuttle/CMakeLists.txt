@@ -110,6 +110,8 @@ if (TuttleBoost_FOUND)
     DESTINATION "include"
     FILES_MATCHING
     PATTERN "*.hpp"
+    PATTERN "*.h"
+    PATTERN "*.tcc"
     PATTERN "*.i"
   )
 
