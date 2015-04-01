@@ -102,6 +102,8 @@ if (TuttleBoost_FOUND)
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
+  install(TARGETS tuttleCommon DESTINATION lib/ OPTIONAL)
+  install(TARGETS tuttlePluginLib DESTINATION lib/ OPTIONAL)
   install(TARGETS sequenceParser DESTINATION lib/ OPTIONAL)
 
   # Install tuttle host headers
