@@ -1,11 +1,6 @@
 #include "SwscaleProcess.hpp"
 
-extern "C" {
-#ifndef __STDC_CONSTANT_MACROS
-	#define __STDC_CONSTANT_MACROS
-#endif
-	#include <libavutil/pixfmt.h>
-}
+#include <AvTranscoder/frame/VideoFrame.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -14,7 +9,8 @@ namespace swscale {
 SwscaleProcess::SwscaleProcess( SwscalePlugin &effect )
 : ImageFilterProcessor( effect, eImageOrientationFromTopToBottom )
 , _plugin( effect )
-, _context( NULL )
+, _params()
+, _transform()
 {
 	this->setNoMultiThreading();
 }
@@ -92,19 +88,6 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch()
 			<< exception::user( "SwScale: unsupported bit depth / channel input." ) );
 	}
-	
-	_context = sws_getCachedContext( _context,
-			this->_src->getBoundsSize().x, this->_src->getBoundsSize().y,
-			pixFmt,
-			this->_dst->getBoundsSize().x, this->_dst->getBoundsSize().y,
-			pixFmt,
-			_params._sws_filter,
-			NULL, NULL, NULL );
-	if ( !_context )
-	{
-		BOOST_THROW_EXCEPTION( exception::Failed()
-			<< exception::user( "swscale: Could not get swscale context." ) );
-	}
 
 	// set filtering mode
 	// @todo: sws set filtermode( _params._sws_filter )
@@ -125,21 +108,16 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 	// "this->_src->getRowDistanceBytes()" is not the same than "this->_src->getBoundsSize().x * pixelBytes"
 	// The buffer could contain a padding between lines.
 
-	int srcStride = this->_src->getRowDistanceBytes();
-	int dstStride = this->_dst->getRowDistanceBytes();
-	int ret = sws_scale( _context, &srcPtr, &srcStride, 0,
-			this->_src->getBoundsSize().y, &dstPtr, &dstStride );
-	if ( ret < 0 )
-		BOOST_THROW_EXCEPTION( exception::Failed()
-			<< exception::user( "swscale: Scaling failed." )
-			<< exception::dev( ret ) );
-}
+	avtranscoder::VideoFrameDesc srcDesc( _src->getBoundsSize().x, _src->getBoundsSize().y, pixFmt );
+	avtranscoder::VideoFrame src( srcDesc );
+	src.refData( srcPtr, _src->getBoundsImageDataBytes() );
 
-void SwscaleProcess::postProcess()
-{
-	sws_freeContext( _context );
-}
+	avtranscoder::VideoFrameDesc dstDesc( _dst->getBoundsSize().x, _dst->getBoundsSize().y, pixFmt );
+	avtranscoder::VideoFrame dst( dstDesc );
+	dst.refData( dstPtr, _dst->getBoundsImageDataBytes() );
 
+	_transform.convert( src, dst );
+}
 
 }
 }

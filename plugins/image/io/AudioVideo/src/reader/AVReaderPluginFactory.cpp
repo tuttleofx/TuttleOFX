@@ -30,6 +30,7 @@ namespace reader {
 void AVReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	avtranscoder::preloadCodecsAndFormats();
+	avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 
 	desc.setLabels(
 		"TuttleAVReader",
@@ -209,6 +210,12 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	metaDataUnknown->setEnabled( false );
 	metaDataUnknown->setStringType( OFX::eStringTypeMultiLine );
 	metaDataUnknown->setParent( metaGroup );
+
+	/// VERBOSE
+	OFX::BooleanParamDescriptor* useVerbose = desc.defineBooleanParam( kParamVerbose );
+	useVerbose->setLabel( "Set to verbose" );
+	useVerbose->setDefault( false );
+	useVerbose->setHint( "Set plugin to verbose to get debug informations." );
 }
 
 /**

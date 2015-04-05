@@ -16,6 +16,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Tuttle source code
 include_directories(src)
 file(GLOB_RECURSE TUTTLE_HOST_SRC_FILES src/tuttle/host/*.?pp src/tuttle/common/*.?pp)
+file(GLOB_RECURSE TUTTLE_HOST_HEADER_FILES src/tuttle/host/*.hpp src/tuttle/common/*.hpp)
 
 # Boost dependencies
 include(UseTuttleBoost)
@@ -100,8 +101,21 @@ if (TuttleBoost_FOUND)
 
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
-  install(TARGETS tuttleHost DESTINATION lib/)
-  install(TARGETS sequenceParser DESTINATION lib/)
+  install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
+  install(TARGETS tuttleCommon DESTINATION lib/ OPTIONAL)
+  install(TARGETS tuttlePluginLib DESTINATION lib/ OPTIONAL)
+  install(TARGETS sequenceParser DESTINATION lib/ OPTIONAL)
+
+  # Install tuttle host headers
+  install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/tuttle"
+    DESTINATION "include"
+    FILES_MATCHING
+    PATTERN "*.hpp"
+    PATTERN "*.h"
+    PATTERN "*.tcc"
+    PATTERN "*.i"
+  )
 
   # Install boost library along with tuttle library
   # Need to copy the files pointed by symlinks instead of the symlinks
@@ -118,19 +132,30 @@ if (TuttleBoost_FOUND)
     # Find python c libs
     find_package(PythonLibs)
     include_directories(${PYTHON_INCLUDE_DIRS})
-  
-    # Find numpy headers
-    # TODO is numpy is not found, remove source files using it from build
-    find_package(Numpy)
-    include_directories(${NUMPY_INCLUDE_DIR})
-  
+
+    # Numpy
+    if(WITHOUT_NUMPY)
+        # Add swig flag to create binding without Numpy
+        set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
+    else()
+        # Find numpy headers
+        find_package(Numpy)
+        if(NUMPY_FOUND)
+            include_directories(${NUMPY_INCLUDE_DIR})
+        else()
+            set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
+        endif()
+    endif()
+
     # Swig to compile c++ -> python
-    set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern) #-doxygen
+    set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern ${SWIG_NUMPY_FLAG}) #-doxygen
 
     # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
+    file(GLOB_RECURSE TUTTLE_PYTHON_ALL_BINDING_FILES src/tuttle/*.i)
     # FIXME : do we need a python package as before ?
     set_source_files_properties(${TUTTLE_PYTHON_BINDING_FILE} PROPERTIES CPLUSPLUS ON) 
+    set(SWIG_MODULE_tuttle_EXTRA_DEPS "${TUTTLE_PYTHON_ALL_BINDING_FILES};${TUTTLE_HOST_HEADER_FILES}")
 
     # Create the output dir as it's not done automatically by cmake
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/tuttle/host)
@@ -149,12 +174,12 @@ if (TuttleBoost_FOUND)
 
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
     file(WRITE "__init__.py" "")
     install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
 
     # pySequenceParser
     set(SEQUENCEPARSER_PYTHON_BINDING_FILE ../sequenceParser/src/sequenceParser.i)
@@ -177,12 +202,12 @@ if (TuttleBoost_FOUND)
 
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_sequenceParser_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/sequenceParser.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
     file(WRITE "__init__.py" "")
     install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")

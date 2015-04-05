@@ -3,26 +3,27 @@ import sys
 import os
 import argparse
 
-import envTuttle
 from pyTuttle import tuttle
 import getBestPlugin
 
 tuttle.core().preload()
 
+# parse command line
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('input', help='input file or sequence')
 
 args = parser.parse_args()
 inputSequence = args.input
 
+# get reader plugin
 fileName, fileExtension = os.path.splitext(inputSequence)
-
 readerPlugin = getBestPlugin.getBestReader(fileExtension)
 
 if readerPlugin == "":
 	print("ERROR: unsuported file format")
 	exit()
 
+# create graph
 graph = tuttle.Graph()
 read = graph.createNode(readerPlugin, filename=inputSequence).asImageEffectNode()
 
@@ -36,6 +37,7 @@ except Exception as e:
 	print("ERROR: ", str(e))
 	exit(1)
 
+# print info of sequence
 rod = read.getRegionOfDefinition( td.min )
 width  = rod.x2 - rod.x1
 height = rod.y2 - rod.y1
@@ -76,4 +78,3 @@ print("Components               :", getComponents(clip.getComponentsString()))
 print("Number of components     :", clip.getNbComponents())
 print("frame rate (fps)         :", clip.getFrameRate())
 print("frame range              : %d, %d" % (int(clip.getFrameRange().min), int(clip.getFrameRange().max)))
-

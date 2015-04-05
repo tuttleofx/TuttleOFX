@@ -96,10 +96,9 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 
 		std::ostringstream audioOffsetName( kParamAudioOffset, std::ios_base::in | std::ios_base::ate );
 		audioOffsetName << "_" << indexAudioInput;
-		_paramAudioOffset.push_back( fetchIntParam( audioOffsetName.str() ) );
+		_paramAudioOffset.push_back( fetchDoubleParam( audioOffsetName.str() ) );
 		_paramAudioOffset.back()->setIsSecretAndDisabled( true );
 	}
-	updateAudioParams();
 
 	// our custom params
 	_paramUseCustomFps = fetchBooleanParam( kParamUseCustomFps );
@@ -145,6 +144,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	
 	updatePixelFormats( videoCodecName );
 	updateSampleFormats( audioCodecName );
+
+	_paramVerbose = fetchBooleanParam( kParamVerbose );
 	
 	// preset
 	_paramMainPreset = fetchChoiceParam( kParamMainPreset );
@@ -174,6 +175,7 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaTrack           ) );
 	_paramMetadatas.push_back( fetchStringParam( kParamMetaVariantBitrate  ) );
 
+	updateAudioParams();
 	updateVisibleTools();
 }
 
@@ -304,16 +306,30 @@ void AVWriterPlugin::updateAudioSelectStream( size_t indexAudioOutput )
 			}
 		}
 	}
-	updateAudioRewrap( indexAudioOutput );
+	updateAudioOffset( indexAudioOutput );
 }
 
-void AVWriterPlugin::updateAudioRewrap( size_t indexAudioOutput )
+void AVWriterPlugin::updateAudioOffset( size_t indexAudioOutput )
 {
 	if( _paramAudioSubGroup.at( indexAudioOutput )->getIsEnable() &&
 		! _paramAudioSubGroup.at( indexAudioOutput )->getIsSecret() &&
 		! _paramAudioSilent.at( indexAudioOutput )->getValue() )
 	{
-		bool isRewrap = _paramAudioPreset.at( indexAudioOutput )->getValue() == 1;
+		bool isRewrap = false;
+		switch( _paramAudioPreset.at( indexAudioOutput )->getValue() )
+		{
+			// check main audio preset
+			case 0:
+				if( _paramAudioMainPreset->getValue() == 1 )
+					isRewrap = true;
+				break;
+			// check audio preset at index
+			case 1:
+				isRewrap = true;
+				break;
+			default:
+				break;
+		}
 		_paramAudioOffset.at( indexAudioOutput )->setIsSecretAndDisabled( isRewrap );
 	}
 }
@@ -336,11 +352,21 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 			audioInfo += "\n";
 			for( size_t audioStreamIndex = 0; audioStreamIndex < nbAudioStream; ++audioStreamIndex )
 			{
+				avtranscoder::AudioProperties& audioProperties = fileProperties.getAudioProperties().at( audioStreamIndex );
+
+				// stream
 				audioInfo += "Stream ";
 				audioInfo += boost::lexical_cast<std::string>( audioStreamIndex );
 				audioInfo += ": ";
-				audioInfo += fileProperties.getAudioProperties().at( audioStreamIndex ).getChannelName();
+
+				// channels
+				audioInfo += boost::lexical_cast<std::string>( audioProperties.getChannels() );
 				audioInfo += " channels";
+
+				// channel layout
+				audioInfo += " (layout ";
+				audioInfo += audioProperties.getChannelLayout();
+				audioInfo += ")";
 				audioInfo += "\n";
 			}
 			_paramAudioFileInfo.at( indexAudioOutput )->setValue( audioInfo );
@@ -361,10 +387,12 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	if( paramName == kTuttlePluginFilename )
 	{
 		const std::string& extension = avtranscoder::getFormat( _paramFilepath->getValue() );
-		std::vector<std::string>::iterator itFormat = std::find( avtranscoder::getFormatsShortNames().begin(), avtranscoder::getFormatsShortNames().end(), extension );
-		if( itFormat != avtranscoder::getFormatsShortNames().end() )
+
+		std::vector<std::string> formats( avtranscoder::getFormatsShortNames() );
+		std::vector<std::string>::iterator itFormat = std::find( formats.begin(), formats.end(), extension );
+		if( itFormat != formats.end() )
 		{
-			size_t indexFormat = itFormat - avtranscoder::getFormatsShortNames().begin();
+			size_t indexFormat = std::distance( formats.begin(), itFormat );
 			_paramFormat->setValue( indexFormat );
 		}
 		cleanVideoAndAudio();
@@ -429,7 +457,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kParamAudioMainPreset )
 	{
-		// if custom audio preset
+		// if custom audio preset or rewrap
 		if( _paramAudioMainPreset->getValue() == 0 || 
 			_paramAudioMainPreset->getValue() == 1 )
 		{
@@ -439,7 +467,13 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		}
 		else
 		{
-			updateAudiotFromExistingProfile();
+			updateAudioFromExistingProfile();
+		}
+
+		// update offset visibility of audio inputs
+		for( size_t indexAudioInput = 0; indexAudioInput < _paramAudioNbInput->getValue(); ++indexAudioInput )
+		{
+			updateAudioOffset( indexAudioInput );
 		}
 	}
 	// fps
@@ -487,7 +521,7 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	{
 		const size_t indexPos = kParamAudioPreset.size() + 1; // add "_"
 		size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
-		updateAudioRewrap( indexAudioOutput );
+		updateAudioOffset( indexAudioOutput );
 	}
 	else if( paramName.find( kParamAudioFilePath ) != std::string::npos )
 	{
@@ -506,6 +540,14 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		const size_t indexPos = kParamAudioStreamIndex.size() + 1; // add "_"
 		const size_t indexAudioOutput = boost::lexical_cast<size_t>( paramName.substr( indexPos ) );
 		_paramAudioSelectStream.at( indexAudioOutput )->setValue( true );
+	}
+	// verbose
+	else if( paramName == kParamVerbose )
+	{
+		if( ! _paramVerbose->getValue() )
+		{
+			_paramVerbose->setValue(true);
+		}
 	}
 }
 
@@ -761,13 +803,17 @@ void AVWriterPlugin::initAudio()
 				bool selectOneStream = _paramAudioSelectStream.at( i )->getValue();
 				int inputStreamIndex = selectOneStream ? _paramAudioStreamIndex.at( i )->getValue() : -1;				
 
-				// Get number of audio stream
-				size_t nbAudioStream = 1;
+				// Get index of audio streams
+				std::vector< int > indexAudioStreams;
 				if( inputStreamIndex == -1 )
 				{
 					avtranscoder::NoDisplayProgress progress;
 					avtranscoder::FileProperties fileProperties = avtranscoder::InputFile::analyseFile( inputFileName, progress, avtranscoder::eAnalyseLevelHeader );
-					nbAudioStream = fileProperties.getAudioProperties().size();
+					std::vector< avtranscoder::AudioProperties > audioProperties = fileProperties.getAudioProperties();
+					for( size_t propertiesIndex = 0; propertiesIndex < audioProperties.size(); ++propertiesIndex )
+					{
+						indexAudioStreams.push_back( audioProperties.at( propertiesIndex ).getStreamIndex() );
+					}
 				}
 				
 				// rewrap
@@ -779,9 +825,9 @@ void AVWriterPlugin::initAudio()
 					}
 					else
 					{
-						for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
+						for( std::vector< int >::iterator itStreamIndex = indexAudioStreams.begin(); itStreamIndex != indexAudioStreams.end(); ++itStreamIndex )
 						{
-							_transcoder->add( inputFileName, streamIndex, presetName );
+							_transcoder->add( inputFileName, *itStreamIndex, presetName );
 						}
 					}
 				}
@@ -790,21 +836,20 @@ void AVWriterPlugin::initAudio()
 				{
 					// select all channels of the stream
 					size_t subStream = -1;
-					size_t offsetMillisecond = _paramAudioOffset.at( i )->getValue();
-					size_t offsetFrame = ( offsetMillisecond * _outputFps ) / 1000;
+					double offset = _paramAudioOffset.at( i )->getValue();
 
 					// custom audio preset
 					if( presetIndex == 0 && mainPresetIndex == 0 )
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile, offsetFrame );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, profile, offset );
 						}
 						else
 						{
-							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
+							for( std::vector< int >::iterator itStreamIndex = indexAudioStreams.begin(); itStreamIndex != indexAudioStreams.end(); ++itStreamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, profile, offsetFrame );
+								_transcoder->add( inputFileName, *itStreamIndex, subStream, profile, offset );
 							}
 						}
 					}
@@ -813,13 +858,13 @@ void AVWriterPlugin::initAudio()
 					{
 						if( inputStreamIndex != -1 )
 						{
-							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName, offsetFrame );
+							_transcoder->add( inputFileName, inputStreamIndex, subStream, presetName, offset );
 						}
 						else
 						{
-							for( size_t streamIndex = 0; streamIndex < nbAudioStream; ++streamIndex )
+							for( std::vector< int >::iterator itStreamIndex = indexAudioStreams.begin(); itStreamIndex != indexAudioStreams.end(); ++itStreamIndex )
 							{
-								_transcoder->add( inputFileName, streamIndex, subStream, presetName, offsetFrame );
+								_transcoder->add( inputFileName, *itStreamIndex, subStream, presetName, offset );
 							}
 						}
 					}
@@ -933,7 +978,7 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 	}
 }
 
-void AVWriterPlugin::updateAudiotFromExistingProfile()
+void AVWriterPlugin::updateAudioFromExistingProfile()
 {
 	size_t presetIndex = _paramAudioMainPreset->getValue();
 	
@@ -996,9 +1041,17 @@ void AVWriterPlugin::cleanVideoAndAudio()
  */
 void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	WriterPlugin::beginSequenceRender( args );
+
 	// Before new render
 	cleanVideoAndAudio();
 	initOutput();
+
+	// manage verbose level
+	if( _paramVerbose->getValue() )
+		avtranscoder::Logger::setLogLevel( AV_LOG_DEBUG );
+	else
+		avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 }
 
 /**
@@ -1027,6 +1080,7 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	if( ! _initWrap || ! _initVideo )
 		return;
 	
+	WriterPlugin::endSequenceRender( args );
 	_outputFile->endWrap();
 }
 

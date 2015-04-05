@@ -8,6 +8,8 @@
 #include <tuttle/host/OutputBufferWrapper.hpp>
 %}
 
+#ifndef WITHOUT_NUMPY
+
 %include "wrappers/numpy.i"
 
 %init
@@ -85,4 +87,7 @@ import_array();
 %clear (float* rawBuffer, int height, int width, int nbComponents);
 %clear (unsigned short* rawBuffer, int height, int width, int nbComponents);
 %clear (unsigned char* rawBuffer, int height, int width, int nbComponents);
-	
+
+#else
+%include <tuttle/host/OutputBufferWrapper.hpp>
+#endif

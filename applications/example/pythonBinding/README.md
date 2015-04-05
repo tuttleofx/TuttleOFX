@@ -1,44 +1,32 @@
 Tuttle binding scripts samples
 ==============================
 
-envTuttle.py
+demo_burn_timecode.py
 ------------
+Sample code to burn timecode on generated bars.
 
-> import envTuttle
+demo_constant_merge.py
+------------
+Test Hud with a constant + merge and blurred text.
 
-Set pyTuttle environment.
-Edit this script to set your TUTTLE_ROOT path.  
-
-envTuttle **should be imported before using the binding**.
-
-loadTuttleLibraries.py
+demo_progress_handle.py
 ----------------------
+Sample code that demonstrate progress handle.
 
-Imported in *envTuttle.py* to load shared libraries.  
-This script **should be edited to match your own installation**.
+demo_seq_to_movie.py
+----------------------
+Sample code that create a movie from an input sequence.
 
-listPlugins
+listPlugins.py
 -----------
+List avalaible OpenFX plugins.
+Equivalent of: sam plugins
 
-List avalaible OpenFX plugins
-
-getBestPlugin.py
-----------------
-
-> readIdentifier = getBestReader(ext)  
-> writerIdentifier = getBestWriter(ext)
-
-Functions to choose the best reader or writer according to an extension.
-Required by seq-info.
-
-seq-info
+seq-info.py
 --------
-
 Display properties of a file or sequence.  
 **Requires argparse**.
 
-
-viewer
+viewer.py
 -----
-
-Compute the equivalent of : sam do r input // view
+Compute the equivalent of: sam do r input // view

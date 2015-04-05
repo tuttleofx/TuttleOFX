@@ -167,6 +167,17 @@ OfxhParam& OfxhParamSet::getParam( const std::size_t index )
 	return _paramVector[index];
 }
 
+// get the param
+OfxhParam& OfxhParamSet::getChildParam( const std::size_t index )
+{
+	if( index > _childParamVector.size() )
+		BOOST_THROW_EXCEPTION( exception::BadIndex()
+				<< exception::user() + "Param not found, index out of range. (index=" + index + ", nb params=" + _paramVector.size() + ")"
+			);
+
+	return *_childParamVector[index];
+}
+
 
 void OfxhParamSet::addParam( OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {
@@ -178,6 +189,13 @@ void OfxhParamSet::addParam( OfxhParam* instance ) OFX_EXCEPTION_SPEC
 	_params[instance->getName()] = instance;
 	_paramsByScriptName[instance->getScriptName()] = instance;
 	//	referenceParam( name, instance );
+}
+
+void OfxhParamSet::declareChildParam( OfxhParam& childParam )
+{
+	childParam.setParamSetInstance( this );
+	_childParamVector.push_back( &childParam );
+	_childParams[childParam.getName()] = &childParam;
 }
 
 }

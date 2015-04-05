@@ -80,6 +80,8 @@ public:
 	OFX::StringParam* _paramMetaDataSubtitle;
 	OFX::StringParam* _paramMetaDataAttachement;
 	OFX::StringParam* _paramMetaDataUnknown;
+
+	OFX::BooleanParam* _paramVerbose;
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
 	boost::scoped_ptr<avtranscoder::VideoDecoder> _inputStreamVideo;

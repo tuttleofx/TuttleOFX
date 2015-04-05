@@ -10,12 +10,14 @@ if(TUTTLE_PRODUCTION)
   add_definitions(-DTUTTLE_PRODUCTION)
 endif()
 
+# The install rule does not depend on all, i.e. everything will not be built before installing
+set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
+
 # Create an alias for all OFX plugins.
 add_custom_target(ofxplugins)
 
 # Include subdirs
 add_subdirectory(libraries/tuttle)
-add_subdirectory(libraries/avTranscoder)
 add_subdirectory(plugins)
 
 # Add a target to generate API documentation with Doxygen

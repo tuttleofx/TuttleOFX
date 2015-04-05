@@ -29,8 +29,10 @@ public:
 protected:
 	boost::ptr_array<T, DIM> _controls; // owns the sub-parameters
 
+#ifndef SWIG
 	BOOST_STATIC_ASSERT( DIM != 0 );
-	
+#endif
+
 public:
 	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
 	: OfxhParam( descriptor, name, setInstance )
@@ -97,6 +99,7 @@ protected:
 	}
 
 public:
+#ifndef SWIG
 	void copy( const OfxhMultiDimParam& p ) OFX_EXCEPTION_SPEC
 	{
 		for( std::size_t index = 0; index < DIM; ++index )
@@ -111,7 +114,8 @@ public:
 
 		copy( param );
 	}
-	
+#endif
+
 	inline void setValue( const BaseType& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 	{
 		for( std::size_t i = 0; i < getSize(); ++i )
@@ -207,6 +211,7 @@ public:
 		_controls[index].integrate( time1, time2, outDst );
 	}
 
+#ifndef SWIG
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC
 	{
@@ -270,7 +275,8 @@ public:
 			_controls[index].integrate( time1, time2, *v );
 		}
 	}
-	
+#endif
+
 	bool paramTypeHasData() const { return true; }
 	
 	std::size_t getHashAtTime( const OfxTime time ) const

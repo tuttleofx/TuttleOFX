@@ -28,8 +28,10 @@ public:
 
 	void setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 
+#ifndef SWIG
 	void copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
+#endif
 };
 
 }

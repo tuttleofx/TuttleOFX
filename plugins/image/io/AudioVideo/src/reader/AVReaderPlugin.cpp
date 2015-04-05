@@ -9,7 +9,6 @@
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/math/special_functions/trunc.hpp>
 
 #include <stdexcept>
 
@@ -81,6 +80,8 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramMetaDataAttachement->setIsSecret( true );
 	_paramMetaDataUnknown = fetchStringParam( kParamMetaDataUnknown );
 	_paramMetaDataUnknown->setIsSecret( true );
+
+	_paramVerbose = fetchBooleanParam( kParamVerbose );
 
 	updateVisibleTools();
 }
@@ -334,6 +335,13 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 		}
 	}
+	else if( paramName == kParamVerbose )
+	{
+		if( ! _paramVerbose->getValue() )
+		{
+			_paramVerbose->setValue(true);
+		}
+	}
 }
 
 double AVReaderPlugin::retrievePAR()
@@ -434,9 +442,10 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	ensureVideoIsOpen();
 
-	double duration = _inputFile->getProperties().getDuration();
-	double fps = _inputFile->getProperties().getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getFps();
-	double nbFrames = boost::math::trunc( fps * duration );
+	size_t nbFrames = _inputFile->getProperties().getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getNbFrames();
+	// if nbFrames is unknown
+	if( nbFrames == 0 )
+		nbFrames = 1;
 
 	range.min = 0.0;
 	range.max = nbFrames - 1.0;
@@ -465,6 +474,8 @@ bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgumen
 
 void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	ReaderPlugin::beginSequenceRender( args );
+
 	ensureVideoIsOpen();
 
 	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile() );
@@ -477,6 +488,12 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	// get image to decode
 	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc.getWidth(), sourceImageDesc.getHeight(), "rgb24" );
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
+
+	// manage verbose level
+	if( _paramVerbose->getValue() )
+		avtranscoder::Logger::setLogLevel( AV_LOG_DEBUG );
+	else
+		avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 }
 
 void AVReaderPlugin::render( const OFX::RenderArguments& args )

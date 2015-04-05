@@ -5,8 +5,8 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
-#include <AvTranscoder/ProfileLoader.hpp>
 #include <AvTranscoder/transcoder/Transcoder.hpp>
+#include <AvTranscoder/profile/ProfileLoader.hpp>
 #include <AvTranscoder/file/OutputFile.hpp>
 #include <AvTranscoder/frame/Frame.hpp>
 
@@ -70,7 +70,7 @@ public:
 	void updateAudioParams();
 	void updateAudioSilent( size_t indexAudioOutput );
 	void updateAudioSelectStream( size_t indexAudioOutput );
-	void updateAudioRewrap( size_t indexAudioOutput );
+	void updateAudioOffset( size_t indexAudioOutput );
 	void updateAudioFileInfo( size_t indexAudioOutput );
 	//@}
 
@@ -87,7 +87,7 @@ public:
 	/** Update OFX parameters from an existing profile (format, video, or audio). */
 	void updateFormatFromExistingProfile();
 	void updateVideoFromExistingProfile();
-	void updateAudiotFromExistingProfile();
+	void updateAudioFromExistingProfile();
 	//@}
 
 	void cleanVideoAndAudio();  ///< Called before each new render.
@@ -126,7 +126,7 @@ public:
 	std::vector<OFX::BooleanParam*> _paramAudioSelectStream;
 	std::vector<OFX::IntParam*> _paramAudioStreamIndex;
 	std::vector<OFX::ChoiceParam*> _paramAudioPreset;
-	std::vector<OFX::IntParam*> _paramAudioOffset;
+	std::vector<OFX::DoubleParam*> _paramAudioOffset;
 	
 	// custom params
 	OFX::BooleanParam* _paramUseCustomFps;
@@ -145,7 +145,9 @@ public:
 	common::LibAVParams _paramFormatDetailCustom;
 	common::LibAVParams _paramVideoDetailCustom;
 	common::LibAVParams _paramAudioDetailCustom;
-	
+
+	OFX::BooleanParam* _paramVerbose;
+
 	// presets
 	OFX::ChoiceParam* _paramMainPreset;
 	OFX::ChoiceParam* _paramFormatPreset;

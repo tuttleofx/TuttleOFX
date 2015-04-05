@@ -44,6 +44,7 @@ public:
 		setValueAtTime( time, getIndexFor( key ), change );
 	}
 
+#ifndef SWIG
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
 
@@ -55,7 +56,8 @@ public:
 
 	/// implementation of var args function
 	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
-	
+#endif
+
 	bool paramTypeHasData() const { return true; }
 
 	std::size_t getHashAtTime( const OfxTime time ) const;

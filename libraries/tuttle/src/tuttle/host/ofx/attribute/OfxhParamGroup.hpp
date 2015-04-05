@@ -15,27 +15,14 @@ class OfxhParamGroup
 	, public OfxhParamSet
 {
 public:
-	OfxhParamGroup( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
+	OfxhParamGroup( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
+	: OfxhParam( descriptor, name, setInstance )
+	{}
 	virtual ~OfxhParamGroup() {}
-
-	void deleteChildrens()
-	{
-		_paramVector.clear();
-	}
-
-	void          setChildrens( const OfxhParamSet* childrens );
-	OfxhParamSet* getChildrens() const;
-	void          addChildren( OfxhParam* children );
 
 	property::OfxhSet& getParamSetProps()
 	{
 		return _paramSetInstance->getParamSetProps();
-	}
-
-	virtual OfxhParam* newParam( const OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
-	{
-		BOOST_THROW_EXCEPTION( exception::Bug() );
-//		return _paramSetInstance->newParam( descriptor );
 	}
 
 	/// The inheriting plugin instance needs to set this up to deal with

@@ -15,6 +15,8 @@
 //%include <tuttle/host/ofx/OfxhImageEffectPluginCache.i>
 %include <tuttle/host/ofx/OfxhImageEffectNode.i>
 
+%include <factory.i>
+
 #include <std_vector.i>
 #include <std_string.i>
 
@@ -25,6 +27,43 @@
 namespace std {
 %template(IntVector) vector<int>;
 }
+
+%factory(tuttle::host::Graph::Node& tuttle::host::createNode, tuttle::host::ImageEffectNode);
+
+%factory(tuttle::host::ofx::attribute::OfxhParam& getParam,
+        tuttle::host::attribute::ParamBoolean,
+        tuttle::host::attribute::ParamChoice,
+        tuttle::host::attribute::ParamDouble,
+        tuttle::host::attribute::ParamDouble2D,
+        tuttle::host::attribute::ParamDouble3D,
+        tuttle::host::attribute::ParamGroup,
+        tuttle::host::attribute::ParamInteger,
+        tuttle::host::attribute::ParamInteger2D,
+        tuttle::host::attribute::ParamInteger3D,
+        tuttle::host::attribute::ParamPage,
+        tuttle::host::attribute::ParamPushButton,
+        tuttle::host::attribute::ParamRGB,
+        tuttle::host::attribute::ParamRGBA,
+        tuttle::host::attribute::ParamString,
+        tuttle::host::attribute::ParamCustom)
+
+%factory(tuttle::host::ofx::attribute::OfxhParam& getParamByScriptName,
+        tuttle::host::attribute::ParamBoolean,
+        tuttle::host::attribute::ParamChoice,
+        tuttle::host::attribute::ParamDouble,
+        tuttle::host::attribute::ParamDouble2D,
+        tuttle::host::attribute::ParamDouble3D,
+        tuttle::host::attribute::ParamGroup,
+        tuttle::host::attribute::ParamInteger,
+        tuttle::host::attribute::ParamInteger2D,
+        tuttle::host::attribute::ParamInteger3D,
+        tuttle::host::attribute::ParamPage,
+        tuttle::host::attribute::ParamPushButton,
+        tuttle::host::attribute::ParamRGB,
+        tuttle::host::attribute::ParamRGBA,
+        tuttle::host::attribute::ParamString,
+        tuttle::host::attribute::ParamCustom)
+
 
 %include <tuttle/host/ImageEffectNode.hpp>
 

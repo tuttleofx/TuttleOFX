@@ -5,12 +5,7 @@
 
 #include <tuttle/plugin/ImageFilterProcessor.hpp>
 
-extern "C" {
-#ifndef __STDC_CONSTANT_MACROS
-	#define __STDC_CONSTANT_MACROS
-#endif
-	#include <libswscale/swscale.h>
-}
+#include <AvTranscoder/transform/VideoTransform.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -25,7 +20,7 @@ class SwscaleProcess : public ImageFilterProcessor
 protected:
 	SwscalePlugin&       _plugin; ///< Rendering plugin
 	SwscaleProcessParams _params; ///< parameters
-	struct SwsContext*   _context;
+	avtranscoder::VideoTransform _transform;
 
 public:
 	SwscaleProcess( SwscalePlugin& effect );
@@ -33,8 +28,6 @@ public:
 	void setup( const OFX::RenderArguments& args );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
-	
-	void postProcess();
 };
 
 }

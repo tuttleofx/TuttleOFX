@@ -18,6 +18,9 @@
 		def getParams(self):
 			nb = self.getNbParams()
 			return [self.getParam(i) for i in range(nb)]
+		def getChildParams(self):
+			nb = self.getNbChildParams()
+			return [self.getChildParam(i) for i in range(nb)]
 	}
 }
 
