@@ -25,9 +25,6 @@ static const std::string kPrefixAudio     = "a_";
 static const std::string kPrefixMetaData  = "m_";
 static const std::string kPrefixAbout     = "l_";
 
-static const std::string kPrefixEncoding  = "e_";
-static const std::string kPrefixDecoding  = "d_";
-
 static const std::string kPrefixGroup     = "g_";
 static const std::string kPrefixFlag      = "_flag_";
 
@@ -44,35 +41,42 @@ public:
 public:
 	/** 
 	 * @param prefixScope: format, video, audio, metadata
-	 * @param prefixOperation: encoding, decoding
+	 * @param flags: encoding, decoding...
 	 */
-	LibAVParams( const std::string& prefixScope, const std::string& prefixOperation );
+	LibAVParams( const std::string& prefixScope, const int flags, const bool isDetailled );
 
 	~LibAVParams();
 
-	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
-	void fetchLibAVParams( OFX::ImageEffect& plugin, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
+	void fetchLibAVParams( OFX::ImageEffect& plugin, const std::string& prefix="" );
 
 	/**
-	 * @brief Get value of OFX parameters contained in the object, and return the corresponding profileDesc.
-	 * @param returnFullProfile: the result contains options which have a current value equals to the default value
+	 * @brief Get value of OFX parameters contained in the object, and return the corresponding profile.
 	 */
-	avtranscoder::ProfileLoader::Profile getCorrespondingProfile( const bool returnFullProfile=true , const std::string& subGroupName="" ) const;
+	avtranscoder::ProfileLoader::Profile getCorrespondingProfile( const std::string& detailledName="" );
 	
 	/**
 	 * @brief Set the libav option and use its value to set the corresponding OFX parameter
 	 * @param libAVOptionName: the option whithout all prefixes.
 	 * @param value: the value will be cast to the corresponding type (int, double...).
-	 * @param subGroupName
+	 * @param detailledName
 	 * @param prefix
 	 */
-	void setOption( const std::string& libAVOptionName, const std::string& value, const std::string& prefix, const std::string& subGroupName="" );
+	void setOption( const std::string& libAVOptionName, const std::string& value, const std::string& prefix, const std::string& detailledName="" );
+
+	/**
+	 * @brief Get the libav option
+	 * @exception boost exception if option is not found
+	 */
+	avtranscoder::Option& getOption( const std::string& libAVOptionName, const std::string& detailledName="" );
 
 	/**
 	 * @brief Get the OFX parameter which corresponds to the libav option name (whithout any prefixes).
 	 * @note return NULL if not found.
 	 */
-	OFX::ValueParam* getOFXParameter( const std::string& libAVOptionName, const std::string& subGroupName="" ) ;
+	OFX::ValueParam* getOFXParameter( const std::string& libAVOptionName, const std::string& detailledName="" ) ;
+
+private:
+	typedef std::map< std::string, std::vector<OFX::BooleanParam*> > FlagOFXPerOption;
 
 private:
 	/**
@@ -87,10 +91,17 @@ private:
 	 */
 	std::vector<OFX::ValueParam*> _paramOFX;
 
+	FlagOFXPerOption _paramFlagOFXPerOption;  ///< List of OFX Boolean per libav flag option name
+
 	std::map< OFX::ChoiceParam*, std::vector<std::string> > _childsPerChoice;  ///< List of values per OFX Choice
 
-	avtranscoder::OptionMap _avOptions;  /// LibAV options to compute option value in libav and use the result for the corresponding OFX parameter
-	void* _avContext;  ///< LibAV context which is used to get and set options value
+	// LibAV options to compute option value in libav and use the result for the corresponding OFX parameter
+	// key: format or codec name (or empty string if common options)
+	// value: array of options
+	avtranscoder::OptionArrayMap _avOptions;
+
+	// LibAV context which is used to get and set options value
+	void* _avContext;
 };
 
 /**
@@ -99,9 +110,9 @@ private:
  * @param group: the group to add OFX params
  * @param optionsArray: options to add to the group
  * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
- * @param subGroupName: informed this to add an other prefix (the codec name) to the name of each OFX params created by the function
+ * @param detailledName: informed this to add an other prefix (the codec name) to the name of each OFX params created by the function
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& subGroupName="" );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& detailledName="" );
 
 /**
  * @brief: Create OFX parameters depending on the list of Options.
@@ -115,18 +126,18 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 /**
  * @brief Get the real name of the AVOption, without our prefix.
  * @param optionName with various prefixes (flags_, sub group name...)
- * @param subGroupName a specific prefix (the codec name...)
+ * @param detailledName a specific prefix (the codec name...)
  * @return the AVOption name
  */
-std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& subGroupName="" );
+std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& detailledName="" );
 
 /**
  * @brief Get the real flag name of the AVOption (unit).
  * @param optionName with prefix (flags_, sub group name...)
- * @param subGroupName a specific prefix (the codec name...)
+ * @param detailledName a specific prefix (the codec name...)
  * @return the flag name
  */
-std::string getOptionFlagName( const std::string& optionName, const std::string& subGroupName );
+std::string getOptionFlagName( const std::string& optionName, const std::string& detailledName );
 
 /**
  * @brief Disable the OFX parameters named in the optionMap.

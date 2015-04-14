@@ -22,11 +22,11 @@ namespace fs = boost::filesystem;
 
 AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	: ReaderPlugin( handle )
-	, _paramFormatCustom( common::kPrefixFormat, common::kPrefixDecoding )
-	, _paramVideoCustom( common::kPrefixVideo, common::kPrefixDecoding )
-	, _paramMetaDataCustom( common::kPrefixMetaData, common::kPrefixDecoding )
-	, _paramFormatDetailCustom( common::kPrefixFormat, common::kPrefixDecoding )
-	, _paramVideoDetailCustom( common::kPrefixVideo, common::kPrefixDecoding )
+	, _paramFormatCustom( common::kPrefixFormat, AV_OPT_FLAG_DECODING_PARAM, false )
+	, _paramVideoCustom( common::kPrefixVideo, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, false )
+	, _paramMetaDataCustom( common::kPrefixMetaData, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA, false )
+	, _paramFormatDetailCustom( common::kPrefixFormat, AV_OPT_FLAG_DECODING_PARAM, true )
+	, _paramVideoDetailCustom( common::kPrefixVideo, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, true )
 	, _inputFile( NULL )
 	, _inputStreamVideo( NULL )
 	, _sourceImage( NULL )
@@ -42,29 +42,12 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramUseCustomSAR = fetchBooleanParam( kParamUseCustomSAR );
 	_paramCustomSAR = fetchDoubleParam( kParamCustomSAR );
 
-	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_DECODING_PARAM );
-	avtranscoder::OptionArray formatOptions( formatContext.getOptions() );
-	_paramFormatCustom.fetchLibAVParams( *this, formatOptions, common::kPrefixFormat );
-
-	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
-	avtranscoder::OptionArray videoOptions;
-	avtranscoder::loadOptions( videoOptions, videoContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	_paramVideoCustom.fetchLibAVParams( *this, videoOptions, common::kPrefixVideo );
-	av_free( videoContext );
-
-	AVCodecContext* metaDataContext = avcodec_alloc_context3( NULL );
-	avtranscoder::OptionArray metaDataOptions;
-	avtranscoder::loadOptions( metaDataOptions, metaDataContext, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_METADATA );
-	_paramVideoCustom.fetchLibAVParams( *this, metaDataOptions, common::kPrefixMetaData );
-	av_free( metaDataContext );
+	_paramFormatCustom.fetchLibAVParams( *this, common::kPrefixFormat );
+	_paramVideoCustom.fetchLibAVParams( *this, common::kPrefixVideo );
+	_paramMetaDataCustom.fetchLibAVParams( *this, common::kPrefixMetaData );
 	
-	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
-	_paramFormatDetailCustom.fetchLibAVParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
-	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, "", common::kPrefixFormat );
-	
-	avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-	_paramVideoDetailCustom.fetchLibAVParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
-	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
+	_paramFormatDetailCustom.fetchLibAVParams( *this, common::kPrefixFormat );
+	_paramVideoDetailCustom.fetchLibAVParams( *this, common::kPrefixVideo );
 	
 	_paramMetaDataWrapper = fetchStringParam( kParamMetaDataWrapper );
 	_paramMetaDataWrapper->setIsSecret( true );
@@ -82,6 +65,12 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	_paramMetaDataUnknown->setIsSecret( true );
 
 	_paramVerbose = fetchBooleanParam( kParamVerbose );
+
+	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
+	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, "", common::kPrefixFormat );
+
+	avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
+	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
 
 	updateVisibleTools();
 }

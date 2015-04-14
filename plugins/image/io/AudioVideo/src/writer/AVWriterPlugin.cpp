@@ -26,12 +26,12 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramAudioFileInfo()
 	, _paramAudioStreamIndex()
 	, _paramAudioPreset()
-	, _paramFormatCustom( common::kPrefixFormat, common::kPrefixEncoding )
-	, _paramVideoCustom( common::kPrefixVideo, common::kPrefixEncoding )
-	, _paramAudioCustom( common::kPrefixAudio, common::kPrefixEncoding )
-	, _paramFormatDetailCustom( common::kPrefixFormat, common::kPrefixEncoding )
-	, _paramVideoDetailCustom( common::kPrefixVideo, common::kPrefixEncoding )
-	, _paramAudioDetailCustom( common::kPrefixAudio, common::kPrefixEncoding )
+	, _paramFormatCustom( common::kPrefixFormat, AV_OPT_FLAG_ENCODING_PARAM, false )
+	, _paramVideoCustom( common::kPrefixVideo, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, false )
+	, _paramAudioCustom( common::kPrefixAudio, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, false )
+	, _paramFormatDetailCustom( common::kPrefixFormat, AV_OPT_FLAG_ENCODING_PARAM, true )
+	, _paramVideoDetailCustom( common::kPrefixVideo, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, true )
+	, _paramAudioDetailCustom( common::kPrefixAudio, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM, true )
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
@@ -108,36 +108,25 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 
 	_paramVideoPixelFormat = fetchChoiceParam( kParamVideoCodecPixelFmt );
 	_paramAudioSampleFormat = fetchChoiceParam( kParamAudioCodecSampleFmt );
-	
+
 	// all custom params
-	avtranscoder::FormatContext formatContext( AV_OPT_FLAG_ENCODING_PARAM );
-	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
-	_paramFormatCustom.fetchLibAVParams( *this, formatOptions, common::kPrefixFormat );
-
-	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
-	avtranscoder::OptionArray videoOptions;
-	avtranscoder::loadOptions( videoOptions, videoContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM );
-	_paramVideoCustom.fetchLibAVParams( *this, videoOptions, common::kPrefixVideo );
-	av_free( videoContext );
-
-	AVCodecContext* audioContext = avcodec_alloc_context3( NULL );
-	avtranscoder::OptionArray audioOptions;
-	avtranscoder::loadOptions( audioOptions, audioContext, AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM );
-	_paramAudioCustom.fetchLibAVParams( *this, audioOptions, common::kPrefixAudio );
-	av_free( audioContext );
+	_paramFormatCustom.fetchLibAVParams( *this, common::kPrefixFormat );
+	_paramVideoCustom.fetchLibAVParams( *this, common::kPrefixVideo );
+	_paramAudioCustom.fetchLibAVParams( *this, common::kPrefixAudio );
 	
+	_paramFormatDetailCustom.fetchLibAVParams( *this, common::kPrefixFormat );
+	_paramVideoDetailCustom.fetchLibAVParams( *this, common::kPrefixVideo );
+	_paramAudioDetailCustom.fetchLibAVParams( *this, common::kPrefixAudio );
+
 	avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
-	_paramFormatDetailCustom.fetchLibAVParams( *this, optionsFormatDetailMap, common::kPrefixFormat );
 	const std::string formatName = avtranscoder::getFormatsNames().at( _paramFormat->getValue() ).first;
 	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, formatName, common::kPrefixFormat );
-	
+
 	avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-	_paramVideoDetailCustom.fetchLibAVParams( *this, optionsVideoCodecMap, common::kPrefixVideo );
 	const std::string videoCodecName = avtranscoder::getVideoCodecsNames().at( _paramVideoCodec->getValue() ).first;
 	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
-	
+
 	avtranscoder::OptionArrayMap optionsAudioCodecMap = avtranscoder::getAudioCodecOptions();
-	_paramAudioDetailCustom.fetchLibAVParams( *this, optionsAudioCodecMap, common::kPrefixAudio );
 	const std::string audioCodecName = avtranscoder::getAudioCodecsNames().at( _paramAudioCodec->getValue() ).first;
 	common::disableOFXParamsForFormatOrCodec( *this, optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
 	
@@ -557,9 +546,9 @@ void AVWriterPlugin::initOutput()
 {
 	AVProcessParams params = getProcessParams();
 	
-	// create output file
 	try
 	{
+		// create output file
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
 
 		// update format depending on the output file extension
@@ -580,22 +569,24 @@ void AVWriterPlugin::initOutput()
 		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
 		profile[ avtranscoder::constants::avProfileFormat ] = params._formatName;
 
-		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile( false );
+		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile();
 		profile.insert( formatProfile.begin(), formatProfile.end() );
 
-		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( false, params._formatName );
+		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._formatName );
 		profile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
 
+		// set format profile
 		_outputFile->setProfile( profile );
 
+		// add metadatas
 		_outputFile->addMetadata( params._metadatas );
 
+		// create transcoder
 		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
 		_transcoder->setProcessMethod( avtranscoder::eProcessMethodBasedOnStream, 0 );
 	}
 	catch( std::exception& e )
 	{
-		_initVideo = false;
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "unable to open output file: " + e.what() );
 	}
@@ -620,7 +611,6 @@ void AVWriterPlugin::initVideo( const OFX::RenderArguments& args )
 		    << exception::user() + "the output is not init. Can't process." );
 	}
 	
-	// create video stream
 	try
 	{
 		// Get custom video profile
@@ -648,11 +638,11 @@ void AVWriterPlugin::initVideo( const OFX::RenderArguments& args )
 		}
 
 		// video options
-		avtranscoder::ProfileLoader::Profile videoProfile = _paramVideoCustom.getCorrespondingProfile( false );
+		avtranscoder::ProfileLoader::Profile videoProfile = _paramVideoCustom.getCorrespondingProfile();
 		profile.insert( videoProfile.begin(), videoProfile.end() );
 
 		// video detail options
-		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( false, params._videoCodecName );
+		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( params._videoCodecName );
 		profile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
 
 		// Warning: Fix libav options which can make the encoder failed if bad value
@@ -700,8 +690,7 @@ void AVWriterPlugin::initAudio()
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "the output is not init. Can't process." );
 	}
-	
-	// create audio streams
+
 	try
 	{
 		size_t mainPresetIndex = _paramAudioMainPreset->getValue();
@@ -733,11 +722,11 @@ void AVWriterPlugin::initAudio()
 					profile[ avtranscoder::constants::avProfileSampleFormat ] = params._audioSampleFormatName;
 
 				// audio options
-				avtranscoder::ProfileLoader::Profile audioProfile = _paramAudioCustom.getCorrespondingProfile( false );
+				avtranscoder::ProfileLoader::Profile audioProfile = _paramAudioCustom.getCorrespondingProfile();
 				profile.insert( audioProfile.begin(), audioProfile.end() );
 
 				// audio detail options
-				avtranscoder::ProfileLoader::Profile audioDetailProfile = _paramAudioDetailCustom.getCorrespondingProfile( false, params._audioCodecName );
+				avtranscoder::ProfileLoader::Profile audioDetailProfile = _paramAudioDetailCustom.getCorrespondingProfile( params._audioCodecName );
 				profile.insert( audioDetailProfile.begin(), audioDetailProfile.end() );
 			}
 			// Rewrap
@@ -775,6 +764,7 @@ void AVWriterPlugin::initAudio()
 					avtranscoder::AudioFrameDesc audioDesc( sampleRate, channels, profile.at( avtranscoder::constants::avProfileSampleFormat ) );
 					audioCodec.setAudioParameters( audioDesc );
 
+					// add silent stream
 					_transcoder->add( "", 1, profile, audioCodec );
 				}
 				catch( std::out_of_range& e )
