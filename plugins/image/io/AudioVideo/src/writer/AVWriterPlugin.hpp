@@ -76,7 +76,7 @@ public:
 
 	void initOutput();  ///< Initialize output file and transcoder
 	void initAudio();  ///< Initialize output audio streams
-	void ensureVideoIsInit( const OFX::RenderArguments& args );  ///< Initialize output video stream
+	void initVideo( const OFX::RenderArguments& args );  ///< Initialize output video stream
 
 	bool isOutputInit();  ///< Check if output file and transcoder are initialized before render
 
@@ -170,8 +170,6 @@ public:
 	// to process video
 	avtranscoder::Frame _videoFrame;
 	avtranscoder::ProfileLoader _presetLoader;
-
-	std::string _lastOutputFilePath;  ///< To check if output file path has changed.
 
 	double _outputFps;
 

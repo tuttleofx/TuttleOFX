@@ -36,7 +36,6 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _outputFile( NULL )
 	, _transcoder( NULL )
 	, _presetLoader( true ) 
-	, _lastOutputFilePath()
 	, _outputFps( 0 )
 	, _initVideo( false )
 	, _initWrap( false )
@@ -602,30 +601,24 @@ void AVWriterPlugin::initOutput()
 	}
 }
 
-void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
+void AVWriterPlugin::initVideo( const OFX::RenderArguments& args )
 {
 	AVProcessParams params = getProcessParams();
-	
-	// ouput file path already set
-	if( _lastOutputFilePath != "" && _lastOutputFilePath == params._outputFilePath )
-		return;
-	
-	if( params._outputFilePath == "" ) // no output file indicated
+
+	// no output file indicated
+	if( params._outputFilePath == "" )
 	{
-		_initVideo = false;
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "no output file indicated"
 		    << exception::filename( params._outputFilePath ) );
 	}
-	
+
+	// output is not init
 	if( ! isOutputInit() )
 	{
-		_initVideo = false;
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "the output is not init. Can't process." );
 	}
-	
-	_lastOutputFilePath = params._outputFilePath;
 	
 	// create video stream
 	try
@@ -673,8 +666,8 @@ void AVWriterPlugin::ensureVideoIsInit( const OFX::RenderArguments& args )
 		}
 
 		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
-		int width = bounds.x2 - bounds.x1;
-		int height = bounds.y2 - bounds.y1;
+		const int width = bounds.x2 - bounds.x1;
+		const int height = bounds.y2 - bounds.y1;
 
 		// describe input frame and codec of transcode
 		avtranscoder::VideoCodec videoCodec( avtranscoder::eCodecTypeEncoder, profile[ avtranscoder::constants::avProfileCodec ] );
@@ -1004,14 +997,8 @@ void AVWriterPlugin::cleanVideoAndAudio()
 	
 	_initVideo = false;
 	_initWrap = false;
-	
-	_lastOutputFilePath = "";
 }
 
-/**
- * @brief The overridden begin render function
- * @param[in]   args     Begin Rendering parameters
- */
 void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	WriterPlugin::beginSequenceRender( args );
@@ -1027,17 +1014,17 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 		avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 }
 
-/**
- * @brief The overridden render function
- * @param[in]   args     Rendering parameters
- */
 void AVWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	if( _clipSrc->fetchImage( args.time ) && _clipDst->fetchImage( args.time ) )
 		WriterPlugin::render( args );
 
-	ensureVideoIsInit( args );
+	// @note: initVideo is called here because we need rendering parameters (ROD...)
+	// of input in order to create our output video stream
+	if( ! _initVideo )
+		initVideo( args );
 
+	// @note: beginWrap needs to be called once, and after have added all the streams (video/audio)
 	if( ! _initWrap )
 	{
 		initAudio();
