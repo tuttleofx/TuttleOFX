@@ -621,8 +621,7 @@ void AVWriterPlugin::initVideo( const OFX::RenderArguments& args )
 		profile[ avtranscoder::constants::avProfileCodec ] = params._videoCodecName;
 
 		// pixel format
-		if( ! params._videoPixelFormatName.empty() )
-			profile[ avtranscoder::constants::avProfilePixelFormat ] = params._videoPixelFormatName;
+		profile[ avtranscoder::constants::avProfilePixelFormat ] = params._videoPixelFormatName;
 
 		// fps
 		if( _paramUseCustomFps->getValue() )
@@ -905,12 +904,14 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		{
 			std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] ) );
 			std::vector<std::string>::iterator iterPixelFormat = std::find( pixelFormats.begin(), pixelFormats.end(), existingProfile[ avtranscoder::constants::avProfilePixelFormat ] );
-			size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
+			const size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
 			if( pixelFomatIndex < pixelFormats.size() )
-			{
 				_paramVideoPixelFormat->setValue( pixelFomatIndex );
-			}
+			else
+				updatePixelFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] );
 		}
+		else
+			updatePixelFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] );
 
 		// frame rate
 		if( existingProfile.find( avtranscoder::constants::avProfileFrameRate ) != existingProfile.end() )
@@ -962,12 +963,16 @@ void AVWriterPlugin::updateAudioFromExistingProfile()
 		{
 			std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] ) );
 			std::vector<std::string>::iterator iterSampleFormat = std::find( sampleFormats.begin(), sampleFormats.end(), existingProfile[ avtranscoder::constants::avProfileSampleFormat ] );
-			size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
+			const size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
 			if( sampleFomatIndex < sampleFormats.size() )
 			{
 				_paramAudioSampleFormat->setValue( sampleFomatIndex );
 			}
+			else
+				updateSampleFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] );
 		}
+		else
+			updateSampleFormats( existingProfile[ avtranscoder::constants::avProfileCodec ] );
 
 		// other options
 		BOOST_FOREACH( avtranscoder::ProfileLoader::Profile::value_type& option, existingProfile )
@@ -1075,12 +1080,15 @@ std::string AVWriterPlugin::getPixelFormatName( const std::string& videoCodecNam
 {
 	std::vector<std::string> supportedPixelFormats( avtranscoder::getPixelFormats( videoCodecName ) );
 
-	// no pixel format
-	if( supportedPixelFormats.empty() )
-		return "";
-
 	try
 	{
+		// no pixel format declared by the codec: return pixel format selected by the user
+		if( supportedPixelFormats.empty() )
+		{
+			supportedPixelFormats = avtranscoder::getPixelFormats();
+			return supportedPixelFormats.at( _paramVideoPixelFormat->getValue() );
+		}
+
 		// Works if Host can updatePixelFormats()
 		return supportedPixelFormats.at( _paramVideoPixelFormat->getValue() );
 	}
@@ -1101,12 +1109,15 @@ std::string AVWriterPlugin::getSampleFormatName( const std::string& audioCodecNa
 {
 	std::vector<std::string> supportedSampleFormats( avtranscoder::getSampleFormats( audioCodecName ) );
 
-	// no sample format
-	if( supportedSampleFormats.empty() )
-		return "";
-
 	try
 	{
+		// no sample format declared by the codec: return sample format selected by the user
+		if( supportedSampleFormats.empty() )
+		{
+			supportedSampleFormats = avtranscoder::getSampleFormats();
+			return supportedSampleFormats.at(  _paramAudioSampleFormat->getValue() );
+		}
+
 		// Works if Host can updateSampleFormats()
 		return supportedSampleFormats.at( _paramAudioSampleFormat->getValue() );
 	}
