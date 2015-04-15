@@ -915,6 +915,8 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		// frame rate
 		if( existingProfile.find( avtranscoder::constants::avProfileFrameRate ) != existingProfile.end() )
 			_paramCustomFps->setValue( boost::lexical_cast<double>( existingProfile[ avtranscoder::constants::avProfileFrameRate ] ) );
+		else
+			_paramUseCustomFps->setValue( false );
 
 		// size
 		if( existingProfile.find( avtranscoder::constants::avProfileWidth ) != existingProfile.end() &&
@@ -923,6 +925,8 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 				boost::lexical_cast<int>( existingProfile[ avtranscoder::constants::avProfileWidth ] ), 
 				boost::lexical_cast<int>( existingProfile[ avtranscoder::constants::avProfileHeight ] )
 			);
+		else
+			_paramUseCustomSize->setValue( false );
 
 		// other options
 		BOOST_FOREACH( avtranscoder::ProfileLoader::Profile::value_type& option, existingProfile )
