@@ -1023,6 +1023,7 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 		initAudio();
 		_outputFile->beginWrap();
 		_initWrap = true;
+		_transcoder->preProcessCodecLatency();
 	}
 	
 	doGilRender<AVWriterProcess>( *this, args );
