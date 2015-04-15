@@ -529,10 +529,10 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	// verbose
 	else if( paramName == kParamVerbose )
 	{
-		if( ! _paramVerbose->getValue() )
-		{
-			_paramVerbose->setValue(true);
-		}
+		if( _paramVerbose->getValue() )
+			avtranscoder::Logger::setLogLevel( AV_LOG_DEBUG );
+		else
+			avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 	}
 }
 
@@ -996,12 +996,6 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	// Before new render
 	cleanVideoAndAudio();
 	initOutput();
-
-	// manage verbose level
-	if( _paramVerbose->getValue() )
-		avtranscoder::Logger::setLogLevel( AV_LOG_DEBUG );
-	else
-		avtranscoder::Logger::setLogLevel( AV_LOG_QUIET );
 }
 
 void AVWriterPlugin::render( const OFX::RenderArguments& args )
