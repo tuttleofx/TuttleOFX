@@ -112,8 +112,9 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, const std::string&
 				}
 				case avtranscoder::eOptionBaseTypeChoice:
 				{
-					// manage exception of video threads parameter: we want to manipulate an OFX Int parameter
-					if( name == kVideoOptionThreads )
+					// manage exception of video/audio threads parameter: we want to manipulate an OFX Int parameter
+					if( name == kPrefixVideo + kOptionThreads ||
+						name == kPrefixAudio + kOptionThreads )
 					{
 						_paramOFX.push_back( plugin.fetchIntParam( name ) );
 						break;
@@ -449,8 +450,9 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			}
 			case avtranscoder::eOptionBaseTypeChoice:
 			{
-				// manage exception of video threads parameter: we want to manipulate an OFX Int parameter
-				if( name == kVideoOptionThreads )
+				// manage exception of threads parameters: we want to manipulate an OFX Int parameter
+				if( name == kPrefixVideo + kOptionThreads ||
+					name == kPrefixAudio + kOptionThreads )
 				{
 					OFX::IntParamDescriptor* intParam = desc.defineIntParam( name );
 					intParam->setDefault( 0 ); // 0 = threads auto (optimal)
@@ -512,8 +514,9 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			param->setHint( option.getHelp() );
 			param->setParent( group );
 
-			// add help for our custom video threads parameter
-			if( name == kVideoOptionThreads )
+			// add help for our custom threads parameters
+			if( name == kPrefixVideo + kOptionThreads ||
+				name == kPrefixAudio + kOptionThreads )
 			{
 				param->setHint( "set a number of threads for encoding (0 autodetect a suitable number of threads to use)" );
 			}
