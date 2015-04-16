@@ -112,6 +112,7 @@ private:
 	//@}
 
 	// remove some bad values for wrapper/encoder
+	// insert value from preset file which had not taken by an OFX parameter
 	void cleanProfile( avtranscoder::ProfileLoader::Profile& profileToClean, const std::string& prefix );
 
 public:

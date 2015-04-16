@@ -1194,6 +1194,32 @@ void AVWriterPlugin::cleanProfile( avtranscoder::ProfileLoader::Profile& profile
 		else
 			++itProfile;
 	}
+
+	// Warning: Fix libav options which can't correspond to an OFX Choice parameter's value
+	// Example: An option can have a value only with a specific codec, but the corresponding 
+	// OFX Choice doesn't know this value when instanciate the option in its factory.
+	size_t presetIndex = 0;
+	avtranscoder::ProfileLoader::Profile originalProfile;
+	if( prefix == common::kPrefixFormat )
+	{
+		presetIndex = _paramFormatPreset->getValue();
+		if( presetIndex != 0 )
+			originalProfile = _presetLoader.getFormatProfiles().at( presetIndex - 1 );
+	}
+	else if( prefix == common::kPrefixVideo )
+	{
+		presetIndex = _paramVideoPreset->getValue();
+		if( presetIndex != 0 )
+			originalProfile = _presetLoader.getVideoProfiles().at( presetIndex - 1 );
+	}
+
+	BOOST_FOREACH( avtranscoder::ProfileLoader::Profile::value_type& option, originalProfile )
+	{
+		if( profileToClean.find( option.first ) == profileToClean.end() )
+		{
+			profileToClean[ option.first ] = option.second;
+		}
+	}
 }
 
 }
