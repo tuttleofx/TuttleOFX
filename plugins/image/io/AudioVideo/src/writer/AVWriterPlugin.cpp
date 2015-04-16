@@ -938,6 +938,7 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 				continue;
 
 			_paramVideoCustom.setOption( option.first, option.second, common::kPrefixVideo );
+			_paramVideoDetailCustom.setOption( option.first, option.second, common::kPrefixVideo, existingProfile[ avtranscoder::constants::avProfileCodec ] );
 		}
 	}
 }
