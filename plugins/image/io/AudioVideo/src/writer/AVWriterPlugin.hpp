@@ -111,6 +111,9 @@ private:
 	void setAudioCodecParam( const std::string& audioCodecShortName );
 	//@}
 
+	// remove some bad values for wrapper/encoder
+	void cleanProfile( avtranscoder::ProfileLoader::Profile& profileToClean, const std::string& prefix );
+
 public:
 	// format
 	OFX::GroupParam* _paramFormatCustomGroup;

@@ -575,6 +575,8 @@ void AVWriterPlugin::initOutput()
 		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._formatName );
 		profile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
 
+		cleanProfile( profile, common::kPrefixFormat );
+
 		// set format profile
 		_outputFile->setProfile( profile );
 
@@ -644,16 +646,9 @@ void AVWriterPlugin::initVideo( const OFX::RenderArguments& args )
 		avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( params._videoCodecName );
 		profile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
 
-		// Warning: Fix libav options which can make the encoder failed if bad value
-		avtranscoder::ProfileLoader::Profile::iterator itProfile = profile.begin();
-		while( itProfile != profile.end() )
-		{
-			if( itProfile->second == "unknown" )
-				profile.erase( itProfile++ );
-			else
-				++itProfile;
-		}
+		cleanProfile( profile, common::kPrefixVideo );
 
+		// get rod
 		const OfxRectI bounds = _clipSrc->getPixelRod( args.time, args.renderScale );
 		const int width = bounds.x2 - bounds.x1;
 		const int height = bounds.y2 - bounds.y1;
@@ -727,6 +722,8 @@ void AVWriterPlugin::initAudio()
 				// audio detail options
 				avtranscoder::ProfileLoader::Profile audioDetailProfile = _paramAudioDetailCustom.getCorrespondingProfile( params._audioCodecName );
 				profile.insert( audioDetailProfile.begin(), audioDetailProfile.end() );
+
+				cleanProfile( profile, common::kPrefixAudio );
 			}
 			// Rewrap
 			else if( presetIndex == 1 || ( presetIndex == 0 && mainPresetIndex == 1 ) )
@@ -1183,6 +1180,19 @@ void AVWriterPlugin::setAudioCodecParam( const std::string& audioCodecShortName 
 				_paramAudioCodec->setValue( indexCodec );
 			break;
 		}
+	}
+}
+
+void AVWriterPlugin::cleanProfile( avtranscoder::ProfileLoader::Profile& profileToClean, const std::string& prefix )
+{
+	// Warning: Fix libav options which can make the wrapper/encoder failed if bad value	
+	avtranscoder::ProfileLoader::Profile::iterator itProfile = profileToClean.begin();
+	while( itProfile != profileToClean.end() )
+	{
+		if( itProfile->second == "unknown" )
+			profileToClean.erase( itProfile++ );
+		else
+			++itProfile;
 	}
 }
 
