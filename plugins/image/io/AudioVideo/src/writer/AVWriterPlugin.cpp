@@ -1033,6 +1033,18 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 		return;
 	
 	WriterPlugin::endSequenceRender( args );
+
+	// encode and wrap last frames
+	std::vector< avtranscoder::StreamTranscoder* >& streams = _transcoder->getStreamTranscoders();
+	for( size_t streamIndex = 0; streamIndex < streams.size(); ++streamIndex )
+	{
+		avtranscoder::IEncoder& encoder = streams.at( streamIndex )->getEncoder();
+		avtranscoder::CodedData data;
+		while( encoder.encodeFrame( data ) )
+			streams.at( streamIndex )->getOutputStream().wrap( data );
+	}
+
+	// end wrapping
 	_outputFile->endWrap();
 }
 
