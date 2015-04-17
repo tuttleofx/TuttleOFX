@@ -171,6 +171,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	}
 	else if( paramName == kTuttlePluginFilename )
 	{
+		typedef std::pair<std::string, std::string> PropertyPair;
 		try
 		{
 			ensureVideoIsOpen();
@@ -183,7 +184,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 			// update wrapper of Metadata tab
 			std::string wrapperValue( "" );
-			BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, inputProperties.getPropertiesAsMap() )
+			BOOST_FOREACH( const PropertyPair& pair, inputProperties.getPropertiesAsVector() )
 			{
 				wrapperValue += pair.first + ": " + pair.second + "\n";
 			}
@@ -198,7 +199,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::VideoProperties& videoStream, inputProperties.getVideoProperties() )
 			{
 				videoValue += "::::: VIDEO STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, videoStream.getPropertiesAsMap() )
+				BOOST_FOREACH( const PropertyPair& pair, videoStream.getPropertiesAsVector() )
 				{
 					videoValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -215,7 +216,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AudioProperties& audioStream, inputProperties.getAudioProperties() )
 			{
 				audioValue += "::::: AUDIO STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, audioStream.getPropertiesAsMap() )
+				BOOST_FOREACH( const PropertyPair& pair, audioStream.getPropertiesAsVector() )
 				{
 					audioValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -232,7 +233,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::DataProperties& dataStream, inputProperties.getDataProperties() )
 			{
 				dataValue += "::::: DATA STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, dataStream.getPropertiesAsMap() )
+				BOOST_FOREACH( const PropertyPair& pair, dataStream.getPropertiesAsVector() )
 				{
 					dataValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -249,7 +250,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::SubtitleProperties& subtitleStream, inputProperties.getSubtitleProperties() )
 			{
 				subtitleValue += "::::: SUBTITLE STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, subtitleStream.getPropertiesAsMap() )
+				BOOST_FOREACH( const PropertyPair& pair, subtitleStream.getPropertiesAsVector() )
 				{
 					subtitleValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -266,7 +267,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AttachementProperties& attachementStream, inputProperties.getAttachementProperties() )
 			{
 				attachementValue += "::::: ATTACHEMENT STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, attachementStream.getPropertiesAsMap() )
+				BOOST_FOREACH( const PropertyPair& pair, attachementStream.getPropertiesAsVector() )
 				{
 					attachementValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -283,7 +284,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, inputProperties.getUnknownPropertiesProperties() )
 			{
 				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
-				BOOST_FOREACH( const avtranscoder::PropertiesMap::value_type& pair, unknownStream.getPropertiesAsMap() )
+				BOOST_FOREACH( const PropertyPair& pair, unknownStream.getPropertiesAsVector() )
 				{
 					unknownValue += pair.first + ": " + pair.second + "\n";
 				}

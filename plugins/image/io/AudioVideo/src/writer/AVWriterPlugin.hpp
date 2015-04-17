@@ -36,7 +36,7 @@ struct AVProcessParams
 	std::string _videoPixelFormatName; /// videoPixelFormat name
 	std::string _audioSampleFormatName; /// audioSampleFormat name
 
-	avtranscoder::PropertiesMap _metadatas;
+	avtranscoder::PropertyVector _metadatas;
 };
 
 /**
