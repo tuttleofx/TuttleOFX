@@ -4,6 +4,7 @@
 %include <tuttle/host/attribute/AnimatedParamType.i>
 
 %include <tuttle/host/ofx/attribute/OfxhParam.i>
+%include <tuttle/host/ofx/attribute/OfxhParamBoolean.i>
 %include <tuttle/host/ofx/attribute/OfxhMultiDimParam.i>
 %include <tuttle/host/ofx/attribute/OfxhParamAccessor.i>
 %include <tuttle/host/ofx/attribute/OfxhParamDescriptor.i>
