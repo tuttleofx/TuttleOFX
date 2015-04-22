@@ -98,7 +98,7 @@ void* OfxhHost::fetchSuite( const char* suiteName, const int suiteVersion )
 		return getMemorySuite( suiteVersion );
 	}
 
-	///printf("fetchSuite failed with host = %p, name = %s, version = %i\n", this, suiteName, suiteVersion);
+	TUTTLE_LOG_TRACE("Failed to Fetch Unknown Suite: " << suiteName << " " << suiteVersion << ".");
 	return NULL;
 }
 

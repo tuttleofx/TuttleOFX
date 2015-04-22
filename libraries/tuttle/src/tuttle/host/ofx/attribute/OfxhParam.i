@@ -63,6 +63,6 @@ namespace std {
 				if change != eChangeNone:
 					self.paramChanged(change)
 			else:
-				self.private_setValue(value)
+				self.private_setValue(value, change)
 	}
 }
