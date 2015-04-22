@@ -1,6 +1,7 @@
 %include <tuttle/host/global.i>
 
 %include <tuttle/host/attribute/Param.i>
+%include <tuttle/host/attribute/ParamDouble.i>
 %include <tuttle/host/attribute/AnimatedParamType.i>
 %include <tuttle/host/attribute/ParamDoubleMultiDim.i>
 
@@ -16,8 +17,5 @@
 
 #include <tuttle/host/attribute/ParamRGBA.hpp>
 %}
-
-%template(ParamDoubleMultiDim4) tuttle::host::attribute::ParamDoubleMultiDim<4>;
-%template(OfxhMultiDimParamParamDouble4) tuttle::host::ofx::attribute::OfxhMultiDimParam<tuttle::host::attribute::ParamDouble, 4>;
 
 %include <tuttle/host/attribute/ParamRGBA.hpp>
