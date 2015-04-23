@@ -316,7 +316,7 @@ avtranscoder::Option& LibAVParams::getOption(const std::string& libAVOptionName,
 	return optionsArray.at( optionIndex );
 }
 
-void LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value,  const std::string& prefix, const std::string& detailledName )
+void LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName )
 {
 	try
 	{

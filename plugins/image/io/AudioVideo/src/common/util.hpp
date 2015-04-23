@@ -61,7 +61,7 @@ public:
 	 * @param detailledName
 	 * @param prefix
 	 */
-	void setOption( const std::string& libAVOptionName, const std::string& value, const std::string& prefix, const std::string& detailledName="" );
+	void setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName="" );
 
 	/**
 	 * @brief Get the libav option

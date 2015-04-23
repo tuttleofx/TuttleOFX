@@ -878,7 +878,7 @@ void AVWriterPlugin::updateFormatFromExistingProfile()
 				option.first == avtranscoder::constants::avProfileType )
 				continue;
 
-			_paramFormatCustom.setOption( option.first, option.second, common::kPrefixFormat );
+			_paramFormatCustom.setOption( option.first, option.second );
 		}
 	}
 }
@@ -937,8 +937,8 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 				option.first == avtranscoder::constants::avProfileFrameRate )
 				continue;
 
-			_paramVideoCustom.setOption( option.first, option.second, common::kPrefixVideo );
-			_paramVideoDetailCustom.setOption( option.first, option.second, common::kPrefixVideo, existingProfile[ avtranscoder::constants::avProfileCodec ] );
+			_paramVideoCustom.setOption( option.first, option.second );
+			_paramVideoDetailCustom.setOption( option.first, option.second, existingProfile[ avtranscoder::constants::avProfileCodec ] );
 		}
 	}
 }
@@ -982,7 +982,7 @@ void AVWriterPlugin::updateAudioFromExistingProfile()
 				option.first == avtranscoder::constants::avProfileSampleFormat )
 				continue;
 
-			_paramAudioCustom.setOption( option.first, option.second, common::kPrefixAudio );
+			_paramAudioCustom.setOption( option.first, option.second );
 		}
 	}
 }
