@@ -985,6 +985,7 @@ void AVWriterPlugin::updateAudioFromExistingProfile()
 				continue;
 
 			_paramAudioCustom.setOption( option.first, option.second );
+			_paramAudioDetailCustom.setOption( option.first, option.second, existingProfile[ avtranscoder::constants::avProfileCodec ] );
 		}
 	}
 }
