@@ -875,10 +875,12 @@ void AVWriterPlugin::updateFormatFromExistingProfile()
 		{
 			if( option.first == avtranscoder::constants::avProfileIdentificator ||
 				option.first == avtranscoder::constants::avProfileIdentificatorHuman ||
-				option.first == avtranscoder::constants::avProfileType )
+				option.first == avtranscoder::constants::avProfileType ||
+				option.first == avtranscoder::constants::avProfileFormat )
 				continue;
 
 			_paramFormatCustom.setOption( option.first, option.second );
+			_paramFormatDetailCustom.setOption( option.first, option.second, existingProfile[ avtranscoder::constants::avProfileFormat ] );
 		}
 	}
 }
