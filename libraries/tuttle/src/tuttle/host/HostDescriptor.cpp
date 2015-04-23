@@ -22,13 +22,18 @@
 #include <fstream>
 #include <cstring>
 
+/// environment variable to override the host kOfxPropName
+/// This is useful if the plugin defines specific behavior depending on the host
+#define kHostPropNameEnvVar "TUTTLE_OVERRIDE_HOST_OFXPROPNAME"
+
 namespace tuttle {
 namespace host {
 
 Host::Host()
 {
 	/// @todo tuttle set host properties correctly...
-	_properties.setStringProperty( kOfxPropName, "TuttleOfx" );
+	const std::string hostPropName( std::getenv( kHostPropNameEnvVar ) ? std::getenv( kHostPropNameEnvVar ) : "TuttleOfx" );
+	_properties.setStringProperty( kOfxPropName, hostPropName );
 	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx Alpha" );
 	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, false );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, true );
