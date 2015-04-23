@@ -51,6 +51,7 @@ public:
 
 	/**
 	 * @brief Get value of OFX parameters contained in the object, and return the corresponding profile.
+	 * @param detailledName: a format/codec name to get only value of OFX parameters related to the current format/codec
 	 */
 	avtranscoder::ProfileLoader::Profile getCorrespondingProfile( const std::string& detailledName="" );
 	
@@ -58,19 +59,20 @@ public:
 	 * @brief Set the libav option and use its value to set the corresponding OFX parameter
 	 * @param libAVOptionName: the option whithout all prefixes.
 	 * @param value: the value will be cast to the corresponding type (int, double...).
-	 * @param detailledName
-	 * @param prefix
+	 * @param detailledName: an other prefix which corresponds to a format/codec name to set the correct OFX parameter
 	 */
 	void setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName="" );
 
 	/**
 	 * @brief Get the libav option
+	 * @param detailledName: the format/codec name, which is needed to get the correct libav Option
 	 * @exception boost exception if option is not found
 	 */
 	avtranscoder::Option& getOption( const std::string& libAVOptionName, const std::string& detailledName="" );
 
 	/**
 	 * @brief Get the OFX parameter which corresponds to the libav option name (whithout any prefixes).
+	 * @param detailledName: the format/codec name, which is needed to get the correct OFX parameter
 	 * @note return NULL if not found.
 	 */
 	OFX::ValueParam* getOFXParameter( const std::string& libAVOptionName, const std::string& detailledName="" ) ;
