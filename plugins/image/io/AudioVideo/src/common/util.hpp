@@ -68,7 +68,7 @@ public:
 	 * @param detailledName: the format/codec name, which is needed to get the correct libav Option
 	 * @exception boost exception if option is not found
 	 */
-	avtranscoder::Option& getOption( const std::string& libAVOptionName, const std::string& detailledName="" );
+	avtranscoder::Option& getLibAVOption( const std::string& libAVOptionName, const std::string& detailledName="" );
 
 	/**
 	 * @brief Get the OFX parameter which corresponds to the libav option name (whithout any prefixes).

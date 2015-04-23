@@ -167,7 +167,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 			continue;
 
 		const std::string libavOptionName( getOptionNameWithoutPrefix( param->getName(), detailledName ) );
-		const avtranscoder::Option& libavOption = getOption( libavOptionName, detailledName );
+		const avtranscoder::Option& libavOption = getLibAVOption( libavOptionName, detailledName );
 		std::string libavOptionValue( "" );
 
 		// Manage OFX Boolean
@@ -257,7 +257,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	{
 		try
 		{
-			const avtranscoder::Option& libavOption = getOption( flagsPerOption.first, detailledName );
+			const avtranscoder::Option& libavOption = getLibAVOption( flagsPerOption.first, detailledName );
 			const std::string flagName( libavOption.getName() );
 
 			// iterate on option's flags
@@ -303,7 +303,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	return profile;
 }
 
-avtranscoder::Option& LibAVParams::getOption(const std::string& libAVOptionName, const std::string& detailledName )
+avtranscoder::Option& LibAVParams::getLibAVOption(const std::string& libAVOptionName, const std::string& detailledName )
 {
 	avtranscoder::OptionArray& optionsArray = _avOptions.at( detailledName );
 
@@ -321,7 +321,7 @@ void LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 	try
 	{
 		// Get libav option
-		avtranscoder::Option& option = getOption( libAVOptionName, detailledName );
+		avtranscoder::Option& option = getLibAVOption( libAVOptionName, detailledName );
 
 		// Set libav option's value
 		option.setString( value );
