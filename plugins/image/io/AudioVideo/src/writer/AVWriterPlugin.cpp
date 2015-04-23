@@ -379,8 +379,6 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		{
 			setFormatParam( extension );
 		}
-
-		cleanVideoAndAudio();
 	}
 	// format
 	else if( paramName == kParamFormat )
