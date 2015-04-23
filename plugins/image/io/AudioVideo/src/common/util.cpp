@@ -316,7 +316,7 @@ avtranscoder::Option& LibAVParams::getLibAVOption(const std::string& libAVOption
 	return optionsArray.at( optionIndex );
 }
 
-void LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName )
+bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName )
 {
 	try
 	{
@@ -331,6 +331,7 @@ void LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 		if( ! param)
 		{
 			TUTTLE_TLOG( TUTTLE_INFO, "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << detailledName );
+			return false;
 		}
 
 		// Set OFX parameter's value
@@ -338,42 +339,43 @@ void LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 		if( paramBoolean )
 		{
 			paramBoolean->setValue( option.getBool() );
-			return;
+			return true;
 		}
 		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
 		if( paramInt )
 		{
 			paramInt->setValue( option.getInt() );
-			return;
+			return true;
 		}
 		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
 		if( paramDouble )
 		{
 			paramDouble->setValue( option.getDouble() );
-			return;
+			return true;
 		}
 		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
 		if( paramString )
 		{
 			paramString->setValue( option.getString() );
-			return;
+			return true;
 		}
 		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
 		if( paramRatio )
 		{
 			paramRatio->setValue( option.getRatio().first, option.getRatio().second );
-			return;
+			return true;
 		}
 		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
 		if( paramChoice )
 		{
 			paramChoice->setValue( option.getInt() );
-			return;
+			return true;
 		}
 	}
 	catch( std::exception& e )
 	{
 		TUTTLE_TLOG( TUTTLE_INFO, "Can't set option " << libAVOptionName << " to " << value << ": " << e.what() );
+		return false;
 	}
 }
 

@@ -60,8 +60,9 @@ public:
 	 * @param libAVOptionName: the option whithout all prefixes.
 	 * @param value: the value will be cast to the corresponding type (int, double...).
 	 * @param detailledName: an other prefix which corresponds to a format/codec name to set the correct OFX parameter
+	 * @return if the option was set
 	 */
-	void setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName="" );
+	bool setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName="" );
 
 	/**
 	 * @brief Get the libav option
