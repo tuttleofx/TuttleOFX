@@ -551,17 +551,6 @@ void AVWriterPlugin::initOutput()
 		// create output file
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
 
-		// update format depending on the output file extension
-		boost::filesystem::path path( params._outputFilePath );
-		std::string formatFromFile = avtranscoder::getFormat( path.filename().string() );
-		if( ! formatFromFile.empty() )
-		{
-			setFormatParam( formatFromFile );
-		}
-
-		// update format
-		params = getProcessParams();
-
 		// Get format profile
 		avtranscoder::ProfileLoader::Profile profile;
 		profile[ avtranscoder::constants::avProfileIdentificator ] = "customFormatPreset";
