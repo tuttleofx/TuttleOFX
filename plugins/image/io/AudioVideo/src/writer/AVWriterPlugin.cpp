@@ -997,8 +997,10 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 
 void AVWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _clipSrc->fetchImage( args.time ) && _clipDst->fetchImage( args.time ) )
-		WriterPlugin::render( args );
+	if( ! _clipSrc->fetchImage( args.time ) || ! _clipDst->fetchImage( args.time ) )
+		return;
+
+	WriterPlugin::render( args );
 
 	// @note: initVideo is called here because we need rendering parameters (ROD...)
 	// of input in order to create our output video stream
