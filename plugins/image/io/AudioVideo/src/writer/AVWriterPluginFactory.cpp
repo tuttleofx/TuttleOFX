@@ -174,13 +174,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
 	common::addOptionsToGroup( desc, formatCustomGroupParam, formatOptions, common::kPrefixFormat );
 	
-	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
-	formatDetailledGroup->setLabel( "Detailled" );
-	formatDetailledGroup->setAsTab( );
-	formatDetailledGroup->setParent( formatGroup );
+	OFX::GroupParamDescriptor* formatDetailedGroup = desc.defineGroupParam( kParamFormatDetailedGroup );
+	formatDetailedGroup->setLabel( "Detailed" );
+	formatDetailedGroup->setAsTab( );
+	formatDetailedGroup->setParent( formatGroup );
 	
-	avtranscoder::OptionArrayMap formatDetailledGroupOptions = avtranscoder::getOutputFormatOptions();
-	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
+	avtranscoder::OptionArrayMap formatDetailedGroupOptions = avtranscoder::getOutputFormatOptions();
+	common::addOptionsToGroup( desc, formatDetailedGroup, formatDetailedGroupOptions, common::kPrefixFormat );
 	
 	/// VIDEO PARAMETERS
 	OFX::ChoiceParamDescriptor* videoPresetParam = desc.defineChoiceParam( kParamVideoPreset );
@@ -264,13 +264,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, videoCustomGroupParam, videoOptions, common::kPrefixVideo );
 	av_free( videoContext );
 
-	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
-	videoDetailledGroup->setLabel( "Detailled" );
-	videoDetailledGroup->setAsTab( );
-	videoDetailledGroup->setParent( videoGroup );
+	OFX::GroupParamDescriptor* videoDetailedGroup  = desc.defineGroupParam( kParamVideoDetailedGroup );
+	videoDetailedGroup->setLabel( "Detailed" );
+	videoDetailedGroup->setAsTab( );
+	videoDetailedGroup->setParent( videoGroup );
 	
-	avtranscoder::OptionArrayMap videoDetailledGroupOptions = avtranscoder::getVideoCodecOptions(); 
-	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
+	avtranscoder::OptionArrayMap videoDetailedGroupOptions = avtranscoder::getVideoCodecOptions(); 
+	common::addOptionsToGroup( desc, videoDetailedGroup, videoDetailedGroupOptions, common::kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
 	OFX::ChoiceParamDescriptor* audioMainPresetParam = desc.defineChoiceParam( kParamAudioMainPreset );
@@ -328,13 +328,13 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	common::addOptionsToGroup( desc, audioCustomGroupParam, audioOptions, common::kPrefixAudio );
 	av_free( audioContext );
 	
-	OFX::GroupParamDescriptor* audioDetailledGroup  = desc.defineGroupParam( kParamAudioDetailledGroup );
-	audioDetailledGroup->setLabel( "Detailled" );
-	audioDetailledGroup->setAsTab( );
-	audioDetailledGroup->setParent( audioGroup );
+	OFX::GroupParamDescriptor* audioDetailedGroup  = desc.defineGroupParam( kParamAudioDetailedGroup );
+	audioDetailedGroup->setLabel( "Detailed" );
+	audioDetailedGroup->setAsTab( );
+	audioDetailedGroup->setParent( audioGroup );
 	
-	avtranscoder::OptionArrayMap audioDetailledGroupOptions = avtranscoder::getAudioCodecOptions();
-	common::addOptionsToGroup( desc, audioDetailledGroup, audioDetailledGroupOptions, common::kPrefixAudio );
+	avtranscoder::OptionArrayMap audioDetailedGroupOptions = avtranscoder::getAudioCodecOptions();
+	common::addOptionsToGroup( desc, audioDetailedGroup, audioDetailedGroupOptions, common::kPrefixAudio );
 	
 	OFX::IntParamDescriptor* audioNbInputs = desc.defineIntParam( kParamAudioNbInputs );
 	audioNbInputs->setLabel( "Number Of Audio Inputs" );

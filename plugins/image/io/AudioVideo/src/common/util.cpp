@@ -18,14 +18,14 @@ namespace plugin {
 namespace av {
 namespace common {
 
-LibAVParams::LibAVParams( const std::string& prefixScope, const int flags, const bool isDetailled )
+LibAVParams::LibAVParams( const std::string& prefixScope, const int flags, const bool isDetailed )
 	: _paramOFX()
 	, _paramFlagOFXPerOption()
 	, _childsPerChoice()
 	, _avOptions()
 	, _avContext( NULL )
 {
-	if( ! isDetailled )
+	if( ! isDetailed )
 	{
 		if( prefixScope == kPrefixFormat )
 		{
@@ -69,16 +69,16 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, const std::string&
 	// iterate on map keys
 	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, _avOptions )
 	{
-		const std::string detailledName = subGroupOption.first;
+		const std::string detailedName = subGroupOption.first;
 		avtranscoder::OptionArray& options = subGroupOption.second;
 				
 		// iterate on options
 		BOOST_FOREACH( avtranscoder::Option& option, options )
 		{
 			std::string name = prefix;
-			if( ! detailledName.empty() )
+			if( ! detailedName.empty() )
 			{
-				name += detailledName;
+				name += detailedName;
 				name += "_";
 			}
 			name += option.getName();
@@ -135,9 +135,9 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, const std::string&
 					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 					{
 						std::string childName = prefix;
-						if( ! detailledName.empty() )
+						if( ! detailedName.empty() )
 						{
-							childName += detailledName;
+							childName += detailedName;
 							childName += "_";
 						}
 						childName += child.getUnit();
@@ -155,19 +155,19 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, const std::string&
 	}
 }
 
-avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const std::string& detailledName )
+avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const std::string& detailedName )
 {
 	LibAVOptions optionsNameAndValue;
 
 	// Get all libav options and values corresponding to the OFX parameters
 	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{
-		// skip detailled params which does not concern our current format/codec
-		if( ! detailledName.empty() && param->getName().find( "_" + detailledName + "_" ) == std::string::npos )
+		// skip detailed params which does not concern our current format/codec
+		if( ! detailedName.empty() && param->getName().find( "_" + detailedName + "_" ) == std::string::npos )
 			continue;
 
-		const std::string libavOptionName( getOptionNameWithoutPrefix( param->getName(), detailledName ) );
-		const avtranscoder::Option& libavOption = getLibAVOption( libavOptionName, detailledName );
+		const std::string libavOptionName( getOptionNameWithoutPrefix( param->getName(), detailedName ) );
+		const avtranscoder::Option& libavOption = getLibAVOption( libavOptionName, detailedName );
 		std::string libavOptionValue( "" );
 
 		// Manage OFX Boolean
@@ -257,14 +257,14 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	{
 		try
 		{
-			const avtranscoder::Option& libavOption = getLibAVOption( flagsPerOption.first, detailledName );
+			const avtranscoder::Option& libavOption = getLibAVOption( flagsPerOption.first, detailedName );
 			const std::string flagName( libavOption.getName() );
 
 			// iterate on option's flags
 			BOOST_FOREACH( OFX::BooleanParam* param, flagsPerOption.second )
 			{
-				// skip detailled flag params which does not concern our current format/codec
-				if( ! detailledName.empty() && param->getName().find( "_" + detailledName + "_" ) == std::string::npos )
+				// skip detailed flag params which does not concern our current format/codec
+				if( ! detailedName.empty() && param->getName().find( "_" + detailedName + "_" ) == std::string::npos )
 					continue;
 
 				// get flag value
@@ -273,7 +273,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 					libavOptionValue.append( "+" );
 				else
 					libavOptionValue.append( "-" );
-				libavOptionValue.append( getOptionNameWithoutPrefix( param->getName(), detailledName ) );
+				libavOptionValue.append( getOptionNameWithoutPrefix( param->getName(), detailedName ) );
 
 				// if first flag with this flagName
 				if( optionsNameAndValue.find( flagName ) == optionsNameAndValue.end() )
@@ -290,7 +290,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		}
 		catch( std::exception& e )
 		{
-			// std::cout << "can't create option from name " << flagsPerOption.first << " (" << detailledName << ")" << std::endl;
+			// std::cout << "can't create option from name " << flagsPerOption.first << " (" << detailedName << ")" << std::endl;
 		}
 	}
 
@@ -303,34 +303,34 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 	return profile;
 }
 
-avtranscoder::Option& LibAVParams::getLibAVOption(const std::string& libAVOptionName, const std::string& detailledName )
+avtranscoder::Option& LibAVParams::getLibAVOption(const std::string& libAVOptionName, const std::string& detailedName )
 {
-	avtranscoder::OptionArray& optionsArray = _avOptions.at( detailledName );
+	avtranscoder::OptionArray& optionsArray = _avOptions.at( detailedName );
 
 	avtranscoder::OptionArray::iterator iterOption = std::find_if( optionsArray.begin(), optionsArray.end(), boost::bind( &avtranscoder::Option::getName, _1) == libAVOptionName );
 	const size_t optionIndex = std::distance( optionsArray.begin(), iterOption);
 
 	if( optionIndex >= optionsArray.size() )
-		BOOST_THROW_EXCEPTION( exception::Failed() << exception::user() + "option is not in array of detailled:  " + detailledName ); 
+		BOOST_THROW_EXCEPTION( exception::Failed() << exception::user() + "option is not in array of detailed:  " + detailedName ); 
 
 	return optionsArray.at( optionIndex );
 }
 
-bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailledName )
+bool LibAVParams::setOption( const std::string& libAVOptionName, const std::string& value, const std::string& detailedName )
 {
 	try
 	{
 		// Get libav option
-		avtranscoder::Option& option = getLibAVOption( libAVOptionName, detailledName );
+		avtranscoder::Option& option = getLibAVOption( libAVOptionName, detailedName );
 
 		// Set libav option's value
 		option.setString( value );
 
 		// Get corresponding OFX parameter
-		OFX::ValueParam* param = getOFXParameter( libAVOptionName, detailledName );
+		OFX::ValueParam* param = getOFXParameter( libAVOptionName, detailedName );
 		if( ! param)
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << detailledName );
+			TUTTLE_TLOG( TUTTLE_INFO, "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << detailedName );
 			return false;
 		}
 
@@ -379,25 +379,25 @@ bool LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 	}
 }
 
-OFX::ValueParam* LibAVParams::getOFXParameter( const std::string& libAVOptionName, const std::string& detailledName )
+OFX::ValueParam* LibAVParams::getOFXParameter( const std::string& libAVOptionName, const std::string& detailedName )
 {
 	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{
-		if( getOptionNameWithoutPrefix( param->getName(), detailledName ) == libAVOptionName )
+		if( getOptionNameWithoutPrefix( param->getName(), detailedName ) == libAVOptionName )
 			return param;
 	}
 	return NULL;
 }
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& detailledName )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& detailedName )
 {
 	OFX::ParamDescriptor* param = NULL;
 	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
 	{
 		std::string name = prefix;
-		if( ! detailledName.empty() )
+		if( ! detailedName.empty() )
 		{
-			name += detailledName;
+			name += detailedName;
 			name += "_";
 		}
 		name += option.getName();
@@ -477,9 +477,9 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 			{
 				std::string groupName = prefix;
 				groupName += kPrefixGroup;
-				if( ! detailledName.empty() )
+				if( ! detailedName.empty() )
 				{
-					groupName += detailledName;
+					groupName += detailedName;
 					groupName += "_";
 				}
 				groupName += option.getName();
@@ -489,9 +489,9 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 				BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 				{
 					std::string childName = prefix;
-					if( ! detailledName.empty() )
+					if( ! detailedName.empty() )
 					{
-						childName += detailledName;
+						childName += detailedName;
 						childName += "_";
 					}
 					childName += child.getUnit();
@@ -531,14 +531,14 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 	// iterate on map keys
 	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
 	{
-		const std::string detailledName = subGroupOption.first;
+		const std::string detailedName = subGroupOption.first;
 		avtranscoder::OptionArray& options = subGroupOption.second;
 		
-		addOptionsToGroup( desc, group, options, prefix, detailledName );
+		addOptionsToGroup( desc, group, options, prefix, detailedName );
 	}
 }
 
-std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& detailledName )
+std::string getOptionNameWithoutPrefix( const std::string& optionName, const std::string& detailedName )
 {
 	std::string nameWithoutPrefix( optionName );
 	
@@ -550,11 +550,11 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 	else if( nameWithoutPrefix.find( kPrefixAudio ) != std::string::npos )
 		nameWithoutPrefix.erase( 0, kPrefixAudio.size() );
 	
-	// detailled group name
-	if( ! detailledName.empty() && nameWithoutPrefix.find( detailledName ) != std::string::npos )
+	// detailed group name
+	if( ! detailedName.empty() && nameWithoutPrefix.find( detailedName ) != std::string::npos )
 	{
-		// detailledName.size() + 1: also remove the "_"
-		nameWithoutPrefix.erase( 0, detailledName.size() + 1 );
+		// detailedName.size() + 1: also remove the "_"
+		nameWithoutPrefix.erase( 0, detailedName.size() + 1 );
 	}
 	
 	// childs of groups (flag)
@@ -568,14 +568,14 @@ std::string getOptionNameWithoutPrefix( const std::string& optionName, const std
 }
 
 
-std::string getOptionFlagName( const std::string& optionName, const std::string& detailledName )
+std::string getOptionFlagName( const std::string& optionName, const std::string& detailedName )
 {
 	std::string flagName;
 	
 	if( optionName.find( kPrefixFlag ) != std::string::npos )
 	{
 		size_t startedPosition;
-		if( detailledName.empty() )
+		if( detailedName.empty() )
 			startedPosition = optionName.find( "_" );
 		else
 		{
@@ -595,14 +595,14 @@ void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::O
 	// iterate on map keys
 	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
 	{
-		const std::string detailledName = subGroupOption.first;
+		const std::string detailedName = subGroupOption.first;
 		avtranscoder::OptionArray& options = subGroupOption.second;
 
 		// iterate on options
 		BOOST_FOREACH( avtranscoder::Option& option, options )
 		{
 			std::string name = prefix;
-			name += detailledName;
+			name += detailedName;
 			name += "_";
 			name += option.getName();
 
@@ -611,56 +611,56 @@ void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::O
 				case avtranscoder::eOptionBaseTypeBool:
 				{
 					OFX::BooleanParam* curOpt = plugin.fetchBooleanParam( name );
-					curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+					curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					break;
 				}
 				case avtranscoder::eOptionBaseTypeInt:
 				{
 					OFX::IntParam* curOpt = plugin.fetchIntParam( name );
-					curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+					curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					break;
 				}
 				case avtranscoder::eOptionBaseTypeDouble:
 				{
 					OFX::DoubleParam* curOpt = plugin.fetchDoubleParam( name );
-					curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+					curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					break;
 				}
 				case avtranscoder::eOptionBaseTypeString:
 				{
 					OFX::StringParam* curOpt = plugin.fetchStringParam( name );
-					curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+					curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					break;
 				}
 				case avtranscoder::eOptionBaseTypeRatio:
 				{
 					OFX::Int2DParam* curOpt = plugin.fetchInt2DParam( name );
-					curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+					curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					break;
 				}
 				case avtranscoder::eOptionBaseTypeChoice:
 				{
 					OFX::ChoiceParam* curOpt = plugin.fetchChoiceParam( name );
-					curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+					curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					break;
 				}
 				case avtranscoder::eOptionBaseTypeGroup:
 				{
 					std::string groupName = prefix;
 					groupName += common::kPrefixGroup;
-					groupName += detailledName;
+					groupName += detailedName;
 					groupName += "_";
 					groupName += option.getName();
 					
 					OFX::GroupParam* curOpt = plugin.fetchGroupParam( groupName );
-					curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+					curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					
 					BOOST_FOREACH( const avtranscoder::Option& child, option.getChilds() )
 					{
 						std::string childName = prefix;
-						if( ! detailledName.empty() )
+						if( ! detailedName.empty() )
 						{
-							childName += detailledName;
+							childName += detailedName;
 							childName += "_";
 						}
 						childName += child.getUnit();
@@ -668,7 +668,7 @@ void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::O
 						childName += child.getName();
 						
 						OFX::BooleanParam* curOpt = plugin.fetchBooleanParam( childName );
-						curOpt->setIsSecretAndDisabled( !( detailledName == filter ) );
+						curOpt->setIsSecretAndDisabled( !( detailedName == filter ) );
 					}
 					break;
 				}

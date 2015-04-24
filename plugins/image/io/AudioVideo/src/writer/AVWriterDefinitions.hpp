@@ -25,11 +25,11 @@ static const std::string kParamAudioCodec                = common::kPrefixAudio 
 static const std::string kParamAudioCodecLabel           = "Audio codec";
 
 static const std::string kParamFormatGroup               = common::kPrefixFormat + "group";
-static const std::string kParamFormatDetailledGroup      = common::kPrefixFormat + "detailledGroup";
+static const std::string kParamFormatDetailedGroup       = common::kPrefixFormat + "detailedGroup";
 static const std::string kParamVideoGroup                = common::kPrefixVideo + "group";
-static const std::string kParamVideoDetailledGroup       = common::kPrefixVideo + "detailledGroup";
+static const std::string kParamVideoDetailedGroup        = common::kPrefixVideo + "detailedGroup";
 static const std::string kParamAudioGroup                = common::kPrefixAudio + "group";
-static const std::string kParamAudioDetailledGroup       = common::kPrefixAudio + "detailledGroup";
+static const std::string kParamAudioDetailedGroup        = common::kPrefixAudio + "detailedGroup";
 static const std::string kParamMetaGroup                 = common::kPrefixMetaData + "group";
 static const std::string kParamAboutGroup                = common::kPrefixAbout + "group";
 
