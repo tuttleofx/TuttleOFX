@@ -330,7 +330,7 @@ bool LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 		OFX::ValueParam* param = getOFXParameter( libAVOptionName, detailedName );
 		if( ! param)
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << detailedName );
+			TUTTLE_LOG_WARNING( "Can't get OFX parameter corresponding to option " << libAVOptionName << " of subgroup " << detailedName );
 			return false;
 		}
 
@@ -374,7 +374,7 @@ bool LibAVParams::setOption( const std::string& libAVOptionName, const std::stri
 	}
 	catch( std::exception& e )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "Can't set option " << libAVOptionName << " to " << value << ": " << e.what() );
+		TUTTLE_LOG_WARNING( "Can't set option " << libAVOptionName << " to " << value << ": " << e.what() );
 		return false;
 	}
 }
