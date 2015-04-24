@@ -623,7 +623,7 @@ void OfxhImageEffectNode::endInstanceEditAction() OFX_EXCEPTION_SPEC
 
 void OfxhImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
 					     OfxTime   endFrame,
-					     OfxTime   step,
+					     double    step,
 					     bool      interactive,
 					     OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
@@ -683,7 +683,7 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 
 void OfxhImageEffectNode::endSequenceRenderAction( OfxTime   startFrame,
 					   OfxTime   endFrame,
-					   OfxTime   step,
+					   double    step,
 					   bool      interactive,
 					   OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {

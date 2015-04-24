@@ -376,7 +376,7 @@ void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 /// override to get frame range of the effect
 void ImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
 					 OfxTime   endFrame,
-					 OfxTime   step,
+					 double    step,
 					 bool      interactive,
 					 OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
