@@ -111,8 +111,13 @@ private:
 	void setAudioCodecParam( const std::string& audioCodecShortName );
 	//@}
 
-	// remove some bad values for wrapper/encoder
-	// insert value from preset file which had not taken by an OFX parameter
+	/**
+	 * @brief Before any render, the wrapper/encoder profiles are checked and possibly updated by this function:
+	 * 1 - remove libav options which can make the wrapper/encoder failed if bad value
+	 * 2 - add libav options which can't correspond to an OFX Choice parameter's value
+	 * Example: An option can have a value only with a specific codec, but the corresponding
+	 * OFX Choice doesn't know this value when instanciate the option in its factory.
+	 */
 	void cleanProfile( avtranscoder::ProfileLoader::Profile& profileToClean, const std::string& prefix );
 
 public:

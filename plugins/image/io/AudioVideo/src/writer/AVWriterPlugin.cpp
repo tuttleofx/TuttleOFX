@@ -1190,7 +1190,7 @@ void AVWriterPlugin::setAudioCodecParam( const std::string& audioCodecShortName 
 
 void AVWriterPlugin::cleanProfile( avtranscoder::ProfileLoader::Profile& profileToClean, const std::string& prefix )
 {
-	// Warning: Fix libav options which can make the wrapper/encoder failed if bad value	
+	// 1 - remove libav options which can make the wrapper/encoder failed if bad value
 	avtranscoder::ProfileLoader::Profile::iterator itProfile = profileToClean.begin();
 	while( itProfile != profileToClean.end() )
 	{
@@ -1200,9 +1200,7 @@ void AVWriterPlugin::cleanProfile( avtranscoder::ProfileLoader::Profile& profile
 			++itProfile;
 	}
 
-	// Warning: Fix libav options which can't correspond to an OFX Choice parameter's value
-	// Example: An option can have a value only with a specific codec, but the corresponding 
-	// OFX Choice doesn't know this value when instanciate the option in its factory.
+	// 2 - add libav options which can't correspond to an OFX Choice parameter's value
 	size_t presetIndex = 0;
 	avtranscoder::ProfileLoader::Profile originalProfile;
 	if( prefix == common::kPrefixFormat )
