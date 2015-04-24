@@ -18,6 +18,4 @@
 #include <tuttle/host/attribute/ParamDouble2D.hpp>
 %}
 
-%template(OfxhMultiDimParamParamDouble2) tuttle::host::ofx::attribute::OfxhMultiDimParam<tuttle::host::attribute::ParamDouble, 2>;
-
 %include <tuttle/host/attribute/ParamDouble2D.hpp>
