@@ -340,7 +340,7 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 			audioInfo += "\n";
 			for( size_t audioStreamIndex = 0; audioStreamIndex < nbAudioStream; ++audioStreamIndex )
 			{
-				avtranscoder::AudioProperties& audioProperties = fileProperties.getAudioProperties().at( audioStreamIndex );
+				const avtranscoder::AudioProperties& audioProperties = fileProperties.getAudioProperties().at( audioStreamIndex );
 
 				// stream
 				audioInfo += "Stream ";
