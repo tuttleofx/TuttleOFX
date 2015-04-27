@@ -549,24 +549,6 @@ void AVWriterPlugin::initOutput()
 		// create output file
 		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
 
-		// Get format profile
-		avtranscoder::ProfileLoader::Profile profile;
-		profile[ avtranscoder::constants::avProfileIdentificator ] = "customFormatPreset";
-		profile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom format preset";
-		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
-		profile[ avtranscoder::constants::avProfileFormat ] = params._formatName;
-
-		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile();
-		profile.insert( formatProfile.begin(), formatProfile.end() );
-
-		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._formatName );
-		profile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
-
-		cleanProfile( profile, common::kPrefixFormat );
-
-		// set format profile
-		_outputFile->setProfile( profile );
-
 		// add metadatas
 		_outputFile->addMetadata( params._metadatas );
 
@@ -1007,12 +989,35 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 	if( ! _initVideo )
 		initVideo( args );
 
-	// @note: beginWrap needs to be called once, and after have added all the streams (video/audio)
 	if( ! _initWrap )
 	{
+		// add audio streams
 		initAudio();
+
+		// @note: beginWrap needs to be called once, and after have added all the streams (video/audio)
 		_outputFile->beginWrap();
 		_initWrap = true;
+
+		// Get format profile
+		AVProcessParams params = getProcessParams();
+		avtranscoder::ProfileLoader::Profile profile;
+		profile[ avtranscoder::constants::avProfileIdentificator ] = "customFormatPreset";
+		profile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom format preset";
+		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
+		profile[ avtranscoder::constants::avProfileFormat ] = params._formatName;
+
+		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile();
+		profile.insert( formatProfile.begin(), formatProfile.end() );
+
+		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._formatName );
+		profile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
+
+		cleanProfile( profile, common::kPrefixFormat );
+
+		// set format profile (need to be done after beginWrap when muxing)
+		_outputFile->setProfile( profile );
+
+		// manage codec lantancy
 		_transcoder->preProcessCodecLatency();
 	}
 	
