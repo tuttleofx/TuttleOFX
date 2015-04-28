@@ -607,14 +607,24 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 
 	TUTTLE_LOG_INFO( "[Process render] start" );
 
-	//--- RENDER
-	// at each frame
+	// Begin range of frames
+	TimeRange globalTimeRange( timeRanges.back() );
+	BOOST_FOREACH( const TimeRange& range, timeRanges )
+	{
+		if( globalTimeRange._begin > range._begin )
+			globalTimeRange._begin = range._begin;
+		if( globalTimeRange._end < range._end )
+			globalTimeRange._end = range._end;
+	}
+	TUTTLE_LOG_TRACE( "[Process render] begin timeRange: [" << globalTimeRange._begin << ", " << globalTimeRange._end << "]" );
+	beginSequence( globalTimeRange );
+
+	// RENDER (at each frame)
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
-		TUTTLE_LOG_TRACE( "[Process render] timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
+		TUTTLE_LOG_TRACE( "[Process render] process timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
 
-		beginSequence( timeRange );
-
+		// If someone had asked to abort the process
 		if( _options.getAbort() )
 		{
 			TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED before first frame." );
@@ -715,9 +725,10 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 			}
 			_options.endFrameHandle();
 		}
-
-		endSequence();
 	}
+
+	// End range of frames
+	endSequence();
 
 #ifdef TUTTLE_EXPORT_WITH_TIMER
 	TUTTLE_LOG_INFO( "[all process timer] " << boost::timer::format(all_process_timer.elapsed()) );
