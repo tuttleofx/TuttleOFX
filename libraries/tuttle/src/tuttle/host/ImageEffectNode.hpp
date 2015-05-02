@@ -255,7 +255,7 @@ public:
 
 	void beginSequenceRenderAction( OfxTime   startFrame,
 	                        OfxTime   endFrame,
-	                        OfxTime   step,
+	                        double    step,
 	                        bool      interactive,
 	                        OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 

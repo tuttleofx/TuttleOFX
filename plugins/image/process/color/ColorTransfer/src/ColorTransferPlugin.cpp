@@ -53,18 +53,22 @@ void ColorTransferPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgu
 {
 	if( _clipSrcRef->isConnected() )
 	{
+		// set roi of source
 		OfxRectD srcRod = args.regionOfInterest;
 		rois.setRegionOfInterest( *this->_clipSrc, srcRod );
+
+		// set roi of source ref
+		OfxRectD srcRefRod = _clipSrcRef->getCanonicalRod( args.time );
+		rois.setRegionOfInterest( *_clipSrcRef, srcRefRod );
 	}
 	else
 	{
+		// set roi of source
 		OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 		rois.setRegionOfInterest( *this->_clipSrc, srcRod );
 	}
-	
-	OfxRectD srcRefRod = _clipSrcRef->getCanonicalRod( args.time );
-	rois.setRegionOfInterest( *_clipSrcRef, srcRefRod );
-	
+
+	// set roi of destination ref
 	OfxRectD dstRefRod = _clipDstRef->getCanonicalRod( args.time );
 	rois.setRegionOfInterest( *_clipDstRef, dstRefRod );
 }
