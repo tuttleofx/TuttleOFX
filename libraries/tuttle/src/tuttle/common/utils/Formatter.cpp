@@ -42,7 +42,7 @@ void Formatter::init_logging()
 	namespace sinks = boost::log::sinks;
 
 	boost::shared_ptr< sinks::text_ostream_backend > backend = boost::make_shared< sinks::text_ostream_backend >();
-	backend->add_stream( boost::shared_ptr< std::ostream >( &std::clog, boost::log::empty_deleter() ));
+	backend->add_stream( boost::shared_ptr< std::ostream >( &std::clog, boost::empty_deleter() ) );
 	//backend->add_stream( boost::shared_ptr< std::ostream >( new std::ofstream("sample.log") ) );
 
 	backend->auto_flush(true);
