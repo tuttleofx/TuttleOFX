@@ -294,7 +294,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		}
 		catch( std::exception& e )
 		{
-			// std::cout << "can't create option from name " << flagsPerOption.first << " (" << detailedName << ")" << std::endl;
+			TUTTLE_LOG_WARNING( "Can't create flag option from name " << flagsPerOption.first << " (" << detailedName << ")" );
 		}
 	}
 
@@ -315,7 +315,7 @@ avtranscoder::Option& LibAVParams::getLibAVOption(const std::string& libAVOption
 	const size_t optionIndex = std::distance( optionsArray.begin(), iterOption);
 
 	if( optionIndex >= optionsArray.size() )
-		BOOST_THROW_EXCEPTION( exception::Failed() << exception::user() + "option is not in array of detailed:  " + detailedName ); 
+		BOOST_THROW_EXCEPTION( exception::Failed() << exception::user() + "Can't get libav option '" + libAVOptionName + "' (with detailed  '" + detailedName + "')" ); 
 
 	return optionsArray.at( optionIndex );
 }
