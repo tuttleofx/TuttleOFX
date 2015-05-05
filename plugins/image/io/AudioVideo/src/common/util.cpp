@@ -174,7 +174,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
 		if( paramBoolean )
 		{
-			if( libavOption.getDefaultBool() == libavOption.getBool() )
+			if( libavOption.getDefaultBool() == paramBoolean->getValue() )
 				continue;
 
 			libavOptionValue = boost::to_string( paramBoolean->getValue() );
@@ -186,7 +186,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
 		if( paramInt )
 		{
-			if( libavOption.getDefaultInt() == libavOption.getInt() )
+			if( libavOption.getDefaultInt() == paramInt->getValue() )
 				continue;
 
 			libavOptionValue = boost::to_string( paramInt->getValue() );
@@ -198,7 +198,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
 		if( paramDouble )
 		{
-			if( boost::test_tools::check_is_close( libavOption.getDefaultDouble(), libavOption.getDouble(), boost::test_tools::percent_tolerance( 0.5 ) ) )
+			if( boost::test_tools::check_is_close( libavOption.getDefaultDouble(), paramDouble->getValue(), boost::test_tools::percent_tolerance( 0.5 ) ) )
 				continue;
 
 			libavOptionValue = boost::to_string( paramDouble->getValue() );
@@ -215,7 +215,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 			if( libavOptionValue.empty() )
 				continue;
 
-			if( libavOption.getDefaultString() == libavOption.getString() )
+			if( libavOption.getDefaultString() == libavOptionValue )
 				continue;
 
 			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
@@ -226,7 +226,8 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
 		if( paramRatio )
 		{
-			if( libavOption.getDefaultRatio() == libavOption.getRatio() )
+			std::pair<int, int> ofxParamValue = std::make_pair( paramRatio->getValue().x, paramRatio->getValue().y );
+			if( libavOption.getDefaultRatio() == ofxParamValue )
 				continue;
 
 			libavOptionValue = boost::to_string( paramRatio->getValue().x ) + ":" + boost::to_string( paramRatio->getValue().y );
@@ -238,11 +239,11 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
 		if( paramChoice )
 		{
-			if( libavOption.getDefaultInt() == libavOption.getInt() )
+			if( libavOption.getDefaultInt() == paramChoice->getValue() )
 				continue;
 
-			size_t optionIndex = paramChoice->getValue();
-			std::vector<std::string> childs( _childsPerChoice.at( paramChoice ) );
+			const size_t optionIndex = paramChoice->getValue();
+			const std::vector<std::string> childs( _childsPerChoice.at( paramChoice ) );
 			if( childs.size() > optionIndex )
 			{
 				libavOptionValue = childs.at( optionIndex );
