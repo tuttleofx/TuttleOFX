@@ -267,6 +267,10 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 				if( ! detailedName.empty() && param->getName().find( "_" + detailedName + "_" ) == std::string::npos )
 					continue;
 
+				// skip flags not set
+				if( param->getValue() == param->getDefault() )
+					continue;
+
 				// get flag value
 				std::string libavOptionValue( "" );
 				if( param->getValue() )
