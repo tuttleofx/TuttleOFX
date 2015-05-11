@@ -80,7 +80,7 @@ const std::string& OfxhParamChoice::getChoiceKeyAt( const int index ) const
 	if( index < 0 || index >= keys.size() )
 	{
 		BOOST_THROW_EXCEPTION( OfxhException(kOfxStatErrBadIndex)
-			<< exception::user() + "The index value \"" + index + "\" is out of kays range.\n" +
+			<< exception::user() + "The index value \"" + index + "\" is out of range.\n" +
 			"Choice keys are : [\n\"" + boost::algorithm::join( keys, "\",\n\"" ) + "\" ]"
 			);
 	}
