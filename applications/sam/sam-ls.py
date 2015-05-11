@@ -72,7 +72,8 @@ def printItem(item, directory, args, level):
 
     # sam-ls --relative-path
     if args.relativePath:
-        filename += directory +  ('/' if directory[-1] != '/' else '')
+        filename += (item.getFolder() if item.getFolder()[0] != '/' else '.')
+        filename += ('/' if filename[-1] != '/' else '')
 
     # filename
     if args.color:
