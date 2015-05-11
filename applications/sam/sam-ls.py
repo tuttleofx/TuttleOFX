@@ -114,21 +114,23 @@ def manageItems(items, directory, args, level=0, detectionMethod=sequenceParser.
     """
     for item in sorted(items):
         itemType = item.getType()
+        toPrint = True
 
         # sam-ls -d
         if args.directories and itemType != sequenceParser.eTypeFolder:
-            continue
+            toPrint = False
 
         # sam-ls -f
         if args.files and itemType != sequenceParser.eTypeFile:
-            continue
+            toPrint = False
 
         # sam-ls -s
         if args.sequences and itemType != sequenceParser.eTypeSequence:
-            continue
+            toPrint = False
 
         # print current item
-        printItem(item, directory, args, level)
+        if toPrint:
+            printItem(item, directory, args, level)
 
         # sam-ls -R
         if args.recursive and itemType == sequenceParser.eTypeFolder:
