@@ -197,8 +197,15 @@ if __name__ == '__main__':
             if 'No such file or directory' in str(e):
                 print e
                 continue
-            # else manage it as a file
+            # else try a new browse on the current directory, with the given name as filter
             else:
-                items.append(sequenceParser.Item(sequenceParser.eTypeFile, inputDirectory))
+                # create item from the given name
+                fileItem = sequenceParser.Item(sequenceParser.eTypeFile, inputDirectory)
+                # new browse
+                filters.append(fileItem.getFilename())
+                folderName = fileItem.getFolder()
+                if len(folderName) == 0:
+                    folderName = os.getcwd()
+                items += sequenceParser.browse(folderName, detectionMethod, filters)
 
         manageItems(items, inputDirectory, args)
