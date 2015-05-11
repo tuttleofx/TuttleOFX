@@ -2,7 +2,6 @@
 # PYTHON_ARGCOMPLETE_OK
 
 import os
-import sys
 from datetime import date
 import argparse
 
@@ -34,7 +33,7 @@ def printItem(item, directory, args, level):
     """
     itemType = item.getType()
 
-    filename = ''
+    filePath = ''
     detailed = ''
     detailedSequence = ''
 
@@ -68,30 +67,30 @@ def printItem(item, directory, args, level):
 
     # sam-ls --absolute-path
     if args.absolutePath:
-        filename += os.path.abspath(directory) + '/'
+        filePath += os.path.abspath(directory) + '/'
 
     # sam-ls --relative-path
     if args.relativePath:
-        filename += (item.getFolder() if item.getFolder()[0] != '/' else '.')
-        filename += ('/' if filename[-1] != '/' else '')
+        filePath += (item.getFolder() if item.getFolder()[0] != '/' else '.')
+        filePath += ('/' if filePath[-1] != '/' else '')
 
     # filename
     if args.color:
         if itemType == sequenceParser.eTypeUndefined:
-            filename = colored.red(filename + item.getFilename())
+            filePath = colored.red(os.path.join(filePath, item.getFilename()))
         elif itemType == sequenceParser.eTypeFolder:
-            filename = colored.blue(filename + item.getFilename(), bold=True) # blue is not visible without bold
+            filePath = colored.blue(os.path.join(filePath + item.getFilename()), bold=True) # blue is not visible without bold
         elif itemType == sequenceParser.eTypeFile:
-            filename = colored.green(filename + item.getFilename())
+            filePath = colored.green(os.path.join(filePath + item.getFilename()))
         elif itemType == sequenceParser.eTypeSequence:
-            filename = colored.magenta(filename + item.getFilename(), bold=True) # magenta is not visible without bold
+            filePath = colored.magenta(os.path.join(filePath + item.getFilename()), bold=True) # magenta is not visible without bold
         elif itemType == sequenceParser.eTypeLink:
-            filename = colored.cyan(filename + item.getFilename())
+            filePath = colored.cyan(os.path.join(filePath + item.getFilename()))
         else:
-            filename += item.getFilename()
+            filePath += os.path.join(filePath + item.getFilename())
     else:
-        filename += item.getFilename()
-    filename += ' \t'
+        filePath += os.path.join(filePath + item.getFilename())
+    filePath += ' \t'
 
     # sam-ls -R
     indentTree = ''
@@ -100,7 +99,7 @@ def printItem(item, directory, args, level):
         indentTree += '|__ '
 
     # display
-    toPrint = detailed + filename + detailedSequence
+    toPrint = detailed + filePath + detailedSequence
     # cannot use indent method with an empty quote
     if level == 0:
         puts(toPrint.format())
@@ -109,7 +108,7 @@ def printItem(item, directory, args, level):
             puts(toPrint.format())
 
 
-def manageItems(items, directory, args, level=0, detectionMethod=sequenceParser.eDetectionDefault, filters=[]):
+def printItems(items, directory, args, level=0, detectionMethod=sequenceParser.eDetectionDefault, filters=[]):
     """
     For each items, check if it should be printed, depending on the command line options.
     """
@@ -136,7 +135,7 @@ def manageItems(items, directory, args, level=0, detectionMethod=sequenceParser.
         # sam-ls -R
         if args.recursive and itemType == sequenceParser.eTypeFolder:
             level += levelPadding
-            manageItems(sequenceParser.browse(item.getFolder() + '/' + item.getFilename(), detectionMethod, filters), directory, args, level)
+            printItems(sequenceParser.browse(os.path.join(item.getFolder() + '/' + item.getFilename()), detectionMethod, filters), directory, args, level)
             level -= levelPadding
 
 
@@ -175,10 +174,10 @@ if __name__ == '__main__':
 
     # directories to scan
     inputDirectories = []
-    if len( args.inputDirectories ) == 0:
-        inputDirectories.append(os.getcwd())
-    else:
+    if args.inputDirectories:
         inputDirectories = args.inputDirectories
+    else:
+        inputDirectories.append(os.getcwd())
 
     # sam-ls -a
     detectionMethod = sequenceParser.eDetectionDefault
@@ -194,7 +193,7 @@ if __name__ == '__main__':
     for inputDirectory in inputDirectories:
         items = []
         try:
-            items += sequenceParser.browse(inputDirectory, detectionMethod, filters)
+            items = sequenceParser.browse(inputDirectory, detectionMethod, filters)
         except IOError as e:
             # if the given input does not correspond to anything
             if 'No such file or directory' in str(e):
@@ -207,8 +206,8 @@ if __name__ == '__main__':
                 # new browse
                 filters.append(fileItem.getFilename())
                 folderName = fileItem.getFolder()
-                if len(folderName) == 0:
+                if not folderName:
                     folderName = os.getcwd()
                 items += sequenceParser.browse(folderName, detectionMethod, filters)
 
-        manageItems(items, inputDirectory, args)
+        printItems(items, inputDirectory, args)
