@@ -68,7 +68,7 @@ def printItem(item, directory, args, level):
 
     # sam-ls --absolute-path
     if args.absolutePath:
-        filename += item.getFolder() + '/'
+        filename += os.path.abspath(directory) + '/'
 
     # sam-ls --relative-path
     if args.relativePath:
