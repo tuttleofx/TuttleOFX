@@ -108,7 +108,7 @@ def printItem(item, directory, args, level):
             puts(toPrint.format())
 
 
-def printItems(items, directory, args, level=0, detectionMethod=sequenceParser.eDetectionDefault, filters=[]):
+def printItems(items, directory, args, detectionMethod, filters, level=0):
     """
     For each items, check if it should be printed, depending on the command line options.
     """
@@ -135,7 +135,8 @@ def printItems(items, directory, args, level=0, detectionMethod=sequenceParser.e
         # sam-ls -R
         if args.recursive and itemType == sequenceParser.eTypeFolder:
             level += levelPadding
-            printItems(sequenceParser.browse(os.path.join(item.getFolder() + '/' + item.getFilename()), detectionMethod, filters), directory, args, level)
+            newItems = sequenceParser.browse(os.path.join(item.getFolder() + '/' + item.getFilename()), detectionMethod, filters)
+            printItems(newItems, directory, args, detectionMethod, filters, level)
             level -= levelPadding
 
 
@@ -210,4 +211,4 @@ if __name__ == '__main__':
                     folderName = os.getcwd()
                 items += sequenceParser.browse(folderName, detectionMethod, filters)
 
-        printItems(items, inputDirectory, args)
+        printItems(items, inputDirectory, args, detectionMethod, filters)
