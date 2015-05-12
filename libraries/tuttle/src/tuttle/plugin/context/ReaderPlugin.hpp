@@ -6,8 +6,12 @@
 #include "ReaderDefinition.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <Sequence.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+#include <Sequence.hpp>
+
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 
 namespace tuttle {
@@ -28,27 +32,37 @@ public:
 	virtual void render( const OFX::RenderArguments& args );
 
 public:
+
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
-		//TUTTLE_LOG_VAR( TUTTLE_INFO, time );
 		if( _isSequence )
-		{
-			//TUTTLE_LOG_VAR( TUTTLE_INFO, _filePattern.getAbsoluteFilenameAt( time ) );
-			return _filePattern.getFilenameAt( static_cast<std::ssize_t>(time) );
-		}
+			return (getAbsoluteDirectoryPath() / _filePattern.getFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) )).string();
 		else
-		{
-			//TUTTLE_LOG_VAR( TUTTLE_INFO, _paramFilepath->getValue() );
 			return _paramFilepath->getValue();
-		}
+	}
+
+	boost::filesystem::path getAbsoluteDirectoryPath() const
+	{
+		namespace bfs = boost::filesystem;
+		bfs::path filepath( _paramFilepath->getValue() );
+		return bfs::absolute(filepath).parent_path();
+	}
+
+	std::string getAbsoluteDirectory() const
+	{
+		return getAbsoluteDirectoryPath().string();
 	}
 
 	std::string getAbsoluteFirstFilename() const
 	{
 		if( _isSequence )
-			return _filePattern.getFirstFilename();
+		{
+			return (getAbsoluteDirectoryPath() / _filePattern.getFirstFilename()).string();
+		}
 		else
+		{
 			return _paramFilepath->getValue();
+		}
 	}
 
 	OfxTime getFirstTime() const
