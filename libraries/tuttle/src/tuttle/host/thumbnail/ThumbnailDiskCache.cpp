@@ -47,14 +47,7 @@ namespace host {
 	graph.setup();
 
 	OfxRangeD timeDomain = nodes.back()->getTimeDomain();
-	OfxTime time = timeDomain.min + (timeDomain.max - timeDomain.min) * 0.5;
-
-	// TODO: If it's a sequence, the middle frame may not exist.
-//	item = sequenceParser.browse(id)[0]
-//	if item._type is sequenceParser.eTypeSequence:
-//		fileAtTime = item._sequence.getAbsoluteFilenameAt(int(time))
-//		if not os.path.exists(fileAtTime):
-//			time = td.min
+	OfxTime time = timeDomain.min;
 
 	ComputeOptions cOptions;
 	cOptions.setVerboseLevel(eVerboseLevelTrace);
