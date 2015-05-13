@@ -158,11 +158,7 @@ if __name__ == '__main__':
         offset += args.outputFirst - inputSequence.getFirstTime()
     # sam-mv --output-last
     if args.outputLast is not None:
-        if args.outputLast < inputSequence.getLastTime():
-            puts(colored.red('Error: cannot force last time of output sequence to ' + str(args.outputLast) + ' when the last time of input sequence is ' + str(inputSequence.getLastTime())))
-            exit(-1)
-        else:
-            offset += args.outputLast - inputSequence.getLastTime()
+        offset += args.outputLast - inputSequence.getLastTime()
     # sam-mv -o
     if args.offset:
         offset += args.offset
