@@ -93,6 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('--output-first', dest='outputFirst', type=int, help='specify the first output image, in order to select a sub-range of the output sequence')
     parser.add_argument('--output-last', dest='outputLast', type=int, help='specify the last input image in order to select a sub-range of the output sequence')
     parser.add_argument('--remove-holes', dest='removeHoles', action='store_true', help='remove holes of the sequence')
+    parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
 
     # Activate completion
     argcomplete.autocomplete(parser)
@@ -115,8 +116,12 @@ if __name__ == '__main__':
         inputSequencePath = '.'
     inputSequenceName = os.path.basename(args.inputs[0])
 
+    # sam-mv --detect-negative
+    detectionMethod = sequenceParser.eDetectionDefault
+    if args.detectNegative:
+        detectionMethod = detectionMethod | sequenceParser.eDetectionNegative
+
     # get input sequence
-    detectionMethod = sequenceParser.eDetectionDefault | sequenceParser.eDetectionNegative
     inputItems = sequenceParser.browse(inputSequencePath, detectionMethod, [inputSequenceName])
     if len(inputItems) != 1:
         puts(colored.red('Error: no existing file corresponds to the given input sequence: ' + args.inputs[0]))
