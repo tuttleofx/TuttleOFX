@@ -24,7 +24,7 @@ def sequenceParserCompleter(prefix, **kwargs):
     return itemsStr
 
 
-def moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath):
+def moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove):
     """
     Move an input sequence from inputSequencePath to output.
     Depending on args, update the frame ranges of the output sequence.
@@ -36,6 +36,7 @@ def moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSe
     :param offset: offset used to retime the output sequence
     :param outputSequence: the output sequence to write.
     :param outputSequence: the path of the outputSequence.
+    :param holesToRemove: list of holes to remove in the output sequence
     """
     # create output directory if not exists
     try:
@@ -49,15 +50,16 @@ def moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSe
     puts(colored.magenta(os.path.join(inputSequencePath, str(inputSequence)) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)), bold=True))
 
     # get frame ranges
-    frameRangeList = list(inputSequence.getFramesIterable(first, last))
+    inputFrameList = list(inputSequence.getFramesIterable(first, last))
+    outputFrameList = sorted(inputFrameList + holesToRemove)
     if offset > 0:
-        frameRangeList = reversed(frameRangeList)
+        inputFrameList = reversed(inputFrameList)
+        outputFrameList = reversed(outputFrameList)
 
     # for each time of sequence
-    for time in frameRangeList:
-        inputPath = os.path.join(inputSequencePath, inputSequence.getFilenameAt(time))
-        outputTime = time + offset
-        outputPath = os.path.join(outputSequencePath, outputSequence.getFilenameAt(outputTime))
+    for inputTime, outputTime in zip(inputFrameList, outputFrameList):
+        inputPath = os.path.join(inputSequencePath, inputSequence.getFilenameAt(inputTime))
+        outputPath = os.path.join(outputSequencePath, outputSequence.getFilenameAt(outputTime + offset))
 
 #        print inputPath, '->', outputPath
 
@@ -90,6 +92,7 @@ if __name__ == '__main__':
     parser.add_argument('--input-last', dest='inputLast', type=int, help='specify the last input image in order to select a sub-range of the input sequence')
     parser.add_argument('--output-first', dest='outputFirst', type=int, help='specify the first output image, in order to select a sub-range of the output sequence')
     parser.add_argument('--output-last', dest='outputLast', type=int, help='specify the last input image in order to select a sub-range of the output sequence')
+    parser.add_argument('--remove-holes', dest='removeHoles', action='store_true', help='remove holes of the sequence')
 
     # Activate completion
     argcomplete.autocomplete(parser)
@@ -159,5 +162,19 @@ if __name__ == '__main__':
     if args.offset:
         offset += args.offset
 
+    # sam-mv --remove-holes
+    holesToRemove = []
+    if args.removeHoles and inputSequence.hasMissingFile():
+        lastest = -1
+        for currentRange in inputSequence.getFrameRanges():
+            if lastest == -1:
+                lastest = currentRange.last
+                continue
+
+            gap = currentRange.first - lastest
+            for hole in range(1,gap):
+                holesToRemove.append(lastest + hole)
+            lastest = currentRange.last
+
     # move sequence
-    moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath)
+    moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove)
