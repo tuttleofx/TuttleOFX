@@ -65,7 +65,7 @@ def moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSe
 
         # security: check if file already exist
         if os.path.exists(outputPath):
-            puts(colored.magenta('Error: the output path "' + outputPath + '" already exist!'))
+            puts(colored.red('Error: the output path "' + outputPath + '" already exist!'))
             exit(-1)
 
         # move the image at time
