@@ -54,8 +54,6 @@ if __name__ == '__main__':
         puts(colored.red('Error: first input is not a sequence: ', inputItem.getFilename()))
         exit(-1)
 
-    inputSequence = inputItem.getSequence()
-
     # get output path
     outputSequencePath = os.path.dirname(args.inputs[1])
     if not outputSequencePath:
@@ -69,27 +67,27 @@ if __name__ == '__main__':
         outputSequence = sequenceParser.Sequence(inputSequence)
 
     # sam-mv --input-first
-    first = args.inputFirst if (args.inputFirst is not None and args.inputFirst > inputSequence.getFirstTime()) else inputSequence.getFirstTime()
+    first = args.inputFirst if (args.inputFirst is not None and args.inputFirst > inputItem.getSequence().getFirstTime()) else inputItem.getSequence().getFirstTime()
 
     # sam-mv --input-last
-    last = args.inputLast if (args.inputLast is not None and args.inputLast < inputSequence.getLastTime()) else inputSequence.getLastTime()
+    last = args.inputLast if (args.inputLast is not None and args.inputLast < inputItem.getSequence().getLastTime()) else inputItem.getSequence().getLastTime()
 
     offset = 0
     # sam-mv --output-first
     if args.outputFirst is not None:
-        offset += args.outputFirst - inputSequence.getFirstTime()
+        offset += args.outputFirst - inputItem.getSequence().getFirstTime()
     # sam-mv --output-last
     if args.outputLast is not None:
-        offset += args.outputLast - inputSequence.getLastTime()
+        offset += args.outputLast - inputItem.getSequence().getLastTime()
     # sam-mv -o
     if args.offset:
         offset += args.offset
 
     # sam-mv --remove-holes
     holesToRemove = []
-    if args.removeHoles and inputSequence.hasMissingFile():
+    if args.removeHoles and inputItem.getSequence().hasMissingFile():
         lastest = -1
-        for currentRange in inputSequence.getFrameRanges():
+        for currentRange in inputItem.getSequence().getFrameRanges():
             if lastest == -1:
                 lastest = currentRange.last
                 continue
@@ -100,4 +98,4 @@ if __name__ == '__main__':
             lastest = currentRange.last
 
     # move sequence
-    common.processSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove, shutil.move)
+    common.processSequence(inputItem, first, last, offset, outputSequence, outputSequencePath, holesToRemove, shutil.move)

@@ -60,13 +60,12 @@ def getMvCpArgumentsFromParser(parser):
     return args
 
 
-def processSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove, func):
+def processSequence(inputItem, first, last, offset, outputSequence, outputSequencePath, holesToRemove, func):
     """
-    Apply 'func' operation to inputSequence (used by sam-mv and sam-cp).
+    Apply 'func' operation to the sequence contained in inputItem (used by sam-mv and sam-cp).
     Depending on args, update the frame ranges of the output sequence.
     
-    :param inputSequence: the input sequence to process (move, copy...)
-    :param inputSequencePath: path of the inputSequence
+    :param inputItem: the item which contains the input sequence to process (move, copy...)
     :param first: first time of the inputSequence
     :param last: last time of the inputSequence
     :param offset: offset used to retime the output sequence
@@ -83,10 +82,10 @@ def processSequence(inputSequence, inputSequencePath, first, last, offset, outpu
         exit(-1)
 
     # print brief of the operation
-    puts(colored.magenta(os.path.join(inputSequencePath, str(inputSequence)) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)), bold=True))
+    puts(colored.magenta(os.path.join(inputItem.getFolder(), str(inputItem.getSequence())) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)), bold=True))
 
     # get frame ranges
-    inputFrameList = list(inputSequence.getFramesIterable(first, last))
+    inputFrameList = list(inputItem.getSequence().getFramesIterable(first, last))
     outputFrameList = sorted(inputFrameList + holesToRemove)
     if offset > 0:
         inputFrameList = reversed(inputFrameList)
@@ -94,7 +93,7 @@ def processSequence(inputSequence, inputSequencePath, first, last, offset, outpu
 
     # for each time of sequence
     for inputTime, outputTime in zip(inputFrameList, outputFrameList):
-        inputPath = os.path.join(inputSequencePath, inputSequence.getFilenameAt(inputTime))
+        inputPath = os.path.join(inputItem.getFolder(), inputItem.getSequence().getFilenameAt(inputTime))
         outputPath = os.path.join(outputSequencePath, outputSequence.getFilenameAt(outputTime + offset))
 
 #        print inputPath, '->', outputPath
