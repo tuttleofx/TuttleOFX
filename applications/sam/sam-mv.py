@@ -6,7 +6,6 @@ import argparse
 import shutil
 
 # python modules to easily get completion, colors, indent text...
-import argcomplete
 from clint.textui import colored, puts
 
 # parser of sequence
@@ -66,36 +65,8 @@ if __name__ == '__main__':
     if not outputIsSequence:
         outputSequence = sequenceParser.Sequence(inputSequence)
 
-    # sam-mv --input-first
-    first = args.inputFirst if (args.inputFirst is not None and args.inputFirst > inputItem.getSequence().getFirstTime()) else inputItem.getSequence().getFirstTime()
-
-    # sam-mv --input-last
-    last = args.inputLast if (args.inputLast is not None and args.inputLast < inputItem.getSequence().getLastTime()) else inputItem.getSequence().getLastTime()
-
-    offset = 0
-    # sam-mv --output-first
-    if args.outputFirst is not None:
-        offset += args.outputFirst - inputItem.getSequence().getFirstTime()
-    # sam-mv --output-last
-    if args.outputLast is not None:
-        offset += args.outputLast - inputItem.getSequence().getLastTime()
-    # sam-mv -o
-    if args.offset:
-        offset += args.offset
-
-    # sam-mv --remove-holes
-    holesToRemove = []
-    if args.removeHoles and inputItem.getSequence().hasMissingFile():
-        lastest = -1
-        for currentRange in inputItem.getSequence().getFrameRanges():
-            if lastest == -1:
-                lastest = currentRange.last
-                continue
-
-            gap = currentRange.first - lastest
-            for hole in range(1,gap):
-                holesToRemove.append(lastest + hole)
-            lastest = currentRange.last
+    # How to process the move operation
+    moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
 
     # move sequence
-    common.processSequence(inputItem, first, last, offset, outputSequence, outputSequencePath, holesToRemove, shutil.move)
+    common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.move)

@@ -60,18 +60,21 @@ def getMvCpArgumentsFromParser(parser):
     return args
 
 
-def processSequence(inputItem, first, last, offset, outputSequence, outputSequencePath, holesToRemove, func):
+def processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, func):
     """
     Apply 'func' operation to the sequence contained in inputItem (used by sam-mv and sam-cp).
     Depending on args, update the frame ranges of the output sequence.
     
     :param inputItem: the item which contains the input sequence to process (move, copy...)
-    :param first: first time of the inputSequence
-    :param last: last time of the inputSequence
-    :param offset: offset used to retime the output sequence
     :param outputSequence: the output sequence to write (destination of move, copy...)
     :param outputSequence: the path of the outputSequence.
-    :param holesToRemove: list of holes to remove in the output sequence
+    :param moveManipulators: dict which contains 
+        {
+            first time of the inputSequence, 
+            last time of the inputSequence, 
+            offset used to retime the output sequence, 
+            list of holes to remove in the output sequence
+        }
     """
     # create output directory if not exists
     try:
@@ -85,16 +88,16 @@ def processSequence(inputItem, first, last, offset, outputSequence, outputSequen
     puts(colored.magenta(os.path.join(inputItem.getFolder(), str(inputItem.getSequence())) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)), bold=True))
 
     # get frame ranges
-    inputFrameList = list(inputItem.getSequence().getFramesIterable(first, last))
-    outputFrameList = sorted(inputFrameList + holesToRemove)
-    if offset > 0:
+    inputFrameList = list(inputItem.getSequence().getFramesIterable(moveManipulators['first'], moveManipulators['last']))
+    outputFrameList = sorted(inputFrameList + moveManipulators['holes'])
+    if moveManipulators['offset'] > 0:
         inputFrameList = reversed(inputFrameList)
         outputFrameList = reversed(outputFrameList)
 
     # for each time of sequence
     for inputTime, outputTime in zip(inputFrameList, outputFrameList):
         inputPath = os.path.join(inputItem.getFolder(), inputItem.getSequence().getFilenameAt(inputTime))
-        outputPath = os.path.join(outputSequencePath, outputSequence.getFilenameAt(outputTime + offset))
+        outputPath = os.path.join(outputSequencePath, outputSequence.getFilenameAt(outputTime + moveManipulators['offset']))
 
 #        print inputPath, '->', outputPath
 
@@ -105,3 +108,41 @@ def processSequence(inputItem, first, last, offset, outputSequence, outputSequen
 
         # process the image at time
         func(inputPath, outputPath)
+
+
+def getMvCpSequenceManipulators(inputSequence, args):
+    """
+    Returns a dict of values to detect how to process move/copy of sequence.
+    """
+    # --input-first
+    first = args.inputFirst if (args.inputFirst is not None and args.inputFirst > inputSequence.getFirstTime()) else inputSequence.getFirstTime()
+
+    # --input-last
+    last = args.inputLast if (args.inputLast is not None and args.inputLast < inputSequence.getLastTime()) else inputSequence.getLastTime()
+
+    offset = 0
+    # --output-first
+    if args.outputFirst is not None:
+        offset += args.outputFirst - inputSequence.getFirstTime()
+    # --output-last
+    if args.outputLast is not None:
+        offset += args.outputLast - inputSequence.getLastTime()
+    # --offset
+    if args.offset:
+        offset += args.offset
+
+    # --remove-holes
+    holesToRemove = []
+    if args.removeHoles and inputSequence.hasMissingFile():
+        lastest = -1
+        for currentRange in inputSequence.getFrameRanges():
+            if lastest == -1:
+                lastest = currentRange.last
+                continue
+
+            gap = currentRange.first - lastest
+            for hole in range(1,gap):
+                holesToRemove.append(lastest + hole)
+            lastest = currentRange.last
+    
+    return {'first': first, 'last': last, 'offset': offset, 'holes': holesToRemove}
