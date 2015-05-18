@@ -16,10 +16,6 @@ from pySequenceParser import sequenceParser
 import common
 
 
-# sam-ls -R
-levelPadding = 2
-
-
 def printItem(item, directory, args, level):
     """
     Print the item depending on the command line options.
@@ -85,16 +81,16 @@ def printItem(item, directory, args, level):
         filePath += os.path.join(filePath + item.getFilename())
     filePath += ' \t'
 
-    # sam-ls -R
+    # sam-ls -R / sam-ls -L
     indentTree = ''
-    if args.recursive:
-        indentTree += '|  ' * (level - levelPadding)
+    if args.recursive and args.level != 0:
+        indentTree += '|  ' * (level - 1)
         indentTree += '|__ '
 
     # display
     toPrint = detailed + filePath + detailedSequence
-    # cannot use indent method with an empty quote
-    if level == 0:
+    # if first level or no tree formatting
+    if level == 0 or args.level == 0:
         puts(toPrint.format())
     else:
         with indent(level, quote=indentTree):
@@ -127,10 +123,15 @@ def printItems(items, directory, args, detectionMethod, filters, level=0):
 
         # sam-ls -R
         if args.recursive and itemType == sequenceParser.eTypeFolder:
-            level += levelPadding
+
+            # sam-ls -L
+            if args.level and args.level <= level:
+                continue
+
+            level += 1
             newItems = sequenceParser.browse(os.path.join(item.getFolder() + '/' + item.getFilename()), detectionMethod, filters)
             printItems(newItems, directory, args, detectionMethod, filters, level)
-            level -= levelPadding
+            level -= 1
 
 
 if __name__ == '__main__':
@@ -155,6 +156,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format')
     parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: *.jpg,*.png').completer = common.sequenceParserCompleter
     parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
+    parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
     parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
     parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
     parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (True by default)')
