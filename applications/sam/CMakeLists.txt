@@ -18,3 +18,11 @@ install(
     DESTINATION bin/
 )
 
+# sam-cp
+add_custom_target(sam-cp SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam-cp.py")
+add_dependencies(sam-cp _sequenceparser-py)
+
+install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-cp.py"
+    DESTINATION bin/
+)
