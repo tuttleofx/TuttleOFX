@@ -15,56 +15,6 @@ from pySequenceParser import sequenceParser
 # sam common functions
 import common
 
-
-def moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove):
-    """
-    Move an input sequence from inputSequencePath to output.
-    Depending on args, update the frame ranges of the output sequence.
-    
-    :param inputSequence: the input sequence to move
-    :param inputSequencePath: path of the inputSequence
-    :param first: first time of the inputSequence
-    :param last: last time of the inputSequence
-    :param offset: offset used to retime the output sequence
-    :param outputSequence: the output sequence to write.
-    :param outputSequence: the path of the outputSequence.
-    :param holesToRemove: list of holes to remove in the output sequence
-    """
-    # create output directory if not exists
-    try:
-        if not os.path.exists(outputSequencePath):
-            os.makedirs(outputSequencePath)
-    except Exception as e:
-        puts(colored.red('Error: cannot create directory tree for "' + outputSequencePath + '": ' + str(e)))
-        exit(-1)
-
-    # print brief of the operation
-    puts(colored.magenta(os.path.join(inputSequencePath, str(inputSequence)) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)), bold=True))
-
-    # get frame ranges
-    inputFrameList = list(inputSequence.getFramesIterable(first, last))
-    outputFrameList = sorted(inputFrameList + holesToRemove)
-    if offset > 0:
-        inputFrameList = reversed(inputFrameList)
-        outputFrameList = reversed(outputFrameList)
-
-    # for each time of sequence
-    for inputTime, outputTime in zip(inputFrameList, outputFrameList):
-        inputPath = os.path.join(inputSequencePath, inputSequence.getFilenameAt(inputTime))
-        outputPath = os.path.join(outputSequencePath, outputSequence.getFilenameAt(outputTime + offset))
-
-#        print inputPath, '->', outputPath
-
-        # security: check if file already exist
-        if os.path.exists(outputPath):
-            puts(colored.red('Error: the output path "' + outputPath + '" already exist!'))
-            exit(-1)
-
-        # move the image at time
-        shutil.move(inputPath, outputPath)
-#        shutil.copy2(inputPath, outputPath)
-
-
 if __name__ == '__main__':
 
     # Create command-line interface
@@ -150,4 +100,4 @@ if __name__ == '__main__':
             lastest = currentRange.last
 
     # move sequence
-    moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove)
+    common.processSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove, shutil.move)
