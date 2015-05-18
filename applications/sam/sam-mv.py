@@ -31,27 +31,8 @@ if __name__ == '__main__':
     # Get arguments
     args = common.getMvCpArgumentsFromParser(parser)
 
-    # get input path and name
-    inputSequencePath = os.path.dirname(args.inputs[0])
-    if not inputSequencePath:
-        inputSequencePath = '.'
-    inputSequenceName = os.path.basename(args.inputs[0])
-
-    # sam-mv --detect-negative
-    detectionMethod = sequenceParser.eDetectionDefault
-    if args.detectNegative:
-        detectionMethod = detectionMethod | sequenceParser.eDetectionNegative
-
-    # get input sequence
-    inputItems = sequenceParser.browse(inputSequencePath, detectionMethod, [inputSequenceName])
-    if len(inputItems) != 1:
-        puts(colored.red('Error: no existing file corresponds to the given input sequence: ' + args.inputs[0]))
-        exit(-1)
-
-    inputItem = inputItems[0]
-    if inputItem.getType() != sequenceParser.eTypeSequence:
-        puts(colored.red('Error: first input is not a sequence: ', inputItem.getFilename()))
-        exit(-1)
+    # Get input
+    inputItem = common.getSequenceItemFromPath(args.inputs[0], args.detectNegative)
 
     # get output path
     outputSequencePath = os.path.dirname(args.inputs[1])
