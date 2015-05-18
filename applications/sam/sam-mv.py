@@ -34,14 +34,14 @@ if __name__ == '__main__':
     # Get input
     inputItem = common.getSequenceItemFromPath(args.inputs[0], args.detectNegative)
 
-    # get output path
+    # Get output path
     outputSequencePath = os.path.dirname(args.inputs[1])
     if not outputSequencePath:
         outputSequencePath = '.'
-    outputSequenceName = os.path.basename(args.inputs[1])
 
-    # get output sequence
+    # Get output sequence
     outputSequence = sequenceParser.Sequence()
+    outputSequenceName = os.path.basename(args.inputs[1])
     outputIsSequence = outputSequence.initFromPattern(outputSequenceName, sequenceParser.ePatternDefault)
     if not outputIsSequence:
         outputSequence = sequenceParser.Sequence(inputSequence)
