@@ -5,26 +5,19 @@ import os
 from datetime import date
 import argparse
 
-from pySequenceParser import sequenceParser
-
+# python modules to easily get completion, colors, indent text...
 import argcomplete
 from clint.textui import colored, puts, indent
+
+# parser of sequence
+from pySequenceParser import sequenceParser
+
+# sam common functions
+import common
 
 
 # sam-ls -R
 levelPadding = 2
-
-
-def sequenceParserCompleter(prefix, **kwargs):
-    """
-    Custom Completer to manage auto competion when looking for sequences.
-    """
-    directory = os.path.dirname(prefix)
-    if directory == '':
-        directory = '.'
-    items = sequenceParser.browse(directory, sequenceParser.eDetectionDefault, [str(prefix+'*')])
-    itemsStr = [str(item.getFilename()) for item in items]
-    return itemsStr
 
 
 def printItem(item, directory, args, level):
@@ -152,7 +145,7 @@ if __name__ == '__main__':
             ''',
             )
 
-    parser.add_argument('inputDirectories', nargs='*', action='store', help='list of input directories to analyse').completer = sequenceParserCompleter
+    parser.add_argument('inputDirectories', nargs='*', action='store', help='list of input directories to analyse').completer = common.sequenceParserCompleter
 
     # Options
     parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
@@ -160,7 +153,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
     parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
     parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format')
-    parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: *.jpg,*.png').completer = sequenceParserCompleter
+    parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: *.jpg,*.png').completer = common.sequenceParserCompleter
     parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
     parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
     parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')

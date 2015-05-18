@@ -3,25 +3,17 @@
 
 import os
 import argparse
-
-from pySequenceParser import sequenceParser
-
 import shutil
 
+# python modules to easily get completion, colors, indent text...
 import argcomplete
 from clint.textui import colored, puts
 
+# parser of sequence
+from pySequenceParser import sequenceParser
 
-def sequenceParserCompleter(prefix, **kwargs):
-    """
-    Custom Completer to manage auto competion when looking for sequences.
-    """
-    directory = os.path.dirname(prefix)
-    if directory == '':
-        directory = '.'
-    items = sequenceParser.browse(directory, sequenceParser.eDetectionDefault, [str(prefix+'*')])
-    itemsStr = [str(item.getFilename()) for item in items]
-    return itemsStr
+# sam common functions
+import common
 
 
 def moveSequence(inputSequence, inputSequencePath, first, last, offset, outputSequence, outputSequencePath, holesToRemove):
@@ -84,7 +76,7 @@ if __name__ == '__main__':
             ''',
             )
 
-    parser.add_argument('inputs', nargs='*', action='store', help='list of input directories to move').completer = sequenceParserCompleter
+    parser.add_argument('inputs', nargs='*', action='store', help='list of input directories to move').completer = common.sequenceParserCompleter
 
     # Options
     parser.add_argument('-o', '--offset', dest='offset', type=int, help='retime the sequence with the given offset')
