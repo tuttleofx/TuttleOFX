@@ -26,3 +26,12 @@ install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-cp.py"
     DESTINATION bin/
 )
+
+# sam-rm
+add_custom_target(sam-rm SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam-rm.py")
+add_dependencies(sam-rm _sequenceparser-py)
+
+install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-rm.py"
+    DESTINATION bin/
+)
