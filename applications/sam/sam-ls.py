@@ -129,7 +129,7 @@ def printItems(items, args, detectionMethod, filters, level=0):
                 continue
 
             level += 1
-            newItems = sequenceParser.browse(os.path.join(item.getFolder() + '/' + item.getFilename()), detectionMethod, filters)
+            newItems = sequenceParser.browse(os.path.join(item.getFolder(), item.getFilename()), detectionMethod, filters)
             printItems(newItems, args, detectionMethod, filters, level)
             level -= 1
 
