@@ -55,7 +55,7 @@ def addMvCpArgumentsToParser(parser):
     Create common arguments/options to sam-mv and sam-cp tools.
     """
     # Arguments
-    parser.add_argument('inputs', nargs='*', action='store', help='list of input directories to move').completer = sequenceParserCompleter
+    parser.add_argument('inputs', nargs='*', action='store', help='list of input directories').completer = sequenceParserCompleter
 
     # Options
     parser.add_argument('-o', '--offset', dest='offset', type=int, help='retime the sequence with the given offset')
