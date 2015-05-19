@@ -1,5 +1,12 @@
 ## sam
 
+# common
+find_package(PythonLibs)
+install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/common.py"
+    DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/
+)
+
 # sam-ls
 add_custom_target(sam-ls SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam-ls.py")
 add_dependencies(sam-ls _sequenceparser-py)
