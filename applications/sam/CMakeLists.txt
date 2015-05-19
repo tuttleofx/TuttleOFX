@@ -4,7 +4,18 @@
 find_package(PythonLibs)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/common.py"
+    PERMISSIONS WORLD_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/
+)
+
+# sam
+add_custom_target(sam SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py")
+add_dependencies(sam sam-ls sam-mv sam-cp sam-rm)
+
+install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py"
+    PERMISSIONS WORLD_EXECUTE WORLD_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    DESTINATION bin/
 )
 
 # sam-ls
@@ -13,6 +24,7 @@ add_dependencies(sam-ls _sequenceparser-py)
 
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-ls.py"
+    PERMISSIONS WORLD_EXECUTE WORLD_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
 
@@ -22,6 +34,7 @@ add_dependencies(sam-mv _sequenceparser-py)
 
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-mv.py"
+    PERMISSIONS WORLD_EXECUTE WORLD_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
 
@@ -31,6 +44,7 @@ add_dependencies(sam-cp _sequenceparser-py)
 
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-cp.py"
+    PERMISSIONS WORLD_EXECUTE WORLD_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
 
@@ -40,5 +54,6 @@ add_dependencies(sam-rm _sequenceparser-py)
 
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-rm.py"
+    PERMISSIONS WORLD_EXECUTE WORLD_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
