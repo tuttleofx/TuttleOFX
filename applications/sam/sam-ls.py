@@ -146,18 +146,14 @@ if __name__ == '__main__':
     parser.add_argument('inputs', nargs='*', action='store', help='list of files/sequences/directories to analyse').completer = common.sequenceParserCompleter
 
     # Options
-    parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
-    parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
-    parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
-    parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
+    common.addCommonFilterArgumentsToParser(parser)
     parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format')
-    parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: *.jpg,*.png').completer = common.sequenceParserCompleter
     parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
     parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
     parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
     parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
     parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (True by default)')
-    parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
+    common.addDetectNegativeArgumentToParser(parser)
     #parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
 
     # Activate completion

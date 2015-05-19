@@ -50,9 +50,27 @@ def getSequenceItemFromPath(inputPath, detectNegative):
     return inputItem
 
 
+def addDetectNegativeArgumentToParser(parser):
+    """
+    Add common a common option to command line of sam tools.
+    """
+    parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
+
+
+def addCommonFilterArgumentsToParser(parser):
+    """
+    Add common options to command line of sam-ls and sam-rm tools.
+    """
+    parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
+    parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
+    parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
+    parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
+    parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: *.jpg,*.png').completer = sequenceParserCompleter
+
+
 def addMvCpArgumentsToParser(parser):
     """
-    Create common arguments/options to sam-mv and sam-cp tools.
+    Add common arguments/options to command line of sam-mv and sam-cp tools.
     """
     # Arguments
     parser.add_argument('inputs', nargs='*', action='store', help='list of input directories').completer = sequenceParserCompleter
@@ -64,7 +82,7 @@ def addMvCpArgumentsToParser(parser):
     parser.add_argument('--output-first', dest='outputFirst', type=int, help='specify the first output image, in order to select a sub-range of the output sequence')
     parser.add_argument('--output-last', dest='outputLast', type=int, help='specify the last input image in order to select a sub-range of the output sequence')
     parser.add_argument('--remove-holes', dest='removeHoles', action='store_true', help='remove holes of the sequence')
-    parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
+    addDetectNegativeArgumentToParser(parser)
 
 
 def getMvCpArgumentsFromParser(parser):

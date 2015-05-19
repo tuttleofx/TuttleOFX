@@ -111,16 +111,12 @@ if __name__ == '__main__':
     parser.add_argument('inputs', nargs='+', action='store', help='list of input files/sequences/directories to remove').completer = common.sequenceParserCompleter
 
     # Options
-    parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
-    parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
-    parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
-    parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
-    parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: *.jpg,*.png').completer = common.sequenceParserCompleter
+    common.addCommonFilterArgumentsToParser(parser)
     parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
     parser.add_argument('--first-image', dest='firstImage', type=int, help='specify the first image of sequence')
     parser.add_argument('--last-image', dest='lastImage', type=int, help='specify the last image of sequence')
     parser.add_argument('--range', dest='range', nargs=2, type=int, help='specify the range of sequence')
-    parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
+    common.addDetectNegativeArgumentToParser(parser)
 
     # Activate completion
     argcomplete.autocomplete(parser)
