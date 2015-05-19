@@ -38,21 +38,18 @@ def printItem(item, args, level):
             characterFromType = 'f'
         elif itemType == sequenceParser.eTypeSequence:
             characterFromType = 's'
+            # [ begin : end ] nbFiles - nbMissingFiles
+            sequence = item.getSequence()
+            detailedSequence += '[' + str(sequence.getFirstTime()) + ':' + str(sequence.getLastTime()) + '] '
+            detailedSequence += str(sequence.getNbFiles()) + ' files'
+            detailedSequence += ( ', ' + str(sequence.getNbMissingFiles() ) + ' missing files') if sequence.hasMissingFile() else ''
+            detailedSequence += ' \t'
         elif itemType == sequenceParser.eTypeLink:
             characterFromType = 'l'
         itemStat = sequenceParser.ItemStat(item)
         lastUpdate = date.fromtimestamp(itemStat.modificationTime).strftime('%d/%m/%y')
         detailed += characterFromType + '  ' + lastUpdate + '  ' + str(itemStat.size)
         detailed += ' \t'
-
-    # sam-ls -s
-    if args.sequences:
-        sequence = item.getSequence()
-        # [ begin : end ] nbFiles - nbMissingFiles
-        detailedSequence += '[' + str(sequence.getFirstTime()) + ':' + str(sequence.getLastTime()) + '] '
-        detailedSequence += str(sequence.getNbFiles()) + ' files'
-        detailedSequence += ( ', ' + str(sequence.getNbMissingFiles() ) + ' missing files') if sequence.hasMissingFile() else ''
-        detailedSequence += ' \t'
 
     # sam-ls --absolute-path
     if args.absolutePath:
