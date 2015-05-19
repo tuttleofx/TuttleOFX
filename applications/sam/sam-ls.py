@@ -16,7 +16,7 @@ from pySequenceParser import sequenceParser
 import common
 
 
-def printItem(item, directory, args, level):
+def printItem(item, args, level):
     """
     Print the item depending on the command line options.
     """
@@ -56,7 +56,7 @@ def printItem(item, directory, args, level):
 
     # sam-ls --absolute-path
     if args.absolutePath:
-        filePath += os.path.abspath(directory) + '/'
+        filePath += os.path.abspath(item.getFolder()) + '/'
 
     # sam-ls --relative-path
     if args.relativePath:
@@ -97,7 +97,7 @@ def printItem(item, directory, args, level):
             puts(toPrint.format())
 
 
-def printItems(items, directory, args, detectionMethod, filters, level=0):
+def printItems(items, args, detectionMethod, filters, level=0):
     """
     For each items, check if it should be printed, depending on the command line options.
     """
@@ -119,7 +119,7 @@ def printItems(items, directory, args, detectionMethod, filters, level=0):
 
         # print current item
         if toPrint:
-            printItem(item, directory, args, level)
+            printItem(item, args, level)
 
         # sam-ls -R
         if args.recursive and itemType == sequenceParser.eTypeFolder:
@@ -130,7 +130,7 @@ def printItems(items, directory, args, detectionMethod, filters, level=0):
 
             level += 1
             newItems = sequenceParser.browse(os.path.join(item.getFolder() + '/' + item.getFilename()), detectionMethod, filters)
-            printItems(newItems, directory, args, detectionMethod, filters, level)
+            printItems(newItems, args, detectionMethod, filters, level)
             level -= 1
 
 
@@ -146,7 +146,7 @@ if __name__ == '__main__':
             ''',
             )
 
-    parser.add_argument('inputDirectories', nargs='*', action='store', help='list of input directories to analyse').completer = common.sequenceParserCompleter
+    parser.add_argument('inputs', nargs='*', action='store', help='list of files/sequences/directories to analyse').completer = common.sequenceParserCompleter
 
     # Options
     parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
@@ -169,12 +169,12 @@ if __name__ == '__main__':
     # Parse command-line
     args = parser.parse_args()
 
-    # directories to scan
-    inputDirectories = []
-    if args.inputDirectories:
-        inputDirectories = args.inputDirectories
+    # inputs to scan
+    inputs = []
+    if args.inputs:
+        inputs = args.inputs
     else:
-        inputDirectories.append(os.getcwd())
+        inputs.append(os.getcwd())
 
     # sam-ls -a
     detectionMethod = sequenceParser.eDetectionDefault
@@ -190,25 +190,27 @@ if __name__ == '__main__':
     if args.expression:
         filters.append(args.expression)
 
-    # get list of items for each directory
-    for inputDirectory in inputDirectories:
+    # get list of items for each inputs
+    for input in inputs:
         items = []
         try:
-            items = sequenceParser.browse(inputDirectory, detectionMethod, filters)
+            items = sequenceParser.browse(input, detectionMethod, filters)
         except IOError as e:
             # if the given input does not correspond to anything
             if 'No such file or directory' in str(e):
                 print e
                 continue
-            # else try a new browse on the current directory, with the given name as filter
+            # else it's not a directory: try a new browse with the given input name as filter
             else:
-                # create item from the given name
-                fileItem = sequenceParser.Item(sequenceParser.eTypeFile, inputDirectory)
+                # new path to browse
+                newBrowsePath = os.path.dirname(input)
+                if not newBrowsePath:
+                    newBrowsePath = '.'
+                # new filter
+                newFilter = []
+                newFilter.extend(filters)
+                newFilter.append(os.path.basename(input))
                 # new browse
-                filters.append(fileItem.getFilename())
-                folderName = fileItem.getFolder()
-                if not folderName:
-                    folderName = os.getcwd()
-                items += sequenceParser.browse(folderName, detectionMethod, filters)
+                items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
-        printItems(items, inputDirectory, args, detectionMethod, filters)
+        printItems(items, args, detectionMethod, filters)
