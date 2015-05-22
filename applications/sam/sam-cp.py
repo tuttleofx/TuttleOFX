@@ -5,9 +5,6 @@ import os
 import argparse
 import shutil
 
-# python modules to easily get completion, colors, indent text...
-from clint.textui import colored, puts
-
 # parser of sequence
 from pySequenceParser import sequenceParser
 
@@ -31,23 +28,25 @@ if __name__ == '__main__':
     # Get arguments
     args = common.getMvCpArgumentsFromParser(parser)
 
-    # Get input
-    inputItem = common.getSequenceItemFromPath(args.inputs[0], args.detectNegative)
-
     # Get output path
-    outputSequencePath = os.path.dirname(args.inputs[1])
+    outputSequencePath = os.path.dirname(args.output)
     if not outputSequencePath:
         outputSequencePath = '.'
 
     # Get output sequence
     outputSequence = sequenceParser.Sequence()
-    outputSequenceName = os.path.basename(args.inputs[1])
+    outputSequenceName = os.path.basename(args.output)
     outputIsSequence = outputSequence.initFromPattern(outputSequenceName, sequenceParser.ePatternDefault)
-    if not outputIsSequence:
-        outputSequence = sequenceParser.Sequence(inputItem.getSequence())
 
-    # How to process the copy operation
-    moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
+    # For each input
+    for input in args.inputs:
+        inputItem = common.getSequenceItemFromPath(input, args.detectNegative)
 
-    # copy sequence
-    common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.copy2)
+        if not outputIsSequence:
+            outputSequence = sequenceParser.Sequence(inputItem.getSequence())
+
+        # How to process the copy operation
+        moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
+
+        # copy sequence
+        common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.copy2)

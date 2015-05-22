@@ -44,7 +44,7 @@ def getSequenceItemFromPath(inputPath, detectNegative):
 
     inputItem = inputItems[0]
     if inputItem.getType() != sequenceParser.eTypeSequence:
-        puts(colored.red('Error: first input is not a sequence: ', inputItem.getFilename()))
+        puts(colored.red('Error: input is not a sequence: ', inputItem.getFilename()))
         exit(-1)
 
     return inputItem
@@ -73,7 +73,8 @@ def addMvCpArgumentsToParser(parser):
     Add common arguments/options to command line of sam-mv and sam-cp tools.
     """
     # Arguments
-    parser.add_argument('inputs', nargs='*', action='store', help='list of input directories').completer = sequenceParserCompleter
+    parser.add_argument('inputs', metavar='INPUTS', nargs='+', action='store', help='list of inputs').completer = sequenceParserCompleter
+    parser.add_argument('output', metavar='OUTPUT', help='the output to write').completer = sequenceParserCompleter
 
     # Options
     parser.add_argument('-o', '--offset', dest='offset', type=int, help='retime the sequence with the given offset')
@@ -101,10 +102,6 @@ def getMvCpArgumentsFromParser(parser):
     args = parser.parse_args()
 
     # check command line
-    if len(args.inputs) < 2:
-        puts(colored.red('Error: two sequences and/or directories must be specified.'))
-        exit(-1)
-
     if args.offset and (args.outputFirst is not None or args.outputLast is not None):
         puts(colored.red('Error: you cannot cumulate multiple options to modify the time.'))
         exit(-1)

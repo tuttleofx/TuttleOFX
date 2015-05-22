@@ -31,23 +31,25 @@ if __name__ == '__main__':
     # Get arguments
     args = common.getMvCpArgumentsFromParser(parser)
 
-    # Get input
-    inputItem = common.getSequenceItemFromPath(args.inputs[0], args.detectNegative)
-
     # Get output path
-    outputSequencePath = os.path.dirname(args.inputs[1])
+    outputSequencePath = os.path.dirname(args.output)
     if not outputSequencePath:
         outputSequencePath = '.'
 
     # Get output sequence
     outputSequence = sequenceParser.Sequence()
-    outputSequenceName = os.path.basename(args.inputs[1])
+    outputSequenceName = os.path.basename(args.output)
     outputIsSequence = outputSequence.initFromPattern(outputSequenceName, sequenceParser.ePatternDefault)
-    if not outputIsSequence:
-        outputSequence = sequenceParser.Sequence(inputSequence)
 
-    # How to process the move operation
-    moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
+    # For each input
+    for input in args.inputs:
+        inputItem = common.getSequenceItemFromPath(input, args.detectNegative)
 
-    # move sequence
-    common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.move)
+        if not outputIsSequence:
+            outputSequence = sequenceParser.Sequence(inputItem.getSequence())
+
+        # How to process the move operation
+        moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
+
+        # move sequence
+        common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.move)
