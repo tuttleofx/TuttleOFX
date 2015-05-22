@@ -77,11 +77,16 @@ def addMvCpArgumentsToParser(parser):
 
     # Options
     parser.add_argument('-o', '--offset', dest='offset', type=int, help='retime the sequence with the given offset')
-    parser.add_argument('--input-first', dest='inputFirst', type=int, help='specify the first input image in order to select a sub-range of the input sequence')
-    parser.add_argument('--input-last', dest='inputLast', type=int, help='specify the last input image in order to select a sub-range of the input sequence')
-    parser.add_argument('--output-first', dest='outputFirst', type=int, help='specify the first output image, in order to select a sub-range of the output sequence')
-    parser.add_argument('--output-last', dest='outputLast', type=int, help='specify the last input image in order to select a sub-range of the output sequence')
     parser.add_argument('--remove-holes', dest='removeHoles', action='store_true', help='remove holes of the sequence')
+    # input group
+    inputGroup = parser.add_argument_group('select range of input')
+    inputGroup.add_argument('--input-first', dest='inputFirst', type=int, help='specify the first input image in order to select a sub-range of the input sequence')
+    inputGroup.add_argument('--input-last', dest='inputLast', type=int, help='specify the last input image in order to select a sub-range of the input sequence')
+    # output group
+    outputGroup = parser.add_argument_group('select range of output')
+    outputGroup.add_argument('--output-first', dest='outputFirst', type=int, help='specify the first output image, in order to select a sub-range of the output sequence')
+    outputGroup.add_argument('--output-last', dest='outputLast', type=int, help='specify the last input image in order to select a sub-range of the output sequence')
+
     addDetectNegativeArgumentToParser(parser)
 
 
