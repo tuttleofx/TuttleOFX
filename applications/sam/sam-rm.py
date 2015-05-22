@@ -28,12 +28,13 @@ def removeItem(item, args):
             os.rmdir(os.path.join(filePath, (item.getFilename() if item.getFilename() != '.' else '')))
         except OSError:
             puts(colored.red('Error: you cannot remove a folder which contains elements like this. If you still want to, see "-R" option.'))
-        return
+            return 1
+        return 0
     
     # remove other things than sequences (file, link...)
     if itemType != sequenceParser.eTypeSequence:
         os.remove(os.path.join(filePath, item.getFilename()))
-        return
+        return 0
 
     sequence = item.getSequence()
 
@@ -49,12 +50,15 @@ def removeItem(item, args):
         last = args.range[1] if args.range[1] < last else last
 
     # remove files in sequence
+    error = 0
     for time in range(first, last + 1):
         try:
             filePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
             os.remove(os.path.join(filePathInSequence))
         except OSError:
             puts(colored.red('Error: cannot find file "' + filePathInSequence + '" in sequence.'))
+            error = 1
+    return error
 
 
 def removeItems(items, args, detectionMethod, filters):
@@ -62,6 +66,7 @@ def removeItems(items, args, detectionMethod, filters):
     For each items, check if it should be removed, depending on the command line options.
     """
     folderItems = []
+    error = 0
 
     for item in sorted(items):
         itemType = item.getType()
@@ -90,11 +95,15 @@ def removeItems(items, args, detectionMethod, filters):
                 folderItems.insert(0, item)
             # remove current item
             else:
-                removeItem(item, args)
+                err = removeItem(item, args)
+                if err: error = err
 
     # remove folders (which are empty)
     for folder in folderItems:
-        removeItem(item, args)
+        err = removeItem(folder, args)
+        if err: error = err
+
+    return error
 
 
 if __name__ == '__main__':
@@ -127,11 +136,11 @@ if __name__ == '__main__':
     # check command line
     if args.range and (args.firstImage is not None or args.lastImage is not None):
         puts(colored.red('Error: you cannot cumulate multiple options to specify the range of sequence.'))
-        exit(-1)
+        exit(1)
 
     if '.' in args.inputs or '..' in args.inputs:
         puts(colored.red('Error: you cannot remove folders "." or "..".'))
-        exit(-1)
+        exit(1)
 
     # sam-rm -a
     detectionMethod = sequenceParser.eDetectionDefault
@@ -148,6 +157,7 @@ if __name__ == '__main__':
         filters.append(args.expression)
 
     # get list of items for each inputs
+    error = 0
     for input in args.inputs:
         items = []
 
@@ -167,4 +177,7 @@ if __name__ == '__main__':
             # browse
             items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
 
-        removeItems(items, args, detectionMethod, filters)
+        err = removeItems(items, args, detectionMethod, filters)
+        if err: error = err
+    
+    exit(error)
