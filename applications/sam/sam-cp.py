@@ -44,7 +44,7 @@ if __name__ == '__main__':
     outputSequenceName = os.path.basename(args.inputs[1])
     outputIsSequence = outputSequence.initFromPattern(outputSequenceName, sequenceParser.ePatternDefault)
     if not outputIsSequence:
-        outputSequence = sequenceParser.Sequence(inputSequence)
+        outputSequence = sequenceParser.Sequence(inputItem.getSequence())
 
     # How to process the copy operation
     moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
