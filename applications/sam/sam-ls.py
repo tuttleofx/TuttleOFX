@@ -40,10 +40,7 @@ def printItem(item, args, level):
             characterFromType = 's'
             # [ begin : end ] nbFiles - nbMissingFiles
             sequence = item.getSequence()
-            detailedSequence += '[' + str(sequence.getFirstTime()) + ':' + str(sequence.getLastTime()) + '] '
-            detailedSequence += str(sequence.getNbFiles()) + ' files'
-            detailedSequence += ( ', ' + str(sequence.getNbMissingFiles() ) + ' missing files') if sequence.hasMissingFile() else ''
-            detailedSequence += ' \t'
+            detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
         elif itemType == sequenceParser.eTypeLink:
             characterFromType = 'l'
         itemStat = sequenceParser.ItemStat(item)
