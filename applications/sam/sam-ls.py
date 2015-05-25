@@ -38,16 +38,33 @@ def printItem(item, args, level):
             characterFromType = 'f'
         elif itemType == sequenceParser.eTypeSequence:
             characterFromType = 's'
+
             # [ begin : end ] nbFiles - nbMissingFiles
             sequence = item.getSequence()
             detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
+
         elif itemType == sequenceParser.eTypeLink:
             characterFromType = 'l'
-        # type - user - group - lastUpdate - size
+
+        # type - permissions - user - group - lastUpdate - size
         itemStat = sequenceParser.ItemStat(item)
+
+        permissions = ''
+        permissions += 'r' if itemStat.ownerCanRead else '-'
+        permissions += 'w' if itemStat.ownerCanWrite else '-'
+        permissions += 'x' if itemStat.ownerCanExecute else '-'
+        permissions += 'r' if itemStat.groupCanRead else '-'
+        permissions += 'w' if itemStat.groupCanWrite else '-'
+        permissions += 'x' if itemStat.groupCanExecute else '-'
+        permissions += 'r' if itemStat.otherCanRead else '-'
+        permissions += 'w' if itemStat.otherCanWrite else '-'
+        permissions += 'x' if itemStat.otherCanExecute else '-'
+
         user = itemStat.getUserName()
         group = itemStat.getGroupName()
+
         lastUpdate = date.fromtimestamp(itemStat.modificationTime).strftime('%d/%m/%y')
+
         size = itemStat.size
         sizeExtension = ''
         if (size / pow(2,30)) > 0:
@@ -59,7 +76,8 @@ def printItem(item, args, level):
         elif (size / pow(2,10)) > 0:
             sizeExtension = 'K'
             size = size / (pow(2,10) * 1.0)
-        detailed = '{:1} {:} {:} {:8} {:4}{:1}'.format(characterFromType, user, group, lastUpdate, round(size, 1), sizeExtension)
+
+        detailed = '{:1}{:9} {:} {:} {:8} {:4}{:1}'.format(characterFromType, permissions, user, group, lastUpdate, round(size, 1), sizeExtension)
         detailed += '\t'
 
     # sam-ls --absolute-path
