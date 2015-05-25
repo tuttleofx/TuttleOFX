@@ -9,16 +9,36 @@ from clint.textui import colored, puts
 from pySequenceParser import sequenceParser
 
 
-def sequenceParserCompleter(prefix, **kwargs):
+def getReadableSize(size):
     """
-    Custom Completer to manage auto competion when looking for sequences.
+    Get a human readable string which represents the given size.
     """
-    directory = os.path.dirname(prefix)
-    if directory == '':
-        directory = '.'
-    items = sequenceParser.browse(directory, sequenceParser.eDetectionDefault, [str(prefix+'*')])
-    itemsStr = [str(item.getFilename()) for item in items]
-    return itemsStr
+    sizeExtension = ''
+    if (size / pow(2,30)) > 0:
+        sizeExtension = 'G'
+        size = size / (pow(2,30) * 1.0)
+    elif (size / pow(2,20)) > 0:
+        sizeExtension = 'M'
+        size = size / (pow(2,20) * 1.0)
+    elif (size / pow(2,10)) > 0:
+        sizeExtension = 'K'
+        size = size / (pow(2,10) * 1.0)
+    return str(round(size, 1)) + sizeExtension
+
+
+def getSequenceNameWithFormatting(sequence, format):
+    """
+    Return the sequence name with a specific formatting (from nuke, rv...).
+    """
+    sequenceName = sequence.getPrefix()
+    if format == 'rv':
+        sequenceName += '@' * sequence.getPadding()
+    elif format == 'nuke':
+        sequenceName += '%' + str(sequence.getPadding()) + 'd'
+    else: # default formatting
+        sequenceName += '#' * sequence.getPadding()
+    sequenceName += sequence.getSuffix()
+    return sequenceName
 
 
 def getSequenceItemFromPath(inputPath, detectNegative):

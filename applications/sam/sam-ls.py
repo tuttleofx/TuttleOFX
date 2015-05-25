@@ -13,39 +13,7 @@ from clint.textui import colored, puts, indent
 from pySequenceParser import sequenceParser
 
 # sam common functions
-from common import samCmdLines
-
-
-def getReadableSize(size):
-    """
-    Get a human readable string which represents the given size.
-    """
-    sizeExtension = ''
-    if (size / pow(2,30)) > 0:
-        sizeExtension = 'G'
-        size = size / (pow(2,30) * 1.0)
-    elif (size / pow(2,20)) > 0:
-        sizeExtension = 'M'
-        size = size / (pow(2,20) * 1.0)
-    elif (size / pow(2,10)) > 0:
-        sizeExtension = 'K'
-        size = size / (pow(2,10) * 1.0)
-    return str(round(size, 1)) + sizeExtension
-
-
-def getSequenceNameWithFormatting(sequence, format):
-    """
-    Return the sequence name with a specific formatting (from nuke, rv...).
-    """
-    sequenceName = sequence.getPrefix()
-    if format == 'rv':
-        sequenceName += '@' * sequence.getPadding()
-    elif format == 'nuke':
-        sequenceName += '%' + str(sequence.getPadding()) + 'd'
-    else: # default formatting
-        sequenceName += '#' * sequence.getPadding()
-    sequenceName += sequence.getSuffix()
-    return sequenceName
+from common import samCmdLines, samUtils
 
 
 def printItem(item, args, level):
@@ -94,12 +62,12 @@ def printItem(item, args, level):
 
         lastUpdate = date.fromtimestamp(itemStat.modificationTime).strftime('%d/%m/%y')
 
-        minSize = getReadableSize(itemStat.minSize) if itemStat.minSize != itemStat.size else '-'
-        maxSize = getReadableSize(itemStat.maxSize) if itemStat.maxSize != itemStat.size else '-'
+        minSize = samUtils.getReadableSize(itemStat.minSize) if itemStat.minSize != itemStat.size else '-'
+        maxSize = samUtils.getReadableSize(itemStat.maxSize) if itemStat.maxSize != itemStat.size else '-'
 
         detailed = '{:1}{:9}'.format(characterFromType, permissions)
         detailed += ' {:} {:} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
-        detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, getReadableSize(itemStat.size))
+        detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
         detailed += '\t'
 
     # sam-ls --absolute-path
@@ -115,7 +83,7 @@ def printItem(item, args, level):
     filename = item.getFilename()
     # sam-ls --format
     if itemType == sequenceParser.eTypeSequence:
-        filename = getSequenceNameWithFormatting(item.getSequence(), args.format)
+        filename = samUtils.getSequenceNameWithFormatting(item.getSequence(), args.format)
     # sam-ls --color
     if args.color:
         if itemType == sequenceParser.eTypeFolder:
