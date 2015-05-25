@@ -34,7 +34,7 @@ def addCommonFilterArgumentsToParser(parser):
     parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
     parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
     parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
-    parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: *.jpg,*.png').completer = sequenceParserCompleter
+    parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: "*.jpg", "*.png"').completer = sequenceParserCompleter
 
 
 def addMvCpArgumentsToParser(parser):
