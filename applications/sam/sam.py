@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import os
 import argparse
 
-import common
+# sam common functions
+from common import samCmdLines
 
 if __name__ == '__main__':
 
@@ -21,16 +21,16 @@ if __name__ == '__main__':
     
     # parser for ls command
     parser_ls = subparsers.add_parser('ls', help='ls, to list sequences (and other files)')
-    common.addLsArgumentsToParser(parser_ls)
+    samCmdLines.addLsArgumentsToParser(parser_ls)
     # parser for mv command
     parser_mv = subparsers.add_parser('mv', help='mv, to move sequences')
-    common.addMvCpArgumentsToParser(parser_mv)
+    samCmdLines.addMvCpArgumentsToParser(parser_mv)
     # parser for cp command
     parser_cp = subparsers.add_parser('cp', help='mv, to copy sequences')
-    common.addMvCpArgumentsToParser(parser_cp)
+    samCmdLines.addMvCpArgumentsToParser(parser_cp)
     # parser for rm command
     parser_rm = subparsers.add_parser('rm', help='rm, to remove sequences (and other files)')
-    common.addRmArgumentsToParser(parser_rm)
+    samCmdLines.addRmArgumentsToParser(parser_rm)
 
     # Parse command-line
     args = parser.parse_args()

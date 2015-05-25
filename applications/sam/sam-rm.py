@@ -4,15 +4,13 @@
 import os
 import argparse
 
-# python modules to easily get completion, colors, indent text...
-import argcomplete
-from clint.textui import colored, puts, indent
+from clint.textui import colored, puts
 
 # parser of sequence
 from pySequenceParser import sequenceParser
 
 # sam common functions
-import common
+from common import samCmdLines
 
 
 def removeItem(item, args):
@@ -118,7 +116,7 @@ def main(args = None):
                 )
 
         # Add command line arguments
-        common.addRmArgumentsToParser(parser)
+        samCmdLines.addRmArgumentsToParser(parser)
 
         # Activate completion
         argcomplete.autocomplete(parser)

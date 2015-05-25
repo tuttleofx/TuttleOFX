@@ -9,7 +9,7 @@ import shutil
 from pySequenceParser import sequenceParser
 
 # sam common functions
-import common
+from common import samCmdLines, samUtils
 
 
 def main(args = None):
@@ -24,10 +24,10 @@ def main(args = None):
                 )
 
         # Add command line arguments
-        common.addMvCpArgumentsToParser(parser)
+        samCmdLines.addMvCpArgumentsToParser(parser)
 
         # Get arguments
-        args = common.getMvCpArgumentsFromParser(parser)
+        args = samCmdLines.getMvCpArgumentsFromParser(parser)
 
     # Get output path
     outputSequencePath = os.path.dirname(args.output)
@@ -41,16 +41,16 @@ def main(args = None):
 
     # For each input
     for input in args.inputs:
-        inputItem = common.getSequenceItemFromPath(input, args.detectNegative)
+        inputItem = samUtils.getSequenceItemFromPath(input, args.detectNegative)
 
         if not outputIsSequence:
             outputSequence = sequenceParser.Sequence(inputItem.getSequence())
 
         # How to process the copy operation
-        moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
+        moveManipulators = samUtils.getMvCpSequenceManipulators(inputItem.getSequence(), args)
 
         # copy sequence
-        common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.copy2)
+        samUtils.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.copy2)
 
 
 if __name__ == '__main__':

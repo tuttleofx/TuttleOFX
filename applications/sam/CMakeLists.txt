@@ -3,10 +3,11 @@
 # common
 find_package(PythonLibs)
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/common.py"
-    PERMISSIONS WORLD_READ GROUP_WRITE GROUP_READ OWNER_WRITE OWNER_READ
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/common"
+    FILE_PERMISSIONS WORLD_READ GROUP_WRITE GROUP_READ OWNER_WRITE OWNER_READ
     DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/
 )
+install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/common/__init__.py)")
 
 # sam
 add_custom_target(sam SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py")

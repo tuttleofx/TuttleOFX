@@ -5,14 +5,11 @@ import os
 import argparse
 import shutil
 
-# python modules to easily get completion, colors, indent text...
-from clint.textui import colored, puts
-
 # parser of sequence
 from pySequenceParser import sequenceParser
 
 # sam common functions
-import common
+from common import samCmdLines, samUtils
 
 
 def main(args = None):
@@ -27,10 +24,10 @@ def main(args = None):
                 )
 
         # Add command line arguments
-        common.addMvCpArgumentsToParser(parser)
+        samCmdLines.addMvCpArgumentsToParser(parser)
 
         # Get arguments
-        args = common.getMvCpArgumentsFromParser(parser)
+        args = samCmdLines.getMvCpArgumentsFromParser(parser)
 
     # Get output path
     outputSequencePath = os.path.dirname(args.output)
@@ -44,16 +41,16 @@ def main(args = None):
 
     # For each input
     for input in args.inputs:
-        inputItem = common.getSequenceItemFromPath(input, args.detectNegative)
+        inputItem = samUtils.getSequenceItemFromPath(input, args.detectNegative)
 
         if not outputIsSequence:
             outputSequence = sequenceParser.Sequence(inputItem.getSequence())
 
         # How to process the move operation
-        moveManipulators = common.getMvCpSequenceManipulators(inputItem.getSequence(), args)
+        moveManipulators = samUtils.getMvCpSequenceManipulators(inputItem.getSequence(), args)
 
         # move sequence
-        common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.move)
+        samUtils.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.move)
 
 
 if __name__ == '__main__':

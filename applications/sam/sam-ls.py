@@ -13,7 +13,7 @@ from clint.textui import colored, puts, indent
 from pySequenceParser import sequenceParser
 
 # sam common functions
-import common
+from common import samCmdLines
 
 
 def printItem(item, args, level):
@@ -141,7 +141,7 @@ def main(args = None):
                 )
 
         # Add command line arguments
-        common.addLsArgumentsToParser(parser)
+        samCmdLines.addLsArgumentsToParser(parser)
 
         # Activate completion
         argcomplete.autocomplete(parser)
