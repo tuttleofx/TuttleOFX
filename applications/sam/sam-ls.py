@@ -122,10 +122,14 @@ def printItems(items, args, detectionMethod, filters, level=0):
             if args.level and args.level <= level:
                 continue
 
-            level += 1
-            newItems = sequenceParser.browse(os.path.join(item.getFolder(), item.getFilename()), detectionMethod, filters)
-            printItems(newItems, args, detectionMethod, filters, level)
-            level -= 1
+            try:
+                newItems = sequenceParser.browse(os.path.join(item.getFolder(), item.getFilename()), detectionMethod, filters)
+                level += 1
+                printItems(newItems, args, detectionMethod, filters, level)
+                level -= 1
+            except IOError as e:
+                # Permission denied for example
+                print e
 
 
 def main(args = None):
