@@ -16,6 +16,23 @@ from pySequenceParser import sequenceParser
 from common import samCmdLines
 
 
+def getReadableSize(size):
+    """
+    Get a human readable string which represents the given size.
+    """
+    sizeExtension = ''
+    if (size / pow(2,30)) > 0:
+        sizeExtension = 'G'
+        size = size / (pow(2,30) * 1.0)
+    elif (size / pow(2,20)) > 0:
+        sizeExtension = 'M'
+        size = size / (pow(2,20) * 1.0)
+    elif (size / pow(2,10)) > 0:
+        sizeExtension = 'K'
+        size = size / (pow(2,10) * 1.0)
+    return str(round(size, 1)) + sizeExtension
+
+
 def printItem(item, args, level):
     """
     Print the item depending on the command line options.
@@ -60,24 +77,11 @@ def printItem(item, args, level):
         permissions += 'w' if itemStat.otherCanWrite else '-'
         permissions += 'x' if itemStat.otherCanExecute else '-'
 
-        user = itemStat.getUserName()
-        group = itemStat.getGroupName()
-
         lastUpdate = date.fromtimestamp(itemStat.modificationTime).strftime('%d/%m/%y')
 
-        size = itemStat.size
-        sizeExtension = ''
-        if (size / pow(2,30)) > 0:
-            sizeExtension = 'G'
-            size = size / (pow(2,30) * 1.0)
-        elif (size / pow(2,20)) > 0:
-            sizeExtension = 'M'
-            size = size / (pow(2,20) * 1.0)
-        elif (size / pow(2,10)) > 0:
-            sizeExtension = 'K'
-            size = size / (pow(2,10) * 1.0)
-
-        detailed = '{:1}{:9} {:} {:} {:8} {:4}{:1}'.format(characterFromType, permissions, user, group, lastUpdate, round(size, 1), sizeExtension)
+        detailed = '{:1}{:9}'.format(characterFromType, permissions)
+        detailed += '{:} {:} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
+        detailed += ' {:4}'.format(getReadableSize(itemStat.size))
         detailed += '\t'
 
     # sam-ls --absolute-path
