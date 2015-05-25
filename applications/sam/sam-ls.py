@@ -83,7 +83,7 @@ def printItem(item, args, level):
         maxSize = getReadableSize(itemStat.maxSize) if itemStat.maxSize != itemStat.size else '-'
 
         detailed = '{:1}{:9}'.format(characterFromType, permissions)
-        detailed += '{:} {:} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
+        detailed += ' {:} {:} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
         detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, getReadableSize(itemStat.size))
         detailed += '\t'
 
