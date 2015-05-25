@@ -43,8 +43,10 @@ def printItem(item, args, level):
             detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
         elif itemType == sequenceParser.eTypeLink:
             characterFromType = 'l'
-        # type - lastUpdate - size
+        # type - user - group - lastUpdate - size
         itemStat = sequenceParser.ItemStat(item)
+        user = itemStat.getUserName()
+        group = itemStat.getGroupName()
         lastUpdate = date.fromtimestamp(itemStat.modificationTime).strftime('%d/%m/%y')
         size = itemStat.size
         sizeExtension = ''
@@ -57,7 +59,7 @@ def printItem(item, args, level):
         elif (size / pow(2,10)) > 0:
             sizeExtension = 'K'
             size = size / (pow(2,10) * 1.0)
-        detailed = '{:1} {:8} {:4}{:1}'.format(characterFromType, lastUpdate, round(size, 1), sizeExtension)
+        detailed = '{:1} {:} {:} {:8} {:4}{:1}'.format(characterFromType, user, group, lastUpdate, round(size, 1), sizeExtension)
         detailed += '\t'
 
     # sam-ls --absolute-path
