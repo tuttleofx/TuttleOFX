@@ -66,7 +66,7 @@ def addLsArgumentsToParser(parser):
 
     # Options
     addCommonFilterArgumentsToParser(parser)
-    parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format')
+    parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format (display in this order: type | permissions | owner | group | last update | minSize | maxSize | totalSize | name)')
     parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
     parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
     parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
