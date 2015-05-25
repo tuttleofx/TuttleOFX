@@ -106,32 +106,25 @@ def removeItems(items, args, detectionMethod, filters):
     return error
 
 
-if __name__ == '__main__':
+def main(args = None):
+    if not args:
+        # Create command-line interface
+        parser = argparse.ArgumentParser(
+                prog='sam-rm',
+                description='''
+                Remove file sequences.
+                Remove sequence of files, and could remove trees (folder, files and sequences).
+                ''',
+                )
 
-    # Create command-line interface
-    parser = argparse.ArgumentParser(
-            prog='sam-rm',
-            description='''
-            Remove file sequences.
-            Remove sequence of files, and could remove trees (folder, files and sequences).
-            ''',
-            )
+        # Add command line arguments
+        common.addRmArgumentsToParser(parser)
 
-    parser.add_argument('inputs', nargs='+', action='store', help='list of input files/sequences/directories to remove').completer = common.sequenceParserCompleter
+        # Activate completion
+        argcomplete.autocomplete(parser)
 
-    # Options
-    common.addCommonFilterArgumentsToParser(parser)
-    parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
-    parser.add_argument('--first-image', dest='firstImage', type=int, help='specify the first image of sequence')
-    parser.add_argument('--last-image', dest='lastImage', type=int, help='specify the last image of sequence')
-    parser.add_argument('--range', dest='range', nargs=2, type=int, help='specify the range of sequence')
-    common.addDetectNegativeArgumentToParser(parser)
-
-    # Activate completion
-    argcomplete.autocomplete(parser)
-
-    # Parse command-line
-    args = parser.parse_args()
+        # Parse command-line
+        args = parser.parse_args()
 
     # check command line
     if args.range and (args.firstImage is not None or args.lastImage is not None):
@@ -181,3 +174,7 @@ if __name__ == '__main__':
         if err: error = err
     
     exit(error)
+
+
+if __name__ == '__main__':
+    main()

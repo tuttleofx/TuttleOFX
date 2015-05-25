@@ -128,36 +128,26 @@ def printItems(items, args, detectionMethod, filters, level=0):
             level -= 1
 
 
-if __name__ == '__main__':
+def main(args = None):
+    if not args:
+        # Create command-line interface
+        parser = argparse.ArgumentParser(
+                prog='sam-ls',
+                description='''
+                List information about the sequences, files and folders.
+                List the current directory by default, and only sequences.
+                The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default.
+                ''',
+                )
 
-    # Create command-line interface
-    parser = argparse.ArgumentParser(
-            prog='sam-ls',
-            description='''
-            List information about the sequences, files and folders.
-            List the current directory by default, and only sequences.
-            The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default.
-            ''',
-            )
+        # Add command line arguments
+        common.addLsArgumentsToParser(parser)
 
-    parser.add_argument('inputs', nargs='*', action='store', help='list of files/sequences/directories to analyse').completer = common.sequenceParserCompleter
+        # Activate completion
+        argcomplete.autocomplete(parser)
 
-    # Options
-    common.addCommonFilterArgumentsToParser(parser)
-    parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format')
-    parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
-    parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
-    parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
-    parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
-    parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (True by default)')
-    common.addDetectNegativeArgumentToParser(parser)
-    #parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
-
-    # Activate completion
-    argcomplete.autocomplete(parser)
-
-    # Parse command-line
-    args = parser.parse_args()
+        # Parse command-line
+        args = parser.parse_args()
 
     # inputs to scan
     inputs = []
@@ -204,3 +194,7 @@ if __name__ == '__main__':
                 items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
         printItems(items, args, detectionMethod, filters)
+
+
+if __name__ == '__main__':
+    main()

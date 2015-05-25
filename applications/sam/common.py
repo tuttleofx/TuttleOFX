@@ -91,6 +91,35 @@ def addMvCpArgumentsToParser(parser):
     addDetectNegativeArgumentToParser(parser)
 
 
+def addLsArgumentsToParser(parser):
+    # Arguments
+    parser.add_argument('inputs', nargs='*', action='store', help='list of files/sequences/directories to analyse').completer = sequenceParserCompleter
+
+    # Options
+    addCommonFilterArgumentsToParser(parser)
+    parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format')
+    parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
+    parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
+    parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
+    parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
+    parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (True by default)')
+    addDetectNegativeArgumentToParser(parser)
+    #parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
+
+
+def addRmArgumentsToParser(parser):
+    # Arguments
+    parser.add_argument('inputs', nargs='+', action='store', help='list of input files/sequences/directories to remove').completer = sequenceParserCompleter
+
+    # Options
+    addCommonFilterArgumentsToParser(parser)
+    parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
+    parser.add_argument('--first-image', dest='firstImage', type=int, help='specify the first image of sequence')
+    parser.add_argument('--last-image', dest='lastImage', type=int, help='specify the last image of sequence')
+    parser.add_argument('--range', dest='range', nargs=2, type=int, help='specify the range of sequence')
+    addDetectNegativeArgumentToParser(parser)
+
+
 def getMvCpArgumentsFromParser(parser):
     """
     Get list of arguments/options values which corresond to sam-mv and sam-cp tools.

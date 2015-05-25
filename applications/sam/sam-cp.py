@@ -11,22 +11,23 @@ from pySequenceParser import sequenceParser
 # sam common functions
 import common
 
-if __name__ == '__main__':
 
-    # Create command-line interface
-    parser = argparse.ArgumentParser(
-            prog='sam-cp',
-            description='''
-            copy sequence(s) in a directory.
-            Copy sequence of image files, and could remove trees (folder, files and sequences).
-            ''',
-            )
+def main(args = None):
+    if not args:
+        # Create command-line interface
+        parser = argparse.ArgumentParser(
+                prog='sam-cp',
+                description='''
+                copy sequence(s) in a directory.
+                Copy sequence of image files, and could remove trees (folder, files and sequences).
+                ''',
+                )
 
-    # Add command line arguments
-    common.addMvCpArgumentsToParser(parser)
+        # Add command line arguments
+        common.addMvCpArgumentsToParser(parser)
 
-    # Get arguments
-    args = common.getMvCpArgumentsFromParser(parser)
+        # Get arguments
+        args = common.getMvCpArgumentsFromParser(parser)
 
     # Get output path
     outputSequencePath = os.path.dirname(args.output)
@@ -50,3 +51,7 @@ if __name__ == '__main__':
 
         # copy sequence
         common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.copy2)
+
+
+if __name__ == '__main__':
+    main()

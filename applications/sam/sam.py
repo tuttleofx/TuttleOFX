@@ -3,6 +3,7 @@
 import os
 import argparse
 
+import common
 
 if __name__ == '__main__':
 
@@ -16,19 +17,24 @@ if __name__ == '__main__':
             formatter_class=argparse.RawTextHelpFormatter
             )
 
-    # Options
-    parser.add_argument('command', choices=['ls', 'mv', 'cp', 'rm'], help='''The command to launch:
-    ls, to list sequences (and other files)
-    mv, to move sequences
-    cp, to copy sequences
-    rm, to remove sequences (and other files)
-    '''
-    )
-    parser.add_argument('options', nargs='*', help='List of options given to the command.')
+    subparsers = parser.add_subparsers(dest='subCommand')
+    
+    # parser for ls command
+    parser_ls = subparsers.add_parser('ls', help='ls, to list sequences (and other files)')
+    common.addLsArgumentsToParser(parser_ls)
+    # parser for mv command
+    parser_mv = subparsers.add_parser('mv', help='mv, to move sequences')
+    common.addMvCpArgumentsToParser(parser_mv)
+    # parser for cp command
+    parser_cp = subparsers.add_parser('cp', help='mv, to copy sequences')
+    common.addMvCpArgumentsToParser(parser_cp)
+    # parser for rm command
+    parser_rm = subparsers.add_parser('rm', help='rm, to remove sequences (and other files)')
+    common.addRmArgumentsToParser(parser_rm)
 
     # Parse command-line
-    args, unknown = parser.parse_known_args()
+    args = parser.parse_args()
 
     # launch sam command
-    args.options.extend(unknown)
-    os.system('sam-' + args.command + '.py ' + ' '.join(args.options))
+    module = __import__('sam-' + args.subCommand)
+    module.main(args)

@@ -14,22 +14,23 @@ from pySequenceParser import sequenceParser
 # sam common functions
 import common
 
-if __name__ == '__main__':
 
-    # Create command-line interface
-    parser = argparse.ArgumentParser(
-            prog='sam-mv',
-            description='''
-            Move sequence(s) in a directory.
-            Move sequence of image files, and could remove trees (folder, files and sequences).
-            ''',
-            )
+def main(args = None):
+    if not args:
+        # Create command-line interface
+        parser = argparse.ArgumentParser(
+                prog='sam-mv',
+                description='''
+                Move sequence(s) in a directory.
+                Move sequence of image files, and could remove trees (folder, files and sequences).
+                ''',
+                )
 
-    # Add command line arguments
-    common.addMvCpArgumentsToParser(parser)
+        # Add command line arguments
+        common.addMvCpArgumentsToParser(parser)
 
-    # Get arguments
-    args = common.getMvCpArgumentsFromParser(parser)
+        # Get arguments
+        args = common.getMvCpArgumentsFromParser(parser)
 
     # Get output path
     outputSequencePath = os.path.dirname(args.output)
@@ -53,3 +54,7 @@ if __name__ == '__main__':
 
         # move sequence
         common.processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, shutil.move)
+
+
+if __name__ == '__main__':
+    main()
