@@ -79,9 +79,12 @@ def printItem(item, args, level):
 
         lastUpdate = date.fromtimestamp(itemStat.modificationTime).strftime('%d/%m/%y')
 
+        minSize = getReadableSize(itemStat.minSize) if itemStat.minSize != itemStat.size else '-'
+        maxSize = getReadableSize(itemStat.maxSize) if itemStat.maxSize != itemStat.size else '-'
+
         detailed = '{:1}{:9}'.format(characterFromType, permissions)
         detailed += '{:} {:} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
-        detailed += ' {:4}'.format(getReadableSize(itemStat.size))
+        detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, getReadableSize(itemStat.size))
         detailed += '\t'
 
     # sam-ls --absolute-path
