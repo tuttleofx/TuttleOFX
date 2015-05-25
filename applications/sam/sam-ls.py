@@ -33,6 +33,21 @@ def getReadableSize(size):
     return str(round(size, 1)) + sizeExtension
 
 
+def getSequenceNameWithFormatting(sequence, format):
+    """
+    Return the sequence name with a specific formatting (from nuke, rv...).
+    """
+    sequenceName = sequence.getPrefix()
+    if format == 'rv':
+        sequenceName += '@' * sequence.getPadding()
+    elif format == 'nuke':
+        sequenceName += '%' + str(sequence.getPadding()) + 'd'
+    else: # default formatting
+        sequenceName += '#' * sequence.getPadding()
+    sequenceName += sequence.getSuffix()
+    return sequenceName
+
+
 def printItem(item, args, level):
     """
     Print the item depending on the command line options.
@@ -97,21 +112,24 @@ def printItem(item, args, level):
         filePath += ('/' if filePath[-1] != '/' else '')
 
     # filename
+    filename = item.getFilename()
+    # sam-ls --format
+    if itemType == sequenceParser.eTypeSequence:
+        filename = getSequenceNameWithFormatting(item.getSequence(), args.format)
+    # sam-ls --color
     if args.color:
-        if itemType == sequenceParser.eTypeUndefined:
-            filePath = colored.red(os.path.join(filePath, item.getFilename()))
-        elif itemType == sequenceParser.eTypeFolder:
-            filePath = colored.blue(os.path.join(filePath + item.getFilename()), bold=True) # blue is not visible without bold
+        if itemType == sequenceParser.eTypeFolder:
+            filePath = colored.blue(os.path.join(filePath + filename), bold=True) # blue is not visible without bold
         elif itemType == sequenceParser.eTypeFile:
-            filePath = colored.green(os.path.join(filePath + item.getFilename()))
+            filePath = colored.green(os.path.join(filePath + filename))
         elif itemType == sequenceParser.eTypeSequence:
-            filePath = colored.magenta(os.path.join(filePath + item.getFilename()), bold=True) # magenta is not visible without bold
+            filePath = colored.magenta(os.path.join(filePath + filename), bold=True) # magenta is not visible without bold
         elif itemType == sequenceParser.eTypeLink:
-            filePath = colored.cyan(os.path.join(filePath + item.getFilename()))
+            filePath = colored.cyan(os.path.join(filePath + filename))
         else:
-            filePath += os.path.join(filePath + item.getFilename())
+            filePath = colored.red(os.path.join(filePath, filename))
     else:
-        filePath += os.path.join(filePath + item.getFilename())
+        filePath = os.path.join(filePath + filename)
     filePath += ' \t'
 
     # sam-ls -R / sam-ls -L
