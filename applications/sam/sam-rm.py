@@ -51,7 +51,9 @@ def removeItem(item, args):
 
     # remove files in sequence
     error = 0
-    for time in range(first, last + 1):
+    for time in sequence.getFramesIterable():
+        if time < first or time > last:
+            continue
         try:
             filePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
             os.remove(os.path.join(filePathInSequence))
