@@ -288,8 +288,8 @@ class SamDo(samUtils.Sam):
                     except Exception:
                         # cannot set param of node
                         pass
-            # sam-do --help
-            if '-h' in options:
+            # sam-do node --help
+            if '-h' in options or '--help' in options:
                 self._displayNodeHelp(nodeFullName, node)
                 exit(0)
             nodes.append(node)
