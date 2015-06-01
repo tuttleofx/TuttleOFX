@@ -170,9 +170,11 @@ class SamDo(samUtils.Sam):
                         with indent(40):
                             for choiceValue in choiceValues:
                                 if choiceValues.index(choiceValue) == defaultValueIndex:
-                                    puts(colored.red(choiceValue))
+                                    puts(colored.yellow(choiceValue), newline=not hasLabel)
                                 else:
-                                    puts(choiceValue)
+                                    puts(colored.red(choiceValue), newline=not hasLabel)
+                                if hasLabel:
+                                    puts(choiceLabelValues[choiceValues.index(choiceValue)])
                     with indent(2):
                         puts(param.getHint())
             # Other param types
@@ -195,7 +197,7 @@ class SamDo(samUtils.Sam):
                 with indent(4):
                     puts('{paramName:50}: {paramType:10} {default:9}'.format(
                         paramName=colored.green(param.getScriptName()), paramType=param.getParamTypeName(),
-                        default=','.join(defaultValue)),
+                        default=colored.yellow(','.join(defaultValue))),
                         newline=False)
 
                     if len(minDisplayValue) and len(maxDisplayValue):
