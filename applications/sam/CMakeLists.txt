@@ -11,7 +11,7 @@ install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_
 
 # sam
 add_custom_target(sam SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py")
-add_dependencies(sam sam_ls sam_mv sam_cp sam_rm)
+add_dependencies(sam sam_ls sam_mv sam_cp sam_rm sam_do)
 
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py"
@@ -55,6 +55,16 @@ add_dependencies(sam_rm _sequenceparser-py)
 
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_rm.py"
+    PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    DESTINATION bin/
+)
+
+# sam_do
+add_custom_target(sam_do SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam_do.py")
+add_dependencies(sam_do _sequenceparser-py _tuttle)
+
+install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_do.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )

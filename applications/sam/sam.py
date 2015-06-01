@@ -7,6 +7,7 @@ from sam_ls import SamLs
 from sam_mv import SamMv
 from sam_cp import SamCp
 from sam_rm import SamRm
+from sam_do import SamDo
 
 
 if __name__ == '__main__':
@@ -21,7 +22,7 @@ if __name__ == '__main__':
         )
 
     # Create dict of sam tools
-    tools = [SamLs(), SamMv(), SamCp(), SamRm()]
+    tools = [SamLs(), SamMv(), SamCp(), SamRm(), SamDo()]
     tools = {tool.command: tool for tool in tools}
 
     # Create a subparser per sam tool
