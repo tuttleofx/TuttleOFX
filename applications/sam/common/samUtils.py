@@ -9,6 +9,30 @@ from clint.textui import colored, puts
 from pySequenceParser import sequenceParser
 
 
+class Sam(object):
+    """
+    Based class for all sam operations.
+    """
+
+    def __init__(self):
+        self.command = 'command'
+        self.help = ''
+        self.description = ''
+        self.epilog = ''
+
+    def fillParser(self, parser):
+        """
+        To fill the given parser.
+        """
+        raise NotImplementedError
+
+    def run(self, parser):
+        """
+        To process the sam operation
+        """
+        raise NotImplementedError
+
+
 def sequenceParserCompleter(prefix, **kwargs):
     """
     Custom Completer to manage auto competion when looking for sequences.

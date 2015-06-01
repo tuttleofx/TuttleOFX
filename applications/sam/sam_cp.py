@@ -13,6 +13,7 @@ class SamCp(SamMv):
     """
 
     def __init__(self):
+        SamMv.__init__(self)
         self.command = 'cp'
         self.help = 'cp, to copy sequences'
         self._operation = shutil.copy2

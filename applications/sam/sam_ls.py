@@ -16,12 +16,13 @@ from pySequenceParser import sequenceParser
 from common import samUtils
 
 
-class SamLs(object):
+class SamLs(samUtils.Sam):
     """
     Class which represents the sam_ls operation.
     """
 
     def __init__(self):
+        samUtils.Sam.__init__(self)
         self.command = 'ls'
         self.help = 'ls, to list sequences (and other files)'
 

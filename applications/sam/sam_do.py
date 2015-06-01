@@ -11,21 +11,22 @@ from clint.textui import colored, puts, indent
 from pyTuttle import tuttle
 
 # sam common functions
-from common import samCmdLines
+from common import samUtils
 
 
-class SamDo(object):
+class SamDo(samUtils.Sam):
     """
     Class which represents the sam_do operation.
     """
 
     def __init__(self):
+        samUtils.Sam.__init__(self)
         self.command = 'do'
         self.help = 'do, to execute a list of OpenFX nodes'
 
     def fillParser(self, parser):
         # Arguments
-        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samCmdLines.sequenceParserCompleter
+        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.sequenceParserCompleter
 
         # Options
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')

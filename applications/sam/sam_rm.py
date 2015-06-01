@@ -15,12 +15,13 @@ from pySequenceParser import sequenceParser
 from common import samUtils
 
 
-class SamRm(object):
+class SamRm(samUtils.Sam):
     """
     Class which represents the sam_rm operation.
     """
 
     def __init__(self):
+        samUtils.Sam.__init__(self)
         self.command = 'rm'
         self.help = 'rm, to remove sequences (and other files)'
 

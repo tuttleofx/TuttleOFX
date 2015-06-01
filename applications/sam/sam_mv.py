@@ -16,12 +16,13 @@ from pySequenceParser import sequenceParser
 from common import samUtils
 
 
-class SamMv(object):
+class SamMv(samUtils.Sam):
     """
     Class which represents the sam_mv operation.
     """
 
     def __init__(self):
+        samUtils.Sam.__init__(self)
         self.command = 'mv'
         self.help = 'mv, to move sequences'
         self._operation = shutil.move
