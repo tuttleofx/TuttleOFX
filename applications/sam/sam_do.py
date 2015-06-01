@@ -302,8 +302,7 @@ class SamDo(samUtils.Sam):
         # Options of process
         options = tuttle.ComputeOptions()
         # sam-do --verbose
-        if args.verbose:
-            options.setVerboseLevel(args.verbose)
+        options.setVerboseLevel(args.verbose)
 
         # Connect and compute
         if len(nodes) > 1:
