@@ -2,39 +2,38 @@
 
 import argparse
 
-# sam common functions
-from common import samCmdLines
+# import sam tools
+from sam_ls import SamLs
+from sam_mv import SamMv
+from sam_cp import SamCp
+from sam_rm import SamRm
+
 
 if __name__ == '__main__':
-
     # Create command-line interface
     parser = argparse.ArgumentParser(
-            prog='sam',
-            description='''
-            A set of command line tools.
-            Specialized in sequence manipulations.
-            ''',
-            formatter_class=argparse.RawTextHelpFormatter
-            )
+        prog='sam',
+        description='''
+        A set of command line tools.
+        Specialized in sequence manipulations.
+        ''',
+        formatter_class=argparse.RawTextHelpFormatter
+        )
 
-    subparsers = parser.add_subparsers(dest='subCommand')
-    
-    # parser for ls command
-    parser_ls = subparsers.add_parser('ls', help='ls, to list sequences (and other files)')
-    samCmdLines.addLsArgumentsToParser(parser_ls)
-    # parser for mv command
-    parser_mv = subparsers.add_parser('mv', help='mv, to move sequences')
-    samCmdLines.addMvCpArgumentsToParser(parser_mv)
-    # parser for cp command
-    parser_cp = subparsers.add_parser('cp', help='mv, to copy sequences')
-    samCmdLines.addMvCpArgumentsToParser(parser_cp)
-    # parser for rm command
-    parser_rm = subparsers.add_parser('rm', help='rm, to remove sequences (and other files)')
-    samCmdLines.addRmArgumentsToParser(parser_rm)
+    # Create dict of sam tools
+    tools = [SamLs(), SamMv(), SamCp(), SamRm()]
+    tools = {tool.command: tool for tool in tools}
+
+    # Create a subparser per sam tool
+    subparsers = parser.add_subparsers(dest='samSubCommand')
+    for tool in tools.values():
+        toolParser = subparsers.add_parser(tool.command, help=tool.help)
+        tool.fillParser(toolParser)
 
     # Parse command-line
     args = parser.parse_args()
 
-    # launch sam command
-    module = __import__('sam-' + args.subCommand)
-    module.main(args)
+    # launch sam tool
+    tool = tools.get(args.samSubCommand)
+    if tool:
+        tool.run(parser)

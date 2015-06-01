@@ -11,7 +11,7 @@ install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_
 
 # sam
 add_custom_target(sam SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py")
-add_dependencies(sam sam-ls sam-mv sam-cp sam-rm)
+add_dependencies(sam sam_ls sam_mv sam_cp sam_rm)
 
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py"
@@ -19,42 +19,42 @@ install(
     DESTINATION bin/
 )
 
-# sam-ls
-add_custom_target(sam-ls SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam-ls.py")
-add_dependencies(sam-ls _sequenceparser-py)
+# sam_ls
+add_custom_target(sam_ls SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam_ls.py")
+add_dependencies(sam_ls _sequenceparser-py)
 
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-ls.py"
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_ls.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
 
-# sam-mv
-add_custom_target(sam-mv SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam-mv.py")
-add_dependencies(sam-mv _sequenceparser-py)
+# sam_mv
+add_custom_target(sam_mv SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam_mv.py")
+add_dependencies(sam_mv _sequenceparser-py)
 
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-mv.py"
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_mv.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
 
-# sam-cp
-add_custom_target(sam-cp SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam-cp.py")
-add_dependencies(sam-cp _sequenceparser-py)
+# sam_cp
+add_custom_target(sam_cp SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam_cp.py")
+add_dependencies(sam_cp _sequenceparser-py)
 
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-cp.py"
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_cp.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
 
-# sam-rm
-add_custom_target(sam-rm SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam-rm.py")
-add_dependencies(sam-rm _sequenceparser-py)
+# sam_rm
+add_custom_target(sam_rm SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam_rm.py")
+add_dependencies(sam_rm _sequenceparser-py)
 
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam-rm.py"
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_rm.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION bin/
 )
