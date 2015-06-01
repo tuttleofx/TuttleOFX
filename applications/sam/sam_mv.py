@@ -25,6 +25,10 @@ class SamMv(samUtils.Sam):
         samUtils.Sam.__init__(self)
         self.command = 'mv'
         self.help = 'mv, to move sequences'
+        self.description = '''
+            Move sequence(s) in a directory.
+            Move sequence of image files, and could remove trees (folder, files and sequences).
+            '''
         self._operation = shutil.move
 
     def fillParser(self, parser):
@@ -169,16 +173,15 @@ class SamMv(samUtils.Sam):
 
 
 if __name__ == '__main__':
+    # Create the tool
+    tool = SamMv()
+
     # Create command-line interface
     parser = argparse.ArgumentParser(
-        prog='sam-mv',
-        description='''
-        Move sequence(s) in a directory.
-        Move sequence of image files, and could remove trees (folder, files and sequences).
-        ''',
+        prog='sam-'+tool.command,
+        description=tool.description,
         )
 
-    # Create and run the command
-    command = SamMv()
-    command.fillParser(parser)
-    command.run(parser)
+    # Run the command
+    tool.fillParser(parser)
+    tool.run(parser)

@@ -23,6 +23,58 @@ class SamDo(samUtils.Sam):
         samUtils.Sam.__init__(self)
         self.command = 'do'
         self.help = 'do, to execute a list of OpenFX nodes'
+        self.description = '''
+            A command line to execute a list of OpenFX nodes.
+            Use the separator // to pipe images between nodes.
+            sam do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]
+            '''
+        self.epilog = '''
+    Plugins options
+        Plugin list:                       sam do --nodes
+        Plugin help:                       sam do blur -h
+
+    Generators and viewers
+        Viewer:                            sam do reader in.@.dpx // viewer
+        Print:                             sam do reader in.@.dpx // print color=full16ansi
+        Constant generator:                sam do constant                // viewer
+        White constant generator:          sam do constant color=1,1,1,1  // viewer
+        HD constant generator:             sam do constant size=1920,1080 // viewer
+        Checkerboard generator:            sam do checkerboard            // viewer
+        Checkerboard generator:            sam do checkerboard width=500  // viewer
+        Checkerboard generator:            sam do checkerboard width=1920 ratio=2.35 // viewer
+        Text writing:                      sam do constant // text text="hello" size=80 // viewer
+
+    Image sequence conversion and creation
+        Convert Image:                     sam do reader in.dpx // writer out.jpg
+        Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
+        Select a range:                    sam do reader in.####.dpx // writer out.####.jpg // --range=10,100
+                                           r and w are shortcuts for reader and writer
+
+    Geometry processing during conversion
+        Crop:                              sam do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
+        Fill:                              sam do reader in.####.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50 // writer out.jpg
+        Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
+        Upscaling:                         sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg
+        Downscaling:                       sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg
+
+    Color processing during conversion
+        Lut :                              sam do reader in.####.dpx // lut lutFile.3dl // writer out.jpg
+        CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
+        Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
+
+    Image Sequence Numbering
+        Frames with or without padding:    image.@.jpg
+        Frames 1 to 100 padding 4:         image.####.jpg -or- image.@.jpg
+        Frames 1 to 100 padding 5:         image.#####.jpg
+        Printf style padding 4:            image.%04d.jpg
+        All Frames in Directory:           /path/to/directory
+
+    Processing options
+        Range process:                     sam do reader in.@.dpx // writer out.@.exr // --range 50,100
+        Single process:                    sam do reader in.@.dpx // writer out.@.exr // --range 59
+        Multiple CPUs:                     sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4
+        Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr // --continueOnError
+        '''
 
     def fillParser(self, parser):
         # Arguments
@@ -255,19 +307,18 @@ class SamDo(samUtils.Sam):
 
 
 if __name__ == '__main__':
+    # Create the tool
+    tool = SamDo()
+
     # Create command-line interface
     parser = argparse.ArgumentParser(
-        prog='sam-do',
-        description='''
-        A command line to execute a list of OpenFX nodes.
-        Use the separator // to pipe images between nodes.
-        sam do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]
-        ''',
+        prog='sam-'+tool.command,
+        description=tool.description,
+        epilog=tool.epilog,
         formatter_class=argparse.RawTextHelpFormatter,
         add_help=False,
         )
 
-    # Create and run the command
-    command = SamDo()
-    command.fillParser(parser)
-    command.run(parser)
+    # Run the command
+    tool.fillParser(parser)
+    tool.run(parser)

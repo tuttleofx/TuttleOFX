@@ -25,6 +25,11 @@ class SamLs(samUtils.Sam):
         samUtils.Sam.__init__(self)
         self.command = 'ls'
         self.help = 'ls, to list sequences (and other files)'
+        self.description = '''
+            List information about the sequences, files and folders.
+            List the current directory by default, and only sequences.
+            The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default.
+            '''
 
     def fillParser(self, parser):
         # Arguments
@@ -246,17 +251,15 @@ class SamLs(samUtils.Sam):
 
 
 if __name__ == '__main__':
+    # Create the tool
+    tool = SamLs()
+
     # Create command-line interface
     parser = argparse.ArgumentParser(
-        prog='sam-ls',
-        description='''
-        List information about the sequences, files and folders.
-        List the current directory by default, and only sequences.
-        The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default.
-        ''',
+        prog='sam-'+tool.command,
+        description=tool.description,
         )
 
-    # Create and run the command
-    command = SamLs()
-    command.fillParser(parser)
-    command.run(parser)
+    # Run the command
+    tool.fillParser(parser)
+    tool.run(parser)

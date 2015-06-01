@@ -16,20 +16,22 @@ class SamCp(SamMv):
         SamMv.__init__(self)
         self.command = 'cp'
         self.help = 'cp, to copy sequences'
+        self.description = '''
+            Copy sequence(s) in a directory.
+            '''
         self._operation = shutil.copy2
 
 
 if __name__ == '__main__':
+    # Create the tool
+    tool = SamCp()
+
     # Create command-line interface
     parser = argparse.ArgumentParser(
-        prog='sam-cp',
-        description='''
-        copy sequence(s) in a directory.
-        Copy sequence of image files, and could remove trees (folder, files and sequences).
-        ''',
+        prog='sam-'+tool.command,
+        description=tool.description,
         )
 
-    # Create and run the command
-    command = SamCp()
-    command.fillParser(parser)
-    command.run(parser)
+    # Run the command
+    tool.fillParser(parser)
+    tool.run(parser)
