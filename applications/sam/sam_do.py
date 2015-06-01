@@ -215,7 +215,7 @@ class SamDo(samUtils.Sam):
             components = clip.getSupportedComponents()
             componentsStr = []
             for component in components:
-                componentsStr.append(component[17:]) # remove 'OfxImageComponent'
+                componentsStr.append(component[17:])  # remove 'OfxImageComponent'
             # Property
             properties = []
             if clip.getProperties().getIntProperty('OfxImageClipPropOptional'):
@@ -226,7 +226,10 @@ class SamDo(samUtils.Sam):
                 properties.append('use temporal access')
             # Print
             with indent(4):
-                puts('{clipName:10}: {clipComponents} {clipProperties}'.format(clipName=colored.green(clip.getName()), clipComponents=('[' + (', '.join(componentsStr)) + ']'), clipProperties=((', '.join(properties)))))
+                puts('{clipName:10}: {clipComponents} {clipProperties}'.format(
+                    clipName=colored.green(clip.getName()),
+                    clipComponents=('[' + (', '.join(componentsStr)) + ']'),
+                    clipProperties=(', '.join(properties))))
 
     def run(self, parser):
         """
@@ -263,7 +266,7 @@ class SamDo(samUtils.Sam):
         # sam-do --nodes
         if args.nodes:
             for plugin in tuttle.core().getPlugins():
-                puts(plugin.getIdentifier().ljust(30) + " (v" + str( plugin.getVersionMajor() ) + "." + str( plugin.getVersionMinor() ) + ")")
+                puts(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
             exit(0)
 
         # Tuttle graph
