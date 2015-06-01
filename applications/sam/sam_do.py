@@ -2,7 +2,6 @@
 # PYTHON_ARGCOMPLETE_OK
 
 import argparse
-import sys
 
 # python modules to easily get completion
 import argcomplete
@@ -178,19 +177,32 @@ class SamDo(object):
 
     def run(self, parser):
         """
-        Process the list operation.
+        Process the do operation.
         """
         # Activate completion
         argcomplete.autocomplete(parser)
 
         # Parse command-line
         args, unknown = parser.parse_known_args()
-        args.inputs.extend(unknown)
 
         # sam-do --help
-        if sys.argv[1] == '-h' or sys.argv[1] == '--help':
+        if len(args.inputs) == 0:
+            # if launched from sam, retrieve subparsers from parser
+            subparsers_actions = [
+                action for action in parser._actions
+                if isinstance(action, argparse._SubParsersAction)]
+            for subparsers_action in subparsers_actions:
+                # get all subparsers and print help
+                for choice, subparser in subparsers_action.choices.items():
+                    if choice != 'do':
+                        continue
+                    puts(subparser.format_help())
+                    exit(0)
             parser.print_help()
             exit(0)
+
+        # Add unknown options to the command line to process
+        args.inputs.extend(unknown)
 
         # preload OFX plugins
         tuttle.core().preload(False)

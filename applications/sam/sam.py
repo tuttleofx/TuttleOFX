@@ -28,11 +28,11 @@ if __name__ == '__main__':
     # Create a subparser per sam tool
     subparsers = parser.add_subparsers(dest='samSubCommand')
     for tool in tools.values():
-        toolParser = subparsers.add_parser(tool.command, help=tool.help)
+        toolParser = subparsers.add_parser(tool.command, help=tool.help, add_help=(False if tool.command == 'do' else True))
         tool.fillParser(toolParser)
 
     # Parse command-line
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     # launch sam tool
     tool = tools.get(args.samSubCommand)
