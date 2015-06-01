@@ -36,21 +36,19 @@ def getReadableSize(size):
         size = size / (pow(2,10) * 1.0)
     return str(round(size, 1)) + sizeExtension
 
-
-def getSequenceNameWithFormatting(sequence, format):
+def getSequenceNameWithFormatting(sequence, formatChosen):
     """
     Return the sequence name with a specific formatting (from nuke, rv...).
     """
     sequenceName = sequence.getPrefix()
-    if format == 'rv':
+    if formatChosen == 'rv':
         sequenceName += '@' * sequence.getPadding()
-    elif format == 'nuke':
+    elif formatChosen == 'nuke':
         sequenceName += '%' + str(sequence.getPadding()) + 'd'
-    else: # default formatting
+    else:  # default formatting
         sequenceName += '#' * sequence.getPadding()
     sequenceName += sequence.getSuffix()
     return sequenceName
-
 
 def getSequenceItemFromPath(inputPath, detectNegative):
     """
