@@ -126,6 +126,95 @@ class SamDo(samUtils.Sam):
         else:
             return 'unknown'
 
+    def _displayParamHelp(self, param):
+        # Choice param
+        if param.getParamType() == 'OfxParamTypeChoice':
+            defaultValueIndex = None
+            if param.getProperties().hasProperty('OfxParamPropDefault'):
+                propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
+                defaultValue = self._getListValues(propDefault)
+                if propDefault.getType() == tuttle.ePropTypeInt:
+                    defaultValueIndex = param.getProperties().getIntProperty('OfxParamPropDefault', 0)
+
+            choiceValues = []
+            choiceLabelValues = []
+            hasLabel = False
+            if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
+                propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
+                choiceValues = self._getListValues(propChoiceOption)
+            if param.getProperties().hasProperty('OfxParamPropChoiceLabelOption'):
+                propChoiceLabel = param.getProperties().fetchProperty('OfxParamPropChoiceLabelOption')
+                choiceLabelValues = self._getListValues(propChoiceLabel)
+                hasLabel = (len(choiceValues) == len(choiceLabelValues))
+
+            # Print
+            with indent(4):
+                puts('{name:50}: {type:10} '.format(name=colored.green(param.getScriptName()), type=param.getParamTypeName()))
+                if len(choiceValues):
+                    with indent(40):
+                        for choiceValue in choiceValues:
+                            if choiceValues.index(choiceValue) == defaultValueIndex:
+                                puts(colored.yellow(choiceValue), newline=not hasLabel)
+                            else:
+                                puts(colored.red(choiceValue), newline=not hasLabel)
+                            if hasLabel:
+                                puts(choiceLabelValues[choiceValues.index(choiceValue)])
+                with indent(2):
+                    puts(param.getHint())
+        # Other param types
+        else:
+            defaultValue = []
+            if param.getProperties().hasProperty('OfxParamPropDefault'):
+                propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
+                defaultValue = self._getListValues(propDefault)
+
+            minDisplayValue = []
+            maxDisplayValue = []
+            # min/max values
+            if param.getProperties().hasProperty('OfxParamPropDisplayMin'):
+                propDisplayMin = param.getProperties().fetchProperty('OfxParamPropDisplayMin')
+                propDisplayMax = param.getProperties().fetchProperty('OfxParamPropDisplayMax')
+                minDisplayValue = self._getListValues(propDisplayMin)
+                maxDisplayValue = self._getListValues(propDisplayMax)
+
+            # Print
+            with indent(4):
+                puts('{paramName:50}: {paramType:10} {default:9}'.format(
+                    paramName=colored.green(param.getScriptName()), paramType=param.getParamTypeName(),
+                    default=colored.yellow(','.join(defaultValue))),
+                    newline=False)
+
+                if len(minDisplayValue) and len(maxDisplayValue):
+                    puts('[{minDisplay:5} --> {maxDisplay:5}]'.format(
+                        minDisplay=','.join(minDisplayValue),
+                        maxDisplay=','.join(maxDisplayValue)))
+                else:
+                    puts('\n')
+
+                with indent(2):
+                    puts(param.getHint())
+
+    def _displayClipHelp(self, clip):
+        # Components
+        components = clip.getSupportedComponents()
+        componentsStr = []
+        for component in components:
+            componentsStr.append(component[17:])  # remove 'OfxImageComponent'
+        # Property
+        properties = []
+        if clip.getProperties().getIntProperty('OfxImageClipPropOptional'):
+            properties.append('optional')
+        if clip.isMask():
+            properties.append('mask')
+        if clip.temporalAccess():
+            properties.append('use temporal access')
+        # Print
+        with indent(4):
+            puts('{clipName:10}: {clipComponents} {clipProperties}'.format(
+                clipName=colored.green(clip.getName()),
+                clipComponents=('[' + (', '.join(componentsStr)) + ']'),
+                clipProperties=(', '.join(properties))))
+
     def _displayNodeHelp(self, nodeFullName, node):
         """
         Display help of a specific node in the command line.
@@ -150,101 +239,16 @@ class SamDo(samUtils.Sam):
             # Skip secret params
             if param.getSecret():
                 continue
-
             paramType = param.getParamType()
             # Skip Group / PushButton / Page params
             if paramType == 'OfxParamTypeGroup' or paramType == 'OfxParamTypePushButton' or paramType == 'OfxParamTypePage':
                 continue
-
-            # Choice param
-            if paramType == 'OfxParamTypeChoice':
-                defaultValueIndex = None
-                if param.getProperties().hasProperty('OfxParamPropDefault'):
-                    propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
-                    defaultValue = self._getListValues(propDefault)
-                    if propDefault.getType() == tuttle.ePropTypeInt:
-                        defaultValueIndex = param.getProperties().getIntProperty('OfxParamPropDefault', 0)
-
-                choiceValues = []
-                choiceLabelValues = []
-                hasLabel = False
-                if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
-                    propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
-                    choiceValues = self._getListValues(propChoiceOption)
-                if param.getProperties().hasProperty('OfxParamPropChoiceLabelOption'):
-                    propChoiceLabel = param.getProperties().fetchProperty('OfxParamPropChoiceLabelOption')
-                    choiceLabelValues = self._getListValues(propChoiceLabel)
-                    hasLabel = (len(choiceValues) == len(choiceLabelValues))
-
-                # Print
-                with indent(4):
-                    puts('{name:50}: {type:10} '.format(name=colored.green(param.getScriptName()), type=param.getParamTypeName()))
-                    if len(choiceValues):
-                        with indent(40):
-                            for choiceValue in choiceValues:
-                                if choiceValues.index(choiceValue) == defaultValueIndex:
-                                    puts(colored.yellow(choiceValue), newline=not hasLabel)
-                                else:
-                                    puts(colored.red(choiceValue), newline=not hasLabel)
-                                if hasLabel:
-                                    puts(choiceLabelValues[choiceValues.index(choiceValue)])
-                    with indent(2):
-                        puts(param.getHint())
-            # Other param types
-            else:
-                defaultValue = []
-                if param.getProperties().hasProperty('OfxParamPropDefault'):
-                    propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
-                    defaultValue = self._getListValues(propDefault)
-
-                minDisplayValue = []
-                maxDisplayValue = []
-                # min/max values
-                if param.getProperties().hasProperty('OfxParamPropDisplayMin'):
-                    propDisplayMin = param.getProperties().fetchProperty('OfxParamPropDisplayMin')
-                    propDisplayMax = param.getProperties().fetchProperty('OfxParamPropDisplayMax')
-                    minDisplayValue = self._getListValues(propDisplayMin)
-                    maxDisplayValue = self._getListValues(propDisplayMax)
-
-                # Print
-                with indent(4):
-                    puts('{paramName:50}: {paramType:10} {default:9}'.format(
-                        paramName=colored.green(param.getScriptName()), paramType=param.getParamTypeName(),
-                        default=colored.yellow(','.join(defaultValue))),
-                        newline=False)
-
-                    if len(minDisplayValue) and len(maxDisplayValue):
-                        puts('[{minDisplay:5} --> {maxDisplay:5}]'.format(
-                            minDisplay=','.join(minDisplayValue),
-                            maxDisplay=','.join(maxDisplayValue)))
-                    else:
-                        puts('\n')
-
-                    with indent(2):
-                        puts(param.getHint())
+            self._displayParamHelp(param)
 
         # CLIPS
         puts('\n' + colored.blue('CLIPS', bold=True))
         for clip in node.getClipImageSet().getClips():
-            # Components
-            components = clip.getSupportedComponents()
-            componentsStr = []
-            for component in components:
-                componentsStr.append(component[17:])  # remove 'OfxImageComponent'
-            # Property
-            properties = []
-            if clip.getProperties().getIntProperty('OfxImageClipPropOptional'):
-                properties.append('optional')
-            if clip.isMask():
-                properties.append('mask')
-            if clip.temporalAccess():
-                properties.append('use temporal access')
-            # Print
-            with indent(4):
-                puts('{clipName:10}: {clipComponents} {clipProperties}'.format(
-                    clipName=colored.green(clip.getName()),
-                    clipComponents=('[' + (', '.join(componentsStr)) + ']'),
-                    clipProperties=(', '.join(properties))))
+            self._displayClipHelp(clip)
 
         # SUPPORTED BIT DEPTH
         if node.getProperties().hasProperty('OfxImageEffectPropSupportedPixelDepths'):
