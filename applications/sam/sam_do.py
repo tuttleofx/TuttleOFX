@@ -83,6 +83,8 @@ class SamDo(samUtils.Sam):
         # Options
         parser.add_argument('-r', '--range', dest='range', nargs=2, type=int, help='specify the range to process')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
+        parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
+        parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('-v', '--verbose', dest='verbose', type=int, default=2, help='verbose level (trace=0, debug=1, info=2 (by default), warning=3, error=4, fatal=5)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
@@ -308,6 +310,10 @@ class SamDo(samUtils.Sam):
         if args.range:
             options.setBegin(args.range[0])
             options.setEnd(args.range[1])
+        # sam-do --continue-on-error
+        options.setContinueOnError(args.continueOnError)
+        # sam-do --stop-on-missing-files
+        options.setContinueOnMissingFile(not args.stopOnMissingFiles)
 
         # Connect and compute
         if len(nodes) > 1:
