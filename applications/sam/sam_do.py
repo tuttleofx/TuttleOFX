@@ -284,12 +284,12 @@ class SamDo(samUtils.Sam):
                 if '=' in option:
                     optionName, optionValue = option.split('=')
                     param = node.getParam(optionName)
-                    param.setValue(optionValue)
+                    param.setValueFromExpression(optionValue)
                 elif option[0] != '-':
                     try:
                         # set parameter at index written in the command line
                         param = node.getParams()[options.index(option)]
-                        param.setValue(option)
+                        param.setValueFromExpression(option)
                     except Exception:
                         # cannot set param of node
                         pass
