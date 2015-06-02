@@ -14,6 +14,44 @@ from pyTuttle import tuttle
 from common import samUtils
 
 
+class SamDoSetVerboseAction(argparse.Action):
+    '''
+    Class to get the corresponding tuttle verbose level from the user input.
+    The user input can be a number or a string.
+    '''
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        if nargs is not None:
+            raise ValueError("nargs not allowed")
+        super(SamDoSetVerboseAction, self).__init__(option_strings, dest, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        # if the given number is upper than the max tuttle verbose level, set verbose to trace
+        try:
+            if int(values) > 6:
+                setattr(namespace, self.dest, 0)
+                return
+        except Exception:
+            pass
+
+        if values == '0' or values.lower() == 'none':
+            setattr(namespace, self.dest, None)
+        elif values == '1' or values.lower() == 'fatal':
+            setattr(namespace, self.dest, 5)
+        elif values == '2' or values.lower() == 'error':
+            setattr(namespace, self.dest, 4)
+        elif values == '3' or values.lower() == 'warn':
+            setattr(namespace, self.dest, 3)
+        elif values == '4' or values.lower() == 'info':
+            setattr(namespace, self.dest, 2)
+        elif values == '5' or values.lower() == 'debug':
+            setattr(namespace, self.dest, 1)
+        elif values == '6' or values.lower() == 'trace':
+            setattr(namespace, self.dest, 0)
+        # if the level is not recognized, no verbosity
+        else:
+            setattr(namespace, self.dest, None)
+
+
 class SamDo(samUtils.Sam):
     """
     Class which represents the sam_do operation.
@@ -85,7 +123,7 @@ class SamDo(samUtils.Sam):
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
-        parser.add_argument('-v', '--verbose', dest='verbose', type=int, default=2, help='verbose level (trace=0, debug=1, info=2 (by default), warning=3, error=4, fatal=5)')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=SamDoSetVerboseAction, help='verbose level (0/none(by default), 1/fatal, 2/error, 3/warn, 4/info, 5/debug, 6(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
     def _decomposeCommandLine(self, inputs):
@@ -336,7 +374,8 @@ class SamDo(samUtils.Sam):
         # Options of process
         options = tuttle.ComputeOptions()
         # sam-do --verbose
-        options.setVerboseLevel(args.verbose)
+        if args.verbose is not None:
+            options.setVerboseLevel(args.verbose)
         # sam-do --range
         if args.range:
             options.setBegin(args.range[0])
