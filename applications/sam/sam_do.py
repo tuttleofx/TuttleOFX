@@ -73,7 +73,7 @@ class SamDo(samUtils.Sam):
         Range process:                     sam do reader in.@.dpx // writer out.@.exr // --range 50,100
         Single process:                    sam do reader in.@.dpx // writer out.@.exr // --range 59
         Multiple CPUs:                     sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4
-        Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr // --continueOnError
+        Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr // --continue-on-error
         '''
 
     def fillParser(self, parser):
