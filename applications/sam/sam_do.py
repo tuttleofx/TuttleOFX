@@ -116,6 +116,16 @@ class SamDo(samUtils.Sam):
                 elements.append(ofxProperty.getStringValueAt(n))
         return elements
 
+    def _getNbBitsFromOfxBitDepth(self, ofxBitDepth):
+        if ofxBitDepth == 'OfxBitDepthByte':
+            return '8 bits'
+        elif ofxBitDepth == 'OfxBitDepthShort':
+            return '16 bits'
+        elif ofxBitDepth == 'OfxBitDepthFloat':
+            return '32 bits'
+        else:
+            return 'unknown'
+
     def _displayNodeHelp(self, nodeFullName, node):
         """
         Display help of a specific node in the command line.
@@ -235,6 +245,26 @@ class SamDo(samUtils.Sam):
                     clipName=colored.green(clip.getName()),
                     clipComponents=('[' + (', '.join(componentsStr)) + ']'),
                     clipProperties=(', '.join(properties))))
+
+        # SUPPORTED BIT DEPTH
+        if node.getProperties().hasProperty('OfxImageEffectPropSupportedPixelDepths'):
+            puts('\n' + colored.blue('SUPPORTED BIT DEPTH', bold=True))
+            propBitDepth = node.getProperties().fetchProperty('OfxImageEffectPropSupportedPixelDepths')
+            bitDepthValues = self._getListValues(propBitDepth)
+            bitDepthSourceStr = []
+            bitDepthOutputStr = []
+            for bitDepthValue in bitDepthValues[:len(bitDepthValues)/2]:
+                bitDepthSourceStr.append(self._getNbBitsFromOfxBitDepth(bitDepthValue))
+            for bitDepthValue in bitDepthValues[len(bitDepthValues)/2:]:
+                bitDepthOutputStr.append(self._getNbBitsFromOfxBitDepth(bitDepthValue))
+            # Print
+            with indent(4):
+                puts('{name:10}: [{bitdepth}]'.format(
+                    name=colored.green('Source'),
+                    bitdepth=', '.join(bitDepthSourceStr)))
+                puts('{name:10}: [{bitdepth}]'.format(
+                    name=colored.green('Output'),
+                    bitdepth=', '.join(bitDepthOutputStr)))
 
     def run(self, parser):
         """
