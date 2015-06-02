@@ -143,7 +143,7 @@ class SamDo(samUtils.Sam):
 
             paramType = param.getParamType()
             # Skip Group / PushButton / Page params
-            if type == 'OfxParamTypeGroup'  or type == 'OfxParamTypePushButton' or type == 'OfxParamTypePage':
+            if paramType == 'OfxParamTypeGroup' or paramType == 'OfxParamTypePushButton' or paramType == 'OfxParamTypePage':
                 continue
 
             # Choice param
