@@ -81,6 +81,7 @@ class SamDo(samUtils.Sam):
         parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.sequenceParserCompleter
 
         # Options
+        parser.add_argument('-r', '--range', dest='range', nargs=2, type=int, help='specify the range to process')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
         parser.add_argument('-v', '--verbose', dest='verbose', type=int, default=2, help='verbose level (trace=0, debug=1, info=2 (by default), warning=3, error=4, fatal=5)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
@@ -303,6 +304,10 @@ class SamDo(samUtils.Sam):
         options = tuttle.ComputeOptions()
         # sam-do --verbose
         options.setVerboseLevel(args.verbose)
+        # sam-do --range
+        if args.range:
+            options.setBegin(args.range[0])
+            options.setEnd(args.range[1])
 
         # Connect and compute
         if len(nodes) > 1:
