@@ -153,12 +153,9 @@ class SamDo(samUtils.Sam):
                 if len(choiceValues):
                     with indent(40):
                         for choiceValue in choiceValues:
-                            if choiceValues.index(choiceValue) == defaultValueIndex:
-                                puts(colored.yellow(choiceValue), newline=not hasLabel)
-                            else:
-                                puts(colored.red(choiceValue), newline=not hasLabel)
-                            if hasLabel:
-                                puts(choiceLabelValues[choiceValues.index(choiceValue)])
+                            puts('{value:50} {label}'.format(
+                                value=(colored.yellow(choiceValue) if choiceValues.index(choiceValue) == defaultValueIndex else colored.red(choiceValue)),
+                                label=(choiceLabelValues[choiceValues.index(choiceValue)] if hasLabel else '')))
                 with indent(2):
                     puts(param.getHint())
         # Other param types
