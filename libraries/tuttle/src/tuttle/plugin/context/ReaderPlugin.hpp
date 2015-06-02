@@ -30,15 +30,12 @@ public:
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
-		//TUTTLE_LOG_VAR( TUTTLE_INFO, time );
 		if( _isSequence )
 		{
-			//TUTTLE_LOG_VAR( TUTTLE_INFO, _filePattern.getAbsoluteFilenameAt( time ) );
-			return _filePattern.getFilenameAt( static_cast<std::ssize_t>(time) );
+			return getAbsolutePath() + _filePattern.getFilenameAt( static_cast<std::ssize_t>(time) );
 		}
 		else
 		{
-			//TUTTLE_LOG_VAR( TUTTLE_INFO, _paramFilepath->getValue() );
 			return _paramFilepath->getValue();
 		}
 	}
@@ -46,9 +43,17 @@ public:
 	std::string getAbsoluteFirstFilename() const
 	{
 		if( _isSequence )
-			return _filePattern.getFirstFilename();
+		{
+			return getAbsolutePath() + _filePattern.getFirstFilename();
+		}
 		else
 			return _paramFilepath->getValue();
+	}
+
+	std::string getAbsolutePath() const 
+	{
+		const std::size_t indexOfSequenceName = _paramFilepath->getValue().rfind('/');
+		return _paramFilepath->getValue().substr(0, indexOfSequenceName + 1);
 	}
 
 	OfxTime getFirstTime() const
