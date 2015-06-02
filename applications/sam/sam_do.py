@@ -53,9 +53,9 @@ class SamDoSetVerboseAction(argparse.Action):
 
 
 class SamDo(samUtils.Sam):
-    """
+    '''
     Class which represents the sam_do operation.
-    """
+    '''
 
     def __init__(self):
         samUtils.Sam.__init__(self)
@@ -127,9 +127,9 @@ class SamDo(samUtils.Sam):
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
     def _decomposeCommandLine(self, inputs):
-        """
+        '''
         Split command line in dict with {plugin: relative options}
-        """
+        '''
         pluginsWithOption = []
         newPlugin = True
         for input in inputs:
@@ -145,9 +145,9 @@ class SamDo(samUtils.Sam):
         return pluginsWithOption
 
     def _getListValues(self, ofxProperty):
-        """
+        '''
         Get list of string from the given property
-        """
+        '''
         elements = []
         for n in range(0, ofxProperty.getDimension()):
             if ofxProperty.getStringValueAt(n):
@@ -155,6 +155,9 @@ class SamDo(samUtils.Sam):
         return elements
 
     def _getNbBitsFromOfxBitDepth(self, ofxBitDepth):
+        '''
+        Get a label 'nb bits' from 'OfxBitDepth__' name.
+        '''
         if ofxBitDepth == 'OfxBitDepthByte':
             return '8 bits'
         elif ofxBitDepth == 'OfxBitDepthShort':
@@ -165,6 +168,9 @@ class SamDo(samUtils.Sam):
             return 'unknown'
 
     def _displayParamHelp(self, param):
+        '''
+        Display help of the given OFXParameter.
+        '''
         # Choice param
         if param.getParamType() == 'OfxParamTypeChoice':
             defaultValueIndex = None
@@ -230,6 +236,9 @@ class SamDo(samUtils.Sam):
                     puts(param.getHint())
 
     def _displayClipHelp(self, clip):
+        '''
+        Display help of the given OFXClip.
+        '''
         # Components
         components = clip.getSupportedComponents()
         componentsStr = []
@@ -251,9 +260,9 @@ class SamDo(samUtils.Sam):
                 clipProperties=(', '.join(properties))))
 
     def _displayNodeHelp(self, nodeFullName, node):
-        """
+        '''
         Display help of a specific node in the command line.
-        """
+        '''
         # NODE
         puts('\n' + colored.blue('NODE', bold=True))
         with indent(4):
@@ -306,9 +315,9 @@ class SamDo(samUtils.Sam):
                     bitdepth=', '.join(bitDepthOutputStr)))
 
     def run(self, parser):
-        """
+        '''
         Process the do operation.
-        """
+        '''
         # Activate completion
         argcomplete.autocomplete(parser)
 
