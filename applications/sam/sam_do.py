@@ -243,6 +243,15 @@ class SamDo(samUtils.Sam):
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
+        # preload OFX plugins
+        tuttle.core().preload(False)
+
+        # sam-do --nodes
+        if args.nodes:
+            for plugin in tuttle.core().getPlugins():
+                puts(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
+            exit(0)
+
         # sam-do --help
         if len(args.inputs) == 0:
             # if launched from sam, retrieve subparsers from parser
@@ -261,15 +270,6 @@ class SamDo(samUtils.Sam):
 
         # Add unknown options to the command line to process
         args.inputs.extend(unknown)
-
-        # preload OFX plugins
-        tuttle.core().preload(False)
-
-        # sam-do --nodes
-        if args.nodes:
-            for plugin in tuttle.core().getPlugins():
-                puts(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
-            exit(0)
 
         # Tuttle graph
         graph = tuttle.Graph()
