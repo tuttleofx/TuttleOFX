@@ -69,6 +69,7 @@ class SamDo(samUtils.Sam):
         self.epilog = '''
     Plugins options
         Plugin list:                       sam do --nodes
+        Supported file formats list:       sam do --file-formats
         Plugin help:                       sam do blur -h
 
     Generators and viewers
@@ -121,6 +122,7 @@ class SamDo(samUtils.Sam):
         # Options
         parser.add_argument('-r', '--range', dest='range', nargs=2, type=int, help='specify the range to process')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
+        parser.add_argument('--file-formats', dest='fileFormats', action='store_true', help='list all supported file formats (R/W)')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('-v', '--verbose', dest='verbose', action=SamDoSetVerboseAction, help='verbose level (0/none(by default), 1/fatal, 2/error, 3/warn, 4/info, 5/debug, 6(or upper)/trace)')
@@ -166,6 +168,35 @@ class SamDo(samUtils.Sam):
             return '32 bits'
         else:
             return 'unknown'
+
+    def _displayFileFormats(self):
+        '''
+        Display all supported input/output file formats.
+        '''
+        def getListOfSupportedExtension(ofxhImageEffectNodeDescriptor):
+            '''
+            Return list of supported extension from a given plugin descriptor.
+            '''
+            propSupportedExtension = ofxhImageEffectNodeDescriptor.getParamSetProps().fetchProperty( 'TuttleOfxImageEffectPropSupportedExtensions' )
+            return self._getListValues(propSupportedExtension)
+
+        supportedExtensions = {'r': [], 'w': []}
+        for plugin in tuttle.core().getImageEffectPluginCache().getPlugins():
+            plugin.loadAndDescribeActions()
+            if plugin.supportsContext('OfxImageEffectContextReader'):
+                pluginDescriptor = plugin.getDescriptorInContext('OfxImageEffectContextReader')
+                if pluginDescriptor.getParamSetProps().hasProperty('TuttleOfxImageEffectPropSupportedExtensions'):
+                    supportedExtensions['r'].extend(getListOfSupportedExtension(pluginDescriptor))
+            elif plugin.supportsContext('OfxImageEffectContextWriter'):
+                pluginDescriptor = plugin.getDescriptorInContext('OfxImageEffectContextWriter')
+                if pluginDescriptor.getParamSetProps().hasProperty('TuttleOfxImageEffectPropSupportedExtensions'):
+                    supportedExtensions['w'].extend(getListOfSupportedExtension(pluginDescriptor))
+        for key, extensions in supportedExtensions.items():
+            if key == 'r':
+                puts('\n' + colored.blue('SUPPORTED INPUT FILE FORMATS', bold=True))
+            elif key == 'w':
+                puts('\n' + colored.blue('SUPPORTED OUTPUT FILE FORMATS', bold=True))
+            puts(', '.join(sorted(extensions)))
 
     def _displayParamHelp(self, param):
         '''
@@ -331,6 +362,11 @@ class SamDo(samUtils.Sam):
         if args.nodes:
             for plugin in tuttle.core().getPlugins():
                 puts(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
+            exit(0)
+
+        # sam-do --file-formats
+        if args.fileFormats:
+            self._displayFileFormats()
             exit(0)
 
         # sam-do --help
