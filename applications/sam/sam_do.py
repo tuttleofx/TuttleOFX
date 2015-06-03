@@ -169,6 +169,13 @@ class SamDo(samUtils.Sam):
         else:
             return 'unknown'
 
+    def _displayPlugins(self):
+        '''
+        Display all available plugins, with their versions (v[major].[minor])
+        '''
+        for plugin in tuttle.core().getPlugins():
+            puts(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
+
     def _displayFileFormats(self):
         '''
         Display all supported input/output file formats.
@@ -360,8 +367,7 @@ class SamDo(samUtils.Sam):
 
         # sam-do --nodes
         if args.nodes:
-            for plugin in tuttle.core().getPlugins():
-                puts(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
+            self._displayPlugins()
             exit(0)
 
         # sam-do --file-formats
