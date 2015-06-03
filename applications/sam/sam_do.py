@@ -66,7 +66,7 @@ class SamDo(samUtils.Sam):
         self.description = '''
             A command line to execute a list of OpenFX nodes.
             Use the separator // to pipe images between nodes.
-            sam do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]
+            sam do [options]... [// node [node-options]... [[param=]value]...]... [options]
             '''
         self.epilog = '''
     Plugins options
@@ -88,8 +88,9 @@ class SamDo(samUtils.Sam):
     Image sequence conversion and creation
         Convert Image:                     sam do reader in.dpx // writer out.jpg
         Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
-        Select a range:                    sam do reader in.####.dpx // writer out.####.jpg // --range=10,100
-                                           r and w are shortcuts for reader and writer
+        Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
+        Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
+                                           'r' and 'w' are shortcuts for 'reader' and 'writer'
 
     Geometry processing during conversion
         Crop:                              sam do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
@@ -111,10 +112,10 @@ class SamDo(samUtils.Sam):
         All Frames in Directory:           /path/to/directory
 
     Processing options
-        Range process:                     sam do reader in.@.dpx // writer out.@.exr // --range 50,100
-        Single process:                    sam do reader in.@.dpx // writer out.@.exr // --range 59
-        Multiple CPUs:                     sam do reader in.@.dpx // writer out.@.exr // --nb-cores 4
-        Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr // --continue-on-error
+        Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
+        Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
+        Multiple CPUs:                     sam do reader in.@.dpx // writer out.@.exr --nb-cores 4
+        Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         '''
 
     def fillParser(self, parser):
@@ -122,7 +123,7 @@ class SamDo(samUtils.Sam):
         parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.sequenceParserCompleter
 
         # Options
-        parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process')
+        parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process (only numbers separate with spaces)')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
         parser.add_argument('--file-formats', dest='fileFormats', action='store_true', help='list all supported file formats (R/W)')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
