@@ -2,6 +2,8 @@
 # PYTHON_ARGCOMPLETE_OK
 
 import argparse
+import itertools
+
 
 # python modules to easily get completion
 import argcomplete
@@ -120,13 +122,29 @@ class SamDo(samUtils.Sam):
         parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.sequenceParserCompleter
 
         # Options
-        parser.add_argument('-r', '--range', dest='range', nargs=2, type=int, help='specify the range to process')
+        parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
         parser.add_argument('--file-formats', dest='fileFormats', action='store_true', help='list all supported file formats (R/W)')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('-v', '--verbose', dest='verbose', action=SamDoSetVerboseAction, help='verbose level (0/none(by default), 1/fatal, 2/error, 3/warn, 4/info, 5/debug, 6(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
+
+    def _setTimeRanges(self, computeOptions, ranges):
+        """
+        Set time ranges of the given compute options.
+        """
+        def grouper(iterable, n, fillValue=None):
+            """
+            Collect data into fixed-length chunks or blocks.
+            """
+            args = [iter(iterable)] * n
+            return itertools.izip_longest(*args, fillvalue=fillValue)
+
+        for begin, end in grouper(ranges, 2):
+            if end is None:
+                end = begin
+            computeOptions.addTimeRange(begin, end)
 
     def _decomposeCommandLine(self, inputs):
         """
@@ -436,10 +454,10 @@ class SamDo(samUtils.Sam):
         # sam-do --verbose
         if args.verbose is not None:
             options.setVerboseLevel(args.verbose)
-        # sam-do --range
-        if args.range:
-            options.setBegin(args.range[0])
-            options.setEnd(args.range[1])
+        # sam-do --ranges
+        if args.ranges is not None:
+            self._setTimeRanges(options, args.ranges)
+
         # sam-do --continue-on-error
         options.setContinueOnError(args.continueOnError)
         # sam-do --stop-on-missing-files
