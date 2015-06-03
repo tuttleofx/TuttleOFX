@@ -169,6 +169,12 @@ class SamDo(samUtils.Sam):
         else:
             return 'unknown'
 
+    def _displayTitle(self, title):
+        """
+        Display the given string with a title format.
+        """
+        puts('\n' + colored.blue(title, bold=True))
+
     def _displayPlugins(self):
         """
         Display all available plugins, with their versions (v[major].[minor])
@@ -200,9 +206,9 @@ class SamDo(samUtils.Sam):
                     supportedExtensions['w'].extend(getListOfSupportedExtension(pluginDescriptor))
         for key, extensions in supportedExtensions.items():
             if key == 'r':
-                puts('\n' + colored.blue('SUPPORTED INPUT FILE FORMATS', bold=True))
+                self._displayTitle('SUPPORTED INPUT FILE FORMATS')
             elif key == 'w':
-                puts('\n' + colored.blue('SUPPORTED OUTPUT FILE FORMATS', bold=True))
+                self._displayTitle('SUPPORTED OUTPUT FILE FORMATS')
             puts(', '.join(sorted(extensions)))
 
     def _displayParamHelp(self, param):
@@ -302,12 +308,12 @@ class SamDo(samUtils.Sam):
         Display help of a specific node in the command line.
         """
         # NODE
-        puts('\n' + colored.blue('NODE', bold=True))
+        self._displayTitle('NODE')
         with indent(4):
             puts(colored.green(nodeFullName + ' ' + node.getVersionStr()))
 
         # DESCRIPTION
-        puts('\n' + colored.blue('DESCRIPTION', bold=True))
+        self._displayTitle('DESCRIPTION')
         with indent(4):
             puts('type: ' + colored.green(tuttle.mapNodeTypeEnumToString(node.getNodeType())))
             puts('group: ' + colored.green(node.asImageEffectNode().getPluginGrouping()))
@@ -316,7 +322,7 @@ class SamDo(samUtils.Sam):
 
         # PARAMETERS
         if node.getParams():
-            puts('\n' + colored.blue('PARAMETERS', bold=True))
+            self._displayTitle('PARAMETERS')
         for param in node.getParams():
             # Skip secret params
             if param.getSecret():
@@ -328,13 +334,13 @@ class SamDo(samUtils.Sam):
             self._displayParamHelp(param)
 
         # CLIPS
-        puts('\n' + colored.blue('CLIPS', bold=True))
+        self._displayTitle('CLIPS')
         for clip in node.getClipImageSet().getClips():
             self._displayClipHelp(clip)
 
         # SUPPORTED BIT DEPTH
         if node.getProperties().hasProperty('OfxImageEffectPropSupportedPixelDepths'):
-            puts('\n' + colored.blue('SUPPORTED BIT DEPTH', bold=True))
+            self._displayTitle('SUPPORTED BIT DEPTH')
             propBitDepth = node.getProperties().fetchProperty('OfxImageEffectPropSupportedPixelDepths')
             bitDepthValues = self._getListValues(propBitDepth)
             bitDepthSourceStr = []
