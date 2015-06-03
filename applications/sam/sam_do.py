@@ -177,10 +177,13 @@ class SamDo(samUtils.Sam):
 
     def _displayPlugins(self):
         """
-        Display all available plugins, with their versions (v[major].[minor])
+        Display all available plugins (in alphabetical order), with their versions (v[major].[minor]).
         """
+        plugins = []
         for plugin in tuttle.core().getPlugins():
-            puts(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
+            plugins.append(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
+        for plugin in sorted(plugins):
+            puts(plugin)
 
     def _displayFileFormats(self):
         """
