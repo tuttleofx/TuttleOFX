@@ -165,16 +165,6 @@ class SamDo(samUtils.Sam):
                 pluginsWithOption[-1][1].append(input)
         return pluginsWithOption
 
-    def _getListValues(self, ofxProperty):
-        """
-        Get list of string from the given property
-        """
-        elements = []
-        for n in range(0, ofxProperty.getDimension()):
-            if ofxProperty.getStringValueAt(n):
-                elements.append(ofxProperty.getStringValueAt(n))
-        return elements
-
     def _getNbBitsFromOfxBitDepth(self, ofxBitDepth):
         """
         Get a label 'nb bits' from 'OfxBitDepth__' name.
@@ -213,7 +203,7 @@ class SamDo(samUtils.Sam):
             Return list of supported extension from a given plugin descriptor.
             """
             propSupportedExtension = ofxhImageEffectNodeDescriptor.getParamSetProps().fetchProperty( 'TuttleOfxImageEffectPropSupportedExtensions' )
-            return self._getListValues(propSupportedExtension)
+            return samUtils.getListValues(propSupportedExtension)
 
         supportedExtensions = {'r': [], 'w': []}
         for plugin in tuttle.core().getImageEffectPluginCache().getPlugins():
@@ -242,7 +232,7 @@ class SamDo(samUtils.Sam):
             defaultValueIndex = None
             if param.getProperties().hasProperty('OfxParamPropDefault'):
                 propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
-                defaultValue = self._getListValues(propDefault)
+                defaultValue = samUtils.getListValues(propDefault)
                 if propDefault.getType() == tuttle.ePropTypeInt:
                     defaultValueIndex = param.getProperties().getIntProperty('OfxParamPropDefault', 0)
 
@@ -251,10 +241,10 @@ class SamDo(samUtils.Sam):
             hasLabel = False
             if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
                 propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
-                choiceValues = self._getListValues(propChoiceOption)
+                choiceValues = samUtils.getListValues(propChoiceOption)
             if param.getProperties().hasProperty('OfxParamPropChoiceLabelOption'):
                 propChoiceLabel = param.getProperties().fetchProperty('OfxParamPropChoiceLabelOption')
-                choiceLabelValues = self._getListValues(propChoiceLabel)
+                choiceLabelValues = samUtils.getListValues(propChoiceLabel)
                 hasLabel = (len(choiceValues) == len(choiceLabelValues))
 
             # Print
@@ -273,7 +263,7 @@ class SamDo(samUtils.Sam):
             defaultValue = []
             if param.getProperties().hasProperty('OfxParamPropDefault'):
                 propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
-                defaultValue = self._getListValues(propDefault)
+                defaultValue = samUtils.getListValues(propDefault)
 
             minDisplayValue = []
             maxDisplayValue = []
@@ -281,8 +271,8 @@ class SamDo(samUtils.Sam):
             if param.getProperties().hasProperty('OfxParamPropDisplayMin'):
                 propDisplayMin = param.getProperties().fetchProperty('OfxParamPropDisplayMin')
                 propDisplayMax = param.getProperties().fetchProperty('OfxParamPropDisplayMax')
-                minDisplayValue = self._getListValues(propDisplayMin)
-                maxDisplayValue = self._getListValues(propDisplayMax)
+                minDisplayValue = samUtils.getListValues(propDisplayMin)
+                maxDisplayValue = samUtils.getListValues(propDisplayMax)
 
             # Print
             with indent(4):
@@ -364,7 +354,7 @@ class SamDo(samUtils.Sam):
         if node.getProperties().hasProperty('OfxImageEffectPropSupportedPixelDepths'):
             self._displayTitle('SUPPORTED BIT DEPTH')
             propBitDepth = node.getProperties().fetchProperty('OfxImageEffectPropSupportedPixelDepths')
-            bitDepthValues = self._getListValues(propBitDepth)
+            bitDepthValues = samUtils.getListValues(propBitDepth)
             bitDepthSourceStr = []
             bitDepthOutputStr = []
             for bitDepthValue in bitDepthValues[:len(bitDepthValues)/2]:

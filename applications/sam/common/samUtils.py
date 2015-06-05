@@ -58,17 +58,39 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
     plugins = tuttle.core().getPlugins()
     pluginsStr = [str(plugin.getIdentifier()) for plugin in plugins]
 
-    # get params
+    # check last input in command line
     if len(parsed_args.inputs):
         lastInput = parsed_args.inputs[-1]
+        # get params
         if lastInput in pluginsStr:
             graph = tuttle.Graph()
             node = graph.createNode(lastInput)
             params = node.getParams()
             paramsStr = [str(param.getScriptName()) for param in params]
             return paramsStr
+        # get choices
+        else:
+            for input in reversed(parsed_args.inputs):
+                if input in pluginsStr:
+                    graph = tuttle.Graph()
+                    node = graph.createNode(input)
+                    param = node.getParam(lastInput)
+                    if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
+                        propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
+                        choicesStr = getListValues(propChoiceOption)
+                        return choicesStr
 
     return pluginsStr
+
+def getListValues(ofxProperty):
+    """
+    Get list of string from the given OfxProperty
+    """
+    elements = []
+    for n in range(0, ofxProperty.getDimension()):
+        if ofxProperty.getStringValueAt(n):
+            elements.append(ofxProperty.getStringValueAt(n))
+    return elements
 
 def retrieveNodeFullName(pluginId):
     """
