@@ -52,11 +52,9 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
     """
     Custom Completer to manage auto competion when looking for openFX nodes.
     """
-    tuttle.core().preload(False)
-
     # get plugins
-    plugins = tuttle.core().getPlugins()
-    pluginsStr = [str(plugin.getIdentifier()) for plugin in plugins]
+    pluginsId = tuttle.core().getImageEffectPluginCache().getPluginsByID()
+    pluginsStr = [str(id) for id in pluginsId]
 
     # check last input in command line
     if len(parsed_args.inputs):

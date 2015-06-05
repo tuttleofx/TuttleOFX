@@ -118,6 +118,9 @@ class SamDo(samUtils.Sam):
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         '''
 
+        # preload OFX plugins
+        tuttle.core().preload(False)
+
     def fillParser(self, parser):
         # Arguments
         parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.samDoCompleter
@@ -379,9 +382,6 @@ class SamDo(samUtils.Sam):
 
         # Parse command-line
         args, unknown = parser.parse_known_args()
-
-        # preload OFX plugins
-        tuttle.core().preload(False)
 
         # sam-do --nodes
         if args.nodes:
