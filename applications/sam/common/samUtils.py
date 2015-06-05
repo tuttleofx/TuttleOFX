@@ -48,13 +48,26 @@ def sequenceParserCompleter(prefix, **kwargs):
     itemsStr = [str(item.getFilename()) for item in items]
     return itemsStr
 
-def samDoCompleter(prefix, **kwargs):
+def samDoCompleter(prefix, parsed_args, **kwargs):
     """
     Custom Completer to manage auto competion when looking for openFX nodes.
-    """    
+    """
     tuttle.core().preload(False)
+
+    # get plugins
     plugins = tuttle.core().getPlugins()
     pluginsStr = [str(plugin.getIdentifier()) for plugin in plugins]
+
+    # get params
+    if len(parsed_args.inputs):
+        lastInput = parsed_args.inputs[-1]
+        if lastInput in pluginsStr:
+            graph = tuttle.Graph()
+            node = graph.createNode(lastInput)
+            params = node.getParams()
+            paramsStr = [str(param.getScriptName()) for param in params]
+            return paramsStr
+
     return pluginsStr
 
 def retrieveNodeFullName(pluginId):
