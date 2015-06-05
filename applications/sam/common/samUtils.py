@@ -59,25 +59,32 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
     # check last input in command line
     if len(parsed_args.inputs):
         lastInput = parsed_args.inputs[-1]
-        # get params
+        # if last input is a plugin, return its parameters
         if lastInput in pluginsStr:
             graph = tuttle.Graph()
             node = graph.createNode(lastInput)
             params = node.getParams()
             paramsStr = [str(param.getScriptName()) for param in params]
             return paramsStr
-        # get choices
         else:
             for input in reversed(parsed_args.inputs):
+                # if an input is a plugin, get its parameters
                 if input in pluginsStr:
                     graph = tuttle.Graph()
                     node = graph.createNode(input)
-                    param = node.getParam(lastInput)
-                    if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
-                        propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
-                        choicesStr = getListValues(propChoiceOption)
-                        return choicesStr
-
+                    params = node.getParams()
+                    paramsStr = [str(param.getScriptName()) for param in params]
+                    # if last input is one of its parameters, return its choices
+                    if lastInput in paramsStr:
+                        param = node.getParam(lastInput)
+                        if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
+                            propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
+                            choicesStr = getListValues(propChoiceOption)
+                            return choicesStr
+                    # else, return its parameters
+                    else:
+                        return paramsStr
+    # else return available plugins
     return pluginsStr
 
 def getListValues(ofxProperty):
