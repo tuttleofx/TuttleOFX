@@ -120,7 +120,7 @@ class SamDo(samUtils.Sam):
 
     def fillParser(self, parser):
         # Arguments
-        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.sequenceParserCompleter
+        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.samDoCompleter
 
         # Options
         parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process (only numbers separate with spaces)')
