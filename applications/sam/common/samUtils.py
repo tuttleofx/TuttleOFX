@@ -45,6 +45,12 @@ def sequenceParserCompleter(prefix, **kwargs):
     itemsStr = [str(item.getFilename()) for item in items]
     return itemsStr
 
+def retrieveNodeFullName(pluginId):
+    """
+    Return complete node name from the given id.
+    """
+    return 'tuttle.' + pluginId
+
 def getReadableSize(size):
     """
     Get a human readable string which represents the given size.

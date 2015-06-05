@@ -422,7 +422,7 @@ class SamDo(samUtils.Sam):
         # Create nodes from command line
         pluginsWithOption = self._decomposeCommandLine(args.inputs)
         for plugin, options in pluginsWithOption:
-            nodeFullName = 'tuttle.' + plugin
+            nodeFullName = samUtils.retrieveNodeFullName(plugin)
             node = graph.createNode(nodeFullName)
             for option in options:
                 if '=' in option:
