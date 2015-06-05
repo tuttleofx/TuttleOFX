@@ -231,8 +231,15 @@ class SamLs(samUtils.Sam):
             except IOError as e:
                 # if the given input does not correspond to anything
                 if 'No such file or directory' in str(e):
-                    print e
-                    continue
+                    # try to create a sequence from the given input
+                    sequence = sequenceParser.Sequence()
+                    isSequence = sequenceParser.browseSequence(sequence, input)
+                    if isSequence:
+                        items.append(sequenceParser.Item(sequence, os.getcwd()))
+                    # else error
+                    else:
+                        print e
+                        continue
                 # else it's not a directory: try a new browse with the given input name as filter
                 else:
                     # new path to browse
