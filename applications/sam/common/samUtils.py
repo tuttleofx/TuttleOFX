@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import argparse
 
 # python modules to easily get colors, indent text...
 from clint.textui import colored, puts
@@ -101,3 +102,19 @@ def getSequenceItemFromPath(inputPath, detectNegative):
         exit(-1)
 
     return inputItem
+
+def getSubParser(parser, subSamCommand):
+    """
+    Get the subparser which corresponds to the given sam command, from the given parser.
+    """
+    # retrieve subparsers from parser
+    subparsers_actions = [
+        action for action in parser._actions
+        if isinstance(action, argparse._SubParsersAction)]
+    for subparsers_action in subparsers_actions:
+        # get all subparsers and print help
+        for choice, subparser in subparsers_action.choices.items():
+            if choice != subSamCommand:
+                continue
+            return subparser
+    return None

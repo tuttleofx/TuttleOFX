@@ -405,17 +405,10 @@ class SamDo(samUtils.Sam):
 
         # sam-do --help
         if len(args.inputs) == 0:
-            # if launched from sam, retrieve subparsers from parser
-            subparsers_actions = [
-                action for action in parser._actions
-                if isinstance(action, argparse._SubParsersAction)]
-            for subparsers_action in subparsers_actions:
-                # get all subparsers and print help
-                for choice, subparser in subparsers_action.choices.items():
-                    if choice != 'do':
-                        continue
-                    puts(subparser.format_help())
-                    exit(0)
+            subparser = samUtils.getSubParser(parser, 'do')
+            if subparser is not None:
+                puts(subparser.format_help())
+                exit(0)
             parser.print_help()
             exit(0)
 
