@@ -23,11 +23,10 @@ class SamRm(samUtils.Sam):
     def __init__(self):
         samUtils.Sam.__init__(self)
         self.command = 'rm'
-        self.help = 'rm, to remove sequences (and other files)'
-        self.description = '''
-            Remove file sequences.
-            Remove sequence of files, and could remove trees (folder, files and sequences).
-            '''
+        self.help = 'to remove sequences (and other files)'
+        self.description = str(colored.green('''
+            Remove sequences, files and folders.
+            '''))
 
     def fillParser(self, parser):
         # Arguments
@@ -204,6 +203,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog='sam-'+tool.command,
         description=tool.description,
+        formatter_class=argparse.RawTextHelpFormatter,
         )
 
     # Run the command

@@ -4,6 +4,8 @@
 import argparse
 import shutil
 
+from clint.textui import colored
+
 from sam_mv import SamMv
 
 
@@ -15,10 +17,10 @@ class SamCp(SamMv):
     def __init__(self):
         SamMv.__init__(self)
         self.command = 'cp'
-        self.help = 'cp, to copy sequences'
-        self.description = '''
-            Copy sequence(s) in a directory.
-            '''
+        self.help = 'to copy sequences'
+        self.description = str(colored.green('''
+            Copy sequences in a directory.
+            '''))
         self._operation = shutil.copy2
 
 
@@ -30,6 +32,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog='sam-'+tool.command,
         description=tool.description,
+        formatter_class=argparse.RawTextHelpFormatter,
         )
 
     # Run the command

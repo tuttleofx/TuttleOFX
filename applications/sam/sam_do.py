@@ -62,19 +62,19 @@ class SamDo(samUtils.Sam):
     def __init__(self):
         samUtils.Sam.__init__(self)
         self.command = 'do'
-        self.help = 'do, to execute a list of OpenFX nodes'
-        self.description = '''
+        self.help = 'to execute a list of OpenFX nodes'
+        self.description = str(colored.green('''
             A command line to execute a list of OpenFX nodes.
             Use the separator // to pipe images between nodes.
             sam do [options]... [// node [node-options]... [[param=]value]...]... [options]
-            '''
+            '''))
         self.epilog = '''
-    Plugins options
+    '''+colored.blue('Plugins options', bold=True)+'''
         Plugin list:                       sam do --nodes
         Supported file formats list:       sam do --file-formats
         Plugin help:                       sam do blur -h
 
-    Generators and viewers
+    '''+colored.blue('Generators and viewers', bold=True)+'''
         Viewer:                            sam do reader in.@.dpx // viewer
         Print:                             sam do reader in.@.dpx // print color=full16ansi
         Constant generator:                sam do constant                // viewer
@@ -85,33 +85,33 @@ class SamDo(samUtils.Sam):
         Checkerboard generator:            sam do checkerboard width=1920 ratio=2.35 // viewer
         Text writing:                      sam do constant // text text="hello" size=80 // viewer
 
-    Image sequence conversion and creation
+    '''+colored.blue('Image sequence conversion and creation', bold=True)+'''
         Convert Image:                     sam do reader in.dpx // writer out.jpg
         Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
         Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
         Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
                                            'r' and 'w' are shortcuts for 'reader' and 'writer'
 
-    Geometry processing during conversion
+    '''+colored.blue('Geometry processing during conversion', bold=True)+'''
         Crop:                              sam do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
         Fill:                              sam do reader in.####.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50 // writer out.jpg
         Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
         Upscaling:                         sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg
         Downscaling:                       sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg
 
-    Color processing during conversion
+    '''+colored.blue('Color processing during conversion', bold=True)+'''
         Lut :                              sam do reader in.####.dpx // lut lutFile.3dl // writer out.jpg
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
 
-    Image Sequence Numbering
+    '''+colored.blue('Image Sequence Numbering', bold=True)+'''
         Frames with or without padding:    image.@.jpg
         Frames 1 to 100 padding 4:         image.####.jpg -or- image.@.jpg
         Frames 1 to 100 padding 5:         image.#####.jpg
         Printf style padding 4:            image.%04d.jpg
         All Frames in Directory:           /path/to/directory
 
-    Processing options
+    '''+colored.blue('Processing options', bold=True)+'''
         Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
         Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
         Multiple CPUs:                     sam do reader in.@.dpx // writer out.@.exr --nb-cores 4

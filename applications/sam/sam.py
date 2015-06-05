@@ -2,6 +2,8 @@
 
 import argparse
 
+from clint.textui import colored
+
 # import sam tools
 from sam_ls import SamLs
 from sam_mv import SamMv
@@ -14,10 +16,10 @@ if __name__ == '__main__':
     # Create command-line interface
     parser = argparse.ArgumentParser(
         prog='sam',
-        description='''
-        A set of command line tools.
-        Specialized in sequence manipulations.
-        ''',
+        description=colored.green('''
+            Sam is a set of command line tools to manage image processing.
+            Specialized in sequence manipulations.
+            '''),
         formatter_class=argparse.RawTextHelpFormatter
         )
 

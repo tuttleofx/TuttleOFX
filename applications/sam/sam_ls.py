@@ -24,12 +24,11 @@ class SamLs(samUtils.Sam):
     def __init__(self):
         samUtils.Sam.__init__(self)
         self.command = 'ls'
-        self.help = 'ls, to list sequences (and other files)'
-        self.description = '''
-            List information about the sequences, files and folders.
-            List the current directory by default, and only sequences.
-            The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default.
-            '''
+        self.help = 'to list sequences (and other files)'
+        self.description = str(colored.green('''
+            List information about sequences, files and folders.
+            List the current directory by default.
+            '''))
 
     def fillParser(self, parser):
         # Arguments
@@ -48,7 +47,7 @@ class SamLs(samUtils.Sam):
         parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
         parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
-        parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (True by default)')
+        parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (activated by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
         #parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
 
@@ -258,6 +257,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog='sam-'+tool.command,
         description=tool.description,
+        formatter_class=argparse.RawTextHelpFormatter,
         )
 
     # Run the command
