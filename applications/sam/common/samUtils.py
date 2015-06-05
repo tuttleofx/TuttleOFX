@@ -6,6 +6,9 @@ import argparse
 # python modules to easily get colors, indent text...
 from clint.textui import colored, puts
 
+# openFX host
+from pyTuttle import tuttle
+
 # parser of sequence
 from pySequenceParser import sequenceParser
 
@@ -49,7 +52,12 @@ def retrieveNodeFullName(pluginId):
     """
     Return complete node name from the given id.
     """
-    return 'tuttle.' + pluginId
+    pluginIdLower = pluginId.lower()
+    pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
+    if pluginIdLower in pluginsMap:
+        return pluginId
+    else:
+        return 'tuttle.' + pluginIdLower
 
 def getReadableSize(size):
     """
