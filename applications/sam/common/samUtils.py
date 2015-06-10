@@ -6,9 +6,6 @@ import argparse
 # python modules to easily get colors, indent text...
 from clint.textui import colored, puts
 
-# openFX host
-from pyTuttle import tuttle
-
 # parser of sequence
 from pySequenceParser import sequenceParser
 
@@ -48,45 +45,6 @@ def sequenceParserCompleter(prefix, **kwargs):
     itemsStr = [str(item.getFilename()) for item in items]
     return itemsStr
 
-def samDoCompleter(prefix, parsed_args, **kwargs):
-    """
-    Custom Completer to manage auto competion when looking for openFX nodes.
-    """
-    # get plugins
-    pluginsId = tuttle.core().getImageEffectPluginCache().getPluginsByID()
-    pluginsStr = [str(id) for id in pluginsId]
-
-    # check last input in command line
-    if len(parsed_args.inputs):
-        lastInput = parsed_args.inputs[-1]
-        # if last input is a plugin, return its parameters
-        if lastInput in pluginsStr:
-            graph = tuttle.Graph()
-            node = graph.createNode(lastInput)
-            params = node.getParams()
-            paramsStr = [str(param.getScriptName()) for param in params]
-            return paramsStr
-        else:
-            for input in reversed(parsed_args.inputs):
-                # if an input is a plugin, get its parameters
-                if input in pluginsStr:
-                    graph = tuttle.Graph()
-                    node = graph.createNode(input)
-                    params = node.getParams()
-                    paramsStr = [str(param.getScriptName()) for param in params]
-                    # if last input is one of its parameters, return its choices
-                    if lastInput in paramsStr:
-                        param = node.getParam(lastInput)
-                        if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
-                            propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
-                            choicesStr = getListValues(propChoiceOption)
-                            return choicesStr
-                    # else, return its parameters
-                    else:
-                        return paramsStr
-    # else return available plugins
-    return pluginsStr
-
 def getListValues(ofxProperty):
     """
     Get list of string from the given OfxProperty
@@ -96,17 +54,6 @@ def getListValues(ofxProperty):
         if ofxProperty.getStringValueAt(n):
             elements.append(ofxProperty.getStringValueAt(n))
     return elements
-
-def retrieveNodeFullName(pluginId):
-    """
-    Return complete node name from the given id.
-    """
-    pluginIdLower = pluginId.lower()
-    pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
-    if pluginIdLower in pluginsMap:
-        return pluginId
-    else:
-        return 'tuttle.' + pluginIdLower
 
 def getReadableSize(size):
     """

@@ -54,6 +54,58 @@ class SamDoSetVerboseAction(argparse.Action):
             setattr(namespace, self.dest, None)
 
 
+def samDoCompleter(prefix, parsed_args, **kwargs):
+    """
+    Custom Completer to manage auto competion when looking for openFX nodes.
+    """
+    # get plugins
+    pluginsId = tuttle.core().getImageEffectPluginCache().getPluginsByID()
+    pluginsStr = [str(id) for id in pluginsId]
+
+    # check last input in command line
+    if len(parsed_args.inputs):
+        lastInput = parsed_args.inputs[-1]
+        # if last input is a plugin, return its parameters
+        if lastInput in pluginsStr:
+            graph = tuttle.Graph()
+            node = graph.createNode(lastInput)
+            params = node.getParams()
+            paramsStr = [str(param.getScriptName()) for param in params]
+            return paramsStr
+        else:
+            for input in reversed(parsed_args.inputs):
+                # if an input is a plugin, get its parameters
+                if input in pluginsStr:
+                    graph = tuttle.Graph()
+                    node = graph.createNode(input)
+                    params = node.getParams()
+                    paramsStr = [str(param.getScriptName()) for param in params]
+                    # if last input is one of its parameters, return its choices
+                    if lastInput in paramsStr:
+                        param = node.getParam(lastInput)
+                        if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
+                            propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
+                            choicesStr = getListValues(propChoiceOption)
+                            return choicesStr
+                    # else, return its parameters
+                    else:
+                        return paramsStr
+    # else return available plugins
+    return pluginsStr
+
+
+def retrieveNodeFullName(pluginId):
+    """
+    Return complete node name from the given id.
+    """
+    pluginIdLower = pluginId.lower()
+    pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
+    if pluginIdLower in pluginsMap:
+        return pluginId
+    else:
+        return 'tuttle.' + pluginIdLower
+
+
 class SamDo(samUtils.Sam):
     """
     Class which represents the sam_do operation.
@@ -123,7 +175,7 @@ class SamDo(samUtils.Sam):
 
     def fillParser(self, parser):
         # Arguments
-        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samUtils.samDoCompleter
+        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samDoCompleter
 
         # Options
         parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process (only numbers separate with spaces)')
@@ -412,7 +464,7 @@ class SamDo(samUtils.Sam):
         # Create nodes from command line
         pluginsWithOption = self._decomposeCommandLine(args.inputs)
         for plugin, options in pluginsWithOption:
-            nodeFullName = samUtils.retrieveNodeFullName(plugin)
+            nodeFullName = retrieveNodeFullName(plugin)
             node = graph.createNode(nodeFullName)
             for option in options:
                 if '=' in option:
