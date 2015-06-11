@@ -210,7 +210,7 @@ class SamDo(samUtils.Sam):
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         '''
 
-        # preload OFX plugins
+        # preload OFX plugins (to have auto completion of plugins name, their parameters...)
         tuttle.core().preload(False)
 
     def fillParser(self, parser):
@@ -223,6 +223,8 @@ class SamDo(samUtils.Sam):
         parser.add_argument('--file-formats', dest='fileFormats', action='store_true', help='list all supported file formats (R/W)')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
+        parser.add_argument('--no-plugin-cache', dest='noPluginCache', action='store_true', default=False, help='load plugins without using the cache file')
+        parser.add_argument('--rebuild-plugin-cache', dest='rebuildPluginCache', action='store_true', default=False, help='load plugins and rebuild the cache file')
         parser.add_argument('-v', '--verbose', dest='verbose', action=SamDoSetVerboseAction, help='verbose level (0/none(by default), 1/fatal, 2/error, 3/warn, 4/info, 5/debug, 6(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
@@ -474,6 +476,16 @@ class SamDo(samUtils.Sam):
 
         # Parse command-line
         args, unknown = parser.parse_known_args()
+
+        # Clear plugin cache
+        if args.rebuildPluginCache:
+            tuttle.core().getPluginCache().clearPluginFiles()
+
+        # preload OFX plugins
+        if args.noPluginCache:
+            tuttle.core().preload(False)
+        else:
+            tuttle.core().preload(True)
 
         # sam-do --nodes
         if args.nodes:
