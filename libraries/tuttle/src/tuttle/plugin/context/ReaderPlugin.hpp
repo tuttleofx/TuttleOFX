@@ -10,10 +10,6 @@
 
 #include <Sequence.hpp> // sequenceParser
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/numeric/conversion/cast.hpp>
-
 
 namespace tuttle {
 namespace plugin {
@@ -35,78 +31,17 @@ public:
 	virtual void render( const OFX::RenderArguments& args );
 
 public:
-	std::string getAbsoluteFilenameAt( const OfxTime time ) const
-	{
-		if( _isSequence )
-		{
-			bfs::path dir( getAbsoluteDirectory() );
-			bfs::path filename( _filePattern.getFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) ) );
-			return (dir / filename).string();
-		}
-		else
-			return _paramFilepath->getValue();
-	}
+	std::string getAbsoluteFilenameAt( const OfxTime time ) const;
+	std::string getAbsoluteFirstFilename() const;
+	std::string getAbsoluteDirectory() const ;
 
-	std::string getAbsoluteFirstFilename() const
-	{
-		if( _isSequence )
-		{
-			bfs::path dir( getAbsoluteDirectory() );
-			bfs::path filename( _filePattern.getFirstFilename() );
-			return (dir / filename).string();
-		}
-		else
-			return _paramFilepath->getValue();
-	}
+	OfxTime getFirstTime() const;
+	OfxTime getLastTime() const;
 
-	std::string getAbsoluteDirectory() const 
-	{
-		bfs::path filepath( _paramFilepath->getValue() );
-		return bfs::absolute(filepath).parent_path().string();
-	}
-
-	OfxTime getFirstTime() const
-	{
-		if( _isSequence )
-			return _filePattern.getFirstTime();
-		else
-			return kOfxFlagInfiniteMin;
-	}
-
-	OfxTime getLastTime() const
-	{
-		if( _isSequence )
-			return _filePattern.getLastTime();
-		else
-			return kOfxFlagInfiniteMax;
-	}
-
-	EParamReaderBitDepth getExplicitBitDepthConversion() const
-	{
-		return static_cast<EParamReaderBitDepth>( _paramBitDepth->getValue() );
-	}
-
+	EParamReaderBitDepth getExplicitBitDepthConversion() const;
+	EParamReaderChannel getExplicitChannelConversion() const;
 	
-	EParamReaderChannel getExplicitChannelConversion() const
-	{
-		return static_cast<EParamReaderChannel>( _paramChannel->getValue() );
-	}
-	
-	OFX::EBitDepth getOfxExplicitConversion() const
-	{
-		switch( getExplicitBitDepthConversion() )
-		{
-			case eParamReaderBitDepthByte:
-				return OFX::eBitDepthUByte;
-			case eParamReaderBitDepthShort:
-				return OFX::eBitDepthUShort;
-			case eParamReaderBitDepthFloat:
-				return OFX::eBitDepthFloat;
-			case eParamReaderBitDepthAuto:
-				BOOST_THROW_EXCEPTION( exception::Value() );
-		}
-		return OFX::eBitDepthNone;
-	}
+	OFX::EBitDepth getOfxExplicitConversion() const;
 
 protected:
 	virtual inline bool varyOnTime() const { return _isSequence; }
