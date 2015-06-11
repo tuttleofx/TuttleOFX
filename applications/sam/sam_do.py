@@ -187,14 +187,14 @@ class SamDo(samUtils.Sam):
                                            'r' and 'w' are shortcuts for 'reader' and 'writer'
 
     '''+colored.blue('Geometry processing during conversion', bold=True)+'''
-        Crop:                              sam do reader in.####.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
-        Fill:                              sam do reader in.####.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50 // writer out.jpg
+        Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
+        Fill:                              sam do reader in.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50,1 // writer out.jpg
         Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
         Upscaling:                         sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg
         Downscaling:                       sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg
 
     '''+colored.blue('Color processing during conversion', bold=True)+'''
-        Lut :                              sam do reader in.####.dpx // lut lutFile.3dl // writer out.jpg
+        Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
 
@@ -203,12 +203,10 @@ class SamDo(samUtils.Sam):
         Frames 1 to 100 padding 4:         image.####.jpg -or- image.@.jpg
         Frames 1 to 100 padding 5:         image.#####.jpg
         Printf style padding 4:            image.%04d.jpg
-        All Frames in Directory:           /path/to/directory
 
     '''+colored.blue('Processing options', bold=True)+'''
         Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
         Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
-        Multiple CPUs:                     sam do reader in.@.dpx // writer out.@.exr --nb-cores 4
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         '''
 
