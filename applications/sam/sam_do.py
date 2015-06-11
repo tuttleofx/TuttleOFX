@@ -99,7 +99,7 @@ def isGenericReader(pluginId):
     Is the given plugin name corresponds to a generic reader to guess.
     """
     pluginIdLower = pluginId.lower()
-    if pluginIdLower == 'r':
+    if pluginIdLower == 'r' or pluginIdLower == 'reader':
         return True
     return False
 
@@ -109,7 +109,7 @@ def isGenericWriter(pluginId):
     Is the given plugin name corresponds to a generic writer to guess.
     """
     pluginIdLower = pluginId.lower()
-    if pluginIdLower == 'w':
+    if pluginIdLower == 'w' or pluginIdLower == 'writer':
         return True
     return False
 
