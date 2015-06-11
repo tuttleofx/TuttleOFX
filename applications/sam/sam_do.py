@@ -94,15 +94,38 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
     return pluginsStr
 
 
-def retrieveNodeFullName(pluginId):
+def retrieveNodeFullName(pluginId, cmdOptions):
     """
     Return complete node name from the given id.
+    @param cmdOptions: command line options related to the given plugin. Can be used to get best reader/writer.
+    @note Get best reader if the given name is 'r'.
+    @note Get best writer if the given name is 'w'.
     """
     pluginIdLower = pluginId.lower()
     pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
     if pluginIdLower in pluginsMap:
         return pluginId
     else:
+        if pluginIdLower == 'r' or pluginIdLower == 'w':
+            if len(cmdOptions) == 0:
+                puts(colored.red('Cannot guess the best reader/writer node without any filename specified.'))
+                return ''
+            # get filename
+            filename = None
+            if '=' in cmdOptions[0]:
+                filename = cmdOptions[0].split('=')[1]
+            else:
+                filename = cmdOptions[0]
+            # return best reader
+            if pluginIdLower == 'r':
+                bestReader = tuttle.getBestReader(filename)
+                puts(colored.green('Use "' + bestReader + '" to read "' + filename + '".'))
+                return bestReader
+            # return best writer
+            elif pluginIdLower == 'w':
+                bestWriter = tuttle.getBestWriter(filename)
+                puts(colored.green('Use "' + bestWriter + '" to write "' + filename + '".'))
+                return bestWriter
         return 'tuttle.' + pluginIdLower
 
 
@@ -464,7 +487,7 @@ class SamDo(samUtils.Sam):
         # Create nodes from command line
         pluginsWithOption = self._decomposeCommandLine(args.inputs)
         for plugin, options in pluginsWithOption:
-            nodeFullName = retrieveNodeFullName(plugin)
+            nodeFullName = retrieveNodeFullName(plugin, options)
             node = None
             try:
                 node = graph.createNode(nodeFullName)
