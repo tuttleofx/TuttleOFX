@@ -465,20 +465,35 @@ class SamDo(samUtils.Sam):
         pluginsWithOption = self._decomposeCommandLine(args.inputs)
         for plugin, options in pluginsWithOption:
             nodeFullName = retrieveNodeFullName(plugin)
-            node = graph.createNode(nodeFullName)
+            node = None
+            try:
+                node = graph.createNode(nodeFullName)
+            except Exception as e:
+                # Plugin not found
+                puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
+                print e
+                continue
             for option in options:
                 if '=' in option:
                     optionName, optionValue = option.split('=')
-                    param = node.getParam(optionName)
-                    param.setValueFromExpression(optionValue)
+                    try:
+                        param = node.getParam(optionName)
+                        param.setValueFromExpression(optionValue)
+                    except Exception as e:
+                        # Cannot set param of node
+                        puts(colored.red('Cannot set parameter "' + optionName + '" of node "' + nodeFullName + '" to value "' + optionValue + '": the parameter will be skipped from the command line.'))
+                        print e
+                        continue
                 elif option[0] != '-':
                     try:
-                        # set parameter at index written in the command line
+                        # Set parameter at index written in the command line
                         param = node.getParams()[options.index(option)]
                         param.setValueFromExpression(option)
-                    except Exception:
-                        # cannot set param of node
-                        pass
+                    except Exception as e:
+                        # Cannot set param at index of node
+                        puts(colored.red('Cannot set "' + option + '" of node "' + nodeFullName + '": the parameter will be skipped from the command line.'))
+                        print e
+                        continue
             # sam-do node --help
             if '-h' in options or '--help' in options:
                 self._displayNodeHelp(nodeFullName, node)
