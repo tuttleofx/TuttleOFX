@@ -121,12 +121,11 @@ def retrieveNodeFullName(pluginId, cmdOptions):
     @note Get best reader if the given name is 'r'.
     @note Get best writer if the given name is 'w'.
     """
-    pluginIdLower = pluginId.lower()
     pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
-    if pluginIdLower in pluginsMap:
+    if pluginId in pluginsMap:
         return pluginId
     else:
-        if isGenericReader(pluginIdLower) or isGenericWriter(pluginIdLower):
+        if isGenericReader(pluginId) or isGenericWriter(pluginId):
             if len(cmdOptions) == 0:
                 puts(colored.red('Cannot guess the best reader/writer node without any filename specified.'))
                 return ''
@@ -137,16 +136,16 @@ def retrieveNodeFullName(pluginId, cmdOptions):
             else:
                 filename = cmdOptions[0]
             # return best reader
-            if isGenericReader(pluginIdLower):
+            if isGenericReader(pluginId):
                 bestReader = tuttle.getBestReader(filename)
                 puts(colored.green('Use "' + bestReader + '" to read "' + filename + '".'))
                 return bestReader
             # return best writer
-            elif isGenericWriter(pluginIdLower):
+            elif isGenericWriter(pluginId):
                 bestWriter = tuttle.getBestWriter(filename)
                 puts(colored.green('Use "' + bestWriter + '" to write "' + filename + '".'))
                 return bestWriter
-        return 'tuttle.' + pluginIdLower
+        return 'tuttle.' + pluginId
 
 
 class SamDo(samUtils.Sam):
