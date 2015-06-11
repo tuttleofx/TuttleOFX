@@ -94,6 +94,26 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
     return pluginsStr
 
 
+def isGenericReader(pluginId):
+    """
+    Is the given plugin name corresponds to a generic reader to guess.
+    """
+    pluginIdLower = pluginId.lower()
+    if pluginIdLower == 'r':
+        return True
+    return False
+
+
+def isGenericWriter(pluginId):
+    """
+    Is the given plugin name corresponds to a generic writer to guess.
+    """
+    pluginIdLower = pluginId.lower()
+    if pluginIdLower == 'w':
+        return True
+    return False
+
+
 def retrieveNodeFullName(pluginId, cmdOptions):
     """
     Return complete node name from the given id.
@@ -106,7 +126,7 @@ def retrieveNodeFullName(pluginId, cmdOptions):
     if pluginIdLower in pluginsMap:
         return pluginId
     else:
-        if pluginIdLower == 'r' or pluginIdLower == 'w':
+        if isGenericReader(pluginIdLower) or isGenericWriter(pluginIdLower):
             if len(cmdOptions) == 0:
                 puts(colored.red('Cannot guess the best reader/writer node without any filename specified.'))
                 return ''
@@ -117,12 +137,12 @@ def retrieveNodeFullName(pluginId, cmdOptions):
             else:
                 filename = cmdOptions[0]
             # return best reader
-            if pluginIdLower == 'r':
+            if isGenericReader(pluginIdLower):
                 bestReader = tuttle.getBestReader(filename)
                 puts(colored.green('Use "' + bestReader + '" to read "' + filename + '".'))
                 return bestReader
             # return best writer
-            elif pluginIdLower == 'w':
+            elif isGenericWriter(pluginIdLower):
                 bestWriter = tuttle.getBestWriter(filename)
                 puts(colored.green('Use "' + bestWriter + '" to write "' + filename + '".'))
                 return bestWriter
