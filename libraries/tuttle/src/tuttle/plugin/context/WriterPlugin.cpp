@@ -16,11 +16,11 @@ namespace plugin {
 namespace bfs = boost::filesystem;
 
 WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
-: ImageEffectGilPlugin( handle )
-, _oneRender( false )
-, _oneRenderAtTime( 0 )
-, _isSequence( false )
-, _filePattern()
+	: ImageEffectGilPlugin( handle )
+	, _oneRender( false )
+	, _oneRenderAtTime( 0 )
+	, _isSequence( false )
+	, _filePattern()
 {
 	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
@@ -34,8 +34,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 }
 
 WriterPlugin::~WriterPlugin( )
-{
-}
+{}
 
 void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
