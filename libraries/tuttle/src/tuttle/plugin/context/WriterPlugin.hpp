@@ -9,13 +9,15 @@
 
 #include <ofxsImageEffect.h>
 
+#include <Sequence.hpp> // sequenceParser
+
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/numeric/conversion/cast.hpp>
-
 #include <boost/gil/gil_all.hpp>
 
-#include <Sequence.hpp>
+namespace bfs = boost::filesystem;
+
 
 namespace tuttle {
 namespace plugin {
@@ -49,29 +51,29 @@ public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
 		if( _isSequence )
-			return _filePattern.getFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) );
+		{
+			bfs::path dir( getAbsoluteDirectory() );
+			bfs::path filename( _filePattern.getFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) ) );
+			return (dir / filename).string();
+		}
 		else
 			return _paramFilepath->getValue();
 	}
 
 	std::string getAbsoluteDirectory() const
 	{
-		namespace bfs = boost::filesystem;
-		if( _isSequence )
-		{
-			return _filePattern.getFirstFilename();
-		}
-		else
-		{
-			bfs::path filepath( _paramFilepath->getValue() );
-			return bfs::absolute(filepath).parent_path().string();
-		}
+		bfs::path filepath( _paramFilepath->getValue() );
+		return bfs::absolute(filepath).parent_path().string();
 	}
 
 	std::string getAbsoluteFirstFilename() const
 	{
 		if( _isSequence )
-			return _filePattern.getFirstFilename();
+		{
+			bfs::path dir( getAbsoluteDirectory() );
+			bfs::path filename (_filePattern.getFirstFilename() );
+			return (dir / filename).string();
+		}
 		else
 			return _paramFilepath->getValue();
 	}

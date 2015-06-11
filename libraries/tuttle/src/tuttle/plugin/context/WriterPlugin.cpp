@@ -38,7 +38,8 @@ void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginFilename )
 	{
-		_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
+		bfs::path path( _paramFilepath->getValue() );
+		_isSequence = sequenceParser::browseSequence( _filePattern, path.filename().string() );
 	}
 	else if( paramName == kParamWriterRender )
 	{
