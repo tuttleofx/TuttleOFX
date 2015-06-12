@@ -582,6 +582,9 @@ class SamDo(samUtils.Sam):
         options.setContinueOnError(args.continueOnError)
         # sam-do --stop-on-missing-files
         options.setContinueOnMissingFile(not args.stopOnMissingFiles)
+        # Set progress handle
+        progress = samUtils.ProgressHandle(options.getTimeRanges())
+        options.setProgressHandle(progress)
 
         # Connect and compute
         if len(nodes) > 1:

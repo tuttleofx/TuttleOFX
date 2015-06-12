@@ -4,10 +4,13 @@ import os
 import argparse
 
 # python modules to easily get colors, indent text...
-from clint.textui import colored, puts
+from clint.textui import colored, puts, progress
 
 # parser of sequence
 from pySequenceParser import sequenceParser
+
+# openFX host
+from pyTuttle import tuttle
 
 
 class Sam(object):
@@ -128,3 +131,22 @@ def getSubParser(parser, subSamCommand):
                 continue
             return subparser
     return None
+
+class ProgressHandle(tuttle.IProgressHandle):
+    """
+    Progress handle to get progress of process.
+    """
+    def __init__(self, ranges):
+        super(ProgressHandle, self).__init__()
+        nbFramesToCompute = 0
+        for range in ranges:
+            nbFramesToCompute += (range._end - range._begin + 1) / range._step
+        self._progress = progress.Bar(expected_size=(nbFramesToCompute if nbFramesToCompute else 1))
+        self._counter = 1
+
+    def processAtTime(self):
+        self._progress.show(self._counter)
+        self._counter += 1
+
+    def endSequence(self):
+        self._progress.done()
