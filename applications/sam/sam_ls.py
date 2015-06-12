@@ -107,7 +107,7 @@ class SamLs(samUtils.Sam):
 
         # sam-ls --absolute-path
         if args.absolutePath:
-            filePath += os.path.abspath(item.getFolder()) + '/'
+            filePath += os.path.abspath(item.getFolder())
 
         # sam-ls --relative-path
         if args.relativePath:
@@ -123,18 +123,18 @@ class SamLs(samUtils.Sam):
         if args.color:
             if itemType == sequenceParser.eTypeFolder:
                 # blue is not visible without bold
-                filePath = colored.blue(os.path.join(filePath + filename), bold=True)
+                filePath = colored.blue(os.path.join(filePath, filename), bold=True)
             elif itemType == sequenceParser.eTypeFile:
-                filePath = colored.green(os.path.join(filePath + filename))
+                filePath = colored.green(os.path.join(filePath, filename))
             elif itemType == sequenceParser.eTypeSequence:
                 # magenta is not visible without bold
-                filePath = colored.magenta(os.path.join(filePath + filename), bold=True)
+                filePath = colored.magenta(os.path.join(filePath, filename), bold=True)
             elif itemType == sequenceParser.eTypeLink:
-                filePath = colored.cyan(os.path.join(filePath + filename))
+                filePath = colored.cyan(os.path.join(filePath, filename))
             else:
                 filePath = colored.red(os.path.join(filePath, filename))
         else:
-            filePath = os.path.join(filePath + filename)
+            filePath = os.path.join(filePath, filename)
         filePath += ' \t'
 
         # sam-ls -R / sam-ls -L
