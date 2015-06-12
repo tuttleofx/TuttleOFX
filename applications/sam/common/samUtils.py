@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os
+import os, sys
 import argparse
 
 # python modules to easily get colors, indent text...
@@ -150,3 +150,16 @@ class ProgressHandle(tuttle.IProgressHandle):
 
     def endSequence(self):
         self._progress.done()
+
+def memoryUsageResource():
+    """
+    Use resource module, which is part of the standard Python library, to return RAM used by the python script.
+    In kilobytes.
+    """
+    import resource
+    rusage_denom = 1024.
+    if sys.platform == 'darwin':
+        # ... it seems that in OSX the output is different units ...
+        rusage_denom = rusage_denom * rusage_denom
+    mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / rusage_denom
+    return mem
