@@ -95,8 +95,8 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	{
 #ifdef __WINDOWS__
 		BOOST_THROW_EXCEPTION( exception::FileNotExist( _params._fontPath )
-							<< exception::user( "Text: Error in Font Path." )
-							<< exception::filename( _params._fontPath ) );
+			<< exception::user( "Text: Error in Font Path." )
+			<< exception::filename( _params._fontPath ) );
 #else
 		FcInit();
 
@@ -104,10 +104,10 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		FcResult result;
 		FcConfig *config = FcInitLoadConfigAndFonts();
 		FcPattern *p = FcPatternBuild(
-						   NULL,
-						   FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
-						   FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
-						   NULL );
+			NULL,
+			FC_WEIGHT, FcTypeInteger, FC_WEIGHT_BOLD,
+			FC_SLANT, FcTypeInteger, FC_SLANT_ITALIC,
+			NULL );
 
 		FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
 		FcFontSet   *fs = FcFontList( config, p, os );
@@ -124,10 +124,10 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		int slant  = ( _params._italic == 1) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN;
 
 		p  = FcPatternBuild( NULL,
-							 FC_FAMILY, FcTypeString, selectedFont.c_str(),
-							 FC_WEIGHT, FcTypeInteger, weight,
-							 FC_SLANT, FcTypeInteger, slant,
-							 NULL );
+			FC_FAMILY, FcTypeString, selectedFont.c_str(),
+			FC_WEIGHT, FcTypeInteger, weight,
+			FC_SLANT, FcTypeInteger, slant,
+			NULL );
 
 		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FAMILY, 0, &file );
 		FcPatternGetString( FcFontMatch( 0, p, &result ), FC_FILE, 0, &file );
@@ -144,9 +144,9 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 
 	//Step 3. Make Glyphs Array ------------------
 	rgba32f_pixel_t rgba32f_foregroundColor( _params._fontColor.r,
-											 _params._fontColor.g,
-											 _params._fontColor.b,
-											 _params._fontColor.a );
+		_params._fontColor.g,
+		_params._fontColor.b,
+		_params._fontColor.a );
 	color_convert( rgba32f_foregroundColor, _foregroundColor );
 	std::transform( _text.begin(), _text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
@@ -224,9 +224,9 @@ void TextProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procW
 	using namespace terry;
 	
 	rgba32f_pixel_t backgroundColor( _params._backgroundColor.r,
-									 _params._backgroundColor.g,
-									 _params._backgroundColor.b,
-									 _params._backgroundColor.a );
+		_params._backgroundColor.g,
+		_params._backgroundColor.b,
+		_params._backgroundColor.a );
 	fill_pixels( this->_dstView, backgroundColor );
 	
 	OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
