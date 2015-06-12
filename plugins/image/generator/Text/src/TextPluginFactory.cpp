@@ -93,9 +93,14 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 		boost::replace_all ( id, " ", "_" );
 	
 		font->appendOption( id, stream.str() );
-		
+
+		// if available, set Arial, Courier or then Utopia font as default
 		if(!strcmp((char*)s, "Arial"))
-			font->setDefault( i );	
+			font->setDefault( i );
+		else if(!strcmp((char*)s, "Courier"))
+			font->setDefault( i );
+		else if(!strcmp((char*)s, "Utopia"))
+			font->setDefault( i );
 	}
 	font->setHint("Select the font.");
 	font->setLabel("Font");
