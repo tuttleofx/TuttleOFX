@@ -133,11 +133,7 @@ def retrieveNodeFullName(pluginId, cmdOptions):
                 puts(colored.red('Cannot guess the best reader/writer node without any filename specified.'))
                 return ''
             # get filename
-            filename = None
-            if '=' in cmdOptions[0]:
-                filename = cmdOptions[0].split('=')[1]
-            else:
-                filename = cmdOptions[0]
+            filename = cmdOptions[0][1]
             # return best reader
             if isGenericReader(pluginId):
                 bestReader = tuttle.getBestReader(filename)
@@ -249,7 +245,8 @@ class SamDo(samUtils.Sam):
 
     def _decomposeCommandLine(self, inputs):
         """
-        Split command line in dict with {plugin: relative options}
+        Split command line and return:
+        [(pluginName, [(paramName, paramValue), ...], ...
         """
         pluginsWithOption = []
         newPlugin = True
@@ -262,7 +259,12 @@ class SamDo(samUtils.Sam):
                 pluginsWithOption.append((input, []))
                 newPlugin = False
             else:
-                pluginsWithOption[-1][1].append(input)
+                paramName = paramValue = ''
+                if '=' in input:
+                    paramName, paramValue = input.split('=')
+                else:
+                    paramValue = input
+                pluginsWithOption[-1][1].append((paramName, paramValue))
         return pluginsWithOption
 
     def _getNbBitsFromOfxBitDepth(self, ofxBitDepth):
@@ -544,31 +546,23 @@ class SamDo(samUtils.Sam):
                 print e
                 continue
             # sam-do node --help
-            if '-h' in options or '--help' in options:
+            optionValues = [option[1] for option in options]
+            if '-h' in optionValues or '--help' in optionValues:
                 self._displayNodeHelp(nodeFullName, node)
                 exit(0)
             # Set parameters
-            for option in options:
-                if '=' in option:
-                    optionName, optionValue = option.split('=')
-                    try:
+            for optionName, optionValue in options:
+                try:
+                    param = None
+                    if optionName:
                         param = node.getParam(optionName)
-                        param.setValueFromExpression(optionValue)
-                    except Exception as e:
-                        # Cannot set param of node
-                        puts(colored.red('Cannot set parameter "' + optionName + '" of node "' + nodeFullName + '" to value "' + optionValue + '": the parameter will be skipped from the command line.'))
-                        print e
-                        continue
-                elif option[0] != '-':
-                    try:
-                        # Set parameter at index written in the command line
-                        param = node.getParams()[options.index(option)]
-                        param.setValueFromExpression(option)
-                    except Exception as e:
-                        # Cannot set param at index of node
-                        puts(colored.red('Cannot set "' + option + '" of node "' + nodeFullName + '": the parameter will be skipped from the command line.'))
-                        print e
-                        continue
+                    else:
+                        param = node.getParams()[options.index((optionName, optionValue))]
+                    param.setValueFromExpression(optionValue)
+                except Exception as e:
+                    # Cannot set param of node
+                    puts(colored.red('Cannot set parameter "' + optionName + '" of node "' + nodeFullName + '" to value "' + optionValue + '": the parameter will be skipped from the command line.'))
+                    print e
             nodes.append(node)
 
         # Options of process
