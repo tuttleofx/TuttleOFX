@@ -543,6 +543,11 @@ class SamDo(samUtils.Sam):
                 puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
                 print e
                 continue
+            # sam-do node --help
+            if '-h' in options or '--help' in options:
+                self._displayNodeHelp(nodeFullName, node)
+                exit(0)
+            # Set parameters
             for option in options:
                 if '=' in option:
                     optionName, optionValue = option.split('=')
@@ -564,10 +569,6 @@ class SamDo(samUtils.Sam):
                         puts(colored.red('Cannot set "' + option + '" of node "' + nodeFullName + '": the parameter will be skipped from the command line.'))
                         print e
                         continue
-            # sam-do node --help
-            if '-h' in options or '--help' in options:
-                self._displayNodeHelp(nodeFullName, node)
-                exit(0)
             nodes.append(node)
 
         # Options of process
