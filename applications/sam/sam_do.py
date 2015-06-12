@@ -5,10 +5,12 @@ import sys
 import argparse
 import itertools
 
-
 # python modules to easily get completion
 import argcomplete
 from clint.textui import colored, puts, indent
+
+# parser of sequence
+from pySequenceParser import sequenceParser
 
 # openFX host
 from pyTuttle import tuttle
@@ -582,7 +584,17 @@ class SamDo(samUtils.Sam):
         # sam-do --stop-on-missing-files
         options.setContinueOnMissingFile(not args.stopOnMissingFiles)
         # Set progress handle
-        progress = samUtils.ProgressHandle(options.getTimeRanges())
+        ranges = options.getTimeRanges()
+        if not len(ranges):
+            # get time domaine
+            try:
+                timeDomain = nodes[0].asImageEffectNode().computeTimeDomain()
+                ranges = []
+                ranges.append(tuttle.TimeRange(int(timeDomain.min), int(timeDomain.max), 1))
+            except Exception as e:
+                # the first added node has no filename set
+                pass
+        progress = samUtils.ProgressHandle(ranges)
         options.setProgressHandle(progress)
 
         # Connect and compute
