@@ -112,6 +112,12 @@ void TextProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		FcObjectSet *os = FcObjectSetBuild( FC_FAMILY, NULL );
 		FcFontSet   *fs = FcFontList( config, p, os );
 
+		if( fs->nfont == 0 )
+		{
+			BOOST_THROW_EXCEPTION( exception::FileNotExist( _params._fontPath )
+				<< exception::user( "The plugin does not find any font on your system. Please inform 'fontFile' parameter manually." ) );
+		}
+
 		selectedFont = (char*) FcNameUnparse( fs->fonts[_params._font] );
 
 		int weight = ( _params._bold   == 1) ? FC_WEIGHT_BOLD  : FC_WEIGHT_MEDIUM;
