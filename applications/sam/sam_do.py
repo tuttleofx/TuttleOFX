@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
 
+import sys
 import argparse
 import itertools
 
@@ -362,14 +363,30 @@ class SamDo(samUtils.Sam):
                 propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
                 defaultValue = samUtils.getListValues(propDefault)
 
-            minDisplayValue = []
-            maxDisplayValue = []
+            minDisplayValues = []
+            maxDisplayValues = []
             # min/max values
             if param.getProperties().hasProperty('OfxParamPropDisplayMin'):
                 propDisplayMin = param.getProperties().fetchProperty('OfxParamPropDisplayMin')
                 propDisplayMax = param.getProperties().fetchProperty('OfxParamPropDisplayMax')
-                minDisplayValue = samUtils.getListValues(propDisplayMin)
-                maxDisplayValue = samUtils.getListValues(propDisplayMax)
+                minDisplayValues = samUtils.getListValues(propDisplayMin)
+                maxDisplayValues = samUtils.getListValues(propDisplayMax)
+                # check inf
+                for i in range(0, len(maxDisplayValues)):
+                    if propDisplayMax.getType() == tuttle.ePropTypeInt:
+                        if int(maxDisplayValues[i]) >= sys.maxint:
+                            maxDisplayValues[i] = 'inf'
+                    elif propDisplayMax.getType() == tuttle.ePropTypeDouble:
+                        if float(maxDisplayValues[i]) >= sys.maxint:
+                            maxDisplayValues[i] = 'inf'
+                # check -inf
+                for i in range(0, len(minDisplayValues)):
+                    if propDisplayMax.getType() == tuttle.ePropTypeInt:
+                        if int(minDisplayValues[i]) <= -sys.maxint-1:
+                            minDisplayValues[i] = '-inf'
+                    elif propDisplayMax.getType() == tuttle.ePropTypeDouble:
+                        if float(minDisplayValues[i]) <= -sys.maxint-1:
+                            minDisplayValues[i] = '-inf'
 
             # Print
             with indent(4):
@@ -378,10 +395,10 @@ class SamDo(samUtils.Sam):
                     default=colored.yellow(','.join(defaultValue))),
                     newline=False)
 
-                if len(minDisplayValue) and len(maxDisplayValue):
+                if len(minDisplayValues) and len(maxDisplayValues):
                     puts('[{minDisplay:5} --> {maxDisplay:5}]'.format(
-                        minDisplay=','.join(minDisplayValue),
-                        maxDisplay=','.join(maxDisplayValue)))
+                        minDisplay=','.join(minDisplayValues),
+                        maxDisplay=','.join(maxDisplayValues)))
                 else:
                     puts('\n')
 
