@@ -387,20 +387,19 @@ class SamDo(samUtils.Sam):
                     elif propDisplayMax.getType() == tuttle.ePropTypeDouble:
                         if float(minDisplayValues[i]) <= -sys.maxint-1:
                             minDisplayValues[i] = '-inf'
+            hasMinMaxValues = len(minDisplayValues) > 0 and len(minDisplayValues) == len(maxDisplayValues)
 
             # Print
             with indent(4):
                 puts('{paramName:50}: {paramType:10} {default:9}'.format(
                     paramName=colored.green(param.getScriptName()), paramType=param.getParamTypeName(),
                     default=colored.yellow(','.join(defaultValue))),
-                    newline=False)
+                    newline=(False if hasMinMaxValues else True))
 
-                if len(minDisplayValues) and len(maxDisplayValues):
+                if hasMinMaxValues:
                     puts('[{minDisplay:5} --> {maxDisplay:5}]'.format(
                         minDisplay=','.join(minDisplayValues),
                         maxDisplay=','.join(maxDisplayValues)))
-                else:
-                    puts('\n')
 
                 with indent(2):
                     puts(param.getHint())
