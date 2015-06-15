@@ -16,7 +16,7 @@ add_dependencies(sam sam_ls sam_mv sam_cp sam_rm sam_do)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py"
     PERMISSIONS WORLD_EXECUTE WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION bin/
+    DESTINATION "share/python/sam"
 )
 
 # sam_ls
@@ -26,7 +26,7 @@ add_dependencies(sam_ls _sequenceparser-py)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_ls.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION bin/
+    DESTINATION "share/python/sam"
 )
 
 # sam_mv
@@ -36,7 +36,7 @@ add_dependencies(sam_mv _sequenceparser-py)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_mv.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION bin/
+    DESTINATION "share/python/sam"
 )
 
 # sam_cp
@@ -46,7 +46,7 @@ add_dependencies(sam_cp _sequenceparser-py)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_cp.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION bin/
+    DESTINATION "share/python/sam"
 )
 
 # sam_rm
@@ -56,7 +56,7 @@ add_dependencies(sam_rm _sequenceparser-py)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_rm.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION bin/
+    DESTINATION "share/python/sam"
 )
 
 # sam_do
@@ -66,5 +66,5 @@ add_dependencies(sam_do _sequenceparser-py _tuttle)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_do.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION bin/
+    DESTINATION "share/python/sam"
 )
