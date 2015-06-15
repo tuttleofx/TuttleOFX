@@ -68,3 +68,20 @@ install(
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION "share/python/sam"
 )
+
+# If UNIX, add custom target "deploy_sam_links" to deploy sam symbolic links
+if(UNIX)
+    add_custom_command(
+        OUTPUT sam_links
+        COMMAND mkdir -p "${CMAKE_INSTALL_PREFIX}/bin"
+        COMMAND ln -sf "${CMAKE_INSTALL_PREFIX}/share/python/sam/sam.py" "${CMAKE_INSTALL_PREFIX}/bin/sam"
+        COMMAND ln -sf "${CMAKE_INSTALL_PREFIX}/share/python/sam/sam_ls.py" "${CMAKE_INSTALL_PREFIX}/bin/sam-ls"
+        COMMAND ln -sf "${CMAKE_INSTALL_PREFIX}/share/python/sam/sam_mv.py" "${CMAKE_INSTALL_PREFIX}/bin/sam-mv"
+        COMMAND ln -sf "${CMAKE_INSTALL_PREFIX}/share/python/sam/sam_cp.py" "${CMAKE_INSTALL_PREFIX}/bin/sam-cp"
+        COMMAND ln -sf "${CMAKE_INSTALL_PREFIX}/share/python/sam/sam_rm.py" "${CMAKE_INSTALL_PREFIX}/bin/sam-rm"
+        COMMAND ln -sf "${CMAKE_INSTALL_PREFIX}/share/python/sam/sam_do.py" "${CMAKE_INSTALL_PREFIX}/bin/sam-do"
+        DEPENDS sam
+        COMMENT "Generating sam symbolic links"
+    )
+    add_custom_target(deploy_sam_links DEPENDS sam_links)
+endif(UNIX)
