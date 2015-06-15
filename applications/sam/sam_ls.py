@@ -49,7 +49,7 @@ class SamLs(samUtils.Sam):
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
         parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (activated by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
-        #parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
+        # parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
 
     def printItem(self, item, args, level):
         """

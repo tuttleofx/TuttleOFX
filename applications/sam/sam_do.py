@@ -304,7 +304,7 @@ class SamDo(samUtils.Sam):
             """
             Return list of supported extension from a given plugin descriptor.
             """
-            propSupportedExtension = ofxhImageEffectNodeDescriptor.getParamSetProps().fetchProperty( 'TuttleOfxImageEffectPropSupportedExtensions' )
+            propSupportedExtension = ofxhImageEffectNodeDescriptor.getParamSetProps().fetchProperty('TuttleOfxImageEffectPropSupportedExtensions')
             return samUtils.getListValues(propSupportedExtension)
 
         supportedExtensions = {'r': [], 'w': []}

@@ -80,7 +80,7 @@ class SamMv(samUtils.Sam):
                     continue
 
                 gap = currentRange.first - lastest
-                for hole in range(1,gap):
+                for hole in range(1, gap):
                     holesToRemove.append(lastest + hole)
                 lastest = currentRange.last
 
@@ -94,11 +94,11 @@ class SamMv(samUtils.Sam):
         :param inputItem: the item which contains the input sequence to process (move, copy...)
         :param outputSequence: the output sequence to write (destination of move, copy...)
         :param outputSequence: the path of the outputSequence.
-        :param moveManipulators: dict which contains 
+        :param moveManipulators: dict which contains
             {
-                first time of the inputSequence, 
-                last time of the inputSequence, 
-                offset used to retime the output sequence, 
+                first time of the inputSequence,
+                last time of the inputSequence,
+                offset used to retime the output sequence,
                 list of holes to remove in the output sequence
             }
         """

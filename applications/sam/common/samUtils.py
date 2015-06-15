@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys
+import os
 import argparse
 
 # python modules to easily get colors, indent text...
@@ -48,6 +48,7 @@ def sequenceParserCompleter(prefix, **kwargs):
     itemsStr = [str(item.getFilename()) for item in items]
     return itemsStr
 
+
 def getListValues(ofxProperty):
     """
     Get list of string from the given OfxProperty
@@ -58,21 +59,23 @@ def getListValues(ofxProperty):
             elements.append(ofxProperty.getStringValueAt(n))
     return elements
 
+
 def getReadableSize(size):
     """
     Get a human readable string which represents the given size.
     """
     sizeExtension = ''
-    if (size / pow(2,30)) > 0:
+    if (size / pow(2, 30)) > 0:
         sizeExtension = 'G'
-        size = size / (pow(2,30) * 1.0)
-    elif (size / pow(2,20)) > 0:
+        size = size / (pow(2, 30) * 1.0)
+    elif (size / pow(2, 20)) > 0:
         sizeExtension = 'M'
-        size = size / (pow(2,20) * 1.0)
-    elif (size / pow(2,10)) > 0:
+        size = size / (pow(2, 20) * 1.0)
+    elif (size / pow(2, 10)) > 0:
         sizeExtension = 'K'
-        size = size / (pow(2,10) * 1.0)
+        size = size / (pow(2, 10) * 1.0)
     return str(round(size, 1)) + sizeExtension
+
 
 def getSequenceNameWithFormatting(sequence, formatChosen):
     """
@@ -87,6 +90,7 @@ def getSequenceNameWithFormatting(sequence, formatChosen):
         sequenceName += '#' * sequence.getPadding()
     sequenceName += sequence.getSuffix()
     return sequenceName
+
 
 def getSequenceItemFromPath(inputPath, detectNegative):
     """
@@ -116,6 +120,7 @@ def getSequenceItemFromPath(inputPath, detectNegative):
 
     return inputItem
 
+
 def getSubParser(parser, subSamCommand):
     """
     Get the subparser which corresponds to the given sam command, from the given parser.
@@ -131,6 +136,7 @@ def getSubParser(parser, subSamCommand):
                 continue
             return subparser
     return None
+
 
 class ProgressHandle(tuttle.IProgressHandle):
     """
@@ -151,12 +157,14 @@ class ProgressHandle(tuttle.IProgressHandle):
     def endSequence(self):
         self._progress.done()
 
+
 def memoryUsageResource():
     """
     Use resource module, which is part of the standard Python library, to return RAM used by the python script.
     In kilobytes.
     """
     import resource
+    import sys
     rusage_denom = 1024.
     if sys.platform == 'darwin':
         # ... it seems that in OSX the output is different units ...

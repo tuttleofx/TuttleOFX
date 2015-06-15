@@ -90,7 +90,6 @@ class SamRm(samUtils.Sam):
                 error = 1
         return error
 
-
     def _removeItems(self, items, args, detectionMethod, filters):
         """
         For each items, check if it should be removed, depending on the command line options.
@@ -126,12 +125,14 @@ class SamRm(samUtils.Sam):
                 # remove current item
                 else:
                     err = self._removeItem(item, args)
-                    if err: error = err
+                    if err:
+                        error = err
 
         # remove folders (which are empty)
         for folder in folderItems:
             err = self._removeItem(folder, args)
-            if err: error = err
+            if err:
+                error = err
 
         return error
 
@@ -190,7 +191,8 @@ class SamRm(samUtils.Sam):
                 items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
 
             err = self._removeItems(items, args, detectionMethod, filters)
-            if err: error = err
+            if err:
+                error = err
 
         exit(error)
 
