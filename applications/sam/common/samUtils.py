@@ -88,7 +88,7 @@ def getSequenceNameWithFormatting(sequence, formatChosen):
         if not sequence.getPadding():
             sequenceName += '@'  # no padding
     elif formatChosen == 'nuke':
-        sequenceName += '%' + str(sequence.getPadding()) + 'd'
+        sequenceName += '%0' + str(sequence.getPadding()) + 'd'
     else:  # default formatting
         sequenceName += '#' * sequence.getPadding()
         if not sequence.getPadding():
