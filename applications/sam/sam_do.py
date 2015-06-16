@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
 
-import sys
 import argparse
 import itertools
 
@@ -378,18 +377,18 @@ class SamDo(samUtils.Sam):
                 # check inf
                 for i in range(0, len(maxDisplayValues)):
                     if propDisplayMax.getType() == tuttle.ePropTypeInt:
-                        if int(maxDisplayValues[i]) >= sys.maxint:
+                        if int(maxDisplayValues[i]) >= samUtils.getMaxInt():
                             maxDisplayValues[i] = 'inf'
                     elif propDisplayMax.getType() == tuttle.ePropTypeDouble:
-                        if float(maxDisplayValues[i]) >= sys.maxint:
+                        if float(maxDisplayValues[i]) >= samUtils.getMaxInt():
                             maxDisplayValues[i] = 'inf'
                 # check -inf
                 for i in range(0, len(minDisplayValues)):
                     if propDisplayMax.getType() == tuttle.ePropTypeInt:
-                        if int(minDisplayValues[i]) <= -sys.maxint-1:
+                        if int(minDisplayValues[i]) <= -samUtils.getMaxInt()-1:
                             minDisplayValues[i] = '-inf'
                     elif propDisplayMax.getType() == tuttle.ePropTypeDouble:
-                        if float(minDisplayValues[i]) <= -sys.maxint-1:
+                        if float(minDisplayValues[i]) <= -samUtils.getMaxInt()-1:
                             minDisplayValues[i] = '-inf'
             hasMinMaxValues = len(minDisplayValues) > 0 and len(minDisplayValues) == len(maxDisplayValues)
 
