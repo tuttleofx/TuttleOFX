@@ -6,10 +6,6 @@
 #include <boost/foreach.hpp>
 
 
-#ifdef TUTTLE_DEBUG
-#define TUTTLE_EXPORT_PROCESSGRAPH_DOT
-#endif
-
 //#define TUTTLE_EXPORT_WITH_TIMER
 
 
@@ -349,7 +345,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	TUTTLE_LOG_TRACE( "[Setup at time " << time << "] start" );
 	graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( _renderGraph, time );
 	_renderGraph.depthFirstVisit( deployTimeVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcess_c.dot", _renderGraph );
 #endif
 
@@ -424,7 +420,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	bakeGraphInformationToNodes( _renderGraphAtTime );
 
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_a.dot", _renderGraphAtTime );
 #endif
 
@@ -446,7 +442,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		}
 	}
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", _renderGraphAtTime );
 #endif
 
@@ -462,7 +458,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		_renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
 	}
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_c.dot", _renderGraphAtTime );
 #endif
 
@@ -471,7 +467,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 	*/
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_d.dot", _renderGraphAtTime );
 #endif
 	/*
@@ -515,7 +511,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 			TUTTLE_TLOG( TUTTLE_INFO, e.getName() << " - " <<  _renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
 		}
 	}
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphprocess_e.dot", tmpGraph );
 #endif
 	*/
@@ -590,7 +586,7 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 	boost::timer::cpu_timer all_process_timer;
 #endif
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportAsDOT( "graphProcess_a.dot", _renderGraph );
 #endif
 
@@ -598,7 +594,7 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 
 	std::list<TimeRange> timeRanges = computeTimeRange();
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcess_b.dot", _renderGraph );
 #endif
 
