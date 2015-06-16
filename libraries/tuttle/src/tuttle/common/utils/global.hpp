@@ -99,6 +99,9 @@
  // Create "*.dot" file during the process to get informations about the graph
  #define TUTTLE_EXPORT_PROCESSGRAPH_DOT (1)
 
+ // Log several times during the process
+ #define TUTTLE_EXPORT_WITH_TIMER (1)
+
  // TUTTLE_TLOG* defines are used by developers for temporary displays during development stages.
  #define TUTTLE_TLOG TUTTLE_LOG
  #define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE
@@ -116,6 +119,7 @@
  #include "release.hpp"
 
  #define TUTTLE_EXPORT_PROCESSGRAPH_DOT (0)
+ #define TUTTLE_EXPORT_WITH_TIMER (0)
 
 // TUTTLE_TLOG* are removed in release mode.
  #define TUTTLE_TLOG TUTTLE_LOG_DEBUG

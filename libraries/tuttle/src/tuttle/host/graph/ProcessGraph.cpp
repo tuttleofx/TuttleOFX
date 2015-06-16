@@ -5,12 +5,7 @@
 
 #include <boost/foreach.hpp>
 
-
-//#define TUTTLE_EXPORT_WITH_TIMER
-
-
-
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 #include <boost/timer/timer.hpp>
 #endif
 
@@ -338,7 +333,7 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 void ProcessGraph::setupAtTime( const OfxTime time )
 {
 	_options.setupAtTimeHandle();
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer timer;
 #endif
 	
@@ -520,7 +515,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time )
 {
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer timer;
 #endif
 	setupAtTime( time );
@@ -534,7 +529,7 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime time )
 {
 	_options.processAtTimeHandle();
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer timer;
 #endif
 	
@@ -582,7 +577,7 @@ void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime 
 
 bool ProcessGraph::process( memory::IMemoryCache& outCache )
 {
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer all_process_timer;
 #endif
 
@@ -635,19 +630,19 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 
 			try
 			{
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				boost::timer::cpu_timer setup_timer;
 #endif
 				setupAtTime( time );
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				TUTTLE_LOG_INFO( "[process timer] setup " << boost::timer::format(setup_timer.elapsed()) );
 #endif
 
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				boost::timer::cpu_timer processAtTime_timer;
 #endif
 				processAtTime( outCache, time );
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				TUTTLE_LOG_INFO( "[process timer] took " << boost::timer::format(processAtTime_timer.elapsed()) );
 #endif
 			}
@@ -726,7 +721,7 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 	// End range of frames
 	endSequence();
 
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	TUTTLE_LOG_INFO( "[all process timer] " << boost::timer::format(all_process_timer.elapsed()) );
 #endif
 	return true;
