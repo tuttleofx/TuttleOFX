@@ -119,11 +119,11 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 	
 	OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam( kParamOutputCompression );
 	compression->setLabel( kParamOutputOrientationLabel );
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	compression->appendOption( kParamOutputCompressionNone );
 #endif
 	compression->appendOption( kParamOutputCompressionZip );
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	compression->appendOption( kParamOutputCompressionZips );
 	compression->appendOption( kParamOutputCompressionRle );
 	compression->appendOption( kParamOutputCompressionPiz );

@@ -48,7 +48,7 @@ std::string format_exception_info( const ::boost::exception& e )
 	tmp << "----------" << std::endl;
 	tmp << " * Full exception information:" << std::endl;
 	tmp << ::boost::current_exception_diagnostic_information() << std::endl;
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	tmp << std::endl;
 	tmp << " * Backtrace:" << std::endl;
 	tmp << ::boost::trace(e) << std::endl;

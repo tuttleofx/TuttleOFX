@@ -6,7 +6,7 @@
 #include <boost/foreach.hpp>
 
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 #define TUTTLE_EXPORT_PROCESSGRAPH_DOT
 #endif
 

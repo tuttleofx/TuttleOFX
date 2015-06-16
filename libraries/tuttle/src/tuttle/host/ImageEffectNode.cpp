@@ -21,7 +21,7 @@
 #include <tuttle/host/ofx/attribute/OfxhClip.hpp>
 #include <tuttle/host/ofx/attribute/OfxhParam.hpp>
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 // to output all nodes as png for debug
 //#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
 #endif
@@ -615,7 +615,7 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 
 void ImageEffectNode::coutBitDepthConnections() const
 {
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	// validation
 	for( ClipImageMap::const_iterator it = _clipImages.begin();
 	     it != _clipImages.end();

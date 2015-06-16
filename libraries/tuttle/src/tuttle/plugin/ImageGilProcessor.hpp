@@ -33,7 +33,7 @@ public:
 		ImageProcessor::setup( args );
 		_dstView = getView( _dst.get(), _dstPixelRod );
 
-		#ifndef TUTTLE_PRODUCTION
+		#ifdef TUTTLE_DEBUG
 		// init dst buffer with red to highlight uninitialized pixels
 		const OfxRectI dstRenderWin = this->translateRoWToOutputClipCoordinates( args.renderWindow );
 		View dstToFill = boost::gil::subimage_view( _dstView,

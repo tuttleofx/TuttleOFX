@@ -68,7 +68,7 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	OFX::ChoiceParamDescriptor* storageType = desc.defineChoiceParam( kParamStorageType );
 	storageType->setLabel( "Storage type" );
 	storageType->appendOption( kParamStorageScanLine );
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	storageType->appendOption( kParamStorageTiles    );
 #endif
 	storageType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );

@@ -33,7 +33,7 @@ ResizePlugin::ResizePlugin( OfxImageEffectHandle handle )
 	_paramSizeOrientation = fetchChoiceParam   ( kParamSizeOrientation );
 	_paramSizeKeepRatio   = fetchBooleanParam  ( kParamSizeKeepRatio );
 
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	_paramCenter          = fetchBooleanParam  ( kParamCenter );
 	_paramCenterPoint     = fetchDouble2DParam ( kParamCenterPoint );
 #endif
@@ -45,7 +45,7 @@ void ResizePlugin::updateVisibleTools()
 {
 	OFX::InstanceChangedArgs args( this->timeLineGetTime() );
 	changedParam( args, kParamMode );
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	changedParam( args, kParamCenter );
 #endif
 	changedParam( args, kParamFilter );
@@ -56,7 +56,7 @@ void ResizePlugin::updateVisibleTools()
 ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	ResizeProcessParams<Scalar> params;
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	OfxPointD centerPoint                           = _paramCenterPoint->getValue();
 
 	params._centerPoint.x                           = centerPoint.x;
@@ -176,7 +176,7 @@ void ResizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
 	{
 		_paramMode->setValue( eParamModeScale );
 	}
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	else if( paramName == kParamCenter )
 	{
 		if( _paramCenter->getValue() )

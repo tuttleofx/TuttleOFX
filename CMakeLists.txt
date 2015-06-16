@@ -3,13 +3,6 @@ include(CPack)
 cmake_minimum_required (VERSION 2.8)
 project (TuttleOFX)
 
-
-# Add a variable for production
-set(TUTTLE_PRODUCTION TRUE CACHE BOOL "Fully optimized for production usage.")
-if(TUTTLE_PRODUCTION)
-  add_definitions(-DTUTTLE_PRODUCTION)
-endif()
-
 # The install rule does not depend on all, i.e. everything will not be built before installing
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 

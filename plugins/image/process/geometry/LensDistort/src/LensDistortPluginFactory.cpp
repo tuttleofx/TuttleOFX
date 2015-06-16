@@ -91,7 +91,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         OFX::ChoiceParamDescriptor* lensType = desc.defineChoiceParam( kParamLensType );
         lensType->setLabel( "Lens type" );
         lensType->appendOption( kParamLensTypeStandard );
-        #ifndef TUTTLE_PRODUCTION
+        #ifdef TUTTLE_DEBUG
         lensType->appendOption( kParamLensTypeFishEye ); // not implemented yet...
         lensType->appendOption( kParamLensTypeAdvanced ); // not implemented yet...
 		#else
@@ -116,13 +116,13 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
                         ">0 : Barrel distortion\n"
                         "<0 : Pincushion distortion\n"
                         );
-        #ifdef TUTTLE_PRODUCTION
+        #ifdef TUTTLE_RELEASE
         coef2->setIsSecret( true );
         #endif
 
         OFX::DoubleParamDescriptor* squeeze = desc.defineDoubleParam( kParamSqueeze );
         squeeze->setLabel( "Squeeze" );
-        #ifdef TUTTLE_PRODUCTION
+        #ifdef TUTTLE_RELEASE
         squeeze->setIsSecret( true );
         #endif
         //    squeeze->setDoubleType( eDoubleTypeNormalisedX );
@@ -133,7 +133,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 
         OFX::Double2DParamDescriptor* asymmetric = desc.defineDouble2DParam( kParamAsymmetric );
         asymmetric->setLabel( "Asymmetric" );
-        #ifdef TUTTLE_PRODUCTION
+        #ifdef TUTTLE_RELEASE
         asymmetric->setIsSecret( true );
         #endif
         //    asymmetric->setDoubleType( eDoubleTypeNormalisedXY );
@@ -157,7 +157,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 
         OFX::ChoiceParamDescriptor* centerType = desc.defineChoiceParam( kParamCenterType );
         centerType->setLabel( "Center type" );
-        #ifdef TUTTLE_PRODUCTION
+        #ifdef TUTTLE_RELEASE
         centerType->setIsSecret( true );
         #endif
         centerType->appendOption( kParamCenterTypeSource );
@@ -246,13 +246,13 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         debugOptions->setLabel( "Debug options" );
         debugOptions->setHint( "Debug options" );
         debugOptions->setParent( *displayOptions );
-        #ifdef TUTTLE_PRODUCTION
+        #ifdef TUTTLE_RELEASE
         debugOptions->setIsSecret( true );
         #endif
 
         OFX::BooleanParamDescriptor* debugDisplayRoi = desc.defineBooleanParam( kParamDebugDisplayRoi );
         debugDisplayRoi->setLabel( "Display RoI" );
-        #ifdef TUTTLE_PRODUCTION
+        #ifdef TUTTLE_RELEASE
         debugDisplayRoi->setIsSecret( true );
         #endif
         debugDisplayRoi->setParent( *debugOptions );

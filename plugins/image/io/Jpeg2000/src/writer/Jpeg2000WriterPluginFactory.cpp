@@ -84,7 +84,7 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth12 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 #endif
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
