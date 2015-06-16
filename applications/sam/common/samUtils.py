@@ -83,7 +83,10 @@ def getSequenceNameWithFormatting(sequence, formatChosen):
     """
     sequenceName = sequence.getPrefix()
     if formatChosen == 'rv':
+        sequenceName += (str(sequence.getFirstTime()) + '-' + str(sequence.getLastTime()))
         sequenceName += '@' * sequence.getPadding()
+        if not sequence.getPadding():
+            sequenceName += '@'  # no padding
     elif formatChosen == 'nuke':
         sequenceName += '%' + str(sequence.getPadding()) + 'd'
     else:  # default formatting
