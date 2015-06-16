@@ -106,7 +106,7 @@ public:
 	VIEW_T getGilView();
 
 public:
-	#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
+	#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)
 	void debugSaveAsPng( const std::string& filename );
 	#endif
 

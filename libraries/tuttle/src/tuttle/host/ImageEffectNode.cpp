@@ -21,11 +21,6 @@
 #include <tuttle/host/ofx/attribute/OfxhClip.hpp>
 #include <tuttle/host/ofx/attribute/OfxhParam.hpp>
 
-#ifdef TUTTLE_DEBUG
-// to output all nodes as png for debug
-//#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
-#endif
-
 // ofx
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
@@ -1044,7 +1039,7 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
-	#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
+	#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)
 	boost::shared_ptr<Image> image = getNode().getData().getInternMemoryCache().get( this->getName() + "." kOfxOutputAttributeName, time );
 
 	// big hack, for debug...

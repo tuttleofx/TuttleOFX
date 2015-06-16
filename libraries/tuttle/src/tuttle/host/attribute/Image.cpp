@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
+#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)
 #define int_p_NULL (int *)NULL
  // Should be included first to avoid setjmp.h include troubles
  #include <boost/gil/extension/io/png_io.hpp>
@@ -124,7 +124,7 @@ void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 	}
 }
 
-#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
+#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)
 void Image::debugSaveAsPng( const std::string& filename )
 {
 	using namespace boost::gil;
