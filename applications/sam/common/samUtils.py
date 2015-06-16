@@ -149,7 +149,7 @@ class ProgressHandle(tuttle.IProgressHandle):
         nbFramesToCompute = 0
         for range in ranges:
             nbFramesToCompute += (range._end - range._begin + 1) / range._step
-        self._progress = progress.Bar(expected_size=(nbFramesToCompute if nbFramesToCompute else 1))
+        self._progress = progress.Bar(expected_size=(nbFramesToCompute if (nbFramesToCompute and nbFramesToCompute <= getMaxInt()) else 1))
         self._counter = 1
 
     def processAtTime(self):
@@ -173,3 +173,9 @@ def memoryUsageResource():
         rusage_denom = rusage_denom * rusage_denom
     mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / rusage_denom
     return mem
+
+def getMaxInt():
+    """
+    Returns C/C++ max int
+    """
+    return pow(2, 31)-1
