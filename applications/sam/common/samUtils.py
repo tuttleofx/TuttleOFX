@@ -88,6 +88,8 @@ def getSequenceNameWithFormatting(sequence, formatChosen):
         sequenceName += '%' + str(sequence.getPadding()) + 'd'
     else:  # default formatting
         sequenceName += '#' * sequence.getPadding()
+        if not sequence.getPadding():
+            sequenceName += '@'  # no padding
     sequenceName += sequence.getSuffix()
     return sequenceName
 
