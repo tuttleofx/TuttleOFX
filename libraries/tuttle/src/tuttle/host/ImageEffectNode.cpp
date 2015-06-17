@@ -1039,11 +1039,18 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
-	#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)
-	boost::shared_ptr<Image> image = getNode().getData().getInternMemoryCache().get( this->getName() + "." kOfxOutputAttributeName, time );
-
-	// big hack, for debug...
-	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>( time ) + "_" + this->getName() + ".png" );
+	#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)	
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+	     it != _clipImages.end();
+	     ++it )
+	{
+		const attribute::ClipImage& clip = dynamic_cast<const attribute::ClipImage&>( *( it->second ) );
+		if( clip.isOutput() )
+		{
+			boost::shared_ptr<attribute::Image> image = clip.getNode().getData().getInternMemoryCache().get( this->getName() + "." kOfxOutputAttributeName, time );
+			image->debugSaveAsPng( boost::lexical_cast<std::string>( time ) + "_" + this->getName() + ".png" );
+		}
+	}
 	#endif
 }
 
