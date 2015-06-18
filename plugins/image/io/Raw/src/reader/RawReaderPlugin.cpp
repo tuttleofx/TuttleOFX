@@ -20,6 +20,7 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 {
 	_paramFiltering     = fetchChoiceParam( kParamFiltering );
 	_paramInterpolation = fetchChoiceParam( kParamInterpolation );
+	_paramOutputColor   = fetchChoiceParam( kParamOutputColor );
 	
 	_paramGreyboxPoint = fetchDouble2DParam( kParamGreyboxPoint );
 	_paramGreyboxSize  = fetchDouble2DParam( kParamGreyboxSize );
@@ -60,6 +61,7 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._filepath      = getAbsoluteFilenameAt( time );
 	params._filtering     = static_cast<EFiltering>( _paramFiltering->getValue() );
 	params._interpolation = static_cast<EInterpolation>( _paramInterpolation->getValue() );
+	params._outputColor   = static_cast<EOutputColor>( _paramOutputColor->getValue() );
 	
 	params._gammaPower = _paramGammaPower->getValue();
 	params._gammaToe   = _paramGammaToe->getValue();

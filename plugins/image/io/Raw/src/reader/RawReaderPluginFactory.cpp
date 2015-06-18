@@ -221,6 +221,16 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filtering->appendOption( kParamFilteringAuto );
 	filtering->appendOption( kParamFilteringNone );
 	
+	OFX::ChoiceParamDescriptor* outputColor = desc.defineChoiceParam( kParamOutputColor );
+	outputColor->setLabel( kParamOutputColorLabel );
+	outputColor->setHint( kParamOutputColorHint );
+	outputColor->appendOption( kParamOutputColorRaw );
+	outputColor->appendOption( kParamOutputColorsRGB );
+	outputColor->appendOption( kParamOutputColorAbode );
+	outputColor->appendOption( kParamOutputColorWide );
+	outputColor->appendOption( kParamOutputColorProPhoto );
+	outputColor->appendOption( kParamOutputColorXYZ );
+
 	OFX::GroupParamDescriptor* metadata = desc.defineGroupParam( kParamMetadata );
 	metadata->setLabel( kParamMetadata );
 	

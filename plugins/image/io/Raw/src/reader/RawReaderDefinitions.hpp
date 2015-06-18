@@ -242,6 +242,26 @@ enum EFiltering
 	eFilteringNone
 };
 
+static const std::string kParamOutputColor = "outputcolor";
+static const std::string kParamOutputColorLabel = "Output Colorspace";
+static const std::string kParamOutputColorHint  = "Output colorspace.";
+static const std::string kParamOutputColorRaw = "raw";
+static const std::string kParamOutputColorsRGB = "sRGB";
+static const std::string kParamOutputColorAbode = "Adobe";
+static const std::string kParamOutputColorWide = "Wide";
+static const std::string kParamOutputColorProPhoto = "ProPhoto";
+static const std::string kParamOutputColorXYZ = "XYZ";
+
+enum EOutputColor
+{
+    eOutputColorRaw,
+    eOutputColorsRGB,
+    eOutputColorAdobe,
+    eOutputColorWide,
+    eOutputColorProPhoto,
+    eOutputColorXYZ
+};
+
 }
 }
 }

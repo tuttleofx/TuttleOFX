@@ -15,6 +15,7 @@ struct RawReaderProcessParams
 	std::string    _filepath;       ///< filepath
 	EFiltering     _filtering;
 	EInterpolation _interpolation;
+	EOutputColor   _outputColor;
 	float          _gammaPower;
 	float          _gammaToe;
 	double         _redAbber;
@@ -63,6 +64,7 @@ public:
 	/// @{
 	OFX::ChoiceParam*    _paramFiltering;    ///< Filtering mode
 	OFX::ChoiceParam*    _paramInterpolation;
+	OFX::ChoiceParam*    _paramOutputColor;
 	
 	OFX::DoubleParam*    _paramGammaPower;
 	OFX::DoubleParam*    _paramGammaToe;
