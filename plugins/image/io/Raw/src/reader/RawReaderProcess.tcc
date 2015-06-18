@@ -104,7 +104,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.exp_preser = _params._exposurePreserve;
 		
 		_out.highlight  = _params._hightlight;
-		_out.use_fuji_rotate = 0; // don't use
+		_out.use_fuji_rotate = 0; // don't use rotation for cameras on a Fuji sensor
 		
 		_out.use_auto_wb = 0;
 		_out.use_camera_wb = 0;
@@ -149,33 +149,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		
 		_out.fbdd_noiserd = _params._fbddNoiseRd;
 		_out.output_color = _params._outputColor;
-		/*
-#define greybox         (imgdata.params.greybox)
-#define cropbox         (imgdata.params.cropbox)
-#define aber            (imgdata.params.aber)
-#define gamm            (imgdata.params.gamm)
-#define user_mul        (imgdata.params.user_mul)
-#define shot_select     (imgdata.params.shot_select)
-#define bright          (imgdata.params.bright)
-#define threshold       (imgdata.params.threshold)
-#define half_size       (imgdata.params.half_size)
-#define four_color_rgb  (imgdata.params.four_color_rgb)
-#define document_mode   (imgdata.params.document_mode)
-#define highlight       (imgdata.params.highlight)
-//#define verbose         (imgdata.params.verbose)
-#define use_auto_wb     (imgdata.params.use_auto_wb)
-#define use_camera_wb   (imgdata.params.use_camera_wb)
-#define use_camera_matrix (imgdata.params.use_camera_matrix)
-#define output_color    (imgdata.params.output_color)
-#define output_bps      (imgdata.params.output_bps)
-#define gamma_16bit      (imgdata.params.gamma_16bit)
-#define output_tiff     (imgdata.params.output_tiff)
-#define med_passes      (imgdata.params.med_passes)
-#define no_auto_bright  (imgdata.params.no_auto_bright)
-#define use_fuji_rotate (imgdata.params.use_fuji_rotate)
-#define filtering_mode (imgdata.params.filtering_mode)
-*/
-		
+
 		/*switch( _params._filtering )
 		{
 			case eFilteringAuto:
