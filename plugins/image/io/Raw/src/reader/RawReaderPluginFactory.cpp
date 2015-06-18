@@ -96,9 +96,9 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	redAbber->setDefault( 1.0 );
 	redAbber->setDisplayRange( 0.999, 1.001 );
 	
-	OFX::DoubleParamDescriptor* greenAbber = desc.defineDoubleParam( kParamBlueAbber );
-	greenAbber->setLabel( kParamBlueAbberLabel );
-	greenAbber->setHint( kParamBlueAbberHint );
+	OFX::DoubleParamDescriptor* greenAbber = desc.defineDoubleParam( kParamGreenAbber );
+	greenAbber->setLabel( kParamGreenAbberLabel );
+	greenAbber->setHint( kParamGreenAbberHint );
 	greenAbber->setDefault( 1.0 );
 	greenAbber->setDisplayRange( 0.999, 1.001 );
 	

@@ -19,7 +19,7 @@ struct RawReaderProcessParams
 	float          _gammaPower;
 	float          _gammaToe;
 	double         _redAbber;
-	double         _blueAbber;
+	double         _greenAbber;
 	
 	double         _bright;
 	double         _threshold;
@@ -69,7 +69,7 @@ public:
 	OFX::DoubleParam*    _paramGammaPower;
 	OFX::DoubleParam*    _paramGammaToe;
 	OFX::DoubleParam*    _paramRedAbber;
-	OFX::DoubleParam*    _paramBlueAbber;
+	OFX::DoubleParam*    _paramGreenAbber;
 	
 	
 	OFX::DoubleParam*    _paramBright;

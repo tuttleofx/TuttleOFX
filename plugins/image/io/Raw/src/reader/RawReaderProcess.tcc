@@ -88,7 +88,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.greybox[3] = _params._greyboxSize.y;
 
 		_out.aber[0]   = _params._redAbber;
-		_out.aber[2]   = _params._blueAbber;
+		_out.aber[2]   = _params._greenAbber;
 		
 		_out.bright    = _params._bright;
 		_out.threshold = _params._threshold;

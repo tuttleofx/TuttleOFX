@@ -66,9 +66,9 @@ static const std::string kParamRedAbber      = "redabberation";
 static const std::string kParamRedAbberLabel = "Red Abberation Chromatic";
 static const std::string kParamRedAbberHint  = "Correction of chromatic aberrations.";
 
-static const std::string kParamBlueAbber      = "blueabberation";
-static const std::string kParamBlueAbberLabel = "Blue Abberation Chromatic";
-static const std::string kParamBlueAbberHint  = "Correction of chromatic aberrations.";
+static const std::string kParamGreenAbber      = "greenabberation";
+static const std::string kParamGreenAbberLabel = "Green Abberation Chromatic";
+static const std::string kParamGreenAbberHint  = "Correction of chromatic aberrations.";
 
 static const std::string kParamGammaPower      = "gammaPower";
 static const std::string kParamGammaPowerLabel = "Gamma Power";
