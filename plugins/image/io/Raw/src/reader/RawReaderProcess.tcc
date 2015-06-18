@@ -95,7 +95,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.gamm[0]   = _params._gammaPower;
 		_out.gamm[1]   = _params._gammaToe;
 		_out.user_qual = _params._interpolation;
-		_out.no_auto_bright    = 0;
+		_out.no_auto_bright = 1; // don't use automatic increase of brightness by histogram
 		
 		_out.four_color_rgb = _params._fourColorRgb;
 		
