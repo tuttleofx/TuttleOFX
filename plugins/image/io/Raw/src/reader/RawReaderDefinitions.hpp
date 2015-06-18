@@ -82,6 +82,20 @@ static const std::string kParamBright      = "bright";
 static const std::string kParamBrightLabel = "Bright";
 static const std::string kParamBrightHint  = "";
 
+static const std::string kParamFBDDNoiseRd = "fbddNoiseReduction";
+static const std::string kParamFBDDNoiseRdLabel = "FBDD Noise Reduction";
+static const std::string kParamFBDDNoiseRdHint = "Controls FBDD (Fragment Based Drug Discovery) noise reduction before demosaic.";
+static const std::string kParamFBDDNoiseRdDisable = "disable";
+static const std::string kParamFBDDNoiseRdLight = "light";
+static const std::string kParamFBDDNoiseRdFull = "full";
+
+enum EFBDDNoiseRd
+{
+	eFBDDNoiseRdDisable,
+	eFBDDNoiseRdLight,
+	eFBDDNoiseRdFull 
+};
+
 static const std::string kParamThreshold      = "threshold";
 static const std::string kParamThresholdLabel = "Threshold";
 static const std::string kParamThresholdHint  = "Parameter for noise reduction through wavelet denoising.";

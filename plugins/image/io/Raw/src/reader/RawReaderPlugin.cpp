@@ -41,6 +41,8 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
 	
 	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
+
+	_paramFbddNoiseRd = fetchChoiceParam( kParamFBDDNoiseRd ) ;
 	
 	// metadatas
 	_paramManufacturer   = fetchStringParam( kParamManufacturer );
@@ -85,6 +87,8 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._whiteBalance     = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
 	
 	params._hightlight = static_cast<EHighlight>( _paramHighlight->getValue() );
+
+	params._fbddNoiseRd = static_cast<EFBDDNoiseRd>( _paramFbddNoiseRd->getValue() );
 	
 	return params;
 }

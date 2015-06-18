@@ -120,6 +120,14 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bright->setDefault( 1.0 );
 	bright->setDisplayRange( -8.0, 8.0 );
 
+	OFX::ChoiceParamDescriptor* fbdd = desc.defineChoiceParam( kParamFBDDNoiseRd );
+	fbdd->setLabel( kParamFBDDNoiseRdLabel );
+	fbdd->setHint( kParamFBDDNoiseRdHint );
+	fbdd->appendOption( kParamFBDDNoiseRdDisable );
+	fbdd->appendOption( kParamFBDDNoiseRdLight );
+	fbdd->appendOption( kParamFBDDNoiseRdFull );
+	fbdd->setDefault( eFBDDNoiseRdDisable );
+
 	OFX::DoubleParamDescriptor* threshold = desc.defineDoubleParam( kParamThreshold );
 	threshold->setLabel( kParamThresholdLabel );
 	threshold->setHint( kParamThresholdHint );

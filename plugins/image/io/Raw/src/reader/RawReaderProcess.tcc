@@ -147,6 +147,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			case e10000: break;
 		}
 		
+		_out.fbdd_noiserd = _params._fbddNoiseRd;
 		_out.output_color = _params._outputColor;
 		/*
 #define greybox         (imgdata.params.greybox)

@@ -31,7 +31,9 @@ struct RawReaderProcessParams
 	double         _exposurePreserve;
 	
 	EWhiteBalance  _whiteBalance;
-	
+
+	EFBDDNoiseRd _fbddNoiseRd;
+
 	boost::gil::point2<Scalar> _greyboxPoint;
 	boost::gil::point2<Scalar> _greyboxSize;
 };
@@ -85,6 +87,8 @@ public:
 	
 	OFX::Double2DParam*  _paramGreyboxPoint;
 	OFX::Double2DParam*  _paramGreyboxSize;
+
+	OFX::ChoiceParam* _paramFbddNoiseRd;
 	
 	/// metadata
 	OFX::StringParam*    _paramManufacturer;
