@@ -76,7 +76,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	writer.SetFileInfo( _params._filepath.c_str(), 0, "TuttleOFX DPX Writer", _params._project.c_str(), _params._copyright.c_str(), ~0, _params._swapEndian );
 	writer.SetImageInfo( procWindowSize.x, procWindowSize.y );
 
-#ifdef TUTTLE_DEBUG
+#if(TUTTLE_EXPERIMENTAL)
 	writer.header.SetImageOrientation( _params._orientation );
 #endif
 

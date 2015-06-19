@@ -79,7 +79,7 @@ void FloodFillPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	method->setLabel( "Method" );
 	method->appendOption( kParamMethod4Connections );
 	method->appendOption( kParamMethod8Connections );
-#ifdef TUTTLE_DEBUG
+#if(TUTTLE_EXPERIMENTAL)
 	method->appendOption( kParamMethodBruteForce );
 #endif
 	method->setDefault( 1 );

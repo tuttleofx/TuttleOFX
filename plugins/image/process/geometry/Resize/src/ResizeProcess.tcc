@@ -44,7 +44,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 
 	matrix3x2<double> mat;
 
-#ifdef TUTTLE_DEBUG
+#if(TUTTLE_EXPERIMENTAL)
 	if( _params._changeCenter )
 	{
 		mat =	matrix3x2<double>::get_translate( -( _params._centerPoint.x - dst_width * 0.5) , -( _params._centerPoint.y - dst_height * 0.5) ) *
