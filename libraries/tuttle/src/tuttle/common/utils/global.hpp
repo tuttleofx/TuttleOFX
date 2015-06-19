@@ -105,6 +105,9 @@
  // Output all nodes in the graph as png
  #define TUTTLE_PNG_EXPORT_BETWEEN_NODES 1
 
+ // Init dst buffer with red to highlight uninitialized pixels
+ #define TUTTLE_INIT_IMAGE_BUFFERS 1
+
  // TUTTLE_TLOG* defines are used by developers for temporary displays during development stages.
  #define TUTTLE_TLOG TUTTLE_LOG
  #define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE
@@ -124,6 +127,7 @@
  #define TUTTLE_EXPORT_PROCESSGRAPH_DOT 0
  #define TUTTLE_EXPORT_WITH_TIMER 0
  #define TUTTLE_PNG_EXPORT_BETWEEN_NODES 0
+ #define TUTTLE_INIT_IMAGE_BUFFERS 0
 
 // TUTTLE_TLOG* are removed in release mode.
  #define TUTTLE_TLOG TUTTLE_LOG_DEBUG
