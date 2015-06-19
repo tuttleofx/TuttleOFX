@@ -7,6 +7,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/assign/std/vector.hpp>
 
+#include <libraw/libraw_version.h>
+
 #include <string>
 #include <vector>
 
@@ -174,7 +176,9 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	interpolation->appendOption( kParamInterpolationMixed );
 	interpolation->appendOption( kParamInterpolationLmmse );
 	interpolation->appendOption( kParamInterpolationAmaze );
+#if LIBRAW_MAJOR_VERSION >= 0 && LIBRAW_MINOR_VERSION >= 16
 	interpolation->appendOption( kParamInterpolationDisable );
+#endif
 	interpolation->setDefault( 3 );
 	
 	OFX::DoubleParamDescriptor* exposure = desc.defineDoubleParam( kParamExposure );

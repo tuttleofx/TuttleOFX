@@ -104,9 +104,11 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.fbdd_noiserd = _params._fbddNoiseRd;
 
 		// interpolation
+#if LIBRAW_MAJOR_VERSION >= 0 && LIBRAW_MINOR_VERSION >= 16
 		if( _params._interpolation == eInterpolationDisable )
 		    _out.no_interpolation = 1; // disables interpolation step in LibRaw::dcraw_process() call.
 		else
+#endif
 		    _out.user_qual = _params._interpolation;
 
 		// interpolate colors
