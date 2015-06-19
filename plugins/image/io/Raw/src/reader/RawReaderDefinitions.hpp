@@ -54,19 +54,19 @@ static const std::string kParamArtistHint  = "";
 
 
 
-static const std::string kParamGreyboxPoint      = "greyboxpoint";
+static const std::string kParamGreyboxPoint      = "greyBoxPoint";
 static const std::string kParamGreyboxPointLabel = "GreyBox Point";
 static const std::string kParamGreyboxPointHint  = "Coordinates of the rectangle that is used to calculate the white balance. X and Y are coordinates of the left-top rectangle corner.";
 
-static const std::string kParamGreyboxSize      = "greyboxsize";
+static const std::string kParamGreyboxSize      = "greyBoxSize";
 static const std::string kParamGreyboxSizeLabel = "GreyBox Size";
 static const std::string kParamGreyboxSizeHint  = "Coordinates of the rectangle that is used to calculate the white balance. w and h are the rectangle's width and height, respectively.";
 
-static const std::string kParamRedAbber      = "redabberation";
+static const std::string kParamRedAbber      = "redAbberation";
 static const std::string kParamRedAbberLabel = "Red Abberation Chromatic";
 static const std::string kParamRedAbberHint  = "Correction of chromatic aberrations.";
 
-static const std::string kParamGreenAbber      = "greenabberation";
+static const std::string kParamGreenAbber      = "greenAbberation";
 static const std::string kParamGreenAbberLabel = "Green Abberation Chromatic";
 static const std::string kParamGreenAbberHint  = "Correction of chromatic aberrations.";
 
@@ -74,7 +74,7 @@ static const std::string kParamGammaPower      = "gammaPower";
 static const std::string kParamGammaPowerLabel = "Gamma Power";
 static const std::string kParamGammaPowerHint  = "Inverted gamma value";
 
-static const std::string kParamGammaToe      = "gammatoe";
+static const std::string kParamGammaToe      = "gammaToe";
 static const std::string kParamGammaToeLabel = "Gamma Toe";
 static const std::string kParamGammaToeHint  = "Slope for linear part (so called toe slope). Set to zero for simple power curve.";
 
@@ -82,7 +82,7 @@ static const std::string kParamBright      = "bright";
 static const std::string kParamBrightLabel = "Bright";
 static const std::string kParamBrightHint  = "";
 
-static const std::string kParamAutoBright      = "autobright";
+static const std::string kParamAutoBright      = "autoBright";
 static const std::string kParamAutoBrightLabel = "Auto bright";
 static const std::string kParamAutoBrightHint  = "Use automatic increase of brightness by histogram.";
 
@@ -104,7 +104,7 @@ static const std::string kParamThreshold      = "threshold";
 static const std::string kParamThresholdLabel = "Threshold";
 static const std::string kParamThresholdHint  = "Parameter for noise reduction through wavelet denoising.";
 
-static const std::string kParamFourColorRgb      = "fourcolorrgb";
+static const std::string kParamFourColorRgb      = "fourColorRGB";
 static const std::string kParamFourColorRgbLabel = "4 color RGB";
 static const std::string kParamFourColorRgbHint  = "Switches on separate interpolations for two green components.";
 
@@ -172,11 +172,11 @@ static const std::string kParamExposure      = "exposure";
 static const std::string kParamExposureLabel = "Exposure correction";
 static const std::string kParamExposureHint  = "Exposure shift in linear scale. Usable range from 0.25 (2-stop darken) to 8.0 (3-stop lighter). Default: 1.0 (no exposure shift).";
 
-static const std::string kParamExposurePreserve      = "exposurepreserve";
+static const std::string kParamExposurePreserve      = "exposurePreserve";
 static const std::string kParamExposurePreserveLabel = "Exposure preserve highlights";
 static const std::string kParamExposurePreserveHint  = "Preserve highlights when lighten the image. Usable range from 0.0 (no preservation) to 1.0 (full preservation). 0.0 is the default value.";
 
-static const std::string kParamWhiteBalance      = "whitebalance";
+static const std::string kParamWhiteBalance      = "whiteBalance";
 static const std::string kParamWhiteBalanceLabel = "White Balance";
 static const std::string kParamWhiteBalanceHint  = "Select white balance.";
 static const std::string kParamWhiteBalanceAutoWb   = "auto";
@@ -262,7 +262,7 @@ enum EFiltering
 	eFilteringNone
 };
 
-static const std::string kParamOutputColor = "outputcolor";
+static const std::string kParamOutputColor = "outputColor";
 static const std::string kParamOutputColorLabel = "Output Colorspace";
 static const std::string kParamOutputColorHint  = "Output colorspace.";
 static const std::string kParamOutputColorRaw = "raw";
