@@ -22,6 +22,7 @@ struct RawReaderProcessParams
 	double         _greenAbber;
 	
 	double         _bright;
+	bool           _autoBright;
 	double         _threshold;
 	bool           _fourColorRgb;
 	
@@ -72,9 +73,10 @@ public:
 	OFX::DoubleParam*    _paramGammaToe;
 	OFX::DoubleParam*    _paramRedAbber;
 	OFX::DoubleParam*    _paramGreenAbber;
-	
-	
+
 	OFX::DoubleParam*    _paramBright;
+	OFX::BooleanParam*   _paramAutoBright;
+
 	OFX::DoubleParam*    _paramThreshold;
 	OFX::BooleanParam*   _paramFourColorRgb;
 	

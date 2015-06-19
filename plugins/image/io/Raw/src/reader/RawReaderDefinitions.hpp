@@ -82,6 +82,10 @@ static const std::string kParamBright      = "bright";
 static const std::string kParamBrightLabel = "Bright";
 static const std::string kParamBrightHint  = "";
 
+static const std::string kParamAutoBright      = "autobright";
+static const std::string kParamAutoBrightLabel = "Auto bright";
+static const std::string kParamAutoBrightHint  = "Use automatic increase of brightness by histogram.";
+
 static const std::string kParamFBDDNoiseRd = "fbddNoiseReduction";
 static const std::string kParamFBDDNoiseRdLabel = "FBDD Noise Reduction";
 static const std::string kParamFBDDNoiseRdHint = "Controls FBDD (Fragment Based Drug Discovery) noise reduction before demosaic.";

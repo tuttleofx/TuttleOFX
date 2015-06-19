@@ -97,7 +97,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		// brightness
 		_out.bright    = _params._bright;
 		_out.highlight  = _params._hightlight;
-		_out.no_auto_bright = 1; // don't use automatic increase of brightness by histogram
+		_out.no_auto_bright = !_params._autoBright;
 
 		// noise reduction
 		_out.threshold = _params._threshold;

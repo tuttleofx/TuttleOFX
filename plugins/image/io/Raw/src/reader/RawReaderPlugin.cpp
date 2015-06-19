@@ -31,8 +31,9 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramGreenAbber = fetchDoubleParam( kParamGreenAbber );
 	
 	_paramBright     = fetchDoubleParam( kParamBright );
+	_paramAutoBright = fetchBooleanParam( kParamAutoBright );
+
 	_paramThreshold  = fetchDoubleParam( kParamThreshold );
-	
 	_paramFourColorRgb = fetchBooleanParam( kParamFourColorRgb );
 	
 	_paramExposure         = fetchDoubleParam( kParamExposure );
@@ -71,8 +72,9 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._greenAbber = _paramGreenAbber->getValue();
 	
 	params._bright     = _paramBright->getValue();
+	params._autoBright = _paramAutoBright->getValue();
+
 	params._threshold  = _paramThreshold->getValue();
-	
 	params._fourColorRgb = _paramFourColorRgb->getValue();
 	
 	params._greyboxPoint.x = _paramGreyboxPoint->getValue().x;

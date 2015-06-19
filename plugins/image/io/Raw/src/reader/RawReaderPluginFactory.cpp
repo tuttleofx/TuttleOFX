@@ -120,6 +120,11 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bright->setDefault( 1.0 );
 	bright->setDisplayRange( -8.0, 8.0 );
 
+	OFX::BooleanParamDescriptor* autoBright = desc.defineBooleanParam( kParamAutoBright );
+	autoBright->setLabel( kParamAutoBrightLabel );
+	autoBright->setHint( kParamAutoBrightHint );
+	autoBright->setDefault( false );
+
 	OFX::ChoiceParamDescriptor* fbdd = desc.defineChoiceParam( kParamFBDDNoiseRd );
 	fbdd->setLabel( kParamFBDDNoiseRdLabel );
 	fbdd->setHint( kParamFBDDNoiseRdHint );
