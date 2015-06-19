@@ -146,6 +146,7 @@ static const std::string kParamInterpolationVcd         = "VCD";
 static const std::string kParamInterpolationMixed       = "MixedVCDModifiedAHD";
 static const std::string kParamInterpolationLmmse       = "LMMSE";
 static const std::string kParamInterpolationAmaze       = "AMaZE";
+static const std::string kParamInterpolationDisable     = "disable";
 
 enum EInterpolation
 {
@@ -159,7 +160,8 @@ enum EInterpolation
 	eInterpolationVcd,
 	eInterpolationMixed,
 	eInterpolationLmmse,
-	eInterpolationAmaze
+	eInterpolationAmaze,
+	eInterpolationDisable
 };
 
 static const std::string kParamExposure      = "exposure";

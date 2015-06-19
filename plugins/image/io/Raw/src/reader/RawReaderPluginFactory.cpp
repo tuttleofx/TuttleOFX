@@ -169,6 +169,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	interpolation->appendOption( kParamInterpolationMixed );
 	interpolation->appendOption( kParamInterpolationLmmse );
 	interpolation->appendOption( kParamInterpolationAmaze );
+	interpolation->appendOption( kParamInterpolationDisable );
 	interpolation->setDefault( 3 );
 	
 	OFX::DoubleParamDescriptor* exposure = desc.defineDoubleParam( kParamExposure );

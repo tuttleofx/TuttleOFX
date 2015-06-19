@@ -94,7 +94,13 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.threshold = _params._threshold;
 		_out.gamm[0]   = _params._gammaPower;
 		_out.gamm[1]   = _params._gammaToe;
-		_out.user_qual = _params._interpolation;
+
+		// interpolation
+		if( _params._interpolation == eInterpolationDisable )
+		    _out.no_interpolation = 1; // disables interpolation step in LibRaw::dcraw_process() call.
+		else
+		    _out.user_qual = _params._interpolation;
+
 		_out.no_auto_bright = 1; // don't use automatic increase of brightness by histogram
 		
 		_out.four_color_rgb = _params._fourColorRgb;
