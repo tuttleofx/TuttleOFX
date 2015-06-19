@@ -80,7 +80,8 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 	try
 	{
-		_out.output_bps = 16;
+		_out.output_bps = 16; // 16 bits
+		_out.use_fuji_rotate = 0; // don't use rotation for cameras on a Fuji sensor
 
 		_out.greybox[0] = _params._greyboxPoint.x;
 		_out.greybox[1] = _params._greyboxPoint.y;
@@ -89,11 +90,18 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 		_out.aber[0]   = _params._redAbber;
 		_out.aber[2]   = _params._greenAbber;
-		
-		_out.bright    = _params._bright;
-		_out.threshold = _params._threshold;
+
 		_out.gamm[0]   = _params._gammaPower;
 		_out.gamm[1]   = _params._gammaToe;
+
+		// brightness
+		_out.bright    = _params._bright;
+		_out.highlight  = _params._hightlight;
+		_out.no_auto_bright = 1; // don't use automatic increase of brightness by histogram
+
+		// noise reduction
+		_out.threshold = _params._threshold;
+		_out.fbdd_noiserd = _params._fbddNoiseRd;
 
 		// interpolation
 		if( _params._interpolation == eInterpolationDisable )
@@ -101,10 +109,10 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		else
 		    _out.user_qual = _params._interpolation;
 
-		_out.no_auto_bright = 1; // don't use automatic increase of brightness by histogram
-		
+		// interpolate colors
 		_out.four_color_rgb = _params._fourColorRgb;
-		
+		_out.output_color = _params._outputColor;
+
 		// exposure correction before demosaic
 		_out.exp_shift  = _params._exposure;
 		_out.exp_preser = _params._exposurePreserve;
@@ -112,13 +120,10 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		    _out.exp_correc = 0; // don't correct exposure
 		else
 		    _out.exp_correc = 1;
-
-		_out.highlight  = _params._hightlight;
-		_out.use_fuji_rotate = 0; // don't use rotation for cameras on a Fuji sensor
 		
+		// white balance
 		_out.use_auto_wb = 0;
 		_out.use_camera_wb = 0;
-		
 		switch( _params._whiteBalance )
 		{
 			case eAutoWb: _out.use_auto_wb = 1; break;
@@ -156,9 +161,6 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			case e9100: break;
 			case e10000: break;
 		}
-		
-		_out.fbdd_noiserd = _params._fbddNoiseRd;
-		_out.output_color = _params._outputColor;
 
 		/*switch( _params._filtering )
 		{
