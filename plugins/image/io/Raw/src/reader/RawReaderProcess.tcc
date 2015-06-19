@@ -105,10 +105,14 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		
 		_out.four_color_rgb = _params._fourColorRgb;
 		
-		_out.exp_correc = 1; // every time correct exposure (use default parameters to don't change)
+		// exposure correction before demosaic
 		_out.exp_shift  = _params._exposure;
 		_out.exp_preser = _params._exposurePreserve;
-		
+		if( _out.exp_shift == 1.0 && _out.exp_preser == 0.0 )
+		    _out.exp_correc = 0; // don't correct exposure
+		else
+		    _out.exp_correc = 1;
+
 		_out.highlight  = _params._hightlight;
 		_out.use_fuji_rotate = 0; // don't use rotation for cameras on a Fuji sensor
 		
