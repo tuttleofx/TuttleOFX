@@ -86,7 +86,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         OFX::BooleanParamDescriptor* displaySource = desc.defineBooleanParam( kParamDisplaySource );
         displaySource->setLabel( "Display Source" );
         displaySource->setDefault( false );
-        displaySource->setHint( "Display the image source (usefull to parameter the distortion with lines overlays on the source image)." );
+        displaySource->setHint( "Display the image source (useful to parameter the distortion with lines overlays on the source image)." );
 
         OFX::ChoiceParamDescriptor* lensType = desc.defineChoiceParam( kParamLensType );
         lensType->setLabel( "Lens type" );
@@ -99,26 +99,26 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 #endif
         lensType->setDefault( 0 );
 
-        OFX::DoubleParamDescriptor* coef1 = desc.defineDoubleParam( kParamCoef1 );
-        coef1->setLabel( "Main" );
-        coef1->setDefault( 0.1 );
-        coef1->setDisplayRange( -1.0, 1.0 );
-        coef1->setHint( "Main distortion coeffecient\n"
+        OFX::DoubleParamDescriptor* brown1 = desc.defineDoubleParam( kParamBrown1 );
+        brown1->setLabel( "Main" );
+        brown1->setDefault( 0.1 );
+        brown1->setDisplayRange( -1.0, 1.0 );
+        brown1->setHint( "Main distortion coefficient\n"
                         ">0 : Barrel distortion\n"
                         "<0 : Pincushion distortion\n"
                         );
 
-        OFX::DoubleParamDescriptor* coef2 = desc.defineDoubleParam( kParamCoef2 );
-        coef2->setLabel( "Secondary" );
-        coef2->setDefault( 0.0 );
-        coef2->setDisplayRange( -1.0, 1.0 );
-        coef2->setHint( "Secondary distortion coeffecient (usefull for fisheyes only)\n"
-                        ">0 : Barrel distortion\n"
-                        "<0 : Pincushion distortion\n"
-                        );
-#if(!TUTTLE_EXPERIMENTAL)
-        coef2->setIsSecret( true );
-#endif
+        OFX::DoubleParamDescriptor* brown2 = desc.defineDoubleParam( kParamBrown2 );
+        brown2->setLabel( "Secondary" );
+        brown2->setDefault( 0.0 );
+        brown2->setDisplayRange( -1.0, 1.0 );
+        brown2->setHint( "Secondary distortion coefficient");
+
+        OFX::DoubleParamDescriptor* brown3 = desc.defineDoubleParam( kParamBrown3 );
+        brown3->setLabel( "Third" );
+        brown3->setDefault( 0.0 );
+        brown3->setDisplayRange( -1.0, 1.0 );
+        brown3->setHint( "Third distortion coefficient" );
 
         OFX::DoubleParamDescriptor* squeeze = desc.defineDoubleParam( kParamSqueeze );
         squeeze->setLabel( "Squeeze" );
@@ -129,7 +129,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         squeeze->setDefault( 1.0 );
         squeeze->setRange( 0.00001, 1.0 );
         squeeze->setDisplayRange( 0.01, 1.0 );
-        squeeze->setHint( "Squeeze distortion coeffecient (usefull for bad quality lens...)" );
+        squeeze->setHint( "Squeeze distortion coefficient (useful for bad quality lens)" );
 
         OFX::Double2DParamDescriptor* asymmetric = desc.defineDouble2DParam( kParamAsymmetric );
         asymmetric->setLabel( "Asymmetric" );
@@ -140,7 +140,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         asymmetric->setDefault( 0.0, 0.0 );
         asymmetric->setRange( 0.0, 0.0, 1.0, 1.0 );
         asymmetric->setDisplayRange( 0.0, 0.0, 1.0, 1.0 );
-        asymmetric->setHint( "asymmetric distortion coeffecient (usefull for bad quality lens...)" );
+        asymmetric->setHint( "asymmetric distortion coefficient (useful for bad quality lens)" );
 
         OFX::Double2DParamDescriptor* center = desc.defineDouble2DParam( kParamCenter );
         center->setLabel( "Center" );
@@ -180,6 +180,20 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         postScale->setRange( 0.00001, std::numeric_limits<double>::max() );
         postScale->setDisplayRange( 0.0, 2.5 );
         postScale->setHint( "If the transformation of optics is high, you may need to change the scale of the result to be globally closer to the source image or preserve a good resolution." );
+
+        OFX::Double2DParamDescriptor* preOffset = desc.defineDouble2DParam( kParamPreOffset );
+        preOffset->setLabel( "Pre-offset" );
+        preOffset->setDoubleType( OFX::eDoubleTypePlain );
+        preOffset->setDefault( 0.0, 0.0 );
+        preOffset->setDisplayRange( -100., -100., 100., 100. );
+        preOffset->setHint( "Apply an image offset before lens distortion." );
+
+        OFX::Double2DParamDescriptor* postOffset = desc.defineDouble2DParam( kParamPostOffset );
+        postOffset->setLabel( "Post-offset" );
+        postOffset->setDoubleType( OFX::eDoubleTypePlain );
+        postOffset->setDefault( 0.0, 0.0 );
+        postOffset->setDisplayRange( -100., -100., 100., 100. );
+        postOffset->setHint( "Apply an image offset after lens distortion." );
 
 
         // sampler parameters //
