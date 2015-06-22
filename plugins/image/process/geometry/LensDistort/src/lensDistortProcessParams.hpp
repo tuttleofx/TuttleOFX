@@ -12,6 +12,60 @@ namespace lens {
 
 using boost::gil::point2;
 
+template <typename T>
+T square(const T &v) {
+    return v * v;
+}
+
+template<class DistoFunctor>
+struct DistoSolver
+{
+	const DistoFunctor& _distoFunctor;
+
+	DistoSolver(const DistoFunctor& distoFunctor)
+	: _distoFunctor(distoFunctor)
+	{}
+
+	/// Functor to solve Square(disto(radius(p'))) = r^2
+	double operator()(double r2) const
+	{
+		return r2 * square(_distoFunctor.distoCoef(_distoFunctor._params, r2));
+	}
+};
+
+/**
+ * @brief Solve by bisection the p' radius such that Square(disto(radius(p'))) = r^2
+ * @param[in] params: radial distortion parameters
+ * @param[in] r2: targeted radius
+ * @param[in] functor: 
+ * @param[in] epsilon: criteria to stop the bisection
+ */
+template <class DistoFunctor>
+double bisectionRadiusSolve(
+	double r2,
+	const DistoSolver<DistoFunctor>& functor,
+	double epsilon = 1e-8)
+{
+	// Guess plausible upper and lower bound
+	double lowerbound = r2, upbound = r2;
+	while (functor(lowerbound) > r2) lowerbound /= 1.05;
+	while (functor(upbound) < r2) upbound *= 1.05;
+
+	// Perform a bisection until epsilon accuracy is not reached
+	while (epsilon < upbound - lowerbound)
+	{
+		const double mid = .5 * (lowerbound + upbound);
+		if (functor(mid) > r2)
+			upbound = mid;
+		else
+			lowerbound = mid;
+	}
+	return .5 * (lowerbound + upbound);
+}
+
+
+
+
 template<typename F>
 struct LensDistortProcessParams
 {
@@ -235,6 +289,70 @@ struct LensUndistortBrown1 : public CoordonatesSystem<F>
 		return this->lensCenterNormalizedToPixel( pc ); // to the original space
 	}
 };
+
+
+
+template<typename F>
+struct LensDistortBrown3 : public CoordonatesSystem<F>
+{
+	LensDistortBrown3(const LensDistortProcessParams<F>& params)
+	: CoordonatesSystem<F>(params)
+	{}
+	template<typename F2>
+	inline point2<F> apply( const point2<F2>& src ) const
+	{
+		BOOST_ASSERT( this->_params.distort );
+		BOOST_ASSERT( this->_params.brown1 >= 0 );
+		point2<F> pc( this->pixelToLensCenterNormalized( src ) ); // centered normalized space
+		pc *= this->_params.postScale;
+
+		const F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center squared
+		// distortion coef for current pixel
+		const F coef = distoCoef( this->_params, r2 );
+		pc *= coef;
+
+		pc *= this->_params.preScale;
+		return this->lensCenterNormalizedToPixel( pc ); // original space
+	}
+
+	static F distoCoef(const LensDistortProcessParams<F>& params, F r2)
+	{
+		const F r4 = r2 * r2;
+		const F r6 = r2 * r4;
+		// distortion coef for current pixel
+		return 1.0 + r2 * params.brown1 + r4 * params.brown2 + r6 * params.brown3;
+	}
+
+};
+
+template<typename F>
+struct LensUndistortBrown3 : public CoordonatesSystem<F>
+{
+	LensUndistortBrown3(const LensDistortProcessParams<F>& params)
+	: CoordonatesSystem<F>(params)
+	{}
+	template<typename F2>
+	inline point2<F> apply( const point2<F2>& src ) const
+	{
+		BOOST_ASSERT( !this->_params.distort );
+		BOOST_ASSERT( this->_params.brown1 >= 0 );
+		point2<F> pc( this->pixelToLensCenterNormalized( src ) );
+		pc *= this->_params.postScale;
+
+		const F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center squared
+		const LensDistortBrown3<F> disto(this->_params);
+		const DistoSolver<LensDistortBrown3<F> > distoSolver(disto);
+		const F coefSolver = bisectionRadiusSolve(r2, distoSolver);
+
+		const F coef = (r2 == 0) ? 1. : ::sqrt(coefSolver / r2);
+
+		pc *= coef;
+
+		pc *= this->_params.preScale;
+		return this->lensCenterNormalizedToPixel( pc ); // to the original space
+	}
+};
+
 
 
 template<typename F>

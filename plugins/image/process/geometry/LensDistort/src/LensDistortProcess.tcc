@@ -146,7 +146,7 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 	terry::Rect<std::ssize_t> procWin = ofxToGil(procWindow);
 	switch( _params._lensType )
 	{
-		case eParamLensTypeStandard:
+		case eParamLensTypeBrown1:
 		{
 			if( _p.distort )
 			{
@@ -155,6 +155,18 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 			else
 			{
 				resample_pixels_progress( srcView, dstView, LensUndistortBrown1<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			}
+			return;
+		}
+		case eParamLensTypeBrown3:
+		{
+			if( _p.distort )
+			{
+				resample_pixels_progress( srcView, dstView, LensDistortBrown3<double>(_p), procWin, outOfImageProcess, this->getOfxProgress(), sampler );
+			}
+			else
+			{
+				resample_pixels_progress( srcView, dstView, LensUndistortBrown3<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			}
 			return;
 		}

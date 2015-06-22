@@ -90,13 +90,10 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 
         OFX::ChoiceParamDescriptor* lensType = desc.defineChoiceParam( kParamLensType );
         lensType->setLabel( "Lens type" );
-        lensType->appendOption( kParamLensTypeStandard );
-#if(TUTTLE_EXPERIMENTAL)
-        lensType->appendOption( kParamLensTypeFishEye ); // not implemented yet...
-        lensType->appendOption( kParamLensTypeAdvanced ); // not implemented yet...
-#else
-        lensType->setIsSecret( true );
-#endif
+        lensType->appendOption( kParamLensTypeBrown1 );
+        lensType->appendOption( kParamLensTypeBrown3 );
+//        lensType->appendOption( kParamLensTypeFishEye ); // not implemented yet
+//        lensType->appendOption( kParamLensTypeAdvanced ); // not implemented yet
         lensType->setDefault( 0 );
 
         OFX::DoubleParamDescriptor* brown1 = desc.defineDoubleParam( kParamBrown1 );

@@ -36,6 +36,18 @@ inline point2<F> transform( const ::tuttle::plugin::lens::LensUndistortBrown1<F>
 }
 
 template <typename F, typename F2>
+inline point2<F> transform( const ::tuttle::plugin::lens::LensDistortBrown3<F>& algo, const point2<F2>& src )
+{
+	return algo.apply(src);
+}
+
+template <typename F, typename F2>
+inline point2<F> transform( const ::tuttle::plugin::lens::LensUndistortBrown3<F>& algo, const point2<F2>& src )
+{
+	return algo.apply(src);
+}
+
+template <typename F, typename F2>
 inline point2<F> transform( const ::tuttle::plugin::lens::LensDistortFisheye<F>& algo, const point2<F2>& src )
 {
 	return algo.apply(src);
@@ -110,7 +122,7 @@ inline Obj transformValues( const EParamLensType lensType, const LensDistortProc
 {
 	switch( lensType )
 	{
-		case eParamLensTypeStandard:
+		case eParamLensTypeBrown1:
 		{
 			if( params.distort )
 			{
@@ -119,6 +131,17 @@ inline Obj transformValues( const EParamLensType lensType, const LensDistortProc
 			else
 			{
 				return transformValues( LensUndistortBrown1<double>(params), obj );
+			}
+		}
+		case eParamLensTypeBrown3:
+		{
+			if( params.distort )
+			{
+				return transformValues( LensDistortBrown3<double>(params), obj );
+			}
+			else
+			{
+				return transformValues( LensUndistortBrown3<double>(params), obj );
 			}
 		}
 		case eParamLensTypeFisheye:
@@ -171,7 +194,7 @@ inline void transformValuesApply( const EParamLensType lensType, const LensDisto
 {
 	switch( lensType )
 	{
-		case eParamLensTypeStandard:
+		case eParamLensTypeBrown1:
 		{
 			if( params.distort )
 			{
@@ -183,6 +206,18 @@ inline void transformValuesApply( const EParamLensType lensType, const LensDisto
 			}
 			break;
 		}
+                case eParamLensTypeBrown3:
+                {
+                        if( params.distort )
+                        {
+                                transformValuesApply( LensDistortBrown3<double>(params), obj );
+                        }
+                        else
+                        {
+                                transformValuesApply( LensUndistortBrown3<double>(params), obj );
+                        }
+                        break;
+                }
 		case eParamLensTypeFisheye:
 		{
 			if( params.distort )

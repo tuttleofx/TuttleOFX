@@ -16,7 +16,8 @@ static const std::string kClipOptionalSourceRef( "SourceRef" );
 static const std::string kParamReverse                 ( "reverse" );
 static const std::string kParamDisplaySource           ( "displaySource" );
 static const std::string kParamLensType                ( "lensType" );
-static const std::string kParamLensTypeStandard        ( "standard" );
+static const std::string kParamLensTypeBrown1          ( "brown1" );
+static const std::string kParamLensTypeBrown3          ( "brown3" );
 static const std::string kParamLensTypeFishEye         ( "fish-eye" );
 static const std::string kParamLensTypeAdvanced        ( "advanced" );
 static const std::string kParamBrown1                  ( "brown1" );
@@ -61,7 +62,8 @@ static const std::string kParamHelp                    ( "help" );
 
 enum EParamLensType
 {
-	eParamLensTypeStandard = 0,
+	eParamLensTypeBrown1 = 0,
+	eParamLensTypeBrown3,
 	eParamLensTypeFisheye,
 	eParamLensTypeAdvanced,
 };
