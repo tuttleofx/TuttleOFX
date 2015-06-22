@@ -51,11 +51,7 @@ if (TuttleBoost_FOUND)
   else()
     message(STATUS "tuttleHost version is "
                  "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO} (retrieved from version.hpp)")
-
-    set_target_properties(
-      tuttleHost
-    PROPERTIES
-      VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}"
+    set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}"
   )
   endif()
 
@@ -72,6 +68,15 @@ if (TuttleBoost_FOUND)
             PROPERTIES INSTALL_RPATH "$ORIGIN")
   endif(UNIX AND NOT APPLE)
   
+  # TuttleHost depends on libpng when it is built in debug.
+  # To generate png images when for each output of each nodes computed in the graph.
+  if(CMAKE_BUILD_TYPE MATCHES RELEASE)
+    find_package(PNG)
+    if(PNG_FOUND) 
+      target_link_libraries(tuttleHost ${PNG_LIBRARIES})
+    endif(PNG_FOUND)
+  endif(CMAKE_BUILD_TYPE MATCHES RELEASE)
+
   # TODO: if cmake >= 2.8.11
   # TODO: declare BOOST Atomic optional.
   # There is a basic fallback implementation for boost_atomic:

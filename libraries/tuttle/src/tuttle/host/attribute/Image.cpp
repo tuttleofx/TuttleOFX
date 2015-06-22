@@ -1,11 +1,9 @@
 #include "Image.hpp"
 
-#ifndef TUTTLE_PRODUCTION
-#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
+#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)
 #define int_p_NULL (int *)NULL
  // Should be included first to avoid setjmp.h include troubles
  #include <boost/gil/extension/io/png_io.hpp>
-#endif
 #endif
 
 #include <tuttle/host/attribute/ClipImage.hpp>
@@ -126,31 +124,55 @@ void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 	}
 }
 
-#ifndef TUTTLE_PRODUCTION
-#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
+#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)
 void Image::debugSaveAsPng( const std::string& filename )
 {
 	using namespace boost::gil;
 	switch( getComponentsType() )
 	{
-		case ofx::imageEffect::ePixelComponentRGBA:
+		case ofx::imageEffect::ePixelComponentRGB:
 			switch( getBitDepth() )
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					rgba8_view_t view = getGilView<rgba8_view_t >();
+					rgb8_view_t view = getGilView<rgb8_view_t>();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					rgba16_view_t view = getGilView<rgba16_view_t >();
+					rgb16_view_t view = getGilView<rgb16_view_t>();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					rgba32f_view_t view = getGilView<rgba32f_view_t >();
+					rgb32f_view_t view = getGilView<rgb32f_view_t>();
+					png_write_view( filename, color_converted_view<rgb8_pixel_t>( view ) );
+					break;
+				}
+				default:
+					break;
+			}
+			break;
+		case ofx::imageEffect::ePixelComponentRGBA:
+			switch( getBitDepth() )
+			{
+				case ofx::imageEffect::eBitDepthUByte:
+				{
+					rgba8_view_t view = getGilView<rgba8_view_t>();
+					png_write_view( filename, view );
+					break;
+				}
+				case ofx::imageEffect::eBitDepthUShort:
+				{
+					rgba16_view_t view = getGilView<rgba16_view_t>();
+					png_write_view( filename, view );
+					break;
+				}
+				case ofx::imageEffect::eBitDepthFloat:
+				{
+					rgba32f_view_t view = getGilView<rgba32f_view_t>();
 					png_write_view( filename, color_converted_view<rgba8_pixel_t>( view ) );
 					break;
 				}
@@ -163,19 +185,19 @@ void Image::debugSaveAsPng( const std::string& filename )
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					gray8_view_t view = getGilView<gray8_view_t >();
+					gray8_view_t view = getGilView<gray8_view_t>();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					gray16_view_t view = getGilView<gray16_view_t >();
+					gray16_view_t view = getGilView<gray16_view_t>();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					gray32f_view_t view = getGilView<gray32f_view_t >();
+					gray32f_view_t view = getGilView<gray32f_view_t>();
 					png_write_view( filename, color_converted_view<rgb8_pixel_t>( view ) );
 					break;
 				}
@@ -184,10 +206,10 @@ void Image::debugSaveAsPng( const std::string& filename )
 			}
 			break;
 		default:
+			TUTTLE_TLOG( TUTTLE_WARNING, "Cannot write png debug image for file '" + filename + "': unsupported component type." );
 			break;
 	}
 }
-#endif
 #endif
 
 /// Copy from gil image view to Image

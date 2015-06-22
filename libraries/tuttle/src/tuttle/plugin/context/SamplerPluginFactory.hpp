@@ -32,7 +32,7 @@ void describeSamplerParamsInContext( OFX::ImageEffectDescriptor& desc,
 	filter->appendOption	( kParamFilterLanczos4  );
 	filter->appendOption	( kParamFilterLanczos6  );
 	filter->appendOption	( kParamFilterLanczos12 );
-#ifndef TUTTLE_PRODUCTION
+#if(TUTTLE_EXPERIMENTAL)
 	filter->appendOption	( kParamFilterGaussian  );
 #endif
 
@@ -55,7 +55,7 @@ void describeSamplerParamsInContext( OFX::ImageEffectDescriptor& desc,
 		"lanczos4: Lanczos sampler with filter size = 4, sharpen = 2\n"
 		"lanczos6: Lanczos sampler with filter size = 6, sharpen = 2\n"
 		"lanczos12: Lanczos sampler with filter size = 12, sharpen = 2 \n"
-#ifndef TUTTLE_PRODUCTION
+#if(TUTTLE_EXPERIMENTAL)
 		"gaussian: Gaussian sampler with parametrable filter size and sigma value\n"
 #endif
 	);
@@ -100,7 +100,7 @@ void describeSamplerParamsInContext( OFX::ImageEffectDescriptor& desc,
 	outOfImage->appendOption ( kParamFilterOutBlack );
 	outOfImage->appendOption ( kParamFilterOutTransparency );
 	outOfImage->appendOption ( kParamFilterOutCopy );
-#ifndef TUTTLE_PRODUCTION
+#if(TUTTLE_EXPERIMENTAL)
 	outOfImage->appendOption ( kParamFilterOutMirror );
 #endif
 	outOfImage->setHint      ( "Select the filtering method out of the image." );

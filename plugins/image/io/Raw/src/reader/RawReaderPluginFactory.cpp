@@ -180,7 +180,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	whitebalance->setHint( kParamWhiteBalanceHint );
 	whitebalance->appendOption( kParamWhiteBalanceAutoWb );
 	whitebalance->appendOption( kParamWhiteBalanceCameraWb );
-#ifndef TUTTLE_PRODUCTION
+#if(TUTTLE_EXPERIMENTAL)
 	whitebalance->appendOption( kParamWhiteBalanceManualWb );
 	whitebalance->appendOption( kParamWhiteBalance2500 );
 	whitebalance->appendOption( kParamWhiteBalance2550 );

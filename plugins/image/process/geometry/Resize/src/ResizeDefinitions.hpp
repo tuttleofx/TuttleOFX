@@ -38,10 +38,8 @@ enum EParamSizeOrientation
 
 static const std::string kParamScale            = "scale";
 
-#ifndef TUTTLE_PRODUCTION
 static const std::string kParamCenter           = "center";
 static const std::string kParamCenterPoint      = "centerPoint";
-#endif
 
 }
 }

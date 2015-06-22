@@ -21,11 +21,6 @@
 #include <tuttle/host/ofx/attribute/OfxhClip.hpp>
 #include <tuttle/host/ofx/attribute/OfxhParam.hpp>
 
-#ifndef TUTTLE_PRODUCTION
-// to output all nodes as png for debug
-//#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
-#endif
-
 // ofx
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
@@ -615,7 +610,7 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 
 void ImageEffectNode::coutBitDepthConnections() const
 {
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_DEBUG
 	// validation
 	for( ClipImageMap::const_iterator it = _clipImages.begin();
 	     it != _clipImages.end();
@@ -1044,11 +1039,18 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
-	#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
-	boost::shared_ptr<Image> image = getNode().getData().getInternMemoryCache().get( this->getName() + "." kOfxOutputAttributeName, time );
-
-	// big hack, for debug...
-	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>( time ) + "_" + this->getName() + ".png" );
+	#if(TUTTLE_PNG_EXPORT_BETWEEN_NODES)	
+	for( ClipImageMap::const_iterator it = _clipImages.begin();
+	     it != _clipImages.end();
+	     ++it )
+	{
+		const attribute::ClipImage& clip = dynamic_cast<const attribute::ClipImage&>( *( it->second ) );
+		if( clip.isOutput() )
+		{
+			boost::shared_ptr<attribute::Image> image = clip.getNode().getData().getInternMemoryCache().get( this->getName() + "." kOfxOutputAttributeName, time );
+			image->debugSaveAsPng( boost::lexical_cast<std::string>( time ) + "_" + this->getName() + ".png" );
+		}
+	}
 	#endif
 }
 
