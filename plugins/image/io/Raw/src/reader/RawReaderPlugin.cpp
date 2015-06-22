@@ -20,6 +20,7 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 {
 	_paramFiltering     = fetchChoiceParam( kParamFiltering );
 	_paramInterpolation = fetchChoiceParam( kParamInterpolation );
+	_paramOutputColor   = fetchChoiceParam( kParamOutputColor );
 	
 	_paramGreyboxPoint = fetchDouble2DParam( kParamGreyboxPoint );
 	_paramGreyboxSize  = fetchDouble2DParam( kParamGreyboxSize );
@@ -27,11 +28,12 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramGammaPower = fetchDoubleParam( kParamGammaPower );
 	_paramGammaToe   = fetchDoubleParam( kParamGammaToe );
 	_paramRedAbber   = fetchDoubleParam( kParamRedAbber );
-	_paramBlueAbber = fetchDoubleParam( kParamBlueAbber );
+	_paramGreenAbber = fetchDoubleParam( kParamGreenAbber );
 	
 	_paramBright     = fetchDoubleParam( kParamBright );
+	_paramAutoBright = fetchBooleanParam( kParamAutoBright );
+
 	_paramThreshold  = fetchDoubleParam( kParamThreshold );
-	
 	_paramFourColorRgb = fetchBooleanParam( kParamFourColorRgb );
 	
 	_paramExposure         = fetchDoubleParam( kParamExposure );
@@ -40,6 +42,8 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
 	
 	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
+
+	_paramFbddNoiseRd = fetchChoiceParam( kParamFBDDNoiseRd ) ;
 	
 	// metadatas
 	_paramManufacturer   = fetchStringParam( kParamManufacturer );
@@ -60,15 +64,17 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._filepath      = getAbsoluteFilenameAt( time );
 	params._filtering     = static_cast<EFiltering>( _paramFiltering->getValue() );
 	params._interpolation = static_cast<EInterpolation>( _paramInterpolation->getValue() );
+	params._outputColor   = static_cast<EOutputColor>( _paramOutputColor->getValue() );
 	
 	params._gammaPower = _paramGammaPower->getValue();
 	params._gammaToe   = _paramGammaToe->getValue();
 	params._redAbber   = _paramRedAbber->getValue();
-	params._blueAbber = _paramBlueAbber->getValue();
+	params._greenAbber = _paramGreenAbber->getValue();
 	
 	params._bright     = _paramBright->getValue();
+	params._autoBright = _paramAutoBright->getValue();
+
 	params._threshold  = _paramThreshold->getValue();
-	
 	params._fourColorRgb = _paramFourColorRgb->getValue();
 	
 	params._greyboxPoint.x = _paramGreyboxPoint->getValue().x;
@@ -83,6 +89,8 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._whiteBalance     = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
 	
 	params._hightlight = static_cast<EHighlight>( _paramHighlight->getValue() );
+
+	params._fbddNoiseRd = static_cast<EFBDDNoiseRd>( _paramFbddNoiseRd->getValue() );
 	
 	return params;
 }
