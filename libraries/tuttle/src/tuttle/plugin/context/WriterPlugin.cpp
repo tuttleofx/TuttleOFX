@@ -2,15 +2,9 @@
 
 #include <ofxCore.h>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/scoped_ptr.hpp>
-
-#include <cstdio>
-
 namespace tuttle {
 namespace plugin {
 
-namespace bfs = boost::filesystem;
 
 WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
@@ -125,35 +119,6 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 	_oneRender = false;
 
 	TUTTLE_LOG_INFO( "        --> " << getAbsoluteFilenameAt( args.time ) );
-
-	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
-	boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
-	
-	// Copy buffer
-	const OfxRectI bounds = dst->getBounds();
-	TUTTLE_TLOG_VAR( TUTTLE_TRACE, bounds );
-	if( src->isLinearBuffer() && dst->isLinearBuffer() )
-	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "isLinearBuffer" );
-		const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
-		TUTTLE_TLOG_VAR( TUTTLE_TRACE, imageDataBytes );
-		if( imageDataBytes )
-		{
-			void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );
-			void* dataDstPtr = dst->getPixelAddress( bounds.x1, bounds.y1 );
-			memcpy( dataDstPtr, dataSrcPtr, imageDataBytes );
-		}
-	}
-	else
-	{
-		const std::size_t rowBytesToCopy = dst->getBoundsRowDataBytes();
-		for( int y = bounds.y1; y < bounds.y2; ++y )
-		{
-			void* dataSrcPtr = src->getPixelAddress( bounds.x1, y );
-			void* dataDstPtr = dst->getPixelAddress( bounds.x1, y );
-			memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
-		}
-	}
 }
 
 }
