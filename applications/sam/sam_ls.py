@@ -48,7 +48,8 @@ class SamLs(samUtils.Sam):
         parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
         parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (activated by default)')
-        parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
+        parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
+        parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
         # parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
 
     def printItem(self, item, args, level):
@@ -217,6 +218,10 @@ class SamLs(samUtils.Sam):
         # sam-ls --detect-negative
         if args.detectNegative:
             detectionMethod = detectionMethod | sequenceParser.eDetectionNegative
+
+        # sam-ls --detect-without-holes
+        if args.detectWithoutHoles:
+            detectionMethod = detectionMethod | sequenceParser.eDetectionSequenceWithoutHoles
 
         # sam-ls -e
         filters = []
