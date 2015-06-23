@@ -41,17 +41,16 @@ class CommandSplit:
                 itemType = item.getType()
                 if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
                     newGraph = copy.deepcopy(generalGraph)
-                    newGraph.getFirstNode().getArguments()[0] = (None, item.getAbsoluteFilepath())
+                    newGraph.getFirstNode().setFilename(item.getAbsoluteFilepath())
                     # if the user gives an output directory
-                    outputArgValue = generalGraph.getLastNode().getArguments()[0][1]
-                    outputIsFolder = sequenceParser.getTypeFromPath(outputArgValue) == sequenceParser.eTypeFolder
+                    outputIsFolder = sequenceParser.getTypeFromPath(generalGraph.getLastNode().getFilename()) == sequenceParser.eTypeFolder
                     if outputIsFolder:
-                        newGraph.getLastNode().getArguments()[0] = (None, os.path.join(newGraph.getLastNode().getArguments()[0][1], item.getFilename()))
+                        newGraph.getLastNode().setFilename(os.path.join(newGraph.getLastNode().getFilename(), item.getFilename()))
                     # if the user add a filter of output extensions
                     outputExtName, outputExtValue = generalGraph.getLastNode().getArgument('ext')
                     if outputExtName:
-                        outputArgValue = newGraph.getLastNode().getArguments()[0][1]
-                        newGraph.getLastNode().getArguments()[0] = (None, newGraph.getLastNode().getArguments()[0][1][:outputArgValue.rfind('.')+1] + outputExtValue)
+                        outputFilename = newGraph.getLastNode().getFilename()
+                        newGraph.getLastNode().setFilename(outputFilename[:outputFilename.rfind('.')+1] + outputExtValue)
                         newGraph.getLastNode().removeArgument(outputExtName)
                     self._graph.append(newGraph)
         else:
@@ -185,6 +184,29 @@ class CommandSplitNode:
             if argName == name:
                 return (argName, argvalue)
         return (None, None)
+
+    def getFilename(self):
+        """
+        If not found, return None.
+        Only used for reader/writer nodes.
+        """
+        for argName, argvalue in self._arguments:
+            if argName == 'filename':
+                return argvalue
+        return self._arguments[0][1]
+
+    def setFilename(self, value):
+        """
+        If not found, do nothing.
+        Only used for reader/writer nodes.
+        """
+        for i in range(0, len(self._arguments)):
+            argName = self._arguments[i][0]
+            if argName == 'filename':
+                self._arguments[i] = (argName, value)
+        # set first arg if it has no name
+        if self._arguments[0][0] == None:
+            self._arguments[0] = ('filename', value)
 
     def addArgument(self, name, value):
         self._arguments.append((name, value))
