@@ -378,7 +378,6 @@ class SamDo(samUtils.Sam):
 
         # Tuttle graph
         graph = tuttle.Graph()
-        nodes = []
 
         # Create nodes from command line
         commandSplitGraph = samDoUtils.CommandSplitGraph(args.inputs)
@@ -409,7 +408,6 @@ class SamDo(samUtils.Sam):
                     # Cannot set param of node
                     puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
                     print e
-            nodes.append(node)
 
         # Options of process
         options = tuttle.ComputeOptions()
@@ -429,7 +427,7 @@ class SamDo(samUtils.Sam):
         if not len(ranges):
             # get time domaine
             try:
-                timeDomain = nodes[0].asImageEffectNode().computeTimeDomain()
+                timeDomain = graph.getNodes()[0].asImageEffectNode().computeTimeDomain()
                 ranges = []
                 ranges.append(tuttle.TimeRange(int(timeDomain.min), int(timeDomain.max), 1))
             except Exception as e:
@@ -439,9 +437,9 @@ class SamDo(samUtils.Sam):
         options.setProgressHandle(progress)
 
         # Connect and compute
-        if len(nodes) > 1:
-            graph.connect(nodes)
-            graph.compute(nodes[-1], options)
+        if len(graph.getNodes()) > 1:
+            graph.connect(graph.getNodes())
+            graph.compute(graph.getNodes()[-1], options)
             puts('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
 
