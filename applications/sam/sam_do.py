@@ -419,7 +419,7 @@ class SamDo(samUtils.Sam):
         # Add unknown options to the command line to process
         args.inputs.extend(unknown)
 
-        # Create Tuttle graph from command line
+        # Create a list of tuttle graph from command line
         graphs = self._getGraphsFromCommandLine(args.inputs)
 
         for graph in graphs:

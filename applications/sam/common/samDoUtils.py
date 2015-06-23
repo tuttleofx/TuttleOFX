@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
+import copy
 
 # python modules to easily get colors, indent text...
 from clint.textui import colored, puts, progress
+
+# parser of sequence
+from pySequenceParser import sequenceParser
 
 # openFX host
 from pyTuttle import tuttle
@@ -13,10 +17,26 @@ class CommandSplit:
     """
     A dedicated class to expose the given input command split as a list of graph.
     It contains a list of CommandSplitGraph.
+    @note resolve given input folders.
     """
     def __init__(self, inputCommandLine):
         self._graph = []
-        self._graph.append(CommandSplitGraph(inputCommandLine))
+
+        generalGraph = CommandSplitGraph(inputCommandLine)
+        # if the user gives an input directory
+        inputArgName = generalGraph.getFirstNode().getArguments()[0][1]
+        inputIsFolder = sequenceParser.getTypeFromPath(inputArgName) == sequenceParser.eTypeFolder
+        if inputIsFolder:
+            # create a new commandSplitGraph for each files/sequences in directory
+            items = sequenceParser.browse(inputArgName)
+            for item in items:
+                itemType = item.getType()
+                if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
+                    newGraph = copy.deepcopy(generalGraph)
+                    newGraph.getFirstNode().getArguments()[0] = (None, item.getAbsoluteFilepath())
+                    self._graph.append(newGraph)
+        else:
+            self._graph.append(generalGraph)
 
     def getGraphs(self):
         return self._graph
@@ -65,6 +85,9 @@ class CommandSplitGraph:
 
     def getNode(self, index):
         return self._nodes[index]
+
+    def getFirstNode(self):
+        return self._nodes[0]
 
     def getLastNode(self):
         return self._nodes[-1]
