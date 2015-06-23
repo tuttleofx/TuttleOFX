@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import argparse
 import copy
 
@@ -17,7 +18,7 @@ class CommandSplit:
     """
     A dedicated class to expose the given input command split as a list of graph.
     It contains a list of CommandSplitGraph.
-    @note resolve given input folders.
+    @note resolve given input/output folders.
     """
     def __init__(self, inputCommandLine):
         self._graph = []
@@ -26,27 +27,32 @@ class CommandSplit:
         # if the user gives an input directory
         inputArgName = generalGraph.getFirstNode().getArguments()[0][1]
         inputIsFolder = sequenceParser.getTypeFromPath(inputArgName) == sequenceParser.eTypeFolder
-        # if the user gives an output directory
-        outputArgName = generalGraph.getLastNode().getArguments()[0][1]
-        outputIsFolder = sequenceParser.getTypeFromPath(outputArgName) == sequenceParser.eTypeFolder
 
         if inputIsFolder:
-            # create a new commandSplitGraph for each files/sequences in directory
             filters = []
             # if the user add a filter of input extensions
-            extName, extValue = generalGraph.getFirstNode().getArgument('ext')
-            if extName:
-                filters.append('*.' + extValue)
-                generalGraph.getFirstNode().removeArgument(extName)
-
+            inputExtName, inputExtValue = generalGraph.getFirstNode().getArgument('ext')
+            if inputExtName:
+                filters.append('*.' + inputExtValue)
+                generalGraph.getFirstNode().removeArgument(inputExtName)
+            # create a new commandSplitGraph for each files/sequences in directory
             items = sequenceParser.browse(inputArgName, sequenceParser.eDetectionDefault, filters)
             for item in items:
                 itemType = item.getType()
                 if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
                     newGraph = copy.deepcopy(generalGraph)
                     newGraph.getFirstNode().getArguments()[0] = (None, item.getAbsoluteFilepath())
+                    # if the user gives an output directory
+                    outputArgValue = generalGraph.getLastNode().getArguments()[0][1]
+                    outputIsFolder = sequenceParser.getTypeFromPath(outputArgValue) == sequenceParser.eTypeFolder
                     if outputIsFolder:
-                        newGraph.getLastNode().getArguments()[0] = (None, newGraph.getLastNode().getArguments()[0][1] + item.getFilename())
+                        newGraph.getLastNode().getArguments()[0] = (None, os.path.join(newGraph.getLastNode().getArguments()[0][1], item.getFilename()))
+                    # if the user add a filter of output extensions
+                    outputExtName, outputExtValue = generalGraph.getLastNode().getArgument('ext')
+                    if outputExtName:
+                        outputArgValue = newGraph.getLastNode().getArguments()[0][1]
+                        newGraph.getLastNode().getArguments()[0] = (None, newGraph.getLastNode().getArguments()[0][1][:outputArgValue.rfind('.')+1] + outputExtValue)
+                        newGraph.getLastNode().removeArgument(outputExtName)
                     self._graph.append(newGraph)
         else:
             self._graph.append(generalGraph)
@@ -59,7 +65,6 @@ class CommandSplitGraph:
     """
     A dedicated class to expose the given input command split as a graph.
     It contains a list of CommandSplitNode.
-    @note resolve full name of plugins.
     """
     def __init__(self, inputCommandLine):
         self._nodes = []
