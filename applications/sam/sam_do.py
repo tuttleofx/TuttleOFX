@@ -15,135 +15,7 @@ from pySequenceParser import sequenceParser
 from pyTuttle import tuttle
 
 # sam common functions
-from common import samUtils
-
-
-class SamDoSetVerboseAction(argparse.Action):
-    """
-    Class to get the corresponding tuttle verbose level from the user input.
-    The user input can be a number or a string.
-    """
-    def __init__(self, option_strings, dest, nargs=None, **kwargs):
-        if nargs is not None:
-            raise ValueError("nargs not allowed")
-        super(SamDoSetVerboseAction, self).__init__(option_strings, dest, **kwargs)
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        # if the given number is upper than the max tuttle verbose level, set verbose to trace
-        try:
-            if int(values) > 6:
-                setattr(namespace, self.dest, 0)
-                return
-        except Exception:
-            pass
-
-        if values == '0' or values.lower() == 'none':
-            setattr(namespace, self.dest, None)
-        elif values == '1' or values.lower() == 'fatal':
-            setattr(namespace, self.dest, 5)
-        elif values == '2' or values.lower() == 'error':
-            setattr(namespace, self.dest, 4)
-        elif values == '3' or values.lower() == 'warn':
-            setattr(namespace, self.dest, 3)
-        elif values == '4' or values.lower() == 'info':
-            setattr(namespace, self.dest, 2)
-        elif values == '5' or values.lower() == 'debug':
-            setattr(namespace, self.dest, 1)
-        elif values == '6' or values.lower() == 'trace':
-            setattr(namespace, self.dest, 0)
-        # if the level is not recognized, no verbosity
-        else:
-            setattr(namespace, self.dest, None)
-
-
-def samDoCompleter(prefix, parsed_args, **kwargs):
-    """
-    Custom Completer to manage auto competion when looking for openFX nodes.
-    """
-    # get plugins
-    pluginsId = tuttle.core().getImageEffectPluginCache().getPluginsByID()
-    pluginsStr = [str(id) for id in pluginsId]
-
-    # check last input in command line
-    if len(parsed_args.inputs):
-        lastInput = parsed_args.inputs[-1]
-        # if last input is a plugin, return its parameters
-        if lastInput in pluginsStr:
-            graph = tuttle.Graph()
-            node = graph.createNode(lastInput)
-            params = node.getParams()
-            paramsStr = [str(param.getScriptName()) for param in params]
-            return paramsStr
-        else:
-            for input in reversed(parsed_args.inputs):
-                # if an input is a plugin, get its parameters
-                if input in pluginsStr:
-                    graph = tuttle.Graph()
-                    node = graph.createNode(input)
-                    params = node.getParams()
-                    paramsStr = [str(param.getScriptName()) for param in params]
-                    # if last input is one of its parameters, return its choices
-                    if lastInput in paramsStr:
-                        param = node.getParam(lastInput)
-                        if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
-                            propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
-                            choicesStr = getListValues(propChoiceOption)
-                            return choicesStr
-                    # else, return its parameters
-                    else:
-                        return paramsStr
-    # else return available plugins
-    return pluginsStr
-
-
-def isGenericReader(pluginId):
-    """
-    Is the given plugin name corresponds to a generic reader to guess.
-    """
-    pluginIdLower = pluginId.lower()
-    if pluginIdLower == 'r' or pluginIdLower == 'reader':
-        return True
-    return False
-
-
-def isGenericWriter(pluginId):
-    """
-    Is the given plugin name corresponds to a generic writer to guess.
-    """
-    pluginIdLower = pluginId.lower()
-    if pluginIdLower == 'w' or pluginIdLower == 'writer':
-        return True
-    return False
-
-
-def retrieveNodeFullName(pluginId, cmdOptions):
-    """
-    Return complete node name from the given id.
-    @param cmdOptions: command line options related to the given plugin. Can be used to get best reader/writer.
-    @note Get best reader if the given name is 'r'.
-    @note Get best writer if the given name is 'w'.
-    """
-    pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
-    if pluginId in pluginsMap:
-        return pluginId
-    else:
-        if isGenericReader(pluginId) or isGenericWriter(pluginId):
-            if len(cmdOptions) == 0:
-                puts(colored.red('Cannot guess the best reader/writer node without any filename specified.'))
-                return ''
-            # get filename
-            filename = cmdOptions[0][1]
-            # return best reader
-            if isGenericReader(pluginId):
-                bestReader = tuttle.getBestReader(filename)
-                puts(colored.green('Use "' + bestReader + '" to read "' + filename + '".'))
-                return bestReader
-            # return best writer
-            elif isGenericWriter(pluginId):
-                bestWriter = tuttle.getBestWriter(filename)
-                puts(colored.green('Use "' + bestWriter + '" to write "' + filename + '".'))
-                return bestWriter
-        return 'tuttle.' + pluginId
+from common import samUtils, samDoUtils
 
 
 class SamDo(samUtils.Sam):
@@ -213,7 +85,7 @@ class SamDo(samUtils.Sam):
 
     def fillParser(self, parser):
         # Arguments
-        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samDoCompleter
+        parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samDoUtils.samDoCompleter
 
         # Options
         parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process (only numbers separate with spaces)')
@@ -223,7 +95,7 @@ class SamDo(samUtils.Sam):
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('--no-plugin-cache', dest='noPluginCache', action='store_true', default=False, help='load plugins without using the cache file')
         parser.add_argument('--rebuild-plugin-cache', dest='rebuildPluginCache', action='store_true', default=False, help='load plugins and rebuild the cache file')
-        parser.add_argument('-v', '--verbose', dest='verbose', action=SamDoSetVerboseAction, help='verbose level (0/none(by default), 1/fatal, 2/error, 3/warn, 4/info, 5/debug, 6(or upper)/trace)')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=samDoUtils.SamDoSetVerboseAction, help='verbose level (0/none(by default), 1/fatal, 2/error, 3/warn, 4/info, 5/debug, 6(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
     def _setTimeRanges(self, computeOptions, ranges):
@@ -241,30 +113,6 @@ class SamDo(samUtils.Sam):
             if end is None:
                 end = begin
             computeOptions.addTimeRange(begin, end)
-
-    def _decomposeCommandLine(self, inputs):
-        """
-        Split command line and return:
-        [(pluginName, [(paramName, paramValue), ...], ...
-        """
-        pluginsWithOption = []
-        newPlugin = True
-        for input in inputs:
-            # split command line for each new '//'
-            if input == '//':
-                newPlugin = True
-                continue
-            if newPlugin:
-                pluginsWithOption.append((input, []))
-                newPlugin = False
-            else:
-                paramName = paramValue = ''
-                if '=' in input:
-                    paramName, paramValue = input.split('=')
-                else:
-                    paramValue = input
-                pluginsWithOption[-1][1].append((paramName, paramValue))
-        return pluginsWithOption
 
     def _getNbBitsFromOfxBitDepth(self, ofxBitDepth):
         """
@@ -533,9 +381,9 @@ class SamDo(samUtils.Sam):
         nodes = []
 
         # Create nodes from command line
-        pluginsWithOption = self._decomposeCommandLine(args.inputs)
-        for plugin, options in pluginsWithOption:
-            nodeFullName = retrieveNodeFullName(plugin, options)
+        commandSplitGraph = samDoUtils.CommandSplitGraph(args.inputs)
+        for commandSplitNode in commandSplitGraph.getNodes():
+            nodeFullName = commandSplitNode.getPluginName()
             node = None
             try:
                 node = graph.createNode(nodeFullName)
@@ -545,22 +393,21 @@ class SamDo(samUtils.Sam):
                 print e
                 continue
             # sam-do node --help
-            optionValues = [option[1] for option in options]
-            if '-h' in optionValues or '--help' in optionValues:
+            if commandSplitNode.hasHelp():
                 self._displayNodeHelp(nodeFullName, node)
                 exit(0)
             # Set parameters
-            for optionName, optionValue in options:
+            for argName, argValue in commandSplitNode.getArguments():
                 try:
                     param = None
-                    if optionName:
-                        param = node.getParam(optionName)
+                    if argName:
+                        param = node.getParam(argName)
                     else:
-                        param = node.getParams()[options.index((optionName, optionValue))]
-                    param.setValueFromExpression(optionValue)
+                        param = node.getParams()[commandSplitNode.getArguments().index((argName, argValue))]
+                    param.setValueFromExpression(argValue)
                 except Exception as e:
                     # Cannot set param of node
-                    puts(colored.red('Cannot set parameter "' + optionName + '" of node "' + nodeFullName + '" to value "' + optionValue + '": the parameter will be skipped from the command line.'))
+                    puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
                     print e
             nodes.append(node)
 
@@ -588,7 +435,7 @@ class SamDo(samUtils.Sam):
             except Exception as e:
                 # the first added node has no filename set
                 pass
-        progress = samUtils.ProgressHandle(ranges)
+        progress = samDoUtils.ProgressHandle(ranges)
         options.setProgressHandle(progress)
 
         # Connect and compute

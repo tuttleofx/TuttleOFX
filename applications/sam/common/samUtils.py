@@ -4,13 +4,10 @@ import os
 import argparse
 
 # python modules to easily get colors, indent text...
-from clint.textui import colored, puts, progress
+from clint.textui import colored, puts
 
 # parser of sequence
 from pySequenceParser import sequenceParser
-
-# openFX host
-from pyTuttle import tuttle
 
 
 class Sam(object):
@@ -143,26 +140,6 @@ def getSubParser(parser, subSamCommand):
     return None
 
 
-class ProgressHandle(tuttle.IProgressHandle):
-    """
-    Progress handle to get progress of process.
-    """
-    def __init__(self, ranges):
-        super(ProgressHandle, self).__init__()
-        nbFramesToCompute = 0
-        for range in ranges:
-            nbFramesToCompute += (range._end - range._begin + 1) / range._step
-        self._progress = progress.Bar(expected_size=(nbFramesToCompute if (nbFramesToCompute and nbFramesToCompute <= getMaxInt()) else 1))
-        self._counter = 1
-
-    def processAtTime(self):
-        self._progress.show(self._counter)
-        self._counter += 1
-
-    def endSequence(self):
-        self._progress.done()
-
-
 def memoryUsageResource():
     """
     Use resource module, which is part of the standard Python library, to return RAM used by the python script.
@@ -176,9 +153,3 @@ def memoryUsageResource():
         rusage_denom = rusage_denom * rusage_denom
     mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / rusage_denom
     return mem
-
-def getMaxInt():
-    """
-    Returns C/C++ max int
-    """
-    return pow(2, 31)-1
