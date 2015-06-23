@@ -32,7 +32,14 @@ class CommandSplit:
 
         if inputIsFolder:
             # create a new commandSplitGraph for each files/sequences in directory
-            items = sequenceParser.browse(inputArgName)
+            filters = []
+            # if the user add a filter of input extensions
+            extName, extValue = generalGraph.getFirstNode().getArgument('ext')
+            if extName:
+                filters.append('*.' + extValue)
+                generalGraph.getFirstNode().removeArgument(extName)
+
+            items = sequenceParser.browse(inputArgName, sequenceParser.eDetectionDefault, filters)
             for item in items:
                 itemType = item.getType()
                 if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
@@ -165,8 +172,22 @@ class CommandSplitNode:
     def getArguments(self):
         return self._arguments
 
+    def getArgument(self, name):
+        """
+        If not found, return (None, None)
+        """
+        for argName, argvalue in self._arguments:
+            if argName == name:
+                return (argName, argvalue)
+        return (None, None)
+
     def addArgument(self, name, value):
         self._arguments.append((name, value))
+
+    def removeArgument(self, name):
+        for argName, argvalue in self._arguments:
+            if argName == name:
+                self._arguments.remove((argName, argvalue))
 
     def hasHelp(self):
         argumentValues = [argument[1] for argument in self._arguments]
