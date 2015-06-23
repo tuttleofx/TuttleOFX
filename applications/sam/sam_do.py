@@ -334,6 +334,42 @@ class SamDo(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
+    def _getGraphFromCommandLine(self, inputCommandLine):
+        """
+        Return the tuttle graph which corresponds to the given input command.
+        """
+        graph = tuttle.Graph()
+
+        commandSplitGraph = samDoUtils.CommandSplitGraph(inputCommandLine)
+        for commandSplitNode in commandSplitGraph.getNodes():
+            nodeFullName = commandSplitNode.getPluginName()
+            node = None
+            try:
+                node = graph.createNode(nodeFullName)
+            except Exception as e:
+                # Plugin not found
+                puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
+                print e
+                continue
+            # sam-do node --help
+            if commandSplitNode.hasHelp():
+                self._displayNodeHelp(nodeFullName, node)
+                exit(0)
+            # Set parameters
+            for argName, argValue in commandSplitNode.getArguments():
+                try:
+                    param = None
+                    if argName:
+                        param = node.getParam(argName)
+                    else:
+                        param = node.getParams()[commandSplitNode.getArguments().index((argName, argValue))]
+                    param.setValueFromExpression(argValue)
+                except Exception as e:
+                    # Cannot set param of node
+                    puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
+                    print e
+        return graph
+
     def run(self, parser):
         """
         Process the do operation.
@@ -376,38 +412,8 @@ class SamDo(samUtils.Sam):
         # Add unknown options to the command line to process
         args.inputs.extend(unknown)
 
-        # Tuttle graph
-        graph = tuttle.Graph()
-
-        # Create nodes from command line
-        commandSplitGraph = samDoUtils.CommandSplitGraph(args.inputs)
-        for commandSplitNode in commandSplitGraph.getNodes():
-            nodeFullName = commandSplitNode.getPluginName()
-            node = None
-            try:
-                node = graph.createNode(nodeFullName)
-            except Exception as e:
-                # Plugin not found
-                puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
-                print e
-                continue
-            # sam-do node --help
-            if commandSplitNode.hasHelp():
-                self._displayNodeHelp(nodeFullName, node)
-                exit(0)
-            # Set parameters
-            for argName, argValue in commandSplitNode.getArguments():
-                try:
-                    param = None
-                    if argName:
-                        param = node.getParam(argName)
-                    else:
-                        param = node.getParams()[commandSplitNode.getArguments().index((argName, argValue))]
-                    param.setValueFromExpression(argValue)
-                except Exception as e:
-                    # Cannot set param of node
-                    puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
-                    print e
+        # Create Tuttle graph from command line
+        graph = self._getGraphFromCommandLine(args.inputs)
 
         # Options of process
         options = tuttle.ComputeOptions()
