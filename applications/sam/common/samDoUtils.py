@@ -26,6 +26,10 @@ class CommandSplit:
         # if the user gives an input directory
         inputArgName = generalGraph.getFirstNode().getArguments()[0][1]
         inputIsFolder = sequenceParser.getTypeFromPath(inputArgName) == sequenceParser.eTypeFolder
+        # if the user gives an output directory
+        outputArgName = generalGraph.getLastNode().getArguments()[0][1]
+        outputIsFolder = sequenceParser.getTypeFromPath(outputArgName) == sequenceParser.eTypeFolder
+
         if inputIsFolder:
             # create a new commandSplitGraph for each files/sequences in directory
             items = sequenceParser.browse(inputArgName)
@@ -34,6 +38,8 @@ class CommandSplit:
                 if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
                     newGraph = copy.deepcopy(generalGraph)
                     newGraph.getFirstNode().getArguments()[0] = (None, item.getAbsoluteFilepath())
+                    if outputIsFolder:
+                        newGraph.getLastNode().getArguments()[0] = (None, newGraph.getLastNode().getArguments()[0][1] + item.getFilename())
                     self._graph.append(newGraph)
         else:
             self._graph.append(generalGraph)
