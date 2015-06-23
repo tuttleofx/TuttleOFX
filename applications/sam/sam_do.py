@@ -334,41 +334,48 @@ class SamDo(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
-    def _getGraphFromCommandLine(self, inputCommandLine):
+    def _getGraphsFromCommandLine(self, inputCommandLine):
         """
-        Return the tuttle graph which corresponds to the given input command.
+        Return a list of tuttle graph which corresponds to the given input command.
         """
-        graph = tuttle.Graph()
+        # split the user command
+        commandSplit = samDoUtils.CommandSplit(inputCommandLine)
 
-        commandSplitGraph = samDoUtils.CommandSplitGraph(inputCommandLine)
-        for commandSplitNode in commandSplitGraph.getNodes():
-            nodeFullName = commandSplitNode.getPluginName()
-            node = None
-            try:
-                node = graph.createNode(nodeFullName)
-            except Exception as e:
-                # Plugin not found
-                puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
-                print e
-                continue
-            # sam-do node --help
-            if commandSplitNode.hasHelp():
-                self._displayNodeHelp(nodeFullName, node)
-                exit(0)
-            # Set parameters
-            for argName, argValue in commandSplitNode.getArguments():
+        # create a list of tuttle graphs
+        graphs = []
+        for commandSplitGraph in commandSplit.getGraphs():
+            # create a tuttle graph
+            graph = tuttle.Graph()
+            for commandSplitNode in commandSplitGraph.getNodes():
+                # create tuttle node
+                nodeFullName = commandSplitNode.getPluginName()
+                node = None
                 try:
-                    param = None
-                    if argName:
-                        param = node.getParam(argName)
-                    else:
-                        param = node.getParams()[commandSplitNode.getArguments().index((argName, argValue))]
-                    param.setValueFromExpression(argValue)
+                    node = graph.createNode(nodeFullName)
                 except Exception as e:
-                    # Cannot set param of node
-                    puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
+                    # Plugin not found
+                    puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
                     print e
-        return graph
+                    continue
+                # sam-do node --help
+                if commandSplitNode.hasHelp():
+                    self._displayNodeHelp(nodeFullName, node)
+                    exit(0)
+                # Set its parameters
+                for argName, argValue in commandSplitNode.getArguments():
+                    try:
+                        param = None
+                        if argName:
+                            param = node.getParam(argName)
+                        else:
+                            param = node.getParams()[commandSplitNode.getArguments().index((argName, argValue))]
+                        param.setValueFromExpression(argValue)
+                    except Exception as e:
+                        # Cannot set param of node
+                        puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
+                        print e
+            graphs.append(graph)
+        return graphs
 
     def run(self, parser):
         """
@@ -413,40 +420,41 @@ class SamDo(samUtils.Sam):
         args.inputs.extend(unknown)
 
         # Create Tuttle graph from command line
-        graph = self._getGraphFromCommandLine(args.inputs)
+        graphs = self._getGraphsFromCommandLine(args.inputs)
 
-        # Options of process
-        options = tuttle.ComputeOptions()
-        # sam-do --verbose
-        if args.verbose is not None:
-            options.setVerboseLevel(args.verbose)
-        # sam-do --ranges
-        if args.ranges is not None:
-            self._setTimeRanges(options, args.ranges)
+        for graph in graphs:
+            # Options of process
+            options = tuttle.ComputeOptions()
+            # sam-do --verbose
+            if args.verbose is not None:
+                options.setVerboseLevel(args.verbose)
+            # sam-do --ranges
+            if args.ranges is not None:
+                self._setTimeRanges(options, args.ranges)
 
-        # sam-do --continue-on-error
-        options.setContinueOnError(args.continueOnError)
-        # sam-do --stop-on-missing-files
-        options.setContinueOnMissingFile(not args.stopOnMissingFiles)
-        # Set progress handle
-        ranges = options.getTimeRanges()
-        if not len(ranges):
-            # get time domaine
-            try:
-                timeDomain = graph.getNodes()[0].asImageEffectNode().computeTimeDomain()
-                ranges = []
-                ranges.append(tuttle.TimeRange(int(timeDomain.min), int(timeDomain.max), 1))
-            except Exception as e:
-                # the first added node has no filename set
-                pass
-        progress = samDoUtils.ProgressHandle(ranges)
-        options.setProgressHandle(progress)
+            # sam-do --continue-on-error
+            options.setContinueOnError(args.continueOnError)
+            # sam-do --stop-on-missing-files
+            options.setContinueOnMissingFile(not args.stopOnMissingFiles)
+            # Set progress handle
+            ranges = options.getTimeRanges()
+            if not len(ranges):
+                # get time domaine
+                try:
+                    timeDomain = graph.getNodes()[0].asImageEffectNode().computeTimeDomain()
+                    ranges = []
+                    ranges.append(tuttle.TimeRange(int(timeDomain.min), int(timeDomain.max), 1))
+                except Exception as e:
+                    # the first added node has no filename set
+                    pass
+            progress = samDoUtils.ProgressHandle(ranges)
+            options.setProgressHandle(progress)
 
-        # Connect and compute
-        if len(graph.getNodes()) > 1:
-            graph.connect(graph.getNodes())
-            graph.compute(graph.getNodes()[-1], options)
-            puts('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
+            # Connect and compute
+            if len(graph.getNodes()) > 1:
+                graph.connect(graph.getNodes())
+                graph.compute(graph.getNodes()[-1], options)
+                puts('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
 
 if __name__ == '__main__':

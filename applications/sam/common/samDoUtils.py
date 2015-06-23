@@ -9,10 +9,24 @@ from clint.textui import colored, puts, progress
 from pyTuttle import tuttle
 
 
+class CommandSplit:
+    """
+    A dedicated class to expose the given input command split as a list of graph.
+    It contains a list of CommandSplitGraph.
+    """
+    def __init__(self, inputCommandLine):
+        self._graph = []
+        self._graph.append(CommandSplitGraph(inputCommandLine))
+
+    def getGraphs(self):
+        return self._graph
+
+
 class CommandSplitGraph:
     """
     A dedicated class to expose the given input command split as a graph.
     It contains a list of CommandSplitNode.
+    @note resolve full name of plugins.
     """
     def __init__(self, inputCommandLine):
         self._nodes = []
