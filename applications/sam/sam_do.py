@@ -90,6 +90,7 @@ class SamDo(samUtils.Sam):
         # Options
         parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process (only numbers separate with spaces)')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
+        parser.add_argument('--recursive', dest='recursive', action='store_true', default=False, help='Enable recursivity when using directory as input/output')
         parser.add_argument('--file-formats', dest='fileFormats', action='store_true', help='list all supported file formats (R/W)')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
@@ -334,12 +335,12 @@ class SamDo(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
-    def _getGraphsFromCommandLine(self, inputCommandLine):
+    def _getGraphsFromCommandLine(self, inputCommandLine, recursive):
         """
         Return a list of tuttle graph which corresponds to the given input command.
         """
         # split the user command
-        commandSplit = samDoUtils.CommandSplit(inputCommandLine)
+        commandSplit = samDoUtils.CommandSplit(inputCommandLine, recursive)
 
         # create a list of tuttle graphs
         graphs = []
@@ -420,7 +421,7 @@ class SamDo(samUtils.Sam):
         args.inputs.extend(unknown)
 
         # Create a list of tuttle graph from command line
-        graphs = self._getGraphsFromCommandLine(args.inputs)
+        graphs = self._getGraphsFromCommandLine(args.inputs, args.recursive)
 
         for graph in graphs:
             # Options of process

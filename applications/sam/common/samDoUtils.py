@@ -20,44 +20,62 @@ class CommandSplit:
     It contains a list of CommandSplitGraph.
     @note resolve given input/output folders.
     """
-    def __init__(self, inputCommandLine):
+    def __init__(self, inputCommandLine, recursive):
         self._graph = []
+        self._recursive = recursive
 
+        # Get general graph from the command line
         generalGraph = CommandSplitGraph(inputCommandLine)
+
         # if the user gives an input directory
-        inputArgName = generalGraph.getFirstNode().getArguments()[0][1]
-        inputIsFolder = sequenceParser.getTypeFromPath(inputArgName) == sequenceParser.eTypeFolder
+        inputName = generalGraph.getFirstNode().getFilename()
+        inputIsFolder = sequenceParser.getTypeFromPath(inputName) == sequenceParser.eTypeFolder
 
         if inputIsFolder:
+            # create filter
             filters = []
-            # if the user add a filter of input extensions
             inputExtName, inputExtValue = generalGraph.getFirstNode().getArgument('ext')
             if inputExtName:
                 filters.append('*.' + inputExtValue)
-                generalGraph.getFirstNode().removeArgument(inputExtName)
-            # create a new commandSplitGraph for each files/sequences in directory
-            items = sequenceParser.browse(inputArgName, sequenceParser.eDetectionDefault, filters)
-            for item in items:
-                itemType = item.getType()
-                if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
-                    newGraph = copy.deepcopy(generalGraph)
-                    newGraph.getFirstNode().setFilename(item.getAbsoluteFilepath())
-                    # if the user gives an output directory
-                    outputIsFolder = sequenceParser.getTypeFromPath(generalGraph.getLastNode().getFilename()) == sequenceParser.eTypeFolder
-                    if outputIsFolder:
-                        newGraph.getLastNode().setFilename(os.path.join(newGraph.getLastNode().getFilename(), item.getFilename()))
-                    # if the user add a filter of output extensions
-                    outputExtName, outputExtValue = generalGraph.getLastNode().getArgument('ext')
-                    if outputExtName:
-                        outputFilename = newGraph.getLastNode().getFilename()
-                        newGraph.getLastNode().setFilename(outputFilename[:outputFilename.rfind('.')+1] + outputExtValue)
-                        newGraph.getLastNode().removeArgument(outputExtName)
-                    self._graph.append(newGraph)
+            # browse in the given directory
+            self._browseFolder(generalGraph, inputName, filters)
         else:
             self._graph.append(generalGraph)
 
+        # remove arguments of command line which are not for the plugins
+        for graph in self._graph:
+            graph.getLastNode().removeArgument('ext')
+            graph.getFirstNode().removeArgument('ext')
+
     def getGraphs(self):
         return self._graph
+
+    def _browseFolder(self, graph, inputFolder, filters):
+        """
+        Browse filesystem and append a new graph for each files/sequences.
+        """
+        items = sequenceParser.browse(inputFolder, sequenceParser.eDetectionDefault, filters)
+        for item in items:
+            itemType = item.getType()
+            if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
+                # create a new graph
+                newGraph = copy.deepcopy(graph)
+                newGraph.getFirstNode().setFilename(item.getAbsoluteFilepath())
+                newGraph.getLastNode().setFilename(os.path.join(newGraph.getLastNode().getFilename(), item.getFilename()))
+                # if the user add a filter of output extensions
+                outputExtName, outputExtValue = graph.getLastNode().getArgument('ext')
+                if outputExtName:
+                    outputFilename = newGraph.getLastNode().getFilename()
+                    newGraph.getLastNode().setFilename(outputFilename[:outputFilename.rfind('.')+1] + outputExtValue)
+                # add the new graph
+                self._graph.append(newGraph)
+            elif itemType == sequenceParser.eTypeFolder:
+                # sam-do --recursive
+                if self._recursive:
+                    newGraph = copy.deepcopy(graph)
+                    newGraph.getFirstNode().setFilename(item.getAbsoluteFilepath())
+                    newGraph.getLastNode().setFilename(os.path.join(graph.getLastNode().getFilename(), item.getFilename()))
+                    self._browseFolder(newGraph, item.getAbsoluteFilepath(), filters)
 
 
 class CommandSplitGraph:
@@ -187,13 +205,15 @@ class CommandSplitNode:
 
     def getFilename(self):
         """
-        If not found, return None.
+        If not found, return an empty string.
         Only used for reader/writer nodes.
         """
         for argName, argvalue in self._arguments:
             if argName == 'filename':
                 return argvalue
-        return self._arguments[0][1]
+        if len(self._arguments):
+            return self._arguments[0][1]
+        return ''
 
     def setFilename(self, value):
         """
@@ -203,9 +223,9 @@ class CommandSplitNode:
         for i in range(0, len(self._arguments)):
             argName = self._arguments[i][0]
             if argName == 'filename':
-                self._arguments[i] = (argName, value)
+                self._arguments[i] = ('filename', value)
         # set first arg if it has no name
-        if self._arguments[0][0] == None:
+        if self._arguments[0][0] is None:
             self._arguments[0] = ('filename', value)
 
     def addArgument(self, name, value):
