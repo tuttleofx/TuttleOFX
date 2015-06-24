@@ -335,70 +335,64 @@ class SamDo(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
-    def _getGraphsFromCommandLine(self, inputCommandLine, recursive):
+    def _getTuttleGraph(self, splitCmd):
         """
-        Return a list of tuple (tuttle graph, list of its nodes) which corresponds to the given input command.
+        Return the tuple (tuttle graph, its nodes) which corresponds to the given split command.
         """
-        # Split the user command
-        commandSplit = samDoUtils.CommandSplit(inputCommandLine, recursive)
+        graph = tuttle.Graph()
+        nodes = []
+        connections = []
 
-        # Create a list of tuttle graphs
-        graphsWithNodes = []
-        for commandSplitGraph in commandSplit.getGraphs():
-            # Create a tuttle graph
-            graph = tuttle.Graph()
-            nodes = []
-            connections = []
-
-            for commandSplitNode in commandSplitGraph.getNodes():
-                # Create a tuttle node
-                nodeFullName = commandSplitNode.getPluginName()
-                node = None
+        for cmdSplitNode in splitCmd.getNodes():
+            # Create a tuttle node
+            nodeFullName = cmdSplitNode.getPluginName()
+            node = None
+            try:
+                node = graph.createNode(nodeFullName)
+            except Exception as e:
+                # Plugin not found
+                puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
+                print e
+                continue
+            # sam-do node --help
+            if cmdSplitNode.hasHelp():
+                self._displayNodeHelp(nodeFullName, node)
+                exit(0)
+            # Set its parameters
+            for argName, argValue in cmdSplitNode.getArguments():
                 try:
-                    node = graph.createNode(nodeFullName)
+                    param = None
+                    if argName:
+                        param = node.getParam(argName)
+                    else:
+                        param = node.getParams()[cmdSplitNode.getArguments().index((argName, argValue))]
+                    param.setValueFromExpression(argValue)
                 except Exception as e:
-                    # Plugin not found
-                    puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
-                    print e
-                    continue
-                # sam-do node --help
-                if commandSplitNode.hasHelp():
-                    self._displayNodeHelp(nodeFullName, node)
-                    exit(0)
-                # Set its parameters
-                for argName, argValue in commandSplitNode.getArguments():
-                    try:
-                        param = None
-                        if argName:
-                            param = node.getParam(argName)
-                        else:
-                            param = node.getParams()[commandSplitNode.getArguments().index((argName, argValue))]
-                        param.setValueFromExpression(argValue)
-                    except Exception as e:
-                        # if id for connection
-                        if argName == 'id':
-                            pass
-                        # if clip name, create connection
-                        elif argName in [clip.getName() for clip in node.getClipImageSet().getClips()]:
-                            try:
-                                graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
-                            except Exception as e:
-                                # Cannot connect attribute of node
-                                puts(colored.red('Cannot connect attribute "' + argName + '" of node "' + nodeFullName + '" to id "' + argValue + '": the connection will be skipped from the command line.'))
-                                print e
-                        else:
-                            # Cannot set param of node
-                            puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
+                    # if id for connection
+                    if argName == 'id':
+                        pass
+                    # if clip name, create connection
+                    elif argName in [clip.getName() for clip in node.getClipImageSet().getClips()]:
+                        try:
+                            graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
+                        except Exception as e:
+                            # Cannot connect attribute of node
+                            puts(colored.red('Cannot connect attribute "' + argName + '" of node "' + nodeFullName + '" to id "' + argValue + '": the connection will be skipped from the command line.'))
                             print e
-                nodes.append(node)
-                connections.append(commandSplitNode.getArgument('id')[1])
-            # Create in line connections
-            for i in range(0, len(connections)):
-                if connections[i] is None and i+1 < len(connections):
-                    graph.connect(nodes[i], nodes[i+1])
-            # Append tuttle graph
-            graphsWithNodes.append((graph, nodes))
-        return graphsWithNodes
+                    else:
+                        # Cannot set param of node
+                        puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
+                        print e
+            nodes.append(node)
+            connections.append(cmdSplitNode.getArgument('id')[1])
+
+        # Create in line connections
+        for i in range(0, len(connections)):
+            if connections[i] is None and i+1 < len(connections):
+                graph.connect(nodes[i], nodes[i+1])
+
+        # return tuple (graph, nodes)
+        return (graph, nodes)
 
     def run(self, parser):
         """
@@ -442,8 +436,11 @@ class SamDo(samUtils.Sam):
         # Add unknown options to the command line to process
         args.inputs.extend(unknown)
 
-        # Create a list of tuttle graph from command line
-        graphsWithNodes = self._getGraphsFromCommandLine(args.inputs, args.recursive)
+        # Split command line
+        commandSplit = samDoUtils.CommandSplit(args.inputs, args.recursive)
+        graphsWithNodes = []
+        for commandSplitGraph in commandSplit.getGraphs():
+            graphsWithNodes.append(self._getTuttleGraph(commandSplitGraph))
 
         for graph, nodes in graphsWithNodes:
             # Options of process
