@@ -337,16 +337,17 @@ class SamDo(samUtils.Sam):
 
     def _getGraphsFromCommandLine(self, inputCommandLine, recursive):
         """
-        Return a list of tuttle graph which corresponds to the given input command.
+        Return a list of tuple (tuttle graph, list of its nodes) which corresponds to the given input command.
         """
         # split the user command
         commandSplit = samDoUtils.CommandSplit(inputCommandLine, recursive)
 
         # create a list of tuttle graphs
-        graphs = []
+        graphsWithNodes = []
         for commandSplitGraph in commandSplit.getGraphs():
             # create a tuttle graph
             graph = tuttle.Graph()
+            nodes = []
             for commandSplitNode in commandSplitGraph.getNodes():
                 # create tuttle node
                 nodeFullName = commandSplitNode.getPluginName()
@@ -375,8 +376,9 @@ class SamDo(samUtils.Sam):
                         # Cannot set param of node
                         puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
                         print e
-            graphs.append(graph)
-        return graphs
+                nodes.append(node)
+            graphsWithNodes.append((graph, nodes))
+        return graphsWithNodes
 
     def run(self, parser):
         """
@@ -421,9 +423,9 @@ class SamDo(samUtils.Sam):
         args.inputs.extend(unknown)
 
         # Create a list of tuttle graph from command line
-        graphs = self._getGraphsFromCommandLine(args.inputs, args.recursive)
+        graphsWithNodes = self._getGraphsFromCommandLine(args.inputs, args.recursive)
 
-        for graph in graphs:
+        for graph, nodes in graphsWithNodes:
             # Options of process
             options = tuttle.ComputeOptions()
             # sam-do --verbose
@@ -442,7 +444,7 @@ class SamDo(samUtils.Sam):
             if not len(ranges):
                 # get time domaine
                 try:
-                    timeDomain = graph.getNodes()[0].asImageEffectNode().computeTimeDomain()
+                    timeDomain = nodes[0].asImageEffectNode().computeTimeDomain()
                     ranges = []
                     ranges.append(tuttle.TimeRange(int(timeDomain.min), int(timeDomain.max), 1))
                 except Exception as e:
@@ -452,9 +454,9 @@ class SamDo(samUtils.Sam):
             options.setProgressHandle(progress)
 
             # Connect and compute
-            if len(graph.getNodes()) > 1:
-                graph.connect(graph.getNodes())
-                graph.compute(graph.getNodes()[-1], options)
+            if len(nodes) > 1:
+                graph.connect(nodes)
+                graph.compute(nodes[-1], options)
                 puts('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
 
