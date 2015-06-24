@@ -343,9 +343,9 @@ class SamDo(samUtils.Sam):
         nodes = []
         connections = []
 
-        for cmdSplitNode in splitCmd.getNodes():
+        for splitCmdNode in splitCmd.getNodes():
             # Create a tuttle node
-            nodeFullName = cmdSplitNode.getPluginName()
+            nodeFullName = splitCmdNode.getPluginName()
             node = None
             try:
                 node = graph.createNode(nodeFullName)
@@ -355,17 +355,17 @@ class SamDo(samUtils.Sam):
                 print e
                 continue
             # sam-do node --help
-            if cmdSplitNode.hasHelp():
+            if splitCmdNode.hasHelp():
                 self._displayNodeHelp(nodeFullName, node)
                 exit(0)
             # Set its parameters
-            for argName, argValue in cmdSplitNode.getArguments():
+            for argName, argValue in splitCmdNode.getArguments():
                 try:
                     param = None
                     if argName:
                         param = node.getParam(argName)
                     else:
-                        param = node.getParams()[cmdSplitNode.getArguments().index((argName, argValue))]
+                        param = node.getParams()[splitCmdNode.getArguments().index((argName, argValue))]
                     param.setValueFromExpression(argValue)
                 except Exception as e:
                     # if id for connection
@@ -384,7 +384,7 @@ class SamDo(samUtils.Sam):
                         puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
                         print e
             nodes.append(node)
-            connections.append(cmdSplitNode.getArgument('id')[1])
+            connections.append(splitCmdNode.getArgument('id')[1])
 
         # Create in line connections
         for i in range(0, len(connections)):
@@ -437,11 +437,10 @@ class SamDo(samUtils.Sam):
         args.inputs.extend(unknown)
 
         # Split command line
-        commandSplit = samDoUtils.CommandSplit(args.inputs, args.recursive)
-        graphsWithNodes = []
-        for commandSplitGraph in commandSplit.getGraphs():
-            graphsWithNodes.append(self._getTuttleGraph(commandSplitGraph))
+        splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
+        graphsWithNodes = [self._getTuttleGraph(splitCmdGraph) for splitCmdGraph in splitCmd.getGraphs()]
 
+        # Compute the corresponding tuttle graphs
         for graph, nodes in graphsWithNodes:
             # Options of process
             options = tuttle.ComputeOptions()

@@ -17,10 +17,10 @@ from pyTuttle import tuttle
 from common import samUtils
 
 
-class CommandSplit:
+class SplitCmd:
     """
-    A dedicated class to expose the given input command split as a list of graph.
-    It contains a list of CommandSplitGraph.
+    A dedicated class to expose the given input split command as a list of graph.
+    It contains a list of SplitCmdGraph.
     @note resolve given input/output folders.
     """
     def __init__(self, inputCommandLine, recursive):
@@ -28,7 +28,7 @@ class CommandSplit:
         self._recursive = recursive
 
         # Get general graph from the command line
-        generalGraph = CommandSplitGraph(inputCommandLine)
+        generalGraph = SplitCmdGraph(inputCommandLine)
 
         # if the user gives an input directory
         inputName = generalGraph.getFirstNode().getFilename()
@@ -81,10 +81,10 @@ class CommandSplit:
                     self._browseFolder(newGraph, item.getAbsoluteFilepath(), filters)
 
 
-class CommandSplitGraph:
+class SplitCmdGraph:
     """
-    A dedicated class to expose the given input command split as a graph.
-    It contains a list of CommandSplitNode.
+    A dedicated class to expose the given input split command as a graph.
+    It contains a list of SplitCmdNode.
     """
     def __init__(self, inputCommandLine):
         self._nodes = []
@@ -97,7 +97,7 @@ class CommandSplitGraph:
                 continue
             # new node in the command
             if newPlugin:
-                self.addNode(CommandSplitNode(input))
+                self.addNode(SplitCmdNode(input))
                 newPlugin = False
             else:
                 # new argument to the last added node
@@ -131,9 +131,9 @@ class CommandSplitGraph:
         return self._nodes[-1]
 
 
-class CommandSplitNode:
+class SplitCmdNode:
     """
-    A dedicated class to expose each part of the split command as a node.
+    A dedicated class to expose each part of the command split as a node.
     """
     def __init__(self, pluginId):
         self._pluginId = pluginId
