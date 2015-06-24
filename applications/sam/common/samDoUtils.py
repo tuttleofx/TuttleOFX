@@ -209,11 +209,12 @@ class CommandSplitNode:
     def getFilename(self):
         """
         If not found, return an empty string.
-        Only used for reader/writer nodes.
+        Used for reader/writer nodes.
         """
         for argName, argvalue in self._arguments:
             if argName == 'filename':
                 return argvalue
+        # get first arg if it has no name
         if len(self._arguments):
             return self._arguments[0][1]
         return ''
@@ -221,7 +222,7 @@ class CommandSplitNode:
     def setFilename(self, value):
         """
         If not found, do nothing.
-        Only used for reader/writer nodes.
+        Used for reader/writer nodes.
         """
         for i in range(0, len(self._arguments)):
             argName = self._arguments[i][0]

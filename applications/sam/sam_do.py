@@ -339,19 +339,19 @@ class SamDo(samUtils.Sam):
         """
         Return a list of tuple (tuttle graph, list of its nodes) which corresponds to the given input command.
         """
-        # split the user command
+        # Split the user command
         commandSplit = samDoUtils.CommandSplit(inputCommandLine, recursive)
 
-        # create a list of tuttle graphs
+        # Create a list of tuttle graphs
         graphsWithNodes = []
         for commandSplitGraph in commandSplit.getGraphs():
-            # create a tuttle graph
+            # Create a tuttle graph
             graph = tuttle.Graph()
             nodes = []
             connections = []
 
             for commandSplitNode in commandSplitGraph.getNodes():
-                # create tuttle node
+                # Create a tuttle node
                 nodeFullName = commandSplitNode.getPluginName()
                 node = None
                 try:
