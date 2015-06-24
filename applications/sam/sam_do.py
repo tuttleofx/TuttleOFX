@@ -348,6 +348,8 @@ class SamDo(samUtils.Sam):
             # create a tuttle graph
             graph = tuttle.Graph()
             nodes = []
+            connections = []
+
             for commandSplitNode in commandSplitGraph.getNodes():
                 # create tuttle node
                 nodeFullName = commandSplitNode.getPluginName()
@@ -373,10 +375,28 @@ class SamDo(samUtils.Sam):
                             param = node.getParams()[commandSplitNode.getArguments().index((argName, argValue))]
                         param.setValueFromExpression(argValue)
                     except Exception as e:
-                        # Cannot set param of node
-                        puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
-                        print e
+                        # if id for connection
+                        if argName == 'id':
+                            pass
+                        # if clip name, create connection
+                        elif argName in [clip.getName() for clip in node.getClipImageSet().getClips()]:
+                            try:
+                                graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
+                            except Exception as e:
+                                # Cannot connect attribute of node
+                                puts(colored.red('Cannot connect attribute "' + argName + '" of node "' + nodeFullName + '" to id "' + argValue + '": the connection will be skipped from the command line.'))
+                                print e
+                        else:
+                            # Cannot set param of node
+                            puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
+                            print e
                 nodes.append(node)
+                connections.append(commandSplitNode.getArgument('id')[1])
+            # Create in line connections
+            for i in range(0, len(connections)):
+                if connections[i] is None and i+1 < len(connections):
+                    graph.connect(nodes[i], nodes[i+1])
+            # Append tuttle graph
             graphsWithNodes.append((graph, nodes))
         return graphsWithNodes
 
@@ -455,7 +475,6 @@ class SamDo(samUtils.Sam):
 
             # Connect and compute
             if len(nodes) > 1:
-                graph.connect(nodes)
                 graph.compute(nodes[-1], options)
                 puts('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
