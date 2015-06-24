@@ -153,3 +153,9 @@ def memoryUsageResource():
         rusage_denom = rusage_denom * rusage_denom
     mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / rusage_denom
     return mem
+
+def getMaxInt():
+    """
+    Returns C/C++ max int
+    """
+    return pow(2, 31)-1

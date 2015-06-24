@@ -13,6 +13,9 @@ from pySequenceParser import sequenceParser
 # openFX host
 from pyTuttle import tuttle
 
+# sam common functions
+from common import samUtils
+
 
 class CommandSplit:
     """
@@ -290,7 +293,7 @@ class ProgressHandle(tuttle.IProgressHandle):
         nbFramesToCompute = 0
         for range in ranges:
             nbFramesToCompute += (range._end - range._begin + 1) / range._step
-        self._progress = progress.Bar(expected_size=(nbFramesToCompute if (nbFramesToCompute and nbFramesToCompute <= getMaxInt()) else 1))
+        self._progress = progress.Bar(expected_size=(nbFramesToCompute if (nbFramesToCompute and nbFramesToCompute <= samUtils.getMaxInt()) else 1))
         self._counter = 1
 
     def processAtTime(self):
@@ -339,10 +342,3 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
                         return paramsStr
     # else return available plugins
     return pluginsStr
-
-
-def getMaxInt():
-    """
-    Returns C/C++ max int
-    """
-    return pow(2, 31)-1
