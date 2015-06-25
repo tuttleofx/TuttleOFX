@@ -52,7 +52,12 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 	}
 	//existingFile->appendOption( kParamWriterExistingFile_reader ); // TODO: not implemented yet.
 	existingFile->setDefault( eParamWriterExistingFile_overwrite );
-	
+
+	OFX::BooleanParamDescriptor* copyToOutput = desc.defineBooleanParam( kParamWriterCopyToOutput );
+	copyToOutput->setLabel( "Copy buffer to output" );
+	copyToOutput->setHint( "This is only useful if you connect nodes to the output clip of the writer." );
+	copyToOutput->setDefault( false );
+
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint("Force render (writing)");
@@ -60,7 +65,6 @@ void describeWriterParamsInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setHint( "This is only useful as a workaround for GUI applications." );
-//	renderAlways->setDefault( false );
 	renderAlways->setDefault( true ); // because tuttle is not declared as a background renderer
 
 	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );

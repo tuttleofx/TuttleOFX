@@ -22,6 +22,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
 	_paramRenderButton = fetchPushButtonParam( kParamWriterRender );
 	_paramRenderAlways = fetchBooleanParam( kParamWriterRenderAlways );
+	_paramCopyToOutput = fetchBooleanParam( kParamWriterCopyToOutput );
 	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
 	_paramPremult = fetchBooleanParam( kParamPremultiplied );
 	_paramExistingFile = fetchChoiceParam( kParamWriterExistingFile );
@@ -126,32 +127,35 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 
 	TUTTLE_LOG_INFO( "        --> " << getAbsoluteFilenameAt( args.time ) );
 
-	boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
-	boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
-	
-	// Copy buffer
-	const OfxRectI bounds = dst->getBounds();
-	TUTTLE_TLOG_VAR( TUTTLE_TRACE, bounds );
-	if( src->isLinearBuffer() && dst->isLinearBuffer() )
+	if( _paramCopyToOutput->getValue() )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "isLinearBuffer" );
-		const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
-		TUTTLE_TLOG_VAR( TUTTLE_TRACE, imageDataBytes );
-		if( imageDataBytes )
+		boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
+		boost::scoped_ptr<OFX::Image> dst( _clipDst->fetchImage( args.time ) );
+
+		// Copy buffer
+		const OfxRectI bounds = dst->getBounds();
+		TUTTLE_TLOG_VAR( TUTTLE_TRACE, bounds );
+		if( src->isLinearBuffer() && dst->isLinearBuffer() )
 		{
-			void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );
-			void* dataDstPtr = dst->getPixelAddress( bounds.x1, bounds.y1 );
-			memcpy( dataDstPtr, dataSrcPtr, imageDataBytes );
+			TUTTLE_TLOG( TUTTLE_TRACE, "isLinearBuffer" );
+			const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
+			TUTTLE_TLOG_VAR( TUTTLE_TRACE, imageDataBytes );
+			if( imageDataBytes )
+			{
+				void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );
+				void* dataDstPtr = dst->getPixelAddress( bounds.x1, bounds.y1 );
+				memcpy( dataDstPtr, dataSrcPtr, imageDataBytes );
+			}
 		}
-	}
-	else
-	{
-		const std::size_t rowBytesToCopy = dst->getBoundsRowDataBytes();
-		for( int y = bounds.y1; y < bounds.y2; ++y )
+		else
 		{
-			void* dataSrcPtr = src->getPixelAddress( bounds.x1, y );
-			void* dataDstPtr = dst->getPixelAddress( bounds.x1, y );
-			memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
+			const std::size_t rowBytesToCopy = dst->getBoundsRowDataBytes();
+			for( int y = bounds.y1; y < bounds.y2; ++y )
+			{
+				void* dataSrcPtr = src->getPixelAddress( bounds.x1, y );
+				void* dataDstPtr = dst->getPixelAddress( bounds.x1, y );
+				memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
+			}
 		}
 	}
 }
