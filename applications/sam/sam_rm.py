@@ -37,7 +37,7 @@ class Sam_rm(samUtils.Sam):
         parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
         parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
         parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
-        parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: "*.jpg", "*.png"').completer = samUtils.sequenceParserCompleter
+        parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: "*.jpg", "*.png"')
 
         parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
         parser.add_argument('--first-image', dest='firstImage', type=int, help='specify the first image of sequence')
