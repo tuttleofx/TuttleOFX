@@ -6,6 +6,12 @@ project (TuttleOFX)
 # The install rule does not depend on all, i.e. everything will not be built before installing
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 
+# Add a variable for experimental host/plugins features
+if(NOT TUTTLE_EXPERIMENTAL)
+  set(TUTTLE_EXPERIMENTAL 0)
+endif()
+add_definitions(-DTUTTLE_EXPERIMENTAL=${TUTTLE_EXPERIMENTAL})
+
 # Create an alias for all OFX plugins.
 add_custom_target(ofxplugins)
 
