@@ -34,14 +34,14 @@ class Sam(object):
         raise NotImplementedError
 
 
-def sequenceParserCompleter(prefix, **kwargs):
+def sequenceParserCompleter(prefix, parsed_args, **kwargs):
     """
     Custom Completer to manage auto competion when looking for sequences.
     """
-    directory = os.path.dirname(prefix)
-    if directory == '':
-        directory = '.'
-    items = sequenceParser.browse(directory, sequenceParser.eDetectionDefault, [str(prefix+'*')])
+    directory = '.'
+    if parsed_args.inputs and len(parsed_args.inputs):
+        directory = os.path.abspath(parsed_args.inputs[-1])
+    items = sequenceParser.browse(directory, sequenceParser.eDetectionDefault)
     itemsStr = [str(item.getFilename()) for item in items]
     return itemsStr
 
