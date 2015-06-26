@@ -1,7 +1,10 @@
 #!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 
 import sys
 import argparse
+
+import argcomplete
 
 from clint.textui import puts, colored
 
@@ -50,8 +53,9 @@ if __name__ == '__main__':
             puts(colored.red('Error: no sam tool is named "' + toolCommand + '".'))
             tools = getAllSamTools()
 
-    # Create a subparser per sam tool
+    # Create a subparser for sam commands
     subparsers = parser.add_subparsers(dest='samSubCommand')
+    # Add a parser per sam command
     for tool in tools.values():
         toolParser = subparsers.add_parser(
             tool.command,
@@ -61,6 +65,9 @@ if __name__ == '__main__':
             formatter_class=argparse.RawTextHelpFormatter,
             add_help=(False if tool.command == 'do' else True))
         tool.fillParser(toolParser)
+
+    # Activate completion
+    argcomplete.autocomplete(parser)
 
     # Parse command-line
     args, unknown = parser.parse_known_args()

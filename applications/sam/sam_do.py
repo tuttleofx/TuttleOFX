@@ -405,9 +405,6 @@ class Sam_do(samUtils.Sam):
         """
         Process the do operation.
         """
-        # Activate completion
-        argcomplete.autocomplete(parser)
-
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
@@ -494,7 +491,10 @@ if __name__ == '__main__':
         formatter_class=argparse.RawTextHelpFormatter,
         add_help=False,
         )
+    tool.fillParser(parser)
+
+    # Activate completion
+    argcomplete.autocomplete(parser)
 
     # Run the command
-    tool.fillParser(parser)
     tool.run(parser)

@@ -140,9 +140,6 @@ class Sam_rm(samUtils.Sam):
         """
         Process the remove operation.
         """
-        # Activate completion
-        argcomplete.autocomplete(parser)
-
         # Parse command-line
         args = parser.parse_args()
 
@@ -207,7 +204,10 @@ if __name__ == '__main__':
         description=tool.description,
         formatter_class=argparse.RawTextHelpFormatter,
         )
+    tool.fillParser(parser)
+
+    # Activate completion
+    argcomplete.autocomplete(parser)
 
     # Run the command
-    tool.fillParser(parser)
     tool.run(parser)

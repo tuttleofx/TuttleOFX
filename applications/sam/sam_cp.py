@@ -34,7 +34,10 @@ if __name__ == '__main__':
         description=tool.description,
         formatter_class=argparse.RawTextHelpFormatter,
         )
+    tool.fillParser(parser)
+
+    # Activate completion
+    argcomplete.autocomplete(parser)
 
     # Run the command
-    tool.fillParser(parser)
     tool.run(parser)
