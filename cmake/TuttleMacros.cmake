@@ -83,6 +83,14 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         
         endif()
 
+        # By default, do not build a plugin with major version 0
+        if(${plugin_VERSION_MAJOR} EQUAL "0")
+          message(WARNING, " ${PLUGIN_NAME} plugin is experimental")
+          if(NOT ${TUTTLE_EXPERIMENTAL})
+            message(WARNING, " It will not be built")
+            return()
+          endif()
+        endif()
 
         # OpenFX and Terry are used by default
         include(UseOfxpp)
