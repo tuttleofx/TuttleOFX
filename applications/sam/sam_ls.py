@@ -16,7 +16,7 @@ from pySequenceParser import sequenceParser
 from common import samUtils
 
 
-class SamLs(samUtils.Sam):
+class Sam_ls(samUtils.Sam):
     """
     Class which represents the sam_ls operation.
     """
@@ -263,7 +263,7 @@ class SamLs(samUtils.Sam):
 
 if __name__ == '__main__':
     # Create the tool
-    tool = SamLs()
+    tool = Sam_ls()
 
     # Create command-line interface
     parser = argparse.ArgumentParser(

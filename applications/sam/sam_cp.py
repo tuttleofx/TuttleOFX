@@ -6,16 +6,16 @@ import shutil
 
 from clint.textui import colored
 
-from sam_mv import SamMv
+from sam_mv import Sam_mv
 
 
-class SamCp(SamMv):
+class Sam_cp(Sam_mv):
     """
     Class which represents the sam-cp operation.
     """
 
     def __init__(self):
-        SamMv.__init__(self)
+        Sam_mv.__init__(self)
         self.command = 'cp'
         self.help = 'to copy sequences'
         self.description = str(colored.green('''
@@ -26,7 +26,7 @@ class SamCp(SamMv):
 
 if __name__ == '__main__':
     # Create the tool
-    tool = SamCp()
+    tool = Sam_cp()
 
     # Create command-line interface
     parser = argparse.ArgumentParser(

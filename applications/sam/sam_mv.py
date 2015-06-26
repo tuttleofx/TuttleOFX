@@ -16,7 +16,7 @@ from pySequenceParser import sequenceParser
 from common import samUtils
 
 
-class SamMv(samUtils.Sam):
+class Sam_mv(samUtils.Sam):
     """
     Class which represents the sam_mv operation.
     """
@@ -174,7 +174,7 @@ class SamMv(samUtils.Sam):
 
 if __name__ == '__main__':
     # Create the tool
-    tool = SamMv()
+    tool = Sam_mv()
 
     # Create command-line interface
     parser = argparse.ArgumentParser(

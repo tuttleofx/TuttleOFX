@@ -18,7 +18,7 @@ from pyTuttle import tuttle
 from common import samUtils, samDoUtils
 
 
-class SamDo(samUtils.Sam):
+class Sam_do(samUtils.Sam):
     """
     Class which represents the sam_do operation.
     """
@@ -484,7 +484,7 @@ class SamDo(samUtils.Sam):
 
 if __name__ == '__main__':
     # Create the tool
-    tool = SamDo()
+    tool = Sam_do()
 
     # Create command-line interface
     parser = argparse.ArgumentParser(
