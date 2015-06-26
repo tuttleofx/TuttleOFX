@@ -336,7 +336,7 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
                         param = node.getParam(lastInput)
                         if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
                             propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
-                            choicesStr = getListValues(propChoiceOption)
+                            choicesStr = samUtils.getListValues(propChoiceOption)
                             return choicesStr
                     # else, return its parameters
                     else:
