@@ -377,11 +377,18 @@ class SamDo(samUtils.Sam):
                             graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
                         except Exception as e:
                             # Cannot connect attribute of node
-                            puts(colored.red('Cannot connect attribute "' + argName + '" of node "' + nodeFullName + '" to id "' + argValue + '": the connection will be skipped from the command line.'))
+                            puts(colored.red('Cannot connect attribute "' 
+                                + argName + '" of node "' + nodeFullName 
+                                + '" to id "' + argValue 
+                                + '": the connection will be skipped from the command line.'))
                             print e
                     else:
                         # Cannot set param of node
-                        puts(colored.red('Cannot set parameter "' + argName + '" of node "' + nodeFullName + '" to value "' + argValue + '": the parameter will be skipped from the command line.'))
+                        puts(colored.red('Cannot set '
+                            + (('parameter "' + argName + '" of ') if argName else '')
+                            + 'node "' + nodeFullName + '" ' 
+                            + (('to value "' + argValue + '"') if argValue else '') 
+                            + ': the parameter will be skipped from the command line.'))
                         print e
             nodes.append(node)
             connections.append(splitCmdNode.getArgument('id')[1])
