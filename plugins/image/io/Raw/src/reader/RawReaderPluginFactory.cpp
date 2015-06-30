@@ -7,6 +7,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/assign/std/vector.hpp>
 
+#include <libraw/libraw_version.h>
+
 #include <string>
 #include <vector>
 
@@ -96,9 +98,9 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	redAbber->setDefault( 1.0 );
 	redAbber->setDisplayRange( 0.999, 1.001 );
 	
-	OFX::DoubleParamDescriptor* greenAbber = desc.defineDoubleParam( kParamBlueAbber );
-	greenAbber->setLabel( kParamBlueAbberLabel );
-	greenAbber->setHint( kParamBlueAbberHint );
+	OFX::DoubleParamDescriptor* greenAbber = desc.defineDoubleParam( kParamGreenAbber );
+	greenAbber->setLabel( kParamGreenAbberLabel );
+	greenAbber->setHint( kParamGreenAbberHint );
 	greenAbber->setDefault( 1.0 );
 	greenAbber->setDisplayRange( 0.999, 1.001 );
 	
@@ -119,6 +121,19 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bright->setHint( kParamBrightHint );
 	bright->setDefault( 1.0 );
 	bright->setDisplayRange( -8.0, 8.0 );
+
+	OFX::BooleanParamDescriptor* autoBright = desc.defineBooleanParam( kParamAutoBright );
+	autoBright->setLabel( kParamAutoBrightLabel );
+	autoBright->setHint( kParamAutoBrightHint );
+	autoBright->setDefault( false );
+
+	OFX::ChoiceParamDescriptor* fbdd = desc.defineChoiceParam( kParamFBDDNoiseRd );
+	fbdd->setLabel( kParamFBDDNoiseRdLabel );
+	fbdd->setHint( kParamFBDDNoiseRdHint );
+	fbdd->appendOption( kParamFBDDNoiseRdDisable );
+	fbdd->appendOption( kParamFBDDNoiseRdLight );
+	fbdd->appendOption( kParamFBDDNoiseRdFull );
+	fbdd->setDefault( eFBDDNoiseRdDisable );
 
 	OFX::DoubleParamDescriptor* threshold = desc.defineDoubleParam( kParamThreshold );
 	threshold->setLabel( kParamThresholdLabel );
@@ -161,6 +176,9 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	interpolation->appendOption( kParamInterpolationMixed );
 	interpolation->appendOption( kParamInterpolationLmmse );
 	interpolation->appendOption( kParamInterpolationAmaze );
+#if LIBRAW_MAJOR_VERSION >= 0 && LIBRAW_MINOR_VERSION >= 16
+	interpolation->appendOption( kParamInterpolationDisable );
+#endif
 	interpolation->setDefault( 3 );
 	
 	OFX::DoubleParamDescriptor* exposure = desc.defineDoubleParam( kParamExposure );
@@ -180,7 +198,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	whitebalance->setHint( kParamWhiteBalanceHint );
 	whitebalance->appendOption( kParamWhiteBalanceAutoWb );
 	whitebalance->appendOption( kParamWhiteBalanceCameraWb );
-#ifndef TUTTLE_PRODUCTION
+#if(TUTTLE_EXPERIMENTAL)
 	whitebalance->appendOption( kParamWhiteBalanceManualWb );
 	whitebalance->appendOption( kParamWhiteBalance2500 );
 	whitebalance->appendOption( kParamWhiteBalance2550 );
@@ -221,6 +239,16 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filtering->appendOption( kParamFilteringAuto );
 	filtering->appendOption( kParamFilteringNone );
 	
+	OFX::ChoiceParamDescriptor* outputColor = desc.defineChoiceParam( kParamOutputColor );
+	outputColor->setLabel( kParamOutputColorLabel );
+	outputColor->setHint( kParamOutputColorHint );
+	outputColor->appendOption( kParamOutputColorRaw );
+	outputColor->appendOption( kParamOutputColorsRGB );
+	outputColor->appendOption( kParamOutputColorAbode );
+	outputColor->appendOption( kParamOutputColorWide );
+	outputColor->appendOption( kParamOutputColorProPhoto );
+	outputColor->appendOption( kParamOutputColorXYZ );
+
 	OFX::GroupParamDescriptor* metadata = desc.defineGroupParam( kParamMetadata );
 	metadata->setLabel( kParamMetadata );
 	

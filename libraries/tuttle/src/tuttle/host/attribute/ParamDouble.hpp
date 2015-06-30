@@ -2,7 +2,7 @@
 #define _TUTTLE_HOST_CORE_ATTRIBUTE_PARAMDOUBLE_HPP_
 
 /* Most of the implementation is in the AnimatedParam template */
-#include "AnimatedParam.hpp"
+#include "AnimatedParamType.hpp"
 
 namespace tuttle {
 namespace host {

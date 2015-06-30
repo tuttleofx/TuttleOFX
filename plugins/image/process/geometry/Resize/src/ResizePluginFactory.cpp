@@ -122,7 +122,7 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 	height->setDisplayRange( 0, 3000 );
 	height->setHint( "Set the height in pixels and keep the input image ratio." );
 
-#ifndef TUTTLE_PRODUCTION
+#if(TUTTLE_EXPERIMENTAL)
 	OFX::BooleanParamDescriptor* center = desc.defineBooleanParam( kParamCenter );
 	center->setLabel( "Center resizing" );
 	center->setDefault( false );

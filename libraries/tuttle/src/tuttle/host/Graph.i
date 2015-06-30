@@ -8,6 +8,9 @@
 %include <tuttle/host/NodeHashContainer.i>
 %include <tuttle/host/INode.i>
 %include <tuttle/host/Node.i>
+%include <tuttle/host/ImageEffectNode.i>
+
+%include <factory.i>
 
 %{
 #include <tuttle/host/Graph.hpp>
@@ -16,6 +19,10 @@
 // rename the original "connect" function to reimplement it in python
 %rename(private_connect) connect;
 %rename(private_createNode) createNode;
+
+%factory(tuttle::host::Graph::Node& tuttle::host::Graph::createNode, tuttle::host::ImageEffectNode);
+%factory(tuttle::host::Graph::Node& tuttle::host::Graph::addNode, tuttle::host::ImageEffectNode);
+
 
 %include <tuttle/host/Graph.hpp>
 

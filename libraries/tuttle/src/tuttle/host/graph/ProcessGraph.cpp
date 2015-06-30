@@ -5,16 +5,7 @@
 
 #include <boost/foreach.hpp>
 
-
-#ifndef TUTTLE_PRODUCTION
-#define TUTTLE_EXPORT_PROCESSGRAPH_DOT
-#endif
-
-//#define TUTTLE_EXPORT_WITH_TIMER
-
-
-
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 #include <boost/timer/timer.hpp>
 #endif
 
@@ -342,14 +333,14 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 void ProcessGraph::setupAtTime( const OfxTime time )
 {
 	_options.setupAtTimeHandle();
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer timer;
 #endif
 	
 	TUTTLE_LOG_TRACE( "[Setup at time " << time << "] start" );
 	graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( _renderGraph, time );
 	_renderGraph.depthFirstVisit( deployTimeVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcess_c.dot", _renderGraph );
 #endif
 
@@ -424,7 +415,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	bakeGraphInformationToNodes( _renderGraphAtTime );
 
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_a.dot", _renderGraphAtTime );
 #endif
 
@@ -446,7 +437,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		}
 	}
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_b.dot", _renderGraphAtTime );
 #endif
 
@@ -462,7 +453,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		_renderGraphAtTime.depthFirstVisit( preProcess2Visitor, outputAtTime );
 	}
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_c.dot", _renderGraphAtTime );
 #endif
 
@@ -471,7 +462,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 	*/
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcessAtTime_d.dot", _renderGraphAtTime );
 #endif
 	/*
@@ -515,7 +506,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 			TUTTLE_TLOG( TUTTLE_INFO, e.getName() << " - " <<  _renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
 		}
 	}
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphprocess_e.dot", tmpGraph );
 #endif
 	*/
@@ -524,7 +515,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 
 void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const OfxTime time )
 {
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer timer;
 #endif
 	setupAtTime( time );
@@ -538,7 +529,7 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime time )
 {
 	_options.processAtTimeHandle();
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer timer;
 #endif
 	
@@ -586,11 +577,11 @@ void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime 
 
 bool ProcessGraph::process( memory::IMemoryCache& outCache )
 {
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	boost::timer::cpu_timer all_process_timer;
 #endif
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportAsDOT( "graphProcess_a.dot", _renderGraph );
 #endif
 
@@ -598,7 +589,7 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 
 	std::list<TimeRange> timeRanges = computeTimeRange();
 
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportDebugAsDOT( "graphProcess_b.dot", _renderGraph );
 #endif
 
@@ -607,14 +598,24 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 
 	TUTTLE_LOG_INFO( "[Process render] start" );
 
-	//--- RENDER
-	// at each frame
+	// Begin range of frames
+	TimeRange globalTimeRange( timeRanges.back() );
+	BOOST_FOREACH( const TimeRange& range, timeRanges )
+	{
+		if( globalTimeRange._begin > range._begin )
+			globalTimeRange._begin = range._begin;
+		if( globalTimeRange._end < range._end )
+			globalTimeRange._end = range._end;
+	}
+	TUTTLE_LOG_TRACE( "[Process render] begin timeRange: [" << globalTimeRange._begin << ", " << globalTimeRange._end << "]" );
+	beginSequence( globalTimeRange );
+
+	// RENDER (at each frame)
 	BOOST_FOREACH( const TimeRange& timeRange, timeRanges )
 	{
-		TUTTLE_LOG_TRACE( "[Process render] timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
+		TUTTLE_LOG_TRACE( "[Process render] process timeRange: [" << timeRange._begin << ", " << timeRange._end << ", " << timeRange._step << "]" );
 
-		beginSequence( timeRange );
-
+		// If someone had asked to abort the process
 		if( _options.getAbort() )
 		{
 			TUTTLE_LOG_ERROR( "[Process render] PROCESS ABORTED before first frame." );
@@ -629,19 +630,19 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 
 			try
 			{
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				boost::timer::cpu_timer setup_timer;
 #endif
 				setupAtTime( time );
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				TUTTLE_LOG_INFO( "[process timer] setup " << boost::timer::format(setup_timer.elapsed()) );
 #endif
 
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				boost::timer::cpu_timer processAtTime_timer;
 #endif
 				processAtTime( outCache, time );
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+#if(TUTTLE_EXPORT_WITH_TIMER)
 				TUTTLE_LOG_INFO( "[process timer] took " << boost::timer::format(processAtTime_timer.elapsed()) );
 #endif
 			}
@@ -715,11 +716,12 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 			}
 			_options.endFrameHandle();
 		}
-
-		endSequence();
 	}
 
-#ifdef TUTTLE_EXPORT_WITH_TIMER
+	// End range of frames
+	endSequence();
+
+#if(TUTTLE_EXPORT_WITH_TIMER)
 	TUTTLE_LOG_INFO( "[all process timer] " << boost::timer::format(all_process_timer.elapsed()) );
 #endif
 	return true;

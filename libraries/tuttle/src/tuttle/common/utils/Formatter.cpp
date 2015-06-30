@@ -13,10 +13,12 @@ namespace common {
 
 boost::shared_ptr<Formatter> Formatter::get()
 {
+	if( _formatter.get() == NULL )
+		_formatter.reset( new Formatter() );
 	return _formatter;
 }
 
-boost::shared_ptr<Formatter> Formatter::_formatter(new Formatter);
+boost::shared_ptr<Formatter> Formatter::_formatter;
 
 
 Formatter::Formatter()
@@ -39,18 +41,21 @@ void Formatter::init_logging()
 #ifndef WITHOUT_BOOST_LOG
 	namespace sinks = boost::log::sinks;
 
+	 // Create a backend and attach a stream to it
 	boost::shared_ptr< sinks::text_ostream_backend > backend = boost::make_shared< sinks::text_ostream_backend >();
-	backend->add_stream( boost::shared_ptr< std::ostream >( &std::clog, boost::log::empty_deleter() ));
+	backend->add_stream( boost::shared_ptr< std::ostream >( &std::clog, boost::empty_deleter() ) );
 	//backend->add_stream( boost::shared_ptr< std::ostream >( new std::ofstream("sample.log") ) );
 
+	// Enable auto-flushing after each log record written
 	backend->auto_flush(true);
 
-	//sink(  new sink_t( backend ) );
-
+	// Wrap it into the frontend and register in the core.
 	_sink = boost::make_shared< sink_t >( backend );
 
+	// Specify format of the log records
 	displayLogLevel( false );
 
+	// Register the sink in the logging core
 	boost::log::core::get()->add_sink( _sink );
 #endif
 }

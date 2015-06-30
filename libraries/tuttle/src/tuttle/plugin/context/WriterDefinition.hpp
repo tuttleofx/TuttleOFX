@@ -22,6 +22,7 @@ enum EParamWriterExistingFile
 
 static const std::string kParamWriterRender         = "render";
 static const std::string kParamWriterRenderAlways   = "renderAlways";
+static const std::string kParamWriterCopyToOutput = "copyToOutput";
 static const std::string kParamWriterForceNewRender = "forceNewRender";
 
 static const std::string kParamPremultiplied      = "premultiplied";

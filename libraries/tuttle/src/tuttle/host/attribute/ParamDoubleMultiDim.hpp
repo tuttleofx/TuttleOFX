@@ -20,6 +20,8 @@ public:
 	: MultiDimParamParent( descriptor, name, setInstance )
 	{}
 
+	virtual ~ParamDoubleMultiDim() = 0;
+
 	void setValueAtIndex( const std::size_t index, const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 	{
 		MultiDimParamParent::setValueAtIndex( index, v, change );
@@ -37,6 +39,9 @@ public:
 		MultiDimParamParent::setValueAtTimeAndIndex( time, index, (double)v, change );
 	}
 };
+
+template <std::size_t DIM>
+ParamDoubleMultiDim<DIM>::~ParamDoubleMultiDim() {}
 
 }
 }

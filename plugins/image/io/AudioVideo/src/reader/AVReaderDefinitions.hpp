@@ -12,11 +12,11 @@ namespace av {
 namespace reader {
 
 static const std::string kParamFormatGroup               = common::kPrefixFormat + "group";
-static const std::string kParamFormatDetailledGroup      = common::kPrefixFormat + "detailledGroup";
+static const std::string kParamFormatDetailedGroup       = common::kPrefixFormat + "detailedGroup";
 static const std::string kParamVideoGroup                = common::kPrefixVideo + "group";
-static const std::string kParamVideoDetailledGroup       = common::kPrefixVideo + "detailledGroup";
+static const std::string kParamVideoDetailedGroup        = common::kPrefixVideo + "detailedGroup";
 static const std::string kParamMetaGroup                 = common::kPrefixMetaData + "group";
-static const std::string kParamMetaDetailledGroup        = common::kPrefixMetaData + "detailledGroup";
+static const std::string kParamMetaDetailedGroup         = common::kPrefixMetaData + "detailedGroup";
 
 static const std::string kParamUseCustomSAR = common::kPrefixVideo + "useCustomSAR";
 static const std::string kParamCustomSAR = common::kPrefixVideo + "customSAR";

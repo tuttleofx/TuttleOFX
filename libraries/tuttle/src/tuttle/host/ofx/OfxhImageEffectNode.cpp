@@ -162,8 +162,6 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 {
 	const attribute::OfxhParamSetDescriptor::ParamDescriptorList& paramDescriptors = _descriptor.getParamList();
 
-	std::map<std::string, attribute::OfxhParam*> parameters;
-
 	this->reserveParameters( paramDescriptors.size() );
 
 	// Create parameters on their own groups
@@ -171,29 +169,35 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 	     it != itEnd;
 	     ++it )
 	{
-//		attribute::OfxhParamSet* setInstance = this;
 		// SetInstance where the childrens param instances will be added
 		const attribute::OfxhParamDescriptor& descriptor = *it;
 
-		// name and parentName of the parameter
-		std::string name       = descriptor.getName();
-//		std::string parentName = descriptor.getParentName();
-//
-//		if( parentName != "" )
-//		{
-//			attribute::OfxhParamGroup* parentGroup = dynamic_cast<attribute::OfxhParamGroup*>( parameters[parentName] );
-//			if( parentGroup )
-//			{
-//				setInstance = parentGroup->getChildrens();
-//			}
-//		}
-//		else
-//			setInstance = this;
+		// get a param instance from a param descriptor.
+		attribute::OfxhParam* paramInstance = newParam( descriptor );
 
-		// get a param instance from a param descriptor. Param::Instance is automatically added into the setInstance provided.
-		attribute::OfxhParam* instance = newParam( descriptor );
-		/// @todo tuttle set the groups of the ParamInstance !!!
-		parameters[name] = instance;
+		// This param instance is added into the right parent ParamSet.
+		const std::string parentName = descriptor.getParentName();
+		attribute::OfxhParamSet* parentParamSet = this;
+		// Find the parent group, by default it's the node itself
+		if( parentName != "" )
+		{
+			try
+			{
+				attribute::OfxhParamGroup& parentGroup = dynamic_cast<attribute::OfxhParamGroup&>( getParam(parentName) );
+				parentParamSet = &parentGroup;
+			}
+			catch(...)
+			{
+				TUTTLE_LOG_WARNING(
+					"The parameter " << quotes(descriptor.getName()) <<
+					" is declared inside the group parameter " << quotes(parentName) <<
+					", but this group parameter is not recognized. "
+					"This is probably an error in the plugin."
+					);
+			}
+		}
+		// declare the new param instance to the corresponding paramGroup.
+		parentParamSet->declareChildParam( *paramInstance );
 	}
 }
 
@@ -619,7 +623,7 @@ void OfxhImageEffectNode::endInstanceEditAction() OFX_EXCEPTION_SPEC
 
 void OfxhImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
 					     OfxTime   endFrame,
-					     OfxTime   step,
+					     double    step,
 					     bool      interactive,
 					     OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
@@ -679,7 +683,7 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 
 void OfxhImageEffectNode::endSequenceRenderAction( OfxTime   startFrame,
 					   OfxTime   endFrame,
-					   OfxTime   step,
+					   double    step,
 					   bool      interactive,
 					   OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {

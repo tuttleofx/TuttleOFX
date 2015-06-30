@@ -2651,9 +2651,6 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	}
 	catch( boost::exception& e )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << tuttle::common::Color::get()->_error;
-		std::cerr << "__________" << std::endl;
 		/*
 		[tuttle::exception::tag_devMessage*] = DPX: Unable to open file.
 		[OFX::tag_ofxStatus*] = kOfxStatErrValue
@@ -2661,29 +2658,22 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		*/
 		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
 		{
-			std::cerr << "Error: " << *messageException << std::endl;
+			TUTTLE_TLOG( TUTTLE_ERROR, "Error: " << *messageException );
 		}
 		else
 		{
-			std::cerr << "Error: " "No message." << std::endl;
+			TUTTLE_TLOG( TUTTLE_ERROR, << "Error: " "No message." );
 		}
 		if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >(e) )
 		{
-			std::cerr << "filename: \"" << *filenameException << "\"" << std::endl;
+			TUTTLE_TLOG( TUTTLE_ERROR, "filename: \"" << *filenameException << "\"" );
 		}
 
-		std::cerr << "__________" << std::endl;
-		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught boost::exception on action " << actionRaw );
 	#ifndef BOOST_EXCEPTION_DISABLE
-		std::cerr << boost::diagnostic_information(e);
+		TUTTLE_TLOG( TUTTLE_ERROR, boost::diagnostic_information(e) );
 	#endif
-//		std::cerr << "* inArgs: " << inArgs << std::endl;
-		std::cerr << "----------" << std::endl;
-		std::cerr << "* Backtrace" << std::endl;
-		std::cerr << boost::trace(e);
-		std::cerr << "__________" << std::endl;
-		std::cerr << tuttle::common::Color::get()->_std;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Backtrace" << std::endl << boost::trace(e) );
 
 		/// @todo there is an assert in boost::get_error_info here. Why?
 		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )
@@ -2699,36 +2689,28 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught OFX::Exception::Suite (" << e.what() << ")" );
 		stat = e.status();
 	}
 
 	// catch host inadequate exceptions
 	catch( OFX::Exception::HostInadequate& e )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "Caught OFX::Exception::HostInadequate (" << e.what() << ")" << std::endl;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught OFX::Exception::HostInadequate (" << e.what() << ")" );
 		stat = kOfxStatErrMissingHostFeature;
 	}
 
 	// catch exception due to a property being unknown to the host, implies something wrong with host if not caught further down
 	catch( OFX::Exception::PropertyUnknownToHost& e )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" << std::endl;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" );
 		stat = kOfxStatErrMissingHostFeature;
 	}
 
 	// catch memory
 	catch( std::bad_alloc& e )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "Caught std::bad_alloc (" << e.what() << ")" << std::endl;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught std::bad_alloc (" << e.what() << ")" );
 		stat = kOfxStatErrMemory;
 	}
 
@@ -2736,9 +2718,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	#ifdef OFX_CLIENT_EXCEPTION_TYPE
 	catch( OFX_CLIENT_EXCEPTION_TYPE& e )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" << std::endl;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" );
 		stat = OFX_CLIENT_EXCEPTION_HANDLER( e, plugname );
 	}
 	#endif
@@ -2746,18 +2726,14 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	// catch all exceptions
 	catch( std::exception& e )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" );
 		stat = kOfxStatFailed;
 	}
 
 	// Catch anything else, unknown
 	catch( ... )
 	{
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
-	#endif
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" );
 		stat = kOfxStatFailed;
 	}
 

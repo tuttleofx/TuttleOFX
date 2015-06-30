@@ -5,7 +5,6 @@
 #include <tuttle/host/memory/MemoryCache.hpp>
 
 #include <tuttle/common/system/system.hpp>
-#include <tuttle/common/utils/Formatter.hpp>
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>

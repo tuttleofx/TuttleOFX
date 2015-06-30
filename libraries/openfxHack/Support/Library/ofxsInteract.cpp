@@ -548,33 +548,24 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 	
 	catch( boost::exception& e )
 	{
-		std::cerr << tuttle::common::Color::get()->_error;
-		std::cerr << "__________" << std::endl;
 		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
 		{
-			std::cerr << "Error: " << *messageException << std::endl;
+			TUTTLE_TLOG( TUTTLE_ERROR, "Error: " << *messageException );
 		}
 		else
 		{
-			std::cerr << "Error: " "No message." << std::endl;
+			TUTTLE_TLOG( TUTTLE_ERROR, "Error: " "No message." );
 		}
 		if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >(e) )
 		{
-			std::cerr << "filename: \"" << *filenameException << "\"" << std::endl;
+			TUTTLE_TLOG( TUTTLE_ERROR, "filename: \"" << *filenameException << "\"" );
 		}
 
-	#ifndef TUTTLE_PRODUCTION
-		std::cerr << "__________" << std::endl;
-		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
+		TUTTLE_TLOG( TUTTLE_ERROR, "* Caught boost::exception on action " << actionRaw );
 	#ifndef BOOST_EXCEPTION_DISABLE
-		std::cerr << boost::diagnostic_information(e);
+		TUTTLE_TLOG( TUTTLE_ERROR, boost::diagnostic_information(e) );
 	#endif
-		std::cerr << "----------" << std::endl;
-		std::cerr << "* Backtrace" << std::endl;
-		std::cerr << boost::trace(e);
-	#endif
-		std::cerr << "__________" << std::endl;
-		std::cerr << tuttle::common::Color::get()->_std;
+		TUTTLE_TLOG( TUTTLE_ERROR, "* Backtrace" << boost::trace(e) );
 		
 		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )
 		{
@@ -589,18 +580,18 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
-		std::cerr << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught OFX::Exception::Suite (" << e.what() << ")" );
 		stat = e.status();
 	}
 	// catch all exceptions
 	catch( std::exception& e )
 	{
-		std::cerr << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" );
 		stat = kOfxStatFailed;
 	}
 	catch(... )
 	{
-		std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
+		TUTTLE_TLOG( TUTTLE_ERROR, "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" );
 		stat = kOfxStatFailed;
 	}
 

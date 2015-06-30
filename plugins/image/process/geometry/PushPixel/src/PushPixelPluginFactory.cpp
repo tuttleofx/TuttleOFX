@@ -85,9 +85,7 @@ void PushPixelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	normalizedKernel->setLabel( "Normalized kernel" );
 	normalizedKernel->setHint( "Use a normalized kernel to compute the gradient." );
 	normalizedKernel->setDefault( true );
-//#ifndef TUTTLE_PRODUCTION
 	normalizedKernel->setIsSecret( true );
-//#endif
 	
 	OFX::DoubleParamDescriptor* intensity = desc.defineDoubleParam( kParamIntensity );
 	intensity->setLabel( "Intensity" );

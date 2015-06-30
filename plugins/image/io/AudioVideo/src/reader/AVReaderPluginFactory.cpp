@@ -117,13 +117,13 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	avtranscoder::OptionArray formatOptions = formatContext.getOptions();
 	common::addOptionsToGroup( desc, formatGroup, formatOptions, common::kPrefixFormat );
 	
-	OFX::GroupParamDescriptor* formatDetailledGroup = desc.defineGroupParam( kParamFormatDetailledGroup );
-	formatDetailledGroup->setLabel( "Detailled" );
-	formatDetailledGroup->setAsTab( );
-	formatDetailledGroup->setParent( formatGroup );
+	OFX::GroupParamDescriptor* formatDetailedGroup = desc.defineGroupParam( kParamFormatDetailedGroup );
+	formatDetailedGroup->setLabel( "Detailed" );
+	formatDetailedGroup->setAsTab( );
+	formatDetailedGroup->setParent( formatGroup );
 	
-	avtranscoder::OptionArrayMap formatDetailledGroupOptions = avtranscoder::getOutputFormatOptions();
-	common::addOptionsToGroup( desc, formatDetailledGroup, formatDetailledGroupOptions, common::kPrefixFormat );
+	avtranscoder::OptionArrayMap formatDetailedGroupOptions = avtranscoder::getOutputFormatOptions();
+	common::addOptionsToGroup( desc, formatDetailedGroup, formatDetailedGroupOptions, common::kPrefixFormat );
 	
 	/// VIDEO PARAMETERS
 	AVCodecContext* videoContext = avcodec_alloc_context3( NULL );
@@ -154,13 +154,13 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	streamIndex->setHint( "Choose a custom value to decode the video stream you want. Maximum value: 100." );
 	streamIndex->setParent( videoGroup );
 
-	OFX::GroupParamDescriptor* videoDetailledGroup  = desc.defineGroupParam( kParamVideoDetailledGroup );
-	videoDetailledGroup->setLabel( "Detailled" );
-	videoDetailledGroup->setAsTab( );
-	videoDetailledGroup->setParent( videoGroup );
+	OFX::GroupParamDescriptor* videoDetailedGroup  = desc.defineGroupParam( kParamVideoDetailedGroup );
+	videoDetailedGroup->setLabel( "Detailed" );
+	videoDetailedGroup->setAsTab( );
+	videoDetailedGroup->setParent( videoGroup );
 	
-	avtranscoder::OptionArrayMap videoDetailledGroupOptions =  avtranscoder::getVideoCodecOptions(); 
-	common::addOptionsToGroup( desc, videoDetailledGroup, videoDetailledGroupOptions, common::kPrefixVideo );
+	avtranscoder::OptionArrayMap videoDetailedGroupOptions =  avtranscoder::getVideoCodecOptions(); 
+	common::addOptionsToGroup( desc, videoDetailedGroup, videoDetailedGroupOptions, common::kPrefixVideo );
 
 	/// METADATA PARAMETERS
 	AVCodecContext* metaDataContext = avcodec_alloc_context3( NULL );

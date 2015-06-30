@@ -368,7 +368,7 @@ bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes
 bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes,
 		const ComputeOptions& options, memory::IMemoryCache& internMemoryCache )
 {
-#ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
 	

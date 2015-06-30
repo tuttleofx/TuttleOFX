@@ -101,6 +101,7 @@ public:
 	OFX::PushButtonParam* _paramRenderButton; ///< Render push button
 	OFX::StringParam*     _paramFilepath; ///< Target file path
 	OFX::BooleanParam*    _paramRenderAlways;
+	OFX::BooleanParam*    _paramCopyToOutput; ///< Copy the image buffer to the output clip
 	OFX::ChoiceParam*     _paramBitDepth;
 	OFX::BooleanParam*    _paramPremult;
 	OFX::ChoiceParam*     _paramExistingFile;

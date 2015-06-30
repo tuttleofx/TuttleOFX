@@ -33,7 +33,7 @@ function(tuttle_install_shared_libs LIBRARIES)
             get_filename_component(realpath ${lib} REALPATH) 
             tuttle_get_library_soname(${realpath} SONAME)
             message("will copy and rename ${realpath} to ${SONAME}") 
-            install(FILES ${realpath} DESTINATION lib/ RENAME ${SONAME} NAMELINK_SKIP)
+            install(FILES ${realpath} DESTINATION lib/ RENAME ${SONAME} NAMELINK_SKIP OPTIONAL)
         endif()
     endforeach(lib ${LIBRARIES})
 endfunction(tuttle_install_shared_libs )
@@ -83,6 +83,14 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         
         endif()
 
+        # By default, do not build a plugin with major version 0
+        if(${plugin_VERSION_MAJOR} EQUAL "0")
+          message(WARNING, " ${PLUGIN_NAME} plugin is experimental")
+          if(NOT ${TUTTLE_EXPERIMENTAL})
+            message(WARNING, " It will not be built")
+            return()
+          endif()
+        endif()
 
         # OpenFX and Terry are used by default
         include(UseOfxpp)
@@ -114,7 +122,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # http://openfx.sourceforge.net/Documentation/1.3/Reference/ch02s02.html
         set(OFX_PLUGIN_ROOT "${CMAKE_INSTALL_PREFIX}/OFX/${PLUGIN_NAME}${_plugin_version_suffix}.ofx.bundle/Contents")
         tuttle_ofx_architecture(OFX_ARCH)
-        install(DIRECTORY Resources DESTINATION ${OFX_PLUGIN_ROOT})
+        install(DIRECTORY Resources DESTINATION ${OFX_PLUGIN_ROOT} OPTIONAL)
         install(TARGETS ${PLUGIN_NAME} 
             DESTINATION ${OFX_PLUGIN_ROOT}/${OFX_ARCH} OPTIONAL)
 
@@ -238,7 +246,7 @@ function(tuttle_add_executable TARGET SOURCES)
         endif(APPLE)
 
         # Install
-        install(TARGETS ${TARGET} DESTINATION bin)
+        install(TARGETS ${TARGET} DESTINATION bin OPTIONAL)
     endif(TuttleBoost_FOUND)
 endfunction(tuttle_add_executable)
 

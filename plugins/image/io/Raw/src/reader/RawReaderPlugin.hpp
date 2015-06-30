@@ -15,12 +15,14 @@ struct RawReaderProcessParams
 	std::string    _filepath;       ///< filepath
 	EFiltering     _filtering;
 	EInterpolation _interpolation;
+	EOutputColor   _outputColor;
 	float          _gammaPower;
 	float          _gammaToe;
 	double         _redAbber;
-	double         _blueAbber;
+	double         _greenAbber;
 	
 	double         _bright;
+	bool           _autoBright;
 	double         _threshold;
 	bool           _fourColorRgb;
 	
@@ -30,7 +32,9 @@ struct RawReaderProcessParams
 	double         _exposurePreserve;
 	
 	EWhiteBalance  _whiteBalance;
-	
+
+	EFBDDNoiseRd _fbddNoiseRd;
+
 	boost::gil::point2<Scalar> _greyboxPoint;
 	boost::gil::point2<Scalar> _greyboxSize;
 };
@@ -63,14 +67,16 @@ public:
 	/// @{
 	OFX::ChoiceParam*    _paramFiltering;    ///< Filtering mode
 	OFX::ChoiceParam*    _paramInterpolation;
+	OFX::ChoiceParam*    _paramOutputColor;
 	
 	OFX::DoubleParam*    _paramGammaPower;
 	OFX::DoubleParam*    _paramGammaToe;
 	OFX::DoubleParam*    _paramRedAbber;
-	OFX::DoubleParam*    _paramBlueAbber;
-	
-	
+	OFX::DoubleParam*    _paramGreenAbber;
+
 	OFX::DoubleParam*    _paramBright;
+	OFX::BooleanParam*   _paramAutoBright;
+
 	OFX::DoubleParam*    _paramThreshold;
 	OFX::BooleanParam*   _paramFourColorRgb;
 	
@@ -83,6 +89,8 @@ public:
 	
 	OFX::Double2DParam*  _paramGreyboxPoint;
 	OFX::Double2DParam*  _paramGreyboxSize;
+
+	OFX::ChoiceParam* _paramFbddNoiseRd;
 	
 	/// metadata
 	OFX::StringParam*    _paramManufacturer;

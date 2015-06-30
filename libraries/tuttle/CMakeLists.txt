@@ -16,6 +16,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Tuttle source code
 include_directories(src)
 file(GLOB_RECURSE TUTTLE_HOST_SRC_FILES src/tuttle/host/*.?pp src/tuttle/common/*.?pp)
+file(GLOB_RECURSE TUTTLE_HOST_HEADER_FILES src/tuttle/host/*.hpp src/tuttle/common/*.hpp)
 
 # Boost dependencies
 include(UseTuttleBoost)
@@ -50,11 +51,7 @@ if (TuttleBoost_FOUND)
   else()
     message(STATUS "tuttleHost version is "
                  "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO} (retrieved from version.hpp)")
-
-    set_target_properties(
-      tuttleHost
-    PROPERTIES
-      VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}"
+    set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}"
   )
   endif()
 
@@ -71,6 +68,15 @@ if (TuttleBoost_FOUND)
             PROPERTIES INSTALL_RPATH "$ORIGIN")
   endif(UNIX AND NOT APPLE)
   
+  # TuttleHost depends on libpng when it is built in debug.
+  # To generate png images when for each output of each nodes computed in the graph.
+  if(CMAKE_BUILD_TYPE MATCHES RELEASE)
+    find_package(PNG)
+    if(PNG_FOUND) 
+      target_link_libraries(tuttleHost ${PNG_LIBRARIES})
+    endif(PNG_FOUND)
+  endif(CMAKE_BUILD_TYPE MATCHES RELEASE)
+
   # TODO: if cmake >= 2.8.11
   # TODO: declare BOOST Atomic optional.
   # There is a basic fallback implementation for boost_atomic:
@@ -100,8 +106,10 @@ if (TuttleBoost_FOUND)
 
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
-  install(TARGETS tuttleHost DESTINATION lib/)
-  install(TARGETS sequenceParser DESTINATION lib/)
+  install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
+  install(TARGETS tuttleCommon DESTINATION lib/ OPTIONAL)
+  install(TARGETS tuttlePluginLib DESTINATION lib/ OPTIONAL)
+  install(TARGETS sequenceParser DESTINATION lib/ OPTIONAL)
 
   # Install tuttle host headers
   install(
@@ -109,6 +117,8 @@ if (TuttleBoost_FOUND)
     DESTINATION "include"
     FILES_MATCHING
     PATTERN "*.hpp"
+    PATTERN "*.h"
+    PATTERN "*.tcc"
     PATTERN "*.i"
   )
 
@@ -147,8 +157,10 @@ if (TuttleBoost_FOUND)
 
     # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
+    file(GLOB_RECURSE TUTTLE_PYTHON_ALL_BINDING_FILES src/tuttle/*.i)
     # FIXME : do we need a python package as before ?
     set_source_files_properties(${TUTTLE_PYTHON_BINDING_FILE} PROPERTIES CPLUSPLUS ON) 
+    set(SWIG_MODULE_tuttle_EXTRA_DEPS "${TUTTLE_PYTHON_ALL_BINDING_FILES};${TUTTLE_HOST_HEADER_FILES}")
 
     # Create the output dir as it's not done automatically by cmake
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/tuttle/host)
@@ -167,9 +179,9 @@ if (TuttleBoost_FOUND)
 
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
-    install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
+    install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
     install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle/__init__.py)")
 
     # pySequenceParser
@@ -193,9 +205,9 @@ if (TuttleBoost_FOUND)
 
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_sequenceParser_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/sequenceParser.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser)
+        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
     install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser/__init__.py)")
 
   else(SWIG_FOUND)

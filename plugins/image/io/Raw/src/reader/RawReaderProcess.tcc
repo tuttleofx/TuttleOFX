@@ -80,7 +80,8 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 	try
 	{
-		_out.output_bps = 16;
+		_out.output_bps = 16; // 16 bits
+		_out.use_fuji_rotate = 0; // don't use rotation for cameras on a Fuji sensor
 
 		_out.greybox[0] = _params._greyboxPoint.x;
 		_out.greybox[1] = _params._greyboxPoint.y;
@@ -88,27 +89,43 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.greybox[3] = _params._greyboxSize.y;
 
 		_out.aber[0]   = _params._redAbber;
-		_out.aber[2]   = _params._blueAbber;
-		
-		_out.bright    = _params._bright;
-		_out.threshold = _params._threshold;
+		_out.aber[2]   = _params._greenAbber;
+
 		_out.gamm[0]   = _params._gammaPower;
 		_out.gamm[1]   = _params._gammaToe;
-		_out.user_qual = _params._interpolation;
-		_out.no_auto_bright    = 0;
-		
+
+		// brightness
+		_out.bright    = _params._bright;
+		_out.highlight  = _params._hightlight;
+		_out.no_auto_bright = !_params._autoBright;
+
+		// noise reduction
+		_out.threshold = _params._threshold;
+		_out.fbdd_noiserd = _params._fbddNoiseRd;
+
+		// interpolation
+#if LIBRAW_MAJOR_VERSION >= 0 && LIBRAW_MINOR_VERSION >= 16
+		if( _params._interpolation == eInterpolationDisable )
+		    _out.no_interpolation = 1; // disables interpolation step in LibRaw::dcraw_process() call.
+		else
+#endif
+		    _out.user_qual = _params._interpolation;
+
+		// interpolate colors
 		_out.four_color_rgb = _params._fourColorRgb;
-		
-		_out.exp_correc = 1; // every time correct exposure (use default parameters to don't change)
+		_out.output_color = _params._outputColor;
+
+		// exposure correction before demosaic
 		_out.exp_shift  = _params._exposure;
 		_out.exp_preser = _params._exposurePreserve;
+		if( _out.exp_shift == 1.0 && _out.exp_preser == 0.0 )
+		    _out.exp_correc = 0; // don't correct exposure
+		else
+		    _out.exp_correc = 1;
 		
-		_out.highlight  = _params._hightlight;
-		_out.use_fuji_rotate = 0; // don't use
-		
+		// white balance
 		_out.use_auto_wb = 0;
 		_out.use_camera_wb = 0;
-		
 		switch( _params._whiteBalance )
 		{
 			case eAutoWb: _out.use_auto_wb = 1; break;
@@ -146,34 +163,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			case e9100: break;
 			case e10000: break;
 		}
-		
-		/*
-#define greybox         (imgdata.params.greybox)
-#define cropbox         (imgdata.params.cropbox)
-#define aber            (imgdata.params.aber)
-#define gamm            (imgdata.params.gamm)
-#define user_mul        (imgdata.params.user_mul)
-#define shot_select     (imgdata.params.shot_select)
-#define bright          (imgdata.params.bright)
-#define threshold       (imgdata.params.threshold)
-#define half_size       (imgdata.params.half_size)
-#define four_color_rgb  (imgdata.params.four_color_rgb)
-#define document_mode   (imgdata.params.document_mode)
-#define highlight       (imgdata.params.highlight)
-//#define verbose         (imgdata.params.verbose)
-#define use_auto_wb     (imgdata.params.use_auto_wb)
-#define use_camera_wb   (imgdata.params.use_camera_wb)
-#define use_camera_matrix (imgdata.params.use_camera_matrix)
-#define output_color    (imgdata.params.output_color)
-#define output_bps      (imgdata.params.output_bps)
-#define gamma_16bit      (imgdata.params.gamma_16bit)
-#define output_tiff     (imgdata.params.output_tiff)
-#define med_passes      (imgdata.params.med_passes)
-#define no_auto_bright  (imgdata.params.no_auto_bright)
-#define use_fuji_rotate (imgdata.params.use_fuji_rotate)
-#define filtering_mode (imgdata.params.filtering_mode)
-*/
-		
+
 		/*switch( _params._filtering )
 		{
 			case eFilteringAuto:

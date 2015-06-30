@@ -92,36 +92,54 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Some specifics things to debug or release version
 #ifdef DEBUG
- #include "debug.hpp"
-#else
- #include "release.hpp"
-#endif
+ #define TUTTLE_DEBUG
 
-////////////////////////////////////////////////////////////////////////////////
-// TUTTLE_TLOG* defines are used by developers for temporary displays during development stages.
-// They are removed in production mode.
-#ifndef TUTTLE_PRODUCTION
-	#define TUTTLE_TLOG TUTTLE_LOG
-	#define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE
-	#define TUTTLE_TLOG_INFO TUTTLE_LOG_INFO
-	#define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR
-	#define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2
-	#define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3
-	#define TUTTLE_TLOG_VAR4 TUTTLE_LOG_VAR4
-	#define TUTTLE_TLOG_INFOS TUTTLE_LOG_INFOS
-	#define TUTTLE_TLOG_WITHINFOS TUTTLE_LOG_WITHINFOS
-	#define TUTTLE_TLOG_EXCEPTION TUTTLE_LOG_EXCEPTION
+ #include "debug.hpp"
+
+ // Create "*.dot" file during the process to get informations about the graph
+ #define TUTTLE_EXPORT_PROCESSGRAPH_DOT 1
+
+ // Log several times during the process
+ #define TUTTLE_EXPORT_WITH_TIMER 1
+
+ // Output all nodes in the graph as png
+ #define TUTTLE_PNG_EXPORT_BETWEEN_NODES 1
+
+ // Init dst buffer with red to highlight uninitialized pixels
+ #define TUTTLE_INIT_IMAGE_BUFFERS 1
+
+ // TUTTLE_TLOG* defines are used by developers for temporary displays during development stages.
+ #define TUTTLE_TLOG TUTTLE_LOG
+ #define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE
+ #define TUTTLE_TLOG_INFO TUTTLE_LOG_INFO
+ #define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR
+ #define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2
+ #define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3
+ #define TUTTLE_TLOG_VAR4 TUTTLE_LOG_VAR4
+ #define TUTTLE_TLOG_INFOS TUTTLE_LOG_INFOS
+ #define TUTTLE_TLOG_WITHINFOS TUTTLE_LOG_WITHINFOS
+ #define TUTTLE_TLOG_EXCEPTION TUTTLE_LOG_EXCEPTION
 #else
-	#define TUTTLE_TLOG TUTTLE_LOG_DEBUG
-	#define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE_DEBUG
-	#define TUTTLE_TLOG_INFO TUTTLE_LOG_INFO_DEBUG
-	#define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR_DEBUG
-	#define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2_DEBUG
-	#define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3_DEBUG
-	#define TUTTLE_TLOG_VAR4 TUTTLE_LOG_VAR4_DEBUG
-	#define TUTTLE_TLOG_INFOS TUTTLE_LOG_INFOS_DEBUG
-	#define TUTTLE_TLOG_WITHINFOS TUTTLE_LOG_WITHINFOS_DEBUG
-	#define TUTTLE_TLOG_EXCEPTION TUTTLE_LOG_EXCEPTION_DEBUG
+ #define TUTTLE_RELEASE
+
+ #include "release.hpp"
+
+ #define TUTTLE_EXPORT_PROCESSGRAPH_DOT 0
+ #define TUTTLE_EXPORT_WITH_TIMER 0
+ #define TUTTLE_PNG_EXPORT_BETWEEN_NODES 0
+ #define TUTTLE_INIT_IMAGE_BUFFERS 0
+
+// TUTTLE_TLOG* are removed in release mode.
+ #define TUTTLE_TLOG TUTTLE_LOG_DEBUG
+ #define TUTTLE_TLOG_TRACE TUTTLE_LOG_TRACE_DEBUG
+ #define TUTTLE_TLOG_INFO TUTTLE_LOG_INFO_DEBUG
+ #define TUTTLE_TLOG_VAR TUTTLE_LOG_VAR_DEBUG
+ #define TUTTLE_TLOG_VAR2 TUTTLE_LOG_VAR2_DEBUG
+ #define TUTTLE_TLOG_VAR3 TUTTLE_LOG_VAR3_DEBUG
+ #define TUTTLE_TLOG_VAR4 TUTTLE_LOG_VAR4_DEBUG
+ #define TUTTLE_TLOG_INFOS TUTTLE_LOG_INFOS_DEBUG
+ #define TUTTLE_TLOG_WITHINFOS TUTTLE_LOG_WITHINFOS_DEBUG
+ #define TUTTLE_TLOG_EXCEPTION TUTTLE_LOG_EXCEPTION_DEBUG
 #endif
 
 #define TUTTLE_LOG_PLUGIN_NAME_WIDTH 30

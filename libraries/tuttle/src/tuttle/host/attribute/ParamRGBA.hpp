@@ -2,6 +2,7 @@
 #define _TUTTLE_HOST_CORE_ATTRIBUTE_PARAMRGBA_HPP_
 
 #include "Param.hpp"
+
 #include "ParamDoubleMultiDim.hpp"
 
 #include <ofxPixels.h>
@@ -15,7 +16,7 @@ class ParamRGBA : public Param
 {
 public:
 	ParamRGBA( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamRGBA* clone() const { return new ParamRGBA( *this ); }
+	ParamRGBA* clone() const { return new ParamRGBA( *this ); }
 
 	OfxRGBAColourD getDefault() const;
 	

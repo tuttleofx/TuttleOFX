@@ -36,7 +36,7 @@ struct AVProcessParams
 	std::string _videoPixelFormatName; /// videoPixelFormat name
 	std::string _audioSampleFormatName; /// audioSampleFormat name
 
-	avtranscoder::PropertiesMap _metadatas;
+	avtranscoder::PropertyVector _metadatas;
 };
 
 /**
@@ -46,9 +46,6 @@ class AVWriterPlugin : public WriterPlugin
 {
 public:
 	AVWriterPlugin( OfxImageEffectHandle handle );
-
-private:
-	void updateVisibleTools();
 
 public:
 	AVProcessParams getProcessParams();
@@ -79,7 +76,7 @@ public:
 
 	void initOutput();  ///< Initialize output file and transcoder
 	void initAudio();  ///< Initialize output audio streams
-	void ensureVideoIsInit( const OFX::RenderArguments& args );  ///< Initialize output video stream
+	void initVideo( const OFX::RenderArguments& args );  ///< Initialize output video stream
 
 	bool isOutputInit();  ///< Check if output file and transcoder are initialized before render
 
@@ -96,14 +93,32 @@ public:
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
+private:
+	void updateVisibleTools();
+
 	//@{
 	/** Getters which throw exception if format or codec are not found. */
-	std::string getFormatName( const int format ) const;
-	std::string getVideoCodecName( const int codec ) const;
-	std::string getAudioCodecName( const int codec ) const;
+	std::string getFormatName( const size_t formatIndex ) const;
+	std::string getVideoCodecName( const size_t codecIndex ) const;
+	std::string getAudioCodecName( const size_t codecIndex ) const;
 	std::string getPixelFormatName( const std::string& videoCodecName ) const;
 	std::string getSampleFormatName( const std::string& audioCodecName ) const;
 	//@}
+
+	//@{
+	void setFormatParam( const std::string& formatShortName );
+	void setVideoCodecParam( const std::string& videoCodecShortName );
+	void setAudioCodecParam( const std::string& audioCodecShortName );
+	//@}
+
+	/**
+	 * @brief Before any render, the wrapper/encoder profiles are checked and possibly updated by this function:
+	 * 1 - remove libav options which can make the wrapper/encoder failed if bad value
+	 * 2 - add libav options which can't correspond to an OFX Choice parameter's value
+	 * Example: An option can have a value only with a specific codec, but the corresponding
+	 * OFX Choice doesn't know this value when instanciate the option in its factory.
+	 */
+	void cleanProfile( avtranscoder::ProfileLoader::Profile& profileToClean, const std::string& prefix );
 
 public:
 	// format
@@ -164,8 +179,6 @@ public:
 	// to process video
 	avtranscoder::Frame _videoFrame;
 	avtranscoder::ProfileLoader _presetLoader;
-
-	std::string _lastOutputFilePath;  ///< To check if output file path has changed.
 
 	double _outputFps;
 
