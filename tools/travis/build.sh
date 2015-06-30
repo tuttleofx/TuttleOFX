@@ -1,33 +1,19 @@
 #!/usr/bin/env bash
 
+# Exit immediately if a command exits with a non-zero status
 set -e
+# Print commands and their arguments as they are executed.
+set -x
 
-# enable testing locally or on forks without multi-os enabled
-if [[ "${TRAVIS_OS_NAME:-false}" == false ]]; then
-    if [[ $(uname -s) == "Darwin" ]]; then
-        TRAVIS_OS_NAME="osx"
-        VERBOSE=0
-    elif [[ $(uname -s) == "Linux" ]]; then
-        TRAVIS_OS_NAME="linux"
-        VERBOSE=1
-    fi
-fi
-
-if [[ ${COVERITY_BUILD_DISABLED} == 1 ]];
-then
-    echo "Coverity is not executed on this build variant."
-    exit 0;
-fi
-
-# (wget --quiet https://www.dropbox.com/s/0wkebzn5zyshlh8/testfiles.tar && tar -xf testfiles.tar) &
-
+# Create directory of build
 mkdir -p ${TUTTLE_BUILD}
 cd ${TUTTLE_BUILD}
 
 # Ask cmake to search in all homebrew packages
 CMAKE_PREFIX_PATH=$(echo /usr/local/Cellar/*/* | sed 's/ /;/g')
 
+# Build tuttle
 cmake -DCMAKE_INSTALL_PREFIX=${TUTTLE_INSTALL} -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH ..
-make ${CI_NODE_TOTAL} VERBOSE=$VERBOSE -k
+make -j${CI_NODE_TOTAL} -k
 make install
-
+cd ..

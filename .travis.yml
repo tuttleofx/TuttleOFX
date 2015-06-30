@@ -34,28 +34,28 @@ before_install:
   - env | sort  
   - date -u
   - uname -a
+  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+      lsb_release -a;
+    elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+      sw_vers -productVersion;
+    fi
 
 install:
   - tools/travis/coverity_env.sh
-  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]];
-    then
-        exit 0;
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
+      exit 0;
     fi
-  - tools/travis/install_dependencies.sh > install_dependencies.log 2>&1
+  - tools/travis/install_dependencies.sh
 
 script:
-  - if [[ ${COVERITY_SCAN_BRANCH} == 1 ]];
-    then
-      echo "Don't build on coverty_scan branch.";
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
       exit 0;
     fi
   - tools/travis/build.sh
   - tools/travis/launch_tests.sh
 
-
 after_failure:
-  - cat install_dependencies.log || true
-  - cat build_travis/CMakeFiles/CMakeOutput.log
+  - cat ${TUTTLE_BUILD}/CMakeFiles/CMakeOutput.log
 
 addons:
   coverity_scan:
@@ -65,4 +65,3 @@ addons:
     notification_email: "tuttleofx-team@googlegroups.com"
     build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
-
