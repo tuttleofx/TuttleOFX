@@ -21,13 +21,13 @@ fi
 
 # (wget --quiet https://www.dropbox.com/s/0wkebzn5zyshlh8/testfiles.tar && tar -xf testfiles.tar) &
 
-mkdir -p build_travis
-cd build_travis
+mkdir -p ${TUTTLE_BUILD}
+cd ${TUTTLE_BUILD}
 
 # Ask cmake to search in all homebrew packages
 CMAKE_PREFIX_PATH=$(echo /usr/local/Cellar/*/* | sed 's/ /;/g')
 
-cmake -DCMAKE_INSTALL_PREFIX=/tmp/tuttle-ci -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH ..
-make $J VERBOSE=$VERBOSE -k
+cmake -DCMAKE_INSTALL_PREFIX=${TUTTLE_INSTALL} -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH ..
+make ${CI_NODE_TOTAL} VERBOSE=$VERBOSE -k
 make install
 

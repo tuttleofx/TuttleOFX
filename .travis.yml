@@ -3,6 +3,9 @@ env:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "NvoMZI1lDLmdoKMgAJnNp3RzdRMYGfWL4buwPdIRyjJ522AIceVrT59x0//JB2bdbrABibo/o5TPP1dUGBJlVp9N250R0pjKz8zlehTL++6Y5z0zGWF9WRXOzrvTOCDpUAjJ24zwIREFy02qHmhcEbAy5+IE8aw9s3eZxsngL54="
+    - TUTTLE_BUILD=${TRAVIS_BUILD_DIR}/build-tuttle
+    - TUTTLE_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
+    - CI_NODE_TOTAL=2
 
 os:
   - linux
@@ -28,9 +31,9 @@ cache:
   - /usr/local/Cellar
 
 before_install:
-   - date -u
-   - uname -a
-   - export J='-j3'
+  - env | sort  
+  - date -u
+  - uname -a
 
 install:
   - tools/travis/coverity_env.sh
