@@ -1,5 +1,3 @@
-# scons: pluginOpenImageIO pluginInvert pluginTimeShift pluginGamma pluginJpeg
-
 from pyTuttle import tuttle
 
 

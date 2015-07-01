@@ -1,7 +1,4 @@
-# scons: pluginCheckerboard pluginLensDistort pluginMerge
-
 from pyTuttle import tuttle
-import os
 
 from nose.tools import *
 

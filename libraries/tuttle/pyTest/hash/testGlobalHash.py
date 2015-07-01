@@ -7,9 +7,9 @@ def setUp():
 
 
 def testSameGraph():
-	'''
+	"""
 	If we create 2 identical graphs, their hashes should be the same!
-	'''
+	"""
 	a_g = tuttle.Graph()
 	a_read1 = a_g.createNode("tuttle.checkerboard", size=[50,50])
 	a_read2 = a_g.createNode("tuttle.checkerboard", size=[50,49])
@@ -38,14 +38,14 @@ def testSameGraph():
 
 
 def testClipOrder():
-	'''
+	"""
 	The "merge" node has 2 input clips. The order of these input connections
 	should modify the hash.
 
 	"Merge.A -> Read1" and "Merge.B -> Read2"
 	is NOT the same than
 	"Merge.A -> Read2" and "Merge.B -> Read1"
-	'''
+	"""
 	a_g = tuttle.Graph()
 	a_read1 = a_g.createNode("tuttle.checkerboard", size=[50,50])
 	a_read2 = a_g.createNode("tuttle.checkerboard", size=[50,49])
@@ -74,7 +74,7 @@ def testClipOrder():
 
 
 def testClipOrderWithSameInputs():
-	'''
+	"""
 	The "merge" node has 2 input clips. The order of these input connections
 	modify the hash only if these input are different.
 
@@ -82,7 +82,7 @@ def testClipOrderWithSameInputs():
 	is the same than
 	"Merge.A -> Read2" and "Merge.B -> Read1"
 	ONLY IF Read1 is the same than Read2
-	'''
+	"""
 	a_g = tuttle.Graph()
 	a_read1 = a_g.createNode("tuttle.checkerboard", size=[50,72])
 	a_read2 = a_g.createNode("tuttle.checkerboard", size=[50,72])
@@ -111,7 +111,7 @@ def testClipOrderWithSameInputs():
 
 
 def testNotValidGraphRaise():
-	'''
+	"""
 	To compute the hash we need to run setupAtTime first (we need to know if
 	the node isFrameVaying, etc.).
 	"setupAtTime()" raises if the graph is not valid, like a non optional clip
@@ -120,7 +120,7 @@ def testNotValidGraphRaise():
 	
 	@todo: The computeGlobalHashAtTime should not throw, and it should compute
 	the hash of all valid nodes.
-	'''
+	"""
 	a_g = tuttle.Graph()
 	a_read1 = a_g.createNode("tuttle.checkerboard", size=[50,50])
 	a_read2 = a_g.createNode("tuttle.checkerboard", size=[50,49])
@@ -143,10 +143,10 @@ def testNotValidGraphRaise():
 
 
 def testNotTheSameClipIsUnconnected():
-	'''
+	"""
 	A "fade" node with 2 optional input clips should have different hashes
 	depending on which input is unconnected.
-	'''
+	"""
 	a_g = tuttle.Graph()
 	a_read1 = a_g.createNode("tuttle.checkerboard", size=[50,50])
 	a_lensdistort = a_g.createNode("tuttle.fade")

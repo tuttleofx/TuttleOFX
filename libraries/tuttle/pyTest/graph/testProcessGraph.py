@@ -1,7 +1,6 @@
-# scons: pluginExr pluginInvert pluginGamma pluginJpeg
-
 from pyTuttle import tuttle
 from nose.tools import *
+
 
 def setUp():
 	tuttle.core().preload(False)

@@ -7,6 +7,7 @@ def setUp():
 	tuttle.core().getFormatter().setLogLevel_int(0)
 	tuttle.core().preload(False)
 
+
 def testComputeTime():
 	nbFrames = 10
 	N = 0
@@ -63,5 +64,3 @@ def testComputeTime():
 		
 	print("testComputeTime %d" % N); N += 1
 	#assert(False)
-
-
