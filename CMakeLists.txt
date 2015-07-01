@@ -24,12 +24,12 @@ add_subdirectory(applications)
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/code/Doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doc/code/Doxyfile @ONLY)
-  FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/share/tuttle/doc)
+  FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/share/doc)
   add_custom_target(doc
     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/code/Doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating TuttleHOST documentation with Doxygen" VERBATIM
     )
-  # install(DIRECTORY "${CMAKE_BINARY_DIR}/share/tuttle/doc" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/tuttle/doc")
+  install(DIRECTORY "${CMAKE_BINARY_DIR}/share/doc" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc" OPTIONAL)
 
 endif(DOXYGEN_FOUND)
