@@ -1,12 +1,13 @@
 from pyTuttle import tuttle
 
 from nose.tools import *
-
+from nose.tools import nottest
 
 def setUp():
 	tuttle.core().preload(False)
 
 
+@nottest
 def testGetBestReader():
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader("path/to/image.jpg"))
 	assert_equals("tuttle.turbojpegreader", tuttle.getBestReader(".jpg"))
