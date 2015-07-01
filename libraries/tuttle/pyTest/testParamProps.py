@@ -7,7 +7,7 @@ def setUp():
 
 def testDoubleParamProps():
 	g = tuttle.Graph()
-	blur = g.createNode( "tuttle.blur", size={1.0:[80.0, 40.0], 9.0:0.0} )
+	blur = g.createNode( "tuttle.blur", size={1.0:[80.0, 40.0], 9.0:[0.0, 0.0]} )
 	
 	blurSize = blur.getParam("size")
         

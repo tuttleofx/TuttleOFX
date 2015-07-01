@@ -33,7 +33,7 @@ def testBasic():
 
 def testAnimation():
 	g = tuttle.Graph()
-	blur = g.createNode( "tuttle.blur", size={1.0:[80.0, 40.0], 9.0:0.0, 60.0:[80.0, 40.0]} )
+	blur = g.createNode( "tuttle.blur", size={1.0:[80.0, 40.0], 9.0:[0.0, 0.0], 60.0:[80.0, 40.0]} )
 	
 	assert_not_equal( blur.getLocalHashAtTime(1.0), blur.getLocalHashAtTime(30.0) )
 	assert_equal( blur.getLocalHashAtTime(1.0), blur.getLocalHashAtTime(60.0) )
