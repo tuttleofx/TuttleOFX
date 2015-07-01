@@ -10,8 +10,7 @@ git clone https://github.com/tuttleofx/TuttleOFX-data.git
 
 # nosetests
 ln -s ${TRAVIS_BUILD_DIR}/TuttleOFX-data ${TRAVIS_BUILD_DIR}/libraries/tuttle/pyTest/TuttleOFX-data
-cd ${TRAVIS_BUILD_DIR}/libraries/tuttle/pyTest
-nosetests
+nosetests ${TRAVIS_BUILD_DIR}/libraries/tuttle/pyTest -v
 
 # boost unit tests
 ln -s ${TRAVIS_BUILD_DIR}/TuttleOFX-data ${TRAVIS_BUILD_DIR}/testBin/TuttleOFX-data
