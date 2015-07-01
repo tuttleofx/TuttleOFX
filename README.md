@@ -19,7 +19,6 @@ See [**COPYING.md**](COPYING.md)
 
 Compilation
 -----------
-
 Getting the source
 >    `git clone --recursive git://github.com/tuttleofx/TuttleOFX.git`  
 
@@ -28,8 +27,12 @@ See [**INSTALL.md**](INSTALL.md)
 
 Plugin creation
 ---------------
-
 See [**plugins/_scripts/README.md**](plugins/_scripts/README.md)
+
+
+Documentation
+-----------
+See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX/).
 
 
 Tested compilers
