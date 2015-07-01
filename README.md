@@ -1,6 +1,5 @@
 ![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX
 ========================
-**Project under early development.**
 
 [![Build Status](https://travis-ci.org/tuttleofx/TuttleOFX.svg?branch=develop)](https://travis-ci.org/tuttleofx/TuttleOFX)
 
