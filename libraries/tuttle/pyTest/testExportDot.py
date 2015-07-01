@@ -1,5 +1,3 @@
-# scons: pluginCheckerboard pluginMerge
-
 from pyTuttle import tuttle
 import os
 

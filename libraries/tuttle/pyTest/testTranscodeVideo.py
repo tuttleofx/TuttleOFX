@@ -1,11 +1,11 @@
-# scons: pluginAudioVideo pluginInvert
-
 from nose.tools import nottest
 
 from pyTuttle import tuttle
 
+
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testTranscodeToDefaultCodec():
 	tuttle.compute(

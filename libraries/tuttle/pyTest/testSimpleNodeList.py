@@ -1,5 +1,3 @@
-# scons: pluginCheckerboard pluginInvert pluginAudioVideo pluginPng
-
 from pyTuttle import tuttle
 
 

@@ -1,8 +1,7 @@
-# scons: pluginCheckerboard pluginBlur pluginPng pluginConstant pluginGamma pluginImageStatistics pluginPinning pluginConstant
-
 from pyTuttle import tuttle
 
 from nose.tools import *
+
 
 def setUp():
 	tuttle.core().preload(False)

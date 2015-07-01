@@ -1,9 +1,9 @@
-# scons: pluginCheckerboard pluginBlur pluginPng
-
 from pyTuttle import tuttle
+
 
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testThreadEnv():
 	g = tuttle.Graph()

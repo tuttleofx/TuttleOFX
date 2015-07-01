@@ -1,11 +1,10 @@
-# scons: pluginCheckerboard pluginMerge pluginTimeShift pluginFade
-
 from pyTuttle import tuttle
 
 from nose.tools import *
 
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testSameGraph():
 	'''
@@ -72,6 +71,7 @@ def testClipOrder():
 	cHash = cHashMap.getHash(c_merge.getName(), time)
 
 	assert_not_equal( aHash, cHash )
+
 
 def testClipOrderWithSameInputs():
 	'''

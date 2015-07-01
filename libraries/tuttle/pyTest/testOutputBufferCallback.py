@@ -1,13 +1,13 @@
-# scons: pluginJpeg
-
 from pyTuttle import tuttle
 from tempfile import *
 
 from PIL import Image
 import numpy
 
+
 def setUp():
 	tuttle.core().preload(False)
+
 
 # This is called by Tuttle with the output image data
 def writeImage(time, data, width, height, rowSizeBytes, bitDepth, components, field):

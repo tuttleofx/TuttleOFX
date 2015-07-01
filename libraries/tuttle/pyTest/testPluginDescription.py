@@ -1,12 +1,11 @@
-# scons: pluginTurboJpeg pluginImageMagick
-
 from pyTuttle import tuttle
-import os
 
 from nose.tools import *
 
+
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testPluginDescProps():
 	"""

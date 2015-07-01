@@ -1,5 +1,3 @@
-# scons: pluginPng pluginComponent pluginMerge
-
 from pyTuttle import tuttle
 import tempfile
 

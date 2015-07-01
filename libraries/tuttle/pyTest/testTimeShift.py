@@ -1,5 +1,3 @@
-# scons: pluginOpenImageIO pluginInvert pluginTimeShift pluginGamma pluginJpeg
-
 from pyTuttle import tuttle
 
 
@@ -16,4 +14,3 @@ def testTimeShift():
 		tuttle.NodeInit( "tuttle.gamma", master=.5 ),
 		tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
 		] )
-

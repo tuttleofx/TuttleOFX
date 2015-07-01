@@ -1,5 +1,3 @@
-# scons: pluginCheckerboard pluginInvert pluginMerge pluginPushPixel
-
 from pyTuttle import tuttle
 
 from nose.tools import *
@@ -7,6 +5,7 @@ from nose.tools import *
 
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testUnusedNodes():
 	"""

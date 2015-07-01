@@ -1,6 +1,5 @@
-# scons: pluginPng pluginMathOperator pluginDiff
-
 from pyTuttle import tuttle
+
 
 def setUp():
 	tuttle.core().preload(False)

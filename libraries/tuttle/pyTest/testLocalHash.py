@@ -1,10 +1,10 @@
-# scons: pluginCheckerboard pluginBlur pluginPng
-
-from nose.tools import *
 from pyTuttle import tuttle
 from tempfile import *
 
+from nose.tools import *
+
 import os
+
 
 def setUp():
 	tuttle.core().preload(False)
@@ -82,6 +82,7 @@ def testFilenameLastWriteTimeChanged():
 
 	assert_not_equal( hash_with_no_file, hash_with_file )
 	assert_not_equal( hash_with_file, hash_with_modified_file )
+
 
 def testClipOrder():
 	a_g = tuttle.Graph()

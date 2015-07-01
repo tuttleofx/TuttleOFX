@@ -1,5 +1,3 @@
-# scons: all
-
 from pyTuttle import tuttle
 
 

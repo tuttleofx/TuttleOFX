@@ -1,5 +1,3 @@
-# scons: pluginCheckerboard pluginBlur pluginAudioVideo pluginPng
-
 from pyTuttle import tuttle
 import tempfile
 

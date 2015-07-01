@@ -1,7 +1,4 @@
-# scons: pluginLensDistort pluginAudioVideo
-
 from pyTuttle import tuttle
-import os
 
 from nose.tools import *
 

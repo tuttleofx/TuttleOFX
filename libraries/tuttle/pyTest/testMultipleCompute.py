@@ -1,9 +1,9 @@
-# scons: pluginCheckerboard pluginInvert pluginColorTransform pluginPng
-
 from pyTuttle import tuttle
+
 
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testMultipleCompute_simpleNodes():
 
@@ -26,4 +26,3 @@ def testMultipleCompute_renderSomeFrames():
 	assert g.compute( write, tuttle.ComputeOptions(0) )
 	assert g.compute( write, tuttle.ComputeOptions(5) )
 	assert g.compute( write, tuttle.ComputeOptions(0) )
-

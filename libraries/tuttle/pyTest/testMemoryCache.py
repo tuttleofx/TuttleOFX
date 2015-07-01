@@ -1,5 +1,3 @@
-# scons: pluginCheckerboard pluginColorTransform pluginInvert
-
 from pyTuttle import tuttle
 
 from nose.tools import *

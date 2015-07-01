@@ -1,9 +1,9 @@
-# scons: pluginCheckerboard pluginInvert pluginMerge pluginAudioVideo
-
 from pyTuttle import tuttle
+
 
 def setUp():
 	tuttle.core().preload(False)
+
 
 def testMergeWithDynamicOffset():
 

@@ -1,5 +1,3 @@
-# scons: pluginTurboJpeg pluginJpeg pluginOpenImageIO pluginImageMagick
-
 from pyTuttle import tuttle
 
 from nose.tools import *

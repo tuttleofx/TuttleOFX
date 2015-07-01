@@ -1,7 +1,6 @@
-# scons: pluginAudioVideo
-
 from pyTuttle import tuttle
 import time
+
 
 def setUp():
 	print("testComputeTime setUp")

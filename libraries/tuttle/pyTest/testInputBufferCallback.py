@@ -1,5 +1,3 @@
-# scons: pluginMemoryBuffer pluginPng
-
 from pyTuttle import tuttle
 import tempfile
 
