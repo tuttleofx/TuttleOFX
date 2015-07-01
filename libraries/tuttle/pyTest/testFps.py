@@ -1,20 +1,23 @@
 from pyTuttle import tuttle
 
+from nose.tools import *
+
 
 def setUp():
 	tuttle.core().preload(False)
 
 
 def testFpsPropagation():
+        g = tuttle.Graph()
 
-	return # TODO
+        reader = g.createNode("tuttle.avreader", filename="TuttleOFX-data/video/morgen-20030714.avi")
+        inv1 = g.createNode("tuttle.invert")
+        inv2 = g.createNode("tuttle.invert")
+        writer = g.createNode("tuttle.avwriter", filename=".tests/output.avi")
 
-	tuttle.compute( [
-		NodeInit( "tuttle.ffmpegreader", filename="TuttleOFX-data/video/morgen-20030714.avi" ),
-		NodeInit( "tuttle.invert" ),
-		NodeInit( "tuttle.invert" ),
-		NodeInit( "tuttle.ffmpegwriter", filename=".tests/output.avi" ),
-		] )
-	
-	# TODO: check the fps! ;)
+	g.connect(reader, inv1, inv2, writer)
 
+	clipReader = reader.getOutputClip()
+	clipWriter = writer.getOutputClip()
+
+        assert_equals(clipReader.getFrameRate(), clipWriter.getFrameRate())
