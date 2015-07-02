@@ -47,23 +47,25 @@ def getSamTools():
     Optimization to get sam tools as a dict {name: intance, ...}.
     This function avoids to import all sam modules at each completion.
     """
+    # get command line as an array
+    cmdLine = []
     if completion():
-        compLine = os.environ['COMP_LINE'].split()
-        if len(compLine) > 1:
-            toolCommand = compLine[1]
-            return getSpecificSamTool(toolCommand)
-        else:
-            return getAllSamTools()
-    elif len(sys.argv) < 2 or sys.argv[1].startswith('-'):
-        return getAllSamTools()
+        cmdLine = os.environ['COMP_LINE'].split()
     else:
+        cmdLine = sys.argv
+
+    # check if a specific sam tool can be load
+    if len(cmdLine) > 1 and not cmdLine[1].startswith('-'):
         try:
-            toolCommand = sys.argv[1]
-            return getSpecificSamTool(toolCommand)
+            toolCommand = cmdLine[1]
+            return getSpecificSamTool(cmdLine[1])
         except ImportError:
             # sam tool unknown: import all
             puts(colored.red('Error: no sam tool is named "' + toolCommand + '".'))
             return getAllSamTools()
+    # else load all sam tools
+    else:
+        return getAllSamTools()
 
 
 if __name__ == '__main__':
