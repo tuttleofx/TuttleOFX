@@ -187,6 +187,12 @@ class Sam_rm(samUtils.Sam):
                 # browse
                 items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
 
+            # print error if no items were found
+            if len(items) == 0:
+                puts(colored.red('Error: no file or folders correspond to "' + input + '".'))
+                error = 1
+                continue
+
             err = self._removeItems(items, args, detectionMethod, filters)
             if err:
                 error = err
