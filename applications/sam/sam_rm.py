@@ -43,7 +43,7 @@ class Sam_rm(samUtils.Sam):
         parser.add_argument('--first-image', dest='firstImage', type=int, help='specify the first image of sequence')
         parser.add_argument('--last-image', dest='lastImage', type=int, help='specify the last image of sequence')
         parser.add_argument('--range', dest='range', nargs=2, type=int, help='specify the range of sequence')
-        parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character (False by default)')
+        parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
 
     def _removeItem(self, item, args):
         """
