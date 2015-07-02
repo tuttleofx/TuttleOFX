@@ -13,7 +13,7 @@ from clint.textui import puts, colored
 
 def getAllSamTools():
     """
-    Get all sam tools as a dict {name: intance, ...}.
+    Get all sam tools.
     """
     from sam_ls import Sam_ls
     from sam_mv import Sam_mv
@@ -42,6 +42,30 @@ def completion():
     return '_ARGCOMPLETE' and 'COMP_LINE' in os.environ
 
 
+def getSamTools():
+    """
+    Optimization to get sam tools as a dict {name: intance, ...}.
+    This function avoids to import all sam modules at each completion.
+    """
+    if completion():
+        compLine = os.environ['COMP_LINE'].split()
+        if len(compLine) > 1:
+            toolCommand = compLine[1]
+            return getSpecificSamTool(toolCommand)
+        else:
+            return getAllSamTools()
+    elif len(sys.argv) < 2 or sys.argv[1].startswith('-'):
+        return getAllSamTools()
+    else:
+        try:
+            toolCommand = sys.argv[1]
+            return getSpecificSamTool(toolCommand)
+        except ImportError:
+            # sam tool unknown: import all
+            puts(colored.red('Error: no sam tool is named "' + toolCommand + '".'))
+            return getAllSamTools()
+
+
 if __name__ == '__main__':
     # Create command-line interface
     parser = argparse.ArgumentParser(
@@ -54,25 +78,7 @@ if __name__ == '__main__':
         )
 
     # dict of sam tools to use
-    tools = []
-
-    if completion():
-        compLine = os.environ['COMP_LINE'].split()
-        if len(compLine) > 1:
-            toolCommand = compLine[1]
-            tools = getSpecificSamTool(toolCommand)
-        else:
-            tools = getAllSamTools()
-    elif len(sys.argv) < 2 or sys.argv[1].startswith('-'):
-        tools = getAllSamTools()
-    else:
-        try:
-            toolCommand = sys.argv[1]
-            tools = getSpecificSamTool(toolCommand)
-        except ImportError:
-            # sam tool unknown: import all
-            puts(colored.red('Error: no sam tool is named "' + toolCommand + '".'))
-            tools = getAllSamTools()
+    tools = getSamTools()
 
     # Create a subparser for sam commands
     subparsers = parser.add_subparsers(dest='samSubCommand')
