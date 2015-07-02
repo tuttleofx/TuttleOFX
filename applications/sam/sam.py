@@ -35,7 +35,7 @@ def getSpecificSamTool(toolCommand):
     return {toolCommand: toolClass()}
 
 
-def isCompletion():
+def completion():
     """
     If the script is executed to generate autocomplete choices.
     """
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     # dict of sam tools to use
     tools = []
 
-    if isCompletion():
+    if completion():
         compLine = os.environ['COMP_LINE'].split()
         if len(compLine) > 1:
             toolCommand = compLine[1]
