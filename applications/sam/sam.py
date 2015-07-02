@@ -2,6 +2,7 @@
 # PYTHON_ARGCOMPLETE_OK
 
 import sys
+import os
 import argparse
 
 import argcomplete
@@ -23,6 +24,23 @@ def getAllSamTools():
     return {tool.command: tool for tool in tools}
 
 
+def getSpecificSamTool(toolCommand):
+    """
+    Get the sam tool from the given name.
+    """
+    toolClass = 'Sam_' + toolCommand
+    toolModule = __import__('sam_' + toolCommand, fromlist=[toolClass])
+    toolClass = getattr(toolModule, toolClass)
+    return {toolCommand: toolClass()}
+
+
+def isCompletion():
+    """
+    If the script is executed to generate autocomplete choices.
+    """
+    return '_ARGCOMPLETE' and 'COMP_LINE' in os.environ
+
+
 if __name__ == '__main__':
     # Create command-line interface
     parser = argparse.ArgumentParser(
@@ -37,17 +55,19 @@ if __name__ == '__main__':
     # dict of sam tools to use
     tools = []
 
-    if len(sys.argv) < 2 or sys.argv[1].startswith('-'):
-        # import all sam tools
+    if isCompletion():
+        compLine = os.environ['COMP_LINE'].split()
+        if len(compLine) > 1:
+            toolCommand = compLine[1]
+            tools = getSpecificSamTool(toolCommand)
+        else:
+            tools = getAllSamTools()
+    elif len(sys.argv) < 2 or sys.argv[1].startswith('-'):
         tools = getAllSamTools()
     else:
-        # import a specific sam tool
-        toolCommand = sys.argv[1]
-        toolClass = 'Sam_' + toolCommand
         try:
-            toolModule = __import__('sam_' + toolCommand, fromlist=[toolClass])
-            toolClass = getattr(toolModule, toolClass)
-            tools = {toolCommand: toolClass()}
+            toolCommand = sys.argv[1]
+            tools = getSpecificSamTool(toolCommand)
         except ImportError:
             # sam tool unknown: import all
             puts(colored.red('Error: no sam tool is named "' + toolCommand + '".'))
