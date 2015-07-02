@@ -324,6 +324,8 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
             params = node.getParams()
             paramsStr = [str(param.getScriptName()) for param in params]
             return paramsStr
+        elif lastInput == '//':
+            return pluginsStr
         else:
             for input in reversed(parsed_args.inputs):
                 # if an input is a plugin, get its parameters
