@@ -42,7 +42,7 @@ def completion():
     return '_ARGCOMPLETE' and 'COMP_LINE' in os.environ
 
 
-def getSamTools():
+def getBestSamTools():
     """
     Optimization to get sam tools as a dict {name: intance, ...}.
     This function avoids to import all sam modules at each completion.
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         )
 
     # dict of sam tools to use
-    tools = getSamTools()
+    tools = getBestSamTools()
 
     # Create a subparser for sam commands
     subparsers = parser.add_subparsers(dest='samSubCommand')
