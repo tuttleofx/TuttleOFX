@@ -96,7 +96,9 @@ if __name__ == '__main__':
         tool.fillParser(toolParser)
 
     # Activate completion
-    argcomplete.autocomplete(parser)
+    # collects completions, prints them to the output stream, and exits
+    if completion():
+        argcomplete.autocomplete(parser)
 
     # Parse command-line
     args, unknown = parser.parse_known_args()
