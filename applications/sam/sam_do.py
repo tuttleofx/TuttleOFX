@@ -445,6 +445,9 @@ class Sam_do(samUtils.Sam):
         splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
         graphsWithNodes = [self._getTuttleGraph(splitCmdGraph) for splitCmdGraph in splitCmd.getGraphs()]
 
+        if not graphsWithNodes:
+            puts(colored.red('Error: nothing to compute.'))
+
         # Compute the corresponding tuttle graphs
         for graph, nodes in graphsWithNodes:
             # Options of process
