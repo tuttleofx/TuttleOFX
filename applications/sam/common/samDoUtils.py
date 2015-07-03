@@ -309,10 +309,11 @@ class ProgressHandle(tuttle.IProgressHandle):
 def samDoCompleter(prefix, parsed_args, **kwargs):
     """
     Custom Completer to manage auto competion when looking for openFX nodes.
+    @warning The autocompletion works only for TuttleOFX plugins.
     """
     # get plugins
     pluginsId = tuttle.core().getImageEffectPluginCache().getPluginsByID()
-    pluginsStr = [str(id) for id in pluginsId]
+    pluginsStr = [str(id).replace('tuttle.', '') for id in pluginsId]
 
     # check last input in command line
     if len(parsed_args.inputs):
@@ -320,7 +321,7 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
         # if last input is a plugin, return its parameters
         if lastInput in pluginsStr:
             graph = tuttle.Graph()
-            node = graph.createNode(lastInput)
+            node = graph.createNode('tuttle.'+lastInput)
             params = node.getParams()
             paramsStr = [str(param.getScriptName()) for param in params]
             return paramsStr
@@ -331,7 +332,7 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
                 # if an input is a plugin, get its parameters
                 if input in pluginsStr:
                     graph = tuttle.Graph()
-                    node = graph.createNode(input)
+                    node = graph.createNode('tuttle.'+input)
                     params = node.getParams()
                     paramsStr = [str(param.getScriptName()) for param in params]
                     # if last input is one of its parameters, return its choices
