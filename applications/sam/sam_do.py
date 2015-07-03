@@ -483,7 +483,7 @@ class Sam_do(samUtils.Sam):
             # Connect and compute
             if len(nodes) > 1:
                 graph.compute(nodes[-1], options)
-                puts('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
+                self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
 
 if __name__ == '__main__':
