@@ -482,7 +482,11 @@ class Sam_do(samUtils.Sam):
 
             # Connect and compute
             if len(nodes) > 1:
-                graph.compute(nodes[-1], options)
+                try:
+                    graph.compute(nodes[-1], options)
+                except Exception as e:
+                    self.logger.error('Tuttle graph computation failed.')
+                    self.logger.debug(e)
                 self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
 
