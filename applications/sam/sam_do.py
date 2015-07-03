@@ -352,8 +352,8 @@ class Sam_do(samUtils.Sam):
                 node = graph.createNode(nodeFullName)
             except Exception as e:
                 # Plugin not found
-                puts(colored.red('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.'))
-                print e
+                self.logger.error('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
+                self.logger.debug(e)
                 continue
             # sam-do node --help
             if splitCmdNode.hasHelp():
@@ -378,19 +378,19 @@ class Sam_do(samUtils.Sam):
                             graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
                         except Exception as e:
                             # Cannot connect attribute of node
-                            puts(colored.red('Cannot connect attribute "' 
+                            self.logger.error('Cannot connect attribute "' 
                                 + argName + '" of node "' + nodeFullName 
                                 + '" to id "' + argValue 
-                                + '": the connection will be skipped from the command line.'))
-                            print e
+                                + '": the connection will be skipped from the command line.')
+                            self.logger.debug(e)
                     else:
                         # Cannot set param of node
-                        puts(colored.red('Cannot set '
+                        self.logger.error('Cannot set '
                             + (('parameter "' + argName + '" of ') if argName else '')
                             + 'node "' + nodeFullName + '" ' 
                             + (('to value "' + argValue + '"') if argValue else '') 
-                            + ': the parameter will be skipped from the command line.'))
-                        print e
+                            + ': the parameter will be skipped from the command line.')
+                        self.logger.debug(e)
             nodes.append(node)
             connections.append(splitCmdNode.getArgument('id')[1])
 
@@ -449,7 +449,7 @@ class Sam_do(samUtils.Sam):
         graphsWithNodes = [self._getTuttleGraph(splitCmdGraph) for splitCmdGraph in splitCmd.getGraphs()]
 
         if not graphsWithNodes:
-            puts(colored.red('Error: nothing to compute.'))
+            self.logger.warning('Nothing to compute.')
 
         # Compute the corresponding tuttle graphs
         for graph, nodes in graphsWithNodes:
