@@ -2,6 +2,7 @@
 # coding: utf-8 
 
 import os
+import logging
 import argparse
 
 # python modules to easily get colors, indent text...
@@ -22,6 +23,10 @@ class Sam(object):
         self.description = ''
         self.epilog = ''
 
+        # create logger
+        self.logger = logging.getLogger('SAM')
+        self.logger.setLevel(logging.DEBUG)
+
     def fillParser(self, parser):
         """
         To fill the given parser.
@@ -33,6 +38,24 @@ class Sam(object):
         To process the sam operation
         """
         raise NotImplementedError
+
+    def addConsoleHandler(self, tuttleVerboseLevel):
+        """
+        Add handler to log in console.
+        """
+        # create console handler
+        ch = logging.StreamHandler()
+        if tuttleVerboseLevel is None:
+            ch.setLevel(logging.CRITICAL)
+        else:
+            ch.setLevel(10*tuttleVerboseLevel) # fit to python logging levels
+
+        # create formatter
+        formatter = logging.Formatter("%(asctime)s - %(name)s %(levelname)s - %(message)s")
+        # add formatter to ch
+        ch.setFormatter(formatter)
+        # add ch to logger
+        self.logger.addHandler(ch)
 
 
 def sequenceParserCompleter(prefix, parsed_args, **kwargs):
@@ -154,6 +177,7 @@ def memoryUsageResource():
         rusage_denom = rusage_denom * rusage_denom
     mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / rusage_denom
     return mem
+
 
 def getMaxInt():
     """
