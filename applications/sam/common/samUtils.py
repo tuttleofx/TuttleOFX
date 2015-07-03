@@ -119,35 +119,6 @@ def getSequenceNameWithFormatting(sequence, formatChosen):
     return sequenceName
 
 
-def getSequenceItemFromPath(inputPath, detectNegative):
-    """
-    Get an Item (which corresponds to a sequence) from a path.
-    """
-    # get input path and name
-    inputSequencePath = os.path.dirname(inputPath)
-    if not inputSequencePath:
-        inputSequencePath = '.'
-    inputSequenceName = os.path.basename(inputPath)
-
-    # sam-mv --detect-negative
-    detectionMethod = sequenceParser.eDetectionDefault
-    if detectNegative:
-        detectionMethod = detectionMethod | sequenceParser.eDetectionNegative
-
-    # get input sequence
-    inputItems = sequenceParser.browse(inputSequencePath, detectionMethod, [inputSequenceName])
-    if len(inputItems) != 1:
-        puts(colored.red('Error: no existing file corresponds to the given input sequence: ' + inputPath))
-        exit(-1)
-
-    inputItem = inputItems[0]
-    if inputItem.getType() != sequenceParser.eTypeSequence:
-        puts(colored.red('Error: input is not a sequence: ', inputItem.getFilename()))
-        exit(-1)
-
-    return inputItem
-
-
 def getSubParser(parser, subSamCommand):
     """
     Get the subparser which corresponds to the given sam command, from the given parser.
