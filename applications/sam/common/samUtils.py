@@ -45,8 +45,9 @@ class Sam(object):
         """
         # create console handler
         ch = logging.StreamHandler()
+        # default log level
         if tuttleVerboseLevel is None:
-            ch.setLevel(logging.CRITICAL)
+            ch.setLevel(logging.ERROR)
         else:
             ch.setLevel(10*tuttleVerboseLevel) # fit to python logging levels
 
