@@ -39,7 +39,7 @@ class Sam(object):
         """
         raise NotImplementedError
 
-    def addConsoleHandler(self, tuttleVerboseLevel):
+    def addConsoleHandler(self, tuttleVerboseLevel=None):
         """
         Add handler to log in console.
         """

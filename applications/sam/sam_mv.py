@@ -152,12 +152,12 @@ class Sam_mv(samUtils.Sam):
         # get input sequence
         inputItems = sequenceParser.browse(inputSequencePath, detectionMethod, [inputSequenceName])
         if len(inputItems) != 1:
-            puts(colored.red('Error: no existing file corresponds to the given input sequence: ' + inputPath))
+            self.logger.error('No existing file corresponds to the given input sequence: ' + inputPath)
             exit(-1)
 
         inputItem = inputItems[0]
         if inputItem.getType() != sequenceParser.eTypeSequence:
-            puts(colored.red('Error: input is not a sequence: ', inputItem.getFilename()))
+            self.logger.error('Input is not a sequence: ', inputItem.getFilename())
             exit(-1)
 
         return inputItem
@@ -168,6 +168,9 @@ class Sam_mv(samUtils.Sam):
         """
         # Parse command-line
         args = parser.parse_args()
+
+        # Add sam logger
+        self.addConsoleHandler()
 
         # check command line
         if args.offset and (args.outputFirst is not None or args.outputLast is not None):
