@@ -159,4 +159,4 @@ def getMaxInt():
     """
     Returns C/C++ max int
     """
-    return pow(2, 31)-1
+    return pow(2, 31)

@@ -295,7 +295,7 @@ class ProgressHandle(tuttle.IProgressHandle):
         nbFramesToCompute = 0
         for range in ranges:
             nbFramesToCompute += (range._end - range._begin + 1) / range._step
-        self._progress = progress.Bar(expected_size=(nbFramesToCompute if (nbFramesToCompute and nbFramesToCompute <= samUtils.getMaxInt()) else 1))
+        self._progress = progress.Bar(expected_size=(nbFramesToCompute if nbFramesToCompute < samUtils.getMaxInt() else 1))
         self._counter = 1
 
     def processAtTime(self):
