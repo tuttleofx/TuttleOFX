@@ -409,6 +409,9 @@ class Sam_do(samUtils.Sam):
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
+        # Add sam logger
+        self.addConsoleHandler(args.verbose)
+
         # Clear plugin cache
         if args.rebuildPluginCache:
             tuttle.core().getPluginCache().clearPluginFiles()
