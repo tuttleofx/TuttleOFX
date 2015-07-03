@@ -178,23 +178,24 @@ class Sam_do(samUtils.Sam):
         """
         Display help of the given OFXParameter.
         """
+        props = param.getProperties()
         # Choice param
         if param.getParamType() == 'OfxParamTypeChoice':
             defaultValueIndex = None
-            if param.getProperties().hasProperty('OfxParamPropDefault'):
-                propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
+            if props.hasProperty('OfxParamPropDefault'):
+                propDefault = props.fetchProperty('OfxParamPropDefault')
                 defaultValue = samUtils.getListValues(propDefault)
                 if propDefault.getType() == tuttle.ePropTypeInt:
-                    defaultValueIndex = param.getProperties().getIntProperty('OfxParamPropDefault', 0)
+                    defaultValueIndex = props.getIntProperty('OfxParamPropDefault', 0)
 
             choiceValues = []
             choiceLabelValues = []
             hasLabel = False
-            if param.getProperties().hasProperty('OfxParamPropChoiceOption'):
-                propChoiceOption = param.getProperties().fetchProperty('OfxParamPropChoiceOption')
+            if props.hasProperty('OfxParamPropChoiceOption'):
+                propChoiceOption = props.fetchProperty('OfxParamPropChoiceOption')
                 choiceValues = samUtils.getListValues(propChoiceOption)
-            if param.getProperties().hasProperty('OfxParamPropChoiceLabelOption'):
-                propChoiceLabel = param.getProperties().fetchProperty('OfxParamPropChoiceLabelOption')
+            if props.hasProperty('OfxParamPropChoiceLabelOption'):
+                propChoiceLabel = props.fetchProperty('OfxParamPropChoiceLabelOption')
                 choiceLabelValues = samUtils.getListValues(propChoiceLabel)
                 hasLabel = (len(choiceValues) == len(choiceLabelValues))
 
@@ -212,16 +213,16 @@ class Sam_do(samUtils.Sam):
         # Other param types
         else:
             defaultValue = []
-            if param.getProperties().hasProperty('OfxParamPropDefault'):
-                propDefault = param.getProperties().fetchProperty('OfxParamPropDefault')
+            if props.hasProperty('OfxParamPropDefault'):
+                propDefault = props.fetchProperty('OfxParamPropDefault')
                 defaultValue = samUtils.getListValues(propDefault)
 
             minDisplayValues = []
             maxDisplayValues = []
             # min/max values
-            if param.getProperties().hasProperty('OfxParamPropDisplayMin'):
-                propDisplayMin = param.getProperties().fetchProperty('OfxParamPropDisplayMin')
-                propDisplayMax = param.getProperties().fetchProperty('OfxParamPropDisplayMax')
+            if props.hasProperty('OfxParamPropDisplayMin'):
+                propDisplayMin = props.fetchProperty('OfxParamPropDisplayMin')
+                propDisplayMax = props.fetchProperty('OfxParamPropDisplayMax')
                 minDisplayValues = samUtils.getListValues(propDisplayMin)
                 maxDisplayValues = samUtils.getListValues(propDisplayMax)
                 # check inf
