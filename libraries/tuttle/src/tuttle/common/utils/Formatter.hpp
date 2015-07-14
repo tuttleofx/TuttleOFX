@@ -20,7 +20,12 @@
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
+#if BOOST_VERSION >= 105500
 #include <boost/utility/empty_deleter.hpp>
+#else
+#include <boost/log/utility/empty_deleter.hpp>
+#endif
+
 #include <boost/log/expressions/formatters/stream.hpp>
 #include <boost/log/expressions/attr.hpp>
 #include <boost/log/expressions/message.hpp>
