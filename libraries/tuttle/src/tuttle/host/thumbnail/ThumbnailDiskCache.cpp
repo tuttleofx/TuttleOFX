@@ -65,10 +65,20 @@ namespace host {
 const std::string ThumbnailDiskCache::s_thumbnailExtension(".png");
 const int ThumbnailDiskCache::s_thumbnailMaxSize(256);
 
+std::string ThumbnailDiskCache::keyToThumbnailPath( const KeyType& key ) const
+{
+	return _diskCacheTranslator.keyToAbsolutePath( key ).replace_extension(s_thumbnailExtension).string();
+}
+
+std::string ThumbnailDiskCache::getThumbnailPath( const boost::filesystem::path& imagePath ) const
+{
+	return keyToThumbnailPath( buildKey(imagePath) );
+}
+
 bool ThumbnailDiskCache::containsUpToDate( const boost::filesystem::path& imagePath ) const
 {
 	std::time_t thumbnailLastWriteTime; // thumbnail cached file time
-	if( ! _diskCacheTranslator.contains( _diskCacheTranslator.keyToAbsolutePath( buildKey(imagePath) ).replace_extension(".png"), thumbnailLastWriteTime ) )
+	if( ! _diskCacheTranslator.contains( getThumbnailPath(imagePath), thumbnailLastWriteTime ) )
 		return false;
 
 	boost::system::error_code error;
@@ -115,7 +125,7 @@ ThumbnailDiskCache::TImage ThumbnailDiskCache::getThumbnail( KeyType& key, const
 
 	// Load an existing thumbnail
 	key = buildKey(imagePath);
-	const boost::filesystem::path thumbnailPath = _diskCacheTranslator.keyToAbsolutePath( key ).replace_extension(s_thumbnailExtension);
+	const boost::filesystem::path thumbnailPath = keyToThumbnailPath(key);
 
 	return loadImage( thumbnailPath.string() );
 }
