@@ -462,7 +462,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 					name == kPrefixAudio + kOptionThreads )
 				{
 					OFX::IntParamDescriptor* intParam = desc.defineIntParam( name );
-					intParam->setDefault( option.getDefaultInt() );
+					intParam->setDefault( 0 ); // autodetect a suitable number of threads to use 
 					intParam->setRange( 0, std::numeric_limits<int>::max() );
 					intParam->setDisplayRange( 0, 64 );
 					param = intParam;

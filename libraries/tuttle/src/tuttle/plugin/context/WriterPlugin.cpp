@@ -16,9 +16,11 @@ namespace plugin {
 namespace bfs = boost::filesystem;
 
 WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
-: ImageEffectGilPlugin( handle )
-, _oneRender( false )
-, _oneRenderAtTime( 0 )
+	: ImageEffectGilPlugin( handle )
+	, _oneRender( false )
+	, _oneRenderAtTime( 0 )
+	, _isSequence( false )
+	, _filePattern()
 {
 	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
@@ -33,8 +35,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 }
 
 WriterPlugin::~WriterPlugin( )
-{
-}
+{}
 
 void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
@@ -63,7 +64,7 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
 	if( existingFile != eParamWriterExistingFile_overwrite )
 	{
 		const std::string filepath = getAbsoluteFilenameAt( args.time );
-		const bool fileExists = boost::filesystem::exists( filepath );
+		const bool fileExists = bfs::exists( filepath );
 
 		switch( existingFile )
 		{
@@ -116,10 +117,10 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
 
 void WriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
-	boost::filesystem::path dir( getAbsoluteDirectory( ) );
-	if( !boost::filesystem::exists( dir ) )
+	bfs::path dir( getAbsoluteDirectory() );
+	if( !bfs::exists( dir ) )
 	{
-		boost::filesystem::create_directories( dir );
+		bfs::create_directories( dir );
 	}
 }
 
@@ -157,6 +158,52 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 			memcpy( dataDstPtr, dataSrcPtr, rowBytesToCopy );
 		}
 	}
+}
+
+std::string WriterPlugin::getAbsoluteFilenameAt( const OfxTime time ) const
+{
+	if( _isSequence )
+	{
+		bfs::path dir( getAbsoluteDirectory() );
+		bfs::path filename( _filePattern.getFilenameAt( boost::numeric_cast<sequenceParser::Time>(time) ) );
+		return (dir / filename).string();
+	}
+	else
+		return _paramFilepath->getValue();
+}
+
+std::string WriterPlugin::getAbsoluteFirstFilename() const
+{
+	if( _isSequence )
+	{
+		bfs::path dir( getAbsoluteDirectory() );
+		bfs::path filename (_filePattern.getFirstFilename() );
+		return (dir / filename).string();
+	}
+	else
+		return _paramFilepath->getValue();
+}
+
+std::string WriterPlugin::getAbsoluteDirectory() const
+{
+	bfs::path filepath( _paramFilepath->getValue() );
+	return bfs::absolute(filepath).parent_path().string();
+}
+
+OfxTime WriterPlugin::getFirstTime() const
+{
+	if( _isSequence )
+		return _filePattern.getFirstTime();
+	else
+		return kOfxFlagInfiniteMin;
+}
+
+OfxTime WriterPlugin::getLastTime() const
+{
+	if( _isSequence )
+		return _filePattern.getLastTime();
+	else
+		return kOfxFlagInfiniteMax;
 }
 
 }
