@@ -5,7 +5,7 @@ import os
 import argparse
 import copy
 
-# python modules to easily get colors, indent text...
+# python module to get colors, indent text...
 from clint.textui import colored, puts, progress
 
 # parser of sequence

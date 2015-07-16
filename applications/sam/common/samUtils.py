@@ -18,7 +18,7 @@ class Sam(object):
     """
 
     def __init__(self):
-        self.command = 'command'
+        self.command = ''
         self.help = ''
         self.description = ''
         self.epilog = ''
@@ -38,7 +38,7 @@ class Sam(object):
 
     def run(self, parser):
         """
-        To process the sam operation
+        To process the sam operation.
         """
         raise NotImplementedError
 
