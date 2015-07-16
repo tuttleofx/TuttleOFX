@@ -6,7 +6,7 @@ import os
 import argparse
 import shutil
 
-from clint.textui import colored, puts
+from clint.textui import colored
 
 # parser of sequence
 from pySequenceParser import sequenceParser
@@ -106,11 +106,11 @@ class Sam_mv(samUtils.Sam):
             if not os.path.exists(outputSequencePath):
                 os.makedirs(outputSequencePath)
         except Exception as e:
-            puts(colored.red('Error: cannot create directory tree for "' + outputSequencePath + '": ' + str(e)))
+            self.logger.error('Cannot create directory tree for "' + outputSequencePath + '": ' + str(e))
             exit(-1)
 
         # print brief of the operation
-        puts(colored.magenta(os.path.join(inputItem.getFolder(), str(inputItem.getSequence())) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)), bold=True))
+        self.logger.info(os.path.join(inputItem.getFolder(), str(inputItem.getSequence())) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)))
 
         # get frame ranges
         inputFrameList = list(inputItem.getSequence().getFramesIterable(moveManipulators['first'], moveManipulators['last']))
@@ -126,7 +126,7 @@ class Sam_mv(samUtils.Sam):
 
             # security: check if file already exist
             if os.path.exists(outputPath):
-                puts(colored.red('Error: the output path "' + outputPath + '" already exist!'))
+                self.logger.error('The output path "' + outputPath + '" already exist!')
                 exit(-1)
 
             # process the image at time
@@ -169,7 +169,7 @@ class Sam_mv(samUtils.Sam):
 
         # check command line
         if args.offset and (args.outputFirst is not None or args.outputLast is not None):
-            puts(colored.red('Error: you cannot cumulate multiple options to modify the time.'))
+            self.logger.error('You cannot cumulate multiple options to modify the time.')
             exit(-1)
 
         # Get output path
