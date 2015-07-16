@@ -59,6 +59,13 @@ class Sam(object):
         self.logger.addHandler(ch)
 
 
+def completion():
+    """
+    If the script is executed to generate autocomplete choices.
+    """
+    return '_ARGCOMPLETE' and 'COMP_LINE' in os.environ
+
+
 def sequenceParserCompleter(prefix, parsed_args, **kwargs):
     """
     Custom Completer to manage auto competion when looking for sequences.

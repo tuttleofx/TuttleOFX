@@ -10,6 +10,8 @@ import argcomplete
 
 from clint.textui import puts, colored
 
+from common import samUtils
+
 
 def getAllSamTools():
     """
@@ -35,13 +37,6 @@ def getSpecificSamTool(toolCommand):
     return {toolCommand: toolClass()}
 
 
-def completion():
-    """
-    If the script is executed to generate autocomplete choices.
-    """
-    return '_ARGCOMPLETE' and 'COMP_LINE' in os.environ
-
-
 def getBestSamTools():
     """
     Optimization to get sam tools as a dict {name: intance, ...}.
@@ -49,7 +44,7 @@ def getBestSamTools():
     """
     # get command line as an array
     cmdLine = []
-    if completion():
+    if samUtils.completion():
         cmdLine = os.environ['COMP_LINE'].split()
     else:
         cmdLine = sys.argv
@@ -97,7 +92,7 @@ if __name__ == '__main__':
 
     # Activate completion
     # collects completions, prints them to the output stream, and exits
-    if completion():
+    if samUtils.completion():
         argcomplete.autocomplete(parser)
 
     # Parse command-line
