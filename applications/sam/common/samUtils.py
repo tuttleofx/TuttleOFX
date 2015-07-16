@@ -27,6 +27,9 @@ class Sam(object):
         self.logger = logging.getLogger('SAM')
         self.logger.setLevel(logging.DEBUG)
 
+        # Add a console handler
+        self.addConsoleHandler()
+
     def fillParser(self, parser):
         """
         To fill the given parser.
@@ -45,18 +48,23 @@ class Sam(object):
         """
         # create console handler
         ch = logging.StreamHandler()
-        # default log level
-        if tuttleVerboseLevel is None:
-            ch.setLevel(logging.ERROR)
-        else:
-            ch.setLevel(10*tuttleVerboseLevel) # fit to python logging levels
+        # set a default log level
+        ch.setLevel(logging.ERROR)
 
         # create formatter
         formatter = logging.Formatter("%(asctime)s - %(name)s %(levelname)s - %(message)s")
-        # add formatter to ch
+        # set formatter
         ch.setFormatter(formatter)
-        # add ch to logger
+        # add console handler to logger
         self.logger.addHandler(ch)
+
+    def setLogLevel(self, tuttleVerboseLevel):
+        """
+        Set log level of all handlers of the logger.
+        """
+        if tuttleVerboseLevel is not None:
+            for handler in self.logger.handlers:
+                handler.setLevel(10*tuttleVerboseLevel) # fit to python logging levels
 
 
 def completion():

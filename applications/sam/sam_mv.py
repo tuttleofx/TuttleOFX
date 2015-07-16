@@ -167,9 +167,6 @@ class Sam_mv(samUtils.Sam):
         # Parse command-line
         args = parser.parse_args()
 
-        # Add sam logger
-        self.addConsoleHandler()
-
         # check command line
         if args.offset and (args.outputFirst is not None or args.outputLast is not None):
             puts(colored.red('Error: you cannot cumulate multiple options to modify the time.'))
