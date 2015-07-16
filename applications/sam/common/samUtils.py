@@ -74,7 +74,7 @@ def doCompletion(parser):
     Else, the function does nothing.
     """
     if completion():
-        argcomplete.autocomplete(parser)
+        argcomplete.autocomplete(parser, always_complete_options=False)
 
 
 def sequenceParserCompleter(prefix, parsed_args, **kwargs):
