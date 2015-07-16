@@ -180,8 +180,6 @@ public:
 	avtranscoder::Frame _videoFrame;
 	avtranscoder::ProfileLoader _presetLoader;
 
-	double _outputFps;
-
 	bool _initVideo;  ///< To check if video stream is init.
 	bool _initWrap;  ///< To check if initial wrap of output file is done.
 };

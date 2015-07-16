@@ -394,10 +394,10 @@ OFX::ValueParam* LibAVParams::getOFXParameter( const std::string& libAVOptionNam
 	return NULL;
 }
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& detailedName )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, const avtranscoder::OptionArray& optionsArray, const std::string& prefix, const std::string& detailedName )
 {
 	OFX::ParamDescriptor* param = NULL;
-	BOOST_FOREACH( avtranscoder::Option& option, optionsArray )
+	BOOST_FOREACH( const avtranscoder::Option& option, optionsArray )
 	{
 		std::string name = prefix;
 		if( ! detailedName.empty() )
@@ -531,13 +531,13 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 	}
 }
 
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, const avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix )
 {
 	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
+	BOOST_FOREACH( const avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
 	{
 		const std::string detailedName = subGroupOption.first;
-		avtranscoder::OptionArray& options = subGroupOption.second;
+		const avtranscoder::OptionArray& options = subGroupOption.second;
 		
 		addOptionsToGroup( desc, group, options, prefix, detailedName );
 	}
@@ -595,16 +595,16 @@ std::string getOptionFlagName( const std::string& optionName, const std::string&
 	return flagName;
 }
 
-void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& filter, const std::string& prefix )
+void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, const avtranscoder::OptionArrayMap& optionArrayMap, const std::string& filter, const std::string& prefix )
 {
 	// iterate on map keys
-	BOOST_FOREACH( avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
+	BOOST_FOREACH( const avtranscoder::OptionArrayMap::value_type& subGroupOption, optionArrayMap )
 	{
 		const std::string detailedName = subGroupOption.first;
-		avtranscoder::OptionArray& options = subGroupOption.second;
+		const avtranscoder::OptionArray& options = subGroupOption.second;
 
 		// iterate on options
-		BOOST_FOREACH( avtranscoder::Option& option, options )
+		BOOST_FOREACH( const avtranscoder::Option& option, options )
 		{
 			std::string name = prefix;
 			name += detailedName;

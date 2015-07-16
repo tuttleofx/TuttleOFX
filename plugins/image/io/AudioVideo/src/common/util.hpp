@@ -119,7 +119,7 @@ private:
  * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
  * @param detailedName: informed this to add an other prefix (the codec name) to the name of each OFX params created by the function
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& detailedName="" );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group, const avtranscoder::OptionArray& optionsArray, const std::string& prefix="", const std::string& detailedName="" );
 
 /**
  * @brief: Create OFX parameters depending on the list of Options.
@@ -128,7 +128,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
  * @param optionArrayMap: options to add to the group (organized by the keys in the map)
  * @param prefix: informed this to add a prefix to the name of each OFX params created by the function
  */
-void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
+void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescriptor* group,  const avtranscoder::OptionArrayMap& optionArrayMap, const std::string& prefix="" );
 
 /**
  * @brief Get the real name of the AVOption, without our prefix.
@@ -154,7 +154,7 @@ std::string getOptionFlagName( const std::string& optionName, const std::string&
  * @param filter: could be the format or the codec name.
  * @param prefix: prefix of the related OFX parameters.
  */
-void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, avtranscoder::OptionArrayMap& optionArrayMap, const std::string& filter, const std::string& prefix );
+void disableOFXParamsForFormatOrCodec( OFX::ImageEffect& plugin, const avtranscoder::OptionArrayMap& optionArrayMap, const std::string& filter, const std::string& prefix );
 
 }
 }
