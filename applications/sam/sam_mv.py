@@ -6,8 +6,6 @@ import os
 import argparse
 import shutil
 
-# python modules to easily get completion, colors, indent text...
-import argcomplete
 from clint.textui import colored, puts
 
 # parser of sequence

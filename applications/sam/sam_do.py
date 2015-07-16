@@ -5,12 +5,7 @@
 import argparse
 import itertools
 
-# python modules to easily get completion
-import argcomplete
 from clint.textui import colored, puts, indent
-
-# parser of sequence
-from pySequenceParser import sequenceParser
 
 # openFX host
 from pyTuttle import tuttle

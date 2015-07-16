@@ -5,8 +5,6 @@
 import os
 import argparse
 
-# python modules to easily get completion, colors, indent text...
-import argcomplete
 from clint.textui import colored, puts
 
 # parser of sequence

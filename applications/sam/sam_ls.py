@@ -6,8 +6,6 @@ import os
 from datetime import date
 import argparse
 
-# python modules to easily get completion, colors, indent text...
-import argcomplete
 from clint.textui import colored, puts, indent
 
 # parser of sequence
