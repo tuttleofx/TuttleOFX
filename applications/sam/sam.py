@@ -6,8 +6,6 @@ import sys
 import os
 import argparse
 
-import argcomplete
-
 from clint.textui import puts, colored
 
 from common import samUtils
@@ -92,8 +90,7 @@ if __name__ == '__main__':
 
     # Activate completion
     # collects completions, prints them to the output stream, and exits
-    if samUtils.completion():
-        argcomplete.autocomplete(parser)
+    samUtils.doCompletion(parser)
 
     # Parse command-line
     args, unknown = parser.parse_known_args()

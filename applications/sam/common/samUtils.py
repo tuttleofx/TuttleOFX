@@ -7,6 +7,7 @@ import argparse
 
 # python modules to easily get colors, indent text...
 from clint.textui import colored, puts
+import argcomplete
 
 # parser of sequence
 from pySequenceParser import sequenceParser
@@ -64,6 +65,16 @@ def completion():
     If the script is executed to generate autocomplete choices.
     """
     return '_ARGCOMPLETE' and 'COMP_LINE' in os.environ
+
+
+def doCompletion(parser):
+    """
+    Activate completion by using argcomplete module.
+    If the script is running by argcomplete to collect completions, it prints them to the output stream, and exits.
+    Else, the function does nothing.
+    """
+    if completion():
+        argcomplete.autocomplete(parser)
 
 
 def sequenceParserCompleter(prefix, parsed_args, **kwargs):

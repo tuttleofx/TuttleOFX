@@ -38,7 +38,7 @@ if __name__ == '__main__':
     tool.fillParser(parser)
 
     # Activate completion
-    argcomplete.autocomplete(parser)
+    samUtils.doCompletion(parser)
 
     # Run the command
     tool.run(parser)
