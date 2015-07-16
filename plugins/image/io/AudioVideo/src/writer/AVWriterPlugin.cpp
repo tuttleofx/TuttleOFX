@@ -376,9 +376,14 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 		if( ! _paramFilepath->getValue().empty() )
 		{
 			const avtranscoder::OutputFile output( _paramFilepath->getValue() );
-			const std::string extension = output.getFormatName();
-			if( ! extension.empty() )
+			std::istringstream extensions( output.getFormatName() );
+			if( extensions.rdbuf()->in_avail() )
+			{
+				// use first format defined in the file to set the list of formats
+				std::string extension;
+				std::getline( extensions, extension, ',' );
 				setFormatParam( extension );
+			}
 		}
 	}
 	// format
