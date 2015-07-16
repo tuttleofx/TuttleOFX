@@ -112,7 +112,6 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		
 		// set video stream
 		_inputStreamVideo.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
-		_inputStreamVideo->setup();
 	}
 	catch( std::exception& e )
 	{
@@ -469,7 +468,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	ensureVideoIsOpen();
 
 	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile() );
-	_inputStreamVideo->setProfile( _paramVideoCustom.getCorrespondingProfile() );
+	_inputStreamVideo->setupDecoder( _paramVideoCustom.getCorrespondingProfile() );
 
 	// get source image
 	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc() );

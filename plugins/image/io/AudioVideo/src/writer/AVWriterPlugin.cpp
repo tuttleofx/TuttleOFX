@@ -374,10 +374,12 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	// filename
 	if( paramName == kTuttlePluginFilename )
 	{
-		const std::string extension = avtranscoder::getFormat( _paramFilepath->getValue() );
-		if( ! extension.empty() )
+		if( ! _paramFilepath->getValue().empty() )
 		{
-			setFormatParam( extension );
+			const avtranscoder::OutputFile output( _paramFilepath->getValue() );
+			const std::string extension = output.getFormatName();
+			if( ! extension.empty() )
+				setFormatParam( extension );
 		}
 	}
 	// format
