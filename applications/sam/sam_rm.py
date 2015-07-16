@@ -5,7 +5,7 @@
 import os
 import argparse
 
-from clint.textui import colored, puts
+from clint.textui import colored
 
 # parser of sequence
 from pySequenceParser import sequenceParser
@@ -56,7 +56,7 @@ class Sam_rm(samUtils.Sam):
             try:
                 os.rmdir(os.path.join(filePath, (item.getFilename() if item.getFilename() != '.' else '')))
             except OSError:
-                puts(colored.red('Error: you cannot remove a folder which contains elements like this. If you still want to, see "-R" option.'))
+                self.logger.error('You cannot remove a folder which contains elements like this. If you still want to, see "-R" option.')
                 return 1
             return 0
 
@@ -85,7 +85,7 @@ class Sam_rm(samUtils.Sam):
                 filePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
                 os.remove(os.path.join(filePathInSequence))
             except OSError:
-                puts(colored.red('Error: cannot find file "' + filePathInSequence + '" in sequence.'))
+                self.logger.error('Cannot find file "' + filePathInSequence + '" in sequence.')
                 error = 1
         return error
 
@@ -144,11 +144,11 @@ class Sam_rm(samUtils.Sam):
 
         # check command line
         if args.range and (args.firstImage is not None or args.lastImage is not None):
-            puts(colored.red('Error: you cannot cumulate multiple options to specify the range of sequence.'))
+            self.logger.error('You cannot cumulate multiple options to specify the range of sequence.')
             exit(1)
 
         if '.' in args.inputs or '..' in args.inputs:
-            puts(colored.red('Error: you cannot remove folders "." or "..".'))
+            self.logger.error('You cannot remove folders "." or "..".')
             exit(1)
 
         # sam-rm -a
@@ -188,7 +188,7 @@ class Sam_rm(samUtils.Sam):
 
             # print error if no items were found
             if len(items) == 0:
-                puts(colored.red('Error: no file or folders correspond to "' + input + '".'))
+                self.logger.error('No file or folders correspond to "' + input + '".')
                 error = 1
                 continue
 
