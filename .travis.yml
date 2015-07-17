@@ -3,6 +3,8 @@ env:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "NvoMZI1lDLmdoKMgAJnNp3RzdRMYGfWL4buwPdIRyjJ522AIceVrT59x0//JB2bdbrABibo/o5TPP1dUGBJlVp9N250R0pjKz8zlehTL++6Y5z0zGWF9WRXOzrvTOCDpUAjJ24zwIREFy02qHmhcEbAy5+IE8aw9s3eZxsngL54="
+
+    - DEPENDENCIES_INSTALL=${TRAVIS_BUILD_DIR}/install-dependencies
     - TUTTLE_BUILD=${TRAVIS_BUILD_DIR}/build-tuttle
     - TUTTLE_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
     - CI_NODE_TOTAL=2
@@ -17,6 +19,9 @@ compiler:
   - gcc
   - clang
 
+# Use container-based infrastructure
+sudo: false
+
 matrix:
   exclude:
     - os: osx
@@ -26,9 +31,12 @@ matrix:
   fast_finish: true
 
 cache:
+  # Caching Ubuntu packages
   apt: true
+  # Caching other directories
   directories:
-  - /usr/local/Cellar
+  - ${DEPENDENCIES_INSTALL}
+  - ${TRAVIS_BUILD_DIR}/TuttleOFX-data
 
 before_install:
   - env | sort  
@@ -58,6 +66,49 @@ after_failure:
   - cat ${TUTTLE_BUILD}/CMakeFiles/CMakeOutput.log
 
 addons:
+  apt:
+    sources: ['boost-latest', 'kalakris-cmake', 'kubuntu-backports']
+    packages:
+    - cmake    
+    - swig
+    - libboost1.55-all-dev
+    - python-dev
+    - python-numpy
+    - libfreetype6-dev
+    - libbz2-dev
+    - libltdl-dev
+    - libpng-dev
+    - libjpeg-dev
+    - libglew-dev
+    - libtiff4-dev
+    - libilmbase-dev
+    - libopenexr-dev
+    - libglew-dev
+    - libgraphviz-dev
+    - graphviz-dev
+    - python-nose
+    - python-imaging
+    - libturbojpeg
+    - libxmu-dev
+    - libmp3lame-dev
+    - liblzma-dev
+    - libxt-dev
+    - libmagickcore-dev
+    - liblcms2-dev
+    - libyaml-dev
+    
+    # Currently, these following packages are not available.
+    # Checkout this list: https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
+    - libopenctl0.8
+    - libcaca-dev
+    - libraw-dev
+    - libopenjpeg-dev
+    - libglui-dev
+    - libtinyxml-dev
+    - libopenimageio-dev
+    - yasm
+    - libx264-dev
+    - libxvidcore-dev
   coverity_scan:
     project:
       name: "tuttleofx/TuttleOFX"

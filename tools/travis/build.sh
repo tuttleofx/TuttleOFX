@@ -9,10 +9,16 @@ set -x
 mkdir -p ${TUTTLE_BUILD}
 cd ${TUTTLE_BUILD}
 
-# Ask cmake to search in all homebrew packages
-CMAKE_PREFIX_PATH=$(echo /usr/local/Cellar/*/* | sed 's/ /;/g')
+if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+    # Ask cmake to search in all dependencies we've installed manually
+    export CMAKE_PREFIX_PATH=$DEPENDENCIES_INSTALL
+elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+    # Ask cmake to search in all homebrew packages
+    export CMAKE_PREFIX_PATH=$(echo /usr/local/Cellar/*/* | sed 's/ /;/g')
+fi
 
 # Build tuttle
+cmake --version
 cmake -DTUTTLE_EXPERIMENTAL=True -DCMAKE_INSTALL_PREFIX=${TUTTLE_INSTALL} -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH ..
 make -j${CI_NODE_TOTAL} -k
 make install
