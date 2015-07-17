@@ -178,14 +178,14 @@ AVProcessParams AVWriterPlugin::getProcessParams()
 
 	params._outputFilePath = _paramFilepath->getValue();
 	
-	params._format = _paramFormat->getValue();
-	params._formatName = getFormatName( params._format );
+	params._formatId = _paramFormat->getValue();
+	params._formatName = getFormatName( params._formatId );
 	
-	params._videoCodec = _paramVideoCodec->getValue();
-	params._videoCodecName = getVideoCodecName( params._videoCodec );
+	params._videoCodecId = _paramVideoCodec->getValue();
+	params._videoCodecName = getVideoCodecName( params._videoCodecId );
 	
-	params._audioCodec = _paramAudioCodec->getValue();
-	params._audioCodecName = getAudioCodecName( params._audioCodec );
+	params._audioCodecId = _paramAudioCodec->getValue();
+	params._audioCodecName = getAudioCodecName( params._audioCodecId );
 
 	params._videoPixelFormatName = getPixelFormatName( params._videoCodecName );
 	params._audioSampleFormatName = getSampleFormatName( params._audioCodecName );
@@ -1010,10 +1010,10 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 		profile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
 		profile[ avtranscoder::constants::avProfileFormat ] = params._formatName;
 
-		avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile();
+		const avtranscoder::ProfileLoader::Profile formatProfile = _paramFormatCustom.getCorrespondingProfile();
 		profile.insert( formatProfile.begin(), formatProfile.end() );
 
-		avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._formatName );
+		const avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._formatName );
 		profile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
 
 		cleanProfile( profile, common::kPrefixFormat );
