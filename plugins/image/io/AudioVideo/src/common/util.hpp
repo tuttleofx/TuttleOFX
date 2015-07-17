@@ -98,7 +98,7 @@ private:
 	 */
 	std::vector<OFX::ValueParam*> _paramOFX;
 
-	FlagOFXPerOption _paramFlagOFXPerOption;  ///< List of OFX Boolean per libav flag option name
+	FlagOFXPerOption _paramFlagOFXPerOption;  ///< List of OFX Boolean per flag option name
 
 	std::map< OFX::ChoiceParam*, std::vector<std::string> > _childsPerChoice;  ///< List of values per OFX Choice
 
