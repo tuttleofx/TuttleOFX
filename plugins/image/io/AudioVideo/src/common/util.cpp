@@ -186,7 +186,8 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
 		if( paramInt )
 		{
-			if( libavOption.getDefaultInt() == paramInt->getValue() )
+			// exception for threads
+			if( libavOption.getDefaultInt() == paramInt->getValue() && libavOption.getName() != kOptionThreads )
 				continue;
 
 			libavOptionValue = boost::to_string( paramInt->getValue() );
