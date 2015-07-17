@@ -23,6 +23,10 @@ namespace reader {
 struct AVReaderParams
 {
 	std::string _filepath;
+	std::string _inputFormatName;
+
+	const avtranscoder::FileProperties* _inputProperties;
+	const avtranscoder::VideoProperties* _inputVideoProperties;
 };
 
 /**
