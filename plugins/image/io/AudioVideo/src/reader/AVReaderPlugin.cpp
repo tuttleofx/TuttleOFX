@@ -467,8 +467,41 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 
 	ensureVideoIsOpen();
 
-	_inputFile->setProfile( _paramFormatCustom.getCorrespondingProfile() );
-	_inputStreamVideo->setupDecoder( _paramVideoCustom.getCorrespondingProfile() );
+	const avtranscoder::FileProperties& fileProperties = _inputFile->getProperties();
+
+	// set format
+	avtranscoder::ProfileLoader::Profile formatProfile;
+	formatProfile[ avtranscoder::constants::avProfileIdentificator ] = "customFormatPreset";
+	formatProfile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom format preset";
+	formatProfile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
+	// format options
+	const avtranscoder::ProfileLoader::Profile formatCommonProfile = _paramFormatCustom.getCorrespondingProfile();
+	formatProfile.insert( formatCommonProfile.begin(), formatCommonProfile.end() );
+	// format detail options
+	std::istringstream formats( fileProperties.getFormatName() );
+	if( formats.rdbuf()->in_avail() )
+	{
+		// use first format defined in the file to set the list of formats
+		std::string format;
+		std::getline( formats, format, ',' );
+		const avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( format );
+		formatProfile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
+	}
+	_inputFile->setProfile( formatProfile );
+
+	// set video decoder
+	avtranscoder::ProfileLoader::Profile videoProfile;
+	videoProfile[ avtranscoder::constants::avProfileIdentificator ] = "customVideoPreset";
+	videoProfile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom video preset";
+	videoProfile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeVideo;
+	// video options
+	const avtranscoder::ProfileLoader::Profile videoCommonProfile = _paramVideoCustom.getCorrespondingProfile();
+	videoProfile.insert( videoCommonProfile.begin(), videoCommonProfile.end() );
+	// video detail options
+	const std::string videoCodecName = fileProperties.getVideoProperties().at( _paramVideoStreamIndex->getValue() ).getCodecName();
+	const avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( videoCodecName );
+	videoProfile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
+	_inputStreamVideo->setupDecoder( videoProfile );
 
 	// get source image
 	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc() );
