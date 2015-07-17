@@ -177,12 +177,15 @@ if (TuttleBoost_FOUND)
             PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
     endif(APPLE)
 
+    # get path to install python bindings
+    tuttle_get_path_to_install_python(TUTTLE_INSTALL_PYTHON)
+
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
+        DESTINATION ${TUTTLE_INSTALL_PYTHON}/pyTuttle OPTIONAL)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
-    install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle/__init__.py)")
+        DESTINATION ${TUTTLE_INSTALL_PYTHON}/pyTuttle OPTIONAL)
+    install(CODE "file(WRITE ${TUTTLE_INSTALL_PYTHON}/pyTuttle/__init__.py)")
 
     # pySequenceParser
     set(SEQUENCEPARSER_PYTHON_BINDING_FILE ../sequenceParser/src/sequenceParser.i)
@@ -205,10 +208,10 @@ if (TuttleBoost_FOUND)
 
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_sequenceParser_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
+        DESTINATION ${TUTTLE_INSTALL_PYTHON}/pySequenceParser OPTIONAL)
     install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/sequenceParser.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
-    install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser/__init__.py)")
+        DESTINATION ${TUTTLE_INSTALL_PYTHON}/pySequenceParser OPTIONAL)
+    install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/${TUTTLE_INSTALL_PYTHON}/pySequenceParser/__init__.py)")
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")
