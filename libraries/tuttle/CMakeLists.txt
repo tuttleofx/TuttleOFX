@@ -141,6 +141,7 @@ if (TuttleBoost_FOUND)
     # Numpy
     if(WITHOUT_NUMPY)
         # Add swig flag to create binding without Numpy
+        message("Build TuttleOFX python binding without numpy module.")
         set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
     else()
         # Find numpy headers

@@ -41,4 +41,3 @@ def testUnusedNodes():
 	# Trying to compute all nodes should raise an error
 	# on unconnected filters (invert and pushpixel).
 	assert_raises(Exception, g.compute, outputCache)
-

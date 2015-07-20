@@ -27,5 +27,3 @@ def testOutputMemoryCache():
 	print('imgRes:', dir( imgRes ))
 	print('FullName:', imgRes.getFullName())
 	print('MemorySize:', imgRes.getMemorySize())
-
-	img = imgRes.getNumpyImage()

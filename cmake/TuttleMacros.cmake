@@ -39,8 +39,8 @@ endfunction(tuttle_get_path_to_install_python)
 # Install dynamic libraries in the TUTTLE/lib folder
 function(tuttle_install_shared_libs LIBRARIES)
     foreach(lib ${LIBRARIES})
-        # Is is a shared library ?
-        if (${lib} MATCHES ".*\\.so.*")
+        # Is it a shared library?
+        if(${lib} MATCHES ".*\\.so.*")
             get_filename_component(realpath ${lib} REALPATH) 
             tuttle_get_library_soname(${realpath} SONAME)
             message("will copy and rename ${realpath} to ${SONAME}") 
