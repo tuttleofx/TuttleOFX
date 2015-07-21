@@ -60,7 +60,9 @@ script:
       exit 0;
     fi
   - tools/travis/build.sh
-  - tools/travis/launch_tests.sh
+
+  # launch tests
+  - if [ ${CC} = "gcc" ]; then tools/travis/launch_tests.sh; fi
 
 after_failure:
   - cat ${TUTTLE_BUILD}/CMakeFiles/CMakeOutput.log
