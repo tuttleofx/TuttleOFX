@@ -105,7 +105,6 @@ addons:
     - libopenjpeg-dev
     - libglui-dev
     - libtinyxml-dev
-    - libopenimageio-dev
     - yasm
     - libx264-dev
     - libxvidcore-dev
