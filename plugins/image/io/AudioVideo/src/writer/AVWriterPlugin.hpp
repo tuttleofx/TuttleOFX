@@ -24,17 +24,17 @@ struct AVProcessParams
 {
 	std::string _outputFilePath; ///< Filepath
 	
-	int         _format;      ///< Format
-	std::string _formatName;      ///< Format name
+	int         _formatId;
+	std::string _formatName;
 	
-	int         _videoCodec;  ///< Video codec
-	std::string _videoCodecName;  ///< Video codec name
+	int         _videoCodecId;
+	std::string _videoCodecName;
 	
-	int         _audioCodec;  ///< Audio codec
-	std::string _audioCodecName;  ///< Audio codec name
+	int         _audioCodecId;
+	std::string _audioCodecName;
 	
-	std::string _videoPixelFormatName; /// videoPixelFormat name
-	std::string _audioSampleFormatName; /// audioSampleFormat name
+	std::string _videoPixelFormatName;
+	std::string _audioSampleFormatName;
 
 	avtranscoder::PropertyVector _metadatas;
 };
@@ -179,8 +179,6 @@ public:
 	// to process video
 	avtranscoder::Frame _videoFrame;
 	avtranscoder::ProfileLoader _presetLoader;
-
-	double _outputFps;
 
 	bool _initVideo;  ///< To check if video stream is init.
 	bool _initWrap;  ///< To check if initial wrap of output file is done.

@@ -1,7 +1,8 @@
 ![TuttleOFX](https://github.com/tuttleofx/TuttleOFX/raw/master/plugins/_scripts/ImageEffectApi/Resources/L_ProjectName_.png "TuttleOFX")TuttleOFX
 ========================
-**Project under early development.**
-  
+
+[![Build Status](https://travis-ci.org/tuttleofx/TuttleOFX.svg?branch=develop)](https://travis-ci.org/tuttleofx/TuttleOFX)
+
 TuttleOFX project is an image processing framework based on [OpenFX plugin format](http://openfx.sourceforge.net/).  
 More informations on the official website :[http://www.tuttleofx.org](http://www.tuttleofx.org).
 
@@ -19,7 +20,6 @@ See [**COPYING.md**](COPYING.md)
 
 Compilation
 -----------
-
 Getting the source
 >    `git clone --recursive git://github.com/tuttleofx/TuttleOFX.git`  
 
@@ -28,8 +28,12 @@ See [**INSTALL.md**](INSTALL.md)
 
 Plugin creation
 ---------------
-
 See [**plugins/_scripts/README.md**](plugins/_scripts/README.md)
+
+
+Documentation
+-----------
+See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX/).
 
 
 Tested compilers
