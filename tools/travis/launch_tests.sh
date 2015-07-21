@@ -6,11 +6,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${DEPENDENCIES_INSTALL}/lib:${TUTTLE_INS
 export PYTHONPATH=${TUTTLE_INSTALL}/lib/python2.7/site-packages:$PYTHONPATH
 
 # clone data for tests
-if [ ! -d "${TRAVIS_BUILD_DIR}/TuttleOFX-data" ]; then
-    git clone https://github.com/tuttleofx/TuttleOFX-data.git
-else
-    echo 'Using cached directory.';
-fi
+git clone https://github.com/tuttleofx/TuttleOFX-data.git
 
 # nosetests
 ln -s ${TRAVIS_BUILD_DIR}/TuttleOFX-data ${TRAVIS_BUILD_DIR}/libraries/tuttle/pyTest/TuttleOFX-data

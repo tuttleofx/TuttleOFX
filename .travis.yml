@@ -28,7 +28,6 @@ cache:
   # Caching other directories
   directories:
   - ${DEPENDENCIES_INSTALL}
-  - ${TRAVIS_BUILD_DIR}/TuttleOFX-data
 
 before_install:
   - env | sort  
