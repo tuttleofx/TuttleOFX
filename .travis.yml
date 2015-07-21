@@ -117,3 +117,17 @@ addons:
     notification_email: "tuttleofx-team@googlegroups.com"
     build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
+
+before_deploy:
+  # create archive
+  - cd ${TRAVIS_BUILD_DIR}
+  - tar -cvzf tuttle-${TRAVIS_OS_NAME}-${CC}.tgz ${TUTTLE_INSTALL}
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ${GITHUB_RELEASE_API_KEY}
+  file: tuttle-${TRAVIS_OS_NAME}-${CC}.tgz
+  skip_cleanup: true
+  on:
+    branch: master
