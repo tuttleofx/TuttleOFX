@@ -33,7 +33,7 @@ See [**plugins/_scripts/README.md**](plugins/_scripts/README.md)
 
 Documentation
 -----------
-See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX/).
+See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX-doxygen/).
 
 
 Tested compilers
