@@ -9,16 +9,6 @@ install(
 )
 install(CODE "file(WRITE ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/common/__init__.py)")
 
-# sam
-add_custom_target(sam SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py")
-add_dependencies(sam sam_ls sam_mv sam_cp sam_rm sam_do)
-
-install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py"
-    PERMISSIONS WORLD_EXECUTE WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION "share/python/sam"
-)
-
 # sam_ls
 add_custom_target(sam_ls SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam_ls.py")
 add_dependencies(sam_ls _sequenceparser-py)
@@ -66,6 +56,16 @@ add_dependencies(sam_do _sequenceparser-py _tuttle)
 install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam_do.py"
     PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    DESTINATION "share/python/sam"
+)
+
+# sam
+add_custom_target(sam SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py")
+add_dependencies(sam sam_ls sam_mv sam_cp sam_rm sam_do)
+
+install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/sam.py"
+    PERMISSIONS WORLD_EXECUTE WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ OWNER_EXECUTE OWNER_WRITE OWNER_READ
     DESTINATION "share/python/sam"
 )
 
