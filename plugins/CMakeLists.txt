@@ -2,7 +2,6 @@
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 add_subdirectory(image/io/AudioVideo)
-add_subdirectory(image/Dummy)
 add_subdirectory(image/display/ColorCubeViewer)
 add_subdirectory(image/display/Histogram)
 add_subdirectory(image/display/Viewer)

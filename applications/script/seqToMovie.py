@@ -1,47 +1,34 @@
-import os, sys
+#!/usr/bin/env python
+
+import os
 import time
 import argparse
 
 from pyTuttle import tuttle
 
 
-def getReaderId():
+def getReaderId(inputSequence):
 	"""
 	Get tuttle node id of best reader for the given sequence.
 	"""
-	import getBestPlugin
         readerNodeId = 0
 	try:
-		filename, fileExtension = os.path.splitext(args.inputSequence)
-		readerNodeId = getBestPlugin.getBestReader(fileExtension)
+		readerNodeId = tuttle.getBestReader(inputSequence)
+                return readerNodeId
 	except Exception:
-		pass
-
-	if not readerNodeId:
 		raise ValueError("Could not read input. Please give a filename as first argument.")
 
-	return readerNodeId
 
-
-def getSequence(filepath):
+def getSequence(inputSequence):
 	"""
-	Get sequence from the given file path (any image of the sequence).
+	Get sequence from the given file path.
 	"""
 	from pySequenceParser import sequenceParser
-	items = sequenceParser.browse(
-			filepath,
-			(sequenceParser.eDetectionSequenceFromFilename |
-			 sequenceParser.eDetectionIgnoreDotFile))
-	if len(items) == 0:
-		raise ValueError("No image sequence found for '%s'." % filepath)
-	elif len(items) > 1:
-		raise ValueError("Too many different image sequences found for '%s'." % filepath)
-
-	imgseq = items[0]
-	if imgseq._type != sequenceParser.eTypeSequence:
-		raise ValueError("Sequence '%s' is not recognized as an image sequence." % filepath)
-	
-	return imgseq
+	sequence = sequenceParser.Sequence()
+        isSequence = sequenceParser.browseSequence(sequence, inputSequence)
+        if isSequence:
+            return sequence
+        raise ValueError("Given input '%s' is not recognized as an image sequence." % inputSequence)
 
 
 def interactiveMode():
@@ -52,9 +39,9 @@ def interactiveMode():
 
 	### Video preset
 	videoPresets = [
-		("H264", "h264"),
+		("H264", "h264-lq"),
 		("DNxHD 120", "dnxhd120"),
-		("PRORES HQ", "proreshq"),
+		("PRORES", "proresproxy"),
 	]
 	videoPresetsChoices = "Select output video presets:\n"
 	for i, (preset, _) in enumerate(videoPresets):
@@ -140,7 +127,7 @@ class ProgressHandle(tuttle.IProgressHandle):
 		Print what the script will do based on what the user indicated in the command-line.
 		"""
 		print("===== Resume =====")
-		print(" > Make the movie '%s' from sequence '%s'" % (args.outputFile, sequenceName))
+		print(" > Make the movie '%s' from sequence '%s'" % (args.outputFile, args.inputSequence))
 		print(" > Output video preset: %s" % args.videoPreset)
 		print(" > Output video fps: %s" % args.fps)
 		if args.width:
@@ -180,11 +167,11 @@ parser = argparse.ArgumentParser(
 	description='''Python script to convert an image sequence to a movie.''',
 	)
 # requirements
-parser.add_argument('inputSequence', help='It could be any file of the sequence.')
+parser.add_argument('inputSequence', help='The input sequence to process.')
 parser.add_argument('outputFile', help='The output video filename.')
 # options
 parser.add_argument("-i", "--interactive", dest="interactive", default=False, action="store_true", help="shell asks questions instead of reading options")
-parser.add_argument("-v", "--videoPreset", dest="videoPreset", default="x264-low", help="set output preset : x264-hq, prores-hq, MpegII-intra-hq... (default=x264-low)")
+parser.add_argument("-v", "--videoPreset", dest="videoPreset", type=str, help="set output preset : x264-hq, prores-hq, MpegII-intra-hq...")
 parser.add_argument("-f", "--fps", dest="fps", type=float, default=25, help="set output movie framerate (default=25)")
 parser.add_argument("-w", "--width", dest="width", type=int, help="set output horizontal movie width in pixels: 1920, 1280... (default=same as input)")
 parser.add_argument("-r", "--ratio", dest="ratio", type=float, help="set output movie ratio: 1.33 (4/3), 1.77 (16/9), 1.85, 2.35 (cinemascope)... (default=same as input)")
@@ -196,9 +183,7 @@ parser.add_argument("-t", "--text", dest="text", default=False, action="store_tr
 args = parser.parse_args()
 
 ### Get sequence
-sequenceItem = getSequence(args.inputSequence)
-sequence = sequenceItem._sequence
-sequenceName = sequenceItem._folder + "/" + sequenceItem._filename
+sequence = getSequence(args.inputSequence)
 
 if args.interactive:
 	interactiveMode()
@@ -215,7 +200,7 @@ progress = ProgressHandle()
 options.setProgressHandle(progress)
 
 ### Create reader node
-nodes.append(graph.createNode(getReaderId(), filename=sequenceName))
+nodes.append(graph.createNode(getReaderId(args.inputSequence), filename=args.inputSequence))
 
 # Depend on input, manage color conversion
 fileExtension = os.path.splitext(args.inputSequence)[1].lower()
@@ -240,14 +225,12 @@ if args.lut:
 	nodes.append(graph.createNode("tuttle.ocio.lut", filename=args.lutPath))
 
 ### Create text node
-textSize = 400
-textFont = "utopia"
 if args.text:
-	nodes.append(graph.createNode("tuttle.text", text=str(time.strftime("%Y / %m / %d")), size=textSize, vAlign="bottom", hAlign="left", font=textFont))
-       	nodes.append(graph.createNode("tuttle.text", text=sequenceName, size=textSize, vAlign="bottom", hAlign="right", font=textFont, bold=True))
+	nodes.append(graph.createNode("tuttle.text", text=str(time.strftime("%Y / %m / %d")), vAlign="bottom", hAlign="left", font="utopia"))
+       	nodes.append(graph.createNode("tuttle.text", text=args.inputSequence, vAlign="bottom", hAlign="right", font="utopia", bold=True))
 
 ### Create writer node
-nodes.append(graph.createNode("tuttle.avwriter", filename=args.outputFile, v_preset=str(args.videoPreset), v_customFps=args.fps))
+nodes.append(graph.createNode("tuttle.avwriter", filename=args.outputFile, verbose=True, v_preset=(args.videoPreset if args.videoPreset is not None else 'custom'), v_customFps=args.fps))
 
 ### Process
 if nodes:

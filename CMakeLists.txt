@@ -16,6 +16,7 @@ add_definitions(-DTUTTLE_EXPERIMENTAL=${TUTTLE_EXPERIMENTAL})
 add_custom_target(ofxplugins)
 
 # Include subdirs
+add_subdirectory(libraries/sequenceParser)
 add_subdirectory(libraries/tuttle)
 add_subdirectory(plugins)
 add_subdirectory(applications)
