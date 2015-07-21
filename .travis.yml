@@ -95,7 +95,6 @@ addons:
     # Checkout this list: https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
     - libopenctl0.8
     - libcaca-dev
-    - libraw-dev
     - libopenjpeg-dev
     - libglui-dev
     - libtinyxml-dev
