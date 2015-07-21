@@ -445,7 +445,8 @@ class Sam_do(samUtils.Sam):
         graphsWithNodes = [self._getTuttleGraph(splitCmdGraph) for splitCmdGraph in splitCmd.getGraphs()]
 
         if not graphsWithNodes:
-            self.logger.warning('Nothing to compute.')
+            self.logger.error('No tuttle graph to compute.')
+            exit(1)
 
         # Compute the corresponding tuttle graphs
         for graph, nodes in graphsWithNodes:
@@ -476,14 +477,17 @@ class Sam_do(samUtils.Sam):
             progress = samDoUtils.ProgressHandle(ranges)
             options.setProgressHandle(progress)
 
+            if not nodes:
+                self.logger.warning('No nodes to compute')
+                continue
+
             # Connect and compute
-            if len(nodes) > 1:
-                try:
-                    graph.compute(nodes[-1], options)
-                except Exception as e:
-                    self.logger.error('Tuttle graph computation failed.')
-                    self.logger.debug(e)
-                self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
+            try:
+                graph.compute(nodes[-1], options)
+            except Exception as e:
+                self.logger.error('Tuttle graph computation failed.')
+                self.logger.debug(e)
+            self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
 
 if __name__ == '__main__':
