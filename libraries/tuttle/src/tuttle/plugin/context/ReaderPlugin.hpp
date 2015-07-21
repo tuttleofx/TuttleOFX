@@ -6,12 +6,15 @@
 #include "ReaderDefinition.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <Sequence.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+#include <Sequence.hpp> // sequenceParser
 
 
 namespace tuttle {
 namespace plugin {
+
+namespace bfs = boost::filesystem;
 
 class ReaderPlugin : public OFX::ImageEffect
 {
@@ -28,71 +31,17 @@ public:
 	virtual void render( const OFX::RenderArguments& args );
 
 public:
-	std::string getAbsoluteFilenameAt( const OfxTime time ) const
-	{
-		//TUTTLE_LOG_VAR( TUTTLE_INFO, time );
-		if( _isSequence )
-		{
-			//TUTTLE_LOG_VAR( TUTTLE_INFO, _filePattern.getAbsoluteFilenameAt( time ) );
-			return _filePattern.getAbsoluteFilenameAt( static_cast<std::ssize_t>(time) );
-		}
-		else
-		{
-			//TUTTLE_LOG_VAR( TUTTLE_INFO, _paramFilepath->getValue() );
-			return _paramFilepath->getValue();
-		}
-	}
+	std::string getAbsoluteFilenameAt( const OfxTime time ) const;
+	std::string getAbsoluteFirstFilename() const;
+	std::string getAbsoluteDirectory() const ;
 
-	std::string getAbsoluteFirstFilename() const
-	{
-		if( _isSequence )
-			return _filePattern.getAbsoluteFirstFilename();
-		else
-			return _paramFilepath->getValue();
-	}
+	OfxTime getFirstTime() const;
+	OfxTime getLastTime() const;
 
-	OfxTime getFirstTime() const
-	{
-		if( _isSequence )
-			return _filePattern.getFirstTime();
-		else
-			return kOfxFlagInfiniteMin;
-	}
-
-	OfxTime getLastTime() const
-	{
-		if( _isSequence )
-			return _filePattern.getLastTime();
-		else
-			return kOfxFlagInfiniteMax;
-	}
-
-	EParamReaderBitDepth getExplicitBitDepthConversion() const
-	{
-		return static_cast<EParamReaderBitDepth>( _paramBitDepth->getValue() );
-	}
-
+	EParamReaderBitDepth getExplicitBitDepthConversion() const;
+	EParamReaderChannel getExplicitChannelConversion() const;
 	
-	EParamReaderChannel getExplicitChannelConversion() const
-	{
-		return static_cast<EParamReaderChannel>( _paramChannel->getValue() );
-	}
-	
-	OFX::EBitDepth getOfxExplicitConversion() const
-	{
-		switch( getExplicitBitDepthConversion() )
-		{
-			case eParamReaderBitDepthByte:
-				return OFX::eBitDepthUByte;
-			case eParamReaderBitDepthShort:
-				return OFX::eBitDepthUShort;
-			case eParamReaderBitDepthFloat:
-				return OFX::eBitDepthFloat;
-			case eParamReaderBitDepthAuto:
-				BOOST_THROW_EXCEPTION( exception::Value() );
-		}
-		return OFX::eBitDepthNone;
-	}
+	OFX::EBitDepth getOfxExplicitConversion() const;
 
 protected:
 	virtual inline bool varyOnTime() const { return _isSequence; }

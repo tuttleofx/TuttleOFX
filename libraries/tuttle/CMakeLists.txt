@@ -82,13 +82,6 @@ if (TuttleBoost_FOUND)
   # There is a basic fallback implementation for boost_atomic:
   # libraries/tuttle/src/tuttle/common/atomic.hpp
   # target_compile_definitions(tuttleHost PUBLIC WITHOUT_BOOST_ATOMIC)
-
-  # Add a target with only object files to avoid recompiling sequence parser
-  # multiple times
-  add_library(sequenceParser SHARED ${SEQUENCEPARSER_FILES}) 
-  set_target_properties(sequenceParser
-                        PROPERTIES COMPILE_FLAGS "-fPIC")
-  target_link_libraries(sequenceParser ${Boost_LIBRARIES})
   
   # Adds a support library for common and plugins
   # only compile object files, and use them at link time
@@ -100,7 +93,7 @@ if (TuttleBoost_FOUND)
   target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
 
   # Utilities for OFX plugins
-  target_link_libraries(tuttlePluginLib sequenceParser) 
+  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
   set_target_properties(tuttlePluginLib
                         PROPERTIES COMPILE_FLAGS "-fPIC")
 
@@ -109,7 +102,6 @@ if (TuttleBoost_FOUND)
   install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttleCommon DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttlePluginLib DESTINATION lib/ OPTIONAL)
-  install(TARGETS sequenceParser DESTINATION lib/ OPTIONAL)
 
   # Install tuttle host headers
   install(
@@ -185,34 +177,6 @@ if (TuttleBoost_FOUND)
     file(WRITE "__init__.py" "")
     install(FILES "__init__.py" 
         DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
-
-    # pySequenceParser
-    set(SEQUENCEPARSER_PYTHON_BINDING_FILE ../sequenceParser/src/sequenceParser.i)
-    set_source_files_properties(${SEQUENCEPARSER_PYTHON_BINDING_FILE} PROPERTIES CPLUSPLUS ON) 
-
-    # Create the output dir as it's not done automatically by cmake
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../sequenceParser/src)
-    swig_add_module(sequenceParser python ${SEQUENCEPARSER_PYTHON_BINDING_FILE})
-    swig_link_libraries(sequenceParser sequenceParser)
-    swig_link_libraries(sequenceParser ${Boost_LIBRARIES})
-    swig_link_libraries(sequenceParser ${PYTHON_LIBRARIES})
-    # Force the library to look in the project lib folder relatively
-    if (APPLE)
-      set_target_properties(${SWIG_MODULE_sequenceParser_REAL_NAME} 
-            PROPERTIES INSTALL_RPATH "@loader_path/../../..")
-    else(APPLE)
-        set_target_properties(${SWIG_MODULE_sequenceParser_REAL_NAME}
-            PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
-    endif(APPLE)
-
-    # Install python libs and wrapper in INSTALL_PREFIX/lib/python
-    install(TARGETS ${SWIG_MODULE_sequenceParser_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
-    install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/sequenceParser.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
-    file(WRITE "__init__.py" "")
-    install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pySequenceParser OPTIONAL)
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")

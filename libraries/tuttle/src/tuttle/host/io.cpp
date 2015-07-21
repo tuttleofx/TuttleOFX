@@ -87,26 +87,16 @@ std::string getFileExtension( const std::string& filename )
 	size_t pos = filename.find_last_of( "." );
 	if( pos == std::string::npos )
 	{
-		#ifdef _WIN32
-		const std::string os_pathsep( ";" );
-		#else
-		const std::string os_pathsep( ":" );
-		#endif
-		if( filename.find( os_pathsep ) != std::string::npos )
-		{
-			BOOST_THROW_EXCEPTION( exception::File( filename )
-				<< exception::user() + "Filename has no extension \"" + filename + "\"."
-				<< exception::dev() + "Filename has no extension \"" + filename + "\"." );
-		}
-		return filename;
+		BOOST_THROW_EXCEPTION( exception::File( filename )
+			<< exception::user() + "Filename has no extension \"" + filename + "\"."
+			<< exception::dev() + "Filename has no extension \"" + filename + "\"." );
 	}
 	return filename.substr( pos );
 }
 
 std::vector< std::string > _getReaders( const std::string& extension )
 {
-	const char* context = "OfxImageEffectContextReader";
-	return getIOPluginsForExtension( extension, std::string( context ) );
+	return getIOPluginsForExtension( extension, kOfxImageEffectContextReader );
 }
 
 std::vector< std::string > getReaders( const std::string& filename )
@@ -160,8 +150,7 @@ std::string getBestReader( const std::string& filename )
 
 std::vector< std::string > _getWriters( const std::string& extension )
 {
-	const char* context = "OfxImageEffectContextWriter";
-	return getIOPluginsForExtension( extension, std::string( context ) );
+	return getIOPluginsForExtension( extension, kOfxImageEffectContextWriter );
 }
 
 std::vector< std::string > getWriters( const std::string& filename )
