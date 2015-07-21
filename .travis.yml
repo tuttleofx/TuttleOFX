@@ -22,14 +22,6 @@ env:
     - TUTTLE_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
     - CI_NODE_TOTAL=2
 
-matrix:
-  exclude:
-    - os: osx
-      compiler: gcc
-  allow_failures:
-    - os: osx  # we exceed the time limit
-  fast_finish: true
-
 cache:
   # Caching Ubuntu packages
   apt: true
