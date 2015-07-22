@@ -40,8 +40,6 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	
 	_paramFileCompression = fetchChoiceParam( kParamCompression );
 	_paramFileBitDepth = fetchChoiceParam( kParamFileBitDepth );
-
-	updateCombos();
 }
 
 EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
