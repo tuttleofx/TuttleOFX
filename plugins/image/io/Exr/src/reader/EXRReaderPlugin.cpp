@@ -71,11 +71,6 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 		}
 	}
 	
-	params._redChannelIndex   = _paramRedComponents->getValue();
-	params._greenChannelIndex = _paramGreenComponents->getValue();
-	params._blueChannelIndex  = _paramBlueComponents->getValue();
-	params._alphaChannelIndex = _paramAlphaComponents->getValue();
-	
 	params._displayWindow     = ( _paramOutputData->getValue() == 0 );
 	
 	return params;

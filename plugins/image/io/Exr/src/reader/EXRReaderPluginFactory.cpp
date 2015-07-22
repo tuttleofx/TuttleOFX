@@ -71,6 +71,8 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	outRedIs->appendOption( "3" );
 	outRedIs->setLabel( "Red is" );
 	outRedIs->setDefault( 0 );
+	outRedIs->setHint(
+		"Read-only information to get index of red component in the file.");
 
 	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kParamOutputGreenIs );
 	outGreenIs->appendOption( "0" );
@@ -79,6 +81,8 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	outGreenIs->appendOption( "3" );
 	outGreenIs->setLabel( "Green is" );
 	outGreenIs->setDefault( 0 );
+	outGreenIs->setHint(
+		"Read-only information to get index of green component in the file.");
 
 	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kParamOutputBlueIs );
 	outBlueIs->appendOption( "0" );
@@ -87,6 +91,8 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	outBlueIs->appendOption( "3" );
 	outBlueIs->setLabel( "Blue is" );
 	outBlueIs->setDefault( 0 );
+	outBlueIs->setHint(
+		"Read-only information to get index of blue component in the file.");
 
 	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kParamOutputAlphaIs );
 	outAlphaIs->appendOption( "0" );
@@ -95,6 +101,8 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	outAlphaIs->appendOption( "3" );
 	outAlphaIs->setLabel( "Alpha is" );
 	outAlphaIs->setDefault( 0 );
+	outAlphaIs->setHint(
+		"Read-only information to get index of alpha component in the file.");
 
 	OFX::ChoiceParamDescriptor* outputData = desc.defineChoiceParam( kParamOutputData );
 	outputData->appendOption( "display" );
