@@ -1,7 +1,6 @@
-#include <EXRDefinitions.hpp>
-#include "EXRWriterPlugin.hpp"
 #include "EXRWriterProcess.hpp"
-
+#include "EXRWriterDefinitions.hpp"
+#include "EXRWriterPlugin.hpp"
 
 #include <terry/globals.hpp>
 #include <terry/openexr/half.hpp>

@@ -4,8 +4,6 @@
 
 #include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
-#include <string>
-
 namespace tuttle {
 namespace plugin {
 namespace exr {
