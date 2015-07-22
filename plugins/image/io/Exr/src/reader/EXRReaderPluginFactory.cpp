@@ -124,6 +124,8 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	compression->appendOption( kParamCompressionB44, kParamCompressionHintB44 );
 	compression->appendOption( kParamCompressionB44A, kParamCompressionHintB44A );
 	compression->setDefault( eParamCompression_None );
+	compression->setHint(
+		"Read-only information about the image compression stored in the file.");
 }
 
 /**
