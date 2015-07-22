@@ -22,6 +22,12 @@ env:
     - TUTTLE_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
     - CI_NODE_TOTAL=2
 
+matrix:
+  allow_failures:
+    # we exceed the time limit
+    - os: osx
+  fast_finish: true
+
 cache:
   # Caching Ubuntu packages
   apt: true
@@ -81,6 +87,7 @@ addons:
     - graphviz-dev
     - python-nose
     - python-imaging
+    - libopenjpeg-dev
     - libturbojpeg
     - libxmu-dev
     - libmp3lame-dev
@@ -94,7 +101,6 @@ addons:
     # Checkout this list: https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
     - libopenctl0.8
     - libcaca-dev
-    - libopenjpeg-dev
     - libglui-dev
     - libtinyxml-dev
     - yasm
