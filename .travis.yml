@@ -1,59 +1,110 @@
+language: cpp
+
+# Use container-based infrastructure
+sudo: false
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
+
 env:
   global:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "NvoMZI1lDLmdoKMgAJnNp3RzdRMYGfWL4buwPdIRyjJ522AIceVrT59x0//JB2bdbrABibo/o5TPP1dUGBJlVp9N250R0pjKz8zlehTL++6Y5z0zGWF9WRXOzrvTOCDpUAjJ24zwIREFy02qHmhcEbAy5+IE8aw9s3eZxsngL54="
 
-os:
-  - linux
-  - osx
-
-language: cpp
-
-compiler:
-  - gcc
-  - clang
+    - DEPENDENCIES_INSTALL=${TRAVIS_BUILD_DIR}/install-dependencies
+    - TUTTLE_BUILD=${TRAVIS_BUILD_DIR}/build-tuttle
+    - TUTTLE_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
+    - CI_NODE_TOTAL=2
 
 matrix:
-  exclude:
-    - os: osx
-      compiler: gcc
   allow_failures:
-    - os: osx  # we exceed the time limit
+    # we exceed the time limit
+    - os: osx
   fast_finish: true
 
 cache:
+  # Caching Ubuntu packages
   apt: true
+  # Caching other directories
   directories:
-  - /usr/local/Cellar
+  - ${DEPENDENCIES_INSTALL}
 
 before_install:
-   - date -u
-   - uname -a
-   - export J='-j3'
+  - env | sort  
+  - date -u
+  - uname -a
+  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+      lsb_release -a;
+    elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+      sw_vers -productVersion;
+    fi
 
 install:
   - tools/travis/coverity_env.sh
-  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]];
-    then
-        exit 0;
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
+      exit 0;
     fi
-  - tools/travis/install_dependencies.sh > install_dependencies.log 2>&1
+  - tools/travis/install_dependencies.sh
 
 script:
-  - if [[ ${COVERITY_SCAN_BRANCH} == 1 ]];
-    then
-      echo "Don't build on coverty_scan branch.";
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
       exit 0;
     fi
   - tools/travis/build.sh
 
+  # launch tests
+  - if [ ${CC} = "gcc" ]; then tools/travis/launch_tests.sh; fi
 
 after_failure:
-  - cat install_dependencies.log || true
-  - cat build_travis/CMakeFiles/CMakeOutput.log
+  - cat ${TUTTLE_BUILD}/CMakeFiles/CMakeOutput.log
 
 addons:
+  apt:
+    sources: ['boost-latest', 'kalakris-cmake', 'kubuntu-backports']
+    packages:
+    - cmake    
+    - swig
+    - libboost1.55-all-dev
+    - python-dev
+    - python-numpy
+    - libfreetype6-dev
+    - libbz2-dev
+    - libltdl-dev
+    - libpng-dev
+    - libjpeg-dev
+    - libraw-dev
+    - libglew-dev
+    - libtiff4-dev
+    - libilmbase-dev
+    - libopenexr-dev
+    - libopenimageio-dev
+    - libglew-dev
+    - libgraphviz-dev
+    - graphviz-dev
+    - python-nose
+    - python-imaging
+    - libopenjpeg-dev
+    - libturbojpeg
+    - libxmu-dev
+    - libmp3lame-dev
+    - liblzma-dev
+    - libxt-dev
+    - libmagickcore-dev
+    - liblcms2-dev
+    - libyaml-dev
+    - libopenctl0.8
+    - libcaca-dev
+    - libglui-dev
+    - libtinyxml-dev
+    - yasm
+    - libx264-dev
+    - libxvidcore-dev
   coverity_scan:
     project:
       name: "tuttleofx/TuttleOFX"
@@ -62,3 +113,16 @@ addons:
     build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
 
+before_deploy:
+  # create archive
+  - cd ${TRAVIS_BUILD_DIR}
+  - tar -cvzf tuttle-${TRAVIS_OS_NAME}-${CC}.tgz ${TUTTLE_INSTALL}
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ${GITHUB_RELEASE_API_KEY}
+  file: tuttle-${TRAVIS_OS_NAME}-${CC}.tgz
+  skip_cleanup: true
+  on:
+    branch: master

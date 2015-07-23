@@ -133,6 +133,7 @@ if (TuttleBoost_FOUND)
     # Numpy
     if(WITHOUT_NUMPY)
         # Add swig flag to create binding without Numpy
+        message("Build TuttleOFX python binding without numpy module.")
         set(SWIG_NUMPY_FLAG "-DWITHOUT_NUMPY")
     else()
         # Find numpy headers
@@ -169,17 +170,21 @@ if (TuttleBoost_FOUND)
             PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
     endif(APPLE)
 
+    # get path to install python bindings
+    tuttle_get_path_to_install_python(TUTTLE_INSTALL_PYTHON)
+
     # Install python libs and wrapper in INSTALL_PREFIX/lib/python
     install(TARGETS ${SWIG_MODULE_tuttle_REAL_NAME} 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
-    install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
-    file(WRITE "__init__.py" "")
-    install(FILES "__init__.py" 
-        DESTINATION lib/python${PYTHONLIBS_VERSION_STRING}/site-packages/pyTuttle OPTIONAL)
+        DESTINATION ${TUTTLE_INSTALL_PYTHON}/pyTuttle OPTIONAL)
+    install(FILES ${CMAKE_BINARY_DIR}/libraries/tuttle/tuttle.py
+        DESTINATION ${TUTTLE_INSTALL_PYTHON}/pyTuttle OPTIONAL)
+    install(CODE "file(WRITE ${TUTTLE_INSTALL_PYTHON}/pyTuttle/__init__.py)")
 
   else(SWIG_FOUND)
     message("SWIG not found, will not build python bindings")
   endif(SWIG_FOUND)
+
+  # Build boot unit tests of host and plugins
+  add_subdirectory(tests)
 
 endif(TuttleBoost_FOUND)
