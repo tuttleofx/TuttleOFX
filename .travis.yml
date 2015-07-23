@@ -78,10 +78,12 @@ addons:
     - libltdl-dev
     - libpng-dev
     - libjpeg-dev
+    - libraw-dev
     - libglew-dev
     - libtiff4-dev
     - libilmbase-dev
     - libopenexr-dev
+    - libopenimageio-dev
     - libglew-dev
     - libgraphviz-dev
     - graphviz-dev
@@ -96,9 +98,6 @@ addons:
     - libmagickcore-dev
     - liblcms2-dev
     - libyaml-dev
-    
-    # Currently, these following packages are not available.
-    # Checkout this list: https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
     - libopenctl0.8
     - libcaca-dev
     - libglui-dev
