@@ -1,9 +1,7 @@
-#ifndef EXRWRITER_DEFINITIONS_HPP
-#define EXRWRITER_DEFINITIONS_HPP
+#ifndef EXR_DEFINITIONS_HPP
+#define EXR_DEFINITIONS_HPP
 
 #include <tuttle/plugin/global.hpp>
-
-#include <tuttle/plugin/context/WriterDefinition.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -26,16 +24,6 @@ enum ETuttlePluginComponents
 	eTuttlePluginComponentsRGB,
 	eTuttlePluginComponentsRGBA,
 	eTuttlePluginComponentsABGR
-};
-
-static const std::string kParamStorageType     = "storage";
-static const std::string kParamStorageScanLine = "scanLine";
-static const std::string kParamStorageTiles    = "tiles";
-
-enum EParamStorage
-{
-	eParamStorageScanLine = 0,
-	eParamStorageTiles
 };
 
 static const std::string kParamCompression = "compression";
@@ -130,4 +118,3 @@ static const std::string kParamCompressionHintB44A = "Lossy, 4-by-4 pixel block 
 }
 
 #endif
-

@@ -1,4 +1,5 @@
-#include <tuttle/test/unit_test.hpp>
+#define BOOST_TEST_MODULE tuttle_asynchronous
+#include <tuttle/test/main.hpp>
 
 #include <tuttle/host/ThreadEnv.hpp>
 #include <tuttle/host/Graph.hpp>

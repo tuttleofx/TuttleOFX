@@ -106,7 +106,10 @@ std::string ReaderPlugin::getAbsoluteFilenameAt( const OfxTime time ) const
 		return (dir / filename).string();
 	}
 	else
-		return _paramFilepath->getValue();
+	{
+		bfs::path filepath( _paramFilepath->getValue( ) );
+		return bfs::absolute( filepath ).string( );
+	}
 }
 
 std::string ReaderPlugin::getAbsoluteFirstFilename() const
@@ -118,7 +121,10 @@ std::string ReaderPlugin::getAbsoluteFirstFilename() const
 		return (dir / filename).string();
 	}
 	else
-		return _paramFilepath->getValue();
+	{
+		bfs::path filepath( _paramFilepath->getValue() );
+		return bfs::absolute(filepath).string();
+	}
 }
 
 std::string ReaderPlugin::getAbsoluteDirectory() const 

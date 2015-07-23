@@ -1,7 +1,6 @@
-# scons: pluginOpenImageIO pluginInvert pluginTimeShift pluginGamma pluginJpeg
-
 from pyTuttle import tuttle
 from nose.tools import *
+
 
 def setUp():
 	tuttle.core().preload(False)
@@ -29,6 +28,7 @@ def testRenameNode():
 	# rename to an existing name
 	assert_raises( Exception, g.renameNode, nodes[4], "plop" )
 
+
 def testDeleteNode():
 
 	g = tuttle.Graph()
@@ -53,6 +53,7 @@ def testDeleteNode():
 	lensdistort  = g.createNode( "tuttle.timeshift", 0 ).asImageEffectNode()
 
 	assert_equals(g.getNbNodes(), 6)
+
 
 def testClearGraph():
 
@@ -79,6 +80,7 @@ def testClearGraph():
 	lensdistort  = g.createNode( "tuttle.timeshift", 0 ).asImageEffectNode()
 
 	assert_equals(g.getNbNodes(), 2)
+
 
 def testDeleteUnconnectedNodes():
 
@@ -114,4 +116,3 @@ def testDeleteUnconnectedNodes():
 
 	assert_equals(g.getNbNodes(), 6)
 	assert_equals(g.getNbConnections(), 5)
-

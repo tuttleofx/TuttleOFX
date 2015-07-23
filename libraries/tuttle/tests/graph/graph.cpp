@@ -1,4 +1,5 @@
-#include <tuttle/test/unit_test.hpp>
+#define BOOST_TEST_MODULE tuttle_graph
+#include <tuttle/test/main.hpp>
 
 #include <tuttle/host/Graph.hpp>
 #include <tuttle/host/Node.hpp>

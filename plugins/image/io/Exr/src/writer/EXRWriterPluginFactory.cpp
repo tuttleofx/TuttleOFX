@@ -1,5 +1,5 @@
-#include <EXRDefinitions.hpp>
 #include "EXRWriterPluginFactory.hpp"
+#include "EXRWriterDefinitions.hpp"
 #include "EXRWriterPlugin.hpp"
 
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>

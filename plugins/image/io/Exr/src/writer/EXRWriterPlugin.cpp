@@ -1,6 +1,6 @@
+#include "EXRWriterDefinitions.hpp"
 #include "EXRWriterPlugin.hpp"
 #include "EXRWriterProcess.hpp"
-#include <EXRDefinitions.hpp>
 
 #include <boost/gil/gil_all.hpp>
 

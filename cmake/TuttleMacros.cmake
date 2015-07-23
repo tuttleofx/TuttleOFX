@@ -2,6 +2,7 @@
 # Custom macros, UseOfxpp UseTerry
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+
 # Returns the library LIBRARY soname in SONAME
 # CAVEAT this function is linux specific and has not been tested
 # on multiple systems
@@ -11,6 +12,7 @@ function(tuttle_get_library_soname LIBRARY SONAME)
         OUTPUT_VARIABLE soname)
     set(${SONAME} ${soname} PARENT_SCOPE)
 endfunction(tuttle_get_library_soname LIBRARY SONAME)
+
 
 # Returns architecture as defined by the OFX standard
 function(tuttle_ofx_architecture ARCH)
@@ -25,18 +27,27 @@ function(tuttle_ofx_architecture ARCH)
     endif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 endfunction(tuttle_ofx_architecture) 
 
+
+# Returns path where to install python bindings and tools
+function(tuttle_get_path_to_install_python TUTTLE_INSTALL_PYTHON)
+    find_package(PythonLibs)
+    string(SUBSTRING ${PYTHONLIBS_VERSION_STRING} 0 3 PYTHON_VERSION)
+    set(${TUTTLE_INSTALL_PYTHON} "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION}/site-packages" PARENT_SCOPE)
+endfunction(tuttle_get_path_to_install_python)
+
+
 # Install dynamic libraries in the TUTTLE/lib folder
 function(tuttle_install_shared_libs LIBRARIES)
     foreach(lib ${LIBRARIES})
-        # Is is a shared library ?
-        if (${lib} MATCHES ".*\\.so.*")
+        # Is it a shared library?
+        if(${lib} MATCHES ".*\\.so.*")
             get_filename_component(realpath ${lib} REALPATH) 
             tuttle_get_library_soname(${realpath} SONAME)
             message("will copy and rename ${realpath} to ${SONAME}") 
             install(FILES ${realpath} DESTINATION lib/ RENAME ${SONAME} NAMELINK_SKIP OPTIONAL)
         endif()
     endforeach(lib ${LIBRARIES})
-endfunction(tuttle_install_shared_libs )
+endfunction(tuttle_install_shared_libs)
 
 
 # Use this function to create a new plugin target
@@ -153,6 +164,7 @@ function(tuttle_find_package_paths PACKAGE_NAME INCLUDES LIBRARYPATH LIBRARIES)
     set (${LIBRARIES} ${libvar} PARENT_SCOPE)
 endfunction(tuttle_find_package_paths)
 
+
 # Add a package/library dependency to a plugin
 function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
     
@@ -198,6 +210,7 @@ function(tuttle_ofx_plugin_add_library PLUGIN_TARGET PACKAGE_NAME)
         message("${PLUGIN_TARGET} not found")
     endif(TARGET ${PLUGIN_TARGET})
 endfunction(tuttle_ofx_plugin_add_library) 
+
 
 # Add a list of packages to a plugin
 function(tuttle_ofx_plugin_add_libraries PLUGIN_TARGET PLUGIN_LIBRARIES)
@@ -249,6 +262,7 @@ function(tuttle_add_executable TARGET SOURCES)
         install(TARGETS ${TARGET} DESTINATION bin OPTIONAL)
     endif(TuttleBoost_FOUND)
 endfunction(tuttle_add_executable)
+
 
 # Add libraries to an executable.
 function(tuttle_executable_add_library TARGET PACKAGE)
