@@ -42,12 +42,14 @@ bool TurboJpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinition
 		unsigned char *jpegbuf = NULL;
 		unsigned long jpgbufsize = 0;
 
-		file = fopen( getAbsoluteFilenameAt( args.time ).c_str(), "rb" );
+		const std::string filepath = getAbsoluteFilenameAt( args.time );
+
+		file = fopen( filepath.c_str(), "rb" );
 		if( file == NULL )
 		{
 			BOOST_THROW_EXCEPTION( exception::File()
 				<< exception::user( "TurboJpeg: Unable to open file" )
-				<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
+				<< exception::filename( filepath ) );
 		}
 		
 		fseek( file, 0, SEEK_END );
@@ -68,7 +70,7 @@ bool TurboJpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinition
 		{
 			BOOST_THROW_EXCEPTION( exception::FileNotExist()
 				<< exception::user( tjGetErrorStr() )
-				<< exception::filename( getAbsoluteFilenameAt( args.time ) ) );
+				<< exception::filename( filepath ) );
 		}
 		
 		tjDestroy( jpeghandle );

@@ -1,9 +1,5 @@
 #include "ReaderPlugin.hpp"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/numeric/conversion/cast.hpp>
-
 #include <filesystem.hpp>
 
 namespace tuttle {
@@ -18,6 +14,7 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 {
 	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
+	_isSequence    = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
 	_paramChannel  = fetchChoiceParam( kTuttlePluginChannel );
 }

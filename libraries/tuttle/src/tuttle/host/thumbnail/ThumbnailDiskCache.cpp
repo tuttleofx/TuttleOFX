@@ -47,14 +47,7 @@ namespace host {
 	graph.setup();
 
 	OfxRangeD timeDomain = nodes.back()->getTimeDomain();
-	OfxTime time = timeDomain.min + (timeDomain.max - timeDomain.min) * 0.5;
-
-	// TODO: If it's a sequence, the middle frame may not exist.
-//	item = sequenceParser.browse(id)[0]
-//	if item._type is sequenceParser.eTypeSequence:
-//		fileAtTime = item._sequence.getAbsoluteFilenameAt(int(time))
-//		if not os.path.exists(fileAtTime):
-//			time = td.min
+	OfxTime time = timeDomain.min;
 
 	ComputeOptions cOptions;
 	cOptions.setVerboseLevel(eVerboseLevelTrace);
@@ -72,10 +65,20 @@ namespace host {
 const std::string ThumbnailDiskCache::s_thumbnailExtension(".png");
 const int ThumbnailDiskCache::s_thumbnailMaxSize(256);
 
+std::string ThumbnailDiskCache::keyToThumbnailPath( const KeyType& key ) const
+{
+	return _diskCacheTranslator.keyToAbsolutePath( key ).replace_extension(s_thumbnailExtension).string();
+}
+
+std::string ThumbnailDiskCache::getThumbnailPath( const boost::filesystem::path& imagePath ) const
+{
+	return keyToThumbnailPath( buildKey(imagePath) );
+}
+
 bool ThumbnailDiskCache::containsUpToDate( const boost::filesystem::path& imagePath ) const
 {
 	std::time_t thumbnailLastWriteTime; // thumbnail cached file time
-	if( ! _diskCacheTranslator.contains( _diskCacheTranslator.keyToAbsolutePath( buildKey(imagePath) ).replace_extension(".png"), thumbnailLastWriteTime ) )
+	if( ! _diskCacheTranslator.contains( getThumbnailPath(imagePath), thumbnailLastWriteTime ) )
 		return false;
 
 	boost::system::error_code error;
@@ -122,7 +125,7 @@ ThumbnailDiskCache::TImage ThumbnailDiskCache::getThumbnail( KeyType& key, const
 
 	// Load an existing thumbnail
 	key = buildKey(imagePath);
-	const boost::filesystem::path thumbnailPath = _diskCacheTranslator.keyToAbsolutePath( key ).replace_extension(s_thumbnailExtension);
+	const boost::filesystem::path thumbnailPath = keyToThumbnailPath(key);
 
 	return loadImage( thumbnailPath.string() );
 }

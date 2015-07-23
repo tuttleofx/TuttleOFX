@@ -31,6 +31,11 @@ public:
 	ThumbnailDiskCache()
 	{}
 
+	std::string keyToThumbnailPath( const KeyType& key ) const;
+
+	std::string getThumbnailPath( const boost::filesystem::path& imagePath ) const;
+	std::string getThumbnailPath( const std::string& imagePath ) const { return getThumbnailPath(boost::filesystem::path(imagePath)); }
+
 	/**
 	 * @brief Set the base directory for all cached files.
 	 */
