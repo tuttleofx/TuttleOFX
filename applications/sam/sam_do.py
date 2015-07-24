@@ -196,11 +196,11 @@ class Sam_do(samUtils.Sam):
 
             # Print
             with indent(4):
-                puts('{name:50}: {type:10} '.format(name=colored.green(param.getScriptName()), type=param.getParamTypeName()))
+                puts('{name!s:50}: {type:10} '.format(name=colored.green(param.getScriptName()), type=param.getParamTypeName()))
                 if len(choiceValues):
                     with indent(40):
                         for choiceValue in choiceValues:
-                            puts('{value:50} {label}'.format(
+                            puts('{value!s:50} {label}'.format(
                                 value=(colored.yellow(choiceValue) if choiceValues.index(choiceValue) == defaultValueIndex else colored.red(choiceValue)),
                                 label=(choiceLabelValues[choiceValues.index(choiceValue)] if hasLabel else '')))
                 with indent(2):
@@ -240,7 +240,7 @@ class Sam_do(samUtils.Sam):
 
             # Print
             with indent(4):
-                puts('{paramName:50}: {paramType:10} {default:9}'.format(
+                puts('{paramName!s:50}: {paramType!s:10} {default!s:9}'.format(
                     paramName=colored.green(param.getScriptName()), paramType=param.getParamTypeName(),
                     default=colored.yellow(','.join(defaultValue))),
                     newline=(False if hasMinMaxValues else True))
@@ -272,7 +272,7 @@ class Sam_do(samUtils.Sam):
             properties.append('use temporal access')
         # Print
         with indent(4):
-            puts('{clipName:10}: {clipComponents} {clipProperties}'.format(
+            puts('{clipName!s:10}: {clipComponents} {clipProperties}'.format(
                 clipName=colored.green(clip.getName()),
                 clipComponents=('[' + (', '.join(componentsStr)) + ']'),
                 clipProperties=(', '.join(properties))))
@@ -319,16 +319,16 @@ class Sam_do(samUtils.Sam):
             bitDepthValues = samUtils.getListValues(propBitDepth)
             bitDepthSourceStr = []
             bitDepthOutputStr = []
-            for bitDepthValue in bitDepthValues[:len(bitDepthValues)/2]:
+            for bitDepthValue in bitDepthValues[:int(len(bitDepthValues)/2)]:
                 bitDepthSourceStr.append(self._getNbBitsFromOfxBitDepth(bitDepthValue))
-            for bitDepthValue in bitDepthValues[len(bitDepthValues)/2:]:
+            for bitDepthValue in bitDepthValues[int(len(bitDepthValues)/2):]:
                 bitDepthOutputStr.append(self._getNbBitsFromOfxBitDepth(bitDepthValue))
             # Print
             with indent(4):
-                puts('{name:10}: [{bitdepth}]'.format(
+                puts('{name!s:10}: [{bitdepth}]'.format(
                     name=colored.green('Source'),
                     bitdepth=', '.join(bitDepthSourceStr)))
-                puts('{name:10}: [{bitdepth}]'.format(
+                puts('{name!s:10}: [{bitdepth}]'.format(
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
