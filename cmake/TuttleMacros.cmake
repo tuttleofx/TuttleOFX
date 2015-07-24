@@ -110,7 +110,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
-        target_link_libraries(${PLUGIN_NAME} ${Boost_LIBRARIES} tuttlePluginLib tuttleCommon)
+        target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
         set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX "${_plugin_version_suffix}.ofx")
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
         # Add this new plugin to the global alias ofxplugins

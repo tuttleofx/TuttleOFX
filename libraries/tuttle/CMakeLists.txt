@@ -91,11 +91,13 @@ if (TuttleBoost_FOUND)
   add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
   find_package(Threads)
   target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(tuttleCommon ${Boost_LIBRARIES})
 
   # Utilities for OFX plugins
   target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
   set_target_properties(tuttlePluginLib
                         PROPERTIES COMPILE_FLAGS "-fPIC")
+  target_link_libraries(tuttlePluginLib tuttleCommon)
 
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
