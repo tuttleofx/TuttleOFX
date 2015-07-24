@@ -43,7 +43,7 @@ void Formatter::init_logging()
 
 	 // Create a backend and attach a stream to it
 	boost::shared_ptr< sinks::text_ostream_backend > backend = boost::make_shared< sinks::text_ostream_backend >();
-	backend->add_stream( boost::shared_ptr< std::ostream >( &std::clog, boost::empty_deleter() ) );
+	backend->add_stream( boost::shared_ptr< std::ostream >( &std::clog, boost::null_deleter() ) );
 	//backend->add_stream( boost::shared_ptr< std::ostream >( new std::ofstream("sample.log") ) );
 
 	// Enable auto-flushing after each log record written
