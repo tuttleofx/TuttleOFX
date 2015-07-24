@@ -188,6 +188,7 @@ void OfxhImageEffectPlugin::initContexts()
 
 void OfxhImageEffectPlugin::loadAndDescribeActions()
 {
+	boost::mutex::scoped_lock locker( _mutex );
 	if( _pluginLoadGuard )
 	{
 		//TUTTLE_TLOG( TUTTLE_TRACE, "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );

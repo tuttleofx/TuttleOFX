@@ -71,6 +71,8 @@ public:
 	typedef std::set<std::string> ContextSet;
 
 private:
+	boost::mutex _mutex;
+
 	OfxhImageEffectPluginCache* _imageEffectPluginCache;
 
 	/// map to store contexts in
