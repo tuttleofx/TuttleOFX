@@ -14,7 +14,7 @@ def testOutputMemoryCache():
 		outputCache,
 		[
 			tuttle.NodeInit( "tuttle.checkerboard", format="PAL", explicitConversion="8i" ),
-			tuttle.NodeInit( "tuttle.colortransform", offsetGlobal=.2 ),
+			tuttle.NodeInit( "tuttle.blur", size=.2 ),
 			tuttle.NodeInit( "tuttle.invert" ),
 		] )
 
