@@ -149,25 +149,25 @@ def testNotTheSameClipIsUnconnected():
 	"""
 	a_g = tuttle.Graph()
 	a_read1 = a_g.createNode("tuttle.checkerboard", size=[50,50])
-	a_lensdistort = a_g.createNode("tuttle.fade")
-	a_g.connect(a_read1, a_lensdistort.getClip("SourceFrom"))
-	# a_lensdistort.getClip("SourceTo") is unconnected
+	a_fade = a_g.createNode("tuttle.fade")
+	a_g.connect(a_read1, a_fade.getClip("SourceFrom"))
+	# a_fade.getClip("SourceTo") is unconnected
 
 	b_g = tuttle.Graph()
 	b_read1 = b_g.createNode("tuttle.checkerboard", size=[50,50])
-	b_lensdistort = b_g.createNode("tuttle.fade")
-	b_g.connect(b_read1, b_lensdistort.getClip("SourceTo"))
-	# b_lensdistort.getClip("SourceFrom") is unconnected
-	
+	b_fade = b_g.createNode("tuttle.fade")
+	b_g.connect(b_read1, b_fade.getClip("SourceTo"))
+	# b_fade.getClip("SourceFrom") is unconnected
+
 	time = 0.0
 
 	aHashMap = tuttle.NodeHashContainer()
 	a_g.computeGlobalHashAtTime(aHashMap, time)
-	aHash = aHashMap.getHash(a_lensdistort.getName(), time)
+	aHash = aHashMap.getHash(a_fade.getName(), time)
 
 	bHashMap = tuttle.NodeHashContainer()
 	b_g.computeGlobalHashAtTime(bHashMap, time)
-	bHash = bHashMap.getHash(b_lensdistort.getName(), time)
+	bHash = bHashMap.getHash(b_fade.getName(), time)
 
 	assert_not_equal( aHash, bHash )
 
