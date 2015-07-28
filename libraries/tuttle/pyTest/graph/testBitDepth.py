@@ -11,7 +11,7 @@ def setUp():
 def testCompatibleBitDepth():
 	filepath = tempfile.NamedTemporaryFile( prefix="bitDepthTest-", suffix=".png" )
 	tuttle.compute( [
-		tuttle.NodeInit( "tuttle.checkerboard", size=[50,50] ),
+		tuttle.NodeInit( "tuttle.checkerboard", size=[50,50], explicitConversion="8i" ),
 		tuttle.NodeInit( "tuttle.swscale", height=500 ), # only supports 8ui
 		tuttle.NodeInit( "tuttle.pngwriter", filename=filepath.name ),
 		] )
