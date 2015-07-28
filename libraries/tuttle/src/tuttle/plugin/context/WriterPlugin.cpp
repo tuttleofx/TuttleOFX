@@ -1,14 +1,14 @@
 #include "WriterPlugin.hpp"
 
+#include <filesystem.hpp>
+
 #include <ofxCore.h>
 
-#include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/numeric/conversion/cast.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include <filesystem.hpp>
 #include <cstdio>
+
 
 namespace tuttle {
 namespace plugin {
@@ -32,6 +32,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_paramPremult = fetchBooleanParam( kParamPremultiplied );
 	_paramExistingFile = fetchChoiceParam( kParamWriterExistingFile );
 	_paramForceNewRender = fetchIntParam( kParamWriterForceNewRender );
+	_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 }
 
 WriterPlugin::~WriterPlugin( )
@@ -41,8 +42,7 @@ void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginFilename )
 	{
-		bfs::path path( _paramFilepath->getValue() );
-		_isSequence = sequenceParser::browseSequence( _filePattern, path.filename().string() );
+		_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 	}
 	else if( paramName == kParamWriterRender )
 	{
@@ -173,7 +173,10 @@ std::string WriterPlugin::getAbsoluteFilenameAt( const OfxTime time ) const
 		return (dir / filename).string();
 	}
 	else
-		return _paramFilepath->getValue();
+	{
+		bfs::path filepath( _paramFilepath->getValue( ) );
+		return bfs::absolute( filepath ).string( );
+	}
 }
 
 std::string WriterPlugin::getAbsoluteFirstFilename() const
@@ -185,7 +188,10 @@ std::string WriterPlugin::getAbsoluteFirstFilename() const
 		return (dir / filename).string();
 	}
 	else
-		return _paramFilepath->getValue();
+	{
+		bfs::path filepath( _paramFilepath->getValue( ) );
+		return bfs::absolute( filepath ).string( );
+	}
 }
 
 std::string WriterPlugin::getAbsoluteDirectory() const

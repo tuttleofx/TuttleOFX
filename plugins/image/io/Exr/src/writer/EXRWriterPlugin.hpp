@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_EXRWRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_EXRWRITER_PLUGIN_HPP_
 
-#include <EXRDefinitions.hpp>
+#include "EXRWriterDefinitions.hpp"
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
 namespace tuttle {

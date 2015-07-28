@@ -10,6 +10,9 @@
 
 #include <Sequence.hpp> // sequenceParser
 
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+
 
 namespace tuttle {
 namespace plugin {
@@ -33,7 +36,7 @@ public:
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const;
 	std::string getAbsoluteFirstFilename() const;
-	std::string getAbsoluteDirectory() const ;
+	std::string getAbsoluteDirectory() const;
 
 	OfxTime getFirstTime() const;
 	OfxTime getLastTime() const;

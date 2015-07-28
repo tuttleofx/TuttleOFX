@@ -190,7 +190,7 @@ class Sam_ls(samUtils.Sam):
                     level -= 1
                 except IOError as e:
                     # Permission denied for example
-                    print e
+                    self.logger.warning(e)
 
     def run(self, parser):
         """
@@ -239,7 +239,7 @@ class Sam_ls(samUtils.Sam):
                         items.append(sequenceParser.Item(sequence, os.getcwd()))
                     # else error
                     else:
-                        print e
+                        self.logger.warning(e)
                         continue
                 # else it's not a directory: try a new browse with the given input name as filter
                 else:

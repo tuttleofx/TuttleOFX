@@ -18,8 +18,8 @@ add_custom_target(ofxplugins)
 # Include subdirs
 add_subdirectory(libraries/sequenceParser)
 add_subdirectory(libraries/tuttle)
-add_subdirectory(plugins)
 add_subdirectory(applications)
+add_subdirectory(plugins)
 
 # Add a target to generate API documentation with Doxygen
 find_package(Doxygen)

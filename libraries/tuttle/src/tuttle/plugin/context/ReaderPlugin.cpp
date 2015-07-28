@@ -1,9 +1,5 @@
 #include "ReaderPlugin.hpp"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/numeric/conversion/cast.hpp>
-
 #include <filesystem.hpp>
 
 namespace tuttle {
@@ -18,6 +14,7 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 {
 	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath = fetchStringParam( kTuttlePluginFilename );
+	_isSequence    = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 	_paramBitDepth = fetchChoiceParam( kTuttlePluginBitDepth );
 	_paramChannel  = fetchChoiceParam( kTuttlePluginChannel );
 }
@@ -106,7 +103,10 @@ std::string ReaderPlugin::getAbsoluteFilenameAt( const OfxTime time ) const
 		return (dir / filename).string();
 	}
 	else
-		return _paramFilepath->getValue();
+	{
+		bfs::path filepath( _paramFilepath->getValue( ) );
+		return bfs::absolute( filepath ).string( );
+	}
 }
 
 std::string ReaderPlugin::getAbsoluteFirstFilename() const
@@ -118,7 +118,10 @@ std::string ReaderPlugin::getAbsoluteFirstFilename() const
 		return (dir / filename).string();
 	}
 	else
-		return _paramFilepath->getValue();
+	{
+		bfs::path filepath( _paramFilepath->getValue() );
+		return bfs::absolute(filepath).string();
+	}
 }
 
 std::string ReaderPlugin::getAbsoluteDirectory() const 
