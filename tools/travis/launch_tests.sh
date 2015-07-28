@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+# Print commands and their arguments as they are executed.
+set -x
+
 # set env
 export OFX_PLUGIN_PATH=${TUTTLE_INSTALL}/OFX
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${DEPENDENCIES_INSTALL}/lib:${TUTTLE_INSTALL}/lib
