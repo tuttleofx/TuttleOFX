@@ -3,4 +3,4 @@
 	url = http://github.com/mikrosimage/sequenceparser.git
 [submodule "plugins/image/io/AudioVideo/avTranscoder"]
 	path = plugins/image/io/AudioVideo/avTranscoder
-	url = https://github.com/mikrosimage/avTranscoder.git
+	url = https://github.com/avTranscoder/avTranscoder.git
