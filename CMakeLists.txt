@@ -12,6 +12,11 @@ if(NOT TUTTLE_EXPERIMENTAL)
 endif()
 add_definitions(-DTUTTLE_EXPERIMENTAL=${TUTTLE_EXPERIMENTAL})
 
+# Add a variable to install dependencies with tuttle when deploy
+if(NOT TUTTLE_DEPLOY_DEPENDENCIES)
+  set(TUTTLE_DEPLOY_DEPENDENCIES 0)
+endif()
+
 # Create an alias for all OFX plugins.
 add_custom_target(ofxplugins)
 

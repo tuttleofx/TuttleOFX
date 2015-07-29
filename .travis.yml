@@ -28,6 +28,9 @@ matrix:
     - os: osx
   fast_finish: true
 
+# This results in a 2×2 build matrix.
+# Where the variables are: os / compiler
+
 cache:
   # Caching Ubuntu packages
   apt: true
