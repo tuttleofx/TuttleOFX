@@ -69,15 +69,15 @@ void Formatter::setLogLevel_int( const int level )
 {
 	switch( level )
 	{
-		case 0: setLogLevel( boost::log::trivial::trace ); break;
-		case 1: setLogLevel( boost::log::trivial::debug ); break;
-		case 2: setLogLevel( boost::log::trivial::info ); break;
-		case 3: setLogLevel( boost::log::trivial::warning ); break;
-		case 4: setLogLevel( boost::log::trivial::error ); break;
-		case 5: setLogLevel( boost::log::trivial::fatal ); break;
+		case 0: setLogLevel( boost::log::trivial::fatal ); break;
+		case 1: setLogLevel( boost::log::trivial::error ); break;
+		case 2: setLogLevel( boost::log::trivial::warning ); break;
+		case 3: setLogLevel( boost::log::trivial::info ); break;
+		case 4: setLogLevel( boost::log::trivial::debug ); break;
+		case 5: setLogLevel( boost::log::trivial::trace ); break;
 		default:
 			setLogLevel( boost::log::trivial::warning );
-			TUTTLE_LOG_WARNING( "Unrecognized log level " << level << ", fallback to \"warning\" (3)." );
+			TUTTLE_LOG_WARNING( "Unrecognized log level " << level << ", fallback to \"warning\" (2)." );
 			break;
 	}
 }
@@ -85,12 +85,12 @@ void Formatter::setLogLevel_int( const int level )
 int logLevel_stringToInt( const std::string& level )
 {
 	static const std::vector<std::string> m = boost::assign::list_of
-		("trace")
-		("debug")
-		("info")
-		("warning")
+		("fatal")
 		("error")
-		("fatal");
+		("warning")
+		("info")
+		("debug")
+		("trace");
 	std::string lowerStrLevel = level;
 	boost::algorithm::to_lower(lowerStrLevel);
 	
@@ -98,8 +98,8 @@ int logLevel_stringToInt( const std::string& level )
 	
 	if( v == m.end() )
 	{
-		TUTTLE_LOG_WARNING( "Unrecognized log level " << quotes(level) << ", fallback to \"warning\" (3)." );
-		return 3;
+		TUTTLE_LOG_WARNING( "Unrecognized log level " << quotes(level) << ", fallback to \"warning\" (2)." );
+		return 2;
 	}
 	return std::distance(m.begin(), v);
 }
