@@ -332,6 +332,17 @@ class Sam_do(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
+    def _displayCommandLineHelp(self, parser):
+        """
+        Display sam-do command line help.
+        """
+        subparser = samUtils.getSubParser(parser, 'do')
+        # if sam-do is called from sam main command line
+        if subparser is not None:
+            puts(subparser.format_help())
+        else:
+            parser.print_help()
+
     def _getTuttleGraph(self, splitCmd):
         """
         Return the tuple (tuttle graph, its nodes) which corresponds to the given split command.
@@ -405,7 +416,7 @@ class Sam_do(samUtils.Sam):
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
-        # Set log level
+        # Set sam log level
         self.setLogLevel(args.verbose)
 
         # Clear plugin cache
@@ -430,11 +441,7 @@ class Sam_do(samUtils.Sam):
 
         # sam-do --help
         if len(args.inputs) == 0:
-            subparser = samUtils.getSubParser(parser, 'do')
-            if subparser is not None:
-                puts(subparser.format_help())
-                exit(0)
-            parser.print_help()
+            self._displayCommandLineHelp(parser)
             exit(0)
 
         # Add unknown options to the command line to process
