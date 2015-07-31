@@ -28,6 +28,10 @@ class SplitCmd:
         self._graph = []
         self._recursive = recursive
 
+        # check if there is a command
+        if not len(inputCommandLine):
+            return
+
         # Get general graph from the command line
         generalGraph = SplitCmdGraph(inputCommandLine)
 
