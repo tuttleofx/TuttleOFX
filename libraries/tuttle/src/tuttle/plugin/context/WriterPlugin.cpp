@@ -32,7 +32,6 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_paramPremult = fetchBooleanParam( kParamPremultiplied );
 	_paramExistingFile = fetchChoiceParam( kParamWriterExistingFile );
 	_paramForceNewRender = fetchIntParam( kParamWriterForceNewRender );
-	_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
 }
 
 WriterPlugin::~WriterPlugin( )
@@ -42,7 +41,8 @@ void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginFilename )
 	{
-		_isSequence = sequenceParser::browseSequence( _filePattern, _paramFilepath->getValue() );
+		const bfs::path filepath( _paramFilepath->getValue( ) );
+		_isSequence = _filePattern.initFromPattern( filepath.filename().string(), sequenceParser::ePatternAll );
 	}
 	else if( paramName == kParamWriterRender )
 	{
