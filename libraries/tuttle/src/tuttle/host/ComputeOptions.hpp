@@ -55,12 +55,12 @@ struct TimeRange
 
 enum EVerboseLevel
 {
-	eVerboseLevelTrace   = boost::log::trivial::trace,
-	eVerboseLevelDebug   = boost::log::trivial::debug,
-	eVerboseLevelInfo    = boost::log::trivial::info,
-	eVerboseLevelWarning = boost::log::trivial::warning,
-	eVerboseLevelError   = boost::log::trivial::error,
-	eVerboseLevelFatal   = boost::log::trivial::fatal
+	eVerboseLevelFatal,
+	eVerboseLevelError,
+	eVerboseLevelWarning,
+	eVerboseLevelInfo,
+	eVerboseLevelDebug,
+	eVerboseLevelTrace
 };
 
 class ComputeOptions
@@ -224,7 +224,7 @@ public:
 	 */
 	This& setVerboseLevel( const EVerboseLevel level )
 	{
-		tuttle::common::Formatter::get()->setLogLevel( static_cast<boost::log::trivial::severity_level>( level ) );
+		tuttle::common::Formatter::get()->setLogLevel_int( static_cast<int>( level ) );
 		return *this;
 	}
 	
