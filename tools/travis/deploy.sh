@@ -13,4 +13,4 @@ fi
 
 # Create archive
 cd ${TRAVIS_BUILD_DIR}
-tar -czf tuttle-${_system_name}-${_system_version}-${_system_arch}-${CC}.tgz install-tuttle
+tar -czf ${TUTTLE_DEPLOY}-${CC}.tgz install-tuttle
