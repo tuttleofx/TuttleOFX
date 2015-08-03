@@ -21,6 +21,11 @@ License
 See [**COPYING.md**](COPYING.md)
 
 
+How to use
+-------
+See [**USAGE.md**](USAGE.md)
+
+
 Compilation
 -----------
 Getting the source
