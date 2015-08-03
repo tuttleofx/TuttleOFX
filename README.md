@@ -12,40 +12,34 @@ The project is composed of 4 main parts:
 > - **Tuttle plugins**, a set of OpenFX plugins for image processing and image/video IO.  
 > - **Sam**, a set of command line tools.  
 
-[![Stories in Ready](https://badge.waffle.io/tuttleofx/tuttleofx.svg?label=1 - Ready)](http://waffle.io/tuttleofx/tuttleofx) <br />
-TuttleOFX is alive! <br/>
+[![Stories in Ready](https://badge.waffle.io/tuttleofx/tuttleofx.svg?label=1 - Ready)](http://waffle.io/tuttleofx/tuttleofx)  
+TuttleOFX is alive!  
 See the next development steps with this badge above.
 
-License
--------
+## License
 See [**COPYING.md**](COPYING.md)
 
 
-How to use
--------
+## How to use
 See [**USAGE.md**](USAGE.md)
 
 
-Documentation
------------
+## Documentation
 See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX-doxygen/).
 
 
-Compilation
------------
+## Compilation
 Getting the source
 >    `git clone --recursive git://github.com/tuttleofx/TuttleOFX.git`  
 
 See [**INSTALL.md**](INSTALL.md)
 
 
-Plugin creation
----------------
+## Plugin creation
 See [**plugins/_scripts/README.md**](plugins/_scripts/README.md)
 
 
-More information 
------------
+## More information
 
 Check TuttleOFX website for more information. 
 >[http://www.tuttleofx.org](http://www.tuttleofx.org)
@@ -57,8 +51,7 @@ OpenFX plugin standard.
 >[http://openfx.sourceforge.net](http://openfx.sourceforge.net)
 
 
-Contact
------------
+## Contact
 
 Developers mailing-list (public)
 > [tuttleofx-dev@googlegroups.com](mailto:tuttleofx-dev@googlegroups.com)  
