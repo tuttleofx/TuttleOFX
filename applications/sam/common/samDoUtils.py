@@ -29,7 +29,7 @@ class SplitCmd:
         self._recursive = recursive
 
         # check if there is a command
-        if not len(inputCommandLine):
+        if not inputCommandLine:
             return
 
         # Get general graph from the command line

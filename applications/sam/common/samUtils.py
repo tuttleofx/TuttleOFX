@@ -87,7 +87,7 @@ def completion():
     """
     If the script is executed to generate autocomplete choices.
     """
-    return '_ARGCOMPLETE' and 'COMP_LINE' in os.environ
+    return '_ARGCOMPLETE' in os.environ and 'COMP_LINE' in os.environ
 
 
 def doCompletion(parser):
