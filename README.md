@@ -13,7 +13,7 @@ The project is composed of 4 main parts:
 > - **Sam**, a set of command line tools.  
 
 [![Stories in Ready](https://badge.waffle.io/tuttleofx/tuttleofx.svg?label=1 - Ready)](http://waffle.io/tuttleofx/tuttleofx) <br />
-TuttleOFX is alive! 
+TuttleOFX is alive! <br/>
 See the next development steps with this badge above.
 
 License
@@ -24,6 +24,11 @@ See [**COPYING.md**](COPYING.md)
 How to use
 -------
 See [**USAGE.md**](USAGE.md)
+
+
+Documentation
+-----------
+See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX-doxygen/).
 
 
 Compilation
@@ -39,13 +44,8 @@ Plugin creation
 See [**plugins/_scripts/README.md**](plugins/_scripts/README.md)
 
 
-Documentation
------------
-See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX-doxygen/).
-
-
 More information 
-----------------
+-----------
 
 Check TuttleOFX website for more information. 
 >[http://www.tuttleofx.org](http://www.tuttleofx.org)
@@ -58,7 +58,7 @@ OpenFX plugin standard.
 
 
 Contact
--------
+-----------
 
 Developers mailing-list (public)
 > [tuttleofx-dev@googlegroups.com](mailto:tuttleofx-dev@googlegroups.com)  
