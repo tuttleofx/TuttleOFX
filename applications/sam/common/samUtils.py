@@ -62,9 +62,25 @@ class Sam(object):
         """
         Set log level of all handlers of the logger.
         """
-        if tuttleVerboseLevel is not None:
-            for handler in self.logger.handlers:
-                handler.setLevel(10*tuttleVerboseLevel) # fit to python logging levels
+        for handler in self.logger.handlers:
+            if tuttleVerboseLevel is 0:
+                # CRITICAL
+                handler.setLevel(50)
+            elif tuttleVerboseLevel is 1:
+                # ERROR
+                handler.setLevel(40)
+            elif tuttleVerboseLevel is 2:
+                # WARNING
+                handler.setLevel(30)
+            elif tuttleVerboseLevel is 3:
+                # INFO
+                handler.setLevel(20)
+            elif tuttleVerboseLevel >= 4:
+                # DEBUG (and trace)
+                handler.setLevel(10)
+            else:
+                # WARNING
+                handler.setLevel(30)
 
 
 def completion():

@@ -76,9 +76,6 @@ class Sam_do(samUtils.Sam):
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         '''
 
-        # preload OFX plugins (to have auto completion of plugins name, their parameters...)
-        tuttle.core().preload(False)
-
     def fillParser(self, parser):
         # Arguments
         parser.add_argument('inputs', nargs='*', action='store', help='command line to process').completer = samDoUtils.samDoCompleter
@@ -92,7 +89,7 @@ class Sam_do(samUtils.Sam):
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('--no-plugin-cache', dest='noPluginCache', action='store_true', default=False, help='load plugins without using the cache file')
         parser.add_argument('--rebuild-plugin-cache', dest='rebuildPluginCache', action='store_true', default=False, help='load plugins and rebuild the cache file')
-        parser.add_argument('-v', '--verbose', dest='verbose', action=samDoUtils.SamDoSetVerboseAction, help='verbose level (0/none(by default), 1/fatal, 2/error, 3/warn, 4/info, 5/debug, 6(or upper)/trace)')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=samDoUtils.SamDoSetVerboseAction, default=0, help='verbose level (0/fatal (by default), 1/error, 2/warn, 3/info, 4/debug, 5(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
     def _setTimeRanges(self, computeOptions, ranges):
@@ -332,6 +329,17 @@ class Sam_do(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
+    def _displayCommandLineHelp(self, parser):
+        """
+        Display sam-do command line help.
+        """
+        subparser = samUtils.getSubParser(parser, 'do')
+        # if sam-do is called from sam main command line
+        if subparser is not None:
+            puts(subparser.format_help())
+        else:
+            parser.print_help()
+
     def _getTuttleGraph(self, splitCmd):
         """
         Return the tuple (tuttle graph, its nodes) which corresponds to the given split command.
@@ -405,8 +413,15 @@ class Sam_do(samUtils.Sam):
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
-        # Set log level
+        # sam-do --help
+        if len(args.inputs) == 0 and ('-h' in unknown or '--help' in unknown):
+            self._displayCommandLineHelp(parser)
+            exit(0)
+
+        # Set sam log level
         self.setLogLevel(args.verbose)
+        # set tuttle host log level
+        tuttle.core().getFormatter().setLogLevel_int(args.verbose)
 
         # Clear plugin cache
         if args.rebuildPluginCache:
@@ -428,15 +443,6 @@ class Sam_do(samUtils.Sam):
             self._displayFileFormats()
             exit(0)
 
-        # sam-do --help
-        if len(args.inputs) == 0:
-            subparser = samUtils.getSubParser(parser, 'do')
-            if subparser is not None:
-                puts(subparser.format_help())
-                exit(0)
-            parser.print_help()
-            exit(0)
-
         # Add unknown options to the command line to process
         args.inputs.extend(unknown)
 
@@ -453,8 +459,7 @@ class Sam_do(samUtils.Sam):
             # Options of process
             options = tuttle.ComputeOptions()
             # sam-do --verbose
-            if args.verbose is not None:
-                options.setVerboseLevel(args.verbose)
+            options.setVerboseLevel(args.verbose)
             # sam-do --ranges
             if args.ranges is not None:
                 self._setTimeRanges(options, args.ranges)

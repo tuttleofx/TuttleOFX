@@ -28,6 +28,10 @@ class SplitCmd:
         self._graph = []
         self._recursive = recursive
 
+        # check if there is a command
+        if not len(inputCommandLine):
+            return
+
         # Get general graph from the command line
         generalGraph = SplitCmdGraph(inputCommandLine)
 
@@ -259,31 +263,29 @@ class SamDoSetVerboseAction(argparse.Action):
         super(SamDoSetVerboseAction, self).__init__(option_strings, dest, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
-        # if the given number is upper than the max tuttle verbose level, set verbose to trace
+        # if the given number is upper than the max sam verbose level, set to trace
         try:
             if int(values) > 6:
-                setattr(namespace, self.dest, 0)
+                setattr(namespace, self.dest, 5)
                 return
         except Exception:
             pass
 
-        if values == '0' or values.lower() == 'none':
-            setattr(namespace, self.dest, None)
-        elif values == '1' or values.lower() == 'fatal':
-            setattr(namespace, self.dest, 5)
-        elif values == '2' or values.lower() == 'error':
-            setattr(namespace, self.dest, 4)
-        elif values == '3' or values.lower() == 'warn':
-            setattr(namespace, self.dest, 3)
-        elif values == '4' or values.lower() == 'info':
-            setattr(namespace, self.dest, 2)
-        elif values == '5' or values.lower() == 'debug':
-            setattr(namespace, self.dest, 1)
-        elif values == '6' or values.lower() == 'trace':
+        if values == '0' or values.lower() == 'fatal':
             setattr(namespace, self.dest, 0)
-        # if the level is not recognized, no verbosity
+        elif values == '1' or values.lower() == 'error':
+            setattr(namespace, self.dest, 1)
+        elif values == '2' or values.lower() == 'warn':
+            setattr(namespace, self.dest, 2)
+        elif values == '3' or values.lower() == 'info':
+            setattr(namespace, self.dest, 3)
+        elif values == '4' or values.lower() == 'debug':
+            setattr(namespace, self.dest, 4)
+        elif values == '5' or values.lower() == 'trace':
+            setattr(namespace, self.dest, 5)
+        # if the level is not recognized, set to warning
         else:
-            setattr(namespace, self.dest, None)
+            setattr(namespace, self.dest, 2)
 
 
 class ProgressHandle(tuttle.IProgressHandle):
@@ -311,6 +313,9 @@ def samDoCompleter(prefix, parsed_args, **kwargs):
     Custom Completer to manage auto competion when looking for openFX nodes.
     @warning The autocompletion works only for TuttleOFX plugins.
     """
+    # preload OFX plugins (to have auto completion of plugins name, their parameters...)
+    tuttle.core().preload(True)
+
     # get plugins
     pluginsId = tuttle.core().getImageEffectPluginCache().getPluginsByID()
     pluginsStr = [str(id).replace('tuttle.', '') for id in pluginsId]
