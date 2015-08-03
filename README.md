@@ -39,22 +39,6 @@ Documentation
 See [**Doxygen documentation**](http://tuttleofx.github.io/TuttleOFX-doxygen/).
 
 
-Tested compilers
-----------------
-
-- Linux
- + GCC 4.1 on OpenSUSE 11.2 64bits
- + GCC 4.4 on OpenSUSE 11.2 64bits
- + GCC 4.6 on Ubuntu 12.04 64bits
- + GCC 4.8 on Ubuntu 14.04 64bits
- + Clang 3.4 on Ubuntu 12.04 64bits
-- MacOS
- + Clang 4.2 64bits
-- Windows
- + Visual C++ 2010 on Windows XP 32bits
- + GCC-MINGW 3.4.5, 4.3.0 on Windows XP 32bits
-
-
 More information 
 ----------------
 
