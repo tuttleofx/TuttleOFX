@@ -32,6 +32,9 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_paramPremult = fetchBooleanParam( kParamPremultiplied );
 	_paramExistingFile = fetchChoiceParam( kParamWriterExistingFile );
 	_paramForceNewRender = fetchIntParam( kParamWriterForceNewRender );
+
+	// update params
+	changedParam( OFX::InstanceChangedArgs(), kTuttlePluginFilename );
 }
 
 WriterPlugin::~WriterPlugin( )
