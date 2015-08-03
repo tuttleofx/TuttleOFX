@@ -20,6 +20,7 @@ env:
     - DEPENDENCIES_INSTALL=${TRAVIS_BUILD_DIR}/install-dependencies
     - TUTTLE_BUILD=${TRAVIS_BUILD_DIR}/build-tuttle
     - TUTTLE_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
+    - TUTTLE_DEPLOY=tuttle-${_system_name}-${_system_version}-${_system_arch}
     - CI_NODE_TOTAL=2
 
 matrix:
@@ -117,15 +118,13 @@ addons:
     branch_pattern: coverity_scan
 
 before_deploy:
-  # create archive
-  - cd ${TRAVIS_BUILD_DIR}
-  - tar -cvzf tuttle-${TRAVIS_OS_NAME}-${CC}.tgz ${TUTTLE_INSTALL}
+  - tools/travis/deploy.sh
 
 deploy:
   provider: releases
   api_key:
     secure: ${GITHUB_RELEASE_API_KEY}
-  file: tuttle-${TRAVIS_OS_NAME}-${CC}.tgz
+  file: ${TUTTLE_DEPLOY}-${CC}.tgz
   skip_cleanup: true
   on:
     branch: master
