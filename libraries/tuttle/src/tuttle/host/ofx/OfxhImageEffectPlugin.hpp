@@ -48,6 +48,8 @@
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/scoped_ptr.hpp>
 
+#include <boost/thread/mutex.hpp>
+
 #include <string>
 #include <set>
 #include <memory>
