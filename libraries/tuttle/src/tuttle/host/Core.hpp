@@ -68,6 +68,15 @@ public:
 
 
 public:
+	/**
+	 * @brief Ensure preload has been done once.
+	 */
+	void ensurePreload( const bool useCache = true )
+	{
+		if( _isPreloaded )
+			return;
+		preload( useCache );
+	}
 	void preload( const bool useCache = true );
 
 	const ofx::OfxhPlugin& operator[]( const std::string& name ) const

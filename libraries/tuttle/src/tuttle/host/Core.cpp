@@ -65,9 +65,6 @@ Core::~Core()
 
 void Core::preload( const bool useCache )
 {
-	if( _isPreloaded )
-		return;
-	
 	_isPreloaded = true;
 	
 	//	typedef boost::archive::binary_oarchive OArchive;
