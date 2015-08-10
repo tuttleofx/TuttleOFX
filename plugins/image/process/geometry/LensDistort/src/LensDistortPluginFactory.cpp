@@ -165,6 +165,12 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         center->setDisplayRange( -1.0, -1.0, 1.0, 1.0 );
         center->setHint( "Center parameter allows you to shift the center of distortion." );
 
+        OFX::ChoiceParamDescriptor* centerUnit = desc.defineChoiceParam( kParamCenterUnit );
+        centerUnit->setLabel( "Center Unit" );
+        centerUnit->appendOption( kParamCenterUnitPixel );
+        centerUnit->appendOption( kParamCenterUnitNormWidth );
+        centerUnit->setDefault( eParamCenterUnitPixel );
+        
         OFX::BooleanParamDescriptor* centerOverlay = desc.defineBooleanParam( kParamCenterOverlay );
         centerOverlay->setLabel( "Display distortion center" );
         centerOverlay->setDefault( false );

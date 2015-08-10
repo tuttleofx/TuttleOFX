@@ -33,6 +33,7 @@ LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 	_squeeze              = fetchDoubleParam        ( kParamSqueeze );
 	_asymmetric           = fetchDouble2DParam      ( kParamAsymmetric );
 	_center               = fetchDouble2DParam      ( kParamCenter );
+	_centerUnit           = fetchChoiceParam        ( kParamCenterUnit );
 	_centerOverlay        = fetchBooleanParam       ( kParamCenterOverlay );
 	_centerType           = fetchChoiceParam        ( kParamCenterType );
 	_preScale             = fetchDoubleParam        ( kParamPreScale );
@@ -415,7 +416,15 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	{
 		case eParamCenterTypeSource:
 		{
-			params.lensCenterSrc = pointNormalizedXXcToCanonicalXY( ofxToGil( _center->getValue() ), params.imgSizeSrc );
+			switch( (EParamCenterUnit)_centerUnit->getValue() )
+			{
+				case eParamCenterUnitPixel:
+					params.lensCenterSrc = ofxToGil( _center->getValue() );
+					break;
+				case eParamCenterUnitNormWidth:
+					params.lensCenterSrc = pointNormalizedXXcToCanonicalXY( ofxToGil( _center->getValue() ), params.imgSizeSrc );
+					break;
+			}
 			if( useOptionalInputRod )
 			{
 				Point2 imgShiftBetweenInputs = Point2( optionalInputRod.x1 - inputRod.x1, optionalInputRod.y1 - inputRod.y1 ); // translate inputRod -> optionalInputRod

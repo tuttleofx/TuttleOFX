@@ -48,6 +48,7 @@ public:
 	OFX::DoubleParam*   _squeeze;              ///< squeeze coefficient horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _asymmetric;           ///< lens distortion is asymmetric horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _center;               ///< center coordonnates
+	OFX::ChoiceParam*   _centerUnit;
 	OFX::BooleanParam*  _centerOverlay;        ///< lens center overlay
 	OFX::ChoiceParam*   _centerType;           ///< centered the lens distortion on source RoD or image size (not implemented yet)
 	OFX::DoubleParam*   _preScale;             ///< scale before applying the lens distortion

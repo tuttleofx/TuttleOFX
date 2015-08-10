@@ -26,6 +26,15 @@ static const std::string kParamBrown3                  ( "brown3" );
 static const std::string kParamSqueeze                 ( "squeeze" );
 static const std::string kParamAsymmetric              ( "asymmetric" );
 static const std::string kParamCenter                  ( "center" );
+static const std::string kParamCenterUnit              ( "centerUnit" );
+static const std::string kParamCenterUnitPixel         ( "pixel" );
+static const std::string kParamCenterUnitNormWidth     ( "normWidth" );
+enum EParamCenterUnit
+{
+	eParamCenterUnitPixel = 0,
+	eParamCenterUnitNormWidth
+};
+
 static const std::string kParamCenterOverlay           ( "lensCenterOverlay" );
 static const std::string kParamCenterType              ( "centerType" );
 static const std::string kParamCenterTypeSource        ( "source" );
