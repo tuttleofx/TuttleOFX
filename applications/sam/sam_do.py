@@ -192,7 +192,7 @@ class Sam_do(samUtils.Sam):
         Display help of the given OFXParameter.
         """
         paramName = colored.green(param.getScriptName())
-        if not param.getSecret() and clintVersion >= '0.3.3':
+        if param.getEnabled() and not param.getSecret() and clintVersion >= '0.3.3':
             paramName.bold = True
         paramType = param.getParamTypeName()
         paramHint = param.getHint()
