@@ -191,7 +191,9 @@ class Sam_do(samUtils.Sam):
         """
         Display help of the given OFXParameter.
         """
-        paramName = param.getScriptName()
+        paramName = colored.green(param.getScriptName())
+        if not param.getSecret() and clintVersion >= '0.3.3':
+            paramName.bold = True
         paramType = param.getParamTypeName()
         paramHint = param.getHint()
         paramDefaultValue = None
@@ -256,7 +258,7 @@ class Sam_do(samUtils.Sam):
         # Print
         with indent(4):
             puts('{paramName!s:50}: {paramType!s:10}'.format(
-                paramName=colored.green(paramName),
+                paramName=paramName,
                 paramType=paramType),
                 newline=paramIsChoice)
 
