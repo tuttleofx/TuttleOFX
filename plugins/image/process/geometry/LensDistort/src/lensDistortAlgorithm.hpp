@@ -48,6 +48,18 @@ inline point2<F> transform( const ::tuttle::plugin::lens::LensUndistortBrown3<F>
 }
 
 template <typename F, typename F2>
+inline point2<F> transform( const ::tuttle::plugin::lens::LensDistortPTLens<F>& algo, const point2<F2>& src )
+{
+	return algo.apply(src);
+}
+
+template <typename F, typename F2>
+inline point2<F> transform( const ::tuttle::plugin::lens::LensUndistortPTLens<F>& algo, const point2<F2>& src )
+{
+	return algo.apply(src);
+}
+
+template <typename F, typename F2>
 inline point2<F> transform( const ::tuttle::plugin::lens::LensDistortFisheye<F>& algo, const point2<F2>& src )
 {
 	return algo.apply(src);
@@ -55,12 +67,6 @@ inline point2<F> transform( const ::tuttle::plugin::lens::LensDistortFisheye<F>&
 
 template <typename F, typename F2>
 inline point2<F> transform( const ::tuttle::plugin::lens::LensUndistortFisheye<F>& algo, const point2<F2>& src )
-{
-	return algo.apply(src);
-}
-
-template <typename F, typename F2>
-inline point2<F> transform( const ::tuttle::plugin::lens::LensDistortAdvanced<F>& algo, const point2<F2>& src )
 {
 	return algo.apply(src);
 }
@@ -144,19 +150,19 @@ inline Obj transformValues( const EParamLensType lensType, const LensDistortProc
 				return transformValues( LensUndistortBrown3<double>(params), obj );
 			}
 		}
+		case eParamLensTypePTLens:
+		{
+			if( params.distort )
+				return transformValues( LensDistortPTLens<double>(params), obj );
+			else
+				return transformValues( LensUndistortPTLens<double>(params), obj );
+		}
 		case eParamLensTypeFisheye:
 		{
 			if( params.distort )
 				return transformValues( LensDistortFisheye<double>(params), obj );
 			else
 				return transformValues( LensUndistortFisheye<double>(params), obj );
-		}
-		case eParamLensTypeAdvanced:
-		{
-			if( params.distort )
-				return transformValues( LensDistortAdvanced<double>(params), obj );
-			else
-				return transformValues( LensDistortAdvanced<double>(params), obj );
 		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Unsupported()
@@ -206,32 +212,24 @@ inline void transformValuesApply( const EParamLensType lensType, const LensDisto
 			}
 			break;
 		}
-                case eParamLensTypeBrown3:
+        case eParamLensTypeBrown3:
+        {
+                if( params.distort )
                 {
-                        if( params.distort )
-                        {
-                                transformValuesApply( LensDistortBrown3<double>(params), obj );
-                        }
-                        else
-                        {
-                                transformValuesApply( LensUndistortBrown3<double>(params), obj );
-                        }
-                        break;
+                        transformValuesApply( LensDistortBrown3<double>(params), obj );
                 }
+                else
+                {
+                        transformValuesApply( LensUndistortBrown3<double>(params), obj );
+                }
+                break;
+        }
 		case eParamLensTypeFisheye:
 		{
 			if( params.distort )
 				transformValuesApply( LensDistortFisheye<double>(params), obj );
 			else
 				transformValuesApply( LensUndistortFisheye<double>(params), obj );
-			break;
-		}
-		case eParamLensTypeAdvanced:
-		{
-			//if( params.distort )
-			transformValuesApply( LensDistortAdvanced<double>(params), obj );
-			//else
-			//	transformValuesApply( LensUndistortAdvanced<double>(params), obj );
 			break;
 		}
 	}

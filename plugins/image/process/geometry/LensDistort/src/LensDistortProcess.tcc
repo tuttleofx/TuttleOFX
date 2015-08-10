@@ -170,20 +170,20 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 			}
 			return;
 		}
+		case eParamLensTypePTLens:
+		{
+			if( _p.distort )
+				resample_pixels_progress( srcView, dstView, LensDistortPTLens<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			else
+				resample_pixels_progress( srcView, dstView, LensUndistortPTLens<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			return;
+		}
 		case eParamLensTypeFisheye:
 		{
 			if( _p.distort )
 				resample_pixels_progress( srcView, dstView, LensDistortFisheye<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			else
 				resample_pixels_progress( srcView, dstView, LensUndistortFisheye<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
-			return;
-		}
-		case eParamLensTypeAdvanced:
-		{
-			//if( _p.distort )
-			resample_pixels_progress( srcView, dstView, LensDistortAdvanced<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
-			//else
-			//	resample_pixels_progress( srcView, dstView, LensUndistortAdvanced<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
 	}

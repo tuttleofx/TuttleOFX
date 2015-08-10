@@ -41,7 +41,7 @@ void LensDistortPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	// set a few flags
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setHostFrameThreading( false ); // The plugin is able to manage threading per frame
-	desc.setSupportsTiles( true );
+	desc.setSupportsTiles( false );
 
 	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<LensDistortOverlayDescriptor>() );
 }
@@ -111,14 +111,14 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         lensType->setLabel( "Lens type" );
         lensType->appendOption( kParamLensTypeBrown1 );
         lensType->appendOption( kParamLensTypeBrown3 );
-//        lensType->appendOption( kParamLensTypeFishEye ); // not implemented yet
-//        lensType->appendOption( kParamLensTypeAdvanced ); // not implemented yet
-        lensType->setDefault( 0 );
+        lensType->appendOption( kParamLensTypePTLens );
+        lensType->appendOption( kParamLensTypeFishEye );
+        lensType->setDefault( eParamLensTypeBrown3 );
 
         OFX::DoubleParamDescriptor* brown1 = desc.defineDoubleParam( kParamBrown1 );
         brown1->setLabel( "Main" );
         brown1->setDefault( 0.1 );
-        brown1->setDisplayRange( -1.0, 1.0 );
+        brown1->setDisplayRange( 0.0, 1.0 );
         brown1->setHint( "Main distortion coefficient\n"
                         ">0 : Barrel distortion\n"
                         "<0 : Pincushion distortion\n"

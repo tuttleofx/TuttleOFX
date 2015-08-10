@@ -76,31 +76,31 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 
 	if( paramName == kParamLensType )
 	{
-		switch( _lensType->getValue() )
+		switch( (EParamLensType)_lensType->getValue() )
 		{
-			case 0: // normal
-				_brown2     -> setIsSecret( true );
-				_brown2     -> setEnabled( false );
-				_squeeze    -> setIsSecret( true );
-				_squeeze    -> setEnabled( false );
-				_asymmetric -> setIsSecret( true );
-				_asymmetric -> setEnabled( false );
+			case eParamLensTypeBrown1:
+				_brown2     -> setIsSecretAndDisabled( true );
+				_brown3     -> setIsSecretAndDisabled( true );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
-			case 1: // fish-eye
-				_brown2     ->setIsSecret( false );
-				_brown2     -> setEnabled( true );
-				_squeeze    -> setIsSecret( true );
-				_squeeze    -> setEnabled( false );
-				_asymmetric -> setIsSecret( true );
-				_asymmetric -> setEnabled( false );
+			case eParamLensTypeBrown3:
+				_brown2     -> setIsSecretAndDisabled( false );
+				_brown3     -> setIsSecretAndDisabled( false );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
-			case 2: // advanced
-				_brown2     -> setIsSecret( false );
-				_brown2     -> setEnabled( true );
-				_squeeze    -> setIsSecret( false );
-				_squeeze    -> setEnabled( true );
-				_asymmetric -> setIsSecret( false );
-				_asymmetric -> setEnabled( true );
+			case eParamLensTypePTLens:
+				_brown2     -> setIsSecretAndDisabled( false );
+				_brown3     -> setIsSecretAndDisabled( false );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
+				break;
+			case eParamLensTypeFisheye:
+				_brown2     ->setIsSecretAndDisabled( true );
+				_brown3     ->setIsSecretAndDisabled( true );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
 			default:
 				BOOST_THROW_EXCEPTION( exception::Bug()

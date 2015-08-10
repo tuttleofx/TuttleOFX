@@ -18,8 +18,8 @@ static const std::string kParamDisplaySource           ( "displaySource" );
 static const std::string kParamLensType                ( "lensType" );
 static const std::string kParamLensTypeBrown1          ( "brown1" );
 static const std::string kParamLensTypeBrown3          ( "brown3" );
+static const std::string kParamLensTypePTLens          ( "ptlens" );
 static const std::string kParamLensTypeFishEye         ( "fish-eye" );
-static const std::string kParamLensTypeAdvanced        ( "advanced" );
 static const std::string kParamBrown1                  ( "brown1" );
 static const std::string kParamBrown2                  ( "brown2" );
 static const std::string kParamBrown3                  ( "brown3" );
@@ -85,8 +85,8 @@ enum EParamLensType
 {
 	eParamLensTypeBrown1 = 0,
 	eParamLensTypeBrown3,
+	eParamLensTypePTLens,
 	eParamLensTypeFisheye,
-	eParamLensTypeAdvanced,
 };
 
 enum EParamCenterType
