@@ -295,9 +295,6 @@ class Sam_do(samUtils.Sam):
         if node.getParams():
             self._displayTitle('PARAMETERS')
         for param in node.getParams():
-            # Skip secret params
-            if param.getSecret():
-                continue
             paramType = param.getParamType()
             # Skip Group / PushButton / Page params
             if paramType == 'OfxParamTypeGroup' or paramType == 'OfxParamTypePushButton' or paramType == 'OfxParamTypePage':
