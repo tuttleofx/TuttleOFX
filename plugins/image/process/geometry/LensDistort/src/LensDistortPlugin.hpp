@@ -40,6 +40,8 @@ public:
 	OFX::BooleanParam*  _reverse;              ///< reverse the effect
 	OFX::BooleanParam*  _displaySource;        ///< do nothing (so host displays input)
 	OFX::ChoiceParam*   _lensType;             ///< choice to select lens type
+	OFX::ChoiceParam*   _normalization;
+	OFX::DoubleParam*   _focal;
 	OFX::DoubleParam*   _brown1;                ///< distortion coeffiscient
 	OFX::DoubleParam*   _brown2;                ///< distortion coeffiscient for fish-eye lens
 	OFX::DoubleParam*   _brown3;                ///< distortion coeffiscient for fish-eye lens

@@ -35,6 +35,27 @@ static const std::string kParamPostScale               ( "postScale" );
 static const std::string kParamPreOffset               ( "preOffset" );
 static const std::string kParamPostOffset              ( "postOffset" );
 
+static const std::string kParamNormalization           ( "normalization" );
+static const std::string kParamNormalizationWidth      ( "width" );
+static const std::string kParamNormalizationHeight     ( "height" );
+static const std::string kParamNormalizationMinSize    ( "minSize" );
+static const std::string kParamNormalizationMaxSize    ( "maxSize" );
+static const std::string kParamNormalizationDiagonal   ( "diagonal" );
+static const std::string kParamNormalizationHalfDiagonal( "halfDiagonal" );
+static const std::string kParamNormalizationFocal      ( "focal" );
+enum EParamNormalization
+{
+	eParamNormalizationWidth = 0,
+	eParamNormalizationHeight,
+	eParamNormalizationMinSize,
+	eParamNormalizationMaxSize,
+	eParamNormalizationDiagonal,
+	eParamNormalizationHalfDiagonal,
+	eParamNormalizationFocal
+};
+
+static const std::string kParamFocal                   ( "focal" );
+
 static const std::string kParamResizeRod               ( "resizeRod" );
 static const std::string kParamResizeRodNo             ( "no" );
 static const std::string kParamResizeRodSourceRef      ( "sourceRef" );

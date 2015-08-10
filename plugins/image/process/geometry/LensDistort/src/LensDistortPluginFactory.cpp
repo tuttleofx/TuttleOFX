@@ -88,6 +88,25 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         displaySource->setDefault( false );
         displaySource->setHint( "Display the image source (useful to parameter the distortion with lines overlays on the source image)." );
 
+        OFX::ChoiceParamDescriptor* normalization = desc.defineChoiceParam( kParamNormalization );
+        normalization->setLabel( "Normalization" );
+        normalization->appendOption( kParamNormalizationWidth );
+        normalization->appendOption( kParamNormalizationHeight );
+        normalization->appendOption( kParamNormalizationMinSize );
+        normalization->appendOption( kParamNormalizationMaxSize );
+        normalization->appendOption( kParamNormalizationDiagonal );
+        normalization->appendOption( kParamNormalizationHalfDiagonal );
+        normalization->appendOption( kParamNormalizationFocal );
+        normalization->setDefault( eParamNormalizationHalfDiagonal );
+        
+        OFX::DoubleParamDescriptor* focal = desc.defineDoubleParam( kParamFocal );
+        focal->setLabel( "Focal" );
+        focal->setDefault( 1.0 );
+        focal->setDisplayRange( 0.0, 1000.0 );
+        focal->setHint(
+            "Focal value to scale the interpretation "
+            "of the distortion coefficients according to the focal." );
+
         OFX::ChoiceParamDescriptor* lensType = desc.defineChoiceParam( kParamLensType );
         lensType->setLabel( "Lens type" );
         lensType->appendOption( kParamLensTypeBrown1 );

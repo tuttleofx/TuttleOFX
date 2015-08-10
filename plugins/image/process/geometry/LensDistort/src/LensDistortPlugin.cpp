@@ -25,9 +25,11 @@ LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 	_reverse              = fetchBooleanParam       ( kParamReverse );
 	_displaySource        = fetchBooleanParam       ( kParamDisplaySource );
 	_lensType             = fetchChoiceParam        ( kParamLensType );
-	_brown1                = fetchDoubleParam       ( kParamBrown1 );
-	_brown2                = fetchDoubleParam       ( kParamBrown2 );
-	_brown3                = fetchDoubleParam       ( kParamBrown3 );
+	_normalization        = fetchChoiceParam        ( kParamNormalization );
+	_focal                = fetchDoubleParam        ( kParamFocal );
+	_brown1               = fetchDoubleParam        ( kParamBrown1 );
+	_brown2               = fetchDoubleParam        ( kParamBrown2 );
+	_brown3               = fetchDoubleParam        ( kParamBrown3 );
 	_squeeze              = fetchDoubleParam        ( kParamSqueeze );
 	_asymmetric           = fetchDouble2DParam      ( kParamAsymmetric );
 	_center               = fetchDouble2DParam      ( kParamCenter );
@@ -56,6 +58,7 @@ void LensDistortPlugin::initParamsProps()
 	changedParam( args, kParamFilter );
 	changedParam( args, kParamLensType );
 	changedParam( args, kParamResizeRod );
+	changedParam( args, kParamNormalization );
 }
 
 /**
@@ -104,6 +107,10 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 					<< exception::user() + "Lens type value not recognize." );
 				break;
 		}
+	}
+	else if( paramName == kParamNormalization )
+	{
+		_focal->setIsSecretAndDisabled( _normalization->getValue() != eParamNormalizationFocal );
 	}
 	else if( paramName == kParamResizeRod )
 	{
@@ -378,7 +385,30 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	params.imgSizeSrc      = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
 	params.imgCenterSrc    = Point2( params.imgSizeSrc.x * 0.5, params.imgSizeSrc.y * 0.5 );
 	params.imgCenterDst    = params.imgCenterSrc + imgShift;
-	params.imgHalfDiagonal = std::sqrt( params.imgCenterSrc.x * params.imgCenterSrc.x * pixelAspectRatio * pixelAspectRatio + params.imgCenterSrc.y * params.imgCenterSrc.y );
+	switch( (EParamNormalization)_normalization->getValue() )
+	{
+		case eParamNormalizationWidth:
+			params.normalizeCoef = params.imgSizeSrc.x;
+			break;
+		case eParamNormalizationHeight:
+			params.normalizeCoef = params.imgSizeSrc.y;
+			break;
+		case eParamNormalizationMinSize:
+			params.normalizeCoef = std::min(params.imgSizeSrc.x, params.imgSizeSrc.y);
+			break;
+		case eParamNormalizationMaxSize:
+			params.normalizeCoef = std::max(params.imgSizeSrc.x, params.imgSizeSrc.y);
+			break;
+		case eParamNormalizationDiagonal:
+			params.normalizeCoef = std::sqrt( params.imgSizeSrc.x * params.imgSizeSrc.x * pixelAspectRatio * pixelAspectRatio + params.imgSizeSrc.y * params.imgSizeSrc.y );
+			break;
+		case eParamNormalizationHalfDiagonal:
+			params.normalizeCoef = std::sqrt( params.imgCenterSrc.x * params.imgCenterSrc.x * pixelAspectRatio * pixelAspectRatio + params.imgCenterSrc.y * params.imgCenterSrc.y );
+			break;
+		case eParamNormalizationFocal:
+			params.normalizeCoef = _focal->getValue();
+			break;
+	}
 	params.pixelRatio      = pixelAspectRatio;
 
 	switch( getCenterType() )

@@ -76,7 +76,7 @@ struct LensDistortProcessParams
 	Point2 imgSizeSrc;
 	Point2 imgCenterSrc;
 	Point2 imgCenterDst;
-	F imgHalfDiagonal; ///< half diagonal of the image (to work between -0.5 and 0.5)
+	F normalizeCoef; ///< coef to normalize the pixel values (to work between [-0.5, 0.5],  [0, 1], ...)
 	F pixelRatio;
 	/// @}
 
@@ -151,14 +151,14 @@ public:
 	{
 		BOOST_STATIC_ASSERT( boost::is_floating_point<F>::value );
 		BOOST_STATIC_ASSERT( ( boost::is_same<F, double>::value ) );
-		Point2 pn( p / _params.imgHalfDiagonal );
+		Point2 pn( p / _params.normalizeCoef );
 		pn.x *= _params.pixelRatio;
 		return pn;
 	}
 
 	inline Point2 normalizedToPixel( const Point2& pn ) const
 	{
-		Point2 p( pn * _params.imgHalfDiagonal );
+		Point2 p( pn * _params.normalizeCoef );
 
 		p.x /= _params.pixelRatio;
 		return p;
