@@ -6,6 +6,7 @@ import argparse
 import itertools
 
 from clint.textui import colored, puts, indent
+from clint import __version__ as clintVersion
 
 # openFX host
 from pyTuttle import tuttle
@@ -28,13 +29,30 @@ class Sam_do(samUtils.Sam):
             Use the separator // to pipe images between nodes.
             sam do [options]... [// node [node-options]... [[param=]value]...]... [options]
             '''))
+
+        self._pluginOption = colored.blue('Plugins options')
+        self._generatorsAndViewers = colored.blue('Generators and viewers')
+        self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
+        self._geometryPorcessing = colored.blue('Geometry processing during conversion')
+        self._colorProcessing = colored.blue('Color processing during conversion')
+        self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
+        self.processingOptions = colored.blue('Processing options')
+        if clintVersion >= '0.3.3':
+            self._pluginOption.bold=True
+            self._generatorsAndViewers.bold=True
+            self._imgSeqConversion.bold=True
+            self._geometryPorcessing.bold=True
+            self._colorProcessing.bold=True
+            self._imgSeqNumbering.bold=True
+            self.processingOptions.bold=True
+
         self.epilog = '''
-    '''+colored.blue('Plugins options', bold=True)+'''
+    ''' + self._pluginOption + '''
         Plugin list:                       sam do --nodes
         Supported file formats list:       sam do --file-formats
         Plugin help:                       sam do blur -h
 
-    '''+colored.blue('Generators and viewers', bold=True)+'''
+    ''' + self._generatorsAndViewers + '''
         Viewer:                            sam do reader in.@.dpx // viewer
         Print:                             sam do reader in.@.dpx // print color=full16ansi
         Constant generator:                sam do constant                // viewer
@@ -45,32 +63,32 @@ class Sam_do(samUtils.Sam):
         Checkerboard generator:            sam do checkerboard width=1920 ratio=2.35 // viewer
         Text writing:                      sam do constant // text text="hello" size=80 // viewer
 
-    '''+colored.blue('Image sequence conversion and creation', bold=True)+'''
+    ''' + self._imgSeqConversion + '''
         Convert Image:                     sam do reader in.dpx // writer out.jpg
         Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
         Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
         Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
                                            'r' and 'w' are shortcuts for 'reader' and 'writer'
 
-    '''+colored.blue('Geometry processing during conversion', bold=True)+'''
+    ''' + self._geometryPorcessing + '''
         Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
         Fill:                              sam do reader in.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50,1 // writer out.jpg
         Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
         Upscaling:                         sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg
         Downscaling:                       sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg
 
-    '''+colored.blue('Color processing during conversion', bold=True)+'''
+    ''' + self._colorProcessing + '''
         Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
 
-    '''+colored.blue('Image Sequence Numbering', bold=True)+'''
+    ''' + self._imgSeqNumbering + '''
         Frames with or without padding:    image.@.jpg
         Frames 1 to 100 padding 4:         image.####.jpg -or- image.@.jpg
         Frames 1 to 100 padding 5:         image.#####.jpg
         Printf style padding 4:            image.%04d.jpg
 
-    '''+colored.blue('Processing options', bold=True)+'''
+    ''' + self.processingOptions + '''
         Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
         Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
@@ -125,7 +143,10 @@ class Sam_do(samUtils.Sam):
         """
         Display the given string with a title format.
         """
-        puts('\n' + colored.blue(title, bold=True))
+        blueTitle = colored.blue(title)
+        if clintVersion >= '0.3.3':
+            blueTitle.bold=True
+        puts('\n' + blueTitle)
 
     def _displayPlugins(self):
         """
@@ -170,85 +191,95 @@ class Sam_do(samUtils.Sam):
         """
         Display help of the given OFXParameter.
         """
+        paramName = colored.green(param.getScriptName())
+        if param.getEnabled() and not param.getSecret() and clintVersion >= '0.3.3':
+            paramName.bold = True
+        paramType = param.getParamTypeName()
+        paramHint = param.getHint()
+        paramDefaultValue = None
+        paramChoiceValues = []
+        paramChoiceLabel = []
+        paramMinDisplayValue = []
+        paramMaxDisplayValue = []
+        paramHasMinMaxValues = False
+        paramIsChoice = False
+
         props = param.getProperties()
+
         # Choice param
         if param.getParamType() == 'OfxParamTypeChoice':
-            defaultValueIndex = None
+            paramIsChoice = True
+            # Get default choice value
             if props.hasProperty('OfxParamPropDefault'):
                 propDefault = props.fetchProperty('OfxParamPropDefault')
                 defaultValue = samUtils.getListValues(propDefault)
                 if propDefault.getType() == tuttle.ePropTypeInt:
-                    defaultValueIndex = props.getIntProperty('OfxParamPropDefault', 0)
-
-            choiceValues = []
-            choiceLabelValues = []
-            hasLabel = False
+                    paramDefaultValue = props.getIntProperty('OfxParamPropDefault', 0)
+            # Get choice values
             if props.hasProperty('OfxParamPropChoiceOption'):
                 propChoiceOption = props.fetchProperty('OfxParamPropChoiceOption')
-                choiceValues = samUtils.getListValues(propChoiceOption)
+                paramChoiceValues = samUtils.getListValues(propChoiceOption)
+            # Get label values
             if props.hasProperty('OfxParamPropChoiceLabelOption'):
                 propChoiceLabel = props.fetchProperty('OfxParamPropChoiceLabelOption')
-                choiceLabelValues = samUtils.getListValues(propChoiceLabel)
-                hasLabel = (len(choiceValues) == len(choiceLabelValues))
+                paramChoiceLabel = samUtils.getListValues(propChoiceLabel)
+                hasLabel = (len(paramChoiceValues) == len(paramChoiceLabel))
 
-            # Print
-            with indent(4):
-                puts('{name!s:50}: {type:10} '.format(name=colored.green(param.getScriptName()), type=param.getParamTypeName()))
-                if len(choiceValues):
-                    with indent(40):
-                        for choiceValue in choiceValues:
-                            puts('{value!s:50} {label}'.format(
-                                value=(colored.yellow(choiceValue) if choiceValues.index(choiceValue) == defaultValueIndex else colored.red(choiceValue)),
-                                label=(choiceLabelValues[choiceValues.index(choiceValue)] if hasLabel else '')))
-                with indent(2):
-                    puts(param.getHint())
         # Other param types
         else:
-            defaultValue = []
+            # Get default value
             if props.hasProperty('OfxParamPropDefault'):
                 propDefault = props.fetchProperty('OfxParamPropDefault')
-                defaultValue = samUtils.getListValues(propDefault)
-
-            minDisplayValues = []
-            maxDisplayValues = []
-            # min/max values
+                paramDefaultValue = samUtils.getListValues(propDefault)
+            # Get min/max values
             if props.hasProperty('OfxParamPropDisplayMin'):
                 propDisplayMin = props.fetchProperty('OfxParamPropDisplayMin')
                 propDisplayMax = props.fetchProperty('OfxParamPropDisplayMax')
-                minDisplayValues = samUtils.getListValues(propDisplayMin)
-                maxDisplayValues = samUtils.getListValues(propDisplayMax)
-                # check inf
-                for i in range(0, len(maxDisplayValues)):
+                paramMinDisplayValue = samUtils.getListValues(propDisplayMin)
+                paramMaxDisplayValue = samUtils.getListValues(propDisplayMax)
+                # check +inf
+                for i in range(0, len(paramMaxDisplayValue)):
                     if propDisplayMax.getType() == tuttle.ePropTypeInt:
-                        if int(maxDisplayValues[i]) >= samUtils.getMaxInt():
-                            maxDisplayValues[i] = 'inf'
+                        if int(paramMaxDisplayValue[i]) >= samUtils.getMaxInt():
+                            paramMaxDisplayValue[i] = 'inf'
                     elif propDisplayMax.getType() == tuttle.ePropTypeDouble:
-                        if float(maxDisplayValues[i]) >= samUtils.getMaxInt():
-                            maxDisplayValues[i] = 'inf'
+                        if float(paramMaxDisplayValue[i]) >= samUtils.getMaxInt():
+                            paramMaxDisplayValue[i] = 'inf'
                 # check -inf
-                for i in range(0, len(minDisplayValues)):
+                for i in range(0, len(paramMinDisplayValue)):
                     if propDisplayMax.getType() == tuttle.ePropTypeInt:
-                        if int(minDisplayValues[i]) <= -samUtils.getMaxInt()-1:
-                            minDisplayValues[i] = '-inf'
+                        if int(paramMinDisplayValue[i]) <= -samUtils.getMaxInt()-1:
+                            paramMinDisplayValue[i] = '-inf'
                     elif propDisplayMax.getType() == tuttle.ePropTypeDouble:
-                        if float(minDisplayValues[i]) <= -samUtils.getMaxInt()-1:
-                            minDisplayValues[i] = '-inf'
-            hasMinMaxValues = len(minDisplayValues) > 0 and len(minDisplayValues) == len(maxDisplayValues)
+                        if float(paramMinDisplayValue[i]) <= -samUtils.getMaxInt()-1:
+                            paramMinDisplayValue[i] = '-inf'
+                paramHasMinMaxValues = len(paramMinDisplayValue) > 0 and len(paramMinDisplayValue) == len(paramMaxDisplayValue)
 
-            # Print
-            with indent(4):
-                puts('{paramName!s:50}: {paramType!s:10} {default!s:9}'.format(
-                    paramName=colored.green(param.getScriptName()), paramType=param.getParamTypeName(),
-                    default=colored.yellow(','.join(defaultValue))),
-                    newline=(False if hasMinMaxValues else True))
+        # Print
+        with indent(4):
+            puts('{paramName!s:50}: {paramType!s:10}'.format(
+                paramName=paramName,
+                paramType=paramType),
+                newline=paramIsChoice)
 
-                if hasMinMaxValues:
-                    puts('[{minDisplay:5} --> {maxDisplay:5}]'.format(
-                        minDisplay=','.join(minDisplayValues),
-                        maxDisplay=','.join(maxDisplayValues)))
+            if paramIsChoice:
+                with indent(40):
+                    for choiceValue in paramChoiceValues:
+                        puts('{choiceValue!s:50} {label}'.format(
+                            choiceValue=(colored.yellow(choiceValue) if paramChoiceValues.index(choiceValue) == paramDefaultValue else colored.red(choiceValue)),
+                            label=(paramChoiceLabel[paramChoiceValues.index(choiceValue)] if hasLabel else '')))
+            else:
+                puts('{defaultValue!s:9}'.format(
+                    defaultValue=colored.yellow(','.join(paramDefaultValue))),
+                    newline=(not paramHasMinMaxValues))
 
-                with indent(2):
-                    puts(param.getHint())
+                if paramHasMinMaxValues:
+                    puts('[{minDisplayValue:5} --> {maxDisplayValue:5}]'.format(
+                        minDisplayValue=','.join(paramMinDisplayValue),
+                        maxDisplayValue=','.join(paramMaxDisplayValue)))
+
+            with indent(2):
+                puts(paramHint)
 
     def _displayClipHelp(self, clip):
         """
@@ -295,9 +326,6 @@ class Sam_do(samUtils.Sam):
         if node.getParams():
             self._displayTitle('PARAMETERS')
         for param in node.getParams():
-            # Skip secret params
-            if param.getSecret():
-                continue
             paramType = param.getParamType()
             # Skip Group / PushButton / Page params
             if paramType == 'OfxParamTypeGroup' or paramType == 'OfxParamTypePushButton' or paramType == 'OfxParamTypePage':

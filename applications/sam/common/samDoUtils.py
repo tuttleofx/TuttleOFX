@@ -7,6 +7,7 @@ import copy
 
 # python module to get colors, indent text...
 from clint.textui import colored, puts, progress
+from clint import __version__ as clintVersion
 
 # parser of sequence
 from pySequenceParser import sequenceParser
@@ -294,18 +295,32 @@ class ProgressHandle(tuttle.IProgressHandle):
     """
     def __init__(self, ranges):
         super(ProgressHandle, self).__init__()
+
+        # Get number of frames to compute
         nbFramesToCompute = 0
-        for range in ranges:
-            nbFramesToCompute += (range._end - range._begin + 1) / range._step
-        self._progress = progress.Bar(expected_size=(nbFramesToCompute if nbFramesToCompute < samUtils.getMaxInt() else 1))
-        self._counter = 1
+        for timeRange in ranges:
+            nbFramesToCompute += (timeRange._end - timeRange._begin + 1) / timeRange._step
+        expectedSize = (nbFramesToCompute if nbFramesToCompute < samUtils.getMaxInt() else 1)
+
+        # Create progress bar
+        if clintVersion >= '0.3.5':
+            self._progress = progress.Bar(expected_size=expectedSize)
+            self._counter = 1
+        else:
+            self._it = list(range(0, expectedSize+1))
+            self._progress = progress.bar(self._it, expected_size=expectedSize)
+            self._progress.next()
 
     def processAtTime(self):
-        self._progress.show(self._counter)
-        self._counter += 1
+        if clintVersion >= '0.3.5':
+            self._progress.show(self._counter)
+            self._counter += 1
+        else:
+            self._progress.next()
 
     def endSequence(self):
-        self._progress.done()
+        if clintVersion >= '0.3.5':
+            self._progress.done()
 
 
 def samDoCompleter(prefix, parsed_args, **kwargs):
