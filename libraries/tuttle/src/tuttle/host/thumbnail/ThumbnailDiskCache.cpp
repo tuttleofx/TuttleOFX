@@ -50,7 +50,7 @@ namespace host {
 	OfxTime time = timeDomain.min;
 
 	ComputeOptions cOptions;
-	cOptions.setVerboseLevel(eVerboseLevelTrace);
+	cOptions.setVerboseLevel(boost::log::trivial::trace);
 	cOptions.setTimeRange(time, time);
 
 	graph.compute(

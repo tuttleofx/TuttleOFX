@@ -53,16 +53,6 @@ struct TimeRange
 	int _step;
 };
 
-enum EVerboseLevel
-{
-	eVerboseLevelFatal,
-	eVerboseLevelError,
-	eVerboseLevelWarning,
-	eVerboseLevelInfo,
-	eVerboseLevelDebug,
-	eVerboseLevelTrace
-};
-
 class ComputeOptions
 {
 public:
@@ -126,7 +116,7 @@ private:
 	void init()
 	{
 		setRenderScale( 1.0, 1.0 );
-		setVerboseLevel( eVerboseLevelWarning );
+		setVerboseLevel( boost::log::trivial::warning );
 		setReturnBuffers            ( true  );
 		setContinueOnError          ( false );
 		setContinueOnMissingFile    ( false );
@@ -222,9 +212,9 @@ public:
 	/**
 	 * @brief Set the verbose level of the process.
 	 */
-	This& setVerboseLevel( const EVerboseLevel level )
+	This& setVerboseLevel( const boost::log::trivial::severity_level level )
 	{
-		tuttle::common::Formatter::get()->setLogLevel_int( static_cast<int>( level ) );
+		tuttle::common::Formatter::get()->setLogLevel( level );
 		return *this;
 	}
 	
