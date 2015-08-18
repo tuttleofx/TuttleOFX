@@ -349,13 +349,9 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	double preScale         = _preScale->getValue();
 	double postScale        = _postScale->getValue();
 
-	params.brown1           = _brown1->getValue();
-	if( params.brown1 >= 0 )
-		params.distort = true; // distort
-	else
-		params.distort = false; // undistort
+	params.distort          = _reverse->getValue();
 
-	params.brown1          = std::abs( params.brown1 );
+	params.brown1           = _brown1->getValue();
 	params.brown2          = _brown2->getValue();
 	params.brown3          = _brown3->getValue();
 	params.squeeze         = _squeeze->getValue();
@@ -367,7 +363,7 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	Point2 preOffset = ofxToGil(_preOffset->getValue());
 	Point2 postOffset = ofxToGil(_postOffset->getValue());
 
-	if( _reverse->getValue() != reverse )
+	if( reverse )
 	{
 		params.distort   = !params.distort;
 
