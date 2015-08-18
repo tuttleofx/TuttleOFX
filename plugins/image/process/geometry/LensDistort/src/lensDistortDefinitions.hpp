@@ -27,11 +27,15 @@ static const std::string kParamSqueeze                 ( "squeeze" );
 static const std::string kParamAsymmetric              ( "asymmetric" );
 static const std::string kParamCenter                  ( "center" );
 static const std::string kParamCenterUnit              ( "centerUnit" );
+static const std::string kParamCenterUnitCenteredPixel ( "pixel centered" );
 static const std::string kParamCenterUnitPixel         ( "pixel" );
+static const std::string kParamCenterUnitCenteredNormWidth( "normalized width centered" );
 static const std::string kParamCenterUnitNormWidth     ( "normWidth" );
 enum EParamCenterUnit
 {
-	eParamCenterUnitPixel = 0,
+	eParamCenterUnitCenteredPixel = 0,
+	eParamCenterUnitPixel,
+	eParamCenterUnitCenteredNormWidth,
 	eParamCenterUnitNormWidth
 };
 

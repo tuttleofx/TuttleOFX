@@ -167,7 +167,9 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 
         OFX::ChoiceParamDescriptor* centerUnit = desc.defineChoiceParam( kParamCenterUnit );
         centerUnit->setLabel( "Center Unit" );
+        centerUnit->appendOption( kParamCenterUnitCenteredPixel );
         centerUnit->appendOption( kParamCenterUnitPixel );
+        centerUnit->appendOption( kParamCenterUnitCenteredNormWidth );
         centerUnit->appendOption( kParamCenterUnitNormWidth );
         centerUnit->setDefault( eParamCenterUnitPixel );
         

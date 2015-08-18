@@ -382,7 +382,7 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 		postOffset = swapPoint;
 	}
 
-	Point2  imgShift        = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
+	Point2  imgShift       = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
 	params.imgSizeSrc      = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
 	params.imgCenterSrc    = Point2( params.imgSizeSrc.x * 0.5, params.imgSizeSrc.y * 0.5 );
 	params.imgCenterDst    = params.imgCenterSrc + imgShift;
@@ -401,16 +401,16 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 			params.normalizeCoef = std::max(params.imgSizeSrc.x, params.imgSizeSrc.y);
 			break;
 		case eParamNormalizationDiagonal:
-			params.normalizeCoef = std::sqrt( params.imgSizeSrc.x * params.imgSizeSrc.x * pixelAspectRatio * pixelAspectRatio + params.imgSizeSrc.y * params.imgSizeSrc.y );
+			params.normalizeCoef = std::sqrt( params.imgSizeSrc.x * params.imgSizeSrc.x + params.imgSizeSrc.y * params.imgSizeSrc.y );
 			break;
 		case eParamNormalizationHalfDiagonal:
-			params.normalizeCoef = std::sqrt( params.imgCenterSrc.x * params.imgCenterSrc.x * pixelAspectRatio * pixelAspectRatio + params.imgCenterSrc.y * params.imgCenterSrc.y );
+			params.normalizeCoef = std::sqrt( params.imgCenterSrc.x * params.imgCenterSrc.x + params.imgCenterSrc.y * params.imgCenterSrc.y );
 			break;
 		case eParamNormalizationFocal:
 			params.normalizeCoef = _focal->getValue();
 			break;
 	}
-	params.pixelRatio      = pixelAspectRatio;
+	params.pixelRatio = pixelAspectRatio;
 
 	switch( getCenterType() )
 	{
@@ -418,11 +418,17 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 		{
 			switch( (EParamCenterUnit)_centerUnit->getValue() )
 			{
+				case eParamCenterUnitCenteredPixel:
+					params.lensCenterSrc = ofxToGil( _center->getValue() ) + params.imgCenterSrc;
+					break;
 				case eParamCenterUnitPixel:
 					params.lensCenterSrc = ofxToGil( _center->getValue() );
 					break;
-				case eParamCenterUnitNormWidth:
+				case eParamCenterUnitCenteredNormWidth:
 					params.lensCenterSrc = pointNormalizedXXcToCanonicalXY( ofxToGil( _center->getValue() ), params.imgSizeSrc );
+					break;
+				case eParamCenterUnitNormWidth:
+					params.lensCenterSrc = pointNormalizedXXToCanonicalXY( ofxToGil( _center->getValue() ), params.imgSizeSrc );
 					break;
 			}
 			if( useOptionalInputRod )
