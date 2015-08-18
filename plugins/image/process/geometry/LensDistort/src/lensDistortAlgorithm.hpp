@@ -219,18 +219,18 @@ inline void transformValuesApply( const EParamLensType lensType, const LensDisto
 			}
 			break;
 		}
-        case eParamLensTypeBrown3:
-        {
-                if( params.distort )
-                {
-                        transformValuesApply( LensDistortBrown3<double>(params), obj );
-                }
-                else
-                {
-                        transformValuesApply( LensUndistortBrown3<double>(params), obj );
-                }
-                break;
-        }
+		case eParamLensTypeBrown3:
+		{
+			if( params.distort )
+			{
+				transformValuesApply( LensDistortBrown3<double>(params), obj );
+			}
+			else
+			{
+				transformValuesApply( LensUndistortBrown3<double>(params), obj );
+			}
+			break;
+		}
 		case eParamLensTypeFisheye:
 		{
 			if( params.distort )
