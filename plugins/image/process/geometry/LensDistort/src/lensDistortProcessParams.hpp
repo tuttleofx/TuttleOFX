@@ -302,7 +302,6 @@ struct LensDistortBrown3 : public CoordonatesSystem<F>
 	inline point2<F> apply( const point2<F2>& src ) const
 	{
 		BOOST_ASSERT( this->_params.distort );
-		BOOST_ASSERT( this->_params.brown1 >= 0 );
 		point2<F> pc( this->pixelToLensCenterNormalized( src ) ); // centered normalized space
 		pc *= this->_params.postScale;
 
@@ -335,7 +334,6 @@ struct LensUndistortBrown3 : public CoordonatesSystem<F>
 	inline point2<F> apply( const point2<F2>& src ) const
 	{
 		BOOST_ASSERT( !this->_params.distort );
-		BOOST_ASSERT( this->_params.brown1 >= 0 );
 		point2<F> pc( this->pixelToLensCenterNormalized( src ) );
 		pc *= this->_params.postScale;
 
