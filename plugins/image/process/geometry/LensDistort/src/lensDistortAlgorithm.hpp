@@ -16,6 +16,7 @@
 #include <boost/gil/typedefs.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/assert.hpp>
+#include <boost/foreach.hpp>
 
 #include <cmath>
 
@@ -92,29 +93,35 @@ OfxRectD transformValues( const DistortFunc& algo, const OfxRectD& rec )
 	typedef typename DistortFunc::Point2 Point2;
 	std::vector<Point2> points;
 
-	// center in rec ?
+	// If center is in rec
 	if( algo._params.lensCenterDst.x > rec.x1 && algo._params.lensCenterDst.x < rec.x2 )
 	{
-		points.push_back( algo.apply( Point2( algo._params.lensCenterDst.x, rec.y1 ) ) );
-		points.push_back( algo.apply( Point2( algo._params.lensCenterDst.x, rec.y2 ) ) );
+		points.push_back( Point2( algo._params.lensCenterDst.x, rec.y1 ) );
+		points.push_back( Point2( algo._params.lensCenterDst.x, rec.y2 ) );
 	}
 	if( algo._params.lensCenterDst.y > rec.y1 && algo._params.lensCenterDst.y < rec.y2 )
 	{
-		points.push_back( algo.apply( Point2( rec.x1, algo._params.lensCenterDst.y ) ) );
-		points.push_back( algo.apply( Point2( rec.x2, algo._params.lensCenterDst.y ) ) );
+		points.push_back( Point2( rec.x1, algo._params.lensCenterDst.y ) );
+		points.push_back( Point2( rec.x2, algo._params.lensCenterDst.y ) );
 	}
 
-	// A B
-	// C D
-	Point2 outA( rec.x1, rec.y1 );
-	Point2 outB( rec.x2, rec.y1 );
-	Point2 outC( rec.x1, rec.y2 );
-	Point2 outD( rec.x2, rec.y2 );
-	points.push_back( algo.apply( outA ) );
-	points.push_back( algo.apply( outB ) );
-	points.push_back( algo.apply( outC ) );
-	points.push_back( algo.apply( outD ) );
-
+	const double xOffset = (rec.x2-rec.x1)/16.0;
+	for( double x = rec.x1; x < rec.x2 + xOffset; x += xOffset )
+	{
+		points.push_back( Point2( x, rec.y1 ) );
+		points.push_back( Point2( x, rec.y2 ) );
+	}
+	const double yOffset = (rec.y2-rec.y1)/16.0;
+	for( double y = rec.y1; y < rec.y2 + yOffset; y += yOffset )
+	{
+		points.push_back( Point2( rec.x1, y ) );
+		points.push_back( Point2( rec.x2, y ) );
+	}
+	BOOST_FOREACH( Point2& p, points )
+	{
+		p = algo.apply(p);
+	}
+	
 	return pointsBoundingBox( points );
 }
 
