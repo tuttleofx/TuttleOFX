@@ -157,13 +157,8 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		_paramArtist->setValue( p2.artist );
 	
 	// https://github.com/LibRaw/LibRaw/blob/master/samples/raw-identify.cpp
-	
+	// For debugging
 	std::ostringstream ss;
-	ss << "Filename: " << params._filepath << "\n";
-	ss << "Timestamp: " << ctime( &( p2.timestamp ) ) << "\n";
-	ss << "Camera: " << p1.make << " " << p1.model << "\n";
-	if( p2.artist[0] )
-		ss << "Owner: " << p2.artist << "\n";
 	if( p1.dng_version )
 	{
 		ss << "DNG Version: ";
@@ -172,28 +167,24 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		ss << "\n";
 	}
 
-	ss << "ISO speed: " << (int) p2.iso_speed << "\n";
-	ss << "Shutter: ";
-	/*if( p2.shutter > 0 && p2.shutter < 1 )
-		p2.shutter = 1 / p2.shutter;*/
-	ss << p2.shutter << " sec" << "\n"; // %0.1f
-	ss << "Aperture: f/" << p2.aperture << "\n";
-	ss << "Focal length: " << p2.focal_len << " mm" << "\n";
 	if( color.profile )
 		ss << "Embedded ICC profile: yes, " << color.profile_length << " bytes" << "\n";
 	else
 		ss << "Embedded ICC profile: no" << "\n";
 
-	ss << "Number of raw images: " << p1.raw_count;
+	ss << "Number of raw images: " << p1.raw_count << "\n";
+
 	if( sizes.pixel_aspect != 1 )
 		ss << "Pixel Aspect Ratio: " << sizes.pixel_aspect << "\n";
+
 	if( thumbnail.tlength )
 		ss << "Thumb size:  " << thumbnail.twidth << " x " << thumbnail.theight << "\n";
-	ss << "Full size:   " << sizes.raw_width << " x " << sizes.raw_height << "\n";
 
+	ss << "Full size:   " << sizes.raw_width << " x " << sizes.raw_height << "\n";
 	ss << "Image size:  " << sizes.width << " x " << sizes.height << "\n";
 	ss << "Output size: " << sizes.iwidth << " x " << sizes.iheight << "\n";
 	ss << "Raw colors: " << p1.colors << "\n";
+
 	if( p1.filters )
 	{
 		ss << "Filter pattern: ";
@@ -209,17 +200,12 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		}
 		ss << "\n";
 	}
+
 	ss << "Daylight multipliers: ";
 	for( int c = 0; c < p1.colors; ++c )
 		ss << " " << color.pre_mul[c];
 	ss << "\n";
-	if( color.cam_mul[0] > 0 )
-	{
-		ss << "Camera multipliers: ";
-		for( int c = 0; c < 4; ++c )
-			ss << " " << color.cam_mul[c];
-		ss << "\n";
-	}
+
 	const char* csl[] = { "U", "I", "CO", "L", "CA" };
 	ss << "Color sources /Legend: (U)nknown, (I)nit, (CO)nstant, (L)oaded, (CA)lculated/:" << "\n";
 	ss << "Cam->XYZ matrix:" << "\n";
