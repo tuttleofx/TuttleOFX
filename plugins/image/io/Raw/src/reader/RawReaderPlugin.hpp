@@ -98,6 +98,7 @@ public:
 	OFX::IntParam*       _paramIso;
 	OFX::IntParam*       _paramShutter;
 	OFX::DoubleParam*    _paramAperture;
+	OFX::IntParam*       _paramFocal;
 	OFX::StringParam*    _paramDateOfShooting;
 	OFX::StringParam*    _paramGPS;
 	OFX::StringParam*    _paramDesc;
