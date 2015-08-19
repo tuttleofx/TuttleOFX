@@ -36,6 +36,14 @@ static const std::string kParamFocal      = "focal";
 static const std::string kParamFocalLabel = "Focal Length";
 static const std::string kParamFocalHint  = "In millimeters";
 
+static const std::string kParamWBR      = "whiteBalanceR";
+static const std::string kParamWBRLabel = "White Balance - R Coeff";
+static const std::string kParamWBG      = "whiteBalanceG";
+static const std::string kParamWBGLabel = "White Balance - G Coeff";
+static const std::string kParamWBB      = "whiteBalanceB";
+static const std::string kParamWBBLabel = "White Balance - B Coeff";
+static const std::string kParamWBHint  = "White balance coefficients (as shot). Either read from file or calculated.";
+
 static const std::string kParamDateOfShooting      = "timestamp";
 static const std::string kParamDateOfShootingLabel = "Date of shooting";
 static const std::string kParamDateOfShootingHint  = "";

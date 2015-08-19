@@ -52,6 +52,9 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramShutter        = fetchIntParam   ( kParamShutter );
 	_paramAperture       = fetchDoubleParam( kParamAperture );
 	_paramFocal          = fetchIntParam   ( kParamFocal );
+	_paramWBR            = fetchDoubleParam( kParamWBR );
+	_paramWBG            = fetchDoubleParam( kParamWBG );
+	_paramWBB            = fetchDoubleParam( kParamWBB );
 	_paramDateOfShooting = fetchStringParam( kParamDateOfShooting );
 	_paramGPS            = fetchStringParam( kParamGPS );
 	_paramDesc           = fetchStringParam( kParamDesc );
@@ -132,6 +135,9 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 	_paramShutter->setValue( p2.shutter );
 	_paramAperture->setValue( p2.aperture );
 	_paramFocal->setValue( p2.focal_len );
+	_paramWBR->setValue(color.cam_mul[0]);
+	_paramWBG->setValue(color.cam_mul[1]);
+	_paramWBB->setValue(color.cam_mul[2]);
 	_paramDateOfShooting->setValue( ctime( &( p2.timestamp ) ) );
 	
 	if( p2.gpsdata[0] )

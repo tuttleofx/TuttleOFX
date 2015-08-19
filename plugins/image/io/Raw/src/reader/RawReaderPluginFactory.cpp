@@ -287,6 +287,25 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	focal->setHint( kParamFocalHint );
 	focal->setEnabled( false );
 	focal->setParent( metadata );
+
+	OFX::DoubleParamDescriptor* WBR = desc.defineDoubleParam( kParamWBR );
+	WBR->setLabel( kParamWBRLabel );
+	WBR->setHint( kParamWBHint );
+	WBR->setEnabled( false );
+	WBR->setParent( metadata );
+
+	OFX::DoubleParamDescriptor* WBG = desc.defineDoubleParam( kParamWBG );
+	WBG->setLabel( kParamWBGLabel );
+	WBG->setHint( kParamWBHint );
+	WBG->setEnabled( false );
+	WBG->setParent( metadata );
+
+	OFX::DoubleParamDescriptor* WBB = desc.defineDoubleParam( kParamWBB );
+	WBB->setLabel( kParamManualWBBLabel );
+	WBB->setHint( kParamWBHint );
+	WBB->setEnabled( false );
+	WBB->setParent( metadata );
+
 	OFX::StringParamDescriptor* date = desc.defineStringParam( kParamDateOfShooting );
 	date->setLabel( kParamDateOfShootingLabel );
 	date->setHint( kParamDateOfShootingHint );
