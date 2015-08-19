@@ -26,15 +26,15 @@ static const std::string kParamIsoHint  = "";
 
 static const std::string kParamShutter      = "shutter";
 static const std::string kParamShutterLabel = "Shutter speed";
-static const std::string kParamShutterHint  = "";
+static const std::string kParamShutterHint  = "In seconds";
 
 static const std::string kParamAperture      = "aperture";
 static const std::string kParamApertureLabel = "Aperture";
-static const std::string kParamApertureHint  = "";
+static const std::string kParamApertureHint  = "f/value";
 
 static const std::string kParamFocal      = "focal";
 static const std::string kParamFocalLabel = "Focal Length";
-static const std::string kParamFocalHint  = "";
+static const std::string kParamFocalHint  = "In millimeters";
 
 static const std::string kParamDateOfShooting      = "timestamp";
 static const std::string kParamDateOfShootingLabel = "Date of shooting";
