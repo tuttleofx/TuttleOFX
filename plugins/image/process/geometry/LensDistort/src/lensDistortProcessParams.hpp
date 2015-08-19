@@ -92,9 +92,9 @@ struct LensDistortProcessParams
 
 	/// @group Brown
 	/// @{
-	F brown1;
-	F brown2;
-	F brown3;
+	F coef1;
+	F coef2;
+	F coef3;
 	/// @}
 
 	/// @group Advanced
@@ -215,12 +215,12 @@ struct LensDistortBrown1 : public CoordonatesSystem<F>
 	inline point2<F> apply( const point2<F2>& src ) const
 	{
 		BOOST_ASSERT( this->_params.distort );
-		BOOST_ASSERT( this->_params.brown1 >= 0 );
+		BOOST_ASSERT( this->_params.coef1 >= 0 );
 		point2<F> pc( this->pixelToLensCenterNormalized( src ) ); // centered normalized space
 		pc *= this->_params.postScale;
 
 		const F r2   = pc.x * pc.x + pc.y * pc.y; // distance to center squared
-		const F coef = 1.0 + r2 * this->_params.brown1; // distortion coef for current pixel
+		const F coef = 1.0 + r2 * this->_params.coef1; // distortion coef for current pixel
 		pc.x *= coef;
 		pc.y *= coef;
 
@@ -239,7 +239,7 @@ struct LensUndistortBrown1 : public CoordonatesSystem<F>
 	inline point2<F> apply( const point2<F2>& src ) const
 	{
 		BOOST_ASSERT( !this->_params.distort );
-		BOOST_ASSERT( this->_params.brown1 >= 0 );
+		BOOST_ASSERT( this->_params.coef1 >= 0 );
 		point2<F> pc( this->pixelToLensCenterNormalized( src ) );
 
 		pc *= this->_params.postScale;
@@ -247,14 +247,14 @@ struct LensUndistortBrown1 : public CoordonatesSystem<F>
 		F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
 
 		// necessary values to calculate
-		if( r == 0 || this->_params.brown1 == 0 )
+		if( r == 0 || this->_params.coef1 == 0 )
 		{
 			return this->lensCenterNormalizedToPixel( pc );
 		}
 
 		// calculate the determinant delta = Q^3 + R^2
-		F cQ    = -1.0 / ( 3.0 * this->_params.brown1 );
-		F cR    = -r / ( 2.f * this->_params.brown1 );
+		F cQ    = -1.0 / ( 3.0 * this->_params.coef1 );
+		F cR    = -r / ( 2.f * this->_params.coef1 );
 		F delta = -cQ * cQ * cQ + cR * cR;
 		F coef  = 0.0;
 		F t;
@@ -319,7 +319,7 @@ struct LensDistortBrown3 : public CoordonatesSystem<F>
 		const F r4 = r2 * r2;
 		const F r6 = r2 * r4;
 		// distortion coef for current pixel
-		return 1.0 + r2 * params.brown1 + r4 * params.brown2 + r6 * params.brown3;
+		return 1.0 + r2 * params.coef1 + r4 * params.coef2 + r6 * params.coef3;
 	}
 
 };
@@ -338,9 +338,9 @@ struct LensUndistortBrown3 : public CoordonatesSystem<F>
 		pc *= this->_params.postScale;
 
 		const F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center squared
-		const LensDistortBrown3<F> disto(this->_params);
-		const DistoSolver<LensDistortBrown3<F> > distoSolver(disto);
-		const F coefSolver = bisectionRadiusSolve(r2, distoSolver);
+		const LensDistortBrown3<F> distortion(this->_params);
+		const DistoSolver<LensDistortBrown3<F> > distortionSolver(distortion);
+		const F coefSolver = bisectionRadiusSolve(r2, distortionSolver);
 
 		const F coef = (r2 == 0) ? 1. : std::sqrt(coefSolver / r2);
 
@@ -362,7 +362,7 @@ struct LensDistortPTLens : public CoordonatesSystem<F>
 	inline point2<F> apply( const point2<F2>& src ) const
 	{
 		BOOST_ASSERT( this->_params.distort );
-		BOOST_ASSERT( this->_params.brown1 >= 0 );
+		BOOST_ASSERT( this->_params.coef1 >= 0 );
 		point2<F> pc( this->pixelToLensCenterNormalized( src ) ); // centered normalized space
 		pc *= this->_params.postScale;
 
@@ -380,7 +380,7 @@ struct LensDistortPTLens : public CoordonatesSystem<F>
 		const F r = std::sqrt(r2);
 		const F r3 = r * r2;
 		// distortion coef for current pixel
-		return 1.0 + r * params.brown3 + r2 * params.brown2 + r3 * params.brown1 - params.brown1 - params.brown2 - params.brown3;
+		return 1.0 + r * params.coef3 + r2 * params.coef2 + r3 * params.coef1 - params.coef1 - params.coef2 - params.coef3;
 	}
 };
 
@@ -394,7 +394,7 @@ struct LensUndistortPTLens : public CoordonatesSystem<F>
 	inline point2<F> apply( const point2<F2>& src ) const
 	{
 		BOOST_ASSERT( !this->_params.distort );
-		BOOST_ASSERT( this->_params.brown1 >= 0 );
+		BOOST_ASSERT( this->_params.coef1 >= 0 );
 		point2<F> pc( this->pixelToLensCenterNormalized( src ) );
 		pc *= this->_params.postScale;
 
@@ -431,7 +431,7 @@ struct LensDistortFisheye : public CoordonatesSystem<F>
 			point2<F> tmp( src.x, src.y );
 			return tmp;
 		}
-		F coef = 0.5 * std::tan( r * this->_params.brown1 ) / ( std::tan( 0.5 * this->_params.brown1 ) * r );
+		F coef = 0.5 * std::tan( r * this->_params.coef1 ) / ( std::tan( 0.5 * this->_params.coef1 ) * r );
 
 		pc *= coef;
 		pc *= this->_params.preScale;
@@ -452,12 +452,12 @@ struct LensUndistortFisheye : public CoordonatesSystem<F>
 		pc *= this->_params.postScale;
 
 		F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
-		if( r == 0 || this->_params.brown1 == 0 )
+		if( r == 0 || this->_params.coef1 == 0 )
 		{
 			point2<F> tmp( src.x, src.y );
 			return tmp;
 		}
-		F coef = std::atan( 2.0 * r * std::tan( 0.5 * this->_params.brown1 ) ) / this->_params.brown1;
+		F coef = std::atan( 2.0 * r * std::tan( 0.5 * this->_params.coef1 ) ) / this->_params.coef1;
 		coef /= r;
 
 		pc *= coef;

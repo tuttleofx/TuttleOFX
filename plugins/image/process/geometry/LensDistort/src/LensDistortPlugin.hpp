@@ -42,9 +42,9 @@ public:
 	OFX::ChoiceParam*   _lensType;             ///< choice to select lens type
 	OFX::ChoiceParam*   _normalization;
 	OFX::DoubleParam*   _focal;
-	OFX::DoubleParam*   _brown1;                ///< distortion coeffiscient
-	OFX::DoubleParam*   _brown2;                ///< distortion coeffiscient for fish-eye lens
-	OFX::DoubleParam*   _brown3;                ///< distortion coeffiscient for fish-eye lens
+	OFX::DoubleParam*   _coef1;                ///< distortion coeffiscient
+	OFX::DoubleParam*   _coef2;                ///< distortion coeffiscient for fish-eye lens
+	OFX::DoubleParam*   _coef3;                ///< distortion coeffiscient for fish-eye lens
 	OFX::DoubleParam*   _squeeze;              ///< squeeze coefficient horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _asymmetric;           ///< lens distortion is asymmetric horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _center;               ///< center coordonnates

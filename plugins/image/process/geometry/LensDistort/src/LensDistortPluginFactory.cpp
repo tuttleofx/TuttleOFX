@@ -115,26 +115,26 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         lensType->appendOption( kParamLensTypeFishEye );
         lensType->setDefault( eParamLensTypeBrown3 );
 
-        OFX::DoubleParamDescriptor* brown1 = desc.defineDoubleParam( kParamBrown1 );
-        brown1->setLabel( "Main" );
-        brown1->setDefault( 0.1 );
-        brown1->setDisplayRange( 0.0, 1.0 );
-        brown1->setHint( "Main distortion coefficient\n"
+        OFX::DoubleParamDescriptor* coef1 = desc.defineDoubleParam( kParamCoef1 );
+        coef1->setLabel( "Main" );
+        coef1->setDefault( 0.1 );
+        coef1->setDisplayRange( 0.0, 1.0 );
+        coef1->setHint( "Main distortion coefficient\n"
                         ">0 : Barrel distortion\n"
                         "<0 : Pincushion distortion\n"
                         );
 
-        OFX::DoubleParamDescriptor* brown2 = desc.defineDoubleParam( kParamBrown2 );
-        brown2->setLabel( "Secondary" );
-        brown2->setDefault( 0.0 );
-        brown2->setDisplayRange( -1.0, 1.0 );
-        brown2->setHint( "Secondary distortion coefficient");
+        OFX::DoubleParamDescriptor* coef2 = desc.defineDoubleParam( kParamCoef2 );
+        coef2->setLabel( "Secondary" );
+        coef2->setDefault( 0.0 );
+        coef2->setDisplayRange( -1.0, 1.0 );
+        coef2->setHint( "Secondary distortion coefficient");
 
-        OFX::DoubleParamDescriptor* brown3 = desc.defineDoubleParam( kParamBrown3 );
-        brown3->setLabel( "Third" );
-        brown3->setDefault( 0.0 );
-        brown3->setDisplayRange( -1.0, 1.0 );
-        brown3->setHint( "Third distortion coefficient" );
+        OFX::DoubleParamDescriptor* coef3 = desc.defineDoubleParam( kParamCoef3 );
+        coef3->setLabel( "Third" );
+        coef3->setDefault( 0.0 );
+        coef3->setDisplayRange( -1.0, 1.0 );
+        coef3->setHint( "Third distortion coefficient" );
 
         OFX::DoubleParamDescriptor* squeeze = desc.defineDoubleParam( kParamSqueeze );
         squeeze->setLabel( "Squeeze" );
