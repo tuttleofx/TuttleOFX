@@ -40,12 +40,8 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramExposurePreserve = fetchDoubleParam( kParamExposurePreserve );
 	
 	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
-	_paramManualWhiteBalanceR = fetchDoubleParam( kParamManualWBR );
-	_paramManualWhiteBalanceG = fetchDoubleParam( kParamManualWBG );
-	_paramManualWhiteBalanceB = fetchDoubleParam( kParamManualWBB );
-	_paramManualWhiteBalanceR->setIsSecret(true);
-	_paramManualWhiteBalanceG->setIsSecret(true);
-	_paramManualWhiteBalanceB->setIsSecret(true);
+	_paramManualWBKelvin = fetchDoubleParam( kParamManualWBKelvin );
+	_paramManualWBKelvin->setIsSecret(true);
 	
 	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
 
@@ -97,9 +93,7 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._exposurePreserve = _paramExposurePreserve->getValue();
 	
 	params._whiteBalance     = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
-	params._manualWhiteBalanceR = _paramManualWhiteBalanceR->getValue();
-	params._manualWhiteBalanceG = _paramManualWhiteBalanceG->getValue();
-	params._manualWhiteBalanceB = _paramManualWhiteBalanceB->getValue();
+	params._manualWBKelvin = _paramManualWBKelvin->getValue();
 	
 	params._hightlight = static_cast<EHighlight>( _paramHighlight->getValue() );
 
@@ -228,23 +222,17 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		EWhiteBalance wbMode = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
 		if( wbMode == eManualWb )
 		{
-			_paramManualWhiteBalanceR->setIsSecret(false);
-			_paramManualWhiteBalanceG->setIsSecret(false);
-			_paramManualWhiteBalanceB->setIsSecret(false);
+			_paramManualWBKelvin->setIsSecret(false);
 		}
 		else
 		{
-			_paramManualWhiteBalanceR->setIsSecret(true);
-			_paramManualWhiteBalanceG->setIsSecret(true);
-			_paramManualWhiteBalanceB->setIsSecret(true);
+			_paramManualWBKelvin->setIsSecret(true);
 		}
 	}
-	else if( paramName == kParamManualWBR || paramName == kParamManualWBG || paramName == kParamManualWBB )
+	else if( paramName == kParamManualWBKelvin )
 	{
-		const double manualWhiteBalanceR = _paramManualWhiteBalanceR->getValue();
-		const double manualWhiteBalanceG = _paramManualWhiteBalanceG->getValue();
-		const double manualWhiteBalanceB = _paramManualWhiteBalanceB->getValue();
-		if( manualWhiteBalanceR != 0.0 || manualWhiteBalanceG != 0.0 || manualWhiteBalanceB != 0.0 )
+		const double manualWBKelvin = _paramManualWBKelvin->getValue();
+		if( manualWBKelvin != 0.0 )
 		{
 			_paramWhiteBalance->setValue( eManualWb );
 		}

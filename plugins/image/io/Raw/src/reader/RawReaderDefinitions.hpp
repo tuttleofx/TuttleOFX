@@ -197,13 +197,9 @@ enum EWhiteBalance
 	eManualWb,
 };
 
-static const std::string kParamManualWBR = "manualWhiteBalanceR";
-static const std::string kParamManualWBRLabel = "Manual White Balance - R coeff";
-static const std::string kParamManualWBG = "manualWhiteBalanceG";
-static const std::string kParamManualWBGLabel = "Manual White Balance - G coeff";
-static const std::string kParamManualWBB = "manualWhiteBalanceB";
-static const std::string kParamManualWBBLabel = "Manual White Balance - B coeff";
-static const std::string kParamManualWBHint = "Use your own white balance coeffs: \n\
+static const std::string kParamManualWBKelvin = "manualWhiteBalance";
+static const std::string kParamManualWBKelvinLabel = "Manual White Balance in Kelvin";
+static const std::string kParamManualWBKelvinHint = "Use your own white balance: \n\
 1,700 K	Match flame, low pressure sodium lamps (LPS/SOX) \n\
 1,850 K	Candle flame, sunset/sunrise \n\
 2,700–3,300 K	Incandescent lamps \n\

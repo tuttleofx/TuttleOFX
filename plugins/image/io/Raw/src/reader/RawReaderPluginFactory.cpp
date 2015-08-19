@@ -201,23 +201,11 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	whitebalance->appendOption( kParamWhiteBalanceManualWb );
 	whitebalance->setDefault( eCameraWb );
 
-	OFX::DoubleParamDescriptor* manualWBR = desc.defineDoubleParam( kParamManualWBR );
-	manualWBR->setLabel( kParamManualWBRLabel );
-	manualWBR->setHint( kParamManualWBHint );
-	manualWBR->setDefault( 0.0 );
-	manualWBR->setDisplayRange( 0, 30000.0 );
-
-	OFX::DoubleParamDescriptor* manualWBG = desc.defineDoubleParam( kParamManualWBG );
-	manualWBG->setLabel( kParamManualWBGLabel );
-	manualWBG->setHint( kParamManualWBHint );
-	manualWBG->setDefault( 0.0 );
-	manualWBG->setDisplayRange( 0, 30000.0 );
-
-	OFX::DoubleParamDescriptor* manualWBB = desc.defineDoubleParam( kParamManualWBB );
-	manualWBB->setLabel( kParamManualWBBLabel );
-	manualWBB->setHint( kParamManualWBHint );
-	manualWBB->setDefault( 0.0 );
-	manualWBB->setDisplayRange( 0, 30000.0 );
+	OFX::DoubleParamDescriptor* manualWBKelvin = desc.defineDoubleParam( kParamManualWBKelvin );
+	manualWBKelvin->setLabel(kParamManualWBKelvinLabel );
+	manualWBKelvin->setHint( kParamManualWBKelvinHint );
+	manualWBKelvin->setDefault( 0.0 );
+	manualWBKelvin->setDisplayRange( 1000, 40000.0 );
 
 	OFX::ChoiceParamDescriptor* filtering = desc.defineChoiceParam( kParamFiltering );
 	filtering->setLabel( "Filtering" );
@@ -286,7 +274,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	WBG->setParent( metadata );
 
 	OFX::DoubleParamDescriptor* WBB = desc.defineDoubleParam( kParamWBB );
-	WBB->setLabel( kParamManualWBBLabel );
+	WBB->setLabel( kParamWBBLabel );
 	WBB->setHint( kParamWBHint );
 	WBB->setEnabled( false );
 	WBB->setParent( metadata );

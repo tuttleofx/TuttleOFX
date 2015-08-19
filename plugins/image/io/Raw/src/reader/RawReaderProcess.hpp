@@ -27,6 +27,12 @@ public:
 	View& readImage( View& dst, const std::string& filepath );
 
 private:
+	// http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/
+	float getRedFromKelvin( const double kelvinValue );
+	float getGreenFromKelvin( const double kelvinValue );
+	float getBlueFromKelvin( const double kelvinValue );
+
+private:
 	RawReaderPlugin&    _plugin;        ///< Rendering plugin
 	RawReaderProcessParams<Scalar> _params;
 

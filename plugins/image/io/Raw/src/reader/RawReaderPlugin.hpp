@@ -32,9 +32,7 @@ struct RawReaderProcessParams
 	double         _exposurePreserve;
 	
 	EWhiteBalance  _whiteBalance;
-	double _manualWhiteBalanceR;
-	double _manualWhiteBalanceG;
-	double _manualWhiteBalanceB;
+	double _manualWBKelvin;
 
 	EFBDDNoiseRd _fbddNoiseRd;
 
@@ -89,9 +87,7 @@ public:
 	OFX::DoubleParam*    _paramExposurePreserve;
 	
 	OFX::ChoiceParam*    _paramWhiteBalance;
-	OFX::DoubleParam*    _paramManualWhiteBalanceR;
-	OFX::DoubleParam*    _paramManualWhiteBalanceG;
-	OFX::DoubleParam*    _paramManualWhiteBalanceB;
+	OFX::DoubleParam*    _paramManualWBKelvin;
 	
 	OFX::Double2DParam*  _paramGreyboxPoint;
 	OFX::Double2DParam*  _paramGreyboxSize;
