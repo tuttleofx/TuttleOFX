@@ -198,42 +198,27 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	whitebalance->setHint( kParamWhiteBalanceHint );
 	whitebalance->appendOption( kParamWhiteBalanceAutoWb );
 	whitebalance->appendOption( kParamWhiteBalanceCameraWb );
-#if(TUTTLE_EXPERIMENTAL)
 	whitebalance->appendOption( kParamWhiteBalanceManualWb );
-	whitebalance->appendOption( kParamWhiteBalance2500 );
-	whitebalance->appendOption( kParamWhiteBalance2550 );
-	whitebalance->appendOption( kParamWhiteBalance2650 );
-	whitebalance->appendOption( kParamWhiteBalance2700 );
-	whitebalance->appendOption( kParamWhiteBalance2800 );
-	whitebalance->appendOption( kParamWhiteBalance2850 );
-	whitebalance->appendOption( kParamWhiteBalance2950 );
-	whitebalance->appendOption( kParamWhiteBalance3000 );
-	whitebalance->appendOption( kParamWhiteBalance3100 );
-	whitebalance->appendOption( kParamWhiteBalance3200 );
-	whitebalance->appendOption( kParamWhiteBalance3300 );
-	whitebalance->appendOption( kParamWhiteBalance3400 );
-	whitebalance->appendOption( kParamWhiteBalance3600 );
-	whitebalance->appendOption( kParamWhiteBalance3700 );
-	whitebalance->appendOption( kParamWhiteBalance3800 );
-	whitebalance->appendOption( kParamWhiteBalance4000 );
-	whitebalance->appendOption( kParamWhiteBalance4200 );
-	whitebalance->appendOption( kParamWhiteBalance4300 );
-	whitebalance->appendOption( kParamWhiteBalance4500 );
-	whitebalance->appendOption( kParamWhiteBalance4800 );
-	whitebalance->appendOption( kParamWhiteBalance5000 );
-	whitebalance->appendOption( kParamWhiteBalance5300 );
-	whitebalance->appendOption( kParamWhiteBalance5600 );
-	whitebalance->appendOption( kParamWhiteBalance5900 );
-	whitebalance->appendOption( kParamWhiteBalance6300 );
-	whitebalance->appendOption( kParamWhiteBalance6700 );
-	whitebalance->appendOption( kParamWhiteBalance7100 );
-	whitebalance->appendOption( kParamWhiteBalance7700 );
-	whitebalance->appendOption( kParamWhiteBalance8300 );
-	whitebalance->appendOption( kParamWhiteBalance9100 );
-	whitebalance->appendOption( kParamWhiteBalance10000 );
-#endif
 	whitebalance->setDefault( eCameraWb );
-	
+
+	OFX::DoubleParamDescriptor* manualWBR = desc.defineDoubleParam( kParamManualWBR );
+	manualWBR->setLabel( kParamManualWBRLabel );
+	manualWBR->setHint( kParamManualWBHint );
+	manualWBR->setDefault( 0.0 );
+	manualWBR->setDisplayRange( 0, 30000.0 );
+
+	OFX::DoubleParamDescriptor* manualWBG = desc.defineDoubleParam( kParamManualWBG );
+	manualWBG->setLabel( kParamManualWBGLabel );
+	manualWBG->setHint( kParamManualWBHint );
+	manualWBG->setDefault( 0.0 );
+	manualWBG->setDisplayRange( 0, 30000.0 );
+
+	OFX::DoubleParamDescriptor* manualWBB = desc.defineDoubleParam( kParamManualWBB );
+	manualWBB->setLabel( kParamManualWBBLabel );
+	manualWBB->setHint( kParamManualWBHint );
+	manualWBB->setDefault( 0.0 );
+	manualWBB->setDisplayRange( 0, 30000.0 );
+
 	OFX::ChoiceParamDescriptor* filtering = desc.defineChoiceParam( kParamFiltering );
 	filtering->setLabel( "Filtering" );
 	filtering->appendOption( kParamFilteringAuto );

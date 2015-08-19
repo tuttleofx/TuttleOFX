@@ -40,6 +40,12 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramExposurePreserve = fetchDoubleParam( kParamExposurePreserve );
 	
 	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
+	_paramManualWhiteBalanceR = fetchDoubleParam( kParamManualWBR );
+	_paramManualWhiteBalanceG = fetchDoubleParam( kParamManualWBG );
+	_paramManualWhiteBalanceB = fetchDoubleParam( kParamManualWBB );
+	_paramManualWhiteBalanceR->setIsSecret(true);
+	_paramManualWhiteBalanceG->setIsSecret(true);
+	_paramManualWhiteBalanceB->setIsSecret(true);
 	
 	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
 
@@ -91,6 +97,9 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._exposurePreserve = _paramExposurePreserve->getValue();
 	
 	params._whiteBalance     = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
+	params._manualWhiteBalanceR = _paramManualWhiteBalanceR->getValue();
+	params._manualWhiteBalanceG = _paramManualWhiteBalanceG->getValue();
+	params._manualWhiteBalanceB = _paramManualWhiteBalanceB->getValue();
 	
 	params._hightlight = static_cast<EHighlight>( _paramHighlight->getValue() );
 
@@ -222,14 +231,38 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 
 void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-//	else if( paramName == kRawReaderUpdateInfosButton )
-//	{
-//		updateInfos();
-//	}
-//	else
-//	{
 	ReaderPlugin::changedParam( args, paramName );
-//	}
+
+	if( paramName == kTuttlePluginFilename )
+	{
+		updateInfos( args.time );
+	}
+	else if( paramName == kParamWhiteBalance )
+	{
+		EWhiteBalance wbMode = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
+		if( wbMode == eManualWb )
+		{
+			_paramManualWhiteBalanceR->setIsSecret(false);
+			_paramManualWhiteBalanceG->setIsSecret(false);
+			_paramManualWhiteBalanceB->setIsSecret(false);
+		}
+		else
+		{
+			_paramManualWhiteBalanceR->setIsSecret(true);
+			_paramManualWhiteBalanceG->setIsSecret(true);
+			_paramManualWhiteBalanceB->setIsSecret(true);
+		}
+	}
+	else if( paramName == kParamManualWBR || paramName == kParamManualWBG || paramName == kParamManualWBB )
+	{
+		const double manualWhiteBalanceR = _paramManualWhiteBalanceR->getValue();
+		const double manualWhiteBalanceG = _paramManualWhiteBalanceG->getValue();
+		const double manualWhiteBalanceB = _paramManualWhiteBalanceB->getValue();
+		if( manualWhiteBalanceR != 0.0 || manualWhiteBalanceG != 0.0 || manualWhiteBalanceB != 0.0 )
+		{
+			_paramWhiteBalance->setValue( eManualWb );
+		}
+	}
 }
 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )

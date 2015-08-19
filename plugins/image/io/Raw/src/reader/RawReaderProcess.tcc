@@ -109,7 +109,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		    _out.no_interpolation = 1; // disables interpolation step in LibRaw::dcraw_process() call.
 		else
 #endif
-		    _out.user_qual = _params._interpolation;
+		_out.user_qual = _params._interpolation;
 
 		// interpolate colors
 		_out.four_color_rgb = _params._fourColorRgb;
@@ -128,40 +128,22 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.use_camera_wb = 0;
 		switch( _params._whiteBalance )
 		{
-			case eAutoWb: _out.use_auto_wb = 1; break;
-			case eCameraWb: _out.use_camera_wb = 1; break;
-			case eManualWb: break;
-			case e2500: break;
-			case e2550: break;
-			case e2650: break;
-			case e2700: break;
-			case e2800: break;
-			case e2850: break;
-			case e2950: break;
-			case e3000: break;
-			case e3100: break;
-			case e3200: break;
-			case e3300: break;
-			case e3400: break;
-			case e3600: break;
-			case e3700: break;
-			case e3800: break;
-			case e4000: break;
-			case e4200: break;
-			case e4300: break;
-			case e4500: break;
-			case e4800: break;
-			case e5000: break;
-			case e5300: break;
-			case e5600: break;
-			case e5900: break;
-			case e6300: break;
-			case e6700: break;
-			case e7100: break;
-			case e7700: break;
-			case e8300: break;
-			case e9100: break;
-			case e10000: break;
+			case eAutoWb:
+				// Use automatic white balance obtained after averaging over the entire image.
+				_out.use_auto_wb = 1;
+				break;
+			case eCameraWb:
+				// If possible, use the white balance from the camera.
+				_out.use_camera_wb = 1;
+				break;
+			case eManualWb:
+				//  Use your own WB coeffs.
+				// 4 multipliers (r,g,b,g) 
+				_out.user_mul[0] = _params._manualWhiteBalanceR;
+				_out.user_mul[1] = _params._manualWhiteBalanceG;
+				_out.user_mul[2] = _params._manualWhiteBalanceB;
+				_out.user_mul[3] = _params._manualWhiteBalanceG;
+				break;
 		}
 
 		/*switch( _params._filtering )
