@@ -143,7 +143,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				_out.user_mul[0] = getRedFromKelvin( _params._manualWBKelvin );
 				_out.user_mul[1] = getGreenFromKelvin( _params._manualWBKelvin );
 				_out.user_mul[2] = getBlueFromKelvin( _params._manualWBKelvin );
-				_out.user_mul[3] = getGreenFromKelvin( _params._manualWBKelvin );
+				_out.user_mul[3] = _out.user_mul[1];
 				break;
 		}
 
