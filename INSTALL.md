@@ -20,6 +20,24 @@ make
 make install
 ```
 
+
+## Additionnal dependencies for sam
+
+* __clint__
+
+Clint is a module filled with a set of awesome tools for developing commandline applications.
+
+https://pypi.python.org/pypi/clint/ <br/>
+Suggested version: v0.4.1
+
+* __argcomplete__
+
+Argcomplete provides easy, extensible command line tab completion of arguments for your Python script.
+
+https://pypi.python.org/pypi/argcomplete <br/>
+Suggested version: v0.9.0
+
+
 ## Tested compilers
 
 - Linux
