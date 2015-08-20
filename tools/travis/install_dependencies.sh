@@ -63,10 +63,15 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     brew tap homebrew/python
     brew tap homebrew/science
 
-    echo "Brew install python"
-    brew install python
-    echo "Pip install nose for test"
-    pip install nose
+    echo "Brew install python & nose"
+    if [[ ${PYTHON_VERSION} == "2.7" ]]; then
+        brew install python
+        pip install nose
+    elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
+        brew install python3
+        pip3 install nose
+    fi
+
     echo "Brew install packages"
     brew install swig ilmbase openexr jasper little-cms2 glew freetype fontconfig ffmpeg imagemagick libcaca aces_container ctl jpeg-turbo libraw seexpr openjpeg opencolorio openimageio numpy
 

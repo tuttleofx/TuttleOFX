@@ -15,6 +15,7 @@ if(FFMPEG_FOUND)
     # Build avTranscoder library
     set(AVTRANSCODER_DISABLE_APPS True)
     set(AVTRANSCODER_DISABLE_BINDINGS True)
+    set(AVTRANSCODER_PYTHON_VERSION_OF_BINDING ${TUTTLE_PYTHON_VERSION})
     add_subdirectory(avTranscoder)
 endif(FFMPEG_FOUND)
 

@@ -129,7 +129,7 @@ if (TuttleBoost_FOUND)
     include(${SWIG_USE_FILE})
   
     # Find python c libs
-    find_package(PythonLibs)
+    find_package(PythonLibs ${TUTTLE_PYTHON_VERSION})
     include_directories(${PYTHON_INCLUDE_DIRS})
 
     # Numpy
