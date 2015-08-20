@@ -214,11 +214,7 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 {
 	ReaderPlugin::changedParam( args, paramName );
 
-	if( paramName == kTuttlePluginFilename )
-	{
-		updateInfos( args.time );
-	}
-	else if( paramName == kParamWhiteBalance )
+	if( paramName == kParamWhiteBalance )
 	{
 		EWhiteBalance wbMode = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
 		if( wbMode == eManualWb )
