@@ -41,7 +41,6 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	
 	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
 	_paramManualWBKelvin = fetchDoubleParam( kParamManualWBKelvin );
-	_paramManualWBKelvin->setIsSecret(true);
 	
 	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
 
@@ -61,6 +60,8 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramGPS            = fetchStringParam( kParamGPS );
 	_paramDesc           = fetchStringParam( kParamDesc );
 	_paramArtist         = fetchStringParam( kParamArtist );
+
+	changedParam( OFX::InstanceChangedArgs(), kParamWhiteBalance );
 }
 
 RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParams( const OfxTime time )
