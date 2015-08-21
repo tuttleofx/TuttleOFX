@@ -149,6 +149,9 @@ if (TuttleBoost_FOUND)
 
     # Swig to compile c++ -> python
     set(CMAKE_SWIG_FLAGS -c++ -threads -Wall -small -fcompact -O -modern ${SWIG_NUMPY_FLAG}) #-doxygen
+    if(${PYTHONLIBS_VERSION_STRING} VERSION_GREATER "3")
+         set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -py3)
+    endif()
 
     # pyTuttle
     set(TUTTLE_PYTHON_BINDING_FILE src/tuttle/host/tuttle.i)
