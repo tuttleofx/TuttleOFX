@@ -368,7 +368,7 @@ class Sam_do(samUtils.Sam):
         else:
             parser.print_help()
 
-    def _getTuttleGraph(self, splitCmd):
+    def _getTuttleGraph(self, splitCmdGraph):
         """
         Return the tuple (tuttle graph, its nodes) which corresponds to the given split command.
         """
@@ -376,7 +376,7 @@ class Sam_do(samUtils.Sam):
         nodes = []
         connections = []
 
-        for splitCmdNode in splitCmd.getNodes():
+        for splitCmdNode in splitCmdGraph.getNodes():
             # Create a tuttle node
             nodeFullName = splitCmdNode.getPluginName()
             node = None

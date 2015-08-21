@@ -203,6 +203,7 @@ class SplitCmdNode:
         Plugin's arguments can be used to get best reader/writer.
         @note Get best reader if the given name is 'r'.
         @note Get best writer if the given name is 'w'.
+        @exception if cannot find a best reader/writer
         """
         pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
         if self._pluginId in pluginsMap:
