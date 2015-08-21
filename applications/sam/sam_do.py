@@ -381,7 +381,7 @@ class Sam_do(samUtils.Sam):
             nodeFullName = ''
             node = None
             try:
-                nodeFullName = splitCmdNode.getPluginName()
+                nodeFullName = splitCmdNode.getPluginName(self.logger)
                 node = graph.createNode(nodeFullName)
             except Exception as e:
                 # Plugin not found

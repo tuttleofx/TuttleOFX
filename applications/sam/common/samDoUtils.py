@@ -6,7 +6,7 @@ import argparse
 import copy
 
 # python module to get colors, indent text...
-from clint.textui import colored, puts, progress
+from clint.textui import colored, progress
 from clint import __version__ as clintVersion
 
 # parser of sequence
@@ -197,7 +197,7 @@ class SplitCmdNode:
             outputStr += '{:} -> {:}\n'.format(argName if argName else 'arg at '+str(i), str(argValue))
         return outputStr
 
-    def getPluginName(self):
+    def getPluginName(self, logger):
         """
         Return complete node name from the pluginId and its arguments.
         Plugin's arguments can be used to get best reader/writer.
@@ -211,19 +211,19 @@ class SplitCmdNode:
         else:
             if self.isGenericReader() or self.isGenericWriter():
                 if len(self._arguments) == 0:
-                    puts(colored.red('Cannot guess the best reader/writer node without any filename specified.'))
+                    logger.warning('Cannot guess the best reader/writer node without any filename specified.')
                     return ''
                 # get filename
                 filename = self._arguments[0][1]
                 # return best reader
                 if self.isGenericReader():
                     bestReader = tuttle.getBestReader(filename)
-                    puts(colored.green('Use "' + bestReader + '" to read "' + filename + '".'))
+                    logger.info('Use "' + bestReader + '" to read "' + filename + '".')
                     return bestReader
                 # return best writer
                 elif self.isGenericWriter():
                     bestWriter = tuttle.getBestWriter(filename)
-                    puts(colored.green('Use "' + bestWriter + '" to write "' + filename + '".'))
+                    logger.info('Use "' + bestWriter + '" to write "' + filename + '".')
                     return bestWriter
             return 'tuttle.' + self._pluginId
 
