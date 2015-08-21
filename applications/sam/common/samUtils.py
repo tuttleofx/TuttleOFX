@@ -7,6 +7,8 @@ import argparse
 
 # python module to get completions
 import argcomplete
+# python module to get colors
+from clint.textui import colored
 
 # parser of sequence
 from pySequenceParser import sequenceParser
@@ -52,7 +54,7 @@ class Sam(object):
         ch.setLevel(logging.ERROR)
 
         # create formatter
-        formatter = logging.Formatter("%(asctime)s - %(name)s %(levelname)s - %(message)s")
+        formatter = SamFormatter("%(asctime)s - %(name)s %(levelname)s - %(message)s")
         # set formatter
         ch.setFormatter(formatter)
         # add console handler to logger
@@ -81,6 +83,34 @@ class Sam(object):
             else:
                 # WARNING
                 handler.setLevel(30)
+
+
+class SamFormatter(logging.Formatter):
+    """
+    Custom formatter for python logger.
+    Use clint module to add color (depending on the log level).
+    """
+
+    def __init__(self, fmt):
+        logging.Formatter.__init__(self, fmt)
+
+    def format(self, record):
+        # Call the original formatter class to do the grunt work
+        result = logging.Formatter.format(self, record)
+
+        # Put color depending on the logging level
+        if record.levelno == logging.CRITICAL:
+            result = colored.red(result)
+        elif record.levelno == logging.ERROR:
+            result = colored.red(result)
+        elif record.levelno == logging.WARNING:
+            result = colored.yellow(result)
+        elif record.levelno == logging.INFO:
+            result = colored.green(result)
+        elif record.levelno == logging.DEBUG:
+            result = colored.white(result)
+
+        return result
 
 
 def completion():
