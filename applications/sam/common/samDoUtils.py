@@ -50,6 +50,10 @@ class SplitCmd:
                     filters.append('*.' + inputExtValue)
                 # browse in the given directory
                 self._browseFolder(generalGraph, inputFilename, filters)
+                # if no graph has been added when browse folder, add the general graph
+                # the user could display the help of a plugin
+                if not len(self._graph):
+                    self._graph.append(generalGraph)
             else:
                 self._graph.append(generalGraph)
         else:
