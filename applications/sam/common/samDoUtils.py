@@ -37,24 +37,30 @@ class SplitCmd:
         generalGraph = SplitCmdGraph(inputCommandLine)
 
         # if the user gives an input directory
-        inputName = generalGraph.getFirstNode().getFilename()
-        inputIsFolder = sequenceParser.getTypeFromPath(inputName) == sequenceParser.eTypeFolder
-
-        if inputIsFolder:
-            # create filter
-            filters = []
-            inputExtName, inputExtValue = generalGraph.getFirstNode().getArgument('ext')
-            if inputExtName:
-                filters.append('*.' + inputExtValue)
-            # browse in the given directory
-            self._browseFolder(generalGraph, inputName, filters)
+        inputIsFolder = False
+        if generalGraph.hasReader():
+            firstReader = generalGraph.getFirstReader()
+            inputFilename = firstReader.getFilename()
+            inputIsFolder = sequenceParser.getTypeFromPath(inputFilename) == sequenceParser.eTypeFolder
+            if inputIsFolder:
+                # create filter
+                filters = []
+                inputExtName, inputExtValue = firstReader.getArgument('ext')
+                if inputExtName:
+                    filters.append('*.' + inputExtValue)
+                # browse in the given directory
+                self._browseFolder(generalGraph, inputFilename, filters)
+            else:
+                self._graph.append(generalGraph)
         else:
             self._graph.append(generalGraph)
 
         # remove arguments of command line which are not for the plugins
         for graph in self._graph:
-            graph.getLastNode().removeArgument('ext')
-            graph.getFirstNode().removeArgument('ext')
+            if graph.hasReader():
+                graph.getFirstReader().removeArgument('ext')
+            if graph.hasWriter():
+                graph.getLastWriter().removeArgument('ext')
 
     def getGraphs(self):
         return self._graph
@@ -62,6 +68,7 @@ class SplitCmd:
     def _browseFolder(self, graph, inputFolder, filters):
         """
         Browse filesystem and append a new graph for each files/sequences.
+        If the script runs this function, the graph has at least a reader with a folder as filename parameter.
         """
         items = sequenceParser.browse(inputFolder, sequenceParser.eDetectionDefault, filters)
         for item in items:
@@ -69,21 +76,24 @@ class SplitCmd:
             if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
                 # create a new graph
                 newGraph = copy.deepcopy(graph)
-                newGraph.getFirstNode().setFilename(item.getAbsoluteFilepath())
-                newGraph.getLastNode().setFilename(os.path.join(newGraph.getLastNode().getFilename(), item.getFilename()))
-                # if the user add a filter of output extensions
-                outputExtName, outputExtValue = graph.getLastNode().getArgument('ext')
-                if outputExtName:
-                    outputFilename = newGraph.getLastNode().getFilename()
-                    newGraph.getLastNode().setFilename(outputFilename[:outputFilename.rfind('.')+1] + outputExtValue)
+                newGraph.getFirstReader().setFilename(item.getAbsoluteFilepath())
+                if newGraph.hasWriter():
+                    lastWriter = newGraph.getLastWriter()
+                    lastWriter.setFilename(os.path.join(lastWriter.getFilename(), item.getFilename()))
+                    # if the user add a filter of output extensions
+                    outputExtName, outputExtValue = graph.getLastWriter().getArgument('ext')
+                    if outputExtName:
+                        outputFilename = newGraph.getLastWriter().getFilename()
+                        newGraph.getLastWriter().setFilename(outputFilename[:outputFilename.rfind('.')+1] + outputExtValue)
                 # add the new graph
                 self._graph.append(newGraph)
             elif itemType == sequenceParser.eTypeFolder:
                 # sam-do --recursive
                 if self._recursive:
                     newGraph = copy.deepcopy(graph)
-                    newGraph.getFirstNode().setFilename(item.getAbsoluteFilepath())
-                    newGraph.getLastNode().setFilename(os.path.join(graph.getLastNode().getFilename(), item.getFilename()))
+                    newGraph.getFirstReader().setFilename(item.getAbsoluteFilepath())
+                    if newGraph.hasWriter():
+                        newGraph.getLastWriter().setFilename(os.path.join(graph.getLastWriter().getFilename(), item.getFilename()))
                     self._browseFolder(newGraph, item.getAbsoluteFilepath(), filters)
 
 
@@ -113,7 +123,7 @@ class SplitCmdGraph:
                     paramName, paramValue = input.split('=')
                 else:
                     paramValue = input
-                self.getLastNode().addArgument(paramName, paramValue)
+                self._nodes[-1].addArgument(paramName, paramValue)
 
     def __str__(self):
         outputStr = ''
@@ -130,11 +140,41 @@ class SplitCmdGraph:
     def getNode(self, index):
         return self._nodes[index]
 
-    def getFirstNode(self):
-        return self._nodes[0]
+    def getFirstReader(self):
+        """
+        Get the first reader node.
+        Return None if there is no reader.
+        """
+        for node in self._nodes:
+            if node.isReader():
+                return node
+        return None
 
-    def getLastNode(self):
-        return self._nodes[-1]
+    def getLastWriter(self):
+        """
+        Get the last writer node.
+        Return None if there is no writer.
+        """
+        for node in reversed(self._nodes):
+            if node.isWriter():
+                return node
+        return None
+
+    def hasReader(self):
+        """
+        True if there is at least one reader in the graph.
+        """
+        if self.getFirstReader():
+            return True
+        return False
+
+    def hasWriter(self):
+        """
+        True if there is at least one writer in the graph.
+        """
+        if self.getLastWriter():
+            return True
+        return False
 
 
 class SplitCmdNode:
@@ -200,12 +240,32 @@ class SplitCmdNode:
             return True
         return False
 
+    def isReader(self):
+        """
+        From the plugin name, guess if it's a reader.
+        """
+        if self.isGenericReader():
+            return True
+        if 'reader' in self._pluginId:
+            return True
+        return False
+
+    def isWriter(self):
+        """
+        From the plugin name, guess if it's a writer.
+        """
+        if self.isGenericWriter():
+            return True
+        if 'writer' in self._pluginId:
+            return True
+        return False
+
     def getArguments(self):
         return self._arguments
 
     def getArgument(self, name):
         """
-        If not found, return (None, None)
+        If not found, returns (None, None)
         """
         for argName, argvalue in self._arguments:
             if argName == name:
