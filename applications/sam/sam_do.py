@@ -476,7 +476,14 @@ class Sam_do(samUtils.Sam):
 
         # Split command line
         splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
-        graphsWithNodes = [self._getTuttleGraph(splitCmdGraph) for splitCmdGraph in splitCmd.getGraphs()]
+        graphsWithNodes = []
+        for splitCmdGraph in splitCmd.getGraphs():
+            try:
+                graphsWithNodes.append(self._getTuttleGraph(splitCmdGraph))
+            except Exception as e:
+                self.logger.error('Cannot create tuttle graph')
+                self.logger.debug('\n' + str(splitCmdGraph))
+                self.logger.debug(e)
 
         if not graphsWithNodes:
             self.logger.error('No tuttle graph to compute.')
