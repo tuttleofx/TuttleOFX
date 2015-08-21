@@ -77,7 +77,7 @@ class SplitCmd:
         items = sequenceParser.browse(inputFolder, sequenceParser.eDetectionDefault, filters)
         for item in items:
             itemType = item.getType()
-            if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence:
+            if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence or itemType == sequenceParser.eTypeLink:
                 # create a new graph
                 newGraph = copy.deepcopy(graph)
                 newGraph.getFirstReader().setFilename(item.getAbsoluteFilepath())
