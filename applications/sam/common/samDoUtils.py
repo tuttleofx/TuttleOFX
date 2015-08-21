@@ -203,29 +203,39 @@ class SplitCmdNode:
         Plugin's arguments can be used to get best reader/writer.
         @note Get best reader if the given name is 'r'.
         @note Get best writer if the given name is 'w'.
-        @exception if cannot find a best reader/writer
+        @exception if cannot find the plugin name which corresponds to the plugin id
         """
-        pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
-        if self._pluginId in pluginsMap:
-            return self._pluginId
+        if self.isGenericReader() or self.isGenericWriter():
+            if len(self._arguments) == 0:
+                logger.warning('Cannot guess the best reader/writer node without any filename specified.')
+            # get filename
+            filename = self._arguments[0][1]
+            # return best reader
+            if self.isGenericReader():
+                bestReader = tuttle.getBestReader(filename)
+                logger.info('Use "' + bestReader + '" to read "' + filename + '".')
+                return bestReader
+            # return best writer
+            elif self.isGenericWriter():
+                bestWriter = tuttle.getBestWriter(filename)
+                logger.info('Use "' + bestWriter + '" to write "' + filename + '".')
+                return bestWriter
         else:
-            if self.isGenericReader() or self.isGenericWriter():
-                if len(self._arguments) == 0:
-                    logger.warning('Cannot guess the best reader/writer node without any filename specified.')
-                    return ''
-                # get filename
-                filename = self._arguments[0][1]
-                # return best reader
-                if self.isGenericReader():
-                    bestReader = tuttle.getBestReader(filename)
-                    logger.info('Use "' + bestReader + '" to read "' + filename + '".')
-                    return bestReader
-                # return best writer
-                elif self.isGenericWriter():
-                    bestWriter = tuttle.getBestWriter(filename)
-                    logger.info('Use "' + bestWriter + '" to write "' + filename + '".')
-                    return bestWriter
-            return 'tuttle.' + self._pluginId
+            pluginsMap = tuttle.core().getImageEffectPluginCache().getPluginsByID()
+            # get plugins name which match with the given id
+            pluginNames = []
+            for pluginName in pluginsMap:
+                if self._pluginId in pluginName:
+                    pluginNames.append(pluginName)
+            # one plugin matches
+            if len(pluginNames) == 1:
+                return pluginNames[0]
+            # more than one matches
+            elif len(pluginNames) > 1:
+                logger.warning('Cannot guess the best match for plugin name "' + self._pluginId +'".')
+                logger.warning('Possible choices are: "' + ', '.join(pluginNames) +'".')
+        # cannot find a best reader/writer or no plugin name matches with the id
+        raise RuntimeError('Plugin with id "' + self._pluginId + '" not found.')
 
     def isGenericReader(self):
         """
