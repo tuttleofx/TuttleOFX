@@ -378,12 +378,15 @@ class Sam_do(samUtils.Sam):
 
         for splitCmdNode in splitCmdGraph.getNodes():
             # Create a tuttle node
-            nodeFullName = splitCmdNode.getPluginName()
+            nodeFullName = ''
             node = None
             try:
+                nodeFullName = splitCmdNode.getPluginName()
                 node = graph.createNode(nodeFullName)
             except Exception as e:
                 # Plugin not found
+                if not nodeFullName:
+                    nodeFullName = splitCmdNode._pluginId
                 self.logger.error('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
                 self.logger.debug(e)
                 continue
