@@ -10,6 +10,9 @@
 #include <tuttle/host/ofx/property/OfxhSet.hpp>
 %}
 
+namespace std {
+%template(VectorVoidPtr) vector<void*>;
+}
 
 %factory(tuttle::host::ofx::property::OfxhProperty& fetchProperty,
     tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhIntValue>,
