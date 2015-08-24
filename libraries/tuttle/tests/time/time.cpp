@@ -13,15 +13,6 @@ using namespace tuttle::host;
 
 BOOST_AUTO_TEST_SUITE( time_tests_suite01 )
 
-BOOST_AUTO_TEST_CASE( preload )
-{
-	TUTTLE_LOG_INFO( "-------- LOADING OPENFX PLUGINS --------" );
-	core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	core().preload();
-//	TUTTLE_TLOG( TUTTLE_TRACE, core().getImageEffectPluginCache() );
-	TUTTLE_LOG_INFO( "----------------- DONE -----------------" );
-}
-
 BOOST_AUTO_TEST_CASE( time_shift_offset_null )
 {
 	TUTTLE_LOG_INFO( "******** PROCESS TIMESHIFT ********" );

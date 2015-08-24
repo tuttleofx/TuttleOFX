@@ -18,9 +18,6 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 	using namespace std;
 	using namespace tuttle::host;
 
-	core().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
-	tuttle::host::core().preload();
-
 	// get some plugins examples
 	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::core().getImageEffectPluginById( "tuttle.pngreader" );
 	BOOST_CHECK( plugin != NULL );
