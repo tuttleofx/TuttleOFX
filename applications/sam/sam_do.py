@@ -107,7 +107,7 @@ class Sam_do(samUtils.Sam):
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('--no-plugin-cache', dest='noPluginCache', action='store_true', default=False, help='load plugins without using the cache file')
         parser.add_argument('--rebuild-plugin-cache', dest='rebuildPluginCache', action='store_true', default=False, help='load plugins and rebuild the cache file')
-        parser.add_argument('-v', '--verbose', dest='verbose', action=samDoUtils.SamDoSetVerboseAction, default=0, help='verbose level (0/fatal (by default), 1/error, 2/warn, 3/info, 4/debug, 5(or upper)/trace)')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=samDoUtils.SamDoSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4/debug, 5(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
     def _setTimeRanges(self, computeOptions, ranges):
@@ -368,7 +368,7 @@ class Sam_do(samUtils.Sam):
         else:
             parser.print_help()
 
-    def _getTuttleGraph(self, splitCmd):
+    def _getTuttleGraph(self, splitCmdGraph):
         """
         Return the tuple (tuttle graph, its nodes) which corresponds to the given split command.
         """
@@ -376,15 +376,18 @@ class Sam_do(samUtils.Sam):
         nodes = []
         connections = []
 
-        for splitCmdNode in splitCmd.getNodes():
+        for splitCmdNode in splitCmdGraph.getNodes():
             # Create a tuttle node
-            nodeFullName = splitCmdNode.getPluginName()
+            nodeFullName = ''
             node = None
             try:
+                nodeFullName = splitCmdNode.getPluginName(self.logger)
                 node = graph.createNode(nodeFullName)
             except Exception as e:
                 # Plugin not found
-                self.logger.error('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
+                if not nodeFullName:
+                    nodeFullName = splitCmdNode._pluginId
+                self.logger.warning('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
                 self.logger.debug(e)
                 continue
             # sam-do node --help
@@ -410,14 +413,14 @@ class Sam_do(samUtils.Sam):
                             graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
                         except Exception as e:
                             # Cannot connect attribute of node
-                            self.logger.error('Cannot connect attribute "' 
+                            self.logger.warning('Cannot connect attribute "' 
                                 + argName + '" of node "' + nodeFullName 
                                 + '" to id "' + argValue 
                                 + '": the connection will be skipped from the command line.')
                             self.logger.debug(e)
                     else:
                         # Cannot set param of node
-                        self.logger.error('Cannot set '
+                        self.logger.warning('Cannot set '
                             + (('parameter "' + argName + '" of ') if argName else '')
                             + 'node "' + nodeFullName + '" ' 
                             + (('to value "' + argValue + '"') if argValue else '') 
@@ -476,7 +479,14 @@ class Sam_do(samUtils.Sam):
 
         # Split command line
         splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
-        graphsWithNodes = [self._getTuttleGraph(splitCmdGraph) for splitCmdGraph in splitCmd.getGraphs()]
+        graphsWithNodes = []
+        for splitCmdGraph in splitCmd.getGraphs():
+            try:
+                graphsWithNodes.append(self._getTuttleGraph(splitCmdGraph))
+            except Exception as e:
+                self.logger.error('Cannot create tuttle graph')
+                self.logger.debug('\n' + str(splitCmdGraph))
+                self.logger.debug(e)
 
         if not graphsWithNodes:
             self.logger.error('No tuttle graph to compute.')
@@ -511,7 +521,7 @@ class Sam_do(samUtils.Sam):
             options.setProgressHandle(progress)
 
             if not nodes:
-                self.logger.warning('No nodes to compute')
+                self.logger.warning('No tuttle nodes to compute')
                 continue
 
             # Connect and compute
