@@ -31,6 +31,8 @@
 
 #include "OfxhProperty.hpp"
 
+#include <boost/type_traits/is_pointer.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -215,6 +217,8 @@ public:
 	/// return the value as a string
 	inline std::string getStringValueAt( int index = 0 ) const
 	{
+		if( boost::is_pointer<Type>::value)
+			return "";
 		return boost::lexical_cast<std::string>( _value[index] );
 	}
 

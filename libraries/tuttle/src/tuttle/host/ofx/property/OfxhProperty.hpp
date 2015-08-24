@@ -173,6 +173,12 @@ public:
 	{
 		return _type;
 	}
+
+	/// get the type of this property as a string
+	std::string getTypeStr() const
+	{
+		return mapTypeEnumToString(_type);
+	}
 #ifndef SWIG
 	/// add a notify hook
 	void addNotifyHook( OfxhNotifyHook* hook )
