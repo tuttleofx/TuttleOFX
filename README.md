@@ -13,9 +13,9 @@ The project is composed of 4 main parts:
 > - **Tuttle plugins**, a set of OpenFX plugins for image processing and image/video IO.  
 > - **Sam**, a set of command line tools.  
 
-[![Stories in Ready](https://badge.waffle.io/tuttleofx/tuttleofx.svg?label=1 - Ready)](http://waffle.io/tuttleofx/tuttleofx)  
+[![Stories in Progress](https://badge.waffle.io/tuttleofx/tuttleofx.svg?label=2 - Working&title=In Progress)](http://waffle.io/tuttleofx/tuttleofx)   
 TuttleOFX is alive!  
-See the next development steps with this badge above.
+Click on the badge above to have a big picture view of what's in progress and how you can help.  
 
 ## License
 See [**COPYING.md**](COPYING.md)
