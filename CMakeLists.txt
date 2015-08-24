@@ -21,6 +21,7 @@ endif()
 add_custom_target(ofxplugins)
 
 # Include subdirs
+set(SEQUENCEPARSER_PYTHON_VERSION ${TUTTLE_PYTHON_VERSION})
 add_subdirectory(libraries/sequenceParser)
 add_subdirectory(libraries/tuttle)
 add_subdirectory(applications)
