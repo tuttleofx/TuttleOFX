@@ -236,7 +236,10 @@ class Sam_ls(samUtils.Sam):
                     sequence = sequenceParser.Sequence()
                     isSequence = sequenceParser.browseSequence(sequence, input)
                     if isSequence:
-                        items.append(sequenceParser.Item(sequence, os.getcwd()))
+                        item = sequenceParser.Item(sequence, os.getcwd())
+                        # check if the sequence contains at least one element
+                        if len(item.explode()):
+                            items.append(item)
                     # else error
                     else:
                         self.logger.warning(e)
