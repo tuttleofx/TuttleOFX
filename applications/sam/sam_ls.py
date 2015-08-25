@@ -257,7 +257,10 @@ class Sam_ls(samUtils.Sam):
                     # new browse
                     items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
-            self.printItems(items, args, detectionMethod, filters)
+            if not len(items):
+                self.logger.warning('No items found for input "' + input + '".')
+            else:
+                self.printItems(items, args, detectionMethod, filters)
 
 
 if __name__ == '__main__':
