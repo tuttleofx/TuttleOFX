@@ -171,15 +171,19 @@ class Sam_do(samUtils.Sam):
 
         supportedExtensions = {'r': [], 'w': []}
         for plugin in tuttle.core().getImageEffectPluginCache().getPlugins():
-            plugin.loadAndDescribeActions()
-            if plugin.supportsContext('OfxImageEffectContextReader'):
-                pluginDescriptor = plugin.getDescriptorInContext('OfxImageEffectContextReader')
-                if pluginDescriptor.getParamSetProps().hasProperty('TuttleOfxImageEffectPropSupportedExtensions'):
-                    supportedExtensions['r'].extend(getListOfSupportedExtension(pluginDescriptor))
-            elif plugin.supportsContext('OfxImageEffectContextWriter'):
-                pluginDescriptor = plugin.getDescriptorInContext('OfxImageEffectContextWriter')
-                if pluginDescriptor.getParamSetProps().hasProperty('TuttleOfxImageEffectPropSupportedExtensions'):
-                    supportedExtensions['w'].extend(getListOfSupportedExtension(pluginDescriptor))
+            try:
+                plugin.loadAndDescribeActions()
+                if plugin.supportsContext('OfxImageEffectContextReader'):
+                    pluginDescriptor = plugin.getDescriptorInContext('OfxImageEffectContextReader')
+                    if pluginDescriptor.getParamSetProps().hasProperty('TuttleOfxImageEffectPropSupportedExtensions'):
+                        supportedExtensions['r'].extend(getListOfSupportedExtension(pluginDescriptor))
+                elif plugin.supportsContext('OfxImageEffectContextWriter'):
+                    pluginDescriptor = plugin.getDescriptorInContext('OfxImageEffectContextWriter')
+                    if pluginDescriptor.getParamSetProps().hasProperty('TuttleOfxImageEffectPropSupportedExtensions'):
+                        supportedExtensions['w'].extend(getListOfSupportedExtension(pluginDescriptor))
+            except Exception as e:
+                self.logger.warning('Cannot load and describe plugin "' + plugin.getIdentifier() + '".')
+                self.logger.debug(e)
         for key, extensions in supportedExtensions.items():
             if key == 'r':
                 self._displayTitle('SUPPORTED INPUT FILE FORMATS')
