@@ -32,6 +32,9 @@ class Sam(object):
         # Add a console handler
         self.addConsoleHandler()
 
+        # Set default log level of all sam tools to warning
+        self.setLogLevel(2)
+
     def fillParser(self, parser):
         """
         To fill the given parser.

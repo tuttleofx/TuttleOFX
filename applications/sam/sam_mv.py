@@ -155,7 +155,7 @@ class Sam_mv(samUtils.Sam):
 
         inputItem = inputItems[0]
         if inputItem.getType() != sequenceParser.eTypeSequence:
-            self.logger.error('Input is not a sequence: ', inputItem.getFilename())
+            self.logger.error('Input is not a sequence: ' + inputItem.getFilename())
             exit(-1)
 
         return inputItem
