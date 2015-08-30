@@ -14,4 +14,4 @@ fi
 
 # Create archive
 cd ${TRAVIS_BUILD_DIR}
-tar -czf ${TUTTLE_DEPLOY}-${CC}.tgz install-tuttle
+tar -czf ${TUTTLE_DEPLOY}-${CC}-python-${PYTHON_VERSION}.tgz install-tuttle
