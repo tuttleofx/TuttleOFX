@@ -43,8 +43,10 @@ find_path(TURBOJPEG_INCLUDE_DIR
 )
 
 # Looking for library path
+# On debian based system there is no "libturbojpeg.so" without specific version.
+# So we look first for "libturbojpeg.so.0".
 find_library(TURBOJPEG_LIBRARY
-    NAMES       turbojpeg 
+    NAMES       libturbojpeg.so.0 turbojpeg
     HINTS         ${_turbojpeg_SEARCH_DIRS} ${TURBOJPEGPKG_LIBRARY_DIRS}
   PATH_SUFFIXES lib64 lib
 )
