@@ -6,8 +6,8 @@ set -e
 set -x
 
 # Create directory of build
-mkdir -p ${TUTTLE_BUILD}
-cd ${TUTTLE_BUILD}
+mkdir -p ${TUTTLEOFX_BUILD}
+cd ${TUTTLEOFX_BUILD}
 
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     # Ask cmake to search in all dependencies we've installed manually
@@ -19,7 +19,7 @@ fi
 
 # Build tuttle
 cmake --version
-cmake .. -DCMAKE_INSTALL_PREFIX=${TUTTLE_INSTALL} -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH -DTUTTLE_EXPERIMENTAL=True -DWITHOUT_NUMPY=True -DTUTTLE_DEPLOY_DEPENDENCIES=True -DTUTTLE_PYTHON_VERSION=${PYTHON_VERSION}
-make -j${CI_NODE_TOTAL} -k
+cmake ${TUTTLEOFX_DEV} -DCMAKE_INSTALL_PREFIX=${TUTTLEOFX_INSTALL} -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH -DTUTTLE_EXPERIMENTAL=True -DWITHOUT_NUMPY=True -DTUTTLE_DEPLOY_DEPENDENCIES=True -DTUTTLE_PYTHON_VERSION=${PYTHON_VERSION}
+make -k
 make install
 cd ..

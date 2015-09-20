@@ -18,9 +18,9 @@ env:
     - secure: "NvoMZI1lDLmdoKMgAJnNp3RzdRMYGfWL4buwPdIRyjJ522AIceVrT59x0//JB2bdbrABibo/o5TPP1dUGBJlVp9N250R0pjKz8zlehTL++6Y5z0zGWF9WRXOzrvTOCDpUAjJ24zwIREFy02qHmhcEbAy5+IE8aw9s3eZxsngL54="
 
     - DEPENDENCIES_INSTALL=${TRAVIS_BUILD_DIR}/install-dependencies
-    - TUTTLE_BUILD=${TRAVIS_BUILD_DIR}/build-tuttle
-    - TUTTLE_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
-    - TUTTLE_DEPLOY=tuttle-${_system_name}-${_system_version}-${_system_arch}
+    - TUTTLEOFX_BUILD=${TRAVIS_BUILD_DIR}/build-tuttle
+    - TUTTLEOFX_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
+    - TUTTLEOFX_DEPLOY=tuttle-${_system_name}-${_system_version}-${_system_arch}
     - CI_NODE_TOTAL=2
   matrix:
     - PYTHON_VERSION=2.7
@@ -69,7 +69,7 @@ script:
   - if [ ${CC} = "gcc" ]; then tools/travis/launch_tests.sh; fi
 
 after_failure:
-  - cat ${TUTTLE_BUILD}/CMakeFiles/CMakeOutput.log
+  - cat ${TUTTLEOFX_BUILD}/CMakeFiles/CMakeOutput.log
 
 addons:
   apt:
@@ -129,7 +129,7 @@ deploy:
   provider: releases
   api_key:
     secure: ${GITHUB_RELEASE_API_KEY}
-  file: ${TUTTLE_DEPLOY}-${CC}-python-${PYTHON_VERSION}.tgz
+  file: ${TUTTLEOFX_DEPLOY}-${CC}-python-${PYTHON_VERSION}.tgz
   skip_cleanup: true
   on:
     branch: master

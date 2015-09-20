@@ -7,7 +7,9 @@ set -x
 
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
 
-    if [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
+    # Use TRAVIS_JOB_ID to detect that we are in travis.
+    # In that case, use a simple check to detect if the cache is already there.
+    if  [ -z ${TRAVIS_JOB_ID} ] || [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
 
         cd $TRAVIS_BUILD_DIR
         wget https://www.ffmpeg.org/releases/ffmpeg-2.2.9.tar.bz2
