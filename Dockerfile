@@ -1,5 +1,7 @@
 FROM ubuntu:latest
 
+MAINTAINER TuttleOFX <tuttleofx-dev@googlegroups.com>
+
 RUN apt-get update && apt-get install -y \
   wget \
   build-essential \
