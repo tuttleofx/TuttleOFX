@@ -63,6 +63,7 @@ script:
   - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
       exit 0;
     fi
+  - export TUTTLEOFX_DEV=$PWD
   - tools/travis/build.sh
 
   # launch tests
