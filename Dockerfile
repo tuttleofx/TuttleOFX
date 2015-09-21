@@ -53,7 +53,7 @@ ENV TUTTLEOFX_DEV=/opt/TuttleOFX_git
 ENV TUTTLEOFX_BUILD=/tmp/TuttleOFX_build_tmp
 ENV TUTTLEOFX_INSTALL=/usr/local
 ENV DEPENDENCIES_INSTALL=/usr/local
-ENV PYTHONPATH=$PYTHONPATH:/usr/local/lib/python${PYTHON_VERSION}/site-packages
+ENV PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python${PYTHON_VERSION}/site-packages
 
 RUN mkdir ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
 
