@@ -46,14 +46,14 @@ RUN apt-get update && apt-get install -y \
   libx264-dev \
   libxvidcore-dev
 
-ENV PYTHON_VERSION=2.7
-ENV TRAVIS_OS_NAME=linux
-ENV TRAVIS_BUILD_DIR=/tmp/TuttleOFX_build
-ENV TUTTLEOFX_DEV=/opt/TuttleOFX_git
-ENV TUTTLEOFX_BUILD=/tmp/TuttleOFX_build_tmp
-ENV TUTTLEOFX_INSTALL=/usr/local
-ENV DEPENDENCIES_INSTALL=/usr/local
-ENV PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python${PYTHON_VERSION}/site-packages
+ENV PYTHON_VERSION=2.7 \
+    TRAVIS_OS_NAME=linux \
+    TRAVIS_BUILD_DIR=/tmp/TuttleOFX_build \
+    TUTTLEOFX_DEV=/opt/TuttleOFX_git \
+    TUTTLEOFX_BUILD=/tmp/TuttleOFX_build_tmp \
+    TUTTLEOFX_INSTALL=/usr/local \
+    DEPENDENCIES_INSTALL=/usr/local \
+    PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python${PYTHON_VERSION}/site-packages
 
 RUN mkdir ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
 
