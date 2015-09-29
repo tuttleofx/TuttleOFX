@@ -16,42 +16,42 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         bunzip2 ffmpeg-2.2.9.tar.bz2
         tar -xf ffmpeg-2.2.9.tar > /dev/null 2>&1
         cd ffmpeg-2.2.9
-        ./configure --prefix=${DEPENDENCIES_INSTALL} --enable-shared --disable-static --disable-yasm && make -j${CI_NODE_TOTAL} && make install
+        ./configure --prefix=${DEPENDENCIES_INSTALL} --enable-shared --disable-static --disable-yasm && make && make install
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/aces_container-1.0.tar.gz
         tar -xzf /tmp/aces_container-1.0.tar.gz > /dev/null 2>&1
         mkdir aces_container-1.0/build
         cd aces_container-1.0/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make -j${CI_NODE_TOTAL} && make install
+        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/ampas/CTL/archive/ctl-1.5.2.tar.gz -O /tmp/ctl-1.5.2.tar.gz
         tar -xzf /tmp/ctl-1.5.2.tar.gz > /dev/null 2>&1
         mkdir CTL-ctl-1.5.2/build
         cd CTL-ctl-1.5.2/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make -j${CI_NODE_TOTAL} && make install
+        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/wdas/SeExpr/archive/rel-1.0.1.tar.gz -O /tmp/SeExpr-1.0.1.tar.gz
         tar -xzf /tmp/SeExpr-1.0.1.tar.gz > /dev/null 2>&1
         mkdir SeExpr-rel-1.0.1/build
         cd SeExpr-rel-1.0.1/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make -j${CI_NODE_TOTAL} && make install
+        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/imageworks/OpenColorIO/archive/v1.0.9.tar.gz -O /tmp/ocio-1.0.9.tar.gz
         tar -xzf /tmp/ocio-1.0.9.tar.gz > /dev/null 2>&1
         mkdir OpenColorIO-1.0.9/build
         cd OpenColorIO-1.0.9/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make -j${CI_NODE_TOTAL} && make install
+        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/OpenImageIO/oiio/archive/Release-1.5.16.tar.gz -O /tmp/oiio-1.5.16.tar.gz
         tar -xzf /tmp/oiio-1.5.16.tar.gz > /dev/null 2>&1
         mkdir oiio-Release-1.5.16/build
         cd oiio-Release-1.5.16/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make -j${CI_NODE_TOTAL} && make install
+        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install
 
     else
         echo 'Using cached directory.';
