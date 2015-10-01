@@ -62,4 +62,5 @@ RUN cd ${TUTTLEOFX_DEV} && git submodule update --init --recursive
 RUN cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/install_dependencies.sh
 RUN cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/build.sh
 
+RUN rm -rf ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
 
