@@ -190,6 +190,13 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 			if( libavOption.getDefaultInt() == paramInt->getValue() && libavOption.getName() != kOptionThreads )
 				continue;
 
+			// FFmpeg threads option has a default value of 1.
+			// Our threads parameter has a default value of 0.
+			// If 0, do not use it to set the decoding/encoding profile:
+			// avTranscoder will automatically set the number of threads according to the codec.
+			if( libavOption.getName() == kOptionThreads && paramInt->getValue() == 0 )
+				continue;
+
 			libavOptionValue = boost::to_string( paramInt->getValue() );
 			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
 			continue;
