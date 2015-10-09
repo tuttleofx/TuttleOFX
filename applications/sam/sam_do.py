@@ -155,7 +155,7 @@ class Sam_do(samUtils.Sam):
         plugins = []
         for plugin in tuttle.core().getPlugins():
             plugins.append(plugin.getIdentifier().ljust(30) + ' (v' + str(plugin.getVersionMajor()) + '.' + str(plugin.getVersionMinor()) + ')')
-        for plugin in sorted(plugins):
+        for plugin in sorted(set(plugins)):
             puts(plugin)
 
     def _displayFileFormats(self):
