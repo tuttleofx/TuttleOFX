@@ -38,7 +38,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
         parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
         parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
-        parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: "*.jpg", "*.png"')
+        parser.add_argument('-e', '--expression', dest='expression', action='append', default=[], help='use a specific pattern, ex: "*.jpg", "*.png"')
 
         parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format (display in this order: type | permissions | owner | group | last update | minSize | maxSize | totalSize | name)')
         parser.add_argument('--format', dest='format', choices=['default', 'nuke', 'rv'], default='default', help='specify formatting of the sequence padding')
@@ -201,9 +201,14 @@ class Sam_ls(samUtils.Sam):
 
         # inputs to scan
         inputs = []
-        if args.inputs:
-            inputs = args.inputs
-        else:
+        for input in args.inputs:
+            # if exists add the path
+            if os.path.exists(input):
+                inputs.append(input)
+            # else use it as a filter expression
+            else:
+                args.expression.append(input)
+        if not inputs:
             inputs.append(os.getcwd())
 
         # sam-ls -a
@@ -221,8 +226,8 @@ class Sam_ls(samUtils.Sam):
 
         # sam-ls -e
         filters = []
-        if args.expression:
-            filters.append(args.expression)
+        for expression in args.expression:
+            filters.append(expression)
 
         # get list of items for each inputs
         for input in inputs:
