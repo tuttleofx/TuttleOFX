@@ -75,7 +75,7 @@ public:
 	// do not need to delete these, the ImageEffect is managing them for us
 	OFX::Clip*         _clipDst;           ///< Destination image clip
 
-	OFX::IntParam* _paramVideoStreamIndex; ///< video stream index
+	OFX::IntParam* _paramVideoStreamIndex; ///< human readable video stream index (from 0 to x)
 	OFX::BooleanParam* _paramUseCustomSAR; ///< Keep sample aspect ratio
 	OFX::DoubleParam*  _paramCustomSAR;    ///< Custom SAR to use
 	
