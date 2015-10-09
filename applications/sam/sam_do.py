@@ -36,7 +36,9 @@ class Sam_do(samUtils.Sam):
         self._geometryPorcessing = colored.blue('Geometry processing during conversion')
         self._colorProcessing = colored.blue('Color processing during conversion')
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
-        self.processingOptions = colored.blue('Processing options')
+        self._processingOptions = colored.blue('Processing options')
+        self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
+        self._tuttleWebSite = colored.green('http://www.tuttleofx.org/')
         if clintVersion >= '0.3.3':
             self._pluginOption.bold=True
             self._generatorsAndViewers.bold=True
@@ -44,7 +46,9 @@ class Sam_do(samUtils.Sam):
             self._geometryPorcessing.bold=True
             self._colorProcessing.bold=True
             self._imgSeqNumbering.bold=True
-            self.processingOptions.bold=True
+            self._processingOptions.bold=True
+            self._tuttleVersion.bold=True
+            self._tuttleWebSite.bold=True
 
         self.epilog = '''
     ''' + self._pluginOption + '''
@@ -88,11 +92,12 @@ class Sam_do(samUtils.Sam):
         Frames 1 to 100 padding 5:         image.#####.jpg
         Printf style padding 4:            image.%04d.jpg
 
-    ''' + self.processingOptions + '''
+    ''' + self._processingOptions + '''
         Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
         Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
-        '''
+        
+    ''' + self._tuttleVersion + '''            ''' + self._tuttleWebSite
 
     def fillParser(self, parser):
         # Arguments
