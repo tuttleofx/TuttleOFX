@@ -83,7 +83,7 @@ if __name__ == '__main__':
             tool.command,
             help=tool.help,
             description=tool.description,
-            epilog=(tool.epilog if tool.epilog else None),
+            epilog=tool.epilog,
             formatter_class=argparse.RawTextHelpFormatter,
             add_help=(False if tool.command == 'do' else True))
         tool.fillParser(toolParser)
