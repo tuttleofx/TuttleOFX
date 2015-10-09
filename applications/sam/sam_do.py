@@ -453,11 +453,6 @@ class Sam_do(samUtils.Sam):
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
-        # sam-do --help
-        if len(args.inputs) == 0 and ('-h' in unknown or '--help' in unknown):
-            self._displayCommandLineHelp(parser)
-            exit(0)
-
         # Set sam log level
         self.setLogLevel(args.verbose)
         # set tuttle host log level
@@ -481,6 +476,11 @@ class Sam_do(samUtils.Sam):
         # sam-do --file-formats
         if args.fileFormats:
             self._displayFileFormats()
+            exit(0)
+
+        # sam-do --help
+        if len(args.inputs) == 0 and (len(unknown) == 0 or '-h' in unknown or '--help' in unknown):
+            self._displayCommandLineHelp(parser)
             exit(0)
 
         # Add unknown options to the command line to process
