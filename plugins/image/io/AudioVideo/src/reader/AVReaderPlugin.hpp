@@ -38,7 +38,16 @@ public:
 	AVReaderPlugin( OfxImageEffectHandle handle );
 
 public:
+	/**
+	 * @brief Open and analyse the InputFile. 
+	 * Create a Stream and its corresponding Decoder for the first video stream of the given file.
+	 * @note Do nothing if the InputFile and the videoStream are already set
+	 */
 	void ensureVideoIsOpen();
+
+	/**
+	 * @brief Clear all attributes related to unwrapping / decoding.
+	 */
 	void cleanInputFile();
 
 	AVReaderParams getProcessParams() const;
@@ -66,7 +75,7 @@ public:
 	// do not need to delete these, the ImageEffect is managing them for us
 	OFX::Clip*         _clipDst;           ///< Destination image clip
 
-	OFX::IntParam* _paramVideoStreamIndex; ///< video stream index
+	OFX::IntParam* _paramVideoStreamIndex; ///< human readable video stream index (from 0 to x)
 	OFX::BooleanParam* _paramUseCustomSAR; ///< Keep sample aspect ratio
 	OFX::DoubleParam*  _paramCustomSAR;    ///< Custom SAR to use
 	
@@ -88,9 +97,10 @@ public:
 	OFX::BooleanParam* _paramVerbose;
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
-	boost::scoped_ptr<avtranscoder::VideoDecoder> _inputStreamVideo;
+	boost::scoped_ptr<avtranscoder::VideoDecoder> _inputDecoder;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
+	avtranscoder::InputStream* _inputStream;  ///< Has link (InputFile has ownership)
 	
 	avtranscoder::VideoTransform _colorTransform;
 	
@@ -99,7 +109,8 @@ public:
 	
 	int _lastFrame;
 	
-	bool _initVideo;
+	bool _initVideo;  ///< Is the video init
+	bool _isSetUp;  ///< Is the unwrapping and decoding setup
 };
 
 }

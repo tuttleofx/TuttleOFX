@@ -1019,7 +1019,7 @@ void AVWriterPlugin::render( const OFX::RenderArguments& args )
 		cleanProfile( profile, common::kPrefixFormat );
 
 		// set format profile (need to be done after beginWrap when muxing)
-		_outputFile->setProfile( profile );
+		_outputFile->setupWrapping( profile );
 
 		// manage codec lantancy
 		_transcoder->preProcessCodecLatency();

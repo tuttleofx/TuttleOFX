@@ -190,6 +190,13 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 			if( libavOption.getDefaultInt() == paramInt->getValue() && libavOption.getName() != kOptionThreads )
 				continue;
 
+			// FFmpeg threads option has a default value of 1.
+			// Our threads parameter has a default value of 0.
+			// If 0, do not use it to set the decoding/encoding profile:
+			// avTranscoder will automatically set the number of threads according to the codec.
+			if( libavOption.getName() == kOptionThreads && paramInt->getValue() == kOptionThreadsValue )
+				continue;
+
 			libavOptionValue = boost::to_string( paramInt->getValue() );
 			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
 			continue;
@@ -462,7 +469,7 @@ void addOptionsToGroup( OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescrip
 					name == kPrefixAudio + kOptionThreads )
 				{
 					OFX::IntParamDescriptor* intParam = desc.defineIntParam( name );
-					intParam->setDefault( 0 ); // autodetect a suitable number of threads to use 
+					intParam->setDefault( kOptionThreadsValue );
 					intParam->setRange( 0, std::numeric_limits<int>::max() );
 					intParam->setDisplayRange( 0, 64 );
 					param = intParam;

@@ -26,13 +26,13 @@ void AVReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	if( ( _plugin._lastFrame + 1 ) != args.time )
 	{
 		_plugin._inputFile->seekAtFrame( args.time );
-		_plugin._inputStreamVideo->flushDecoder();
+		_plugin._inputDecoder->flushDecoder();
 	}
 	
 	_plugin._lastFrame = args.time;
 	
 	// Fetch output image
-	if( ! _plugin._inputStreamVideo->decodeNextFrame( *_plugin._sourceImage ) )
+	if( ! _plugin._inputDecoder->decodeNextFrame( *_plugin._sourceImage ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Failed()
 		    << exception::user() + "Can't open the frame at time " + args.time
@@ -113,10 +113,10 @@ View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::VideoFrame& ima
 {
 	typedef typename FileView::value_type Pixel;
 
-	size_t width = image.desc().getWidth();
-	size_t height = image.desc().getHeight();
-	avtranscoder::PixelProperties pixel = _plugin._inputFile->getProperties().getVideoProperties().at( _plugin._paramVideoStreamIndex->getValue() ).getPixelProperties();
-	size_t rowSizeInBytes = pixel.getNbComponents() * width;
+	const size_t width = image.desc().getWidth();
+	const size_t height = image.desc().getHeight();
+	const avtranscoder::PixelProperties pixel = _plugin._inputFile->getProperties().getVideoProperties().at( _plugin._paramVideoStreamIndex->getValue() ).getPixelProperties();
+	const size_t rowSizeInBytes = pixel.getNbComponents() * width;
 
 	FileView avSrcView = interleaved_view( 
 		width, height,

@@ -28,13 +28,15 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _paramFormatDetailCustom( common::kPrefixFormat, AV_OPT_FLAG_DECODING_PARAM, true )
 	, _paramVideoDetailCustom( common::kPrefixVideo, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, true )
 	, _inputFile( NULL )
-	, _inputStreamVideo( NULL )
+	, _inputStream( NULL )
+	, _inputDecoder( NULL )
 	, _sourceImage( NULL )
 	, _imageToDecode( NULL )
 	, _lastInputFilePath( "" )
 	, _lastVideoStreamIndex( 0 )
 	, _lastFrame( -1 )
 	, _initVideo( false )
+	, _isSetUp( false )
 {
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
@@ -79,12 +81,14 @@ void AVReaderPlugin::ensureVideoIsOpen()
 {
 	const std::string& filepath = _paramFilepath->getValue();
 	const size_t videoStreamIndex = _paramVideoStreamIndex->getValue();
-	 
-	if( _lastInputFilePath == filepath && // already opened
-		! _lastInputFilePath.empty() && // not the first time...
-		_lastVideoStreamIndex == videoStreamIndex )
+
+	// if the given file is already opened
+	if( _lastInputFilePath == filepath &&
+	    ! _lastInputFilePath.empty() &&
+	    _lastVideoStreamIndex == videoStreamIndex )
 		return;
-	
+
+	// if the given file does not exist
 	if( filepath == "" || ! boost::filesystem::exists( filepath ) )
 	{
 		cleanInputFile();
@@ -97,21 +101,24 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		// set and analyse inputFile
 		_inputFile.reset( new avtranscoder::InputFile( filepath ) );
 		_lastInputFilePath = filepath;
+
+		// launch deep analyse to get info of first gop
 		avtranscoder::NoDisplayProgress progress;
 		_inputFile->analyse( progress, avtranscoder::eAnalyseLevelFirstGop );
 		
-		// get streamId of the video stream
+		// get index of the video stream
 		if( videoStreamIndex >= _inputFile->getProperties().getVideoProperties().size() )
 		{
 			throw std::runtime_error( "the stream index doesn't exist in the input file" );
 		}
 		_lastVideoStreamIndex = videoStreamIndex;
 		
-		// buffered video stream at _indexVideoStream
-		_inputFile->activateStream( _paramVideoStreamIndex->getValue() );
+		// buffered the selected video stream
+		_inputStream = &_inputFile->getStream( _inputFile->getProperties().getVideoProperties().at(videoStreamIndex).getStreamIndex() );
+		_inputStream->activate();
 		
-		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
+		// set video decoder
+		_inputDecoder.reset( new avtranscoder::VideoDecoder( *_inputStream ) );
 	}
 	catch( std::exception& e )
 	{
@@ -126,7 +133,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 void AVReaderPlugin::cleanInputFile()
 {
 	_inputFile.reset();
-	_inputStreamVideo.reset();
+	_inputDecoder.reset();
 	_sourceImage.reset();
 	_imageToDecode.reset();
 	_lastInputFilePath = "";
@@ -291,7 +298,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			// update unknown of Metadata tab
 			std::string unknownValue( "" );
-			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, params._inputProperties->getUnknownPropertiesProperties() )
+			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, params._inputProperties->getUnknownProperties() )
 			{
 				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
 				BOOST_FOREACH( const PropertyPair& pair, unknownStream.getPropertiesAsVector() )
@@ -477,6 +484,11 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	ReaderPlugin::beginSequenceRender( args );
 
+	// To be sure to execute the following code only once
+	// Optimization in some hosts when rendering several frames (nuke...)
+	if( _isSetUp )
+		return;
+
 	ensureVideoIsOpen();
 
 	AVReaderParams params = getProcessParams();
@@ -486,34 +498,38 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	formatProfile[ avtranscoder::constants::avProfileIdentificator ] = "customFormatPreset";
 	formatProfile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom format preset";
 	formatProfile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
+	formatProfile[ avtranscoder::constants::avProfileFormat ] = params._inputFormatName;
 	// format options
 	const avtranscoder::ProfileLoader::Profile formatCommonProfile = _paramFormatCustom.getCorrespondingProfile();
 	formatProfile.insert( formatCommonProfile.begin(), formatCommonProfile.end() );
 	// format detail options
 	const avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._inputFormatName );
 	formatProfile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
-	_inputFile->setProfile( formatProfile );
+	_inputFile->setupUnwrapping( formatProfile );
 
 	// set video decoder
 	avtranscoder::ProfileLoader::Profile videoProfile;
 	videoProfile[ avtranscoder::constants::avProfileIdentificator ] = "customVideoPreset";
 	videoProfile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom video preset";
 	videoProfile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeVideo;
+	videoProfile[ avtranscoder::constants::avProfileCodec ] = params._inputVideoProperties->getCodecName();
 	// video options
 	const avtranscoder::ProfileLoader::Profile videoCommonProfile = _paramVideoCustom.getCorrespondingProfile();
 	videoProfile.insert( videoCommonProfile.begin(), videoCommonProfile.end() );
 	// video detail options
 	const avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( params._inputVideoProperties->getCodecName() );
 	videoProfile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
-	_inputStreamVideo->setupDecoder( videoProfile );
+	_inputDecoder->setupDecoder( videoProfile );
 
 	// get source image
-	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc() );
+	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputStream->getVideoCodec().getVideoFrameDesc() );
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 
 	// get image to decode
 	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc.getWidth(), sourceImageDesc.getHeight(), "rgb24" );
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
+
+	_isSetUp = true;
 }
 
 void AVReaderPlugin::render( const OFX::RenderArguments& args )
