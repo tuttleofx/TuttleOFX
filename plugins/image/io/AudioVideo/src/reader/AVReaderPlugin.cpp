@@ -291,7 +291,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			
 			// update unknown of Metadata tab
 			std::string unknownValue( "" );
-			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, params._inputProperties->getUnknownPropertiesProperties() )
+			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, params._inputProperties->getUnknownProperties() )
 			{
 				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
 				BOOST_FOREACH( const PropertyPair& pair, unknownStream.getPropertiesAsVector() )
@@ -486,19 +486,21 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	formatProfile[ avtranscoder::constants::avProfileIdentificator ] = "customFormatPreset";
 	formatProfile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom format preset";
 	formatProfile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeFormat;
+	formatProfile[ avtranscoder::constants::avProfileFormat ] = params._inputFormatName;
 	// format options
 	const avtranscoder::ProfileLoader::Profile formatCommonProfile = _paramFormatCustom.getCorrespondingProfile();
 	formatProfile.insert( formatCommonProfile.begin(), formatCommonProfile.end() );
 	// format detail options
 	const avtranscoder::ProfileLoader::Profile formatDetailProfile = _paramFormatDetailCustom.getCorrespondingProfile( params._inputFormatName );
 	formatProfile.insert( formatDetailProfile.begin(), formatDetailProfile.end() );
-	_inputFile->setProfile( formatProfile );
+	_inputFile->setupUnwrapping( formatProfile );
 
 	// set video decoder
 	avtranscoder::ProfileLoader::Profile videoProfile;
 	videoProfile[ avtranscoder::constants::avProfileIdentificator ] = "customVideoPreset";
 	videoProfile[ avtranscoder::constants::avProfileIdentificatorHuman ] = "Custom video preset";
 	videoProfile[ avtranscoder::constants::avProfileType ] = avtranscoder::constants::avProfileTypeVideo;
+	videoProfile[ avtranscoder::constants::avProfileCodec ] = params._inputVideoProperties->getCodecName();
 	// video options
 	const avtranscoder::ProfileLoader::Profile videoCommonProfile = _paramVideoCustom.getCorrespondingProfile();
 	videoProfile.insert( videoCommonProfile.begin(), videoCommonProfile.end() );
