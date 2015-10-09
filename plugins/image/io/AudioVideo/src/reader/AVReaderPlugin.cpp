@@ -79,12 +79,14 @@ void AVReaderPlugin::ensureVideoIsOpen()
 {
 	const std::string& filepath = _paramFilepath->getValue();
 	const size_t videoStreamIndex = _paramVideoStreamIndex->getValue();
-	 
-	if( _lastInputFilePath == filepath && // already opened
-		! _lastInputFilePath.empty() && // not the first time...
-		_lastVideoStreamIndex == videoStreamIndex )
+
+	// if the given file is already opened
+	if( _lastInputFilePath == filepath &&
+	    ! _lastInputFilePath.empty() &&
+	    _lastVideoStreamIndex == videoStreamIndex )
 		return;
-	
+
+	// if the given file does not exist
 	if( filepath == "" || ! boost::filesystem::exists( filepath ) )
 	{
 		cleanInputFile();
@@ -97,6 +99,8 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		// set and analyse inputFile
 		_inputFile.reset( new avtranscoder::InputFile( filepath ) );
 		_lastInputFilePath = filepath;
+
+		// launch deep analyse to get info of first gop
 		avtranscoder::NoDisplayProgress progress;
 		_inputFile->analyse( progress, avtranscoder::eAnalyseLevelFirstGop );
 		
@@ -107,11 +111,11 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		}
 		_lastVideoStreamIndex = videoStreamIndex;
 		
-		// buffered video stream at _indexVideoStream
-		_inputFile->activateStream( _paramVideoStreamIndex->getValue() );
+		// buffered the selected video stream
+		_inputFile->activateStream( videoStreamIndex );
 		
 		// set video decoder
-		_inputDecoder.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
+		_inputDecoder.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( videoStreamIndex ) ) );
 	}
 	catch( std::exception& e )
 	{

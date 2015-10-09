@@ -38,7 +38,16 @@ public:
 	AVReaderPlugin( OfxImageEffectHandle handle );
 
 public:
+	/**
+	 * @brief Open and analyse the InputFile. 
+	 * Create a Stream and its corresponding Decoder for the first video stream of the given file.
+	 * @note Do nothing if the InputFile and the videoStream are already set
+	 */
 	void ensureVideoIsOpen();
+
+	/**
+	 * @brief Clear all attributes related to unwrapping / decoding.
+	 */
 	void cleanInputFile();
 
 	AVReaderParams getProcessParams() const;
