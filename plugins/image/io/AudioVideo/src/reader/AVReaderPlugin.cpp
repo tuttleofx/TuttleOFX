@@ -28,6 +28,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _paramFormatDetailCustom( common::kPrefixFormat, AV_OPT_FLAG_DECODING_PARAM, true )
 	, _paramVideoDetailCustom( common::kPrefixVideo, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, true )
 	, _inputFile( NULL )
+	, _inputStream( NULL )
 	, _inputDecoder( NULL )
 	, _sourceImage( NULL )
 	, _imageToDecode( NULL )
@@ -104,7 +105,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		avtranscoder::NoDisplayProgress progress;
 		_inputFile->analyse( progress, avtranscoder::eAnalyseLevelFirstGop );
 		
-		// get streamId of the video stream
+		// get index of the video stream
 		if( videoStreamIndex >= _inputFile->getProperties().getVideoProperties().size() )
 		{
 			throw std::runtime_error( "the stream index doesn't exist in the input file" );
@@ -112,10 +113,11 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		_lastVideoStreamIndex = videoStreamIndex;
 		
 		// buffered the selected video stream
-		_inputFile->activateStream( videoStreamIndex );
+		_inputStream = &_inputFile->getStream( _inputFile->getProperties().getVideoProperties().at(videoStreamIndex).getStreamIndex() );
+		_inputStream->activate();
 		
 		// set video decoder
-		_inputDecoder.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( videoStreamIndex ) ) );
+		_inputDecoder.reset( new avtranscoder::VideoDecoder( *_inputStream ) );
 	}
 	catch( std::exception& e )
 	{
@@ -514,7 +516,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_inputDecoder->setupDecoder( videoProfile );
 
 	// get source image
-	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc() );
+	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputStream->getVideoCodec().getVideoFrameDesc() );
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 
 	// get image to decode

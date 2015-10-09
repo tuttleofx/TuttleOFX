@@ -100,6 +100,7 @@ public:
 	boost::scoped_ptr<avtranscoder::VideoDecoder> _inputDecoder;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
+	avtranscoder::InputStream* _inputStream;  ///< Has link (InputFile has ownership)
 	
 	avtranscoder::VideoTransform _colorTransform;
 	
