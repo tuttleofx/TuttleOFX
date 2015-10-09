@@ -1,7 +1,8 @@
-
 %module tuttle
 
 %module(directors="1", threads="1") tuttle
+
+%include <tuttle/host/version.hpp>
 
 %include "global.i"
 %include "Core.i"
@@ -17,4 +18,3 @@
 %include "thumbnail/ThumbnailDiskCache.i"
 %include "Callback.i"
 %include <tuttle/common/utils/Formatter.i>
-
