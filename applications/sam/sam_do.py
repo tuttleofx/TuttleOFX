@@ -396,7 +396,7 @@ class Sam_do(samUtils.Sam):
                 # Plugin not found
                 if not nodeFullName:
                     nodeFullName = splitCmdNode._pluginId
-                self.logger.warning('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
+                self.logger.error('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
                 self.logger.debug(e)
                 continue
             # sam-do node --help
@@ -537,7 +537,7 @@ class Sam_do(samUtils.Sam):
             try:
                 graph.compute(nodes[-1], options)
             except Exception as e:
-                self.logger.error('Tuttle graph computation failed.')
+                self.logger.error('Tuttle graph computation has failed.')
                 self.logger.debug(e)
             self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
