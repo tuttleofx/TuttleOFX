@@ -109,7 +109,8 @@ public:
 	
 	int _lastFrame;
 	
-	bool _initVideo;
+	bool _initVideo;  ///< Is the video init
+	bool _isSetUp;  ///< Is the unwrapping and decoding setup
 };
 
 }

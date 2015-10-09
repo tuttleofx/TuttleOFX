@@ -36,6 +36,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _lastVideoStreamIndex( 0 )
 	, _lastFrame( -1 )
 	, _initVideo( false )
+	, _isSetUp( false )
 {
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
@@ -483,6 +484,11 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 {
 	ReaderPlugin::beginSequenceRender( args );
 
+	// To be sure to execute the following code only once
+	// Optimization in some hosts when rendering several frames (nuke...)
+	if( _isSetUp )
+		return;
+
 	ensureVideoIsOpen();
 
 	AVReaderParams params = getProcessParams();
@@ -522,6 +528,8 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	// get image to decode
 	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc.getWidth(), sourceImageDesc.getHeight(), "rgb24" );
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
+
+	_isSetUp = true;
 }
 
 void AVReaderPlugin::render( const OFX::RenderArguments& args )
