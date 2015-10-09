@@ -29,6 +29,7 @@ static const std::string kPrefixGroup     = "g_";
 static const std::string kPrefixFlag      = "_flag_";
 
 static const std::string kOptionThreads = "threads";
+static const size_t kOptionThreadsValue = 0;  ///< Autodetect a suitable number of threads to use
 
 /**
  * @brief Use this class to get libav Options about format, video, and audio.
