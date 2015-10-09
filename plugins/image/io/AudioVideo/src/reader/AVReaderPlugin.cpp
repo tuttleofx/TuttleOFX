@@ -28,7 +28,7 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _paramFormatDetailCustom( common::kPrefixFormat, AV_OPT_FLAG_DECODING_PARAM, true )
 	, _paramVideoDetailCustom( common::kPrefixVideo, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, true )
 	, _inputFile( NULL )
-	, _inputStreamVideo( NULL )
+	, _inputDecoder( NULL )
 	, _sourceImage( NULL )
 	, _imageToDecode( NULL )
 	, _lastInputFilePath( "" )
@@ -110,8 +110,8 @@ void AVReaderPlugin::ensureVideoIsOpen()
 		// buffered video stream at _indexVideoStream
 		_inputFile->activateStream( _paramVideoStreamIndex->getValue() );
 		
-		// set video stream
-		_inputStreamVideo.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
+		// set video decoder
+		_inputDecoder.reset( new avtranscoder::VideoDecoder( _inputFile->getStream( _paramVideoStreamIndex->getValue() ) ) );
 	}
 	catch( std::exception& e )
 	{
@@ -126,7 +126,7 @@ void AVReaderPlugin::ensureVideoIsOpen()
 void AVReaderPlugin::cleanInputFile()
 {
 	_inputFile.reset();
-	_inputStreamVideo.reset();
+	_inputDecoder.reset();
 	_sourceImage.reset();
 	_imageToDecode.reset();
 	_lastInputFilePath = "";
@@ -505,7 +505,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	// video detail options
 	const avtranscoder::ProfileLoader::Profile videoDetailProfile = _paramVideoDetailCustom.getCorrespondingProfile( params._inputVideoProperties->getCodecName() );
 	videoProfile.insert( videoDetailProfile.begin(), videoDetailProfile.end() );
-	_inputStreamVideo->setupDecoder( videoProfile );
+	_inputDecoder->setupDecoder( videoProfile );
 
 	// get source image
 	const avtranscoder::VideoFrameDesc sourceImageDesc( _inputFile->getStream( _paramVideoStreamIndex->getValue() ).getVideoCodec().getVideoFrameDesc() );

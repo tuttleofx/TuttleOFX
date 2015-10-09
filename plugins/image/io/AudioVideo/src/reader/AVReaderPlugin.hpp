@@ -88,7 +88,7 @@ public:
 	OFX::BooleanParam* _paramVerbose;
 	
 	boost::scoped_ptr<avtranscoder::InputFile> _inputFile;
-	boost::scoped_ptr<avtranscoder::VideoDecoder> _inputStreamVideo;
+	boost::scoped_ptr<avtranscoder::VideoDecoder> _inputDecoder;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _sourceImage;
 	boost::scoped_ptr<avtranscoder::VideoFrame> _imageToDecode;
 	
