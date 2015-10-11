@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
   libboost1.55-all-dev \
   python-dev \
   python-numpy \
+  python-clint \
+  python-argcomplete \
   python3-dev \
   python3-nose \
   libfreetype6-dev \
@@ -52,6 +54,7 @@ ENV PYTHON_VERSION=2.7 \
     TUTTLEOFX_DEV=/opt/TuttleOFX_git \
     TUTTLEOFX_BUILD=/tmp/TuttleOFX_build_tmp \
     TUTTLEOFX_INSTALL=/usr/local \
+    OFX_PLUGIN_PATH=/usr/local/OFX \
     DEPENDENCIES_INSTALL=/usr/local \
     PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python2.7/site-packages
 
