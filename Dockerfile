@@ -14,8 +14,6 @@ RUN apt-get update && apt-get install -y \
   python-numpy \
   python-clint \
   python-argcomplete \
-  python3-dev \
-  python3-nose \
   libfreetype6-dev \
   libbz2-dev \
   libltdl-dev \
