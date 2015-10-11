@@ -21,6 +21,7 @@ env:
     - TUTTLEOFX_BUILD=${TRAVIS_BUILD_DIR}/build-tuttle
     - TUTTLEOFX_INSTALL=${TRAVIS_BUILD_DIR}/install-tuttle
     - TUTTLEOFX_DEPLOY=tuttle-${_system_name}-${_system_version}-${_system_arch}
+    - TUTTLEOFX_DEV=${TRAVIS_BUILD_DIR}
     - CI_NODE_TOTAL=2
   matrix:
     - PYTHON_VERSION=2.7
@@ -63,7 +64,6 @@ script:
   - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
       exit 0;
     fi
-  - export TUTTLEOFX_DEV=$PWD
   - tools/travis/build.sh
 
   # launch tests
