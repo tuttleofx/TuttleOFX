@@ -47,6 +47,7 @@ class Sam_mv(samUtils.Sam):
         outputGroup.add_argument('--output-last', dest='outputLast', type=int, help='specify the last input image in order to select a sub-range of the output sequence')
 
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
     def _getSequenceManipulators(self, inputSequence, args):
         """
@@ -166,6 +167,9 @@ class Sam_mv(samUtils.Sam):
         """
         # Parse command-line
         args = parser.parse_args()
+
+        # Set sam log level
+        self.setLogLevel(args.verbose)
 
         # check command line
         if args.offset and (args.outputFirst is not None or args.outputLast is not None):
