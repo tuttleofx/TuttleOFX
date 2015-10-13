@@ -28,6 +28,7 @@ class Sam_ls(samUtils.Sam):
             List information about sequences, files and folders.
             List the current directory by default.
             '''))
+        self._itemPrinted = [] # name of Items already printed
 
     def fillParser(self, parser):
         # Arguments
@@ -50,6 +51,15 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
         # parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
+
+    def isAlreadyPrinted(self, item):
+        """
+        Return if the given item has already been printed.
+        @see printItem
+        """
+        if item.getFilename() in self._itemPrinted:
+            return True
+        return False
 
     def printItem(self, item, args, level):
         """
@@ -152,6 +162,8 @@ class Sam_ls(samUtils.Sam):
             with indent(level, quote=indentTree):
                 puts(toPrint.format())
 
+        self._itemPrinted.append(item.getFilename())
+
     def printItems(self, items, args, detectionMethod, filters, level=0):
         """
         For each items, check if it should be printed, depending on the command line options.
@@ -170,6 +182,10 @@ class Sam_ls(samUtils.Sam):
 
             # sam-ls -s
             if args.sequences and itemType != sequenceParser.eTypeSequence:
+                toPrint = False
+
+            # skip item already printed
+            if self.isAlreadyPrinted(item):
                 toPrint = False
 
             # print current item
