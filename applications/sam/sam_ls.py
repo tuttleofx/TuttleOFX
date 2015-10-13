@@ -49,7 +49,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (activated by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
-        # parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
     def printItem(self, item, args, level):
         """
@@ -200,6 +200,9 @@ class Sam_ls(samUtils.Sam):
         """
         # Parse command-line
         args = parser.parse_args()
+
+        # Set sam log level
+        self.setLogLevel(args.verbose)
 
         # inputs to scan
         inputs = []
