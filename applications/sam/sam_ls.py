@@ -184,7 +184,9 @@ class Sam_ls(samUtils.Sam):
                     continue
 
                 try:
-                    newItems = sequenceParser.browse(os.path.join(item.getFolder(), item.getFilename()), detectionMethod, filters)
+                    newFolder = os.path.join(item.getFolder(), item.getFilename())
+                    self.logger.info('Launch a browse on "' + newFolder + '" with the following filters: ' + str(filters))
+                    newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
                     level += 1
                     self.printItems(newItems, args, detectionMethod, filters, level)
                     level -= 1
@@ -233,12 +235,14 @@ class Sam_ls(samUtils.Sam):
         for input in inputs:
             items = []
             try:
+                self.logger.info('Launch a browse on "' + input + '" with the following filters: ' + str(filters))
                 items = sequenceParser.browse(input, detectionMethod, filters)
             except IOError as e:
                 # if the given input does not correspond to anything
                 if 'No such file or directory' in str(e):
                     # try to create a sequence from the given input
                     sequence = sequenceParser.Sequence()
+                    self.logger.info('Launch a browseSequence on "' + input + '".')
                     isSequence = sequenceParser.browseSequence(sequence, input)
                     if isSequence:
                         item = sequenceParser.Item(sequence, os.getcwd())
@@ -260,6 +264,7 @@ class Sam_ls(samUtils.Sam):
                     newFilter.extend(filters)
                     newFilter.append(os.path.basename(input))
                     # new browse
+                    self.logger.info('Launch a browse on "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
                     items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
             if not len(items):
