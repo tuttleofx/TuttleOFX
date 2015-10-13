@@ -84,6 +84,7 @@ class Sam_rm(samUtils.Sam):
         for time in sequence.getFramesIterable(first, last):
             try:
                 filePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
+                self.logger.info('Remove file "' + filePathInSequence + '".')
                 os.remove(os.path.join(filePathInSequence))
             except OSError:
                 self.logger.error('Cannot find file "' + filePathInSequence + '" in sequence.')
