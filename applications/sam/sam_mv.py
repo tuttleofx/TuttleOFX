@@ -150,10 +150,14 @@ class Sam_mv(samUtils.Sam):
 
         # get input sequence
         inputItems = sequenceParser.browse(inputSequencePath, detectionMethod, [inputSequenceName])
-        if len(inputItems) != 1:
+        if not len(inputItems):
             self.logger.error('No existing file corresponds to the given input sequence: ' + inputPath)
             exit(-1)
+        if len(inputItems) > 0:
+            self.logger.error('Several items ' + str([item.getFilename() for item in inputItems]) + ' correspond to the given input sequence: ' + inputPath)
+            exit(-1)
 
+        # check if the item is a sequence
         inputItem = inputItems[0]
         if inputItem.getType() != sequenceParser.eTypeSequence:
             self.logger.error('Input is not a sequence: ' + inputItem.getFilename())
