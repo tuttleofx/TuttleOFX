@@ -2,7 +2,6 @@
 # coding: utf-8 
 
 import os
-import argparse
 import copy
 
 # python module to get colors, indent text...
@@ -326,42 +325,6 @@ class SplitCmdNode:
         if '-h' in argumentValues or '--help' in argumentValues:
             return True
         return False
-
-
-class SamDoSetVerboseAction(argparse.Action):
-    """
-    Class to get the corresponding tuttle verbose level from the user input.
-    The user input can be a number or a string.
-    """
-    def __init__(self, option_strings, dest, nargs=None, **kwargs):
-        if nargs is not None:
-            raise ValueError("nargs not allowed")
-        super(SamDoSetVerboseAction, self).__init__(option_strings, dest, **kwargs)
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        # if the given number is upper than the max sam verbose level, set to trace
-        try:
-            if int(values) > 6:
-                setattr(namespace, self.dest, 5)
-                return
-        except Exception:
-            pass
-
-        if values == '0' or values.lower() == 'fatal':
-            setattr(namespace, self.dest, 0)
-        elif values == '1' or values.lower() == 'error':
-            setattr(namespace, self.dest, 1)
-        elif values == '2' or values.lower() == 'warn':
-            setattr(namespace, self.dest, 2)
-        elif values == '3' or values.lower() == 'info':
-            setattr(namespace, self.dest, 3)
-        elif values == '4' or values.lower() == 'debug':
-            setattr(namespace, self.dest, 4)
-        elif values == '5' or values.lower() == 'trace':
-            setattr(namespace, self.dest, 5)
-        # if the level is not recognized, set to warning
-        else:
-            setattr(namespace, self.dest, 2)
 
 
 class ProgressHandle(tuttle.IProgressHandle):
