@@ -5,13 +5,15 @@
 # Add custom cmake macros
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-# All libraries will be put in INSTALL_PREFIX/lib 
-# RPATH of host points INSTALL_PREFIX/lib
-# see: http://www.cmake.org/Wiki/CMake_RPATH_handling
-set(CMAKE_MACOSX_RPATH 1)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+if(${TUTTLE_DEPLOY_DEPENDENCIES})
+  # All libraries will be put in INSTALL_PREFIX/lib 
+  # RPATH of host points INSTALL_PREFIX/lib
+  # see: http://www.cmake.org/Wiki/CMake_RPATH_handling
+  set(CMAKE_MACOSX_RPATH 1)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
 
 # Tuttle source code
 include_directories(src)
