@@ -4,7 +4,7 @@
 set(Boost_USE_STATIC_LIBS OFF)
 add_definitions(-DBOOST_LOG_DYN_LINK)
 find_package(Boost 1.53.0 
-    COMPONENTS regex date_time chrono thread serialization system filesystem atomic log program_options timer QUIET)
+    COMPONENTS date_time chrono serialization system filesystem atomic log program_options timer QUIET)
 
 if (Boost_FOUND) 
   set(TuttleBoost_FOUND 1)
