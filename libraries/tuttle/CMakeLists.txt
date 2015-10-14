@@ -50,7 +50,28 @@ if (TuttleBoost_FOUND)
   # SequenceParser, as a separate project
   find_package(sequenceParser)
 
-  # Target is a shared library
+  # TODO: if cmake >= 2.8.11
+  # TODO: declare BOOST Atomic optional.
+  # There is a basic fallback implementation for boost_atomic:
+  # libraries/tuttle/src/tuttle/common/atomic.hpp
+  # target_compile_definitions(tuttleHost PUBLIC WITHOUT_BOOST_ATOMIC)
+  
+  # Add tuttleCommon library (utilities for both host and plugins)
+  add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES})
+  target_include_directories(tuttleCommon PUBLIC ${Boost_INCLUDE_DIRS})
+  set_target_properties(tuttleCommon PROPERTIES COMPILE_FLAGS "-fPIC")
+  find_package(Threads)
+  target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(tuttleCommon ${TuttleCommonBoost_LIBRARIES})
+
+  # Add tuttlePlugin library (utilities for OFX plugins)
+  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
+  target_include_directories(tuttlePluginLib PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
+  set_target_properties(tuttlePluginLib PROPERTIES COMPILE_FLAGS "-fPIC")
+  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
+  target_link_libraries(tuttlePluginLib tuttleCommon)
+
+  # Add tuttleHost library
   add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
   set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}")
   target_include_directories(tuttleHost PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
@@ -75,29 +96,7 @@ if (TuttleBoost_FOUND)
     endif(PNG_FOUND)
   endif(CMAKE_BUILD_TYPE MATCHES RELEASE)
 
-  # TODO: if cmake >= 2.8.11
-  # TODO: declare BOOST Atomic optional.
-  # There is a basic fallback implementation for boost_atomic:
-  # libraries/tuttle/src/tuttle/common/atomic.hpp
-  # target_compile_definitions(tuttleHost PUBLIC WITHOUT_BOOST_ATOMIC)
-  
-  # Adds a support library for common and plugins
-  # only compile object files, and use them at link time
-  add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES})
-  target_include_directories(tuttleCommon PUBLIC ${Boost_INCLUDE_DIRS})
-  set_target_properties(tuttleCommon PROPERTIES COMPILE_FLAGS "-fPIC")
-  find_package(Threads)
-  target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
-  target_link_libraries(tuttleCommon ${TuttleCommonBoost_LIBRARIES})
-
-  # Utilities for OFX plugins
-  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
-  target_include_directories(tuttlePluginLib PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
-  set_target_properties(tuttlePluginLib PROPERTIES COMPILE_FLAGS "-fPIC")
-  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
-  target_link_libraries(tuttlePluginLib tuttleCommon)
-
-  # Install tuttle host library in INSTALL_PREFIX/lib/
+  # Install tuttle libraries in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttleCommon DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttlePluginLib DESTINATION lib/ OPTIONAL)
