@@ -62,8 +62,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
     # FIXME: Why ? what are we including here ? common ??
     include_directories(${PROJECT_SOURCE_DIR}/libraries/tuttle/src/)
     include(UseTuttleBoost) 
-    if(TuttleBoost_FOUND) 
-        include_directories(${Boost_INCLUDE_DIRS}) 
+    if(TuttleBoost_FOUND)
 
         # If no plugin source is provided, recursively find file below src folder
         set(PLUGIN_SOURCES ${ARGV1}) 

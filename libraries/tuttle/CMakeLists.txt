@@ -23,7 +23,6 @@ file(GLOB_RECURSE TUTTLE_HOST_HEADER_FILES src/tuttle/host/*.hpp src/tuttle/comm
 # Boost dependencies
 include(UseTuttleBoost)
 if (TuttleBoost_FOUND) 
-  include_directories(${Boost_INCLUDE_DIRS}) 
   
   # OpenFX and Terry rely on boost
   include(UseOfxpp)
@@ -31,8 +30,7 @@ if (TuttleBoost_FOUND)
   
   # SequenceParser, as a separate project
   find_package(sequenceParser)
-  include_directories(${SEQUENCEPARSER_INCLUDE_DIR})
-  
+
   # Target is a shared library
   add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
 
@@ -57,6 +55,8 @@ if (TuttleBoost_FOUND)
   )
   endif()
 
+  target_include_directories(tuttleHost PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
+  target_include_directories(tuttleHost PUBLIC ${Boost_INCLUDE_DIRS})
   target_link_libraries(tuttleHost ${Boost_LIBRARIES})
   if(APPLE)
       set_target_properties(tuttleHost 
@@ -87,7 +87,8 @@ if (TuttleBoost_FOUND)
   
   # Adds a support library for common and plugins
   # only compile object files, and use them at link time
-  add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES}) 
+  add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES})
+  target_include_directories(tuttleCommon PUBLIC ${Boost_INCLUDE_DIRS})
   set_target_properties(tuttleCommon
                         PROPERTIES COMPILE_FLAGS "-fPIC")
   add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
@@ -97,6 +98,7 @@ if (TuttleBoost_FOUND)
 
   # Utilities for OFX plugins
   target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
+  target_include_directories(tuttlePluginLib PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
   set_target_properties(tuttlePluginLib
                         PROPERTIES COMPILE_FLAGS "-fPIC")
   target_link_libraries(tuttlePluginLib tuttleCommon)
