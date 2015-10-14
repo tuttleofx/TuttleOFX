@@ -55,7 +55,7 @@ if (TuttleBoost_FOUND)
   set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}")
   target_include_directories(tuttleHost PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
   target_include_directories(tuttleHost PUBLIC ${Boost_INCLUDE_DIRS})
-  target_link_libraries(tuttleHost ${Boost_LIBRARIES})
+  target_link_libraries(tuttleHost ${TuttleHostBoost_LIBRARIES})
   if(APPLE)
       set_target_properties(tuttleHost PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
       set_target_properties(tuttleHost PROPERTIES INSTALL_RPATH "@loader_path")
@@ -88,7 +88,7 @@ if (TuttleBoost_FOUND)
   set_target_properties(tuttleCommon PROPERTIES COMPILE_FLAGS "-fPIC")
   find_package(Threads)
   target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
-  target_link_libraries(tuttleCommon ${Boost_LIBRARIES})
+  target_link_libraries(tuttleCommon ${TuttleCommonBoost_LIBRARIES})
 
   # Utilities for OFX plugins
   add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
@@ -116,7 +116,8 @@ if (TuttleBoost_FOUND)
   # Install boost library along with tuttle library
   # Need to copy the files pointed by symlinks instead of the symlinks
   include(TuttleMacros)
-  tuttle_install_shared_libs("${Boost_LIBRARIES}")
+  tuttle_install_shared_libs("${TuttleCommonBoost_LIBRARIES}")
+  tuttle_install_shared_libs("${TuttleHostBoost_LIBRARIES}")
 
   # Python bindings with Swig 
   find_package(SWIG)
@@ -161,7 +162,7 @@ if (TuttleBoost_FOUND)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/tuttle/host)
     swig_add_module(tuttle python ${TUTTLE_PYTHON_BINDING_FILE})
     swig_link_libraries(tuttle tuttleHost)
-    swig_link_libraries(tuttle ${Boost_LIBRARIES})
+    swig_link_libraries(tuttle ${TuttleHostBoost_LIBRARIES})
     swig_link_libraries(tuttle ${PYTHON_LIBRARIES})
     # Force the library to look in the project lib folder relatively
     if (APPLE)

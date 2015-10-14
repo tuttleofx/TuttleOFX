@@ -1,10 +1,21 @@
-
 # Boost for the whole Tuttle project
 
 set(Boost_USE_STATIC_LIBS OFF)
 add_definitions(-DBOOST_LOG_DYN_LINK)
-find_package(Boost 1.53.0 
-    COMPONENTS date_time chrono serialization system filesystem atomic log program_options timer QUIET)
+
+# Get boost libraries for tuttleCommon
+find_package(Boost 1.53.0
+    COMPONENTS log filesystem
+    QUIET
+)
+set(TuttleCommonBoost_LIBRARIES ${Boost_LIBRARIES})
+
+# Get boost libraries for tuttleHost
+find_package(Boost 1.53.0
+    COMPONENTS date_time chrono serialization system filesystem atomic log program_options timer
+    QUIET
+)
+set(TuttleHostBoost_LIBRARIES ${Boost_LIBRARIES})
 
 if (Boost_FOUND) 
   set(TuttleBoost_FOUND 1)
