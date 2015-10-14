@@ -27,12 +27,6 @@ if (TuttleBoost_FOUND)
   # OpenFX and Terry rely on boost
   include(UseOfxpp)
   include(UseTerry)
-  
-  # SequenceParser, as a separate project
-  find_package(sequenceParser)
-
-  # Target is a shared library
-  add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
 
   # Extract tuttleHost_VERSION_MAJOR/MINOR/MICRO from version.hpp
   file(STRINGS "src/tuttle/host/version.hpp" _tuttleHost_VERSION_HPP_CONTENTS REGEX "#define TUTTLE_HOST_VERSION_")
@@ -51,18 +45,20 @@ if (TuttleBoost_FOUND)
   else()
     message(STATUS "tuttleHost version is "
                  "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO} (retrieved from version.hpp)")
-    set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}"
-  )
   endif()
 
+  # SequenceParser, as a separate project
+  find_package(sequenceParser)
+
+  # Target is a shared library
+  add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
+  set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}")
   target_include_directories(tuttleHost PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
   target_include_directories(tuttleHost PUBLIC ${Boost_INCLUDE_DIRS})
   target_link_libraries(tuttleHost ${Boost_LIBRARIES})
   if(APPLE)
-      set_target_properties(tuttleHost 
-            PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
-      set_target_properties(tuttleHost 
-            PROPERTIES INSTALL_RPATH "@loader_path")
+      set_target_properties(tuttleHost PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
+      set_target_properties(tuttleHost PROPERTIES INSTALL_RPATH "@loader_path")
   endif(APPLE)
   if (UNIX AND NOT APPLE)
       target_link_libraries(tuttleHost dl)
@@ -89,20 +85,17 @@ if (TuttleBoost_FOUND)
   # only compile object files, and use them at link time
   add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES})
   target_include_directories(tuttleCommon PUBLIC ${Boost_INCLUDE_DIRS})
-  set_target_properties(tuttleCommon
-                        PROPERTIES COMPILE_FLAGS "-fPIC")
-  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
+  set_target_properties(tuttleCommon PROPERTIES COMPILE_FLAGS "-fPIC")
   find_package(Threads)
   target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
   target_link_libraries(tuttleCommon ${Boost_LIBRARIES})
 
   # Utilities for OFX plugins
-  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
+  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
   target_include_directories(tuttlePluginLib PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
-  set_target_properties(tuttlePluginLib
-                        PROPERTIES COMPILE_FLAGS "-fPIC")
+  set_target_properties(tuttlePluginLib PROPERTIES COMPILE_FLAGS "-fPIC")
+  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
   target_link_libraries(tuttlePluginLib tuttleCommon)
-
 
   # Install tuttle host library in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
@@ -172,11 +165,9 @@ if (TuttleBoost_FOUND)
     swig_link_libraries(tuttle ${PYTHON_LIBRARIES})
     # Force the library to look in the project lib folder relatively
     if (APPLE)
-      set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} 
-            PROPERTIES INSTALL_RPATH "@loader_path/../../..")
+      set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} PROPERTIES INSTALL_RPATH "@loader_path/../../..")
     else(APPLE)
-        set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME}
-            PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
+        set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
     endif(APPLE)
 
     # get path to install python bindings
