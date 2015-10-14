@@ -17,5 +17,12 @@ export OFX_PLUGIN_PATH=/path/to/your/tuttle/OFX
 Note: some host provide a way to set this path in their GUI. Checkout the "preference" menu.
 
 
+## Override host name
+Some OFX plugins define a specific behavior depending on the host (shame on them!).
+To handle these cases, you can override the TuttleOFX host name by defined the following environment variable:
+```
+export TUTTLE_OVERRIDE_HOST_OFXPROPNAME=Your new Host name
+```
+
 ## More information
 http://www.tuttleofx.org/user-documentation
