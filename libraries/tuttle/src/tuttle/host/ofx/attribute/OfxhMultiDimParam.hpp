@@ -6,7 +6,6 @@
 #include "OfxhParamDescriptor.hpp"
 #include "OfxhParamSet.hpp"
 
-#include <boost/program_options/parsers.hpp>
 #include <boost/ptr_container/ptr_array.hpp>
 #include <boost/functional/hash.hpp>
 
@@ -48,7 +47,22 @@ public:
 
 	void setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 	{
-		std::vector<std::string> allExp = boost::program_options::split_unix( value, "," );
+		// splits value parameter to a collection of single strings
+		// use ',' as separator
+		std::vector<std::string> allExp;
+		std::string tmpValue;
+		for(int i=0; i < value.length(); i++)
+		{
+			if (value[i] == ',')
+			{
+			    allExp.push_back(tmpValue);
+			    tmpValue.clear();
+			}
+			else
+			    tmpValue += value[i];
+		}
+		if(! tmpValue.empty() )
+		    allExp.push_back(tmpValue);
 
 		if( allExp.size() == 1 )
 		{

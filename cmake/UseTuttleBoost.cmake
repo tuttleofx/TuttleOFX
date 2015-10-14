@@ -12,7 +12,7 @@ set(TuttleCommonBoost_LIBRARIES ${Boost_LIBRARIES})
 
 # Get boost libraries for tuttleHost
 find_package(Boost 1.53.0
-    COMPONENTS date_time chrono serialization system filesystem atomic log program_options timer
+    COMPONENTS date_time chrono serialization system filesystem atomic log timer
     QUIET
 )
 set(TuttleHostBoost_LIBRARIES ${Boost_LIBRARIES})
