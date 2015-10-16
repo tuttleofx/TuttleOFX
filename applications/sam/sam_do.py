@@ -486,8 +486,6 @@ class Sam_do(samUtils.Sam):
         for graph, nodes in graphsWithNodes:
             # Options of process
             options = tuttle.ComputeOptions()
-            # sam-do --verbose
-            options.setVerboseLevel(args.verbose)
             # sam-do --ranges
             if args.ranges is not None:
                 self._setTimeRanges(options, args.ranges)
