@@ -150,36 +150,36 @@ BOOST_AUTO_TEST_CASE( test_export )
 	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], graph::TestEdge( n1, n2 ) );
 	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], graph::TestEdge( n2, n3 ) );
 
-	TUTTLE_TLOG( TUTTLE_TRACE, "graph:" );
+	TUTTLE_LOG_TRACE( "graph:" );
 	boost::print_graph( graph.getGraph() );
 
 	InternalGraph graphT;
 	graphT.copyTransposed( graph );
 
-	TUTTLE_TLOG( TUTTLE_TRACE, "graphT:" );
+	TUTTLE_LOG_TRACE( "graphT:" );
 	boost::print_graph( graphT.getGraph() );
 
 	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( "boostgraphtest.dot", graph );
 	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( "boostgraphTtest.dot", graphT );
 
-	TUTTLE_TLOG( TUTTLE_TRACE, "__________________________________________________" );
-	TUTTLE_TLOG( TUTTLE_TRACE, "graph:" );
+	TUTTLE_LOG_TRACE( "__________________________________________________" );
+	TUTTLE_LOG_TRACE( "graph:" );
 	//	std::vector<boost::default_color_type > colormap(boost::num_vertices(graph.getGraph()));
 	graph::visitor::Test_dfs<InternalGraph> testVisitorA( graph );
 	//	boost::depth_first_search( graph.getGraph(), boost::root_vertex(nodesDescriptor[n1]), boost::visitor(testVisitorA) );//, colormap );
 	graph.depthFirstVisit( testVisitorA, nodesDescriptor[n1] );
 
-	TUTTLE_TLOG( TUTTLE_TRACE, "__________________________________________________" );
-	TUTTLE_TLOG( TUTTLE_TRACE, "graphT:" );
+	TUTTLE_LOG_TRACE( "__________________________________________________" );
+	TUTTLE_LOG_TRACE( "graphT:" );
 
 	std::map<std::string, InternalGraph::vertex_descriptor> mmap;
 	for( InternalGraph::vertex_iterator i = vertices( graphT.getGraph() ).first, iEnd = vertices( graphT.getGraph() ).second;
 	     i != iEnd;
 	     ++i )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "pp: " << graphT.getGraph()[*i]._name );
+		TUTTLE_LOG_TRACE( "pp: " << graphT.getGraph()[*i]._name );
 		mmap[graphT.getGraph()[*i]._name] = *i;
-		//		TUTTLE_TLOG( TUTTLE_TRACE, "pp: "<< graphT.getGraph()[*i]._name );
+		//		TUTTLE_LOG_TRACE( "pp: "<< graphT.getGraph()[*i]._name );
 	}
 
 	graph::visitor::Test_dfs<InternalGraph> testVisitorB( graph );
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE( check_cycle )
 		graph.addEdge( nodesDescriptor[n3], nodesDescriptor[n1], graph::TestEdge( n3, n1 ) ),
 		 exception::Logic );
 	
-	TUTTLE_TLOG( TUTTLE_TRACE, "graph:" );
+	TUTTLE_LOG_TRACE( "graph:" );
 	boost::print_graph( graph.getGraph() );
 }
 
@@ -329,7 +329,7 @@ BOOST_AUTO_TEST_CASE( test_create_add_remove )
 //		 i != iEnd;
 //		 ++i )
 //	{
-//		TUTTLE_TLOG( TUTTLE_TRACE, ": " << graph[*i]._name );
+//		TUTTLE_LOG_TRACE( ": " << graph[*i]._name );
 //	}
 }
 

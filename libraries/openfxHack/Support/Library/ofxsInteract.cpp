@@ -550,22 +550,22 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 	{
 		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
 		{
-			TUTTLE_TLOG( TUTTLE_ERROR, "Error: " << *messageException );
+			TUTTLE_LOG_ERROR( "Error: " << *messageException );
 		}
 		else
 		{
-			TUTTLE_TLOG( TUTTLE_ERROR, "Error: " "No message." );
+			TUTTLE_LOG_ERROR( "Error: " "No message." );
 		}
 		if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >(e) )
 		{
-			TUTTLE_TLOG( TUTTLE_ERROR, "filename: \"" << *filenameException << "\"" );
+			TUTTLE_LOG_ERROR( "filename: \"" << *filenameException << "\"" );
 		}
 
-		TUTTLE_TLOG( TUTTLE_ERROR, "* Caught boost::exception on action " << actionRaw );
+		TUTTLE_LOG_ERROR( "* Caught boost::exception on action " << actionRaw );
 	#ifndef BOOST_EXCEPTION_DISABLE
-		TUTTLE_TLOG( TUTTLE_ERROR, boost::diagnostic_information(e) );
+		TUTTLE_LOG_ERROR( boost::diagnostic_information(e) );
 	#endif
-		TUTTLE_TLOG( TUTTLE_ERROR, "* Backtrace" << boost::trace(e) );
+		TUTTLE_LOG_ERROR( "* Backtrace" << boost::trace(e) );
 		
 		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )
 		{
@@ -580,18 +580,18 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
-		TUTTLE_TLOG( TUTTLE_ERROR, "Caught OFX::Exception::Suite (" << e.what() << ")" );
+		TUTTLE_LOG_ERROR( "Caught OFX::Exception::Suite (" << e.what() << ")" );
 		stat = e.status();
 	}
 	// catch all exceptions
 	catch( std::exception& e )
 	{
-		TUTTLE_TLOG( TUTTLE_ERROR, "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" );
+		TUTTLE_LOG_ERROR( "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" );
 		stat = kOfxStatFailed;
 	}
 	catch(... )
 	{
-		TUTTLE_TLOG( TUTTLE_ERROR, "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" );
+		TUTTLE_LOG_ERROR( "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" );
 		stat = kOfxStatFailed;
 	}
 

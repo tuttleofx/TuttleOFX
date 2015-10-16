@@ -79,7 +79,7 @@ void Core::preload( const bool useCache )
 	{
 		cacheFile = (getPreferences().getTuttleHomePath() / "tuttlePluginCacheSerialize.xml").string();
 		
-		TUTTLE_LOG_DEBUG( TUTTLE_INFO, "plugin cache file = " << cacheFile );
+		TUTTLE_LOG_DEBUG( "plugin cache file = " << cacheFile );
 
 		if( boost::filesystem::exists(cacheFile) )
 		{
@@ -87,7 +87,7 @@ void Core::preload( const bool useCache )
 			{
 				std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
 				{
-					TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Read plugins cache." );
+					TUTTLE_LOG_DEBUG( "Read plugins cache." );
 					IArchive iArchive( ifsb );
 					iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
 					// Destructor for an archive should be called before the stream is closed. It restores any altered stream facets to thier state before the the archive was opened.
@@ -111,7 +111,7 @@ void Core::preload( const bool useCache )
 		boost::uuids::uuid u = gen();
 		const std::string tmpCacheFile( cacheFile + ".writing." + boost::uuids::to_string(u) + ".xml" );
 		
-		TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Write plugins cache " << tmpCacheFile );
+		TUTTLE_LOG_DEBUG(  "Write plugins cache " << tmpCacheFile );
 		try
 		{
 			// Serialize into a temporary file

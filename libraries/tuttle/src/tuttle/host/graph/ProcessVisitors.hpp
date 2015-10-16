@@ -30,9 +30,9 @@ inline void connectClips( TGraph& graph )
 		typename TGraph::Vertex& vertexOutput = graph.targetInstance( ed );
 		typename TGraph::Vertex& vertexInput  = graph.sourceInstance( ed );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Connect Clips] " << edge );
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Connect Clips] " << vertexOutput << " -> " << vertexInput );
-		//TUTTLE_TLOG_VAR( TUTTLE_TRACE, edge.getInAttrName() );
+		TUTTLE_LOG_TRACE( "[Connect Clips] " << edge );
+		TUTTLE_LOG_TRACE( "[Connect Clips] " << vertexOutput << " -> " << vertexInput );
+		//TUTTLE_LOG_VAR( TUTTLE_TRACE, edge.getInAttrName() );
 		
 		if( ! vertexOutput.isFake() && ! vertexInput.isFake() )
 		{
@@ -64,7 +64,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Setup 1] finish vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Setup 1] finish vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -91,7 +91,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Setup 2] discover vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Setup 2] discover vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -118,7 +118,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Setup 3] finish vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Setup 3] finish vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -145,12 +145,12 @@ public:
 	{
 		Vertex& vertex = _graph.instance( vd );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Time Domain] finish vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Time Domain] finish vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
 		vertex.getProcessData()._timeDomain = vertex.getProcessNode().computeTimeDomain();
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Time Domain] min: " << vertex.getProcessData()._timeDomain.min << ", max: " << vertex.getProcessData()._timeDomain.max );
+		TUTTLE_LOG_TRACE( "[Time Domain] min: " << vertex.getProcessData()._timeDomain.min << ", max: " << vertex.getProcessData()._timeDomain.max );
 	}
 
 private:
@@ -173,14 +173,14 @@ public:
 		, _outNodesHash( outNodesHash )
 		, _time( time )
 	{
-		//TUTTLE_TLOG( TUTTLE_TRACE, "[ComputeHashAtTime] constructor" );
+		//TUTTLE_LOG_TRACE( "[ComputeHashAtTime] constructor" );
 	}
 
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor vd, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( vd );
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Compute Hash At Time] finish vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Compute Hash At Time] finish vertex " << vertex );
 
 		if( vertex.isFake() )
 			return;
@@ -205,13 +205,13 @@ public:
 		std::size_t seed = localHash;
 		BOOST_FOREACH( const typename InputsHash::value_type& inputGlobalHash, inputsGlobalHash )
 		{
-			//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, inputGlobalHash.first, inputGlobalHash.second );
+			//TUTTLE_LOG_VAR2( TUTTLE_TRACE, inputGlobalHash.first, inputGlobalHash.second );
 			boost::hash_combine( seed, inputGlobalHash.first.getName() ); // name of the input clip connected
 			boost::hash_combine( seed, inputGlobalHash.second );
 		}
 		_outNodesHash.addHash( vertex.getKey(), seed );
-		//TUTTLE_TLOG_VAR( TUTTLE_TRACE, localHash );
-		//TUTTLE_TLOG_VAR2( TUTTLE_TRACE, vertex.getKey(), seed );
+		//TUTTLE_LOG_VAR( TUTTLE_TRACE, localHash );
+		//TUTTLE_LOG_VAR2( TUTTLE_TRACE, vertex.getKey(), seed );
 	}
 
 private:
@@ -260,14 +260,14 @@ public:
 	    
 
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Deploy Time] " << vertex );
+		TUTTLE_LOG_TRACE( "[Deploy Time] " << vertex );
 		if( vertex.isFake() )
 		{
 			BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( v ) )
 			{
 				Edge& e = _graph.instance( ed );
 				e._timesNeeded[_time].insert( _time );
-				//TUTTLE_TLOG( TUTTLE_TRACE, "--- insert edge: " << _time );
+				//TUTTLE_LOG_TRACE( "--- insert edge: " << _time );
 			}
 			vertex._data._times.insert( _time );
 			return;
@@ -277,7 +277,7 @@ public:
 		BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( v ) )
 		{
 			const Edge& edge = _graph.instance( ed );
-			//TUTTLE_TLOG( TUTTLE_TRACE, "-- outEdge: " << edge );
+			//TUTTLE_LOG_TRACE( "-- outEdge: " << edge );
 			BOOST_FOREACH( const typename Edge::TimeMap::value_type& timesNeeded, edge._timesNeeded )
 			{
 				vertex._data._times.insert( timesNeeded.second.begin(), timesNeeded.second.end() );
@@ -292,18 +292,18 @@ public:
 		// Set all times needed on each input edges
 		BOOST_FOREACH( const OfxTime t, vertex._data._times )
 		{
-			TUTTLE_TLOG( TUTTLE_TRACE, "[Deploy Time] time: " << boost::lexical_cast< std::string >(t) );
+			TUTTLE_LOG_TRACE( "[Deploy Time] time: " << boost::lexical_cast< std::string >(t) );
 			INode::ClipTimesSetMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
-//				TUTTLE_TLOG_VAR( TUTTLE_TRACE, v.first );
+//				TUTTLE_LOG_VAR( TUTTLE_TRACE, v.first );
 //			}
 			BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( v ) )
 			{
 				Edge& edge = _graph.instance( ed );
-//				TUTTLE_TLOG( TUTTLE_INFO, "-- inEdge "<<t<<": " << edge );
+//				TUTTLE_LOG_INFO( "-- inEdge "<<t<<": " << edge );
 //				const Vertex& input = _graph.targetInstance( ed );
-//				TUTTLE_TLOG_VAR( TUTTLE_TRACE, input.getName() );
+//				TUTTLE_LOG_VAR( TUTTLE_TRACE, input.getName() );
 //				std::cout << "--- insert edges: ";
 //				std::copy( mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].begin(),
 //				           mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].end(),
@@ -368,7 +368,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( vd );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Remove identity nodes] finish vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Remove identity nodes] finish vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -444,9 +444,9 @@ public:
 						reconnect._outputs.push_back(c);
 					}
 				}
-				TUTTLE_TLOG( TUTTLE_TRACE, "isIdentity => " << vertex.getName() << " - " << inputClip << " at time " << atTime );
+				TUTTLE_LOG_TRACE( "isIdentity => " << vertex.getName() << " - " << inputClip << " at time " << atTime );
 				_toRemove.push_back( reconnect );
-				TUTTLE_TLOG_VAR( TUTTLE_TRACE, _toRemove.size() );
+				TUTTLE_LOG_VAR( TUTTLE_TRACE, _toRemove.size() );
 			}
 			catch( boost::exception& e )
 			{
@@ -497,22 +497,22 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 //		TUTTLE_LOG_VAR( TUTTLE_TRACE, toRemove.size() );
 //		BOOST_FOREACH( const IdentityNodeConnection<TGraph>& connection, toRemove )
 //		{
-//			TUTTLE_LOG( TUTTLE_TRACE, connection._identityVertex );
-//			TUTTLE_LOG( TUTTLE_TRACE, "IN: "
+//			TUTTLE_LOG_TRACE( connection._identityVertex );
+//			TUTTLE_LOG_TRACE( "IN: "
 //				<< connection._identityVertex << "::" << connection._input._inputClip
 //				<< " <<-- "
 //				<< connection._input._srcNode << "::" kOfxOutputAttributeName );
 //			
 //			BOOST_FOREACH( const typename IdentityNodeConnection<TGraph>::OutputClipConnection& outputClipConnection, connection._outputs )
 //			{
-//				TUTTLE_LOG( TUTTLE_TRACE, "OUT: "
+//				TUTTLE_LOG_TRACE( "OUT: "
 //					<< connection._identityVertex << "::" kOfxOutputAttributeName
 //					<< " -->> "
 //					<< outputClipConnection._dstNode << "::" << outputClipConnection._dstNodeClip );
 //			}
 //		}
 //	);
-//	TUTTLE_LOG( TUTTLE_TRACE, "-- removeIdentityNodes --" );
+//	TUTTLE_LOG_TRACE( "-- removeIdentityNodes --" );
 	typedef typename TGraph::Vertex Vertex;
 	typedef typename Vertex::Key VertexKey;
 	
@@ -536,8 +536,8 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 		else
 		{
 			// Create new connections if the input clip name is not empty
-			TUTTLE_TLOG_TRACE( boost::lexical_cast<std::string>(connection._identityVertex) );
-			TUTTLE_TLOG_TRACE( "IN: "
+			TUTTLE_LOG_TRACE( boost::lexical_cast<std::string>(connection._identityVertex) );
+			TUTTLE_LOG_TRACE( "IN: "
 				<< boost::lexical_cast<std::string>(connection._identityVertex) << "::" << boost::lexical_cast<std::string>(connection._input._inputClip)
 				<< " <<-- "
 				<< boost::lexical_cast<std::string>(connection._input._srcNode) << "::" kOfxOutputAttributeName );
@@ -558,7 +558,7 @@ void removeIdentityNodes( TGraph& graph, const std::vector<IdentityNodeConnectio
 			// replace all input/output connections of the identity node by one edge
 			BOOST_FOREACH( const typename IdentityNodeConnection<TGraph>::OutputClipConnection& outputClipConnection, connection._outputs )
 			{
-				//TUTTLE_TLOG_TRACE( "OUT: "
+				//TUTTLE_LOG_TRACE( "OUT: "
 				//	<< connection._identityVertex << "::" kOfxOutputAttributeName
 				//	<< " -->> "
 				//	<< outputClipConnection._dstNode << "::" << outputClipConnection._dstNodeClip );
@@ -600,11 +600,11 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Preprocess 1] finish vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Preprocess 1] finish vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
-		//TUTTLE_TLOG( TUTTLE_TRACE, vertex.getProcessDataAtTime()._time );
+		//TUTTLE_LOG_TRACE( vertex.getProcessDataAtTime()._time );
 		vertex.getProcessNode().preProcess1( vertex.getProcessDataAtTime() );
 	}
 
@@ -628,7 +628,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Preprocess 2] discover vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Preprocess 2] discover vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -688,8 +688,8 @@ public:
 //		}
 
 
-//		TUTTLE_TLOG( TUTTLE_TRACE, vertex.getName() );
-//		TUTTLE_TLOG( TUTTLE_TRACE, procOptions );
+//		TUTTLE_LOG_TRACE( vertex.getName() );
+//		TUTTLE_LOG_TRACE( procOptions );
 	}
 
 private:
@@ -729,7 +729,7 @@ public:
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Process] finish_vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Process] finish_vertex " << vertex );
 
 		// do nothing on the empty output node
 		// it's just a link to final nodes
@@ -744,7 +744,7 @@ public:
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 		_cumulativeTime += t2 - t1;
 		
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Process] " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" << vertex );
+		TUTTLE_LOG_TRACE( "[Process] " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" << vertex );
 		
 		if( _result && vertex.getProcessDataAtTime()._isFinalNode )
 		{
@@ -784,7 +784,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE,"[Post-process] initialize_vertex " << vertex );
+		TUTTLE_LOG( TUTTLE_TRACE,"[Post-process] initialize_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 	}
@@ -794,7 +794,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "[Post-process] finish_vertex " << vertex );
+		TUTTLE_LOG_TRACE( "[Post-process] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 

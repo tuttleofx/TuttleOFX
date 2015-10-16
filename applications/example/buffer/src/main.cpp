@@ -28,7 +28,7 @@ int main( int argc, char** argv )
 		// core().getPluginCache().scanPluginFiles();
 		core().preload();
 
-		TUTTLE_TLOG( TUTTLE_INFO, core().getImageEffectPluginCache() );
+		TUTTLE_LOG_INFO( core().getImageEffectPluginCache() );
 
 		TUTTLE_LOG_INFO( "[buffer example] Preload done" );
 

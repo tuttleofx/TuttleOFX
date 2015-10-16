@@ -54,7 +54,7 @@ import_array();
 		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		Inputbuffer_python_customData& customData = *(Inputbuffer_python_customData*)object;
 		
-//		TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer_python_callback: " << (void*)object << ", time: " << time << ", width: " << width << ", height: " << height << ", customData._funcObject: " << (void*)customData._funcObject );
+//		TUTTLE_LOG_TRACE( "inputbuffer_python_callback: " << (void*)object << ", time: " << time << ", width: " << width << ", height: " << height << ", customData._funcObject: " << (void*)customData._funcObject );
 		PyObject* ret = PyObject_CallFunction( customData._funcObject, (char *)"d", time );
 		if( (void *)ret == NULL )
 		{
@@ -81,13 +81,13 @@ import_array();
 #else
 		*rawdata = PyBytes_AsString( PyTuple_GetItem(ret, 0) );
 #endif
-//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *rawdata );
+//		TUTTLE_LOG_VAR( TUTTLE_TRACE, *rawdata );
 		*width = static_cast<int>( PyInt_AsLong( PyTuple_GetItem(ret, 1) ) );
-//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *width );
+//		TUTTLE_LOG_VAR( TUTTLE_TRACE, *width );
 		*height = static_cast<int>( PyInt_AsLong( PyTuple_GetItem(ret, 2) ) );
-//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *height );
+//		TUTTLE_LOG_VAR( TUTTLE_TRACE, *height );
 		*rowSizeBytes = static_cast<int>( PyInt_AsLong( PyTuple_GetItem(ret, 3) ) );
-//		TUTTLE_TLOG_VAR( TUTTLE_TRACE, *rowSizeBytes );
+//		TUTTLE_LOG_VAR( TUTTLE_TRACE, *rowSizeBytes );
 		
 		customData.setImgObject( ret );
 		SWIG_PYTHON_THREAD_END_BLOCK;
@@ -95,7 +95,7 @@ import_array();
 	
 	void inputbuffer_destroy_callback( void* object )
 	{
-//		TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer_destroy_callback, Py_DECREF: " << (void*)object );
+//		TUTTLE_LOG_TRACE( "inputbuffer_destroy_callback, Py_DECREF: " << (void*)object );
 		delete (Inputbuffer_python_customData*)object;
 	}
 	
@@ -114,7 +114,7 @@ import_array();
 		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		if( PyCallable_Check( (PyObject *)object ) )
 		{
-			//TUTTLE_TLOG( TUTTLE_TRACE, "inputbuffer, Py_INCREF: " << (void*)object );
+			//TUTTLE_LOG_TRACE( "inputbuffer, Py_INCREF: " << (void*)object );
 			Py_INCREF( (PyObject *)object );
 			Inputbuffer_python_customData* customData = new Inputbuffer_python_customData();
 			customData->_funcObject = (PyObject *)object;

@@ -62,7 +62,7 @@ OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
 {
 //	*nCPUs = 1; /// @todo tuttle: needs to have an option to disable multithreading (force only one cpu).
 	*nCPUs = boost::thread::hardware_concurrency();
-	TUTTLE_TLOG( TUTTLE_INFO, "[Multi thread] CPUs used: " << *nCPUs );
+	TUTTLE_LOG_INFO( "[Multi thread] CPUs used: " << *nCPUs );
 	return kOfxStatOK;
 }
 

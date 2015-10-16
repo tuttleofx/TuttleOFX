@@ -89,7 +89,7 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 	if( node.getName() == newUniqueName )
 		return;
 	
-	TUTTLE_TLOG( TUTTLE_INFO, "Graph::renameNode: from: " << node.getName() << " -> to: " << newUniqueName );
+	TUTTLE_LOG_INFO( "Graph::renameNode: from: " << node.getName() << " -> to: " << newUniqueName );
 	{
 		// check if newUniqueName is not already in the graph
 		NodeMap::iterator itNew = _nodesMap.find( newUniqueName );
@@ -122,14 +122,14 @@ void Graph::renameNode( Graph::Node& node, const std::string& newUniqueName )
 
 void Graph::addToInternalGraph( Node& node )
 {
-	//TUTTLE_TLOG( TUTTLE_INFO, "Graph::addToInternalGraph: " << node.getName() );
+	//TUTTLE_LOG_INFO( "Graph::addToInternalGraph: " << node.getName() );
 	Vertex v( node.getName(), node );
 	_graph.addVertex( v );
 }
 
 void Graph::removeFromInternalGraph( Node& node )
 {
-	//TUTTLE_TLOG( TUTTLE_INFO, "Graph::removeFromInternalGraph: " << node.getName() );
+	//TUTTLE_LOG_INFO( "Graph::removeFromInternalGraph: " << node.getName() );
 	const unsigned int id = _graph.getVertexDescriptor( node.getName() );
 	_graph.removeVertex( id );
 }
@@ -255,8 +255,8 @@ inline void graphConnectClips( TGraph& graph )
 		typename TGraph::Vertex& vertexSource = graph.sourceInstance( ed );
 		typename TGraph::Vertex& vertexDest   = graph.targetInstance( ed );
 
-		//TUTTLE_TLOG( TUTTLE_INFO, "[connectClips] " << edge );
-		//TUTTLE_TLOG( TUTTLE_INFO, vertexSource << "->" << vertexDest );
+		//TUTTLE_LOG_INFO( "[connectClips] " << edge );
+		//TUTTLE_LOG_INFO( vertexSource << "->" << vertexDest );
 		
 		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
 		{

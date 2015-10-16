@@ -43,13 +43,13 @@ BOOST_AUTO_TEST_CASE( process_writer )
 
 	memory::CACHE_ELEMENT imgRes = outputCache.get( writer.getName(), 0 );
 
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, imgRes->getROD() );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, imgRes->getROD() );
 	BOOST_CHECK_EQUAL( imgRes->getROD().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getROD().y1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getROD().x2, 500 );
 	BOOST_CHECK_EQUAL( imgRes->getROD().y2, 500 );
 
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, imgRes->getBounds() );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, imgRes->getBounds() );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().y1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().x2, 500 );

@@ -41,7 +41,7 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 
 	// Copy buffer
 	const OfxRectI bounds = dst->getBounds();
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, bounds );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, bounds );
 
 	size_t width = dst->getBoundsSize().x;
 	size_t height = dst->getBoundsSize().y;
@@ -79,9 +79,9 @@ void ViewerPlugin::render( const OFX::RenderArguments &args )
 
 	if( src->isLinearBuffer() && dst->isLinearBuffer() )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "isLinearBuffer" );
+		TUTTLE_LOG_INFO( "isLinearBuffer" );
 		const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, imageDataBytes );
+		TUTTLE_LOG_VAR( TUTTLE_INFO, imageDataBytes );
 		if( imageDataBytes )
 		{
 			void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );

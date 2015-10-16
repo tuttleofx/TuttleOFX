@@ -258,9 +258,9 @@ void WarpPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::
         //Si le mode est MultiCurve
         else if( paramName == kParamNextCurve )
         {
-                TUTTLE_LOG_DEBUG(TUTTLE_INFO, _paramNbPoints->getValue());
+                TUTTLE_LOG_DEBUG( _paramNbPoints->getValue() );
                 _paramCurveBegin[(_paramNbPoints->getValue())]->setValue(true);
-                TUTTLE_LOG_DEBUG(TUTTLE_INFO, _paramCurveBegin[(_paramNbPoints->getValue())]->getValue());
+                TUTTLE_LOG_DEBUG( _paramCurveBegin[(_paramNbPoints->getValue())]->getValue() );
         }
 	else if( paramName == kParamSetKey )
 	{

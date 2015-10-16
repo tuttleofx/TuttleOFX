@@ -181,7 +181,7 @@ namespace tuttle
       CropPlugin::changedClip(const OFX::InstanceChangedArgs& args,
           const std::string& clipName)
       {
-//        TUTTLE_TLOG( TUTTLE_INFO, "changedClip:" << clipName );
+//        TUTTLE_LOG_INFO( "changedClip:" << clipName );
         if (clipName == kOfxImageEffectSimpleSourceClipName)
           {
             changedParam(_changedArgs, kParamRatio);
@@ -192,7 +192,7 @@ namespace tuttle
       CropPlugin::changedParam(const OFX::InstanceChangedArgs& args,
           const std::string& paramName)
       {
-//        TUTTLE_TLOG( TUTTLE_INFO, "changedParam:" << paramName );
+//        TUTTLE_LOG_INFO( "changedParam:" << paramName );
 //	if( paramName == kParamMode )
 //	{
 //		EParamMode mode = static_cast<EParamMode>( _paramMode->getValue() );

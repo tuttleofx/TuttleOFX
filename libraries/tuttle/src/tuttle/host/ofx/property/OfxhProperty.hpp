@@ -125,22 +125,22 @@ public:
 	{
 		if( _name != other._name )
 		{
-			//TUTTLE_TLOG( TUTTLE_INFO, "OfxhProperty::operator== not same name : " << _name << " != " << other._name );
+			//TUTTLE_LOG_INFO( "OfxhProperty::operator== not same name : " << _name << " != " << other._name );
 			return false;
 		}
 		if( _type != other._type )
 		{
-			//TUTTLE_TLOG( TUTTLE_INFO, "OfxhProperty::operator== not same type : " << _type << " != " << other._type );
+			//TUTTLE_LOG_INFO( "OfxhProperty::operator== not same type : " << _type << " != " << other._type );
 			return false;
 		}
 		if( _dimension != other._dimension )
 		{
-			//TUTTLE_TLOG( TUTTLE_INFO, "OfxhProperty::operator== not same size : " << _dimension << " != " << other._dimension );
+			//TUTTLE_LOG_INFO( "OfxhProperty::operator== not same size : " << _dimension << " != " << other._dimension );
 			return false;
 		}
 		if( _pluginReadOnly != other._pluginReadOnly )
 		{
-			//TUTTLE_TLOG( TUTTLE_INFO, "OfxhProperty::operator== not sale read only : " << _pluginReadOnly << " != " << other._pluginReadOnly );
+			//TUTTLE_LOG_INFO( "OfxhProperty::operator== not sale read only : " << _pluginReadOnly << " != " << other._pluginReadOnly );
 			return false;
 		}
 		return true;

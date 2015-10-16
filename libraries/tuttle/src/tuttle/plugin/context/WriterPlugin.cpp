@@ -91,7 +91,7 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
 					// This is not in the OpenFX standard. So this option only exist on TuttleOFX host.
 					identityClip = NULL;
 					identityTime = 0;
-					TUTTLE_TLOG_TRACE("[Plugin Writer] Identity node: " << this->getName() << " at time: " << args.time  << ", file already exist:" << filepath);
+					TUTTLE_LOG_TRACE("[Plugin Writer] Identity node: " << this->getName() << " at time: " << args.time  << ", file already exist:" << filepath);
 					return true;
 				}
 				break;
@@ -141,12 +141,12 @@ void WriterPlugin::render( const OFX::RenderArguments& args )
 
 		// Copy buffer
 		const OfxRectI bounds = dst->getBounds();
-		TUTTLE_TLOG_VAR( TUTTLE_TRACE, bounds );
+		TUTTLE_LOG_VAR( TUTTLE_TRACE, bounds );
 		if( src->isLinearBuffer() && dst->isLinearBuffer() )
 		{
-			TUTTLE_TLOG( TUTTLE_TRACE, "isLinearBuffer" );
+			TUTTLE_LOG_TRACE( "isLinearBuffer" );
 			const std::size_t imageDataBytes = dst->getBoundsImageDataBytes();
-			TUTTLE_TLOG_VAR( TUTTLE_TRACE, imageDataBytes );
+			TUTTLE_LOG_VAR( TUTTLE_TRACE, imageDataBytes );
 			if( imageDataBytes )
 			{
 				void* dataSrcPtr = src->getPixelAddress( bounds.x1, bounds.y1 );

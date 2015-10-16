@@ -59,7 +59,7 @@ template<class View>
 void NLMDenoiserProcess<View>::addFrame( const OfxRectI & dBounds, const int dstBitDepth, const int dstComponents, const double time, const int z )
 {
 	// Fetch main input image
-	TUTTLE_TLOG( TUTTLE_INFO, "NLMDenoiserProcess<View>::addFrame time:" << time );
+	TUTTLE_LOG_INFO( "NLMDenoiserProcess<View>::addFrame time:" << time );
 	OFX::Image *img = _plugin._clipSrc->fetchImage( time );
 	if( !img )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
@@ -120,13 +120,13 @@ void NLMDenoiserProcess<View>::setup( const OFX::RenderArguments &args )
 
 	for( OfxTime t = args.time - 1; t >= realRange.min; --t )
 	{
-		TUTTLE_TLOG_VAR2( TUTTLE_INFO, args.time, t );
+		TUTTLE_LOG_VAR2( TUTTLE_INFO, args.time, t );
 		addFrame( dBounds, dstBitDepth, dstComponents, t, i++ );
 	}
 
 	for( OfxTime t = args.time + 1; t <= realRange.max; ++t )
 	{
-		TUTTLE_TLOG_VAR2( TUTTLE_INFO, args.time, t );
+		TUTTLE_LOG_VAR2( TUTTLE_INFO, args.time, t );
 		addFrame( dBounds, dstBitDepth, dstComponents, t, i++ );
 	}
 }

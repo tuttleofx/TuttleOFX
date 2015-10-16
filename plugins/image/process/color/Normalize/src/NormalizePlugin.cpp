@@ -104,7 +104,7 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 		{
 			case OFX::ePixelComponentRGBA:
 			{
-				TUTTLE_TLOG( TUTTLE_TRACE, "RGBA" );
+				TUTTLE_LOG_TRACE( "RGBA" );
 				rgba32f_pixel_t min, max;
 				switch( _clipSrc->getPixelDepth() )
 				{
@@ -146,20 +146,20 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 				}
 				setRGBAParamValues( _srcMinColor, min );
 				setRGBAParamValues( _srcMaxColor, max );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( min, red_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( min, green_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( min, blue_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( min, alpha_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( min, red_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( min, green_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( min, blue_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( min, alpha_t() ) );
 				
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( max, red_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( max, green_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( max, blue_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( max, alpha_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( max, red_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( max, green_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( max, blue_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( max, alpha_t() ) );
 				break;
 			}
 			case OFX::ePixelComponentRGB:
 			{
-				TUTTLE_TLOG( TUTTLE_TRACE, "RGB" );
+				TUTTLE_LOG_TRACE( "RGB" );
 				rgb32f_pixel_t min, max;
 				switch( _clipSrc->getPixelDepth() )
 				{
@@ -202,19 +202,19 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 				setRGBParamValues( _srcMinColor, min );
 				setRGBParamValues( _srcMaxColor, max );
 				
-				TUTTLE_TLOG( TUTTLE_INFO, "results" );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( min, red_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( min, green_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( min, blue_t() ) );
+				TUTTLE_LOG_INFO( "results" );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( min, red_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( min, green_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( min, blue_t() ) );
 				
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( max, red_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( max, green_t() ) );
-				TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( max, blue_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( max, red_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( max, green_t() ) );
+				TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( max, blue_t() ) );
 				break;
 			}
 			case OFX::ePixelComponentAlpha:
 			{
-				TUTTLE_TLOG( TUTTLE_TRACE, "alpha" );
+				TUTTLE_LOG_TRACE( "alpha" );
 				break;
 			}
 			case OFX::ePixelComponentCustom:

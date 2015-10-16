@@ -154,7 +154,7 @@ void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEff
 void OfxhImageEffectPlugin::addContext( const std::string& context )
 {
 	_knownContexts.insert( context );
-	//TUTTLE_TLOG( TUTTLE_TRACE, "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
+	//TUTTLE_LOG_TRACE( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
 }
 
 const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
@@ -165,10 +165,10 @@ const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 {
 	/*
-	TUTTLE_LOG( TUTTLE_TRACE, context << " supportsContext? " << _knownContexts.size() );
+	TUTTLE_LOG_TRACE( context << " supportsContext? " << _knownContexts.size() );
 	BOOST_FOREACH( const std::string& c, _knownContexts )
 	{
-		TUTTLE_LOG( TUTTLE_TRACE, "context " << c );
+		TUTTLE_LOG_TRACE( "context " << c );
 	}
 	*/
 	return _knownContexts.find( context ) != _knownContexts.end();
@@ -191,7 +191,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	boost::mutex::scoped_lock locker( _mutex );
 	if( _pluginLoadGuard )
 	{
-		//TUTTLE_TLOG( TUTTLE_TRACE, "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
+		//TUTTLE_LOG_TRACE( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
 		return;
 	}
 	_pluginLoadGuard.reset( new tuttle::host::ofx::OfxhPluginLoadGuard( *this, getApiHandler().getHost() ) );
@@ -235,10 +235,10 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 {
 	ContextMap::iterator it = _contexts.find( context );
 
-	//TUTTLE_TLOG( TUTTLE_TRACE, "context : " << context );
+	//TUTTLE_LOG_TRACE( "context : " << context );
 	if( it != _contexts.end() )
 	{
-		//TUTTLE_TLOG( TUTTLE_TRACE, "found context description : " << it->second->getLabel() );
+		//TUTTLE_LOG_TRACE( "found context description : " << it->second->getLabel() );
 		return *( it->second );
 	}
 

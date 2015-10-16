@@ -20,7 +20,7 @@ void SeExprProcess<View>::setup( const OFX::RenderArguments& args )
 
 	_time = args.time;
 	
-	TUTTLE_TLOG( TUTTLE_INFO, _params._code );
+	TUTTLE_LOG_INFO( _params._code );
 
 	ImageSynthExpr expr( _params._code );
 	expr.vars["u"] = ImageSynthExpr::Var( _params._paramTextureOffset.x );
@@ -32,8 +32,8 @@ void SeExprProcess<View>::setup( const OFX::RenderArguments& args )
 	bool valid = expr.isValid();
 	if( !valid )
 	{
-		TUTTLE_LOG( TUTTLE_ERROR, "Invalid expression" );
-		TUTTLE_LOG( TUTTLE_ERROR, expr.parseError() );
+		TUTTLE_LOG_ERROR( "Invalid expression" );
+		TUTTLE_LOG_ERROR( expr.parseError() );
 	}
 }
 

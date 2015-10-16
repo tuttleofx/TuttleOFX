@@ -673,7 +673,7 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderWindow.x1, 4 );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
-	//TUTTLE_TLOG( TUTTLE_INFO, "OfxhImageEffect::renderAction inArgs=" << inArgs );
+	//TUTTLE_LOG_INFO( "OfxhImageEffect::renderAction inArgs=" << inArgs );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionRender, this->getHandle(), &inArgs, 0 );
 
@@ -739,8 +739,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 {
 	ClipTimesSetMap timesSetMap = getFramesNeeded( time ); /// @todo: do not recompute this here
 	
-//	TUTTLE_TLOG( TUTTLE_INFO, "calcDefaultRegionOfDefinition" );
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, _context );
+//	TUTTLE_LOG_INFO( "calcDefaultRegionOfDefinition" );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, _context );
 	OfxRectD rod = { 0, 0, 0, 0 };
 	try
 	{

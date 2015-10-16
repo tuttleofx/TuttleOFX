@@ -165,21 +165,21 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	write4.getParam( "filename" ).setValue( ".tests/processGraph/output4.png" );
 
 	TUTTLE_LOG_INFO( "-------- GRAPH CONNECTION --------" );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	g.connect( read1, invert1 );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	//		g.connect( invert1, bitdepth );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	g.connect( invert1, invert2 );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	g.connect( invert2, invert3 );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	g.connect( invert3, write1 );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	g.connect( invert1, invert4 );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	g.connect( invert4, write2 );
-	TUTTLE_TLOG( TUTTLE_TRACE, "connect" );
+	TUTTLE_LOG_TRACE( "connect" );
 	g.connect( invert1, write3 );
 
 	TUTTLE_LOG_INFO( "-------- GRAPH CONNECT CLIPS --------" );

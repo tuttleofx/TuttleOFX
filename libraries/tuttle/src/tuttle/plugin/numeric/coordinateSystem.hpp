@@ -71,9 +71,9 @@ Point pointNormalizedXYToCanonicalXY( const Point& point, const Point& imgSize )
 //	template<typename Point>
 //    Point pointCanonicalXYToNormalizedXX( const Point& point, const Point& imgSize )
 //	{
-//		TUTTLE_TLOG( TUTTLE_TRACE, "canonicalXY : " << point.x << ", " << point.y );
+//		TUTTLE_LOG_TRACE( "canonicalXY : " << point.x << ", " << point.y );
 //		Point p( point.x / imgSize.x, ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x) );
-//		TUTTLE_TLOG( TUTTLE_TRACE, "normalizedXX : " << p.x << ", " << p.y );
+//		TUTTLE_LOG_TRACE( "normalizedXX : " << p.x << ", " << p.y );
 //		return p;
 //	}
 

@@ -148,7 +148,7 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		VertexAtTime& v = _renderGraphAtTime.instance( vd );
 		ProcessVertexAtTimeData& vData = v.getProcessDataAtTime();
 		
-		TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] node: " << v.getName() );
+		TUTTLE_LOG_INFO( "[bake graph information to nodes] node: " << v.getName() );
 
 		vData._outDegree = _renderGraphAtTime.getInDegree( vd );
 		vData._inDegree = _renderGraphAtTime.getOutDegree( vd );
@@ -159,19 +159,19 @@ void ProcessGraph::bakeGraphInformationToNodes( InternalGraphAtTimeImpl& _render
 		{
 			const ProcessEdgeAtTime* e = &_renderGraphAtTime.instance(ed);
 
-			TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] in edge " << e->getInAttrName() << ", at time " << e->getInTime() );
+			TUTTLE_LOG_INFO( "[bake graph information to nodes] in edge " << e->getInAttrName() << ", at time " << e->getInTime() );
 			vData._outEdges.push_back( e );
 		}
 		vData._inEdges.clear();
 		BOOST_FOREACH( const InternalGraphAtTimeImpl::edge_descriptor ed, _renderGraphAtTime.getOutEdges( vd ) )
 		{
 			const ProcessEdgeAtTime* e = &_renderGraphAtTime.instance(ed);
-			TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] out edge " << e->getInAttrName() << ", at time " << e->getInTime() );
+			TUTTLE_LOG_INFO( "[bake graph information to nodes] out edge " << e->getInAttrName() << ", at time " << e->getInTime() );
 			std::pair<std::string, OfxTime> key( e->getInAttrName(), e->getInTime() );
 			vData._inEdges[key] = e;
 		}
 	}
-	TUTTLE_TLOG( TUTTLE_INFO, "[bake graph information to nodes] connect clips" );
+	TUTTLE_LOG_INFO( "[bake graph information to nodes] connect clips" );
 	connectClips<InternalGraphAtTimeImpl>( _renderGraphAtTime );
 
 }
@@ -183,7 +183,7 @@ void ProcessGraph::beginSequence( const TimeRange& timeRange )
 	_procOptions._renderTimeRange.max = timeRange._end;
 	_procOptions._step                = timeRange._step;
 
-	TUTTLE_TLOG( TUTTLE_INFO, "[begin sequence] start" );
+	TUTTLE_LOG_INFO( "[begin sequence] start" );
 	//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
 		it != itEnd;
@@ -197,7 +197,7 @@ void ProcessGraph::beginSequence( const TimeRange& timeRange )
 void ProcessGraph::endSequence()
 {
 	_options.endSequenceHandle();
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process render] process end sequence" );
+	TUTTLE_LOG_INFO( "[Process render] process end sequence" );
 	//--- END sequence render
 	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
@@ -217,7 +217,7 @@ void ProcessGraph::updateGraph( Graph& userGraph, const std::list<std::string>& 
 		BOOST_FOREACH( const std::string & s, outputNodes )
 		{
 			_renderGraph.connect( _outputId, s, "Output" );
-			TUTTLE_LOG_DEBUG( TUTTLE_INFO, "MY OUTPUT: " << s );
+			TUTTLE_LOG_DEBUG( "MY OUTPUT: " << s );
 		}
 	}
 	else
@@ -239,7 +239,7 @@ void ProcessGraph::setup()
 {
 	using namespace boost;
 	using namespace boost::graph;
-	TUTTLE_TLOG( TUTTLE_INFO, "[Process render] setup" );
+	TUTTLE_LOG_INFO( "[Process render] setup" );
 	
 	// Initialize variables
 //	OfxRectD renderWindow = { 0, 0, 0, 0 };
@@ -277,13 +277,13 @@ void ProcessGraph::setup()
 	connectClips<InternalGraphImpl>( _renderGraph );
 	
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] Time domain propagation" );
+		TUTTLE_LOG_INFO( "[Process render] Time domain propagation" );
 		graph::visitor::TimeDomain<InternalGraphImpl> timeDomainPropagationVisitor( _renderGraph );
 		_renderGraph.depthFirstVisit( timeDomainPropagationVisitor, _renderGraph.getVertexDescriptor( _outputId ) );
 	}
 
 	{	
-		TUTTLE_TLOG( TUTTLE_INFO, "[Process render] setup visitors" );
+		TUTTLE_LOG_INFO( "[Process render] setup visitors" );
 		graph::visitor::Setup1<InternalGraphImpl> setup1Visitor( _renderGraph );
 		_renderGraph.depthFirstVisit( setup1Visitor, _renderGraph.getVertexDescriptor( _outputId ) );
 		graph::visitor::Setup2<InternalGraphImpl> setup2Visitor( _renderGraph );
@@ -297,34 +297,34 @@ std::list<TimeRange> ProcessGraph::computeTimeRange()
 {
 	std::list<TimeRange> timeRanges = _options.getTimeRanges();
 
-	TUTTLE_TLOG_INFOS;
+	TUTTLE_LOG_INFOS;
 	if( timeRanges.empty() )
 	{
 		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( _renderGraph.getVertexDescriptor(_outputId), _renderGraph.getGraph() ) )
 		{
-			//TUTTLE_TLOG_INFOS;
+			//TUTTLE_LOG_INFOS;
 			ProcessVertex& v = _renderGraph.targetInstance( ed );
 			// compute the time domain for each output node
-			//TUTTLE_TLOG_INFOS;
+			//TUTTLE_LOG_INFOS;
 			OfxRangeD timeDomain = v.getProcessData()._timeDomain;
-			TUTTLE_TLOG_VAR2( TUTTLE_TRACE, timeDomain.min, timeDomain.max );
+			TUTTLE_LOG_VAR2( TUTTLE_TRACE, timeDomain.min, timeDomain.max );
 			
 			if( _options.getBegin() != std::numeric_limits<int>::min() && timeDomain.min < _options.getBegin() )
 				timeDomain.min = _options.getBegin();
 			if( _options.getEnd() != std::numeric_limits<int>::max() && timeDomain.max > _options.getEnd() )
 				timeDomain.max = _options.getEnd();
 			
-			TUTTLE_TLOG_VAR2( TUTTLE_TRACE, timeDomain.min, timeDomain.max );
+			TUTTLE_LOG_VAR2( TUTTLE_TRACE, timeDomain.min, timeDomain.max );
 			// special case for infinite time domain (eg. a still image)
 			if( timeDomain.min <= kOfxFlagInfiniteMin )
 				timeDomain.min = 0;
 			if( timeDomain.max >= kOfxFlagInfiniteMax )
 				timeDomain.max = 0;
 
-			//TUTTLE_TLOG_INFOS;
+			//TUTTLE_LOG_INFOS;
 			timeRanges.push_back( TimeRange( timeDomain ) );
-			TUTTLE_TLOG_INFOS;
-			TUTTLE_TLOG( TUTTLE_INFO, "Compute " << quotes(v.getName()) << " full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
+			TUTTLE_LOG_INFOS;
+			TUTTLE_LOG_INFO( "Compute " << quotes(v.getName()) << " full time domain: from " << timeDomain.min << " to " << timeDomain.max << "." );
 		}
 	}
 	return timeRanges;
@@ -354,7 +354,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 			Vertex& v = _renderGraph.instance( vd );
 			BOOST_FOREACH( const OfxTime t, v._data._times )
 			{
-				TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] add connection from node: " << v << " for time: " << t );
+				TUTTLE_LOG_INFO( "[Setup at time " << time << "] add connection from node: " << v << " for time: " << t );
 				_renderGraphAtTime.addVertex( ProcessVertexAtTime(v, t) );
 			}
 		}
@@ -363,22 +363,22 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 			const Edge& e = _renderGraph.instance( ed );
 			const Vertex& in = _renderGraph.sourceInstance( ed );
 			const Vertex& out = _renderGraph.targetInstance( ed );
-			TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] set connection " << e );
+			TUTTLE_LOG_INFO( "[Setup at time " << time << "] set connection " << e );
 			BOOST_FOREACH( const Edge::TimeMap::value_type& tm, e._timesNeeded )
 			{
 				const VertexAtTime procIn( in, tm.first );
 				BOOST_FOREACH( const OfxTime t2, tm.second )
 				{
-					//TUTTLE_TLOG_VAR( TUTTLE_TRACE, tm.first );
-					//TUTTLE_TLOG_VAR( TUTTLE_TRACE, t2 );
+					//TUTTLE_LOG_VAR( TUTTLE_TRACE, tm.first );
+					//TUTTLE_LOG_VAR( TUTTLE_TRACE, t2 );
 					const VertexAtTime procOut( out, t2 );
 
 					const VertexAtTime::Key inKey( procIn.getKey() );
 					const VertexAtTime::Key outKey( procOut.getKey() );
 
-					//TUTTLE_TLOG_VAR( TUTTLE_TRACE, inKey );
-					//TUTTLE_TLOG_VAR( TUTTLE_TRACE, outKey );
-					//TUTTLE_TLOG_VAR( TUTTLE_TRACE, e.getInAttrName() );
+					//TUTTLE_LOG_VAR( TUTTLE_TRACE, inKey );
+					//TUTTLE_LOG_VAR( TUTTLE_TRACE, outKey );
+					//TUTTLE_LOG_VAR( TUTTLE_TRACE, e.getInAttrName() );
 
 					const EdgeAtTime eAtTime( outKey, inKey, e.getInAttrName() );
 
@@ -400,14 +400,14 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		v.getProcessDataAtTime()._isFinalNode = true; /// @todo: this is maybe better to move this into the ProcessData? Doesn't depend on time?
 	}
 
-	TUTTLE_TLOG( TUTTLE_INFO, "[Setup at time " << time << "] set data at time" );
+	TUTTLE_LOG_INFO( "[Setup at time " << time << "] set data at time" );
 	// give a link to the node on its attached process data
 	BOOST_FOREACH( const InternalGraphAtTimeImpl::vertex_descriptor vd, _renderGraphAtTime.getVertices() )
 	{
 		VertexAtTime& v = _renderGraphAtTime.instance(vd);
 		if( ! v.isFake() )
 		{
-			//TUTTLE_TLOG( TUTTLE_INFO, "setProcessDataAtTime: " << v._name << " id: " << v._id << " at time: " << v._data._time );
+			//TUTTLE_LOG_INFO( "setProcessDataAtTime: " << v._name << " id: " << v._id << " at time: " << v._data._time );
 			v.getProcessNode().setProcessDataAtTime( &v._data );
 		}
 	}
@@ -458,7 +458,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 #endif
 
 	/*
-	TUTTLE_TLOG( TUTTLE_INFO, "---------------------------------------- optimize graph" );
+	TUTTLE_LOG_INFO( "---------------------------------------- optimize graph" );
 	graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( _renderGraphAtTime );
 	_renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 	*/
@@ -469,7 +469,7 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 	InternalGraphImpl tmpGraph;
 	output = _renderGraph.getVertexDescriptor( _outputId );
 	/// @todo tuttle: out_edges sort don't work...
-	TUTTLE_TLOG( TUTTLE_INFO, "---------------------------------------- sorting graph" );
+	TUTTLE_LOG_INFO( "---------------------------------------- sorting graph" );
 	BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, _renderGraph.getVertices() )
 	{
 		std::vector<InternalGraphImpl::Edge> edges( boost::out_degree(vd, _renderGraph.getGraph()) );
@@ -482,28 +482,28 @@ void ProcessGraph::setupAtTime( const OfxTime time )
 		Vertex& v = _renderGraph.instance(vd);
 
 		std::size_t i = 0;
-		TUTTLE_TLOG( TUTTLE_INFO, "before sort edges of " << v.getName() );
+		TUTTLE_LOG_INFO( "before sort edges of " << v.getName() );
 		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, _renderGraph.getGraph() ) )
 		{
 			Edge& e = _renderGraph.instance(ed);
 			e._localId = i++;
 			e._name += " -- ";
 			e._name += boost::lexical_cast<std::string>(e._localId); // tmp
-			TUTTLE_TLOG( TUTTLE_INFO, e.getName() << " - " <<  _renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory  );
+			TUTTLE_LOG_INFO( e.getName() << " - " <<  _renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory  );
 		}
 		std::sort( edges.begin(), edges.end(), SortEdgeByMemorySize<InternalGraphImpl>(_renderGraph) );
-		TUTTLE_TLOG( TUTTLE_INFO, "after sort edges of " << v.getName() );
+		TUTTLE_LOG_INFO( "after sort edges of " << v.getName() );
 		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, _renderGraph.getGraph() ) )
 		{
 			Edge& e = _renderGraph.instance(ed);
-			TUTTLE_TLOG( TUTTLE_INFO, e.getName() << " - " <<  _renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory );
+			TUTTLE_LOG_INFO( e.getName() << " - " <<  _renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory );
 		}
 		InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
 		boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, _renderGraph.getGraph() );
 		for( ; oe_it != oe_itEnd; ++oe_it )
 		{
 			Edge& e = _renderGraph.instance(*oe_it);
-			TUTTLE_TLOG( TUTTLE_INFO, e.getName() << " - " <<  _renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
+			TUTTLE_LOG_INFO( e.getName() << " - " <<  _renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
 		}
 	}
 #if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
@@ -519,11 +519,11 @@ void ProcessGraph::computeHashAtTime( NodeHashContainer& outNodesHash, const Ofx
 	boost::timer::cpu_timer timer;
 #endif
 	setupAtTime( time );
-	TUTTLE_TLOG( TUTTLE_INFO, "[Compute hash at time] begin" );
+	TUTTLE_LOG_INFO( "[Compute hash at time] begin" );
 	graph::visitor::ComputeHashAtTime<InternalGraphAtTimeImpl> computeHashAtTimeVisitor( _renderGraphAtTime, outNodesHash, time );
 	InternalGraphAtTimeImpl::vertex_descriptor outputAtTime = getOutputVertexAtTime( time );
 	_renderGraphAtTime.depthFirstVisit( computeHashAtTimeVisitor, outputAtTime );
-	TUTTLE_TLOG( TUTTLE_INFO, "[Compute hash at time] end" );
+	TUTTLE_LOG_INFO( "[Compute hash at time] end" );
 }
 
 void ProcessGraph::processAtTime( memory::IMemoryCache& outCache, const OfxTime time )

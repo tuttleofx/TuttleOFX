@@ -158,13 +158,13 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 		return;
 	}
 	
-	//TUTTLE_TLOG_INFOS;
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, "computeHistogramBufferData - fetchImage " << time );
+	//TUTTLE_LOG_INFOS;
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, "computeHistogramBufferData - fetchImage " << time );
 	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time, renderScale)) );	//scoped pointer of current source clip
-	//TUTTLE_TLOG_INFOS;
+	//TUTTLE_LOG_INFOS;
 	
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getPixelRod(time, renderScale) );
-	//TUTTLE_TLOG_VAR( TUTTLE_INFO, clipSrc->getCanonicalRod(time, renderScale) );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, clipSrc->getPixelRod(time, renderScale) );
+	//TUTTLE_LOG_VAR( TUTTLE_INFO, clipSrc->getCanonicalRod(time, renderScale) );
 	
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
@@ -174,8 +174,8 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 		return;
 	}
 	
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getBounds() );
-//	TUTTLE_TLOG_VAR( TUTTLE_INFO, src->getRegionOfDefinition() );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, src->getBounds() );
+//	TUTTLE_LOG_VAR( TUTTLE_INFO, src->getRegionOfDefinition() );
 
 	if( src->getRowDistanceBytes() == 0 )//if source is wrong
 	{
@@ -189,7 +189,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
         return;
 	}
 	
-//	TUTTLE_TLOG_INFOS;
+//	TUTTLE_LOG_INFOS;
 //	BOOST_ASSERT( srcPixelRod == src->getBounds() );
 	if( srcPixelRod != src->getBounds() )
 	{
@@ -210,28 +210,28 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 	imgSize.x = srcView.width();
 	imgSize.y = srcView.height();
 	
-//	TUTTLE_TLOG_INFOS;
+//	TUTTLE_LOG_INFOS;
 	if( isImageSizeModified( imgSize ) )
 	{
-		//TUTTLE_TLOG_INFOS;
+		//TUTTLE_LOG_INFOS;
 		clearAll( imgSize );
 	}
 	
-	//TUTTLE_TLOG_INFOS;
+	//TUTTLE_LOG_INFOS;
 	//Compute histogram buffer
 	this->computeHistogramBufferData( _data, srcView, time);
 	
-	//TUTTLE_TLOG_INFOS;
+	//TUTTLE_LOG_INFOS;
 	//Compute selection histogram buffer
 	this->computeHistogramBufferData( _selectionData, srcView, time, true );
 	
-	//TUTTLE_TLOG_INFOS;
+	//TUTTLE_LOG_INFOS;
 	//Compute averages
 	this->computeAverages();
 	_isComputing = false;
 	
 	_currentTime = time;
-	//TUTTLE_TLOG_INFOS;
+	//TUTTLE_LOG_INFOS;
 }
 
 /**

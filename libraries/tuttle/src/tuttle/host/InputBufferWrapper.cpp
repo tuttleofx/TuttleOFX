@@ -41,8 +41,8 @@ void InputBufferWrapper::set2DArrayBuffer( void* rawBuffer, const int width, con
 
 void InputBufferWrapper::set3DArrayBuffer( void* rawBuffer, const int width, const int height, const int nbComponents )
 {
-	TUTTLE_TLOG_INFOS;
-	TUTTLE_TLOG( TUTTLE_INFO, "[Inpput buffer wrapper] width = " << width << ", height = " << height << ", components = " << nbComponents );
+	TUTTLE_LOG_INFOS;
+	TUTTLE_LOG_INFO( "[Inpput buffer wrapper] width = " << width << ", height = " << height << ", components = " << nbComponents );
 	setBuffer( rawBuffer );
 	setSize( width, height );
 	switch( nbComponents )
