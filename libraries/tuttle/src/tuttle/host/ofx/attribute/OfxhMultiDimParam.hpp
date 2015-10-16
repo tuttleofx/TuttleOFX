@@ -50,19 +50,14 @@ public:
 		// splits value parameter to a collection of single strings
 		// use ',' as separator
 		std::vector<std::string> allExp;
-		std::string tmpValue;
-		for(int i=0; i < value.length(); i++)
+		size_t indexOfComma = 0;
+		size_t pos = 0;
+		while( (indexOfComma = value.find_first_of(",", pos)) != std::string::npos )
 		{
-			if (value[i] == ',')
-			{
-			    allExp.push_back(tmpValue);
-			    tmpValue.clear();
-			}
-			else
-			    tmpValue += value[i];
+			allExp.push_back(value.substr(pos, indexOfComma));
+			pos += indexOfComma + 1;
 		}
-		if(! tmpValue.empty() )
-		    allExp.push_back(tmpValue);
+		allExp.push_back(value.substr(pos));
 
 		if( allExp.size() == 1 )
 		{
