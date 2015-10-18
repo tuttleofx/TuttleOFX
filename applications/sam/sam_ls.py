@@ -49,7 +49,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (activated by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
-        # parser.add_argument('--script', dest='script', help='format the output such as it could be dump in a file and be used as a script')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
     def printItem(self, item, args, level):
         """
@@ -184,7 +184,9 @@ class Sam_ls(samUtils.Sam):
                     continue
 
                 try:
-                    newItems = sequenceParser.browse(os.path.join(item.getFolder(), item.getFilename()), detectionMethod, filters)
+                    newFolder = os.path.join(item.getFolder(), item.getFilename())
+                    self.logger.info('Launch a browse on "' + newFolder + '" with the following filters: ' + str(filters))
+                    newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
                     level += 1
                     self.printItems(newItems, args, detectionMethod, filters, level)
                     level -= 1
@@ -198,6 +200,9 @@ class Sam_ls(samUtils.Sam):
         """
         # Parse command-line
         args = parser.parse_args()
+
+        # Set sam log level
+        self.setLogLevel(args.verbose)
 
         # inputs to scan
         inputs = []
@@ -233,12 +238,14 @@ class Sam_ls(samUtils.Sam):
         for input in inputs:
             items = []
             try:
+                self.logger.info('Launch a browse on "' + input + '" with the following filters: ' + str(filters))
                 items = sequenceParser.browse(input, detectionMethod, filters)
             except IOError as e:
                 # if the given input does not correspond to anything
                 if 'No such file or directory' in str(e):
                     # try to create a sequence from the given input
                     sequence = sequenceParser.Sequence()
+                    self.logger.info('Launch a browseSequence on "' + input + '".')
                     isSequence = sequenceParser.browseSequence(sequence, input)
                     if isSequence:
                         item = sequenceParser.Item(sequence, os.getcwd())
@@ -260,6 +267,7 @@ class Sam_ls(samUtils.Sam):
                     newFilter.extend(filters)
                     newFilter.append(os.path.basename(input))
                     # new browse
+                    self.logger.info('Launch a browse on "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
                     items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
             if not len(items):
