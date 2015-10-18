@@ -63,7 +63,7 @@ Image::Image( ClipImage& clip, const OfxTime time, const OfxRectD& bounds, const
 
 Image::~Image()
 {
-	//TUTTLE_TLOG_VAR( TUTTLE_TRACE, getFullName() );
+	//TUTTLE_LOG_VAR( TUTTLE_TRACE, getFullName() );
 }
 
 boost::uint8_t* Image::getPixelData()
@@ -206,7 +206,7 @@ void Image::debugSaveAsPng( const std::string& filename )
 			}
 			break;
 		default:
-			TUTTLE_TLOG( TUTTLE_WARNING, "Cannot write png debug image for file '" + filename + "': unsupported component type." );
+			TUTTLE_LOG_WARNING( "Cannot write png debug image for file '" + filename + "': unsupported component type." );
 			break;
 	}
 }

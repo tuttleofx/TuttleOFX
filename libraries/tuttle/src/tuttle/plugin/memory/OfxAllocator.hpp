@@ -39,20 +39,20 @@ public:
 	inline pointer allocate( const size_type n, const void* = 0 )
 	{
 		++size_all;
-		//TUTTLE_TLOG( TUTTLE_TRACE, "Use OfxAllocator to allocate" );
+		//TUTTLE_LOG_TRACE( "Use OfxAllocator to allocate" );
 		T* t = static_cast<T*>( OFX::memory::allocate( n * sizeof( T ) /*, ImageEffect* handle = 0*/ ) );
 		//		T* t = (T*) malloc( n * sizeof(T) );
-		//TUTTLE_TLOG( TUTTLE_TRACE, "allocate done (address:" << t << ") (+" << n << ") " << size_all );
+		//TUTTLE_LOG_TRACE( "allocate done (address:" << t << ") (+" << n << ") " << size_all );
 		return t;
 	}
 
 	inline void deallocate( void* ptr, size_type )
 	{
 		--size_all;
-		//TUTTLE_TLOG( TUTTLE_TRACE, "Use OfxAllocator to deallocate (address:" << ptr << ") (-)" << size_all );
+		//TUTTLE_LOG_TRACE( "Use OfxAllocator to deallocate (address:" << ptr << ") (-)" << size_all );
 		OFX::memory::free( ptr );
 		//free( ptr );
-		//TUTTLE_TLOG( TUTTLE_TRACE, "deallocate done." );
+		//TUTTLE_LOG_TRACE( "deallocate done." );
 	}
 
 	inline void construct( pointer p, const T& val ) { new ( (T*) p )T( val ); }

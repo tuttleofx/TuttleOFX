@@ -115,7 +115,7 @@ public:
 
 	void setDirty()
 	{
-		//TUTTLE_TLOG( TUTTLE_INFO, "OfxhPluginCache::setDirty()" );
+		//TUTTLE_LOG_INFO( "OfxhPluginCache::setDirty()" );
 		_dirty = true;
 	}
 

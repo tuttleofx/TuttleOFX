@@ -88,7 +88,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( boost::exception& e )
 	{
 		e << exception::filename( _params._filepath );
-		TUTTLE_TLOG( TUTTLE_ERROR, boost::diagnostic_information( e ) );
+		TUTTLE_LOG_ERROR( boost::diagnostic_information( e ) );
 		throw;
 	}
 	catch( ... )

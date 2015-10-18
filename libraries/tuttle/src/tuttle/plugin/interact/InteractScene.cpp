@@ -57,7 +57,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	{
 		// create selection
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "create a selection" );
+		TUTTLE_LOG_TRACE( "create a selection" );
 		_selectionRect.x2 = args.penPosition.x;
 		_selectionRect.y2 = args.penPosition.y;
 		_hasSelection = false;

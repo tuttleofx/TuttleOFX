@@ -35,15 +35,15 @@ bool TimeShiftPlugin::getTimeDomain( OfxRangeD& range )
 	if( params._offset == 0 )
 		return false;
 	
-	TUTTLE_TLOG( TUTTLE_INFO, "[Time Shift] TimeDomain--" );
+	TUTTLE_LOG_INFO( "[Time Shift] TimeDomain--" );
 	
 	range = _clipSrc->getFrameRange();
-	TUTTLE_TLOG_VAR2( TUTTLE_INFO, range.min, range.max );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, params._offset );
+	TUTTLE_LOG_VAR2( TUTTLE_INFO, range.min, range.max );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, params._offset );
 	range.min += params._offset;
 	range.max += params._offset;
 	
-	TUTTLE_TLOG_VAR2( TUTTLE_INFO, range.min, range.max );
+	TUTTLE_LOG_VAR2( TUTTLE_INFO, range.min, range.max );
 	
 	return true;
 }
@@ -55,10 +55,10 @@ void TimeShiftPlugin::getFramesNeeded( const OFX::FramesNeededArguments &args, O
 	const OfxRangeD range = { inTime, inTime };
 	frames.setFramesNeeded( *_clipSrc, range );
 	
-	TUTTLE_TLOG( TUTTLE_INFO, "[Time Shift] FrameNeeded--" );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, args.time );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, params._offset );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, inTime );
+	TUTTLE_LOG_INFO( "[Time Shift] FrameNeeded--" );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, args.time );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, params._offset );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, inTime );
 }
 
 bool TimeShiftPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
@@ -67,10 +67,10 @@ bool TimeShiftPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& 
 
 	identityTime = args.time - _offset->getValue();
 	
-	TUTTLE_TLOG( TUTTLE_INFO, "[Time Shift] isIdentity--" );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, args.time );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, _offset->getValue() );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, identityTime );
+	TUTTLE_LOG_INFO( "[Time Shift] isIdentity--" );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, args.time );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, _offset->getValue() );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, identityTime );
 	
 	return true;
 }

@@ -85,7 +85,7 @@ MemoryInfo getMemoryInfo()
 	        infos._totalSwap    =
 	            infos._freeSwap = std::numeric_limits<std::size_t>::max();
 	#endif
-	TUTTLE_LOG_DEBUG( TUTTLE_INFO, "[Memory infos] " << infos );
+	TUTTLE_LOG_DEBUG( "[Memory infos] " << infos );
 
 	return infos;
 }

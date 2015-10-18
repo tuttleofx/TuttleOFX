@@ -38,7 +38,7 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		headerStr << "DPX HEADER:" << std::endl;
 		headerStr << dpxImg.getHeader();
 
-		TUTTLE_TLOG( TUTTLE_INFO, headerStr.str() );
+		TUTTLE_LOG_INFO( headerStr.str() );
 
 		sendMessage( OFX::Message::eMessageMessage,
 					 "", // No XML resources

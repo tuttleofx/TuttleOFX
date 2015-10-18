@@ -51,7 +51,7 @@ bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		rod.x2 = pngDims.x * this->_clipDst->getPixelAspectRatio();
 		rod.y1 = 0;
 		rod.y2 = pngDims.y;
-		TUTTLE_TLOG_VAR( TUTTLE_INFO, rod );
+		TUTTLE_LOG_VAR( TUTTLE_INFO, rod );
 	}
 	catch( std::exception& e )
 	{

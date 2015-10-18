@@ -177,7 +177,7 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 		return;
 	}
 	
-//	TUTTLE_TLOG_INFOS;
+//	TUTTLE_LOG_INFOS;
 //	BOOST_ASSERT( srcPixelRod == src->getBounds() );
 	if( srcPixelRod != src->getBounds() )
 	{

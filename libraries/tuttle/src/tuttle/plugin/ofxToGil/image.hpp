@@ -27,13 +27,13 @@ View getGilView( OFX::Image* img, const OfxRectI& pixelRod, const EImageOrientat
 {
 	using namespace boost::gil;
 	typedef typename View::value_type Pixel;
-	//TUTTLE_TLOG( TUTTLE_TRACE, "getGilView => " << img->getUniqueIdentifier() );
+	//TUTTLE_LOG_TRACE( "getGilView => " << img->getUniqueIdentifier() );
 
 	//	OfxRectI imgrod = img->getRegionOfDefinition(); // bug in nuke returns bounds... not the clip rod with renderscale...
 	const OfxRectI bounds = img->getBounds();
-//	TUTTLE_TLOG_VAR( TUTTLE_TRACE, bounds );
-//	TUTTLE_TLOG_VAR( TUTTLE_TRACE, imgrod );
-//	TUTTLE_TLOG_VAR( TUTTLE_TRACE, rod );
+//	TUTTLE_LOG_VAR( TUTTLE_TRACE, bounds );
+//	TUTTLE_LOG_VAR( TUTTLE_TRACE, imgrod );
+//	TUTTLE_LOG_VAR( TUTTLE_TRACE, rod );
 	const point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
 	                                    bounds.y2 - bounds.y1 );
 
@@ -54,8 +54,8 @@ View getGilView( OFX::Image* img, const OfxRectI& pixelRod, const EImageOrientat
 										static_cast<Pixel*>( img->getPixelData() ),
 										img->getRowDistanceBytes() );
 	
-	TUTTLE_TLOG( TUTTLE_INFO, "[OFX to Gil] Row distance from image " << img->getRowDistanceBytes() << " bytes" );
-	TUTTLE_TLOG( TUTTLE_INFO, "[OFX to Gil] Tile view, row size = " << tileView.pixels().row_size() );
+	TUTTLE_LOG_INFO( "[OFX to Gil] Row distance from image " << img->getRowDistanceBytes() << " bytes" );
+	TUTTLE_LOG_INFO( "[OFX to Gil] Tile view, row size = " << tileView.pixels().row_size() );
 	
 	View fullView;
 	const bool isTile = (
@@ -65,24 +65,24 @@ View getGilView( OFX::Image* img, const OfxRectI& pixelRod, const EImageOrientat
 	// directly return the tile
 	if( ! isTile )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "[OFX to Gil] Tile is equal to the full view" );
+		TUTTLE_LOG_INFO( "[OFX to Gil] Tile is equal to the full view" );
 		fullView = tileView;
 	}
 	else
 	{
 		// view the tile as a full image
-		////TUTTLE_TLOG( TUTTLE_TRACE, "Tile to full view" );
+		////TUTTLE_LOG_TRACE( "Tile to full view" );
 		fullView = subimage_view( tileView, pixelRod.x1 - bounds.x1, pixelRod.y1 - bounds.y1, pixelRod.x2 - pixelRod.x1, pixelRod.y2 - pixelRod.y1 );
 	}
 	
-	TUTTLE_TLOG( TUTTLE_INFO, "[OFX to Gil] Full view, row size = " << fullView.pixels().row_size() );
+	TUTTLE_LOG_INFO( "[OFX to Gil] Full view, row size = " << fullView.pixels().row_size() );
 	
 	View resView = fullView;
 	switch( orientation )
 	{
 		case eImageOrientationIndependant: // use memory order
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "[OFX to Gil] Image orientation independant"  );
+			TUTTLE_LOG_INFO( "[OFX to Gil] Image orientation independant"  );
 			if( isTile ) // can't manage ordering
 				break;
 
@@ -94,7 +94,7 @@ View getGilView( OFX::Image* img, const OfxRectI& pixelRod, const EImageOrientat
 		}
 		case eImageOrientationFromTopToBottom:
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "[OFX to Gil] Image orientation from top to bottom"  );
+			TUTTLE_LOG_INFO( "[OFX to Gil] Image orientation from top to bottom"  );
 			BOOST_ASSERT( ! isTile ); // can't manage ordering with tiles currently (no RoW information in OpenFX)
 
 			resView = flipped_up_down_view( fullView );
@@ -102,13 +102,13 @@ View getGilView( OFX::Image* img, const OfxRectI& pixelRod, const EImageOrientat
 		}
 		case eImageOrientationFromBottomToTop:
 		{
-			TUTTLE_TLOG( TUTTLE_INFO, "[OFX to Gil] Image orientation from bottom to top"  );
+			TUTTLE_LOG_INFO( "[OFX to Gil] Image orientation from bottom to top"  );
 			// by default in OpenFX we are in this order
 			break;
 		}
 	}
 	
-	////TUTTLE_TLOG_VAR( TUTTLE_TRACE, resView.pixels().row_size() );
+	////TUTTLE_LOG_VAR( TUTTLE_TRACE, resView.pixels().row_size() );
 	return resView;
 }
 

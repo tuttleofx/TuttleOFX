@@ -99,9 +99,9 @@ struct ColorParams
 		pixel_assigns_t<Pixel, Pixel>()( dstAverage, _dstAverage );
 		_eColorspace = eColorspace;
 
-//		TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( _deviationRatio, red_t() ) );
-//		TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( _srcAverage, red_t() ) );
-//		TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( _dstAverage, red_t() ) );
+//		TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( _deviationRatio, red_t() ) );
+//		TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( _srcAverage, red_t() ) );
+//		TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( _dstAverage, red_t() ) );
 	}
 
 	Pixel operator( )(const Pixel& p ) const
@@ -247,12 +247,12 @@ void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 	computeAverage( this->_dstRefView, _dstRefAverage, dstRefDeviation, _params._colorspace );
 	//TUTTLE_LOG_VAR4( TUTTLE_INFO, _srcRefAverage[0], _srcRefDeviation[0], _dstRefAverage[0], _dstRefDeviation[0]);
 	
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( dstRefDeviation, red_t() ) );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( dstRefDeviation, green_t() ) );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( dstRefDeviation, blue_t() ) );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( srcRefDeviation, red_t() ) );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( srcRefDeviation, green_t() ) );
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, get_color( srcRefDeviation, blue_t() ) );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( dstRefDeviation, red_t() ) );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( dstRefDeviation, green_t() ) );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( dstRefDeviation, blue_t() ) );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( srcRefDeviation, red_t() ) );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( srcRefDeviation, green_t() ) );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, get_color( srcRefDeviation, blue_t() ) );
 
 	// now analyse the differences
 	pixel_zeros_t<Pixel>()( _deviationRatio );

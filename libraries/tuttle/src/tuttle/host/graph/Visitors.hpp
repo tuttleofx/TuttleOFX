@@ -57,7 +57,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		//TUTTLE_TLOG( TUTTLE_INFO, "MarkUsed &&&&& init" << vertex.getName() );
+		//TUTTLE_LOG_INFO( "MarkUsed &&&&& init" << vertex.getName() );
 		vertex.setUsed( false );
 	}
 
@@ -88,12 +88,12 @@ public:
 	Test_dfs( TGraph& graph )
 		: _graph( graph )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "Test_dfs" );
+		TUTTLE_LOG_TRACE( "Test_dfs" );
 	}
 
 	~Test_dfs()
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "~Test_dfs" );
+		TUTTLE_LOG_TRACE( "~Test_dfs" );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -101,7 +101,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "initialize_vertex: " << vertex );
+		TUTTLE_LOG_TRACE( "initialize_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -109,7 +109,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "start_vertex: " << vertex );
+		TUTTLE_LOG_TRACE( "start_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -117,7 +117,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "discover_vertex: " << vertex );
+		TUTTLE_LOG_TRACE( "discover_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -125,7 +125,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "finish_vertex: " << vertex );
+		TUTTLE_LOG_TRACE( "finish_vertex: " << vertex );
 	}
 
 	template<class EdgeDescriptor, class Graph>
@@ -136,7 +136,7 @@ public:
 		//		Vertex& vertexSource = _graph.sourceInstance(e);
 		//		Vertex& vertexDest   = _graph.targetInstance(e);
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "examine_edge: " << edge );
+		TUTTLE_LOG_TRACE( "examine_edge: " << edge );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -144,7 +144,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "tree_edge: " << edge  );
+		TUTTLE_LOG_TRACE( "tree_edge: " << edge  );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -152,7 +152,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "back_edge: " << edge  );
+		TUTTLE_LOG_TRACE( "back_edge: " << edge  );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -160,7 +160,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TUTTLE_TLOG( TUTTLE_TRACE, "forward_or_cross_edge: " << edge );
+		TUTTLE_LOG_TRACE( "forward_or_cross_edge: " << edge );
 	}
 
 private:
@@ -175,55 +175,55 @@ public:
 	template<class VertexDescriptor, class Graph>
 	void initialize_vertex( VertexDescriptor v, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "initialize_vertex " << g[v] );
+		TUTTLE_LOG_TRACE( "initialize_vertex " << g[v] );
 	}
 
 	template<class VertexDescriptor, class Graph>
 	void discover_vertex( VertexDescriptor v, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "discover_vertex " << g[v] << " outedges: " << out_degree( v, g ) );
+		TUTTLE_LOG_TRACE( "discover_vertex " << g[v] << " outedges: " << out_degree( v, g ) );
 	}
 
 	template<class VertexDescriptor, class Graph>
 	void examine_vertex( VertexDescriptor v, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "examine_vertex " << g[v] );
+		TUTTLE_LOG_TRACE( "examine_vertex " << g[v] );
 	}
 
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "finish_vertex " << g[v] );
+		TUTTLE_LOG_TRACE( "finish_vertex " << g[v] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void examine_edge( EdgeDescriptor e, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "examine_edge " << g[e] );
+		TUTTLE_LOG_TRACE( "examine_edge " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void tree_edge( EdgeDescriptor e, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "tree_edge " << g[e] );
+		TUTTLE_LOG_TRACE( "tree_edge " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void non_tree_edge( EdgeDescriptor e, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "non_tree_edge " << g[e] );
+		TUTTLE_LOG_TRACE( "non_tree_edge " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void gray_target( EdgeDescriptor e, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "gray_target " << g[e] );
+		TUTTLE_LOG_TRACE( "gray_target " << g[e] );
 	}
 
 	template<class EdgeDescriptor, class Graph>
 	void black_target( EdgeDescriptor e, Graph& g )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "black_target " << g[e] );
+		TUTTLE_LOG_TRACE( "black_target " << g[e] );
 	}
 
 };

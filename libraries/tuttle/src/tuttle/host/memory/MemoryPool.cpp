@@ -224,14 +224,14 @@ IPoolDataPtr MemoryPool::allocate( const std::size_t size )
 	}
 
 	// Allocate a new buffer in MemoryPool
-	TUTTLE_TLOG( TUTTLE_TRACE, "[Memory Pool] allocate " << size << " bytes" );
+	TUTTLE_LOG_TRACE( "[Memory Pool] allocate " << size << " bytes" );
 	return new PoolData( *this, size );
 }
 
 std::size_t MemoryPool::updateMemoryAuthorizedWithRAM()
 {
 	_memoryAuthorized = /*getUsedMemorySize() +*/ getMemoryInfo()._totalRam;
-	TUTTLE_LOG_DEBUG( TUTTLE_TRACE, "[Memory Pool] update memory authorized with RAM: " << _memoryAuthorized );
+	TUTTLE_LOG_DEBUG( "[Memory Pool] update memory authorized with RAM: " << _memoryAuthorized );
 	return _memoryAuthorized;
 }
 

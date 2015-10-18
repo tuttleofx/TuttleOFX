@@ -246,13 +246,13 @@ MotionType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::Pe
 	MotionType m = _center.intersect( args );
 	if( m._mode != eMotionNone )
 	{
-		TUTTLE_TLOG( TUTTLE_TRACE, "intersect center." );
+		TUTTLE_LOG_TRACE( "intersect center." );
 		_selectType = eSelectTypeC;
 		return m;
 	}
 	// intersect borders
 	_selectType = selectType( args );
-	TUTTLE_TLOG( TUTTLE_TRACE, "_selectType : " << mapESelectTypeToString( _selectType ) );
+	TUTTLE_LOG_TRACE( "_selectType : " << mapESelectTypeToString( _selectType ) );
 	if( _selectType != eSelectTypeNone )
 	{
 		m._mode = eMotionTranslate;

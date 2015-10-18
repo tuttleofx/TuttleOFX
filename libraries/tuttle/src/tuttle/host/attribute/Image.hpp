@@ -126,10 +126,10 @@ VIEW_T Image::getGilView( const EImageOrientation orientation )
 	//const OfxRectI rod = this->getROD();
 	const OfxRectI bounds = this->getBounds();
 
-	TUTTLE_TLOG_VAR( TUTTLE_TRACE, bounds );
-	TUTTLE_TLOG_VAR( TUTTLE_TRACE, std::abs( bounds.x2 - bounds.x1 ) );
-	TUTTLE_TLOG_VAR( TUTTLE_TRACE, std::abs( bounds.y2 - bounds.y1 ) );
-	TUTTLE_TLOG_VAR( TUTTLE_TRACE, this->getRowBytes() );
+	TUTTLE_LOG_VAR( TUTTLE_TRACE, bounds );
+	TUTTLE_LOG_VAR( TUTTLE_TRACE, std::abs( bounds.x2 - bounds.x1 ) );
+	TUTTLE_LOG_VAR( TUTTLE_TRACE, std::abs( bounds.y2 - bounds.y1 ) );
+	TUTTLE_LOG_VAR( TUTTLE_TRACE, this->getRowBytes() );
 	
 	typedef typename VIEW_T::value_type Pixel;
 	return boost::gil::interleaved_view( std::abs( bounds.x2 - bounds.x1 ),

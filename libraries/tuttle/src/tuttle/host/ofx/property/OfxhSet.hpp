@@ -378,7 +378,7 @@ typename T::ReturnType OfxhSet::getProperty( const std::string& property, int in
 	/*
 	if( !hasProperty( property, true ) )
 	{
-		TUTTLE_TLOG( TUTTLE_INFO, "return kEmpty on property: " << property );
+		TUTTLE_LOG_INFO( "return kEmpty on property: " << property );
 		return T::kEmpty; /// @todo tuttle: is this really needed ?
 	}
 	*/

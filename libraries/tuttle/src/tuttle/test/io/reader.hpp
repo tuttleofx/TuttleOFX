@@ -36,13 +36,13 @@ BOOST_AUTO_TEST_CASE( process_reader )
 
 	memory::CACHE_ELEMENT imgRes = outputCache.get( read.getName(), 0 );
 
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, imgRes->getROD() );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, imgRes->getROD() );
 	BOOST_CHECK_EQUAL( imgRes->getROD().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getROD().y1, 0 );
 	BOOST_CHECK_NE( imgRes->getROD().x2, 0 );
 	BOOST_CHECK_NE( imgRes->getROD().y2, 0 );
 
-	TUTTLE_TLOG_VAR( TUTTLE_INFO, imgRes->getBounds() );
+	TUTTLE_LOG_VAR( TUTTLE_INFO, imgRes->getBounds() );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().x1, 0 );
 	BOOST_CHECK_EQUAL( imgRes->getBounds().y1, 0 );
 	BOOST_CHECK_NE( imgRes->getBounds().x2, 0 );

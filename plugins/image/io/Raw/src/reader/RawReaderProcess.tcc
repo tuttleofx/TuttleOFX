@@ -22,7 +22,7 @@ static int progressCallback( void* data, LibRaw_progress p, int iteration, int e
 {
 	typedef RawReaderProcess<View> PluginProcess;
 	//PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
-	TUTTLE_LOG_DEBUG( TUTTLE_INFO, "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
+	TUTTLE_LOG_DEBUG( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
 	/*if( process->progressUpdate( iteration / (double)expected ) )
 		return 1; // cancel processing immediately*/
 	return 0; // can continue
@@ -225,10 +225,10 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//		}
 
 		// The metadata are accessible through data fields of the class
-		TUTTLE_TLOG( TUTTLE_INFO, "Image size: " << _rawProcessor.imgdata.sizes.width << ", " << _rawProcessor.imgdata.sizes.height );
+		TUTTLE_LOG_INFO( "Image size: " << _rawProcessor.imgdata.sizes.width << ", " << _rawProcessor.imgdata.sizes.height );
 
 		//		TUTTLE_LOG_VAR2( image->width, image->height );
-		TUTTLE_TLOG_VAR2( TUTTLE_INFO, _rawProcessor.imgdata.sizes.width, _rawProcessor.imgdata.sizes.height );
+		TUTTLE_LOG_VAR2( TUTTLE_INFO, _rawProcessor.imgdata.sizes.width, _rawProcessor.imgdata.sizes.height );
 
 		//		// And let us print its dump; the data are accessible through data fields of the class
 		//		for( int i = 0;

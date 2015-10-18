@@ -209,7 +209,7 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 	for( int i = 0; i < 4; ++i )
 		ss << color.cam_xyz[i][0] << "\t" << color.cam_xyz[i][1] << "\t" << color.cam_xyz[i][2] << "\n"; // %6.4f
 
-	TUTTLE_LOG_DEBUG( TUTTLE_INFO, ss );
+	TUTTLE_LOG_DEBUG( ss );
 }
 
 void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

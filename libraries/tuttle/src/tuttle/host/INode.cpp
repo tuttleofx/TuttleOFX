@@ -42,7 +42,7 @@ void INode::setProcessData( Data* data )
 
 void INode::setProcessDataAtTime( DataAtTime* dataAtTime )
 {
-	TUTTLE_TLOG( TUTTLE_TRACE, "setProcessDataAtTime \"" << getName() << "\" at " << dataAtTime->_time );
+	TUTTLE_LOG_TRACE( "setProcessDataAtTime \"" << getName() << "\" at " << dataAtTime->_time );
 	_dataAtTime[dataAtTime->_time] = dataAtTime;
 }
 
@@ -94,7 +94,7 @@ bool INode::hasData( const OfxTime time ) const
 
 const INode::DataAtTime& INode::getData( const OfxTime time ) const
 {
-	//TUTTLE_TLOG( TUTTLE_TRACE, "- INode::getData(" << time << ") of " << getName() );
+	//TUTTLE_LOG_TRACE( "- INode::getData(" << time << ") of " << getName() );
 	DataAtTimeMap::const_iterator it = _dataAtTime.find( time );
 	if( it == _dataAtTime.end() )
 	{

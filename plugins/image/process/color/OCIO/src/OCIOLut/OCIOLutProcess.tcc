@@ -54,7 +54,7 @@ void OCIOLutProcess<View>::setup(const OFX::RenderArguments& args)
 	
 		outputColorSpace->setTransform( groupTransform, OCIO::COLORSPACE_DIR_FROM_REFERENCE );
 	
-		TUTTLE_TLOG( TUTTLE_WARNING, "Specified Transform:" << *(groupTransform) );
+		TUTTLE_LOG_WARNING( "Specified Transform:" << *(groupTransform) );
 	
 		config->addColorSpace( outputColorSpace );
 		

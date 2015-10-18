@@ -43,18 +43,18 @@ void NLMDenoiserPlugin::getFramesNeeded( const OFX::FramesNeededArguments &args,
     const int depth = _paramDepth->getValue();
 	
     const OfxRangeD clipFullRange = _clipSrc->getFrameRange( );
-//	TUTTLE_TLOG_VAR2( TUTTLE_INFO, clipFullRange.min, clipFullRange.max );
+//	TUTTLE_LOG_VAR2( TUTTLE_INFO, clipFullRange.min, clipFullRange.max );
 	OfxRangeD requestedRange;
 	requestedRange.min = args.time - depth;
 	requestedRange.max = args.time + depth;
-//	TUTTLE_TLOG_VAR2( TUTTLE_INFO, requestedRange.min, requestedRange.max );
+//	TUTTLE_LOG_VAR2( TUTTLE_INFO, requestedRange.min, requestedRange.max );
 	OfxRangeD realRange;
 	realRange.min = clamp( requestedRange.min, clipFullRange.min, clipFullRange.max );
 	realRange.max = clamp( requestedRange.max, clipFullRange.min, clipFullRange.max );
-//	TUTTLE_TLOG_VAR2( TUTTLE_INFO, realRange.min, realRange.max );
+//	TUTTLE_LOG_VAR2( TUTTLE_INFO, realRange.min, realRange.max );
 	
     frames.setFramesNeeded( *_clipSrc, realRange );
-//	TUTTLE_TLOG( TUTTLE_INFO, "NLMDenoiserPlugin::getFramesNeeded timerange min:" << realRange.min << ", max:" << realRange.max << " for time:" << args.time );
+//	TUTTLE_LOG_INFO( "NLMDenoiserPlugin::getFramesNeeded timerange min:" << realRange.min << ", max:" << realRange.max << " for time:" << args.time );
 }
 
 

@@ -173,7 +173,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		bounds.y2 = optionalBounds->y2;
 		//BOOST_THROW_EXCEPTION( exception::MissingHostFeature()
 		//	<< exception::dev("Uses optionalBounds not supported yet.") ); ///< @todo tuttle: needs to be supported !
-		//TUTTLE_TLOG( TUTTLE_TRACE, "on clip: " << getFullName() << " optionalBounds="<< bounds);
+		//TUTTLE_LOG_TRACE( "on clip: " << getFullName() << " optionalBounds="<< bounds);
 	}
 	else
 	{
@@ -181,7 +181,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	}
 	
 	const OfxTime realTime = getRemappedTime(time);
-	//TUTTLE_TLOG( TUTTLE_TRACE, "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
+	//TUTTLE_LOG_TRACE( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
 	boost::shared_ptr<Image> image = getNode().getData().getInternMemoryCache().get( getClipIdentifier(), realTime );
 	//	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds...
