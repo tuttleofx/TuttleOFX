@@ -1,6 +1,6 @@
 from pyTuttle import tuttle
 tuttle.core().preload(False)
-
+tuttle.core().getFormatter().setLogLevel(tuttle.eVerboseLevelTrace)
 
 class CallbackText(tuttle.Callback):
 	"""
@@ -43,5 +43,4 @@ text.setBeforeRenderCallback(callback)
 graph.connect(nodes)
 options = tuttle.ComputeOptions()
 options.addTimeRange(startedFrame, endedFrame)
-options.setVerboseLevel(tuttle.eVerboseLevelTrace)
 graph.compute(options)

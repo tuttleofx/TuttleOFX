@@ -7,6 +7,7 @@ from pyTuttle import tuttle
 import getBestPlugin
 
 tuttle.core().preload(False)
+tuttle.core().getFormatter().setLogLevel(tuttle.eVerboseLevelError)
 
 if len(sys.argv) < 2 :
 	print("ERROR: no such input file")
@@ -25,7 +26,6 @@ reader = graph.createNode(plugin, filename=sys.argv[1])
 viewer = graph.createNode("tuttle.viewer")
 
 options = tuttle.ComputeOptions()
-options.setVerboseLevel(tuttle.eVerboseLevelError)
 
 graph.connect([reader, viewer])
 graph.compute(viewer, options)

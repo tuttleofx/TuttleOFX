@@ -5,6 +5,7 @@ from sys import argv
 
 from pyTuttle import tuttle
 tuttle.core().preload(False)
+tuttle.core().getFormatter().setLogLevel(tuttle.eVerboseLevelError)
 
 
 def start():
@@ -66,7 +67,6 @@ pathIn = argv[1]
 pathOut = argv[2]
 # ComputeOption init
 co = tuttle.ComputeOptions()
-co.setVerboseLevel(tuttle.eVerboseLevelError)
 ## Create handle and set it in ComputeOptions
 handle = ProgressHandle(start)
 co.setProgressHandle(handle)

@@ -190,11 +190,11 @@ if args.interactive:
 
 ### Initialize Tuttle graph
 tuttle.core().preload(False)
+tuttle.core().getFormatter().setLogLevel(tuttle.eVerboseLevelFatal)
 graph = tuttle.Graph()
 nodes = []
 # Set verbose level
 options = tuttle.ComputeOptions()
-options.setVerboseLevel(tuttle.eVerboseLevelFatal)
 # Set progress handle
 progress = ProgressHandle()
 options.setProgressHandle(progress)

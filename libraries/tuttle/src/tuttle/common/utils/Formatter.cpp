@@ -65,24 +65,24 @@ void Formatter::init_logging()
 #endif
 }
 
-void Formatter::setLogLevel( const int level )
+void Formatter::setLogLevel( const EVerboseLevel level )
 {
 	switch( level )
 	{
-		case 0: setLogLevel( boost::log::trivial::fatal ); break;
-		case 1: setLogLevel( boost::log::trivial::error ); break;
-		case 2: setLogLevel( boost::log::trivial::warning ); break;
-		case 3: setLogLevel( boost::log::trivial::info ); break;
-		case 4: setLogLevel( boost::log::trivial::debug ); break;
-		case 5: setLogLevel( boost::log::trivial::trace ); break;
+		case eVerboseLevelFatal: setLogLevel( boost::log::trivial::fatal ); break;
+		case eVerboseLevelError: setLogLevel( boost::log::trivial::error ); break;
+		case eVerboseLevelWarning: setLogLevel( boost::log::trivial::warning ); break;
+		case eVerboseLevelInfo: setLogLevel( boost::log::trivial::info ); break;
+		case eVerboseLevelDebug: setLogLevel( boost::log::trivial::debug ); break;
+		case eVerboseLevelTrace: setLogLevel( boost::log::trivial::trace ); break;
 		default:
 			setLogLevel( boost::log::trivial::warning );
-			TUTTLE_LOG_WARNING( "Unrecognized log level " << level << ", fallback to \"warning\" (2)." );
+			TUTTLE_LOG_WARNING( "Unrecognized log level " << level << ", fallback to \"warning\"." );
 			break;
 	}
 }
 
-int logLevel_stringToInt( const std::string& level )
+void Formatter::setLogLevel( const std::string& strLevel )
 {
 	static const std::vector<std::string> m = boost::assign::list_of
 		("fatal")
@@ -91,33 +91,20 @@ int logLevel_stringToInt( const std::string& level )
 		("info")
 		("debug")
 		("trace");
-	std::string lowerStrLevel = level;
+	std::string lowerStrLevel = strLevel;
 	boost::algorithm::to_lower(lowerStrLevel);
 	
 	std::vector<std::string>::const_iterator v = std::find(m.begin(), m.end(), lowerStrLevel);
-	
+
 	if( v == m.end() )
 	{
-		TUTTLE_LOG_WARNING( "Unrecognized log level " << quotes(level) << ", fallback to \"warning\" (2)." );
-		return 2;
+		TUTTLE_LOG_WARNING( "Unrecognized log level " << quotes(strLevel) << ", fallback to \"warning\"." );
+		setLogLevel( eVerboseLevelWarning );
 	}
-	return std::distance(m.begin(), v);
-}
-
-void Formatter::setLogLevel( const std::string& level )
-{
-	int levelInt = 0;
-	try
+	else
 	{
-		// level is a string containing an integer
-		levelInt = boost::lexical_cast<int>(level);
+		setLogLevel( static_cast<EVerboseLevel>(std::distance(m.begin(), v)) );
 	}
-	catch(const boost::bad_lexical_cast &)
-	{
-		// level is a string containing an level like "warning"
-		levelInt = logLevel_stringToInt(level);
-	}
-	setLogLevel( levelInt );
 }
 
 void Formatter::setLogLevel( const boost::log::trivial::severity_level level )

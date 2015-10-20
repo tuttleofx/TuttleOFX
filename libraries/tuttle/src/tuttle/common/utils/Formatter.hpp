@@ -51,6 +51,16 @@ enum severity_level
 namespace tuttle {
 namespace common {
 
+enum EVerboseLevel
+{
+	eVerboseLevelFatal,
+	eVerboseLevelError,
+	eVerboseLevelWarning,
+	eVerboseLevelInfo,
+	eVerboseLevelDebug,
+	eVerboseLevelTrace
+};
+
 class Formatter : boost::noncopyable
 {
 #ifndef WITHOUT_BOOST_LOG
@@ -72,7 +82,7 @@ private:
 public:
 	void setLogLevel( const boost::log::trivial::severity_level level );
 
-	void setLogLevel( const int level );
+	void setLogLevel( const EVerboseLevel level );
 	void setLogLevel( const std::string& level );
 
 	void displayLogLevel( bool display );
