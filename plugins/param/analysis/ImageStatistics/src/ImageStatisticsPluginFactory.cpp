@@ -41,6 +41,9 @@ void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Image statistics" );
 	desc.setPluginGrouping( "tuttle/param/analysis" );
 
+	desc.setDescription( "ImageStatistics\n"
+			 "Plugin is used to get statistics (about color, luminosity...) on a specific part of the given image." );
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
