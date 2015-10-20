@@ -190,11 +190,11 @@ if args.interactive:
 
 ### Initialize Tuttle graph
 tuttle.core().preload(False)
+tuttle.core().getFormatter().setLogLevel(tuttle.eVerboseLevelFatal)
 graph = tuttle.Graph()
 nodes = []
 # Set verbose level
 options = tuttle.ComputeOptions()
-options.setVerboseLevel(tuttle.eVerboseLevelFatal)
 # Set progress handle
 progress = ProgressHandle()
 options.setProgressHandle(progress)
@@ -230,7 +230,7 @@ if args.text:
        	nodes.append(graph.createNode("tuttle.text", text=args.inputSequence, vAlign="bottom", hAlign="right", font="utopia", bold=True))
 
 ### Create writer node
-nodes.append(graph.createNode("tuttle.avwriter", filename=args.outputFile, verbose=True, v_preset=(args.videoPreset if args.videoPreset is not None else 'custom'), v_customFps=args.fps))
+nodes.append(graph.createNode("tuttle.avwriter", filename=args.outputFile, v_preset=(args.videoPreset if args.videoPreset is not None else 'custom'), v_customFps=args.fps))
 
 ### Process
 if nodes:

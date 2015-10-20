@@ -53,16 +53,6 @@ struct TimeRange
 	int _step;
 };
 
-enum EVerboseLevel
-{
-	eVerboseLevelFatal,
-	eVerboseLevelError,
-	eVerboseLevelWarning,
-	eVerboseLevelInfo,
-	eVerboseLevelDebug,
-	eVerboseLevelTrace
-};
-
 class ComputeOptions
 {
 public:
@@ -126,7 +116,6 @@ private:
 	void init()
 	{
 		setRenderScale( 1.0, 1.0 );
-		setVerboseLevel( eVerboseLevelWarning );
 		setReturnBuffers            ( true  );
 		setContinueOnError          ( false );
 		setContinueOnMissingFile    ( false );
@@ -218,15 +207,6 @@ public:
 		return *this;
 	}
 	bool getReturnBuffers() const { return _returnBuffers; }
-	
-	/**
-	 * @brief Set the verbose level of the process.
-	 */
-	This& setVerboseLevel( const EVerboseLevel level )
-	{
-		tuttle::common::Formatter::get()->setLogLevel_int( static_cast<int>( level ) );
-		return *this;
-	}
 	
 	/**
 	 * @brief Set the output color enabled or not.

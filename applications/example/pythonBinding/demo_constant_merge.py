@@ -4,6 +4,7 @@ from sys import argv
 import getBestPlugin
 from pyTuttle import tuttle
 tuttle.core().preload(False)
+tuttle.core().getFormatter().setLogLevel(tuttle.eVerboseLevelTrace)
 
 if len(argv) != 3:
     print "Script args : seqIn@.ext seqOut@.ext"
@@ -83,6 +84,5 @@ g.connect([image_merge, writer])
 
 # Set options and writer node
 co = tuttle.ComputeOptions(int(td.min), int(td.max))
-co.setVerboseLevel(tuttle.eVerboseLevelTrace)
 
 g.compute(writer, co)
