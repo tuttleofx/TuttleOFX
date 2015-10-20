@@ -32,7 +32,7 @@ Formatter::Formatter()
 	}
 	else
 	{
-		setLogLevel_string( envLevel );
+		setLogLevel( envLevel );
 	}
 }
 
@@ -65,7 +65,7 @@ void Formatter::init_logging()
 #endif
 }
 
-void Formatter::setLogLevel_int( const int level )
+void Formatter::setLogLevel( const int level )
 {
 	switch( level )
 	{
@@ -104,7 +104,7 @@ int logLevel_stringToInt( const std::string& level )
 	return std::distance(m.begin(), v);
 }
 
-void Formatter::setLogLevel_string( const std::string& level )
+void Formatter::setLogLevel( const std::string& level )
 {
 	int levelInt = 0;
 	try
@@ -117,7 +117,7 @@ void Formatter::setLogLevel_string( const std::string& level )
 		// level is a string containing an level like "warning"
 		levelInt = logLevel_stringToInt(level);
 	}
-	setLogLevel_int( levelInt );
+	setLogLevel( levelInt );
 }
 
 void Formatter::setLogLevel( const boost::log::trivial::severity_level level )

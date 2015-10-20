@@ -449,7 +449,7 @@ class Sam_do(samUtils.Sam):
         # Set sam log level
         self.setLogLevel(args.verbose)
         # set tuttle host log level
-        tuttle.core().getFormatter().setLogLevel_int(args.verbose)
+        tuttle.core().getFormatter().setLogLevel(args.verbose)
 
         # Clear plugin cache
         if args.rebuildPluginCache:

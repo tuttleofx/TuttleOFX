@@ -72,8 +72,8 @@ private:
 public:
 	void setLogLevel( const boost::log::trivial::severity_level level );
 
-	void setLogLevel_int( const int level );
-	void setLogLevel_string( const std::string& level );
+	void setLogLevel( const int level );
+	void setLogLevel( const std::string& level );
 
 	void displayLogLevel( bool display );
 
