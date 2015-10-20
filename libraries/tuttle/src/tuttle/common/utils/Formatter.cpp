@@ -111,7 +111,6 @@ void Formatter::setLogLevel_string( const std::string& level )
 	{
 		// level is a string containing an integer
 		levelInt = boost::lexical_cast<int>(level);
-		setLogLevel_int( levelInt );
 	}
 	catch(const boost::bad_lexical_cast &)
 	{
