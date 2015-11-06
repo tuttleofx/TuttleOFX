@@ -78,8 +78,8 @@ class Sam_do(samUtils.Sam):
         Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
         Fill:                              sam do reader in.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50,1 // writer out.jpg
         Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
-        Upscaling:                         sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg
-        Downscaling:                       sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg
+        Upscaling:                         sam do reader in.####.dpx // resize width=1920 filter=lanczos // writer out.####.jpg
+        Downscaling:                       sam do reader in.####.dpx // resize width=720 filter=mitchell // writer out.####.jpg
 
     ''' + self._colorProcessing + '''
         Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
