@@ -205,7 +205,7 @@ class Sam_do(samUtils.Sam):
                 self._displayTitle('SUPPORTED INPUT FILE FORMATS')
             elif key == 'w':
                 self._displayTitle('SUPPORTED OUTPUT FILE FORMATS')
-            puts(', '.join(sorted(extensions)))
+            puts(', '.join(sorted(set(extensions))))
 
     def _displayParamHelp(self, param):
         """
