@@ -16,20 +16,58 @@ static const std::string kClipOptionalSourceRef( "SourceRef" );
 static const std::string kParamReverse                 ( "reverse" );
 static const std::string kParamDisplaySource           ( "displaySource" );
 static const std::string kParamLensType                ( "lensType" );
-static const std::string kParamLensTypeStandard        ( "standard" );
+static const std::string kParamLensTypeBrown1          ( "brown1" );
+static const std::string kParamLensTypeBrown3          ( "brown3" );
+static const std::string kParamLensTypePTLens          ( "ptlens" );
 static const std::string kParamLensTypeFishEye         ( "fish-eye" );
-static const std::string kParamLensTypeAdvanced        ( "advanced" );
 static const std::string kParamCoef1                   ( "coef1" );
 static const std::string kParamCoef2                   ( "coef2" );
+static const std::string kParamCoef3                   ( "coef3" );
 static const std::string kParamSqueeze                 ( "squeeze" );
 static const std::string kParamAsymmetric              ( "asymmetric" );
 static const std::string kParamCenter                  ( "center" );
+static const std::string kParamCenterUnit              ( "centerUnit" );
+static const std::string kParamCenterUnitCenteredPixel ( "pixel centered" );
+static const std::string kParamCenterUnitPixel         ( "pixel" );
+static const std::string kParamCenterUnitCenteredNormWidth( "normalized width centered" );
+static const std::string kParamCenterUnitNormWidth     ( "normWidth" );
+enum EParamCenterUnit
+{
+	eParamCenterUnitCenteredPixel = 0,
+	eParamCenterUnitPixel,
+	eParamCenterUnitCenteredNormWidth,
+	eParamCenterUnitNormWidth
+};
+
 static const std::string kParamCenterOverlay           ( "lensCenterOverlay" );
 static const std::string kParamCenterType              ( "centerType" );
 static const std::string kParamCenterTypeSource        ( "source" );
 static const std::string kParamCenterTypeRoW           ( "RoW" );
 static const std::string kParamPreScale                ( "preScale" );
 static const std::string kParamPostScale               ( "postScale" );
+static const std::string kParamPreOffset               ( "preOffset" );
+static const std::string kParamPostOffset              ( "postOffset" );
+
+static const std::string kParamNormalization           ( "normalization" );
+static const std::string kParamNormalizationWidth      ( "width" );
+static const std::string kParamNormalizationHeight     ( "height" );
+static const std::string kParamNormalizationMinSize    ( "minSize" );
+static const std::string kParamNormalizationMaxSize    ( "maxSize" );
+static const std::string kParamNormalizationDiagonal   ( "diagonal" );
+static const std::string kParamNormalizationHalfDiagonal( "halfDiagonal" );
+static const std::string kParamNormalizationFocal      ( "focal" );
+enum EParamNormalization
+{
+	eParamNormalizationWidth = 0,
+	eParamNormalizationHeight,
+	eParamNormalizationMinSize,
+	eParamNormalizationMaxSize,
+	eParamNormalizationDiagonal,
+	eParamNormalizationHalfDiagonal,
+	eParamNormalizationFocal
+};
+
+static const std::string kParamFocal                   ( "focal" );
 
 static const std::string kParamResizeRod               ( "resizeRod" );
 static const std::string kParamResizeRodNo             ( "no" );
@@ -58,9 +96,10 @@ static const std::string kParamHelp                    ( "help" );
 
 enum EParamLensType
 {
-	eParamLensTypeStandard = 0,
+	eParamLensTypeBrown1 = 0,
+	eParamLensTypeBrown3,
+	eParamLensTypePTLens,
 	eParamLensTypeFisheye,
-	eParamLensTypeAdvanced,
 };
 
 enum EParamCenterType

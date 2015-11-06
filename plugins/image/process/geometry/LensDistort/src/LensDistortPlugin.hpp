@@ -40,15 +40,21 @@ public:
 	OFX::BooleanParam*  _reverse;              ///< reverse the effect
 	OFX::BooleanParam*  _displaySource;        ///< do nothing (so host displays input)
 	OFX::ChoiceParam*   _lensType;             ///< choice to select lens type
+	OFX::ChoiceParam*   _normalization;
+	OFX::DoubleParam*   _focal;
 	OFX::DoubleParam*   _coef1;                ///< distortion coeffiscient
 	OFX::DoubleParam*   _coef2;                ///< distortion coeffiscient for fish-eye lens
+	OFX::DoubleParam*   _coef3;                ///< distortion coeffiscient for fish-eye lens
 	OFX::DoubleParam*   _squeeze;              ///< squeeze coefficient horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _asymmetric;           ///< lens distortion is asymmetric horizontally/vertically (not implemented yet)
 	OFX::Double2DParam* _center;               ///< center coordonnates
+	OFX::ChoiceParam*   _centerUnit;
 	OFX::BooleanParam*  _centerOverlay;        ///< lens center overlay
 	OFX::ChoiceParam*   _centerType;           ///< centered the lens distortion on source RoD or image size (not implemented yet)
-	OFX::DoubleParam*   _postScale;            ///< scale after applying the lens distortion
 	OFX::DoubleParam*   _preScale;             ///< scale before applying the lens distortion
+	OFX::DoubleParam*   _postScale;            ///< scale after applying the lens distortion
+	OFX::Double2DParam* _preOffset;
+	OFX::Double2DParam* _postOffset;
 	OFX::ChoiceParam*   _resizeRod;            ///< Choice how to resize the RoD (default 'no' resize)
 	OFX::DoubleParam*   _resizeRodManualScale; ///< scale the output RoD
 
