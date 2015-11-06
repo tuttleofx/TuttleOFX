@@ -30,6 +30,9 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 					"Text" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
+	desc.setDescription( "Text generator\n"
+			 "Plugin is used to burn text on images." );
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );

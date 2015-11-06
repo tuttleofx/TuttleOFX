@@ -16,6 +16,9 @@ void DiffPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleDiff", "Diff", "Diff" );
 	desc.setPluginGrouping( "tuttle/param/analysis" );
+	desc.setDescription( "Diff\n"
+			 "Plugin is used to show the result of a quality mesure function between two given images. \n"
+			 "MSE (mean square error) and PSNR (peak signal to noise ratio) are available." );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextGeneral );

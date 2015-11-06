@@ -23,6 +23,12 @@ void ThinningPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		            "Thinning" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
+	desc.setDescription( "Thinning\n"
+			 "It's a morphological operation that is used to remove selected foreground pixels from binary images, somewhat like erosion or opening. \n"
+			 "It can be used for several applications, but is particularly useful for skeletonization. \n"
+			 "It is commonly used to tidy up the output of edge detectors by reducing all lines to single pixel thickness. \n"
+			 "Thinning is normally only applied to binary images, and produces another binary image as output." );
+
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );

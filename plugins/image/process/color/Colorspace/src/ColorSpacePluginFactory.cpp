@@ -20,9 +20,12 @@ namespace ttlc = tuttle::plugin::color;
  */
 void ColorSpacePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels				( "TuttleColorSpace", "ColorSpace",
-						  "Color convertions" );
-	desc.setPluginGrouping			( "tuttle/image/process/color" );
+	desc.setLabels( "TuttleColorSpace", "ColorSpace",
+					"Color convertions" );
+	desc.setPluginGrouping( "tuttle/image/process/color" );
+
+	desc.setDescription( "ColorSpace\n"
+			 "Plugin is used to apply colorspace transformations on images." );
 
 	// add the supported contexts
 	desc.addSupportedContext		( OFX::eContextFilter );
