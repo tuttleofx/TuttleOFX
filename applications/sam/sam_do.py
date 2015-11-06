@@ -78,8 +78,8 @@ class Sam_do(samUtils.Sam):
         Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
         Fill:                              sam do reader in.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50,1 // writer out.jpg
         Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
-        Upscaling:                         sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg
-        Downscaling:                       sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg
+        Upscaling:                         sam do reader in.####.dpx // resize width=1920 filter=lanczos // writer out.####.jpg
+        Downscaling:                       sam do reader in.####.dpx // resize width=720 filter=mitchell // writer out.####.jpg
 
     ''' + self._colorProcessing + '''
         Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
@@ -114,6 +114,17 @@ class Sam_do(samUtils.Sam):
         parser.add_argument('--rebuild-plugin-cache', dest='rebuildPluginCache', action='store_true', default=False, help='load plugins and rebuild the cache file')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4/debug, 5(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
+
+    def _isCommandLineValid(self, inputsToProcess):
+        """
+        Returns if the given sam do inputs to process is well written.
+        @param inputsToProcess the 'inputs' argument of the user command line.
+        """
+        # check if last input is the separator
+        if inputsToProcess[-1] == '//':
+            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
+            return False
+        return True
 
     def _setTimeRanges(self, computeOptions, ranges):
         """
@@ -194,7 +205,7 @@ class Sam_do(samUtils.Sam):
                 self._displayTitle('SUPPORTED INPUT FILE FORMATS')
             elif key == 'w':
                 self._displayTitle('SUPPORTED OUTPUT FILE FORMATS')
-            puts(', '.join(sorted(extensions)))
+            puts(', '.join(sorted(set(extensions))))
 
     def _displayParamHelp(self, param):
         """
@@ -479,7 +490,8 @@ class Sam_do(samUtils.Sam):
             exit(0)
 
         # sam-do --help
-        if len(args.inputs) == 0 and (len(unknown) == 0 or '-h' in unknown or '--help' in unknown):
+        if( not self._isCommandLineValid(args.inputs) or
+            ( len(args.inputs) == 0 and (len(unknown) == 0 or '-h' in unknown or '--help' in unknown) ) ):
             self._displayCommandLineHelp(parser)
             exit(0)
 
@@ -490,6 +502,7 @@ class Sam_do(samUtils.Sam):
         splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
         graphsWithNodes = []
         for splitCmdGraph in splitCmd.getGraphs():
+            self.logger.debug('Create the following tuttle graph: \n' + str(splitCmdGraph))
             try:
                 graphsWithNodes.append(self._getTuttleGraph(splitCmdGraph))
             except Exception as e:
