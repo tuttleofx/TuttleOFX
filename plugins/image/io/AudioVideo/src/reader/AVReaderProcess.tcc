@@ -53,8 +53,8 @@ void AVReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 
 	avtranscoder::PixelProperties pixel( _plugin._inputFile->getProperties().getVideoProperties().at( _plugin._paramVideoStreamIndex->getValue() ).getPixelProperties() );
-	size_t components = pixel.getNbComponents();
-	size_t bitDepth = 8; // @todo: waiting for getMaxBitPerChannel() in avTranscoder
+	const size_t components = pixel.getNbComponents();
+	const size_t bitDepth = pixel.getMaxNbBitsInChannels();
 	
 	switch( bitDepth )
 	{
