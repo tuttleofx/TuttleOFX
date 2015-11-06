@@ -502,6 +502,7 @@ class Sam_do(samUtils.Sam):
         splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
         graphsWithNodes = []
         for splitCmdGraph in splitCmd.getGraphs():
+            self.logger.debug('Create the following tuttle graph: \n' + str(splitCmdGraph))
             try:
                 graphsWithNodes.append(self._getTuttleGraph(splitCmdGraph))
             except Exception as e:
