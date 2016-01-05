@@ -115,11 +115,16 @@ class Sam_do(samUtils.Sam):
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4/debug, 5(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
-    def _isCommandLineValid(self, inputsToProcess):
+    def _isCommandLineValid(self, inputsToProcess, inputsUnknown):
         """
         Returns if the given sam do inputs to process is well written.
-        @param inputsToProcess the 'inputs' argument of the user command line.
+        @param inputsToProcess the 'inputs' arguments of the command line.
+        @param inputsUnknown the 'inputs' arguments of the command line which are not recognized by argparse.
         """
+        # check if there is no arguments (or only the help option)
+        if len(inputsToProcess) == 0:
+            if len(inputsUnknown) == 0 or '-h' in inputsUnknown or '--help' in inputsUnknown:
+                return False
         # check if last input is the separator
         if inputsToProcess[-1] == '//':
             self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
@@ -490,8 +495,7 @@ class Sam_do(samUtils.Sam):
             exit(0)
 
         # sam-do --help
-        if( not self._isCommandLineValid(args.inputs) or
-            ( len(args.inputs) == 0 and (len(unknown) == 0 or '-h' in unknown or '--help' in unknown) ) ):
+        if not self._isCommandLineValid(args.inputs, unknown):
             self._displayCommandLineHelp(parser)
             exit(0)
 
