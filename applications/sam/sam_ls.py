@@ -87,6 +87,9 @@ class Sam_ls(samUtils.Sam):
                 # [ begin : end ] nbFiles - nbMissingFiles
                 sequence = item.getSequence()
                 detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
+                nbHoles = (sequence.getLastTime() - sequence.getFirstTime() + 1) - sequence.getNbFiles()
+                if nbHoles:
+                    detailedSequence += ' - {nbHoles} missing files'.format(nbHoles=nbHoles)
 
             elif itemType == sequenceParser.eTypeLink:
                 characterFromType = 'l'
