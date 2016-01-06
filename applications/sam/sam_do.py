@@ -77,8 +77,8 @@ class Sam_do(samUtils.Sam):
         Note:                              'r' and 'w' are shortcuts for 'reader' and 'writer'
 
     ''' + self._folderManipulation + '''
-        Convert all images in a folder:    sam do reader inputFolder // writer outputFolder ext=jpg --recursive
-        Convert dpx images in a folder:    sam do reader inputFolder ext=dpx // writer outputFolder ext=jpg --recursive
+        Convert all images in a folder:    sam do reader inputFolder // writer outputFolder ext=jpg
+        Convert dpx images in a folder:    sam do reader inputFolder ext=dpx // writer outputFolder ext=jpg
         Note:                              These commands copy the input tree structure to the output.
 
     ''' + self._geometryPorcessing + '''
@@ -104,6 +104,7 @@ class Sam_do(samUtils.Sam):
         Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
         Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
+        Disable recursivity with folders:  sam do reader inputFolder // writer outputFolder --no-recursivity
         
     ''' + self._tuttleVersion + '''            ''' + self._tuttleWebSite
 
