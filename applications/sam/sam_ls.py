@@ -114,7 +114,7 @@ class Sam_ls(samUtils.Sam):
             maxSize = samUtils.getReadableSize(itemStat.maxSize) if itemStat.maxSize != itemStat.size else '-'
 
             detailed = '{:1}{:9}'.format(characterFromType, permissions)
-            detailed += ' {:} {:} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
+            detailed += ' {:8} {:8} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
             detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
             detailed += '\t'
 
