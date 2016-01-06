@@ -57,7 +57,13 @@ class Sam_ls(samUtils.Sam):
         Return if the given item has already been printed.
         @see printItem
         """
-        if item.getFilename() in self._itemPrinted:
+        nameToCompare = ''
+        if item.getType() == sequenceParser.eTypeSequence:
+            nameToCompare = item.getSequence().__str__()
+        else:
+            nameToCompare = item.getFilename()
+
+        if nameToCompare in self._itemPrinted:
             return True
         return False
 
@@ -165,7 +171,10 @@ class Sam_ls(samUtils.Sam):
             with indent(level, quote=indentTree):
                 puts(toPrint.format())
 
-        self._itemPrinted.append(item.getFilename())
+        if itemType == sequenceParser.eTypeSequence:
+            self._itemPrinted.append(item.getSequence().__str__())
+        else:
+            self._itemPrinted.append(item.getFilename())
 
     def printItems(self, items, args, detectionMethod, filters, level=0):
         """
