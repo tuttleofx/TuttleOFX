@@ -83,14 +83,6 @@ class Sam_ls(samUtils.Sam):
                 characterFromType = 'f'
             elif itemType == sequenceParser.eTypeSequence:
                 characterFromType = 's'
-
-                # [ begin : end ] nbFiles - nbMissingFiles
-                sequence = item.getSequence()
-                detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
-                nbHoles = (sequence.getLastTime() - sequence.getFirstTime() + 1) - sequence.getNbFiles()
-                if nbHoles:
-                    detailedSequence += ' - {nbHoles} missing files'.format(nbHoles=nbHoles)
-
             elif itemType == sequenceParser.eTypeLink:
                 characterFromType = 'l'
 
@@ -117,6 +109,14 @@ class Sam_ls(samUtils.Sam):
             detailed += ' {:8} {:8} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
             detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
             detailed += '\t'
+
+        # only for sequences: [ begin : end ] nbFiles - nbMissingFiles
+        if itemType == sequenceParser.eTypeSequence:
+            sequence = item.getSequence()
+            detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
+            nbHoles = (sequence.getLastTime() - sequence.getFirstTime() + 1) - sequence.getNbFiles()
+            if nbHoles:
+                detailedSequence += ' - {nbHoles} missing files'.format(nbHoles=nbHoles)
 
         # sam-ls --absolute-path
         if args.absolutePath:
