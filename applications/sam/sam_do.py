@@ -92,6 +92,7 @@ class Sam_do(samUtils.Sam):
         Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
+        Color Gradation:                   sam do reader in.####.dpx // colorgradation in=Linear out=Rec709 // writer out.####.jpg
 
     ''' + self._imgSeqNumbering + '''
         Frames with or without padding:    image.@.jpg
