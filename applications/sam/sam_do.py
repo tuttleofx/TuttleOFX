@@ -33,6 +33,7 @@ class Sam_do(samUtils.Sam):
         self._pluginOption = colored.blue('Plugins options')
         self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
+        self._folderManipulation = colored.blue('Folder manipulations')
         self._geometryPorcessing = colored.blue('Geometry processing during conversion')
         self._colorProcessing = colored.blue('Color processing during conversion')
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
@@ -43,6 +44,7 @@ class Sam_do(samUtils.Sam):
             self._pluginOption.bold=True
             self._generatorsAndViewers.bold=True
             self._imgSeqConversion.bold=True
+            self._folderManipulation.bold=True
             self._geometryPorcessing.bold=True
             self._colorProcessing.bold=True
             self._imgSeqNumbering.bold=True
@@ -72,7 +74,12 @@ class Sam_do(samUtils.Sam):
         Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
         Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
         Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
-                                           'r' and 'w' are shortcuts for 'reader' and 'writer'
+        Note:                              'r' and 'w' are shortcuts for 'reader' and 'writer'
+
+    ''' + self._folderManipulation + '''
+        Convert all images in a folder:    sam do reader inputFolder // writer outputFolder ext=jpg --recursive
+        Convert dpx images in a folder:    sam do reader inputFolder ext=dpx // writer outputFolder ext=jpg --recursive
+        Note:                              These commands copy the input tree structure to the output.
 
     ''' + self._geometryPorcessing + '''
         Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
