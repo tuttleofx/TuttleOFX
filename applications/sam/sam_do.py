@@ -114,8 +114,8 @@ class Sam_do(samUtils.Sam):
         # Options
         parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process (only numbers separate with spaces)')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
-        parser.add_argument('--recursive', dest='recursive', action='store_true', default=False, help='Enable recursivity when using directory as input/output')
         parser.add_argument('--file-formats', dest='fileFormats', action='store_true', help='list all supported file formats (R/W)')
+        parser.add_argument('--no-recursivity', dest='noRecursivity', action='store_true', default=False, help='Disable recursivity when using directory as input/output')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('--no-plugin-cache', dest='noPluginCache', action='store_true', default=False, help='load plugins without using the cache file')
@@ -511,7 +511,7 @@ class Sam_do(samUtils.Sam):
         args.inputs.extend(unknown)
 
         # Split command line
-        splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
+        splitCmd = samDoUtils.SplitCmd(args.inputs, args.noRecursivity)
         graphsWithNodes = []
         for splitCmdGraph in splitCmd.getGraphs():
             self.logger.debug('Create the following tuttle graph: \n' + str(splitCmdGraph))

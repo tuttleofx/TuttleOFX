@@ -24,9 +24,9 @@ class SplitCmd:
     It contains a list of SplitCmdGraph.
     @note resolve given input/output folders.
     """
-    def __init__(self, inputCommandLine, recursive):
+    def __init__(self, inputCommandLine, noRecursivity):
         self._graph = []
-        self._recursive = recursive
+        self._recursive = not noRecursivity
 
         # check if there is a command
         if not inputCommandLine:
