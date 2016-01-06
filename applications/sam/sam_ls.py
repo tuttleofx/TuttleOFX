@@ -47,7 +47,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
         parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
-        parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (activated by default)')
+        parser.add_argument('--no-color', dest='noColor', action='store_true', default=False, help='display the output without colors (with colors by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
@@ -132,8 +132,10 @@ class Sam_ls(samUtils.Sam):
         # sam-ls --format
         if itemType == sequenceParser.eTypeSequence:
             filename = samUtils.getSequenceNameWithFormatting(item.getSequence(), args.format)
-        # sam-ls --color
-        if args.color:
+        # sam-ls --no-color
+        if args.noColor:
+            filePath = os.path.join(filePath, filename)
+        else:
             if itemType == sequenceParser.eTypeFolder:
                 # blue is not visible without bold
                 filePath = colored.blue(os.path.join(filePath, filename), bold=True)
@@ -146,8 +148,6 @@ class Sam_ls(samUtils.Sam):
                 filePath = colored.cyan(os.path.join(filePath, filename))
             else:
                 filePath = colored.red(os.path.join(filePath, filename))
-        else:
-            filePath = os.path.join(filePath, filename)
         filePath += ' \t'
 
         # sam-ls -R / sam-ls -L
