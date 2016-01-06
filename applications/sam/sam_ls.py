@@ -29,6 +29,7 @@ class Sam_ls(samUtils.Sam):
             List the current directory by default.
             '''))
         self._itemPrinted = [] # name of Items already printed
+        self._sequenceExploded = [] # name of Sequences already exploded
 
     def fillParser(self, parser):
         # Arguments
@@ -50,6 +51,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('--no-color', dest='noColor', action='store_true', default=False, help='display the output without colors (with colors by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
+        parser.add_argument('--explode-sequences', dest='explodeSequences', action='store_true', default=False, help='explode sequences as several sequences without holes')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
     def isAlreadyPrinted(self, item):
@@ -76,6 +78,21 @@ class Sam_ls(samUtils.Sam):
         filePath = ''
         detailed = ''
         detailedSequence = ''
+
+        # sam-ls --explode-sequences
+        sequenceExploded = False
+        if args.explodeSequences and itemType == sequenceParser.eTypeSequence:
+            sequence = item.getSequence()
+            for frameRange in sequence.getFrameRanges():
+                # for each frame range, print a new item as sequence
+                subSequence = sequenceParser.Sequence(sequence.getPrefix(), sequence.getPadding(), sequence.getSuffix(), frameRange.first, frameRange.last, frameRange.step)
+                if subSequence.__str__() not in self._sequenceExploded:
+                    self._sequenceExploded.append(subSequence.__str__())
+                    sequenceExploded = True
+                    self.printItem(sequenceParser.Item(subSequence, item.getFolder()), args, level)
+            # to skip recursivity
+            if sequenceExploded:
+                return
 
         # sam-ls -l
         if args.longListing:
