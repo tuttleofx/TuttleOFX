@@ -24,9 +24,9 @@ class SplitCmd:
     It contains a list of SplitCmdGraph.
     @note resolve given input/output folders.
     """
-    def __init__(self, inputCommandLine, recursive):
+    def __init__(self, inputCommandLine, noRecursivity):
         self._graph = []
-        self._recursive = recursive
+        self._recursive = not noRecursivity
 
         # check if there is a command
         if not inputCommandLine:
@@ -74,6 +74,14 @@ class SplitCmd:
         If the script runs this function, the graph has at least a reader with a folder as filename parameter.
         """
         items = sequenceParser.browse(inputFolder, sequenceParser.eDetectionDefault, filters)
+        # if the recursivity is enable and there are filters, do a second browse to get the folders
+        if self._recursive and len(filters) > 0:
+            folders = []
+            itemsWithoutFilters = sequenceParser.browse(inputFolder, sequenceParser.eDetectionDefault)
+            for item in itemsWithoutFilters:
+                if item.getType() == sequenceParser.eTypeFolder:
+                    folders.append(item)
+            items = sequenceParser.browse(inputFolder, sequenceParser.eDetectionDefault, filters) + tuple(folders)
         for item in items:
             itemType = item.getType()
             if itemType == sequenceParser.eTypeFile or itemType == sequenceParser.eTypeSequence or itemType == sequenceParser.eTypeLink:
