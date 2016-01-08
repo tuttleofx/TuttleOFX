@@ -32,6 +32,7 @@ struct RawReaderProcessParams
 	double         _exposurePreserve;
 	
 	EWhiteBalance  _whiteBalance;
+	double _manualWBKelvin;
 
 	EFBDDNoiseRd _fbddNoiseRd;
 
@@ -86,6 +87,7 @@ public:
 	OFX::DoubleParam*    _paramExposurePreserve;
 	
 	OFX::ChoiceParam*    _paramWhiteBalance;
+	OFX::DoubleParam*    _paramManualWBKelvin;
 	
 	OFX::Double2DParam*  _paramGreyboxPoint;
 	OFX::Double2DParam*  _paramGreyboxSize;
@@ -98,6 +100,10 @@ public:
 	OFX::IntParam*       _paramIso;
 	OFX::IntParam*       _paramShutter;
 	OFX::DoubleParam*    _paramAperture;
+	OFX::IntParam*       _paramFocal;
+	OFX::DoubleParam*    _paramWBR;
+	OFX::DoubleParam*    _paramWBG;
+	OFX::DoubleParam*    _paramWBB;
 	OFX::StringParam*    _paramDateOfShooting;
 	OFX::StringParam*    _paramGPS;
 	OFX::StringParam*    _paramDesc;

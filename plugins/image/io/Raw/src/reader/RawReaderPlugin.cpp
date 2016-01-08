@@ -40,6 +40,7 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramExposurePreserve = fetchDoubleParam( kParamExposurePreserve );
 	
 	_paramWhiteBalance     = fetchChoiceParam( kParamWhiteBalance );
+	_paramManualWBKelvin = fetchDoubleParam( kParamManualWBKelvin );
 	
 	_paramHighlight = fetchChoiceParam( kParamHighlight ) ;
 
@@ -51,10 +52,16 @@ RawReaderPlugin::RawReaderPlugin( OfxImageEffectHandle handle )
 	_paramIso            = fetchIntParam   ( kParamIso );
 	_paramShutter        = fetchIntParam   ( kParamShutter );
 	_paramAperture       = fetchDoubleParam( kParamAperture );
+	_paramFocal          = fetchIntParam   ( kParamFocal );
+	_paramWBR            = fetchDoubleParam( kParamWBR );
+	_paramWBG            = fetchDoubleParam( kParamWBG );
+	_paramWBB            = fetchDoubleParam( kParamWBB );
 	_paramDateOfShooting = fetchStringParam( kParamDateOfShooting );
 	_paramGPS            = fetchStringParam( kParamGPS );
 	_paramDesc           = fetchStringParam( kParamDesc );
 	_paramArtist         = fetchStringParam( kParamArtist );
+
+	changedParam( OFX::InstanceChangedArgs(), kParamWhiteBalance );
 }
 
 RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParams( const OfxTime time )
@@ -87,6 +94,7 @@ RawReaderProcessParams<RawReaderPlugin::Scalar> RawReaderPlugin::getProcessParam
 	params._exposurePreserve = _paramExposurePreserve->getValue();
 	
 	params._whiteBalance     = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
+	params._manualWBKelvin = _paramManualWBKelvin->getValue();
 	
 	params._hightlight = static_cast<EHighlight>( _paramHighlight->getValue() );
 
@@ -130,6 +138,10 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		p2.shutter = 1 / p2.shutter;
 	_paramShutter->setValue( p2.shutter );
 	_paramAperture->setValue( p2.aperture );
+	_paramFocal->setValue( p2.focal_len );
+	_paramWBR->setValue(color.cam_mul[0]);
+	_paramWBG->setValue(color.cam_mul[1]);
+	_paramWBB->setValue(color.cam_mul[2]);
 	_paramDateOfShooting->setValue( ctime( &( p2.timestamp ) ) );
 	
 	if( p2.gpsdata[0] )
@@ -140,13 +152,8 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		_paramArtist->setValue( p2.artist );
 	
 	// https://github.com/LibRaw/LibRaw/blob/master/samples/raw-identify.cpp
-	
+	// For debugging
 	std::ostringstream ss;
-	ss << "Filename: " << params._filepath << "\n";
-	ss << "Timestamp: " << ctime( &( p2.timestamp ) ) << "\n";
-	ss << "Camera: " << p1.make << " " << p1.model << "\n";
-	if( p2.artist[0] )
-		ss << "Owner: " << p2.artist << "\n";
 	if( p1.dng_version )
 	{
 		ss << "DNG Version: ";
@@ -155,28 +162,24 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		ss << "\n";
 	}
 
-	ss << "ISO speed: " << (int) p2.iso_speed << "\n";
-	ss << "Shutter: ";
-	/*if( p2.shutter > 0 && p2.shutter < 1 )
-		p2.shutter = 1 / p2.shutter;*/
-	ss << p2.shutter << " sec" << "\n"; // %0.1f
-	ss << "Aperture: f/" << p2.aperture << "\n";
-	ss << "Focal length: " << p2.focal_len << " mm" << "\n";
 	if( color.profile )
 		ss << "Embedded ICC profile: yes, " << color.profile_length << " bytes" << "\n";
 	else
 		ss << "Embedded ICC profile: no" << "\n";
 
-	ss << "Number of raw images: " << p1.raw_count;
+	ss << "Number of raw images: " << p1.raw_count << "\n";
+
 	if( sizes.pixel_aspect != 1 )
 		ss << "Pixel Aspect Ratio: " << sizes.pixel_aspect << "\n";
+
 	if( thumbnail.tlength )
 		ss << "Thumb size:  " << thumbnail.twidth << " x " << thumbnail.theight << "\n";
-	ss << "Full size:   " << sizes.raw_width << " x " << sizes.raw_height << "\n";
 
+	ss << "Full size:   " << sizes.raw_width << " x " << sizes.raw_height << "\n";
 	ss << "Image size:  " << sizes.width << " x " << sizes.height << "\n";
 	ss << "Output size: " << sizes.iwidth << " x " << sizes.iheight << "\n";
 	ss << "Raw colors: " << p1.colors << "\n";
+
 	if( p1.filters )
 	{
 		ss << "Filter pattern: ";
@@ -192,17 +195,12 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 		}
 		ss << "\n";
 	}
+
 	ss << "Daylight multipliers: ";
 	for( int c = 0; c < p1.colors; ++c )
 		ss << " " << color.pre_mul[c];
 	ss << "\n";
-	if( color.cam_mul[0] > 0 )
-	{
-		ss << "Camera multipliers: ";
-		for( int c = 0; c < 4; ++c )
-			ss << " " << color.cam_mul[c];
-		ss << "\n";
-	}
+
 	const char* csl[] = { "U", "I", "CO", "L", "CA" };
 	ss << "Color sources /Legend: (U)nknown, (I)nit, (CO)nstant, (L)oaded, (CA)lculated/:" << "\n";
 	ss << "Cam->XYZ matrix:" << "\n";
@@ -214,14 +212,28 @@ void RawReaderPlugin::updateInfos( const OfxTime time )
 
 void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-//	else if( paramName == kRawReaderUpdateInfosButton )
-//	{
-//		updateInfos();
-//	}
-//	else
-//	{
 	ReaderPlugin::changedParam( args, paramName );
-//	}
+
+	if( paramName == kParamWhiteBalance )
+	{
+		EWhiteBalance wbMode = static_cast<EWhiteBalance>( _paramWhiteBalance->getValue() );
+		if( wbMode == eManualWb )
+		{
+			_paramManualWBKelvin->setIsSecret(false);
+		}
+		else
+		{
+			_paramManualWBKelvin->setIsSecret(true);
+		}
+	}
+	else if( paramName == kParamManualWBKelvin )
+	{
+		const double manualWBKelvin = _paramManualWBKelvin->getValue();
+		if( manualWBKelvin != 0.0 )
+		{
+			_paramWhiteBalance->setValue( eManualWb );
+		}
+	}
 }
 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
