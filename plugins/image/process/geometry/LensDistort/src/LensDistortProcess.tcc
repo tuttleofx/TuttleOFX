@@ -146,37 +146,49 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 	terry::Rect<std::ssize_t> procWin = ofxToGil(procWindow);
 	switch( _params._lensType )
 	{
-		case eParamLensTypeStandard:
+		case eParamLensTypeBrown1:
 		{
-			if( _p._distort )
+			if( _p.distort )
 			{
-				resample_pixels_progress( srcView, dstView, static_cast<NormalLensDistortParams<double>&>( _p ), procWin, outOfImageProcess, this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, LensDistortBrown1<double>(_p), procWin, outOfImageProcess, this->getOfxProgress(), sampler );
 			}
 			else
 			{
-				resample_pixels_progress( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, LensUndistortBrown1<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			}
+			return;
+		}
+		case eParamLensTypeBrown3:
+		{
+			if( _p.distort )
+			{
+				resample_pixels_progress( srcView, dstView, LensDistortBrown3<double>(_p), procWin, outOfImageProcess, this->getOfxProgress(), sampler );
+			}
+			else
+			{
+				resample_pixels_progress( srcView, dstView, LensUndistortBrown3<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			}
+			return;
+		}
+		case eParamLensTypePTLens:
+		{
+			if( _p.distort )
+				resample_pixels_progress( srcView, dstView, LensDistortPTLens<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			else
+				resample_pixels_progress( srcView, dstView, LensUndistortPTLens<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
 		case eParamLensTypeFisheye:
 		{
-			if( _p._distort )
-				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			if( _p.distort )
+				resample_pixels_progress( srcView, dstView, LensDistortFisheye<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			else
-				resample_pixels_progress( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
-			return;
-		}
-		case eParamLensTypeAdvanced:
-		{
-			if( _p._distort )
-				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
-			else
-				resample_pixels_progress( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>( _p ), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+				resample_pixels_progress( srcView, dstView, LensUndistortFisheye<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Bug()
-		<< exception::user( "Lens type not recognize." ) );
+		<< exception::user( "Unrecognized lens type." ) );
 }
 
 }
