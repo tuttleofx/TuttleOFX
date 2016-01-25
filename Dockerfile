@@ -44,7 +44,9 @@ RUN apt-get update && apt-get install -y \
   libtinyxml-dev \
   yasm \
   libx264-dev \
-  libxvidcore-dev
+  libxvidcore-dev \
+  bison \
+  flex
 
 ENV PYTHON_VERSION=2.7 \
     TRAVIS_OS_NAME=linux \
