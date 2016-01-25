@@ -74,7 +74,7 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* chooseInput = desc.defineChoiceParam( kParamChooseInput );
 	chooseInput->appendOption( kParamChooseInputCode );
 	chooseInput->appendOption( kParamChooseInputFile );
-	chooseInput->setDefault( eParamChooseInputFile );
+	chooseInput->setDefault( eParamChooseInputCode );
 
 	OFX::StringParamDescriptor* code = desc.defineStringParam( kParamCTLCode );
 	code->setLabel( "CTL code" );
