@@ -192,15 +192,17 @@ class Sam_mv(samUtils.Sam):
             self.logger.error('You cannot cumulate multiple options to modify the time.')
             exit(-1)
 
-        # Get output path
-        outputSequencePath = os.path.dirname(args.output)
-        if not outputSequencePath:
-            outputSequencePath = '.'
-
         # Get output sequence
         outputSequence = sequenceParser.Sequence()
         outputSequenceName = os.path.basename(args.output)
         outputIsSequence = outputSequence.initFromPattern(outputSequenceName, sequenceParser.ePatternDefault)
+
+        # Get output path
+        if outputIsSequence:
+            outputSequencePath = os.path.dirname(args.output)
+        else:
+            outputSequencePath = args.output
+        self.logger.debug('Output sequence path is "' + outputSequencePath + '".')
 
         # For each input
         error = 0
