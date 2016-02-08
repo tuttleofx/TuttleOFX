@@ -136,7 +136,8 @@ class Sam_mv(samUtils.Sam):
 
     def _getSequenceItemFromPath(self, inputPath, detectNegative):
         """
-        Get an Item (which corresponds to a sequence) from a path.
+        Return an Item (which corresponds to a sequence) from a path.
+        Return None if the operation failed.
         """
         # get input path and name
         inputSequencePath = os.path.dirname(inputPath)
@@ -153,16 +154,16 @@ class Sam_mv(samUtils.Sam):
         inputItems = sequenceParser.browse(inputSequencePath, detectionMethod, [inputSequenceName])
         if not len(inputItems):
             self.logger.error('No existing file corresponds to the given input sequence: ' + inputPath)
-            exit(-1)
+            return None
         if len(inputItems) > 1:
             self.logger.error('Several items ' + str([item.getFilename() for item in inputItems]) + ' correspond to the given input sequence: ' + inputPath)
-            exit(-1)
+            return None
 
         # check if the item is a sequence
         inputItem = inputItems[0]
         if inputItem.getType() != sequenceParser.eTypeSequence:
             self.logger.error('Input is not a sequence: ' + inputItem.getFilename())
-            exit(-1)
+            return None
 
         return inputItem
 
@@ -195,6 +196,9 @@ class Sam_mv(samUtils.Sam):
         error = 0
         for inputPath in args.inputs:
             inputItem = self._getSequenceItemFromPath(inputPath, args.detectNegative)
+            if inputItem is None:
+                error = 1
+                continue
 
             if not outputIsSequence:
                 outputSequence = sequenceParser.Sequence(inputItem.getSequence())
