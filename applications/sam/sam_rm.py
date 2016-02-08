@@ -120,7 +120,9 @@ class Sam_rm(samUtils.Sam):
 
             # sam-rm -R
             if args.recursive and itemType == sequenceParser.eTypeFolder:
-                newItems = sequenceParser.browse(os.path.join(item.getFolder(), item.getFilename()), detectionMethod, filters)
+                subFolder = os.path.join(item.getFolder(), item.getFilename())
+                self.logger.debug('Browse in sub folder"' + subFolder + '" with the following filters: ' + str(filters))
+                newItems = sequenceParser.browse(subFolder, detectionMethod, filters)
                 self._removeItems(newItems, args, detectionMethod, filters)
 
             if toRemove:
@@ -193,6 +195,7 @@ class Sam_rm(samUtils.Sam):
                 filterToBrowse.extend(filters)
                 filterToBrowse.append(os.path.basename(input))
                 # browse
+                self.logger.debug('Browse in "' + pathToBrowse + '" with the following filters: ' + str(filterToBrowse))
                 items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
 
             # print error if no items were found
