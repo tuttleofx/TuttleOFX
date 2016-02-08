@@ -44,6 +44,7 @@ class Sam_rm(samUtils.Sam):
         parser.add_argument('--range', dest='range', nargs=2, type=int, help='specify the range of sequence')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
+        parser.add_argument('--dry-run', dest='dryRun', action='store_true', help='only print what it will do (will force verbosity to info)')
 
     def _removeItem(self, item, args):
         """
@@ -58,7 +59,9 @@ class Sam_rm(samUtils.Sam):
             try:
                 absoluteFolderPath = os.path.join(filePath, (item.getFilename() if item.getFilename() != '.' else ''))
                 self.logger.info('Remove folder "' + absoluteFolderPath + '".')
-                os.rmdir(absoluteFolderPath)
+                # sam-rm --dry-run
+                if not args.dryRun:
+                    os.rmdir(absoluteFolderPath)
             except OSError:
                 self.logger.error('You cannot remove a folder which contains elements like this. If you still want to, see "-R" option.')
                 return 1
@@ -68,7 +71,9 @@ class Sam_rm(samUtils.Sam):
         if itemType != sequenceParser.eTypeSequence:
             absoluteFilePath = os.path.join(filePath, item.getFilename())
             self.logger.info('Remove file "' + absoluteFilePath + '".')
-            os.remove(absoluteFilePath)
+            # sam-rm --dry-run
+            if not args.dryRun:
+                os.remove(absoluteFilePath)
             return 0
 
         sequence = item.getSequence()
@@ -90,7 +95,9 @@ class Sam_rm(samUtils.Sam):
             try:
                 filePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
                 self.logger.info('Remove file "' + filePathInSequence + '".')
-                os.remove(os.path.join(filePathInSequence))
+                # sam-rm --dry-run
+                if not args.dryRun:
+                    os.remove(os.path.join(filePathInSequence))
             except OSError:
                 self.logger.error('Cannot find file "' + filePathInSequence + '" in sequence.')
                 error = 1
@@ -153,7 +160,11 @@ class Sam_rm(samUtils.Sam):
         args = parser.parse_args()
 
         # Set sam log level
-        self.setLogLevel(args.verbose)
+        # sam-rm --dry-run
+        if args.dryRun:
+            self.setLogLevel(3) # info
+        else:
+            self.setLogLevel(args.verbose)
 
         # check command line
         if args.range and (args.firstImage is not None or args.lastImage is not None):
