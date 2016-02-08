@@ -115,7 +115,7 @@ class Sam_mv(samUtils.Sam):
             self.logger.error('Cannot create directory tree for "' + outputSequencePath + '": ' + str(e))
             return 1
 
-        # print brief of the operation
+        # log brief of the operation
         self.logger.info(os.path.join(self.command + ' ' + inputItem.getFolder(), str(inputItem.getSequence())) + ' to ' + os.path.join(outputSequencePath, str(outputSequence)))
 
         # get frame ranges
@@ -136,6 +136,7 @@ class Sam_mv(samUtils.Sam):
                 return 1
 
             # process the image at time
+            self.logger.info(inputPath + ' -> ' + outputPath)
             # sam-rm --dry-run
             if not dryRun:
                 self._operation(inputPath, outputPath)
