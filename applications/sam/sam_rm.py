@@ -193,7 +193,7 @@ class Sam_rm(samUtils.Sam):
 
             # print error if no items were found
             if len(items) == 0:
-                self.logger.error('No file or folders correspond to "' + input + '".')
+                self.logger.error('No files, sequences or folders correspond to "' + input + '".')
                 error = 1
                 continue
 
