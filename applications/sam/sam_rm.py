@@ -137,7 +137,7 @@ class Sam_rm(samUtils.Sam):
                     if err:
                         error = err
 
-        # remove folders (which are empty)
+        # remove folders (which should be empty at this state)
         for folder in folderItems:
             err = self._removeItem(folder, args)
             if err:
