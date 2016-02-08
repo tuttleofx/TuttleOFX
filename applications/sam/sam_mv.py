@@ -25,14 +25,14 @@ class Sam_mv(samUtils.Sam):
         self.command = 'mv'
         self.help = 'to move sequences'
         self.description = str(colored.green('''
-            Move sequences in a directory.
-            Rename sequences if the output directory is the same as the input.
+            Move one or more sequences to a directory.
+            Rename / retime a sequence.
             '''))
         self._operation = shutil.move
 
     def fillParser(self, parser):
-        parser.add_argument('inputs', metavar='INPUTS', nargs='+', action='store', help='list of inputs').completer = samUtils.sequenceParserCompleter
-        parser.add_argument('output', metavar='OUTPUT', help='the output to write').completer = samUtils.sequenceParserCompleter
+        parser.add_argument('inputs', metavar='INPUTS', nargs='+', action='store', help='list of inputs (only sequences)').completer = samUtils.sequenceParserCompleter
+        parser.add_argument('output', metavar='OUTPUT', help='the output to write (sequence or directory)').completer = samUtils.sequenceParserCompleter
 
         # Options
         parser.add_argument('-o', '--offset', dest='offset', type=int, help='retime the sequence with the given offset')
