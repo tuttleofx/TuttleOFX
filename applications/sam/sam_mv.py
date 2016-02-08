@@ -201,6 +201,9 @@ class Sam_mv(samUtils.Sam):
         # Get output path
         if outputIsSequence:
             outputSequencePath = os.path.dirname(args.output)
+            # if output path is the same as input
+            if not len(outputSequencePath):
+                outputSequencePath = '.'
         else:
             outputSequencePath = args.output
         self.logger.debug('Output sequence path is "' + outputSequencePath + '".')
