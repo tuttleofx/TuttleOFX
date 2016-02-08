@@ -213,19 +213,17 @@ def getSequenceNameWithFormatting(sequence, formatChosen):
     """
     Return the sequence name with a specific formatting (from nuke, rv...).
     """
-    sequenceName = sequence.getPrefix()
     if formatChosen == 'rv':
+        sequenceName = sequence.getPrefix()
         sequenceName += (str(sequence.getFirstTime()) + '-' + str(sequence.getLastTime()))
-        sequenceName += '@' * sequence.getPadding()
-        if not sequence.getPadding():
+        sequenceName += '@' * sequence.getFixedPadding()
+        if not sequence.getFixedPadding():
             sequenceName += '@'  # no padding
+        sequenceName += sequence.getSuffix()
     elif formatChosen == 'nuke':
-        sequenceName += '%0' + str(sequence.getPadding()) + 'd'
+        sequenceName = sequence.getFilenameWithPrintfPattern()
     else:  # default formatting
-        sequenceName += '#' * sequence.getPadding()
-        if not sequence.getPadding():
-            sequenceName += '@'  # no padding
-    sequenceName += sequence.getSuffix()
+        sequenceName = sequence.getFilenameWithStandardPattern()
     return sequenceName
 
 
