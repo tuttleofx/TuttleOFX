@@ -48,6 +48,7 @@ class Sam_mv(samUtils.Sam):
 
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
+        parser.add_argument('--dry-run', dest='dryRun', action='store_true', help='only print what it will do (will force verbosity to info)')
 
     def _getSequenceManipulators(self, inputSequence, args):
         """
@@ -86,7 +87,7 @@ class Sam_mv(samUtils.Sam):
 
         return {'first': first, 'last': last, 'offset': offset, 'holes': holesToRemove}
 
-    def _processSequence(self, inputItem, outputSequence, outputSequencePath, moveManipulators):
+    def _processSequence(self, inputItem, outputSequence, outputSequencePath, moveManipulators, dryRun):
         """
         Apply operation to the sequence contained in inputItem (used by sam-mv and sam-cp).
         Depending on args, update the frame ranges of the output sequence.
@@ -102,11 +103,14 @@ class Sam_mv(samUtils.Sam):
                 offset used to retime the output sequence,
                 list of holes to remove in the output sequence
             }
+        :param dryRun: only print what it will do.
         """
         # create output directory if not exists
         try:
             if not os.path.exists(outputSequencePath):
-                os.makedirs(outputSequencePath)
+                # sam-rm --dry-run
+                if not dryRun:
+                    os.makedirs(outputSequencePath)
         except Exception as e:
             self.logger.error('Cannot create directory tree for "' + outputSequencePath + '": ' + str(e))
             return 1
@@ -132,7 +136,9 @@ class Sam_mv(samUtils.Sam):
                 return 1
 
             # process the image at time
-            self._operation(inputPath, outputPath)
+            # sam-rm --dry-run
+            if not dryRun:
+                self._operation(inputPath, outputPath)
 
     def _getSequenceItemFromPath(self, inputPath, detectNegative):
         """
@@ -175,7 +181,11 @@ class Sam_mv(samUtils.Sam):
         args = parser.parse_args()
 
         # Set sam log level
-        self.setLogLevel(args.verbose)
+        # sam-rm --dry-run
+        if args.dryRun:
+            self.setLogLevel(3) # info
+        else:
+            self.setLogLevel(args.verbose)
 
         # check command line
         if args.offset and (args.outputFirst is not None or args.outputLast is not None):
@@ -207,7 +217,7 @@ class Sam_mv(samUtils.Sam):
             moveManipulators = self._getSequenceManipulators(inputItem.getSequence(), args)
 
             # move sequence
-            err = self._processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators)
+            err = self._processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, args.dryRun)
             if err:
                 error = err
 
