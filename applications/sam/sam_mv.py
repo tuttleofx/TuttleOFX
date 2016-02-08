@@ -90,6 +90,7 @@ class Sam_mv(samUtils.Sam):
         """
         Apply operation to the sequence contained in inputItem (used by sam-mv and sam-cp).
         Depending on args, update the frame ranges of the output sequence.
+        Return if the operation was a success or not.
 
         :param inputItem: the item which contains the input sequence to process (move, copy...)
         :param outputSequence: the output sequence to write (destination of move, copy...)
@@ -108,7 +109,7 @@ class Sam_mv(samUtils.Sam):
                 os.makedirs(outputSequencePath)
         except Exception as e:
             self.logger.error('Cannot create directory tree for "' + outputSequencePath + '": ' + str(e))
-            exit(-1)
+            return 1
 
         # print brief of the operation
         self.logger.info(os.path.join(inputItem.getFolder(), str(inputItem.getSequence())) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)))
@@ -128,7 +129,7 @@ class Sam_mv(samUtils.Sam):
             # security: check if file already exist
             if os.path.exists(outputPath):
                 self.logger.error('The output path "' + outputPath + '" already exist!')
-                exit(-1)
+                return 1
 
             # process the image at time
             self._operation(inputPath, outputPath)
@@ -191,6 +192,7 @@ class Sam_mv(samUtils.Sam):
         outputIsSequence = outputSequence.initFromPattern(outputSequenceName, sequenceParser.ePatternDefault)
 
         # For each input
+        error = 0
         for input in args.inputs:
             inputItem = self._getSequenceItemFromPath(input, args.detectNegative)
 
@@ -201,8 +203,11 @@ class Sam_mv(samUtils.Sam):
             moveManipulators = self._getSequenceManipulators(inputItem.getSequence(), args)
 
             # move sequence
-            self._processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators)
+            err = self._processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators)
+            if err:
+                error = err
 
+        exit(error)
 
 if __name__ == '__main__':
     # Create the tool
