@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_EXR_READER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_EXR_READER_PLUGIN_HPP_
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 #include <ImfInputFile.h>
 
 namespace tuttle {

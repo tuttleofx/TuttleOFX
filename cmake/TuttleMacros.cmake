@@ -111,7 +111,9 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
+        # TMP: for each plugin, link with both plugin and ioplugin libraries.
         target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
+        target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
         set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX "${_plugin_version_suffix}.ofx")
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
         # Add this new plugin to the global alias ofxplugins

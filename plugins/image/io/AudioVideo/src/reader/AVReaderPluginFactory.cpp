@@ -4,7 +4,7 @@
 
 #include <common/util.hpp>
 
-#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
+#include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 
 #include <AvTranscoder/common.hpp>
 #include <AvTranscoder/util.hpp>

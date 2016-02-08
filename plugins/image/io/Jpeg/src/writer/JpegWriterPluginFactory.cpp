@@ -2,7 +2,7 @@
 #include "JpegWriterDefinitions.hpp"
 #include "JpegWriterPlugin.hpp"
 
-#include <tuttle/plugin/context/WriterPluginFactory.hpp>
+#include <tuttle/ioplugin/context/WriterPluginFactory.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/assign/std/vector.hpp>

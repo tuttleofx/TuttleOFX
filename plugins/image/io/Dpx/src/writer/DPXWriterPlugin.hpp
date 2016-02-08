@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_DPXWRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_DPXWRITER_PLUGIN_HPP_
 
-#include <tuttle/plugin/context/WriterPlugin.hpp>
+#include <tuttle/ioplugin/context/WriterPlugin.hpp>
 #include "DPXWriterDefinitions.hpp"
 
 #include <libdpx/DPX.h>

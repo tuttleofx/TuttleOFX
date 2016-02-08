@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_JPEG2000_READER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_JPEG2000_READER_PLUGIN_HPP_
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 #include "openjpeg/J2KReader.hpp"
 
 namespace tuttle {

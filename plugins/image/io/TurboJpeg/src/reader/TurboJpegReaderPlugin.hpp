@@ -3,7 +3,7 @@
 
 #include "TurboJpegReaderDefinitions.hpp"
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {

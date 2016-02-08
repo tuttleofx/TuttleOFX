@@ -3,7 +3,7 @@
 
 #include "OpenImageIOWriterDefinitions.hpp"
 
-#include <tuttle/plugin/context/WriterPlugin.hpp>
+#include <tuttle/ioplugin/context/WriterPlugin.hpp>
 
 #include <typedesc.h>
 

@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_RAWREADERPLUGIN_HPP_
 
 #include "RawReaderDefinitions.hpp"
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {

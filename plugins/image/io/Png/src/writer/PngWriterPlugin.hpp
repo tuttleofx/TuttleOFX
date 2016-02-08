@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_PNG_WRITER_PLUGIN_HPP_
 
 #include "PngWriterDefinitions.hpp"
-#include <tuttle/plugin/context/WriterPlugin.hpp>
+#include <tuttle/ioplugin/context/WriterPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {

@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_JPEG2000_WRITER_PLUGIN_HPP_
 
 #include "Jpeg2000WriterDefinitions.hpp"
-#include <tuttle/plugin/context/WriterPlugin.hpp>
+#include <tuttle/ioplugin/context/WriterPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {

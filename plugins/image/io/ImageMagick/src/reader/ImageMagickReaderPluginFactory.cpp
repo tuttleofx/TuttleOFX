@@ -2,7 +2,7 @@
 #include "ImageMagickReaderDefinitions.hpp"
 #include "ImageMagickReaderPlugin.hpp"
 
-#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
+#include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/assign/std/vector.hpp>
