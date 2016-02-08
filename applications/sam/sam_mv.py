@@ -116,7 +116,7 @@ class Sam_mv(samUtils.Sam):
             return 1
 
         # print brief of the operation
-        self.logger.info(os.path.join(inputItem.getFolder(), str(inputItem.getSequence())) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)))
+        self.logger.info(os.path.join(self.command + ' ' + inputItem.getFolder(), str(inputItem.getSequence())) + ' to ' + os.path.join(outputSequencePath, str(outputSequence)))
 
         # get frame ranges
         inputFrameList = list(inputItem.getSequence().getFramesIterable(moveManipulators['first'], moveManipulators['last']))
