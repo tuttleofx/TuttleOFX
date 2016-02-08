@@ -1,10 +1,12 @@
 from pyTuttle import tuttle
+from nose.tools import nottest
 
 
 def setUp():
 	tuttle.core().preload(False)
 
 
+@nottest
 def testThreadEnv():
 	g = tuttle.Graph()
 	pngRead = g.createNode("tuttle.checkerboard", size=[50,50])
