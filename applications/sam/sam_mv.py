@@ -193,8 +193,8 @@ class Sam_mv(samUtils.Sam):
 
         # For each input
         error = 0
-        for input in args.inputs:
-            inputItem = self._getSequenceItemFromPath(input, args.detectNegative)
+        for inputPath in args.inputs:
+            inputItem = self._getSequenceItemFromPath(inputPath, args.detectNegative)
 
             if not outputIsSequence:
                 outputSequence = sequenceParser.Sequence(inputItem.getSequence())
