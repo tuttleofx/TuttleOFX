@@ -111,11 +111,17 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
-        # TMP: for each plugin, link with both plugin and ioplugin libraries.
-        target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
-        target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
+        # Static link with a common plugin library
+        set(IS_IOPLUGIN ${ARGV2}) 
+        if(IS_IOPLUGIN)
+            target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
+        else(IS_IOPLUGIN)
+            target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
+        endif(IS_IOPLUGIN)
+
         set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX "${_plugin_version_suffix}.ofx")
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
+
         # Add this new plugin to the global alias ofxplugins
         add_dependencies(ofxplugins ${PLUGIN_NAME})
 
@@ -129,7 +135,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
             set_target_properties(${PLUGIN_NAME} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../lib:$ORIGIN")
             set_target_properties(${PLUGIN_NAME} PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/libraries/openfxHack/Support/include/linuxSymbols")
         endif(APPLE)
-     
+
         # Install OFX plugin as specified in
         # http://openfx.sourceforge.net/Documentation/1.3/Reference/ch02s02.html
         set(OFX_PLUGIN_ROOT "${CMAKE_INSTALL_PREFIX}/OFX/${PLUGIN_NAME}${_plugin_version_suffix}.ofx.bundle/Contents")

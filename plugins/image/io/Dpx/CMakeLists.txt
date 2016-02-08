@@ -9,7 +9,7 @@ file(GLOB_RECURSE DPX_PLUGIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/dpx-google-
 include_directories(src/dpx-google-code)
 
 set(DPX_PLUGIN_SOURCES ${WRITER_PLUGIN_SOURCES} ${DPX_PLUGIN_SOURCES} src/mainEntry.cpp)
-tuttle_ofx_plugin_target(Dpx "${DPX_PLUGIN_SOURCES}")
+tuttle_ofx_plugin_target(Dpx "${DPX_PLUGIN_SOURCES}" TRUE)
 
 # Add external libraries
 tuttle_ofx_plugin_add_libraries(Dpx sequenceParser)
