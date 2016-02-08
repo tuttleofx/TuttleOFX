@@ -48,6 +48,7 @@ class Sam_rm(samUtils.Sam):
     def _removeItem(self, item, args):
         """
         Remove the item.
+        Return if the operation was a success or not.
         """
         itemType = item.getType()
         filePath = os.path.abspath(item.getFolder())
@@ -98,6 +99,7 @@ class Sam_rm(samUtils.Sam):
     def _removeItems(self, items, args, detectionMethod, filters):
         """
         For each items, check if it should be removed, depending on the command line options.
+        Return if the operation was a success or not.
         """
         folderItems = []
         error = 0
