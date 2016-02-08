@@ -55,7 +55,9 @@ class Sam_rm(samUtils.Sam):
         # remove folder
         if itemType == sequenceParser.eTypeFolder:
             try:
-                os.rmdir(os.path.join(filePath, (item.getFilename() if item.getFilename() != '.' else '')))
+                absoluteFolderPath = os.path.join(filePath, (item.getFilename() if item.getFilename() != '.' else ''))
+                self.logger.info('Remove folder "' + absoluteFolderPath + '".')
+                os.rmdir(absoluteFolderPath)
             except OSError:
                 self.logger.error('You cannot remove a folder which contains elements like this. If you still want to, see "-R" option.')
                 return 1
@@ -63,7 +65,9 @@ class Sam_rm(samUtils.Sam):
 
         # remove other things than sequences (file, link...)
         if itemType != sequenceParser.eTypeSequence:
-            os.remove(os.path.join(filePath, item.getFilename()))
+            absoluteFilePath = os.path.join(filePath, item.getFilename())
+            self.logger.info('Remove file "' + absoluteFilePath + '".')
+            os.remove(absoluteFilePath)
             return 0
 
         sequence = item.getSequence()
