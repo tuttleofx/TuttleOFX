@@ -93,13 +93,13 @@ class Sam_rm(samUtils.Sam):
         error = 0
         for time in sequence.getFramesIterable(first, last):
             try:
-                filePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
-                self.logger.info('Remove file "' + filePathInSequence + '".')
+                absoluteFilePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
+                self.logger.info('Remove file "' + absoluteFilePathInSequence + '" of sequence "' + sequence.getFilenameWithStandardPattern() + '".')
                 # sam-rm --dry-run
                 if not args.dryRun:
-                    os.remove(os.path.join(filePathInSequence))
+                    os.remove(os.path.join(absoluteFilePathInSequence))
             except OSError:
-                self.logger.error('Cannot find file "' + filePathInSequence + '" in sequence.')
+                self.logger.error('Cannot find file "' + absoluteFilePathInSequence + '" in sequence.')
                 error = 1
         return error
 
