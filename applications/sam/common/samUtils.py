@@ -69,23 +69,17 @@ class Sam(object):
         """
         for handler in self.logger.handlers:
             if tuttleVerboseLevel is 0:
-                # CRITICAL
-                handler.setLevel(50)
+                handler.setLevel(logging.CRITICAL)
             elif tuttleVerboseLevel is 1:
-                # ERROR
-                handler.setLevel(40)
+                handler.setLevel(logging.ERROR)
             elif tuttleVerboseLevel is 2:
-                # WARNING
-                handler.setLevel(30)
+                handler.setLevel(logging.WARNING)
             elif tuttleVerboseLevel is 3:
-                # INFO
-                handler.setLevel(20)
+                handler.setLevel(logging.INFO)
             elif tuttleVerboseLevel >= 4:
-                # DEBUG (and trace)
-                handler.setLevel(10)
+                handler.setLevel(logging.DEBUG)
             else:
-                # WARNING
-                handler.setLevel(30)
+                handler.setLevel(logging.WARNING)
 
 
 class SamFormatter(logging.Formatter):
