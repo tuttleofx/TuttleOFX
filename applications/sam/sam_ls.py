@@ -249,15 +249,22 @@ class Sam_ls(samUtils.Sam):
         # Set sam log level
         self.setLogLevel(args.verbose)
 
-        # inputs to scan
         inputs = []
+        # for each input to scan
         for inputPath in args.inputs:
-            # if exists add the path
-            if os.path.exists(inputPath):
+            # if the input is a directory, add it and continue
+            if os.path.isdir(inputPath):
                 inputs.append(inputPath)
-            # else use it as a filter expression
-            else:
-                args.expression.append(inputPath)
+                continue
+            # else split the input to a path and a filename
+            subPath = os.path.dirname(inputPath)
+            if not subPath:
+                subPath = '.'
+            filename = os.path.basename(inputPath)
+            # add the path and the filename as an expression
+            inputs.append(subPath)
+            if filename:
+                args.expression.append(filename)
         if not inputs:
             inputs.append(os.getcwd())
 
