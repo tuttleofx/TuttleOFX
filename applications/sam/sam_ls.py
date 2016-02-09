@@ -293,6 +293,7 @@ class Sam_ls(samUtils.Sam):
                 self.logger.debug('Browse in "' + inputPath + '" with the following filters: ' + str(filters))
                 items = sequenceParser.browse(inputPath, detectionMethod, filters)
             except IOError as e:
+                self.logger.debug('IOError raised: "' + str(e) + '".')
                 # if the given input does not correspond to anything
                 if 'No such file or directory' in str(e):
                     # try to create a sequence from the given input
@@ -308,8 +309,9 @@ class Sam_ls(samUtils.Sam):
                     else:
                         self.logger.warning(e)
                         continue
-                # else it's not a directory: try a new browse with the given input name as filter
+                # else it's not a directory
                 else:
+                    self.logger.debug('Try a new browse with the given input name as filter.')
                     # new path to browse
                     newBrowsePath = os.path.dirname(inputPath)
                     if not newBrowsePath:
