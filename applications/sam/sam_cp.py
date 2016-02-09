@@ -20,7 +20,7 @@ class Sam_cp(Sam_mv):
         self.command = 'cp'
         self.help = 'to copy sequences'
         self.description = str(colored.green('''
-            Copy sequences in a directory.
+            Copy one or more sequences to a directory.
             '''))
         self._operation = shutil.copy2
 
