@@ -191,29 +191,29 @@ class Sam_rm(samUtils.Sam):
 
         # get list of items for each inputs
         error = 0
-        for input in args.inputs:
+        for inputPath in args.inputs:
             items = []
 
             # input is a directory
-            if not os.path.basename(input):
-                items.append(sequenceParser.Item(sequenceParser.eTypeFolder, input))
+            if not os.path.basename(inputPath):
+                items.append(sequenceParser.Item(sequenceParser.eTypeFolder, inputPath))
             # else browse directory with a filter, to find the corresponding Item
             else:
                 # get path to browse
-                pathToBrowse = os.path.dirname(input)
+                pathToBrowse = os.path.dirname(inputPath)
                 if not pathToBrowse:
                     pathToBrowse = '.'
                 # get filter
                 filterToBrowse = []
                 filterToBrowse.extend(filters)
-                filterToBrowse.append(os.path.basename(input))
+                filterToBrowse.append(os.path.basename(inputPath))
                 # browse
                 self.logger.debug('Browse in "' + pathToBrowse + '" with the following filters: ' + str(filterToBrowse))
                 items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
 
             # print error if no items were found
             if len(items) == 0:
-                self.logger.error('No files, sequences or folders correspond to "' + input + '".')
+                self.logger.error('No files, sequences or folders correspond to "' + inputPath + '".')
                 error = 1
                 continue
 
