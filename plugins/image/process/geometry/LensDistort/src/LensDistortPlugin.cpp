@@ -25,15 +25,21 @@ LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 	_reverse              = fetchBooleanParam       ( kParamReverse );
 	_displaySource        = fetchBooleanParam       ( kParamDisplaySource );
 	_lensType             = fetchChoiceParam        ( kParamLensType );
+	_normalization        = fetchChoiceParam        ( kParamNormalization );
+	_focal                = fetchDoubleParam        ( kParamFocal );
 	_coef1                = fetchDoubleParam        ( kParamCoef1 );
 	_coef2                = fetchDoubleParam        ( kParamCoef2 );
+	_coef3                = fetchDoubleParam        ( kParamCoef3 );
 	_squeeze              = fetchDoubleParam        ( kParamSqueeze );
 	_asymmetric           = fetchDouble2DParam      ( kParamAsymmetric );
 	_center               = fetchDouble2DParam      ( kParamCenter );
+	_centerUnit           = fetchChoiceParam        ( kParamCenterUnit );
 	_centerOverlay        = fetchBooleanParam       ( kParamCenterOverlay );
 	_centerType           = fetchChoiceParam        ( kParamCenterType );
 	_preScale             = fetchDoubleParam        ( kParamPreScale );
 	_postScale            = fetchDoubleParam        ( kParamPostScale );
+	_preOffset            = fetchDouble2DParam      ( kParamPreOffset );
+	_postOffset           = fetchDouble2DParam      ( kParamPostOffset );
 	_resizeRod            = fetchChoiceParam        ( kParamResizeRod );
 	_resizeRodManualScale = fetchDoubleParam        ( kParamResizeRodManualScale );
 	_groupDisplayParams   = fetchGroupParam         ( kParamDisplayOptions );
@@ -53,6 +59,7 @@ void LensDistortPlugin::initParamsProps()
 	changedParam( args, kParamFilter );
 	changedParam( args, kParamLensType );
 	changedParam( args, kParamResizeRod );
+	changedParam( args, kParamNormalization );
 }
 
 /**
@@ -70,37 +77,41 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 
 	if( paramName == kParamLensType )
 	{
-		switch( _lensType->getValue() )
+		switch( (EParamLensType)_lensType->getValue() )
 		{
-			case 0: // normal
-				_coef2      -> setIsSecret( true );
-				_coef2      -> setEnabled( false );
-				_squeeze    -> setIsSecret( true );
-				_squeeze    -> setEnabled( false );
-				_asymmetric -> setIsSecret( true );
-				_asymmetric -> setEnabled( false );
+			case eParamLensTypeBrown1:
+				_coef2     -> setIsSecretAndDisabled( true );
+				_coef3     -> setIsSecretAndDisabled( true );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
-			case 1: // fish-eye
-				_coef2      ->setIsSecret( false );
-				_coef2      -> setEnabled( true );
-				_squeeze    -> setIsSecret( true );
-				_squeeze    -> setEnabled( false );
-				_asymmetric -> setIsSecret( true );
-				_asymmetric -> setEnabled( false );
+			case eParamLensTypeBrown3:
+				_coef2     -> setIsSecretAndDisabled( false );
+				_coef3     -> setIsSecretAndDisabled( false );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
-			case 2: // advanced
-				_coef2      -> setIsSecret( false );
-				_coef2      -> setEnabled( true );
-				_squeeze    -> setIsSecret( false );
-				_squeeze    -> setEnabled( true );
-				_asymmetric -> setIsSecret( false );
-				_asymmetric -> setEnabled( true );
+			case eParamLensTypePTLens:
+				_coef2     -> setIsSecretAndDisabled( false );
+				_coef3     -> setIsSecretAndDisabled( false );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
+				break;
+			case eParamLensTypeFisheye:
+				_coef2     ->setIsSecretAndDisabled( true );
+				_coef3     ->setIsSecretAndDisabled( true );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
 			default:
 				BOOST_THROW_EXCEPTION( exception::Bug()
 					<< exception::user() + "Lens type value not recognize." );
 				break;
 		}
+	}
+	else if( paramName == kParamNormalization )
+	{
+		_focal->setIsSecretAndDisabled( _normalization->getValue() != eParamNormalizationFocal );
 	}
 	else if( paramName == kParamResizeRod )
 	{
@@ -129,10 +140,13 @@ bool LensDistortPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*
 	{
 		isIdentity = true;
 	}
-	else if( _coef1->getValue() == 0 /*_coef1->getDefault( )*/ &&
+	else if( _coef1->getValue() == 0 &&
 	         _preScale->getValue() == _preScale->getDefault() &&
 	         _postScale->getValue() == _postScale->getDefault() &&
-	         ( !_coef2->getIsEnable() || _coef2->getValue() == _coef2->getDefault() ) &&
+	         _preOffset->getValue() == _preOffset->getDefault() &&
+	         _postOffset->getValue() == _postOffset->getDefault() &&
+	         ( !_coef2->getIsEnable() || _coef2->getValue() == 0 ) &&
+	         ( !_coef3->getIsEnable() || _coef3->getValue() == 0 ) &&
 	         ( !_squeeze->getIsEnable() || _squeeze->getValue() == _squeeze->getDefault() ) &&
 	         ( !_asymmetric->getIsEnable() || _asymmetric->getValue() == _asymmetric->getDefault() ) )
 	{
@@ -186,18 +200,18 @@ bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgu
 			pMax.x = std::min( tr.x, br.x );
 			pMax.y = std::min( bl.y, br.y );
 
-			if( params._lensCenterSrc.x > srcRodInDstFrame.x1 && params._lensCenterSrc.x < srcRodInDstFrame.x2 )
+			if( params.lensCenterSrc.x > srcRodInDstFrame.x1 && params.lensCenterSrc.x < srcRodInDstFrame.x2 )
 			{
-				Point2 t = transformValues( getLensType(), params, Point2( params._lensCenterSrc.x, srcRodInDstFrame.y1 ) );
+				Point2 t = transformValues( getLensType(), params, Point2( params.lensCenterSrc.x, srcRodInDstFrame.y1 ) );
 				pMin.y = std::max( pMin.y, t.y );
-				Point2 b = transformValues( getLensType(), params, Point2( params._lensCenterSrc.x, srcRodInDstFrame.y2 ) );
+				Point2 b = transformValues( getLensType(), params, Point2( params.lensCenterSrc.x, srcRodInDstFrame.y2 ) );
 				pMax.y = std::min( pMax.y, b.y );
 			}
-			if( params._lensCenterSrc.y > srcRodInDstFrame.y1 && params._lensCenterSrc.y < srcRodInDstFrame.y2 )
+			if( params.lensCenterSrc.y > srcRodInDstFrame.y1 && params.lensCenterSrc.y < srcRodInDstFrame.y2 )
 			{
-				Point2 l = transformValues( getLensType(), params, Point2( srcRodInDstFrame.x1, params._lensCenterSrc.y ) );
+				Point2 l = transformValues( getLensType(), params, Point2( srcRodInDstFrame.x1, params.lensCenterSrc.y ) );
 				pMin.x = std::max( pMin.x, l.x );
-				Point2 r = transformValues( getLensType(), params, Point2( srcRodInDstFrame.x2, params._lensCenterSrc.y ) );
+				Point2 r = transformValues( getLensType(), params, Point2( srcRodInDstFrame.x2, params.lensCenterSrc.y ) );
 				pMax.x = std::min( pMax.x, r.x );
 			}
 			rod.x1   = pMin.x;
@@ -335,42 +349,90 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	double preScale         = _preScale->getValue();
 	double postScale        = _postScale->getValue();
 
-	params._coef1           = _coef1->getValue();
+	params.distort          = _reverse->getValue();
 
-	if( params._coef1 >= 0 )
-		params._distort = true; // distort
-	else
-		params._distort = false; // undistort
+	params.coef1           = _coef1->getValue();
+	params.coef2          = _coef2->getValue();
+	params.coef3          = _coef3->getValue();
+	params.squeeze         = _squeeze->getValue();
+	params.asymmetric      = ofxToGil( _asymmetric->getValue() );
 
-	params._coef1           = std::abs( params._coef1 );
-	params._coef2           = _coef2->getValue();
-	params._squeeze         = _squeeze->getValue();
-	params._asymmetric      = ofxToGil( _asymmetric->getValue() );
+	params.preScale.x = params.preScale.y = 1.0 / preScale;
+	params.postScale.x = params.postScale.y = 1.0 / postScale;
 
-	params._preScale.x      = ( 1.0 / preScale );
-	params._preScale.y      = 1.0 / preScale;
+	Point2 preOffset = ofxToGil(_preOffset->getValue());
+	Point2 postOffset = ofxToGil(_postOffset->getValue());
 
-	params._postScale.x     = ( 1.0 / postScale );
-	params._postScale.y     = 1.0 / postScale;
+	if( reverse )
+	{
+		params.distort   = !params.distort;
 
-	Point2  imgShift        = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
-	params._imgSizeSrc      = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
-	params._imgCenterSrc    = Point2( params._imgSizeSrc.x * 0.5, params._imgSizeSrc.y * 0.5 );
-	params._imgCenterDst    = params._imgCenterSrc + imgShift;
-	params._imgHalfDiagonal = std::sqrt( params._imgCenterSrc.x * params._imgCenterSrc.x * pixelAspectRatio * pixelAspectRatio + params._imgCenterSrc.y * params._imgCenterSrc.y );
-	params._pixelRatio      = pixelAspectRatio;
+		// swap pre/post scale
+		Point2 swapPoint = params.preScale;
+		params.preScale  = 1.0 / params.postScale;
+		params.postScale = 1.0 / swapPoint;
+
+		// swap pre/post offset
+		swapPoint = preOffset;
+		preOffset = postOffset;
+		postOffset = swapPoint;
+	}
+
+	Point2  imgShift       = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
+	params.imgSizeSrc      = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
+	params.imgCenterSrc    = Point2( params.imgSizeSrc.x * 0.5, params.imgSizeSrc.y * 0.5 );
+	params.imgCenterDst    = params.imgCenterSrc + imgShift;
+	switch( (EParamNormalization)_normalization->getValue() )
+	{
+		case eParamNormalizationWidth:
+			params.normalizeCoef = params.imgSizeSrc.x;
+			break;
+		case eParamNormalizationHeight:
+			params.normalizeCoef = params.imgSizeSrc.y;
+			break;
+		case eParamNormalizationMinSize:
+			params.normalizeCoef = std::min(params.imgSizeSrc.x, params.imgSizeSrc.y);
+			break;
+		case eParamNormalizationMaxSize:
+			params.normalizeCoef = std::max(params.imgSizeSrc.x, params.imgSizeSrc.y);
+			break;
+		case eParamNormalizationDiagonal:
+			params.normalizeCoef = std::sqrt( params.imgSizeSrc.x * params.imgSizeSrc.x + params.imgSizeSrc.y * params.imgSizeSrc.y );
+			break;
+		case eParamNormalizationHalfDiagonal:
+			params.normalizeCoef = std::sqrt( params.imgCenterSrc.x * params.imgCenterSrc.x + params.imgCenterSrc.y * params.imgCenterSrc.y );
+			break;
+		case eParamNormalizationFocal:
+			params.normalizeCoef = _focal->getValue();
+			break;
+	}
+	params.pixelRatio = pixelAspectRatio;
 
 	switch( getCenterType() )
 	{
 		case eParamCenterTypeSource:
 		{
-			params._lensCenterSrc = pointNormalizedXXcToCanonicalXY( ofxToGil( _center->getValue() ), params._imgSizeSrc );
+			switch( (EParamCenterUnit)_centerUnit->getValue() )
+			{
+				case eParamCenterUnitCenteredPixel:
+					params.lensCenterSrc = ofxToGil( _center->getValue() ) + params.imgCenterSrc;
+					break;
+				case eParamCenterUnitPixel:
+					params.lensCenterSrc = ofxToGil( _center->getValue() );
+					break;
+				case eParamCenterUnitCenteredNormWidth:
+					params.lensCenterSrc = pointNormalizedXXcToCanonicalXY( ofxToGil( _center->getValue() ), params.imgSizeSrc );
+					break;
+				case eParamCenterUnitNormWidth:
+					params.lensCenterSrc = pointNormalizedXXToCanonicalXY( ofxToGil( _center->getValue() ), params.imgSizeSrc );
+					break;
+			}
 			if( useOptionalInputRod )
 			{
 				Point2 imgShiftBetweenInputs = Point2( optionalInputRod.x1 - inputRod.x1, optionalInputRod.y1 - inputRod.y1 ); // translate inputRod -> optionalInputRod
-				params._lensCenterSrc += imgShiftBetweenInputs;
+				params.lensCenterSrc += imgShiftBetweenInputs;
 			}
-			params._lensCenterDst = params._lensCenterSrc + imgShift;
+			params.lensCenterDst = params.lensCenterSrc + imgShift;
 			break;
 		}
 		case eParamCenterTypeRoW:
@@ -379,14 +441,9 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 			break;
 		}
 	}
-	if( _reverse->getValue() != reverse )
-	{
-		Point2 swapPreScale = params._preScale;
+	params.lensCenterSrc -= preOffset;
+	params.lensCenterDst += postOffset;
 
-		params._distort   = !params._distort;
-		params._preScale  = 1.0 / params._postScale;
-		params._postScale = 1.0 / swapPreScale;
-	}
 	return params;
 }
 

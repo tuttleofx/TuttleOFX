@@ -55,7 +55,7 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
     // add supported extensions
 	desc.addSupportedExtensions( supportedExtensions );
-	desc.setPluginEvaluation( 70 );
+	desc.setPluginEvaluation( 30 );
 
     // plugin flags
     desc.setRenderThreadSafety( OFX::eRenderFullySafe );

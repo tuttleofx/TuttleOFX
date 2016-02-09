@@ -651,8 +651,8 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 				e << tuttle::exception::time(time);
 				if( _options.getContinueOnError() || _options.getContinueOnMissingFile() )
 				{
-					TUTTLE_LOG_WARNING( "[Process render] Missing input file at frame " << time << "." << std::endl
-							<< tuttle::exception::format_exception_message(e) << std::endl
+					TUTTLE_LOG_WARNING( "[Process render] Missing input file at frame " << time << "." << std::endl );
+					TUTTLE_LOG_DEBUG( tuttle::exception::format_exception_message(e) << std::endl
 							<< tuttle::exception::format_exception_info(e)
 						);
 				}
@@ -671,8 +671,8 @@ bool ProcessGraph::process( memory::IMemoryCache& outCache )
 				e << tuttle::exception::time(time);
 				if( _options.getContinueOnError() )
 				{
-					TUTTLE_LOG_ERROR( "[Process render] Skip frame " << time << "." << std::endl
-							<< tuttle::exception::format_exception_message(e) << std::endl
+					TUTTLE_LOG_ERROR( "[Process render] Skip frame " << time << "." << std::endl );
+					TUTTLE_LOG_DEBUG( tuttle::exception::format_exception_message(e) << std::endl
 							<< tuttle::exception::format_exception_info(e)
 						);
 				}

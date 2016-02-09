@@ -153,7 +153,7 @@ class Sam_mv(samUtils.Sam):
         if not len(inputItems):
             self.logger.error('No existing file corresponds to the given input sequence: ' + inputPath)
             exit(-1)
-        if len(inputItems) > 0:
+        if len(inputItems) > 1:
             self.logger.error('Several items ' + str([item.getFilename() for item in inputItems]) + ' correspond to the given input sequence: ' + inputPath)
             exit(-1)
 
