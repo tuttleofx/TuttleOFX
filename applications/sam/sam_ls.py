@@ -251,13 +251,13 @@ class Sam_ls(samUtils.Sam):
 
         # inputs to scan
         inputs = []
-        for input in args.inputs:
+        for inputPath in args.inputs:
             # if exists add the path
-            if os.path.exists(input):
-                inputs.append(input)
+            if os.path.exists(inputPath):
+                inputs.append(inputPath)
             # else use it as a filter expression
             else:
-                args.expression.append(input)
+                args.expression.append(inputPath)
         if not inputs:
             inputs.append(os.getcwd())
 
@@ -280,18 +280,18 @@ class Sam_ls(samUtils.Sam):
             filters.append(expression)
 
         # get list of items for each inputs
-        for input in inputs:
+        for inputPath in inputs:
             items = []
             try:
-                self.logger.debug('Browse in "' + input + '" with the following filters: ' + str(filters))
-                items = sequenceParser.browse(input, detectionMethod, filters)
+                self.logger.debug('Browse in "' + inputPath + '" with the following filters: ' + str(filters))
+                items = sequenceParser.browse(inputPath, detectionMethod, filters)
             except IOError as e:
                 # if the given input does not correspond to anything
                 if 'No such file or directory' in str(e):
                     # try to create a sequence from the given input
                     sequence = sequenceParser.Sequence()
-                    self.logger.debug('BrowseSequence on "' + input + '".')
-                    isSequence = sequenceParser.browseSequence(sequence, input)
+                    self.logger.debug('BrowseSequence on "' + inputPath + '".')
+                    isSequence = sequenceParser.browseSequence(sequence, inputPath)
                     if isSequence:
                         item = sequenceParser.Item(sequence, os.getcwd())
                         # check if the sequence contains at least one element
@@ -304,19 +304,19 @@ class Sam_ls(samUtils.Sam):
                 # else it's not a directory: try a new browse with the given input name as filter
                 else:
                     # new path to browse
-                    newBrowsePath = os.path.dirname(input)
+                    newBrowsePath = os.path.dirname(inputPath)
                     if not newBrowsePath:
                         newBrowsePath = '.'
                     # new filter
                     newFilter = []
                     newFilter.extend(filters)
-                    newFilter.append(os.path.basename(input))
+                    newFilter.append(os.path.basename(inputPath))
                     # new browse
                     self.logger.debug('Browse in "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
                     items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
             if not len(items):
-                self.logger.warning('No items found for input "' + input + '".')
+                self.logger.warning('No items found for input "' + inputPath + '".')
             else:
                 self.printItems(items, args, detectionMethod, filters)
 
