@@ -8,7 +8,7 @@ def setUp():
 def testThreadEnv():
 	g = tuttle.Graph()
 	pngRead = g.createNode("tuttle.checkerboard", size=[50,50])
-	blur = g.createNode('tuttle.blur')
+	blur = g.createNode('tuttle.invert')
 	pngW = g.createNode('tuttle.pngwriter', ".tests/output-###.png")
 	g.connect( [pngRead, blur, pngW] )
 

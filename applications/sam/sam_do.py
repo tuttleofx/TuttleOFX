@@ -527,6 +527,7 @@ class Sam_do(samUtils.Sam):
             self.logger.error('No tuttle graph to compute.')
             exit(1)
 
+        error = 0
         # Compute the corresponding tuttle graphs
         for graph, nodes in graphsWithNodes:
             # Options of process
@@ -565,8 +566,10 @@ class Sam_do(samUtils.Sam):
             except Exception as e:
                 self.logger.error('Tuttle graph computation has failed.')
                 self.logger.debug(e)
+                error = 1
             self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
+        exit(error)
 
 if __name__ == '__main__':
     # Create the tool
