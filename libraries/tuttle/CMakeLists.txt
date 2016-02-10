@@ -21,18 +21,10 @@ file(GLOB_RECURSE TUTTLE_HOST_HEADER_FILES src/tuttle/host/*.hpp src/tuttle/comm
 # Boost dependencies
 include(UseTuttleBoost)
 if (TuttleBoost_FOUND) 
-  include_directories(${Boost_INCLUDE_DIRS}) 
   
   # OpenFX and Terry rely on boost
   include(UseOfxpp)
   include(UseTerry)
-  
-  # SequenceParser, as a separate project
-  find_package(sequenceParser)
-  include_directories(${SEQUENCEPARSER_INCLUDE_DIR})
-  
-  # Target is a shared library
-  add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
 
   # Extract tuttleHost_VERSION_MAJOR/MINOR/MICRO from version.hpp
   file(STRINGS "src/tuttle/host/version.hpp" _tuttleHost_VERSION_HPP_CONTENTS REGEX "#define TUTTLE_HOST_VERSION_")
@@ -51,16 +43,41 @@ if (TuttleBoost_FOUND)
   else()
     message(STATUS "tuttleHost version is "
                  "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO} (retrieved from version.hpp)")
-    set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}"
-  )
   endif()
 
-  target_link_libraries(tuttleHost ${Boost_LIBRARIES})
+  # SequenceParser, as a separate project
+  find_package(sequenceParser)
+
+  # TODO: if cmake >= 2.8.11
+  # TODO: declare BOOST Atomic optional.
+  # There is a basic fallback implementation for boost_atomic:
+  # libraries/tuttle/src/tuttle/common/atomic.hpp
+  # target_compile_definitions(tuttleHost PUBLIC WITHOUT_BOOST_ATOMIC)
+  
+  # Add tuttleCommon library (utilities for both host and plugins)
+  add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES})
+  target_include_directories(tuttleCommon PUBLIC ${Boost_INCLUDE_DIRS})
+  set_target_properties(tuttleCommon PROPERTIES COMPILE_FLAGS "-fPIC")
+  find_package(Threads)
+  target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(tuttleCommon ${TuttleCommonBoost_LIBRARIES})
+
+  # Add tuttlePlugin library (utilities for OFX plugins)
+  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
+  target_include_directories(tuttlePluginLib PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
+  set_target_properties(tuttlePluginLib PROPERTIES COMPILE_FLAGS "-fPIC")
+  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
+  target_link_libraries(tuttlePluginLib tuttleCommon)
+
+  # Add tuttleHost library
+  add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
+  set_target_properties(tuttleHost PROPERTIES VERSION "${tuttleHost_VERSION_MAJOR}.${tuttleHost_VERSION_MINOR}.${tuttleHost_VERSION_MICRO}")
+  target_include_directories(tuttleHost PUBLIC ${Boost_INCLUDE_DIRS})
+  target_link_libraries(tuttleHost ${TuttleHostBoost_LIBRARIES})
+  target_link_libraries(tuttleHost tuttleCommon)
   if(APPLE)
-      set_target_properties(tuttleHost 
-            PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
-      set_target_properties(tuttleHost 
-            PROPERTIES INSTALL_RPATH "@loader_path")
+      set_target_properties(tuttleHost PROPERTIES LINK_FLAGS "-framework CoreFoundation -w")
+      set_target_properties(tuttleHost PROPERTIES INSTALL_RPATH "@loader_path")
   endif(APPLE)
   if (UNIX AND NOT APPLE)
       target_link_libraries(tuttleHost dl)
@@ -77,30 +94,7 @@ if (TuttleBoost_FOUND)
     endif(PNG_FOUND)
   endif(CMAKE_BUILD_TYPE MATCHES RELEASE)
 
-  # TODO: if cmake >= 2.8.11
-  # TODO: declare BOOST Atomic optional.
-  # There is a basic fallback implementation for boost_atomic:
-  # libraries/tuttle/src/tuttle/common/atomic.hpp
-  # target_compile_definitions(tuttleHost PUBLIC WITHOUT_BOOST_ATOMIC)
-  
-  # Adds a support library for common and plugins
-  # only compile object files, and use them at link time
-  add_library(tuttleCommon STATIC ${TUTTLE_COMMON_FILES}) 
-  set_target_properties(tuttleCommon
-                        PROPERTIES COMPILE_FLAGS "-fPIC")
-  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
-  find_package(Threads)
-  target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
-  target_link_libraries(tuttleCommon ${Boost_LIBRARIES})
-
-  # Utilities for OFX plugins
-  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
-  set_target_properties(tuttlePluginLib
-                        PROPERTIES COMPILE_FLAGS "-fPIC")
-  target_link_libraries(tuttlePluginLib tuttleCommon)
-
-
-  # Install tuttle host library in INSTALL_PREFIX/lib/
+  # Install tuttle libraries in INSTALL_PREFIX/lib/
   install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttleCommon DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttlePluginLib DESTINATION lib/ OPTIONAL)
@@ -119,7 +113,8 @@ if (TuttleBoost_FOUND)
   # Install boost library along with tuttle library
   # Need to copy the files pointed by symlinks instead of the symlinks
   include(TuttleMacros)
-  tuttle_install_shared_libs("${Boost_LIBRARIES}")
+  tuttle_install_shared_libs("${TuttleCommonBoost_LIBRARIES}")
+  tuttle_install_shared_libs("${TuttleHostBoost_LIBRARIES}")
 
   # Python bindings with Swig 
   find_package(SWIG)
@@ -164,15 +159,13 @@ if (TuttleBoost_FOUND)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/tuttle/host)
     swig_add_module(tuttle python ${TUTTLE_PYTHON_BINDING_FILE})
     swig_link_libraries(tuttle tuttleHost)
-    swig_link_libraries(tuttle ${Boost_LIBRARIES})
+    swig_link_libraries(tuttle ${TuttleHostBoost_LIBRARIES})
     swig_link_libraries(tuttle ${PYTHON_LIBRARIES})
     # Force the library to look in the project lib folder relatively
     if (APPLE)
-      set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} 
-            PROPERTIES INSTALL_RPATH "@loader_path/../../..")
+      set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} PROPERTIES INSTALL_RPATH "@loader_path/../../..")
     else(APPLE)
-        set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME}
-            PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
+        set_target_properties(${SWIG_MODULE_tuttle_REAL_NAME} PROPERTIES INSTALL_RPATH "$ORIGIN/../../..:$ORIGIN")
     endif(APPLE)
 
     # get path to install python bindings

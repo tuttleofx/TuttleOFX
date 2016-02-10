@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::colorCubeViewer::ColorCubeViewerPluginFactory, "tuttle.colorCube" );
+	mAppendPluginFactory( ids, tuttle::plugin::colorCubeViewer::ColorCubeViewerPluginFactory, "tuttle.colorcubeviewer" );
 }
 
 }

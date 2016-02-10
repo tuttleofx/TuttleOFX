@@ -20,6 +20,10 @@ void GammaPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Apply gamma value on image." );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
+	desc.setDescription( "Gamma\n"
+			 "Plugin is used to apply gamma correction, \n"
+			 "a nonlinear operation used to code and decode luminance on images." );
+
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );

@@ -62,8 +62,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
     # FIXME: Why ? what are we including here ? common ??
     include_directories(${PROJECT_SOURCE_DIR}/libraries/tuttle/src/)
     include(UseTuttleBoost) 
-    if(TuttleBoost_FOUND) 
-        include_directories(${Boost_INCLUDE_DIRS}) 
+    if(TuttleBoost_FOUND)
 
         # If no plugin source is provided, recursively find file below src folder
         set(PLUGIN_SOURCES ${ARGV1}) 
@@ -123,11 +122,9 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
             find_package(OpenGL)
             target_link_libraries(${PLUGIN_NAME} ${OPENGL_LIBRARIES})
             set_target_properties(${PLUGIN_NAME} PROPERTIES LINK_FLAGS "-Wl,-exported_symbols_list,${PROJECT_SOURCE_DIR}/libraries/openfxHack/Support/include/osxSymbols -framework CoreFoundation -w")
-            set_target_properties(${PLUGIN_NAME} 
-                PROPERTIES INSTALL_RPATH "@loader_path/../../../../lib")
+            set_target_properties(${PLUGIN_NAME} PROPERTIES INSTALL_RPATH "@loader_path/../../../../lib")
         else(APPLE)
-            set_target_properties(${PLUGIN_NAME}
-                PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../lib:$ORIGIN")
+            set_target_properties(${PLUGIN_NAME} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../lib:$ORIGIN")
             set_target_properties(${PLUGIN_NAME} PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/libraries/openfxHack/Support/include/linuxSymbols")
         endif(APPLE)
      
