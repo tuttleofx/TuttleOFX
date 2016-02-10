@@ -1,10 +1,10 @@
 # Macros used to create an openfx plugin with tuttle
 include(TuttleMacros)
 
-# Include dpx-google-code to find libdpx
-include_directories(src/dpx-google-code)
-
 tuttle_ofx_plugin_target(Dpx)
+
+# Add include of dpx-google-code only to DPX plugin
+target_include_directories(Dpx PUBLIC "src/dpx-google-code")
 
 # Add external libraries
 tuttle_ofx_plugin_add_libraries(Dpx sequenceParser)
