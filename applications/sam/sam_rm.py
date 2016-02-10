@@ -44,10 +44,12 @@ class Sam_rm(samUtils.Sam):
         parser.add_argument('--range', dest='range', nargs=2, type=int, help='specify the range of sequence')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
+        parser.add_argument('--dry-run', dest='dryRun', action='store_true', help='only print what it will do (will force verbosity to info)')
 
     def _removeItem(self, item, args):
         """
         Remove the item.
+        Return if the operation was a success or not.
         """
         itemType = item.getType()
         filePath = os.path.abspath(item.getFolder())
@@ -55,7 +57,11 @@ class Sam_rm(samUtils.Sam):
         # remove folder
         if itemType == sequenceParser.eTypeFolder:
             try:
-                os.rmdir(os.path.join(filePath, (item.getFilename() if item.getFilename() != '.' else '')))
+                absoluteFolderPath = os.path.join(filePath, (item.getFilename() if item.getFilename() != '.' else ''))
+                self.logger.info('Remove folder "' + absoluteFolderPath + '".')
+                # sam-rm --dry-run
+                if not args.dryRun:
+                    os.rmdir(absoluteFolderPath)
             except OSError:
                 self.logger.error('You cannot remove a folder which contains elements like this. If you still want to, see "-R" option.')
                 return 1
@@ -63,7 +69,11 @@ class Sam_rm(samUtils.Sam):
 
         # remove other things than sequences (file, link...)
         if itemType != sequenceParser.eTypeSequence:
-            os.remove(os.path.join(filePath, item.getFilename()))
+            absoluteFilePath = os.path.join(filePath, item.getFilename())
+            self.logger.info('Remove file "' + absoluteFilePath + '".')
+            # sam-rm --dry-run
+            if not args.dryRun:
+                os.remove(absoluteFilePath)
             return 0
 
         sequence = item.getSequence()
@@ -83,17 +93,20 @@ class Sam_rm(samUtils.Sam):
         error = 0
         for time in sequence.getFramesIterable(first, last):
             try:
-                filePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
-                self.logger.info('Remove file "' + filePathInSequence + '".')
-                os.remove(os.path.join(filePathInSequence))
+                absoluteFilePathInSequence = os.path.join(filePath, sequence.getFilenameAt(time))
+                self.logger.info('Remove file "' + absoluteFilePathInSequence + '" of sequence "' + sequence.getFilenameWithStandardPattern() + '".')
+                # sam-rm --dry-run
+                if not args.dryRun:
+                    os.remove(os.path.join(absoluteFilePathInSequence))
             except OSError:
-                self.logger.error('Cannot find file "' + filePathInSequence + '" in sequence.')
+                self.logger.error('Cannot find file "' + absoluteFilePathInSequence + '" in sequence.')
                 error = 1
         return error
 
     def _removeItems(self, items, args, detectionMethod, filters):
         """
         For each items, check if it should be removed, depending on the command line options.
+        Return if the operation was a success or not.
         """
         folderItems = []
         error = 0
@@ -116,7 +129,9 @@ class Sam_rm(samUtils.Sam):
 
             # sam-rm -R
             if args.recursive and itemType == sequenceParser.eTypeFolder:
-                newItems = sequenceParser.browse(os.path.join(item.getFolder(), item.getFilename()), detectionMethod, filters)
+                subFolder = os.path.join(item.getFolder(), item.getFilename())
+                self.logger.debug('Browse in sub folder"' + subFolder + '" with the following filters: ' + str(filters))
+                newItems = sequenceParser.browse(subFolder, detectionMethod, filters)
                 self._removeItems(newItems, args, detectionMethod, filters)
 
             if toRemove:
@@ -129,7 +144,7 @@ class Sam_rm(samUtils.Sam):
                     if err:
                         error = err
 
-        # remove folders (which are empty)
+        # remove folders (which should be empty at this state)
         for folder in folderItems:
             err = self._removeItem(folder, args)
             if err:
@@ -145,7 +160,11 @@ class Sam_rm(samUtils.Sam):
         args = parser.parse_args()
 
         # Set sam log level
-        self.setLogLevel(args.verbose)
+        # sam-rm --dry-run
+        if args.dryRun:
+            self.setLogLevel(3) # info
+        else:
+            self.setLogLevel(args.verbose)
 
         # check command line
         if args.range and (args.firstImage is not None or args.lastImage is not None):
@@ -172,28 +191,29 @@ class Sam_rm(samUtils.Sam):
 
         # get list of items for each inputs
         error = 0
-        for input in args.inputs:
+        for inputPath in args.inputs:
             items = []
 
             # input is a directory
-            if not os.path.basename(input):
-                items.append(sequenceParser.Item(sequenceParser.eTypeFolder, input))
+            if not os.path.basename(inputPath):
+                items.append(sequenceParser.Item(sequenceParser.eTypeFolder, inputPath))
             # else browse directory with a filter, to find the corresponding Item
             else:
                 # get path to browse
-                pathToBrowse = os.path.dirname(input)
+                pathToBrowse = os.path.dirname(inputPath)
                 if not pathToBrowse:
                     pathToBrowse = '.'
                 # get filter
                 filterToBrowse = []
                 filterToBrowse.extend(filters)
-                filterToBrowse.append(os.path.basename(input))
+                filterToBrowse.append(os.path.basename(inputPath))
                 # browse
+                self.logger.debug('Browse in "' + pathToBrowse + '" with the following filters: ' + str(filterToBrowse))
                 items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
 
             # print error if no items were found
             if len(items) == 0:
-                self.logger.error('No file or folders correspond to "' + input + '".')
+                self.logger.error('No files, sequences or folders correspond to "' + inputPath + '".')
                 error = 1
                 continue
 

@@ -69,23 +69,17 @@ class Sam(object):
         """
         for handler in self.logger.handlers:
             if tuttleVerboseLevel is 0:
-                # CRITICAL
-                handler.setLevel(50)
+                handler.setLevel(logging.CRITICAL)
             elif tuttleVerboseLevel is 1:
-                # ERROR
-                handler.setLevel(40)
+                handler.setLevel(logging.ERROR)
             elif tuttleVerboseLevel is 2:
-                # WARNING
-                handler.setLevel(30)
+                handler.setLevel(logging.WARNING)
             elif tuttleVerboseLevel is 3:
-                # INFO
-                handler.setLevel(20)
+                handler.setLevel(logging.INFO)
             elif tuttleVerboseLevel >= 4:
-                # DEBUG (and trace)
-                handler.setLevel(10)
+                handler.setLevel(logging.DEBUG)
             else:
-                # WARNING
-                handler.setLevel(30)
+                handler.setLevel(logging.WARNING)
 
 
 class SamFormatter(logging.Formatter):
@@ -213,19 +207,17 @@ def getSequenceNameWithFormatting(sequence, formatChosen):
     """
     Return the sequence name with a specific formatting (from nuke, rv...).
     """
-    sequenceName = sequence.getPrefix()
     if formatChosen == 'rv':
+        sequenceName = sequence.getPrefix()
         sequenceName += (str(sequence.getFirstTime()) + '-' + str(sequence.getLastTime()))
-        sequenceName += '@' * sequence.getPadding()
-        if not sequence.getPadding():
+        sequenceName += '@' * sequence.getFixedPadding()
+        if not sequence.getFixedPadding():
             sequenceName += '@'  # no padding
+        sequenceName += sequence.getSuffix()
     elif formatChosen == 'nuke':
-        sequenceName += '%0' + str(sequence.getPadding()) + 'd'
+        sequenceName = sequence.getFilenameWithPrintfPattern()
     else:  # default formatting
-        sequenceName += '#' * sequence.getPadding()
-        if not sequence.getPadding():
-            sequenceName += '@'  # no padding
-    sequenceName += sequence.getSuffix()
+        sequenceName = sequence.getFilenameWithStandardPattern()
     return sequenceName
 
 

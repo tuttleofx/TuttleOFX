@@ -368,10 +368,10 @@ bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes
 bool Graph::compute( memory::IMemoryCache& memoryCache, const NodeListArg& nodes,
 		const ComputeOptions& options, memory::IMemoryCache& internMemoryCache )
 {
-#ifdef TUTTLE_EXPORT_PROCESSGRAPH_DOT
+#if(TUTTLE_EXPORT_PROCESSGRAPH_DOT)
 	graph::exportAsDOT( "graph.dot", _graph );
 #endif
-	
+
 	graph::ProcessGraph procGraph( options, *this, nodes.getNodes(), internMemoryCache );
 	return procGraph.process( memoryCache );
 }

@@ -29,6 +29,7 @@ class Sam_ls(samUtils.Sam):
             List the current directory by default.
             '''))
         self._itemPrinted = [] # name of Items already printed
+        self._sequenceExploded = [] # name of Sequences already exploded
 
     def fillParser(self, parser):
         # Arguments
@@ -47,9 +48,10 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
         parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
-        parser.add_argument('--color', dest='color', action='store_true', default=True, help='display the output with colors (activated by default)')
+        parser.add_argument('--no-color', dest='noColor', action='store_true', default=False, help='display the output without colors (with colors by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
+        parser.add_argument('--explode-sequences', dest='explodeSequences', action='store_true', default=False, help='explode sequences as several sequences without holes')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
     def isAlreadyPrinted(self, item):
@@ -57,7 +59,13 @@ class Sam_ls(samUtils.Sam):
         Return if the given item has already been printed.
         @see printItem
         """
-        if item.getFilename() in self._itemPrinted:
+        nameToCompare = ''
+        if item.getType() == sequenceParser.eTypeSequence:
+            nameToCompare = item.getSequence().__str__()
+        else:
+            nameToCompare = item.getFilename()
+
+        if nameToCompare in self._itemPrinted:
             return True
         return False
 
@@ -71,6 +79,21 @@ class Sam_ls(samUtils.Sam):
         detailed = ''
         detailedSequence = ''
 
+        # sam-ls --explode-sequences
+        sequenceExploded = False
+        if args.explodeSequences and itemType == sequenceParser.eTypeSequence:
+            sequence = item.getSequence()
+            for frameRange in sequence.getFrameRanges():
+                # for each frame range, print a new item as sequence
+                subSequence = sequenceParser.Sequence(sequence.getPrefix(), sequence.getPadding(), sequence.getSuffix(), frameRange.first, frameRange.last, frameRange.step)
+                if subSequence.__str__() not in self._sequenceExploded:
+                    self._sequenceExploded.append(subSequence.__str__())
+                    sequenceExploded = True
+                    self.printItem(sequenceParser.Item(subSequence, item.getFolder()), args, level)
+            # to skip recursivity
+            if sequenceExploded:
+                return
+
         # sam-ls -l
         if args.longListing:
             # type - date - size
@@ -83,11 +106,6 @@ class Sam_ls(samUtils.Sam):
                 characterFromType = 'f'
             elif itemType == sequenceParser.eTypeSequence:
                 characterFromType = 's'
-
-                # [ begin : end ] nbFiles - nbMissingFiles
-                sequence = item.getSequence()
-                detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
-
             elif itemType == sequenceParser.eTypeLink:
                 characterFromType = 'l'
 
@@ -111,9 +129,17 @@ class Sam_ls(samUtils.Sam):
             maxSize = samUtils.getReadableSize(itemStat.maxSize) if itemStat.maxSize != itemStat.size else '-'
 
             detailed = '{:1}{:9}'.format(characterFromType, permissions)
-            detailed += ' {:} {:} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
+            detailed += ' {:8} {:8} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
             detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
             detailed += '\t'
+
+        # only for sequences: [ begin : end ] nbFiles - nbMissingFiles
+        if itemType == sequenceParser.eTypeSequence:
+            sequence = item.getSequence()
+            detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
+            nbHoles = (sequence.getLastTime() - sequence.getFirstTime() + 1) - sequence.getNbFiles()
+            if nbHoles:
+                detailedSequence += ' - {nbHoles} missing files'.format(nbHoles=nbHoles)
 
         # sam-ls --absolute-path
         if args.absolutePath:
@@ -129,8 +155,10 @@ class Sam_ls(samUtils.Sam):
         # sam-ls --format
         if itemType == sequenceParser.eTypeSequence:
             filename = samUtils.getSequenceNameWithFormatting(item.getSequence(), args.format)
-        # sam-ls --color
-        if args.color:
+        # sam-ls --no-color
+        if args.noColor:
+            filePath = os.path.join(filePath, filename)
+        else:
             if itemType == sequenceParser.eTypeFolder:
                 # blue is not visible without bold
                 filePath = colored.blue(os.path.join(filePath, filename), bold=True)
@@ -143,8 +171,6 @@ class Sam_ls(samUtils.Sam):
                 filePath = colored.cyan(os.path.join(filePath, filename))
             else:
                 filePath = colored.red(os.path.join(filePath, filename))
-        else:
-            filePath = os.path.join(filePath, filename)
         filePath += ' \t'
 
         # sam-ls -R / sam-ls -L
@@ -162,7 +188,10 @@ class Sam_ls(samUtils.Sam):
             with indent(level, quote=indentTree):
                 puts(toPrint.format())
 
-        self._itemPrinted.append(item.getFilename())
+        if itemType == sequenceParser.eTypeSequence:
+            self._itemPrinted.append(item.getSequence().__str__())
+        else:
+            self._itemPrinted.append(item.getFilename())
 
     def printItems(self, items, args, detectionMethod, filters, level=0):
         """
@@ -201,7 +230,7 @@ class Sam_ls(samUtils.Sam):
 
                 try:
                     newFolder = os.path.join(item.getFolder(), item.getFilename())
-                    self.logger.info('Launch a browse on "' + newFolder + '" with the following filters: ' + str(filters))
+                    self.logger.debug('Browse in "' + newFolder + '" with the following filters: ' + str(filters))
                     newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
                     level += 1
                     self.printItems(newItems, args, detectionMethod, filters, level)
@@ -220,15 +249,22 @@ class Sam_ls(samUtils.Sam):
         # Set sam log level
         self.setLogLevel(args.verbose)
 
-        # inputs to scan
         inputs = []
-        for input in args.inputs:
-            # if exists add the path
-            if os.path.exists(input):
-                inputs.append(input)
-            # else use it as a filter expression
-            else:
-                args.expression.append(input)
+        # for each input to scan
+        for inputPath in args.inputs:
+            # if the input is a directory, add it and continue
+            if os.path.isdir(inputPath):
+                inputs.append(inputPath)
+                continue
+            # else split the input to a path and a filename
+            subPath = os.path.dirname(inputPath)
+            if not subPath:
+                subPath = '.'
+            filename = os.path.basename(inputPath)
+            # add the path and the filename as an expression
+            inputs.append(subPath)
+            if filename:
+                args.expression.append(filename)
         if not inputs:
             inputs.append(os.getcwd())
 
@@ -251,18 +287,19 @@ class Sam_ls(samUtils.Sam):
             filters.append(expression)
 
         # get list of items for each inputs
-        for input in inputs:
+        for inputPath in inputs:
             items = []
             try:
-                self.logger.info('Launch a browse on "' + input + '" with the following filters: ' + str(filters))
-                items = sequenceParser.browse(input, detectionMethod, filters)
+                self.logger.debug('Browse in "' + inputPath + '" with the following filters: ' + str(filters))
+                items = sequenceParser.browse(inputPath, detectionMethod, filters)
             except IOError as e:
+                self.logger.debug('IOError raised: "' + str(e) + '".')
                 # if the given input does not correspond to anything
                 if 'No such file or directory' in str(e):
                     # try to create a sequence from the given input
                     sequence = sequenceParser.Sequence()
-                    self.logger.info('Launch a browseSequence on "' + input + '".')
-                    isSequence = sequenceParser.browseSequence(sequence, input)
+                    self.logger.debug('BrowseSequence on "' + inputPath + '".')
+                    isSequence = sequenceParser.browseSequence(sequence, inputPath)
                     if isSequence:
                         item = sequenceParser.Item(sequence, os.getcwd())
                         # check if the sequence contains at least one element
@@ -272,22 +309,23 @@ class Sam_ls(samUtils.Sam):
                     else:
                         self.logger.warning(e)
                         continue
-                # else it's not a directory: try a new browse with the given input name as filter
+                # else it's not a directory
                 else:
+                    self.logger.debug('Try a new browse with the given input name as filter.')
                     # new path to browse
-                    newBrowsePath = os.path.dirname(input)
+                    newBrowsePath = os.path.dirname(inputPath)
                     if not newBrowsePath:
                         newBrowsePath = '.'
                     # new filter
                     newFilter = []
                     newFilter.extend(filters)
-                    newFilter.append(os.path.basename(input))
+                    newFilter.append(os.path.basename(inputPath))
                     # new browse
-                    self.logger.info('Launch a browse on "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
+                    self.logger.debug('Browse in "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
                     items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
             if not len(items):
-                self.logger.warning('No items found for input "' + input + '".')
+                self.logger.warning('No items found for input "' + inputPath + '".')
             else:
                 self.printItems(items, args, detectionMethod, filters)
 

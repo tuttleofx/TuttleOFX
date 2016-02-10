@@ -25,14 +25,14 @@ class Sam_mv(samUtils.Sam):
         self.command = 'mv'
         self.help = 'to move sequences'
         self.description = str(colored.green('''
-            Move sequences in a directory.
-            Rename sequences if the output directory is the same as the input.
+            Move one or more sequences to a directory.
+            Rename / retime a sequence.
             '''))
         self._operation = shutil.move
 
     def fillParser(self, parser):
-        parser.add_argument('inputs', metavar='INPUTS', nargs='+', action='store', help='list of inputs').completer = samUtils.sequenceParserCompleter
-        parser.add_argument('output', metavar='OUTPUT', help='the output to write').completer = samUtils.sequenceParserCompleter
+        parser.add_argument('inputs', metavar='INPUTS', nargs='+', action='store', help='list of inputs (only sequences)').completer = samUtils.sequenceParserCompleter
+        parser.add_argument('output', metavar='OUTPUT', help='the output to write (sequence or directory)').completer = samUtils.sequenceParserCompleter
 
         # Options
         parser.add_argument('-o', '--offset', dest='offset', type=int, help='retime the sequence with the given offset')
@@ -48,6 +48,7 @@ class Sam_mv(samUtils.Sam):
 
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
+        parser.add_argument('--dry-run', dest='dryRun', action='store_true', help='only print what it will do (will force verbosity to info)')
 
     def _getSequenceManipulators(self, inputSequence, args):
         """
@@ -86,10 +87,11 @@ class Sam_mv(samUtils.Sam):
 
         return {'first': first, 'last': last, 'offset': offset, 'holes': holesToRemove}
 
-    def _processSequence(self, inputItem, outputSequence, outputSequencePath, moveManipulators):
+    def _processSequence(self, inputItem, outputSequence, outputSequencePath, moveManipulators, dryRun):
         """
         Apply operation to the sequence contained in inputItem (used by sam-mv and sam-cp).
         Depending on args, update the frame ranges of the output sequence.
+        Return if the operation was a success or not.
 
         :param inputItem: the item which contains the input sequence to process (move, copy...)
         :param outputSequence: the output sequence to write (destination of move, copy...)
@@ -101,17 +103,20 @@ class Sam_mv(samUtils.Sam):
                 offset used to retime the output sequence,
                 list of holes to remove in the output sequence
             }
+        :param dryRun: only print what it will do.
         """
         # create output directory if not exists
         try:
             if not os.path.exists(outputSequencePath):
-                os.makedirs(outputSequencePath)
+                # sam-rm --dry-run
+                if not dryRun:
+                    os.makedirs(outputSequencePath)
         except Exception as e:
             self.logger.error('Cannot create directory tree for "' + outputSequencePath + '": ' + str(e))
-            exit(-1)
+            return 1
 
-        # print brief of the operation
-        self.logger.info(os.path.join(inputItem.getFolder(), str(inputItem.getSequence())) + ' -> ' + os.path.join(outputSequencePath, str(outputSequence)))
+        # log brief of the operation
+        self.logger.info(os.path.join(self.command + ' ' + inputItem.getFolder(), str(inputItem.getSequence())) + ' to ' + os.path.join(outputSequencePath, str(outputSequence)))
 
         # get frame ranges
         inputFrameList = list(inputItem.getSequence().getFramesIterable(moveManipulators['first'], moveManipulators['last']))
@@ -128,14 +133,18 @@ class Sam_mv(samUtils.Sam):
             # security: check if file already exist
             if os.path.exists(outputPath):
                 self.logger.error('The output path "' + outputPath + '" already exist!')
-                exit(-1)
+                return 1
 
             # process the image at time
-            self._operation(inputPath, outputPath)
+            self.logger.info(inputPath + ' -> ' + outputPath)
+            # sam-rm --dry-run
+            if not dryRun:
+                self._operation(inputPath, outputPath)
 
     def _getSequenceItemFromPath(self, inputPath, detectNegative):
         """
-        Get an Item (which corresponds to a sequence) from a path.
+        Return an Item (which corresponds to a sequence) from a path.
+        Return None if the operation failed.
         """
         # get input path and name
         inputSequencePath = os.path.dirname(inputPath)
@@ -152,16 +161,16 @@ class Sam_mv(samUtils.Sam):
         inputItems = sequenceParser.browse(inputSequencePath, detectionMethod, [inputSequenceName])
         if not len(inputItems):
             self.logger.error('No existing file corresponds to the given input sequence: ' + inputPath)
-            exit(-1)
-        if len(inputItems) > 0:
+            return None
+        if len(inputItems) > 1:
             self.logger.error('Several items ' + str([item.getFilename() for item in inputItems]) + ' correspond to the given input sequence: ' + inputPath)
-            exit(-1)
+            return None
 
         # check if the item is a sequence
         inputItem = inputItems[0]
         if inputItem.getType() != sequenceParser.eTypeSequence:
             self.logger.error('Input is not a sequence: ' + inputItem.getFilename())
-            exit(-1)
+            return None
 
         return inputItem
 
@@ -173,26 +182,39 @@ class Sam_mv(samUtils.Sam):
         args = parser.parse_args()
 
         # Set sam log level
-        self.setLogLevel(args.verbose)
+        # sam-rm --dry-run
+        if args.dryRun:
+            self.setLogLevel(3) # info
+        else:
+            self.setLogLevel(args.verbose)
 
         # check command line
         if args.offset and (args.outputFirst is not None or args.outputLast is not None):
             self.logger.error('You cannot cumulate multiple options to modify the time.')
             exit(-1)
 
-        # Get output path
-        outputSequencePath = os.path.dirname(args.output)
-        if not outputSequencePath:
-            outputSequencePath = '.'
-
         # Get output sequence
         outputSequence = sequenceParser.Sequence()
         outputSequenceName = os.path.basename(args.output)
         outputIsSequence = outputSequence.initFromPattern(outputSequenceName, sequenceParser.ePatternDefault)
 
+        # Get output path
+        if outputIsSequence:
+            outputSequencePath = os.path.dirname(args.output)
+            # if output path is the same as input
+            if not len(outputSequencePath):
+                outputSequencePath = '.'
+        else:
+            outputSequencePath = args.output
+        self.logger.debug('Output sequence path is "' + outputSequencePath + '".')
+
         # For each input
-        for input in args.inputs:
-            inputItem = self._getSequenceItemFromPath(input, args.detectNegative)
+        error = 0
+        for inputPath in args.inputs:
+            inputItem = self._getSequenceItemFromPath(inputPath, args.detectNegative)
+            if inputItem is None:
+                error = 1
+                continue
 
             if not outputIsSequence:
                 outputSequence = sequenceParser.Sequence(inputItem.getSequence())
@@ -201,8 +223,11 @@ class Sam_mv(samUtils.Sam):
             moveManipulators = self._getSequenceManipulators(inputItem.getSequence(), args)
 
             # move sequence
-            self._processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators)
+            err = self._processSequence(inputItem, outputSequence, outputSequencePath, moveManipulators, args.dryRun)
+            if err:
+                error = err
 
+        exit(error)
 
 if __name__ == '__main__':
     # Create the tool

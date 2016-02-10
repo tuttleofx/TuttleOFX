@@ -33,6 +33,7 @@ class Sam_do(samUtils.Sam):
         self._pluginOption = colored.blue('Plugins options')
         self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
+        self._folderManipulation = colored.blue('Folder manipulations')
         self._geometryPorcessing = colored.blue('Geometry processing during conversion')
         self._colorProcessing = colored.blue('Color processing during conversion')
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
@@ -43,6 +44,7 @@ class Sam_do(samUtils.Sam):
             self._pluginOption.bold=True
             self._generatorsAndViewers.bold=True
             self._imgSeqConversion.bold=True
+            self._folderManipulation.bold=True
             self._geometryPorcessing.bold=True
             self._colorProcessing.bold=True
             self._imgSeqNumbering.bold=True
@@ -72,19 +74,25 @@ class Sam_do(samUtils.Sam):
         Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
         Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
         Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
-                                           'r' and 'w' are shortcuts for 'reader' and 'writer'
+        Note:                              'r' and 'w' are shortcuts for 'reader' and 'writer'
+
+    ''' + self._folderManipulation + '''
+        Convert all images in a folder:    sam do reader inputFolder // writer outputFolder ext=jpg
+        Convert dpx images in a folder:    sam do reader inputFolder ext=dpx // writer outputFolder ext=jpg
+        Note:                              These commands copy the input tree structure to the output.
 
     ''' + self._geometryPorcessing + '''
         Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
         Fill:                              sam do reader in.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50,1 // writer out.jpg
         Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
-        Upscaling:                         sam do reader in.####.dpx // resize size=1920,1080 filter=lanczos  // writer out.####.jpg
-        Downscaling:                       sam do reader in.####.dpx // resize size=720,576   filter=mitchell // writer out.####.jpg
+        Upscaling:                         sam do reader in.####.dpx // resize width=1920 filter=lanczos // writer out.####.jpg
+        Downscaling:                       sam do reader in.####.dpx // resize width=720 filter=mitchell // writer out.####.jpg
 
     ''' + self._colorProcessing + '''
         Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
+        Color Gradation:                   sam do reader in.####.dpx // colorgradation in=Linear out=Rec709 // writer out.####.jpg
 
     ''' + self._imgSeqNumbering + '''
         Frames with or without padding:    image.@.jpg
@@ -96,6 +104,7 @@ class Sam_do(samUtils.Sam):
         Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
         Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
+        Disable recursivity with folders:  sam do reader inputFolder // writer outputFolder --no-recursivity
         
     ''' + self._tuttleVersion + '''            ''' + self._tuttleWebSite
 
@@ -106,14 +115,30 @@ class Sam_do(samUtils.Sam):
         # Options
         parser.add_argument('-r', '--ranges', dest='ranges', nargs='+', type=int, help='specify the ranges to process (only numbers separate with spaces)')
         parser.add_argument('-n', '--nodes', dest='nodes', action='store_true', help='list all avalaible nodes')
-        parser.add_argument('--recursive', dest='recursive', action='store_true', default=False, help='Enable recursivity when using directory as input/output')
         parser.add_argument('--file-formats', dest='fileFormats', action='store_true', help='list all supported file formats (R/W)')
+        parser.add_argument('--no-recursivity', dest='noRecursivity', action='store_true', default=False, help='Disable recursivity when using directory as input/output')
         parser.add_argument('--continue-on-error', dest='continueOnError', action='store_true', default=False, help='continue the process even if errors occured')
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('--no-plugin-cache', dest='noPluginCache', action='store_true', default=False, help='load plugins without using the cache file')
         parser.add_argument('--rebuild-plugin-cache', dest='rebuildPluginCache', action='store_true', default=False, help='load plugins and rebuild the cache file')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4/debug, 5(or upper)/trace)')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
+
+    def _isCommandLineInvalid(self, inputsToProcess, inputsUnknown):
+        """
+        Returns if the given sam do inputs to process is not well written.
+        @param inputsToProcess the 'inputs' arguments of the command line.
+        @param inputsUnknown the 'inputs' arguments of the command line which are not recognized by argparse.
+        """
+        # check if there is no arguments (or only the help option)
+        if len(inputsToProcess) == 0:
+            if len(inputsUnknown) == 0 or '-h' in inputsUnknown or '--help' in inputsUnknown:
+                return True
+        # check if last input is the separator
+        if inputsToProcess[-1] == '//':
+            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
+            return True
+        return False
 
     def _setTimeRanges(self, computeOptions, ranges):
         """
@@ -194,7 +219,7 @@ class Sam_do(samUtils.Sam):
                 self._displayTitle('SUPPORTED INPUT FILE FORMATS')
             elif key == 'w':
                 self._displayTitle('SUPPORTED OUTPUT FILE FORMATS')
-            puts(', '.join(sorted(extensions)))
+            puts(', '.join(sorted(set(extensions))))
 
     def _displayParamHelp(self, param):
         """
@@ -479,7 +504,7 @@ class Sam_do(samUtils.Sam):
             exit(0)
 
         # sam-do --help
-        if len(args.inputs) == 0 and (len(unknown) == 0 or '-h' in unknown or '--help' in unknown):
+        if self._isCommandLineInvalid(args.inputs, unknown):
             self._displayCommandLineHelp(parser)
             exit(0)
 
@@ -487,9 +512,10 @@ class Sam_do(samUtils.Sam):
         args.inputs.extend(unknown)
 
         # Split command line
-        splitCmd = samDoUtils.SplitCmd(args.inputs, args.recursive)
+        splitCmd = samDoUtils.SplitCmd(args.inputs, args.noRecursivity)
         graphsWithNodes = []
         for splitCmdGraph in splitCmd.getGraphs():
+            self.logger.debug('Create the following tuttle graph: \n' + str(splitCmdGraph))
             try:
                 graphsWithNodes.append(self._getTuttleGraph(splitCmdGraph))
             except Exception as e:
@@ -501,6 +527,7 @@ class Sam_do(samUtils.Sam):
             self.logger.error('No tuttle graph to compute.')
             exit(1)
 
+        error = 0
         # Compute the corresponding tuttle graphs
         for graph, nodes in graphsWithNodes:
             # Options of process
@@ -537,8 +564,10 @@ class Sam_do(samUtils.Sam):
             except Exception as e:
                 self.logger.error('Tuttle graph computation has failed.')
                 self.logger.debug(e)
+                error = 1
             self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
+        exit(error)
 
 if __name__ == '__main__':
     # Create the tool

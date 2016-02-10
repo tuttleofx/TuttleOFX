@@ -34,7 +34,7 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	supportedExtensions += "bmp", "cin", "dds", "dpx", "exr", "fits", "hdr", "ico", 
 			"j2k", "j2c", "jp2", "jpeg", "jpg", "jpe", "jfif", "jfi", 
 			"pbm", "pgm", "png", "pnm", "ppm", "pic", "psd", "rgbe", 
-			"sgi", "tga", "tif", "tiff", "tpic", "tx", "webp";
+			"sgi", "tga", "tif", "tiff", "tpic", "tx", "webp", "cr2";
 	
 	desc.setDescription(
 				"OpenImageIO Reader"
