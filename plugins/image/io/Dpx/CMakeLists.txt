@@ -2,8 +2,6 @@
 include(TuttleMacros)
 
 # Declare the plugin
-# TODO : the reader is not taken into account.
-# if it is permanent, remove it from git
 file(GLOB_RECURSE WRITER_PLUGIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/writer/*.?pp)
 file(GLOB_RECURSE DPX_PLUGIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/dpx-google-code/*.cpp)
 include_directories(src/dpx-google-code)
