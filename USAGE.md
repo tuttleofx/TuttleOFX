@@ -18,7 +18,7 @@ Note: some host provide a way to set this path in their GUI. Checkout the "prefe
 
 
 ## Override host name
-Some OFX plugins define a specific behavior depending on the host (shame on them!).
+Some OFX plugins define a specific behavior depending on the host name (shame on them!).
 To handle these cases, you can override the TuttleOFX host name by defined the following environment variable:
 ```
 export TUTTLE_OVERRIDE_HOST_OFXPROPNAME=Your new Host name
