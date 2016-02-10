@@ -230,7 +230,7 @@ class Sam_ls(samUtils.Sam):
 
                 try:
                     newFolder = os.path.join(item.getFolder(), item.getFilename())
-                    self.logger.info('Launch a browse on "' + newFolder + '" with the following filters: ' + str(filters))
+                    self.logger.debug('Browse in "' + newFolder + '" with the following filters: ' + str(filters))
                     newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
                     level += 1
                     self.printItems(newItems, args, detectionMethod, filters, level)
@@ -249,15 +249,22 @@ class Sam_ls(samUtils.Sam):
         # Set sam log level
         self.setLogLevel(args.verbose)
 
-        # inputs to scan
         inputs = []
-        for input in args.inputs:
-            # if exists add the path
-            if os.path.exists(input):
-                inputs.append(input)
-            # else use it as a filter expression
-            else:
-                args.expression.append(input)
+        # for each input to scan
+        for inputPath in args.inputs:
+            # if the input is a directory, add it and continue
+            if os.path.isdir(inputPath):
+                inputs.append(inputPath)
+                continue
+            # else split the input to a path and a filename
+            subPath = os.path.dirname(inputPath)
+            if not subPath:
+                subPath = '.'
+            filename = os.path.basename(inputPath)
+            # add the path and the filename as an expression
+            inputs.append(subPath)
+            if filename:
+                args.expression.append(filename)
         if not inputs:
             inputs.append(os.getcwd())
 
@@ -280,18 +287,19 @@ class Sam_ls(samUtils.Sam):
             filters.append(expression)
 
         # get list of items for each inputs
-        for input in inputs:
+        for inputPath in inputs:
             items = []
             try:
-                self.logger.info('Launch a browse on "' + input + '" with the following filters: ' + str(filters))
-                items = sequenceParser.browse(input, detectionMethod, filters)
+                self.logger.debug('Browse in "' + inputPath + '" with the following filters: ' + str(filters))
+                items = sequenceParser.browse(inputPath, detectionMethod, filters)
             except IOError as e:
+                self.logger.debug('IOError raised: "' + str(e) + '".')
                 # if the given input does not correspond to anything
                 if 'No such file or directory' in str(e):
                     # try to create a sequence from the given input
                     sequence = sequenceParser.Sequence()
-                    self.logger.info('Launch a browseSequence on "' + input + '".')
-                    isSequence = sequenceParser.browseSequence(sequence, input)
+                    self.logger.debug('BrowseSequence on "' + inputPath + '".')
+                    isSequence = sequenceParser.browseSequence(sequence, inputPath)
                     if isSequence:
                         item = sequenceParser.Item(sequence, os.getcwd())
                         # check if the sequence contains at least one element
@@ -301,22 +309,23 @@ class Sam_ls(samUtils.Sam):
                     else:
                         self.logger.warning(e)
                         continue
-                # else it's not a directory: try a new browse with the given input name as filter
+                # else it's not a directory
                 else:
+                    self.logger.debug('Try a new browse with the given input name as filter.')
                     # new path to browse
-                    newBrowsePath = os.path.dirname(input)
+                    newBrowsePath = os.path.dirname(inputPath)
                     if not newBrowsePath:
                         newBrowsePath = '.'
                     # new filter
                     newFilter = []
                     newFilter.extend(filters)
-                    newFilter.append(os.path.basename(input))
+                    newFilter.append(os.path.basename(inputPath))
                     # new browse
-                    self.logger.info('Launch a browse on "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
+                    self.logger.debug('Browse in "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
                     items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
             if not len(items):
-                self.logger.warning('No items found for input "' + input + '".')
+                self.logger.warning('No items found for input "' + inputPath + '".')
             else:
                 self.printItems(items, args, detectionMethod, filters)
 

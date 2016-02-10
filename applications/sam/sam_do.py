@@ -481,7 +481,7 @@ class Sam_do(samUtils.Sam):
         # Set sam log level
         self.setLogLevel(args.verbose)
         # set tuttle host log level
-        tuttle.core().getFormatter().setLogLevel_int(args.verbose)
+        tuttle.core().getFormatter().setLogLevel(args.verbose)
 
         # Clear plugin cache
         if args.rebuildPluginCache:
@@ -527,12 +527,11 @@ class Sam_do(samUtils.Sam):
             self.logger.error('No tuttle graph to compute.')
             exit(1)
 
+        error = 0
         # Compute the corresponding tuttle graphs
         for graph, nodes in graphsWithNodes:
             # Options of process
             options = tuttle.ComputeOptions()
-            # sam-do --verbose
-            options.setVerboseLevel(args.verbose)
             # sam-do --ranges
             if args.ranges is not None:
                 self._setTimeRanges(options, args.ranges)
@@ -565,8 +564,10 @@ class Sam_do(samUtils.Sam):
             except Exception as e:
                 self.logger.error('Tuttle graph computation has failed.')
                 self.logger.debug(e)
+                error = 1
             self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
+        exit(error)
 
 if __name__ == '__main__':
     # Create the tool

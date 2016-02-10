@@ -23,6 +23,12 @@ void FloodFillPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		            "FloodFill" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
+	desc.setDescription( "FloodFill\n"
+			 "Or seed fill, it is an algorithm that determines the area connected to a given node in a multi-dimensional array. \n"
+			 "It is used in the 'bucket' fill tool of paint programs to fill connected, similarly-colored areas with a different color. \n"
+			 "When applied on an image to fill a particular bounded area with color, it is also known as boundary fill. \n"
+			 "https://en.wikipedia.org/wiki/Flood_fill" );
+
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );

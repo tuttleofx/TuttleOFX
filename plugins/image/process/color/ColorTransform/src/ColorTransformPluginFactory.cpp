@@ -22,7 +22,9 @@ void ColorTransformPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		            "ColorTransform" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
-	desc.setDescription( "Plugin under early development." );
+	desc.setDescription( "ColorTransform\n"
+			 "Plugin is used to apply color transformations \n"
+			 "(saturation, constrast, brightness...) on images." );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );

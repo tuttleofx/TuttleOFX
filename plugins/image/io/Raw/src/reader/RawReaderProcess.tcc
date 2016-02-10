@@ -109,7 +109,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		    _out.no_interpolation = 1; // disables interpolation step in LibRaw::dcraw_process() call.
 		else
 #endif
-		    _out.user_qual = _params._interpolation;
+		_out.user_qual = _params._interpolation;
 
 		// interpolate colors
 		_out.four_color_rgb = _params._fourColorRgb;
@@ -128,40 +128,23 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		_out.use_camera_wb = 0;
 		switch( _params._whiteBalance )
 		{
-			case eAutoWb: _out.use_auto_wb = 1; break;
-			case eCameraWb: _out.use_camera_wb = 1; break;
-			case eManualWb: break;
-			case e2500: break;
-			case e2550: break;
-			case e2650: break;
-			case e2700: break;
-			case e2800: break;
-			case e2850: break;
-			case e2950: break;
-			case e3000: break;
-			case e3100: break;
-			case e3200: break;
-			case e3300: break;
-			case e3400: break;
-			case e3600: break;
-			case e3700: break;
-			case e3800: break;
-			case e4000: break;
-			case e4200: break;
-			case e4300: break;
-			case e4500: break;
-			case e4800: break;
-			case e5000: break;
-			case e5300: break;
-			case e5600: break;
-			case e5900: break;
-			case e6300: break;
-			case e6700: break;
-			case e7100: break;
-			case e7700: break;
-			case e8300: break;
-			case e9100: break;
-			case e10000: break;
+			case eAutoWb:
+				// Use automatic white balance obtained after averaging over the entire image.
+				_out.use_auto_wb = 1;
+				break;
+			case eCameraWb:
+				// If possible, use the white balance from the camera.
+				_out.use_camera_wb = 1;
+				break;
+			case eManualWb:
+				//  Use your own WB coeffs.
+				// 4 multipliers (r,g,b,g) 
+				
+				_out.user_mul[0] = getRedFromKelvin( _params._manualWBKelvin );
+				_out.user_mul[1] = getGreenFromKelvin( _params._manualWBKelvin );
+				_out.user_mul[2] = getBlueFromKelvin( _params._manualWBKelvin );
+				_out.user_mul[3] = _out.user_mul[1];
+				break;
 		}
 
 		/*switch( _params._filtering )
@@ -267,6 +250,64 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//			<< exception::user( "Unable to write image")
 		//			<< exception::filename(filepath) );
 		TUTTLE_LOG_ERROR( boost::current_exception_diagnostic_information() );
+	}
+}
+
+template<class View>
+float RawReaderProcess<View>::getRedFromKelvin( const double kelvinValue )
+{
+	if( kelvinValue <= 66 )
+		return 255;
+	double tmpCalc = kelvinValue - 60;
+	tmpCalc = 329.698727446 * pow(tmpCalc, -0.1332047592);
+	float r = tmpCalc;
+	if( r < 0 )
+		r = 0;
+	if( r > 255 )
+		r = 255;
+	return r;
+}
+
+template<class View>
+float RawReaderProcess<View>::getGreenFromKelvin( const double kelvinValue )
+{
+	float g = 0;
+	if( kelvinValue <= 66 )
+	{
+		double tmpCalc = kelvinValue;
+		tmpCalc = 99.4708025861 * log(tmpCalc) - 161.1195681661;
+		g = tmpCalc;
+	}
+	else
+	{
+		float tmpCalc = kelvinValue - 60;
+		tmpCalc = 288.1221695283 * pow(tmpCalc, -0.0755148492);
+		g = tmpCalc;
+	}
+	if( g < 0 )
+		g = 0;
+	if( g > 255 )
+		g = 255;
+	return g;
+}
+
+template<class View>
+float RawReaderProcess<View>::getBlueFromKelvin( const double kelvinValue )
+{
+	if( kelvinValue >= 66 )
+		return 255;
+	else if( kelvinValue <= 19 )
+		return  0;
+	else
+	{
+		double tmpCalc = kelvinValue - 10;
+		tmpCalc = 138.5177312231 * log(tmpCalc) - 305.0447927307;
+		float b = tmpCalc;
+		if( b < 0 )
+			b = 0;
+		if( b > 255 )
+			b = 255;
+		return b;
 	}
 }
 

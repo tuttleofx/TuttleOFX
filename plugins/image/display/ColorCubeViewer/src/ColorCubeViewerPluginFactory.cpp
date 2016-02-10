@@ -22,7 +22,8 @@ void ColorCubeViewerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle/image/display" );
 
 	desc.setDescription( "ColorCubeViewer\n"
-	                     "Plugin is used to ???." );
+			 "3D visualization of all colors in an image. \n"
+			 "Colors are represented as RGB-values, hence each color corresponds to a point in the 3D color space." );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
