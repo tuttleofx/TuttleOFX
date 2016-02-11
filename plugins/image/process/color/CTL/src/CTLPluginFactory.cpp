@@ -65,20 +65,16 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::ChoiceParamDescriptor* chooseInput = desc.defineChoiceParam( kParamChooseInput );
 	chooseInput->appendOption( kParamChooseInputCode );
 	chooseInput->appendOption( kParamChooseInputFile );
-	chooseInput->setDefault( eParamChooseInputFile );
+	chooseInput->setDefault( eParamChooseInputCode );
 
 	OFX::StringParamDescriptor* code = desc.defineStringParam( kParamCTLCode );
 	code->setLabel( "CTL code" );
