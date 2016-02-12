@@ -1,7 +1,7 @@
 #include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>

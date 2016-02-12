@@ -2,7 +2,7 @@
 #include "Jpeg2000ReaderProcess.hpp"
 #include "Jpeg2000ReaderDefinitions.hpp"
 
-#include <tuttle/plugin/context/WriterDefinition.hpp>
+#include <tuttle/ioplugin/context/WriterDefinition.hpp>
 #include <tuttle/plugin/global.hpp>
 
 #include <ofxsImageEffect.h>

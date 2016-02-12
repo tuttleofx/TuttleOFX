@@ -1,7 +1,7 @@
-#ifndef _TUTTLE_PLUGIN_CONTEXT_READERDEFINITION_HPP_
-#define _TUTTLE_PLUGIN_CONTEXT_READERDEFINITION_HPP_
+#ifndef _TUTTLE_IOPLUGIN_CONTEXT_READERDEFINITION_HPP_
+#define _TUTTLE_IOPLUGIN_CONTEXT_READERDEFINITION_HPP_
 
-#include "Definition.hpp"
+#include <tuttle/plugin/context/Definition.hpp>
 
 namespace tuttle {
 namespace plugin {

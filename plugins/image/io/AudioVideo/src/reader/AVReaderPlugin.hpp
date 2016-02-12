@@ -3,7 +3,7 @@
 
 #include <common/util.hpp>
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/InputFile.hpp>

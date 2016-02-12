@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_AV_READER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
 #include <common/util.hpp>
 

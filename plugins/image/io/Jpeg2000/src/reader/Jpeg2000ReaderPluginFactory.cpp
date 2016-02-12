@@ -2,7 +2,7 @@
 #include "Jpeg2000ReaderPlugin.hpp"
 #include "Jpeg2000ReaderDefinitions.hpp"
 
-#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
+#include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {

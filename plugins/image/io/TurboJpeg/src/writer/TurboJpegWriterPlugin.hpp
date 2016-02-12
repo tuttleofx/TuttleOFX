@@ -3,7 +3,7 @@
 
 #include "TurboJpegWriterDefinitions.hpp"
 
-#include <tuttle/plugin/context/WriterPlugin.hpp>
+#include <tuttle/ioplugin/context/WriterPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {

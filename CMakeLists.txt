@@ -20,6 +20,9 @@ if(NOT TUTTLE_DEPLOY_DEPENDENCIES)
   set(TUTTLE_DEPLOY_DEPENDENCIES 0)
 endif()
 
+# Diplay commands being ran by CMake
+set(CMAKE_VERBOSE_MAKEFILE OFF)
+
 # Create an alias for all OFX plugins.
 add_custom_target(ofxplugins)
 

@@ -4,7 +4,7 @@
 
 #include "PngEngine/png_adds.hpp"
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem/operations.hpp>

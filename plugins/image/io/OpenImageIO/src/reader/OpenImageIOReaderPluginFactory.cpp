@@ -2,7 +2,7 @@
 #include "OpenImageIOReaderDefinitions.hpp"
 #include "OpenImageIOReaderPlugin.hpp"
 
-#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
+#include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>

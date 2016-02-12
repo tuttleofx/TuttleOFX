@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
-#define _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
+#ifndef _TUTTLE_IOPLUGIN_CONTEXT_WRITERPLUGIN_HPP_
+#define _TUTTLE_IOPLUGIN_CONTEXT_WRITERPLUGIN_HPP_
 
 #include <boost/gil/channel_algorithm.hpp> // force to use the boostHack version first
 

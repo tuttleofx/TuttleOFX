@@ -2,7 +2,7 @@
 #define _PNGWRITER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/context/WriterDefinition.hpp>
+#include <tuttle/ioplugin/context/WriterDefinition.hpp>
 
 namespace tuttle {
 namespace plugin {
