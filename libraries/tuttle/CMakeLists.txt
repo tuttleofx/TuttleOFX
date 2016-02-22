@@ -62,12 +62,17 @@ if (TuttleBoost_FOUND)
   target_link_libraries(tuttleCommon ${CMAKE_THREAD_LIBS_INIT})
   target_link_libraries(tuttleCommon ${TuttleCommonBoost_LIBRARIES})
 
-  # Add tuttlePlugin library (utilities for OFX plugins)
-  add_library(tuttlePluginLib STATIC ${OFXPP_FILES})
-  target_include_directories(tuttlePluginLib PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
+  # Add tuttlePlugin library (utilities for tuttle plugins)
+  add_library(tuttlePluginLib STATIC ${OFXHACK} ${TUTTLE_PLUGIN_FILES})
   set_target_properties(tuttlePluginLib PROPERTIES COMPILE_FLAGS "-fPIC")
-  target_link_libraries(tuttlePluginLib ${SEQUENCEPARSER_LIBRARIES}) 
   target_link_libraries(tuttlePluginLib tuttleCommon)
+
+  # Add tuttleIOPlugin library (utilities for tuttle IO plugins)
+  add_library(tuttleIOPluginLib STATIC ${TUTTLE_IOPLUGIN_FILES})
+  target_include_directories(tuttleIOPluginLib PUBLIC ${SEQUENCEPARSER_INCLUDE_DIR})
+  set_target_properties(tuttleIOPluginLib PROPERTIES COMPILE_FLAGS "-fPIC")
+  target_link_libraries(tuttleIOPluginLib ${SEQUENCEPARSER_LIBRARIES}) 
+  target_link_libraries(tuttleIOPluginLib tuttlePluginLib)
 
   # Add tuttleHost library
   add_library(tuttleHost SHARED ${TUTTLE_HOST_SRC_FILES})
@@ -98,6 +103,7 @@ if (TuttleBoost_FOUND)
   install(TARGETS tuttleHost DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttleCommon DESTINATION lib/ OPTIONAL)
   install(TARGETS tuttlePluginLib DESTINATION lib/ OPTIONAL)
+  install(TARGETS tuttleIOPluginLib DESTINATION lib/ OPTIONAL)
 
   # Install tuttle host headers
   install(

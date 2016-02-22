@@ -4,7 +4,7 @@
 #include <EXRDefinitions.hpp>
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/context/ReaderDefinition.hpp>
+#include <tuttle/ioplugin/context/ReaderDefinition.hpp>
 
 namespace tuttle {
 namespace plugin {

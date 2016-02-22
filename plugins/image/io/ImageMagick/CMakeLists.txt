@@ -2,7 +2,7 @@
 # Macros used to create an openfx plugin with tuttle
 include(TuttleMacros)
 
-tuttle_ofx_plugin_target(ImageMagick)
+tuttle_ofx_plugin_target(ImageMagick "" TRUE)
 
 # Add external libraries with specific components
 tuttle_ofx_plugin_add_library(ImageMagick ImageMagick COMPONENTS MagickCore)

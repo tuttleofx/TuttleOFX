@@ -2,7 +2,7 @@
 #include "EXRReaderPluginFactory.hpp"
 #include "EXRReaderPlugin.hpp"
 
-#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
+#include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {

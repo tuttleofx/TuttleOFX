@@ -165,6 +165,12 @@ OfxhPluginCache::OfxhPluginCache()
 {
 	std::string s = OFXGetEnv( "OFX_PLUGIN_PATH" );
 
+	// if OFX_PLUGIN_PATH environment variable is not set, use a default path (defines in CMake)
+	if( s.empty() )
+	{
+		s = TUTTLE_OFX_PLUGIN_PATH;
+	}
+
 	while( s.length() )
 	{
 		int spos = int(s.find_first_of( DIRLIST_SEP_CHARS ) );

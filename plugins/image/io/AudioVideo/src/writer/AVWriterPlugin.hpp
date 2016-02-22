@@ -3,7 +3,7 @@
 
 #include <common/util.hpp>
 
-#include <tuttle/plugin/context/WriterPlugin.hpp>
+#include <tuttle/ioplugin/context/WriterPlugin.hpp>
 
 #include <AvTranscoder/transcoder/Transcoder.hpp>
 #include <AvTranscoder/profile/ProfileLoader.hpp>

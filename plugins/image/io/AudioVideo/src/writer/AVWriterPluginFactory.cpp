@@ -4,7 +4,7 @@
 
 #include <common/util.hpp>
 
-#include <tuttle/plugin/context/WriterPluginFactory.hpp>
+#include <tuttle/ioplugin/context/WriterPluginFactory.hpp>
 
 #include <AvTranscoder/common.hpp>
 #include <AvTranscoder/util.hpp>

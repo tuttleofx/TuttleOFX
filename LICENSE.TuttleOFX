@@ -1,7 +1,7 @@
 TuttleOFX Public License
 Version 1.0, March 14, 2011
 
-TuttleOFX license is the GNU Lesser Public License (LGPL) version 3, with some exclusions regarding “derived work” definition, see below. Put simply, it’s a less restrictive version of LGPL.
+TuttleOFX license is the GNU Lesser Public License (LGPL) version 2.1, with some exclusions regarding “derived work” definition, see below. Put simply, it’s a less restrictive version of LGPL.
 
 Under the LGPL you may use TuttleOFX for any purpose you wish, and modify it if you require, as long as you:
    1. Pass on the (modified) TuttleOFX source code with your software, with original copyrights intact.

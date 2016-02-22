@@ -2,7 +2,7 @@
 #include "DPXWriterPlugin.hpp"
 #include "DPXWriterDefinitions.hpp"
 
-#include <tuttle/plugin/context/WriterPluginFactory.hpp>
+#include <tuttle/ioplugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {

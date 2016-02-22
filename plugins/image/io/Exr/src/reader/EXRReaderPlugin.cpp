@@ -2,7 +2,7 @@
 #include "EXRReaderPlugin.hpp"
 #include "EXRReaderProcess.hpp"
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
 #include <ImfInputFile.h>
 #include <ImathBox.h>

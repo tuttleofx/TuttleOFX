@@ -2,7 +2,7 @@
 #include "Jpeg2000WriterPlugin.hpp"
 #include "Jpeg2000WriterDefinitions.hpp"
 
-#include <tuttle/plugin/context/WriterPluginFactory.hpp>
+#include <tuttle/ioplugin/context/WriterPluginFactory.hpp>
 
 #include <openjpeg/J2KWriter.hpp>
 

@@ -1,7 +1,7 @@
 #ifndef _IMAGEMAGICKWRITER_DEFINITIONS_HPP_
 #define _IMAGEMAGICKWRITER_DEFINITIONS_HPP_
 
-#include <tuttle/plugin/context/WriterDefinition.hpp>
+#include <tuttle/ioplugin/context/WriterDefinition.hpp>
 #include <tuttle/plugin/global.hpp>
 
 namespace tuttle {

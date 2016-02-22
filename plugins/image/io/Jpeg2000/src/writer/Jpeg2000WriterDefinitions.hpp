@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_JPEG2000_WRITER_DEFINITIONS_HPP_
 #define _TUTTLE_PLUGIN_JPEG2000_WRITER_DEFINITIONS_HPP_
 
-#include <tuttle/plugin/context/WriterDefinition.hpp>
+#include <tuttle/ioplugin/context/WriterDefinition.hpp>
 #include <tuttle/plugin/global.hpp>
 
 
