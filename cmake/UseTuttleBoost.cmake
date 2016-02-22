@@ -19,6 +19,8 @@ set(TuttleHostBoost_LIBRARIES ${Boost_LIBRARIES})
 
 if (Boost_FOUND) 
   set(TuttleBoost_FOUND 1)
+  # Override some boost gil headers
+  include_directories(${PROJECT_SOURCE_DIR}/libraries/boostHack)
 else(Boost_FOUND)
     message("please set BOOST_ROOT environment variable to a proper boost install")
 endif(Boost_FOUND)
