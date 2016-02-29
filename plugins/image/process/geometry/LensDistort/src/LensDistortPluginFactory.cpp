@@ -178,7 +178,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         centerUnit->appendOption( kParamCenterUnitPixel );
         centerUnit->appendOption( kParamCenterUnitCenteredNormWidth );
         centerUnit->appendOption( kParamCenterUnitNormWidth );
-        centerUnit->setDefault( eParamCenterUnitPixel );
+        centerUnit->setDefault( eParamCenterUnitCenteredPixel );
         
         OFX::BooleanParamDescriptor* centerOverlay = desc.defineBooleanParam( kParamCenterOverlay );
         centerOverlay->setLabel( "Display distortion center" );
