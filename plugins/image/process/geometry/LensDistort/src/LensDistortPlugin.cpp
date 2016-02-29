@@ -30,6 +30,7 @@ LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 	_coef1                = fetchDoubleParam        ( kParamCoef1 );
 	_coef2                = fetchDoubleParam        ( kParamCoef2 );
 	_coef3                = fetchDoubleParam        ( kParamCoef3 );
+	_coef4                = fetchDoubleParam        ( kParamCoef4 );
 	_squeeze              = fetchDoubleParam        ( kParamSqueeze );
 	_asymmetric           = fetchDouble2DParam      ( kParamAsymmetric );
 	_center               = fetchDouble2DParam      ( kParamCenter );
@@ -82,24 +83,35 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 			case eParamLensTypeBrown1:
 				_coef2     -> setIsSecretAndDisabled( true );
 				_coef3     -> setIsSecretAndDisabled( true );
+				_coef4     ->setIsSecretAndDisabled( true );
 				_squeeze    -> setIsSecretAndDisabled( true );
 				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
 			case eParamLensTypeBrown3:
 				_coef2     -> setIsSecretAndDisabled( false );
 				_coef3     -> setIsSecretAndDisabled( false );
+				_coef4     ->setIsSecretAndDisabled( true );
 				_squeeze    -> setIsSecretAndDisabled( true );
 				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
 			case eParamLensTypePTLens:
 				_coef2     -> setIsSecretAndDisabled( false );
 				_coef3     -> setIsSecretAndDisabled( false );
+				_coef4     ->setIsSecretAndDisabled( true );
 				_squeeze    -> setIsSecretAndDisabled( true );
 				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
 			case eParamLensTypeFisheye:
 				_coef2     ->setIsSecretAndDisabled( true );
 				_coef3     ->setIsSecretAndDisabled( true );
+				_coef4     ->setIsSecretAndDisabled( true );
+				_squeeze    -> setIsSecretAndDisabled( true );
+				_asymmetric -> setIsSecretAndDisabled( true );
+				break;
+			case eParamLensTypeFisheye4:
+				_coef2     ->setIsSecretAndDisabled( false );
+				_coef3     ->setIsSecretAndDisabled( false );
+				_coef4     ->setIsSecretAndDisabled( false );
 				_squeeze    -> setIsSecretAndDisabled( true );
 				_asymmetric -> setIsSecretAndDisabled( true );
 				break;
@@ -352,8 +364,9 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	params.distort          = _reverse->getValue();
 
 	params.coef1           = _coef1->getValue();
-	params.coef2          = _coef2->getValue();
-	params.coef3          = _coef3->getValue();
+	params.coef2           = _coef2->getValue();
+	params.coef3           = _coef3->getValue();
+	params.coef4           = _coef4->getValue();
 	params.squeeze         = _squeeze->getValue();
 	params.asymmetric      = ofxToGil( _asymmetric->getValue() );
 
