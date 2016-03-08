@@ -300,7 +300,7 @@ class Sam_do(samUtils.Sam):
                 with indent(40):
                     for choiceValue in paramChoiceValues:
                         puts('{choiceValue!s:50} {label}'.format(
-                            choiceValue=(colored.yellow(choiceValue) if paramChoiceValues.index(choiceValue) == paramDefaultValue else colored.red(choiceValue)),
+                            choiceValue=(colored.yellow(choiceValue + ' (default)') if paramChoiceValues.index(choiceValue) == paramDefaultValue else colored.red(choiceValue)),
                             label=(paramChoiceLabel[paramChoiceValues.index(choiceValue)] if hasLabel else '')))
             else:
                 puts('{defaultValue!s:9}'.format(
