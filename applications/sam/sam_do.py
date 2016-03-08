@@ -409,6 +409,7 @@ class Sam_do(samUtils.Sam):
         graph = tuttle.Graph()
         nodes = []
         connections = []
+        error = 0
 
         for splitCmdNode in splitCmdGraph.getNodes():
             # Create a tuttle node
@@ -421,9 +422,9 @@ class Sam_do(samUtils.Sam):
                 # Plugin not found
                 if not nodeFullName:
                     nodeFullName = splitCmdNode._pluginId
-                self.logger.error('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
+                self.logger.error('Cannot create node "' + nodeFullName + '".')
                 self.logger.debug(e)
-                continue
+                error = 1
             # sam-do node --help
             if splitCmdNode.hasHelp():
                 self._displayNodeHelp(nodeFullName, node)
@@ -447,21 +448,25 @@ class Sam_do(samUtils.Sam):
                             graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
                         except Exception as e:
                             # Cannot connect attribute of node
-                            self.logger.warning('Cannot connect attribute "' 
-                                + argName + '" of node "' + nodeFullName 
-                                + '" to id "' + argValue 
-                                + '": the connection will be skipped from the command line.')
+                            self.logger.warning('Cannot connect attribute "'
+                                + argName + '" of node "' + nodeFullName
+                                + '" to id "' + argValue)
                             self.logger.debug(e)
+                            error = 1
                     else:
                         # Cannot set param of node
                         self.logger.warning('Cannot set '
                             + (('parameter "' + argName + '" of ') if argName else '')
-                            + 'node "' + nodeFullName + '" ' 
-                            + (('to value "' + argValue + '"') if argValue else '') 
-                            + ': the parameter will be skipped from the command line.')
+                            + 'node "' + nodeFullName + '" '
+                            + (('to value "' + argValue + '"') if argValue else ''))
                         self.logger.debug(e)
+                        error = 1
             nodes.append(node)
             connections.append(splitCmdNode.getArgument('id')[1])
+
+        # exit the process if there is an error in the command line
+        if error:
+            exit(error)
 
         # Create in line connections
         for i in range(0, len(connections)):
