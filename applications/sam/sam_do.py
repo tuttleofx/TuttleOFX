@@ -343,6 +343,9 @@ class Sam_do(samUtils.Sam):
         """
         Display help of a specific node in the command line.
         """
+        if not node:
+            self.logger.error('Cannot print help of unknown plugin "' + nodeFullName + '".')
+            exit(1)
         # NODE
         self._displayTitle('NODE')
         with indent(4):
