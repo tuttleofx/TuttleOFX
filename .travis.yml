@@ -124,6 +124,9 @@ addons:
     branch_pattern: coverity_scan
 
 before_deploy:
+  # copy external dependencies of boost-regex
+  - if [ ${TRAVIS_OS_NAME} = "linux" ]; then cp /usr/lib/{libicuuc.so.48,libicui18n.so.48,libicudata.so.48} ${TUTTLEOFX_INSTALL}/lib; fi
+  # prepare deployment
   - tools/travis/deploy.sh
 
 deploy:
@@ -133,5 +136,6 @@ deploy:
   file: ${TUTTLEOFX_DEPLOY}-${CC}-python-${PYTHON_VERSION}.tgz
   skip_cleanup: true
   on:
-    branch: master
+    tags: true
+    all_branches: true
     condition: ${CC} = "gcc"
