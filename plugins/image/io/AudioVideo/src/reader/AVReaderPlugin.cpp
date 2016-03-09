@@ -5,7 +5,7 @@
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/FormatContext.hpp>
 #include <AvTranscoder/progress/NoDisplayProgress.hpp>
-#include <AvTranscoder/mediaProperty/FileProperties.hpp>
+#include <AvTranscoder/properties/FileProperties.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
@@ -201,7 +201,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 			// update wrapper of Metadata tab
 			std::string wrapperValue( "" );
-			BOOST_FOREACH( const PropertyPair& pair, params._inputProperties->getPropertiesAsVector() )
+			BOOST_FOREACH( const PropertyPair& pair, params._inputProperties->asVector() )
 			{
 				wrapperValue += pair.first + ": " + pair.second + "\n";
 			}
@@ -216,7 +216,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::VideoProperties& videoStream, params._inputProperties->getVideoProperties() )
 			{
 				videoValue += "::::: VIDEO STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, videoStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, videoStream.asVector() )
 				{
 					videoValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -233,7 +233,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AudioProperties& audioStream, params._inputProperties->getAudioProperties() )
 			{
 				audioValue += "::::: AUDIO STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, audioStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, audioStream.asVector() )
 				{
 					audioValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -250,7 +250,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::DataProperties& dataStream, params._inputProperties->getDataProperties() )
 			{
 				dataValue += "::::: DATA STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, dataStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, dataStream.asVector() )
 				{
 					dataValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -267,7 +267,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::SubtitleProperties& subtitleStream, params._inputProperties->getSubtitleProperties() )
 			{
 				subtitleValue += "::::: SUBTITLE STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, subtitleStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, subtitleStream.asVector() )
 				{
 					subtitleValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -284,7 +284,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AttachementProperties& attachementStream, params._inputProperties->getAttachementProperties() )
 			{
 				attachementValue += "::::: ATTACHEMENT STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, attachementStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, attachementStream.asVector() )
 				{
 					attachementValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -301,7 +301,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, params._inputProperties->getUnknownProperties() )
 			{
 				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, unknownStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, unknownStream.asVector() )
 				{
 					unknownValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -526,7 +526,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 
 	// get image to decode
-	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc.getWidth(), sourceImageDesc.getHeight(), "rgb24" );
+	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc._width, sourceImageDesc._height, "rgb24" );
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
 
 	_isSetUp = true;

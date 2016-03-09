@@ -347,7 +347,7 @@ void AVWriterPlugin::updateAudioFileInfo( size_t indexAudioOutput )
 				audioInfo += ": ";
 
 				// channels
-				audioInfo += boost::lexical_cast<std::string>( audioProperties.getChannels() );
+				audioInfo += boost::lexical_cast<std::string>( audioProperties.getNbChannels() );
 				audioInfo += " channels";
 
 				// channel layout
@@ -1039,9 +1039,9 @@ void AVWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& a
 	std::vector< avtranscoder::StreamTranscoder* >& streams = _transcoder->getStreamTranscoders();
 	for( size_t streamIndex = 0; streamIndex < streams.size(); ++streamIndex )
 	{
-		avtranscoder::IEncoder& encoder = streams.at( streamIndex )->getEncoder();
+		avtranscoder::IEncoder* encoder = streams.at( streamIndex )->getEncoder();
 		avtranscoder::CodedData data;
-		while( encoder.encodeFrame( data ) )
+		while( encoder->encodeFrame( data ) )
 			streams.at( streamIndex )->getOutputStream().wrap( data );
 	}
 

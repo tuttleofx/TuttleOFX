@@ -8,7 +8,6 @@
 #include <AvTranscoder/transcoder/Transcoder.hpp>
 #include <AvTranscoder/profile/ProfileLoader.hpp>
 #include <AvTranscoder/file/OutputFile.hpp>
-#include <AvTranscoder/frame/Frame.hpp>
 
 #include <boost/scoped_ptr.hpp>
 
@@ -176,8 +175,7 @@ public:
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
 	
-	// to process video
-	avtranscoder::Frame _videoFrame;
+	// to access encoding profiles
 	avtranscoder::ProfileLoader _presetLoader;
 
 	bool _initVideo;  ///< To check if video stream is init.

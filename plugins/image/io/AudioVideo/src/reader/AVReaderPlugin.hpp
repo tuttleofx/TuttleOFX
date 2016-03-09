@@ -8,7 +8,7 @@
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/InputFile.hpp>
 #include <AvTranscoder/decoder/VideoDecoder.hpp>
-#include <AvTranscoder/frame/VideoFrame.hpp>
+#include <AvTranscoder/data/decoded/VideoFrame.hpp>
 #include <AvTranscoder/transform/VideoTransform.hpp>
 
 #include <boost/scoped_ptr.hpp>
