@@ -157,8 +157,9 @@ void LibAVParams::fetchLibAVParams( OFX::ImageEffect& plugin, const std::string&
 
 avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const std::string& detailedName )
 {
-	LibAVOptions optionsNameAndValue;
+	avtranscoder::ProfileLoader::Profile profileToReturn;
 
+	LibAVOptions optionsNameAndValue;
 	// Get all libav options and values corresponding to the OFX parameters
 	BOOST_FOREACH( OFX::ValueParam* param, _paramOFX )
 	{
@@ -167,98 +168,106 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 			continue;
 
 		const std::string libavOptionName( getOptionNameWithoutPrefix( param->getName(), detailedName ) );
-		const avtranscoder::Option& libavOption = getLibAVOption( libavOptionName, detailedName );
-		std::string libavOptionValue( "" );
-
-		// Manage OFX Boolean
-		OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
-		if( paramBoolean )
+		try
 		{
-			if( libavOption.getDefaultBool() == paramBoolean->getValue() )
-				continue;
+            const avtranscoder::Option& libavOption = getLibAVOption( libavOptionName, detailedName );
+            std::string libavOptionValue( "" );
 
-			libavOptionValue = boost::to_string( paramBoolean->getValue() );
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
-			continue;
-		}
+            // Manage OFX Boolean
+            OFX::BooleanParam* paramBoolean = dynamic_cast<OFX::BooleanParam*>( param );
+            if( paramBoolean )
+            {
+                if( libavOption.getDefaultBool() == paramBoolean->getValue() )
+                    continue;
 
-		// Manage OFX Int
-		OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
-		if( paramInt )
-		{
-			// exception for threads
-			if( libavOption.getDefaultInt() == paramInt->getValue() && libavOption.getName() != kOptionThreads )
-				continue;
+                libavOptionValue = boost::to_string( paramBoolean->getValue() );
+                optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
+                continue;
+            }
 
-			// FFmpeg threads option has a default value of 1.
-			// Our threads parameter has a default value of 0.
-			// If 0, do not use it to set the decoding/encoding profile:
-			// avTranscoder will automatically set the number of threads according to the codec.
-			if( libavOption.getName() == kOptionThreads && paramInt->getValue() == kOptionThreadsValue )
-				continue;
+            // Manage OFX Int
+            OFX::IntParam* paramInt = dynamic_cast<OFX::IntParam*>( param );
+            if( paramInt )
+            {
+                // exception for threads
+                if( libavOption.getDefaultInt() == paramInt->getValue() && libavOption.getName() != kOptionThreads )
+                    continue;
 
-			libavOptionValue = boost::to_string( paramInt->getValue() );
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
-			continue;
-		}
+                // FFmpeg threads option has a default value of 1.
+                // Our threads parameter has a default value of 0.
+                // If 0, do not use it to set the decoding/encoding profile:
+                // avTranscoder will automatically set the number of threads according to the codec.
+                if( libavOption.getName() == kOptionThreads && paramInt->getValue() == kOptionThreadsValue )
+                    continue;
 
-		// Manage OFX Double
-		OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
-		if( paramDouble )
-		{
-			if( boost::test_tools::check_is_close( libavOption.getDefaultDouble(), paramDouble->getValue(), boost::test_tools::percent_tolerance( 0.5 ) ) )
-				continue;
+                libavOptionValue = boost::to_string( paramInt->getValue() );
+                optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
+                continue;
+            }
 
-			libavOptionValue = boost::to_string( paramDouble->getValue() );
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
-			continue;
-		}
+            // Manage OFX Double
+            OFX::DoubleParam* paramDouble = dynamic_cast<OFX::DoubleParam*>( param );
+            if( paramDouble )
+            {
+                if( boost::test_tools::check_is_close( libavOption.getDefaultDouble(), paramDouble->getValue(), boost::test_tools::percent_tolerance( 0.5 ) ) )
+                    continue;
 
-		// Manage OFX String
-		OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
-		if( paramString )
-		{
-			// skip empty string
-			libavOptionValue = paramString->getValue();
-			if( libavOptionValue.empty() )
-				continue;
+                libavOptionValue = boost::to_string( paramDouble->getValue() );
+                optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
+                continue;
+            }
 
-			if( libavOption.getDefaultString() == libavOptionValue )
-				continue;
+            // Manage OFX String
+            OFX::StringParam* paramString = dynamic_cast<OFX::StringParam*>( param );
+            if( paramString )
+            {
+                // skip empty string
+                libavOptionValue = paramString->getValue();
+                if( libavOptionValue.empty() )
+                    continue;
 
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
-			continue;
-		}
+                if( libavOption.getDefaultString() == libavOptionValue )
+                    continue;
 
-		// Manage OFX Int2D
-		OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
-		if( paramRatio )
-		{
-			std::pair<int, int> ofxParamValue = std::make_pair( paramRatio->getValue().x, paramRatio->getValue().y );
-			if( libavOption.getDefaultRatio() == ofxParamValue )
-				continue;
+                optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
+                continue;
+            }
 
-			libavOptionValue = boost::to_string( paramRatio->getValue().x ) + ":" + boost::to_string( paramRatio->getValue().y );
-			optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
-			continue;
-		}
+            // Manage OFX Int2D
+            OFX::Int2DParam* paramRatio = dynamic_cast<OFX::Int2DParam*>( param );
+            if( paramRatio )
+            {
+                std::pair<int, int> ofxParamValue = std::make_pair( paramRatio->getValue().x, paramRatio->getValue().y );
+                if( libavOption.getDefaultRatio() == ofxParamValue )
+                    continue;
 
-		// Manage OFX Choice
-		OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
-		if( paramChoice )
-		{
-			if( libavOption.getDefaultInt() == paramChoice->getValue() )
-				continue;
+                libavOptionValue = boost::to_string( paramRatio->getValue().x ) + ":" + boost::to_string( paramRatio->getValue().y );
+                optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
+                continue;
+            }
 
-			const size_t optionIndex = paramChoice->getValue();
-			const std::vector<std::string> childs( _childsPerChoice.at( paramChoice ) );
-			if( childs.size() > optionIndex )
-			{
-				libavOptionValue = childs.at( optionIndex );
-				optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
-			}
-			continue;
-		}
+            // Manage OFX Choice
+            OFX::ChoiceParam* paramChoice = dynamic_cast<OFX::ChoiceParam*>( param );
+            if( paramChoice )
+            {
+                if( libavOption.getDefaultInt() == paramChoice->getValue() )
+                    continue;
+
+                const size_t optionIndex = paramChoice->getValue();
+                const std::vector<std::string> childs( _childsPerChoice.at( paramChoice ) );
+                if( childs.size() > optionIndex )
+                {
+                    libavOptionValue = childs.at( optionIndex );
+                    optionsNameAndValue.insert( std::make_pair( libavOptionName, libavOptionValue ) );
+                }
+                continue;
+            }
+        }
+        catch( std::exception& e )
+        {
+            TUTTLE_LOG_WARNING( "Can't get option " << libavOptionName << " (" << detailedName << "): " << e.what() );
+            continue;
+        }
 	}
 
 	// Get all libav flags and values corresponding to the OFX parameters
@@ -306,13 +315,12 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
 		}
 	}
 
-	// Create the corresponding profile
-	avtranscoder::ProfileLoader::Profile profile;
+	// Fill and return the profile
 	BOOST_FOREACH( LibAVOptions::value_type& nameAndValue, optionsNameAndValue )
 	{
-		profile[ nameAndValue.first ] = nameAndValue.second;
+		profileToReturn[ nameAndValue.first ] = nameAndValue.second;
 	}
-	return profile;
+	return profileToReturn;
 }
 
 avtranscoder::Option& LibAVParams::getLibAVOption(const std::string& libAVOptionName, const std::string& detailedName )

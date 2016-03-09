@@ -71,7 +71,9 @@ public:
 
 	/**
 	 * @brief Get the libav option
+	 * @param libAVOptionName: the libav option name
 	 * @param detailedName: the format/codec name, which is needed to get the correct libav Option
+	 * @exception out_of_range exception if the detailedName does not exist
 	 * @exception boost exception if option is not found
 	 */
 	avtranscoder::Option& getLibAVOption( const std::string& libAVOptionName, const std::string& detailedName="" );
