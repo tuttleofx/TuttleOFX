@@ -933,21 +933,16 @@ void AVWriterPlugin::updateAudioFromExistingProfile()
 	}
 }
 
-void AVWriterPlugin::cleanVideoAndAudio()
-{
-	_outputFile.reset();
-	_transcoder.reset();
-	
-	_initVideo = false;
-	_initWrap = false;
-}
-
 void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	WriterPlugin::beginSequenceRender( args );
 
-	// Before new render
-	cleanVideoAndAudio();
+	// Clean video and audio
+    _outputFile.reset();
+	_transcoder.reset();
+	
+	_initVideo = false;
+	_initWrap = false;
 
     // Input output
     AVProcessParams params = getProcessParams();

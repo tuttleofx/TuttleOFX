@@ -53,8 +53,6 @@ public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
-	void cleanVideoAndAudio();  ///< Called before each new render.
-
 	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
