@@ -74,7 +74,6 @@ public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
-	void initOutput();  ///< Initialize output file and transcoder
 	void initAudio();  ///< Initialize output audio streams
 	void initVideo( const OFX::RenderArguments& args );  ///< Initialize output video stream
 

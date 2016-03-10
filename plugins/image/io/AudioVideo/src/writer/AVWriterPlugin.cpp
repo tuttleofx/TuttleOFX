@@ -539,28 +539,6 @@ void AVWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 	clipPreferences.setOutputFrameVarying( true );
 }
 
-void AVWriterPlugin::initOutput()
-{
-	AVProcessParams params = getProcessParams();
-	
-	try
-	{
-		// create output file
-		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
-
-		// add metadatas
-		_outputFile->addMetadata( params._metadatas );
-
-		// create transcoder
-		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
-		_transcoder->setProcessMethod( avtranscoder::eProcessMethodBasedOnStream, 0 );
-	}
-	catch( std::exception& e )
-	{
-		TUTTLE_LOG_WARNING( "Unable to open output file: " << e.what() );
-	}
-}
-
 void AVWriterPlugin::initVideo( const OFX::RenderArguments& args )
 {
 	AVProcessParams params = getProcessParams();
@@ -970,7 +948,25 @@ void AVWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 
 	// Before new render
 	cleanVideoAndAudio();
-	initOutput();
+
+    // Input output
+    AVProcessParams params = getProcessParams();
+	try
+	{
+		// create output file
+		_outputFile.reset( new avtranscoder::OutputFile( params._outputFilePath ) );
+
+		// add metadatas
+		_outputFile->addMetadata( params._metadatas );
+
+		// create transcoder
+		_transcoder.reset( new avtranscoder::Transcoder( *_outputFile ) );
+		_transcoder->setProcessMethod( avtranscoder::eProcessMethodBasedOnStream, 0 );
+	}
+	catch( std::exception& e )
+	{
+		TUTTLE_LOG_WARNING( "Unable to open output file: " << e.what() );
+	}
 }
 
 void AVWriterPlugin::render( const OFX::RenderArguments& args )
