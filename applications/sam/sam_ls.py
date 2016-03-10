@@ -32,6 +32,15 @@ class Sam_ls(samUtils.Sam):
         self._sequenceExploded = [] # name of Sequences already exploded
 
     def fillParser(self, parser):
+        def level_type(level):
+            """
+            Check constrains of 'level' argument.
+            """
+            level = int(level)
+            if level < 0:
+                raise argparse.ArgumentTypeError("Minimum level is 0")
+            return level
+
         # Arguments
         parser.add_argument('inputs', nargs='*', action='store', help='list of files/sequences/directories to analyse').completer = samUtils.sequenceParserCompleter
 
@@ -45,7 +54,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format (display in this order: type | permissions | owner | group | last update | minSize | maxSize | totalSize | name)')
         parser.add_argument('--format', dest='format', choices=['default', 'nuke', 'rv'], default='default', help='specify formatting of the sequence padding')
         parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
-        parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
+        parser.add_argument('-L', '--level', dest='level', type=level_type, help='max display depth of the directory tree (without formatting if 0)')
         parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
         parser.add_argument('--no-color', dest='noColor', action='store_true', default=False, help='display the output without colors (with colors by default)')
