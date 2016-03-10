@@ -266,7 +266,7 @@ avtranscoder::ProfileLoader::Profile LibAVParams::getCorrespondingProfile( const
         }
         catch( std::exception& e )
         {
-            TUTTLE_LOG_WARNING( "Can't get option " << libavOptionName << " (" << detailedName << "): " << e.what() );
+            TUTTLE_LOG_INFO( "Can't get option " << libavOptionName << " (" << detailedName << "): " << e.what() );
             continue;
         }
 	}
