@@ -394,17 +394,6 @@ class Sam_do(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
-    def _displayCommandLineHelp(self, parser):
-        """
-        Display sam-do command line help.
-        """
-        subparser = samUtils.getSubParser(parser, 'do')
-        # if sam-do is called from sam main command line
-        if subparser is not None:
-            puts(subparser.format_help())
-        else:
-            parser.print_help()
-
     def _getTuttleGraph(self, splitCmdGraph):
         """
         Return the tuple (tuttle graph, its nodes) which corresponds to the given split command.
