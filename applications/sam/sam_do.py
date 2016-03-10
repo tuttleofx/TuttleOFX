@@ -503,7 +503,7 @@ class Sam_do(samUtils.Sam):
         # sam-do --help
         if self._isCommandLineInvalid(args.inputs, unknown):
             self._displayCommandLineHelp(parser)
-            exit(0)
+            exit(1)
 
         # Add unknown options to the command line to process
         args.inputs.extend(unknown)
