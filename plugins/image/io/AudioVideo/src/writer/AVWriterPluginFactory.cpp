@@ -2,7 +2,7 @@
 #include "AVWriterPlugin.hpp"
 #include "AVWriterDefinitions.hpp"
 
-#include <common/util.hpp>
+#include <common/LibAVParams.hpp>
 
 #include <tuttle/ioplugin/context/WriterPluginFactory.hpp>
 

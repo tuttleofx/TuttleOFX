@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
-#define _TUTTLE_PLUGIN_AV_COMMON_UTIL_HPP
+#ifndef _TUTTLE_PLUGIN_AV_COMMON_LIBAVPARAMS_HPP
+#define _TUTTLE_PLUGIN_AV_COMMON_LIBAVPARAMS_HPP
 
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/Option.hpp>

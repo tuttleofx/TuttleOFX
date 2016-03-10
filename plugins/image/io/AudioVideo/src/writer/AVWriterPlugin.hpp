@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 
-#include <common/util.hpp>
+#include <common/LibAVParams.hpp>
 #include <common/LibAVFeaturesAvailable.hpp>
 
 #include <tuttle/ioplugin/context/WriterPlugin.hpp>

@@ -2,7 +2,7 @@
 #include "AVReaderPlugin.hpp"
 #include "AVReaderDefinitions.hpp"
 
-#include <common/util.hpp>
+#include <common/LibAVParams.hpp>
 
 #include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 
