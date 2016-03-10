@@ -117,17 +117,13 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	_paramVideoDetailCustom.fetchLibAVParams( *this, common::kPrefixVideo );
 	_paramAudioDetailCustom.fetchLibAVParams( *this, common::kPrefixAudio );
 
-	const avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
-	const std::string formatName = avtranscoder::getFormatsNames().at( _paramFormat->getValue() ).first;
-	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, formatName, common::kPrefixFormat );
+    const std::string formatName = getFormatName(_paramFormat->getValue());
+    const std::string videoCodecName = getVideoCodecName(_paramVideoCodec->getValue());
+    const std::string audioCodecName = getAudioCodecName(_paramAudioCodec->getValue());
 
-	const avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-	const std::string videoCodecName = avtranscoder::getVideoCodecsNames().at( _paramVideoCodec->getValue() ).first;
-	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
-
-	const avtranscoder::OptionArrayMap optionsAudioCodecMap = avtranscoder::getAudioCodecOptions();
-	const std::string audioCodecName = avtranscoder::getAudioCodecsNames().at( _paramAudioCodec->getValue() ).first;
-	common::disableOFXParamsForFormatOrCodec( *this, optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
+	common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, formatName, common::kPrefixFormat );
+	common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, videoCodecName, common::kPrefixVideo );
+	common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerAudioCodec, audioCodecName, common::kPrefixAudio );
 	
 	updatePixelFormats( videoCodecName );
 	updateSampleFormats( audioCodecName );
@@ -207,11 +203,11 @@ void AVWriterPlugin::updatePixelFormats( const std::string& videoCodecName )
 {
 	_paramVideoPixelFormat->resetOptions();
 	
-	std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( videoCodecName ) );
+	std::vector<std::string> pixelFormats( avtranscoder::getSupportedPixelFormats( videoCodecName ) );
 	// get all pixel formats if the list is empty with the video codec indicated
 	if( pixelFormats.empty() )
 	{
-		pixelFormats = avtranscoder::getPixelFormats();
+		pixelFormats = _libavFeatures._allSupportedPixelFormats;
 	}
 	
 	for( std::vector<std::string>::iterator it = pixelFormats.begin(); it != pixelFormats.end(); ++it )
@@ -224,11 +220,11 @@ void AVWriterPlugin::updateSampleFormats( const std::string& audioCodecName )
 {
 	_paramAudioSampleFormat->resetOptions();
 	
-	std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( audioCodecName ) );
+	std::vector<std::string> sampleFormats( avtranscoder::getSupportedSampleFormats( audioCodecName ) );
 	// get all sample formats if the list is empty with the audio codec indicated
 	if( sampleFormats.empty() )
 	{
-		sampleFormats = avtranscoder::getSampleFormats();
+		sampleFormats = _libavFeatures._allSupportedSampleFormats;
 	}
 	
 	for( std::vector<std::string>::iterator it = sampleFormats.begin(); it != sampleFormats.end(); ++it )
@@ -389,24 +385,21 @@ void AVWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 	// format
 	else if( paramName == kParamFormat )
 	{
-		const avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
 		const std::string formatName = getFormatName( _paramFormat->getValue() );
-		common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, formatName, common::kPrefixFormat );
+		common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, formatName, common::kPrefixFormat );
 	}
 	// codecs
 	else if( paramName == kParamVideoCodec )
 	{
-		const avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
 		const std::string videoCodecName = getVideoCodecName( _paramVideoCodec->getValue() );
-		common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
+		common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, videoCodecName, common::kPrefixVideo );
 		
 		updatePixelFormats( videoCodecName );
 	}
 	else if( paramName == kParamAudioCodec )
 	{
-		const avtranscoder::OptionArrayMap optionsAudioCodecMap = avtranscoder::getAudioCodecOptions();
 		const std::string audioCodecName = getAudioCodecName(_paramAudioCodec->getValue() );
-		common::disableOFXParamsForFormatOrCodec( *this, optionsAudioCodecMap, audioCodecName, common::kPrefixAudio );
+		common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerAudioCodec, audioCodecName, common::kPrefixAudio );
 		
 		updateSampleFormats( audioCodecName );
 	}
@@ -874,7 +867,7 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
 		// pixel format
 		if( existingProfile.find( avtranscoder::constants::avProfilePixelFormat ) != existingProfile.end() )
 		{
-			const std::vector<std::string> pixelFormats( avtranscoder::getPixelFormats( existingProfile.at(avtranscoder::constants::avProfileCodec) ) );
+			const std::vector<std::string> pixelFormats( avtranscoder::getSupportedPixelFormats( existingProfile.at(avtranscoder::constants::avProfileCodec) ) );
 			std::vector<std::string>::const_iterator iterPixelFormat = std::find( pixelFormats.begin(), pixelFormats.end(), existingProfile.at(avtranscoder::constants::avProfilePixelFormat) );
 			const size_t pixelFomatIndex = std::distance( pixelFormats.begin(), iterPixelFormat);
 			if( pixelFomatIndex < pixelFormats.size() )
@@ -934,7 +927,7 @@ void AVWriterPlugin::updateAudioFromExistingProfile()
 		// sample format
 		if( existingProfile.find( avtranscoder::constants::avProfileSampleFormat ) != existingProfile.end() )
 		{
-			const std::vector<std::string> sampleFormats( avtranscoder::getSampleFormats( existingProfile.at(avtranscoder::constants::avProfileCodec) ) );
+			const std::vector<std::string> sampleFormats( avtranscoder::getSupportedSampleFormats( existingProfile.at(avtranscoder::constants::avProfileCodec) ) );
 			std::vector<std::string>::const_iterator iterSampleFormat = std::find( sampleFormats.begin(), sampleFormats.end(), existingProfile.at(avtranscoder::constants::avProfileSampleFormat) );
 			const size_t sampleFomatIndex = std::distance( sampleFormats.begin(), iterSampleFormat);
 			if( sampleFomatIndex < sampleFormats.size() )
@@ -1053,7 +1046,7 @@ std::string AVWriterPlugin::getFormatName( const size_t formatIndex ) const
 {
 	try
 	{
-		return avtranscoder::getFormatsNames().at( formatIndex ).first;
+		return _libavFeatures._availableFormats.at( formatIndex ).first;
 	}
 	catch( std::exception& e )
 	{
@@ -1066,7 +1059,7 @@ std::string AVWriterPlugin::getVideoCodecName( const size_t codecIndex ) const
 {
 	try
 	{
-		return avtranscoder::getVideoCodecsNames().at( codecIndex ).first;
+		return _libavFeatures._availableVideoCodecs.at( codecIndex ).first;
 	}
 	catch( std::exception& e )
 	{
@@ -1079,7 +1072,7 @@ std::string AVWriterPlugin::getAudioCodecName( const size_t codecIndex ) const
 {
 	try
 	{
-		return avtranscoder::getAudioCodecsNames().at( codecIndex ).first;
+		return _libavFeatures._availableAudioCodecs.at( codecIndex ).first;
 	}
 	catch( std::exception& e )
 	{
@@ -1090,14 +1083,14 @@ std::string AVWriterPlugin::getAudioCodecName( const size_t codecIndex ) const
 
 std::string AVWriterPlugin::getPixelFormatName( const std::string& videoCodecName ) const
 {
-	std::vector<std::string> supportedPixelFormats( avtranscoder::getPixelFormats( videoCodecName ) );
+	std::vector<std::string> supportedPixelFormats( avtranscoder::getSupportedPixelFormats( videoCodecName ) );
 
 	try
 	{
 		// no pixel format declared by the codec: return pixel format selected by the user
 		if( supportedPixelFormats.empty() )
 		{
-			supportedPixelFormats = avtranscoder::getPixelFormats();
+			supportedPixelFormats = _libavFeatures._allSupportedPixelFormats;
 			return supportedPixelFormats.at( _paramVideoPixelFormat->getValue() );
 		}
 
@@ -1119,14 +1112,14 @@ std::string AVWriterPlugin::getPixelFormatName( const std::string& videoCodecNam
 
 std::string AVWriterPlugin::getSampleFormatName( const std::string& audioCodecName ) const
 {
-	std::vector<std::string> supportedSampleFormats( avtranscoder::getSampleFormats( audioCodecName ) );
+	std::vector<std::string> supportedSampleFormats( avtranscoder::getSupportedSampleFormats( audioCodecName ) );
 
 	try
 	{
 		// no sample format declared by the codec: return sample format selected by the user
 		if( supportedSampleFormats.empty() )
 		{
-			supportedSampleFormats = avtranscoder::getSampleFormats();
+			supportedSampleFormats = _libavFeatures._allSupportedSampleFormats;
 			return supportedSampleFormats.at(  _paramAudioSampleFormat->getValue() );
 		}
 
@@ -1148,8 +1141,8 @@ std::string AVWriterPlugin::getSampleFormatName( const std::string& audioCodecNa
 
 void AVWriterPlugin::setFormatParam( const std::string& formatShortName )
 {
-	const avtranscoder::NamesArray formats( avtranscoder::getFormatsNames() );
-	for( avtranscoder::NamesArray::const_iterator itFormat = formats.begin();
+	const common::LibAVFeaturesAvailable::NamesArray& formats( _libavFeatures._availableFormats );
+	for( common::LibAVFeaturesAvailable::NamesArray::const_iterator itFormat = formats.begin();
 		itFormat != formats.end();
 		++itFormat )
 	{
@@ -1165,8 +1158,8 @@ void AVWriterPlugin::setFormatParam( const std::string& formatShortName )
 
 void AVWriterPlugin::setVideoCodecParam( const std::string& videoCodecShortName )
 {
-	const avtranscoder::NamesArray codecs( avtranscoder::getVideoCodecsNames() );
-	for( avtranscoder::NamesArray::const_iterator itCodec = codecs.begin();
+	const common::LibAVFeaturesAvailable::NamesArray& codecs( _libavFeatures._availableVideoCodecs );
+	for( common::LibAVFeaturesAvailable::NamesArray::const_iterator itCodec = codecs.begin();
 		itCodec != codecs.end();
 		++itCodec )
 	{
@@ -1182,8 +1175,8 @@ void AVWriterPlugin::setVideoCodecParam( const std::string& videoCodecShortName 
 
 void AVWriterPlugin::setAudioCodecParam( const std::string& audioCodecShortName )
 {
-	const avtranscoder::NamesArray codecs( avtranscoder::getAudioCodecsNames() );
-	for( avtranscoder::NamesArray::const_iterator itCodec = codecs.begin();
+	const common::LibAVFeaturesAvailable::NamesArray codecs( _libavFeatures._availableAudioCodecs );
+	for( common::LibAVFeaturesAvailable::NamesArray::const_iterator itCodec = codecs.begin();
 		itCodec != codecs.end();
 		++itCodec )
 	{

@@ -28,10 +28,12 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _paramFormatDetailCustom( common::kPrefixFormat, AV_OPT_FLAG_DECODING_PARAM, true )
 	, _paramVideoDetailCustom( common::kPrefixVideo, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, true )
 	, _inputFile( NULL )
-	, _inputStream( NULL )
 	, _inputDecoder( NULL )
 	, _sourceImage( NULL )
 	, _imageToDecode( NULL )
+	, _inputStream( NULL )
+	, _colorTransform()
+	, _libavFeatures()
 	, _lastInputFilePath( "" )
 	, _lastVideoStreamIndex( 0 )
 	, _lastFrame( -1 )
@@ -68,11 +70,8 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 
 	_paramVerbose = fetchBooleanParam( kParamVerbose );
 
-	const avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
-	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, "", common::kPrefixFormat );
-
-	const avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
+	common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, "", common::kPrefixFormat );
+	common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, "", common::kPrefixVideo );
 
 	updateVisibleTools();
 }
@@ -314,13 +313,10 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			}
 
 			// update format details parameters
-			avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, params._inputFormatName, common::kPrefixFormat );
-			
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, params._inputFormatName, common::kPrefixFormat );
 			// update video details parameters
-			avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
 			const std::string videoCodecName = params._inputVideoProperties->getCodecName();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, videoCodecName, common::kPrefixVideo );
 		}
 		catch( std::exception& e )
 		{
@@ -335,11 +331,8 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramMetaDataAttachement->setIsSecret( true );
 			_paramMetaDataUnknown->setIsSecret( true );
 
-			avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, "", common::kPrefixFormat );
-			
-			avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, "", common::kPrefixFormat );
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, "", common::kPrefixVideo );
 		}
 	}
 	else if( paramName == kParamVerbose )

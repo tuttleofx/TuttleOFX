@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_AV_WRITER_PLUGIN_HPP_
 
 #include <common/util.hpp>
+#include <common/LibAVFeaturesAvailable.hpp>
 
 #include <tuttle/ioplugin/context/WriterPlugin.hpp>
 
@@ -96,7 +97,7 @@ private:
 	void updateVisibleTools();
 
 	//@{
-	/** Getters which throw exception if format or codec are not found. */
+	/** Getters which throw exception if the format or the codec is not found. */
 	std::string getFormatName( const size_t formatIndex ) const;
 	std::string getVideoCodecName( const size_t codecIndex ) const;
 	std::string getAudioCodecName( const size_t codecIndex ) const;
@@ -170,13 +171,16 @@ public:
 	
 	// metadata
 	std::vector<OFX::StringParam*> _paramMetadatas;
-	
+
 	// to process transcode
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
 	
 	// to access encoding profiles
 	avtranscoder::ProfileLoader _presetLoader;
+
+	// to access available libav features
+	common::LibAVFeaturesAvailable _libavFeatures;
 
 	bool _initVideo;  ///< To check if video stream is init.
 	bool _initWrap;  ///< To check if initial wrap of output file is done.

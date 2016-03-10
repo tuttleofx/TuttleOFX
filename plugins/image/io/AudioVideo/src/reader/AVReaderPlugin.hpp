@@ -2,10 +2,10 @@
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
 #include <common/util.hpp>
+#include <common/LibAVFeaturesAvailable.hpp>
 
 #include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
-#include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/InputFile.hpp>
 #include <AvTranscoder/decoder/VideoDecoder.hpp>
 #include <AvTranscoder/data/decoded/VideoFrame.hpp>
@@ -104,6 +104,9 @@ public:
 	
 	avtranscoder::VideoTransform _colorTransform;
 	
+	// to access available libav features
+	common::LibAVFeaturesAvailable _libavFeatures;
+
 	std::string _lastInputFilePath;
 	size_t _lastVideoStreamIndex;
 	

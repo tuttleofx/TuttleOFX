@@ -156,8 +156,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	/// FORMAT PARAMETERS
 	int default_format = 0;
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
-	avtranscoder::NamesArray formatsNames( avtranscoder::getFormatsNames() );
-	for( avtranscoder::NamesArray::const_iterator itName = formatsNames.begin();
+	avtranscoder::NamesMap formatsNames( avtranscoder::getAvailableVideoFormatsNames() );
+	for( avtranscoder::NamesMap::const_iterator itName = formatsNames.begin();
 		itName != formatsNames.end();
 		++itName )
 	{
@@ -179,7 +179,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatDetailedGroup->setAsTab( );
 	formatDetailedGroup->setParent( formatGroup );
 	
-	avtranscoder::OptionArrayMap formatDetailedGroupOptions = avtranscoder::getOutputFormatOptions();
+	avtranscoder::OptionArrayMap formatDetailedGroupOptions = avtranscoder::getAvailableOptionsPerOutputFormat();
 	common::addOptionsToGroup( desc, formatDetailedGroup, formatDetailedGroupOptions, common::kPrefixFormat );
 	
 	/// VIDEO PARAMETERS
@@ -235,8 +235,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	int default_codec = 0;
 	std::string defaultVideoCodec( "mpeg4" );
 	OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam( kParamVideoCodec );
-	avtranscoder::NamesArray videoCodecsNames( avtranscoder::getVideoCodecsNames() );
-	for( avtranscoder::NamesArray::const_iterator itName = videoCodecsNames.begin();
+	avtranscoder::NamesMap videoCodecsNames( avtranscoder::getAvailableVideoCodecsNames() );
+	for( avtranscoder::NamesMap::const_iterator itName = videoCodecsNames.begin();
 		itName != videoCodecsNames.end();
 		++itName )
 	{
@@ -251,7 +251,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	OFX::ChoiceParamDescriptor* videoCodecPixelFmt = desc.defineChoiceParam( kParamVideoCodecPixelFmt );
 	videoCodecPixelFmt->setLabel( "Select the output video pixel type" );
-	std::vector<std::string> pixelFormats = avtranscoder::getPixelFormats();
+	std::vector<std::string> pixelFormats = avtranscoder::getSupportedPixelFormats();
 	for( size_t i = 0; i < pixelFormats.size(); ++i )
 	{
 		videoCodecPixelFmt->appendOption( pixelFormats.at( i ) );
@@ -269,7 +269,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoDetailedGroup->setAsTab( );
 	videoDetailedGroup->setParent( videoGroup );
 	
-	avtranscoder::OptionArrayMap videoDetailedGroupOptions = avtranscoder::getVideoCodecOptions(); 
+	avtranscoder::OptionArrayMap videoDetailedGroupOptions = avtranscoder::getAvailableOptionsPerVideoCodec(); 
 	common::addOptionsToGroup( desc, videoDetailedGroup, videoDetailedGroupOptions, common::kPrefixVideo );
 	
 	/// AUDIO PARAMETERS
@@ -299,8 +299,8 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	int default_audio_codec = 0;
 	std::string defaultAudioCodec( "pcm_s16le" );
 	OFX::ChoiceParamDescriptor* audioCodecParam = desc.defineChoiceParam( kParamAudioCodec );
-	avtranscoder::NamesArray audioCodecsNames( avtranscoder::getAudioCodecsNames() );
-	for( avtranscoder::NamesArray::const_iterator itName = audioCodecsNames.begin();
+	avtranscoder::NamesMap audioCodecsNames( avtranscoder::getAvailableAudioCodecsNames() );
+	for( avtranscoder::NamesMap::const_iterator itName = audioCodecsNames.begin();
 		itName != audioCodecsNames.end();
 		++itName )
 	{
@@ -315,7 +315,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	
 	OFX::ChoiceParamDescriptor* audioSampleFmtParam = desc.defineChoiceParam( kParamAudioCodecSampleFmt );
 	audioSampleFmtParam->setLabel( "Select the output audio sample type" );
-	std::vector<std::string> sampleFormats = avtranscoder::getSampleFormats();
+	std::vector<std::string> sampleFormats = avtranscoder::getSupportedSampleFormats();
 	for( size_t i = 0; i < sampleFormats.size(); ++i )
 	{
 		audioSampleFmtParam->appendOption( sampleFormats.at( i ) );
@@ -333,7 +333,7 @@ void AVWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	audioDetailedGroup->setAsTab( );
 	audioDetailedGroup->setParent( audioGroup );
 	
-	avtranscoder::OptionArrayMap audioDetailedGroupOptions = avtranscoder::getAudioCodecOptions();
+	avtranscoder::OptionArrayMap audioDetailedGroupOptions = avtranscoder::getAvailableOptionsPerAudioCodec();
 	common::addOptionsToGroup( desc, audioDetailedGroup, audioDetailedGroupOptions, common::kPrefixAudio );
 	
 	OFX::IntParamDescriptor* audioNbInputs = desc.defineIntParam( kParamAudioNbInputs );

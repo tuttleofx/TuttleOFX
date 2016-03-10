@@ -1,4 +1,5 @@
 #include "util.hpp"
+#include "LibAVFeaturesAvailable.hpp"
 
 #include <writer/AVWriterDefinitions.hpp>
 
@@ -46,15 +47,15 @@ LibAVParams::LibAVParams( const std::string& prefixScope, const int flags, const
 	{
 		if( prefixScope == kPrefixFormat )
 		{
-			_avOptions = avtranscoder::getOutputFormatOptions();
+			_avOptions = avtranscoder::getAvailableOptionsPerOutputFormat();
 		}
 		else if( prefixScope == kPrefixVideo )
 		{
-			_avOptions = avtranscoder::getVideoCodecOptions();
+			_avOptions = avtranscoder::getAvailableOptionsPerVideoCodec();
 		}
 		else if( prefixScope == kPrefixAudio )
 		{
-			_avOptions = avtranscoder::getAudioCodecOptions();
+			_avOptions = avtranscoder::getAvailableOptionsPerAudioCodec();
 		}
 	}
 }
