@@ -9,6 +9,7 @@ set -x
 export OFX_PLUGIN_PATH=${TUTTLEOFX_INSTALL}/OFX
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${DEPENDENCIES_INSTALL}/lib:${TUTTLEOFX_INSTALL}/lib
 export PYTHONPATH=${TUTTLEOFX_INSTALL}/lib/python${PYTHON_VERSION}/site-packages:$PYTHONPATH
+export PATH=$PATH:${TUTTLEOFX_INSTALL}/bin
 
 # clone data for tests
 git clone https://github.com/tuttleofx/TuttleOFX-data.git
@@ -27,3 +28,5 @@ ln -s ${TRAVIS_BUILD_DIR}/TuttleOFX-data ${TRAVIS_BUILD_DIR}/testBin/TuttleOFX-d
 cd ${TUTTLEOFX_BUILD}
 make run_tests
 
+# sam tests
+${TRAVIS_BUILD_DIR}/applications/test/samCommands.sh
