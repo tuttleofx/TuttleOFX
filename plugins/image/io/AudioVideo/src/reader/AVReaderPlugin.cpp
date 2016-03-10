@@ -440,7 +440,15 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 
 bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
-	ensureVideoIsOpen();
+    try
+    {
+        ensureVideoIsOpen();
+    }
+    catch(std::exception& e)
+    {
+        TUTTLE_LOG_WARNING( e.what() );
+        return false;
+    }
 
 	AVReaderParams params = getProcessParams();
 	size_t nbFrames = params._inputVideoProperties->getNbFrames();
@@ -456,7 +464,15 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	ensureVideoIsOpen();
+    try
+    {
+        ensureVideoIsOpen();
+    }
+    catch(std::exception& e)
+    {
+        TUTTLE_LOG_WARNING( e.what() );
+        return false;
+    }
 
 	// get metadata of video stream
 	AVReaderParams params = getProcessParams();

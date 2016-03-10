@@ -42,6 +42,7 @@ public:
 	 * @brief Open and analyse the InputFile. 
 	 * Create a Stream and its corresponding Decoder for the first video stream of the given file.
 	 * @note Do nothing if the InputFile and the videoStream are already set
+	 * @exception throw boost exception if cannot open input file
 	 */
 	void ensureVideoIsOpen();
 
