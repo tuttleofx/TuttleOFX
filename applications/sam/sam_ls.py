@@ -246,6 +246,11 @@ class Sam_ls(samUtils.Sam):
         # Parse command-line
         args = parser.parse_args()
 
+        # sam-ls --absolute-path --relative-path
+        if args.absolutePath and args.relativePath:
+            self._displayCommandLineHelp(parser)
+            exit(1)
+
         # Set sam log level
         self.setLogLevel(args.verbose)
 
