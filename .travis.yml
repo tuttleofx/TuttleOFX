@@ -25,7 +25,7 @@ env:
     - CI_NODE_TOTAL=2
   matrix:
     - PYTHON_VERSION=2.7
-    - PYTHON_VERSION=3.2
+    - PYTHON_VERSION=3.4
 
 matrix:
   allow_failures:
