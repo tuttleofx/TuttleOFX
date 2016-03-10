@@ -50,6 +50,16 @@ public:
 public:
 	AVProcessParams getProcessParams();
 
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+
+	void cleanVideoAndAudio();  ///< Called before each new render.
+
+	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
+	void render( const OFX::RenderArguments& args );
+	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
+
+private:
 	/**
 	* @brief Update the list of pixel format supported depending on the video codec.
 	* Warning: the function does not update the list correctly in Nuke.
@@ -71,9 +81,6 @@ public:
 	void updateAudioFileInfo( size_t indexAudioOutput );
 	//@}
 
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-
 	void initAudio();  ///< Initialize output audio streams
 	void initVideo( const OFX::RenderArguments& args );  ///< Initialize output video stream
 
@@ -86,13 +93,6 @@ public:
 	void updateAudioFromExistingProfile();
 	//@}
 
-	void cleanVideoAndAudio();  ///< Called before each new render.
-
-	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
-	void render( const OFX::RenderArguments& args );
-	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
-
-private:
 	void updateVisibleTools();
 
 	//@{
