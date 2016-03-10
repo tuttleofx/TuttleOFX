@@ -557,8 +557,7 @@ void AVWriterPlugin::initOutput()
 	}
 	catch( std::exception& e )
 	{
-		BOOST_THROW_EXCEPTION( exception::Failed()
-		    << exception::user() + "unable to open output file: " + e.what() );
+		TUTTLE_LOG_WARNING( "Unable to open output file: " << e.what() );
 	}
 }
 
