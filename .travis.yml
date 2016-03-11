@@ -1,7 +1,9 @@
-language: cpp
-
 # Use container-based infrastructure
-sudo: false
+sudo: required
+services:
+  - docker
+
+language: cpp
 
 os:
   - linux
