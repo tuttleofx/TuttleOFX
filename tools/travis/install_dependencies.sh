@@ -46,12 +46,12 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         cd OpenColorIO-1.0.9/build
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
-        cd $TRAVIS_BUILD_DIR
-        wget https://github.com/OpenImageIO/oiio/archive/Release-1.5.16.tar.gz -O /tmp/oiio-1.5.16.tar.gz
-        tar -xzf /tmp/oiio-1.5.16.tar.gz > /dev/null 2>&1
-        mkdir oiio-Release-1.5.16/build
-        cd oiio-Release-1.5.16/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install
+        # cd $TRAVIS_BUILD_DIR
+        # wget https://github.com/OpenImageIO/oiio/archive/Release-1.5.16.tar.gz -O /tmp/oiio-1.5.16.tar.gz
+        # tar -xzf /tmp/oiio-1.5.16.tar.gz > /dev/null 2>&1
+        # mkdir oiio-Release-1.5.16/build
+        # cd oiio-Release-1.5.16/build
+        # cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install
 
     else
         echo 'Using cached directory.';
