@@ -110,7 +110,7 @@ addons:
     - libmagickcore-dev
     - liblcms2-dev
     - libyaml-dev
-    - libopenctl0.8
+    # - libopenctl0.8
     - libcaca-dev
     - libglui-dev
     - libtinyxml-dev
