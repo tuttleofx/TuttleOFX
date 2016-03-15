@@ -1,7 +1,6 @@
 # Use container-based infrastructure
 sudo: false
-services:
-  - docker
+dist: trusty
 
 language: cpp
 
