@@ -7,6 +7,13 @@ set -x
 
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
 
+    # Install python packages to run sam command line
+    if [[ ${PYTHON_VERSION} == "2.7" ]]; then
+        pip install --user clint argcomplete
+    elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
+        pip3 install --user clint argcomplete
+    fi
+
     # Use TRAVIS_JOB_ID to detect that we are in travis.
     # In that case, use a simple check to detect if the cache is already there.
     if  [ -z ${TRAVIS_JOB_ID} ] || [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
@@ -69,9 +76,11 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     if [[ ${PYTHON_VERSION} == "2.7" ]]; then
         brew install python
         pip install nose
+        pip install clint argcomplete
     elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
         brew install python3
         pip3 install nose
+        pip3 install clint argcomplete
     fi
 
     echo "Brew install packages"
