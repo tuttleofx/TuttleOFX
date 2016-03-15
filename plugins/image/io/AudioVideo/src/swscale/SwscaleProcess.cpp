@@ -1,6 +1,6 @@
 #include "SwscaleProcess.hpp"
 
-#include <AvTranscoder/frame/VideoFrame.hpp>
+#include <AvTranscoder/data/decoded/VideoFrame.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -110,11 +110,11 @@ void SwscaleProcess::multiThreadProcessImages( const OfxRectI& procWindow )
 
 	avtranscoder::VideoFrameDesc srcDesc( _src->getBoundsSize().x, _src->getBoundsSize().y, pixFmt );
 	avtranscoder::VideoFrame src( srcDesc );
-	src.refData( srcPtr, _src->getBoundsImageDataBytes() );
+	src.getData()[0] = srcPtr;
 
 	avtranscoder::VideoFrameDesc dstDesc( _dst->getBoundsSize().x, _dst->getBoundsSize().y, pixFmt );
 	avtranscoder::VideoFrame dst( dstDesc );
-	dst.refData( dstPtr, _dst->getBoundsImageDataBytes() );
+	dst.getData()[0] = dstPtr;
 
 	_transform.convert( src, dst );
 }
