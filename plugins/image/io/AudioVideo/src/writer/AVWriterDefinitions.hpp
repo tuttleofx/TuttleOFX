@@ -4,7 +4,7 @@
 #include <tuttle/ioplugin/context/WriterDefinition.hpp>
 #include <tuttle/plugin/global.hpp>
 
-#include <common/util.hpp>
+#include <common/LibAVParams.hpp>
 
 namespace tuttle {
 namespace plugin {

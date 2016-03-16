@@ -14,7 +14,8 @@ AVWriterProcess<View>::AVWriterProcess( AVWriterPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance, eImageOrientationFromTopToBottom )
 	, _plugin( instance )
 	, _params( _plugin.getProcessParams() )
-	, _videoStream( static_cast<avtranscoder::VideoGenerator&>( _plugin._transcoder->getStreamTranscoder( 0 ).getCurrentDecoder() ) )
+	, _videoStream( static_cast<avtranscoder::VideoGenerator&>( *_plugin._transcoder->getStreamTranscoder( 0 ).getCurrentDecoder() ) )
+	, _videoFrame( _videoStream.getVideoFrameDesc() )
 {
 	this->setNoMultiThreading();
 }
@@ -41,14 +42,12 @@ void AVWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 
 	// Convert pixels in PIX_FMT_RGB24
 	copy_and_convert_pixels( this->_srcView, vw );
-	
+
 	uint8_t* imageData = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
-	
+
 	// set video stream next frame
-	
-	const size_t bufferSize = _videoStream.getVideoFrameDesc().getDataSize();
-	_plugin._videoFrame.refData( imageData, bufferSize );
-	_videoStream.setNextFrame( _plugin._videoFrame );
+	_videoFrame.getData()[0] = imageData;
+	_videoStream.setNextFrame(_videoFrame);
 
 	// process
 	_plugin._transcoder->processFrame();

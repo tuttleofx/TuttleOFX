@@ -2,7 +2,7 @@
 #include "AVReaderPlugin.hpp"
 #include "AVReaderDefinitions.hpp"
 
-#include <common/util.hpp>
+#include <common/LibAVParams.hpp>
 
 #include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 
@@ -122,7 +122,7 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	formatDetailedGroup->setAsTab( );
 	formatDetailedGroup->setParent( formatGroup );
 	
-	avtranscoder::OptionArrayMap formatDetailedGroupOptions = avtranscoder::getOutputFormatOptions();
+	avtranscoder::OptionArrayMap formatDetailedGroupOptions = avtranscoder::getAvailableOptionsPerOutputFormat();
 	common::addOptionsToGroup( desc, formatDetailedGroup, formatDetailedGroupOptions, common::kPrefixFormat );
 	
 	/// VIDEO PARAMETERS
@@ -159,7 +159,7 @@ void AVReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	videoDetailedGroup->setAsTab( );
 	videoDetailedGroup->setParent( videoGroup );
 	
-	avtranscoder::OptionArrayMap videoDetailedGroupOptions =  avtranscoder::getVideoCodecOptions(); 
+	avtranscoder::OptionArrayMap videoDetailedGroupOptions =  avtranscoder::getAvailableOptionsPerVideoCodec(); 
 	common::addOptionsToGroup( desc, videoDetailedGroup, videoDetailedGroupOptions, common::kPrefixVideo );
 
 	/// METADATA PARAMETERS

@@ -5,7 +5,7 @@
 #include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/FormatContext.hpp>
 #include <AvTranscoder/progress/NoDisplayProgress.hpp>
-#include <AvTranscoder/mediaProperty/FileProperties.hpp>
+#include <AvTranscoder/properties/FileProperties.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
@@ -28,10 +28,12 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 	, _paramFormatDetailCustom( common::kPrefixFormat, AV_OPT_FLAG_DECODING_PARAM, true )
 	, _paramVideoDetailCustom( common::kPrefixVideo, AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM, true )
 	, _inputFile( NULL )
-	, _inputStream( NULL )
 	, _inputDecoder( NULL )
 	, _sourceImage( NULL )
 	, _imageToDecode( NULL )
+	, _inputStream( NULL )
+	, _colorTransform()
+	, _libavFeatures()
 	, _lastInputFilePath( "" )
 	, _lastVideoStreamIndex( 0 )
 	, _lastFrame( -1 )
@@ -68,11 +70,8 @@ AVReaderPlugin::AVReaderPlugin( OfxImageEffectHandle handle )
 
 	_paramVerbose = fetchBooleanParam( kParamVerbose );
 
-	const avtranscoder::OptionArrayMap optionsFormatDetailMap = avtranscoder::getOutputFormatOptions();
-	common::disableOFXParamsForFormatOrCodec( *this, optionsFormatDetailMap, "", common::kPrefixFormat );
-
-	const avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-	common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
+	common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, "", common::kPrefixFormat );
+	common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, "", common::kPrefixVideo );
 
 	updateVisibleTools();
 }
@@ -201,7 +200,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 
 			// update wrapper of Metadata tab
 			std::string wrapperValue( "" );
-			BOOST_FOREACH( const PropertyPair& pair, params._inputProperties->getPropertiesAsVector() )
+			BOOST_FOREACH( const PropertyPair& pair, params._inputProperties->asVector() )
 			{
 				wrapperValue += pair.first + ": " + pair.second + "\n";
 			}
@@ -216,7 +215,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::VideoProperties& videoStream, params._inputProperties->getVideoProperties() )
 			{
 				videoValue += "::::: VIDEO STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, videoStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, videoStream.asVector() )
 				{
 					videoValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -233,7 +232,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AudioProperties& audioStream, params._inputProperties->getAudioProperties() )
 			{
 				audioValue += "::::: AUDIO STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, audioStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, audioStream.asVector() )
 				{
 					audioValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -250,7 +249,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::DataProperties& dataStream, params._inputProperties->getDataProperties() )
 			{
 				dataValue += "::::: DATA STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, dataStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, dataStream.asVector() )
 				{
 					dataValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -267,7 +266,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::SubtitleProperties& subtitleStream, params._inputProperties->getSubtitleProperties() )
 			{
 				subtitleValue += "::::: SUBTITLE STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, subtitleStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, subtitleStream.asVector() )
 				{
 					subtitleValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -284,7 +283,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::AttachementProperties& attachementStream, params._inputProperties->getAttachementProperties() )
 			{
 				attachementValue += "::::: ATTACHEMENT STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, attachementStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, attachementStream.asVector() )
 				{
 					attachementValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -301,7 +300,7 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			BOOST_FOREACH( const avtranscoder::UnknownProperties& unknownStream, params._inputProperties->getUnknownProperties() )
 			{
 				unknownValue += "::::: UNKNOWN STREAM ::::: \n";
-				BOOST_FOREACH( const PropertyPair& pair, unknownStream.getPropertiesAsVector() )
+				BOOST_FOREACH( const PropertyPair& pair, unknownStream.asVector() )
 				{
 					unknownValue += pair.first + ": " + pair.second + "\n";
 				}
@@ -314,13 +313,10 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			}
 
 			// update format details parameters
-			avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, params._inputFormatName, common::kPrefixFormat );
-			
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, params._inputFormatName, common::kPrefixFormat );
 			// update video details parameters
-			avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
 			const std::string videoCodecName = params._inputVideoProperties->getCodecName();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, videoCodecName, common::kPrefixVideo );
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, videoCodecName, common::kPrefixVideo );
 		}
 		catch( std::exception& e )
 		{
@@ -335,11 +331,8 @@ void AVReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const s
 			_paramMetaDataAttachement->setIsSecret( true );
 			_paramMetaDataUnknown->setIsSecret( true );
 
-			avtranscoder::OptionArrayMap optionsFormatMap = avtranscoder::getOutputFormatOptions();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsFormatMap, "", common::kPrefixFormat );
-			
-			avtranscoder::OptionArrayMap optionsVideoCodecMap = avtranscoder::getVideoCodecOptions();
-			common::disableOFXParamsForFormatOrCodec( *this, optionsVideoCodecMap, "", common::kPrefixVideo );
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerOutputFormat, "", common::kPrefixFormat );
+			common::disableOFXParamsForFormatOrCodec( *this, _libavFeatures._optionsPerVideoCodec, "", common::kPrefixVideo );
 		}
 	}
 	else if( paramName == kParamVerbose )
@@ -447,7 +440,15 @@ void AVReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 
 bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
-	ensureVideoIsOpen();
+    try
+    {
+        ensureVideoIsOpen();
+    }
+    catch(std::exception& e)
+    {
+        TUTTLE_LOG_WARNING( e.what() );
+        return false;
+    }
 
 	AVReaderParams params = getProcessParams();
 	size_t nbFrames = params._inputVideoProperties->getNbFrames();
@@ -463,7 +464,15 @@ bool AVReaderPlugin::getTimeDomain( OfxRangeD& range )
 
 bool AVReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	ensureVideoIsOpen();
+    try
+    {
+        ensureVideoIsOpen();
+    }
+    catch(std::exception& e)
+    {
+        TUTTLE_LOG_WARNING( e.what() );
+        return false;
+    }
 
 	// get metadata of video stream
 	AVReaderParams params = getProcessParams();
@@ -526,7 +535,7 @@ void AVReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgument
 	_sourceImage.reset( new avtranscoder::VideoFrame( sourceImageDesc ) );
 
 	// get image to decode
-	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc.getWidth(), sourceImageDesc.getHeight(), "rgb24" );
+	const avtranscoder::VideoFrameDesc imageToDecodeDesc( sourceImageDesc._width, sourceImageDesc._height, "rgb24" );
 	_imageToDecode.reset( new avtranscoder::VideoFrame( imageToDecodeDesc ) );
 
 	_isSetUp = true;

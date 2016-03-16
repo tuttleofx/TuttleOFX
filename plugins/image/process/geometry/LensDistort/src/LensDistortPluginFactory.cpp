@@ -112,7 +112,8 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         lensType->appendOption( kParamLensTypeBrown1 );
         lensType->appendOption( kParamLensTypeBrown3 );
         lensType->appendOption( kParamLensTypePTLens );
-        lensType->appendOption( kParamLensTypeFishEye );
+        lensType->appendOption( kParamLensTypeFishEye1 );
+        lensType->appendOption( kParamLensTypeFishEye4 );
         lensType->setDefault( eParamLensTypeBrown3 );
 
         OFX::DoubleParamDescriptor* coef1 = desc.defineDoubleParam( kParamCoef1 );
@@ -135,6 +136,12 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         coef3->setDefault( 0.0 );
         coef3->setDisplayRange( -1.0, 1.0 );
         coef3->setHint( "Third distortion coefficient" );
+
+        OFX::DoubleParamDescriptor* coef4 = desc.defineDoubleParam( kParamCoef4 );
+        coef4->setLabel( "Fourth" );
+        coef4->setDefault( 0.0 );
+        coef4->setDisplayRange( -1.0, 1.0 );
+        coef4->setHint( "Fourth distortion coefficient" );
 
         OFX::DoubleParamDescriptor* squeeze = desc.defineDoubleParam( kParamSqueeze );
         squeeze->setLabel( "Squeeze" );
@@ -171,7 +178,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
         centerUnit->appendOption( kParamCenterUnitPixel );
         centerUnit->appendOption( kParamCenterUnitCenteredNormWidth );
         centerUnit->appendOption( kParamCenterUnitNormWidth );
-        centerUnit->setDefault( eParamCenterUnitPixel );
+        centerUnit->setDefault( eParamCenterUnitCenteredPixel );
         
         OFX::BooleanParamDescriptor* centerOverlay = desc.defineBooleanParam( kParamCenterOverlay );
         centerOverlay->setLabel( "Display distortion center" );

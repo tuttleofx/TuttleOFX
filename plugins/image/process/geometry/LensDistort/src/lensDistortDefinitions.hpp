@@ -19,10 +19,12 @@ static const std::string kParamLensType                ( "lensType" );
 static const std::string kParamLensTypeBrown1          ( "brown1" );
 static const std::string kParamLensTypeBrown3          ( "brown3" );
 static const std::string kParamLensTypePTLens          ( "ptlens" );
-static const std::string kParamLensTypeFishEye         ( "fish-eye" );
+static const std::string kParamLensTypeFishEye1        ( "fisheye1" );
+static const std::string kParamLensTypeFishEye4        ( "fisheye4" );
 static const std::string kParamCoef1                   ( "coef1" );
 static const std::string kParamCoef2                   ( "coef2" );
 static const std::string kParamCoef3                   ( "coef3" );
+static const std::string kParamCoef4                   ( "coef4" );
 static const std::string kParamSqueeze                 ( "squeeze" );
 static const std::string kParamAsymmetric              ( "asymmetric" );
 static const std::string kParamCenter                  ( "center" );
@@ -100,6 +102,7 @@ enum EParamLensType
 	eParamLensTypeBrown3,
 	eParamLensTypePTLens,
 	eParamLensTypeFisheye,
+	eParamLensTypeFisheye4,
 };
 
 enum EParamCenterType

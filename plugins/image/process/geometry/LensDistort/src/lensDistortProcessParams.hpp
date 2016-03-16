@@ -95,6 +95,7 @@ struct LensDistortProcessParams
 	F coef1;
 	F coef2;
 	F coef3;
+	F coef4;
 	/// @}
 
 	/// @group Advanced
@@ -484,6 +485,104 @@ struct LensUndistortFisheye : public CoordonatesSystem<F>
 		pc.x *= this->_params.preScale.x;
 		pc.y *= this->_params.preScale.y;
 		return this->lensCenterNormalizedToPixel( pc ); // to the original space
+	}
+};
+
+
+template<typename F>
+struct LensDistortFisheye4 : public CoordonatesSystem<F>
+{
+	LensDistortFisheye4(const LensDistortProcessParams<F>& params)
+	: CoordonatesSystem<F>(params)
+	{}
+	template<typename F2>
+	inline point2<F> apply( const point2<F2>& src ) const
+	{
+		BOOST_ASSERT( this->_params.distort );
+		point2<F> pc( this->pixelToLensCenterNormalized( src ) ); // centered normalized space
+		pc.x *= this->_params.postScale.x;
+		pc.y *= this->_params.postScale.y;
+
+		const F r = std::sqrt(pc.x * pc.x + pc.y * pc.y); // distance to center squared
+		// distortion coef for current pixel
+		const F coef = distoCoef( this->_params, r );
+		pc.x *= coef;
+		pc.y *= coef;
+
+		pc.x *= this->_params.preScale.x;
+		pc.y *= this->_params.preScale.y;
+		return this->lensCenterNormalizedToPixel( pc ); // original space
+	}
+
+	static F distoCoef(const LensDistortProcessParams<F>& params, F r)
+	{
+		const double eps = 1e-8;
+		const double k1 = params.coef1, k2 = params.coef2, k3 = params.coef3, k4 = params.coef4;
+		const double theta = std::atan(r);
+		const double
+			theta2 = theta*theta,
+			theta3 = theta2*theta,
+			theta4 = theta2*theta2,
+			theta5 = theta4*theta,
+			theta6 = theta3*theta3,
+			theta7 = theta6*theta,
+			theta8 = theta4*theta4,
+			theta9 = theta8*theta;
+		const double theta_dist = theta + k1*theta3 + k2*theta5 + k3*theta7 + k4*theta9;
+		const double inv_r = r > eps ? 1.0/r : 1.0;
+		const double cdist = r > eps ? theta_dist * inv_r : 1.0;
+		return cdist;
+	}
+};
+
+template<typename F>
+struct LensUndistortFisheye4 : public CoordonatesSystem<F>
+{
+	LensUndistortFisheye4(const LensDistortProcessParams<F>& params)
+	: CoordonatesSystem<F>(params)
+	{}
+	template<typename F2>
+	inline point2<F> apply( const point2<F2>& src ) const
+	{
+		BOOST_ASSERT( !this->_params.distort );
+		point2<F> pc( this->pixelToLensCenterNormalized( src ) );
+		pc.x *= this->_params.postScale.x;
+		pc.y *= this->_params.postScale.y;
+
+		const F r = std::sqrt(pc.x * pc.x + pc.y * pc.y); // distance to center squared
+		// distortion coef for current pixel
+		const F coef = distoCoef( this->_params, r );
+		pc.x *= coef;
+		pc.y *= coef;
+
+		pc.x *= this->_params.preScale.x;
+		pc.y *= this->_params.preScale.y;
+		return this->lensCenterNormalizedToPixel( pc ); // to the original space
+	}
+
+	static F distoCoef(const LensDistortProcessParams<F>& params, F theta_dist)
+	{
+		const double eps = 1e-8;
+		double scale = 1.0;
+		if (theta_dist > eps)
+		{
+			double theta = theta_dist;
+			for (int j = 0; j < 10; ++j)
+			{
+				const double
+				theta2 = theta*theta,
+				theta4 = theta2*theta2,
+				theta6 = theta4*theta2,
+				theta8 = theta6*theta2;
+				theta = theta_dist /
+					(1.0 + params.coef1 * theta2
+					+ params.coef2 * theta4
+					+ params.coef3 * theta6
+					+ params.coef4 * theta8);
+			}
+			scale = std::tan(theta) / theta_dist;
+		}
+		return scale;
 	}
 };
 
