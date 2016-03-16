@@ -32,6 +32,15 @@ class Sam_ls(samUtils.Sam):
         self._sequenceExploded = [] # name of Sequences already exploded
 
     def fillParser(self, parser):
+        def level_type(level):
+            """
+            Check constrains of 'level' argument.
+            """
+            level = int(level)
+            if level < 0:
+                raise argparse.ArgumentTypeError("Minimum level is 0")
+            return level
+
         # Arguments
         parser.add_argument('inputs', nargs='*', action='store', help='list of files/sequences/directories to analyse').completer = samUtils.sequenceParserCompleter
 
@@ -45,7 +54,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format (display in this order: type | permissions | owner | group | last update | minSize | maxSize | totalSize | name)')
         parser.add_argument('--format', dest='format', choices=['default', 'nuke', 'rv'], default='default', help='specify formatting of the sequence padding')
         parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
-        parser.add_argument('-L', '--level', dest='level', type=int, help='max display depth of the directory tree (without formatting if 0)')
+        parser.add_argument('-L', '--level', dest='level', type=level_type, help='max display depth of the directory tree (without formatting if 0)')
         parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
         parser.add_argument('--no-color', dest='noColor', action='store_true', default=False, help='display the output without colors (with colors by default)')
@@ -246,15 +255,31 @@ class Sam_ls(samUtils.Sam):
         # Parse command-line
         args = parser.parse_args()
 
+        # sam-ls --absolute-path --relative-path
+        if args.absolutePath and args.relativePath:
+            self._displayCommandLineHelp(parser)
+            exit(1)
+
         # Set sam log level
         self.setLogLevel(args.verbose)
 
-        inputs = []
-        # for each input to scan
+        class InputToBrowse(object):
+            """
+            Represents an input to browse: a path and a list of filters.
+            """
+            def __init__(self, inputPath):
+                self.inputPath = inputPath
+                self.filters = []
+
+            def addFilter(self, filterToAdd):
+                self.filters.append(filterToAdd)
+
+        # translate user inputs to a list of InputToBrowse
+        inputsToBrowse = []
         for inputPath in args.inputs:
             # if the input is a directory, add it and continue
             if os.path.isdir(inputPath):
-                inputs.append(inputPath)
+                inputsToBrowse.append(InputToBrowse(inputPath))
                 continue
             # else split the input to a path and a filename
             subPath = os.path.dirname(inputPath)
@@ -262,11 +287,12 @@ class Sam_ls(samUtils.Sam):
                 subPath = '.'
             filename = os.path.basename(inputPath)
             # add the path and the filename as an expression
-            inputs.append(subPath)
-            if filename:
-                args.expression.append(filename)
-        if not inputs:
-            inputs.append(os.getcwd())
+            inputToBrowse = InputToBrowse(subPath)
+            inputToBrowse.addFilter(filename)
+            inputsToBrowse.append(inputToBrowse)
+        # if no user input, will browse in the current working directory
+        if not inputsToBrowse:
+            inputsToBrowse.append(InputToBrowse(os.getcwd()))
 
         # sam-ls -a
         detectionMethod = sequenceParser.eDetectionDefault
@@ -282,13 +308,15 @@ class Sam_ls(samUtils.Sam):
             detectionMethod = detectionMethod | sequenceParser.eDetectionSequenceWithoutHoles
 
         # sam-ls -e
-        filters = []
         for expression in args.expression:
-            filters.append(expression)
+            for inputToBrowse in inputsToBrowse:
+                inputToBrowse.addFilter(expression)
 
-        # get list of items for each inputs
-        for inputPath in inputs:
+        # for each input to browse, print the finding items
+        for inputToBrowse in inputsToBrowse:
             items = []
+            inputPath = inputToBrowse.inputPath
+            filters = inputToBrowse.filters
             try:
                 self.logger.debug('Browse in "' + inputPath + '" with the following filters: ' + str(filters))
                 items = sequenceParser.browse(inputPath, detectionMethod, filters)
@@ -325,7 +353,7 @@ class Sam_ls(samUtils.Sam):
                     items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
 
             if not len(items):
-                self.logger.warning('No items found for input "' + inputPath + '".')
+                self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
             else:
                 self.printItems(items, args, detectionMethod, filters)
 

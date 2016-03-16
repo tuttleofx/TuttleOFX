@@ -131,6 +131,7 @@ if (TuttleBoost_FOUND)
   
     # Find python c libs
     find_package(PythonLibs ${TUTTLE_PYTHON_VERSION})
+    set(TUTTLE_PYTHON_VERSION ${PYTHONLIBS_VERSION_STRING})
     include_directories(${PYTHON_INCLUDE_DIRS})
 
     # Numpy
