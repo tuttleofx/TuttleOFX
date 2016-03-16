@@ -96,7 +96,7 @@ addons:
     - libtiff4-dev
     - libilmbase-dev
     - libopenexr-dev
-    - libopenimageio-dev
+    # - libopenimageio-dev
     - libglew-dev
     - libgraphviz-dev
     - graphviz-dev
