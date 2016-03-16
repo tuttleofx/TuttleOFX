@@ -22,6 +22,7 @@ samOK=(
     "sam do --nodes"
     "sam do --file-formats"
     "sam do blur -h"
+    "sam do jpegreader plop.jpg // viewer"
 )
 
 samKO=(
@@ -36,6 +37,7 @@ samKO=(
 # sam do
     "sam do toto"
     "sam do //"
+    "sam do jpegreader plop.jpg // viewer --stop-on-missing-files"
 )
 
 # Check all sam commands which are expected to be OK.
