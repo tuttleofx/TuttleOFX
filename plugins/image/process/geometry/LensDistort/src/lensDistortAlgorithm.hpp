@@ -72,6 +72,18 @@ inline point2<F> transform( const ::tuttle::plugin::lens::LensUndistortFisheye<F
 	return algo.apply(src);
 }
 
+template <typename F, typename F2>
+inline point2<F> transform( const ::tuttle::plugin::lens::LensDistortFisheye4<F>& algo, const point2<F2>& src )
+{
+	return algo.apply(src);
+}
+
+template <typename F, typename F2>
+inline point2<F> transform( const ::tuttle::plugin::lens::LensUndistortFisheye4<F>& algo, const point2<F2>& src )
+{
+	return algo.apply(src);
+}
+
 }
 
 namespace tuttle {
@@ -171,6 +183,13 @@ inline Obj transformValues( const EParamLensType lensType, const LensDistortProc
 			else
 				return transformValues( LensUndistortFisheye<double>(params), obj );
 		}
+		case eParamLensTypeFisheye4:
+		{
+			if( params.distort )
+				return transformValues( LensDistortFisheye4<double>(params), obj );
+			else
+				return transformValues( LensUndistortFisheye4<double>(params), obj );
+		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Unsupported()
 	    << exception::user( "Unknown lens type." ) );
@@ -237,6 +256,14 @@ inline void transformValuesApply( const EParamLensType lensType, const LensDisto
 				transformValuesApply( LensDistortFisheye<double>(params), obj );
 			else
 				transformValuesApply( LensUndistortFisheye<double>(params), obj );
+			break;
+		}
+		case eParamLensTypeFisheye4:
+		{
+			if( params.distort )
+				transformValuesApply( LensDistortFisheye4<double>(params), obj );
+			else
+				transformValuesApply( LensUndistortFisheye4<double>(params), obj );
 			break;
 		}
 	}
