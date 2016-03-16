@@ -3,15 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace bitDepth {
+namespace tuttle
+{
+namespace plugin
+{
+namespace bitDepth
+{
 
 static const bool kSupportTiles = true;
 
-mDeclarePluginFactory( BitDepthPluginFactory, {}, {}
-                       );
-
+mDeclarePluginFactory(BitDepthPluginFactory, {}, {});
 }
 }
 }

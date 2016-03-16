@@ -1,72 +1,74 @@
 #include "OfxhParamDouble.hpp"
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace attribute
+{
 
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::getV( va_list arg ) const OFX_EXCEPTION_SPEC
+void OfxhParamDouble::getV(va_list arg) const OFX_EXCEPTION_SPEC
 {
-	double* value = va_arg( arg, double* );
+    double* value = va_arg(arg, double*);
 
-	getValue( *value );
-}
-
-/**
- * implementation of var args function
- */
-void OfxhParamDouble::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
-{
-	double* value = va_arg( arg, double* );
-
-	getValueAtTime( time, *value );
+    getValue(*value);
 }
 
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::getV(const OfxTime time, va_list arg) const OFX_EXCEPTION_SPEC
 {
-	double value = va_arg( arg, double );
+    double* value = va_arg(arg, double*);
 
-	setValue( value, change );
+    getValueAtTime(time, *value);
 }
 
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::setV(va_list arg, const EChange change) OFX_EXCEPTION_SPEC
 {
-	double value = va_arg( arg, double );
+    double value = va_arg(arg, double);
 
-	setValueAtTime( time, value, change );
+    setValue(value, change);
 }
 
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
+void OfxhParamDouble::setV(const OfxTime time, va_list arg, const EChange change) OFX_EXCEPTION_SPEC
 {
-	double* value = va_arg( arg, double* );
+    double value = va_arg(arg, double);
 
-	derive( time, *value );
+    setValueAtTime(time, value, change);
 }
 
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC
+void OfxhParamDouble::deriveV(const OfxTime time, va_list arg) const OFX_EXCEPTION_SPEC
 {
-	double* value = va_arg( arg, double* );
+    double* value = va_arg(arg, double*);
 
-	integrate( time1, time2, *value );
-}
-
-}
-}
-}
+    derive(time, *value);
 }
 
+/**
+ * implementation of var args function
+ */
+void OfxhParamDouble::integrateV(const OfxTime time1, const OfxTime time2, va_list arg) const OFX_EXCEPTION_SPEC
+{
+    double* value = va_arg(arg, double*);
+
+    integrate(time1, time2, *value);
+}
+}
+}
+}
+}

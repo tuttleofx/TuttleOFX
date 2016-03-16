@@ -43,70 +43,78 @@
 
 #include <algorithm> // for find
 
-/** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries.
+/** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common
+ * support libraries.
  */
-namespace OFX {
+namespace OFX
+{
 
-InteractDescriptor::~InteractDescriptor() {}
-EffectInteractWrap::~EffectInteractWrap() {}
-ParamInteractWrap::~ParamInteractWrap() {}
+InteractDescriptor::~InteractDescriptor()
+{
+}
+EffectInteractWrap::~EffectInteractWrap()
+{
+}
+ParamInteractWrap::~ParamInteractWrap()
+{
+}
 
 /** @brief fetch a pixel scale out of the property set */
-static OfxPointD getPixelScale( const PropertySet& props )
+static OfxPointD getPixelScale(const PropertySet& props)
 {
-	OfxPointD pixelScale;
+    OfxPointD pixelScale;
 
-	pixelScale.x = props.propGetDouble( kOfxInteractPropPixelScale, 0 );
-	pixelScale.y = props.propGetDouble( kOfxInteractPropPixelScale, 1 );
-	return pixelScale;
+    pixelScale.x = props.propGetDouble(kOfxInteractPropPixelScale, 0);
+    pixelScale.y = props.propGetDouble(kOfxInteractPropPixelScale, 1);
+    return pixelScale;
 }
 
 /** @brief fetch a render scale out of the property set */
-static OfxPointD getRenderScale( const PropertySet& props )
+static OfxPointD getRenderScale(const PropertySet& props)
 {
-	OfxPointD v;
+    OfxPointD v;
 
-	v.x = props.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
-	v.y = props.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
-	return v;
+    v.x = props.propGetDouble(kOfxImageEffectPropRenderScale, 0);
+    v.y = props.propGetDouble(kOfxImageEffectPropRenderScale, 1);
+    return v;
 }
 
 /** @brief fetch a background colour out of the property set */
-static OfxRGBColourD getBackgroundColour( const PropertySet& props )
+static OfxRGBColourD getBackgroundColour(const PropertySet& props)
 {
-	OfxRGBColourD backGroundColour;
+    OfxRGBColourD backGroundColour;
 
-	backGroundColour.r = props.propGetDouble( kOfxInteractPropBackgroundColour, 0 );
-	backGroundColour.g = props.propGetDouble( kOfxInteractPropBackgroundColour, 1 );
-	backGroundColour.b = props.propGetDouble( kOfxInteractPropBackgroundColour, 2 );
-	return backGroundColour;
+    backGroundColour.r = props.propGetDouble(kOfxInteractPropBackgroundColour, 0);
+    backGroundColour.g = props.propGetDouble(kOfxInteractPropBackgroundColour, 1);
+    backGroundColour.b = props.propGetDouble(kOfxInteractPropBackgroundColour, 2);
+    return backGroundColour;
 }
 
 /** @brief retrieves the image effect pointer from the interact handle */
-static ImageEffect* retrieveEffectFromInteractHandle( OfxInteractHandle handle )
+static ImageEffect* retrieveEffectFromInteractHandle(OfxInteractHandle handle)
 {
-	// get the properties set on this handle
-	OfxPropertySetHandle propHandle;
-	OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet( handle, &propHandle );
+    // get the properties set on this handle
+    OfxPropertySetHandle propHandle;
+    OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet(handle, &propHandle);
 
-	throwSuiteStatusException( stat );
-	PropertySet interactProperties( propHandle );
+    throwSuiteStatusException(stat);
+    PropertySet interactProperties(propHandle);
 
-	// get the effect handle from this handle
-	OfxImageEffectHandle effectHandle = (OfxImageEffectHandle) interactProperties.propGetPointer( kOfxPropEffectInstance );
+    // get the effect handle from this handle
+    OfxImageEffectHandle effectHandle = (OfxImageEffectHandle)interactProperties.propGetPointer(kOfxPropEffectInstance);
 
-	// get the effect properties
-	return OFX::Private::retrieveImageEffectPointer( effectHandle );
+    // get the effect properties
+    return OFX::Private::retrieveImageEffectPointer(effectHandle);
 }
 
-
 InteractI::~InteractI()
-{}
+{
+}
 
 /** @brief the function called to draw in the interact */
-bool InteractI::draw( const DrawArgs& args )
+bool InteractI::draw(const DrawArgs& args)
 {
-	return false;
+    return false;
 }
 
 /** @brief the function called to handle pen motion in the interact
@@ -114,9 +122,9 @@ bool InteractI::draw( const DrawArgs& args )
  * returns true if the interact trapped the action in some sense. This will block the action being passed to
  * any other interact that may share the viewer.
  */
-bool InteractI::penMotion( const PenArgs& args )
+bool InteractI::penMotion(const PenArgs& args)
 {
-	return false;
+    return false;
 }
 
 /** @brief the function called to handle pen down events in the interact
@@ -124,9 +132,9 @@ bool InteractI::penMotion( const PenArgs& args )
  * returns true if the interact trapped the action in some sense. This will block the action being passed to
  * any other interact that may share the viewer.
  */
-bool InteractI::penDown( const PenArgs& args )
+bool InteractI::penDown(const PenArgs& args)
 {
-	return false;
+    return false;
 }
 
 /** @brief the function called to handle pen up events in the interact
@@ -134,9 +142,9 @@ bool InteractI::penDown( const PenArgs& args )
  * returns true if the interact trapped the action in some sense. This will block the action being passed to
  * any other interact that may share the viewer.
  */
-bool InteractI::penUp( const PenArgs& args )
+bool InteractI::penUp(const PenArgs& args)
 {
-	return false;
+    return false;
 }
 
 /** @brief the function called to handle key down events in the interact
@@ -144,9 +152,9 @@ bool InteractI::penUp( const PenArgs& args )
  * returns true if the interact trapped the action in some sense. This will block the action being passed to
  * any other interact that may share the viewer.
  */
-bool InteractI::keyDown( const KeyArgs& args )
+bool InteractI::keyDown(const KeyArgs& args)
 {
-	return false;
+    return false;
 }
 
 /** @brief the function called to handle key up events in the interact
@@ -154,9 +162,9 @@ bool InteractI::keyDown( const KeyArgs& args )
  * returns true if the interact trapped the action in some sense. This will block the action being passed to
  * any other interact that may share the viewer.
  */
-bool InteractI::keyUp( const KeyArgs& args )
+bool InteractI::keyUp(const KeyArgs& args)
 {
-	return false;
+    return false;
 }
 
 /** @brief the function called to handle key down repeat events in the interact
@@ -164,440 +172,438 @@ bool InteractI::keyUp( const KeyArgs& args )
  * returns true if the interact trapped the action in some sense. This will block the action being passed to
  * any other interact that may share the viewer.
  */
-bool InteractI::keyRepeat( const KeyArgs& args )
+bool InteractI::keyRepeat(const KeyArgs& args)
 {
-	return false;
+    return false;
 }
 
 /** @brief Called when the interact is given input focus */
-void InteractI::gainFocus( const FocusArgs& args )
-{}
+void InteractI::gainFocus(const FocusArgs& args)
+{
+}
 
 /** @brief Called when the interact is loses input focus */
-void InteractI::loseFocus( const FocusArgs& args )
-{}
-
-
-Interact::Interact( OfxInteractHandle handle )
-	: _interactHandle( handle )
-	, _effect( 0 )
-	, _magic( kMagic )
+void InteractI::loseFocus(const FocusArgs& args)
 {
-	// get the properties set on this handle
-	OfxPropertySetHandle propHandle;
-	OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet( handle, &propHandle );
+}
 
-	throwSuiteStatusException( stat );
-	_interactProperties.propSetHandle( propHandle );
+Interact::Interact(OfxInteractHandle handle)
+    : _interactHandle(handle)
+    , _effect(0)
+    , _magic(kMagic)
+{
+    // get the properties set on this handle
+    OfxPropertySetHandle propHandle;
+    OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet(handle, &propHandle);
 
-	// set othe instance data on the property handle to point to this interact
-	_interactProperties.propSetPointer( kOfxPropInstanceData, (void*)this );
+    throwSuiteStatusException(stat);
+    _interactProperties.propSetHandle(propHandle);
 
-	// get the effect handle from this handle
-	_effect = retrieveEffectFromInteractHandle( handle );
+    // set othe instance data on the property handle to point to this interact
+    _interactProperties.propSetPointer(kOfxPropInstanceData, (void*)this);
+
+    // get the effect handle from this handle
+    _effect = retrieveEffectFromInteractHandle(handle);
 }
 
 Interact::~Interact()
-{}
+{
+}
 
 /** @brief The bitdepth of each component in the openGL frame buffer */
-int Interact::getBitDepth( void ) const
+int Interact::getBitDepth(void) const
 {
-	return _interactProperties.propGetInt( kOfxInteractPropBitDepth );
+    return _interactProperties.propGetInt(kOfxInteractPropBitDepth);
 }
 
 /** @brief Does the openGL frame buffer have an alpha */
-bool Interact::hasAlpha( void ) const
+bool Interact::hasAlpha(void) const
 {
-	return _interactProperties.propGetInt( kOfxInteractPropHasAlpha ) != 0;
+    return _interactProperties.propGetInt(kOfxInteractPropHasAlpha) != 0;
 }
 
 /** @brief Returns the size of a real screen pixel under the interact's cannonical projection */
-OfxPointD Interact::getPixelScale( void ) const
+OfxPointD Interact::getPixelScale(void) const
 {
-	OfxPointD v;
+    OfxPointD v;
 
-	v.x = _interactProperties.propGetDouble( kOfxInteractPropPixelScale, 0 );
-	v.y = _interactProperties.propGetDouble( kOfxInteractPropPixelScale, 1 );
-	return v;
+    v.x = _interactProperties.propGetDouble(kOfxInteractPropPixelScale, 0);
+    v.y = _interactProperties.propGetDouble(kOfxInteractPropPixelScale, 1);
+    return v;
 }
 
 /** @brief Request a redraw */
-void Interact::requestRedraw( void ) const
+void Interact::requestRedraw(void) const
 {
-	OfxStatus stat = OFX::Private::gInteractSuite->interactRedraw( _interactHandle );
+    OfxStatus stat = OFX::Private::gInteractSuite->interactRedraw(_interactHandle);
 
-	throwSuiteStatusException( stat );
+    throwSuiteStatusException(stat);
 }
 
 /** @brief Swap a buffer in the case of a double bufferred interact, this is possibly a silly one */
-void Interact::swapBuffers( void ) const
+void Interact::swapBuffers(void) const
 {
-	OfxStatus stat = OFX::Private::gInteractSuite->interactSwapBuffers( _interactHandle );
+    OfxStatus stat = OFX::Private::gInteractSuite->interactSwapBuffers(_interactHandle);
 
-	throwSuiteStatusException( stat );
+    throwSuiteStatusException(stat);
 }
 
 /** @brief Set a param that the interact should be redrawn on if its value changes */
-void Interact::addParamToSlaveTo( Param* p )
+void Interact::addParamToSlaveTo(Param* p)
 {
-	// do we have it already ?
-	std::list<Param*>::iterator i;
-	i = std::find( _slaveParams.begin(), _slaveParams.end(), p );
-	if( i == _slaveParams.end() )
-	{
-		// we have a new one to add in here
-		_slaveParams.push_back( p );
+    // do we have it already ?
+    std::list<Param*>::iterator i;
+    i = std::find(_slaveParams.begin(), _slaveParams.end(), p);
+    if(i == _slaveParams.end())
+    {
+        // we have a new one to add in here
+        _slaveParams.push_back(p);
 
-		// and set the property
-		int n = _interactProperties.propGetDimension( kOfxInteractPropSlaveToParam );
-		_interactProperties.propSetString( kOfxInteractPropSlaveToParam, p->getName(), n );
-	}
-
+        // and set the property
+        int n = _interactProperties.propGetDimension(kOfxInteractPropSlaveToParam);
+        _interactProperties.propSetString(kOfxInteractPropSlaveToParam, p->getName(), n);
+    }
 }
 
 /** @brief Remova a param that the interact should be redrawn on if its value changes */
-void Interact::removeParamToSlaveTo( Param* p )
+void Interact::removeParamToSlaveTo(Param* p)
 {
-	// do we have it already ?
-	std::list<Param*>::iterator i;
-	i = std::find( _slaveParams.begin(), _slaveParams.end(), p );
-	if( i != _slaveParams.end() )
-	{
-		// clobber it from the list
-		_slaveParams.erase( i );
+    // do we have it already ?
+    std::list<Param*>::iterator i;
+    i = std::find(_slaveParams.begin(), _slaveParams.end(), p);
+    if(i != _slaveParams.end())
+    {
+        // clobber it from the list
+        _slaveParams.erase(i);
 
-		// reset the property to remove our dead one
-		_interactProperties.propReset( kOfxInteractPropSlaveToParam );
+        // reset the property to remove our dead one
+        _interactProperties.propReset(kOfxInteractPropSlaveToParam);
 
-		// and add them all in again
-		int n = 0;
-		for( i = _slaveParams.begin(); i != _slaveParams.end(); ++i, ++n )
-		{
-			_interactProperties.propSetString( kOfxInteractPropSlaveToParam, ( *i )->getName(), n );
-		}
-	}
+        // and add them all in again
+        int n = 0;
+        for(i = _slaveParams.begin(); i != _slaveParams.end(); ++i, ++n)
+        {
+            _interactProperties.propSetString(kOfxInteractPropSlaveToParam, (*i)->getName(), n);
+        }
+    }
 }
 
 /** @brief the background colour */
-OfxRGBColourD Interact::getBackgroundColour( void ) const
+OfxRGBColourD Interact::getBackgroundColour(void) const
 {
-	return OFX::getBackgroundColour( _interactProperties );
+    return OFX::getBackgroundColour(_interactProperties);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // overlay interact guff
 
 /** @brief ctor */
-OverlayInteract::OverlayInteract( OfxInteractHandle handle )
-	: Interact( handle )
+OverlayInteract::OverlayInteract(OfxInteractHandle handle)
+    : Interact(handle)
 {
-	// add this interact into the list of overlays that the effect knows about
-	if( _effect )
-		_effect->addOverlayInteract( this );
+    // add this interact into the list of overlays that the effect knows about
+    if(_effect)
+        _effect->addOverlayInteract(this);
 }
 
 /** @brief ctor */
 OverlayInteract::~OverlayInteract()
 {
-	// add this interact into the list of overlays that the effect knows about
-	if( _effect )
-		_effect->removeOverlayInteract( this );
+    // add this interact into the list of overlays that the effect knows about
+    if(_effect)
+        _effect->removeOverlayInteract(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /** @brief ctor */
-InteractArgs::InteractArgs( const PropertySet& props )
+InteractArgs::InteractArgs(const PropertySet& props)
 {
-	time        = props.propGetDouble( kOfxPropTime );
-	renderScale = getRenderScale( props );
+    time = props.propGetDouble(kOfxPropTime);
+    renderScale = getRenderScale(props);
 }
 
 /** @brief ctor */
-DrawArgs::DrawArgs( const PropertySet& props )
-	: InteractArgs( props )
+DrawArgs::DrawArgs(const PropertySet& props)
+    : InteractArgs(props)
 {
-	backGroundColour = getBackgroundColour( props );
-	pixelScale       = getPixelScale( props );
+    backGroundColour = getBackgroundColour(props);
+    pixelScale = getPixelScale(props);
 }
 
 /** @brief ctor */
-PenArgs::PenArgs( const PropertySet& props )
-	: InteractArgs( props )
+PenArgs::PenArgs(const PropertySet& props)
+    : InteractArgs(props)
 {
-	pixelScale    = getPixelScale( props );
-	penPosition.x = props.propGetDouble( kOfxInteractPropPenPosition, 0 );
-	penPosition.y = props.propGetDouble( kOfxInteractPropPenPosition, 1 );
-	penPressure   = props.propGetDouble( kOfxInteractPropPenPressure );
+    pixelScale = getPixelScale(props);
+    penPosition.x = props.propGetDouble(kOfxInteractPropPenPosition, 0);
+    penPosition.y = props.propGetDouble(kOfxInteractPropPenPosition, 1);
+    penPressure = props.propGetDouble(kOfxInteractPropPenPressure);
 }
 
 /** @brief ctor */
-KeyArgs::KeyArgs( const PropertySet& props )
-	: InteractArgs( props )
+KeyArgs::KeyArgs(const PropertySet& props)
+    : InteractArgs(props)
 {
-	time        = props.propGetDouble( kOfxPropTime );
-	renderScale = getRenderScale( props );
-	keyString   = props.propGetString( kOfxPropKeyString );
-	keySymbol   = props.propGetInt( kOfxPropKeySym );
+    time = props.propGetDouble(kOfxPropTime);
+    renderScale = getRenderScale(props);
+    keyString = props.propGetString(kOfxPropKeyString);
+    keySymbol = props.propGetInt(kOfxPropKeySym);
 }
 
 /** @brief ctor */
-FocusArgs::FocusArgs( const PropertySet& props )
-	: InteractArgs( props )
+FocusArgs::FocusArgs(const PropertySet& props)
+    : InteractArgs(props)
 {
-	pixelScale       = getPixelScale( props );
-	backGroundColour = getBackgroundColour( props );
+    pixelScale = getPixelScale(props);
+    backGroundColour = getBackgroundColour(props);
 }
 
-void ParamInteractDescriptor::setInteractSizeAspect( double asp )
+void ParamInteractDescriptor::setInteractSizeAspect(double asp)
 {
-	_props->propSetDouble( kOfxParamPropInteractSizeAspect, asp );
+    _props->propSetDouble(kOfxParamPropInteractSizeAspect, asp);
 }
 
-void ParamInteractDescriptor::setInteractMinimumSize( int x, int y )
+void ParamInteractDescriptor::setInteractMinimumSize(int x, int y)
 {
-	_props->propSetInt( kOfxParamPropInteractMinimumSize, x, 0 );
-	_props->propSetInt( kOfxParamPropInteractMinimumSize, y, 1 );
+    _props->propSetInt(kOfxParamPropInteractMinimumSize, x, 0);
+    _props->propSetInt(kOfxParamPropInteractMinimumSize, y, 1);
 }
 
-void ParamInteractDescriptor::setInteractPreferredSize( int x, int y )
+void ParamInteractDescriptor::setInteractPreferredSize(int x, int y)
 {
-	_props->propSetInt( kOfxParamPropInteractPreferedSize, x, 0 );
-	_props->propSetInt( kOfxParamPropInteractPreferedSize, y, 1 );
+    _props->propSetInt(kOfxParamPropInteractPreferedSize, x, 0);
+    _props->propSetInt(kOfxParamPropInteractPreferedSize, y, 1);
 }
 
-ParamInteract::ParamInteract( OfxInteractHandle handle, ImageEffect* effect ) : Interact( handle ),
-	_effect( effect )
-{}
+ParamInteract::ParamInteract(OfxInteractHandle handle, ImageEffect* effect)
+    : Interact(handle)
+    , _effect(effect)
+{
+}
 
 OfxPointI ParamInteract::getInteractSize() const
 {
-	OfxPointI ret;
+    OfxPointI ret;
 
-	ret.x =  _interactProperties.propGetInt( kOfxParamPropInteractSize, 0 );
-	ret.y =  _interactProperties.propGetInt( kOfxParamPropInteractSize, 1 );
-	return ret;
+    ret.x = _interactProperties.propGetInt(kOfxParamPropInteractSize, 0);
+    ret.y = _interactProperties.propGetInt(kOfxParamPropInteractSize, 1);
+    return ret;
 }
 
-namespace Private {
-/** @brief fetches our pointer out of the props on the handle */
-Interact* retrieveInteractPointer( OfxInteractHandle handle )
+namespace Private
 {
-	Interact* instance;
+/** @brief fetches our pointer out of the props on the handle */
+Interact* retrieveInteractPointer(OfxInteractHandle handle)
+{
+    Interact* instance;
 
-	// get the prop set on the handle
-	OfxPropertySetHandle propHandle;
-	OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet( handle, &propHandle );
+    // get the prop set on the handle
+    OfxPropertySetHandle propHandle;
+    OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet(handle, &propHandle);
 
-	throwSuiteStatusException( stat );
+    throwSuiteStatusException(stat);
 
-	// make our wrapper object
-	PropertySet props( propHandle );
+    // make our wrapper object
+    PropertySet props(propHandle);
 
-	// fetch the instance data out of the properties
-	instance = (Interact*) props.propGetPointer( kOfxPropInstanceData );
+    // fetch the instance data out of the properties
+    instance = (Interact*)props.propGetPointer(kOfxPropInstanceData);
 
-	OFX::Log::error( instance == 0, "Instance data handle in effect instance properties is NULL!" );
+    OFX::Log::error(instance == 0, "Instance data handle in effect instance properties is NULL!");
 
-	// need to throw something here
+    // need to throw something here
 
-	// and dance to the music
-	return instance;
+    // and dance to the music
+    return instance;
 }
 
 /** @brief The common entry point used by all interacts */
-OfxStatus interactMainEntry( const std::string& action,
-                             OfxInteractHandle  handle,
-                             PropertySet        inArgs,
-                             PropertySet        outArgs )
+OfxStatus interactMainEntry(const std::string& action, OfxInteractHandle handle, PropertySet inArgs, PropertySet outArgs)
 {
-	OfxStatus stat = kOfxStatReplyDefault;
+    OfxStatus stat = kOfxStatReplyDefault;
 
-	// get the interact pointer
-	Interact* interact = retrieveInteractPointer( handle );
+    // get the interact pointer
+    Interact* interact = retrieveInteractPointer(handle);
 
-	// if one was not made, return and do nothing
-	if( interact == NULL )
-	{
-		return kOfxStatErrBadHandle;
-	}
-	if( ! interact->verifyMagic() )
-	{
-		return kOfxStatErrBadHandle;
-	}
-	
-	if( action == kOfxActionDestroyInstance )
-	{
-		delete interact;
-		stat = kOfxStatOK;
-	}
-	else if( action == kOfxInteractActionDraw )
-	{
-		// make the draw args
-		DrawArgs drawArgs( inArgs );
-		if( interact->draw( drawArgs ) )
-			stat = kOfxStatOK;
-	}
-	else if( action ==   kOfxInteractActionPenMotion )
-	{
+    // if one was not made, return and do nothing
+    if(interact == NULL)
+    {
+        return kOfxStatErrBadHandle;
+    }
+    if(!interact->verifyMagic())
+    {
+        return kOfxStatErrBadHandle;
+    }
 
-		// make the draw args
-		PenArgs args( inArgs );
-		if( interact->penMotion( args ) )
-			stat = kOfxStatOK;
-	}
-	else if( action ==   kOfxInteractActionPenDown )
-	{
-		// make the draw args
-		PenArgs args( inArgs );
-		if( interact->penDown( args ) )
-			stat = kOfxStatOK;
-	}
-	else if( action ==   kOfxInteractActionPenUp )
-	{
-		// make the draw args
-		PenArgs args( inArgs );
-		if( interact->penUp( args ) )
-			stat = kOfxStatOK;
-	}
-	else if( action ==   kOfxInteractActionKeyDown )
-	{
-		// make the draw args
-		KeyArgs args( inArgs );
-		if( interact->keyDown( args ) )
-			stat = kOfxStatOK;
-	}
-	else if( action ==   kOfxInteractActionKeyUp )
-	{
-		// make the draw args
-		KeyArgs args( inArgs );
-		if( interact->keyUp( args ) )
-			stat = kOfxStatOK;
-	}
-	else if( action ==   kOfxInteractActionKeyRepeat )
-	{
-		// make the draw args
-		KeyArgs args( inArgs );
-		if( interact->keyRepeat( args ) )
-			stat = kOfxStatOK;
-	}
-	else if( action ==   kOfxInteractActionGainFocus )
-	{
-		// make the draw args
-		FocusArgs args( inArgs );
-		interact->gainFocus( args );
-	}
-	else if( action ==   kOfxInteractActionGainFocus )
-	{
-		// make the draw args
-		FocusArgs args( inArgs );
-		interact->loseFocus( args );
-	}
+    if(action == kOfxActionDestroyInstance)
+    {
+        delete interact;
+        stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionDraw)
+    {
+        // make the draw args
+        DrawArgs drawArgs(inArgs);
+        if(interact->draw(drawArgs))
+            stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionPenMotion)
+    {
 
-	return stat;
+        // make the draw args
+        PenArgs args(inArgs);
+        if(interact->penMotion(args))
+            stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionPenDown)
+    {
+        // make the draw args
+        PenArgs args(inArgs);
+        if(interact->penDown(args))
+            stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionPenUp)
+    {
+        // make the draw args
+        PenArgs args(inArgs);
+        if(interact->penUp(args))
+            stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionKeyDown)
+    {
+        // make the draw args
+        KeyArgs args(inArgs);
+        if(interact->keyDown(args))
+            stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionKeyUp)
+    {
+        // make the draw args
+        KeyArgs args(inArgs);
+        if(interact->keyUp(args))
+            stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionKeyRepeat)
+    {
+        // make the draw args
+        KeyArgs args(inArgs);
+        if(interact->keyRepeat(args))
+            stat = kOfxStatOK;
+    }
+    else if(action == kOfxInteractActionGainFocus)
+    {
+        // make the draw args
+        FocusArgs args(inArgs);
+        interact->gainFocus(args);
+    }
+    else if(action == kOfxInteractActionGainFocus)
+    {
+        // make the draw args
+        FocusArgs args(inArgs);
+        interact->loseFocus(args);
+    }
+
+    return stat;
 }
 
 /** @brief The main entry for image effect overlays */
-OfxStatus interactMainEntry( const char*          actionRaw,
-                             const void*          handleRaw,
-                             OfxPropertySetHandle inArgsRaw,
-                             OfxPropertySetHandle outArgsRaw,
-                             InteractDescriptor&  desc )
+OfxStatus interactMainEntry(const char* actionRaw, const void* handleRaw, OfxPropertySetHandle inArgsRaw,
+                            OfxPropertySetHandle outArgsRaw, InteractDescriptor& desc)
 {
-	OFX::Log::print( "********************************************************************************" );
-	OFX::Log::print( "START overlayInteractMainEntry (%s)", actionRaw );
-	OFX::Log::indent();
-	OfxStatus stat = kOfxStatReplyDefault;
+    OFX::Log::print("********************************************************************************");
+    OFX::Log::print("START overlayInteractMainEntry (%s)", actionRaw);
+    OFX::Log::indent();
+    OfxStatus stat = kOfxStatReplyDefault;
 
-	try
-	{
-		// Cast the raw handle to be an image effect handle, because that is what it is
-		OfxInteractHandle handle = (OfxInteractHandle) handleRaw;
+    try
+    {
+        // Cast the raw handle to be an image effect handle, because that is what it is
+        OfxInteractHandle handle = (OfxInteractHandle)handleRaw;
 
-		// Turn the arguments into wrapper objects to make our lives easier
-		OFX::PropertySet inArgs( inArgsRaw );
-		OFX::PropertySet outArgs( outArgsRaw );
+        // Turn the arguments into wrapper objects to make our lives easier
+        OFX::PropertySet inArgs(inArgsRaw);
+        OFX::PropertySet outArgs(outArgsRaw);
 
-		// turn the action into a std::string
-		std::string action( actionRaw );
+        // turn the action into a std::string
+        std::string action(actionRaw);
 
-		// figure the actions
-		if( action == kOfxActionDescribe )
-		{
-			OfxPropertySetHandle propHandle;
-			OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet( handle, &propHandle );
-			throwSuiteStatusException( stat );
-			PropertySet interactProperties( propHandle );
-			desc.setPropertySet( &interactProperties );
-			desc.describe();
-		}
-		else if( action == kOfxActionCreateInstance )
-		{
-			// fetch the image effect we are being made for out of the interact's property handle
-			ImageEffect* effect = retrieveEffectFromInteractHandle( handle );
-			/*OFX::Interact* interact = */ desc.createInstance( handle, effect );
-			// and all was well
-			stat = kOfxStatOK;
-		}
-		else
-		{
-			stat = interactMainEntry( action, handle, inArgs, outArgs );
-		}
+        // figure the actions
+        if(action == kOfxActionDescribe)
+        {
+            OfxPropertySetHandle propHandle;
+            OfxStatus stat = OFX::Private::gInteractSuite->interactGetPropertySet(handle, &propHandle);
+            throwSuiteStatusException(stat);
+            PropertySet interactProperties(propHandle);
+            desc.setPropertySet(&interactProperties);
+            desc.describe();
+        }
+        else if(action == kOfxActionCreateInstance)
+        {
+            // fetch the image effect we are being made for out of the interact's property handle
+            ImageEffect* effect = retrieveEffectFromInteractHandle(handle);
+            /*OFX::Interact* interact = */ desc.createInstance(handle, effect);
+            // and all was well
+            stat = kOfxStatOK;
+        }
+        else
+        {
+            stat = interactMainEntry(action, handle, inArgs, outArgs);
+        }
+    }
 
-	}
-	
-	catch( boost::exception& e )
-	{
-		if( const boost::error_info_sstream* const messageException = boost::get_error_info< tuttle::exception::user >(e) )
-		{
-			TUTTLE_LOG_ERROR( "Error: " << *messageException );
-		}
-		else
-		{
-			TUTTLE_LOG_ERROR( "Error: " "No message." );
-		}
-		if( const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name >(e) )
-		{
-			TUTTLE_LOG_ERROR( "filename: \"" << *filenameException << "\"" );
-		}
+    catch(boost::exception& e)
+    {
+        if(const boost::error_info_sstream* const messageException = boost::get_error_info<tuttle::exception::user>(e))
+        {
+            TUTTLE_LOG_ERROR("Error: " << *messageException);
+        }
+        else
+        {
+            TUTTLE_LOG_ERROR("Error: "
+                             "No message.");
+        }
+        if(const std::string* const filenameException = boost::get_error_info< ::boost::errinfo_file_name>(e))
+        {
+            TUTTLE_LOG_ERROR("filename: \"" << *filenameException << "\"");
+        }
 
-		TUTTLE_LOG_DEBUG( "* Caught boost::exception on action " << actionRaw );
-	#ifndef BOOST_EXCEPTION_DISABLE
-		TUTTLE_LOG_DEBUG( boost::diagnostic_information(e) );
-	#endif
-		TUTTLE_LOG_DEBUG( "* Backtrace" << boost::trace(e) );
-		
-		if( const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus >( e ) )
-		{
-			stat = *status;
-		}
-		else
-		{
-			stat = kOfxStatFailed;
-		}
-	}
-	
-	// catch suite exceptions
-	catch( OFX::Exception::Suite& e )
-	{
-		TUTTLE_LOG_DEBUG( "Caught OFX::Exception::Suite (" << e.what() << ")" );
-		stat = e.status();
-	}
-	// catch all exceptions
-	catch( std::exception& e )
-	{
-		TUTTLE_LOG_DEBUG( "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" );
-		stat = kOfxStatFailed;
-	}
-	catch(... )
-	{
-		TUTTLE_LOG_DEBUG( "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" );
-		stat = kOfxStatFailed;
-	}
+        TUTTLE_LOG_DEBUG("* Caught boost::exception on action " << actionRaw);
+#ifndef BOOST_EXCEPTION_DISABLE
+        TUTTLE_LOG_DEBUG(boost::diagnostic_information(e));
+#endif
+        TUTTLE_LOG_DEBUG("* Backtrace" << boost::trace(e));
 
-	OFX::Log::outdent();
-	OFX::Log::print( "STOP overlayInteractMainEntry (%s)", actionRaw );
-	return stat;
+        if(const ::OfxStatus* status = boost::get_error_info< ::OFX::ofxStatus>(e))
+        {
+            stat = *status;
+        }
+        else
+        {
+            stat = kOfxStatFailed;
+        }
+    }
+
+    // catch suite exceptions
+    catch(OFX::Exception::Suite& e)
+    {
+        TUTTLE_LOG_DEBUG("Caught OFX::Exception::Suite (" << e.what() << ")");
+        stat = e.status();
+    }
+    // catch all exceptions
+    catch(std::exception& e)
+    {
+        TUTTLE_LOG_DEBUG("Caught std::exception on action " << actionRaw << " (" << e.what() << ")");
+        stat = kOfxStatFailed;
+    }
+    catch(...)
+    {
+        TUTTLE_LOG_DEBUG("Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")");
+        stat = kOfxStatFailed;
+    }
+
+    OFX::Log::outdent();
+    OFX::Log::print("STOP overlayInteractMainEntry (%s)", actionRaw);
+    return stat;
 }
 
 }; // end namespace private

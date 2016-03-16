@@ -4,40 +4,40 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorBars {
-
-
-ColorBarsPlugin::ColorBarsPlugin( OfxImageEffectHandle handle )
-	: GeneratorPlugin( handle )
+namespace tuttle
 {
-	mode = fetchChoiceParam( kColorBarsLevels );
+namespace plugin
+{
+namespace colorBars
+{
+
+ColorBarsPlugin::ColorBarsPlugin(OfxImageEffectHandle handle)
+    : GeneratorPlugin(handle)
+{
+    mode = fetchChoiceParam(kColorBarsLevels);
 }
 
 ColorBarsParams ColorBarsPlugin::getProcessParams() const
 {
-	ColorBarsParams params;
-	
-	params.mode = static_cast<EColorBarsLevels>( mode->getValue() );
-	return params;
+    ColorBarsParams params;
+
+    params.mode = static_cast<EColorBarsLevels>(mode->getValue());
+    return params;
 }
 
-void ColorBarsPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+void ColorBarsPlugin::getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences)
 {
-	GeneratorPlugin::getClipPreferences( clipPreferences );
+    GeneratorPlugin::getClipPreferences(clipPreferences);
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ColorBarsPlugin::render( const OFX::RenderArguments &args )
+void ColorBarsPlugin::render(const OFX::RenderArguments& args)
 {
-	doGilRender<ColorBarsProcess>( *this, args );
+    doGilRender<ColorBarsProcess>(*this, args);
 }
-
-
 }
 }
 }

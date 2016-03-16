@@ -3,14 +3,15 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace lens {
-mDeclarePluginFactory( LensDistortPluginFactory, {}, {}
-                       );
+namespace tuttle
+{
+namespace plugin
+{
+namespace lens
+{
+mDeclarePluginFactory(LensDistortPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-

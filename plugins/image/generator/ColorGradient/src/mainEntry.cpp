@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "ColorGradientPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::colorGradient::ColorGradientPluginFactory, "tuttle.colorgradient" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::colorGradient::ColorGradientPluginFactory, "tuttle.colorgradient");
+}
 }
 }

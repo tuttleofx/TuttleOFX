@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "MergePluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::merge::MergePluginFactory, "tuttle.merge" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::merge::MergePluginFactory, "tuttle.merge");
+}
 }
 }

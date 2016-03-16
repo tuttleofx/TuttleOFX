@@ -3,15 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace convolution {
+namespace tuttle
+{
+namespace plugin
+{
+namespace convolution
+{
 static const bool kSupportTiles = false;
-mDeclarePluginFactory( ConvolutionPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory(ConvolutionPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-

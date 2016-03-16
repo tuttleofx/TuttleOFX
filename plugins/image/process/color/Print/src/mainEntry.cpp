@@ -4,14 +4,14 @@
 #include "PrintPluginFactory.hpp"
 #include <tuttle/plugin/Plugin.hpp>
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::print::PrintPluginFactory, "tuttle.print" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::print::PrintPluginFactory, "tuttle.print");
 }
 }
-
+}

@@ -3,12 +3,14 @@
 
 #include <tuttle/plugin/global.hpp>
 
-
-namespace tuttle {
-namespace plugin {
-namespace jpeg2000 {
-namespace reader {
-
+namespace tuttle
+{
+namespace plugin
+{
+namespace jpeg2000
+{
+namespace reader
+{
 }
 }
 }

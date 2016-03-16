@@ -3,12 +3,14 @@
 
 #include <tuttle/common/exceptions.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace exception {
+namespace tuttle
+{
+namespace plugin
+{
+namespace exception
+{
 
 using namespace tuttle::exception;
-
 }
 }
 }

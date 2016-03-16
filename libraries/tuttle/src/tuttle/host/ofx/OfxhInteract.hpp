@@ -37,264 +37,239 @@
 
 #include <ofxInteract.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace interact {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace interact
+{
 
 class OfxhInteractBase
 {
 public:
-	OfxhInteractBase()
-	: _magic(kMagic)
-	{}
-	virtual ~OfxhInteractBase() = 0;
-	
+    OfxhInteractBase()
+        : _magic(kMagic)
+    {
+    }
+    virtual ~OfxhInteractBase() = 0;
+
 private:
-	static const int kMagic = 0x09012013; ///< magic number for Interact, and current day :-)
-	const int _magic; ///< to check for handles being nice
-	
+    static const int kMagic = 0x09012013; ///< magic number for Interact, and current day :-)
+    const int _magic;                     ///< to check for handles being nice
+
 public:
-	bool verifyMagic() const { return this != NULL && _magic == kMagic; }
-	
-	/// grab a handle on the parameter for passing to the C API
-	OfxInteractHandle getHandle() { return ( OfxInteractHandle ) this; }
+    bool verifyMagic() const { return this != NULL && _magic == kMagic; }
+
+    /// grab a handle on the parameter for passing to the C API
+    OfxInteractHandle getHandle() { return (OfxInteractHandle) this; }
 
 #ifndef SWIG
-	/// get the property handle for this instance/descriptor
-	virtual OfxPropertySetHandle getPropHandle() = 0;
+    /// get the property handle for this instance/descriptor
+    virtual OfxPropertySetHandle getPropHandle() = 0;
 #endif
 };
 
 /// state the interact can be in
 enum State
 {
-	eUninitialised,
-	eDescribed,
-	eCreated,
-	eFailed
+    eUninitialised,
+    eDescribed,
+    eCreated,
+    eFailed
 };
 
 /// Descriptor for an interact. Interacts all share a single description
 class OfxhInteractDescriptor : public OfxhInteractBase
 {
 protected:
-	property::OfxhSet _properties; ///< its props
-	State _state;      ///< how is it feeling today
-	OfxPluginEntryPoint* _entryPoint;  ///< the entry point for this overlay
+    property::OfxhSet _properties;    ///< its props
+    State _state;                     ///< how is it feeling today
+    OfxPluginEntryPoint* _entryPoint; ///< the entry point for this overlay
 
 public:
-	/// CTOR
-	OfxhInteractDescriptor();
+    /// CTOR
+    OfxhInteractDescriptor();
 
-	/// dtor
-	virtual ~OfxhInteractDescriptor();
+    /// dtor
+    virtual ~OfxhInteractDescriptor();
 
-	/// set the main entry points
-	void setEntryPoint( OfxPluginEntryPoint* entryPoint ) { _entryPoint = entryPoint; }
+    /// set the main entry points
+    void setEntryPoint(OfxPluginEntryPoint* entryPoint) { _entryPoint = entryPoint; }
 
-	/// call describe on this descriptor, returns true if all went well
-	bool describe( int bitDepthPerComponent, bool hasAlpha );
+    /// call describe on this descriptor, returns true if all went well
+    bool describe(int bitDepthPerComponent, bool hasAlpha);
 
-	/// grab a handle on the properties of this parameter for the C api
-	OfxPropertySetHandle getPropHandle() { return _properties.getHandle(); }
+    /// grab a handle on the properties of this parameter for the C api
+    OfxPropertySetHandle getPropHandle() { return _properties.getHandle(); }
 
-	/// get prop set
-	const property::OfxhSet& getProperties() const { return _properties; }
+    /// get prop set
+    const property::OfxhSet& getProperties() const { return _properties; }
 
-	/// get a non const prop set
-	property::OfxhSet& getProperties() { return _properties; }
+    /// get a non const prop set
+    property::OfxhSet& getProperties() { return _properties; }
 
-	/// call the entry point with action and the given args
-	OfxStatus callEntry( const char*          action,
-	                     void*                handle,
-	                     OfxPropertySetHandle inArgs,
-	                     OfxPropertySetHandle outArgs ) const;
+    /// call the entry point with action and the given args
+    OfxStatus callEntry(const char* action, void* handle, OfxPropertySetHandle inArgs, OfxPropertySetHandle outArgs) const;
 
-	/// what is it's state?
-	State getState() const { return _state; }
+    /// what is it's state?
+    State getState() const { return _state; }
 };
 
 /// a generic interact, it doesn't belong to anything in particular
 /// we need to generify this slighty more and remove the renderscale args
 /// into a derived class, as they only belong to image effect plugins
-class OfxhInteract : public OfxhInteractBase
-	, protected property::OfxhGetHook
+class OfxhInteract : public OfxhInteractBase, protected property::OfxhGetHook
 {
 protected:
-	const OfxhInteractDescriptor& _descriptor; ///< who we are
-	property::OfxhSet _properties;  ///< its props
-	State _state;      ///< how is it feeling today
-	void* _effectInstance; ///< this is ugly, we need a base class to all plugin instances at some point.
-	property::OfxhSet _argProperties;
+    const OfxhInteractDescriptor& _descriptor; ///< who we are
+    property::OfxhSet _properties;             ///< its props
+    State _state;                              ///< how is it feeling today
+    void* _effectInstance;                     ///< this is ugly, we need a base class to all plugin instances at some point.
+    property::OfxhSet _argProperties;
 
-	/// initialise the argument properties
-	void initArgProp( OfxTime          time,
-	                  const OfxPointD& renderScale );
+    /// initialise the argument properties
+    void initArgProp(OfxTime time, const OfxPointD& renderScale);
 
-	/// set pen props in the args
-	void setPenArgProps( const OfxPointD& penPos,
-	                     const OfxPointI& penPosViewport,
-	                     double           pressure );
+    /// set pen props in the args
+    void setPenArgProps(const OfxPointD& penPos, const OfxPointI& penPosViewport, double pressure);
 
-	/// set key args in the props
-	void setKeyArgProps( int   key,
-	                     char* keyString );
+    /// set key args in the props
+    void setKeyArgProps(int key, char* keyString);
 
 public:
-	OfxhInteract( const OfxhInteractDescriptor& desc, void* effectInstance );
+    OfxhInteract(const OfxhInteractDescriptor& desc, void* effectInstance);
 
-	virtual ~OfxhInteract();
+    virtual ~OfxhInteract();
 
-	/// what is it's state?
-	State getState() const { return _state; }
+    /// what is it's state?
+    State getState() const { return _state; }
 
-	/// grab a handle on the properties of this parameter for the C api
-	OfxPropertySetHandle getPropHandle() { return _properties.getHandle(); }
+    /// grab a handle on the properties of this parameter for the C api
+    OfxPropertySetHandle getPropHandle() { return _properties.getHandle(); }
 
-	/// get prop set
-	const property::OfxhSet& getProperties() const { return _properties; }
+    /// get prop set
+    const property::OfxhSet& getProperties() const { return _properties; }
 
-	/// call the entry point in the descriptor with action and the given args
-	OfxStatus callEntry( const char*        action,
-	                     property::OfxhSet* inArgs );
+    /// call the entry point in the descriptor with action and the given args
+    OfxStatus callEntry(const char* action, property::OfxhSet* inArgs);
 
-	/// hooks to kOfxInteractPropViewportSize in the property set
-	/// this is actually redundant and is to be deprecated
-	virtual void getViewportSize( int& width, int& height ) const = 0;
+    /// hooks to kOfxInteractPropViewportSize in the property set
+    /// this is actually redundant and is to be deprecated
+    virtual void getViewportSize(int& width, int& height) const = 0;
 
-	// hooks to live kOfxInteractPropPixelScale in the property set
-	virtual void getPixelScale( double& xScale, double& yScale ) const = 0;
+    // hooks to live kOfxInteractPropPixelScale in the property set
+    virtual void getPixelScale(double& xScale, double& yScale) const = 0;
 
-	// hooks to kOfxInteractPropBackgroundColour in the property set
-	virtual void getBackgroundColour( double& r, double& g, double& b ) const = 0;
+    // hooks to kOfxInteractPropBackgroundColour in the property set
+    virtual void getBackgroundColour(double& r, double& g, double& b) const = 0;
 
-	/// implement
-	virtual void swapBuffers() OFX_EXCEPTION_SPEC = 0;
+    /// implement
+    virtual void swapBuffers() OFX_EXCEPTION_SPEC = 0;
 
-	/// implement this
-	virtual void redraw() OFX_EXCEPTION_SPEC = 0;
+    /// implement this
+    virtual void redraw() OFX_EXCEPTION_SPEC = 0;
 
-	/// returns the params the interact uses
-	virtual void getSlaveToParam( std::vector<std::string>& params ) const;
+    /// returns the params the interact uses
+    virtual void getSlaveToParam(std::vector<std::string>& params) const;
 
-	// don't know what to do
-	virtual void reset( const std::string& name ) OFX_EXCEPTION_SPEC;
+    // don't know what to do
+    virtual void reset(const std::string& name) OFX_EXCEPTION_SPEC;
 
-	/// call create instance
-	virtual void createInstanceAction() OFX_EXCEPTION_SPEC;
+    /// call create instance
+    virtual void createInstanceAction() OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionDraw
-	//
-	// Params -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	virtual void drawAction( OfxTime time, const OfxPointD& renderScale )  OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionDraw
+    //
+    // Params -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    virtual void drawAction(OfxTime time, const OfxPointD& renderScale) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionPenMotion
-	//
-	// Params  -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	//    penX              - the X position
-	//    penY              - the Y position
-	//    pressure          - the pen pressue 0 to 1
-	virtual void penMotionAction( OfxTime          time,
-	                              const OfxPointD& renderScale,
-	                              const OfxPointD& penPos,
-	                              const OfxPointI& penPosViewport,
-	                              double           pressure ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionPenMotion
+    //
+    // Params  -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    //    penX              - the X position
+    //    penY              - the Y position
+    //    pressure          - the pen pressue 0 to 1
+    virtual void penMotionAction(OfxTime time, const OfxPointD& renderScale, const OfxPointD& penPos,
+                                 const OfxPointI& penPosViewport, double pressure) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionPenUp
-	//
-	// Params  -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	//    penX              - the X position
-	//    penY              - the Y position
-	//    pressure          - the pen pressue 0 to 1
-	virtual void penUpAction( OfxTime          time,
-	                          const OfxPointD& renderScale,
-	                          const OfxPointD& penPos,
-	                          const OfxPointI& penPosViewport,
-	                          double           pressure ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionPenUp
+    //
+    // Params  -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    //    penX              - the X position
+    //    penY              - the Y position
+    //    pressure          - the pen pressue 0 to 1
+    virtual void penUpAction(OfxTime time, const OfxPointD& renderScale, const OfxPointD& penPos,
+                             const OfxPointI& penPosViewport, double pressure) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionPenDown
-	//
-	// Params  -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	//    penX              - the X position
-	//    penY              - the Y position
-	//    pressure          - the pen pressue 0 to 1
-	virtual void penDownAction( OfxTime          time,
-	                            const OfxPointD& renderScale,
-	                            const OfxPointD& penPos,
-	                            const OfxPointI& penPosViewport,
-	                            double           pressure ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionPenDown
+    //
+    // Params  -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    //    penX              - the X position
+    //    penY              - the Y position
+    //    pressure          - the pen pressue 0 to 1
+    virtual void penDownAction(OfxTime time, const OfxPointD& renderScale, const OfxPointD& penPos,
+                               const OfxPointI& penPosViewport, double pressure) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionkeyDown
-	//
-	// Params  -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	//    key               - the pressed key
-	//    keyString         - the pressed key string
-	virtual void keyDownAction( OfxTime          time,
-	                            const OfxPointD& renderScale,
-	                            int              key,
-	                            char*            keyString ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionkeyDown
+    //
+    // Params  -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    //    key               - the pressed key
+    //    keyString         - the pressed key string
+    virtual void keyDownAction(OfxTime time, const OfxPointD& renderScale, int key, char* keyString) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionkeyUp
-	//
-	// Params  -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	//    key               - the pressed key
-	//    keyString         - the pressed key string
-	virtual void keyUpAction( OfxTime          time,
-	                          const OfxPointD& renderScale,
-	                          int              key,
-	                          char*            keyString ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionkeyUp
+    //
+    // Params  -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    //    key               - the pressed key
+    //    keyString         - the pressed key string
+    virtual void keyUpAction(OfxTime time, const OfxPointD& renderScale, int key, char* keyString) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionkeyRepeat
-	//
-	// Params  -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	//    key               - the pressed key
-	//    keyString         - the pressed key string
-	virtual void keyRepeatAction( OfxTime          time,
-	                              const OfxPointD& renderScale,
-	                              int              key,
-	                              char*            keyString ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionkeyRepeat
+    //
+    // Params  -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    //    key               - the pressed key
+    //    keyString         - the pressed key string
+    virtual void keyRepeatAction(OfxTime time, const OfxPointD& renderScale, int key, char* keyString) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionLoseFocus
-	//
-	// Params -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	virtual void gainFocusAction( OfxTime          time,
-	                              const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionLoseFocus
+    //
+    // Params -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    virtual void gainFocusAction(OfxTime time, const OfxPointD& renderScale) OFX_EXCEPTION_SPEC;
 
-	// interact action - kOfxInteractActionLoseFocus
-	//
-	// Params -
-	//
-	//    time              - the effect time at which changed occured
-	//    renderScale       - the render scale
-	virtual void loseFocusAction( OfxTime          time,
-	                              const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC;
+    // interact action - kOfxInteractActionLoseFocus
+    //
+    // Params -
+    //
+    //    time              - the effect time at which changed occured
+    //    renderScale       - the render scale
+    virtual void loseFocusAction(OfxTime time, const OfxPointD& renderScale) OFX_EXCEPTION_SPEC;
 };
-
 }
 }
 }

@@ -4,14 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "ColorSuppressPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::colorSuppress::ColorSuppressPluginFactory, "tuttle.colorsuppress" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::colorSuppress::ColorSuppressPluginFactory, "tuttle.colorsuppress");
 }
 }
-
+}

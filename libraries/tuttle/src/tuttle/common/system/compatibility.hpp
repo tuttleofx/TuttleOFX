@@ -10,14 +10,13 @@
 #endif
 
 // compatibility problems...
-namespace std {
+namespace std
+{
 #ifdef _MSC_VER
-	typedef SSIZE_T ssize_t;
+typedef SSIZE_T ssize_t;
 #else
-	typedef ::ssize_t ssize_t;
+typedef ::ssize_t ssize_t;
 #endif
 }
 
-
 #endif
-

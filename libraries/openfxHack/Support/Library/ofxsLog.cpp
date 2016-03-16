@@ -48,8 +48,10 @@
 
 //#define OFX_LOG
 
-namespace OFX {
-namespace Log {
+namespace OFX
+{
+namespace Log
+{
 
 /** @brief log file */
 static FILE* gLogFP = 0;
@@ -58,114 +60,113 @@ static FILE* gLogFP = 0;
 #define kLogFileEnvVar "OFX_PLUGIN_LOGFILE"
 
 /** @brief the global logfile name */
-static std::string gLogFileName( getenv( kLogFileEnvVar ) ? getenv( kLogFileEnvVar ) : "ofxTestLog.txt" );
+static std::string gLogFileName(getenv(kLogFileEnvVar) ? getenv(kLogFileEnvVar) : "ofxTestLog.txt");
 
 /** @brief global indent level, not MP sane */
 static int gIndent = 0;
 
 /** @brief Sets the name of the log file. */
-void setFileName( const std::string& value )
+void setFileName(const std::string& value)
 {
-	gLogFileName = value;
+    gLogFileName = value;
 }
 
 /** @brief Opens the log file, returns whether this was sucessful or not. */
-bool open( void )
+bool open(void)
 {
-	#ifdef OFX_LOG
-	if( !gLogFP )
-	{
-		gLogFP = fopen( gLogFileName.c_str(), "w" );
-		return gLogFP != 0;
-	}
-	#endif
-	return gLogFP != 0;
+#ifdef OFX_LOG
+    if(!gLogFP)
+    {
+        gLogFP = fopen(gLogFileName.c_str(), "w");
+        return gLogFP != 0;
+    }
+#endif
+    return gLogFP != 0;
 }
 
 /** @brief Closes the log file. */
-void close( void )
+void close(void)
 {
-	if( gLogFP )
-	{
-		fclose( gLogFP );
-	}
-	gLogFP = 0;
+    if(gLogFP)
+    {
+        fclose(gLogFP);
+    }
+    gLogFP = 0;
 }
 
 /** @brief Indent it, not MP sane at the moment */
-void indent( void )
+void indent(void)
 {
-	++gIndent;
+    ++gIndent;
 }
 
 /** @brief Outdent it, not MP sane at the moment */
-void outdent( void )
+void outdent(void)
 {
-	--gIndent;
+    --gIndent;
 }
 
 /** @brief do the indenting */
-static void doIndent( void )
+static void doIndent(void)
 {
-	if( open() )
-	{
-		for( int i = 0; i < gIndent; i++ )
-		{
-			fputs( "    ", gLogFP );
-		}
-	}
+    if(open())
+    {
+        for(int i = 0; i < gIndent; i++)
+        {
+            fputs("    ", gLogFP);
+        }
+    }
 }
 
 /** @brief Prints to the log file. */
-void print( const char* format, ... )
+void print(const char* format, ...)
 {
-	if( open() )
-	{
-		doIndent();
-		va_list args;
-		va_start( args, format );
-		vfprintf( gLogFP, format, args );
-		fputc( '\n', gLogFP );
-		fflush( gLogFP );
-		va_end( args );
-	}
+    if(open())
+    {
+        doIndent();
+        va_list args;
+        va_start(args, format);
+        vfprintf(gLogFP, format, args);
+        fputc('\n', gLogFP);
+        fflush(gLogFP);
+        va_end(args);
+    }
 }
 
 /** @brief Prints to the log file only if the condition is true and prepends a warning notice. */
-void warning( bool condition, const char* format, ... )
+void warning(bool condition, const char* format, ...)
 {
-	if( condition && open() )
-	{
-		doIndent();
-		fputs( "WARNING : ", gLogFP );
+    if(condition && open())
+    {
+        doIndent();
+        fputs("WARNING : ", gLogFP);
 
-		va_list args;
-		va_start( args, format );
-		vfprintf( gLogFP, format, args );
-		fputc( '\n', gLogFP );
-		va_end( args );
+        va_list args;
+        va_start(args, format);
+        vfprintf(gLogFP, format, args);
+        fputc('\n', gLogFP);
+        va_end(args);
 
-		fflush( gLogFP );
-	}
+        fflush(gLogFP);
+    }
 }
 
 /** @brief Prints to the log file only if the condition is true and prepends an error notice. */
-void error( bool condition, const char* format, ... )
+void error(bool condition, const char* format, ...)
 {
-	if( condition && open() )
-	{
-		doIndent();
-		fputs( "ERROR : ", gLogFP );
+    if(condition && open())
+    {
+        doIndent();
+        fputs("ERROR : ", gLogFP);
 
-		va_list args;
-		va_start( args, format );
-		vfprintf( gLogFP, format, args );
-		fputc( '\n', gLogFP );
-		va_end( args );
+        va_list args;
+        va_start(args, format);
+        vfprintf(gLogFP, format, args);
+        fputc('\n', gLogFP);
+        va_end(args);
 
-		fflush( gLogFP );
-	}
+        fflush(gLogFP);
+    }
 }
-
 };
 };

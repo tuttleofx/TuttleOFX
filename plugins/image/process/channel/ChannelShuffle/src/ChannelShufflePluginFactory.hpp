@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace channelShuffle {
+namespace tuttle
+{
+namespace plugin
+{
+namespace channelShuffle
+{
 
-mDeclarePluginFactory( ChannelShufflePluginFactory, { }, { } );
-
+mDeclarePluginFactory(ChannelShufflePluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

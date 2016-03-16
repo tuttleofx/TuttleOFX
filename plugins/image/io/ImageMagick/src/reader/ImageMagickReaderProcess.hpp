@@ -6,31 +6,34 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace imagemagick {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace imagemagick
+{
+namespace reader
+{
 
 /**
  *
  */
-template<class View>
+template <class View>
 class ImageMagickReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	ImageMagickReaderPlugin&    _plugin;        ///< Rendering plugin
-	ImageMagickReaderProcessParams _params;
+    ImageMagickReaderPlugin& _plugin; ///< Rendering plugin
+    ImageMagickReaderProcessParams _params;
 
 public:
-	ImageMagickReaderProcess( ImageMagickReaderPlugin& instance );
+    ImageMagickReaderProcess(ImageMagickReaderPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
-	View& readGilImage( View& dst, const std::string& filepath );
+    View& readGilImage(View& dst, const std::string& filepath);
 };
-
 }
 }
 }

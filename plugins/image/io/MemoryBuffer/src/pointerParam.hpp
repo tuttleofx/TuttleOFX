@@ -3,15 +3,16 @@
 
 #include <string>
 
-namespace tuttle {
-namespace plugin {
-namespace memoryBuffer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace memoryBuffer
+{
 
-void* stringToPointer( const std::string& value );
-
+void* stringToPointer(const std::string& value);
 }
 }
 }
 
 #endif
-

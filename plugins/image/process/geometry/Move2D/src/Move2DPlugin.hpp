@@ -5,14 +5,17 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace move2D {
+namespace tuttle
+{
+namespace plugin
+{
+namespace move2D
+{
 
-template<typename Scalar>
+template <typename Scalar>
 struct Move2DProcessParams
 {
-	boost::gil::point2<Scalar> _translation;
+    boost::gil::point2<Scalar> _translation;
 };
 
 /**
@@ -21,26 +24,26 @@ struct Move2DProcessParams
 class Move2DPlugin : public ImageEffectGilPlugin
 {
 public:
-	typedef float Scalar;
-public:
-    Move2DPlugin( OfxImageEffectHandle handle );
+    typedef float Scalar;
 
 public:
-	Move2DProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+    Move2DPlugin(OfxImageEffectHandle handle);
 
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
-
-	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
-
-    void render( const OFX::RenderArguments &args );
-	
 public:
-//    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
-	OFX::Double2DParam* _paramTranslation;
+    Move2DProcessParams<Scalar> getProcessParams(const OfxPointD& renderScale = OFX::kNoRenderScale) const;
+
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
+
+    bool getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod);
+    void getRegionsOfInterest(const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois);
+    bool isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime);
+
+    void render(const OFX::RenderArguments& args);
+
+public:
+    //    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
+    OFX::Double2DParam* _paramTranslation;
 };
-
 }
 }
 }

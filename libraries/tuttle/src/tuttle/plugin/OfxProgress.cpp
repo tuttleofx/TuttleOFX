@@ -2,8 +2,10 @@
 
 #include <ofxsMultiThread.h>
 
-namespace tuttle {
-namespace plugin {
+namespace tuttle
+{
+namespace plugin
+{
 
 /**
  * @brief Start the algorithm progress bar.
@@ -11,11 +13,11 @@ namespace plugin {
  * @param[in]       numSteps   number of steps
  *
  */
-void OfxProgress::progressBegin( const int numSteps, const std::string& msg )
+void OfxProgress::progressBegin(const int numSteps, const std::string& msg)
 {
-	_counter = 0.0;
-	_stepSize = 1.0 / static_cast<double>( numSteps );
-	_effect.progressStart( msg );
+    _counter = 0.0;
+    _stepSize = 1.0 / static_cast<double>(numSteps);
+    _effect.progressStart(msg);
 }
 
 /**
@@ -27,30 +29,30 @@ void OfxProgress::progressBegin( const int numSteps, const std::string& msg )
  *         false = continu rendering
  *
  */
-bool OfxProgress::progressForward( const int nSteps )
+bool OfxProgress::progressForward(const int nSteps)
 {
-	_mutex.lock();
-	_counter += _stepSize * static_cast<double>( nSteps );
-	/// @todo why not unlock the mutex here?
-	if( _effect.abort() )
-	{
-		_mutex.unlock();
-		_effect.progressEnd();
-		return true;
-	}
-	const bool res = _effect.progressUpdate( _counter );
-	_mutex.unlock();
-	return res;
+    _mutex.lock();
+    _counter += _stepSize * static_cast<double>(nSteps);
+    /// @todo why not unlock the mutex here?
+    if(_effect.abort())
+    {
+        _mutex.unlock();
+        _effect.progressEnd();
+        return true;
+    }
+    const bool res = _effect.progressUpdate(_counter);
+    _mutex.unlock();
+    return res;
 }
 
-bool OfxProgress::progressUpdate( const double p )
+bool OfxProgress::progressUpdate(const double p)
 {
-	if( _effect.abort() )
-	{
-		return true;
-	}
-	_counter = p;
-	return _effect.progressUpdate( _counter );
+    if(_effect.abort())
+    {
+        return true;
+    }
+    _counter = p;
+    return _effect.progressUpdate(_counter);
 }
 
 /**
@@ -59,21 +61,19 @@ bool OfxProgress::progressUpdate( const double p )
  */
 void OfxProgress::progressEnd()
 {
-	// Wait for the end
-	_mutex.lock();
-	_mutex.unlock();
-	_effect.progressEnd();
+    // Wait for the end
+    _mutex.lock();
+    _mutex.unlock();
+    _effect.progressEnd();
 }
 
-OfxProgress& OfxProgress::operator=( const OfxProgress& p )
+OfxProgress& OfxProgress::operator=(const OfxProgress& p)
 {
-	if( this == &p )
-		return *this;                                                                                                                                                                                                                                                                                               // Gracefully handle self assignment
-	_counter  = p._counter;
-	_stepSize = p._stepSize;
-	return *this;
-}
-
+    if(this == &p)
+        return *this; // Gracefully handle self assignment
+    _counter = p._counter;
+    _stepSize = p._stepSize;
+    return *this;
 }
 }
-
+}

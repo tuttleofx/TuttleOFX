@@ -36,44 +36,43 @@
 
 #include "./ofxsSupportPrivate.h"
 
-
-namespace OFX {
+namespace OFX
+{
 
 using namespace OFX::Private;
 
-void throwPropertyException( OfxStatus          stat,
-                             const std::string& propName )
+void throwPropertyException(OfxStatus stat, const std::string& propName)
 {
-	switch( stat )
-	{
-		case kOfxStatOK:
-		case kOfxStatReplyYes:
-		case kOfxStatReplyNo:
-		case kOfxStatReplyDefault:
-			// Throw nothing!
-			return;
+    switch(stat)
+    {
+        case kOfxStatOK:
+        case kOfxStatReplyYes:
+        case kOfxStatReplyNo:
+        case kOfxStatReplyDefault:
+            // Throw nothing!
+            return;
 
-		case kOfxStatErrUnknown:
-		case kOfxStatErrUnsupported: // unsupported implies unknow here
-			if( OFX::PropertySet::getThrowOnUnsupportedProperties() ) // are we suppressing this?
-				BOOST_THROW_EXCEPTION( OFX::Exception::PropertyUnknownToHost( propName ) );
-			return;
+        case kOfxStatErrUnknown:
+        case kOfxStatErrUnsupported:                                // unsupported implies unknow here
+            if(OFX::PropertySet::getThrowOnUnsupportedProperties()) // are we suppressing this?
+                BOOST_THROW_EXCEPTION(OFX::Exception::PropertyUnknownToHost(propName));
+            return;
 
-		case kOfxStatErrMemory:
-			BOOST_THROW_EXCEPTION( std::bad_alloc() );
-			return;
+        case kOfxStatErrMemory:
+            BOOST_THROW_EXCEPTION(std::bad_alloc());
+            return;
 
-		case kOfxStatErrValue:
-			BOOST_THROW_EXCEPTION( OFX::Exception::PropertyValueIllegalToHost( propName.c_str() ) );
-			return;
+        case kOfxStatErrValue:
+            BOOST_THROW_EXCEPTION(OFX::Exception::PropertyValueIllegalToHost(propName.c_str()));
+            return;
 
-		// in these cases and default throwSuiteStatusException
-		case kOfxStatErrBadHandle:
-		case kOfxStatErrBadIndex:
-			break;
-	}
-	// default case
-	throwSuiteStatusException( stat );
+        // in these cases and default throwSuiteStatusException
+        case kOfxStatErrBadHandle:
+        case kOfxStatErrBadIndex:
+            break;
+    }
+    // default case
+    throwSuiteStatusException(stat);
 }
 
 /** @brief are we logging property get/set */
@@ -83,159 +82,162 @@ int PropertySet::_gPropLogging = 1;
 bool PropertySet::_gThrowOnUnsupported = true;
 
 /** @brief Virtual destructor */
-PropertySet::~PropertySet() {}
+PropertySet::~PropertySet()
+{
+}
 
 /** @brief, returns the dimension of the given property from this property set */
-int PropertySet::propGetDimension( const char* property, bool throwOnFailure ) const
+int PropertySet::propGetDimension(const char* property, bool throwOnFailure) const
 {
-	assert( _propHandle != 0 );
-	int dimension = 0;
-	OfxStatus stat = gPropSuite->propGetDimension( _propHandle, property, &dimension );
-	Log::error( stat != kOfxStatOK, "Failed on fetching dimension for property %s, host returned status %s.", property, mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    int dimension = 0;
+    OfxStatus stat = gPropSuite->propGetDimension(_propHandle, property, &dimension);
+    Log::error(stat != kOfxStatOK, "Failed on fetching dimension for property %s, host returned status %s.", property,
+               mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Fetched dimension of property %s, returned %d.",  property, dimension );
+    if(_gPropLogging > 0)
+        Log::print("Fetched dimension of property %s, returned %d.", property, dimension);
 
-	return dimension;
+    return dimension;
 }
 
 /** @brief, resets the property to it's default value */
-void PropertySet::propReset( const char* property )
+void PropertySet::propReset(const char* property)
 {
-	assert( _propHandle != 0 );
-	OfxStatus stat = gPropSuite->propReset( _propHandle, property );
-	Log::error( stat != kOfxStatOK, "Failed on reseting property %s to its defaults, host returned status %s.", property, mapStatusToString( stat ).c_str() );
-	throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    OfxStatus stat = gPropSuite->propReset(_propHandle, property);
+    Log::error(stat != kOfxStatOK, "Failed on reseting property %s to its defaults, host returned status %s.", property,
+               mapStatusToString(stat).c_str());
+    throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Reset property %s.",  property );
+    if(_gPropLogging > 0)
+        Log::print("Reset property %s.", property);
 }
 
 /** @brief, Set a single dimension pointer property */
-void PropertySet::propSetPointer( const char* property, void* value, int idx, bool throwOnFailure )
+void PropertySet::propSetPointer(const char* property, void* value, int idx, bool throwOnFailure)
 {
-	assert( _propHandle != 0 );
-	OfxStatus stat = gPropSuite->propSetPointer( _propHandle, property, idx, value );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on setting pointer property %s[%d] to %p, host returned status %s;",
-	                 property, idx, value, mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    OfxStatus stat = gPropSuite->propSetPointer(_propHandle, property, idx, value);
+    OFX::Log::error(stat != kOfxStatOK, "Failed on setting pointer property %s[%d] to %p, host returned status %s;",
+                    property, idx, value, mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Set pointer property %s[%d] to be %p.",  property, idx, value );
+    if(_gPropLogging > 0)
+        Log::print("Set pointer property %s[%d] to be %p.", property, idx, value);
 }
 
 /** @brief, Set a single dimension string property */
-void PropertySet::propSetString( const char* property, const std::string& value, int idx, bool throwOnFailure )
+void PropertySet::propSetString(const char* property, const std::string& value, int idx, bool throwOnFailure)
 {
-	assert( _propHandle != 0 );
-	OfxStatus stat = gPropSuite->propSetString( _propHandle, property, idx, value.c_str() );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on setting string property %s[%d] to %s, host returned status %s;",
-	                 property, idx, value.c_str(), mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    OfxStatus stat = gPropSuite->propSetString(_propHandle, property, idx, value.c_str());
+    OFX::Log::error(stat != kOfxStatOK, "Failed on setting string property %s[%d] to %s, host returned status %s;", property,
+                    idx, value.c_str(), mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Set string property %s[%d] to be %s.",  property, idx, value.c_str() );
+    if(_gPropLogging > 0)
+        Log::print("Set string property %s[%d] to be %s.", property, idx, value.c_str());
 }
 
 /** @brief, Set a single dimension double property */
-void PropertySet::propSetDouble( const char* property, double value, int idx, bool throwOnFailure )
+void PropertySet::propSetDouble(const char* property, double value, int idx, bool throwOnFailure)
 {
-	assert( _propHandle != 0 );
-	OfxStatus stat = gPropSuite->propSetDouble( _propHandle, property, idx, value );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on setting double property %s[%d] to %lf, host returned status %s;",
-	                 property, idx, value, mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    OfxStatus stat = gPropSuite->propSetDouble(_propHandle, property, idx, value);
+    OFX::Log::error(stat != kOfxStatOK, "Failed on setting double property %s[%d] to %lf, host returned status %s;",
+                    property, idx, value, mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Set double property %s[%d] to be %lf.",  property, idx, value );
+    if(_gPropLogging > 0)
+        Log::print("Set double property %s[%d] to be %lf.", property, idx, value);
 }
 
 /** @brief, Set a single dimension int property */
-void PropertySet::propSetInt( const char* property, int value, int idx, bool throwOnFailure )
+void PropertySet::propSetInt(const char* property, int value, int idx, bool throwOnFailure)
 {
-	assert( _propHandle != 0 );
-	OfxStatus stat = gPropSuite->propSetInt( _propHandle, property, idx, value );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on setting int property %s[%d] to %d, host returned status %s (%d);",
-	                 property, idx, value, mapStatusToString( stat ).c_str(), stat );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    OfxStatus stat = gPropSuite->propSetInt(_propHandle, property, idx, value);
+    OFX::Log::error(stat != kOfxStatOK, "Failed on setting int property %s[%d] to %d, host returned status %s (%d);",
+                    property, idx, value, mapStatusToString(stat).c_str(), stat);
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Set int property %s[%d] to be %d.",  property, idx, value );
+    if(_gPropLogging > 0)
+        Log::print("Set int property %s[%d] to be %d.", property, idx, value);
 }
 
 /** @brief Get single pointer property */
-void*  PropertySet::propGetPointer( const char* property, int idx, bool throwOnFailure ) const
+void* PropertySet::propGetPointer(const char* property, int idx, bool throwOnFailure) const
 {
-	assert( _propHandle != 0 );
-	void* value    = 0;
-	OfxStatus stat = gPropSuite->propGetPointer( _propHandle, property, idx, &value );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on getting pointer property %s[%d], host returned status %s;",
-	                 property, idx, mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    void* value = 0;
+    OfxStatus stat = gPropSuite->propGetPointer(_propHandle, property, idx, &value);
+    OFX::Log::error(stat != kOfxStatOK, "Failed on getting pointer property %s[%d], host returned status %s;", property, idx,
+                    mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Retrieved pointer property %s[%d], was given %p.",  property, idx, value );
+    if(_gPropLogging > 0)
+        Log::print("Retrieved pointer property %s[%d], was given %p.", property, idx, value);
 
-	return value;
+    return value;
 }
 
 /** @brief Get single string property */
-std::string PropertySet::propGetString( const char* property, int idx, bool throwOnFailure ) const
+std::string PropertySet::propGetString(const char* property, int idx, bool throwOnFailure) const
 {
-	assert( _propHandle != 0 );
-	char* value    = NULL;
-	OfxStatus stat = gPropSuite->propGetString( _propHandle, property, idx, &value );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on getting string property %s[%d], host returned status %s;",
-	                 property, idx, mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    char* value = NULL;
+    OfxStatus stat = gPropSuite->propGetString(_propHandle, property, idx, &value);
+    OFX::Log::error(stat != kOfxStatOK, "Failed on getting string property %s[%d], host returned status %s;", property, idx,
+                    mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Retrieved string property %s[%d], was given %s.", property, idx, value );
+    if(_gPropLogging > 0)
+        Log::print("Retrieved string property %s[%d], was given %s.", property, idx, value);
 
-    if( value == NULL )
+    if(value == NULL)
         return std::string();
 
-	return std::string( value );
+    return std::string(value);
 }
 
 /** @brief Get single double property */
-double PropertySet::propGetDouble( const char* property, int idx, bool throwOnFailure ) const
+double PropertySet::propGetDouble(const char* property, int idx, bool throwOnFailure) const
 {
-	assert( _propHandle != 0 );
-	double value   = 0;
-	OfxStatus stat = gPropSuite->propGetDouble( _propHandle, property, idx, &value );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on getting double property %s[%d], host returned status %s;",
-	                 property, idx, mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    double value = 0;
+    OfxStatus stat = gPropSuite->propGetDouble(_propHandle, property, idx, &value);
+    OFX::Log::error(stat != kOfxStatOK, "Failed on getting double property %s[%d], host returned status %s;", property, idx,
+                    mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Retrieved double property %s[%d], was given %lf.",  property, idx, value );
-	return value;
+    if(_gPropLogging > 0)
+        Log::print("Retrieved double property %s[%d], was given %lf.", property, idx, value);
+    return value;
 }
 
 /** @brief Get single int property */
-int PropertySet::propGetInt( const char* property, int idx, bool throwOnFailure ) const
+int PropertySet::propGetInt(const char* property, int idx, bool throwOnFailure) const
 {
-	assert( _propHandle != 0 );
-	int value      = 0;
-	OfxStatus stat = gPropSuite->propGetInt( _propHandle, property, idx, &value );
-	OFX::Log::error( stat != kOfxStatOK, "Failed on getting int property %s[%d], host returned status %s;",
-	                 property, idx, mapStatusToString( stat ).c_str() );
-	if( throwOnFailure )
-		throwPropertyException( stat, property );
+    assert(_propHandle != 0);
+    int value = 0;
+    OfxStatus stat = gPropSuite->propGetInt(_propHandle, property, idx, &value);
+    OFX::Log::error(stat != kOfxStatOK, "Failed on getting int property %s[%d], host returned status %s;", property, idx,
+                    mapStatusToString(stat).c_str());
+    if(throwOnFailure)
+        throwPropertyException(stat, property);
 
-	if( _gPropLogging > 0 )
-		Log::print( "Retrieved int property %s[%d], was given %d.",  property, idx, value );
-	return value;
+    if(_gPropLogging > 0)
+        Log::print("Retrieved int property %s[%d], was given %d.", property, idx, value);
+    return value;
 }
-
 }

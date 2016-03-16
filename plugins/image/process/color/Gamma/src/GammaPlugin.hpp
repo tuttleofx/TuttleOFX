@@ -5,17 +5,17 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace gamma {
+namespace tuttle
+{
+namespace plugin
+{
+namespace gamma
+{
 
-template<typename Scalar>
+template <typename Scalar>
 struct GammaProcessParams
 {
-	double iRGamma,
-	       iGGamma,
-	       iBGamma,
-	       iAGamma;
+    double iRGamma, iGGamma, iBGamma, iAGamma;
 };
 
 /**
@@ -24,28 +24,27 @@ struct GammaProcessParams
 class GammaPlugin : public ImageEffectGilPlugin
 {
 public:
-	typedef float Scalar;
+    typedef float Scalar;
 
 public:
-	GammaPlugin( OfxImageEffectHandle handle );
+    GammaPlugin(OfxImageEffectHandle handle);
 
 public:
-	void render( const OFX::RenderArguments& args );
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+    void render(const OFX::RenderArguments& args);
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
 
-	GammaProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+    GammaProcessParams<Scalar> getProcessParams(const OfxPointD& renderScale = OFX::kNoRenderScale) const;
 
 public:
-	OFX::ChoiceParam* _gammaType;
-	OFX::DoubleParam* _master;
-	OFX::DoubleParam* _red;
-	OFX::DoubleParam* _green;
-	OFX::DoubleParam* _blue;
-	OFX::DoubleParam* _alpha;
-	OFX::BooleanParam* _invert;
-	EGammaType getGammaType() const { return static_cast<EGammaType>( _gammaType->getValue() ); }
+    OFX::ChoiceParam* _gammaType;
+    OFX::DoubleParam* _master;
+    OFX::DoubleParam* _red;
+    OFX::DoubleParam* _green;
+    OFX::DoubleParam* _blue;
+    OFX::DoubleParam* _alpha;
+    OFX::BooleanParam* _invert;
+    EGammaType getGammaType() const { return static_cast<EGammaType>(_gammaType->getValue()); }
 };
-
 }
 }
 }

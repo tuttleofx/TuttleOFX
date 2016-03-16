@@ -7,32 +7,35 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
-namespace tuttle {
-namespace plugin {
-namespace lut {
+namespace tuttle
+{
+namespace plugin
+{
+namespace lut
+{
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void LutPluginFactory::describe(OFX::ImageEffectDescriptor& desc)
 {
-	desc.setLabels( "TuttleLut", "Lut", "Color transformation through CLUT file" );
-	desc.setPluginGrouping( "tuttle/image/process/color" );
+    desc.setLabels("TuttleLut", "Lut", "Color transformation through CLUT file");
+    desc.setPluginGrouping("tuttle/image/process/color");
 
-	desc.setDescription( "Image Luter is used to lut components of an image." );
+    desc.setDescription("Image Luter is used to lut components of an image.");
 
-	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextGeneral );
-	desc.addSupportedContext( OFX::eContextFilter );
+    // add the supported contexts
+    desc.addSupportedContext(OFX::eContextGeneral);
+    desc.addSupportedContext(OFX::eContextFilter);
 
-	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+    // add supported pixel depths
+    desc.addSupportedBitDepth(OFX::eBitDepthUByte);
+    desc.addSupportedBitDepth(OFX::eBitDepthUShort);
+    desc.addSupportedBitDepth(OFX::eBitDepthFloat);
 
-	desc.setSupportsTiles( kSupportTiles );
-	//desc.setRenderThreadSafety( OFX::eRenderFullySafe ); //< @todo tuttle: remove process data from LutPlugin
+    desc.setSupportsTiles(kSupportTiles);
+    // desc.setRenderThreadSafety( OFX::eRenderFullySafe ); //< @todo tuttle: remove process data from LutPlugin
 }
 
 /**
@@ -40,25 +43,25 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::EContext context )
+void LutPluginFactory::describeInContext(OFX::ImageEffectDescriptor& desc, OFX::EContext context)
 {
-	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
+    OFX::ClipDescriptor* srcClip = desc.defineClip(kOfxImageEffectSimpleSourceClipName);
+    srcClip->addSupportedComponent(OFX::ePixelComponentRGBA);
+    srcClip->addSupportedComponent(OFX::ePixelComponentRGB);
+    srcClip->addSupportedComponent(OFX::ePixelComponentAlpha);
+    srcClip->setSupportsTiles(kSupportTiles);
 
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+    OFX::ClipDescriptor* dstClip = desc.defineClip(kOfxImageEffectOutputClipName);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGBA);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGB);
+    dstClip->addSupportedComponent(OFX::ePixelComponentAlpha);
+    dstClip->setSupportsTiles(kSupportTiles);
 
-	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginFilename );
-	filename->setDefault( "" );
-	filename->setLabels( kTuttlePluginFilenameLabel, kTuttlePluginFilenameLabel, kTuttlePluginFilenameLabel );
-	filename->setStringType( OFX::eStringTypeFilePath );
+    // Controls
+    OFX::StringParamDescriptor* filename = desc.defineStringParam(kTuttlePluginFilename);
+    filename->setDefault("");
+    filename->setLabels(kTuttlePluginFilenameLabel, kTuttlePluginFilenameLabel, kTuttlePluginFilenameLabel);
+    filename->setStringType(OFX::eStringTypeFilePath);
 }
 
 /**
@@ -67,11 +70,10 @@ void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX:
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* LutPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::EContext context )
+OFX::ImageEffect* LutPluginFactory::createInstance(OfxImageEffectHandle handle, OFX::EContext context)
 {
-	return new LutPlugin( handle );
+    return new LutPlugin(handle);
 }
-
 }
 }
 }

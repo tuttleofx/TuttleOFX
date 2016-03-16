@@ -12,49 +12,50 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace ramp {
+namespace tuttle
+{
+namespace plugin
+{
+namespace ramp
+{
 
-
-template<class View>
+template <class View>
 struct RampProcessParams
 {
-	typedef typename View::value_type Pixel;
-	bool  direction;
-	bool  color;
-	Pixel colorStart;
-	Pixel colorEnd;
+    typedef typename View::value_type Pixel;
+    bool direction;
+    bool color;
+    Pixel colorStart;
+    Pixel colorEnd;
 };
 
 /**
  * @brief Ramp process
  *
  */
-template<class View>
+template <class View>
 class RampProcess : public ImageGilProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef terry::generator::RampFunctor<Pixel> RampFunctorT;
-	typedef typename RampFunctorT::point_t Point;
-	typedef boost::gil::virtual_2d_locator<RampFunctorT, false> Locator;
-	typedef boost::gil::image_view<Locator> RampVirtualView;
+    typedef typename View::value_type Pixel;
+    typedef terry::generator::RampFunctor<Pixel> RampFunctorT;
+    typedef typename RampFunctorT::point_t Point;
+    typedef boost::gil::virtual_2d_locator<RampFunctorT, false> Locator;
+    typedef boost::gil::image_view<Locator> RampVirtualView;
 
 protected:
-	RampPlugin&     _plugin;   ///< Rendering plugin
-	RampVirtualView _srcView;  ///< Source view
+    RampPlugin& _plugin;      ///< Rendering plugin
+    RampVirtualView _srcView; ///< Source view
 
 public:
-	RampProcess( RampPlugin& effect );
+    RampProcess(RampPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	RampProcessParams<View> getProcessParams( ) const;
-	
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    RampProcessParams<View> getProcessParams() const;
+
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

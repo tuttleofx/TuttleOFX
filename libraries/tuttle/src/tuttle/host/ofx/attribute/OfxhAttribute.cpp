@@ -1,24 +1,29 @@
 #include "OfxhAttribute.hpp"
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace attribute {
-
-OfxhAttribute::OfxhAttribute( const property::OfxhSet& properties )
-	: _properties( properties )
+namespace tuttle
 {
-	BOOST_ASSERT( getAttributeType().c_str() );
+namespace host
+{
+namespace ofx
+{
+namespace attribute
+{
+
+OfxhAttribute::OfxhAttribute(const property::OfxhSet& properties)
+    : _properties(properties)
+{
+    BOOST_ASSERT(getAttributeType().c_str());
 }
 
-OfxhAttribute::OfxhAttribute( const OfxhAttributeDescriptor& desc )
-	: _properties( desc.getProperties() )
+OfxhAttribute::OfxhAttribute(const OfxhAttributeDescriptor& desc)
+    : _properties(desc.getProperties())
 {
-	BOOST_ASSERT( getAttributeType().c_str() );
+    BOOST_ASSERT(getAttributeType().c_str());
 }
 
-OfxhAttribute::~OfxhAttribute() {}
-
+OfxhAttribute::~OfxhAttribute()
+{
+}
 }
 }
 }

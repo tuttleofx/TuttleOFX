@@ -3,27 +3,27 @@
 
 #include <tuttle/plugin/context/Definition.hpp>
 
-namespace tuttle {
-namespace plugin {
+namespace tuttle
+{
+namespace plugin
+{
 
 enum EParamReaderBitDepth
 {
-	eParamReaderBitDepthAuto = 0,
-	eParamReaderBitDepthByte,
-	eParamReaderBitDepthShort,
-	eParamReaderBitDepthFloat
+    eParamReaderBitDepthAuto = 0,
+    eParamReaderBitDepthByte,
+    eParamReaderBitDepthShort,
+    eParamReaderBitDepthFloat
 };
 
 enum EParamReaderChannel
 {
-	eParamReaderChannelAuto = 0,
-	eParamReaderChannelGray,
-	eParamReaderChannelRGB,
-	eParamReaderChannelRGBA
+    eParamReaderChannelAuto = 0,
+    eParamReaderChannelGray,
+    eParamReaderChannelRGB,
+    eParamReaderChannelRGBA
 };
-
 }
 }
 
 #endif
-

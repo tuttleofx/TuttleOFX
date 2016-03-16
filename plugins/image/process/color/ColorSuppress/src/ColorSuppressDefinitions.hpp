@@ -3,9 +3,12 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorSuppress {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorSuppress
+{
 
 const static std::string kParamRedSuppressRate = "red";
 const static std::string kParamGreenSuppressRate = "green";
@@ -23,15 +26,14 @@ const static std::string kParamPreserveLuma = "preserveLuma";
 
 const static std::string kParamObeyAlpha = "obeyAlpha";
 
-enum EOutputType {
-	eOutputTypeImage = 0,
-	eOutputTypeAlpha = 1,
-	eOutputTypeAlphaImage = 2
+enum EOutputType
+{
+    eOutputTypeImage = 0,
+    eOutputTypeAlpha = 1,
+    eOutputTypeAlphaImage = 2
 };
-
 }
 }
 }
 
 #endif
-

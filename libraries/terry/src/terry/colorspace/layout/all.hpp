@@ -1,5 +1,5 @@
 #ifndef _TERRY_COLOR_LAYOUT_ALL_HPP_
-#define	_TERRY_COLOR_LAYOUT_ALL_HPP_
+#define _TERRY_COLOR_LAYOUT_ALL_HPP_
 
 #include "XYZ.hpp"
 #include "YPbPr.hpp"
@@ -12,6 +12,5 @@
 #include "luv.hpp"
 #include "rgb.hpp"
 #include "yuv.hpp"
-
 
 #endif

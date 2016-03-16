@@ -19,9 +19,12 @@
 #include <vector>
 #include <iostream>
 
-namespace tuttle {
-namespace plugin {
-namespace colorTransfer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorTransfer
+{
 
 /**
  * @brief ColorTransfer process
@@ -29,43 +32,40 @@ namespace colorTransfer {
  */
 using namespace boost::numeric::ublas;
 
-template<class View>
+template <class View>
 class ColorTransferProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::channel_type<View>::type Channel;
-	typedef ColorTransferPlugin::Scalar Scalar;
+    typedef typename View::value_type Pixel;
+    typedef typename boost::gil::channel_type<View>::type Channel;
+    typedef ColorTransferPlugin::Scalar Scalar;
 
-	// Source ref image clip
-	boost::scoped_ptr<OFX::Image> _srcRef;
-	OfxRectI _srcRefPixelRod;
-	View _srcRefView;
+    // Source ref image clip
+    boost::scoped_ptr<OFX::Image> _srcRef;
+    OfxRectI _srcRefPixelRod;
+    View _srcRefView;
 
-	// Dst ref image clip
-	boost::scoped_ptr<OFX::Image> _dstRef;
-	OfxRectI _dstRefPixelRod;
-	View _dstRefView;
+    // Dst ref image clip
+    boost::scoped_ptr<OFX::Image> _dstRef;
+    OfxRectI _dstRefPixelRod;
+    View _dstRefView;
 
 protected:
-	ColorTransferPlugin& _plugin; ///< Rendering plugin
-	ColorTransferProcessParams<Scalar> _params; ///< parameters
+    ColorTransferPlugin& _plugin;               ///< Rendering plugin
+    ColorTransferProcessParams<Scalar> _params; ///< parameters
 
-	Pixel _srcRefAverage, _dstRefAverage, _deviationRatio;
-
+    Pixel _srcRefAverage, _dstRefAverage, _deviationRatio;
 
 public:
-	ColorTransferProcess( ColorTransferPlugin& effect );
+    ColorTransferProcess(ColorTransferPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
 private:
-	void computeAverage( const View& image, Pixel& average, Pixel& deviation, const EColorspace& eColorspace );
-
+    void computeAverage(const View& image, Pixel& average, Pixel& deviation, const EColorspace& eColorspace);
 };
-
 }
 }
 }

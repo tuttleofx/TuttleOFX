@@ -3,22 +3,24 @@
 
 #include <tuttle/plugin/global.hpp>
 
-
-namespace tuttle {
-namespace plugin {
-namespace warp {
+namespace tuttle
+{
+namespace plugin
+{
+namespace warp
+{
 
 static const std::size_t kMaxNbPoints = 20;
-//static const std::size_t kPasBezier = 0.2;
+// static const std::size_t kPasBezier = 0.2;
 static const float lineWidth = 0.5;
 static const float pointWidth = 3.0;
 static const int seuil = 15;
 
 static const float positionOrigine = -200.0;
 
-//static const int nbCoeffBezier = 50;
+// static const int nbCoeffBezier = 50;
 
-//static const std::string kClipSourceA = "A";
+// static const std::string kClipSourceA = "A";
 static const std::string kClipSourceB = "B";
 
 static const std::string kParamMethod = "method";
@@ -27,12 +29,11 @@ static const std::string kParamMethodDelete = "delete";
 static const std::string kParamMethodMove = "move";
 enum EParamMethod
 {
-        eParamMethodCreation = 0,
-        eParamMethodDelete,
-        eParamMethodMove,
+    eParamMethodCreation = 0,
+    eParamMethodDelete,
+    eParamMethodMove,
 
 };
-
 
 static const std::string kParamOverlay = "overlay";
 static const std::string kParamInverse = "inverse";
@@ -70,7 +71,6 @@ static const std::string kParamGroupCurveBegin = "groupCurveBegin";
 static const std::string kParamCurveBegin = "pCurveBegin";
 
 static const std::string kParamGroupOverlay = "groupOverlay";
-
 }
 }
 }

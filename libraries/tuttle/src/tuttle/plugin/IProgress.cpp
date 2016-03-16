@@ -1,11 +1,12 @@
 #include "IProgress.hpp"
 
-namespace tuttle {
-namespace plugin {
+namespace tuttle
+{
+namespace plugin
+{
 
 IProgress::~IProgress()
 {
 }
-
 }
 }

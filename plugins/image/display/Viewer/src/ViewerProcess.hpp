@@ -3,33 +3,36 @@
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace viewer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace viewer
+{
 
 /**
  * @brief Viewer process
  *
  */
-template<class View>
+template <class View>
 class ViewerProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::channel_type<View>::type Channel;
-	typedef float Scalar;
+    typedef typename View::value_type Pixel;
+    typedef typename boost::gil::channel_type<View>::type Channel;
+    typedef float Scalar;
+
 protected:
-	ViewerPlugin&    _plugin;            ///< Rendering plugin
-	ViewerProcessParams<Scalar> _params; ///< parameters
+    ViewerPlugin& _plugin;               ///< Rendering plugin
+    ViewerProcessParams<Scalar> _params; ///< parameters
 
 public:
-	ViewerProcess( ViewerPlugin& effect );
+    ViewerProcess(ViewerPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

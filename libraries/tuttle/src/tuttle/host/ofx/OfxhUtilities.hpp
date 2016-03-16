@@ -3,12 +3,14 @@
 
 #include <tuttle/common/ofx/utilities.hpp>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 using namespace tuttle::ofx;
-
 }
 }
 }

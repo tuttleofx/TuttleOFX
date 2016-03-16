@@ -6,15 +6,16 @@
 #include "writer/AVWriterPluginFactory.hpp"
 #include "swscale/SwscalePluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::av::reader::AVReaderPluginFactory, "tuttle.avreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::av::writer::AVWriterPluginFactory, "tuttle.avwriter" );
-	mAppendPluginFactory( ids, tuttle::plugin::swscale::SwscalePluginFactory, "tuttle.swscale" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::av::reader::AVReaderPluginFactory, "tuttle.avreader");
+    mAppendPluginFactory(ids, tuttle::plugin::av::writer::AVWriterPluginFactory, "tuttle.avwriter");
+    mAppendPluginFactory(ids, tuttle::plugin::swscale::SwscalePluginFactory, "tuttle.swscale");
+}
 }
 }

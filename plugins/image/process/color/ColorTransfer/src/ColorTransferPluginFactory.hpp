@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace colorTransfer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorTransfer
+{
 
-mDeclarePluginFactory( ColorTransferPluginFactory, { }, { } );
-
+mDeclarePluginFactory(ColorTransferPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

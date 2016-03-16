@@ -6,31 +6,34 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace jpeg {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace jpeg
+{
+namespace reader
+{
 
 /**
  *
  */
-template<class View>
+template <class View>
 class JpegReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	JpegReaderPlugin&    _plugin;        ///< Rendering plugin
+    JpegReaderPlugin& _plugin; ///< Rendering plugin
 
-	JpegReaderProcessParams _params;
-	
+    JpegReaderProcessParams _params;
+
 public:
-	JpegReaderProcess( JpegReaderPlugin& instance );
+    JpegReaderProcess(JpegReaderPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void setup(const OFX::RenderArguments& args);
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
-	View& readImage( View& dst );
+    View& readImage(View& dst);
 };
-
 }
 }
 }

@@ -3,10 +3,14 @@
 
 #include "OfxhAttributeAccessor.hpp"
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace attribute
+{
 
 /**
  * Base to both descriptor and instance it
@@ -16,34 +20,27 @@ namespace attribute {
 class OfxhClipAccessor : virtual public OfxhAttributeAccessor
 {
 public:
-	/// @brief base ctor, for a descriptor
-	OfxhClipAccessor();
+    /// @brief base ctor, for a descriptor
+    OfxhClipAccessor();
 
-	virtual ~OfxhClipAccessor() = 0;
+    virtual ~OfxhClipAccessor() = 0;
 
-	/// is the clip optional
-	bool isOptional() const;
+    /// is the clip optional
+    bool isOptional() const;
 
-	const bool isConnected() const;
+    const bool isConnected() const;
 
-	/**
-	 * @brief Connected
-	 * Says whether the clip is currently connected.
-	 */
-	void setConnected( const bool isConnected = true );
+    /**
+     * @brief Connected
+     * Says whether the clip is currently connected.
+     */
+    void setConnected(const bool isConnected = true);
 
-	
-	virtual bool verifyMagic()
-	{
-		return true;
-	}
-
+    virtual bool verifyMagic() { return true; }
 };
-
 }
 }
 }
 }
 
 #endif
-

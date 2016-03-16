@@ -6,15 +6,16 @@
 
 #include <ofxCore.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 using namespace tuttle::ofx;
-
 }
 }
 }
 
 #endif
-

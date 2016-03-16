@@ -3,15 +3,16 @@
 
 #include <ofxMessage.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
-void* getMessageSuite( const int version );
-
+void* getMessageSuite(const int version);
 }
 }
 }
 
 #endif
-

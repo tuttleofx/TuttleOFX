@@ -3,13 +3,15 @@
 
 #include "ColorCubeDefinitions.hpp"
 
-
 #include <tuttle/plugin/context/GeneratorPlugin.hpp>
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorCube {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorCube
+{
 
 struct ColorCubeProcessParams
 {
@@ -22,18 +24,17 @@ struct ColorCubeProcessParams
 class ColorCubePlugin : public GeneratorPlugin
 {
 public:
-    ColorCubePlugin( OfxImageEffectHandle handle );
+    ColorCubePlugin(OfxImageEffectHandle handle);
 
 public:
-    ColorCubeProcessParams getProcessParams( ) const;
+    ColorCubeProcessParams getProcessParams() const;
 
-    void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-    void render( const OFX::RenderArguments &args );
-	
+    void getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences);
+    void render(const OFX::RenderArguments& args);
+
 public:
     OFX::ChoiceParam* _step;
 };
-
 }
 }
 }

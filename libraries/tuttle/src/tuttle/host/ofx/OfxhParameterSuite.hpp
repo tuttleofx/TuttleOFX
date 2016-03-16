@@ -3,14 +3,17 @@
 
 #include <ofxParam.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace attribute
+{
 
 /// fetch the param suite
-void* getParameterSuite( const int version );
-
+void* getParameterSuite(const int version);
 }
 }
 }

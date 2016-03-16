@@ -48,529 +48,524 @@
 #include <cstring>
 #include <cstdlib>
 
+#if defined(__linux__)
 
-#if defined ( __linux__ )
-
- #define DIRLIST_SEP_CHARS ":;"
- #define DIRSEP "/"
+#define DIRLIST_SEP_CHARS ":;"
+#define DIRSEP "/"
 #include <dirent.h>
 
- #define ARCHSTR getArchStr()
+#define ARCHSTR getArchStr()
 
-#elif defined ( __APPLE__ )
+#elif defined(__APPLE__)
 
- #define DIRLIST_SEP_CHARS ";:"
- #define ARCHSTR "MacOS"
- #define DIRSEP "/"
+#define DIRLIST_SEP_CHARS ";:"
+#define ARCHSTR "MacOS"
+#define DIRSEP "/"
 #include <dirent.h>
 
-#elif defined ( WINDOWS )
- #define DIRLIST_SEP_CHARS ";"
+#elif defined(WINDOWS)
+#define DIRLIST_SEP_CHARS ";"
 #ifdef _WIN64
-  #define ARCHSTR "win64"
+#define ARCHSTR "win64"
 #else
-  #define ARCHSTR "win32"
+#define ARCHSTR "win32"
 #endif
- #define DIRSEP "\\"
+#define DIRSEP "\\"
 
 // CINTERFACE needs to be declared if compiling with VC++
 #include <shlobj.h>
 #include <tchar.h>
 #ifndef _MSC_VER
-  #define SHGFP_TYPE_CURRENT 0
+#define SHGFP_TYPE_CURRENT 0
 #endif
 
 #endif
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 struct PluginCacheSupportedApi
 {
-	APICache::OfxhPluginAPICacheI* _handler;
+    APICache::OfxhPluginAPICacheI* _handler;
 
-	PluginCacheSupportedApi( APICache::OfxhPluginAPICacheI* handler )
-		: _handler( handler ) {}
+    PluginCacheSupportedApi(APICache::OfxhPluginAPICacheI* handler)
+        : _handler(handler)
+    {
+    }
 
-	bool matches( std::string api, int version ) const
-	{
-		if( api == _handler->_apiName && version >= _handler->_apiVersionMin && version <= _handler->_apiVersionMax )
-		{
-			return true;
-		}
-		return false;
-	}
+    bool matches(std::string api, int version) const
+    {
+        if(api == _handler->_apiName && version >= _handler->_apiVersionMin && version <= _handler->_apiVersionMax)
+        {
+            return true;
+        }
+        return false;
+    }
 };
 
-
-#if defined ( __linux__ )
+#if defined(__linux__)
 
 static const char* getArchStr()
 {
-	if( sizeof( void* ) == 4 )
-	{
-		return "Linux-x86";
-	}
-	else
-	{
-		return "Linux-x86-64";
-	}
+    if(sizeof(void*) == 4)
+    {
+        return "Linux-x86";
+    }
+    else
+    {
+        return "Linux-x86-64";
+    }
 }
 
 #endif
-#if defined ( WINDOWS )
+#if defined(WINDOWS)
 
-const TCHAR* getStdOFXPluginPath( const std::string& hostId = "Plugins" )
+const TCHAR* getStdOFXPluginPath(const std::string& hostId = "Plugins")
 {
-	static TCHAR buffer[MAX_PATH];
-	static int gotIt = 0;
+    static TCHAR buffer[MAX_PATH];
+    static int gotIt = 0;
 
-	if( !gotIt )
-	{
-		gotIt = 1;
-		SHGetFolderPath( NULL, CSIDL_PROGRAM_FILES_COMMON, NULL, SHGFP_TYPE_CURRENT, buffer );
-		strncat( buffer, "\\OFX\\Plugins", MAX_PATH );
-	}
-	return buffer;
+    if(!gotIt)
+    {
+        gotIt = 1;
+        SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES_COMMON, NULL, SHGFP_TYPE_CURRENT, buffer);
+        strncat(buffer, "\\OFX\\Plugins", MAX_PATH);
+    }
+    return buffer;
 }
 
 #endif
 
-std::string OFXGetEnv( const char* e )
+std::string OFXGetEnv(const char* e)
 {
-	#if !defined( __GNUC__ ) && defined( WINDOWS )
-	std::size_t requiredSize;
-	getenv_s( &requiredSize, 0, 0, e );
-	std::vector<char> buffer( requiredSize );
-	if( requiredSize > 0 )
-	{
-		getenv_s( &requiredSize, &buffer.front(), requiredSize, e );
-		return &buffer.front();
-	}
-	return "";
-	#else
-	const char* env_value = getenv( e );
-	if( env_value == NULL )
-		return "";
-	return env_value;
-	#endif
+#if !defined(__GNUC__) && defined(WINDOWS)
+    std::size_t requiredSize;
+    getenv_s(&requiredSize, 0, 0, e);
+    std::vector<char> buffer(requiredSize);
+    if(requiredSize > 0)
+    {
+        getenv_s(&requiredSize, &buffer.front(), requiredSize, e);
+        return &buffer.front();
+    }
+    return "";
+#else
+    const char* env_value = getenv(e);
+    if(env_value == NULL)
+        return "";
+    return env_value;
+#endif
 }
 
 OfxhPluginCache::OfxhPluginCache()
-	: _ignoreCache( false )
-	, _cacheVersion( "" )
-	, _dirty( false )
-	, _enablePluginSeek( true )
+    : _ignoreCache(false)
+    , _cacheVersion("")
+    , _dirty(false)
+    , _enablePluginSeek(true)
 {
-	std::string s = OFXGetEnv( "OFX_PLUGIN_PATH" );
+    std::string s = OFXGetEnv("OFX_PLUGIN_PATH");
 
-	// if OFX_PLUGIN_PATH environment variable is not set, use a default path (defines in CMake)
-	if( s.empty() )
-	{
-		s = TUTTLE_OFX_PLUGIN_PATH;
-	}
+    // if OFX_PLUGIN_PATH environment variable is not set, use a default path (defines in CMake)
+    if(s.empty())
+    {
+        s = TUTTLE_OFX_PLUGIN_PATH;
+    }
 
-	while( s.length() )
-	{
-		int spos = int(s.find_first_of( DIRLIST_SEP_CHARS ) );
+    while(s.length())
+    {
+        int spos = int(s.find_first_of(DIRLIST_SEP_CHARS));
 
-		std::string path;
+        std::string path;
 
-		if( spos != -1 )
-		{
-			path = s.substr( 0, spos );
-			s    = s.substr( spos + 1 );
-		}
-		else
-		{
-			path = s;
-			s    = "";
-		}
+        if(spos != -1)
+        {
+            path = s.substr(0, spos);
+            s = s.substr(spos + 1);
+        }
+        else
+        {
+            path = s;
+            s = "";
+        }
 
-		_pluginPath.push_back( path );
-	}
-	
-	#if defined( WINDOWS )
-	_pluginPath.push_back( getStdOFXPluginPath() );
-	_pluginPath.push_back( "C:\\Program Files\\Common Files\\OFX\\Plugins" );
-	#endif
-	#if defined( __linux__ )
-	_pluginPath.push_back( "/usr/OFX/Plugins" );
-	#endif
-	#if defined( __APPLE__ )
-	_pluginPath.push_back( "/Library/OFX/Plugins" );
-	#endif
+        _pluginPath.push_back(path);
+    }
+
+#if defined(WINDOWS)
+    _pluginPath.push_back(getStdOFXPluginPath());
+    _pluginPath.push_back("C:\\Program Files\\Common Files\\OFX\\Plugins");
+#endif
+#if defined(__linux__)
+    _pluginPath.push_back("/usr/OFX/Plugins");
+#endif
+#if defined(__APPLE__)
+    _pluginPath.push_back("/Library/OFX/Plugins");
+#endif
 }
 
 OfxhPluginCache::~OfxhPluginCache()
-{}
-
-void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
 {
-	#if defined( WINDOWS )
-	_pluginPath.push_back( getStdOFXPluginPath( hostId ) );
-	_pluginPath.push_back( "C:\\Program Files\\Common Files\\OFX\\" + hostId );
-	#endif
-	#if defined( __linux__ )
-	_pluginPath.push_back( "/usr/OFX/" + hostId );
-	#endif
-	#if defined( __APPLE__ )
-	_pluginPath.push_back( "/Library/OFX/" + hostId );
-	#endif
 }
 
-void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse )
+void OfxhPluginCache::setPluginHostPath(const std::string& hostId)
 {
-	TUTTLE_LOG_TRACE( "Search plugins" << (recurse?" recursively":"") << " in " << quotes(dir) << "." );
-
-	#if defined ( WINDOWS )
-	WIN32_FIND_DATA findData;
-	HANDLE findHandle;
-	#else
-	DIR* d = opendir( dir.c_str() );
-	if( !d )
-	{
-		return;
-	}
-	#endif
-
-	_pluginDirs.push_back( dir );
-
-	#if defined ( UNIX )
-	while( dirent * de = readdir( d ) )
-	#elif defined ( WINDOWS )
-	findHandle = FindFirstFile( ( dir + "\\*" ).c_str(), &findData );
-
-	if( findHandle == INVALID_HANDLE_VALUE )
-	{
-		return;
-	}
-
-	while( 1 )
-	#endif
-	{
-		#if defined ( UNIX )
-		std::string name = de->d_name;
-		bool isdir = true;
-		#else
-		std::string name = findData.cFileName;
-		bool isdir = ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) != 0;
-		#endif
-		if( name.find( ".ofx.bundle" ) != std::string::npos )
-		{
-			const std::string barename = name.substr( 0, name.length() - strlen( ".bundle" ) );
-			const std::string bundlepath = dir + DIRSEP + name;
-			const std::string binpath = bundlepath + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
-
-			foundBinFiles.insert( binpath );
-
-			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
-			{
-				TUTTLE_LOG_TRACE( "Binary does not exist in the cache: " << quotes(binpath) );
-				try
-				{
-					// Creating the binary may throw, if there are some missing
-					// dependencies (like wrong LD_LIBRARY_PATH).
-					// If it throws, it will not be declared in the plugin cache.
-					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlepath, this );
-					_binaries.push_back( pb );
-					
-					// The binary file has been succesfully loaded,
-					// so we need to add it into the cache.
-					setDirty();  // the cache has to be rewrite
-					_knownBinFiles.insert( binpath );
-					
-					TUTTLE_LOG_TRACE( quotes(barename) << " contains " << pb->getNPlugins() <<  " plugins." );
-					
-					// Now, if there is an error that's because the plugin
-					// is not supported by the host.
-					for( int j = 0; j < pb->getNPlugins(); ++j )
-					{
-						OfxhPlugin& plug = pb->getPlugin( j );
-						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
-						try
-						{
-							api.loadFromPlugin( plug );
-						}	
-						catch(... )
-						{
-							TUTTLE_LOG_INFO( "Can't load plugin "
-								<< quotes(plug.getIdentifier()) << " " << plug.getVersionMajor() << "." << plug.getVersionMinor()
-								<< " from file " << quotes(binpath) );
-							TUTTLE_LOG_TRACE( boost::current_exception_diagnostic_information() );
-						}
-					}
-				}
-				catch(... )
-				{
-					TUTTLE_LOG_INFO( "Can't load plugin file " << quotes(binpath) );
-					TUTTLE_LOG_TRACE( boost::current_exception_diagnostic_information() );
-#ifdef __WINDOWS__
-					TUTTLE_LOG_TRACE( "PATH: " << std::getenv("PATH") << std::endl );
-#else
-					TUTTLE_LOG_TRACE( "LD_LIBRARY_PATH: " << std::getenv("LD_LIBRARY_PATH") << std::endl );
+#if defined(WINDOWS)
+    _pluginPath.push_back(getStdOFXPluginPath(hostId));
+    _pluginPath.push_back("C:\\Program Files\\Common Files\\OFX\\" + hostId);
 #endif
-				}
-			}
-			else
-			{
-				TUTTLE_LOG_TRACE( "Found cached binary " << quotes(binpath) );
-			}
-		}
-		else
-		{
-			if( isdir && ( recurse && name[0] != '@' && name != "." && name != ".." ) )
-			{
-				scanDirectory( foundBinFiles, dir + DIRSEP + name, recurse );
-			}
-		}
-		#if defined( WINDOWS )
-		int rval = FindNextFile( findHandle, &findData );
-
-		if( rval == 0 )
-		{
-			break;
-		}
-		#endif
-	}
-
-	#if defined( UNIX )
-	closedir( d );
-	#else
-	FindClose( findHandle );
-	#endif
+#if defined(__linux__)
+    _pluginPath.push_back("/usr/OFX/" + hostId);
+#endif
+#if defined(__APPLE__)
+    _pluginPath.push_back("/Library/OFX/" + hostId);
+#endif
 }
 
-void OfxhPluginCache::addPlugin( OfxhPlugin* plugin )
+void OfxhPluginCache::scanDirectory(std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse)
 {
-	// Check if the same plugin has already been loaded
-	if( _loadedMap.find( plugin->getIdentity() ) == _loadedMap.end() )
-	{
-		_loadedMap[plugin->getIdentity()] = true;
-	}
-	else
-	{
-		TUTTLE_LOG_INFO( "Plugin: " << plugin->getRawIdentifier() << " loaded twice! (" << plugin->getBinary().getFilePath() << ")" );
-	}
-	_plugins.push_back( plugin );
+    TUTTLE_LOG_TRACE("Search plugins" << (recurse ? " recursively" : "") << " in " << quotes(dir) << ".");
 
-	if( _pluginsByID.find( plugin->getIdentifier() ) != _pluginsByID.end() )
-	{
-		OfxhPlugin& otherPlugin = *_pluginsByID[plugin->getIdentifier()];
-		if( plugin->trumps( otherPlugin ) )
-		{
-			_pluginsByID[plugin->getIdentifier()] = plugin;
-		}
-	}
-	else
-	{
-		_pluginsByID[plugin->getIdentifier()] = plugin;
-	}
+#if defined(WINDOWS)
+    WIN32_FIND_DATA findData;
+    HANDLE findHandle;
+#else
+    DIR* d = opendir(dir.c_str());
+    if(!d)
+    {
+        return;
+    }
+#endif
+
+    _pluginDirs.push_back(dir);
+
+#if defined(UNIX)
+    while(dirent* de = readdir(d))
+#elif defined(WINDOWS)
+    findHandle = FindFirstFile((dir + "\\*").c_str(), &findData);
+
+    if(findHandle == INVALID_HANDLE_VALUE)
+    {
+        return;
+    }
+
+    while(1)
+#endif
+    {
+#if defined(UNIX)
+        std::string name = de->d_name;
+        bool isdir = true;
+#else
+        std::string name = findData.cFileName;
+        bool isdir = (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+#endif
+        if(name.find(".ofx.bundle") != std::string::npos)
+        {
+            const std::string barename = name.substr(0, name.length() - strlen(".bundle"));
+            const std::string bundlepath = dir + DIRSEP + name;
+            const std::string binpath = bundlepath + DIRSEP "Contents" DIRSEP + ARCHSTR + DIRSEP + barename;
+
+            foundBinFiles.insert(binpath);
+
+            if(_knownBinFiles.find(binpath) == _knownBinFiles.end())
+            {
+                TUTTLE_LOG_TRACE("Binary does not exist in the cache: " << quotes(binpath));
+                try
+                {
+                    // Creating the binary may throw, if there are some missing
+                    // dependencies (like wrong LD_LIBRARY_PATH).
+                    // If it throws, it will not be declared in the plugin cache.
+                    OfxhPluginBinary* pb = new OfxhPluginBinary(binpath, bundlepath, this);
+                    _binaries.push_back(pb);
+
+                    // The binary file has been succesfully loaded,
+                    // so we need to add it into the cache.
+                    setDirty(); // the cache has to be rewrite
+                    _knownBinFiles.insert(binpath);
+
+                    TUTTLE_LOG_TRACE(quotes(barename) << " contains " << pb->getNPlugins() << " plugins.");
+
+                    // Now, if there is an error that's because the plugin
+                    // is not supported by the host.
+                    for(int j = 0; j < pb->getNPlugins(); ++j)
+                    {
+                        OfxhPlugin& plug = pb->getPlugin(j);
+                        APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
+                        try
+                        {
+                            api.loadFromPlugin(plug);
+                        }
+                        catch(...)
+                        {
+                            TUTTLE_LOG_INFO("Can't load plugin " << quotes(plug.getIdentifier()) << " "
+                                                                 << plug.getVersionMajor() << "." << plug.getVersionMinor()
+                                                                 << " from file " << quotes(binpath));
+                            TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
+                        }
+                    }
+                }
+                catch(...)
+                {
+                    TUTTLE_LOG_INFO("Can't load plugin file " << quotes(binpath));
+                    TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
+#ifdef __WINDOWS__
+                    TUTTLE_LOG_TRACE("PATH: " << std::getenv("PATH") << std::endl);
+#else
+                    TUTTLE_LOG_TRACE("LD_LIBRARY_PATH: " << std::getenv("LD_LIBRARY_PATH") << std::endl);
+#endif
+                }
+            }
+            else
+            {
+                TUTTLE_LOG_TRACE("Found cached binary " << quotes(binpath));
+            }
+        }
+        else
+        {
+            if(isdir && (recurse && name[0] != '@' && name != "." && name != ".."))
+            {
+                scanDirectory(foundBinFiles, dir + DIRSEP + name, recurse);
+            }
+        }
+#if defined(WINDOWS)
+        int rval = FindNextFile(findHandle, &findData);
+
+        if(rval == 0)
+        {
+            break;
+        }
+#endif
+    }
+
+#if defined(UNIX)
+    closedir(d);
+#else
+    FindClose(findHandle);
+#endif
 }
 
-std::string OfxhPluginCache::seekPluginFile( const std::string& baseName ) const
+void OfxhPluginCache::addPlugin(OfxhPlugin* plugin)
 {
-	// Exit early if disabled
-	if( !_enablePluginSeek )
-		return "";
+    // Check if the same plugin has already been loaded
+    if(_loadedMap.find(plugin->getIdentity()) == _loadedMap.end())
+    {
+        _loadedMap[plugin->getIdentity()] = true;
+    }
+    else
+    {
+        TUTTLE_LOG_INFO("Plugin: " << plugin->getRawIdentifier() << " loaded twice! (" << plugin->getBinary().getFilePath()
+                                   << ")");
+    }
+    _plugins.push_back(plugin);
 
-	for( std::list<std::string>::const_iterator paths = _pluginDirs.begin();
-	     paths != _pluginDirs.end();
-	     ++paths )
-	{
-		std::string candidate = *paths + DIRSEP + baseName;
-		FILE* f               = fopen( candidate.c_str(), "r" );
-		if( f )
-		{
-			fclose( f );
-			return candidate;
-		}
-	}
-	return "";
+    if(_pluginsByID.find(plugin->getIdentifier()) != _pluginsByID.end())
+    {
+        OfxhPlugin& otherPlugin = *_pluginsByID[plugin->getIdentifier()];
+        if(plugin->trumps(otherPlugin))
+        {
+            _pluginsByID[plugin->getIdentifier()] = plugin;
+        }
+    }
+    else
+    {
+        _pluginsByID[plugin->getIdentifier()] = plugin;
+    }
+}
+
+std::string OfxhPluginCache::seekPluginFile(const std::string& baseName) const
+{
+    // Exit early if disabled
+    if(!_enablePluginSeek)
+        return "";
+
+    for(std::list<std::string>::const_iterator paths = _pluginDirs.begin(); paths != _pluginDirs.end(); ++paths)
+    {
+        std::string candidate = *paths + DIRSEP + baseName;
+        FILE* f = fopen(candidate.c_str(), "r");
+        if(f)
+        {
+            fclose(f);
+            return candidate;
+        }
+    }
+    return "";
 }
 
 void OfxhPluginCache::scanPluginFiles()
 {
-	std::set<std::string> foundBinFiles;
+    std::set<std::string> foundBinFiles;
 
-	for( std::list<std::string>::iterator paths = _pluginPath.begin();
-	     paths != _pluginPath.end();
-	     ++paths )
-	{
-		scanDirectory( foundBinFiles, *paths, _nonrecursePath.find( *paths ) == _nonrecursePath.end() );
-	}
+    for(std::list<std::string>::iterator paths = _pluginPath.begin(); paths != _pluginPath.end(); ++paths)
+    {
+        scanDirectory(foundBinFiles, *paths, _nonrecursePath.find(*paths) == _nonrecursePath.end());
+    }
 
-	OfxhPluginBinaryList::iterator i = _binaries.begin();
-	while( i != _binaries.end() )
-	{
-		if( foundBinFiles.find( i->getFilePath() ) == foundBinFiles.end() )
-		{
-			// the binary was in the cache, but was not on the path
-			setDirty();
-			i = _binaries.erase( i );
-		}
-		else
-		{
-			const bool binChanged = i->hasBinaryChanged();
+    OfxhPluginBinaryList::iterator i = _binaries.begin();
+    while(i != _binaries.end())
+    {
+        if(foundBinFiles.find(i->getFilePath()) == foundBinFiles.end())
+        {
+            // the binary was in the cache, but was not on the path
+            setDirty();
+            i = _binaries.erase(i);
+        }
+        else
+        {
+            const bool binChanged = i->hasBinaryChanged();
 
-			try
-			{
-				// the binary was in the cache, but the binary has changed and thus we need to reload
-				if( binChanged )
-				{
-					i->loadPluginInfo( this );
-					setDirty();
-				}
+            try
+            {
+                // the binary was in the cache, but the binary has changed and thus we need to reload
+                if(binChanged)
+                {
+                    i->loadPluginInfo(this);
+                    setDirty();
+                }
 
-				for( int j = 0; j < i->getNPlugins(); ++j )
-				{
-					OfxhPlugin& plug                   = i->getPlugin( j );
-					try
-					{
-						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
+                for(int j = 0; j < i->getNPlugins(); ++j)
+                {
+                    OfxhPlugin& plug = i->getPlugin(j);
+                    try
+                    {
+                        APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
 
-						if( binChanged )
-						{
-							api.loadFromPlugin( plug ); // may throw
-						}
+                        if(binChanged)
+                        {
+                            api.loadFromPlugin(plug); // may throw
+                        }
 
-						std::string reason;
+                        std::string reason;
 
-						if( api.pluginSupported( plug, reason ) )
-						{
-							addPlugin( &plug );
-							api.confirmPlugin( plug );
-						}
-						else
-						{
-							TUTTLE_LOG_INFO(
-								"Ignoring plugin " << quotes(plug.getIdentifier()) <<
-								": unsupported, " << reason << "." );
-						}
-					}
-					catch(...)
-					{
-						TUTTLE_LOG_INFO(
-							"Ignoring plugin " << quotes(plug.getIdentifier()) <<
-							": loading error." );
-						TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
-					}
-				}
-			}
-			catch(...)
-			{
-				TUTTLE_LOG_INFO(
-					"Ignoring ofx bundle " << quotes(i->getBundlePath()) <<
-					": loading error." );
-				TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
-			}
+                        if(api.pluginSupported(plug, reason))
+                        {
+                            addPlugin(&plug);
+                            api.confirmPlugin(plug);
+                        }
+                        else
+                        {
+                            TUTTLE_LOG_INFO("Ignoring plugin " << quotes(plug.getIdentifier()) << ": unsupported, " << reason
+                                                               << ".");
+                        }
+                    }
+                    catch(...)
+                    {
+                        TUTTLE_LOG_INFO("Ignoring plugin " << quotes(plug.getIdentifier()) << ": loading error.");
+                        TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
+                    }
+                }
+            }
+            catch(...)
+            {
+                TUTTLE_LOG_INFO("Ignoring ofx bundle " << quotes(i->getBundlePath()) << ": loading error.");
+                TUTTLE_LOG_TRACE(boost::current_exception_diagnostic_information());
+            }
 
-			++i;
-		}
-	}
+            ++i;
+        }
+    }
 }
 
 void OfxhPluginCache::clearPluginFiles()
 {
-	setDirty();
-	
-	_binaries.clear();
-	_plugins.clear();
-	_pluginsByID.clear();
-	_loadedMap.clear();
-	_knownBinFiles.clear();
+    setDirty();
+
+    _binaries.clear();
+    _plugins.clear();
+    _pluginsByID.clear();
+    _loadedMap.clear();
+    _knownBinFiles.clear();
 }
 
-void OfxhPluginCache::registerAPICache( APICache::OfxhPluginAPICacheI& apiCache )
+void OfxhPluginCache::registerAPICache(APICache::OfxhPluginAPICacheI& apiCache)
 {
-	_apiHandlers.push_back( PluginCacheSupportedApi( &apiCache ) );
+    _apiHandlers.push_back(PluginCacheSupportedApi(&apiCache));
 }
 
-APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler( const std::string& api, int version )
+APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler(const std::string& api, int version)
 {
-	std::list<PluginCacheSupportedApi>::iterator i = _apiHandlers.begin();
-	while( i != _apiHandlers.end() )
-	{
-		if( i->matches( api, version ) )
-		{
-			return i->_handler;
-		}
-		++i;
-	}
-	return 0;
+    std::list<PluginCacheSupportedApi>::iterator i = _apiHandlers.begin();
+    while(i != _apiHandlers.end())
+    {
+        if(i->matches(api, version))
+        {
+            return i->_handler;
+        }
+        ++i;
+    }
+    return 0;
 }
 
 /**
  * get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
  * pick the highest found version.
  */
-OfxhPlugin* OfxhPluginCache::getPluginById( const std::string& id, int vermaj, int vermin )
+OfxhPlugin* OfxhPluginCache::getPluginById(const std::string& id, int vermaj, int vermin)
 {
-	if( vermaj == -1 &&  vermin == -1 )
-		return _pluginsByID[id];
+    if(vermaj == -1 && vermin == -1)
+        return _pluginsByID[id];
 
-	// return the highest version one, which fits the pattern provided
-	OfxhPlugin* sofar = 0;
+    // return the highest version one, which fits the pattern provided
+    OfxhPlugin* sofar = 0;
 
-	for( std::list<OfxhPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
-	{
-		OfxhPlugin* p = *i;
+    for(std::list<OfxhPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i)
+    {
+        OfxhPlugin* p = *i;
 
-		if( p->getIdentifier() != id )
-		{
-			continue;
-		}
+        if(p->getIdentifier() != id)
+        {
+            continue;
+        }
 
-		if( vermaj != -1 && p->getVersionMajor() != vermaj )
-		{
-			continue;
-		}
+        if(vermaj != -1 && p->getVersionMajor() != vermaj)
+        {
+            continue;
+        }
 
-		if( vermin != -1 && p->getVersionMinor() != vermin )
-		{
-			continue;
-		}
+        if(vermin != -1 && p->getVersionMinor() != vermin)
+        {
+            continue;
+        }
 
-		if( !sofar || p->trumps( *sofar ) )
-		{
-			sofar = p;
-		}
-	}
-	return sofar;
+        if(!sofar || p->trumps(*sofar))
+        {
+            sofar = p;
+        }
+    }
+    return sofar;
 }
 
-std::ostream& operator<<( std::ostream& os, const OfxhPluginCache& v )
+std::ostream& operator<<(std::ostream& os, const OfxhPluginCache& v)
 {
-	os << "OfxhPluginCache {" << std::endl;
+    os << "OfxhPluginCache {" << std::endl;
 
-	if( v._pluginsByID.empty() )
-		os << "No Plug-ins Found." << std::endl;
+    if(v._pluginsByID.empty())
+        os << "No Plug-ins Found." << std::endl;
 
-	os << "________________________________________________________________________________" << std::endl;
-	for( std::map<std::string, OfxhPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
-	{
-		os << "Plug-in:" << it->first << std::endl;
-		os << "  " << "Filepath: " << it->second->getBinary().getFilePath();
-		os << "(" << it->second->getIndex() << ")" << std::endl;
+    os << "________________________________________________________________________________" << std::endl;
+    for(std::map<std::string, OfxhPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it)
+    {
+        os << "Plug-in:" << it->first << std::endl;
+        os << "  "
+           << "Filepath: " << it->second->getBinary().getFilePath();
+        os << "(" << it->second->getIndex() << ")" << std::endl;
 
-		//		os << "Contexts:" << std::endl;
-		//		const std::set<std::string>& contexts = it->second->getContexts();
-		//		for( std::set<std::string>::const_iterator it2 = contexts.begin(); it2 != contexts.end(); ++it2 )
-		//			os << "  * " << *it2 << std::endl;
-		//		const OfxhImageEffectNodeDescriptor& d = it->second->getDescriptor();
-		//		os << "Inputs:" << std::endl;
-		//		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
-		//		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
-		//			os << "    * " << it2->first << std::endl;
-		os << "________________________________________________________________________________" << std::endl;
-	}
-	os << "}" << std::endl;
-	return os;
+        //		os << "Contexts:" << std::endl;
+        //		const std::set<std::string>& contexts = it->second->getContexts();
+        //		for( std::set<std::string>::const_iterator it2 = contexts.begin(); it2 != contexts.end(); ++it2 )
+        //			os << "  * " << *it2 << std::endl;
+        //		const OfxhImageEffectNodeDescriptor& d = it->second->getDescriptor();
+        //		os << "Inputs:" << std::endl;
+        //		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
+        //		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin();
+        //it2 != inputs.end(); ++it2 )
+        //			os << "    * " << it2->first << std::endl;
+        os << "________________________________________________________________________________" << std::endl;
+    }
+    os << "}" << std::endl;
+    return os;
 }
-
 }
 }
 }
-
-

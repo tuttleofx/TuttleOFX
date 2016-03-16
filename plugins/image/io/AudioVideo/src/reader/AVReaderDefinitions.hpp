@@ -6,22 +6,26 @@
 
 #include <common/LibAVParams.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace av {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace av
+{
+namespace reader
+{
 
-static const std::string kParamFormatGroup               = common::kPrefixFormat + "group";
-static const std::string kParamFormatDetailedGroup       = common::kPrefixFormat + "detailedGroup";
-static const std::string kParamVideoGroup                = common::kPrefixVideo + "group";
-static const std::string kParamVideoDetailedGroup        = common::kPrefixVideo + "detailedGroup";
-static const std::string kParamMetaGroup                 = common::kPrefixMetaData + "group";
-static const std::string kParamMetaDetailedGroup         = common::kPrefixMetaData + "detailedGroup";
+static const std::string kParamFormatGroup = common::kPrefixFormat + "group";
+static const std::string kParamFormatDetailedGroup = common::kPrefixFormat + "detailedGroup";
+static const std::string kParamVideoGroup = common::kPrefixVideo + "group";
+static const std::string kParamVideoDetailedGroup = common::kPrefixVideo + "detailedGroup";
+static const std::string kParamMetaGroup = common::kPrefixMetaData + "group";
+static const std::string kParamMetaDetailedGroup = common::kPrefixMetaData + "detailedGroup";
 
 static const std::string kParamUseCustomSAR = common::kPrefixVideo + "useCustomSAR";
 static const std::string kParamCustomSAR = common::kPrefixVideo + "customSAR";
 
-static const std::string kParamVideoStreamIndex      = common::kPrefixVideo + "streamIndex";
+static const std::string kParamVideoStreamIndex = common::kPrefixVideo + "streamIndex";
 static const std::string kParamVideoStreamIndexLabel = "Video stream index";
 
 static const std::string kParamMetaDataWrapper = common::kPrefixMetaData + "wrapper";
@@ -40,7 +44,6 @@ static const std::string kParamMetaDataUnknown = common::kPrefixMetaData + "unkn
 static const std::string kParamMetaDataUnknownLabel = "Unknown";
 
 static const std::string kParamVerbose = "verbose";
-
 }
 }
 }

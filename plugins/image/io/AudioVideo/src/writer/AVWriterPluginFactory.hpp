@@ -3,15 +3,18 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace av {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace av
+{
+namespace writer
+{
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( AVWriterPluginFactory, {}, {} );
-
+mDeclarePluginFactory(AVWriterPluginFactory, {}, {});
 }
 }
 }

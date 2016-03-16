@@ -9,96 +9,103 @@
 #include <tuttle/host/ofx/property/OfxhGetHook.hpp>
 #include <tuttle/host/ofx/property/OfxhNotifyHook.hpp>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace attribute
+{
 
 class OfxhClipDescriptor;
 
 /**
  * a clip instance
  */
-class OfxhClip
-	: public OfxhAttribute
-	, protected property::OfxhGetHook
-	, protected property::OfxhNotifyHook
-	, virtual public OfxhClipAccessor
-	, private boost::noncopyable
+class OfxhClip : public OfxhAttribute,
+                 protected property::OfxhGetHook,
+                 protected property::OfxhNotifyHook,
+                 virtual public OfxhClipAccessor,
+                 private boost::noncopyable
 {
 public:
-	typedef OfxhClip This;
+    typedef OfxhClip This;
 
 protected:
-	OfxhClip( const OfxhClip& other ) : OfxhAttribute( other ) {}
+    OfxhClip(const OfxhClip& other)
+        : OfxhAttribute(other)
+    {
+    }
 
 public:
-	OfxhClip( const OfxhClipDescriptor& desc );
-	virtual ~OfxhClip() = 0;
+    OfxhClip(const OfxhClipDescriptor& desc);
+    virtual ~OfxhClip() = 0;
 
-	/// clone this clip
-	virtual OfxhClip* clone() const = 0;
+    /// clone this clip
+    virtual OfxhClip* clone() const = 0;
 
-	virtual bool operator==( const This& other ) const
-	{
-		if( OfxhAttribute::operator!=( other ) )
-			return false;
-		return true;
-	}
+    virtual bool operator==(const This& other) const
+    {
+        if(OfxhAttribute::operator!=(other))
+            return false;
+        return true;
+    }
 
-	bool operator!=( const This& other ) const { return !This::operator==( other ); }
+    bool operator!=(const This& other) const { return !This::operator==(other); }
 
-	virtual std::string getFullName() const = 0;
-	
+    virtual std::string getFullName() const = 0;
+
 #ifndef SWIG
-	void initHook( const property::OfxhPropSpec* propSpec );
+    void initHook(const property::OfxhPropSpec* propSpec);
 
-	/// notify override properties
-	void notify( const std::string& name, bool isSingle, int indexOrN ) OFX_EXCEPTION_SPEC
-	{
-		TUTTLE_LOG_INFOS;
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
-	}
+    /// notify override properties
+    void notify(const std::string& name, bool isSingle, int indexOrN) OFX_EXCEPTION_SPEC
+    {
+        TUTTLE_LOG_INFOS;
+        BOOST_THROW_EXCEPTION(OfxhException(kOfxStatErrMissingHostFeature));
+    }
 
-	// don't know what to do
-	void reset( const std::string& name ) OFX_EXCEPTION_SPEC
-	{
-		TUTTLE_LOG_INFOS;
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
-	}
+    // don't know what to do
+    void reset(const std::string& name) OFX_EXCEPTION_SPEC
+    {
+        TUTTLE_LOG_INFOS;
+        BOOST_THROW_EXCEPTION(OfxhException(kOfxStatErrMissingHostFeature));
+    }
 #endif
 
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive& ar, const unsigned int version )
-	{
-		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhAttribute );
-	}
-
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttribute);
+    }
 };
 
 #ifndef SWIG
 /**
  * @brief to make clonable for use in boost::ptr_container.
  */
-inline OfxhClip* new_clone( const OfxhClip& a )
+inline OfxhClip* new_clone(const OfxhClip& a)
 {
-	return a.clone();
+    return a.clone();
 }
 
 #endif
-
 }
 }
 }
 }
 
 // force boost::is_virtual_base_of value (used by boost::serialization)
-namespace boost {
-template<>
-struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
+namespace boost
+{
+template <>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>
+    : public mpl::true_
+{
+};
 }
 
 #endif
-

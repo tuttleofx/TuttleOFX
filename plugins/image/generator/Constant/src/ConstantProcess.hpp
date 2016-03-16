@@ -14,40 +14,42 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace constant {
+namespace tuttle
+{
+namespace plugin
+{
+namespace constant
+{
 
-template<class View>
+template <class View>
 struct ConstantParams
 {
-	typedef typename View::value_type Pixel;
-	Pixel _color;
+    typedef typename View::value_type Pixel;
+    Pixel _color;
 };
 
-template<class View>
+template <class View>
 class ConstantProcess : public ImageGilProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef typename View::point_t Point;
-	typedef typename terry::generator::ConstantColorViewFactory<Pixel>::ConstantVirtualView ConstantVirtualView;
+    typedef typename View::value_type Pixel;
+    typedef typename View::point_t Point;
+    typedef typename terry::generator::ConstantColorViewFactory<Pixel>::ConstantVirtualView ConstantVirtualView;
 
 protected:
-	ConstantPlugin&     _plugin;        ///< Rendering plugin
-	
-	ConstantParams<View> _params;
-	
+    ConstantPlugin& _plugin; ///< Rendering plugin
+
+    ConstantParams<View> _params;
+
 public:
-	ConstantProcess( ConstantPlugin& instance );
+    ConstantProcess(ConstantPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	ConstantParams<View> getParams();
+    ConstantParams<View> getParams();
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

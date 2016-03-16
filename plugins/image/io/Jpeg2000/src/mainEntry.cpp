@@ -6,14 +6,15 @@
 #include "reader/Jpeg2000ReaderPluginFactory.hpp"
 #include "writer/Jpeg2000WriterPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::jpeg2000::reader::Jpeg2000ReaderPluginFactory, "tuttle.jpeg2000reader" );
-	mAppendPluginFactory( ids, tuttle::plugin::jpeg2000::writer::Jpeg2000WriterPluginFactory, "tuttle.jpeg2000writer" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::jpeg2000::reader::Jpeg2000ReaderPluginFactory, "tuttle.jpeg2000reader");
+    mAppendPluginFactory(ids, tuttle::plugin::jpeg2000::writer::Jpeg2000WriterPluginFactory, "tuttle.jpeg2000writer");
+}
 }
 }

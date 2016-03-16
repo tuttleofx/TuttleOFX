@@ -3,14 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace colorSuppress {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorSuppress
+{
 
-	mDeclarePluginFactory( ColorSuppressPluginFactory, { }, { } );
+mDeclarePluginFactory(ColorSuppressPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-

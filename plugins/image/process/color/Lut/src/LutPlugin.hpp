@@ -6,9 +6,12 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace lut {
+namespace tuttle
+{
+namespace plugin
+{
+namespace lut
+{
 
 /**
  * @brief
@@ -17,19 +20,18 @@ namespace lut {
 class LutPlugin : public ImageEffectGilPlugin
 {
 public:
-	LutPlugin( OfxImageEffectHandle handle );
+    LutPlugin(OfxImageEffectHandle handle);
 
 public:
-	void render( const OFX::RenderArguments& args );
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+    void render(const OFX::RenderArguments& args);
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
 
 public:
-	OFX::StringParam* _sFilename;    ///< Filename
+    OFX::StringParam* _sFilename; ///< Filename
 
-	LutReader _lutReader;               ///< Reader
-	Lut3D _lut3D;
+    LutReader _lutReader; ///< Reader
+    Lut3D _lut3D;
 };
-
 }
 }
 }

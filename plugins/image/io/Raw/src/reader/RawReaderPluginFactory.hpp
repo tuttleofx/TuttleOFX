@@ -2,16 +2,18 @@
 #define _TUTTLE_PLUGIN_RAWREADERPLUGINFACTORY_HPP_
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace raw {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace raw
+{
+namespace reader
+{
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( RawReaderPluginFactory, {}, {}
-                       );
-
+mDeclarePluginFactory(RawReaderPluginFactory, {}, {});
 }
 }
 }

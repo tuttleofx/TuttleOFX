@@ -3,10 +3,12 @@
 
 #include <tuttle/plugin/global.hpp>
 
-
-namespace tuttle {
-namespace plugin {
-namespace channelShuffle {
+namespace tuttle
+{
+namespace plugin
+{
+namespace channelShuffle
+{
 
 static const std::string kParamRed = "red";
 static const std::string kParamGreen = "green";
@@ -15,12 +17,11 @@ static const std::string kParamAlpha = "alpha";
 
 enum EChannel
 {
-	eChannelRed = 0,
-	eChannelGreen,
-	eChannelBlue,
-	eChannelAlpha
+    eChannelRed = 0,
+    eChannelGreen,
+    eChannelBlue,
+    eChannelAlpha
 };
-
 }
 }
 }

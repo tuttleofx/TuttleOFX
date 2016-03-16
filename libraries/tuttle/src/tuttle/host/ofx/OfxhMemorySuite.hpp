@@ -3,15 +3,16 @@
 
 #include <ofxMemory.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
-void* getMemorySuite( const int version );
-
+void* getMemorySuite(const int version);
 }
 }
 }
 
 #endif
-

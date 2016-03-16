@@ -3,15 +3,16 @@
 
 #include <ofxMultiThread.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
-void* getMultithreadSuite( const int version );
-
+void* getMultithreadSuite(const int version);
 }
 }
 }
 
 #endif
-

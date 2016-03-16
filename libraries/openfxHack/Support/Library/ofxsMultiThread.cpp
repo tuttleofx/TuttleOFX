@@ -38,131 +38,134 @@
 #include "ofxsUtilities.h"
 #include <iostream>
 
-namespace OFX {
+namespace OFX
+{
 
-namespace MultiThread {
+namespace MultiThread
+{
 
 ////////////////////////////////////////////////////////////////////////////////
 // SMP class
 
 /** @brief ctor */
-Processor::Processor( void )
-{}
+Processor::Processor(void)
+{
+}
 
 /** @brief dtor */
 Processor::~Processor()
-{}
-
-/** @brief Function to pass to the multi thread suite */
-void Processor::staticMultiThreadFunction( unsigned int threadIndex, unsigned int threadMax, void* customArg )
 {
-	// cast the custom arg to one of me
-	Processor* me = (Processor*)  customArg;
-
-	// and call my thread function
-	me->multiThreadFunction( threadIndex, threadMax );
 }
 
 /** @brief Function to pass to the multi thread suite */
-void Processor::multiThread( const unsigned int nCPUs )
+void Processor::staticMultiThreadFunction(unsigned int threadIndex, unsigned int threadMax, void* customArg)
 {
-	unsigned int realNbCPUs = nCPUs;
-	// if 0, use all the CPUs we can
-	if( realNbCPUs == 0 )
-		realNbCPUs = OFX::MultiThread::getNumCPUs();
+    // cast the custom arg to one of me
+    Processor* me = (Processor*)customArg;
 
-	if( realNbCPUs == 0 )
-	{
-		OFXS_COUT_ERROR( "Run process on 0 cpus... it seems to be a problem." );
-	}
-	else if( realNbCPUs == 1 ) // if 1 cpu, don't bother with the threading
-	{
-		multiThreadFunction( 0, 1 );
-	}
-	else
-	{
-		// OK do it
-		OfxStatus stat = OFX::Private::gThreadSuite->multiThread( staticMultiThreadFunction, realNbCPUs, (void*)this );
+    // and call my thread function
+    me->multiThreadFunction(threadIndex, threadMax);
+}
 
-		// did we do it?
-		throwSuiteStatusException( stat );
-	}
+/** @brief Function to pass to the multi thread suite */
+void Processor::multiThread(const unsigned int nCPUs)
+{
+    unsigned int realNbCPUs = nCPUs;
+    // if 0, use all the CPUs we can
+    if(realNbCPUs == 0)
+        realNbCPUs = OFX::MultiThread::getNumCPUs();
+
+    if(realNbCPUs == 0)
+    {
+        OFXS_COUT_ERROR("Run process on 0 cpus... it seems to be a problem.");
+    }
+    else if(realNbCPUs == 1) // if 1 cpu, don't bother with the threading
+    {
+        multiThreadFunction(0, 1);
+    }
+    else
+    {
+        // OK do it
+        OfxStatus stat = OFX::Private::gThreadSuite->multiThread(staticMultiThreadFunction, realNbCPUs, (void*)this);
+
+        // did we do it?
+        throwSuiteStatusException(stat);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // futility functions
 
 /** @brief Has the current thread been spawned from an MP */
-bool isSpawnedThread( void )
+bool isSpawnedThread(void)
 {
-	int v = OFX::Private::gThreadSuite->multiThreadIsSpawnedThread();
+    int v = OFX::Private::gThreadSuite->multiThreadIsSpawnedThread();
 
-	return v != 0;
+    return v != 0;
 }
 
 /** @brief The number of CPUs that can be used for MP-ing */
-unsigned int getNumCPUs( void )
+unsigned int getNumCPUs(void)
 {
-	unsigned int n = 1;
-	OfxStatus stat = OFX::Private::gThreadSuite->multiThreadNumCPUs( &n );
+    unsigned int n = 1;
+    OfxStatus stat = OFX::Private::gThreadSuite->multiThreadNumCPUs(&n);
 
-	if( stat != kOfxStatOK )
-		n = 1;
-	return n;
+    if(stat != kOfxStatOK)
+        n = 1;
+    return n;
 }
 
 /** @brief The index of the current thread. From 0 to numCPUs() - 1 */
-unsigned int getThreadIndex( void )
+unsigned int getThreadIndex(void)
 {
-	unsigned int n = 0;
-	OfxStatus stat = OFX::Private::gThreadSuite->multiThreadIndex( &n );
+    unsigned int n = 0;
+    OfxStatus stat = OFX::Private::gThreadSuite->multiThreadIndex(&n);
 
-	if( stat != kOfxStatOK )
-		n = 0;
-	return n;
+    if(stat != kOfxStatOK)
+        n = 0;
+    return n;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // MUTEX class
 
 /** @brief ctor */
-Mutex::Mutex( int lockCount )
-	: _handle( 0 )
+Mutex::Mutex(int lockCount)
+    : _handle(0)
 {
-	OfxStatus stat = OFX::Private::gThreadSuite->mutexCreate( &_handle, lockCount );
+    OfxStatus stat = OFX::Private::gThreadSuite->mutexCreate(&_handle, lockCount);
 
-	throwSuiteStatusException( stat );
+    throwSuiteStatusException(stat);
 }
 
 /** @brief dtor */
-Mutex::~Mutex( void )
+Mutex::~Mutex(void)
 {
-	/*OfxStatus stat = */OFX::Private::gThreadSuite->mutexDestroy( _handle );
+    /*OfxStatus stat = */ OFX::Private::gThreadSuite->mutexDestroy(_handle);
 }
 
 /** @brief lock it, blocks until lock is gained */
 void Mutex::lock()
 {
-	OfxStatus stat = OFX::Private::gThreadSuite->mutexLock( _handle );
+    OfxStatus stat = OFX::Private::gThreadSuite->mutexLock(_handle);
 
-	throwSuiteStatusException( stat );
+    throwSuiteStatusException(stat);
 }
 
 /** @brief unlock it */
 void Mutex::unlock()
 {
-	OfxStatus stat = OFX::Private::gThreadSuite->mutexUnLock( _handle );
+    OfxStatus stat = OFX::Private::gThreadSuite->mutexUnLock(_handle);
 
-	throwSuiteStatusException( stat );
+    throwSuiteStatusException(stat);
 }
 
 /** @brief attempt to lock, non-blocking */
 bool Mutex::tryLock()
 {
-	OfxStatus stat = OFX::Private::gThreadSuite->mutexTryLock( _handle );
+    OfxStatus stat = OFX::Private::gThreadSuite->mutexTryLock(_handle);
 
-	return stat == kOfxStatOK;
+    return stat == kOfxStatOK;
 }
-
 };
 };

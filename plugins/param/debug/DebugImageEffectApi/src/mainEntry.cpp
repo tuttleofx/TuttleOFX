@@ -4,13 +4,15 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "DebugImageEffectApiPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::debugImageEffectApi::DebugImageEffectApiPluginFactory, "tuttle.debugimageeffectapi" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::debugImageEffectApi::DebugImageEffectApiPluginFactory,
+                         "tuttle.debugimageeffectapi");
+}
 }
 }

@@ -1,20 +1,45 @@
 #ifndef _TUTTLE_COMMON_EXCEPTION_HPP_
 #define _TUTTLE_COMMON_EXCEPTION_HPP_
 
-namespace boost {
-  struct errinfo_file_name_ {};
+namespace boost
+{
+struct errinfo_file_name_
+{
+};
 }
-namespace tuttle { namespace exception {
-    struct tag_userMessage {};
-    struct tag_devMessage {};
-    struct tag_backtraceMessage {};
-    struct tag_ofxContext {};
-    struct tag_ofxApi {};
-    struct tag_pluginIdentifier {};
-    struct tag_pluginName {};
-    struct tag_nodeName {};
-    struct tag_time {};
-}}
+namespace tuttle
+{
+namespace exception
+{
+struct tag_userMessage
+{
+};
+struct tag_devMessage
+{
+};
+struct tag_backtraceMessage
+{
+};
+struct tag_ofxContext
+{
+};
+struct tag_ofxApi
+{
+};
+struct tag_pluginIdentifier
+{
+};
+struct tag_pluginName
+{
+};
+struct tag_nodeName
+{
+};
+struct tag_time
+{
+};
+}
+}
 
 #include "utils/boost_error_info_sstream.hpp"
 #include "utils/backtrace.hpp"
@@ -38,40 +63,43 @@ namespace tuttle { namespace exception {
 #include <string>
 #include <stdexcept>
 
-#define TUTTLE_LOG_EXCEPTION( e )  \
-    TUTTLE_LOG_ERROR( "Exception:" ); \
-    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FILE ); \
-    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FUNCTION ); \
-    TUTTLE_LOG_ERROR( "\t" << ::boost::diagnostic_information( e ) )
+#define TUTTLE_LOG_EXCEPTION(e)                                                                                             \
+    TUTTLE_LOG_ERROR("Exception:");                                                                                         \
+    TUTTLE_LOG_ERROR(TUTTLE_GET_INFOS_FILE);                                                                                \
+    TUTTLE_LOG_ERROR(TUTTLE_GET_INFOS_FUNCTION);                                                                            \
+    TUTTLE_LOG_ERROR("\t" << ::boost::diagnostic_information(e))
 
-#define TUTTLE_LOG_CURRENT_EXCEPTION  \
-    TUTTLE_LOG_ERROR( "Exception:" ); \
-    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FILE ); \
-    TUTTLE_LOG_ERROR( TUTTLE_GET_INFOS_FUNCTION ); \
-    TUTTLE_LOG_ERROR( "\t" << ::boost::current_exception_diagnostic_information() )
+#define TUTTLE_LOG_CURRENT_EXCEPTION                                                                                        \
+    TUTTLE_LOG_ERROR("Exception:");                                                                                         \
+    TUTTLE_LOG_ERROR(TUTTLE_GET_INFOS_FILE);                                                                                \
+    TUTTLE_LOG_ERROR(TUTTLE_GET_INFOS_FUNCTION);                                                                            \
+    TUTTLE_LOG_ERROR("\t" << ::boost::current_exception_diagnostic_information())
 
 #ifndef SWIG
-namespace OFX {
-typedef ::boost::error_info<struct tag_ofxStatus, ::OfxStatus> ofxStatus;
-inline std::string to_string( const ofxStatus& e )
+namespace OFX
 {
-	return ::tuttle::ofx::mapStatusToString( e.value() );
+typedef ::boost::error_info<struct tag_ofxStatus, ::OfxStatus> ofxStatus;
+inline std::string to_string(const ofxStatus& e)
+{
+    return ::tuttle::ofx::mapStatusToString(e.value());
 }
 }
 #endif
 
-namespace tuttle {
+namespace tuttle
+{
 
 /**
  * @brief To add quotes around a string.
  * @example quotes("toto") -> "\"toto\""
  */
-inline std::string quotes( const std::string& s )
+inline std::string quotes(const std::string& s)
 {
-	return "\"" + s + "\"";
+    return "\"" + s + "\"";
 }
 
-namespace exception {
+namespace exception
+{
 
 #ifndef SWIG
 /**
@@ -97,14 +125,14 @@ typedef ::boost::error_info<struct tag_userMessage, ::boost::error_info_sstream>
  * Not always a real human readable message :)
  * @remark Dev information.
  */
-//typedef ::boost::error_info<struct tag_message,std::string> dev;
+// typedef ::boost::error_info<struct tag_message,std::string> dev;
 typedef ::boost::error_info<struct tag_devMessage, ::boost::error_info_sstream> dev;
-//typedef ::boost::error_info_sstream<struct tag_message> dev;
+// typedef ::boost::error_info_sstream<struct tag_message> dev;
 
 /**
  * @brief When we convert a C++ exception into a Python exception,
  *        we put the C++ backtrace into the message.
- * 
+ *
  * @remark Dev information.
  */
 typedef ::boost::error_info<struct tag_backtraceMessage, ::boost::error_info_sstream> backtrace;
@@ -155,34 +183,27 @@ typedef ::boost::errinfo_file_name filename;
 #endif
 
 /** @brief Common exception for all tuttle plugin exceptions */
-struct Common : virtual public ::std::exception
-	, virtual public ::boost::exception
-	, virtual public ::boost::backtrace
-{};
+struct Common : virtual public ::std::exception, virtual public ::boost::exception, virtual public ::boost::backtrace
+{
+};
 
 /// @brief Ofx standard errors
 /// @{
 
 /**
  * @brief You have to specify the exception::ofxStatus(kOfxStatXXX) yourself.
- * When you call a base level function (C API) which returns an ofxStatus, you can use this exception and fill it with the returned value using ofxStatus tag.
+ * When you call a base level function (C API) which returns an ofxStatus, you can use this exception and fill it with the
+ * returned value using ofxStatus tag.
  */
 struct OfxCustom : virtual public Common
 {
-	OfxCustom( const OfxStatus status )
-	{
-		*this << ofxStatus( status );
-	}
+    OfxCustom(const OfxStatus status) { *this << ofxStatus(status); }
 };
 
 /** @brief Status error code for a failed operation */
 struct Failed : virtual public Common
 {
-	Failed()
-	{
-		* this << ofxStatus( kOfxStatFailed );
-	}
-
+    Failed() { *this << ofxStatus(kOfxStatFailed); }
 };
 
 /**
@@ -192,109 +213,71 @@ struct Failed : virtual public Common
  */
 struct Fatal : virtual public Common
 {
-	Fatal()
-	{
-		* this << ofxStatus( kOfxStatErrFatal );
-	}
-
+    Fatal() { *this << ofxStatus(kOfxStatErrFatal); }
 };
 
 /** @brief Status error code for an operation on or request for an unknown object */
 struct Unknown : virtual public Common
 {
-	Unknown()
-	{
-		* this << ofxStatus( kOfxStatErrUnknown );
-	}
-
+    Unknown() { *this << ofxStatus(kOfxStatErrUnknown); }
 };
 
 /**
- * @brief Status error code returned by plug-ins when they are missing host functionality, either an API or some optional functionality (eg: custom params).
+ * @brief Status error code returned by plug-ins when they are missing host functionality, either an API or some optional
+ * functionality (eg: custom params).
  *
  * Plug-Ins returning this should post an appropriate error message stating what they are missing.
  */
 struct MissingHostFeature : virtual Common
 {
-	MissingHostFeature()
-	{
-		* this << ofxStatus( kOfxStatErrMissingHostFeature );
-	}
-	MissingHostFeature( const std::string& feature )
-	{
-		* this << ofxStatus( kOfxStatErrMissingHostFeature );
-		* this << user() + "Missing feature: " + quotes(feature);
-	}
+    MissingHostFeature() { *this << ofxStatus(kOfxStatErrMissingHostFeature); }
+    MissingHostFeature(const std::string& feature)
+    {
+        *this << ofxStatus(kOfxStatErrMissingHostFeature);
+        *this << user() + "Missing feature: " + quotes(feature);
+    }
 };
 
 /** @brief Status error code for an unsupported feature/operation */
 struct Unsupported : virtual public Common
 {
-	Unsupported()
-	{
-		* this << ofxStatus( kOfxStatErrUnsupported );
-	}
-
+    Unsupported() { *this << ofxStatus(kOfxStatErrUnsupported); }
 };
 
 /** @brief Status error code for an operation attempting to create something that exists */
 struct Exists : virtual public Common
 {
-	Exists()
-	{
-		* this << ofxStatus( kOfxStatErrExists );
-	}
-
+    Exists() { *this << ofxStatus(kOfxStatErrExists); }
 };
 
 /** @brief Status error code for an incorrect format */
 struct Format : virtual public Common
 {
-	Format()
-	{
-		* this << ofxStatus( kOfxStatErrFormat );
-	}
-
+    Format() { *this << ofxStatus(kOfxStatErrFormat); }
 };
 
 /** @brief Status error code indicating that something failed due to memory shortage */
 struct Memory : virtual public Common
 {
-	Memory()
-	{
-		* this << ofxStatus( kOfxStatErrMemory );
-	}
-
+    Memory() { *this << ofxStatus(kOfxStatErrMemory); }
 };
 
 /** @brief Status error code for an operation on a bad handle */
 struct BadHandle : virtual public Common
 {
-	BadHandle()
-	{
-		* this << ofxStatus( kOfxStatErrBadHandle );
-	}
-
+    BadHandle() { *this << ofxStatus(kOfxStatErrBadHandle); }
 };
 
 /** @brief Status error code indicating that a given index was invalid or unavailable */
 struct BadIndex : virtual public Common
 {
-	BadIndex()
-	{
-		* this << ofxStatus( kOfxStatErrBadIndex );
-	}
-
+    BadIndex() { *this << ofxStatus(kOfxStatErrBadIndex); }
 };
 
 /** @brief Status error code indicating that something failed due an illegal value */
 struct Value : virtual public Common
 {
-	Value()
-	{
-		* this << ofxStatus( kOfxStatErrValue );
-	}
-
+    Value() { *this << ofxStatus(kOfxStatErrValue); }
 };
 
 /// @brief imageEffect specific errors
@@ -303,11 +286,7 @@ struct Value : virtual public Common
 /** @brief Error code for incorrect image formats */
 struct ImageFormat : virtual public Common
 {
-	ImageFormat()
-	{
-		* this << ofxStatus( kOfxStatErrImageFormat );
-	}
-
+    ImageFormat() { *this << ofxStatus(kOfxStatErrImageFormat); }
 };
 /// @}
 /// @}
@@ -316,10 +295,13 @@ struct ImageFormat : virtual public Common
 /// @{
 
 /**
- * @brief The class serves as the base class for all exceptions thrown to report errors presumably detectable before the program executes, such as violations of logical preconditions (cf. std::logic_error).
+ * @brief The class serves as the base class for all exceptions thrown to report errors presumably detectable before the
+ * program executes, such as violations of logical preconditions (cf. std::logic_error).
  * @remark With this exception, you normally have a "user" tag message.
  */
-struct Logic : virtual public Failed {};
+struct Logic : virtual public Failed
+{
+};
 
 /**
  * @brief Something that should never appends.
@@ -327,17 +309,23 @@ struct Logic : virtual public Failed {};
  *        but we prefer to keep a runtime check even in release (for the moment).
  * @remark With this exception, you should have a "dev" tag message.
  */
-struct Bug : virtual public Fatal {};
+struct Bug : virtual public Fatal
+{
+};
 
 /** @brief Unknown error inside a conversion. */
-struct BadConversion : virtual public Failed {};
+struct BadConversion : virtual public Failed
+{
+};
 
 /** @brief Error with a NULL image buffer.
  * * plugin: The host launch a process, but the input clips are not filled (eg. NULL buffer pointer).
  *           The error comes from host.
  * * host:   Error with memory cache or memory pool.
  */
-struct ImageNotReady : virtual public Value {};
+struct ImageNotReady : virtual public Value
+{
+};
 
 /**
  * @brief A non optional input clip in not connected.
@@ -345,44 +333,60 @@ struct ImageNotReady : virtual public Value {};
  *           The error comes from host.
  * * host: We can't launch the render in this case.
  */
-struct ImageNotConnected : virtual public Failed {};
+struct ImageNotConnected : virtual public Failed
+{
+};
 
 /**
  * @brief Input property don't satisfy descriptor requirements.
  * * plugin:  The error comes from host.
  * * host: We can't launch the render in this case.
  */
-struct InputMismatch : virtual public Format {};
+struct InputMismatch : virtual public Format
+{
+};
 
 /**
  * @brief Input and output properties mismatch.
  * * plugin:  The error comes from host.
  * * host: We can't launch the render in this case.
  */
-struct InOutMismatch : virtual public Format {};
+struct InOutMismatch : virtual public Format
+{
+};
 
 /**
  * @brief Input(s) and enventually output properties mismatch.
  * * plugin:  The error comes from host.
  * * host: We can't launch the render in this case.
  */
-struct BitDepthMismatch : virtual public ImageFormat {};
+struct BitDepthMismatch : virtual public ImageFormat
+{
+};
 
 /**
  * @brief Image raw bytes not valid.
  * * plugin:  The error comes from host.
  * * host: We can't launch the render in this case.
  */
-struct WrongRowBytes : virtual public ImageFormat {};
+struct WrongRowBytes : virtual public ImageFormat
+{
+};
 
 /** @brief Status error code indicating that something failed due an illegal data. */
-struct Data : virtual public Value {};
+struct Data : virtual public Value
+{
+};
 
 /** @brief Something that could work, but is not implemeted. */
-struct NotImplemented : virtual public Unsupported {};
+struct NotImplemented : virtual public Unsupported
+{
+};
 
 /** @brief The parameter doesn't make sense. */
-struct WrongParameter : virtual public Value {};
+struct WrongParameter : virtual public Value
+{
+};
 
 /**
  * @brief File manipulation error.
@@ -390,13 +394,12 @@ struct WrongParameter : virtual public Value {};
  */
 struct File : virtual public Failed
 {
-	File()
-	{}
-	File( const std::string& path )
-	{
-		*this << user("File error.");
-		*this << filename(path);
-	}
+    File() {}
+    File(const std::string& path)
+    {
+        *this << user("File error.");
+        *this << filename(path);
+    }
 };
 
 /**
@@ -404,13 +407,12 @@ struct File : virtual public Failed
  */
 struct FileNotExist : virtual public File
 {
-	FileNotExist()
-	{}
-	FileNotExist( const std::string& path )
-	{
-		*this << user("No such file.");
-		*this << filename(path);
-	}
+    FileNotExist() {}
+    FileNotExist(const std::string& path)
+    {
+        *this << user("No such file.");
+        *this << filename(path);
+    }
 };
 
 /**
@@ -418,13 +420,12 @@ struct FileNotExist : virtual public File
  */
 struct FileExist : virtual public File
 {
-	FileExist()
-	{}
-	FileExist( const std::string& path )
-	{
-		*this << user("File already exists.");
-		*this << filename(path);
-	}
+    FileExist() {}
+    FileExist(const std::string& path)
+    {
+        *this << user("File already exists.");
+        *this << filename(path);
+    }
 };
 
 /**
@@ -432,13 +433,12 @@ struct FileExist : virtual public File
  */
 struct FileInSequenceNotExist : virtual public File
 {
-	FileInSequenceNotExist()
-	{}
-	FileInSequenceNotExist( const std::string& path )
-	{
-		*this << user("No such file.");
-		*this << filename(path);
-	}
+    FileInSequenceNotExist() {}
+    FileInSequenceNotExist(const std::string& path)
+    {
+        *this << user("No such file.");
+        *this << filename(path);
+    }
 };
 
 /**
@@ -446,13 +446,12 @@ struct FileInSequenceNotExist : virtual public File
  */
 struct NoDirectory : virtual public File
 {
-	NoDirectory()
-	{}
-	NoDirectory( const std::string& path )
-	{
-		*this << user("No such directory.");
-		*this << filename(path);
-	}
+    NoDirectory() {}
+    NoDirectory(const std::string& path)
+    {
+        *this << user("No such directory.");
+        *this << filename(path);
+    }
 };
 
 /**
@@ -460,20 +459,18 @@ struct NoDirectory : virtual public File
  */
 struct ReadOnlyFile : virtual public File
 {
-	ReadOnlyFile()
-	{}
-	ReadOnlyFile( const std::string& path )
-	{
-		*this << user("Read-only file.");
-		*this << filename(path);
-	}
+    ReadOnlyFile() {}
+    ReadOnlyFile(const std::string& path)
+    {
+        *this << user("Read-only file.");
+        *this << filename(path);
+    }
 };
 /// @}
 
-std::string format_exception_message( const ::boost::exception& e );
-std::string format_exception_info( const ::boost::exception& e );
+std::string format_exception_message(const ::boost::exception& e);
+std::string format_exception_info(const ::boost::exception& e);
 std::string format_current_exception();
-
 }
 }
 

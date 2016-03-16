@@ -12,138 +12,136 @@
 
 #include <ofxsParam.h>
 
-namespace tuttle {
-namespace plugin {
-namespace interact {
+namespace tuttle
+{
+namespace plugin
+{
+namespace interact
+{
 
-template<class TFrame, ECoordinateSystem coord>
+template <class TFrame, ECoordinateSystem coord>
 class ParamTangent : public ParamPoint<TFrame, coord>
 {
 
 public:
-	typedef ParamPoint<TFrame, coord> PPoint;
-	typedef PPoint Parent;
+    typedef ParamPoint<TFrame, coord> PPoint;
+    typedef PPoint Parent;
 
-	ParamTangent( const InteractInfos& infos,
-				 OFX::Double2DParam* pCenter,
-				 OFX::Double2DParam* pTanA,
-				 OFX::Double2DParam* pTanB,
-				 const TFrame& frame )
-	: Parent( infos, pCenter, frame )
-	, _paramTanA( infos, pTanA, frame )
-	, _paramTanB( infos, pTanB, frame )
-	, _selectType( eSelectTypeNone )
-	{
-	}
+    ParamTangent(const InteractInfos& infos, OFX::Double2DParam* pCenter, OFX::Double2DParam* pTanA,
+                 OFX::Double2DParam* pTanB, const TFrame& frame)
+        : Parent(infos, pCenter, frame)
+        , _paramTanA(infos, pTanA, frame)
+        , _paramTanB(infos, pTanB, frame)
+        , _selectType(eSelectTypeNone)
+    {
+    }
 
-	virtual ~ParamTangent( ) { }
+    virtual ~ParamTangent() {}
 
 protected:
-	PPoint _paramTanA;
-	PPoint _paramTanB;
-	Point2 _previousTanVec;
+    PPoint _paramTanA;
+    PPoint _paramTanB;
+    Point2 _previousTanVec;
 
-	enum ESelectType
-	{
-		eSelectTypeNone,
-		eSelectTypeTanA,
-		eSelectTypeTanB,
-		eSelectTypeCenter
-	};
-	ESelectType _selectType;
+    enum ESelectType
+    {
+        eSelectTypeNone,
+        eSelectTypeTanA,
+        eSelectTypeTanB,
+        eSelectTypeCenter
+    };
+    ESelectType _selectType;
 
 public:
-	bool draw( const OFX::DrawArgs& args ) const;
+    bool draw(const OFX::DrawArgs& args) const;
 
-	MotionType intersect( const OFX::PenArgs& args );
+    MotionType intersect(const OFX::PenArgs& args);
 
-	virtual void translate( const Point2& previous, const Point2& vec )
-	{
-		const Point2 p = this->getPosition();
-		switch( _selectType )
-		{
-			case eSelectTypeCenter:
-			{
-				const Point2 inv = previous - p;
-				const Point2 realVec = inv + vec;
-				Parent::setPosition( previous + vec );
-				_paramTanA.setPosition( _paramTanA.getPoint() + realVec );
-				_paramTanB.setPosition( _paramTanB.getPoint() + realVec );
-				break;
-			}
-			case eSelectTypeTanA:
-			{
-				const Point2 newpA = previous + _previousTanVec + vec;
-				_paramTanA.setPosition( newpA );
-				// symetric around center
-				_paramTanB.setPosition( 2*p - newpA );
-				break;
-			}
-			case eSelectTypeTanB:
-			{
-				const Point2 newpB = previous + _previousTanVec + vec;
-				_paramTanB.setPosition( newpB );
-				// symetric around center
-				_paramTanA.setPosition( 2*p - newpB );
-				break;
-			}
-			case eSelectTypeNone:
-				break;
-		}
-	}
+    virtual void translate(const Point2& previous, const Point2& vec)
+    {
+        const Point2 p = this->getPosition();
+        switch(_selectType)
+        {
+            case eSelectTypeCenter:
+            {
+                const Point2 inv = previous - p;
+                const Point2 realVec = inv + vec;
+                Parent::setPosition(previous + vec);
+                _paramTanA.setPosition(_paramTanA.getPoint() + realVec);
+                _paramTanB.setPosition(_paramTanB.getPoint() + realVec);
+                break;
+            }
+            case eSelectTypeTanA:
+            {
+                const Point2 newpA = previous + _previousTanVec + vec;
+                _paramTanA.setPosition(newpA);
+                // symetric around center
+                _paramTanB.setPosition(2 * p - newpA);
+                break;
+            }
+            case eSelectTypeTanB:
+            {
+                const Point2 newpB = previous + _previousTanVec + vec;
+                _paramTanB.setPosition(newpB);
+                // symetric around center
+                _paramTanA.setPosition(2 * p - newpB);
+                break;
+            }
+            case eSelectTypeNone:
+                break;
+        }
+    }
 };
 
-template<class TFrame, ECoordinateSystem coord>
-bool ParamTangent<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
+template <class TFrame, ECoordinateSystem coord>
+bool ParamTangent<TFrame, coord>::draw(const OFX::DrawArgs& args) const
 {
-	Parent::draw( args );
-	_paramTanA.draw( args );
-	_paramTanB.draw( args );
+    Parent::draw(args);
+    _paramTanA.draw(args);
+    _paramTanB.draw(args);
 
-	Point2 pA = _paramTanA.getPoint( );
-	Point2 pB = _paramTanB.getPoint( );
+    Point2 pA = _paramTanA.getPoint();
+    Point2 pB = _paramTanB.getPoint();
 
-	glBegin( GL_LINE );
-	glVertex2f( pA.x, pA.y );
-	glVertex2f( pB.x, pB.y );
-	glEnd( );
+    glBegin(GL_LINE);
+    glVertex2f(pA.x, pA.y);
+    glVertex2f(pB.x, pB.y);
+    glEnd();
 
-	return true;
+    return true;
 }
 
-template<class TFrame, ECoordinateSystem coord>
-MotionType ParamTangent<TFrame, coord>::intersect( const OFX::PenArgs& args )
+template <class TFrame, ECoordinateSystem coord>
+MotionType ParamTangent<TFrame, coord>::intersect(const OFX::PenArgs& args)
 {
-	MotionType m;
-	m._mode = eMotionTranslate;
-	m._axis = eAxisXY;
+    MotionType m;
+    m._mode = eMotionTranslate;
+    m._axis = eAxisXY;
 
-	if( _paramTanA.intersect( args )._axis == eAxisXY )
-	{
-		_selectType = eSelectTypeTanA;
-		_previousTanVec = _paramTanA.getPosition() - this->getPosition();
-		return m;
-	}
-	if( _paramTanB.intersect( args )._axis == eAxisXY )
-	{
-		_selectType = eSelectTypeTanB;
-		_previousTanVec = _paramTanB.getPosition() - this->getPosition();
-		return m;
-	}
-	if( Parent::intersect( args )._axis == eAxisXY )
-	{
-		_selectType = eSelectTypeCenter;
-		_previousTanVec = Point2(0,0);
-		return m;
-	}
-	m._mode = eMotionNone;
-	m._axis = eAxisNone;
-	return m;
+    if(_paramTanA.intersect(args)._axis == eAxisXY)
+    {
+        _selectType = eSelectTypeTanA;
+        _previousTanVec = _paramTanA.getPosition() - this->getPosition();
+        return m;
+    }
+    if(_paramTanB.intersect(args)._axis == eAxisXY)
+    {
+        _selectType = eSelectTypeTanB;
+        _previousTanVec = _paramTanB.getPosition() - this->getPosition();
+        return m;
+    }
+    if(Parent::intersect(args)._axis == eAxisXY)
+    {
+        _selectType = eSelectTypeCenter;
+        _previousTanVec = Point2(0, 0);
+        return m;
+    }
+    m._mode = eMotionNone;
+    m._axis = eAxisNone;
+    return m;
 }
-
 }
 }
 }
 
 #endif
-

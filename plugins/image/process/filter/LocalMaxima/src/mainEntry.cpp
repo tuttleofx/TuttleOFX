@@ -4,14 +4,14 @@
 #include "LocalMaximaPluginFactory.hpp"
 #include <tuttle/plugin/Plugin.hpp>
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::localmaxima::LocalMaximaPluginFactory, "tuttle.localmaxima" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::localmaxima::LocalMaximaPluginFactory, "tuttle.localmaxima");
 }
 }
-
+}
