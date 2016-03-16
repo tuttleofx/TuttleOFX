@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8 
 
 import os
@@ -8,7 +7,7 @@ import argparse
 # python module to get completions
 import argcomplete
 # python module to get colors
-from clint.textui import colored
+from clint.textui import colored, puts
 
 # parser of sequence
 from pySequenceParser import sequenceParser
@@ -80,6 +79,20 @@ class Sam(object):
                 handler.setLevel(logging.DEBUG)
             else:
                 handler.setLevel(logging.WARNING)
+
+    def _displayCommandLineHelp(self, parser):
+        """
+        Display sam command line help.
+        """
+        if not self.command:
+            raise NotImplementedError
+
+        subparser = getSubParser(parser, self.command)
+        # if sam command is called from sam main command line
+        if subparser is not None:
+            puts(subparser.format_help())
+        else:
+            parser.print_help()
 
 
 class SamFormatter(logging.Formatter):

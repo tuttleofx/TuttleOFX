@@ -113,14 +113,14 @@ View& AVReaderProcess<View>::readImage( View& dst, avtranscoder::VideoFrame& ima
 {
 	typedef typename FileView::value_type Pixel;
 
-	const size_t width = image.desc().getWidth();
-	const size_t height = image.desc().getHeight();
+	const size_t width = image.desc()._width;
+	const size_t height = image.desc()._height;
 	const avtranscoder::PixelProperties pixel = _plugin._inputFile->getProperties().getVideoProperties().at( _plugin._paramVideoStreamIndex->getValue() ).getPixelProperties();
 	const size_t rowSizeInBytes = pixel.getNbComponents() * width;
 
 	FileView avSrcView = interleaved_view( 
 		width, height,
-		(const Pixel*)( image.getData() ),
+		(const Pixel*)( image.getData()[0] ),
 		rowSizeInBytes );
 	
 	copy_and_convert_pixels( avSrcView, dst );

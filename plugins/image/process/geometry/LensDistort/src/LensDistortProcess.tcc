@@ -186,6 +186,14 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 				resample_pixels_progress( srcView, dstView, LensUndistortFisheye<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
 			return;
 		}
+		case eParamLensTypeFisheye4:
+		{
+			if( _p.distort )
+				resample_pixels_progress( srcView, dstView, LensDistortFisheye4<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			else
+				resample_pixels_progress( srcView, dstView, LensUndistortFisheye4<double>(_p), procWin, outOfImageProcess,  this->getOfxProgress(), sampler );
+			return;
+		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::user( "Unrecognized lens type." ) );

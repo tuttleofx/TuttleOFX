@@ -3,11 +3,11 @@
 
 #include "AVWriterPlugin.hpp"
 
-#include <AvTranscoder/decoder/VideoGenerator.hpp>
-
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
-
 #include <terry/globals.hpp>
+
+#include <AvTranscoder/decoder/VideoGenerator.hpp>
+#include <AvTranscoder/data/decoded/VideoFrame.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -24,7 +24,9 @@ class AVWriterProcess : public ImageGilFilterProcessor<View>
 protected:
 	AVWriterPlugin& _plugin; ///< Rendering plugin
 	AVProcessParams _params;
+
 	avtranscoder::VideoGenerator& _videoStream; ///< The output video stream (has link, no ownership)
+	avtranscoder::VideoFrame _videoFrame; ///< The video frame with the encoded data
 
 public:
 	AVWriterProcess( AVWriterPlugin& instance );

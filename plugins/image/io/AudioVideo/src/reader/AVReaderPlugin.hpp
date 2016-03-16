@@ -1,14 +1,14 @@
 #ifndef _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_AV_READER_PLUGIN_HPP_
 
-#include <common/util.hpp>
+#include <common/LibAVParams.hpp>
+#include <common/LibAVFeaturesAvailable.hpp>
 
 #include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
-#include <AvTranscoder/util.hpp>
 #include <AvTranscoder/file/InputFile.hpp>
 #include <AvTranscoder/decoder/VideoDecoder.hpp>
-#include <AvTranscoder/frame/VideoFrame.hpp>
+#include <AvTranscoder/data/decoded/VideoFrame.hpp>
 #include <AvTranscoder/transform/VideoTransform.hpp>
 
 #include <boost/scoped_ptr.hpp>
@@ -42,6 +42,7 @@ public:
 	 * @brief Open and analyse the InputFile. 
 	 * Create a Stream and its corresponding Decoder for the first video stream of the given file.
 	 * @note Do nothing if the InputFile and the videoStream are already set
+	 * @exception throw boost exception if cannot open input file
 	 */
 	void ensureVideoIsOpen();
 
@@ -104,6 +105,9 @@ public:
 	
 	avtranscoder::VideoTransform _colorTransform;
 	
+	// to access available libav features
+	common::LibAVFeaturesAvailable _libavFeatures;
+
 	std::string _lastInputFilePath;
 	size_t _lastVideoStreamIndex;
 	

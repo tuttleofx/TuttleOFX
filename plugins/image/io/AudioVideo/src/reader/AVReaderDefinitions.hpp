@@ -4,7 +4,7 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
-#include <common/util.hpp>
+#include <common/LibAVParams.hpp>
 
 namespace tuttle {
 namespace plugin {

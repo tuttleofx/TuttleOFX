@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8 
 
 import os
@@ -232,7 +231,12 @@ class SplitCmdNode:
             # get plugins name which match with the given id
             pluginNames = []
             for pluginName in pluginsMap:
-                if self._pluginId in pluginName:
+                # if the given id exactly matches the plugin id
+                # plugin id = plugin name without its group
+                if self._pluginId == pluginName[pluginName.rfind('.') + 1:]:
+                    return pluginName
+                # else if the given id is contains in the plugin name
+                elif self._pluginId in pluginName:
                     pluginNames.append(pluginName)
             # one plugin matches
             if len(pluginNames) == 1:

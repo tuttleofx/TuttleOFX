@@ -130,14 +130,27 @@ class Sam_do(samUtils.Sam):
         @param inputsToProcess the 'inputs' arguments of the command line.
         @param inputsUnknown the 'inputs' arguments of the command line which are not recognized by argparse.
         """
-        # check if there is no arguments (or only the help option)
+        # check if there is no arguments
+        if len(inputsToProcess) == 0:
+            return True
+        # else check if last input is the separator
+        elif inputsToProcess[-1] == '//':
+            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
+            return True
+        return False
+
+    def _isCommandLineAskForHelp(self, inputsToProcess, inputsUnknown):
+        """
+        Returns if the given sam do command expects to print its help.
+        """
+        # check if there is no arguments
         if len(inputsToProcess) == 0:
             if len(inputsUnknown) == 0 or '-h' in inputsUnknown or '--help' in inputsUnknown:
                 return True
-        # check if last input is the separator
-        if inputsToProcess[-1] == '//':
-            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
-            return True
+        # else check unknow arguments
+        else:
+            if len(inputsUnknown) == 1 and ('-h' in inputsUnknown or '--help' in inputsUnknown):
+                return True
         return False
 
     def _setTimeRanges(self, computeOptions, ranges):
@@ -300,7 +313,7 @@ class Sam_do(samUtils.Sam):
                 with indent(40):
                     for choiceValue in paramChoiceValues:
                         puts('{choiceValue!s:50} {label}'.format(
-                            choiceValue=(colored.yellow(choiceValue) if paramChoiceValues.index(choiceValue) == paramDefaultValue else colored.red(choiceValue)),
+                            choiceValue=(colored.yellow(choiceValue + ' (default)') if paramChoiceValues.index(choiceValue) == paramDefaultValue else colored.red(choiceValue)),
                             label=(paramChoiceLabel[paramChoiceValues.index(choiceValue)] if hasLabel else '')))
             else:
                 puts('{defaultValue!s:9}'.format(
@@ -343,6 +356,9 @@ class Sam_do(samUtils.Sam):
         """
         Display help of a specific node in the command line.
         """
+        if not node:
+            self.logger.error('Cannot print help of unknown plugin "' + nodeFullName + '".')
+            exit(1)
         # NODE
         self._displayTitle('NODE')
         with indent(4):
@@ -391,17 +407,6 @@ class Sam_do(samUtils.Sam):
                     name=colored.green('Output'),
                     bitdepth=', '.join(bitDepthOutputStr)))
 
-    def _displayCommandLineHelp(self, parser):
-        """
-        Display sam-do command line help.
-        """
-        subparser = samUtils.getSubParser(parser, 'do')
-        # if sam-do is called from sam main command line
-        if subparser is not None:
-            puts(subparser.format_help())
-        else:
-            parser.print_help()
-
     def _getTuttleGraph(self, splitCmdGraph):
         """
         Return the tuple (tuttle graph, its nodes) which corresponds to the given split command.
@@ -409,6 +414,7 @@ class Sam_do(samUtils.Sam):
         graph = tuttle.Graph()
         nodes = []
         connections = []
+        error = 0
 
         for splitCmdNode in splitCmdGraph.getNodes():
             # Create a tuttle node
@@ -421,9 +427,9 @@ class Sam_do(samUtils.Sam):
                 # Plugin not found
                 if not nodeFullName:
                     nodeFullName = splitCmdNode._pluginId
-                self.logger.error('Cannot create node "' + nodeFullName + '": the node will be skipped from the command line.')
+                self.logger.error('Cannot create node "' + nodeFullName + '".')
                 self.logger.debug(e)
-                continue
+                error = 1
             # sam-do node --help
             if splitCmdNode.hasHelp():
                 self._displayNodeHelp(nodeFullName, node)
@@ -447,21 +453,25 @@ class Sam_do(samUtils.Sam):
                             graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
                         except Exception as e:
                             # Cannot connect attribute of node
-                            self.logger.warning('Cannot connect attribute "' 
-                                + argName + '" of node "' + nodeFullName 
-                                + '" to id "' + argValue 
-                                + '": the connection will be skipped from the command line.')
+                            self.logger.warning('Cannot connect attribute "'
+                                + argName + '" of node "' + nodeFullName
+                                + '" to id "' + argValue)
                             self.logger.debug(e)
+                            error = 1
                     else:
                         # Cannot set param of node
                         self.logger.warning('Cannot set '
                             + (('parameter "' + argName + '" of ') if argName else '')
-                            + 'node "' + nodeFullName + '" ' 
-                            + (('to value "' + argValue + '"') if argValue else '') 
-                            + ': the parameter will be skipped from the command line.')
+                            + 'node "' + nodeFullName + '" '
+                            + (('to value "' + argValue + '"') if argValue else ''))
                         self.logger.debug(e)
+                        error = 1
             nodes.append(node)
             connections.append(splitCmdNode.getArgument('id')[1])
+
+        # exit the process if there is an error in the command line
+        if error:
+            exit(error)
 
         # Create in line connections
         for i in range(0, len(connections)):
@@ -504,9 +514,14 @@ class Sam_do(samUtils.Sam):
             exit(0)
 
         # sam-do --help
-        if self._isCommandLineInvalid(args.inputs, unknown):
+        if self._isCommandLineAskForHelp(args.inputs, unknown):
             self._displayCommandLineHelp(parser)
             exit(0)
+
+        # Check sam-do command line
+        if self._isCommandLineInvalid(args.inputs, unknown):
+            self._displayCommandLineHelp(parser)
+            exit(1)
 
         # Add unknown options to the command line to process
         args.inputs.extend(unknown)
