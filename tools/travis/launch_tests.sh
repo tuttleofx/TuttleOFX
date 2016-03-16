@@ -29,4 +29,6 @@ cd ${TUTTLEOFX_BUILD}
 make run_tests
 
 # sam tests
-${TRAVIS_BUILD_DIR}/applications/test/samCommands.sh
+if [[ ${PYTHON_VERSION} == "2.7" ]]; then
+    ${TRAVIS_BUILD_DIR}/applications/test/samCommands.sh
+fi

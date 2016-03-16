@@ -10,8 +10,9 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     # Install python packages to run sam command line
     if [[ ${PYTHON_VERSION} == "2.7" ]]; then
         pip install --user clint argcomplete
-    elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
-        pip3 install --user clint argcomplete
+    # elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
+        # easy_install3 pip --prefix=$HOME/local
+        # pip3 install --user clint argcomplete
     fi
 
     # Use TRAVIS_JOB_ID to detect that we are in travis.
