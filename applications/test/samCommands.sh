@@ -19,6 +19,8 @@ samOK=(
     "sam ls -v trace"
     "sam ls -v 10"
 # sam do
+    "sam do"
+    "sam do --help"
     "sam do --nodes"
     "sam do --file-formats"
     "sam do blur -h"

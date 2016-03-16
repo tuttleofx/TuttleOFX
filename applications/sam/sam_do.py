@@ -2,6 +2,7 @@
 # coding: utf-8 
 # PYTHON_ARGCOMPLETE_OK
 
+import sys
 import argparse
 import itertools
 
@@ -130,14 +131,27 @@ class Sam_do(samUtils.Sam):
         @param inputsToProcess the 'inputs' arguments of the command line.
         @param inputsUnknown the 'inputs' arguments of the command line which are not recognized by argparse.
         """
-        # check if there is no arguments (or only the help option)
+        # check if there is no arguments
+        if len(inputsToProcess) == 0:
+            return True
+        # else check if last input is the separator
+        elif inputsToProcess[-1] == '//':
+            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
+            return True
+        return False
+
+    def _isCommandLineAskForHelp(self, inputsToProcess, inputsUnknown):
+        """
+        Returns if the given sam do command expects to print its help.
+        """
+        # check if there is no arguments
         if len(inputsToProcess) == 0:
             if len(inputsUnknown) == 0 or '-h' in inputsUnknown or '--help' in inputsUnknown:
                 return True
-        # check if last input is the separator
-        if inputsToProcess[-1] == '//':
-            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
-            return True
+        # else check unknow arguments
+        else:
+            if len(inputsUnknown) == 1 and ('-h' in inputsUnknown or '--help' in inputsUnknown):
+                return True
         return False
 
     def _setTimeRanges(self, computeOptions, ranges):
@@ -475,6 +489,11 @@ class Sam_do(samUtils.Sam):
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
+        # sam-do --help
+        if self._isCommandLineAskForHelp(args.inputs, unknown):
+            self._displayCommandLineHelp(parser)
+            exit(0)
+
         # Set sam log level
         self.setLogLevel(args.verbose)
         # set tuttle host log level
@@ -500,7 +519,7 @@ class Sam_do(samUtils.Sam):
             self._displayFileFormats()
             exit(0)
 
-        # sam-do --help
+        # Check sam-do command line
         if self._isCommandLineInvalid(args.inputs, unknown):
             self._displayCommandLineHelp(parser)
             exit(1)
