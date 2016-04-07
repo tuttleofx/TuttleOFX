@@ -2,6 +2,7 @@
 # coding: utf-8 
 # PYTHON_ARGCOMPLETE_OK
 
+import sys
 import argparse
 import itertools
 
@@ -146,9 +147,13 @@ class Sam_do(samUtils.Sam):
         if len(inputsToProcess) == 0:
             if len(inputsUnknown) == 0 or '-h' in inputsUnknown or '--help' in inputsUnknown:
                 return True
-        # else check unknow arguments
+        # else check if help is asked before any input to process
         else:
-            if len(inputsUnknown) == 1 and ('-h' in inputsUnknown or '--help' in inputsUnknown):
+            firstOption = sys.argv[1]
+            # manage if the command is called from 'sam do' or 'sam-do'
+            if firstOption == self.command and len(sys.argv) > 2:
+                firstOption = sys.argv[2]
+            if ('-h' == firstOption or '--help' == firstOption):
                 return True
         return False
 
