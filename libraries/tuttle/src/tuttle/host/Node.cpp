@@ -94,7 +94,7 @@ NodeInit::NodeInit( INode& node )
 	setNode( node );
 }
 
-NodeInit& NodeInit::setParam( const std::string& paramName, ... )
+NodeInit& NodeInit::setParam( const char* paramName, ... )
 {
 	va_list ap;
 	va_start( ap, paramName );

@@ -62,7 +62,7 @@ public:
 	 * you should put all dimensions values.
 	 * @exemple setParam("redColor", 1.0, 0.0, 0.0, 1.0)
 	 */
-	NodeInit& setParam( const std::string& paramName, ... );
+	NodeInit& setParam( const char* paramName, ... );
 	
 	/**
 	 * @brief Set parameter value from a string expression.
