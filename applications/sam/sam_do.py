@@ -130,10 +130,11 @@ class Sam_do(samUtils.Sam):
         """
         # check if there is no arguments
         if len(inputsToProcess) == 0:
+            self.logger.warn('No input to process: the command is invalid.')
             return True
         # else check if last input is the separator
         elif inputsToProcess[-1] == '//':
-            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
+            self.logger.warn('The given inputs to process are invalid: ' + str(inputsToProcess))
             return True
         return False
 
