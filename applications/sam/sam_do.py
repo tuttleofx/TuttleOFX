@@ -104,7 +104,7 @@ class Sam_do(samUtils.Sam):
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         Disable recursivity with folders:  sam do reader inputFolder // writer outputFolder --no-recursivity
         
-    ''' + self._tuttleVersion + '''            ''' + self.tuttleWebSite
+    ''' + self._tuttleVersion + '''            ''' + self.tuttleWebSiteUserDoc
 
     def fillParser(self, parser):
         # Arguments

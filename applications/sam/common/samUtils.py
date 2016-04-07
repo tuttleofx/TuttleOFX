@@ -25,14 +25,14 @@ class Sam(object):
         self.description = ''
 
         # Add a default additional description of the program
-        self.tuttleWebSite = colored.green('http://www.tuttleofx.org/user-documentation')
+        self.tuttleWebSiteUserDoc = colored.green('http://www.tuttleofx.org/user-documentation')
         self.tuttleWebSiteSequences = colored.green('http://www.tuttleofx.org/user-documentation/command-line-examples')
         if clintVersion >= '0.3.3':
-            self.tuttleWebSite.bold=True
+            self.tuttleWebSiteUserDoc.bold=True
             self.tuttleWebSiteSequences.bold=True
         self.epilog = '''
   See the online documentation for more details:
-      General user documentation      ''' + self.tuttleWebSite + '''
+      General user documentation      ''' + self.tuttleWebSiteUserDoc + '''
       How to manipulate sequences     ''' + self.tuttleWebSiteSequences + '''
       '''
 
