@@ -39,7 +39,6 @@ class Sam_do(samUtils.Sam):
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
         self._processingOptions = colored.blue('Processing options')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
-        self._tuttleWebSite = colored.green('http://www.tuttleofx.org/')
         if clintVersion >= '0.3.3':
             self._pluginOption.bold=True
             self._generatorsAndViewers.bold=True
@@ -50,7 +49,6 @@ class Sam_do(samUtils.Sam):
             self._imgSeqNumbering.bold=True
             self._processingOptions.bold=True
             self._tuttleVersion.bold=True
-            self._tuttleWebSite.bold=True
 
         self.epilog = '''
     ''' + self._pluginOption + '''
@@ -106,7 +104,7 @@ class Sam_do(samUtils.Sam):
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         Disable recursivity with folders:  sam do reader inputFolder // writer outputFolder --no-recursivity
         
-    ''' + self._tuttleVersion + '''            ''' + self._tuttleWebSite
+    ''' + self._tuttleVersion + '''            ''' + self.tuttleWebSite
 
     def fillParser(self, parser):
         # Arguments
