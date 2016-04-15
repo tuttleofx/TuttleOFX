@@ -141,8 +141,10 @@ std::string getBestReader( const std::string& filename )
 				// we will try with the other ones.
 			}
 		}
+		const std::string errorMessage("No OFX plugin found to read file '" + filename + "'.");
+		TUTTLE_LOG_ERROR( errorMessage );
 		BOOST_THROW_EXCEPTION( exception::File( filename )
-			<< exception::user() + "Can't read image \"" + filename + "\"."
+			<< exception::user() + errorMessage
 			<< exception::dev() + "File is not supported. We have tried to load it with: " + boost::algorithm::join(results, ", ") );
 	}
 	BOOST_THROW_EXCEPTION( exception::Bug() );
@@ -165,9 +167,11 @@ std::string getBestWriter( const std::string& filename )
 	std::vector< std::string > results = _getWriters( extension );
 	if( results.size() == 0 )
 	{
+		const std::string errorMessage("No OFX plugin found to write file '" + filename + "' (extension '" + extension + "').");
+		TUTTLE_LOG_ERROR( errorMessage );
 		BOOST_THROW_EXCEPTION( exception::File( filename )
-			<< exception::user() + "Unknown file extension \"" + extension + "\"."
-			<< exception::dev() + "Unknown file extension \"" + extension + "\"." );
+			<< exception::user() + errorMessage
+			<< exception::dev() + errorMessage );
 	}
 	return results[0];
 }
