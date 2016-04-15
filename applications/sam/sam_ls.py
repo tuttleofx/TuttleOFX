@@ -61,6 +61,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
         parser.add_argument('--explode-sequences', dest='explodeSequences', action='store_true', default=False, help='explode sequences as several sequences without holes')
+        parser.add_argument('--script', dest='script', action='store_true', default=False, help='Format the output such as it could be dump in a file and be used as a script')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
     def isAlreadyPrinted(self, item):
@@ -77,6 +78,13 @@ class Sam_ls(samUtils.Sam):
         if nameToCompare in self._itemPrinted:
             return True
         return False
+
+    def _needToPrintCurrentFolder(self, args):
+        """
+        Return if the current folder expects to be printed before its content.
+        See behavior of 'ls' UNIX command with several arguments.
+        """
+        return len(args.inputs) > 1 and not args.script and not args.recursive
 
     def printItem(self, item, args, level):
         """
@@ -206,6 +214,10 @@ class Sam_ls(samUtils.Sam):
         """
         For each items, check if it should be printed, depending on the command line options.
         """
+        # sam-ls --script
+        if self._needToPrintCurrentFolder(args):
+            puts(items[0].getFolder() + ':')
+
         for item in sorted(items):
             itemType = item.getType()
             toPrint = True
@@ -247,6 +259,10 @@ class Sam_ls(samUtils.Sam):
                 except IOError as e:
                     # Permission denied for example
                     self.logger.warning(e)
+
+        # sam-ls --script
+        if self._needToPrintCurrentFolder(args):
+            puts(newline=True)
 
     def run(self, parser):
         """

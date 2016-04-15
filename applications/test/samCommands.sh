@@ -16,6 +16,7 @@ samOK=(
     "sam ls --detect-negative"
     "sam ls --detect-without-holes"
     "sam ls --explode-sequences"
+    "sam ls --script"
     "sam ls -v trace"
     "sam ls -v 10"
 # sam do
