@@ -15,7 +15,7 @@ AVWriterProcess<View>::AVWriterProcess( AVWriterPlugin& instance )
 	, _plugin( instance )
 	, _params( _plugin.getProcessParams() )
 	, _videoStream( static_cast<avtranscoder::VideoGenerator&>( *_plugin._transcoder->getStreamTranscoder( 0 ).getCurrentDecoder() ) )
-	, _videoFrame( _videoStream.getVideoFrameDesc() )
+	, _videoFrame( *_plugin._videoDesc )
 {
 	this->setNoMultiThreading();
 }
