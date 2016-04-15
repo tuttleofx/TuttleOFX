@@ -328,6 +328,7 @@ class Sam_ls(samUtils.Sam):
             for inputToBrowse in inputsToBrowse:
                 inputToBrowse.addFilter(expression)
 
+        error = 0
         # for each input to browse, print the finding items
         for inputToBrowse in inputsToBrowse:
             items = []
@@ -370,8 +371,11 @@ class Sam_ls(samUtils.Sam):
 
             if not len(items):
                 self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
+                error = 1
             else:
                 self._printItems(items, args, detectionMethod, filters)
+
+        exit(error)
 
 
 if __name__ == '__main__':
