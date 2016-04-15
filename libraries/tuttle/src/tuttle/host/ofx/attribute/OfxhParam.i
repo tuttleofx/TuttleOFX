@@ -27,6 +27,19 @@ namespace std {
 
 %extend tuttle::host::ofx::attribute::OfxhParam
 {
+	ofx::property::OfxhProperty& __getitem__(const std::string& name)
+	{
+		return self->getEditableProperties().fetchLocalProperty(name);
+	}
+
+	std::string __str__() const
+	{
+		std::stringstream s;
+
+		s << *self;
+		return s.str();
+	}
+
 	%pythoncode
 	{
 		def setValueAtTime(self, time, value, change = eChangeUserEdited):

@@ -279,24 +279,6 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const This& g);
     virtual std::ostream& displayValues(std::ostream& os) const { return os; }
 
-#ifdef SWIG
-    % extend
-    {
-        ofx::property::OfxhProperty& __getitem__(const std::string& name)
-        {
-            return self->getEditableProperties().fetchLocalProperty(name);
-        }
-
-        std::string __str__() const
-        {
-            std::stringstream s;
-
-            s << *self;
-            return s.str();
-        }
-    }
-#endif
-
     void paramChanged(const EChange change);
 
 #ifndef SWIG
