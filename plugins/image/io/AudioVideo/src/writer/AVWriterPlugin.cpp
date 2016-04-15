@@ -35,7 +35,8 @@ AVWriterPlugin::AVWriterPlugin( OfxImageEffectHandle handle )
 	, _paramMetadatas()
 	, _outputFile( NULL )
 	, _transcoder( NULL )
-	, _presetLoader( true ) 
+	, _videoDesc( NULL )
+	, _presetLoader( true )
 	, _initVideo( false )
 	, _initWrap( false )
 {
@@ -600,8 +601,8 @@ void AVWriterPlugin::initVideo( const OFX::RenderArguments& args )
 
 		// describe input frame and codec of transcode
 		avtranscoder::VideoCodec videoCodec( avtranscoder::eCodecTypeEncoder, profile[ avtranscoder::constants::avProfileCodec ] );
-		avtranscoder::VideoFrameDesc imageDesc( width, height, "rgb24" );
-		videoCodec.setImageParameters( imageDesc );
+		_videoDesc.reset( new avtranscoder::VideoFrameDesc( width, height, "rgb24" ) );
+		videoCodec.setImageParameters( *_videoDesc );
 
 		// add video stream
 		_transcoder->add( "", 0, profile, videoCodec );

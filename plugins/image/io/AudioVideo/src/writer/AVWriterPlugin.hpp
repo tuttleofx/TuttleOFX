@@ -172,7 +172,8 @@ public:
 	// to process transcode
 	boost::scoped_ptr<avtranscoder::OutputFile> _outputFile;
 	boost::scoped_ptr<avtranscoder::Transcoder> _transcoder;
-	
+	boost::scoped_ptr<avtranscoder::VideoFrameDesc> _videoDesc;
+
 	// to access encoding profiles
 	avtranscoder::ProfileLoader _presetLoader;
 
