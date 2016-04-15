@@ -37,7 +37,7 @@ find_path(OPENJPEG_INCLUDE_DIR
 
 # Looking for library path
 find_library(OPENJPEG_LIBRARY
-    NAMES         openjpeg
+    NAMES         openjpeg openjp2
     HINTS         ${_openjpeg_SEARCH_DIRS}
   PATH_SUFFIXES lib64 lib
 )
