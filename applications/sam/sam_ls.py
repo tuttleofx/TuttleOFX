@@ -64,10 +64,10 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('--script', dest='script', action='store_true', default=False, help='Format the output such as it could be dump in a file and be used as a script')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
-    def isAlreadyPrinted(self, item):
+    def _isAlreadyPrinted(self, item):
         """
         Return if the given item has already been printed.
-        @see printItem
+        @see _printItem
         """
         nameToCompare = ''
         if item.getType() == sequenceParser.eTypeSequence:
@@ -86,7 +86,7 @@ class Sam_ls(samUtils.Sam):
         """
         return len(args.inputs) > 1 and not args.script and not args.recursive
 
-    def printItem(self, item, args, level):
+    def _printItem(self, item, args, level):
         """
         Print the item depending on the command line options.
         """
@@ -106,7 +106,7 @@ class Sam_ls(samUtils.Sam):
                 if subSequence.__str__() not in self._sequenceExploded:
                     self._sequenceExploded.append(subSequence.__str__())
                     sequenceExploded = True
-                    self.printItem(sequenceParser.Item(subSequence, item.getFolder()), args, level)
+                    self._printItem(sequenceParser.Item(subSequence, item.getFolder()), args, level)
             # to skip recursivity
             if sequenceExploded:
                 return
@@ -210,7 +210,7 @@ class Sam_ls(samUtils.Sam):
         else:
             self._itemPrinted.append(item.getFilename())
 
-    def printItems(self, items, args, detectionMethod, filters, level=0):
+    def _printItems(self, items, args, detectionMethod, filters, level=0):
         """
         For each items, check if it should be printed, depending on the command line options.
         """
@@ -235,12 +235,12 @@ class Sam_ls(samUtils.Sam):
                 toPrint = False
 
             # skip item already printed
-            if self.isAlreadyPrinted(item):
+            if self._isAlreadyPrinted(item):
                 toPrint = False
 
             # print current item
             if toPrint:
-                self.printItem(item, args, level)
+                self._printItem(item, args, level)
 
             # sam-ls -R
             if args.recursive and itemType == sequenceParser.eTypeFolder:
@@ -254,7 +254,7 @@ class Sam_ls(samUtils.Sam):
                     self.logger.debug('Browse in "' + newFolder + '" with the following filters: ' + str(filters))
                     newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
                     level += 1
-                    self.printItems(newItems, args, detectionMethod, filters, level)
+                    self._printItems(newItems, args, detectionMethod, filters, level)
                     level -= 1
                 except IOError as e:
                     # Permission denied for example
@@ -371,7 +371,7 @@ class Sam_ls(samUtils.Sam):
             if not len(items):
                 self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
             else:
-                self.printItems(items, args, detectionMethod, filters)
+                self._printItems(items, args, detectionMethod, filters)
 
 
 if __name__ == '__main__':
