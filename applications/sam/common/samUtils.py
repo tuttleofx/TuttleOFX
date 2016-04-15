@@ -8,6 +8,7 @@ import argparse
 import argcomplete
 # python module to get colors
 from clint.textui import colored, puts
+from clint import __version__ as clintVersion
 
 # parser of sequence
 from pySequenceParser import sequenceParser
@@ -22,7 +23,18 @@ class Sam(object):
         self.command = ''
         self.help = ''
         self.description = ''
-        self.epilog = ''
+
+        # Add a default additional description of the program
+        self.tuttleWebSiteUserDoc = colored.green('http://www.tuttleofx.org/user-documentation')
+        self.tuttleWebSiteSequences = colored.green('http://www.tuttleofx.org/user-documentation/command-line-examples')
+        if clintVersion >= '0.3.3':
+            self.tuttleWebSiteUserDoc.bold=True
+            self.tuttleWebSiteSequences.bold=True
+        self.epilog = '''
+  See the online documentation for more details:
+      General user documentation      ''' + self.tuttleWebSiteUserDoc + '''
+      How to manipulate sequences     ''' + self.tuttleWebSiteSequences + '''
+      '''
 
         # create logger
         self.logger = logging.getLogger('SAM')
