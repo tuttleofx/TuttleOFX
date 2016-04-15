@@ -561,7 +561,7 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 			TUTTLE_LOG_ERROR( "filename: \"" << *filenameException << "\"" );
 		}
 
-		TUTTLE_LOG_DEBUG( "* Caught boost::exception on action " << actionRaw );
+		TUTTLE_LOG_ERROR( "boost::exception on action: " << actionRaw );
 	#ifndef BOOST_EXCEPTION_DISABLE
 		TUTTLE_LOG_DEBUG( boost::diagnostic_information(e) );
 	#endif
@@ -580,18 +580,18 @@ OfxStatus interactMainEntry( const char*          actionRaw,
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
-		TUTTLE_LOG_DEBUG( "Caught OFX::Exception::Suite (" << e.what() << ")" );
+		TUTTLE_LOG_ERROR( "OFX::Exception::Suite error: " << e.what() );
 		stat = e.status();
 	}
 	// catch all exceptions
 	catch( std::exception& e )
 	{
-		TUTTLE_LOG_DEBUG( "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" );
+		TUTTLE_LOG_ERROR( "Exception error on action: " << actionRaw << ": " << e.what() );
 		stat = kOfxStatFailed;
 	}
 	catch(... )
 	{
-		TUTTLE_LOG_DEBUG( "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" );
+		TUTTLE_LOG_ERROR( "Unknown error (file:" << __FILE__ << " line:" << __LINE__ << ")" );
 		stat = kOfxStatFailed;
 	}
 
