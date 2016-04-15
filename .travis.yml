@@ -127,6 +127,8 @@ addons:
 before_deploy:
   # copy external dependencies of boost-regex
   - if [ ${TRAVIS_OS_NAME} = "linux" ]; then cp /usr/lib/{libicuuc.so.48,libicui18n.so.48,libicudata.so.48} ${TUTTLEOFX_INSTALL}/lib; fi
+  # copy external dependency of libavformat
+  - if [ ${TRAVIS_OS_NAME} = "linux" ]; then cp /lib/x86_64-linux-gnu/{libbz2.so.1,libbz2.so.1.0,libbz2.so.1.0.4} ${DEPENDENCY_INSTALL_PATH}/lib; fi
   # prepare deployment
   - tools/travis/deploy.sh
 
