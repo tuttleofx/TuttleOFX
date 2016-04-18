@@ -24,5 +24,15 @@ To handle these cases, you can override the TuttleOFX host name by defined the f
 export TUTTLE_OVERRIDE_HOST_OFXPROPNAME=Your new Host name
 ```
 
+## Override path to plugin cache
+TuttleOFX host handles a cache file (called __tuttlePluginCacheSerialize.xml__) to load OpenFX plugins more quickly.
+By default the path to this file is the UNIX home (see HOME) or the application data directory (see APPDATA) on Windows.
+You can override this path by defining the following variable in your environment:
+```
+export TUTTLE_HOME=/your/custom/path
+```
+If none of these variables are found, the cache file is written in the temporary system directory.
+
+
 ## More information
 http://www.tuttleofx.org/user-documentation
