@@ -20,16 +20,16 @@ CloudPointData::CloudPointData(const OfxPointI& size, OfxTime time)
     _time = time; // get current time
 
     // cloud point VBO
-    int imgSize = size.x * size.y; // number of pixel in the image
+    int imgSize = size.x * size.y;   // number of pixel in the image
     _imgCopy.reserve(imgSize * 0.5); // reserve memory for buffer
 
     // selection buffer
     _selectionCopy.reserve(imgSize * 0.5); // reserve memory for color selection buffer
-    _spillCopy.reserve(imgSize * 0.5); // reserve memory for spill selection buffer
+    _spillCopy.reserve(imgSize * 0.5);     // reserve memory for spill selection buffer
 
     // VBO are not built at this time
-    _isVBOBuilt = false; // cloud point VBO is not built
-    _isSelectionVBOBuilt = false; // color selection VBO is not built
+    _isVBOBuilt = false;               // cloud point VBO is not built
+    _isSelectionVBOBuilt = false;      // color selection VBO is not built
     _isSpillSelectionVBOBuilt = false; // spill selection VBO is not built
 }
 
@@ -79,7 +79,7 @@ bool CloudPointData::generateVBOData(OFX::Clip* clipSrc, const OfxPointD& render
     SView srcView = tuttle::plugin::getGilView<SView>(src.get(), srcPixelRod,
                                                       eImageOrientationIndependant); // get current view from source clip
 
-    _imgCopy.clear(); // clear buffer
+    _imgCopy.clear();         // clear buffer
     if(vboWithDiscretization) // does user want to discretize the VBO
     {
         generateDiscretizedVBOData(srcView, discretizationStep); // create data and return buffer size
@@ -99,15 +99,15 @@ void CloudPointData::updateVBO()
 {
     // point cloud VBO
     _imgVBO.createVBO(&(_imgCopy.front()), _imgCopy.size() / 3); // generate VBO to draw
-    _imgVBO._color = true; // activate color for VBO
+    _imgVBO._color = true;                                       // activate color for VBO
     // color selection VBO
     _selectionColorVBO._colorDifferent = true; // color buffer is not the same than vertex buffer
-    _selectionColorVBO._color = false; // disable color for VBO
+    _selectionColorVBO._color = false;         // disable color for VBO
     _selectionColorVBO.createVBO(&(_selectionCopy.front()), _selectionCopy.size() / 3, GL_STATIC_DRAW,
                                  &(_selectionCopy.front())); // generate color selection VBO to draw
     // spill selection VBO
     _selectionSpillVBO._colorDifferent = true; // color buffer is not the same than vertex buffer
-    _selectionSpillVBO._color = false; // disable color for VBO
+    _selectionSpillVBO._color = false;         // disable color for VBO
     _selectionSpillVBO.createVBO(&(_spillCopy.front()), _spillCopy.size() / 3, GL_STATIC_DRAW,
                                  &(_spillCopy.front())); // generate spill selection VBO to draw
 }
@@ -137,9 +137,9 @@ int CloudPointData::generateDiscretizedVBOData(SView srcView, const int& discret
 
     // Create and use functor to get discretize data  (functor with template)
     Pixel_copy_discretization<SPixel> funct(_imgCopy, discretizationStep); // functor declaration
-    terry::algorithm::transform_pixels(srcView, funct); // with functor reference
-    funct.convertSetDataToVectorData(); // copy functor data to _imgCopy data
-    size = _imgCopy.size(); // change size
+    terry::algorithm::transform_pixels(srcView, funct);                    // with functor reference
+    funct.convertSetDataToVectorData();                                    // copy functor data to _imgCopy data
+    size = _imgCopy.size();                                                // change size
     return size;
 }
 
@@ -205,7 +205,7 @@ bool CloudPointData::generateColorSelectionVBO(OFX::Clip* clipColor, const OfxPo
 int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
 {
     // compute buffer size
-    int size; // returned size
+    int size;                // returned size
     bool isSelection = true; // current operations are on selected pixels
 
     // clear selection copy
@@ -215,7 +215,7 @@ int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
     Pixel_copy funct(_selectionCopy, isSelection); // functor declaration creation
     // treatment
     terry::algorithm::transform_pixels(srcView, funct); // transform pixel did with functor reference
-    size = _selectionCopy.size(); // get current size of VBO
+    size = _selectionCopy.size();                       // get current size of VBO
 
     return size; // return size of VBO buffers (same color and vertex)
 }
@@ -271,8 +271,8 @@ bool CloudPointData::generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPo
     }
     // VBO without discretization
     generateAllPointsSpillVBOData(srcView); // generate a selection VBO without discretization
-    _isSpillSelectionVBOBuilt = true; // selection VBO is not built
-    return true;                      // treatment has been done correctly
+    _isSpillSelectionVBOBuilt = true;       // selection VBO is not built
+    return true;                            // treatment has been done correctly
 }
 
 /*
@@ -281,7 +281,7 @@ bool CloudPointData::generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPo
 int CloudPointData::generateAllPointsSpillVBOData(SView srcView)
 {
     // compute buffer size
-    int size; // returned size
+    int size;                // returned size
     bool isSelection = true; // current operations are on selected pixels
 
     // clear selection copy
@@ -293,7 +293,7 @@ int CloudPointData::generateAllPointsSpillVBOData(SView srcView)
     terry::algorithm::transform_pixels(srcView, funct); // transform pixel did with functor reference
 
     size = _spillCopy.size(); // get current size of VBO
-    return size; // return size of VBO buffers (same color and vertex)
+    return size;              // return size of VBO buffers (same color and vertex)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ void CloudPointData::VBO::deleteVBO()
     if(_idColor != 0)
     {
         glDeleteBuffers(1, &_idColor); // delete color buffer
-        _idColor = 0; // reset color id
+        _idColor = 0;                  // reset color id
     }
 }
 
@@ -345,7 +345,7 @@ void CloudPointData::VBO::deleteVBO()
 void CloudPointData::VBO::genBuffer(unsigned int& id, const void* data, int size, GLenum target, GLenum usage)
 {
     // Test if buffer is not already existing
-    if(id != 0) // if id is not null
+    if(id != 0)      // if id is not null
         deleteVBO(); // delete current VBO
 
     const int dataSize = size * 3 * sizeof(float); // current size of data

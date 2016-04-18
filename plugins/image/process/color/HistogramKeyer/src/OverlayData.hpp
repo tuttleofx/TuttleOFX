@@ -28,12 +28,12 @@ struct HistogramBufferData
     // step
     int _step; // nbStep (for computing and display)
     // RGB
-    HistogramVector _bufferRed; // R
+    HistogramVector _bufferRed;   // R
     HistogramVector _bufferGreen; // G
-    HistogramVector _bufferBlue; // B
+    HistogramVector _bufferBlue;  // B
     /// HLS
-    HistogramVector _bufferHue; // H
-    HistogramVector _bufferLightness; // S
+    HistogramVector _bufferHue;        // H
+    HistogramVector _bufferLightness;  // S
     HistogramVector _bufferSaturation; // L
     // Alpha
     HistogramVector _bufferAlpha; // alpha
@@ -45,13 +45,13 @@ struct HistogramBufferData
 struct AverageBarData
 {
     // RGB
-    int _averageRed; // R
+    int _averageRed;   // R
     int _averageGreen; // G
-    int _averageBlue; // B
+    int _averageBlue;  // B
     // HSL
-    int _averageHue; // H
+    int _averageHue;        // H
     int _averageSaturation; // S
-    int _averageLightness; // L
+    int _averageLightness;  // L
 };
 
 /*
@@ -62,11 +62,11 @@ typedef boost::multi_array<unsigned char, 2, OfxAllocator<unsigned char> > bool_
 struct Pixel_compute_histograms
 {
     HistogramBufferData& _data; // HistogramBufferData to fill up
-    bool_2d& _imgBool; // bool selection img (pixels)
-    std::ssize_t _height; // height of src clip
-    std::ssize_t _width; // width of src clip
-    std::ssize_t _y, _x; // position of the current pixel (functor needs to know which pixel is it)
-    bool _isSelectionMode; // do we work on all of the pixels (normal histograms) or only on selection
+    bool_2d& _imgBool;          // bool selection img (pixels)
+    std::ssize_t _height;       // height of src clip
+    std::ssize_t _width;        // width of src clip
+    std::ssize_t _y, _x;        // position of the current pixel (functor needs to know which pixel is it)
+    bool _isSelectionMode;      // do we work on all of the pixels (normal histograms) or only on selection
 
     Pixel_compute_histograms(bool_2d& selection, HistogramBufferData& data, const bool isSelectionMode)
         : _data(data)
@@ -117,7 +117,7 @@ struct Pixel_compute_histograms
             hsl32f_pixel_t hsl_pix; // needed to work in HSL (entry is RGBA)
             rgba32f_pixel_t pix;
 
-            color_convert(p, pix); // convert input to RGBA
+            color_convert(p, pix);       // convert input to RGBA
             color_convert(pix, hsl_pix); // convert RGBA tp HSL
 
             // RGBA
@@ -223,9 +223,9 @@ public:
 private:
     /*Histogram management*/
     void computeHistogramBufferData(HistogramBufferData& data, SView& srcView, const OfxTime time,
-                                    const bool isSelection = false); // compute a HisogramBufferData
+                                    const bool isSelection = false);       // compute a HisogramBufferData
     void correctHistogramBufferData(HistogramBufferData& toCorrect) const; // correct a complete HistogramBufferData
-    void resetHistogramBufferData(HistogramBufferData& toReset) const; // reset a complete HistogramBufferData
+    void resetHistogramBufferData(HistogramBufferData& toReset) const;     // reset a complete HistogramBufferData
 
     /*Average management*/
     void computeAverages(); // compute average of each channel
@@ -234,23 +234,23 @@ private:
     void resetHistogramData(); // reset data (if size change for example)
 
     void resetHistogramSelectionData(); // reset selection data
-    void resetAverages(); // rest all of the averages
+    void resetAverages();               // rest all of the averages
     void removeSelection();
 
-    void correctVector(HistogramVector& v) const; // correct a specific channel
+    void correctVector(HistogramVector& v) const;                             // correct a specific channel
     void resetVectortoZero(HistogramVector& v, const std::size_t size) const; // reset a specific channel buffer
-    int computeAnAverage(const HistogramVector& selection_v) const; // compute average of a specific channel
+    int computeAnAverage(const HistogramVector& selection_v) const;           // compute average of a specific channel
 
 public:
     ///@todo accessors
-    HistogramBufferData _data; // histogram data
-    HistogramBufferData _selectionData; // selection histogram data
+    HistogramBufferData _data;               // histogram data
+    HistogramBufferData _selectionData;      // selection histogram data
     HistogramBufferData _curveFromSelection; // curve from selection histogram data
 
-    AverageBarData _averageData; // average bar data used to display average bars
-    bool_2d _imgBool; // unsigned char 2D (use for display texture on screen)
-    OfxTime _currentTime; // time of the current frame
-    std::size_t _vNbStep; // nbStep for buffers
+    AverageBarData _averageData;            // average bar data used to display average bars
+    bool_2d _imgBool;                       // unsigned char 2D (use for display texture on screen)
+    OfxTime _currentTime;                   // time of the current frame
+    std::size_t _vNbStep;                   // nbStep for buffers
     std::size_t _vNbStepCurveFromSelection; // nbStep for curve to selection buffers
     bool _isComputing;
 

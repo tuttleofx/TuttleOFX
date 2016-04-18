@@ -559,7 +559,7 @@ std::ostream& operator<<(std::ostream& os, const OfxhPluginCache& v)
         //		os << "Inputs:" << std::endl;
         //		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
         //		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin();
-        //it2 != inputs.end(); ++it2 )
+        // it2 != inputs.end(); ++it2 )
         //			os << "    * " << it2->first << std::endl;
         os << "________________________________________________________________________________" << std::endl;
     }

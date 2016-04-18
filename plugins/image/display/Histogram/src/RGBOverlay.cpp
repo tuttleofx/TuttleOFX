@@ -73,7 +73,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
         if(!_isGriddisplay) // if grid has not been already displayed
         {
             displayGrid(size.y, size.x); // display grid
-            _isGriddisplay = true; // set display grid to true
+            _isGriddisplay = true;       // set display grid to true
         }
 
         displayASpecificHistogram(getOverlayData()._data._bufferRed, getOverlayData()._selectionData._bufferRed, step,
@@ -82,7 +82,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
         {
             displaySelectionPoints(getOverlayData()._selectionData._bufferRed, step, size.x, redHisto); // selection points
             displayAverageBar(getOverlayData()._averageData._averageRed, averageHisto, size.x, size.y, step); // average bar
-            displayRedIndicator(size); // indicator
+            displayRedIndicator(size);                                                                        // indicator
         }
     }
     if(_plugin->_paramOverlayGSelection->getValue()) // GREEN CHANNEL
@@ -90,7 +90,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
         if(!_isGriddisplay) // if grid has not been already displayed
         {
             displayGrid(size.y, size.x); // display grid
-            _isGriddisplay = true; // set display grid to true
+            _isGriddisplay = true;       // set display grid to true
         }
 
         displayASpecificHistogram(getOverlayData()._data._bufferGreen, getOverlayData()._selectionData._bufferGreen, step,
@@ -101,7 +101,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
                                    greenHisto); // selection points
             displayAverageBar(getOverlayData()._averageData._averageGreen, averageHisto, size.x, size.y, step); // average
                                                                                                                 // bar
-            displayGreenIndicator(size); // indicator
+            displayGreenIndicator(size);                                                                        // indicator
         }
     }
     if(_plugin->_paramOverlayBSelection->getValue()) // BLUE CHANNEL
@@ -109,7 +109,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
         if(!_isGriddisplay) // if grid has not been already displayed
         {
             displayGrid(size.y, size.x); // display grid
-            _isGriddisplay = true; // set display grid to true
+            _isGriddisplay = true;       // set display grid to true
         }
 
         displayASpecificHistogram(getOverlayData()._data._bufferBlue, getOverlayData()._selectionData._bufferBlue, step,
@@ -118,7 +118,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
         {
             displaySelectionPoints(getOverlayData()._selectionData._bufferBlue, step, size.x, blueHisto); // selection points
             displayAverageBar(getOverlayData()._averageData._averageBlue, averageHisto, size.x, size.y, step); // average bar
-            displayBlueIndicator(size); // indicator
+            displayBlueIndicator(size);                                                                        // indicator
         }
     }
     // Display border (separate from histograms to eliminate blending)
@@ -149,7 +149,7 @@ ESelectedChannelRGB RGBOverlay::getOnlyChannelSelectedRGB() const
         if(!R && G && !B)
             return eSelectedChannelG; // Only green is selected
         if(!R && !G && B)
-            return eSelectedChannelB; // Only blue is selected
+            return eSelectedChannelB;   // Only blue is selected
         return eSelectedChannelMoreRGB; // More than one RGB channel are selected
     }
     return eSelectedChannelNoneRGB; // None channel is selected
@@ -185,8 +185,8 @@ void RGBOverlay::displayGrid(float height, float width)
 
     // drawing minor grid
     glColor3f(.2f, .2f, .2f); // gray color
-    float baseY = 0; // initialize y to O
-    float baseX = 0; // initialize x to 0
+    float baseY = 0;          // initialize y to O
+    float baseX = 0;          // initialize x to 0
     for(unsigned int i = 0; i < 20; ++i)
     {
         baseY += stepYm; // update Y position
@@ -199,8 +199,8 @@ void RGBOverlay::displayGrid(float height, float width)
 
     // drawing major grid
     glColor3f(.5f, .5f, .5f); // gray color
-    baseY = 0; // initialize y to O
-    baseX = 0; // initialize x to 0
+    baseY = 0;                // initialize y to O
+    baseX = 0;                // initialize x to 0
     for(unsigned int i = 0; i < 10; ++i)
     {
         baseY += stepY; // update Y position

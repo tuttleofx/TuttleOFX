@@ -61,7 +61,7 @@ void merge_views(const View& srcA, const View& srcB, View& dst, F fun)
     // If merging functor needs alpha, check if destination contains alpha.
     typedef typename contains_color<typename View::value_type, alpha_t>::type has_alpha_t;
     //	BOOST_STATIC_ASSERT(( boost::is_same<typename F::operating_mode_t, merge_per_channel_with_alpha>::value ?
-    //has_alpha_t::value : true ));
+    // has_alpha_t::value : true ));
 
     // Merge views.
     for(std::ptrdiff_t y = 0; y < dst.height(); ++y)

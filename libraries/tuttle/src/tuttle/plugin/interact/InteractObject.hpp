@@ -53,9 +53,9 @@ public:
         //		const double a = std::sqrt( pow<2>(penPosition.x - _beginPenPosition.x) + pow<2>(penPosition.y -
         //_beginPenPosition.y) );
         //		const double b = std::sqrt( pow<2>(_beginPenPosition.x - _manipulator->getPosition().x) +
-        //pow<2>(_beginPenPosition.y - _manipulator->getPosition().y) );
+        // pow<2>(_beginPenPosition.y - _manipulator->getPosition().y) );
         //		const double c = std::sqrt( pow<2>(penPosition.x - _manipulator->getPosition().x) +
-        //pow<2>(penPosition.y - _manipulator->getPosition().y) );
+        // pow<2>(penPosition.y - _manipulator->getPosition().y) );
 
         // rotate( center, -std::acos( (pow<2>(a) - pow<2>(b) - pow<2>(c)) / (2*abs(b)*abs(c)) ) );
     }

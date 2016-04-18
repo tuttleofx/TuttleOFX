@@ -109,14 +109,17 @@ void LocalMaximaPlugin::render(const OFX::RenderArguments& args)
     //	{
     //		case OFX::ePixelComponentRGBA:
     //		{
-    //			doGilRender2<LocalMaximaProcess, false, boost::gil::rgba_layout_t>( *this, args, sBitDepth, false, dComponent,
-    //dBitDepth );
+    //			doGilRender2<LocalMaximaProcess, false, boost::gil::rgba_layout_t>( *this, args, sBitDepth, false,
+    // dComponent,
+    // dBitDepth );
     //			return;
     //		}
     //		case OFX::ePixelComponentRGB:
     //		{
-    ////			doGilRender2<LocalMaximaProcess, false, boost::gil::rgb_layout_t>( *this, args, sBitDepth, false, dComponent,
-    ///dBitDepth );
+    ////			doGilRender2<LocalMaximaProcess, false, boost::gil::rgb_layout_t>( *this, args, sBitDepth,
+    ///false,
+    /// dComponent,
+    /// dBitDepth );
     //			return;
     //		}
     //		case OFX::ePixelComponentAlpha:
@@ -124,8 +127,10 @@ void LocalMaximaPlugin::render(const OFX::RenderArguments& args)
     //		case OFX::ePixelComponentNone:
     //		{
     //			BOOST_THROW_EXCEPTION( exception::Unsupported()
-    //				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(sComponent) + ") not supported by
-    //the plugin." );
+    //				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(sComponent) + ") not
+    //supported
+    // by
+    // the plugin." );
     //		}
     //	}
     //	BOOST_THROW_EXCEPTION( exception::Unknown() );

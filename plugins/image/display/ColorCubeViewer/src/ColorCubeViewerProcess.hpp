@@ -14,7 +14,7 @@ namespace colorCubeViewer
 
 struct Compute_alpha_pixel
 {
-    bool _isOutputBW; // is output black & white (or alpha channel)
+    bool _isOutputBW;         // is output black & white (or alpha channel)
     GeodesicForm& _dataColor; // color geodesic form
     GeodesicForm& _dataSpill; // spill geodesic form
 
@@ -30,11 +30,11 @@ struct Compute_alpha_pixel
     {
         using namespace boost::gil;
 
-        double alpha = 0.0; // define current pixel alpha (1 by default)
+        double alpha = 0.0;    // define current pixel alpha (1 by default)
         Ofx3DPointD testPoint; // initialize test point
-        testPoint.x = p[0]; // x == red
-        testPoint.y = p[1]; // y == green
-        testPoint.z = p[2]; // z == blue
+        testPoint.x = p[0];    // x == red
+        testPoint.y = p[1];    // y == green
+        testPoint.z = p[2];    // z == blue
 
         if(_dataSpill.isIntoBoundingBox(testPoint)) // if current pixel is into spill bounding box
         {
@@ -62,16 +62,16 @@ struct Compute_alpha_pixel
                     vectMax.y = _dataSpill._intersectionPoint.y - _dataColor._intersectionPoint.y; // x value
                     vectMax.z = _dataSpill._intersectionPoint.z - _dataColor._intersectionPoint.z; // x value
                     // compute norms
-                    double normMin, normMax; // initialize
-                    normMin = vectMin.x * vectMin.x; // add x*x
+                    double normMin, normMax;          // initialize
+                    normMin = vectMin.x * vectMin.x;  // add x*x
                     normMin += vectMin.y * vectMin.y; // add y*y
                     normMin += vectMin.z * vectMin.z; // add z*z
-                    normMin = sqrt(normMin); // compute norm minimal
+                    normMin = sqrt(normMin);          // compute norm minimal
 
-                    normMax = vectMax.x * vectMax.x; // add x*x
+                    normMax = vectMax.x * vectMax.x;  // add x*x
                     normMax += vectMax.y * vectMax.y; // add y*y
                     normMax += vectMax.z * vectMax.z; // add z*z
-                    normMax = sqrt(normMax); // compute norm maximal
+                    normMax = sqrt(normMax);          // compute norm maximal
 
                     // compute alpha value
                     alpha = normMin / normMax;
@@ -79,8 +79,8 @@ struct Compute_alpha_pixel
             }
         }
         alpha = 1 - alpha; // black is transparent and white is opaque
-        Pixel ret; // declare returned pixel
-        if(_isOutputBW) // output is gray scale image
+        Pixel ret;         // declare returned pixel
+        if(_isOutputBW)    // output is gray scale image
         {
             gray32f_pixel_t inter;     // need a gray_pixel
             inter[0] = alpha;          // recopy value (black or white)
@@ -90,8 +90,8 @@ struct Compute_alpha_pixel
         {
             for(unsigned int i = 0; i < boost::gil::num_channels<Pixel>::type::value - 1; ++i) // all RGB channels (not
                                                                                                // alpha)
-                ret[i] = p[i]; // recopy r,g and b channels
-            ret[3] = alpha; // fill alpha channel up
+                ret[i] = p[i];                                                                 // recopy r,g and b channels
+            ret[3] = alpha;                                                                    // fill alpha channel up
         }
         return ret;
     }

@@ -127,7 +127,7 @@ void InputBufferWrapper::setRawImageBuffer(void* rawBuffer, const int width, con
 //	if( vData._outDegree > 0 )
 //	{
 //		_imageCache->addReference( ofx::imageEffect::OfxhImage::eReferenceOwnerHost, vData._outDegree ); // add a
-//reference on this getNode() for each future usages
+// reference on this getNode() for each future usages
 //	}
 //}
 

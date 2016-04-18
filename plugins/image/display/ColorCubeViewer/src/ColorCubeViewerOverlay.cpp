@@ -22,18 +22,18 @@ ColorCubeViewerOverlay::ColorCubeViewerOverlay(OfxInteractHandle handle, OFX::Im
     , _infos(effect)
 {
     _plugin = static_cast<ColorCubeViewerPlugin*>(_effect); // get plugin
-    _plugin->addRefCloudPointData(); // create pointer to overlay data
+    _plugin->addRefCloudPointData();                        // create pointer to overlay data
 
-    _isPenDown = false; // mouse is not under control by default
-    _isCtrlKeyDown = false; // Ctrl key is not pressed by default
-    _rotateX = _rotateY = 0.0; // initialize rotation to 0
-    _rotateXForm = _rotateYForm = 0.0; // initialize rotation centered to geodesic form to 0
+    _isPenDown = false;                          // mouse is not under control by default
+    _isCtrlKeyDown = false;                      // Ctrl key is not pressed by default
+    _rotateX = _rotateY = 0.0;                   // initialize rotation to 0
+    _rotateXForm = _rotateYForm = 0.0;           // initialize rotation centered to geodesic form to 0
     _origin.x = _origin.y = _end.x = _end.y = 0; // initialize mouse positions to 0
 
     setToIdentity(_modelViewMatrix); // set model view matrix to identity
 
     /// HACK : to initialize correctly overlay display data
-    OFX::InstanceChangedArgs args; // create instance changed arguments
+    OFX::InstanceChangedArgs args;                   // create instance changed arguments
     _plugin->changedParam(args, kPointCloudDisplay); // call changed parameters function to initialize overlay data
 }
 
@@ -84,12 +84,12 @@ void ColorCubeViewerOverlay::prepareOpenGLScene(const OFX::DrawArgs& args)
     glMatrixMode(GL_PROJECTION); // load standard mode
     glLoadMatrixd(proj_matrix);  // reload previous projection matrix
 
-    const GLdouble vleft = -0.5; // frustrum left
-    const GLdouble vright = 1.5; // frustrum right
-    const GLdouble vbottom = -0.5; // frustrum bottom
-    const GLdouble vtop = 1.5; // frustrum top
-    const GLdouble vnear = 10.0; // frustrum near
-    const GLdouble vfar = -10.0; // frustrum far
+    const GLdouble vleft = -0.5;                        // frustrum left
+    const GLdouble vright = 1.5;                        // frustrum right
+    const GLdouble vbottom = -0.5;                      // frustrum bottom
+    const GLdouble vtop = 1.5;                          // frustrum top
+    const GLdouble vnear = 10.0;                        // frustrum near
+    const GLdouble vfar = -10.0;                        // frustrum far
     glOrtho(vleft, vright, vbottom, vtop, vnear, vfar); // define new frustrum for overlay data
 
     glMatrixMode(GL_MODELVIEW); // load standard mode
@@ -97,7 +97,7 @@ void ColorCubeViewerOverlay::prepareOpenGLScene(const OFX::DrawArgs& args)
     double modelViewMatrix[16]; // initialize
     for(unsigned int i = 0; i < 16; ++i)
         modelViewMatrix[i] = _modelViewMatrix[i]; // recopy Matrix4 into double*
-    glLoadMatrixd(modelViewMatrix); // load modelView matrix (first time is equal to identity)
+    glLoadMatrixd(modelViewMatrix);               // load modelView matrix (first time is equal to identity)
 }
 
 /*
@@ -206,20 +206,20 @@ bool ColorCubeViewerOverlay::draw(const OFX::DrawArgs& args)
     bool displaySomethings = false;
     if(_plugin->_paramBoolPointCloudDisplay->getValue()) // Is CloudPointData displayed ? (GUI)
     {
-        glPushMatrix(); // new transformation
+        glPushMatrix();           // new transformation
         prepareOpenGLScene(args); // prepare frustum and projection settings
-        if(_plugin->_updateVBO) // VBO need to be updated
+        if(_plugin->_updateVBO)   // VBO need to be updated
         {
             // update VBO
-            getData().updateVBO(); // update VBO from VBO data (already computed)
+            getData().updateVBO();       // update VBO from VBO data (already computed)
             _plugin->_updateVBO = false; // VBO has been recomputed
         }
         if(_plugin->_resetViewParameters) // View parameters need to be reseted
         {
-            _rotateX = _rotateY = 0; // reset parameters
-            _rotateXForm = _rotateYForm = 0; // reset geodesic form center rotation parameters
+            _rotateX = _rotateY = 0;               // reset parameters
+            _rotateXForm = _rotateYForm = 0;       // reset geodesic form center rotation parameters
             _plugin->_resetViewParameters = false; // view parameters has been changed
-            setToIdentity(_modelViewMatrix); // reset model-view matrix to identity
+            setToIdentity(_modelViewMatrix);       // reset model-view matrix to identity
         }
         // OpenGL parameters
         glEnable(GL_DEPTH_TEST); // active depth (better for understand results)
@@ -227,21 +227,21 @@ bool ColorCubeViewerOverlay::draw(const OFX::DrawArgs& args)
         // drawing Axes
         drawAxes(); // draw the X, Y and Z axes
         // drawing VBO
-        if(getData()._isVBOBuilt) // if VBO has already been built
+        if(getData()._isVBOBuilt)     // if VBO has already been built
             getData()._imgVBO.draw(); // draw VBO
 
         // drawing color selection VBO
         if(getData()._isSelectionVBOBuilt && _plugin->_paramBoolSeeSelection->getValue()) // color selection VBO data is
                                                                                           // built
         {
-            glColor3f(1.0f, 1.0f, 1.0f); // color is white
+            glColor3f(1.0f, 1.0f, 1.0f);         // color is white
             getData()._selectionColorVBO.draw(); // draw selection VBO
         }
         // drawing spill selection VBO
         if(getData()._isSpillSelectionVBOBuilt &&
            _plugin->_paramBoolSeeSpillSelection->getValue()) // spill selection VBO data is built
         {
-            glColor3f(.3f, .3f, .3f); // color is white
+            glColor3f(.3f, .3f, .3f);            // color is white
             getData()._selectionSpillVBO.draw(); // draw selection VBO
         }
 
@@ -249,13 +249,13 @@ bool ColorCubeViewerOverlay::draw(const OFX::DrawArgs& args)
         getData()._averageColor.draw(); // draw average (cross)
         // drawing geodesic form
         if(_plugin->_paramBoolDisplayGeodesicForm->getValue()) // does user want to display color geodesic form
-            getData()._geodesicFormColor.draw(false); // draw geodesic form on screen without alpha
-        if(_plugin->_paramBoolDisplaySpillGF->getValue()) // does user want to display spill geodesic form
-            getData()._geodesicFormSpill.draw(true); // draw spill geodesic form on screen with alpha
+            getData()._geodesicFormColor.draw(false);          // draw geodesic form on screen without alpha
+        if(_plugin->_paramBoolDisplaySpillGF->getValue())      // does user want to display spill geodesic form
+            getData()._geodesicFormSpill.draw(true);           // draw spill geodesic form on screen with alpha
 
         // OpenGL end of parameters
         glDisable(GL_DEPTH_TEST); // disable deep
-        glPopMatrix(); // pop matrix
+        glPopMatrix();            // pop matrix
         displaySomethings = true; // something has been drown on screen
     }
     return displaySomethings; // return if overlay has displayed something (y or n)
@@ -270,10 +270,10 @@ bool ColorCubeViewerOverlay::penDown(const OFX::PenArgs& args)
 {
     if(!_isPenDown) // is mouse is not already selected
     {
-        _isPenDown = true; // active mouse operation (for penMotion)
+        _isPenDown = true;                       // active mouse operation (for penMotion)
         _origin.x = _end.x = args.penPosition.x; // capture x position of current click
         _origin.y = _end.y = args.penPosition.y; // capture y position of current click
-        return true; // event has been captured
+        return true;                             // event has been captured
     }
     return false; // event has not been captured
 }
@@ -287,13 +287,13 @@ bool ColorCubeViewerOverlay::penUp(const OFX::PenArgs& args)
 {
     if(_isPenDown) // is mouse is already selected
     {
-        _isPenDown = false; // mouse is no more selected
+        _isPenDown = false;          // mouse is no more selected
         _end.x = args.penPosition.x; // capture mouse current position x
         _end.y = args.penPosition.y; // capture mouse current position y
 
         if(_origin.x == _end.x && _origin.y == _end.y)
             return false; // basic click (there is nothing to do in this case)
-        return true; // event has been captured
+        return true;      // event has been captured
     }
     return false; // event has not been captured
 }
@@ -312,14 +312,14 @@ bool ColorCubeViewerOverlay::penMotion(const OFX::PenArgs& args)
 
         int deltaX = _end.x - _origin.x; // compute delta for rotation on Y axis (horizontal)
         int deltaY = _end.y - _origin.y; // compute delta for rotation on X axis (vertical)
-        if(_isCtrlKeyDown) // rotation center is current color selection average
+        if(_isCtrlKeyDown)               // rotation center is current color selection average
         {
             _rotateXForm = (deltaX / args.pixelScale.x) / kRotationSpeed; // add delta to geodesic center rotation (X axis)
             _rotateYForm = (deltaY / args.pixelScale.y) / kRotationSpeed; // add delta to geodesic center rotation (Y axis)
 
             // update model-View matrix
             Ofx3DPointD rotationCenter = getData()._geodesicFormColor._center; // get current rotation center
-            updateModelView(rotationCenter); // update model-view
+            updateModelView(rotationCenter);                                   // update model-view
         }
         else // rotation center is reference center (0.5,0.5,0.5 in cube reference)
         {
@@ -327,10 +327,10 @@ bool ColorCubeViewerOverlay::penMotion(const OFX::PenArgs& args)
             _rotateY = (deltaY / args.pixelScale.y) / kRotationSpeed; // add delta to cube rotation (Y axis)
 
             // update model-View matrix
-            Ofx3DPointD rotationCenter; // create rotation center
-            rotationCenter.x = 0.5; // set rotation center X value 0 by default
-            rotationCenter.y = 0.5; // set rotation center Y value
-            rotationCenter.z = 0.5; // set rotation center Z value
+            Ofx3DPointD rotationCenter;      // create rotation center
+            rotationCenter.x = 0.5;          // set rotation center X value 0 by default
+            rotationCenter.y = 0.5;          // set rotation center Y value
+            rotationCenter.z = 0.5;          // set rotation center Z value
             updateModelView(rotationCenter); // update model-view
         }
         _origin.x = args.penPosition.x; // change origin X (prepare next penMotion)
@@ -352,7 +352,7 @@ bool ColorCubeViewerOverlay::keyDown(const OFX::KeyArgs& args)
        args.keySymbol == kOfxKey_Control_R) // if the pressed key is Ctrl key (left or right)
     {
         _isCtrlKeyDown = true; // Ctrl key is pressed
-        return true; // event has been treated
+        return true;           // event has been treated
     }
     return false; // event has not been treated (key pressed is not Ctrl)
 }
@@ -369,7 +369,7 @@ bool ColorCubeViewerOverlay::keyUp(const OFX::KeyArgs& args)
     {
         if(_isCtrlKeyDown)
             _isCtrlKeyDown = false; // Ctrl key is not pressed anymore
-        return true; // event has been treated
+        return true;                // event has been treated
     }
     return false; // event has not been treated (key pressed is not Ctrl)
 }
@@ -407,25 +407,25 @@ void ColorCubeViewerOverlay::updateModelView(const Ofx3DPointD& rotationCenter)
  */
 void ColorCubeViewerOverlay::drawWarning(const Ofx3DPointD& centerPoint, const double ratio)
 {
-    float size = 5.0f; // define size
+    float size = 5.0f;       // define size
     glColor3f(1.0f, .7f, 0); // color orange
-    glLineWidth(size); // change line width (bigger)
+    glLineWidth(size);       // change line width (bigger)
     // draw triangle
-    glBegin(GL_LINE_STRIP); // draw exterior triangle
+    glBegin(GL_LINE_STRIP);                                     // draw exterior triangle
     glVertex2d((centerPoint.x - 0.025 * ratio), centerPoint.y); // first point of triangle
     glVertex2d((centerPoint.x + 0.025 * ratio), centerPoint.y); // second point of triangle
     glVertex2d(centerPoint.x, (centerPoint.y + 0.085 * ratio)); // third point of triangle
     glVertex2d((centerPoint.x - 0.025 * ratio), centerPoint.y); // first point of triangle (boucle)
-    glEnd(); // end of drawing
+    glEnd();                                                    // end of drawing
     // draw !
-    glBegin(GL_LINES); // draw ! sign
+    glBegin(GL_LINES);                                         // draw ! sign
     glVertex2d(centerPoint.x, (centerPoint.y + 0.07 * ratio)); // first point
     glVertex2d(centerPoint.x, (centerPoint.y + 0.03 * ratio)); // second point
-    glEnd(); // end of drawing
-    glBegin(GL_POINTS); // draw ! point
-    glPointSize(size); // change point size (bigger)
+    glEnd();                                                   // end of drawing
+    glBegin(GL_POINTS);                                        // draw ! point
+    glPointSize(size);                                         // change point size (bigger)
     glVertex2d(centerPoint.x, (centerPoint.y + 0.02 * ratio)); // point of !
-    glEnd(); // end of drawing
+    glEnd();                                                   // end of drawing
     // reset basic parameters
     glLineWidth(1.0f); // reset line width (normal)
     glPointSize(1.0f); // reset point size (normal)

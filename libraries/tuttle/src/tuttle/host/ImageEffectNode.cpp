@@ -448,10 +448,11 @@ void ImageEffectNode::initInputClipsPixelAspectRatio()
     //	{
     //		// @todo The plugin doesn't support PAR, the host should do the conversions!
     //		// http://openfx.sourceforge.net/Documentation/1.3/ofxProgrammingReference.html#ImageEffectsPixelAspectRatios
-    //		// If a plugin does not accept clips of differing PARs, then the host must resample all images fed to that effect
-    //to agree with the output's PAR.
+    //		// If a plugin does not accept clips of differing PARs, then the host must resample all images fed to that
+    // effect
+    // to agree with the output's PAR.
     //		// If a plugin does accept clips of differing PARs, it will need to specify the output clip's PAR in the
-    //kOfxImageEffectActionGetClipPreferences action.
+    // kOfxImageEffectActionGetClipPreferences action.
     //
     //		// Convert images here ? Or introduce convert nodes into the ProcessGraph?
     //		BOOST_ASSERT(false);
@@ -591,7 +592,7 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
             // else
             //{
             //	TUTTLE_LOG_INFO( clip.getFullName() << "(" << clip.getBitDepth() << ")" << ", unconnected ? " <<
-            //clip.isConnected() << ", output ? " << clip.isOutput() );
+            // clip.isConnected() << ", output ? " << clip.isOutput() );
             //}
         }
     }

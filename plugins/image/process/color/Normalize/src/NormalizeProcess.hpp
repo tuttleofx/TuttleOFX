@@ -40,10 +40,10 @@ protected:
     boost::gil::rgba32f_pixel_t _sMin;  ///< min value in source image
     boost::gil::rgba32f_pixel_t _dMin;  ///< min value in destination image
     boost::gil::rgba32f_pixel_t _ratio; ///< scale to go from source to dest
-    /// @}
-    /*
-            template< class WorkView, typename LocalChannel >
-            void processChannel( View& src, View& dst, bool process, Pixel& ratio, Pixel& sMin, Pixel& dMin );*/
+                                        /// @}
+                                        /*
+                                                template< class WorkView, typename LocalChannel >
+                                                void processChannel( View& src, View& dst, bool process, Pixel& ratio, Pixel& sMin, Pixel& dMin );*/
 
     template <class WorkView, typename LocalChannel, typename P>
     void processChannel(View& src, View& dst, bool process, P& ratio, P& sMin, P& dMin);

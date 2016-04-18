@@ -308,7 +308,7 @@ public:
                 //				TUTTLE_LOG_VAR( TUTTLE_TRACE, input.getName() );
                 //				std::cout << "--- insert edges: ";
                 //				std::copy( mapInputsTimes[input.getName()+"."
-                //kOfxOutputAttributeName].begin(),
+                // kOfxOutputAttributeName].begin(),
                 //				           mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].end(),
                 //						   std::ostream_iterator<OfxTime>(std::cout, ",") );
                 edge._timesNeeded[t] = mapInputsTimes[edge.getInAttrName()];
@@ -510,8 +510,9 @@ void removeIdentityNodes(TGraph& graph, const std::vector<IdentityNodeConnection
     //				<< " <<-- "
     //				<< connection._input._srcNode << "::" kOfxOutputAttributeName );
     //
-    //			BOOST_FOREACH( const typename IdentityNodeConnection<TGraph>::OutputClipConnection& outputClipConnection,
-    //connection._outputs )
+    //			BOOST_FOREACH( const typename IdentityNodeConnection<TGraph>::OutputClipConnection&
+    // outputClipConnection,
+    // connection._outputs )
     //			{
     //				TUTTLE_LOG_TRACE( "OUT: "
     //					<< connection._identityVertex << "::" kOfxOutputAttributeName

@@ -38,7 +38,7 @@ namespace gil
 //#ifdef _MSC_VER
 //#pragma warning(push)
 //#pragma warning(disable: 4309)      // disable truncation of constant value warning (using -1 to get the max value of an
-//integral)
+// integral)
 //#endif
 
 namespace detail
@@ -56,7 +56,7 @@ struct channel_converter_unsigned_integral_nondivisible;
 
 //////////////////////////////////////
 ////  unsigned_integral_max_value - given an unsigned integral channel type, returns its maximum value as an MPL integral
-///constant
+/// constant
 //////////////////////////////////////
 
 template <typename UnsignedIntegralChannel>
@@ -85,7 +85,7 @@ struct unsigned_integral_max_value<packed_channel_value<K> >
 
 //////////////////////////////////////
 ////  unsigned_integral_num_bits - given an unsigned integral channel type, returns the minimum number of bits needed to
-///represent it
+/// represent it
 //////////////////////////////////////
 
 template <typename UnsignedIntegralChannel>

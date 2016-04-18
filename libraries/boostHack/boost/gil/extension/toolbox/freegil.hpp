@@ -191,7 +191,7 @@ struct text
         right = (0x1 << 2),
         top = (0x1 << 3),
         ftop = (0x1 << 4),
-        middle = (0x1 << 5), // when text is aligned adjacent to each other.
+        middle = (0x1 << 5),  // when text is aligned adjacent to each other.
         fmiddle = (0x1 << 6), // when the text is all by itself
         bottom = (0x1 << 7),
     };

@@ -83,7 +83,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
         {
             displaySelectionPoints(getOverlayData()._selectionData._bufferHue, step, size.x, redHisto); // selection points
             displayAverageBar(getOverlayData()._averageData._averageHue, averageHisto, size.x, size.y, step); // average bar
-            displayHueIndicator(size, kPrecisionHueIndicator); // indicator
+            displayHueIndicator(size, kPrecisionHueIndicator);                                                // indicator
         }
     }
     if(_plugin->_paramOverlaySSelection->getValue()) // SATURATION CHANNEL
@@ -102,7 +102,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
             displaySelectionPoints(getOverlayData()._selectionData._bufferSaturation, step, size.x,
                                    greenHisto); // selection points
             displayAverageBar(getOverlayData()._averageData._averageSaturation, averageHisto, size.x, size.y,
-                              step); // average bar
+                              step);          // average bar
             displaySaturationIndicator(size); // indicator
         }
     }
@@ -121,7 +121,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
             displaySelectionPoints(getOverlayData()._selectionData._bufferLightness, step, size.x,
                                    blueHisto); // selection points
             displayAverageBar(getOverlayData()._averageData._averageLightness, averageHisto, size.x, size.y,
-                              step); // average bar
+                              step);         // average bar
             displayLightnessIndicator(size); // indicator
         }
     }
@@ -153,7 +153,7 @@ ESelectedChannelHSL HSLOverlay::getOnlyChannelSelectedHSL() const
         if(!H && S && !L)
             return eSelectedChannelS; // Only saturation is selected
         if(!H && !S && L)
-            return eSelectedChannelL; // Only lightness is selected
+            return eSelectedChannelL;   // Only lightness is selected
         return eSelectedChannelMoreHSL; // More than one HSL channel are selected
     }
     return eSelectedChannelNoneHSL; // None HSL channel is selected
@@ -189,8 +189,8 @@ void HSLOverlay::displayGrid(float height, float width)
 
     // drawing minor grid
     glColor3f(.2f, .2f, .2f); // gray color
-    float baseY = 0; // initialize y to O
-    float baseX = 0; // initialize x to 0
+    float baseY = 0;          // initialize y to O
+    float baseX = 0;          // initialize x to 0
     for(unsigned int i = 0; i < 20; ++i)
     {
         baseY += stepYm; // update Y position
@@ -203,8 +203,8 @@ void HSLOverlay::displayGrid(float height, float width)
 
     // drawing major grid
     glColor3f(.5f, .5f, .5f); // gray color
-    baseY = 0; // initialize y to O
-    baseX = 0; // initialize x to 0
+    baseY = 0;                // initialize y to O
+    baseX = 0;                // initialize x to 0
     for(unsigned int i = 0; i < 10; ++i)
     {
         baseY += stepY; // update Y position

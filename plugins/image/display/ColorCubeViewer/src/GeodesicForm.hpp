@@ -40,16 +40,16 @@ class GeodesicForm
 {
 public:
     // Geodesic form parameters
-    std::size_t _nbDivisions; // number of divisions of each faces
-    double _radius; // radius of geodesic form
-    Ofx3DPointD _center; // center of the geodesic form
-    std::vector<Ofx3DPointD> _points; // contains all of necessary points
+    std::size_t _nbDivisions;            // number of divisions of each faces
+    double _radius;                      // radius of geodesic form
+    Ofx3DPointD _center;                 // center of the geodesic form
+    std::vector<Ofx3DPointD> _points;    // contains all of necessary points
     std::vector<PyramidTriangle> _faces; // contains triangles
     // Intersection parameters
     std::size_t _idFaceIntersection; // face of the current intersection
-    Triangle _intersection; // triangle of the current intersection
-    Ofx3DPointD _intersectionPoint; // point of intersection between ray and geodesic form
-    bool _hasIntersection; // is there an intersection
+    Triangle _intersection;          // triangle of the current intersection
+    Ofx3DPointD _intersectionPoint;  // point of intersection between ray and geodesic form
+    bool _hasIntersection;           // is there an intersection
     // Bounding box parameters
     BoundingBox _boundingBox; // bounding box of the geodesic form
     // Scale value
@@ -78,7 +78,7 @@ public:
     void extendOnePoint(Ofx3DPointD& testPoint); // extend the geodesic form to contain testPoint
 
     // Bounding box
-    void updateBoundingBox(); // if points vector has changed : update bounding box
+    void updateBoundingBox();                             // if points vector has changed : update bounding box
     bool isIntoBoundingBox(const Ofx3DPointD& testPoint); // is testPoint into bounding box
 
     // Recopy geodesic form (evitate to extends spill form)

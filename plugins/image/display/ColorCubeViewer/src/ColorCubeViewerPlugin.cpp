@@ -28,37 +28,37 @@ ColorCubeViewerPlugin::ColorCubeViewerPlugin(OfxImageEffectHandle handle)
     _paramIntNbOfDivisionsGF =
         fetchIntParam(kIntNumberOfDivisonGeodesicForm); // number of divisions geodesic form - Int parameter
     _paramBoolDisplayGeodesicForm = fetchBooleanParam(kBoolOnlySelection); // display geodesic form - check box
-    _paramChoiceAverageMode = fetchChoiceParam(kColorAverageMode); // average color mode - Choice parameter
-    _paramRGBAColorSelection = fetchRGBAParam(kColorAverageSelection); // average color selection - RGBA parameter
+    _paramChoiceAverageMode = fetchChoiceParam(kColorAverageMode);         // average color mode - Choice parameter
+    _paramRGBAColorSelection = fetchRGBAParam(kColorAverageSelection);     // average color selection - RGBA parameter
     _paramPushButtonAverageCompute = fetchPushButtonParam(kColorAverageComputing); // average color computing - Push button
-    _paramBoolSeeSelection = fetchBooleanParam(kBoolColorSelectionDisplay); // see selection on overlay - check box
-    _paramDoubleScaleGF = fetchDoubleParam(kDoubleScaleGeodesicForm); // scale geodesic form - double parameter
-    _paramBoolSeeSpillSelection = fetchBooleanParam(kBoolSpillSelectionDisplay); // see spill selection - check box
-    _paramBoolDisplaySpillGF = fetchBooleanParam(kBoolDisplaySpillGF); // see spill geodesic form - check box
+    _paramBoolSeeSelection = fetchBooleanParam(kBoolColorSelectionDisplay);        // see selection on overlay - check box
+    _paramDoubleScaleGF = fetchDoubleParam(kDoubleScaleGeodesicForm);              // scale geodesic form - double parameter
+    _paramBoolSeeSpillSelection = fetchBooleanParam(kBoolSpillSelectionDisplay);   // see spill selection - check box
+    _paramBoolDisplaySpillGF = fetchBooleanParam(kBoolDisplaySpillGF);             // see spill geodesic form - check box
 
     // verify display Discrete enable value
     if(_paramBoolPointCloudDisplay->getValue()) // called default value
     {
         _paramBoolDiscretizationActive->setEnabled(true); // Enable discretization check box
-        _paramIntDiscretization->setEnabled(true); // Enable discretization int parameter
-        _paramBoolDisplayGeodesicForm->setEnabled(true); // Enable see color geodesic form display
-        _paramBoolSeeSelection->setEnabled(true); // Enable see color selection display
-        _paramBoolDisplaySpillGF->setEnabled(true); // Enable see spill geodesic form display
-        _paramBoolSeeSpillSelection->setEnabled(true); // Enable see spill selection display
+        _paramIntDiscretization->setEnabled(true);        // Enable discretization int parameter
+        _paramBoolDisplayGeodesicForm->setEnabled(true);  // Enable see color geodesic form display
+        _paramBoolSeeSelection->setEnabled(true);         // Enable see color selection display
+        _paramBoolDisplaySpillGF->setEnabled(true);       // Enable see spill geodesic form display
+        _paramBoolSeeSpillSelection->setEnabled(true);    // Enable see spill selection display
     }
     // verify choice average enable value
     if(_paramChoiceAverageMode->getValue() == 1)
     {
-        _paramRGBAColorSelection->setEnabled(true); // Enable color average selection (RGBA parameter)
+        _paramRGBAColorSelection->setEnabled(true);       // Enable color average selection (RGBA parameter)
         _paramPushButtonAverageCompute->setEnabled(true); // Enable color average computing (Push button)
     }
 
-    _updateAverage = false; // does display need to update average
-    _updateGeodesicForm = false; // does display need to update geodesic form
-    _updateVBO = false; // does display need to update VBO
+    _updateAverage = false;             // does display need to update average
+    _updateGeodesicForm = false;        // does display need to update geodesic form
+    _updateVBO = false;                 // does display need to update VBO
     _updateGeodesicFormAverage = false; // does Geodesic form need to be updated
-    _resetViewParameters = false; // do view parameters need to be reseted
-    _presetAverageSelection = false; // does average selection need to be set
+    _resetViewParameters = false;       // do view parameters need to be reseted
+    _presetAverageSelection = false;    // does average selection need to be set
 }
 
 ColorCubeViewerProcessParams<ColorCubeViewerPlugin::Scalar>
@@ -81,31 +81,31 @@ void ColorCubeViewerPlugin::changedParam(const OFX::InstanceChangedArgs& args, c
         {
             // enable discretization GUI components
             _paramBoolDiscretizationActive->setEnabled(true); // Enable discretization check box
-            _paramIntDiscretization->setEnabled(true); // Enable discretization int parameter
-            _paramBoolDisplayGeodesicForm->setEnabled(true); // Enable geodesic form display
-            _paramBoolSeeSelection->setEnabled(true); // Enable geodesic form display
-            _paramBoolDisplaySpillGF->setEnabled(true); // Enable see spill geodesic form display
-            _paramBoolSeeSpillSelection->setEnabled(true); // Enable see spill selection display
+            _paramIntDiscretization->setEnabled(true);        // Enable discretization int parameter
+            _paramBoolDisplayGeodesicForm->setEnabled(true);  // Enable geodesic form display
+            _paramBoolSeeSelection->setEnabled(true);         // Enable geodesic form display
+            _paramBoolDisplaySpillGF->setEnabled(true);       // Enable see spill geodesic form display
+            _paramBoolSeeSpillSelection->setEnabled(true);    // Enable see spill selection display
 
             // generate VBO data (VBO object is created in overlay)
-            getCloudPointData()._time = args.time; // update time
-            getCloudPointData().generateVBOData( // create a VBO
-                _clipSrc, // source clip
-                args.renderScale, // current render scale
+            getCloudPointData()._time = args.time;          // update time
+            getCloudPointData().generateVBOData(            // create a VBO
+                _clipSrc,                                   // source clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization mode active
-                _paramIntDiscretization->getValue()); // get discretization step
+                _paramIntDiscretization->getValue());       // get discretization step
             // generate color selection VBO data (object created in overlay)
-            getCloudPointData().generateColorSelectionVBO( // create a color selection VBO
-                _clipColor, // color clip
-                args.renderScale, // current render scale
+            getCloudPointData().generateColorSelectionVBO(  // create a color selection VBO
+                _clipColor,                                 // color clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization mode active
-                _paramIntDiscretization->getValue()); // get discretization step
+                _paramIntDiscretization->getValue());       // get discretization step
             // generate spill selection VBO data (object created in overlay)
-            getCloudPointData().generateSpillSelectionVBO( // create a spill selection VBO
-                _clipSpill, // spill clip
-                args.renderScale, // current render scale
+            getCloudPointData().generateSpillSelectionVBO(  // create a spill selection VBO
+                _clipSpill,                                 // spill clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization mode active
-                _paramIntDiscretization->getValue()); // get discretization step
+                _paramIntDiscretization->getValue());       // get discretization step
             // update geodesic form
             updateGeodesicForms(args); // update geodesic form
         }
@@ -113,11 +113,11 @@ void ColorCubeViewerPlugin::changedParam(const OFX::InstanceChangedArgs& args, c
         {
             // disable discretization GUI components
             _paramBoolDiscretizationActive->setEnabled(false); // Disable discretization treatment
-            _paramIntDiscretization->setEnabled(false); // Disable discretization choice
-            _paramBoolDisplayGeodesicForm->setEnabled(false); // Disable geodesic form display
-            _paramBoolSeeSelection->setEnabled(false); // Disable geodesic form display
-            _paramBoolDisplaySpillGF->setEnabled(false); // Disable see spill geodesic form display
-            _paramBoolSeeSpillSelection->setEnabled(false); // Disable see spill selection display
+            _paramIntDiscretization->setEnabled(false);        // Disable discretization choice
+            _paramBoolDisplayGeodesicForm->setEnabled(false);  // Disable geodesic form display
+            _paramBoolSeeSelection->setEnabled(false);         // Disable geodesic form display
+            _paramBoolDisplaySpillGF->setEnabled(false);       // Disable see spill geodesic form display
+            _paramBoolSeeSpillSelection->setEnabled(false);    // Disable see spill selection display
         }
     }
     if(paramName == kBoolDiscretizationDisplay) // discretization active check box changed
@@ -125,24 +125,24 @@ void ColorCubeViewerPlugin::changedParam(const OFX::InstanceChangedArgs& args, c
         if(hasCloudPointData()) // if there is overlay data
         {
             // generate VBO data
-            getCloudPointData()._time = args.time; // update time
-            getCloudPointData().generateVBOData( // create a VBO data
-                _clipSrc, // source clip
-                args.renderScale, // current render scale
+            getCloudPointData()._time = args.time;          // update time
+            getCloudPointData().generateVBOData(            // create a VBO data
+                _clipSrc,                                   // source clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization mode active
-                _paramIntDiscretization->getValue()); // get discretization step
+                _paramIntDiscretization->getValue());       // get discretization step
             // generate selection VBO data
-            getCloudPointData().generateColorSelectionVBO( // create a selection VBO
-                _clipColor, // color clip
-                args.renderScale, // current render scale
+            getCloudPointData().generateColorSelectionVBO(  // create a selection VBO
+                _clipColor,                                 // color clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization mode active
-                _paramIntDiscretization->getValue()); // get discretization step
+                _paramIntDiscretization->getValue());       // get discretization step
             // generate spill selection VBO data (object created in overlay)
-            getCloudPointData().generateSpillSelectionVBO( // create a spill selection VBO
-                _clipSpill, // spill clip
-                args.renderScale, // current render scale
+            getCloudPointData().generateSpillSelectionVBO(  // create a spill selection VBO
+                _clipSpill,                                 // spill clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization mode active
-                _paramIntDiscretization->getValue()); // get discretization step
+                _paramIntDiscretization->getValue());       // get discretization step
             // update VBOs (create VBO objects in overlay)
             _updateVBO = true; // update VBO on overlay
         }
@@ -155,12 +155,12 @@ void ColorCubeViewerPlugin::changedParam(const OFX::InstanceChangedArgs& args, c
             {
                 getCloudPointData()._time = args.time; // update time
                 getCloudPointData()
-                    .generateVBOData( // create a VBO data with discretization (and the new discretization step)
-                        _clipSrc, // source clip
+                    .generateVBOData(     // create a VBO data with discretization (and the new discretization step)
+                        _clipSrc,         // source clip
                         args.renderScale, // current render scale
-                        true, // create cloud point with discretization
+                        true,             // create cloud point with discretization
                         _paramIntDiscretization->getValue()); // get discretization step
-                _updateVBO = true; // update VBO on overlay
+                _updateVBO = true;                            // update VBO on overlay
             }
         }
     }
@@ -179,11 +179,11 @@ void ColorCubeViewerPlugin::changedParam(const OFX::InstanceChangedArgs& args, c
     }
     if(paramName == kColorAverageMode && hasCloudPointData()) // Average mode : choice list
     {
-        if(_paramChoiceAverageMode->getValue() == 1) // selection mode is manual
+        if(_paramChoiceAverageMode->getValue() == 1)    // selection mode is manual
             _paramRGBAColorSelection->setEnabled(true); // active component
         else
             _paramRGBAColorSelection->setEnabled(false); // disable component
-        updateGeodesicForms(args); // update geodesic form
+        updateGeodesicForms(args);                       // update geodesic form
     }
     if(paramName == kColorAverageSelection && hasCloudPointData()) // selection average RGBA component
     {
@@ -192,14 +192,14 @@ void ColorCubeViewerPlugin::changedParam(const OFX::InstanceChangedArgs& args, c
     if(paramName == kColorAverageComputing && hasCloudPointData()) // push button : average computing (selection => manual)
     {
         // update automatic average
-        getCloudPointData()._averageColor._time = args.time; // change current time
+        getCloudPointData()._averageColor._time = args.time;                                     // change current time
         getCloudPointData()._averageColor.computeAverageSelection(_clipColor, args.renderScale); // compute automatic average
         // set computed average value into GUI component
         double alpha = 1.0; // alpha value of new average (doesn't care)
         _paramRGBAColorSelection->setValue(getCloudPointData()._averageColor._averageValue.x, // red value
                                            getCloudPointData()._averageColor._averageValue.y, // green value
                                            getCloudPointData()._averageColor._averageValue.z, // blue value
-                                           alpha // alpha value
+                                           alpha                                              // alpha value
                                            );
         // compute geodesic form
         changedParam(args, kColorAverageSelection); // call changedParam function with modification of selectionAverage value
@@ -222,35 +222,35 @@ void ColorCubeViewerPlugin::changedClip(const OFX::InstanceChangedArgs& args, co
             OFX::Clip* test = fetchClip(clipName); // test if source clip is connected
             if(test->isConnected())
             {
-                getCloudPointData()._time = args.time; // update time
-                getCloudPointData().generateVBOData( // create a VBO data with or without discretization
-                    _clipSrc, // source clip
-                    args.renderScale, // current render scale
+                getCloudPointData()._time = args.time;          // update time
+                getCloudPointData().generateVBOData(            // create a VBO data with or without discretization
+                    _clipSrc,                                   // source clip
+                    args.renderScale,                           // current render scale
                     _paramBoolDiscretizationActive->getValue(), // is discretization used to generate VBO
-                    _paramIntDiscretization->getValue()); // discretization step
+                    _paramIntDiscretization->getValue());       // discretization step
 
-                _updateVBO = true; // update VBO on overlay
+                _updateVBO = true;      // update VBO on overlay
                 this->redrawOverlays(); // redraw scene
             }
-            else // source clip is no more connected
+            else                                         // source clip is no more connected
                 getCloudPointData()._imgVBO.deleteVBO(); // delete VBO
         }
     }
     else if(clipName == kClipColorSelection) // if color clip has changed
     {
         _renderAttributes.recomputeGeodesicForm = true; // recompute process attributes
-        if(this->hasCloudPointData()) // it is not batch mode
+        if(this->hasCloudPointData())                   // it is not batch mode
         {
             OFX::Clip* test = fetchClip(clipName); // test if color clip is connected
             if(test->isConnected())
             {
                 // generate selection VBO data
-                getCloudPointData()._time = args.time; // update time
-                getCloudPointData().generateColorSelectionVBO( // create a selection VBO data with or without discretization
-                    _clipColor, // color clip
-                    args.renderScale, // current render scale
+                getCloudPointData()._time = args.time;          // update time
+                getCloudPointData().generateColorSelectionVBO(  // create a selection VBO data with or without discretization
+                    _clipColor,                                 // color clip
+                    args.renderScale,                           // current render scale
                     _paramBoolDiscretizationActive->getValue(), // is discretization used to generate selection VBO
-                    _paramIntDiscretization->getValue()); // discretization step
+                    _paramIntDiscretization->getValue());       // discretization step
                 updateGeodesicForms(args);
             }
         }
@@ -258,7 +258,7 @@ void ColorCubeViewerPlugin::changedClip(const OFX::InstanceChangedArgs& args, co
     else if(clipName == kClipSpillSelection) // if color clip has changed
     {
         _renderAttributes.recomputeGeodesicForm = true; // recompute process attributes
-        if(this->hasCloudPointData()) // it is not batch mode
+        if(this->hasCloudPointData())                   // it is not batch mode
         {
             OFX::Clip* test = fetchClip(clipName); // test if color clip is connected
             if(test->isConnected())
@@ -268,10 +268,10 @@ void ColorCubeViewerPlugin::changedClip(const OFX::InstanceChangedArgs& args, co
                 getCloudPointData()._time = args.time; // update time
                 getCloudPointData()
                     .generateSpillSelectionVBO( // create a spill selection VBO data with or without discretization
-                        _clipSpill, // spill clip
-                        args.renderScale, // current render scale
+                        _clipSpill,             // spill clip
+                        args.renderScale,       // current render scale
                         _paramBoolDiscretizationActive->getValue(), // is discretization used to generate selection VBO
-                        _paramIntDiscretization->getValue()); // discretization step
+                        _paramIntDiscretization->getValue());       // discretization step
                 updateGeodesicForms(args);
             }
         }
@@ -306,25 +306,25 @@ void ColorCubeViewerPlugin::render(const OFX::RenderArguments& args)
         if(args.time != getCloudPointData()._time) // different time between overlay and VBO data
         {
             // update VBO data
-            getCloudPointData()._time = args.time; // change computing time in cloud point data
-            getCloudPointData().generateVBOData( // create a VBO data (with discretization or not)
-                _clipSrc, // source clip
-                args.renderScale, // current render scale
+            getCloudPointData()._time = args.time;          // change computing time in cloud point data
+            getCloudPointData().generateVBOData(            // create a VBO data (with discretization or not)
+                _clipSrc,                                   // source clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization used
-                _paramIntDiscretization->getValue()); // discretization step
+                _paramIntDiscretization->getValue());       // discretization step
 
             // update selection VBO data
-            getCloudPointData().generateColorSelectionVBO( // create a selection VBO data (with or without discretization)
-                _clipColor, // color clip
-                args.renderScale, // current render scale
+            getCloudPointData().generateColorSelectionVBO(  // create a selection VBO data (with or without discretization)
+                _clipColor,                                 // color clip
+                args.renderScale,                           // current render scale
                 _paramBoolDiscretizationActive->getValue(), // is discretization used
-                _paramIntDiscretization->getValue()); // discretization step
-            _updateVBO = true; // VBO need to be updated in overlay
+                _paramIntDiscretization->getValue());       // discretization step
+            _updateVBO = true;                              // VBO need to be updated in overlay
         }
         if(args.time != getCloudPointData()._averageColor._time) // different time between overlay and average data
         {
             // update automatic average
-            getCloudPointData()._averageColor._time = args.time; // update time
+            getCloudPointData()._averageColor._time = args.time;                                     // update time
             getCloudPointData()._averageColor.computeAverageSelection(_clipColor, args.renderScale); // update average value
             // color geodesic form
             getCloudPointData()._geodesicFormColor._scale = _paramDoubleScaleGF->getValue(); // set scale value
@@ -351,7 +351,7 @@ void ColorCubeViewerPlugin::render(const OFX::RenderArguments& args)
     }
     // update  current parameters for process
     _renderScale = args.renderScale; // change render scale (before rendering)
-    _time = args.time; // change time
+    _time = args.time;               // change time
     // update process attributes
     if(_renderAttributes.recomputeGeodesicForm || _renderAttributes.time != args.time)
         updateProcessGeodesicForms(args);
@@ -370,14 +370,14 @@ void ColorCubeViewerPlugin::updateGeodesicForms(const OFX::InstanceChangedArgs& 
     // spill geodesic form
     getCloudPointData()._geodesicFormSpill._scale = _paramDoubleScaleGF->getValue(); // set scale value
     // refresh selection average
-    getCloudPointData()._averageColor._time = args.time; // set current time into average
+    getCloudPointData()._averageColor._time = args.time;                                     // set current time into average
     getCloudPointData()._averageColor.computeAverageSelection(_clipColor, args.renderScale); // update automatic average
-    if(_paramChoiceAverageMode->getValue() == 1) // average mode is manual
+    if(_paramChoiceAverageMode->getValue() == 1)                                             // average mode is manual
     {
         // get current average selection
         OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue(); // get current average selection
         // transform average color in 3D point average
-        Ofx3DPointD selectionAverage; // initialize
+        Ofx3DPointD selectionAverage;          // initialize
         selectionAverage.x = selectionColor.r; // x == red
         selectionAverage.y = selectionColor.g; // y == green
         selectionAverage.z = selectionColor.b; // z == blue
@@ -405,9 +405,9 @@ void ColorCubeViewerPlugin::updateGeodesicForms(const OFX::InstanceChangedArgs& 
     // scale geodesic form
     getCloudPointData()._geodesicFormColor.scaleGeodesicForm(_paramDoubleScaleGF->getValue());
     getCloudPointData()._geodesicFormSpill.scaleGeodesicForm(_paramDoubleScaleGF->getValue());
-    _updateVBO = true; // update VBO in overlay
+    _updateVBO = true;                              // update VBO in overlay
     _renderAttributes.recomputeGeodesicForm = true; // recompute process attributes
-    this->redrawOverlays(); // redraw scene
+    this->redrawOverlays();                         // redraw scene
 }
 
 /*
@@ -436,11 +436,11 @@ void ColorCubeViewerPlugin::updateProcessGeodesicForms(const OFX::RenderArgument
     }
     else // average mode is manual
     {
-        Ofx3DPointD selectedAverage; // initialize average
+        Ofx3DPointD selectedAverage;                                         // initialize average
         OfxRGBAColourD colorSelected = _paramRGBAColorSelection->getValue(); // get selected color
-        selectedAverage.x = colorSelected.r; // x == red
-        selectedAverage.y = colorSelected.g; // y == green
-        selectedAverage.z = colorSelected.b; // z == blue
+        selectedAverage.x = colorSelected.r;                                 // x == red
+        selectedAverage.y = colorSelected.g;                                 // y == green
+        selectedAverage.z = colorSelected.b;                                 // z == blue
         // compute geodesic forms
         _renderAttributes.geodesicFormColor.subdiviseFaces(selectedAverage,
                                                            _paramIntDiscretization->getValue()); // create geodesic form
@@ -467,7 +467,7 @@ void ColorCubeViewerPlugin::addRefCloudPointData()
     if(_cloudPointDataCount == 0) // no reference has been added yet
     {
         const OfxPointI imgSize = this->_clipSrc->getPixelRodSize(0); ///@todo set the correct time !
-        _cloudPointData.reset(new CloudPointData(imgSize, 0)); // Create data
+        _cloudPointData.reset(new CloudPointData(imgSize, 0));        // Create data
     }
     ++_cloudPointDataCount; // increments number of reference
 }

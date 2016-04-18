@@ -256,7 +256,7 @@ struct float_one
 ///////////////////////////////////////////
 ////
 ////  Support for sub-byte channels. These are integral channels whose value is contained in a range of bits inside an
-///integral type
+/// integral type
 ////
 ///////////////////////////////////////////
 

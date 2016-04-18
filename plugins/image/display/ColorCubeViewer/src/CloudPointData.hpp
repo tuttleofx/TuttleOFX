@@ -72,7 +72,7 @@ struct Pixel_copy
         for(int v = 0; v < 3 /*boost::gil::num_channels<Pixel>::type::value*/; ++v)
         {
             const float val = boost::gil::channel_convert<boost::gil::bits32f>(p[v]); // capt channel (red, green or blue)
-            _data.push_back(val); // add value to buffer data
+            _data.push_back(val);                                                     // add value to buffer data
         }
         return p;
     }
@@ -86,8 +86,8 @@ struct Pixel_copy_discretization
 
     // Arguments
     DataVector& _data; // buffer to fill up
-    int _nbStep; // discretization step
-    float _step; // discretization value
+    int _nbStep;       // discretization step
+    float _step;       // discretization value
     PixelSet _setData; // we use to set to prevent double same data many times
     bool _isSelection; // is current operation to selection VBO
 
@@ -117,19 +117,19 @@ struct Pixel_copy_discretization
             double val = p[v]; // capt channel (red, green or blue)
 
             bool placedInVector = false; // values is not in the vector yet
-            int iteration = 0; // initialize index to 0
-            while(!placedInVector) // place round value in the vector
+            int iteration = 0;           // initialize index to 0
+            while(!placedInVector)       // place round value in the vector
             {
                 float previousValue = iteration * _step;
                 float nextValue = (iteration + 1) * _step;
                 if(val <= previousValue)
                 {
                     add[v] = previousValue; // add value to pixel data
-                    placedInVector = true; // value is put in the vector
+                    placedInVector = true;  // value is put in the vector
                 }
                 else if(val < nextValue)
                 {
-                    add[v] = nextValue; // add value to pixel data
+                    add[v] = nextValue;    // add value to pixel data
                     placedInVector = true; // value is put in the vector
                 }
                 ++iteration; // increments indice
@@ -181,43 +181,43 @@ protected:
         ~VBO() { deleteVBO(); }
 
     public:
-        unsigned int _id; // id of vertex array
+        unsigned int _id;      // id of vertex array
         unsigned int _idColor; // id of color array
-        unsigned int _size; // size of vertex/color array
-        bool _color; // display with colors
-        bool _colorDifferent; // is color array the same than vertex array
+        unsigned int _size;    // size of vertex/color array
+        bool _color;           // display with colors
+        bool _colorDifferent;  // is color array the same than vertex array
 
         void selfColor(bool c) { _color = c; }
         // VBO management
         void createVBO(const void* data, int size, GLenum usage = GL_STATIC_DRAW,
-                       const void* dataColor = NULL); // create a new VBO
-        void deleteVBO(); // delete the VBO
+                       const void* dataColor = NULL);                                              // create a new VBO
+        void deleteVBO();                                                                          // delete the VBO
         void genBuffer(unsigned int& id, const void* data, int size, GLenum target, GLenum usage); // generate VBO data
         void genBufferColor(unsigned int& idColor, const void* data, int size, GLenum target,
                             GLenum usage); // generate VBO data
-        void draw(); // draw VBO on screen
+        void draw();                       // draw VBO on screen
     };
 
 public:
     // Class arguments
-    OfxPointI _size; // size of source clip
-    OfxTime _time; // current time in sequence
-    bool _isVBOBuilt; // if VBO is not built don't draw it on overlay
-    bool _isSelectionVBOBuilt; // if color selection VBO is not built don't draw it on overlay
+    OfxPointI _size;                // size of source clip
+    OfxTime _time;                  // current time in sequence
+    bool _isVBOBuilt;               // if VBO is not built don't draw it on overlay
+    bool _isSelectionVBOBuilt;      // if color selection VBO is not built don't draw it on overlay
     bool _isSpillSelectionVBOBuilt; // if spill selection VBO is not built don't draw it on overlay
 
     // VBO to draw
-    VBO _imgVBO; // VBO to display on overlay (cloud point VBO)
+    VBO _imgVBO;            // VBO to display on overlay (cloud point VBO)
     VBO _selectionColorVBO; // VBO to display on overlay (color selection in white)
     VBO _selectionSpillVBO; // VBO to display on overlay (spill selection in silver)
 
     // Data recopy
-    DataVector _imgCopy; // copy of the image needed to draw VB0
+    DataVector _imgCopy;       // copy of the image needed to draw VB0
     DataVector _selectionCopy; // copy of the selection image to draw VBO
-    DataVector _spillCopy; // copy of the selection colors to draw VBO
+    DataVector _spillCopy;     // copy of the selection colors to draw VBO
 
     // Overlay data
-    SelectionAverage _averageColor; // color clip selection average
+    SelectionAverage _averageColor;  // color clip selection average
     GeodesicForm _geodesicFormColor; // geodesic form color (overlay)
     GeodesicForm _geodesicFormSpill; // geodesic form spill (overlay)
 
@@ -232,15 +232,15 @@ public:
                                    int discretizationStep); // Change color of selected pixel (color clip)
     bool generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPointD& renderScale, bool vboWithDiscretization,
                                    int discretizationStep); // Change color of selected pixel (spill clip)
-    void updateVBO(); // create the VBO from VBO data (draw function)
+    void updateVBO();                                       // create the VBO from VBO data (draw function)
 
 private:
     // VBO data management
-    int generateAllPointsVBOData(SView srcView); // generate a VBO with all of the pixels
+    int generateAllPointsVBOData(SView srcView);                                  // generate a VBO with all of the pixels
     int generateDiscretizedVBOData(SView srcView, const int& discretizationStep); // generate a  VBO with discretization
     // selection VBO data management
     int generateAllPointsSelectionVBOData(SView srcView); // generate a VBO (and color) with all of the selected pixels
-    int generateAllPointsSpillVBOData(SView srcView); // generate a VBO (and color) with all of the selected pixels
+    int generateAllPointsSpillVBOData(SView srcView);     // generate a VBO (and color) with all of the selected pixels
 };
 }
 }

@@ -21,31 +21,31 @@ HistogramKeyerPlugin::HistogramKeyerPlugin(OfxImageEffectHandle handle)
     _paramGlobalDisplaySelection = fetchBooleanParam(kGlobalDisplay); // global display
 
     _paramColorRGBSelection = fetchParametricParam(kParamRGBColorSelection); // curve RGB
-    _paramOverlayRSelection = fetchBooleanParam(kBoolRed); // R (is channel selected?)
-    _paramMutliplierR = fetchDoubleParam(kMultiplierRed); // R multiplier
+    _paramOverlayRSelection = fetchBooleanParam(kBoolRed);                   // R (is channel selected?)
+    _paramMutliplierR = fetchDoubleParam(kMultiplierRed);                    // R multiplier
 
     _paramOverlayGSelection = fetchBooleanParam(kBoolGreen); // G (is channel selected?)
-    _paramMutliplierG = fetchDoubleParam(kMultiplierGreen); // G multiplier
+    _paramMutliplierG = fetchDoubleParam(kMultiplierGreen);  // G multiplier
 
     _paramOverlayBSelection = fetchBooleanParam(kBoolBlue); // B (is channel selected?)
-    _paramMutliplierB = fetchDoubleParam(kMultiplierBlue); // B multiplier
+    _paramMutliplierB = fetchDoubleParam(kMultiplierBlue);  // B multiplier
 
     _resetRGB = fetchPushButtonParam(kButtonResetRGB); // reset RGB button
 
     _paramColorHSLSelection = fetchParametricParam(kParamHSLColorSelection); // curve HSL
-    _paramOverlayHSelection = fetchBooleanParam(kBoolHue); // H (is channel selected?)
-    _paramMutliplierH = fetchDoubleParam(kMultiplierHue); // H multiplier
+    _paramOverlayHSelection = fetchBooleanParam(kBoolHue);                   // H (is channel selected?)
+    _paramMutliplierH = fetchDoubleParam(kMultiplierHue);                    // H multiplier
 
     _paramOverlaySSelection = fetchBooleanParam(kBoolSaturation); // S (is channel selected?)
-    _paramMutliplierS = fetchDoubleParam(kMultiplierSaturation); // S multiplier
+    _paramMutliplierS = fetchDoubleParam(kMultiplierSaturation);  // S multiplier
 
     _paramOverlayLSelection = fetchBooleanParam(kBoolLightness); // L (is channel selected?)
-    _paramMutliplierL = fetchDoubleParam(kMultiplierLightness); // L multiplier
+    _paramMutliplierL = fetchDoubleParam(kMultiplierLightness);  // L multiplier
 
     _resetHSL = fetchPushButtonParam(kButtonResetHSL); // Reset HSL button
 
     _paramDisplayTypeSelection =
-        fetchChoiceParam(kHistoDisplayListParamLabel); // histogram display list (Histogram overlay group)
+        fetchChoiceParam(kHistoDisplayListParamLabel);      // histogram display list (Histogram overlay group)
     _paramResetAll = fetchPushButtonParam(kButtonResetAll); // Reset all button (Histogram overlay group)
 
     _paramDisplaySelection = fetchBooleanParam(kBoolSelection); // display selection on source clip (Selection group)
@@ -55,11 +55,11 @@ HistogramKeyerPlugin::HistogramKeyerPlugin(OfxImageEffectHandle handle)
 
     _paramSelectionMultiplierSelection = fetchDoubleParam(kselectionMultiplier); // selection multiplier (Advanced group)
     _paramRefreshOverlaySelection = fetchPushButtonParam(kButtonRefreshOverlay); // refresh overlay (Advanced group)
-    _paramNbStepSelection = fetchIntParam(knbStepRange); // nb step range (Advanced group)
-    _paramClampCurveValues = fetchBooleanParam(kBoolClampValues); // clamp curve values (Advanced group)
+    _paramNbStepSelection = fetchIntParam(knbStepRange);                         // nb step range (Advanced group)
+    _paramClampCurveValues = fetchBooleanParam(kBoolClampValues);                // clamp curve values (Advanced group)
 
     _paramOutputSettingSelection = fetchChoiceParam(kOutputListParamLabel); // output type (BW/alpha)
-    _paramReverseMaskSelection = fetchBooleanParam(kBoolReverseMask); // reverse mask
+    _paramReverseMaskSelection = fetchBooleanParam(kBoolReverseMask);       // reverse mask
 
     _paramButtonAppendToSelectionHSL =
         fetchPushButtonParam(kButtonAppendSelectionToCurveHSL); // Append to selection HSL (HSL group)
@@ -88,14 +88,14 @@ HistogramKeyerPlugin::getProcessParams(const OfxTime time, const OfxPointD& rend
 
     params._time = time;
     params._paramColorRGB = _paramColorRGBSelection; // curve RGB
-    params._boolRGB[0] = _paramOverlayRSelection; // R (is channel selected?)
-    params._boolRGB[1] = _paramOverlayGSelection; // G (is channel selected?)
-    params._boolRGB[2] = _paramOverlayBSelection; // B (is channel selected?)
+    params._boolRGB[0] = _paramOverlayRSelection;    // R (is channel selected?)
+    params._boolRGB[1] = _paramOverlayGSelection;    // G (is channel selected?)
+    params._boolRGB[2] = _paramOverlayBSelection;    // B (is channel selected?)
 
     params._paramColorHSL = _paramColorHSLSelection; // curve HSL
-    params._boolHSL[0] = _paramOverlayHSelection; // H (is channel selected?)
-    params._boolHSL[1] = _paramOverlaySSelection; // S (is channel selected?)
-    params._boolHSL[2] = _paramOverlayLSelection; // L (is channel selected?)
+    params._boolHSL[0] = _paramOverlayHSelection;    // H (is channel selected?)
+    params._boolHSL[1] = _paramOverlaySSelection;    // S (is channel selected?)
+    params._boolHSL[2] = _paramOverlayLSelection;    // L (is channel selected?)
 
     params._multiplierRGB[0] = _paramMutliplierR; // R multiplier
     params._multiplierRGB[1] = _paramMutliplierG; // G multiplier
@@ -106,8 +106,8 @@ HistogramKeyerPlugin::getProcessParams(const OfxTime time, const OfxPointD& rend
     params._multiplierHSL[2] = _paramMutliplierL; // L multiplier
 
     params._paramOutputSetting = _paramOutputSettingSelection; // output selection (alpha channel or BW)
-    params._boolReverseMask = _paramReverseMaskSelection; // reverse mask check box
-    params._boolClampCurveValues = _paramClampCurveValues; // clamp curve values (Advanced group)
+    params._boolReverseMask = _paramReverseMaskSelection;      // reverse mask check box
+    params._boolClampCurveValues = _paramClampCurveValues;     // clamp curve values (Advanced group)
 
     return params;
 }
@@ -123,14 +123,14 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
     {
         // get nb points for each curve (RGB)
         std::vector<std::size_t> nbControlPointsRGB(nbCurvesRGB); // initialize vector
-        for(std::size_t i = 0; i < nbCurvesRGB; ++i) // fill up vector
+        for(std::size_t i = 0; i < nbCurvesRGB; ++i)              // fill up vector
         {
             nbControlPointsRGB[i] = _paramColorRGBSelection->getNControlPoints(i, args.time);
         }
 
         // get nb points for each curve (HSL)
         std::vector<std::size_t> nbControlPointsHSL(nbCurvesHSL); // initialize vector
-        for(std::size_t i = 0; i < nbCurvesHSL; ++i) // fill up vector
+        for(std::size_t i = 0; i < nbCurvesHSL; ++i)              // fill up vector
         {
             nbControlPointsHSL[i] = _paramColorHSLSelection->getNControlPoints(i, args.time);
         }
@@ -238,7 +238,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
         {
             // Get nb points for each curve (RGB)
             std::vector<std::size_t> nbControlPointsRGB(nbCurvesRGB); // initialize vector
-            for(std::size_t i = 0; i < nbCurvesRGB; ++i) // fill up vector
+            for(std::size_t i = 0; i < nbCurvesRGB; ++i)              // fill up vector
             {
                 nbControlPointsRGB[i] = _paramColorRGBSelection->getNControlPoints(i, args.time);
             }
@@ -266,7 +266,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                 {
                     // getMax of current selection buffer
                     double maxChannel; // will contain max of the current channel (RGB)
-                    if(i == 0) // working on Red channel
+                    if(i == 0)         // working on Red channel
                         maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferRed.begin(),
                                                         getOverlayData()._curveFromSelection._bufferRed.end()));
                     else if(i == 1) // working on Green channel
@@ -289,7 +289,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                             yPosition = (double)((
                                 double)(getOverlayData()
                                             ._curveFromSelection._bufferRed[x])); // get current Y if Red selection buffer
-                        else if(i == 1) // working on Green channel
+                        else if(i == 1)                                           // working on Green channel
                             yPosition =
                                 (double)((double)(getOverlayData()._curveFromSelection._bufferGreen[x])); // get current Y if
                                                                                                           // Green selection
@@ -304,7 +304,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                         if(x == 0 || x == getOverlayData()._vNbStepCurveFromSelection - 1) // current point is last of first
                             _paramColorRGBSelection->addControlPoint(i, args.time, xPosition, yPosition,
                                                                      false); // place the current point
-                        else // filter
+                        else                                                 // filter
                         {
                             double value;
                             double nextValue;
@@ -333,8 +333,8 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                     (double)getOverlayData()._curveFromSelection._bufferBlue[x - 1]; // get previous value
                             }
 
-                            value /= maxChannel; // set value between 0 and 1
-                            nextValue /= maxChannel; // set next value between 0 and 1
+                            value /= maxChannel;         // set value between 0 and 1
+                            nextValue /= maxChannel;     // set next value between 0 and 1
                             previousValue /= maxChannel; // set previous value between 0 and 1
 
                             double betweenNextAndValue =
@@ -362,7 +362,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
         {
             // get nb points for each curve (RGB)
             std::vector<std::size_t> nbControlPointsHSL(nbCurvesHSL); // initialize vector
-            for(std::size_t i = 0; i < nbCurvesHSL; ++i) // fill up vector
+            for(std::size_t i = 0; i < nbCurvesHSL; ++i)              // fill up vector
             {
                 nbControlPointsHSL[i] = _paramColorHSLSelection->getNControlPoints(i, args.time);
             }
@@ -392,7 +392,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                 {
                     // getMax of current selection buffer
                     double maxChannel; // will contain max of the current channel (HSL)
-                    if(i == 0) // working on Hue channel
+                    if(i == 0)         // working on Hue channel
                         maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferHue.begin(),
                                                         getOverlayData()._curveFromSelection._bufferHue.end()));
                     else if(i == 1) // working on Saturation channel
@@ -415,7 +415,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                             yPosition = (double)((
                                 double)(getOverlayData()
                                             ._curveFromSelection._bufferHue[x])); // get current Y if Hue selection buffer
-                        else if(i == 1) // working on Saturation channel
+                        else if(i == 1)                                           // working on Saturation channel
                             yPosition =
                                 (double)((double)(getOverlayData()._curveFromSelection._bufferSaturation[x])); // get current
                                                                                                                // Y if
@@ -435,7 +435,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                         if(x == 0 || x == getOverlayData()._vNbStepCurveFromSelection - 1) // current point is last of first
                             _paramColorHSLSelection->addControlPoint(i, args.time, xPosition, yPosition,
                                                                      false); // place the current point
-                        else // filter
+                        else                                                 // filter
                         {
                             double value;
                             double nextValue;
@@ -465,8 +465,8 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                                     ._curveFromSelection._bufferLightness[x - 1]; // get previous value
                             }
 
-                            value /= maxChannel; // set value between 0 and 1
-                            nextValue /= maxChannel; // set next value between 0 and 1
+                            value /= maxChannel;         // set value between 0 and 1
+                            nextValue /= maxChannel;     // set next value between 0 and 1
                             previousValue /= maxChannel; // set previous value between 0 and 1
 
                             double betweenNextAndValue =
@@ -497,7 +497,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
         getOverlayData()._vNbStepCurveFromSelection =
             _paramSelectionFromCurve->getValue(); // change precision step (precision)
         getOverlayData().computeCurveFromSelectionData(this->_clipSrc, args.time, args.renderScale); // compute curves
-        if(paramName == kButtonAppendSelectionToCurveHSL) // Append to curve (HSL)
+        if(paramName == kButtonAppendSelectionToCurveHSL)                                            // Append to curve (HSL)
         {
             for(unsigned int i = 0; i < nbCurvesHSL; ++i)
             {
@@ -507,7 +507,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                 {
                     // getMax of current selection buffer
                     double maxChannel; // will contain max of the current channel (HSL)
-                    if(i == 0) // working on Hue channel
+                    if(i == 0)         // working on Hue channel
                         maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferHue.begin(),
                                                         getOverlayData()._curveFromSelection._bufferHue.end()));
                     else if(i == 1) // working on Saturation channel
@@ -530,7 +530,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                             yPosition = (double)((
                                 double)(getOverlayData()
                                             ._curveFromSelection._bufferHue[x])); // get current Y if Hue selection buffer
-                        else if(i == 1) // working on Saturation channel
+                        else if(i == 1)                                           // working on Saturation channel
                             yPosition =
                                 (double)((double)(getOverlayData()._curveFromSelection._bufferSaturation[x])); // get current
                                                                                                                // Y if
@@ -551,21 +551,21 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                         {
                             // search for existing control point on x value
                             std::pair<double, double> currentPoint; // define current point
-                            int nbPointsInCurve = 0; // define indice
-                            bool pointFound = false; // point has not been found
+                            int nbPointsInCurve = 0;                // define indice
+                            bool pointFound = false;                // point has not been found
                             while(nbPointsInCurve < _paramColorHSLSelection->getNControlPoints(i, args.time) && !pointFound)
                             {
                                 currentPoint = _paramColorHSLSelection->getNthControlPoints(
                                     i, args.time, nbPointsInCurve); // get current point
                                 if(currentPoint.first == x) // current point has the same X value than this we want to add
-                                    pointFound = true; // point has been found
+                                    pointFound = true;      // point has been found
                                 else
                                     ++nbPointsInCurve; // increments indice
                             }
                             if(pointFound) // control point is already existing so replace it
                             {
                                 currentPoint.second += yPosition; // add value to current control point
-                                if(currentPoint.second > 1.0) // clamp value to 1.0
+                                if(currentPoint.second > 1.0)     // clamp value to 1.0
                                     currentPoint.second = 1.0;
                                 _paramColorHSLSelection->setNthControlPoints(i, args.time, nbPointsInCurve, currentPoint,
                                                                              false); // replace current control point
@@ -604,8 +604,8 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                                     ._curveFromSelection._bufferLightness[x - 1]; // get previous value
                             }
 
-                            value /= maxChannel; // set value between 0 and 1
-                            nextValue /= maxChannel; // set next value between 0 and 1
+                            value /= maxChannel;         // set value between 0 and 1
+                            nextValue /= maxChannel;     // set next value between 0 and 1
                             previousValue /= maxChannel; // set previous value between 0 and 1
 
                             double betweenNextAndValue =
@@ -623,8 +623,8 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                             {
                                 // search for existing control point on x value
                                 std::pair<double, double> currentPoint; // define current point
-                                int nbPointsInCurve = 0; // define indice
-                                bool pointFound = false; // point has not been found
+                                int nbPointsInCurve = 0;                // define indice
+                                bool pointFound = false;                // point has not been found
                                 while(nbPointsInCurve < _paramColorHSLSelection->getNControlPoints(i, args.time) &&
                                       !pointFound)
                                 {
@@ -632,7 +632,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                         i, args.time, nbPointsInCurve); // get current point
                                     double epsilon = 0.01;
                                     if(fabs(currentPoint.first - xPosition) <
-                                       epsilon) // current point has the same X value than this we want to add
+                                       epsilon)            // current point has the same X value than this we want to add
                                         pointFound = true; // point has been found
                                     else
                                         ++nbPointsInCurve; // increments indice
@@ -640,7 +640,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                 if(pointFound) // control point is already existing so replace it
                                 {
                                     currentPoint.second += yPosition; // add value to current control point
-                                    if(currentPoint.second > 1.0) // clamp value to 1.0
+                                    if(currentPoint.second > 1.0)     // clamp value to 1.0
                                         currentPoint.second = 1.0;
                                     _paramColorHSLSelection->setNthControlPoints(i, args.time, nbPointsInCurve, currentPoint,
                                                                                  false); // replace current control point
@@ -679,9 +679,9 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                         std::pair<double, double> prevControlPoint = _paramColorHSLSelection->getNthControlPoints(
                             i, args.time, currentP - 1); // get previous control point
                         std::pair<double, double> nextControlPoint = _paramColorHSLSelection->getNthControlPoints(
-                            i, args.time, currentP + 1); // get next control point
+                            i, args.time, currentP + 1);                                     // get next control point
                         if(prevControlPoint.second >= 1.0 && nextControlPoint.second >= 1.0) // if current point is useless
-                            _paramColorHSLSelection->deleteControlPoint(i, currentP); // delete it
+                            _paramColorHSLSelection->deleteControlPoint(i, currentP);        // delete it
                     }
                 }
             }
@@ -696,7 +696,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                 {
                     // getMax of current selection buffer
                     double maxChannel; // will contain max of the current channel (RGB)
-                    if(i == 0) // working on Red channel
+                    if(i == 0)         // working on Red channel
                         maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferRed.begin(),
                                                         getOverlayData()._curveFromSelection._bufferRed.end()));
                     else if(i == 1) // working on Green channel
@@ -719,7 +719,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                             yPosition = (double)((
                                 double)(getOverlayData()
                                             ._curveFromSelection._bufferRed[x])); // get current Y if Red selection buffer
-                        else if(i == 1) // working on Green channel
+                        else if(i == 1)                                           // working on Green channel
                             yPosition =
                                 (double)((double)(getOverlayData()._curveFromSelection._bufferGreen[x])); // get current Y if
                                                                                                           // Green selection
@@ -735,21 +735,21 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                         {
                             // search for existing control point on x value
                             std::pair<double, double> currentPoint; // define current point
-                            int nbPointsInCurve = 0; // define indice
-                            bool pointFound = false; // point has not been found
+                            int nbPointsInCurve = 0;                // define indice
+                            bool pointFound = false;                // point has not been found
                             while(nbPointsInCurve < _paramColorRGBSelection->getNControlPoints(i, args.time) && !pointFound)
                             {
                                 currentPoint = _paramColorRGBSelection->getNthControlPoints(
                                     i, args.time, nbPointsInCurve); // get current point
                                 if(currentPoint.first == x) // current point has the same X value than this we want to add
-                                    pointFound = true; // point has been found
+                                    pointFound = true;      // point has been found
                                 else
                                     ++nbPointsInCurve; // increments indice
                             }
                             if(pointFound) // control point is already existing so replace it
                             {
                                 currentPoint.second += yPosition; // add value to current control point
-                                if(currentPoint.second > 1.0) // clamp value to 1.0
+                                if(currentPoint.second > 1.0)     // clamp value to 1.0
                                     currentPoint.second = 1.0;
                                 _paramColorRGBSelection->setNthControlPoints(i, args.time, nbPointsInCurve, currentPoint,
                                                                              false); // replace current control point
@@ -787,8 +787,8 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                     (double)getOverlayData()._curveFromSelection._bufferBlue[x - 1]; // get previous value
                             }
 
-                            value /= maxChannel; // set value between 0 and 1
-                            nextValue /= maxChannel; // set next value between 0 and 1
+                            value /= maxChannel;         // set value between 0 and 1
+                            nextValue /= maxChannel;     // set next value between 0 and 1
                             previousValue /= maxChannel; // set previous value between 0 and 1
 
                             double betweenNextAndValue =
@@ -806,8 +806,8 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                             {
                                 // search for existing control point on x value
                                 std::pair<double, double> currentPoint; // define current point
-                                int nbPointsInCurve = 0; // define indice
-                                bool pointFound = false; // point has not been found
+                                int nbPointsInCurve = 0;                // define indice
+                                bool pointFound = false;                // point has not been found
                                 while(nbPointsInCurve < _paramColorRGBSelection->getNControlPoints(i, args.time) &&
                                       !pointFound)
                                 {
@@ -815,7 +815,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                         i, args.time, nbPointsInCurve); // get current point
                                     double epsilon = 0.01;
                                     if(fabs(currentPoint.first - xPosition) <
-                                       epsilon) // current point has the same X value than this we want to add
+                                       epsilon)            // current point has the same X value than this we want to add
                                         pointFound = true; // point has been found
                                     else
                                         ++nbPointsInCurve; // increments indice
@@ -823,7 +823,7 @@ void HistogramKeyerPlugin::changedParam(const OFX::InstanceChangedArgs& args, co
                                 if(pointFound) // control point is already existing so replace it
                                 {
                                     currentPoint.second += yPosition; // add value to current control point
-                                    if(currentPoint.second > 1.0) // clamp value to 1.0
+                                    if(currentPoint.second > 1.0)     // clamp value to 1.0
                                         currentPoint.second = 1.0;
                                     _paramColorRGBSelection->setNthControlPoints(i, args.time, nbPointsInCurve, currentPoint,
                                                                                  false); // replace current control point

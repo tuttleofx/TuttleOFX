@@ -82,54 +82,54 @@ void ColorSpaceKeyerPluginFactory::describeInContext(OFX::ImageEffectDescriptor&
     // Group settings
     OFX::GroupParamDescriptor* groupSettings = desc.defineGroupParam(kGroupSettings);
     groupSettings->setLabel(kGroupSettingsLabel); // add label
-    groupSettings->setAsTab(); // current group is a tab
+    groupSettings->setAsTab();                    // current group is a tab
 
     // Group process
     OFX::GroupParamDescriptor* groupProcess = desc.defineGroupParam(kGroupProcess);
     groupProcess->setLabel(kGroupProcessLabel); // add label
-    groupProcess->setAsTab(); // current group is a tab
+    groupProcess->setAsTab();                   // current group is a tab
 
     // Check-box display
     OFX::BooleanParamDescriptor* pointCloudDisplay = desc.defineBooleanParam(kPointCloudDisplay);
     pointCloudDisplay->setLabel(kPointCloudDisplayLabel); // label
-    pointCloudDisplay->setDefault(false); // display overlay by default
-    pointCloudDisplay->setEvaluateOnChange(false); // Don't render on change
-    pointCloudDisplay->setParent(groupDisplay); // add component to group display
+    pointCloudDisplay->setDefault(false);                 // display overlay by default
+    pointCloudDisplay->setEvaluateOnChange(false);        // Don't render on change
+    pointCloudDisplay->setParent(groupDisplay);           // add component to group display
 
     // Check-box discretization cloud point display
     OFX::BooleanParamDescriptor* pointCloudDiscretization = desc.defineBooleanParam(kBoolDiscretizationDisplay);
     pointCloudDiscretization->setLabel(kBoolDiscretizationDisplayLabel); // label
-    pointCloudDiscretization->setDefault(false); // display overlay by default
-    pointCloudDiscretization->setLayoutHint(OFX::eLayoutHintNoNewLine); // line is not finished
+    pointCloudDiscretization->setDefault(false);                         // display overlay by default
+    pointCloudDiscretization->setLayoutHint(OFX::eLayoutHintNoNewLine);  // line is not finished
     pointCloudDiscretization->setEnabled(false); // Disabled by default (display cloud point is not selected)
     pointCloudDiscretization->setHint("Activate discretization point cloud.");
     pointCloudDiscretization->setEvaluateOnChange(false); // Don't render on change
-    pointCloudDiscretization->setParent(groupDisplay); // add component to group Display
+    pointCloudDiscretization->setParent(groupDisplay);    // add component to group Display
 
     // Discretization int range
     OFX::IntParamDescriptor* discretizationDisplay = desc.defineIntParam(kIntDiscretizationDisplay);
     discretizationDisplay->setLabel(kIntDiscretizationDisplayLabel); // label
-    discretizationDisplay->setRange(1, 500); // value range
-    discretizationDisplay->setDisplayRange(1, 30); // display value range
-    discretizationDisplay->setDefault(10); // default value
+    discretizationDisplay->setRange(1, 500);                         // value range
+    discretizationDisplay->setDisplayRange(1, 30);                   // display value range
+    discretizationDisplay->setDefault(10);                           // default value
     discretizationDisplay->setEnabled(false); // Disabled by default (display cloud point is not selected)
     discretizationDisplay->setHint("Change discretization point cloud step.");
     discretizationDisplay->setEvaluateOnChange(false); // Don't render on change
-    discretizationDisplay->setParent(groupDisplay); // add component to group display
+    discretizationDisplay->setParent(groupDisplay);    // add component to group display
 
     // Push button to reset transformation parameters
     OFX::PushButtonParamDescriptor* resetTransformationParameters =
         desc.definePushButtonParam(kPushButtonResetTransformationParameters);
     resetTransformationParameters->setLabel(kPushButtonResetTransformationParametersLabel); // label
-    resetTransformationParameters->setHint("Reset view parameters"); // help
-    resetTransformationParameters->setParent(groupDisplay); // add component to group display
+    resetTransformationParameters->setHint("Reset view parameters");                        // help
+    resetTransformationParameters->setParent(groupDisplay);                                 // add component to group display
 
     // Number of divison Geodesic form
     OFX::IntParamDescriptor* nbDivisionsGeodesicForm = desc.defineIntParam(kIntNumberOfDivisonGeodesicForm);
-    nbDivisionsGeodesicForm->setLabel(kIntNumberOfDivisonGeodesicFormLabel); // label
-    nbDivisionsGeodesicForm->setRange(2, 50); // value range
-    nbDivisionsGeodesicForm->setDisplayRange(2, 15); // display range values
-    nbDivisionsGeodesicForm->setDefault(4); // default value
+    nbDivisionsGeodesicForm->setLabel(kIntNumberOfDivisonGeodesicFormLabel);                     // label
+    nbDivisionsGeodesicForm->setRange(2, 50);                                                    // value range
+    nbDivisionsGeodesicForm->setDisplayRange(2, 15);                                             // display range values
+    nbDivisionsGeodesicForm->setDefault(4);                                                      // default value
     nbDivisionsGeodesicForm->setHint("Change precision of treatment (can make process slower)"); // help
     nbDivisionsGeodesicForm->setParent(groupSettings); // add component to settings group
 
@@ -144,60 +144,60 @@ void ColorSpaceKeyerPluginFactory::describeInContext(OFX::ImageEffectDescriptor&
 
     // Selection average selection
     OFX::RGBAParamDescriptor* colorAverage = desc.defineRGBAParam(kColorAverageSelection);
-    colorAverage->setLabel(kColorAverageSelectionLabel); // label
+    colorAverage->setLabel(kColorAverageSelectionLabel);          // label
     colorAverage->setHint("Select the average of the selection"); // help
-    colorAverage->setEnabled(false); // Disabled by default
-    colorAverage->setLayoutHint(OFX::eLayoutHintNoNewLine); // line is not finished
-    colorAverage->setParent(groupSettings); // add to settings group
+    colorAverage->setEnabled(false);                              // Disabled by default
+    colorAverage->setLayoutHint(OFX::eLayoutHintNoNewLine);       // line is not finished
+    colorAverage->setParent(groupSettings);                       // add to settings group
 
     // Selection average compute
     OFX::PushButtonParamDescriptor* colorAverageCompute = desc.definePushButtonParam(kColorAverageComputing);
     colorAverageCompute->setLabel(kColorAverageComputingLabel); // label
-    colorAverageCompute->setEnabled(false); // Disabled by default
-    colorAverageCompute->setParent(groupSettings); // add to settings group
+    colorAverageCompute->setEnabled(false);                     // Disabled by default
+    colorAverageCompute->setParent(groupSettings);              // add to settings group
 
     // Check-box only selection color
     OFX::BooleanParamDescriptor* onlySelectionColor = desc.defineBooleanParam(kBoolOnlySelection);
-    onlySelectionColor->setLabel(kBoolOnlySelectionLabel); // add label
-    onlySelectionColor->setDefault(false); // check box is not checked by default
-    onlySelectionColor->setEvaluateOnChange(false); // don't need to recompute on change
-    onlySelectionColor->setHint("see color process form"); // help
+    onlySelectionColor->setLabel(kBoolOnlySelectionLabel);        // add label
+    onlySelectionColor->setDefault(false);                        // check box is not checked by default
+    onlySelectionColor->setEvaluateOnChange(false);               // don't need to recompute on change
+    onlySelectionColor->setHint("see color process form");        // help
     onlySelectionColor->setLayoutHint(OFX::eLayoutHintNoNewLine); // line is not finished
-    onlySelectionColor->setParent(groupDisplay); // add to display group
+    onlySelectionColor->setParent(groupDisplay);                  // add to display group
 
     // Check-box only selection color
     OFX::BooleanParamDescriptor* displaySpillGF = desc.defineBooleanParam(kBoolDisplaySpillGF);
     displaySpillGF->setLabel(kBoolDisplaySpillGFLabel); // add label
-    displaySpillGF->setDefault(false); // check box is not checked by default
-    displaySpillGF->setEvaluateOnChange(false); // don't need to recompute on change
-    displaySpillGF->setHint("see spill process form"); // help
-    displaySpillGF->setParent(groupDisplay); // add to display group
+    displaySpillGF->setDefault(false);                  // check box is not checked by default
+    displaySpillGF->setEvaluateOnChange(false);         // don't need to recompute on change
+    displaySpillGF->setHint("see spill process form");  // help
+    displaySpillGF->setParent(groupDisplay);            // add to display group
 
     // Check box see color selection
     OFX::BooleanParamDescriptor* seeSelection = desc.defineBooleanParam(kBoolColorSelectionDisplay);
     seeSelection->setLabel(kBoolColorSelectionDisplayLabel); // add label
-    seeSelection->setDefault(false); // check box is checked by default
-    seeSelection->setEvaluateOnChange(false); // don't need to recompute on change
-    seeSelection->setHint("Do not see color selection"); // help
-    seeSelection->setLayoutHint(OFX::eLayoutHintNoNewLine); // line is not finished
-    seeSelection->setParent(groupDisplay); // add to display group
+    seeSelection->setDefault(false);                         // check box is checked by default
+    seeSelection->setEvaluateOnChange(false);                // don't need to recompute on change
+    seeSelection->setHint("Do not see color selection");     // help
+    seeSelection->setLayoutHint(OFX::eLayoutHintNoNewLine);  // line is not finished
+    seeSelection->setParent(groupDisplay);                   // add to display group
 
     // Check box see spill selection
     OFX::BooleanParamDescriptor* seeSpillSelection = desc.defineBooleanParam(kBoolSpillSelectionDisplay);
     seeSpillSelection->setLabel(kBoolSpillSelectionDisplayLabel); // add label
-    seeSpillSelection->setDefault(false); // check box is checked by default
-    seeSpillSelection->setEvaluateOnChange(false); // don't need to recompute on change
-    seeSpillSelection->setHint("Do not see spill selection"); // help
-    seeSpillSelection->setParent(groupDisplay); // add to display group
+    seeSpillSelection->setDefault(false);                         // check box is checked by default
+    seeSpillSelection->setEvaluateOnChange(false);                // don't need to recompute on change
+    seeSpillSelection->setHint("Do not see spill selection");     // help
+    seeSpillSelection->setParent(groupDisplay);                   // add to display group
 
     // Double parameters scale (scale geodesic form)
     OFX::DoubleParamDescriptor* scaleGF = desc.defineDoubleParam(kDoubleScaleGeodesicForm);
     scaleGF->setLabel(kDoubleScaleGeodesicFormLabel); // add label
-    scaleGF->setDefault(1.0); // default value
-    scaleGF->setRange(0, 5.0); // scale range
-    scaleGF->setDisplayRange(0, 2); // set display range
-    scaleGF->setHint("Scale geodesic form"); // help
-    scaleGF->setParent(groupProcess); // add to process group
+    scaleGF->setDefault(1.0);                         // default value
+    scaleGF->setRange(0, 5.0);                        // scale range
+    scaleGF->setDisplayRange(0, 2);                   // set display range
+    scaleGF->setHint("Scale geodesic form");          // help
+    scaleGF->setParent(groupProcess);                 // add to process group
 }
 
 /**

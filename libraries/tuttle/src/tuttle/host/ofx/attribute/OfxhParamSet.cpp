@@ -88,7 +88,7 @@ std::size_t OfxhParamSet::getHashAtTime(const OfxTime time) const
 //	if( _allParams.find( name ) != _allParams.end() )
 //	{
 //		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to reference a new parameter which already
-//exists." ) );
+// exists." ) );
 //	}
 //	_allParams[name] = instance;
 //}

@@ -33,15 +33,15 @@ void SelectionAverage::draw()
 
     // compute values on X axis
     float xBefore = _averageValue.x - kCrossSize; // compute before value (X axis)
-    float xAfter = _averageValue.x + kCrossSize; // compute after value (X axis)
+    float xAfter = _averageValue.x + kCrossSize;  // compute after value (X axis)
 
     // compute values on Y axis
     float yBefore = _averageValue.y - kCrossSize; // compute before value (Y axis)
-    float yAfter = _averageValue.y + kCrossSize; // compute after value (Y axis)
+    float yAfter = _averageValue.y + kCrossSize;  // compute after value (Y axis)
 
     // compute values on Z axis
     float zBefore = _averageValue.z - kCrossSize; // compute before value (Z axis)
-    float zAfter = _averageValue.z + kCrossSize; // compute after value (Z axis)
+    float zAfter = _averageValue.z + kCrossSize;  // compute after value (Z axis)
 
     // drawing average mark
     glBegin(GL_LINES);
@@ -162,7 +162,7 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
     // Compute if source is OK
     SView colorView = tuttle::plugin::getGilView<SView>(src.get(), srcPixelRod,
                                                         eImageOrientationIndependant); // get current view from color clip
-    Pixel_extend_GeodesicForm funct(geodesicForm); // functor declaration			//initialize functor
+    Pixel_extend_GeodesicForm funct(geodesicForm);        // functor declaration			//initialize functor
     terry::algorithm::transform_pixels(colorView, funct); // with functor reference;
 }
 }

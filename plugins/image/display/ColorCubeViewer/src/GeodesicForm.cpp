@@ -99,7 +99,7 @@ void GeodesicForm::createGeodesicForm(const Ofx3DPointD& center)
     //  base2        base3  ------x
     */
     // Define main faces (PyramidTriangles) of GeodesicForm
-    PyramidTriangle Ptop1, Ptop2, Ptop3, Ptop4; // top faces
+    PyramidTriangle Ptop1, Ptop2, Ptop3, Ptop4;             // top faces
     PyramidTriangle Pbottom1, Pbottom2, Pbottom3, Pbottom4; // bottom faces
     // start with top faces
     Ptop1.point1 = &(_points[0]); // top
@@ -229,7 +229,7 @@ void GeodesicForm::draw(bool alpha)
 
         // draw intersection point
         glBegin(GL_POINTS);
-        glColor3f(0.0f, 1.0f, 1.0f); // color cyan
+        glColor3f(0.0f, 1.0f, 1.0f);                                                  // color cyan
         glVertex3d(_intersectionPoint.x, _intersectionPoint.y, _intersectionPoint.z); // intersection point
         glEnd();
     }
@@ -321,7 +321,7 @@ void GeodesicForm::subdiviseOneFace(PyramidTriangle& f, const int divisor)
     Xstep.z = double((f.point3->z - f.point2->z) / (double)divisor); // Z axis
 
     // Triangle construction
-    Ofx3DPointD pX, pX2, pY; // needed points to building triangles
+    Ofx3DPointD pX, pX2, pY;           // needed points to building triangles
     pX2.x = pX.x = pY.x = f.point2->x; // initialize X axis
     pX2.y = pX.y = pY.y = f.point2->y; // initialize Y axis
     pX2.z = pX.z = pY.z = f.point2->z; // initialize Z axis
@@ -363,14 +363,14 @@ void GeodesicForm::subdiviseOneFace(PyramidTriangle& f, const int divisor)
             // initialize indices
             pt1 = pt2 = pt3 = 0;
             // define booleans
-            bool findPt1, findPt2, findPt3; // define booleans
+            bool findPt1, findPt2, findPt3;      // define booleans
             findPt1 = findPt2 = findPt3 = false; // set booleans to false
 
             // define point2
             while(!findPt2 && pt2 < _points.size()) // find point2
             {
                 if(_points[pt2].x == pX.x && _points[pt2].y == pX.y && _points[pt2].z == pX.z) //_points[i] == point2
-                    findPt2 = true; // point has been find
+                    findPt2 = true;                                                            // point has been find
                 else
                     ++pt2; // increments indice point2
             }
@@ -379,7 +379,7 @@ void GeodesicForm::subdiviseOneFace(PyramidTriangle& f, const int divisor)
             while(!findPt3 && pt3 < _points.size()) // find point3
             {
                 if(_points[pt3].x == pX2.x && _points[pt3].y == pX2.y && _points[pt3].z == pX2.z) //_points[i] == point3
-                    findPt3 = true; // point has been find
+                    findPt3 = true;                                                               // point has been find
                 else
                     ++pt3; // increments indice point3
             }
@@ -389,7 +389,7 @@ void GeodesicForm::subdiviseOneFace(PyramidTriangle& f, const int divisor)
             {
                 if(fabs(up.x - _points[pt1].x) < epsilon && fabs(up.y - _points[pt1].y) < epsilon &&
                    fabs(up.z - _points[pt1].z) < epsilon) //_points[i] == point3
-                    findPt1 = true; // point has been find
+                    findPt1 = true;                       // point has been find
                 else
                     ++pt1; // increments indice point1
             }
@@ -416,7 +416,7 @@ void GeodesicForm::subdiviseOneFace(PyramidTriangle& f, const int divisor)
             {
                 if(fabs(bottom.x - _points[pt1].x) < epsilon && fabs(bottom.y - _points[pt1].y) < epsilon &&
                    fabs(bottom.z - _points[pt1].z) < epsilon) //_points[i] == point3
-                    findPt1 = true; // point has been find
+                    findPt1 = true;                           // point has been find
                 else
                     ++pt1; // increments indice point1
             }
@@ -486,7 +486,7 @@ void GeodesicForm::createPointsOneFace(const PyramidTriangle& f, const int divis
     Xstep.z = double((facePoint3.z - facePoint2.z) / (double)divisor); // Z axis
 
     // Triangle construction
-    Ofx3DPointD pX, pY; // needed points to building triangles
+    Ofx3DPointD pX, pY;         // needed points to building triangles
     pX.x = pY.x = facePoint2.x; // initialize X axis
     pX.y = pY.y = facePoint2.y; // initialize Y axis
     pX.z = pY.z = facePoint2.z; // initialize Z axis
@@ -543,11 +543,11 @@ double DOT(const double* v1, const double* v2)
  */
 bool GeodesicForm::getIntersection(const Ofx3DPointD& point, const Triangle& triangle)
 {
-    bool isThereIntersection = false; // returned value
+    bool isThereIntersection = false;        // returned value
     static const double epsilon = 0.0000001; // epsilon value (used to test)
 
     // compute direction vector
-    double directionVector[3]; // initialize direction vector
+    double directionVector[3];                // initialize direction vector
     directionVector[0] = _center.x - point.x; // compute X value
     directionVector[1] = _center.y - point.y; // compute Y value
     directionVector[2] = _center.z - point.z; // compute Z value
@@ -585,7 +585,7 @@ bool GeodesicForm::getIntersection(const Ofx3DPointD& point, const Triangle& tri
         double invertFirstCheck = 1.0 / firstCheck;
 
         // try intersection between triangle and ray
-        double s[3]; // initialize
+        double s[3];                         // initialize
         s[0] = point.x - triangle.point1->x; // X value
         s[1] = point.y - triangle.point1->y; // Y value
         s[2] = point.z - triangle.point1->z; // Z value
@@ -639,7 +639,7 @@ void GeodesicForm::testIntersection(const Ofx3DPointD& testPoint)
     int i = 0; // initialize indice faces
 
     // research optimization
-    Ofx3DPointD pointChangeReference; // testPoint is geodesicForm reference
+    Ofx3DPointD pointChangeReference;                 // testPoint is geodesicForm reference
     pointChangeReference.x = testPoint.x - _center.x; // X value in changed reference
     pointChangeReference.y = testPoint.y - _center.y; // Y value in changed reference
     pointChangeReference.z = testPoint.z - _center.z; // Z value in changed reference
@@ -670,10 +670,10 @@ void GeodesicForm::testIntersection(const Ofx3DPointD& testPoint)
             if(getIntersection(testPoint, _faces[i].triangles[j]))
             {
                 // there is an intersection point
-                intersectionFound = true; // An intersection has been found
-                _idFaceIntersection = i; // Keep intersection face
+                intersectionFound = true;               // An intersection has been found
+                _idFaceIntersection = i;                // Keep intersection face
                 _intersection = _faces[i].triangles[j]; // Keep intersection triangle
-                _hasIntersection = true; // An intersection has been found
+                _hasIntersection = true;                // An intersection has been found
             }
             ++j; // increments triangle indice
         }
@@ -700,9 +700,9 @@ bool GeodesicForm::isPointIntoGeodesicForm(const Ofx3DPointD& testPoint)
     testPointVector[2] = testPoint.z - _center.z; // Z value
     // compute first vector norm
     double normFirstVector = testPointVector[0] * testPointVector[0]; // initialize to x*x
-    normFirstVector += testPointVector[1] * testPointVector[1]; // add y*y
-    normFirstVector += testPointVector[2] * testPointVector[2]; // add z*z
-    normFirstVector = sqrt(normFirstVector); // compute norm
+    normFirstVector += testPointVector[1] * testPointVector[1];       // add y*y
+    normFirstVector += testPointVector[2] * testPointVector[2];       // add z*z
+    normFirstVector = sqrt(normFirstVector);                          // compute norm
 
     // Is current point into sphere
     if(normFirstVector <= _radius)
@@ -711,7 +711,7 @@ bool GeodesicForm::isPointIntoGeodesicForm(const Ofx3DPointD& testPoint)
     }
 
     // test inverse intersection (if inverse intersection work point is into extended geodesic form)
-    Ofx3DPointD pointChangeReference; // testPoint is geodesicForm reference
+    Ofx3DPointD pointChangeReference;                 // testPoint is geodesicForm reference
     pointChangeReference.x = testPoint.x - _center.x; // X value in changed reference
     pointChangeReference.y = testPoint.y - _center.y; // Y value in changed reference
     pointChangeReference.z = testPoint.z - _center.z; // Z value in changed reference
@@ -742,7 +742,7 @@ bool GeodesicForm::isPointIntoGeodesicForm(const Ofx3DPointD& testPoint)
               !intersectionFound) // while there are triangle on current faces and there is not intersection
         {
             // Construct PyramidTriangle needed to use intersection function
-            PyramidTriangle tr; // initialization
+            PyramidTriangle tr;                        // initialization
             tr.point1 = _faces[i].triangles[j].point1; // set point1
             tr.point2 = _faces[i].triangles[j].point2; // set point2
             tr.point3 = _faces[i].triangles[j].point3; // set point3
@@ -750,7 +750,7 @@ bool GeodesicForm::isPointIntoGeodesicForm(const Ofx3DPointD& testPoint)
             if(getIntersection2(testPoint, tr, _intersectionPoint, s, t, true)) // test inverse intersection
             {
                 intersectionFound = true; // there is an intersection
-                isPointInto = true; // current point is into extended geodesic form
+                isPointInto = true;       // current point is into extended geodesic form
             }
             ++j; // increments triangle indice
         }
@@ -776,16 +776,16 @@ void GeodesicForm::extendOnePoint(Ofx3DPointD& testPoint)
         return; // end of function
     }
     // compute angle between (testPoint-center) and (triangle points -center)
-    double testPointCenterVector[3]; // initialize
+    double testPointCenterVector[3];                    // initialize
     testPointCenterVector[0] = testPoint.x - _center.x; // X value
     testPointCenterVector[1] = testPoint.y - _center.y; // Y value
     testPointCenterVector[2] = testPoint.z - _center.z; // Z value
     // compute norm
-    double normTestPointCenterVector = 0; // initialize
+    double normTestPointCenterVector = 0;                                             // initialize
     normTestPointCenterVector += testPointCenterVector[0] * testPointCenterVector[0]; // add x*x
     normTestPointCenterVector += testPointCenterVector[1] * testPointCenterVector[1]; // add y*y
     normTestPointCenterVector += testPointCenterVector[2] * testPointCenterVector[2]; // add z*z
-    normTestPointCenterVector = sqrt(normTestPointCenterVector); // compute norm
+    normTestPointCenterVector = sqrt(normTestPointCenterVector);                      // compute norm
     // normalize testPointCenterVector
     testPointCenterVector[0] /= normTestPointCenterVector; // normalize X value
     testPointCenterVector[1] /= normTestPointCenterVector; // normalize Y value
@@ -810,16 +810,16 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 {
 
     // compute vector (center-point to Move)
-    double vectorCenterPointToMove[3]; // initialize
+    double vectorCenterPointToMove[3];                      // initialize
     vectorCenterPointToMove[0] = pointToMove.x - _center.x; // X value
     vectorCenterPointToMove[1] = pointToMove.y - _center.y; // Y value
     vectorCenterPointToMove[2] = pointToMove.z - _center.z; // Z value
     // compute norm of vector (center-point to Move)
-    double normVectorCenterPointToMove = 0; // initialize
+    double normVectorCenterPointToMove = 0;                                                 // initialize
     normVectorCenterPointToMove += vectorCenterPointToMove[0] * vectorCenterPointToMove[0]; // add x*x
     normVectorCenterPointToMove += vectorCenterPointToMove[1] * vectorCenterPointToMove[1]; // add y*y
     normVectorCenterPointToMove += vectorCenterPointToMove[2] * vectorCenterPointToMove[2]; // add z*z
-    normVectorCenterPointToMove = sqrt(normVectorCenterPointToMove); // compute norm
+    normVectorCenterPointToMove = sqrt(normVectorCenterPointToMove);                        // compute norm
     // normalize center-point to move vector
     vectorCenterPointToMove[0] /= normVectorCenterPointToMove; // normalize X value
     vectorCenterPointToMove[1] /= normVectorCenterPointToMove; // normalize Y value
@@ -856,16 +856,16 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 void GeodesicForm::currentPointToSphere(Ofx3DPointD& point, const double& radius)
 {
     // compute vector between point-center
-    double vectorCenterPoint[3]; // initialize
+    double vectorCenterPoint[3];                // initialize
     vectorCenterPoint[0] = point.x - _center.x; // X value
     vectorCenterPoint[1] = point.y - _center.y; // Y value
     vectorCenterPoint[2] = point.z - _center.z; // Z value
     // compute norm
-    double normVectorCenterPoint = 0; // initialize
+    double normVectorCenterPoint = 0;                                     // initialize
     normVectorCenterPoint += vectorCenterPoint[0] * vectorCenterPoint[0]; // add x*x
     normVectorCenterPoint += vectorCenterPoint[1] * vectorCenterPoint[1]; // add y*y
     normVectorCenterPoint += vectorCenterPoint[2] * vectorCenterPoint[2]; // add z*z
-    normVectorCenterPoint = sqrt(normVectorCenterPoint); // compute norm
+    normVectorCenterPoint = sqrt(normVectorCenterPoint);                  // compute norm
     // normalize vector
     vectorCenterPoint[0] /= normVectorCenterPoint; // normalize X value
     vectorCenterPoint[1] /= normVectorCenterPoint; // normalize Y value
@@ -888,7 +888,7 @@ bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTrian
     double epsilon = 0.00000001; // define epsilon
     // Construct ray (intersection between ray and triangle)
     double ray[3]; // initialize
-    if(!inverse) // normal ray
+    if(!inverse)   // normal ray
     {
         ray[0] = _center.x - point.x; // compute x value
         ray[1] = _center.y - point.y; // compute y value
@@ -901,29 +901,29 @@ bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTrian
         ray[2] = point.z - _center.z; // compute z value
     }
     // Compute norm
-    double normRay = 0; // initialize
+    double normRay = 0;         // initialize
     normRay += ray[0] * ray[0]; // add x*x
     normRay += ray[1] * ray[1]; // add y*y
     normRay += ray[2] * ray[2]; // add z*z
-    normRay = sqrt(normRay); // compute norm
+    normRay = sqrt(normRay);    // compute norm
     // Normalize ray vector
     ray[0] /= normRay; // normalize x value
     ray[1] /= normRay; // normalize y value
     ray[2] /= normRay; // normalize z value
 
     // Compute triangle edge vectors and plane normal
-    double u[3]; // initialize
+    double u[3];                                                  // initialize
     u[0] = pyramidTriangle.point2->x - pyramidTriangle.point1->x; // compute x value
     u[1] = pyramidTriangle.point2->y - pyramidTriangle.point1->y; // compute y value
     u[2] = pyramidTriangle.point2->z - pyramidTriangle.point1->z; // compute z value
     // Compute second edge
-    double v[3]; // initialize
+    double v[3];                                                  // initialize
     v[0] = pyramidTriangle.point3->x - pyramidTriangle.point1->x; // compute x value
     v[1] = pyramidTriangle.point3->y - pyramidTriangle.point1->y; // compute y value
     v[2] = pyramidTriangle.point3->z - pyramidTriangle.point1->z; // compute z value
 
     // Cross product u*v
-    double n[3]; // initialize
+    double n[3];                      // initialize
     n[0] = u[1] * v[2] - u[2] * v[1]; // compute x value
     n[1] = u[2] * v[0] - u[0] * v[2]; // compute y value
     n[2] = u[0] * v[1] - u[1] * v[0]; // compute z value
@@ -934,7 +934,7 @@ bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTrian
         return false; // there is not intersection
     }
     // Test direction vector
-    double wO[3]; // initialize
+    double wO[3];                                // initialize
     wO[0] = point.x - pyramidTriangle.point1->x; // compute x value
     wO[1] = point.y - pyramidTriangle.point1->y; // compute y value
     wO[2] = point.z - pyramidTriangle.point1->z; // compute z value
@@ -967,7 +967,7 @@ bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTrian
     uv = DOT(u, v);
     vv = DOT(v, v);
 
-    double w[3]; // initialize
+    double w[3];                                            // initialize
     w[0] = intersectionPoint.x - pyramidTriangle.point1->x; // compute x value
     w[1] = intersectionPoint.y - pyramidTriangle.point1->y; // compute y value
     w[2] = intersectionPoint.z - pyramidTriangle.point1->z; // compute z value
@@ -996,10 +996,10 @@ bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTrian
 bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& inverse, const bool justIntersectionPoint)
 {
     bool intersectionFound = false; // intersection has not been found
-    int i = 0; // initialize indice faces
+    int i = 0;                      // initialize indice faces
 
     // research optimization
-    Ofx3DPointD pointChangeReference; // testPoint is geodesicForm reference
+    Ofx3DPointD pointChangeReference;                 // testPoint is geodesicForm reference
     pointChangeReference.x = testPoint.x - _center.x; // X value in changed reference
     pointChangeReference.y = testPoint.y - _center.y; // Y value in changed reference
     pointChangeReference.z = testPoint.z - _center.z; // Z value in changed reference
@@ -1029,7 +1029,7 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
                             inverse)) // test intersection with current face (stock parametric coordinates)
         {
             if(justIntersectionPoint) // if we just want to know if there is an intersection
-                return true; // there is an intersection (no more computing)
+                return true;          // there is an intersection (no more computing)
 
             // compute pyramid side step
             double pyramidStep = (double)1 / (double)_nbDivisions; // compute pyramid side step
@@ -1046,11 +1046,11 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
             }
             else // intersected triangle indice is not on first line
             {
-                unsigned int indice = 0; // define indice for previous triangle lines
+                unsigned int indice = 0;              // define indice for previous triangle lines
                 while(indice > parametricCoordinateX) // for each of previous lines
                 {
                     indiceTr += (((int)_nbDivisions - indice) * 2) - 1; // increments triangle indice
-                    ++indice; // increments indice
+                    ++indice;                                           // increments indice
                 }
                 indiceTr += 2 * parametricCoordinateY; // terminate intersected triangle
             }
@@ -1058,25 +1058,25 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
                 indiceTr -= 1;
             // test intersection with computed intersection triangle
             bool hasIntersected = false; // intersection has not been done then
-            int indiceIntersected = 0; // check intersection triangles (2 possibilities)
+            int indiceIntersected = 0;   // check intersection triangles (2 possibilities)
             while(!hasIntersected && indiceIntersected < 3)
             {
                 // define pyramid triangle with current point
-                PyramidTriangle pyTr; // define triangle pyTr
+                PyramidTriangle pyTr;                               // define triangle pyTr
                 pyTr.point1 = _faces[i].triangles[indiceTr].point1; // charge point1
                 pyTr.point2 = _faces[i].triangles[indiceTr].point2; // charge point2
                 pyTr.point3 = _faces[i].triangles[indiceTr].point3; // charge point3
                 hasIntersected = getIntersection2(testPoint, pyTr, _intersectionPoint, s, t,
                                                   inverse); // test intersection with current triangle indice
-                ++indiceTr; // increments indice triangle
-                ++indiceIntersected; // increments check intersection triangle
+                ++indiceTr;                                 // increments indice triangle
+                ++indiceIntersected;                        // increments check intersection triangle
             }
             if(!hasIntersected) // intersection has not been found yet (test hard method)
             {
                 unsigned int j = 0; // declare indice to ride through triangle vector of current face
                 while(j < _faces[i].triangles.size() && !intersectionFound) // test for each triangle of current face
                 {
-                    PyramidTriangle test; // initialize pyramid triangle
+                    PyramidTriangle test;                        // initialize pyramid triangle
                     test.point1 = _faces[i].triangles[j].point1; // set point1
                     test.point2 = _faces[i].triangles[j].point2; // set point2
                     test.point3 = _faces[i].triangles[j].point3; // set point3
@@ -1087,8 +1087,8 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
                         // there is an intersection point
                         intersectionFound = true; // An intersection has been found
                         // set intersection triangle
-                        _idFaceIntersection = i; // Keep intersection face
-                        _hasIntersection = true; // An intersection has been found
+                        _idFaceIntersection = i;                // Keep intersection face
+                        _hasIntersection = true;                // An intersection has been found
                         _intersection = _faces[i].triangles[j]; // keep intersection triangle
                     }
                     ++j; // increments indice
@@ -1151,7 +1151,7 @@ bool GeodesicForm::isIntoBoundingBox(const Ofx3DPointD& testPoint)
         if(testPoint.y >= _boundingBox.min.y && testPoint.y <= _boundingBox.max.y) // test Y axis
         {
             if(testPoint.z >= _boundingBox.min.z && testPoint.z <= _boundingBox.max.z) // test Z axis
-                return true; // current point is into bounding box
+                return true;                                                           // current point is into bounding box
         }
     }
     return false; // current point is not into bounding box
@@ -1209,7 +1209,7 @@ void GeodesicForm::scaleGeodesicForm(const double scale)
     for(unsigned int i = 0; i < _points.size(); ++i)
     {
         // compute vector
-        double vect[3]; // initialize vector
+        double vect[3];                     // initialize vector
         vect[0] = _points[i].x - _center.x; // compute x value
         vect[1] = _points[i].y - _center.y; // compute y value
         vect[2] = _points[i].z - _center.z; // compute z value

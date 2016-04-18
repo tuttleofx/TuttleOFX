@@ -260,13 +260,13 @@ void displayHueIndicator(const OfxPointI size, int precisionHueIndicator)
     float hue = 0.0f;
     for(std::ssize_t i = 0; i < precisionHueIndicator; ++i)
     {
-        boost::gil::hsv32f_pixel_t hsl_pix; // declare a HSL pixel
+        boost::gil::hsv32f_pixel_t hsl_pix;      // declare a HSL pixel
         boost::gil::rgb32f_pixel_t pix(0, 0, 0); // declare a RGB pixel (don't need alpha)
-        hsl_pix[0] = (float)(hue / length); // fill up HSL pixel
+        hsl_pix[0] = (float)(hue / length);      // fill up HSL pixel
         hsl_pix[1] = (float)(1.0);
         hsl_pix[2] = (float)(1.0);
 
-        color_convert(hsl_pix, pix); // convert HSL=>RGB for OpenGl
+        color_convert(hsl_pix, pix);       // convert HSL=>RGB for OpenGl
         glColor3f(pix[0], pix[1], pix[2]); // generate openGL color
 
         glVertex2f(hue * (width / length), -0.0f);

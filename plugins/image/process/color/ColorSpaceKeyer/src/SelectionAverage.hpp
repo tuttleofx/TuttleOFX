@@ -37,7 +37,7 @@ struct ComputeAverage
         using namespace terry;
         using namespace terry::numeric;
         std::size_t nbPixels = 0;
-        CPixel sum; // sum of each pixel
+        CPixel sum;                   // sum of each pixel
         pixel_zeros_t<CPixel>()(sum); // set sum to 0
 
         for(int y = 0; // for each lines
@@ -46,19 +46,19 @@ struct ComputeAverage
             typename View::x_iterator src_it = image.x_at(0, y);
             for(int x = 0; x < image.width(); ++x, ++src_it) // for each pixels in a line
             {
-                CPixel pix; // initialize a container pixel
+                CPixel pix;                                     // initialize a container pixel
                 pixel_assigns_t<Pixel, CPixel>()(*src_it, pix); // pix = src_it;
 
                 if(pix[3] == 1) // if current pixel is selected (alpha channel == 1)
                 {
                     pixel_plus_assign_t<CPixel, CPixel>()(pix, sum); // sum += pix;
-                    ++nbPixels; // increments number of selected pixel
+                    ++nbPixels;                                      // increments number of selected pixel
                 }
             }
         }
-        if(nbPixels != 0) // if any selected pixel has been added
+        if(nbPixels != 0)                                                  // if any selected pixel has been added
             sum = pixel_divides_scalar_t<CPixel, double>()(sum, nbPixels); // compute average average (sum/nbPixels)
-        return sum; // return average (or (0,0,0) pixel)
+        return sum;                                                        // return average (or (0,0,0) pixel)
     }
 };
 
@@ -83,9 +83,9 @@ struct Pixel_extend_GeodesicForm
         {
             // construct current point
             Ofx3DPointD point; // initialize
-            point.x = p[0]; //(x == red)
-            point.y = p[1]; //(y == green)
-            point.z = p[2]; //(z == blue)
+            point.x = p[0];    //(x == red)
+            point.y = p[1];    //(y == green)
+            point.z = p[2];    //(z == blue)
 
             // extend geodesicForm
             _data.extendOnePoint(point); // extends geodesic form (point is already into geodesic form checked)
@@ -99,7 +99,7 @@ class SelectionAverage
 public:
     // Arguments
     Ofx3DPointD _averageValue; // Average of the selection color clip (selection)
-    OfxTime _time; // current time in sequence
+    OfxTime _time;             // current time in sequence
 public:
     // Constructor (initialize value to 0)
     SelectionAverage(OfxTime time);

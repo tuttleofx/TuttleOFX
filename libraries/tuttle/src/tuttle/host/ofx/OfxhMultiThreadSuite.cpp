@@ -71,7 +71,7 @@ OfxStatus multiThreadNumCPUs(unsigned int* const nCPUs)
 OfxStatus multiThreadIndex(unsigned int* const threadIndex)
 {
     //	*threadIndex = boost::this_thread::get_id(); //	we don't want a global thead id, but the thead index inside a node
-    //multithread process.
+    // multithread process.
     if(ptr.get() != NULL)
     {
         *threadIndex = 0;

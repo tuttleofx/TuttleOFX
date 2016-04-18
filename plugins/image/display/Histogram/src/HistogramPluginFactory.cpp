@@ -127,7 +127,7 @@ void HistogramPluginFactory::describeInContext(OFX::ImageEffectDescriptor& desc,
         OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
         boolB->setHint("Activate Blue channel");
         boolB->setLayoutHint(OFX::eLayoutHintNoNewLine); // line is not finished
-        boolB->setDefault(true); // blue channel is not selected by default
+        boolB->setDefault(true);                         // blue channel is not selected by default
         boolB->setParent(groupRGB);
         // blue multiplier
         OFX::DoubleParamDescriptor* blueMultiplier = desc.defineDoubleParam(kMultiplierBlue);

@@ -19,21 +19,21 @@ HistogramPlugin::HistogramPlugin(OfxImageEffectHandle handle)
 {
     _paramGlobalDisplaySelection = fetchBooleanParam(kGlobalDisplay); // global display
 
-    _paramOverlayRSelection = fetchBooleanParam(kBoolRed); // R (is channel selected?)
-    _paramMutliplierR = fetchDoubleParam(kMultiplierRed); // R multiplier
+    _paramOverlayRSelection = fetchBooleanParam(kBoolRed);   // R (is channel selected?)
+    _paramMutliplierR = fetchDoubleParam(kMultiplierRed);    // R multiplier
     _paramOverlayGSelection = fetchBooleanParam(kBoolGreen); // G (is channel selected?)
-    _paramMutliplierG = fetchDoubleParam(kMultiplierGreen); // G multiplier
+    _paramMutliplierG = fetchDoubleParam(kMultiplierGreen);  // G multiplier
 
     _paramOverlayBSelection = fetchBooleanParam(kBoolBlue); // B (is channel selected?)
-    _paramMutliplierB = fetchDoubleParam(kMultiplierBlue); // B multiplier
+    _paramMutliplierB = fetchDoubleParam(kMultiplierBlue);  // B multiplier
 
-    _paramOverlayHSelection = fetchBooleanParam(kBoolHue); // H (is channel selected?)
-    _paramMutliplierH = fetchDoubleParam(kMultiplierHue); // H multiplier
+    _paramOverlayHSelection = fetchBooleanParam(kBoolHue);        // H (is channel selected?)
+    _paramMutliplierH = fetchDoubleParam(kMultiplierHue);         // H multiplier
     _paramOverlaySSelection = fetchBooleanParam(kBoolSaturation); // S (is channel selected?)
-    _paramMutliplierS = fetchDoubleParam(kMultiplierSaturation); // S multiplier
+    _paramMutliplierS = fetchDoubleParam(kMultiplierSaturation);  // S multiplier
 
     _paramOverlayLSelection = fetchBooleanParam(kBoolLightness); // L (is channel selected?)
-    _paramMutliplierL = fetchDoubleParam(kMultiplierLightness); // L multiplier
+    _paramMutliplierL = fetchDoubleParam(kMultiplierLightness);  // L multiplier
 
     _paramDisplayTypeSelection =
         fetchChoiceParam(kHistoDisplayListParamLabel); // histogram display list (Histogram overlay group)
@@ -43,7 +43,7 @@ HistogramPlugin::HistogramPlugin(OfxImageEffectHandle handle)
 
     _paramSelectionMultiplierSelection = fetchDoubleParam(kselectionMultiplier); // selection multiplier (Advanced group)
     _paramRefreshOverlaySelection = fetchPushButtonParam(kButtonRefreshOverlay); // refresh overlay (Advanced group)
-    _paramNbStepSelection = fetchIntParam(knbStepRange); // nb step range (Advanced group)
+    _paramNbStepSelection = fetchIntParam(knbStepRange);                         // nb step range (Advanced group)
 
     // Reset param booleans
     _isCleaned = false;

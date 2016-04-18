@@ -13,8 +13,8 @@ namespace colorSpaceKeyer
  */
 void productVectorMatrix(const Vect4& v, const Matrix4& m, Vect4& result)
 {
-    result[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * 1; // compute X value
-    result[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * 1; // compute Y value
+    result[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * 1;  // compute X value
+    result[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * 1;  // compute Y value
     result[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * 1; // compute Z value
     result[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * 1; // compute w
 }
@@ -123,15 +123,15 @@ Matrix4 constructRotationMatrix(const Ofx3DPointD& rotationCenter, const double&
     Axis axisZ = {{0, 0, 1}}; // define axe Z
 
     // Define and create rotation + translation matrix
-    Matrix4 rotationTranslationMatrix; // initialize
+    Matrix4 rotationTranslationMatrix;        // initialize
     setToIdentity(rotationTranslationMatrix); // set matrix center to identity
 
     // Define  and construct rotation matrices
-    Matrix4 rotationMatrixX; // initialize rotation matrix X
+    Matrix4 rotationMatrixX;                            // initialize rotation matrix X
     setToRotate(rotationMatrixX, angleX / 10.0, axisX); // construct rotation matrix X
-    Matrix4 rotationMatrixY; // initialize rotation matrix Y
+    Matrix4 rotationMatrixY;                            // initialize rotation matrix Y
     setToRotate(rotationMatrixY, angleY / 10.0, axisY); // construct rotation matrix Y
-    Matrix4 rotationMatrixZ; // initialize rotation matrix Z
+    Matrix4 rotationMatrixZ;                            // initialize rotation matrix Z
     setToRotate(rotationMatrixZ, angleZ / 10.0, axisZ); // construct rotation matrix Z
 
     // Define and construct translation matrix
@@ -147,10 +147,10 @@ Matrix4 constructRotationMatrix(const Ofx3DPointD& rotationCenter, const double&
     setToTranslate(translationInverseMatrix, inverseTranslationVector); // construct inverse translation matrix
 
     // Construct final reference center matrix (inverse order of application)
-    multMatrixBtoMatrixA(rotationTranslationMatrix, translationMatrix); // translation matrix
-    multMatrixBtoMatrixA(rotationTranslationMatrix, rotationMatrixZ); // rotation Z axis
-    multMatrixBtoMatrixA(rotationTranslationMatrix, rotationMatrixY); // rotation Y axis
-    multMatrixBtoMatrixA(rotationTranslationMatrix, rotationMatrixX); // rotation X axis
+    multMatrixBtoMatrixA(rotationTranslationMatrix, translationMatrix);        // translation matrix
+    multMatrixBtoMatrixA(rotationTranslationMatrix, rotationMatrixZ);          // rotation Z axis
+    multMatrixBtoMatrixA(rotationTranslationMatrix, rotationMatrixY);          // rotation Y axis
+    multMatrixBtoMatrixA(rotationTranslationMatrix, rotationMatrixX);          // rotation X axis
     multMatrixBtoMatrixA(rotationTranslationMatrix, translationInverseMatrix); // inverse translation matrix
     // return result
     return rotationTranslationMatrix;

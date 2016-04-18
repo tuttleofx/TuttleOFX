@@ -26,7 +26,7 @@ struct ColorSpaceKeyerProcessParams
 // Structure used to evite to recompute geodesic form on each render
 struct CSProcessParams
 {
-    OfxTime time; // current time
+    OfxTime time;               // current time
     bool recomputeGeodesicForm; // does data need to recomputed
     // Create geodesic form
     GeodesicForm geodesicFormColor; // color form

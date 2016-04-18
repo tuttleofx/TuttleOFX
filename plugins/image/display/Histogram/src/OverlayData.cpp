@@ -67,12 +67,12 @@ void OverlayData::resetHistogramBufferData(HistogramBufferData& toReset) const
     // Alpha
     this->resetVectortoZero(toReset._bufferAlpha, toReset._step); // alpha
     // RGB
-    this->resetVectortoZero(toReset._bufferRed, toReset._step); // R
+    this->resetVectortoZero(toReset._bufferRed, toReset._step);   // R
     this->resetVectortoZero(toReset._bufferGreen, toReset._step); // G
-    this->resetVectortoZero(toReset._bufferBlue, toReset._step); // B
+    this->resetVectortoZero(toReset._bufferBlue, toReset._step);  // B
     // HLS
-    this->resetVectortoZero(toReset._bufferHue, toReset._step); // H
-    this->resetVectortoZero(toReset._bufferLightness, toReset._step); // S
+    this->resetVectortoZero(toReset._bufferHue, toReset._step);        // H
+    this->resetVectortoZero(toReset._bufferLightness, toReset._step);  // S
     this->resetVectortoZero(toReset._bufferSaturation, toReset._step); // L
 }
 
@@ -83,13 +83,13 @@ void OverlayData::resetHistogramBufferData(HistogramBufferData& toReset) const
 void OverlayData::correctHistogramBufferData(HistogramBufferData& toCorrect) const
 {
     // RGB
-    this->correctVector(toCorrect._bufferRed); // R
+    this->correctVector(toCorrect._bufferRed);   // R
     this->correctVector(toCorrect._bufferGreen); // G
-    this->correctVector(toCorrect._bufferBlue); // B
+    this->correctVector(toCorrect._bufferBlue);  // B
     // HSL
-    this->correctVector(toCorrect._bufferHue); // H
+    this->correctVector(toCorrect._bufferHue);        // H
     this->correctVector(toCorrect._bufferSaturation); // S
-    this->correctVector(toCorrect._bufferLightness); // L
+    this->correctVector(toCorrect._bufferLightness);  // L
 }
 
 /**
@@ -111,13 +111,13 @@ void OverlayData::correctVector(HistogramVector& v) const
 void OverlayData::computeAverages()
 {
     // RGB
-    this->_averageData._averageRed = computeAnAverage(this->_selectionData._bufferRed); // R
-    this->_averageData._averageBlue = computeAnAverage(this->_selectionData._bufferBlue); // G
+    this->_averageData._averageRed = computeAnAverage(this->_selectionData._bufferRed);     // R
+    this->_averageData._averageBlue = computeAnAverage(this->_selectionData._bufferBlue);   // G
     this->_averageData._averageGreen = computeAnAverage(this->_selectionData._bufferGreen); // B
     // HSL
-    this->_averageData._averageHue = computeAnAverage(this->_selectionData._bufferHue); // H
+    this->_averageData._averageHue = computeAnAverage(this->_selectionData._bufferHue);               // H
     this->_averageData._averageSaturation = computeAnAverage(this->_selectionData._bufferSaturation); // S
-    this->_averageData._averageLightness = computeAnAverage(this->_selectionData._bufferLightness); // L
+    this->_averageData._averageLightness = computeAnAverage(this->_selectionData._bufferLightness);   // L
 }
 
 /**
@@ -271,12 +271,12 @@ void OverlayData::removeSelection()
 void OverlayData::resetAverages()
 {
     // reset average
-    this->_averageData._averageRed = 0; // R
-    this->_averageData._averageGreen = 0; // G
-    this->_averageData._averageBlue = 0; // B
-    this->_averageData._averageHue = 0; // H
+    this->_averageData._averageRed = 0;        // R
+    this->_averageData._averageGreen = 0;      // G
+    this->_averageData._averageBlue = 0;       // B
+    this->_averageData._averageHue = 0;        // H
     this->_averageData._averageSaturation = 0; // S
-    this->_averageData._averageLightness = 0; // L
+    this->_averageData._averageLightness = 0;  // L
 }
 
 /**

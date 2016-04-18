@@ -14,8 +14,8 @@ namespace colorCubeViewer
 
 // declare boost::array as Types
 typedef boost::array<double, 16> Matrix4; // 4*4 matrix
-typedef boost::array<double, 4> Vect4; // 4 vector
-typedef boost::array<double, 3> Axis; // axis X = (1,0,0)    Y = (0,1,0)   Z = (0,0,1) or others
+typedef boost::array<double, 4> Vect4;    // 4 vector
+typedef boost::array<double, 3> Axis;     // axis X = (1,0,0)    Y = (0,1,0)   Z = (0,0,1) or others
 
 // Matrix product with a 3D vector and a 4*4 matrix
 void productVectorMatrix(const Vect4& v, const Matrix4& m, Vect4& result);

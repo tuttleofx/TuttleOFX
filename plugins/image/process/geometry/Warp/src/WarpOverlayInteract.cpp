@@ -36,7 +36,8 @@ WarpOverlayInteract::WarpOverlayInteract(OfxInteractHandle handle, OFX::ImageEff
     // Points out
     for(std::size_t i = 0; i < kMaxNbPoints; ++i)
     {
-        //		interact::PointInteract* point = new interact::ParamPoint<interact::FrameClip, eCoordinateSystemXY > (
+        //		interact::PointInteract* point = new interact::ParamPoint<interact::FrameClip, eCoordinateSystemXY >
+        //(
         //_infos, _plugin->_paramPointOut[i], _plugin->_clipSrc );
 
         typedef interact::ParamPoint<interact::FrameClip, eCoordinateSystemXY> PPoint;

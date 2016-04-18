@@ -2546,7 +2546,7 @@ CameraParam::CameraParam(OfxImageEffectHandle imageEffectHandle, const ParamSet*
     //	NukeOfxCameraHandle *camera;
     //	OfxPropertySetHandle *propertySet;
     //	OfxStatus stat = OFX::Private::gCameraParameterSuite->cameraGetHandle( getOfxHandle(), name.c_str(), camera,
-    //propertySet );
+    // propertySet );
     //	throwSuiteStatusException( stat );
 }
 

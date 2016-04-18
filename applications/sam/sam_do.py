@@ -2,6 +2,7 @@
 # coding: utf-8 
 # PYTHON_ARGCOMPLETE_OK
 
+import sys
 import argparse
 import itertools
 
@@ -39,7 +40,6 @@ class Sam_do(samUtils.Sam):
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
         self._processingOptions = colored.blue('Processing options')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
-        self._tuttleWebSite = colored.green('http://www.tuttleofx.org/')
         if clintVersion >= '0.3.3':
             self._pluginOption.bold=True
             self._generatorsAndViewers.bold=True
@@ -50,7 +50,6 @@ class Sam_do(samUtils.Sam):
             self._imgSeqNumbering.bold=True
             self._processingOptions.bold=True
             self._tuttleVersion.bold=True
-            self._tuttleWebSite.bold=True
 
         self.epilog = '''
     ''' + self._pluginOption + '''
@@ -106,7 +105,7 @@ class Sam_do(samUtils.Sam):
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         Disable recursivity with folders:  sam do reader inputFolder // writer outputFolder --no-recursivity
         
-    ''' + self._tuttleVersion + '''            ''' + self._tuttleWebSite
+    ''' + self._tuttleVersion + '''            ''' + self.tuttleWebSiteUserDoc
 
     def fillParser(self, parser):
         # Arguments
@@ -132,10 +131,11 @@ class Sam_do(samUtils.Sam):
         """
         # check if there is no arguments
         if len(inputsToProcess) == 0:
+            self.logger.warn('No input to process: the command is invalid.')
             return True
         # else check if last input is the separator
         elif inputsToProcess[-1] == '//':
-            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
+            self.logger.warn('The given inputs to process are invalid: ' + str(inputsToProcess))
             return True
         return False
 
@@ -147,9 +147,13 @@ class Sam_do(samUtils.Sam):
         if len(inputsToProcess) == 0:
             if len(inputsUnknown) == 0 or '-h' in inputsUnknown or '--help' in inputsUnknown:
                 return True
-        # else check unknow arguments
+        # else check if help is asked before any input to process
         else:
-            if len(inputsUnknown) == 1 and ('-h' in inputsUnknown or '--help' in inputsUnknown):
+            firstOption = sys.argv[1]
+            # manage if the command is called from 'sam do' or 'sam-do'
+            if firstOption == self.command and len(sys.argv) > 2:
+                firstOption = sys.argv[2]
+            if ('-h' == firstOption or '--help' == firstOption):
                 return True
         return False
 

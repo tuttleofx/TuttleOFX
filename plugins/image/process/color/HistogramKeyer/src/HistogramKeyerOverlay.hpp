@@ -30,12 +30,12 @@ public:
     HistogramKeyerPlugin* _plugin; // plugin reference
     interact::InteractInfos _infos;
 
-    bool _penDown; // is mouse under selection
-    bool _keyDown; // is key under selection
-    OfxPointI _origin; // begin of the current selection
-    OfxPointI _end; // end of the current selection
+    bool _penDown;          // is mouse under selection
+    bool _keyDown;          // is key under selection
+    OfxPointI _origin;      // begin of the current selection
+    OfxPointI _end;         // end of the current selection
     OfxPointI _squareBegin; // begin of square selection
-    OfxPointI _squareEnd; // end of square selection
+    OfxPointI _squareEnd;   // end of square selection
 
     bool _isFirstTime; // temporary
 
@@ -50,18 +50,18 @@ public:
     bool draw(const OFX::DrawArgs& args); // draw all of the component (main display)
 
     /*Mouse management*/
-    bool penDown(const OFX::PenArgs& args); // mouse/pen is clicking down
-    bool penUp(const OFX::PenArgs& args); // mouse/pen is releasing
+    bool penDown(const OFX::PenArgs& args);   // mouse/pen is clicking down
+    bool penUp(const OFX::PenArgs& args);     // mouse/pen is releasing
     bool penMotion(const OFX::PenArgs& args); // mouse/pen is under motion
 
     /*Keyboard management*/
     bool keyDown(const OFX::KeyArgs& args); // Ctrl key is pressing down
-    bool keyUp(const OFX::KeyArgs& args); // Ctrl key is releasing
+    bool keyUp(const OFX::KeyArgs& args);   // Ctrl key is releasing
 
     /*Selection help (display)*/
     void displaySelectedAreas(const OfxPointI& fullImgSize, const OfxPointI& imgSize,
                               const OfxRectI& pixelRoD); // display the selected areas (texture)
-    void displaySelectionZone(); // display the current selection zone (white square)
+    void displaySelectionZone();                         // display the current selection zone (white square)
 
     /*Get overlay data*/
     OverlayData& getOverlayData();

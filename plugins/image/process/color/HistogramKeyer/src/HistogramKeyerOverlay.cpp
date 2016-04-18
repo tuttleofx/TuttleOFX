@@ -16,10 +16,10 @@ HistogramKeyerOverlay::HistogramKeyerOverlay(OfxInteractHandle handle, OFX::Imag
     , _hslParam(_plugin)
     , _rgbParam(_plugin)
 {
-    _penDown = false; // Mouse is not clicked down by default
-    _keyDown = false; // Ctrl key is not pressed by default
+    _penDown = false;             // Mouse is not clicked down by default
+    _keyDown = false;             // Ctrl key is not pressed by default
     _plugin->addRefOverlayData(); // add reference to Overlay data
-    _isFirstTime = true; // temporary
+    _isFirstTime = true;          // temporary
     getOverlayData()._isDataInvalid = true;
 }
 
@@ -40,7 +40,7 @@ bool HistogramKeyerOverlay::draw(const OFX::DrawArgs& args)
 
     if(_isFirstTime || getOverlayData()._isDataInvalid || getOverlayData().isCurrentTimeModified(args.time) ||
        getOverlayData().isImageSizeModified(imgSize) ///< HACK changeClip method doesn't work in nuke when source clip is
-                                                     ///changed so we have to check size of imgBool all of the time
+       /// changed so we have to check size of imgBool all of the time
        )
     {
         if(getOverlayData().isImageSizeModified(imgSize))
@@ -57,21 +57,21 @@ bool HistogramKeyerOverlay::draw(const OFX::DrawArgs& args)
         {
             // initialize model-view and projection matrixes to identity
             glMatrixMode(GL_PROJECTION); // load standard mode
-            glLoadIdentity(); // projection to identity
-            glMatrixMode(GL_MODELVIEW); // load standard mode
-            glLoadIdentity(); // model-view to identity
+            glLoadIdentity();            // projection to identity
+            glMatrixMode(GL_MODELVIEW);  // load standard mode
+            glLoadIdentity();            // model-view to identity
 
             // get current viewport size
-            GLint viewport[4] = {0, 0, 0, 0}; // define result array
+            GLint viewport[4] = {0, 0, 0, 0};     // define result array
             glGetIntegerv(GL_VIEWPORT, viewport); // get current viewport size
             const double ratio = (viewport[2] - viewport[0]) / (double)(viewport[3] - viewport[1]); // compute ratio
             // define new coordinates
             glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0); // set coordinates to 0-1
 
             // display warning sign on screen
-            Ofx3DPointD warningPoint; // initialize warning drawing point
-            warningPoint.x = 0.15; // x == viewport width/7;
-            warningPoint.y = 0.2; // y == viewport height/5;
+            Ofx3DPointD warningPoint;         // initialize warning drawing point
+            warningPoint.x = 0.15;            // x == viewport width/7;
+            warningPoint.y = 0.2;             // y == viewport height/5;
             drawWarning(warningPoint, ratio); // draw warning sign
         }
     }
@@ -123,7 +123,7 @@ bool HistogramKeyerOverlay::penMotion(const OFX::PenArgs& args)
     {
         _squareEnd.x = args.penPosition.x; // needed to draw the selection square
         _squareEnd.y = args.penPosition.y; // needed to draw the selection square
-        return true; // event captured
+        return true;                       // event captured
     }
     if(_penDown && _keyDown) // the mouse is moving and there is Ctrl key pressed
     {
@@ -141,10 +141,10 @@ bool HistogramKeyerOverlay::penMotion(const OFX::PenArgs& args)
         x -= pixelRegionOfDefinition.x1; // repere change (reformat)
 
         if(_plugin->_paramSelectionMode->getValue() == 2) // selection mode is subtractive mode
-            getOverlayData()._imgBool[y][x] = 0; // current pixel is no more marked as selected
+            getOverlayData()._imgBool[y][x] = 0;          // current pixel is no more marked as selected
         else
             getOverlayData()._imgBool[y][x] = 255; // current pixel is marked as selected
-        return true; // event captured
+        return true;                               // event captured
     }
     return false; // event is not captured
 }
@@ -156,7 +156,7 @@ bool HistogramKeyerOverlay::penMotion(const OFX::PenArgs& args)
  */
 bool HistogramKeyerOverlay::penDown(const OFX::PenArgs& args)
 {
-    const OfxPointI fullsize = _plugin->_clipSrc->getPixelRodSize(args.time); // full size
+    const OfxPointI fullsize = _plugin->_clipSrc->getPixelRodSize(args.time);                  // full size
     const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale); // size with renderscale
 
     if(!_penDown && !_keyDown &&
@@ -168,7 +168,7 @@ bool HistogramKeyerOverlay::penDown(const OFX::PenArgs& args)
         else
         {
             if(args.penPosition.y > fullsize.y) // clamp the selected Y pixel to the image borders
-                _origin.y = imgSize.y; // click is on the top of the image
+                _origin.y = imgSize.y;          // click is on the top of the image
             else
                 _origin.y = 0; // click is on the bottom of the image
         }
@@ -177,7 +177,7 @@ bool HistogramKeyerOverlay::penDown(const OFX::PenArgs& args)
         else
         {
             if(args.penPosition.x > fullsize.x) // clamp the selected X pixel to the image borders
-                _origin.x = imgSize.x; // click is on the right of the image
+                _origin.x = imgSize.x;          // click is on the right of the image
             else
                 _origin.x = 0; // click is on the left of the image
         }
@@ -206,7 +206,7 @@ bool HistogramKeyerOverlay::penDown(const OFX::PenArgs& args)
  */
 bool HistogramKeyerOverlay::penUp(const OFX::PenArgs& args)
 {
-    const OfxPointI fullSize = _plugin->_clipSrc->getPixelRodSize(args.time); // full image size
+    const OfxPointI fullSize = _plugin->_clipSrc->getPixelRodSize(args.time);                  // full image size
     const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale); // size with renderscale
     const OfxRectI pixelRegionOfDefinition =
         _plugin->_clipSrc->getPixelRod(args.time, args.renderScale); // pixel region of definition
@@ -214,10 +214,10 @@ bool HistogramKeyerOverlay::penUp(const OFX::PenArgs& args)
     // clamp selection
     _end.x = args.penPosition.x * args.renderScale.x; // attach the end of the selection square to the current pixel X
     _end.y = args.penPosition.y * args.renderScale.y; // attach the end of the selection square to the current pixel Y
-    if(_end.x == _origin.x && _end.y == _origin.y) // it's just one click!
+    if(_end.x == _origin.x && _end.y == _origin.y)    // it's just one click!
     {
         _penDown = false; // change penDown
-        return false; // event is not capured
+        return false;     // event is not capured
     }
 
     if(!(args.penPosition.x < fullSize.x && args.penPosition.x > 0 && args.penPosition.y < fullSize.y &&
@@ -226,14 +226,14 @@ bool HistogramKeyerOverlay::penUp(const OFX::PenArgs& args)
         if(args.penPosition.x < 0.0 || args.penPosition.x > fullSize.x) // problem with X axis
         {
             if(args.penPosition.x < 0.0) // click is on the left of the image
-                _end.x = 0.0; // clamp
+                _end.x = 0.0;            // clamp
             else
                 _end.x = imgSize.x; // click is on the right of the image
         }
         if(args.penPosition.y < 0.0 || args.penPosition.y > fullSize.y) // problem with Y axis
         {
             if(args.penPosition.y < 0.0) // click is on the bottom of the image
-                _end.y = 0.0; // clamp
+                _end.y = 0.0;            // clamp
             else
                 _end.y = imgSize.y; // click is on the top of the image
         }
@@ -273,7 +273,7 @@ bool HistogramKeyerOverlay::penUp(const OFX::PenArgs& args)
 
         unsigned char fillValue;
         if(_plugin->_paramSelectionMode->getValue() == 2) // selection mode is subtractive
-            fillValue = 0; // remove all of the selected pixel
+            fillValue = 0;                                // remove all of the selected pixel
         else
             fillValue = 255; // mark all of the selected pixel
 
@@ -307,7 +307,7 @@ bool HistogramKeyerOverlay::keyDown(const OFX::KeyArgs& args)
        args.keySymbol == kOfxKey_Control_R) // if the pressed key is Ctrl key (left or right)
     {
         _keyDown = true; // treatment begins
-        return true; // event captured
+        return true;     // event captured
     }
     return false; // event is not captured (other key)
 }
@@ -341,19 +341,19 @@ void HistogramKeyerOverlay::displaySelectedAreas(const OfxPointI& fullImgSize, c
                                                  const OfxRectI& pixelRoD)
 {
     glEnable(GL_TEXTURE_2D); // Activate texturing
-    GLuint Name; // Texture name
+    GLuint Name;             // Texture name
     glGenTextures(1, &Name); // generate a texture number
     glBindTexture(GL_TEXTURE_2D, Name);
     BOOST_ASSERT(getOverlayData()._imgBool.shape()[0] == std::size_t(imgSize.y));
     BOOST_ASSERT(getOverlayData()._imgBool.shape()[1] == std::size_t(imgSize.x));
-    glTexImage2D(GL_TEXTURE_2D, // Type : texture 2D
-                 0, // Mipmap : none
-                 GL_ALPHA8, // Colors : 4
-                 imgSize.x, // width
-                 imgSize.y, // height
-                 0, // border size
-                 GL_ALPHA, // Format : RGBA
-                 GL_UNSIGNED_BYTE, // color kind
+    glTexImage2D(GL_TEXTURE_2D,                   // Type : texture 2D
+                 0,                               // Mipmap : none
+                 GL_ALPHA8,                       // Colors : 4
+                 imgSize.x,                       // width
+                 imgSize.y,                       // height
+                 0,                               // border size
+                 GL_ALPHA,                        // Format : RGBA
+                 GL_UNSIGNED_BYTE,                // color kind
                  getOverlayData()._imgBool.data() // data buffer
                  );
     glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
@@ -384,7 +384,7 @@ void HistogramKeyerOverlay::displaySelectionZone()
     glEnable(GL_LINE_STIPPLE);
     glLineStipple(1, (short)0x0101); // to draw -------
     glBegin(GL_LINE_LOOP);
-    glColor3f(.6f, 0.6f, 0.6f); // white
+    glColor3f(.6f, 0.6f, 0.6f);                 // white
     glVertex2f(_squareBegin.x, _squareBegin.y); // draw selection square
     glVertex2f(_squareBegin.x, _squareEnd.y);
     glVertex2f(_squareEnd.x, _squareEnd.y);
@@ -400,25 +400,25 @@ void HistogramKeyerOverlay::displaySelectionZone()
  */
 void HistogramKeyerOverlay::drawWarning(const Ofx3DPointD& centerPoint, const double ratio)
 {
-    float size = 5.0f; // define size
+    float size = 5.0f;       // define size
     glColor3f(1.0f, .7f, 0); // color orange
-    glLineWidth(size); // change line width (bigger)
+    glLineWidth(size);       // change line width (bigger)
     // draw triangle
-    glBegin(GL_LINE_STRIP); // draw exterior triangle
+    glBegin(GL_LINE_STRIP);                                     // draw exterior triangle
     glVertex2d((centerPoint.x - 0.025 * ratio), centerPoint.y); // first point of triangle
     glVertex2d((centerPoint.x + 0.025 * ratio), centerPoint.y); // second point of triangle
     glVertex2d(centerPoint.x, (centerPoint.y + 0.085 * ratio)); // third point of triangle
     glVertex2d((centerPoint.x - 0.025 * ratio), centerPoint.y); // first point of triangle (boucle)
-    glEnd(); // end of drawing
+    glEnd();                                                    // end of drawing
     // draw !
-    glBegin(GL_LINES); // draw ! sign
+    glBegin(GL_LINES);                                         // draw ! sign
     glVertex2d(centerPoint.x, (centerPoint.y + 0.07 * ratio)); // first point
     glVertex2d(centerPoint.x, (centerPoint.y + 0.03 * ratio)); // second point
-    glEnd(); // end of drawing
-    glBegin(GL_POINTS); // draw ! point
-    glPointSize(size); // change point size (bigger)
+    glEnd();                                                   // end of drawing
+    glBegin(GL_POINTS);                                        // draw ! point
+    glPointSize(size);                                         // change point size (bigger)
     glVertex2d(centerPoint.x, (centerPoint.y + 0.02 * ratio)); // point of !
-    glEnd(); // end of drawing
+    glEnd();                                                   // end of drawing
     // reset basic parameters
     glLineWidth(1.0f); // reset line width (normal)
     glPointSize(1.0f); // reset point size (normal)

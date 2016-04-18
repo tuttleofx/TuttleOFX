@@ -97,7 +97,7 @@ const static std::string kDoubleScaleGeodesicForm = "scaleGF";
 const static std::string kDoubleScaleGeodesicFormLabel = "Scale geodesic form";
 
 // Rotation constants
-const static int KMaxDegres = 360; // 360° max for a rotation
+const static int KMaxDegres = 360;   // 360° max for a rotation
 const static int kRotationSpeed = 5; // mouse rotation scale
 }
 }

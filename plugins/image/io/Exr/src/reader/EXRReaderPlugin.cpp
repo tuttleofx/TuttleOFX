@@ -291,9 +291,11 @@ bool EXRReaderPlugin::getRegionOfDefinition(const OFX::RegionOfDefinitionArgumen
         {
             const Imath::Box2i dataWindow(h.dataWindow());
 
-            //			TUTTLE_LOG_INFO( "ExrReaderPlugin: displayWindow: " << displayWindow.min.x << ", " << displayWindow.min.y
+            //			TUTTLE_LOG_INFO( "ExrReaderPlugin: displayWindow: " << displayWindow.min.x << ", " <<
+            // displayWindow.min.y
             //<< ", " << displayWindow.max.x << ", " << displayWindow.max.y );
-            //			TUTTLE_LOG_INFO( "ExrReaderPlugin: dataWindow: " << h.dataWindow().min.x << ", " << h.dataWindow().min.y
+            //			TUTTLE_LOG_INFO( "ExrReaderPlugin: dataWindow: " << h.dataWindow().min.x << ", " <<
+            // h.dataWindow().min.y
             //<< ", " << h.dataWindow().max.x << ", " << h.dataWindow().max.y );
 
             rod.x1 = dataWindow.min.x;

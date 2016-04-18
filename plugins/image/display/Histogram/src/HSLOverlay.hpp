@@ -24,10 +24,10 @@ namespace histogram
 enum ESelectedChannelHSL
 {
     eSelectedChannelMoreHSL, // More than one RGB channel are selected
-    eSelectedChannelH, // Only red is selected
-    eSelectedChannelS, // Only green is selected
-    eSelectedChannelL, // Only blue is selected
-    eSelectedChannelNoneHSL // None channel is selected
+    eSelectedChannelH,       // Only red is selected
+    eSelectedChannelS,       // Only green is selected
+    eSelectedChannelL,       // Only blue is selected
+    eSelectedChannelNoneHSL  // None channel is selected
 };
 
 /// @todo class HSLOverlay : public OFX::OverlayInteract (when Nuke overlay works)

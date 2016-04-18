@@ -24,10 +24,10 @@ namespace histogramKeyer
 enum ESelectedChannelRGB
 {
     eSelectedChannelMoreRGB, // More than one RGB channel are selected
-    eSelectedChannelR, // Only red is selected
-    eSelectedChannelG, // Only green is selected
-    eSelectedChannelB, // Only blue is selected
-    eSelectedChannelNoneRGB // None channel is selected
+    eSelectedChannelR,       // Only red is selected
+    eSelectedChannelG,       // Only green is selected
+    eSelectedChannelB,       // Only blue is selected
+    eSelectedChannelNoneRGB  // None channel is selected
 };
 
 /// @todo class RGBOverlay : public OFX::OverlayInteract (when Nuke overlay works)

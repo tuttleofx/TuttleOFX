@@ -107,13 +107,13 @@ OfxhProperty& OfxhSet::fetchLocalProperty(const std::string& name)
 
     if(i == _props.end())
     {
-        BOOST_THROW_EXCEPTION(OfxhException(
-            kOfxStatErrValue, "fetchLocalProperty: " + name + ". Property not found.")); //+ " on type:" +
-                                                                                         //getStringProperty(kOfxPropType) +
-                                                                                         //" name:" +
-                                                                                         //getStringProperty(kOfxPropName)
-                                                                                         //);// " NULL, (followChain: " <<
-                                                                                         //followChain << ").";
+        BOOST_THROW_EXCEPTION(
+            OfxhException(kOfxStatErrValue, "fetchLocalProperty: " + name + ". Property not found.")); //+ " on type:" +
+        // getStringProperty(kOfxPropType) +
+        //" name:" +
+        // getStringProperty(kOfxPropName)
+        //);// " NULL, (followChain: " <<
+        // followChain << ").";
     }
     return *(i->second);
 }

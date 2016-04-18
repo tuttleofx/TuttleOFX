@@ -91,8 +91,8 @@ void HistogramKeyerPluginFactory::describeInContext(OFX::ImageEffectDescriptor& 
         groupHSL->setLabel(kGroupHSLLabel);
 
         // define the graphic aspect
-        curvesRGB->setRange(0.0, 1.0); // set range on RGB curve
-        curvesHSL->setRange(0.0, 1.0); // set range on HSL curve
+        curvesRGB->setRange(0.0, 1.0);        // set range on RGB curve
+        curvesHSL->setRange(0.0, 1.0);        // set range on HSL curve
         curvesRGB->setDimension(nbCurvesRGB); // 3 curves on RGB
         curvesHSL->setDimension(nbCurvesHSL); // 3 curves on HSL
 
@@ -106,17 +106,17 @@ void HistogramKeyerPluginFactory::describeInContext(OFX::ImageEffectDescriptor& 
         curvesHSL->setDimensionLabel(kParamColorSelectionLightness, 2);  // 2 on HSK is lightness
         // define curves color RGB
         curvesRGB->setHint("Color selection");
-        static const OfxRGBColourD red = {1, 0, 0}; // set red color to red curve
+        static const OfxRGBColourD red = {1, 0, 0};   // set red color to red curve
         static const OfxRGBColourD green = {0, 1, 0}; // set green color to green curve
-        static const OfxRGBColourD blue = {0, 0, 1}; // set blue color to blue curve
+        static const OfxRGBColourD blue = {0, 0, 1};  // set blue color to blue curve
         curvesRGB->setUIColour(0, red);
         curvesRGB->setUIColour(1, green);
         curvesRGB->setUIColour(2, blue);
         // define curves color HSL
         curvesHSL->setHint("Color selection");
-        curvesHSL->setUIColour(0, red); // set red color on hue curve
+        curvesHSL->setUIColour(0, red);   // set red color on hue curve
         curvesHSL->setUIColour(1, green); // set green color on saturation curve
-        curvesHSL->setUIColour(2, blue); // set lightness color on saturation curve
+        curvesHSL->setUIColour(2, blue);  // set lightness color on saturation curve
 
         curvesRGB->setInteractDescriptor(
             new OFX::DefaultParamInteractWrap<RGBParamOverlayDescriptor>()); // attach parametric curve to RGBOverlay
@@ -175,7 +175,7 @@ void HistogramKeyerPluginFactory::describeInContext(OFX::ImageEffectDescriptor& 
         OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
         boolB->setHint("Activate Blue channel");
         boolB->setLayoutHint(OFX::eLayoutHintNoNewLine); // line is not finished
-        boolB->setDefault(false); // blue channel is not selected by default
+        boolB->setDefault(false);                        // blue channel is not selected by default
         boolB->setParent(groupRGB);
         // blue multiplier
         OFX::DoubleParamDescriptor* blueMultiplier = desc.defineDoubleParam(kMultiplierBlue);
@@ -247,9 +247,9 @@ void HistogramKeyerPluginFactory::describeInContext(OFX::ImageEffectDescriptor& 
         // Append selection to curves button (RGB)
         OFX::PushButtonParamDescriptor* appendSelectionToCurveRGB =
             desc.definePushButtonParam(kButtonAppendSelectionToCurveRGB);
-        appendSelectionToCurveRGB->setLabel(kButtonAppendSelectionToCurveRGBLabel); // add label
+        appendSelectionToCurveRGB->setLabel(kButtonAppendSelectionToCurveRGBLabel);              // add label
         appendSelectionToCurveRGB->setHint("Append current selection to selected RGB channels"); // help
-        appendSelectionToCurveRGB->setParent(groupRGB); // add to RGB group
+        appendSelectionToCurveRGB->setParent(groupRGB);                                          // add to RGB group
 
         // Clean Button (HSL)
         OFX::PushButtonParamDescriptor* resetButtonHSL = desc.definePushButtonParam(kButtonResetHSL);
@@ -269,9 +269,9 @@ void HistogramKeyerPluginFactory::describeInContext(OFX::ImageEffectDescriptor& 
         // Append selection to curves button (HSL)
         OFX::PushButtonParamDescriptor* appendSelectionToCurveHSL =
             desc.definePushButtonParam(kButtonAppendSelectionToCurveHSL);
-        appendSelectionToCurveHSL->setLabel(kButtonAppendSelectionToCurveHSLLabel); // add label
+        appendSelectionToCurveHSL->setLabel(kButtonAppendSelectionToCurveHSLLabel);              // add label
         appendSelectionToCurveHSL->setHint("Append current selection to selected HSL channels"); // help
-        appendSelectionToCurveHSL->setParent(groupHSL); // add to HSL group
+        appendSelectionToCurveHSL->setParent(groupHSL);                                          // add to HSL group
 
         // Close RGB group (group states by default on screen)
         groupRGB->setOpen(false);
