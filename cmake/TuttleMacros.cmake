@@ -123,7 +123,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
 
         # Add this new plugin to the global alias ofxplugins
-        add_dependencies(ofxplugins ${PLUGIN_NAME})
+        add_dependencies(ofxPlugins ${PLUGIN_NAME})
 
         # FIXME: why tuttlePluginLib depends on OpenGL ? is it necessary ?
         if(APPLE)

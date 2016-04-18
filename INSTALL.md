@@ -20,6 +20,8 @@ make
 make install
 ```
 
+Custom Makefile target:
+* ofxPlugins: build all the OpenFX plugins.
 
 ## Additionnal dependencies for sam
 

@@ -24,7 +24,7 @@ endif()
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # Create an alias for all OFX plugins.
-add_custom_target(ofxplugins)
+add_custom_target(ofxPlugins)
 
 # Include subdirs
 set(SEQUENCEPARSER_PYTHON_VERSION ${TUTTLE_PYTHON_VERSION})
