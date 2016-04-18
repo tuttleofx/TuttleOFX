@@ -79,7 +79,8 @@ nosetests libraries/tuttle/pyTest
 
 If you build TuttleOFX in debug (build option __-DCMAKE_BUILD_TYPE=Debug__), it enables the following host features:
 
-* Create "*.dot" file during the process to get informations about the graph.
-* Log several times during the process.
-* Output all nodes in the graph as png.
-* Initialize output buffer of all nodes with red to highlight uninitialized pixels.
+* Extra logs.
+* Initialize image buffers in red to highlight uninitialized pixels.
+* Export "*.dot" files during the process with user graph and internal process graph in the current folder.
+* Save all computed nodes as png files in the current folder.
+
