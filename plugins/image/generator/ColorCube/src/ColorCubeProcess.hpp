@@ -11,15 +11,18 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorCube {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorCube
+{
 
 /**
  * @brief ColorCube process
  *
  */
-template<class View>
+template <class View>
 class ColorCubeProcess : public ImageGilProcessor<View>
 {
 public:
@@ -30,19 +33,18 @@ public:
     typedef boost::gil::image_view<ColorCubeLocator> ColorCubeVirtualView;
 
 protected:
-    ColorCubePlugin&       _plugin; ///< Rendering plugin
-    ColorCubeVirtualView   _srcColorCubeView;  ///< Source view
+    ColorCubePlugin& _plugin;               ///< Rendering plugin
+    ColorCubeVirtualView _srcColorCubeView; ///< Source view
 
     ColorCubeProcessParams _params; ///< parameters
 
 public:
-    ColorCubeProcess( ColorCubePlugin& effect );
+    ColorCubeProcess(ColorCubePlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

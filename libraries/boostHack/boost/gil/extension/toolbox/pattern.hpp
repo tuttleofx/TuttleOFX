@@ -14,45 +14,47 @@ namespace layer
 template <typename view_t>
 struct pattern
 {
-	view_t v2;
-	pattern(view_t v2) : v2(v2){}
-		
-	void operator()(view_t& view)
-	{
-		using namespace boost::gil;
+    view_t v2;
+    pattern(view_t v2)
+        : v2(v2)
+    {
+    }
 
-		int h = v2.height();
-		int w = v2.width();
-		if (h > view.height() || w > view.width())
-			return;
-		
-		int n = 0;
-		for (int x = 0; x < view.width(); x+=w)
-		{
-			for (int y = 0; y < view.height(); y+=h)
-			{
-				int aw = w;
-				if (x+w > view.width())
-				{
-					int t = x+w-view.width();
-					aw = w-t;	
-				}
+    void operator()(view_t& view)
+    {
+        using namespace boost::gil;
 
-				int ah = h;
-				if (y+h > view.height())
-				{
-					int t = y+h-view.height();
-					ah = h-t;	
-				}
+        int h = v2.height();
+        int w = v2.width();
+        if(h > view.height() || w > view.width())
+            return;
 
-				view_t v3 = subimage_view(view,x,y,aw,ah);
-				view_t v4 = subimage_view(v2,0,0,aw,ah);
-				boost::gil::copy_pixels(v4,v3);
-			}
-		}
-	}
+        int n = 0;
+        for(int x = 0; x < view.width(); x += w)
+        {
+            for(int y = 0; y < view.height(); y += h)
+            {
+                int aw = w;
+                if(x + w > view.width())
+                {
+                    int t = x + w - view.width();
+                    aw = w - t;
+                }
+
+                int ah = h;
+                if(y + h > view.height())
+                {
+                    int t = y + h - view.height();
+                    ah = h - t;
+                }
+
+                view_t v3 = subimage_view(view, x, y, aw, ah);
+                view_t v4 = subimage_view(v2, 0, 0, aw, ah);
+                boost::gil::copy_pixels(v4, v3);
+            }
+        }
+    }
 };
-
 }
 
 #endif

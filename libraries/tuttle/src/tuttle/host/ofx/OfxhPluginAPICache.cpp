@@ -43,10 +43,15 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace APICache {}
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace APICache
+{
+}
 }
 }
 }

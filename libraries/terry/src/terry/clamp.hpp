@@ -3,78 +3,76 @@
 
 #include <terry/color_processed_view.hpp>
 
-namespace terry {
+namespace terry
+{
 
 template <typename Channel>
 struct channel_clamp
 {
-	typedef typename channel_base_type<Channel>::type ChannelBaseType;
-	
-	const ChannelBaseType _min;
-	const ChannelBaseType _max;
+    typedef typename channel_base_type<Channel>::type ChannelBaseType;
 
-	channel_clamp( const Channel min, const Channel max )
-	: _min( min )
-	, _max( max )
-	{ }
+    const ChannelBaseType _min;
+    const ChannelBaseType _max;
 
-	GIL_FORCEINLINE
-		void operator( )(const Channel& src, Channel& dst ) const
-	{
-		dst = std::min( _max, std::max( _min, ChannelBaseType(src) ) );
-	}
+    channel_clamp(const Channel min, const Channel max)
+        : _min(min)
+        , _max(max)
+    {
+    }
+
+    GIL_FORCEINLINE
+    void operator()(const Channel& src, Channel& dst) const { dst = std::min(_max, std::max(_min, ChannelBaseType(src))); }
 };
 
-template<typename Pixel>
+template <typename Pixel>
 struct clamp_converter
 {
-	typedef typename boost::gil::channel_type<Pixel>::type Channel;
+    typedef typename boost::gil::channel_type<Pixel>::type Channel;
 
-	const Channel _min;
-	const Channel _max;
+    const Channel _min;
+    const Channel _max;
 
-	clamp_converter( )
-	: _min( boost::gil::channel_traits<Channel>::min_value( ) )
-	, _max( boost::gil::channel_traits<Channel>::max_value( ) )
-	{ }
+    clamp_converter()
+        : _min(boost::gil::channel_traits<Channel>::min_value())
+        , _max(boost::gil::channel_traits<Channel>::max_value())
+    {
+    }
 
-	clamp_converter( const Channel min, const Channel max )
-	: _min( min )
-	, _max( max )
-	{ }
+    clamp_converter(const Channel min, const Channel max)
+        : _min(min)
+        , _max(max)
+    {
+    }
 
-	GIL_FORCEINLINE
-		void operator( )(const Pixel& src, Pixel & dst ) const
-	{
-		using namespace boost::gil;
-		static_for_each( src, dst, channel_clamp<Channel>( _min, _max ) );
-	}
+    GIL_FORCEINLINE
+    void operator()(const Pixel& src, Pixel& dst) const
+    {
+        using namespace boost::gil;
+        static_for_each(src, dst, channel_clamp<Channel>(_min, _max));
+    }
 };
 
+namespace detail
+{
 
-namespace detail {
-
-template<class View, class has_scoped_channel>
+template <class View, class has_scoped_channel>
 struct clamp_view_type_resolver
 {
-	typedef typename detail::color_processed_view_type<clamp_converter<typename View::value_type>,View>::type Result;
-	
-	inline Result clamp_view( const View& src )
-	{
-		typedef typename View::value_type Pixel;
-		return color_processed_view( src, clamp_converter<Pixel>() );
-	}
+    typedef typename detail::color_processed_view_type<clamp_converter<typename View::value_type>, View>::type Result;
+
+    inline Result clamp_view(const View& src)
+    {
+        typedef typename View::value_type Pixel;
+        return color_processed_view(src, clamp_converter<Pixel>());
+    }
 };
 
-template<class View>
+template <class View>
 struct clamp_view_type_resolver<View, boost::mpl::false_>
 {
-	typedef View Result;
-	
-	inline Result clamp_view( const View& src )
-	{
-		return src;
-	}
+    typedef View Result;
+
+    inline Result clamp_view(const View& src) { return src; }
 };
 
 /**
@@ -84,30 +82,24 @@ struct clamp_view_type_resolver<View, boost::mpl::false_>
  *        nothing to clamp in this case. The values can't be outside the type
  *        range.
  */
-template<class View>
+template <class View>
 struct clamp_view_type
 {
-	typedef typename channel_type<View>::type Channel;
-	
-	typedef clamp_view_type_resolver<View, typename is_scoped_channel<Channel>::type > Resolver;
-	
-	inline typename Resolver::Result clamp_view( const View& src )
-	{
-		return Resolver::clamp_view( src );
-	}
-};
+    typedef typename channel_type<View>::type Channel;
 
+    typedef clamp_view_type_resolver<View, typename is_scoped_channel<Channel>::type> Resolver;
+
+    inline typename Resolver::Result clamp_view(const View& src) { return Resolver::clamp_view(src); }
+};
 }
 
 template <typename View>
-inline typename detail::color_processed_view_type<clamp_converter<typename View::value_type>,View>::type
-clamp_view( const View& src )
+inline typename detail::color_processed_view_type<clamp_converter<typename View::value_type>, View>::type
+clamp_view(const View& src)
 {
-	typedef typename View::value_type Pixel;
-	return color_processed_view( src, clamp_converter<Pixel>() );
+    typedef typename View::value_type Pixel;
+    return color_processed_view(src, clamp_converter<Pixel>());
 }
-
 }
 
 #endif
-

@@ -7,7 +7,7 @@ samOK=(
     "sam ls -d"
     "sam ls -s"
     "sam ls -f"
-    "sam ls -e toto*"
+    "sam ls -e *.cmake"
     "sam ls -R"
     "sam ls -L 2"
     "sam ls --absolute-path"
@@ -16,6 +16,7 @@ samOK=(
     "sam ls --detect-negative"
     "sam ls --detect-without-holes"
     "sam ls --explode-sequences"
+    "sam ls --script"
     "sam ls -v trace"
     "sam ls -v 10"
 # sam do
@@ -32,6 +33,7 @@ samKO=(
     "sam"
     "sam toto"
 # sam ls
+    "sam ls toto"
     "sam ls -e"
     "sam ls -L"
     "sam ls -L -1"

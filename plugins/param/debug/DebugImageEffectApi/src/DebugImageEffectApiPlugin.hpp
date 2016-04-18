@@ -3,12 +3,16 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace debugImageEffectApi {
+namespace tuttle
+{
+namespace plugin
+{
+namespace debugImageEffectApi
+{
 
 struct DebugImageEffectApiParams
-{};
+{
+};
 
 /**
  * @brief DebugImageEffectApi plugin
@@ -16,21 +20,20 @@ struct DebugImageEffectApiParams
 class DebugImageEffectApiPlugin : public ImageEffectGilPlugin
 {
 public:
-	DebugImageEffectApiPlugin( OfxImageEffectHandle handle );
+    DebugImageEffectApiPlugin(OfxImageEffectHandle handle);
 
 public:
-	void render( const OFX::RenderArguments& args );
-	void      changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+    void render(const OFX::RenderArguments& args);
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
 
-	DebugImageEffectApiParams getParams() const;
+    DebugImageEffectApiParams getParams() const;
 
 public:
-	OFX::StringParam* _hostInfos;
-	OFX::DoubleParam* _currentTime;
-	OFX::DoubleParam* _beginTime;
-	OFX::DoubleParam* _endTime;
+    OFX::StringParam* _hostInfos;
+    OFX::DoubleParam* _currentTime;
+    OFX::DoubleParam* _beginTime;
+    OFX::DoubleParam* _endTime;
 };
-
 }
 }
 }

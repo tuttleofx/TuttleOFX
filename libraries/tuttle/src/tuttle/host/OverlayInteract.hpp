@@ -9,8 +9,10 @@
 #include <tuttle/host/Graph.hpp>
 #include <tuttle/host/graph/ProcessGraph.hpp>
 
-namespace tuttle {
-namespace host {
+namespace tuttle
+{
+namespace host
+{
 
 /**
  * An overlay interact for image effects, derived from one of these to
@@ -19,27 +21,25 @@ namespace host {
 class OverlayInteract : public ofx::interact::OfxhInteract
 {
 protected:
-	/// our image effect instance
-	ImageEffectNode& _instance;
-	int _bitDepthPerComponent;
-	bool _hasAlpha;
-	OfxTime _time;
-	graph::ProcessGraph _procGraph;
-	
-public:
-	OverlayInteract( Graph& userGraph, ImageEffectNode& effect, int bitDepthPerComponent = 8, bool hasAlpha = false );
-	
-	void setupGraph()
-	{
-		_procGraph.setup();
-		_procGraph.setupAtTime(_time);
-	}
-	
-	void draw( const OfxPointD& renderScale );
-};
+    /// our image effect instance
+    ImageEffectNode& _instance;
+    int _bitDepthPerComponent;
+    bool _hasAlpha;
+    OfxTime _time;
+    graph::ProcessGraph _procGraph;
 
+public:
+    OverlayInteract(Graph& userGraph, ImageEffectNode& effect, int bitDepthPerComponent = 8, bool hasAlpha = false);
+
+    void setupGraph()
+    {
+        _procGraph.setup();
+        _procGraph.setupAtTime(_time);
+    }
+
+    void draw(const OfxPointD& renderScale);
+};
 }
 }
 
 #endif
-

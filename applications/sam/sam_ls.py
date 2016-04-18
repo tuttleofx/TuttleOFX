@@ -61,12 +61,13 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
         parser.add_argument('--explode-sequences', dest='explodeSequences', action='store_true', default=False, help='explode sequences as several sequences without holes')
+        parser.add_argument('--script', dest='script', action='store_true', default=False, help='Format the output such as it could be dump in a file and be used as a script')
         parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4(or upper)/debug)')
 
-    def isAlreadyPrinted(self, item):
+    def _isAlreadyPrinted(self, item):
         """
         Return if the given item has already been printed.
-        @see printItem
+        @see _printItem
         """
         nameToCompare = ''
         if item.getType() == sequenceParser.eTypeSequence:
@@ -78,7 +79,14 @@ class Sam_ls(samUtils.Sam):
             return True
         return False
 
-    def printItem(self, item, args, level):
+    def _needToPrintCurrentFolder(self, args):
+        """
+        Return if the current folder expects to be printed before its content.
+        See behavior of 'ls' UNIX command with several arguments.
+        """
+        return len(args.inputs) > 1 and not args.script and not args.recursive
+
+    def _printItem(self, item, args, level):
         """
         Print the item depending on the command line options.
         """
@@ -98,7 +106,7 @@ class Sam_ls(samUtils.Sam):
                 if subSequence.__str__() not in self._sequenceExploded:
                     self._sequenceExploded.append(subSequence.__str__())
                     sequenceExploded = True
-                    self.printItem(sequenceParser.Item(subSequence, item.getFolder()), args, level)
+                    self._printItem(sequenceParser.Item(subSequence, item.getFolder()), args, level)
             # to skip recursivity
             if sequenceExploded:
                 return
@@ -202,10 +210,14 @@ class Sam_ls(samUtils.Sam):
         else:
             self._itemPrinted.append(item.getFilename())
 
-    def printItems(self, items, args, detectionMethod, filters, level=0):
+    def _printItems(self, items, args, detectionMethod, filters, level=0):
         """
         For each items, check if it should be printed, depending on the command line options.
         """
+        # sam-ls --script
+        if self._needToPrintCurrentFolder(args):
+            puts(items[0].getFolder() + ':')
+
         for item in sorted(items):
             itemType = item.getType()
             toPrint = True
@@ -223,12 +235,12 @@ class Sam_ls(samUtils.Sam):
                 toPrint = False
 
             # skip item already printed
-            if self.isAlreadyPrinted(item):
+            if self._isAlreadyPrinted(item):
                 toPrint = False
 
             # print current item
             if toPrint:
-                self.printItem(item, args, level)
+                self._printItem(item, args, level)
 
             # sam-ls -R
             if args.recursive and itemType == sequenceParser.eTypeFolder:
@@ -242,11 +254,15 @@ class Sam_ls(samUtils.Sam):
                     self.logger.debug('Browse in "' + newFolder + '" with the following filters: ' + str(filters))
                     newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
                     level += 1
-                    self.printItems(newItems, args, detectionMethod, filters, level)
+                    self._printItems(newItems, args, detectionMethod, filters, level)
                     level -= 1
                 except IOError as e:
                     # Permission denied for example
                     self.logger.warning(e)
+
+        # sam-ls --script
+        if self._needToPrintCurrentFolder(args):
+            puts(newline=True)
 
     def run(self, parser):
         """
@@ -312,6 +328,7 @@ class Sam_ls(samUtils.Sam):
             for inputToBrowse in inputsToBrowse:
                 inputToBrowse.addFilter(expression)
 
+        error = 0
         # for each input to browse, print the finding items
         for inputToBrowse in inputsToBrowse:
             items = []
@@ -354,8 +371,11 @@ class Sam_ls(samUtils.Sam):
 
             if not len(items):
                 self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
+                error = 1
             else:
-                self.printItems(items, args, detectionMethod, filters)
+                self._printItems(items, args, detectionMethod, filters)
+
+        exit(error)
 
 
 if __name__ == '__main__':

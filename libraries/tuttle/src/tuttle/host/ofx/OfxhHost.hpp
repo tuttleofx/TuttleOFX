@@ -37,15 +37,19 @@
 
 #include <string>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 // a plugin what we use
 class OfxhPlugin;
 
 // a param descriptor
-namespace attribute {
+namespace attribute
+{
 class OfxhParamDescriptor;
 }
 
@@ -56,47 +60,42 @@ class OfxhParamDescriptor;
 class OfxhHost
 {
 protected:
-	OfxHost _host;
-	property::OfxhSet _properties;
+    OfxHost _host;
+    property::OfxhSet _properties;
 
 public:
-	OfxhHost();
-	virtual ~OfxhHost() = 0;
+    OfxhHost();
+    virtual ~OfxhHost() = 0;
 
-	/// get the props on this host
-	const property::OfxhSet& getProperties() const { return _properties; }
-	property::OfxhSet&       getProperties()       { return _properties; }
+    /// get the props on this host
+    const property::OfxhSet& getProperties() const { return _properties; }
+    property::OfxhSet& getProperties() { return _properties; }
 
-	/**
-	 * fetch a suite
-	 * The base class returns the following suites
-	 *    PropertySuite
-	 *    MemorySuite
-	 */
-	virtual void* fetchSuite( const char* suiteName, const int suiteVersion );
+    /**
+     * fetch a suite
+     * The base class returns the following suites
+     *    PropertySuite
+     *    MemorySuite
+     */
+    virtual void* fetchSuite(const char* suiteName, const int suiteVersion);
 
-	/// get the C API handle that is passed across the API to represent this host
-	OfxHost* getHandle();
+    /// get the C API handle that is passed across the API to represent this host
+    OfxHost* getHandle();
 
-	/// is my magic number valid?
-	bool verifyMagic() { return true; }
+    /// is my magic number valid?
+    bool verifyMagic() { return true; }
 
-	#ifndef SWIG
+#ifndef SWIG
 
-	/// override this to handle do post-construction initialisation on a Param::Descriptor
-	virtual void initDescriptor( attribute::OfxhParamDescriptor& ) const {}
+    /// override this to handle do post-construction initialisation on a Param::Descriptor
+    virtual void initDescriptor(attribute::OfxhParamDescriptor&) const {}
 
-	/// vmessage
-	virtual OfxStatus vmessage( const char* type,
-	                            const char* id,
-	                            const char* format,
-	                            va_list     args ) const = 0;
-	#endif
+    /// vmessage
+    virtual OfxStatus vmessage(const char* type, const char* id, const char* format, va_list args) const = 0;
+#endif
 };
-
 }
 }
 }
 
 #endif
-

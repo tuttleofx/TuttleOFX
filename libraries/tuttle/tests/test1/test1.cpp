@@ -5,7 +5,7 @@
 
 using namespace boost::unit_test;
 
-BOOST_AUTO_TEST_CASE( test_01 )
+BOOST_AUTO_TEST_CASE(test_01)
 {
-	BOOST_CHECK_EQUAL( 1.0, 1.0 );
+    BOOST_CHECK_EQUAL(1.0, 1.0);
 }

@@ -13,34 +13,33 @@
 using namespace boost::unit_test;
 using namespace tuttle::host;
 
-BOOST_AUTO_TEST_SUITE( plugin_ImageMagick_jpg_reader )
+BOOST_AUTO_TEST_SUITE(plugin_ImageMagick_jpg_reader)
 std::string pluginName = "tuttle.imagemagickreader";
 std::string filename = "jpeg/BLU.JPG";
 #include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE( plugin_ImageMagick_ai_reader )
+BOOST_AUTO_TEST_SUITE(plugin_ImageMagick_ai_reader)
 std::string pluginName = "tuttle.imagemagickreader";
 std::string filename = "ai/GRACoL7_press_bar_005.ai";
 #include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE( plugin_ImageMagick_png_reader )
+BOOST_AUTO_TEST_SUITE(plugin_ImageMagick_png_reader)
 std::string pluginName = "tuttle.imagemagickreader";
 std::string filename = "png/Gradient-8bit.png";
 #include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE( plugin_ImageMagick_tif_reader )
+BOOST_AUTO_TEST_SUITE(plugin_ImageMagick_tif_reader)
 std::string pluginName = "tuttle.imagemagickreader";
 std::string filename = "tif/test-ramp.tif";
 #include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE( plugin_ImageMagick_writer )
+BOOST_AUTO_TEST_SUITE(plugin_ImageMagick_writer)
 std::string pluginName = "tuttle.imagemagickwriter";
 std::string filename = "test-imagemagick.jpg";
 //#include <tuttle/test/io/writer.hpp>
 
 BOOST_AUTO_TEST_SUITE_END()
-

@@ -3,18 +3,19 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace turboJpeg {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace turboJpeg
+{
+namespace reader
+{
 
-mDeclarePluginFactory( TurboJpegReaderPluginFactory, { }, { } );
-
+mDeclarePluginFactory(TurboJpegReaderPluginFactory, {}, {});
 }
 }
 }
 }
 
 #endif
-
-

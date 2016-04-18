@@ -3,15 +3,18 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace av {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace av
+{
+namespace reader
+{
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( AVReaderPluginFactory, {}, {} );
-
+mDeclarePluginFactory(AVReaderPluginFactory, {}, {});
 }
 }
 }

@@ -1,17 +1,17 @@
 #define OFXPLUGIN_VERSION_MAJOR 1
-#define OFXPLUGIN_VERSION_MINOR 0 
+#define OFXPLUGIN_VERSION_MINOR 0
 
 #include "HistogramKeyerPluginFactory.hpp"
 #include <tuttle/plugin/Plugin.hpp>
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::histogramKeyer::HistogramKeyerPluginFactory, "tuttle.histogramkeyer" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::histogramKeyer::HistogramKeyerPluginFactory, "tuttle.histogramkeyer");
 }
 }
-
+}

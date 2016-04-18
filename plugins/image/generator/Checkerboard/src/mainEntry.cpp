@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "CheckerboardPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::checkerboard::CheckerboardPluginFactory, "tuttle.checkerboard" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::checkerboard::CheckerboardPluginFactory, "tuttle.checkerboard");
+}
 }
 }

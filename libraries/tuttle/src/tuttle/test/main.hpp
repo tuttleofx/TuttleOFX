@@ -6,9 +6,7 @@
 
 #include <tuttle/host/PreloadPlugins.hpp>
 
-
 using namespace tuttle::host;
-BOOST_GLOBAL_FIXTURE( PreloadPlugins );
+BOOST_GLOBAL_FIXTURE(PreloadPlugins);
 
 #endif
-

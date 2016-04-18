@@ -5,14 +5,16 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace viewer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace viewer
+{
 
-template<typename Scalar>
+template <typename Scalar>
 struct ViewerProcessParams
 {
-	
 };
 
 /**
@@ -21,25 +23,25 @@ struct ViewerProcessParams
 class ViewerPlugin : public ImageEffectGilPlugin
 {
 public:
-	typedef float Scalar;
-public:
-    ViewerPlugin( OfxImageEffectHandle handle );
+    typedef float Scalar;
 
 public:
-	ViewerProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+    ViewerPlugin(OfxImageEffectHandle handle);
 
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
-
-//	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-//	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
-
-    void render( const OFX::RenderArguments &args );
-	
 public:
-//    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
+    ViewerProcessParams<Scalar> getProcessParams(const OfxPointD& renderScale = OFX::kNoRenderScale) const;
+
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
+
+    //	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+    //	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
+    bool isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime);
+
+    void render(const OFX::RenderArguments& args);
+
+public:
+    //    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
 };
-
 }
 }
 }

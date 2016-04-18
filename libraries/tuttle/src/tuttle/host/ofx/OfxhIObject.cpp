@@ -1,12 +1,15 @@
 #include "OfxhIObject.hpp"
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 OfxhIObject::~OfxhIObject()
-{}
-
+{
+}
 }
 }
 }

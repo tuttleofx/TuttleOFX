@@ -6,48 +6,51 @@
 
 #include <terry/globals.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace openImageIO {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace openImageIO
+{
+namespace writer
+{
 
 /**
  * @brief Base class for the denoising processor
  *
  */
-template<class View>
+template <class View>
 class OpenImageIOWriterProcess : public ImageGilFilterProcessor<View>
 {
-	typedef OpenImageIOWriterProcess<View> This;
+    typedef OpenImageIOWriterProcess<View> This;
 
-	OpenImageIOWriterProcessParams params;
+    OpenImageIOWriterProcessParams params;
 
-	ETuttlePluginBitDepth getDefaultBitDepth(const std::string& filepath, const ETuttlePluginBitDepth &bitDepth);
+    ETuttlePluginBitDepth getDefaultBitDepth(const std::string& filepath, const ETuttlePluginBitDepth& bitDepth);
 
 public:
-	typedef typename terry::image_from_view<View>::type Image;
-	typedef typename View::value_type Pixel;
-	typedef typename View::point_t Point;
-	typedef typename View::coord_t Coord;
+    typedef typename terry::image_from_view<View>::type Image;
+    typedef typename View::value_type Pixel;
+    typedef typename View::point_t Point;
+    typedef typename View::coord_t Coord;
 
 protected:
-	OpenImageIOWriterPlugin&    _plugin;        ///< Rendering plugin
+    OpenImageIOWriterPlugin& _plugin; ///< Rendering plugin
 
 public:
-	OpenImageIOWriterProcess( OpenImageIOWriterPlugin& instance );
+    OpenImageIOWriterProcess(OpenImageIOWriterPlugin& instance);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
-	template<class WImage>
-	void writeImage( View& src, const std::string& filepath, const ETuttlePluginBitDepth& bitDepth );
+    template <class WImage>
+    void writeImage(View& src, const std::string& filepath, const ETuttlePluginBitDepth& bitDepth);
 
-	static bool progressCallback( void *opaque_data, float portion_done )
-	{
-		This* this_ptr = reinterpret_cast<This*>(opaque_data);
-		return this_ptr->progressUpdate( portion_done );
-	}
+    static bool progressCallback(void* opaque_data, float portion_done)
+    {
+        This* this_ptr = reinterpret_cast<This*>(opaque_data);
+        return this_ptr->progressUpdate(portion_done);
+    }
 };
-
 }
 }
 }

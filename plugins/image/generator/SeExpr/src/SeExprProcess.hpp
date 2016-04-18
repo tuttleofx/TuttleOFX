@@ -7,36 +7,40 @@
 
 #include "SeExprAlgorithm.hpp"
 
-namespace tuttle {
-namespace plugin {
-namespace seExpr {
+namespace tuttle
+{
+namespace plugin
+{
+namespace seExpr
+{
 
 /**
  * @brief SeExpr process
  *
  */
-template<class View>
+template <class View>
 class SeExprProcess : public ImageGilProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::channel_type<View>::type Channel;
-	typedef float Scalar;
+    typedef typename View::value_type Pixel;
+    typedef typename boost::gil::channel_type<View>::type Channel;
+    typedef float Scalar;
+
 protected:
-	SeExprPlugin&               _plugin; ///< Rendering plugin
-	SeExprProcessParams<Scalar> _params; ///< parameters
+    SeExprPlugin& _plugin;               ///< Rendering plugin
+    SeExprProcessParams<Scalar> _params; ///< parameters
 
 public:
-	SeExprProcess( SeExprPlugin& effect );
+    SeExprProcess(SeExprPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
+
 private:
-	OfxRectD rod;
-	size_t _time;
+    OfxRectD rod;
+    size_t _time;
 };
-
 }
 }
 }

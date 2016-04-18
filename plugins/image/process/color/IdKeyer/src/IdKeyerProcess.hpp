@@ -12,32 +12,34 @@
 
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace idKeyer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace idKeyer
+{
 
 /**
  * @brief IdKeyer process
  */
-template<class View>
+template <class View>
 class IdKeyerProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef ImageGilFilterProcessor<View> Parent;
-	typedef typename View::value_type Pixel;
+    typedef ImageGilFilterProcessor<View> Parent;
+    typedef typename View::value_type Pixel;
 
 public:
-	IdKeyerProcess( IdKeyerPlugin& instance );
+    IdKeyerProcess(IdKeyerPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
 protected:
-	IdKeyerPlugin&             _plugin;
-	IdKeyerProcessParams<View> _params;
+    IdKeyerPlugin& _plugin;
+    IdKeyerProcessParams<View> _params;
 };
-
 }
 }
 }

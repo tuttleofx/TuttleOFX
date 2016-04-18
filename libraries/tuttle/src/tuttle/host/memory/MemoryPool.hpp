@@ -14,73 +14,73 @@
 #include <functional>
 #include <climits>
 
-namespace tuttle {
-namespace host {
-namespace memory {
+namespace tuttle
+{
+namespace host
+{
+namespace memory
+{
 
 class PoolData; ///< forward declaration
 class IPool
 {
 public:
-	virtual ~IPool()                     = 0;
-	virtual void referenced( PoolData* ) = 0;
-	virtual void released( PoolData* )   = 0;
+    virtual ~IPool() = 0;
+    virtual void referenced(PoolData*) = 0;
+    virtual void released(PoolData*) = 0;
 };
 
 /**
  * @todo tuttle: virtual destructor or nothing in virtual
  */
-class MemoryPool : public IMemoryPool
-	, public IPool
+class MemoryPool : public IMemoryPool, public IPool
 {
 public:
-	typedef MemoryPool This;
+    typedef MemoryPool This;
 
 public:
-	MemoryPool( const std::size_t maxSize = 0 );
-	~MemoryPool();
+    MemoryPool(const std::size_t maxSize = 0);
+    ~MemoryPool();
 
-	IPoolDataPtr allocate( const std::size_t size );
-	std::size_t  updateMemoryAuthorizedWithRAM();
+    IPoolDataPtr allocate(const std::size_t size);
+    std::size_t updateMemoryAuthorizedWithRAM();
 
-	void referenced( PoolData* );
-	void released( PoolData* );
+    void referenced(PoolData*);
+    void released(PoolData*);
 
-	std::size_t getUsedMemorySize() const;
-	std::size_t getAllocatedAndUnusedMemorySize() const;
-	std::size_t getAllocatedMemorySize() const;
-	std::size_t getMaxMemorySize() const;
-	std::size_t getAvailableMemorySize() const;
-	std::size_t getWastedMemorySize() const;
+    std::size_t getUsedMemorySize() const;
+    std::size_t getAllocatedAndUnusedMemorySize() const;
+    std::size_t getAllocatedMemorySize() const;
+    std::size_t getMaxMemorySize() const;
+    std::size_t getAvailableMemorySize() const;
+    std::size_t getWastedMemorySize() const;
 
-	std::size_t getDataUsedSize() const;
-	std::size_t getDataUnusedSize() const;
-	
-	PoolData* getOneAvailableData( const size_t size );
+    std::size_t getDataUsedSize() const;
+    std::size_t getDataUnusedSize() const;
 
-	void clear( std::size_t size );
-	void clear();
-	void clearOne();
+    PoolData* getOneAvailableData(const size_t size);
 
-	friend std::ostream& operator<<( std::ostream& os, const This& v );
+    void clear(std::size_t size);
+    void clear();
+    void clearOne();
+
+    friend std::ostream& operator<<(std::ostream& os, const This& v);
 
 private:
-	typedef boost::unordered_set<PoolData*> DataList;
-	boost::ptr_list<PoolData> _allDatas; // the owner
-	std::map<char*, PoolData*> _dataMap;
-	DataList _dataUsed;
-	DataList _dataUnused;
-	std::size_t _memoryAuthorized;
-	mutable boost::mutex _mutex;
+    typedef boost::unordered_set<PoolData*> DataList;
+    boost::ptr_list<PoolData> _allDatas; // the owner
+    std::map<char*, PoolData*> _dataMap;
+    DataList _dataUsed;
+    DataList _dataUnused;
+    std::size_t _memoryAuthorized;
+    mutable boost::mutex _mutex;
 };
 
 #ifndef SWIG
-std::ostream& operator<<( std::ostream& os, const MemoryPool& memoryPool );
+std::ostream& operator<<(std::ostream& os, const MemoryPool& memoryPool);
 #endif
-
 }
 }
 }
 
 #endif
-

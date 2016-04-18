@@ -5,13 +5,16 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace quality {
+namespace tuttle
+{
+namespace plugin
+{
+namespace quality
+{
 
 struct DiffProcessParams
 {
-	EMeasureFunction measureFunction;
+    EMeasureFunction measureFunction;
 };
 
 /**
@@ -20,30 +23,27 @@ struct DiffProcessParams
 class DiffPlugin : public OFX::ImageEffect
 {
 public:
-	DiffPlugin( OfxImageEffectHandle handle );
+    DiffPlugin(OfxImageEffectHandle handle);
 
 public:
-	DiffProcessParams getProcessParams() const;
+    DiffProcessParams getProcessParams() const;
 
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
 
-	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+    bool getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod);
 
-	void render( const OFX::RenderArguments& args );
+    void render(const OFX::RenderArguments& args);
 
 public:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrcA;               ///< Source image clip A
-	OFX::Clip* _clipSrcB;               ///< Source image clip B
-	OFX::Clip* _clipDst;                ///< Destination image clip
+    // do not need to delete these, the ImageEffect is managing them for us
+    OFX::Clip* _clipSrcA; ///< Source image clip A
+    OFX::Clip* _clipSrcB; ///< Source image clip B
+    OFX::Clip* _clipDst;  ///< Destination image clip
 
-	OFX::ChoiceParam* _measureFunction;
+    OFX::ChoiceParam* _measureFunction;
 
-	OFX::RGBAParam*   _qualityMesure;
-
-
+    OFX::RGBAParam* _qualityMesure;
 };
-
 }
 }
 }

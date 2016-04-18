@@ -3,21 +3,22 @@
 
 #include <boost/foreach.hpp>
 
-namespace tuttle {
-namespace host {
-
-NodeListArg::NodeListArg( const std::list<INode*>& nodes )
+namespace tuttle
 {
-	BOOST_FOREACH( INode * n, nodes )
-	{
-		_nodes.push_back( n->getName() );
-	}
+namespace host
+{
+
+NodeListArg::NodeListArg(const std::list<INode*>& nodes)
+{
+    BOOST_FOREACH(INode* n, nodes)
+    {
+        _nodes.push_back(n->getName());
+    }
 }
 
-NodeListArg::NodeListArg( const INode& node )
+NodeListArg::NodeListArg(const INode& node)
 {
-	_nodes.push_back( node.getName() );
+    _nodes.push_back(node.getName());
 }
-
 }
 }

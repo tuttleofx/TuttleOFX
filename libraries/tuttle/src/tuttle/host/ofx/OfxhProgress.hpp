@@ -33,31 +33,32 @@
 #include "OfxhIObject.hpp"
 #include <string>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 /// Things that display progress derive from this ABC and implement the following
 /// functions.
 class OfxhIProgress : virtual public OfxhIObject
 {
 public:
-	virtual ~OfxhIProgress() {}
+    virtual ~OfxhIProgress() {}
 
-	/// Start doing progress.
-	virtual void progressStart( const std::string& message ) = 0;
+    /// Start doing progress.
+    virtual void progressStart(const std::string& message) = 0;
 
-	/// finish yer progress
-	virtual void progressEnd() = 0;
+    /// finish yer progress
+    virtual void progressEnd() = 0;
 
-	/// set the progress to some level of completion,
-	/// returns true if you should abandon processing, false to continue
-	virtual bool progressUpdate( const double t ) = 0;
+    /// set the progress to some level of completion,
+    /// returns true if you should abandon processing, false to continue
+    virtual bool progressUpdate(const double t) = 0;
 };
-
 }
 }
 }
 
 #endif
-

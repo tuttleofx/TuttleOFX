@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "DiffPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::quality::DiffPluginFactory, "tuttle.diff" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::quality::DiffPluginFactory, "tuttle.diff");
+}
 }
 }

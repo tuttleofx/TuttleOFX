@@ -2,16 +2,18 @@
 #define JPEG_WRITER_PLUGIN_FACTORY_HPP
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace jpeg {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace jpeg
+{
+namespace writer
+{
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( JpegWriterPluginFactory, {}, {}
-                       );
-
+mDeclarePluginFactory(JpegWriterPluginFactory, {}, {});
 }
 }
 }

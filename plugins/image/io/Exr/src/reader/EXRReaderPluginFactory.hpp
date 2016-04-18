@@ -2,14 +2,16 @@
 #define _EXR_READER_PLUGIN_FACTORY_HPP_
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace exr {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace exr
+{
+namespace reader
+{
 
-mDeclarePluginFactory( EXRReaderPluginFactory, {}, {}
-                       );
-
+mDeclarePluginFactory(EXRReaderPluginFactory, {}, {});
 }
 }
 }

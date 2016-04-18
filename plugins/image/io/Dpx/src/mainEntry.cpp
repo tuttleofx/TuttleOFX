@@ -8,10 +8,9 @@ namespace OFX
 {
 namespace Plugin
 {
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+void getPluginIDs(OFX::PluginFactoryArray& ids)
 {
-	mAppendPluginFactory( ids, tuttle::plugin::dpx::writer::DPXWriterPluginFactory, "tuttle.dpxwriter" );
+    mAppendPluginFactory(ids, tuttle::plugin::dpx::writer::DPXWriterPluginFactory, "tuttle.dpxwriter");
 }
-
 }
 }

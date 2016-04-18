@@ -5,14 +5,15 @@
 #include "reader/RawReaderPluginFactory.hpp"
 //#include "writer/RawWriterPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::raw::reader::RawReaderPluginFactory, "tuttle.rawreader" );
-	//mAppendPluginFactory( ids, tuttle::plugin::png::writer::RAWWriterPluginFactory, "tuttle.rawwriter" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::raw::reader::RawReaderPluginFactory, "tuttle.rawreader");
+    // mAppendPluginFactory( ids, tuttle::plugin::png::writer::RAWWriterPluginFactory, "tuttle.rawwriter" );
+}
 }
 }

@@ -4,28 +4,28 @@
 #include "Attribute.hpp"
 #include <tuttle/host/ofx/attribute/OfxhParamAccessor.hpp>
 
-namespace tuttle {
-namespace host {
+namespace tuttle
+{
+namespace host
+{
 
 class INode;
 
-namespace attribute {
+namespace attribute
+{
 
-class Param : public Attribute
-	, virtual public ofx::attribute::OfxhParamAccessor
+class Param : public Attribute, virtual public ofx::attribute::OfxhParamAccessor
 {
 public:
-	Param( INode& effect );
-	virtual ~Param() = 0;
+    Param(INode& effect);
+    virtual ~Param() = 0;
 
-	bool isOutput() const { return false; }
-	
-	const std::string& getName() const { return ofx::attribute::OfxhParamAccessor::getName(); }
+    bool isOutput() const { return false; }
+
+    const std::string& getName() const { return ofx::attribute::OfxhParamAccessor::getName(); }
 };
-
 }
 }
 }
 
 #endif
-

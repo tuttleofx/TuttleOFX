@@ -33,9 +33,12 @@
 #include "OfxhIObject.hpp"
 #include <ofxTimeLine.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 /**
  * Things that implement timeline controls derive from this ABC and implement the following
@@ -44,22 +47,20 @@ namespace ofx {
 class OfxhITimeline : virtual public OfxhIObject
 {
 public:
-	virtual ~OfxhITimeline() {}
+    virtual ~OfxhITimeline() {}
 
-	/// get the current time on the timeline. This is not necessarily the same
-	/// time as being passed to an action (eg render)
-	virtual double timelineGetTime() = 0;
+    /// get the current time on the timeline. This is not necessarily the same
+    /// time as being passed to an action (eg render)
+    virtual double timelineGetTime() = 0;
 
-	/// set the timeline to a specific time
-	virtual void timelineGotoTime( double t ) = 0;
+    /// set the timeline to a specific time
+    virtual void timelineGotoTime(double t) = 0;
 
-	/// get the first and last times available on the effect's timeline
-	virtual void timelineGetBounds( double& t1, double& t2 ) = 0;
+    /// get the first and last times available on the effect's timeline
+    virtual void timelineGetBounds(double& t1, double& t2) = 0;
 };
-
 }
 }
 }
 
 #endif
-

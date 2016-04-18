@@ -3,61 +3,60 @@
 
 #include "OfxhPlugin.hpp"
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 class OfxhMajorPlugin
 {
 public:
-	typedef OfxhMajorPlugin This;
+    typedef OfxhMajorPlugin This;
 
 private:
-	std::string _id;
-	int _major;
+    std::string _id;
+    int _major;
 
 public:
-	OfxhMajorPlugin()
-		: _major( 0 )
-	{}
-	
-	OfxhMajorPlugin( const std::string& id, int major ) : _id( id )
-		, _major( major )
-	{}
+    OfxhMajorPlugin()
+        : _major(0)
+    {
+    }
 
-	OfxhMajorPlugin( OfxhPlugin& iep ) : _id( iep.getIdentifier() )
-		, _major( iep.getVersionMajor() )
-	{}
+    OfxhMajorPlugin(const std::string& id, int major)
+        : _id(id)
+        , _major(major)
+    {
+    }
 
-	const std::string& getId() const
-	{
-		return _id;
-	}
+    OfxhMajorPlugin(OfxhPlugin& iep)
+        : _id(iep.getIdentifier())
+        , _major(iep.getVersionMajor())
+    {
+    }
 
-	int getMajor() const
-	{
-		return _major;
-	}
+    const std::string& getId() const { return _id; }
 
-	bool operator<( const This& other ) const
-	{
-		if( _id < other._id )
-			return true;
+    int getMajor() const { return _major; }
 
-		if( _id > other._id )
-			return false;
+    bool operator<(const This& other) const
+    {
+        if(_id < other._id)
+            return true;
 
-		if( _major < other._major )
-			return true;
+        if(_id > other._id)
+            return false;
 
-		return false;
-	}
+        if(_major < other._major)
+            return true;
 
+        return false;
+    }
 };
-
 }
 }
 }
 
 #endif
-

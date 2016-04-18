@@ -4,19 +4,22 @@
 #include <tuttle/ioplugin/context/WriterDefinition.hpp>
 #include <tuttle/plugin/global.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace imagemagick {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace imagemagick
+{
+namespace writer
+{
 
 enum ETuttlePluginBitDepth
 {
-	eTuttlePluginBitDepth8 = 0
+    eTuttlePluginBitDepth8 = 0
 };
 
 static const std::string kParamPremult = "premult";
 static const std::string kParamQuality = "quality";
-
 }
 }
 }

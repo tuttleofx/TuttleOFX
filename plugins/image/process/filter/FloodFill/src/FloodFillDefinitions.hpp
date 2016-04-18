@@ -3,12 +3,14 @@
 
 #include <tuttle/plugin/global.hpp>
 
-
 //#define DEBUG_FLOODFILL
 
-namespace tuttle {
-namespace plugin {
-namespace floodFill {
+namespace tuttle
+{
+namespace plugin
+{
+namespace floodFill
+{
 
 static const std::string kParamUpperThres = "upperThres";
 static const std::string kParamLowerThres = "lowerThres";
@@ -21,13 +23,10 @@ static const std::string kParamMethodBruteForce = "bruteForce";
 
 enum EParamMethod
 {
-	eParamMethod4 = 0,
-	eParamMethod8,
-	eParamMethodBruteForce
+    eParamMethod4 = 0,
+    eParamMethod8,
+    eParamMethodBruteForce
 };
-
-
-
 }
 }
 }

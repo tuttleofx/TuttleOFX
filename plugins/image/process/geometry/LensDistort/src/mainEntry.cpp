@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "LensDistortPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::lens::LensDistortPluginFactory, "tuttle.lensdistort" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::lens::LensDistortPluginFactory, "tuttle.lensdistort");
+}
 }
 }

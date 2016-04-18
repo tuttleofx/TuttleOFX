@@ -1,92 +1,96 @@
 #include "OfxhClipImage.hpp"
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace attribute
+{
 
 /**
  * clipimage instance
  */
-OfxhClipImage::OfxhClipImage( const attribute::OfxhClipImageDescriptor& desc )
-	: attribute::OfxhClip( desc )
-	//				, _pixelDepth( kOfxBitDepthNone )
-	//				, _components( kOfxImageComponentNone )
+OfxhClipImage::OfxhClipImage(const attribute::OfxhClipImageDescriptor& desc)
+    : attribute::OfxhClip(desc)
+//				, _pixelDepth( kOfxBitDepthNone )
+//				, _components( kOfxImageComponentNone )
 {
-	//					_par = 1.0;
-	/**
-	 * extra properties for the instance, these are fetched from the host
-	 * via a get hook and some virtuals
-	 */
-	static property::OfxhPropSpec clipImageInstanceStuffs[] = {
-		{ kOfxImageEffectPropPixelDepth, property::ePropTypeString, 1, true, kOfxBitDepthNone },
-		{ kOfxImageEffectPropComponents, property::ePropTypeString, 1, true, kOfxImageComponentNone },
-		{ kOfxImageClipPropUnmappedPixelDepth, property::ePropTypeString, 1, true, kOfxBitDepthNone },
-		{ kOfxImageClipPropUnmappedComponents, property::ePropTypeString, 1, true, kOfxImageComponentNone },
-		{ kOfxImageEffectPropPreMultiplication, property::ePropTypeString, 1, true, kOfxImageOpaque },
-		{ kOfxImagePropPixelAspectRatio, property::ePropTypeDouble, 1, true, "1.0" },
-		{ kOfxImageEffectPropFrameRate, property::ePropTypeDouble, 1, true, "25.0" },
-		{ kOfxImageEffectPropFrameRange, property::ePropTypeDouble, 2, true, "0" },
-		{ kOfxImageClipPropFieldOrder, property::ePropTypeString, 1, true, kOfxImageFieldNone },
-		{ kOfxImageEffectPropUnmappedFrameRange, property::ePropTypeDouble, 2, true, "0" },
-		{ kOfxImageEffectPropUnmappedFrameRate, property::ePropTypeDouble, 1, true, "25.0" },
-		{ kOfxImageClipPropContinuousSamples, property::ePropTypeInt, 1, true, "0" },
-		{ 0 },
-	};
+    //					_par = 1.0;
+    /**
+     * extra properties for the instance, these are fetched from the host
+     * via a get hook and some virtuals
+     */
+    static property::OfxhPropSpec clipImageInstanceStuffs[] = {
+        {kOfxImageEffectPropPixelDepth, property::ePropTypeString, 1, true, kOfxBitDepthNone},
+        {kOfxImageEffectPropComponents, property::ePropTypeString, 1, true, kOfxImageComponentNone},
+        {kOfxImageClipPropUnmappedPixelDepth, property::ePropTypeString, 1, true, kOfxBitDepthNone},
+        {kOfxImageClipPropUnmappedComponents, property::ePropTypeString, 1, true, kOfxImageComponentNone},
+        {kOfxImageEffectPropPreMultiplication, property::ePropTypeString, 1, true, kOfxImageOpaque},
+        {kOfxImagePropPixelAspectRatio, property::ePropTypeDouble, 1, true, "1.0"},
+        {kOfxImageEffectPropFrameRate, property::ePropTypeDouble, 1, true, "25.0"},
+        {kOfxImageEffectPropFrameRange, property::ePropTypeDouble, 2, true, "0"},
+        {kOfxImageClipPropFieldOrder, property::ePropTypeString, 1, true, kOfxImageFieldNone},
+        {kOfxImageEffectPropUnmappedFrameRange, property::ePropTypeDouble, 2, true, "0"},
+        {kOfxImageEffectPropUnmappedFrameRate, property::ePropTypeDouble, 1, true, "25.0"},
+        {kOfxImageClipPropContinuousSamples, property::ePropTypeInt, 1, true, "0"},
+        {0},
+    };
 
-	_properties.addProperties( clipImageInstanceStuffs );
-	initHook( clipImageInstanceStuffs );
+    _properties.addProperties(clipImageInstanceStuffs);
+    initHook(clipImageInstanceStuffs);
 }
 
-OfxhClipImage::OfxhClipImage( const OfxhClipImage& other )
-	: attribute::OfxhClip( other )
-{}
+OfxhClipImage::OfxhClipImage(const OfxhClipImage& other)
+    : attribute::OfxhClip(other)
+{
+}
 
 /// given the colour component, find the nearest set of supported colour components
 
-const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) const
+const std::string& OfxhClipImage::findSupportedComp(const std::string& s) const
 {
-	static const std::string none( kOfxImageComponentNone );
-	static const std::string rgba( kOfxImageComponentRGBA );
-	static const std::string rgb( kOfxImageComponentRGB );
-	static const std::string alpha( kOfxImageComponentAlpha );
+    static const std::string none(kOfxImageComponentNone);
+    static const std::string rgba(kOfxImageComponentRGBA);
+    static const std::string rgb(kOfxImageComponentRGB);
+    static const std::string alpha(kOfxImageComponentAlpha);
 
-	/// is it there
-	if( isSupportedComponent( s ) )
-		return s;
+    /// is it there
+    if(isSupportedComponent(s))
+        return s;
 
-/// @todo tuttle: can we remove this check ?
-//	/// were we fed some custom non chromatic component by getUnmappedComponents? Return it.
-//	/// we should never be here mind, so a bit weird
-//	if( !_effectInstance.isChromaticComponent( s ) )
-//		return s;
+    /// @todo tuttle: can we remove this check ?
+    //	/// were we fed some custom non chromatic component by getUnmappedComponents? Return it.
+    //	/// we should never be here mind, so a bit weird
+    //	if( !_effectInstance.isChromaticComponent( s ) )
+    //		return s;
 
-	/// Means we have RGBA or Alpha being passed in and the clip
-	/// only supports the other one, so return that
-	if( s == rgba )
-	{
-		if( isSupportedComponent( rgb ) )
-			return rgb;
-		if( isSupportedComponent( alpha ) )
-			return alpha;
-	}
-	else if( s == alpha )
-	{
-		if( isSupportedComponent( rgba ) )
-			return rgba;
-		if( isSupportedComponent( rgb ) )
-			return rgb;
-	}
+    /// Means we have RGBA or Alpha being passed in and the clip
+    /// only supports the other one, so return that
+    if(s == rgba)
+    {
+        if(isSupportedComponent(rgb))
+            return rgb;
+        if(isSupportedComponent(alpha))
+            return alpha;
+    }
+    else if(s == alpha)
+    {
+        if(isSupportedComponent(rgba))
+            return rgba;
+        if(isSupportedComponent(rgb))
+            return rgb;
+    }
 
-	/// wierd, must be some custom bit , if only one, choose that, otherwise no idea
-	/// how to map, you need to derive to do so.
-	const std::vector<std::string>& supportedComps = getSupportedComponents();
-	if( supportedComps.size() == 1 )
-		return supportedComps[0];
+    /// wierd, must be some custom bit , if only one, choose that, otherwise no idea
+    /// how to map, you need to derive to do so.
+    const std::vector<std::string>& supportedComps = getSupportedComponents();
+    if(supportedComps.size() == 1)
+        return supportedComps[0];
 
-	return none;
+    return none;
 }
-
 }
 }
 }

@@ -13,44 +13,46 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorWheel {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorWheel
+{
 
 /**
  * @brief ColorWheel process
  *
  */
-template<class View>
+template <class View>
 class ColorWheelProcess : public ImageGilProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef terry::generator::ColorWheelFunctor<Pixel> ColorWheelFunctorT;
+    typedef typename View::value_type Pixel;
+    typedef terry::generator::ColorWheelFunctor<Pixel> ColorWheelFunctorT;
     typedef typename ColorWheelFunctorT::point_t ColorWheelPoint;
     typedef boost::gil::virtual_2d_locator<ColorWheelFunctorT, false> ColorWheelLocator;
     typedef boost::gil::image_view<ColorWheelLocator> ColorWheelVirtualView;
-	
+
     typedef terry::generator::RainbowFunctor<Pixel> RainbowFunctorT;
     typedef typename RainbowFunctorT::point_t RainbowPoint;
     typedef boost::gil::virtual_2d_locator<RainbowFunctorT, false> RainbowLocator;
     typedef boost::gil::image_view<RainbowLocator> RainbowVirtualView;
 
 protected:
-	ColorWheelPlugin&     _plugin;   ///< Rendering plugin
-    ColorWheelVirtualView _srcColorWheelView;  ///< Source view
-    RainbowVirtualView    _srcRainbowView;  ///< Source view
+    ColorWheelPlugin& _plugin;                ///< Rendering plugin
+    ColorWheelVirtualView _srcColorWheelView; ///< Source view
+    RainbowVirtualView _srcRainbowView;       ///< Source view
 
     ColorWheelProcessParams _params;
 
 public:
-	ColorWheelProcess( ColorWheelPlugin& effect );
+    ColorWheelProcess(ColorWheelPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

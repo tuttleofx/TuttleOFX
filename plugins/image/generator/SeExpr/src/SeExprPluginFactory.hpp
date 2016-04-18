@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace seExpr {
+namespace tuttle
+{
+namespace plugin
+{
+namespace seExpr
+{
 
-mDeclarePluginFactory( SeExprPluginFactory, { }, { } );
-
+mDeclarePluginFactory(SeExprPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

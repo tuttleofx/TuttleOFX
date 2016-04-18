@@ -16,43 +16,39 @@
 
 namespace tuttle
 {
-  namespace plugin
-  {
-    namespace ocio
-    {
-      namespace colorspace
-      {
+namespace plugin
+{
+namespace ocio
+{
+namespace colorspace
+{
 
-        namespace OCIO = OCIO_NAMESPACE;
+namespace OCIO = OCIO_NAMESPACE;
 
-        /**
-         * @brief Lut process
-         */
-        template<class View>
-          class OCIOColorSpaceProcess : public ImageGilFilterProcessor<View>
-          {
-          private:
-            OCIOColorSpacePlugin& _plugin; ///< Rendering plugin
-            OCIOColorSpaceProcessParams _params; ///< parameters
+/**
+ * @brief Lut process
+ */
+template <class View>
+class OCIOColorSpaceProcess : public ImageGilFilterProcessor<View>
+{
+private:
+    OCIOColorSpacePlugin& _plugin;       ///< Rendering plugin
+    OCIOColorSpaceProcessParams _params; ///< parameters
 
-            OCIO::ConstConfigRcPtr _config;
+    OCIO::ConstConfigRcPtr _config;
 
-          public:
-            OCIOColorSpaceProcess<View>(OCIOColorSpacePlugin & instance);
-            void
-            setup(const OFX::RenderArguments& args);
+public:
+    OCIOColorSpaceProcess<View>(OCIOColorSpacePlugin& instance);
+    void setup(const OFX::RenderArguments& args);
 
-            void
-            multiThreadProcessImages(const OfxRectI& procWindowRoW);
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
-            // Lut Transform
-            void
-            applyLut(View& dst, View& src);
-          };
-
-      }
-    }
-  }
+    // Lut Transform
+    void applyLut(View& dst, View& src);
+};
+}
+}
+}
 }
 
 #include "OCIOColorSpaceProcess.tcc"

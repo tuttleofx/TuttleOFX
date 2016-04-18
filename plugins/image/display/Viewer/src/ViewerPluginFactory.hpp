@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace viewer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace viewer
+{
 
-mDeclarePluginFactory( ViewerPluginFactory, { }, { } );
-
+mDeclarePluginFactory(ViewerPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

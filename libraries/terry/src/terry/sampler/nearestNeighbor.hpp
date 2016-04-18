@@ -5,199 +5,200 @@
 #include <terry/basic_colors.hpp>
 #include <iostream>
 
-namespace terry {
+namespace terry
+{
 using namespace boost::gil;
-namespace sampler {
+namespace sampler
+{
 
 struct nearest_neighbor_sampler
 {
-	const size_t _windowSize;
+    const size_t _windowSize;
 
-	nearest_neighbor_sampler() :
-		_windowSize ( 2.0 )
-	{}
+    nearest_neighbor_sampler()
+        : _windowSize(2.0)
+    {
+    }
 
-	/**
-	 * @brief Get weight for a specific distance, for nearest neighbor resampler.
-	 *
-	 * @param[in] distance between the pixels and the current pixel
-	 * @param[out] weight return value to weight the pixel in filtering
-	 */
-	template<typename Weight>
-	void operator()( const RESAMPLING_CORE_TYPE& distance, Weight& weight )
-	{
-		if( distance > 0.5 || distance <= -0.5 )
-			weight = 0.0;
-		else
-			weight = 1.0;
-	}
+    /**
+     * @brief Get weight for a specific distance, for nearest neighbor resampler.
+     *
+     * @param[in] distance between the pixels and the current pixel
+     * @param[out] weight return value to weight the pixel in filtering
+     */
+    template <typename Weight>
+    void operator()(const RESAMPLING_CORE_TYPE& distance, Weight& weight)
+    {
+        if(distance > 0.5 || distance <= -0.5)
+            weight = 0.0;
+        else
+            weight = 1.0;
+    }
 };
-
 
 /*
 template <typename DstP, typename SrcView, typename F>
-bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage outOfImageProcess )
+bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result, const EParamFilterOutOfImage
+outOfImageProcess )
 {
-	typedef typename SrcView::value_type SrcP;
-	point2<std::ptrdiff_t> center( iround( p ) );
+        typedef typename SrcView::value_type SrcP;
+        point2<std::ptrdiff_t> center( iround( p ) );
 
-	// if we are outside the image
-	if( center.x < 0 )
-	{
-		switch( outOfImageProcess )
-		{
-			case eParamFilterOutBlack :
-			{
-				result = get_black<DstP>();
-				return true;
-			}
-			case eParamFilterOutTransparency :
-			{
-				result = SrcP(0);
-				return true;
-			}
-			case eParamFilterOutCopy :
-			{
-				center.x = 0.0;
-				break;
-			}
-			case eParamFilterOutMirror :
-			{
-				int value = ( - 1.0 * center.x / src.width() );
-				int idx = center.x + value * src.width();
+        // if we are outside the image
+        if( center.x < 0 )
+        {
+                switch( outOfImageProcess )
+                {
+                        case eParamFilterOutBlack :
+                        {
+                                result = get_black<DstP>();
+                                return true;
+                        }
+                        case eParamFilterOutTransparency :
+                        {
+                                result = SrcP(0);
+                                return true;
+                        }
+                        case eParamFilterOutCopy :
+                        {
+                                center.x = 0.0;
+                                break;
+                        }
+                        case eParamFilterOutMirror :
+                        {
+                                int value = ( - 1.0 * center.x / src.width() );
+                                int idx = center.x + value * src.width();
 
-				if( value % 2 == 0 ) // even - mirrored image
-				{
-					center.x = - idx - 1.0;
-					break;
-				}
-				else // odd - displaced image
-				{
-					center.x = src.width() - 1.0 + idx ;
-					break;
-				}
-			}
-		}
-	}
-	if( center.x > src.width() - 1.0 )
-	{
-		switch( outOfImageProcess )
-		{
-			case eParamFilterOutBlack :
-			{
-				result = get_black<DstP>();
-				return true;
-			}
-			case eParamFilterOutTransparency :
-			{
-				result = SrcP(0);
-				return true;
-			}
-			case eParamFilterOutCopy :
-			{
-				center.x = src.width() - 1.0;
-				break;
-			}
-			case eParamFilterOutMirror :
-			{
-				int value =  center.x / src.width();
-				int idx = center.x - ( value + 1.0 ) * src.width();
+                                if( value % 2 == 0 ) // even - mirrored image
+                                {
+                                        center.x = - idx - 1.0;
+                                        break;
+                                }
+                                else // odd - displaced image
+                                {
+                                        center.x = src.width() - 1.0 + idx ;
+                                        break;
+                                }
+                        }
+                }
+        }
+        if( center.x > src.width() - 1.0 )
+        {
+                switch( outOfImageProcess )
+                {
+                        case eParamFilterOutBlack :
+                        {
+                                result = get_black<DstP>();
+                                return true;
+                        }
+                        case eParamFilterOutTransparency :
+                        {
+                                result = SrcP(0);
+                                return true;
+                        }
+                        case eParamFilterOutCopy :
+                        {
+                                center.x = src.width() - 1.0;
+                                break;
+                        }
+                        case eParamFilterOutMirror :
+                        {
+                                int value =  center.x / src.width();
+                                int idx = center.x - ( value + 1.0 ) * src.width();
 
-				if( value % 2 == 0 ) // even - mirrored image
-				{
-					center.x = src.width() - 1.0 + idx ;
-					break;
-				}
-				else // odd - displaced image
-				{
-					center.x = - idx - 1.0;
-					break;
-				}
-			}
-		}
-	}
-	if( center.y < 0 )
-	{
-		switch( outOfImageProcess )
-		{
-			case eParamFilterOutBlack :
-			{
-				result = get_black<DstP>();
-				return true;
-			}
-			case eParamFilterOutTransparency :
-			{
-				result = SrcP(0);
-				return true;
-			}
-			case eParamFilterOutCopy :
-			{
-				center.y = 0;
-				break;
-			}
-			case eParamFilterOutMirror :
-			{
-				int value = ( - 1.0 * center.y / src.height() );
-				int idx = center.y + value * src.height();
+                                if( value % 2 == 0 ) // even - mirrored image
+                                {
+                                        center.x = src.width() - 1.0 + idx ;
+                                        break;
+                                }
+                                else // odd - displaced image
+                                {
+                                        center.x = - idx - 1.0;
+                                        break;
+                                }
+                        }
+                }
+        }
+        if( center.y < 0 )
+        {
+                switch( outOfImageProcess )
+                {
+                        case eParamFilterOutBlack :
+                        {
+                                result = get_black<DstP>();
+                                return true;
+                        }
+                        case eParamFilterOutTransparency :
+                        {
+                                result = SrcP(0);
+                                return true;
+                        }
+                        case eParamFilterOutCopy :
+                        {
+                                center.y = 0;
+                                break;
+                        }
+                        case eParamFilterOutMirror :
+                        {
+                                int value = ( - 1.0 * center.y / src.height() );
+                                int idx = center.y + value * src.height();
 
-				if( value % 2 == 0 ) // even - mirrored image
-				{
-					center.y = - idx - 1.0;
-					break;
-				}
-				else // odd - displaced image
-				{
-					center.y = src.height() - 1.0 + idx ;
-					break;
-				}
-			}
-		}
-	}
+                                if( value % 2 == 0 ) // even - mirrored image
+                                {
+                                        center.y = - idx - 1.0;
+                                        break;
+                                }
+                                else // odd - displaced image
+                                {
+                                        center.y = src.height() - 1.0 + idx ;
+                                        break;
+                                }
+                        }
+                }
+        }
 
-	if( center.y > src.height() - 1.0 )
-	{
-		switch( outOfImageProcess )
-		{
-			case eParamFilterOutBlack :
-			{
-				result = get_black<DstP>();
-				return true;
-			}
-			case eParamFilterOutTransparency :
-			{
-				result = SrcP(0);
-				return true;
-			}
-			case eParamFilterOutCopy :
-			{
-				center.y = src.height() - 1.0;
-				break;
-			}
-			case eParamFilterOutMirror :
-			{
-				int value =  center.y / src.height();
-				int idx = center.y - ( value + 1.0 ) * src.height();
+        if( center.y > src.height() - 1.0 )
+        {
+                switch( outOfImageProcess )
+                {
+                        case eParamFilterOutBlack :
+                        {
+                                result = get_black<DstP>();
+                                return true;
+                        }
+                        case eParamFilterOutTransparency :
+                        {
+                                result = SrcP(0);
+                                return true;
+                        }
+                        case eParamFilterOutCopy :
+                        {
+                                center.y = src.height() - 1.0;
+                                break;
+                        }
+                        case eParamFilterOutMirror :
+                        {
+                                int value =  center.y / src.height();
+                                int idx = center.y - ( value + 1.0 ) * src.height();
 
-				if( value % 2 == 0 ) // even - mirrored image
-				{
-					center.y = src.height() - 1.0 + idx ;
-					break;
-				}
-				else // odd - displaced image
-				{
-					center.y = - idx - 1.0;
-					break;
-				}
-			}
-		}
-	}
+                                if( value % 2 == 0 ) // even - mirrored image
+                                {
+                                        center.y = src.height() - 1.0 + idx ;
+                                        break;
+                                }
+                                else // odd - displaced image
+                                {
+                                        center.y = - idx - 1.0;
+                                        break;
+                                }
+                        }
+                }
+        }
 
-	result = src( center.x, center.y );
-	return true;
+        result = src( center.x, center.y );
+        return true;
 }*/
-
 }
 }
 
 #endif
-

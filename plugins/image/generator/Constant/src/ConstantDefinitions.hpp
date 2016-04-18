@@ -4,12 +4,14 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/context/GeneratorDefinition.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace constant {
+namespace tuttle
+{
+namespace plugin
+{
+namespace constant
+{
 
 static const std::string kConstantColor = "color";
-
 }
 }
 }

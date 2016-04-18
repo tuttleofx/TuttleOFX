@@ -14,38 +14,40 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace lens {
+namespace tuttle
+{
+namespace plugin
+{
+namespace lens
+{
 
 namespace bgil = boost::gil;
 
 /**
  * @brief Plugin rendering
  */
-template<class View>
+template <class View>
 class LensDistortProcess : public ImageGilFilterProcessor<View>
 {
-typedef double Scalar;     // calculations are in double
+    typedef double Scalar; // calculations are in double
 
 protected:
-	LensDistortPlugin&               _plugin;
-	LensDistortProcessParams<Scalar> _p;
+    LensDistortPlugin& _plugin;
+    LensDistortProcessParams<Scalar> _p;
 
-	LensDistortParams                _params;
+    LensDistortParams _params;
 
 public:
-	LensDistortProcess( LensDistortPlugin& instance );
+    LensDistortProcess(LensDistortPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
 private:
-	template<class Sampler>
-	void lensDistort( View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler=Sampler() );
+    template <class Sampler>
+    void lensDistort(View& srcView, View& dstView, const OfxRectI& procWindow, const Sampler& sampler = Sampler());
 };
-
 }
 }
 }

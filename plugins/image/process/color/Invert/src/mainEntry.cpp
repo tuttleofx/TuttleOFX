@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "InvertPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::invert::InvertPluginFactory, "tuttle.invert" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::invert::InvertPluginFactory, "tuttle.invert");
+}
 }
 }

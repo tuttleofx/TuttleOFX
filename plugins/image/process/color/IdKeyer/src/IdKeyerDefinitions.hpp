@@ -5,21 +5,23 @@
 
 #include <boost/lexical_cast.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace idKeyer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace idKeyer
+{
 
-static const std::string kParamNbPoints  = "nbPoints";
-static const size_t      kMaxNbPoints    = 5;
-static const std::string kParamColor     = "color";
-static const std::string kParamUseAlpha  = "useAlpha";
+static const std::string kParamNbPoints = "nbPoints";
+static const size_t kMaxNbPoints = 5;
+static const std::string kParamColor = "color";
+static const std::string kParamUseAlpha = "useAlpha";
 static const std::string kParamTolerance = "tolerance";
 
-inline std::string getColorParamName( const size_t i )
+inline std::string getColorParamName(const size_t i)
 {
-	return kParamColor + boost::lexical_cast<std::string>( i );
+    return kParamColor + boost::lexical_cast<std::string>(i);
 }
-
 }
 }
 }

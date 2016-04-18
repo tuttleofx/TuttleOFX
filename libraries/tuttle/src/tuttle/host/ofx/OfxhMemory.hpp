@@ -33,9 +33,12 @@
 #include <ofxImageEffect.h>
 #include <cstring>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 /**
  * @todo use MemoryPool
@@ -43,26 +46,24 @@ namespace ofx {
 class OfxhMemory
 {
 public:
-	OfxhMemory();
+    OfxhMemory();
 
-	virtual ~OfxhMemory();
-	virtual bool                 alloc( size_t nBytes );
-	virtual OfxImageMemoryHandle getHandle();
-	virtual void                 freeMem();
-	virtual void*                getPtr();
-	virtual void                 lock();
-	virtual void                 unlock();
+    virtual ~OfxhMemory();
+    virtual bool alloc(size_t nBytes);
+    virtual OfxImageMemoryHandle getHandle();
+    virtual void freeMem();
+    virtual void* getPtr();
+    virtual void lock();
+    virtual void unlock();
 
-	virtual bool verifyMagic() { return true; }
+    virtual bool verifyMagic() { return true; }
 
 protected:
-	char*   _ptr;
-	bool _locked;
+    char* _ptr;
+    bool _locked;
 };
-
 }
 }
 }
 
 #endif
-

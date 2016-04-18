@@ -15,39 +15,38 @@ template <class T>
 class StaticSingleton
 {
 private:
-	static T inst;
+    static T inst;
 
 private:
-	StaticSingleton( const StaticSingleton& ) {}
-	StaticSingleton& operator=( const StaticSingleton& ) {}
+    StaticSingleton(const StaticSingleton&) {}
+    StaticSingleton& operator=(const StaticSingleton&) {}
 
 protected:
-	StaticSingleton() {}
-	virtual ~StaticSingleton() = 0;
+    StaticSingleton() {}
+    virtual ~StaticSingleton() = 0;
 
 public:
-	/**
-	 * @brief return the unique instance of StaticSingleton<T> class
-	 * @return T the unique instance of StaticSingleton<T> class
-	 */
-	static T& instance()
-	{
-		return inst;
-	}
-
+    /**
+     * @brief return the unique instance of StaticSingleton<T> class
+     * @return T the unique instance of StaticSingleton<T> class
+     */
+    static T& instance() { return inst; }
 };
 
 template <class T>
 T StaticSingleton<T>::inst;
 template <class T>
-StaticSingleton<T>::~StaticSingleton() {}
+StaticSingleton<T>::~StaticSingleton()
+{
+}
 
-///macro to implement StaticSingleton. Use it in derived class declaration
-#define MAKE_StaticSingleton( Class ) \
-	public: \
-		friend class StaticSingleton < Class >; \
-	private: \
-		Class() {} \
-		~Class() {}
+/// macro to implement StaticSingleton. Use it in derived class declaration
+#define MAKE_StaticSingleton(Class)                                                                                         \
+public:                                                                                                                     \
+    friend class StaticSingleton<Class>;                                                                                    \
+                                                                                                                            \
+private:                                                                                                                    \
+    Class() {}                                                                                                              \
+    ~Class() {}
 
 #endif

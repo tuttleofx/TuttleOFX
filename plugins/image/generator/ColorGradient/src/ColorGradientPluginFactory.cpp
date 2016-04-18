@@ -5,36 +5,37 @@
 #include <tuttle/plugin/context/GeneratorPluginFactory.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
-
-namespace tuttle {
-namespace plugin {
-namespace colorGradient {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorGradient
+{
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void ColorGradientPluginFactory::describe(OFX::ImageEffectDescriptor& desc)
 {
-	desc.setLabels( "TuttleColorGradient", "ColorGradient",
-			"Create a color gradient" );
-	desc.setPluginGrouping( "tuttle/image/generator" );
+    desc.setLabels("TuttleColorGradient", "ColorGradient", "Create a color gradient");
+    desc.setPluginGrouping("tuttle/image/generator");
 
-	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextGeneral );
-	desc.addSupportedContext( OFX::eContextFilter );
+    // add the supported contexts
+    desc.addSupportedContext(OFX::eContextGeneral);
+    desc.addSupportedContext(OFX::eContextFilter);
 
-	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+    // add supported pixel depths
+    desc.addSupportedBitDepth(OFX::eBitDepthUByte);
+    desc.addSupportedBitDepth(OFX::eBitDepthUShort);
+    desc.addSupportedBitDepth(OFX::eBitDepthFloat);
 
-	// plugin flags
-	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-	desc.setHostFrameThreading( false );
-	desc.setSupportsMultiResolution( false );
-	desc.setSupportsMultipleClipDepths( true );
-	desc.setSupportsTiles( kSupportTiles );
+    // plugin flags
+    desc.setRenderThreadSafety(OFX::eRenderFullySafe);
+    desc.setHostFrameThreading(false);
+    desc.setSupportsMultiResolution(false);
+    desc.setSupportsMultipleClipDepths(true);
+    desc.setSupportsTiles(kSupportTiles);
 }
 
 /**
@@ -42,32 +43,31 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-						    OFX::EContext               context )
+void ColorGradientPluginFactory::describeInContext(OFX::ImageEffectDescriptor& desc, OFX::EContext context)
 {
-	describeGeneratorParamsInContext( desc, context );
+    describeGeneratorParamsInContext(desc, context);
 
-	OFX::ChoiceParamDescriptor* gradientType = desc.defineChoiceParam( kGradientType );
-	gradientType->appendOption( kGradientType1DLinear );
-	gradientType->appendOption( kGradientType1DRadial );
-	gradientType->appendOption( kGradientType2D );
-	gradientType->setDefault( 0 );
+    OFX::ChoiceParamDescriptor* gradientType = desc.defineChoiceParam(kGradientType);
+    gradientType->appendOption(kGradientType1DLinear);
+    gradientType->appendOption(kGradientType1DRadial);
+    gradientType->appendOption(kGradientType2D);
+    gradientType->setDefault(0);
 
-	OFX::IntParamDescriptor* nbPoint = desc.defineIntParam( kNbPoints );
-	nbPoint->setDefault( 2 );
-	nbPoint->setRange( 2, kMaxNbPoints );
-	nbPoint->setDisplayRange( 2, kMaxNbPoints );
+    OFX::IntParamDescriptor* nbPoint = desc.defineIntParam(kNbPoints);
+    nbPoint->setDefault(2);
+    nbPoint->setRange(2, kMaxNbPoints);
+    nbPoint->setDisplayRange(2, kMaxNbPoints);
 
-	for( unsigned int i = 0; i < kMaxNbPoints; ++i )
-	{
-		OFX::Double2DParamDescriptor* point = desc.defineDouble2DParam( getPointParamName( i ) );
-		point->setLabel( getPointParamName( i ) );
-		//		point->setIsSecret( true );
-		point->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-		OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( getColorParamName( i ) );
-		color->setLabel( getColorParamName( i ) );
-		//		color->setIsSecret( true );
-	}
+    for(unsigned int i = 0; i < kMaxNbPoints; ++i)
+    {
+        OFX::Double2DParamDescriptor* point = desc.defineDouble2DParam(getPointParamName(i));
+        point->setLabel(getPointParamName(i));
+        //		point->setIsSecret( true );
+        point->setDoubleType(OFX::eDoubleTypeNormalisedXYAbsolute);
+        OFX::RGBAParamDescriptor* color = desc.defineRGBAParam(getColorParamName(i));
+        color->setLabel(getColorParamName(i));
+        //		color->setIsSecret( true );
+    }
 }
 
 /**
@@ -76,12 +76,10 @@ void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor& 
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* ColorGradientPluginFactory::createInstance( OfxImageEffectHandle handle,
-							      OFX::EContext        context )
+OFX::ImageEffect* ColorGradientPluginFactory::createInstance(OfxImageEffectHandle handle, OFX::EContext context)
 {
-	return new ColorGradientPlugin( handle );
+    return new ColorGradientPlugin(handle);
 }
-
 }
 }
 }

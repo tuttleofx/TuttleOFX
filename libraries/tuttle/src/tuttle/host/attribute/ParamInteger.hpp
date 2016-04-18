@@ -4,19 +4,21 @@
 /* Most of the implementation is in the AnimatedParam template */
 #include "AnimatedParamType.hpp"
 
-namespace tuttle {
-namespace host {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace attribute
+{
 
-class ParamInteger :
-	public AnimatedParamInteger
+class ParamInteger : public AnimatedParamInteger
 {
 public:
-	ParamInteger( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor, const std::size_t index = 0 );
+    ParamInteger(INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor,
+                 const std::size_t index = 0);
 
-	int getDefault() const;
+    int getDefault() const;
 };
-
 }
 }
 }

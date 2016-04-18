@@ -4,58 +4,59 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace thinning {
-
-ThinningPlugin::ThinningPlugin( OfxImageEffectHandle handle )
-: ImageEffectGilPlugin( handle )
+namespace tuttle
 {
-	_paramBorder = fetchChoiceParam( kParamBorder );
+namespace plugin
+{
+namespace thinning
+{
+
+ThinningPlugin::ThinningPlugin(OfxImageEffectHandle handle)
+    : ImageEffectGilPlugin(handle)
+{
+    _paramBorder = fetchChoiceParam(kParamBorder);
 }
 
-ThinningProcessParams<ThinningPlugin::Scalar> ThinningPlugin::getProcessParams( const OfxPointD& renderScale ) const
+ThinningProcessParams<ThinningPlugin::Scalar> ThinningPlugin::getProcessParams(const OfxPointD& renderScale) const
 {
-	ThinningProcessParams<Scalar> params;
-	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
-	return params;
+    ThinningProcessParams<Scalar> params;
+    params._border = static_cast<EParamBorder>(_paramBorder->getValue());
+    return params;
 }
 
-bool ThinningPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+bool ThinningPlugin::getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod)
 {
-	ThinningProcessParams<Scalar> params = getProcessParams();
-	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+    ThinningProcessParams<Scalar> params = getProcessParams();
+    const OfxRectD srcRod = _clipSrc->getCanonicalRod(args.time);
 
-	switch( params._border )
-	{
-		case eParamBorderPadded:
-			rod = rectangleReduce( srcRod, 2 );
-			return true;
-		default:
-			break;
-	}
-	return false;
+    switch(params._border)
+    {
+        case eParamBorderPadded:
+            rod = rectangleReduce(srcRod, 2);
+            return true;
+        default:
+            break;
+    }
+    return false;
 }
 
-void ThinningPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+void ThinningPlugin::getRegionsOfInterest(const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois)
 {
-	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-	
-	const OfxRectD srcRoi = rectangleGrow( srcRod, 2 );
+    const OfxRectD srcRod = _clipSrc->getCanonicalRod(args.time);
 
-	rois.setRegionOfInterest( *_clipSrc, srcRoi );
+    const OfxRectD srcRoi = rectangleGrow(srcRod, 2);
+
+    rois.setRegionOfInterest(*_clipSrc, srcRoi);
 }
-
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ThinningPlugin::render( const OFX::RenderArguments &args )
+void ThinningPlugin::render(const OFX::RenderArguments& args)
 {
-	doGilRender<ThinningProcess>( *this, args );
+    doGilRender<ThinningProcess>(*this, args);
 }
-
 }
 }
 }

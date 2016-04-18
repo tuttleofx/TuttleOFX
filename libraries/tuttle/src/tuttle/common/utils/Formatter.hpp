@@ -32,9 +32,12 @@
 
 #else
 
-namespace boost {
-namespace log {
-namespace trivial {
+namespace boost
+{
+namespace log
+{
+namespace trivial
+{
 enum severity_level
 {
     trace,
@@ -44,58 +47,61 @@ enum severity_level
     error,
     fatal
 };
-}}}
+}
+}
+}
 
 #endif
 
-namespace tuttle {
-namespace common {
+namespace tuttle
+{
+namespace common
+{
 
 enum EVerboseLevel
 {
-	eVerboseLevelFatal,
-	eVerboseLevelError,
-	eVerboseLevelWarning,
-	eVerboseLevelInfo,
-	eVerboseLevelDebug,
-	eVerboseLevelTrace
+    eVerboseLevelFatal,
+    eVerboseLevelError,
+    eVerboseLevelWarning,
+    eVerboseLevelInfo,
+    eVerboseLevelDebug,
+    eVerboseLevelTrace
 };
 
 class Formatter : boost::noncopyable
 {
 #ifndef WITHOUT_BOOST_LOG
 #ifndef SWIG
-	typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend > sink_t;
+    typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> sink_t;
 #endif
 #endif
 
 private:
-	Formatter();
+    Formatter();
 
 public:
-	static boost::shared_ptr<Formatter> get();
-	~Formatter() { }
+    static boost::shared_ptr<Formatter> get();
+    ~Formatter() {}
 
 private:
-	void init_logging();
+    void init_logging();
 
 public:
-	void setLogLevel( const boost::log::trivial::severity_level level );
+    void setLogLevel(const boost::log::trivial::severity_level level);
 
-	void setLogLevel( const EVerboseLevel level );
-	void setLogLevel( const std::string& level );
+    void setLogLevel(const EVerboseLevel level);
+    void setLogLevel(const std::string& level);
 
-	void displayLogLevel( bool display );
+    void displayLogLevel(bool display);
 
 public:
-	static boost::shared_ptr< Formatter > _formatter;
+    static boost::shared_ptr<Formatter> _formatter;
 #ifndef WITHOUT_BOOST_LOG
 #ifndef SWIG
-	boost::shared_ptr< sink_t > _sink;
+    boost::shared_ptr<sink_t> _sink;
 #endif
 #endif
 };
-
 }
 }
 

@@ -5,9 +5,12 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace inputBuffer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace inputBuffer
+{
 
 static const std::string kParamInputMode = "mode";
 static const std::string kParamInputModeBufferPointer = "bufferPointer";
@@ -15,8 +18,8 @@ static const std::string kParamInputModeCallbackPointer = "callbackPointer";
 
 enum EParamInputMode
 {
-	eParamInputModeBufferPointer = 0,
-	eParamInputModeCallbackPointer = 1
+    eParamInputModeBufferPointer = 0,
+    eParamInputModeCallbackPointer = 1
 };
 
 static const std::string kParamInputBufferPointer = "bufferPointer";
@@ -25,9 +28,10 @@ static const std::string kParamInputCustomData = "customData";
 static const std::string kParamInputCallbackDestroyCustomData = "callbackDestroyCustomData";
 
 extern "C" {
-	typedef void* CustomDataPtr;
-	typedef void (*CallbackInputImagePtr)( OfxTime time, CustomDataPtr customData, void** outRawdata, int* outWidth, int* outHeight, int* outRowSizeBytes );
-	typedef void (*CallbackDestroyCustomDataPtr)( CustomDataPtr customData );
+typedef void* CustomDataPtr;
+typedef void (*CallbackInputImagePtr)(OfxTime time, CustomDataPtr customData, void** outRawdata, int* outWidth,
+                                      int* outHeight, int* outRowSizeBytes);
+typedef void (*CallbackDestroyCustomDataPtr)(CustomDataPtr customData);
 }
 
 static const std::string kParamSize = "size";
@@ -70,10 +74,10 @@ static const std::string kParamFieldUpper = "Upper";
 /** @brief Enumerates the fields present in an image */
 enum EParamField
 {
-    eParamFieldNone = 0,   /**< @brief unfielded image */
-    eParamFieldBoth = 1,   /**< @brief fielded image with both fields present */
-    eParamFieldLower = 2,  /**< @brief only the spatially lower field is present */
-    eParamFieldUpper = 3   /**< @brief only the spatially upper field is present  */
+    eParamFieldNone = 0,  /**< @brief unfielded image */
+    eParamFieldBoth = 1,  /**< @brief fielded image with both fields present */
+    eParamFieldLower = 2, /**< @brief only the spatially lower field is present */
+    eParamFieldUpper = 3  /**< @brief only the spatially upper field is present  */
 };
 
 static const std::string kParamOrientation = "orientation";
@@ -88,7 +92,6 @@ enum EParamOrientation
 };
 
 static const std::string kParamTimeDomain = "timeDomain";
-
 }
 }
 }

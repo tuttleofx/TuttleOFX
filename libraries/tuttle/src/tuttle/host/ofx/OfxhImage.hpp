@@ -38,10 +38,14 @@
 
 #include <ofxImageEffect.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace imageEffect {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace imageEffect
+{
 
 using namespace ::tuttle::ofx::imageEffect;
 
@@ -55,120 +59,114 @@ class OfxhImageEffectNode;
 class OfxhImage : public property::OfxhSet
 {
 public:
-	enum EReferenceOwner
-	{
-		eReferenceOwnerHost,
-		eReferenceOwnerPlugin
-	};
-	
+    enum EReferenceOwner
+    {
+        eReferenceOwnerHost,
+        eReferenceOwnerPlugin
+    };
+
 protected:
-	/// called during ctors to get bits from the clip props into ours
-	void initClipBits( attribute::OfxhClip& instance );
-	static std::ptrdiff_t _count; ///< temp.... for check
-	std::ptrdiff_t _id; ///< temp.... for check
-	typedef std::map<EReferenceOwner, std::ptrdiff_t> RefMap;
-	RefMap _referenceCount; ///< reference count on this image
-	std::string _clipName; ///< for debug
-	OfxTime _time; ///< for debug
+    /// called during ctors to get bits from the clip props into ours
+    void initClipBits(attribute::OfxhClip& instance);
+    static std::ptrdiff_t _count; ///< temp.... for check
+    std::ptrdiff_t _id;           ///< temp.... for check
+    typedef std::map<EReferenceOwner, std::ptrdiff_t> RefMap;
+    RefMap _referenceCount; ///< reference count on this image
+    std::string _clipName;  ///< for debug
+    OfxTime _time;          ///< for debug
 
 public:
-	// default constructor
-	virtual ~OfxhImage();
+    // default constructor
+    virtual ~OfxhImage();
 
-	/// basic ctor, makes empty property set but sets not value
-	OfxhImage();
+    /// basic ctor, makes empty property set but sets not value
+    OfxhImage();
 
-	/// construct from a clip instance, but leave the
-	/// filling it to the calling code via the propery set
-	explicit OfxhImage( attribute::OfxhClip& instance, const OfxTime time );
+    /// construct from a clip instance, but leave the
+    /// filling it to the calling code via the propery set
+    explicit OfxhImage(attribute::OfxhClip& instance, const OfxTime time);
 
-	// Render Scale (renderScaleX,renderScaleY) -
-	//
-	// The proxy render scale currently being applied.
-	// ------
-	// Data -
-	//
-	// The pixel data pointer of an image.
-	// ------
-	// Bounds (bx1,by1,bx2,by2) -
-	//
-	// The bounds of an image's pixels. The bounds, in PixelCoordinates, are of the
-	// addressable pixels in an image's data pointer. The order of the values is
-	// x1, y1, x2, y2. X values are x1 &lt;= X &lt; x2 Y values are y1 &lt;= Y &lt; y2
-	// ------
-	// ROD (rodx1,rody1,rodx2,rody2) -
-	//
-	// The full region of definition. The ROD, in PixelCoordinates, are of the
-	// addressable pixels in an image's data pointer. The order of the values is
-	// x1, y1, x2, y2. X values are x1 &lt;= X &lt; x2 Y values are y1 &lt;= Y &lt; y2
-	// ------
-	// Row Bytes -
-	//
-	// The number of bytes in a row of an image.
-	// ------
-	// Field -
-	//
-	// kOfxImageFieldNone - the image is an unfielded frame
-	// kOfxImageFieldBoth - the image is fielded and contains both interlaced fields
-	// kOfxImageFieldLower - the image is fielded and contains a single field, being the lower field (rows 0,2,4...)
-	// kOfxImageFieldUpper - the image is fielded and contains a single field, being the upper field (rows 1,3,5...)
-	// ------
-	// Unique Identifier -
-	//
-	// Uniquely labels an image. This is host set and allows a plug-in to differentiate between images. This is
-	// especially useful if a plugin caches analysed information about the image (for example motion vectors). The
-	// plugin can label the cached information with this identifier. If a user connects a different clip to the
-	// analysed input, or the image has changed in some way then the plugin can detect this via an identifier change
-	// and re-evaluate the cached information.
-/*
-	// construction based on clip instance
-	OfxhImage( attribute::OfxhClip& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
-			   OfxTime              time,
-	           double               renderScaleX,
-	           double               renderScaleY,
-	           void*                data,
-	           const OfxRectI&      bounds,
-	           const OfxRectI&      rod,
-	           int                  rowBytes,
-	           const std::string&   field,
-	           const std::string&   uniqueIdentifier );
-*/
-	// OfxImageClipHandle getHandle();
+    // Render Scale (renderScaleX,renderScaleY) -
+    //
+    // The proxy render scale currently being applied.
+    // ------
+    // Data -
+    //
+    // The pixel data pointer of an image.
+    // ------
+    // Bounds (bx1,by1,bx2,by2) -
+    //
+    // The bounds of an image's pixels. The bounds, in PixelCoordinates, are of the
+    // addressable pixels in an image's data pointer. The order of the values is
+    // x1, y1, x2, y2. X values are x1 &lt;= X &lt; x2 Y values are y1 &lt;= Y &lt; y2
+    // ------
+    // ROD (rodx1,rody1,rodx2,rody2) -
+    //
+    // The full region of definition. The ROD, in PixelCoordinates, are of the
+    // addressable pixels in an image's data pointer. The order of the values is
+    // x1, y1, x2, y2. X values are x1 &lt;= X &lt; x2 Y values are y1 &lt;= Y &lt; y2
+    // ------
+    // Row Bytes -
+    //
+    // The number of bytes in a row of an image.
+    // ------
+    // Field -
+    //
+    // kOfxImageFieldNone - the image is an unfielded frame
+    // kOfxImageFieldBoth - the image is fielded and contains both interlaced fields
+    // kOfxImageFieldLower - the image is fielded and contains a single field, being the lower field (rows 0,2,4...)
+    // kOfxImageFieldUpper - the image is fielded and contains a single field, being the upper field (rows 1,3,5...)
+    // ------
+    // Unique Identifier -
+    //
+    // Uniquely labels an image. This is host set and allows a plug-in to differentiate between images. This is
+    // especially useful if a plugin caches analysed information about the image (for example motion vectors). The
+    // plugin can label the cached information with this identifier. If a user connects a different clip to the
+    // analysed input, or the image has changed in some way then the plugin can detect this via an identifier change
+    // and re-evaluate the cached information.
+    /*
+            // construction based on clip instance
+            OfxhImage( attribute::OfxhClip& instance, // construct from clip instance taking pixel depth, components, pre
+       mult and aspect ratio
+                               OfxTime              time,
+                       double               renderScaleX,
+                       double               renderScaleY,
+                       void*                data,
+                       const OfxRectI&      bounds,
+                       const OfxRectI&      rod,
+                       int                  rowBytes,
+                       const std::string&   field,
+                       const std::string&   uniqueIdentifier );
+    */
+    // OfxImageClipHandle getHandle();
 
-	OfxPropertySetHandle getPropHandle() const
-	{
-		return property::OfxhSet::getHandle();
-	}
+    OfxPropertySetHandle getPropHandle() const { return property::OfxhSet::getHandle(); }
 
-	const std::string& getClipName() const { return _clipName; }
-	OfxTime getTime() const { return _time; }
-	std::ptrdiff_t getId() const { return _id; }
-	
-	/// get the bounds of the pixels in memory
-	OfxRectI getBounds() const;
+    const std::string& getClipName() const { return _clipName; }
+    OfxTime getTime() const { return _time; }
+    std::ptrdiff_t getId() const { return _id; }
 
-	/// get the full region of this image
-	OfxRectI getROD() const;
+    /// get the bounds of the pixels in memory
+    OfxRectI getBounds() const;
 
-	EBitDepth getBitDepth() const;
-	
-	inline std::size_t getBitDepthMemorySize() const
-	{
-		return bitDepthMemorySize( getBitDepth() );
-	}
-	
-	int getRowBytes() const;
+    /// get the full region of this image
+    OfxRectI getROD() const;
 
-	EPixelComponent getComponentsType() const;
+    EBitDepth getBitDepth() const;
 
-	int getReferenceCount( const EReferenceOwner from ) const;
+    inline std::size_t getBitDepthMemorySize() const { return bitDepthMemorySize(getBitDepth()); }
 
-	void addReference( const EReferenceOwner from, const std::size_t n = 1 );
-	
-	/// release the reference count, which, if zero, deletes this
-	bool releaseReference( const EReferenceOwner from );
+    int getRowBytes() const;
+
+    EPixelComponent getComponentsType() const;
+
+    int getReferenceCount(const EReferenceOwner from) const;
+
+    void addReference(const EReferenceOwner from, const std::size_t n = 1);
+
+    /// release the reference count, which, if zero, deletes this
+    bool releaseReference(const EReferenceOwner from);
 };
-
 }
 }
 }

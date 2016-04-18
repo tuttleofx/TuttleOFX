@@ -3,12 +3,14 @@
 
 #include <tuttle/plugin/global.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace timeShift {
+namespace tuttle
+{
+namespace plugin
+{
+namespace timeShift
+{
 
 static const std::string kParamOffset = "offset";
-
 }
 }
 }

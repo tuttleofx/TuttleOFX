@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "FlipPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-        mAppendPluginFactory( ids, tuttle::plugin::flip::FlipPluginFactory, "tuttle.flip" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::flip::FlipPluginFactory, "tuttle.flip");
+}
 }
 }

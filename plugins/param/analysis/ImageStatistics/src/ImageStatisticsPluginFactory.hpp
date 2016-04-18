@@ -3,16 +3,17 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace imageStatistics {
+namespace tuttle
+{
+namespace plugin
+{
+namespace imageStatistics
+{
 
 static const bool kSupportTiles = false;
-mDeclarePluginFactory( ImageStatisticsPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory(ImageStatisticsPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-

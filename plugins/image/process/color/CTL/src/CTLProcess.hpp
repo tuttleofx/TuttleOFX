@@ -5,35 +5,38 @@
 
 #include <CtlSimdInterpreter.h>
 
-namespace tuttle {
-namespace plugin {
-namespace ctl {
+namespace tuttle
+{
+namespace plugin
+{
+namespace ctl
+{
 
 /**
  * @brief CTL process
  *
  */
-template<class View>
+template <class View>
 class CTLProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::channel_type<View>::type Channel;
-	typedef float Scalar;
-protected:
-    CTLPlugin&    _plugin;            ///< Rendering plugin
-	CTLProcessParams<Scalar> _params; ///< parameters
+    typedef typename View::value_type Pixel;
+    typedef typename boost::gil::channel_type<View>::type Channel;
+    typedef float Scalar;
 
-	Ctl::SimdInterpreter _interpreter;
+protected:
+    CTLPlugin& _plugin;               ///< Rendering plugin
+    CTLProcessParams<Scalar> _params; ///< parameters
+
+    Ctl::SimdInterpreter _interpreter;
 
 public:
-    CTLProcess( CTLPlugin& effect );
+    CTLProcess(CTLPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

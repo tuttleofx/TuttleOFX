@@ -6,15 +6,14 @@
 
 #include <iostream>
 
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 {
-	using namespace tuttle::host;
-	core().preload();
+    using namespace tuttle::host;
+    core().preload();
 
-	BOOST_FOREACH( ofx::OfxhPlugin* plugin, core().getPluginCache().getPlugins() )
-	{
-		TUTTLE_LOG_INFO( " - plugin: " << plugin->getIdentifier() );
-	}
-	return 0;
+    BOOST_FOREACH(ofx::OfxhPlugin* plugin, core().getPluginCache().getPlugins())
+    {
+        TUTTLE_LOG_INFO(" - plugin: " << plugin->getIdentifier());
+    }
+    return 0;
 }
-

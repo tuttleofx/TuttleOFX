@@ -6,22 +6,20 @@
 
 namespace tuttle
 {
-  namespace plugin
-  {
-    namespace ocio
-    {
-      namespace colorspace
-      {
+namespace plugin
+{
+namespace ocio
+{
+namespace colorspace
+{
 
-        static const std::string kParamInputSpace = "input space";
-        static const std::string kParamOutputSpace = "output space";
+static const std::string kParamInputSpace = "input space";
+static const std::string kParamOutputSpace = "output space";
 
-        static const std::string kTuttlePluginFilenameHint =
-            "open an OpenColorIO config file";
-
-      }
-    }
-  }
+static const std::string kTuttlePluginFilenameHint = "open an OpenColorIO config file";
+}
+}
+}
 }
 
 #endif

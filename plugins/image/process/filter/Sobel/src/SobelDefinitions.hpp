@@ -3,10 +3,12 @@
 
 #include <tuttle/plugin/global.hpp>
 
-
-namespace tuttle {
-namespace plugin {
-namespace sobel {
+namespace tuttle
+{
+namespace plugin
+{
+namespace sobel
+{
 
 static const std::string kParamSize = "size";
 static const std::string kParamGroupAdvanced = "advanced";
@@ -21,9 +23,9 @@ static const std::string kParamPass2 = "2";
 
 enum EParamPass
 {
-	eParamPassFull = 0,
-	eParamPass1,
-	eParamPass2
+    eParamPassFull = 0,
+    eParamPass1,
+    eParamPass2
 };
 
 static const std::string kParamBorder = "border";
@@ -34,10 +36,10 @@ static const std::string kParamBorderPadded = "Padded";
 
 enum EParamBorder
 {
-	eParamBorderMirror = 0,
-	eParamBorderConstant,
-	eParamBorderBlack,
-	eParamBorderPadded
+    eParamBorderMirror = 0,
+    eParamBorderConstant,
+    eParamBorderBlack,
+    eParamBorderPadded
 };
 
 static const std::string kParamComputeGradientNorm = "computeGradientNorm";
@@ -51,13 +53,11 @@ static const std::string kParamOutputComponentRGB = "RGB";
 
 enum EParamOutputComponent
 {
-	eParamOutputComponentRGBA = 0,
-	eParamOutputComponentRGB,
+    eParamOutputComponentRGBA = 0,
+    eParamOutputComponentRGB,
 };
 
 static const std::string kParamInfos = "infos";
-
-
 }
 }
 }

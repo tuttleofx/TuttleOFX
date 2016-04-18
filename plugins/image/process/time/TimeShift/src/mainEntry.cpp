@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "TimeShiftPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids,  tuttle::plugin::timeShift::TimeShiftPluginFactory, "tuttle.timeshift" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::timeShift::TimeShiftPluginFactory, "tuttle.timeshift");
+}
 }
 }

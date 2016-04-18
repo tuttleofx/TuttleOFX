@@ -1,14 +1,15 @@
 #include "color.hpp"
 
-namespace tuttle {
-namespace common {
+namespace tuttle
+{
+namespace common
+{
 
 boost::shared_ptr<Color> Color::get()
 {
-	return color;
+    return color;
 }
 
 boost::shared_ptr<Color> Color::color(new Color);
-
 }
 }

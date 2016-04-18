@@ -4,36 +4,39 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace jpeg {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace jpeg
+{
+namespace writer
+{
 
 /**
  * @brief Base class for the denoising processor
  *
  */
-template<class View>
+template <class View>
 class JpegWriterProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
+    typedef typename View::value_type Pixel;
 
 protected:
-	JpegWriterPlugin&    _plugin;        ///< Rendering plugin
-	JpegWriterProcessParams _params;
+    JpegWriterPlugin& _plugin; ///< Rendering plugin
+    JpegWriterProcessParams _params;
 
 public:
-	JpegWriterProcess( JpegWriterPlugin& instance );
+    JpegWriterProcess(JpegWriterPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
-	template<class Bits>
-	void writeImage( View& src );
+    template <class Bits>
+    void writeImage(View& src);
 };
-
 }
 }
 }

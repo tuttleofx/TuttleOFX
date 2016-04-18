@@ -15,58 +15,61 @@ template <class T>
 class Singleton
 {
 private:
-	static T* inst;
+    static T* inst;
 
-	Singleton( const Singleton& ) {}
-	Singleton& operator=( const Singleton& ) {}
+    Singleton(const Singleton&) {}
+    Singleton& operator=(const Singleton&) {}
 
 protected:
-	Singleton() {}
-	virtual ~Singleton() = 0;
+    Singleton() {}
+    virtual ~Singleton() = 0;
 
 public:
-	/**
-	 * @brief return the unique instance of Singleton<T> class
-	 * @return T the unique instance of Singleton<T> class
-	 */
-	static T& instance()
-	{
-		if( !inst )
-			inst = new T;
-		return *inst;
-	}
+    /**
+     * @brief return the unique instance of Singleton<T> class
+     * @return T the unique instance of Singleton<T> class
+     */
+    static T& instance()
+    {
+        if(!inst)
+            inst = new T;
+        return *inst;
+    }
 
-	/**
-	 * @brief destroy the unique instance of Singleton<T> class
-	 */
-	static void destroy()
-	{
-		delete inst;
-		inst = NULL;
-	}
-
+    /**
+     * @brief destroy the unique instance of Singleton<T> class
+     */
+    static void destroy()
+    {
+        delete inst;
+        inst = NULL;
+    }
 };
 
 template <class T>
-T * Singleton<T>::inst = NULL;
+T* Singleton<T>::inst = NULL;
 
 template <class T>
-Singleton<T>::~Singleton() {}
+Singleton<T>::~Singleton()
+{
+}
 
-///macro to implement singleton. Use it in derived class declaration
-#define MAKE_SINGLETON( Class ) \
-	public: \
-		friend class Singleton < Class >; \
-	private: \
-		Class() {} \
-		~Class() {}
+/// macro to implement singleton. Use it in derived class declaration
+#define MAKE_SINGLETON(Class)                                                                                               \
+public:                                                                                                                     \
+    friend class Singleton<Class>;                                                                                          \
+                                                                                                                            \
+private:                                                                                                                    \
+    Class() {}                                                                                                              \
+    ~Class() {}
 
-///macro to implement singleton. Use it in derived class declaration
-#define MAKE_SINGLETON_WITHCONSTRUCTORS( Class ) \
-	public: \
-		friend class Singleton < Class >; \
-	private: \
-		Class(); \
-		~Class();
+/// macro to implement singleton. Use it in derived class declaration
+#define MAKE_SINGLETON_WITHCONSTRUCTORS(Class)                                                                              \
+public:                                                                                                                     \
+    friend class Singleton<Class>;                                                                                          \
+                                                                                                                            \
+private:                                                                                                                    \
+    Class();                                                                                                                \
+    ~Class();
 
 #endif

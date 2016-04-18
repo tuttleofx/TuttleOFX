@@ -7,59 +7,63 @@
 
 #include <cmath>
 
-namespace tuttle {
-namespace plugin {
-namespace interact {
+namespace tuttle
+{
+namespace plugin
+{
+namespace interact
+{
 
 enum EMotion
 {
-	eMotionNone,
-	eMotionTranslate,
-	eMotionRotate,
-	eMotionScale
+    eMotionNone,
+    eMotionTranslate,
+    eMotionRotate,
+    eMotionScale
 };
 
 enum EAxis
 {
-	eAxisNone,
-	eAxisXY,
-	eAxisX,
-	eAxisY
+    eAxisNone,
+    eAxisXY,
+    eAxisX,
+    eAxisY
 };
 
 struct MotionType
 {
-	MotionType()
-	: _mode(eMotionNone)
-	, _axis(eAxisNone)
-	{}
-	
-	EMotion _mode;
-	EAxis _axis;
+    MotionType()
+        : _mode(eMotionNone)
+        , _axis(eAxisNone)
+    {
+    }
+
+    EMotion _mode;
+    EAxis _axis;
 };
 
-template<class Point>
-inline EAxis clicPoint( const Point& point, const Point& mouse, const double marge )
+template <class Point>
+inline EAxis clicPoint(const Point& point, const Point& mouse, const double marge)
 {
-	Point dist;
-	dist.x = std::abs( point.x - mouse.x );
-	dist.y = std::abs( point.y - mouse.y );
+    Point dist;
+    dist.x = std::abs(point.x - mouse.x);
+    dist.y = std::abs(point.y - mouse.y);
 
-	const double bigMarge  = marge * 3.0;
-	const double tinyMarge = marge * 0.5;
-	if( dist.x < marge && dist.y < marge )
-	{
-		return eAxisXY;
-	}
-	else if( dist.y < tinyMarge && dist.x < bigMarge )
-	{
-		return eAxisX;
-	}
-	else if( dist.x < tinyMarge && dist.y < bigMarge  )
-	{
-		return eAxisY;
-	}
-	return eAxisNone;
+    const double bigMarge = marge * 3.0;
+    const double tinyMarge = marge * 0.5;
+    if(dist.x < marge && dist.y < marge)
+    {
+        return eAxisXY;
+    }
+    else if(dist.y < tinyMarge && dist.x < bigMarge)
+    {
+        return eAxisX;
+    }
+    else if(dist.x < tinyMarge && dist.y < bigMarge)
+    {
+        return eAxisY;
+    }
+    return eAxisNone;
 }
 
 /**
@@ -68,21 +72,19 @@ inline EAxis clicPoint( const Point& point, const Point& mouse, const double mar
  * @param point the ofx parameter (in normalized space)
  * @param mouse the mouse clic
  */
-inline EAxis clicDouble2D( const OFX::Double2DParam& point, const OfxPointD& mouse, const double marge )
+inline EAxis clicDouble2D(const OFX::Double2DParam& point, const OfxPointD& mouse, const double marge)
 {
-	OfxPointD p = point.getValue();
+    OfxPointD p = point.getValue();
 
-	return clicPoint<>( p, mouse, marge );
+    return clicPoint<>(p, mouse, marge);
 }
 
-inline EAxis clicDouble2D( const OFX::Double2DParam* point, const OfxPointD& mouse, const double marge )
+inline EAxis clicDouble2D(const OFX::Double2DParam* point, const OfxPointD& mouse, const double marge)
 {
-	return clicDouble2D( *point, mouse, marge );
+    return clicDouble2D(*point, mouse, marge);
 }
-
 }
 }
 }
 
 #endif
-
