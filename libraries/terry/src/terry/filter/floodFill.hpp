@@ -234,8 +234,9 @@ void flood_fill(const SView& srcView, const Rect<std::ssize_t>& srcRod, DView& d
                         // visit line bellow
                         if(y < rod.y2)
                         {
-                            //						fill_range_if( srcLastBegin[sLB], src_loc[sRB], dstLastBegin[dLB],
-                            //white,
+                            //						fill_range_if( srcLastBegin[sLB], src_loc[sRB],
+                            //dstLastBegin[dLB],
+                            // white,
                             // softTest
                             //);
                             // fill line bellow for current range if respect softTest

@@ -2470,7 +2470,6 @@ OfxStatus mainEntryStr(const char* actionRaw, const void* handleRaw, OfxProperty
         if(it == plugInfoMap.end())
             BOOST_THROW_EXCEPTION(std::logic_error("Action not recognized: " + action));
         OFX::PluginFactory* factory = it->second._factory;
-
         // figure the actions
         if(action == kOfxActionLoad)
         {
@@ -2737,7 +2736,7 @@ OfxStatus mainEntryStr(const char* actionRaw, const void* handleRaw, OfxProperty
             TUTTLE_LOG_ERROR("filename: \"" << *filenameException << "\"");
         }
 
-        TUTTLE_LOG_DEBUG("Caught boost::exception on action " << actionRaw);
+        TUTTLE_LOG_ERROR("boost::exception error on action: " << actionRaw);
 #ifndef BOOST_EXCEPTION_DISABLE
         TUTTLE_LOG_DEBUG(boost::diagnostic_information(e));
 #endif
@@ -2757,14 +2756,14 @@ OfxStatus mainEntryStr(const char* actionRaw, const void* handleRaw, OfxProperty
     // catch suite exceptions
     catch(OFX::Exception::Suite& e)
     {
-        TUTTLE_LOG_DEBUG("Caught OFX::Exception::Suite (" << e.what() << ")");
+        TUTTLE_LOG_ERROR("OFX::Exception::Suite error: " << e.what());
         stat = e.status();
     }
 
     // catch host inadequate exceptions
     catch(OFX::Exception::HostInadequate& e)
     {
-        TUTTLE_LOG_DEBUG("Caught OFX::Exception::HostInadequate (" << e.what() << ")");
+        TUTTLE_LOG_ERROR("OFX::Exception::HostInadequate error: " << e.what());
         stat = kOfxStatErrMissingHostFeature;
     }
 
@@ -2772,14 +2771,14 @@ OfxStatus mainEntryStr(const char* actionRaw, const void* handleRaw, OfxProperty
     // down
     catch(OFX::Exception::PropertyUnknownToHost& e)
     {
-        TUTTLE_LOG_DEBUG("Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")");
+        TUTTLE_LOG_ERROR("OFX::Exception::PropertyUnknownToHost error: " << e.what());
         stat = kOfxStatErrMissingHostFeature;
     }
 
     // catch memory
     catch(std::bad_alloc& e)
     {
-        TUTTLE_LOG_DEBUG("Caught std::bad_alloc (" << e.what() << ")");
+        TUTTLE_LOG_ERROR("std::bad_alloc error: " << e.what());
         stat = kOfxStatErrMemory;
     }
 
@@ -2787,7 +2786,7 @@ OfxStatus mainEntryStr(const char* actionRaw, const void* handleRaw, OfxProperty
 #ifdef OFX_CLIENT_EXCEPTION_TYPE
     catch(OFX_CLIENT_EXCEPTION_TYPE& e)
     {
-        TUTTLE_LOG_DEBUG("Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")");
+        TUTTLE_LOG_ERROR("Custom client error: " << e.what());
         stat = OFX_CLIENT_EXCEPTION_HANDLER(e, plugname);
     }
 #endif
@@ -2795,14 +2794,14 @@ OfxStatus mainEntryStr(const char* actionRaw, const void* handleRaw, OfxProperty
     // catch all exceptions
     catch(std::exception& e)
     {
-        TUTTLE_LOG_DEBUG("Caught std::exception on action " << actionRaw << " (" << e.what() << ")");
+        TUTTLE_LOG_ERROR("Exception error on action: " << actionRaw << ": " << e.what());
         stat = kOfxStatFailed;
     }
 
     // Catch anything else, unknown
     catch(...)
     {
-        TUTTLE_LOG_DEBUG("Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")");
+        TUTTLE_LOG_DEBUG("Unknown error (file:" << __FILE__ << " line:" << __LINE__ << ")");
         stat = kOfxStatFailed;
     }
 

@@ -117,7 +117,7 @@ void LocalMaximaPlugin::render(const OFX::RenderArguments& args)
     //		case OFX::ePixelComponentRGB:
     //		{
     ////			doGilRender2<LocalMaximaProcess, false, boost::gil::rgb_layout_t>( *this, args, sBitDepth,
-    ///false,
+    /// false,
     /// dComponent,
     /// dBitDepth );
     //			return;
@@ -127,8 +127,9 @@ void LocalMaximaPlugin::render(const OFX::RenderArguments& args)
     //		case OFX::ePixelComponentNone:
     //		{
     //			BOOST_THROW_EXCEPTION( exception::Unsupported()
-    //				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(sComponent) + ") not
-    //supported
+    //				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(sComponent) + ")
+    //not
+    // supported
     // by
     // the plugin." );
     //		}
