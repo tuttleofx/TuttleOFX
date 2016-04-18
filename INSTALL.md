@@ -73,3 +73,13 @@ Test of host ( __libraries/tuttle/pyTest__ ) with nosetests tool.
 ```
 nosetests libraries/tuttle/pyTest
 ```
+
+
+## Build in debug
+
+If you build TuttleOFX in debug (build option __-DCMAKE_BUILD_TYPE=Debug__), it enables the following host features:
+
+* Create "*.dot" file during the process to get informations about the graph.
+* Log several times during the process.
+* Output all nodes in the graph as png.
+* Initialize output buffer of all nodes with red to highlight uninitialized pixels.
