@@ -1,7 +1,9 @@
 #include "NoProgress.hpp"
 
-namespace tuttle {
-namespace plugin {
+namespace tuttle
+{
+namespace plugin
+{
 
 /**
  * @brief Start the algorithm progress bar.
@@ -9,10 +11,10 @@ namespace plugin {
  * @param[in]       numSteps   number of steps
  *
  */
-void NoProgress::progressBegin( const int numSteps, const std::string& msg )
+void NoProgress::progressBegin(const int numSteps, const std::string& msg)
 {
-	_counter = 0.0;
-	_stepSize = 1.0 / static_cast<double>( numSteps );
+    _counter = 0.0;
+    _stepSize = 1.0 / static_cast<double>(numSteps);
 }
 
 /**
@@ -24,10 +26,10 @@ void NoProgress::progressBegin( const int numSteps, const std::string& msg )
  *         false = continu rendering
  *
  */
-bool NoProgress::progressForward( const int nSteps )
+bool NoProgress::progressForward(const int nSteps)
 {
-	_counter += _stepSize * static_cast<double>( nSteps );
-	return false;
+    _counter += _stepSize * static_cast<double>(nSteps);
+    return false;
 }
 
 /**
@@ -37,8 +39,5 @@ bool NoProgress::progressForward( const int nSteps )
 void NoProgress::progressEnd()
 {
 }
-
 }
 }
-
-

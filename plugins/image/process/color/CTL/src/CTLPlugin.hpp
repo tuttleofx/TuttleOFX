@@ -5,18 +5,21 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace ctl {
+namespace tuttle
+{
+namespace plugin
+{
+namespace ctl
+{
 
-template<typename Scalar>
+template <typename Scalar>
 struct CTLProcessParams
 {
-	EParamChooseInput _inputType;
-	std::vector<std::string> _paths;
-	std::string _filename;
-	std::string _module;
-	std::string _code;
+    EParamChooseInput _inputType;
+    std::vector<std::string> _paths;
+    std::string _filename;
+    std::string _module;
+    std::string _code;
 };
 
 /**
@@ -25,29 +28,30 @@ struct CTLProcessParams
 class CTLPlugin : public ImageEffectGilPlugin
 {
 public:
-	typedef float Scalar;
-public:
-    CTLPlugin( OfxImageEffectHandle handle );
+    typedef float Scalar;
 
 public:
-	CTLProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+    CTLPlugin(OfxImageEffectHandle handle);
 
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
-
-	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
-
-    void render( const OFX::RenderArguments &args );
-	
 public:
-	OFX::ChoiceParam*        _paramInput;
-	OFX::StringParam*        _paramCode;
-	OFX::StringParam*        _paramFile;
-	OFX::PushButtonParam*    _paramUpdateRender;
+    CTLProcessParams<Scalar> getProcessParams(const OfxPointD& renderScale = OFX::kNoRenderScale) const;
+
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
+
+    bool getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod);
+    bool isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime);
+
+    void render(const OFX::RenderArguments& args);
+
+public:
+    OFX::ChoiceParam* _paramInput;
+    OFX::StringParam* _paramCode;
+    OFX::StringParam* _paramFile;
+    OFX::PushButtonParam* _paramUpdateRender;
+
 private:
-	OFX::InstanceChangedArgs _instanceChangedArgs;
+    OFX::InstanceChangedArgs _instanceChangedArgs;
 };
-
 }
 }
 }

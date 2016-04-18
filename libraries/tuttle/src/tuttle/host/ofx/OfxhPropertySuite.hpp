@@ -3,18 +3,20 @@
 
 #include <ofxProperty.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace property {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace property
+{
 
 /// return the OFX function suite that manages properties
-void* getPropertySuite( const int version );
-
+void* getPropertySuite(const int version);
 }
 }
 }
 }
 
 #endif
-

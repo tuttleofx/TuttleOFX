@@ -3,17 +3,19 @@
 
 #include <ofxInteract.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace interact {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace interact
+{
 
-void* getInteractSuite( const int version );
-
+void* getInteractSuite(const int version);
 }
 }
 }
 }
 
 #endif
-

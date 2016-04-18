@@ -3,276 +3,264 @@
 
 //#define DEBUG_PROPERTIES true
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace property {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace property
+{
 
-namespace {
+namespace
+{
 
 /// static functions for the suite
-template<class T>
-OfxStatus propSet( OfxPropertySetHandle properties,
-		   const char*          property,
-		   int                  index,
-		   typename T::APIType  value )
+template <class T>
+OfxStatus propSet(OfxPropertySetHandle properties, const char* property, int index, typename T::APIType value)
 {
-	#ifdef DEBUG_PROPERTIES
-	std::cout << "propSet - " << properties << " " << property << "[" << index << "] = " << value << " \n";
-	#endif
-	try
-	{
-		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
-		if( !thisSet->verifyMagic() )
-			return kOfxStatErrBadHandle;
+#ifdef DEBUG_PROPERTIES
+    std::cout << "propSet - " << properties << " " << property << "[" << index << "] = " << value << " \n";
+#endif
+    try
+    {
+        OfxhSet* thisSet = reinterpret_cast<OfxhSet*>(properties);
+        if(!thisSet->verifyMagic())
+            return kOfxStatErrBadHandle;
 
-		OfxhPropertyTemplate<T>& prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
+        OfxhPropertyTemplate<T>& prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >(property);
 
-		if( prop.getPluginReadOnly() )
-		{
-			TUTTLE_LOG_ERROR( "Plugin is trying to set a property (" << property << " at index " << index << ") which is read-only." );
-			return kOfxStatErrValue;
-		}
+        if(prop.getPluginReadOnly())
+        {
+            TUTTLE_LOG_ERROR("Plugin is trying to set a property (" << property << " at index " << index
+                                                                    << ") which is read-only.");
+            return kOfxStatErrValue;
+        }
 
-		prop.setValue( value, index, eModifiedByPlugin );
+        prop.setValue(value, index, eModifiedByPlugin);
 
-		//		#ifdef DEBUG_PROPERTIES
-		//		std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
-		//		#endif
-		//		return kOfxStatErrUnknown;
-	}
-	catch( OfxhException& e )
-	{
-		#ifdef DEBUG_PROPERTIES
-		std::cout << " returning status " << e.getStatus() << "\n";
-		#endif
-		return e.getStatus();
-	}
-	catch(... )
-	{
-		return kOfxStatErrUnknown;
-	}
-	return kOfxStatOK;
+        //		#ifdef DEBUG_PROPERTIES
+        //		std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
+        //		#endif
+        //		return kOfxStatErrUnknown;
+    }
+    catch(OfxhException& e)
+    {
+#ifdef DEBUG_PROPERTIES
+        std::cout << " returning status " << e.getStatus() << "\n";
+#endif
+        return e.getStatus();
+    }
+    catch(...)
+    {
+        return kOfxStatErrUnknown;
+    }
+    return kOfxStatOK;
 }
 
 /// static functions for the suite
 
-template<class T>
-OfxStatus propSetN( OfxPropertySetHandle properties,
-		    const char*          property,
-		    int                  count,
-		    typename T::APIType* values )
+template <class T>
+OfxStatus propSetN(OfxPropertySetHandle properties, const char* property, int count, typename T::APIType* values)
 {
-	#ifdef DEBUG_PROPERTIES
-	std::cout << "propSetN - " << properties << " " << property << " \n";
-	#endif
+#ifdef DEBUG_PROPERTIES
+    std::cout << "propSetN - " << properties << " " << property << " \n";
+#endif
 
-	try
-	{
-		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
-		if( !thisSet->verifyMagic() )
-			return kOfxStatErrBadHandle;
+    try
+    {
+        OfxhSet* thisSet = reinterpret_cast<OfxhSet*>(properties);
+        if(!thisSet->verifyMagic())
+            return kOfxStatErrBadHandle;
 
-		OfxhPropertyTemplate<T>& prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
+        OfxhPropertyTemplate<T>& prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >(property);
 
-		if( prop.getPluginReadOnly() )
-		{
-			TUTTLE_LOG_ERROR( "Plugin is trying to set property " << property << " of size " << count << ") which is read-only." );
-			return kOfxStatErrValue;
-		}
+        if(prop.getPluginReadOnly())
+        {
+            TUTTLE_LOG_ERROR("Plugin is trying to set property " << property << " of size " << count
+                                                                 << ") which is read-only.");
+            return kOfxStatErrValue;
+        }
 
-		prop.setValueN( values, count, eModifiedByPlugin );
-	}
-	catch( OfxhException& e )
-	{
-		return e.getStatus();
-	}
-	catch(... )
-	{
-		return kOfxStatErrUnknown;
-	}
-	return kOfxStatOK;
+        prop.setValueN(values, count, eModifiedByPlugin);
+    }
+    catch(OfxhException& e)
+    {
+        return e.getStatus();
+    }
+    catch(...)
+    {
+        return kOfxStatErrUnknown;
+    }
+    return kOfxStatOK;
 }
 
 /// static functions for the suite
 
-template<class T>
-OfxStatus propGet( OfxPropertySetHandle          properties,
-		   const char*                   property,
-		   int                           index,
-		   typename T::APITypeConstless* value )
+template <class T>
+OfxStatus propGet(OfxPropertySetHandle properties, const char* property, int index, typename T::APITypeConstless* value)
 {
-	#ifdef DEBUG_PROPERTIES
-	std::cout << "propGet - " << properties << " " << property << " = ...";
-	#endif
+#ifdef DEBUG_PROPERTIES
+    std::cout << "propGet - " << properties << " " << property << " = ...";
+#endif
 
-	try
-	{
-		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
-		if( !thisSet->verifyMagic() )
-			return kOfxStatErrBadHandle;
-		*value = thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).getAPIConstlessValue( index );
-		//*value = castAwayConst( castToAPIType( prop->getValue( index ) ) );
+    try
+    {
+        OfxhSet* thisSet = reinterpret_cast<OfxhSet*>(properties);
+        if(!thisSet->verifyMagic())
+            return kOfxStatErrBadHandle;
+        *value = thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >(property).getAPIConstlessValue(index);
+//*value = castAwayConst( castToAPIType( prop->getValue( index ) ) );
 
-		#ifdef DEBUG_PROPERTIES
-		std::cout << *value << "\n";
-		#endif
-	}
-	catch( OfxhException& e )
-	{
+#ifdef DEBUG_PROPERTIES
+        std::cout << *value << "\n";
+#endif
+    }
+    catch(OfxhException& e)
+    {
 
-		#ifdef DEBUG_PROPERTIES
-		std::cout <<  "dpxreader /datas/tmp/master32secsh01.####.dpx  // jpegwriter /datas/tmp/test.####.jpg" << std::endl;
+#ifdef DEBUG_PROPERTIES
+        std::cout << "dpxreader /datas/tmp/master32secsh01.####.dpx  // jpegwriter /datas/tmp/test.####.jpg" << std::endl;
 
-		#endif
-		return e.getStatus();
-	}
-	catch(... )
-	{
-		return kOfxStatErrUnknown;
-	}
-	return kOfxStatOK;
+#endif
+        return e.getStatus();
+    }
+    catch(...)
+    {
+        return kOfxStatErrUnknown;
+    }
+    return kOfxStatOK;
 }
 
 ///@todo tuttle: remove this !
-inline int* castToConst( int* s )
+inline int* castToConst(int* s)
 {
-	return s;
+    return s;
 }
 
-inline double* castToConst( double* s )
+inline double* castToConst(double* s)
 {
-	return s;
+    return s;
 }
 
-inline void* * castToConst( void** s )
+inline void** castToConst(void** s)
 {
-	return s;
+    return s;
 }
 
 ///@todo tuttle: remove this !
-inline const char* * castToConst( char** s )
+inline const char** castToConst(char** s)
 {
-	return const_cast<const char**>( s );
+    return const_cast<const char**>(s);
 }
 
 /// static functions for the suite
 
-template<class T>
-OfxStatus propGetN( OfxPropertySetHandle          properties,
-		    const char*                   property,
-		    int                           count,
-		    typename T::APITypeConstless* values )
+template <class T>
+OfxStatus propGetN(OfxPropertySetHandle properties, const char* property, int count, typename T::APITypeConstless* values)
 {
-	try
-	{
-		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
-		if( !thisSet->verifyMagic() )
-			return kOfxStatErrBadHandle;
-		thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).getValueN( castToConst( values ), count );
-	}
-	catch( OfxhException& e )
-	{
-		return e.getStatus();
-	}
-	catch(... )
-	{
-		return kOfxStatErrUnknown;
-	}
-	return kOfxStatOK;
+    try
+    {
+        OfxhSet* thisSet = reinterpret_cast<OfxhSet*>(properties);
+        if(!thisSet->verifyMagic())
+            return kOfxStatErrBadHandle;
+        thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >(property).getValueN(castToConst(values), count);
+    }
+    catch(OfxhException& e)
+    {
+        return e.getStatus();
+    }
+    catch(...)
+    {
+        return kOfxStatErrUnknown;
+    }
+    return kOfxStatOK;
 }
 
 /**
  * static functions for the suite
  */
-OfxStatus propReset( OfxPropertySetHandle properties, const char* property )
+OfxStatus propReset(OfxPropertySetHandle properties, const char* property)
 {
-	try
-	{
-		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
-		if( !thisSet->verifyMagic() )
-			return kOfxStatErrBadHandle;
+    try
+    {
+        OfxhSet* thisSet = reinterpret_cast<OfxhSet*>(properties);
+        if(!thisSet->verifyMagic())
+            return kOfxStatErrBadHandle;
 
-		OfxhProperty& prop = thisSet->fetchLocalProperty( property );
+        OfxhProperty& prop = thisSet->fetchLocalProperty(property);
 
-		//		if( prop.getPluginReadOnly() )
-		//		{
-		//			TUTTLE_LOG_ERROR("Plugin is trying to reset a read-only property " << property );
-		//			return kOfxStatErrValue;
-		//		}
+        //		if( prop.getPluginReadOnly() )
+        //		{
+        //			TUTTLE_LOG_ERROR("Plugin is trying to reset a read-only property " << property );
+        //			return kOfxStatErrValue;
+        //		}
 
-		prop.reset();
-
-	}
-	catch( OfxhException& e )
-	{
-		return e.getStatus();
-	}
-	catch(... )
-	{
-		return kOfxStatErrUnknown;
-	}
-	return kOfxStatOK;
+        prop.reset();
+    }
+    catch(OfxhException& e)
+    {
+        return e.getStatus();
+    }
+    catch(...)
+    {
+        return kOfxStatErrUnknown;
+    }
+    return kOfxStatOK;
 }
 
 /**
  * static functions for the suite
  */
-OfxStatus propGetDimension( OfxPropertySetHandle properties, const char* property, int* count )
+OfxStatus propGetDimension(OfxPropertySetHandle properties, const char* property, int* count)
 {
-	try
-	{
-		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
-		*count = thisSet->fetchProperty( property ).getDimension();
-	}
-	catch( OfxhException& e )
-	{
-		return e.getStatus();
-	}
-	catch(... )
-	{
-		return kOfxStatErrUnknown;
-	}
-	return kOfxStatOK;
+    try
+    {
+        OfxhSet* thisSet = reinterpret_cast<OfxhSet*>(properties);
+        *count = thisSet->fetchProperty(property).getDimension();
+    }
+    catch(OfxhException& e)
+    {
+        return e.getStatus();
+    }
+    catch(...)
+    {
+        return kOfxStatErrUnknown;
+    }
+    return kOfxStatOK;
 }
 
 /**
  * the actual suite that is passed across the API to manage properties
  */
-struct OfxPropertySuiteV1 gSuite =
-{
-	propSet<OfxhPointerValue>,
-	propSet<OfxhStringValue>,
-	propSet<OfxhDoubleValue>,
-	propSet<OfxhIntValue>,
-	propSetN<OfxhPointerValue>,
-	propSetN<OfxhStringValue>,
-	propSetN<OfxhDoubleValue>,
-	propSetN<OfxhIntValue>,
-	propGet<OfxhPointerValue>,
-	propGet<OfxhStringValue>,
-	propGet<OfxhDoubleValue>,
-	propGet<OfxhIntValue>,
-	propGetN<OfxhPointerValue>,
-	propGetN<OfxhStringValue>,
-	propGetN<OfxhDoubleValue>,
-	propGetN<OfxhIntValue>,
-	propReset,
-	propGetDimension
-};
-
+struct OfxPropertySuiteV1 gSuite = {propSet<OfxhPointerValue>,
+                                    propSet<OfxhStringValue>,
+                                    propSet<OfxhDoubleValue>,
+                                    propSet<OfxhIntValue>,
+                                    propSetN<OfxhPointerValue>,
+                                    propSetN<OfxhStringValue>,
+                                    propSetN<OfxhDoubleValue>,
+                                    propSetN<OfxhIntValue>,
+                                    propGet<OfxhPointerValue>,
+                                    propGet<OfxhStringValue>,
+                                    propGet<OfxhDoubleValue>,
+                                    propGet<OfxhIntValue>,
+                                    propGetN<OfxhPointerValue>,
+                                    propGetN<OfxhStringValue>,
+                                    propGetN<OfxhDoubleValue>,
+                                    propGetN<OfxhIntValue>,
+                                    propReset,
+                                    propGetDimension};
 }
 
 /// return the OFX function suite that manages properties
-void* getPropertySuite( const int version )
+void* getPropertySuite(const int version)
 {
-	if( version == 1 )
-		return static_cast<void*>( &gSuite );
-	return NULL;
-}
-
+    if(version == 1)
+        return static_cast<void*>(&gSuite);
+    return NULL;
 }
 }
 }
 }
-
+}

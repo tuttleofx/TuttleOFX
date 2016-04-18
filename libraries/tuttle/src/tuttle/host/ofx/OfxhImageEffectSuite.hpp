@@ -3,17 +3,19 @@
 
 #include <ofxImageEffect.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace imageEffect {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace imageEffect
+{
 
-void* getImageEffectSuite( const int version );
-
+void* getImageEffectSuite(const int version);
 }
 }
 }
 }
 
 #endif
-

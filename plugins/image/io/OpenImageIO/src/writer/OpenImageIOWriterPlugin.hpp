@@ -7,20 +7,24 @@
 
 #include <typedesc.h>
 
-namespace tuttle {
-namespace plugin {
-namespace openImageIO {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace openImageIO
+{
+namespace writer
+{
 
 struct OpenImageIOWriterProcessParams
 {
-	std::string             _filepath;           ///< filepath
-	ETuttlePluginComponents _components;         ///< Force RGB
-	ETuttlePluginBitDepth   _bitDepth;           ///< Output bit depth (real bit depth, not the buffer passed to OpenImageIO)
+    std::string _filepath;               ///< filepath
+    ETuttlePluginComponents _components; ///< Force RGB
+    ETuttlePluginBitDepth _bitDepth;     ///< Output bit depth (real bit depth, not the buffer passed to OpenImageIO)
 
-	bool                    _premultiply;        ///< Output premultiply
-	int                     _quality;            ///< Output quality
-	int                     _orientation;        ///< Output orientation
+    bool _premultiply; ///< Output premultiply
+    int _quality;      ///< Output quality
+    int _orientation;  ///< Output orientation
 };
 
 /**
@@ -29,18 +33,17 @@ struct OpenImageIOWriterProcessParams
 class OpenImageIOWriterPlugin : public WriterPlugin
 {
 public:
-	OpenImageIOWriterPlugin( OfxImageEffectHandle handle );
+    OpenImageIOWriterPlugin(OfxImageEffectHandle handle);
 
 public:
-	OpenImageIOWriterProcessParams getProcessParams( const OfxTime time );
-	void                      render( const OFX::RenderArguments& args );
+    OpenImageIOWriterProcessParams getProcessParams(const OfxTime time);
+    void render(const OFX::RenderArguments& args);
 
 public:
-	OFX::ChoiceParam* _components;             ///< Choose components RGBA/RGB
-	OFX::IntParam*    _quality;
-	OFX::ChoiceParam* _orientation;
+    OFX::ChoiceParam* _components; ///< Choose components RGBA/RGB
+    OFX::IntParam* _quality;
+    OFX::ChoiceParam* _orientation;
 };
-
 }
 }
 }

@@ -4,40 +4,41 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorCube {
-
-ColorCubePlugin::ColorCubePlugin( OfxImageEffectHandle handle )
-: GeneratorPlugin( handle )
+namespace tuttle
 {
-    _step = fetchChoiceParam( kColorCubeStep );
+namespace plugin
+{
+namespace colorCube
+{
+
+ColorCubePlugin::ColorCubePlugin(OfxImageEffectHandle handle)
+    : GeneratorPlugin(handle)
+{
+    _step = fetchChoiceParam(kColorCubeStep);
 }
 
-ColorCubeProcessParams ColorCubePlugin::getProcessParams( ) const
+ColorCubeProcessParams ColorCubePlugin::getProcessParams() const
 {
     ColorCubeProcessParams params;
     int value = 1;
-    value = value << ( _step->getValue() + 2 );
+    value = value << (_step->getValue() + 2);
     params.step = value;
-	return params;
+    return params;
 }
 
-
-void ColorCubePlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+void ColorCubePlugin::getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences)
 {
-    GeneratorPlugin::getClipPreferences( clipPreferences );
+    GeneratorPlugin::getClipPreferences(clipPreferences);
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ColorCubePlugin::render( const OFX::RenderArguments &args )
+void ColorCubePlugin::render(const OFX::RenderArguments& args)
 {
-	doGilRender<ColorCubeProcess>( *this, args );
+    doGilRender<ColorCubeProcess>(*this, args);
 }
-
 }
 }
 }

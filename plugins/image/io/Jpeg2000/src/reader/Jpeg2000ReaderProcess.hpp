@@ -13,39 +13,41 @@
 
 #include <boost/scoped_ptr.hpp>
 
-
-namespace tuttle {
-namespace plugin {
-namespace jpeg2000 {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace jpeg2000
+{
+namespace reader
+{
 
 /**
  * @brief process
  *
  */
-template<class View>
+template <class View>
 class Jpeg2000ReaderProcess : public ImageGilProcessor<View>
 {
-protected :
-    Jpeg2000ReaderPlugin&	_plugin;		///< Rendering plugin
-	Jpeg2000ReaderProcessParams _params;
+protected:
+    Jpeg2000ReaderPlugin& _plugin; ///< Rendering plugin
+    Jpeg2000ReaderProcessParams _params;
 
 public:
-    Jpeg2000ReaderProcess( Jpeg2000ReaderPlugin& instance );
-	~Jpeg2000ReaderProcess();
+    Jpeg2000ReaderProcess(Jpeg2000ReaderPlugin& instance);
+    ~Jpeg2000ReaderProcess();
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	// Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    // Do some processing
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
-	template<class Layout>
-	void switchLayoutCopy( const View& dstView );
+    template <class Layout>
+    void switchLayoutCopy(const View& dstView);
 
-	template<class WorkingPixel>
-	void switchPrecisionCopy( const View& dstView );
+    template <class WorkingPixel>
+    void switchPrecisionCopy(const View& dstView);
 };
-
 }
 }
 }

@@ -34,60 +34,62 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 OfxhMemory::OfxhMemory()
-	: _ptr( 0 )
-	, _locked( false )
-{}
+    : _ptr(0)
+    , _locked(false)
+{
+}
 
 OfxhMemory::~OfxhMemory()
 {
-	delete [] _ptr;
+    delete[] _ptr;
 }
 
-bool OfxhMemory::alloc( size_t nBytes )
+bool OfxhMemory::alloc(size_t nBytes)
 {
-	if( !_locked )
-	{
-		if( _ptr )
-			freeMem();
-		_ptr = new char[nBytes];
-		return true;
-	}
-	else
-		return false;
+    if(!_locked)
+    {
+        if(_ptr)
+            freeMem();
+        _ptr = new char[nBytes];
+        return true;
+    }
+    else
+        return false;
 }
 
 OfxImageMemoryHandle OfxhMemory::getHandle()
 {
-	return ( OfxImageMemoryHandle ) this;
+    return (OfxImageMemoryHandle) this;
 }
 
 void OfxhMemory::freeMem()
 {
-	delete [] _ptr;
-	_ptr = 0;
+    delete[] _ptr;
+    _ptr = 0;
 }
 
 void* OfxhMemory::getPtr()
 {
-	return _ptr;
+    return _ptr;
 }
 
 void OfxhMemory::lock()
 {
-	_locked = true;
+    _locked = true;
 }
 
 void OfxhMemory::unlock()
 {
-	_locked = false;
-}
-
+    _locked = false;
 }
 }
 }
-
+}

@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace colorGradation {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorGradation
+{
 
-mDeclarePluginFactory( ColorGradationPluginFactory, {}, {}
-                       );
-
+mDeclarePluginFactory(ColorGradationPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-

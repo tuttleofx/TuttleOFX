@@ -5,13 +5,16 @@
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include "ColorBarsDefinitions.hpp"
 
-namespace tuttle {
-namespace plugin {
-namespace colorBars {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorBars
+{
 
 struct ColorBarsParams
 {
-	EColorBarsLevels mode;
+    EColorBarsLevels mode;
 };
 
 /**
@@ -20,18 +23,17 @@ struct ColorBarsParams
 class ColorBarsPlugin : public GeneratorPlugin
 {
 public:
-	ColorBarsPlugin( OfxImageEffectHandle handle );
+    ColorBarsPlugin(OfxImageEffectHandle handle);
 
 public:
-	ColorBarsParams getProcessParams() const ;
-	
-	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	void render( const OFX::RenderArguments &args );
+    ColorBarsParams getProcessParams() const;
+
+    void getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences);
+    void render(const OFX::RenderArguments& args);
 
 public:
-	OFX::ChoiceParam* mode;
+    OFX::ChoiceParam* mode;
 };
-
 }
 }
 }

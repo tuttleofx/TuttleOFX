@@ -4,45 +4,48 @@
 
 #include <tuttle/ioplugin/context/ReaderPluginFactory.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace png {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace png
+{
+namespace reader
+{
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void PngReaderPluginFactory::describe(OFX::ImageEffectDescriptor& desc)
 {
-    desc.setLabels( "TuttlePngReader", "PngReader",
-		    "Png file reader" );
-    desc.setPluginGrouping( "tuttle/image/io" );
+    desc.setLabels("TuttlePngReader", "PngReader", "Png file reader");
+    desc.setPluginGrouping("tuttle/image/io");
 
-    desc.setDescription( "PNG File reader\n"
-			 "Plugin is used to read png files.\n\n"
-			 "supported extensions:\n"
-			 "png" );
+    desc.setDescription("PNG File reader\n"
+                        "Plugin is used to read png files.\n\n"
+                        "supported extensions:\n"
+                        "png");
 
     // add the supported contexts
-    desc.addSupportedContext( OFX::eContextReader );
-    desc.addSupportedContext( OFX::eContextGeneral );
+    desc.addSupportedContext(OFX::eContextReader);
+    desc.addSupportedContext(OFX::eContextGeneral);
 
     // add supported pixel depths
-    desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-    desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-    desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+    desc.addSupportedBitDepth(OFX::eBitDepthUByte);
+    desc.addSupportedBitDepth(OFX::eBitDepthUShort);
+    desc.addSupportedBitDepth(OFX::eBitDepthFloat);
 
     // add supported extensions
-    desc.addSupportedExtension( "png" );
-	desc.setPluginEvaluation( 90 );
+    desc.addSupportedExtension("png");
+    desc.setPluginEvaluation(90);
 
     // plugin flags
-    desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-    desc.setHostFrameThreading( false );
-    desc.setSupportsMultiResolution( false );
-    desc.setSupportsMultipleClipDepths( true );
-    desc.setSupportsTiles( kSupportTiles );
+    desc.setRenderThreadSafety(OFX::eRenderFullySafe);
+    desc.setHostFrameThreading(false);
+    desc.setSupportsMultiResolution(false);
+    desc.setSupportsMultipleClipDepths(true);
+    desc.setSupportsTiles(kSupportTiles);
 }
 
 /**
@@ -50,17 +53,16 @@ void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-						OFX::EContext               context )
+void PngReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor& desc, OFX::EContext context)
 {
     // Create the mandated output clip
-    OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-    dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-    dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-    dstClip->setSupportsTiles( kSupportTiles );
+    OFX::ClipDescriptor* dstClip = desc.defineClip(kOfxImageEffectOutputClipName);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGBA);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGB);
+    dstClip->addSupportedComponent(OFX::ePixelComponentAlpha);
+    dstClip->setSupportsTiles(kSupportTiles);
 
-    describeReaderParamsInContext( desc, context );
+    describeReaderParamsInContext(desc, context);
 }
 
 /**
@@ -69,12 +71,10 @@ void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* PngReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-							  OFX::EContext        context )
+OFX::ImageEffect* PngReaderPluginFactory::createInstance(OfxImageEffectHandle handle, OFX::EContext context)
 {
-    return new PngReaderPlugin( handle );
+    return new PngReaderPlugin(handle);
 }
-
 }
 }
 }

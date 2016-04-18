@@ -1,9 +1,12 @@
 #ifndef _TUTTLE_HOST_OFX_OBJECT_HPP_
 #define _TUTTLE_HOST_OFX_OBJECT_HPP_
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 /**
  * @brief All openfx objects that can be send to the plugin need to inherit this class.
@@ -13,12 +16,10 @@ namespace ofx {
 class OfxhIObject
 {
 public:
-	virtual ~OfxhIObject() = 0;
+    virtual ~OfxhIObject() = 0;
 };
-
 }
 }
 }
 
 #endif
-

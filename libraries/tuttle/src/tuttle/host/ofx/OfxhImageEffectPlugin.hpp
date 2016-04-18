@@ -54,10 +54,14 @@
 #include <set>
 #include <memory>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace imageEffect {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace imageEffect
+{
 
 class OfxhImageEffectPluginCache;
 
@@ -68,107 +72,101 @@ class OfxhImageEffectPluginCache;
 class OfxhImageEffectPlugin : public OfxhPlugin
 {
 public:
-	typedef OfxhImageEffectPlugin This;
-	typedef boost::ptr_map<std::string, OfxhImageEffectNodeDescriptor> ContextMap;
-	typedef std::set<std::string> ContextSet;
+    typedef OfxhImageEffectPlugin This;
+    typedef boost::ptr_map<std::string, OfxhImageEffectNodeDescriptor> ContextMap;
+    typedef std::set<std::string> ContextSet;
 
 private:
-	boost::mutex _mutex;
+    boost::mutex _mutex;
 
-	OfxhImageEffectPluginCache* _imageEffectPluginCache;
+    OfxhImageEffectPluginCache* _imageEffectPluginCache;
 
-	/// map to store contexts in
-	ContextMap _contexts;
-	ContextSet _knownContexts;
-	boost::scoped_ptr<OfxhPluginLoadGuard> _pluginLoadGuard;
+    /// map to store contexts in
+    ContextMap _contexts;
+    ContextSet _knownContexts;
+    boost::scoped_ptr<OfxhPluginLoadGuard> _pluginLoadGuard;
 
-	// this comes off Descriptor's property set after a describe
-	// context independent
-	/// @todo tuttle: ???
-	boost::scoped_ptr<OfxhImageEffectNodeDescriptor> _baseDescriptor;     ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
+    // this comes off Descriptor's property set after a describe
+    // context independent
+    /// @todo tuttle: ???
+    boost::scoped_ptr<OfxhImageEffectNodeDescriptor>
+        _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
 private:
-	OfxhImageEffectPlugin();
+    OfxhImageEffectPlugin();
 
 public:
-	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& imageEffectPluginCache, OfxhPluginBinary& pluginBinary, int pluginIndex, OfxPlugin& plugin );
+    OfxhImageEffectPlugin(OfxhImageEffectPluginCache& imageEffectPluginCache, OfxhPluginBinary& pluginBinary,
+                          int pluginIndex, OfxPlugin& plugin);
 
-	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& imageEffectPluginCache,
-	                       OfxhPluginBinary&           pluginBinary,
-	                       int                         pluginIndex,
-	                       const std::string&          api,
-	                       int                         apiVersion,
-	                       const std::string&          pluginId,
-	                       const std::string&          rawId,
-	                       int                         pluginMajorVersion,
-	                       int                         pluginMinorVersion );
+    OfxhImageEffectPlugin(OfxhImageEffectPluginCache& imageEffectPluginCache, OfxhPluginBinary& pluginBinary,
+                          int pluginIndex, const std::string& api, int apiVersion, const std::string& pluginId,
+                          const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion);
 
-	~OfxhImageEffectPlugin();
+    ~OfxhImageEffectPlugin();
 
-	bool operator==( const OfxhImageEffectPlugin& other ) const;
-	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==( other ); }
+    bool operator==(const OfxhImageEffectPlugin& other) const;
+    bool operator!=(const OfxhImageEffectPlugin& other) const { return !This::operator==(other); }
 
-	void setApiHandler( OfxhImageEffectPluginCache& api ) { _imageEffectPluginCache = &api; }
-	void setApiHandler( APICache::OfxhPluginAPICacheI& api );
+    void setApiHandler(OfxhImageEffectPluginCache& api) { _imageEffectPluginCache = &api; }
+    void setApiHandler(APICache::OfxhPluginAPICacheI& api);
 
-	/// @return the API handler this plugin was constructed by
-	APICache::OfxhPluginAPICacheI&       getApiHandler();
-	const APICache::OfxhPluginAPICacheI& getApiHandler() const;
+    /// @return the API handler this plugin was constructed by
+    APICache::OfxhPluginAPICacheI& getApiHandler();
+    const APICache::OfxhPluginAPICacheI& getApiHandler() const;
 
-	/// @brief get the base image effect descriptor
-	OfxhImageEffectNodeDescriptor& getDescriptor();
+    /// @brief get the base image effect descriptor
+    OfxhImageEffectNodeDescriptor& getDescriptor();
 
-	/// @brief get the base image effect descriptor, const version
-	const OfxhImageEffectNodeDescriptor& getDescriptor() const;
+    /// @brief get the base image effect descriptor, const version
+    const OfxhImageEffectNodeDescriptor& getDescriptor() const;
 
-	/// @brief get the image effect descriptor for the context
-	OfxhImageEffectNodeDescriptor& getDescriptorInContext( const std::string& context );
+    /// @brief get the image effect descriptor for the context
+    OfxhImageEffectNodeDescriptor& getDescriptorInContext(const std::string& context);
 
-	#ifndef SWIG
-	void addContext( const std::string& context );
-	void addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied );
-	#endif
+#ifndef SWIG
+    void addContext(const std::string& context);
+    void addContext(const std::string& context, OfxhImageEffectNodeDescriptor* ied);
+#endif
 
-	void              initContexts();
-	const ContextSet& getContexts() const;
-	bool              supportsContext( const std::string& context ) const;
+    void initContexts();
+    const ContextSet& getContexts() const;
+    bool supportsContext(const std::string& context) const;
 
-	OfxhPluginLoadGuard*       getPluginLoadGuardPtr()       { return _pluginLoadGuard.get(); }
-	const OfxhPluginLoadGuard* getPluginLoadGuardPtr() const { return _pluginLoadGuard.get(); }
+    OfxhPluginLoadGuard* getPluginLoadGuardPtr() { return _pluginLoadGuard.get(); }
+    const OfxhPluginLoadGuard* getPluginLoadGuardPtr() const { return _pluginLoadGuard.get(); }
 
-	void loadAndDescribeActions();
+    void loadAndDescribeActions();
 
-	void unloadAction();
+    void unloadAction();
 
-	/**
-	 * @brief this is called to make an instance of the effect
-	 *  the client data ptr is what is passed back to the client creation function
-	 */
-	imageEffect::OfxhImageEffectNode* createInstance( const std::string& context );
+    /**
+     * @brief this is called to make an instance of the effect
+     *  the client data ptr is what is passed back to the client creation function
+     */
+    imageEffect::OfxhImageEffectNode* createInstance(const std::string& context);
 
 private:
-	OfxhImageEffectNodeDescriptor& describeInContextAction( const std::string& context );
+    OfxhImageEffectNodeDescriptor& describeInContextAction(const std::string& context);
 
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive& ar, const unsigned int version )
-	{
-		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhPlugin );
-		ar& BOOST_SERIALIZATION_NVP( _baseDescriptor );
-		//ar & BOOST_SERIALIZATION_NVP(_pluginLoadGuard); // don't save this
-		ar& BOOST_SERIALIZATION_NVP( _contexts );
-	}
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPlugin);
+        ar& BOOST_SERIALIZATION_NVP(_baseDescriptor);
+        // ar & BOOST_SERIALIZATION_NVP(_pluginLoadGuard); // don't save this
+        ar& BOOST_SERIALIZATION_NVP(_contexts);
+    }
 };
-
 }
 }
 }
 }
 
 #ifndef SWIG
-BOOST_CLASS_EXPORT_KEY( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin )
+BOOST_CLASS_EXPORT_KEY(tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin)
 #endif
 
 #endif
-

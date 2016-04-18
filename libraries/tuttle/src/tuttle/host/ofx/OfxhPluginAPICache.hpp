@@ -34,50 +34,54 @@
 
 #include <string>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 class OfxhPlugin;
 class OfxhPluginBinary;
 
-namespace APICache {
+namespace APICache
+{
 
 /// this acts as an interface for the Plugin Cache, handling api-specific cacheing
 class OfxhPluginAPICacheI
 {
 public:
-	std::string _apiName;
-	int _apiVersionMin, _apiVersionMax;
+    std::string _apiName;
+    int _apiVersionMin, _apiVersionMax;
 
 public:
-	OfxhPluginAPICacheI( std::string apiName, int verMin, int verMax )
-		: _apiName( apiName )
-		, _apiVersionMin( verMin )
-		, _apiVersionMax( verMax )
-	{}
+    OfxhPluginAPICacheI(std::string apiName, int verMin, int verMax)
+        : _apiName(apiName)
+        , _apiVersionMin(verMin)
+        , _apiVersionMax(verMax)
+    {
+    }
 
-	virtual ~OfxhPluginAPICacheI() {}
+    virtual ~OfxhPluginAPICacheI() {}
 
-	virtual void loadFromPlugin( OfxhPlugin& ) = 0;
+    virtual void loadFromPlugin(OfxhPlugin&) = 0;
 
-	/// factory method, to create a new plugin (from binary)
-	virtual OfxhPlugin* newPlugin( OfxhPluginBinary&, int pi, OfxPlugin& plug ) = 0;
+    /// factory method, to create a new plugin (from binary)
+    virtual OfxhPlugin* newPlugin(OfxhPluginBinary&, int pi, OfxPlugin& plug) = 0;
 
-	/// factory method, to create a new plugin (from the
-	virtual OfxhPlugin* newPlugin( OfxhPluginBinary& pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
-	                               const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion ) = 0;
+    /// factory method, to create a new plugin (from the
+    virtual OfxhPlugin* newPlugin(OfxhPluginBinary& pb, int pi, const std::string& api, int apiVersion,
+                                  const std::string& pluginId, const std::string& rawId, int pluginMajorVersion,
+                                  int pluginMinorVersion) = 0;
 
-	virtual OfxhHost& getHost() = 0;
+    virtual OfxhHost& getHost() = 0;
 
-	virtual void confirmPlugin( OfxhPlugin& ) = 0;
+    virtual void confirmPlugin(OfxhPlugin&) = 0;
 
-	virtual bool pluginSupported( const OfxhPlugin&, std::string& reason ) const = 0;
+    virtual bool pluginSupported(const OfxhPlugin&, std::string& reason) const = 0;
 };
-
 }
 }
 }
 }
 
 #endif
-

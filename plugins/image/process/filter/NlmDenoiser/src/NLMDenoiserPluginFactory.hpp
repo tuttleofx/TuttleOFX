@@ -3,10 +3,13 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace nlmDenoiser {
-	mDeclarePluginFactory( NLMDenoiserPluginFactory, {}, {} );
+namespace tuttle
+{
+namespace plugin
+{
+namespace nlmDenoiser
+{
+mDeclarePluginFactory(NLMDenoiserPluginFactory, {}, {});
 }
 }
 }

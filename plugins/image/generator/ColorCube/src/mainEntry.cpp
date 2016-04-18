@@ -4,14 +4,14 @@
 #include "ColorCubePluginFactory.hpp"
 #include <tuttle/plugin/Plugin.hpp>
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::colorCube::ColorCubePluginFactory, "tuttle.colorcube" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::colorCube::ColorCubePluginFactory, "tuttle.colorcube");
 }
 }
-
+}

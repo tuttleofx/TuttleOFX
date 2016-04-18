@@ -5,14 +5,15 @@
 #include "reader/JpegReaderPluginFactory.hpp"
 #include "writer/JpegWriterPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::jpeg::reader::JpegReaderPluginFactory, "tuttle.jpegreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::jpeg::writer::JpegWriterPluginFactory, "tuttle.jpegwriter" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::jpeg::reader::JpegReaderPluginFactory, "tuttle.jpegreader");
+    mAppendPluginFactory(ids, tuttle::plugin::jpeg::writer::JpegWriterPluginFactory, "tuttle.jpegwriter");
+}
 }
 }

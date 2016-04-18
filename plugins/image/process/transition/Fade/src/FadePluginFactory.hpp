@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace fade {
+namespace tuttle
+{
+namespace plugin
+{
+namespace fade
+{
 
-mDeclarePluginFactory( FadePluginFactory, { }, { } );
-
+mDeclarePluginFactory(FadePluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

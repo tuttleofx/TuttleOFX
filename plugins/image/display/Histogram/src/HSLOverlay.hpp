@@ -1,5 +1,5 @@
 #ifndef HSLOVERLAY_HPP
-#define	HSLOVERLAY_HPP
+#define HSLOVERLAY_HPP
 
 #include "HistogramPlugin.hpp"
 #include "HistogramDisplay.hpp"
@@ -11,52 +11,53 @@
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
 
-namespace tuttle {
-namespace plugin {
-namespace histogram {
-	
+namespace tuttle
+{
+namespace plugin
+{
+namespace histogram
+{
+
 /*
  *Enum used to know which RGB channel are selected
  */
 enum ESelectedChannelHSL
 {
-	eSelectedChannelMoreHSL,		//More than one RGB channel are selected
-	eSelectedChannelH,				//Only red is selected
-	eSelectedChannelS,				//Only green is selected
-	eSelectedChannelL,				//Only blue is selected
-	eSelectedChannelNoneHSL			//None channel is selected
+    eSelectedChannelMoreHSL, // More than one RGB channel are selected
+    eSelectedChannelH,       // Only red is selected
+    eSelectedChannelS,       // Only green is selected
+    eSelectedChannelL,       // Only blue is selected
+    eSelectedChannelNoneHSL  // None channel is selected
 };
 
 /// @todo class HSLOverlay : public OFX::OverlayInteract (when Nuke overlay works)
 class HSLOverlay
 {
 public:
-	/*Class arguments*/
-	HistogramPlugin* _plugin;	//plugin reference
-	//interact::InteractInfos _infos;  (when Nuke overlay works)
-		
-	/*Creator*/
-	//HSLOverlay(OfxInteractHandle handle, OFX::ImageEffect* effect); (when Nuke overlay works)
-	HSLOverlay(HistogramPlugin* plugin); //temporary
-	
-	/*Destructor*/
-	~HSLOverlay();
-	
-	/*draw main function*/
-	bool draw(const OFX::DrawArgs& args);
-	
-	/*get selected channels*/
-	ESelectedChannelHSL getOnlyChannelSelectedHSL()const;
-	
-	/*get overlay data*/
-	OverlayData& getOverlayData();
-	
-	/*Display grid*/
-	void displayGrid(float height, float width);
+    /*Class arguments*/
+    HistogramPlugin* _plugin; // plugin reference
+    // interact::InteractInfos _infos;  (when Nuke overlay works)
+
+    /*Creator*/
+    // HSLOverlay(OfxInteractHandle handle, OFX::ImageEffect* effect); (when Nuke overlay works)
+    HSLOverlay(HistogramPlugin* plugin); // temporary
+
+    /*Destructor*/
+    ~HSLOverlay();
+
+    /*draw main function*/
+    bool draw(const OFX::DrawArgs& args);
+
+    /*get selected channels*/
+    ESelectedChannelHSL getOnlyChannelSelectedHSL() const;
+
+    /*get overlay data*/
+    OverlayData& getOverlayData();
+
+    /*Display grid*/
+    void displayGrid(float height, float width);
 };
-
 }
 }
 }
-#endif	/* HSLOVERLAY_HPP */
-
+#endif /* HSLOVERLAY_HPP */

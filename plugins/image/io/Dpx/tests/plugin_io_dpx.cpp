@@ -13,7 +13,7 @@
 using namespace boost::unit_test;
 using namespace tuttle::host;
 
-BOOST_AUTO_TEST_SUITE( plugin_Dpx_writer )
+BOOST_AUTO_TEST_SUITE(plugin_Dpx_writer)
 std::string pluginName = "tuttle.dpxwriter";
 std::string filename = "test-png.png";
 #include <tuttle/test/io/writer.hpp>

@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace pinning {
+namespace tuttle
+{
+namespace plugin
+{
+namespace pinning
+{
 
-mDeclarePluginFactory( PinningPluginFactory, { }, { } );
-
+mDeclarePluginFactory(PinningPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

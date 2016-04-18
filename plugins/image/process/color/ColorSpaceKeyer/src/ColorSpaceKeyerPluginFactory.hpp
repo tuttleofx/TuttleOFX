@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace colorSpaceKeyer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorSpaceKeyer
+{
 
-mDeclarePluginFactory( ColorSpaceKeyerPluginFactory, { }, { } );
-
+mDeclarePluginFactory(ColorSpaceKeyerPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

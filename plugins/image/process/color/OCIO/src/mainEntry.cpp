@@ -6,15 +6,15 @@
 #include "OCIOLut/OCIOLutPluginFactory.hpp"
 #include "OCIOColorSpace/OCIOColorSpacePluginFactory.hpp"
 
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::ocio::lut::OCIOLutPluginFactory, "tuttle.ocio.lut" );
-	mAppendPluginFactory( ids, tuttle::plugin::ocio::colorspace::OCIOColorSpacePluginFactory, "tuttle.ocio.colorspace" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::ocio::lut::OCIOLutPluginFactory, "tuttle.ocio.lut");
+    mAppendPluginFactory(ids, tuttle::plugin::ocio::colorspace::OCIOColorSpacePluginFactory, "tuttle.ocio.colorspace");
+}
 }
 }

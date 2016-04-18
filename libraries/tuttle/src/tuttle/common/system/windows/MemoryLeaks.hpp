@@ -3,8 +3,8 @@
 
 #ifdef __WINDOWS__
 
- #include <tuttle/common/patterns/StaticSingleton.hpp>
- #include <crtdbg.h>
+#include <tuttle/common/patterns/StaticSingleton.hpp>
+#include <crtdbg.h>
 
 /**
  * @brief Class to detect memory leaks using the _CrtSetDbgFlag function (windows only).
@@ -35,33 +35,28 @@
 class MemoryLeaks : public StaticSingleton<MemoryLeaks>
 {
 public:
-	friend class StaticSingleton<MemoryLeaks>;
+    friend class StaticSingleton<MemoryLeaks>;
 
 private:
-	_CrtMemState m_checkpoint;
+    _CrtMemState m_checkpoint;
 
 protected:
-	MemoryLeaks()
-	{
-		_CrtMemCheckpoint( &m_checkpoint );
-	}
+    MemoryLeaks() { _CrtMemCheckpoint(&m_checkpoint); }
 
-	~MemoryLeaks()
-	{
-		_CrtMemState checkpoint;
+    ~MemoryLeaks()
+    {
+        _CrtMemState checkpoint;
 
-		_CrtMemCheckpoint( &checkpoint );
+        _CrtMemCheckpoint(&checkpoint);
 
-		_CrtMemState diff;
-		_CrtMemDifference( &diff, &m_checkpoint, &checkpoint );
+        _CrtMemState diff;
+        _CrtMemDifference(&diff, &m_checkpoint, &checkpoint);
 
-		_CrtMemDumpStatistics( &diff );
-		_CrtMemDumpAllObjectsSince( &diff );
-	}
-
+        _CrtMemDumpStatistics(&diff);
+        _CrtMemDumpAllObjectsSince(&diff);
+    }
 };
 
 #endif
 
 #endif
-

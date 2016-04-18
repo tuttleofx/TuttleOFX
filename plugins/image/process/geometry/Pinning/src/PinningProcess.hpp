@@ -5,36 +5,40 @@
 #include <terry/math/Rect.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace pinning {
+namespace tuttle
+{
+namespace plugin
+{
+namespace pinning
+{
 
 /**
  * @brief Pinning process
  *
  */
-template<class View>
+template <class View>
 class PinningProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef PinningPlugin::Scalar Scalar;
-protected :
-    PinningPlugin&    _plugin;        ///< Rendering plugin
+    typedef PinningPlugin::Scalar Scalar;
 
-	PinningProcessParams<Scalar> _params;
-	
+protected:
+    PinningPlugin& _plugin; ///< Rendering plugin
+
+    PinningProcessParams<Scalar> _params;
+
 public:
-    PinningProcess( PinningPlugin& effect );
+    PinningProcess(PinningPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
 private:
-	template<class Sampler>
-	void resample( View& srcView, View& dstView, const terry::Rect<std::ssize_t>& procWindow, const Sampler& sampler = Sampler() );
+    template <class Sampler>
+    void resample(View& srcView, View& dstView, const terry::Rect<std::ssize_t>& procWindow,
+                  const Sampler& sampler = Sampler());
 };
-
 }
 }
 }

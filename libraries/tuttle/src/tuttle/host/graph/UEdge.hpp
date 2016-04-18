@@ -8,9 +8,12 @@
 
 #include <string>
 
-namespace tuttle {
-namespace host {
-namespace graph {
+namespace tuttle
+{
+namespace host
+{
+namespace graph
+{
 
 /**
  * @brief Edge of the user graph.
@@ -18,20 +21,16 @@ namespace graph {
 class UEdge : public IEdge
 {
 public:
-	UEdge()
-	{}
-	
-	UEdge( const UVertex::Key& out, const UVertex::Key& in, const std::string& inAttrName );
+    UEdge() {}
 
-	~UEdge() {}
+    UEdge(const UVertex::Key& out, const UVertex::Key& in, const std::string& inAttrName);
 
-	friend std::ostream& operator<<( std::ostream& os, const UEdge& v );
+    ~UEdge() {}
 
+    friend std::ostream& operator<<(std::ostream& os, const UEdge& v);
 };
-
 }
 }
 }
 
 #endif
-

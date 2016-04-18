@@ -10,9 +10,11 @@
 
 #define TUTTLE_PI boost::math::constants::pi<RESAMPLING_CORE_TYPE>()
 
-namespace terry {
+namespace terry
+{
 using namespace boost::gil;
-namespace sampler {
+namespace sampler
+{
 
 // source: http://src.chromium.org/svn/trunk/src/skia/ext/image_operations.cc
 
@@ -26,7 +28,7 @@ namespace sampler {
 // where
 //   sinc(x) = sin(pi*x) / (pi*x);
 
-//float EvalLanczos(int filter_size, float x) {
+// float EvalLanczos(int filter_size, float x) {
 //  if (x <= -filter_size || x >= filter_size)
 //    return 0.0f;  // Outside of the window.
 //  if (x > -std::numeric_limits<float>::epsilon() &&
@@ -37,69 +39,68 @@ namespace sampler {
 //          sin(xpi / filter_size) / (xpi / filter_size);  // sinc(x/filter_size)
 //}
 
-struct lanczos_sampler{
-	const size_t               _windowSize;
-	const RESAMPLING_CORE_TYPE _sharpen;
+struct lanczos_sampler
+{
+    const size_t _windowSize;
+    const RESAMPLING_CORE_TYPE _sharpen;
 
-	lanczos_sampler( std::size_t filterSize, RESAMPLING_CORE_TYPE sharpen ) :
-		_windowSize ( filterSize * 2 ),
-		_sharpen    ( sharpen )
-	{
-	}
-	
-	RESAMPLING_CORE_TYPE sinc( RESAMPLING_CORE_TYPE x )
-	{
-		if ( x > -std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon() &&
-		     x <  std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon() )
-		{
-			// Special case the discontinuity at the origin.
-			return 1.f;
-		}
-		RESAMPLING_CORE_TYPE xpi = x * TUTTLE_PI;
-		return sinf( xpi ) / ( xpi );
-	}
-	
-	template<typename Weight>
-	void operator()( const RESAMPLING_CORE_TYPE& distance, Weight& weight )
-	{
-		weight =  sinc( distance ) * sinc( _sharpen * distance / _windowSize );
-	}
+    lanczos_sampler(std::size_t filterSize, RESAMPLING_CORE_TYPE sharpen)
+        : _windowSize(filterSize * 2)
+        , _sharpen(sharpen)
+    {
+    }
+
+    RESAMPLING_CORE_TYPE sinc(RESAMPLING_CORE_TYPE x)
+    {
+        if(x > -std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon() &&
+           x < std::numeric_limits<RESAMPLING_CORE_TYPE>::epsilon())
+        {
+            // Special case the discontinuity at the origin.
+            return 1.f;
+        }
+        RESAMPLING_CORE_TYPE xpi = x * TUTTLE_PI;
+        return sinf(xpi) / (xpi);
+    }
+
+    template <typename Weight>
+    void operator()(const RESAMPLING_CORE_TYPE& distance, Weight& weight)
+    {
+        weight = sinc(distance) * sinc(_sharpen * distance / _windowSize);
+    }
 };
 
 struct lanczos3_sampler : public lanczos_sampler
 {
-	lanczos3_sampler() :
-		lanczos_sampler( 3.0, 1.0 )
-	{
-	}
+    lanczos3_sampler()
+        : lanczos_sampler(3.0, 1.0)
+    {
+    }
 };
 
 struct lanczos4_sampler : public lanczos_sampler
 {
-	lanczos4_sampler() :
-		lanczos_sampler( 4.0, 1.0 )
-	{
-	}
+    lanczos4_sampler()
+        : lanczos_sampler(4.0, 1.0)
+    {
+    }
 };
 
 struct lanczos6_sampler : public lanczos_sampler
 {
-	lanczos6_sampler() :
-		lanczos_sampler( 6.0, 1.0 )
-	{
-	}
+    lanczos6_sampler()
+        : lanczos_sampler(6.0, 1.0)
+    {
+    }
 };
 
 struct lanczos12_sampler : public lanczos_sampler
 {
-	lanczos12_sampler() :
-		lanczos_sampler( 12.0, 1.0 )
-	{
-	}
+    lanczos12_sampler()
+        : lanczos_sampler(12.0, 1.0)
+    {
+    }
 };
-
 }
 }
 
 #endif
-

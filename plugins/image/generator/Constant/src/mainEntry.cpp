@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "ConstantPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::constant::ConstantPluginFactory, "tuttle.constant" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::constant::ConstantPluginFactory, "tuttle.constant");
+}
 }
 }

@@ -12,122 +12,120 @@
 
 #define SOFXCLIPLENGTH 1
 
-namespace tuttle {
-namespace host {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace attribute
+{
 
 /**
  *
  *
  */
-class ClipImage : public Attribute
-	, public ofx::attribute::OfxhClipImage
+class ClipImage : public Attribute, public ofx::attribute::OfxhClipImage
 {
-friend class INode;
+    friend class INode;
 
 protected:
-	std::string _name;
-	bool _isConnected;
-	bool _continuousSamples;
+    std::string _name;
+    bool _isConnected;
+    bool _continuousSamples;
 
-	const ClipImage* _connectedClip; ///< @warning HACK ! to keep the connection @todo remove this !!!!
+    const ClipImage* _connectedClip; ///< @warning HACK ! to keep the connection @todo remove this !!!!
 
 public:
-	ClipImage( INode& effect, const ofx::attribute::OfxhClipImageDescriptor& desc );
-	
-	ClipImage( const ClipImage& other );
-	
-	~ClipImage();
+    ClipImage(INode& effect, const ofx::attribute::OfxhClipImageDescriptor& desc);
+
+    ClipImage(const ClipImage& other);
+
+    ~ClipImage();
 
 private:
-	ClipImage& operator=( const ClipImage& other );
-	
+    ClipImage& operator=(const ClipImage& other);
+
 public:
-	ClipImage* clone() const { return new ClipImage( *this ); }
+    ClipImage* clone() const { return new ClipImage(*this); }
 
-	const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
+    const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
 
-	/// @warning HACK ! to keep the connection
-	/// @todo remove this !!!!
-	void setConnectedClip( const ClipImage& other )
-	{
-		if( isOutput() )
-		{
-			BOOST_THROW_EXCEPTION( exception::Logic()
-			    << exception::user( "You can't connect an output Clip !" ) );
-		}
-		if( !other.isOutput() )
-		{
-			BOOST_THROW_EXCEPTION( exception::Logic()
-			    << exception::user( "You can't connect to an input Clip !" ) );
-		}
-		//TUTTLE_LOG_TRACE( "== setConnectedClip: " );
-		//TUTTLE_LOG_VAR( TUTTLE_TRACE, getFullName() );
-		//TUTTLE_LOG_VAR( TUTTLE_TRACE, other.getFullName() );
-		
-		_connectedClip = &other;
-		setConnected();
+    /// @warning HACK ! to keep the connection
+    /// @todo remove this !!!!
+    void setConnectedClip(const ClipImage& other)
+    {
+        if(isOutput())
+        {
+            BOOST_THROW_EXCEPTION(exception::Logic() << exception::user("You can't connect an output Clip !"));
+        }
+        if(!other.isOutput())
+        {
+            BOOST_THROW_EXCEPTION(exception::Logic() << exception::user("You can't connect to an input Clip !"));
+        }
+        // TUTTLE_LOG_TRACE( "== setConnectedClip: " );
+        // TUTTLE_LOG_VAR( TUTTLE_TRACE, getFullName() );
+        // TUTTLE_LOG_VAR( TUTTLE_TRACE, other.getFullName() );
 
-		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
-		getEditableProperties().setStringProperty( "TuttleIdentifier", getClipIdentifier() );
-	}
+        _connectedClip = &other;
+        setConnected();
 
-	void setUnconnected() { _connectedClip = NULL; setConnected( false ); }
+        getEditableProperties().setStringProperty("TuttleFullName", getFullName());
+        getEditableProperties().setStringProperty("TuttleIdentifier", getClipIdentifier());
+    }
 
-	std::string getFullName() const;
+    void setUnconnected()
+    {
+        _connectedClip = NULL;
+        setConnected(false);
+    }
 
-	OfxTime getRemappedTime( const OfxTime time ) const;
+    std::string getFullName() const;
 
-	std::string getConnectedClipFullName() const
-	{
-		if( isOutput() || !isConnected() || _connectedClip->getFullName().size() == 0 )
-		{
-			BOOST_THROW_EXCEPTION( exception::Logic()
-			    << exception::user( "Input clip " + getFullName() + " is not connected !" ) );
-		}
-		return _connectedClip->getFullName();
-	}
+    OfxTime getRemappedTime(const OfxTime time) const;
 
-	std::string getClipIdentifier() const
-	{
-		if( isOutput() || ! isConnected() )
-			return getFullName();
-		else
-			return getConnectedClipFullName();
-	}
+    std::string getConnectedClipFullName() const
+    {
+        if(isOutput() || !isConnected() || _connectedClip->getFullName().size() == 0)
+        {
+            BOOST_THROW_EXCEPTION(exception::Logic()
+                                  << exception::user("Input clip " + getFullName() + " is not connected !"));
+        }
+        return _connectedClip->getFullName();
+    }
 
-	/// @todo tuttle: this is really bad...
-	ClipImage& getConnectedClip()
-	{
-		return const_cast<ClipImage&>( *_connectedClip );
-	}
+    std::string getClipIdentifier() const
+    {
+        if(isOutput() || !isConnected())
+            return getFullName();
+        else
+            return getConnectedClipFullName();
+    }
 
-	const ClipImage& getConnectedClip() const
-	{
-		return *_connectedClip;
-	}
+    /// @todo tuttle: this is really bad...
+    ClipImage& getConnectedClip() { return const_cast<ClipImage&>(*_connectedClip); }
 
-	/**
-	 * @brief Get the Raw Unmapped Pixel Depth from the host
-	 *  @returns
-	 *     - kOfxBitDepthNone (implying a clip is unconnected image)
-	 *     - kOfxBitDepthByte
-	 *     - kOfxBitDepthShort
-	 *     - kOfxBitDepthFloat
-	 */
-	const std::string& getUnmappedBitDepth() const;
+    const ClipImage& getConnectedClip() const { return *_connectedClip; }
 
-	/**
-	 * @brief Get the Raw Unmapped Components from the host
-	 * @returns
-	 *      - kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
-	 *      - kOfxImageComponentRGBA
-	 *      - kOfxImageComponentRGB
-	 *      - kOfxImageComponentAlpha
-	 */
-	const std::string& getUnmappedComponents() const;
+    /**
+     * @brief Get the Raw Unmapped Pixel Depth from the host
+     *  @returns
+     *     - kOfxBitDepthNone (implying a clip is unconnected image)
+     *     - kOfxBitDepthByte
+     *     - kOfxBitDepthShort
+     *     - kOfxBitDepthFloat
+     */
+    const std::string& getUnmappedBitDepth() const;
 
-	#if 0
+    /**
+     * @brief Get the Raw Unmapped Components from the host
+     * @returns
+     *      - kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
+     *      - kOfxImageComponentRGBA
+     *      - kOfxImageComponentRGB
+     *      - kOfxImageComponentAlpha
+     */
+    const std::string& getUnmappedComponents() const;
+
+#if 0
 	/**
 	 * @brief PreMultiplication
 	 *      - kOfxImageOpaque - the image is opaque and so has no premultiplication state
@@ -159,52 +157,50 @@ public:
 	const bool getContinuousSamples() const                         { return _continuousSamples; }
 	void       setContinuousSamples( const bool continuousSamples ) { _continuousSamples = continuousSamples; }
 
-	#endif
+#endif
 
-	/**
-	 * @brief Frame Rate
-	 * The frame rate of a clip or instance's project.
-	 */
-	double getFrameRate() const;
-	
-	void setFrameRate( const double fps );
+    /**
+     * @brief Frame Rate
+     * The frame rate of a clip or instance's project.
+     */
+    double getFrameRate() const;
 
-	/**
-	 * @brief Frame Range (startFrame, endFrame)
-	 * The frame range over which a clip has images.
-	 */
-	void setFrameRange( const double startFrame, const double endFrame );
+    void setFrameRate(const double fps);
 
-	/**
-	 * @brief Unmapped Frame Rate
-	 */
-	const double getUnmappedFrameRate() const;
+    /**
+     * @brief Frame Range (startFrame, endFrame)
+     * The frame range over which a clip has images.
+     */
+    void setFrameRange(const double startFrame, const double endFrame);
 
-	/**
-	 * @brief Unmapped Frame Range -
-	 * The unmaped frame range over which an output clip has images.
-	 */
-	void setUnmappedFrameRange( const double unmappedStartFrame, const double unmappedEndFrame );
+    /**
+     * @brief Unmapped Frame Rate
+     */
+    const double getUnmappedFrameRate() const;
 
-	/**
-	 * @brief override this to fill in the image at the given time.
-	 * The bounds of the image on the image plane should be
-	 * appropriate', typically the value returned in getRegionsOfInterest
-	 * on the effect instance. Outside a render call, the optionalBounds should
-	 * be 'appropriate' for the.
-	 * If bounds is not null, fetch the indicated section of the canonical image plane.
-	 */
-	tuttle::host::ofx::imageEffect::OfxhImage* getImage( const OfxTime time, const OfxRectD* optionalBounds = NULL );
+    /**
+     * @brief Unmapped Frame Range -
+     * The unmaped frame range over which an output clip has images.
+     */
+    void setUnmappedFrameRange(const double unmappedStartFrame, const double unmappedEndFrame);
 
-	/**
-	 * @brief override this to return the rod on the clip
-	 */
-	OfxRectD fetchRegionOfDefinition( const OfxTime time ) const;
+    /**
+     * @brief override this to fill in the image at the given time.
+     * The bounds of the image on the image plane should be
+     * appropriate', typically the value returned in getRegionsOfInterest
+     * on the effect instance. Outside a render call, the optionalBounds should
+     * be 'appropriate' for the.
+     * If bounds is not null, fetch the indicated section of the canonical image plane.
+     */
+    tuttle::host::ofx::imageEffect::OfxhImage* getImage(const OfxTime time, const OfxRectD* optionalBounds = NULL);
+
+    /**
+     * @brief override this to return the rod on the clip
+     */
+    OfxRectD fetchRegionOfDefinition(const OfxTime time) const;
 };
-
 }
 }
 }
 
 #endif
-

@@ -43,66 +43,69 @@
 #include <cfloat>
 #include <cstring>
 
-
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 /// our own internal property for storing away our private pointer to our host descriptor
 #define kOfxHostSupportHostPointer "sf.openfx.net.OfxHostSupportHostPointer"
 
 static property::OfxhPropSpec hostStuffs[] = {
-	{ kOfxPropType, property::ePropTypeString, 1, false, "Host" },
-	{ kOfxPropName, property::ePropTypeString, 1, false, "UNKNOWN" },
-	{ kOfxPropLabel, property::ePropTypeString, 1, false, "UNKNOWN" },
-	{ kOfxHostSupportHostPointer,    property::ePropTypePointer,    0,    false,    NULL },
-	{ 0 },
+    {kOfxPropType, property::ePropTypeString, 1, false, "Host"},
+    {kOfxPropName, property::ePropTypeString, 1, false, "UNKNOWN"},
+    {kOfxPropLabel, property::ePropTypeString, 1, false, "UNKNOWN"},
+    {kOfxHostSupportHostPointer, property::ePropTypePointer, 0, false, NULL},
+    {0},
 };
 
-static void* fetchSuite( OfxPropertySetHandle hostProps, const char* suiteName, int suiteVersion )
+static void* fetchSuite(OfxPropertySetHandle hostProps, const char* suiteName, int suiteVersion)
 {
-	property::OfxhSet* properties = reinterpret_cast<property::OfxhSet*>( hostProps );
+    property::OfxhSet* properties = reinterpret_cast<property::OfxhSet*>(hostProps);
 
-	OfxhHost* host = (OfxhHost*)properties->getPointerProperty( kOfxHostSupportHostPointer );
+    OfxhHost* host = (OfxhHost*)properties->getPointerProperty(kOfxHostSupportHostPointer);
 
-	if( host )
-		return host->fetchSuite( suiteName, suiteVersion );
-	else
-		return 0;
+    if(host)
+        return host->fetchSuite(suiteName, suiteVersion);
+    else
+        return 0;
 }
 
 // Base Host
-OfxhHost::OfxhHost() : _properties( hostStuffs )
+OfxhHost::OfxhHost()
+    : _properties(hostStuffs)
 {
-	_host.host       = _properties.getHandle();
-	_host.fetchSuite = tuttle::host::ofx::fetchSuite;
+    _host.host = _properties.getHandle();
+    _host.fetchSuite = tuttle::host::ofx::fetchSuite;
 
-	// record the host descriptor in the propert set
-	_properties.setPointerProperty( kOfxHostSupportHostPointer, this );
+    // record the host descriptor in the propert set
+    _properties.setPointerProperty(kOfxHostSupportHostPointer, this);
 }
 
-OfxhHost::~OfxhHost() {}
+OfxhHost::~OfxhHost()
+{
+}
 
 OfxHost* OfxhHost::getHandle()
 {
-	return &_host;
+    return &_host;
 }
 
-void* OfxhHost::fetchSuite( const char* suiteName, const int suiteVersion )
+void* OfxhHost::fetchSuite(const char* suiteName, const int suiteVersion)
 {
-	if( strcmp( suiteName, kOfxPropertySuite ) == 0  && suiteVersion == 1 )
-	{
-		return property::getPropertySuite( suiteVersion );
-	}
-	else if( strcmp( suiteName, kOfxMemorySuite ) == 0 && suiteVersion == 1 )
-	{
-		return getMemorySuite( suiteVersion );
-	}
+    if(strcmp(suiteName, kOfxPropertySuite) == 0 && suiteVersion == 1)
+    {
+        return property::getPropertySuite(suiteVersion);
+    }
+    else if(strcmp(suiteName, kOfxMemorySuite) == 0 && suiteVersion == 1)
+    {
+        return getMemorySuite(suiteVersion);
+    }
 
-	TUTTLE_LOG_TRACE("Failed to Fetch Unknown Suite: " << suiteName << " " << suiteVersion << ".");
-	return NULL;
-}
-
+    TUTTLE_LOG_TRACE("Failed to Fetch Unknown Suite: " << suiteName << " " << suiteVersion << ".");
+    return NULL;
 }
 }
 }
-
+}

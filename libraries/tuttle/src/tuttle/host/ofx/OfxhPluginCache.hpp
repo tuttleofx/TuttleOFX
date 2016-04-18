@@ -46,9 +46,12 @@
 #include <algorithm>
 #include <iostream>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 struct PluginCacheSupportedApi;
 
@@ -58,153 +61,136 @@ struct PluginCacheSupportedApi;
 class OfxhPluginCache
 {
 public:
-	typedef OfxhPluginCache This;
-	typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
+    typedef OfxhPluginCache This;
+    typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
 
 protected:
-	std::list<std::string> _pluginPath; ///< list of directories to look in
-	std::set<std::string> _nonrecursePath; ///< list of directories to look in (non-recursively)
-	std::list<std::string> _pluginDirs; ///< list of directories we found
-	
-	OfxhPluginBinaryList _binaries; ///< all the binaries we know about, we own these
-	std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
-	std::map<std::string, OfxhPlugin*> _pluginsByID;
-	std::map<OfxhPluginIdent, bool> _loadedMap; ///< Used to check if a plugin is loaded twice
-	std::set<std::string> _knownBinFiles;
+    std::list<std::string> _pluginPath;    ///< list of directories to look in
+    std::set<std::string> _nonrecursePath; ///< list of directories to look in (non-recursively)
+    std::list<std::string> _pluginDirs;    ///< list of directories we found
 
-	std::list<PluginCacheSupportedApi> _apiHandlers;
+    OfxhPluginBinaryList _binaries;  ///< all the binaries we know about, we own these
+    std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
+    std::map<std::string, OfxhPlugin*> _pluginsByID;
+    std::map<OfxhPluginIdent, bool> _loadedMap; ///< Used to check if a plugin is loaded twice
+    std::set<std::string> _knownBinFiles;
 
-	// internal state
-	bool _ignoreCache;
-	std::string _cacheVersion;
-	bool _dirty;
-	bool _enablePluginSeek; ///< Turn off to make all seekPluginFile() calls return an empty string
+    std::list<PluginCacheSupportedApi> _apiHandlers;
+
+    // internal state
+    bool _ignoreCache;
+    std::string _cacheVersion;
+    bool _dirty;
+    bool _enablePluginSeek; ///< Turn off to make all seekPluginFile() calls return an empty string
 
 public:
-	/// ctor, which inits _pluginPath to default locations and not much else
-	OfxhPluginCache();
+    /// ctor, which inits _pluginPath to default locations and not much else
+    OfxhPluginCache();
 
-	/// dtor
-	~OfxhPluginCache();
+    /// dtor
+    ~OfxhPluginCache();
 
 protected:
-	void scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse );
+    void scanDirectory(std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse);
 
-	void addPlugin( OfxhPlugin* plugin );
-
-public:
-	friend std::ostream& operator<<( std::ostream& os, const This& g );
+    void addPlugin(OfxhPlugin* plugin);
 
 public:
-	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
-	/// pick the highest found version.
-	OfxhPlugin*       getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
-	const OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>( *this ).getPluginById( id, vermaj, vermin ); }
+    friend std::ostream& operator<<(std::ostream& os, const This& g);
 
-	/// get the list in which plugins are sought
-	const std::list<std::string>& getPluginPath() const
-	{
-		return _pluginPath;
-	}
+public:
+    /// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
+    /// pick the highest found version.
+    OfxhPlugin* getPluginById(const std::string& id, int vermaj = -1, int vermin = -1);
+    const OfxhPlugin* getPluginById(const std::string& id, int vermaj = -1, int vermin = -1) const
+    {
+        return const_cast<This&>(*this).getPluginById(id, vermaj, vermin);
+    }
 
-	/// was the cache outdated?
-	bool isDirty() const
-	{
-		return _dirty;
-	}
+    /// get the list in which plugins are sought
+    const std::list<std::string>& getPluginPath() const { return _pluginPath; }
 
-	void setDirty()
-	{
-		//TUTTLE_LOG_INFO( "OfxhPluginCache::setDirty()" );
-		_dirty = true;
-	}
+    /// was the cache outdated?
+    bool isDirty() const { return _dirty; }
 
-	/// add a directory to the plugin path
-	void addDirectoryToPath( const std::string& f, bool recurse = true )
-	{
-		_pluginPath.push_back( f );
-		if( !recurse )
-		{
-			_nonrecursePath.insert( f );
-		}
-	}
+    void setDirty()
+    {
+        // TUTTLE_LOG_INFO( "OfxhPluginCache::setDirty()" );
+        _dirty = true;
+    }
 
-	/// specify which subdirectory of /usr/OFX or equivilant
-	/// (as well as 'Plugins') to look in for plugins.
-	void setPluginHostPath( const std::string& hostId );
+    /// add a directory to the plugin path
+    void addDirectoryToPath(const std::string& f, bool recurse = true)
+    {
+        _pluginPath.push_back(f);
+        if(!recurse)
+        {
+            _nonrecursePath.insert(f);
+        }
+    }
 
-	/// set the version string to write to the cache,
-	/// and also that we expect on cachess read in
-	void setCacheVersion( const std::string& cacheVersion )
-	{
-		_cacheVersion = cacheVersion;
-	}
+    /// specify which subdirectory of /usr/OFX or equivilant
+    /// (as well as 'Plugins') to look in for plugins.
+    void setPluginHostPath(const std::string& hostId);
 
-	// populate the cache.  must call scanPluginFiles() after to check for changes.
-	//void readCache( std::istream& is );
+    /// set the version string to write to the cache,
+    /// and also that we expect on cachess read in
+    void setCacheVersion(const std::string& cacheVersion) { _cacheVersion = cacheVersion; }
 
-	// seek a particular file on the OFX plugin path
-	std::string seekPluginFile( const std::string& baseName ) const;
+    // populate the cache.  must call scanPluginFiles() after to check for changes.
+    // void readCache( std::istream& is );
 
-	/// Sets behaviour of seekPluginFile().
-	/// Enable (the default): normal operation; disable: returns an empty string instead
-	void setPluginSeekEnabled( bool enabled )
-	{
-		_enablePluginSeek = enabled;
-	}
+    // seek a particular file on the OFX plugin path
+    std::string seekPluginFile(const std::string& baseName) const;
 
-	/// scan for plugins
-	void scanPluginFiles();
-	
-	/// Remove all plugins
-	void clearPluginFiles();
+    /// Sets behaviour of seekPluginFile().
+    /// Enable (the default): normal operation; disable: returns an empty string instead
+    void setPluginSeekEnabled(bool enabled) { _enablePluginSeek = enabled; }
 
-	/// register an API cache handler
-	void registerAPICache( APICache::OfxhPluginAPICacheI& apiCache );
+    /// scan for plugins
+    void scanPluginFiles();
 
-	/// find the API cache handler for the given api/apiverson
-	APICache::OfxhPluginAPICacheI* findApiHandler( const std::string& api, int apiver );
+    /// Remove all plugins
+    void clearPluginFiles();
 
-	/// obtain a list of plugins to walk through
-	const std::list<OfxhPlugin*>& getPlugins() const
-	{
-		return _plugins;
-	}
+    /// register an API cache handler
+    void registerAPICache(APICache::OfxhPluginAPICacheI& apiCache);
 
-	OfxhPluginBinaryList& getBinaries()
-	{
-		return _binaries;
-	}
+    /// find the API cache handler for the given api/apiverson
+    APICache::OfxhPluginAPICacheI* findApiHandler(const std::string& api, int apiver);
+
+    /// obtain a list of plugins to walk through
+    const std::list<OfxhPlugin*>& getPlugins() const { return _plugins; }
+
+    OfxhPluginBinaryList& getBinaries() { return _binaries; }
 
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive& ar, const unsigned int version )
-	{
-		// ar & BOOST_SERIALIZATION_NVP(_pluginPath);
-		// ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
-		// ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
-		ar& BOOST_SERIALIZATION_NVP( _binaries );
-		// ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
-		// ar& BOOST_SERIALIZATION_NVP( _knownBinFiles );
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        // ar & BOOST_SERIALIZATION_NVP(_pluginPath);
+        // ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
+        // ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
+        ar& BOOST_SERIALIZATION_NVP(_binaries);
+        // ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
+        // ar& BOOST_SERIALIZATION_NVP( _knownBinFiles );
 
-		if( typename Archive::is_loading() )
-		{
-			BOOST_FOREACH( OfxhPluginBinary& pluginBinary, _binaries )
-			{
-				_knownBinFiles.insert( pluginBinary.getFilePath() );
-				BOOST_FOREACH( OfxhPlugin& plugin, pluginBinary.getPlugins() )
-				{
-					APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( plugin.getPluginApi(), plugin.getApiVersion() );
-					plugin.setApiHandler( *apiCache );
-					_plugins.push_back( &plugin );
-				}
-			}
-		}
-	}
-
+        if(typename Archive::is_loading())
+        {
+            BOOST_FOREACH(OfxhPluginBinary& pluginBinary, _binaries)
+            {
+                _knownBinFiles.insert(pluginBinary.getFilePath());
+                BOOST_FOREACH(OfxhPlugin& plugin, pluginBinary.getPlugins())
+                {
+                    APICache::OfxhPluginAPICacheI* apiCache = findApiHandler(plugin.getPluginApi(), plugin.getApiVersion());
+                    plugin.setApiHandler(*apiCache);
+                    _plugins.push_back(&plugin);
+                }
+            }
+        }
+    }
 };
-
 }
 }
 }

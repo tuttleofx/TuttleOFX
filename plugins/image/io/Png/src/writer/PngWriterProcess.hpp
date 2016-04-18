@@ -1,42 +1,45 @@
 #ifndef PNG_WRITER_PROCESS_HPP
 #define PNG_WRITER_PROCESS_HPP
 
-#define png_infopp_NULL (png_infopp)NULL
-#define int_p_NULL (int*)NULL
+#define png_infopp_NULL (png_infopp) NULL
+#define int_p_NULL (int*) NULL
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace png {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace png
+{
+namespace writer
+{
 
 /**
  * @brief Base class for the denoising processor
  *
  */
-template<class View>
+template <class View>
 class PngWriterProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
+    typedef typename View::value_type Pixel;
 
 protected:
-	PngWriterPlugin&    _plugin;        ///< Rendering plugin
+    PngWriterPlugin& _plugin; ///< Rendering plugin
 
-	PngWriterProcessParams _params;
-	
+    PngWriterProcessParams _params;
+
 public:
-	PngWriterProcess( PngWriterPlugin& instance );
+    PngWriterProcess(PngWriterPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void setup(const OFX::RenderArguments& args);
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 
-	template<class Bits>
-	void writeImage( View& src );
+    template <class Bits>
+    void writeImage(View& src);
 };
-
 }
 }
 }

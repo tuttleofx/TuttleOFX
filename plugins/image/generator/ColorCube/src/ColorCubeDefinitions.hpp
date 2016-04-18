@@ -3,13 +3,14 @@
 
 #include <tuttle/plugin/global.hpp>
 
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorCube
+{
 
-namespace tuttle {
-namespace plugin {
-namespace colorCube {
-
-static const std::string kColorCubeStep  = "cubes";
-
+static const std::string kColorCubeStep = "cubes";
 }
 }
 }

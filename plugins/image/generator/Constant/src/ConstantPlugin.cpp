@@ -4,30 +4,32 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace constant {
-
-ConstantPlugin::ConstantPlugin( OfxImageEffectHandle handle )
-	: GeneratorPlugin( handle )
+namespace tuttle
 {
-	_color = fetchRGBAParam( kConstantColor );
+namespace plugin
+{
+namespace constant
+{
+
+ConstantPlugin::ConstantPlugin(OfxImageEffectHandle handle)
+    : GeneratorPlugin(handle)
+{
+    _color = fetchRGBAParam(kConstantColor);
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ConstantPlugin::render( const OFX::RenderArguments& args )
+void ConstantPlugin::render(const OFX::RenderArguments& args)
 {
-	doGilRender<ConstantProcess>( *this, args );
+    doGilRender<ConstantProcess>(*this, args);
 }
 
-void ConstantPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+void ConstantPlugin::getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences)
 {
-	GeneratorPlugin::getClipPreferences( clipPreferences );
+    GeneratorPlugin::getClipPreferences(clipPreferences);
 }
-
 }
 }
 }

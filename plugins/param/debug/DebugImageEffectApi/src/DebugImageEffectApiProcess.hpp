@@ -9,29 +9,31 @@
 
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace debugImageEffectApi {
+namespace tuttle
+{
+namespace plugin
+{
+namespace debugImageEffectApi
+{
 
 /**
  * @brief DebugImageEffectApi process
  *
  */
-template<class View>
+template <class View>
 class DebugImageEffectApiProcess : public ImageGilFilterProcessor<View>
 {
 protected:
-	DebugImageEffectApiPlugin&    _plugin;        ///< Rendering plugin
+    DebugImageEffectApiPlugin& _plugin; ///< Rendering plugin
 
 public:
-	DebugImageEffectApiProcess( DebugImageEffectApiPlugin& instance );
+    DebugImageEffectApiProcess(DebugImageEffectApiPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	// Do some processing
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    // Do some processing
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

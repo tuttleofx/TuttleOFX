@@ -2,31 +2,32 @@
 
 #include <tuttle/host/INode.hpp>
 
-namespace tuttle {
-namespace host {
-namespace attribute {
-
-ParamPushButton::ParamPushButton( INode&                           effect,
-                                  const std::string&                         name,
-                                  const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: Param( effect )
-	, ofx::attribute::OfxhParamPushButton( descriptor, name, effect.getParamSet() )
-{}
-
-void ParamPushButton::copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC
+namespace tuttle
 {
-	// do not action the push button on copy...
-	//paramChanged( ofx::attribute::eChangeUserEdited );
-}
-
-void ParamPushButton::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+namespace host
 {
-	const ParamPushButton& param = dynamic_cast<const ParamPushButton&>( p );
+namespace attribute
+{
 
-	copy( param );
+ParamPushButton::ParamPushButton(INode& effect, const std::string& name,
+                                 const ofx::attribute::OfxhParamDescriptor& descriptor)
+    : Param(effect)
+    , ofx::attribute::OfxhParamPushButton(descriptor, name, effect.getParamSet())
+{
 }
 
-}
-}
+void ParamPushButton::copy(const ParamPushButton& p) OFX_EXCEPTION_SPEC
+{
+    // do not action the push button on copy...
+    // paramChanged( ofx::attribute::eChangeUserEdited );
 }
 
+void ParamPushButton::copy(const OfxhParam& p) OFX_EXCEPTION_SPEC
+{
+    const ParamPushButton& param = dynamic_cast<const ParamPushButton&>(p);
+
+    copy(param);
+}
+}
+}
+}

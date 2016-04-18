@@ -3,14 +3,18 @@
 
 #include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace png {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace png
+{
+namespace reader
+{
 
 struct PngReaderProcessParams
 {
-	std::string _filepath;       ///< filepath
+    std::string _filepath; ///< filepath
 };
 
 /**
@@ -20,18 +24,17 @@ struct PngReaderProcessParams
 class PngReaderPlugin : public ReaderPlugin
 {
 public:
-	PngReaderPlugin( OfxImageEffectHandle handle );
+    PngReaderPlugin(OfxImageEffectHandle handle);
 
 public:
-	PngReaderProcessParams getProcessParams( const OfxTime time );
+    PngReaderProcessParams getProcessParams(const OfxTime time);
 
-	void                   changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	bool                   getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void                   getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
+    bool getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod);
+    void getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences);
 
-	void                   render( const OFX::RenderArguments& args );
+    void render(const OFX::RenderArguments& args);
 };
-
 }
 }
 }

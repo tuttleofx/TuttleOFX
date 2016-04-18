@@ -46,63 +46,66 @@
 
 //#define DEBUG_PROPERTIES true
 
-namespace tuttle {
-namespace host {
-namespace ofx {
-namespace property {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
+namespace property
+{
 
-OfxhProperty::OfxhProperty( const std::string& name,
-                            EPropType          type,
-                            std::size_t        dimension,
-                            bool               pluginReadOnly )
-	: _name( name )
-	, _type( type )
-	, _dimension( dimension )
-	, _pluginReadOnly( pluginReadOnly )
-	, _modifiedBy( eModifiedByHost )
-	, _getHook( NULL )
-{}
+OfxhProperty::OfxhProperty(const std::string& name, EPropType type, std::size_t dimension, bool pluginReadOnly)
+    : _name(name)
+    , _type(type)
+    , _dimension(dimension)
+    , _pluginReadOnly(pluginReadOnly)
+    , _modifiedBy(eModifiedByHost)
+    , _getHook(NULL)
+{
+}
 
-OfxhProperty::OfxhProperty( const OfxhProperty& other )
-	: _name( other._name )
-	, _type( other._type )
-	, _dimension( other._dimension )
-	, _pluginReadOnly( other._pluginReadOnly )
-	, _modifiedBy( other._modifiedBy )
-	, _getHook( NULL )
-{}
+OfxhProperty::OfxhProperty(const OfxhProperty& other)
+    : _name(other._name)
+    , _type(other._type)
+    , _dimension(other._dimension)
+    , _pluginReadOnly(other._pluginReadOnly)
+    , _modifiedBy(other._modifiedBy)
+    , _getHook(NULL)
+{
+}
 
 OfxhProperty::~OfxhProperty()
-{}
+{
+}
 
 /// call notify on the contained notify hooks
-void OfxhProperty::notify( bool single, int indexOrN )
+void OfxhProperty::notify(bool single, int indexOrN)
 {
-	std::vector<OfxhNotifyHook*>::iterator i;
-	for( i = _notifyHooks.begin(); i != _notifyHooks.end(); ++i )
-	{
-		( *i )->notify( _name, single, indexOrN );
-	}
+    std::vector<OfxhNotifyHook*>::iterator i;
+    for(i = _notifyHooks.begin(); i != _notifyHooks.end(); ++i)
+    {
+        (*i)->notify(_name, single, indexOrN);
+    }
 }
 
 std::vector<std::string> OfxhProperty::getStringValues() const
 {
-	std::vector<std::string> res;
-	for( unsigned int i = 0; i < getDimension(); ++i )
-		res.push_back(getStringValueAt(i));
-	return res;
+    std::vector<std::string> res;
+    for(unsigned int i = 0; i < getDimension(); ++i)
+        res.push_back(getStringValueAt(i));
+    return res;
 }
 
 /// get a string representing all the values of this property
 std::string OfxhProperty::getStringValue() const
 {
-	if( getDimension() == 1 )
-		return getStringValueAt(0);
-	if( getDimension() == 0 )
-		return "";
-	return boost::algorithm::join(getStringValues(), ", ");
+    if(getDimension() == 1)
+        return getStringValueAt(0);
+    if(getDimension() == 0)
+        return "";
+    return boost::algorithm::join(getStringValues(), ", ");
 }
-
 }
 }
 }

@@ -4,14 +4,14 @@
 #include "Move2DPluginFactory.hpp"
 #include <tuttle/plugin/Plugin.hpp>
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::move2D::Move2DPluginFactory, "tuttle.move2d" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::move2D::Move2DPluginFactory, "tuttle.move2d");
 }
 }
-
+}

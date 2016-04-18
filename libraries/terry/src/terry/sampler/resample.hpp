@@ -15,7 +15,7 @@
 #include <boost/lambda/bind.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////////////
-/// @file               
+/// @file
 /// @brief support for generic image resampling
 ///        NOTE: The code is for example use only. It is not optimized for performance
 /// @author Lubomir Bourdev and Hailin Jin \n
@@ -24,20 +24,26 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
 
-namespace terry {
+namespace terry
+{
 
 using namespace boost::gil;
 
 ///////////////////////////////////////////////////////////////////////////
 ////
-////   resample_pixels: set each pixel in the destination view as the result of a sampling function over the transformed coordinates of the source view
+////   resample_pixels: set each pixel in the destination view as the result of a sampling function over the transformed
+/// coordinates of the source view
 ////
 ///////////////////////////////////////////////////////////////////////////
 
-template <typename MapFn> struct mapping_traits {};
+template <typename MapFn>
+struct mapping_traits
+{
+};
 
 /**
- * @brief Set each pixel in the destination view as the result of a sampling function over the transformed coordinates of the source view
+ * @brief Set each pixel in the destination view as the result of a sampling function over the transformed coordinates of the
+ * source view
  * @ingroup ImageAlgorithms
  *
  * The provided implementation works for 2D image views only
@@ -50,12 +56,12 @@ void resample_pixels( const SrcView& src_view, const DstView& dst_view, const Ma
 {
     typename DstView::point_t dst_dims = dst_view.dimensions();
     typename DstView::point_t dst_p;
-    //typename mapping_traits<MapFn>::result_type src_p;
+    // typename mapping_traits<MapFn>::result_type src_p;
 
-    for( dst_p.y=0; dst_p.y<dst_dims.y; ++dst_p.y )
+    for(dst_p.y = 0; dst_p.y < dst_dims.y; ++dst_p.y)
     {
         typename DstView::x_iterator xit = dst_view.row_begin(dst_p.y);
-        for( dst_p.x=0; dst_p.x<dst_dims.x; ++dst_p.x )
+        for(dst_p.x = 0; dst_p.x < dst_dims.x; ++dst_p.x)
         {
             sample(sampler, src_view, transform(dst_to_src, dst_p), xit[dst_p.x], outOfImageProcess);
         }
@@ -64,28 +70,30 @@ void resample_pixels( const SrcView& src_view, const DstView& dst_view, const Ma
 
 ///////////////////////////////////////////////////////////////////////////
 ////
-////   resample_pixels when one or both image views are run-time instantiated. 
+////   resample_pixels when one or both image views are run-time instantiated.
 ////
 ///////////////////////////////////////////////////////////////////////////
 
-namespace detail {
-    template <typename Sampler, typename MapFn>
-    struct resample_pixels_fn : public binary_operation_obj<resample_pixels_fn<Sampler,MapFn> >
-    {
-        MapFn  _dst_to_src;
-        Sampler _sampler;
-        
-        resample_pixels_fn( const MapFn& dst_to_src, const Sampler& sampler )
-        	: _dst_to_src(dst_to_src)
-        	, _sampler(sampler)
-        {}
+namespace detail
+{
+template <typename Sampler, typename MapFn>
+struct resample_pixels_fn : public binary_operation_obj<resample_pixels_fn<Sampler, MapFn> >
+{
+    MapFn _dst_to_src;
+    Sampler _sampler;
 
-        template <typename SrcView, typename DstView>
-        GIL_FORCEINLINE void apply_compatible( const SrcView& src, const DstView& dst ) const
-        {
-            resample_pixels( src, dst, _dst_to_src, _sampler );
-        }
-    };
+    resample_pixels_fn(const MapFn& dst_to_src, const Sampler& sampler)
+        : _dst_to_src(dst_to_src)
+        , _sampler(sampler)
+    {
+    }
+
+    template <typename SrcView, typename DstView>
+    GIL_FORCEINLINE void apply_compatible(const SrcView& src, const DstView& dst) const
+    {
+        resample_pixels(src, dst, _dst_to_src, _sampler);
+    }
+};
 }
 
 /**
@@ -94,9 +102,9 @@ namespace detail {
  * @ingroup ImageAlgorithms
  */
 template <typename Sampler, typename Types1, typename V2, typename MapFn>
-void resample_pixels( const any_image_view<Types1>& src, const V2& dst, const MapFn& dst_to_src, Sampler sampler=Sampler() )
+void resample_pixels(const any_image_view<Types1>& src, const V2& dst, const MapFn& dst_to_src, Sampler sampler = Sampler())
 {
-    apply_operation( src, bind(detail::resample_pixels_fn<Sampler,MapFn>(dst_to_src,sampler), _1, dst) );
+    apply_operation(src, bind(detail::resample_pixels_fn<Sampler, MapFn>(dst_to_src, sampler), _1, dst));
 }
 
 /**
@@ -105,9 +113,9 @@ void resample_pixels( const any_image_view<Types1>& src, const V2& dst, const Ma
  * @ingroup ImageAlgorithms
  */
 template <typename Sampler, typename V1, typename Types2, typename MapFn>
-void resample_pixels( const V1& src, const any_image_view<Types2>& dst, const MapFn& dst_to_src, Sampler sampler=Sampler() )
+void resample_pixels(const V1& src, const any_image_view<Types2>& dst, const MapFn& dst_to_src, Sampler sampler = Sampler())
 {
-    apply_operation( dst, bind(detail::resample_pixels_fn<Sampler,MapFn>(dst_to_src,sampler), src, _1) );
+    apply_operation(dst, bind(detail::resample_pixels_fn<Sampler, MapFn>(dst_to_src, sampler), src, _1));
 }
 
 /**
@@ -115,13 +123,12 @@ void resample_pixels( const V1& src, const any_image_view<Types2>& dst, const Ma
  *        If invoked on incompatible views, throws std::bad_cast()
  * @ingroup ImageAlgorithms
  */
-template <typename Sampler, typename SrcTypes, typename DstTypes, typename MapFn> 
-void resample_pixels( const any_image_view<SrcTypes>& src, const any_image_view<DstTypes>& dst, const MapFn& dst_to_src, Sampler sampler=Sampler() )
+template <typename Sampler, typename SrcTypes, typename DstTypes, typename MapFn>
+void resample_pixels(const any_image_view<SrcTypes>& src, const any_image_view<DstTypes>& dst, const MapFn& dst_to_src,
+                     Sampler sampler = Sampler())
 {
-    apply_operation(src,dst,detail::resample_pixels_fn<Sampler,MapFn>(dst_to_src,sampler));
+    apply_operation(src, dst, detail::resample_pixels_fn<Sampler, MapFn>(dst_to_src, sampler));
 }
-
 }
 
 #endif
-

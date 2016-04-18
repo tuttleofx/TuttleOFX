@@ -6,41 +6,44 @@
 
 #include <limits>
 
-namespace tuttle {
-namespace plugin {
-namespace thinning {
+namespace tuttle
+{
+namespace plugin
+{
+namespace thinning
+{
 
 static const bool kSupportTiles = true;
-
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void ThinningPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void ThinningPluginFactory::describe(OFX::ImageEffectDescriptor& desc)
 {
-	desc.setLabels( "TuttleThinning", "Thinning",
-		            "Thinning" );
-	desc.setPluginGrouping( "tuttle/image/process/filter" );
+    desc.setLabels("TuttleThinning", "Thinning", "Thinning");
+    desc.setPluginGrouping("tuttle/image/process/filter");
 
-	desc.setDescription( "Thinning\n"
-			 "It's a morphological operation that is used to remove selected foreground pixels from binary images, somewhat like erosion or opening. \n"
-			 "It can be used for several applications, but is particularly useful for skeletonization. \n"
-			 "It is commonly used to tidy up the output of edge detectors by reducing all lines to single pixel thickness. \n"
-			 "Thinning is normally only applied to binary images, and produces another binary image as output." );
+    desc.setDescription(
+        "Thinning\n"
+        "It's a morphological operation that is used to remove selected foreground pixels from binary images, somewhat like "
+        "erosion or opening. \n"
+        "It can be used for several applications, but is particularly useful for skeletonization. \n"
+        "It is commonly used to tidy up the output of edge detectors by reducing all lines to single pixel thickness. \n"
+        "Thinning is normally only applied to binary images, and produces another binary image as output.");
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( OFX::eContextFilter );
-	desc.addSupportedContext( OFX::eContextGeneral );
+    // add the supported contexts, only filter at the moment
+    desc.addSupportedContext(OFX::eContextFilter);
+    desc.addSupportedContext(OFX::eContextGeneral);
 
-	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+    // add supported pixel depths
+    desc.addSupportedBitDepth(OFX::eBitDepthUByte);
+    desc.addSupportedBitDepth(OFX::eBitDepthUShort);
+    desc.addSupportedBitDepth(OFX::eBitDepthFloat);
 
-	// plugin flags
-	desc.setSupportsTiles( kSupportTiles );
-	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+    // plugin flags
+    desc.setSupportsTiles(kSupportTiles);
+    desc.setRenderThreadSafety(OFX::eRenderFullySafe);
 }
 
 /**
@@ -48,30 +51,29 @@ void ThinningPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ThinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+void ThinningPluginFactory::describeInContext(OFX::ImageEffectDescriptor& desc, OFX::EContext context)
 {
-	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
+    OFX::ClipDescriptor* srcClip = desc.defineClip(kOfxImageEffectSimpleSourceClipName);
+    srcClip->addSupportedComponent(OFX::ePixelComponentRGBA);
+    srcClip->addSupportedComponent(OFX::ePixelComponentRGB);
+    srcClip->addSupportedComponent(OFX::ePixelComponentAlpha);
+    srcClip->setSupportsTiles(kSupportTiles);
 
-	// Create the mandated output clip
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+    // Create the mandated output clip
+    OFX::ClipDescriptor* dstClip = desc.defineClip(kOfxImageEffectOutputClipName);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGBA);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGB);
+    dstClip->addSupportedComponent(OFX::ePixelComponentAlpha);
+    dstClip->setSupportsTiles(kSupportTiles);
 
-	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
-	border->setLabel( "Gradient border" );
-	border->setHint( "Border method for gradient computation." );
-	border->appendOption( kParamBorderBlack );
-	border->appendOption( kParamBorderPadded );
-//	border->appendOption( kParamBorderMirror );
-//	border->appendOption( kParamBorderConstant );
-	border->setDefault( 1 );
+    OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam(kParamBorder);
+    border->setLabel("Gradient border");
+    border->setHint("Border method for gradient computation.");
+    border->appendOption(kParamBorderBlack);
+    border->appendOption(kParamBorderPadded);
+    //	border->appendOption( kParamBorderMirror );
+    //	border->appendOption( kParamBorderConstant );
+    border->setDefault(1);
 }
 
 /**
@@ -80,13 +82,10 @@ void ThinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* ThinningPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+OFX::ImageEffect* ThinningPluginFactory::createInstance(OfxImageEffectHandle handle, OFX::EContext context)
 {
-	return new ThinningPlugin( handle );
-}
-
+    return new ThinningPlugin(handle);
 }
 }
 }
-
+}
