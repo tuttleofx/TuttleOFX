@@ -31,7 +31,6 @@ You can override this path by defining the following variable in your environmen
 ```
 export TUTTLE_HOME=/your/custom/path
 ```
-If none of these variables are found, the cache file is written in the temporary system directory.
 
 
 ## More information
