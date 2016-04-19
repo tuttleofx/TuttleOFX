@@ -112,12 +112,12 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
         # Static link with a common plugin library
-        set(IS_IOPLUGIN ${ARGV2}) 
-        if(IS_IOPLUGIN)
+        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/io" IS_IOPLUGIN)
+        if(IS_IOPLUGIN GREATER -1)
             target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
-        else(IS_IOPLUGIN)
+        else()
             target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
-        endif(IS_IOPLUGIN)
+        endif()
 
         set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX "${_plugin_version_suffix}.ofx")
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
