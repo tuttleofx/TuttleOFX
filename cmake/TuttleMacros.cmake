@@ -111,20 +111,39 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
-        # Static link with a common plugin library
+        # Get plugin type
         string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/io" IS_IOPLUGIN)
+        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/display" IS_DISPLAY_PLUGIN)
+        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/generator" IS_GENERATOR_PLUGIN)
+        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/process" IS_PROCESS_PLUGIN)
+        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "param/analysis" IS_ANALYSIS_PLUGIN)
+        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "param/debug" IS_DEBUG_PLUGIN)
+
+        # Add this new plugin to custom Makefile target
+        add_dependencies(ofxPlugins ${PLUGIN_NAME})
+        if(IS_IOPLUGIN GREATER -1)
+            add_dependencies(ofxIO ${PLUGIN_NAME})
+        elseif(IS_DISPLAY_PLUGIN GREATER -1)
+            add_dependencies(ofxDisplay ${PLUGIN_NAME})
+        elseif(IS_GENERATOR_PLUGIN GREATER -1)
+            add_dependencies(ofxGenerator ${PLUGIN_NAME})
+        elseif(IS_PROCESS_PLUGIN GREATER -1)
+            add_dependencies(ofxProcess ${PLUGIN_NAME})
+        elseif(IS_ANALYSIS_PLUGIN GREATER -1)
+            add_dependencies(ofxAnalysis ${PLUGIN_NAME})
+        elseif(IS_DEBUG_PLUGIN GREATER -1)
+            add_dependencies(ofxDebug ${PLUGIN_NAME})
+        endif()
+
+        # Static link with a common plugin library
         if(IS_IOPLUGIN GREATER -1)
             target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
-            add_dependencies(ofxIO ${PLUGIN_NAME})
         else()
             target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
         endif()
 
         set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX "${_plugin_version_suffix}.ofx")
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
-
-        # Add this new plugin to the global alias ofxplugins
-        add_dependencies(ofxPlugins ${PLUGIN_NAME})
 
         # FIXME: why tuttlePluginLib depends on OpenGL ? is it necessary ?
         if(APPLE)
