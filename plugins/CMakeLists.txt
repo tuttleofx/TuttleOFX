@@ -1,7 +1,7 @@
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-# Create an alias for all OFX plugins.
+# Create alias for OFX plugins.
 add_custom_target(ofxPlugins)
 
 add_subdirectory(image/io/AudioVideo)
