@@ -34,5 +34,22 @@ export TUTTLE_HOME=/your/custom/path
 If none of these variables are found, the cache file is written in the temporary system directory.
 
 
+## The log level
+TuttleOFX host handles a global level to log information.  
+The list of possible log level are:
+* fatal
+* error
+* warning
+* info
+* debug
+* trace
+
+The default log level is warning. It can be override by defining the following variable in your environment:
+```
+export TUTTLE_LOG_LEVEL=trace
+```
+Note: the sam command line has an other log level, separate from the level of the TuttleOFX host. See sam options to get more details.
+
+
 ## More information
 http://www.tuttleofx.org/user-documentation
