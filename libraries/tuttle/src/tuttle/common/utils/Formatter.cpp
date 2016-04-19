@@ -28,7 +28,7 @@ Formatter::Formatter()
     const char* envLevel = std::getenv("TUTTLE_LOG_LEVEL");
     if(envLevel == NULL)
     {
-        setLogLevel(boost::log::trivial::warning);
+        setLogLevel(eVerboseLevelWarning);
     }
     else
     {
