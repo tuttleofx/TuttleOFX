@@ -112,7 +112,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
         # Get plugin type
-        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/io" IS_IOPLUGIN)
+        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/io" IS_IO_PLUGIN)
         string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/display" IS_DISPLAY_PLUGIN)
         string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/generator" IS_GENERATOR_PLUGIN)
         string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/process" IS_PROCESS_PLUGIN)
@@ -121,7 +121,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
 
         # Add this new plugin to custom Makefile target
         add_dependencies(ofxPlugins ${PLUGIN_NAME})
-        if(IS_IOPLUGIN GREATER -1)
+        if(IS_IO_PLUGIN GREATER -1)
             add_dependencies(ofxIO ${PLUGIN_NAME})
         elseif(IS_DISPLAY_PLUGIN GREATER -1)
             add_dependencies(ofxDisplay ${PLUGIN_NAME})
@@ -136,7 +136,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         endif()
 
         # Static link with a common plugin library
-        if(IS_IOPLUGIN GREATER -1)
+        if(IS_IO_PLUGIN GREATER -1)
             target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
         else()
             target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
