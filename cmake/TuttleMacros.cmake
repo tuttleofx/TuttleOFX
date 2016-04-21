@@ -118,14 +118,18 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         get_filename_component(PLUGIN_PARENT_ABSOLUTE_PATH ${CMAKE_CURRENT_SOURCE_DIR} PATH)
         get_filename_component(PLUGIN_PARENT_DIR ${PLUGIN_PARENT_ABSOLUTE_PATH} NAME)
         set(PLUGIN_CUSTOM_TARGET "ofx${PLUGIN_PARENT_DIR}")
+        set(PLUGIN_COMMON_TARGET "ofxplugins")
 
         # Create custom target if it does not exist
+        if(NOT TARGET ${PLUGIN_COMMON_TARGET})
+            add_custom_target(${PLUGIN_COMMON_TARGET})
+        endif()
         if(NOT TARGET ${PLUGIN_CUSTOM_TARGET})
             add_custom_target(${PLUGIN_CUSTOM_TARGET})
         endif()
 
         # Add this new plugin to custom Makefile targets
-        add_dependencies(ofxplugins ${PLUGIN_NAME})
+        add_dependencies(${PLUGIN_COMMON_TARGET} ${PLUGIN_NAME})
         add_dependencies(${PLUGIN_CUSTOM_TARGET} ${PLUGIN_NAME})
 
         # Static link with a common plugin library
