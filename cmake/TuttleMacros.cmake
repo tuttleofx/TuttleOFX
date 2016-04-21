@@ -133,7 +133,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         add_dependencies(${PLUGIN_CUSTOM_TARGET} ${PLUGIN_NAME})
 
         # Static link with a common plugin library
-        if(${PLUGIN_PARENT_DIR} EQUAL "io")
+        if(${PLUGIN_PARENT_DIR} STREQUAL "io")
             target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
         else()
             target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
