@@ -3,12 +3,6 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Create alias for OFX plugins.
 add_custom_target(ofxPlugins)
-add_custom_target(ofxIO)
-add_custom_target(ofxDisplay)
-add_custom_target(ofxGenerator)
-add_custom_target(ofxProcess)
-add_custom_target(ofxAnalysis)
-add_custom_target(ofxDebug)
 
 add_subdirectory(image/io/AudioVideo)
 add_subdirectory(image/display/ColorCubeViewer)

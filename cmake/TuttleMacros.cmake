@@ -53,6 +53,9 @@ endfunction(tuttle_install_shared_libs)
 
 
 # Use this function to create a new plugin target
+# Each new plugin is added to 2 Makefile custom targets:
+#   * 'ofxPlugins'
+#   * 'ofx<plugin_parent_dir>'
 # The first argument is the plugin name
 # the second argument is a list of files to compile
 function(tuttle_ofx_plugin_target PLUGIN_NAME)
@@ -111,32 +114,22 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
-        # Get plugin type
-        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/io" IS_IO_PLUGIN)
-        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/display" IS_DISPLAY_PLUGIN)
-        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/generator" IS_GENERATOR_PLUGIN)
-        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "image/process" IS_PROCESS_PLUGIN)
-        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "param/analysis" IS_ANALYSIS_PLUGIN)
-        string(FIND ${CMAKE_CURRENT_SOURCE_DIR} "param/debug" IS_DEBUG_PLUGIN)
+        # Get plugin parent directory
+        get_filename_component(PLUGIN_PARENT_ABSOLUTE_PATH ${CMAKE_CURRENT_SOURCE_DIR} PATH)
+        get_filename_component(PLUGIN_PARENT_DIR ${PLUGIN_PARENT_ABSOLUTE_PATH} NAME)
+        set(PLUGIN_CUSTOM_TARGET "ofx${PLUGIN_PARENT_DIR}")
 
-        # Add this new plugin to custom Makefile target
-        add_dependencies(ofxPlugins ${PLUGIN_NAME})
-        if(IS_IO_PLUGIN GREATER -1)
-            add_dependencies(ofxIO ${PLUGIN_NAME})
-        elseif(IS_DISPLAY_PLUGIN GREATER -1)
-            add_dependencies(ofxDisplay ${PLUGIN_NAME})
-        elseif(IS_GENERATOR_PLUGIN GREATER -1)
-            add_dependencies(ofxGenerator ${PLUGIN_NAME})
-        elseif(IS_PROCESS_PLUGIN GREATER -1)
-            add_dependencies(ofxProcess ${PLUGIN_NAME})
-        elseif(IS_ANALYSIS_PLUGIN GREATER -1)
-            add_dependencies(ofxAnalysis ${PLUGIN_NAME})
-        elseif(IS_DEBUG_PLUGIN GREATER -1)
-            add_dependencies(ofxDebug ${PLUGIN_NAME})
+        # Create custom target if it does not exist
+        if(NOT TARGET ${PLUGIN_CUSTOM_TARGET})
+            add_custom_target(${PLUGIN_CUSTOM_TARGET})
         endif()
 
+        # Add this new plugin to custom Makefile targets
+        add_dependencies(ofxPlugins ${PLUGIN_NAME})
+        add_dependencies(${PLUGIN_CUSTOM_TARGET} ${PLUGIN_NAME})
+
         # Static link with a common plugin library
-        if(IS_IO_PLUGIN GREATER -1)
+        if(${PLUGIN_PARENT_DIR} EQUAL "io")
             target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
         else()
             target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
