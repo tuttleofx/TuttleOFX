@@ -54,7 +54,7 @@ endfunction(tuttle_install_shared_libs)
 
 # Use this function to create a new plugin target
 # Each new plugin is added to 2 Makefile custom targets:
-#   * 'ofxPlugins'
+#   * 'ofxplugins'
 #   * 'ofx<plugin_parent_dir>'
 # The first argument is the plugin name
 # the second argument is a list of files to compile
@@ -125,7 +125,7 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         endif()
 
         # Add this new plugin to custom Makefile targets
-        add_dependencies(ofxPlugins ${PLUGIN_NAME})
+        add_dependencies(ofxplugins ${PLUGIN_NAME})
         add_dependencies(${PLUGIN_CUSTOM_TARGET} ${PLUGIN_NAME})
 
         # Static link with a common plugin library
