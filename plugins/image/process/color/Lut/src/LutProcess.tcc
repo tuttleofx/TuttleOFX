@@ -1,5 +1,5 @@
-#if defined( _MSC_VER )
- #pragma warning( disable : 4244 )
+#if defined(_MSC_VER)
+#pragma warning(disable : 4244)
 #endif
 
 #include "LutProcess.hpp"
@@ -19,62 +19,62 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace lut {
+namespace tuttle
+{
+namespace plugin
+{
+namespace lut
+{
 
 using namespace boost::filesystem;
 
-template<class View>
-LutProcess<View>::LutProcess( LutPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance, eImageOrientationIndependant )
-	, _plugin( instance )
+template <class View>
+LutProcess<View>::LutProcess(LutPlugin& instance)
+    : ImageGilFilterProcessor<View>(instance, eImageOrientationIndependant)
+    , _plugin(instance)
 {
-	_lut3D = &_plugin._lut3D;
+    _lut3D = &_plugin._lut3D;
 }
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
  */
-template<class View>
-void LutProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+template <class View>
+void LutProcess<View>::multiThreadProcessImages(const OfxRectI& procWindowRoW)
 {
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+    OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates(procWindowRoW);
 
-	applyLut( this->_dstView, this->_srcView, procWindowOutput );
+    applyLut(this->_dstView, this->_srcView, procWindowOutput);
 }
 
-template<class View>
-void LutProcess<View>::applyLut( View& dst, View& src, const OfxRectI& procWindow )
+template <class View>
+void LutProcess<View>::applyLut(View& dst, View& src, const OfxRectI& procWindow)
 {
-	using namespace terry;
-	typedef typename View::x_iterator vIterator;
-	typedef typename channel_type<View>::type Pixel;
-	const OfxPointI procWindowSize = {
-		procWindow.x2 - procWindow.x1,
-		procWindow.y2 - procWindow.y1 };
+    using namespace terry;
+    typedef typename View::x_iterator vIterator;
+    typedef typename channel_type<View>::type Pixel;
+    const OfxPointI procWindowSize = {procWindow.x2 - procWindow.x1, procWindow.y2 - procWindow.y1};
 
-	for( int y = procWindow.y1; y < procWindow.y2; ++y )
-	{
-		vIterator sit = src.row_begin( y );
-		vIterator dit = dst.row_begin( y );
-		for( int x = procWindow.x1; x < procWindow.x2; ++x )
-		{
-			tuttle::Color col = _lut3D->getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
-			( *dit )[0] = static_cast<Pixel>( col.x );
-			( *dit )[1] = static_cast<Pixel>( col.y );
-			( *dit )[2] = static_cast<Pixel>( col.z );
-			if( dst.num_channels() > 3 )
-				( *dit )[3] = channel_traits< typename channel_type< View >::type >::max_value();
-			++sit;
-			++dit;
-		}
-		if( this->progressForward( procWindowSize.x ) )
-			return;
-	}
+    for(int y = procWindow.y1; y < procWindow.y2; ++y)
+    {
+        vIterator sit = src.row_begin(y);
+        vIterator dit = dst.row_begin(y);
+        for(int x = procWindow.x1; x < procWindow.x2; ++x)
+        {
+            tuttle::Color col = _lut3D->getColor((*sit)[0], (*sit)[1], (*sit)[2]);
+            (*dit)[0] = static_cast<Pixel>(col.x);
+            (*dit)[1] = static_cast<Pixel>(col.y);
+            (*dit)[2] = static_cast<Pixel>(col.z);
+            if(dst.num_channels() > 3)
+                (*dit)[3] = channel_traits<typename channel_type<View>::type>::max_value();
+            ++sit;
+            ++dit;
+        }
+        if(this->progressForward(procWindowSize.x))
+            return;
+    }
 }
-
 }
 }
 }

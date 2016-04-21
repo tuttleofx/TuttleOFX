@@ -235,7 +235,7 @@ void flood_fill(const SView& srcView, const Rect<std::ssize_t>& srcRod, DView& d
                         if(y < rod.y2)
                         {
                             //						fill_range_if( srcLastBegin[sLB], src_loc[sRB],
-                            //dstLastBegin[dLB],
+                            // dstLastBegin[dLB],
                             // white,
                             // softTest
                             //);
