@@ -128,7 +128,7 @@ void LocalMaximaPlugin::render(const OFX::RenderArguments& args)
     //		{
     //			BOOST_THROW_EXCEPTION( exception::Unsupported()
     //				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(sComponent) + ")
-    //not
+    // not
     // supported
     // by
     // the plugin." );
