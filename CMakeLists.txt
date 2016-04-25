@@ -23,9 +23,6 @@ endif()
 # Diplay commands being ran by CMake
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-# Create an alias for all OFX plugins.
-add_custom_target(ofxplugins)
-
 # Include subdirs
 set(SEQUENCEPARSER_PYTHON_VERSION ${TUTTLE_PYTHON_VERSION})
 add_subdirectory(libraries/sequenceParser)

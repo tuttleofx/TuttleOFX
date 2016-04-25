@@ -20,6 +20,20 @@ make
 make install
 ```
 
+Custom Makefile target:
+* ofxplugins: build all the OpenFX plugins.
+* ofxio: build readers and writers plugins.
+* ofxdisplay: build plugins to view images as a color cube, an histogram, or in a simple GL view port.
+* ofxgenerator: build plugins to generate basic inputs (checkerboard, bars, wheel...), images based on procedural geometry, or burn text on images.
+* ofxchannel: build plugins to process operations on channels of images.
+* ofxcolor: build plugins to process mathematics operations on color of images.
+* ofxfilter: build filter plugins.
+* ofxgeometry: build plugins to process mathematics operations on geometry of images.
+* ofxmath: build plugins to process mathematics operations on images.
+* ofxtime: build plugins to shift time.
+* ofxtransition: build plugins to process transitions.
+* ofxanalysis: build plugins to analyse (luminosity, channel values, Kurtosis, Skewness...) and compare images (psnr...).
+* ofxdebug: build plugins to display information about the host and all OpenFX plugins available.
 
 ## Additionnal dependencies for sam
 
