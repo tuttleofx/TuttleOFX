@@ -1,7 +1,7 @@
 # Macros used to create an openfx plugin with tuttle
 include(TuttleMacros)
 
-tuttle_ofx_plugin_target(OpenImageIO "" TRUE)
+tuttle_ofx_plugin_target(OpenImageIO)
 
 # Add external libraries
 tuttle_ofx_plugin_add_library(OpenImageIO OpenImageIO)
