@@ -547,6 +547,9 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("CompressionQuality", params._quality);
     spec.attribute("Orientation", params._orientation);
 
+    const float par = _plugin._clipSrc->getPixelAspectRatio();
+    spec.attribute("PixelAspectRatio", par);
+
     if(!out->open(filepath, spec))
     {
         BOOST_THROW_EXCEPTION(exception::Unknown() << exception::user("OIIO Writer: " + out->geterror())
