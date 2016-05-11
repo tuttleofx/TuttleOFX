@@ -35,7 +35,7 @@ void DPXWriterPluginFactory::describe(OFX::ImageEffectDescriptor& desc)
 
     // add supported extensions
     desc.addSupportedExtension("dpx");
-    desc.setPluginEvaluation(90);
+    desc.setPluginEvaluation(30);
 
     // plugin flags
     desc.setRenderThreadSafety(OFX::eRenderFullySafe);
