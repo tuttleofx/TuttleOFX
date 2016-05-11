@@ -177,7 +177,7 @@ void OpenImageIOReaderPlugin::getClipPreferences(OFX::ClipPreferencesSetter& cli
         }
     }
 
-    float par = spec.get_float_attribute("PixelAspectRatio", 1.0f);
+    const float par = spec.get_float_attribute("PixelAspectRatio", 1.0f);
     clipPreferences.setPixelAspectRatio(*this->_clipDst, par);
     in->close();
 }
