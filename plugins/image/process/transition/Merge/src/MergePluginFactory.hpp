@@ -3,13 +3,15 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace merge {
+namespace tuttle
+{
+namespace plugin
+{
+namespace merge
+{
 
 static const bool kSupportTiles = false;
-mDeclarePluginFactory( MergePluginFactory, {}, {} );
-
+mDeclarePluginFactory(MergePluginFactory, {}, {});
 }
 }
 }

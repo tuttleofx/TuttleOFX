@@ -13,14 +13,13 @@
 using namespace boost::unit_test;
 using namespace tuttle::host;
 
-BOOST_AUTO_TEST_SUITE( plugin_Exr_reader )
+BOOST_AUTO_TEST_SUITE(plugin_Exr_reader)
 std::string pluginName = "tuttle.exrreader";
 std::string filename = "openexr/TestImages/GammaChart.exr";
 #include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
-
-BOOST_AUTO_TEST_SUITE( plugin_Exr_writer )
+BOOST_AUTO_TEST_SUITE(plugin_Exr_writer)
 std::string pluginName = "tuttle.exrwriter";
 std::string filename = "test-exr.exr";
 #include <tuttle/test/io/writer.hpp>

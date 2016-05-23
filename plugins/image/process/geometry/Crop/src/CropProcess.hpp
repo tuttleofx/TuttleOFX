@@ -5,32 +5,34 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace crop {
+namespace tuttle
+{
+namespace plugin
+{
+namespace crop
+{
 
 /**
  * @brief Base class
  *
  */
-template<class View>
+template <class View>
 class CropProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
+    typedef typename View::value_type Pixel;
 
 protected:
-	CropPlugin&          _plugin;        ///< Rendering plugin
-	CropProcessParams<Pixel>    _params;        ///< process parameters
+    CropPlugin& _plugin;              ///< Rendering plugin
+    CropProcessParams<Pixel> _params; ///< process parameters
 
 public:
-	CropProcess<View>( CropPlugin & instance );
+    CropProcess<View>(CropPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }
@@ -38,4 +40,3 @@ public:
 #include "CropProcess.tcc"
 
 #endif
-

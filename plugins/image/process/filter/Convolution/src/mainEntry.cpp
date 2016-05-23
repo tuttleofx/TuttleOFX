@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "ConvolutionPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::convolution::ConvolutionPluginFactory, "tuttle.convolution" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::convolution::ConvolutionPluginFactory, "tuttle.convolution");
+}
 }
 }

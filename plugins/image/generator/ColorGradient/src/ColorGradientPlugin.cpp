@@ -7,247 +7,250 @@
 #include <boost/algorithm/string/predicate.hpp>
 //#include <boost/algorithm/string/classification.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorGradient {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorGradient
+{
 
 using namespace boost::gil;
 
-ColorGradientPlugin::ColorGradientPlugin( OfxImageEffectHandle handle )
-	: GeneratorPlugin( handle )
+ColorGradientPlugin::ColorGradientPlugin(OfxImageEffectHandle handle)
+    : GeneratorPlugin(handle)
 {
-	_gradientType = fetchChoiceParam( kGradientType );
-	_nbPoints     = fetchIntParam( kNbPoints );
+    _gradientType = fetchChoiceParam(kGradientType);
+    _nbPoints = fetchIntParam(kNbPoints);
 
-	_points.reserve( kMaxNbPoints );
-	_colors.reserve( kMaxNbPoints );
-	for( unsigned int i = 0; i < kMaxNbPoints; ++i )
-	{
-		_points.push_back( fetchDouble2DParam( getPointParamName( i ) ) );
-		_colors.push_back( fetchRGBAParam( getColorParamName( i ) ) );
-	}
-	OFX::InstanceChangedArgs args;
-	args.time          = 0;
-	args.renderScale.x = 1;
-	args.renderScale.y = 1;
-	args.reason        = OFX::eChangePluginEdit;
+    _points.reserve(kMaxNbPoints);
+    _colors.reserve(kMaxNbPoints);
+    for(unsigned int i = 0; i < kMaxNbPoints; ++i)
+    {
+        _points.push_back(fetchDouble2DParam(getPointParamName(i)));
+        _colors.push_back(fetchRGBAParam(getColorParamName(i)));
+    }
+    OFX::InstanceChangedArgs args;
+    args.time = 0;
+    args.renderScale.x = 1;
+    args.renderScale.y = 1;
+    args.reason = OFX::eChangePluginEdit;
 
-	changedParam( args, kNbPoints ); // init IsSecret property for each point/color param
+    changedParam(args, kNbPoints); // init IsSecret property for each point/color param
 }
 
-template<class View>
+template <class View>
 ColorGradientProcessParams<View> ColorGradientPlugin::getProcessParams() const
 {
-	ColorGradientProcessParams<View> params;
+    ColorGradientProcessParams<View> params;
 
-	Double2DParamVector::const_iterator it_point = _points.begin();
-	RGBAParamVector::const_iterator it_color     = _colors.begin();
-	unsigned int nbPoints                        = boost::numeric_cast<unsigned int>( _nbPoints->getValue() );
-	for( unsigned int i = 0;
-	     i < nbPoints;
-	     ++i, ++it_point, ++it_color )
-	{
-		OfxPointD p = ( *it_point )->getValue();
-		params._points.push_back( Point2( p.x, p.y ) );
-		OfxRGBAColourD c = ( *it_color )->getValue();
-		typename View::value_type pColor;
-		color_convert( rgba32f_pixel_t( c.r, c.g, c.b, c.a ), pColor );
-		params._colors.push_back( pColor );
-	}
-	return params;
+    Double2DParamVector::const_iterator it_point = _points.begin();
+    RGBAParamVector::const_iterator it_color = _colors.begin();
+    unsigned int nbPoints = boost::numeric_cast<unsigned int>(_nbPoints->getValue());
+    for(unsigned int i = 0; i < nbPoints; ++i, ++it_point, ++it_color)
+    {
+        OfxPointD p = (*it_point)->getValue();
+        params._points.push_back(Point2(p.x, p.y));
+        OfxRGBAColourD c = (*it_color)->getValue();
+        typename View::value_type pColor;
+        color_convert(rgba32f_pixel_t(c.r, c.g, c.b, c.a), pColor);
+        params._colors.push_back(pColor);
+    }
+    return params;
 }
 
-template<template<typename> class Functor>
-void ColorGradientPlugin::renderFunctor( const OFX::RenderArguments& args )
+template <template <typename> class Functor>
+void ColorGradientPlugin::renderFunctor(const OFX::RenderArguments& args)
 {
-	using namespace boost::gil;
+    using namespace boost::gil;
 
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
-	OFX::EPixelComponent components = _clipDst->getPixelComponents( );
+    // instantiate the render code based on the pixel depth of the dst clip
+    OFX::EBitDepth bitDepth = _clipDst->getPixelDepth();
+    OFX::EPixelComponent components = _clipDst->getPixelComponents();
 
-	//doGilRender<ConstantProcess>( *this, args );
+    // doGilRender<ConstantProcess>( *this, args );
 
-	switch( components )
-	{
-		case OFX::ePixelComponentRGBA:
-		{
-			switch( bitDepth )
-			{
-				case OFX::eBitDepthFloat:
-				{
-					ColorGradientProcess<rgba32f_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthUByte:
-				{
-					ColorGradientProcess<rgba8_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					ColorGradientProcess<rgba16_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthCustom:
-				case OFX::eBitDepthNone:
-				{
-					BOOST_THROW_EXCEPTION( exception::Unsupported()
-						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
-				}
-			}
-			break;
-		}
-		case OFX::ePixelComponentRGB:
-		{
-			switch( bitDepth )
-			{
-				case OFX::eBitDepthFloat:
-				{
-					ColorGradientProcess<rgb32f_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthUByte:
-				{
-					ColorGradientProcess<rgb8_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					ColorGradientProcess<rgb16_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthCustom:
-				case OFX::eBitDepthNone:
-				{
-					BOOST_THROW_EXCEPTION( exception::Unsupported()
-						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
-				}
-			}
-			break;
-		}
-		case OFX::ePixelComponentAlpha:
-		{
-			switch( bitDepth )
-			{
-				case OFX::eBitDepthFloat:
-				{
-					ColorGradientProcess<gray32f_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthUByte:
-				{
-					ColorGradientProcess<gray8_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					ColorGradientProcess<gray16_view_t, Functor> p( *this );
-					p.setupAndProcess( args );
-					return;
-				}
-				case OFX::eBitDepthCustom:
-				case OFX::eBitDepthNone:
-				{
-					BOOST_THROW_EXCEPTION( exception::Unsupported()
-						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
-				}
-			}
-			break;
-		}
-		case OFX::ePixelComponentCustom:
-		case OFX::ePixelComponentNone:
-		{
-			BOOST_THROW_EXCEPTION( exception::Unsupported()
-				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
-		}
-	}
-	BOOST_THROW_EXCEPTION( exception::Unknown() );
+    switch(components)
+    {
+        case OFX::ePixelComponentRGBA:
+        {
+            switch(bitDepth)
+            {
+                case OFX::eBitDepthFloat:
+                {
+                    ColorGradientProcess<rgba32f_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthUByte:
+                {
+                    ColorGradientProcess<rgba8_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthUShort:
+                {
+                    ColorGradientProcess<rgba16_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthCustom:
+                case OFX::eBitDepthNone:
+                {
+                    BOOST_THROW_EXCEPTION(exception::Unsupported() << exception::user() + "Bit depth (" +
+                                                                          mapBitDepthEnumToString(bitDepth) +
+                                                                          ") not recognized by the plugin.");
+                }
+            }
+            break;
+        }
+        case OFX::ePixelComponentRGB:
+        {
+            switch(bitDepth)
+            {
+                case OFX::eBitDepthFloat:
+                {
+                    ColorGradientProcess<rgb32f_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthUByte:
+                {
+                    ColorGradientProcess<rgb8_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthUShort:
+                {
+                    ColorGradientProcess<rgb16_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthCustom:
+                case OFX::eBitDepthNone:
+                {
+                    BOOST_THROW_EXCEPTION(exception::Unsupported() << exception::user() + "Bit depth (" +
+                                                                          mapBitDepthEnumToString(bitDepth) +
+                                                                          ") not recognized by the plugin.");
+                }
+            }
+            break;
+        }
+        case OFX::ePixelComponentAlpha:
+        {
+            switch(bitDepth)
+            {
+                case OFX::eBitDepthFloat:
+                {
+                    ColorGradientProcess<gray32f_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthUByte:
+                {
+                    ColorGradientProcess<gray8_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthUShort:
+                {
+                    ColorGradientProcess<gray16_view_t, Functor> p(*this);
+                    p.setupAndProcess(args);
+                    return;
+                }
+                case OFX::eBitDepthCustom:
+                case OFX::eBitDepthNone:
+                {
+                    BOOST_THROW_EXCEPTION(exception::Unsupported() << exception::user() + "Bit depth (" +
+                                                                          mapBitDepthEnumToString(bitDepth) +
+                                                                          ") not recognized by the plugin.");
+                }
+            }
+            break;
+        }
+        case OFX::ePixelComponentCustom:
+        case OFX::ePixelComponentNone:
+        {
+            BOOST_THROW_EXCEPTION(exception::Unsupported() << exception::user() + "Pixel components (" +
+                                                                  mapPixelComponentEnumToString(components) +
+                                                                  ") not supported by the plugin.");
+        }
+    }
+    BOOST_THROW_EXCEPTION(exception::Unknown());
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ColorGradientPlugin::render( const OFX::RenderArguments& args )
+void ColorGradientPlugin::render(const OFX::RenderArguments& args)
 {
-	switch( static_cast<EGradientType>( _gradientType->getValue() ) )
-	{
-		case eGradientType1DLinear:
-		{
-			renderFunctor<ColorGrandient1DLinearFunctor>( args );
-			return;
-		}
-		case eGradientType1DRadial:
-		{
-			renderFunctor<ColorGrandient1DLinearFunctor>( args ); /// @todo tuttle: not implemented yet
-			return;
-		}
-		case eGradientType2D:
-		{
-			renderFunctor<ColorGrandient2DLinearFunctor>( args );
-			return;
-		}
-	}
-	BOOST_THROW_EXCEPTION( exception::Unknown() );
+    switch(static_cast<EGradientType>(_gradientType->getValue()))
+    {
+        case eGradientType1DLinear:
+        {
+            renderFunctor<ColorGrandient1DLinearFunctor>(args);
+            return;
+        }
+        case eGradientType1DRadial:
+        {
+            renderFunctor<ColorGrandient1DLinearFunctor>(args); /// @todo tuttle: not implemented yet
+            return;
+        }
+        case eGradientType2D:
+        {
+            renderFunctor<ColorGrandient2DLinearFunctor>(args);
+            return;
+        }
+    }
+    BOOST_THROW_EXCEPTION(exception::Unknown());
 }
 
-void ColorGradientPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+void ColorGradientPlugin::getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences)
 {
-	GeneratorPlugin::getClipPreferences( clipPreferences );
+    GeneratorPlugin::getClipPreferences(clipPreferences);
 }
 
-void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
+void ColorGradientPlugin::changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName)
 {
-	GeneratorPlugin::changedParam( args, paramName );
-	if( paramName == kNbPoints )
-	{
-		unsigned int nbPoints                  = boost::numeric_cast<unsigned int>( _nbPoints->getValue() );
-		Double2DParamVector::iterator it_point = _points.begin();
-		RGBAParamVector::iterator it_color     = _colors.begin();
-		for( unsigned int i = 0; i < nbPoints; ++i, ++it_point, ++it_color )
-		{
-			( *it_point )->setIsSecret( false );
-			( *it_color )->setIsSecret( false );
-		}
-		for( unsigned int i = nbPoints; i < kMaxNbPoints; ++i, ++it_point, ++it_color )
-		{
-			( *it_point )->setIsSecret( true );
-			( *it_color )->setIsSecret( true );
-		}
-	}
-	/*
-	else if( boost::starts_with( paramName, kPoint ) )
-	{
-		try
-		{
-			unsigned int n            = boost::lexical_cast<unsigned int>( paramName.c_str() + kPoint.size() );
-			OFX::Double2DParam* param = _points[n];
-			OfxPointD p               = param->getValue();
-			if( n < 2 )
-			{
-				// A, B
-			}
-			else
-			{
-				//
-			}
-		}
-		catch( boost::bad_lexical_cast& )
-		{}
-	}
-	*/
-
+    GeneratorPlugin::changedParam(args, paramName);
+    if(paramName == kNbPoints)
+    {
+        unsigned int nbPoints = boost::numeric_cast<unsigned int>(_nbPoints->getValue());
+        Double2DParamVector::iterator it_point = _points.begin();
+        RGBAParamVector::iterator it_color = _colors.begin();
+        for(unsigned int i = 0; i < nbPoints; ++i, ++it_point, ++it_color)
+        {
+            (*it_point)->setIsSecret(false);
+            (*it_color)->setIsSecret(false);
+        }
+        for(unsigned int i = nbPoints; i < kMaxNbPoints; ++i, ++it_point, ++it_color)
+        {
+            (*it_point)->setIsSecret(true);
+            (*it_color)->setIsSecret(true);
+        }
+    }
+    /*
+    else if( boost::starts_with( paramName, kPoint ) )
+    {
+            try
+            {
+                    unsigned int n            = boost::lexical_cast<unsigned int>( paramName.c_str() + kPoint.size() );
+                    OFX::Double2DParam* param = _points[n];
+                    OfxPointD p               = param->getValue();
+                    if( n < 2 )
+                    {
+                            // A, B
+                    }
+                    else
+                    {
+                            //
+                    }
+            }
+            catch( boost::bad_lexical_cast& )
+            {}
+    }
+    */
 }
-
 }
 }
 }

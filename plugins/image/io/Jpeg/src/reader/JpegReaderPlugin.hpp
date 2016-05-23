@@ -3,14 +3,18 @@
 
 #include <tuttle/ioplugin/context/ReaderPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace jpeg {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace jpeg
+{
+namespace reader
+{
 
 struct JpegReaderProcessParams
 {
-	std::string _filepath;       ///< filepath
+    std::string _filepath; ///< filepath
 };
 
 /**
@@ -20,18 +24,17 @@ struct JpegReaderProcessParams
 class JpegReaderPlugin : public ReaderPlugin
 {
 public:
-	JpegReaderPlugin( OfxImageEffectHandle handle );
+    JpegReaderPlugin(OfxImageEffectHandle handle);
 
 public:
-	JpegReaderProcessParams getProcessParams( const OfxTime time );
+    JpegReaderProcessParams getProcessParams(const OfxTime time);
 
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
+    bool getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod);
+    void getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences);
 
-	void render( const OFX::RenderArguments& args );
+    void render(const OFX::RenderArguments& args);
 };
-
 }
 }
 }

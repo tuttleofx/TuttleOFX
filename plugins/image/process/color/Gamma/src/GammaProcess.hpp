@@ -4,29 +4,31 @@
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace gamma {
+namespace tuttle
+{
+namespace plugin
+{
+namespace gamma
+{
 
 /**
  * @brief Gamma process
  *
  */
-template<class View>
+template <class View>
 class GammaProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef float Scalar;
+    typedef float Scalar;
 
 protected:
-	GammaPlugin&    _plugin;        ///< Rendering plugin
+    GammaPlugin& _plugin; ///< Rendering plugin
 
 public:
-	GammaProcess( GammaPlugin& effect );
+    GammaProcess(GammaPlugin& effect);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

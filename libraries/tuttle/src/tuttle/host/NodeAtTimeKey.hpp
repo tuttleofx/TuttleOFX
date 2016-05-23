@@ -6,41 +6,43 @@
 #include <string>
 #include <ostream>
 
-namespace tuttle {
-namespace host {
+namespace tuttle
+{
+namespace host
+{
 
 class NodeAtTimeKey
 {
 public:
-	NodeAtTimeKey()
-	: _time(-9876.54321)
-	{}
-	NodeAtTimeKey( const std::string& name, const OfxTime& time )
-	: _name(name)
-	, _time(time)
-	{}
-	
-	const std::string& getName() const { return _name; }
-	void setName( const std::string& name ) { _name = name; }
+    NodeAtTimeKey()
+        : _time(-9876.54321)
+    {
+    }
+    NodeAtTimeKey(const std::string& name, const OfxTime& time)
+        : _name(name)
+        , _time(time)
+    {
+    }
 
-	OfxTime getTime() const { return _time; }
-	void setTime( const OfxTime time ) { _time = time; }
+    const std::string& getName() const { return _name; }
+    void setName(const std::string& name) { _name = name; }
 
-	bool operator==( const NodeAtTimeKey& v ) const;
-	bool operator<( const NodeAtTimeKey& v ) const;
+    OfxTime getTime() const { return _time; }
+    void setTime(const OfxTime time) { _time = time; }
 
-	std::size_t getHash() const;
+    bool operator==(const NodeAtTimeKey& v) const;
+    bool operator<(const NodeAtTimeKey& v) const;
+
+    std::size_t getHash() const;
 
 public:
-	friend std::ostream& operator<<( std::ostream& os, const NodeAtTimeKey& k );
+    friend std::ostream& operator<<(std::ostream& os, const NodeAtTimeKey& k);
 
 private:
-	std::string _name;
-	OfxTime _time;
+    std::string _name;
+    OfxTime _time;
 };
-
 }
 }
 
 #endif
-

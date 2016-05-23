@@ -6,17 +6,20 @@
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <tuttle/plugin/context/SamplerPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace resize {
+namespace tuttle
+{
+namespace plugin
+{
+namespace resize
+{
 
-template<typename Scalar>
+template <typename Scalar>
 struct ResizeProcessParams
 {
-	bool                                       _changeCenter;
-	boost::gil::point2<Scalar>                 _centerPoint;
+    bool _changeCenter;
+    boost::gil::point2<Scalar> _centerPoint;
 
-	SamplerProcessParams                       _samplerProcessParams;
+    SamplerProcessParams _samplerProcessParams;
 };
 
 /**
@@ -25,42 +28,41 @@ struct ResizeProcessParams
 class ResizePlugin : public SamplerPlugin
 {
 public:
-	typedef float Scalar;
-	typedef boost::gil::point2<double> Point2;
+    typedef float Scalar;
+    typedef boost::gil::point2<double> Point2;
 
 public:
-	ResizePlugin( OfxImageEffectHandle handle );
+    ResizePlugin(OfxImageEffectHandle handle);
 
 public:
-	ResizeProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+    ResizeProcessParams<Scalar> getProcessParams(const OfxPointD& renderScale = OFX::kNoRenderScale) const;
 
-	void updateVisibleTools();
+    void updateVisibleTools();
 
-	void changedParam          ( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+    void changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName);
 
-	bool getRegionOfDefinition ( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void getRegionsOfInterest  ( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-	bool isIdentity            ( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
+    bool getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod);
+    void getRegionsOfInterest(const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois);
+    bool isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime);
 
-	void render                ( const OFX::RenderArguments &args );
+    void render(const OFX::RenderArguments& args);
 
 public:
-	OFX::ChoiceParam*       _paramMode;
+    OFX::ChoiceParam* _paramMode;
 
-	OFX::ChoiceParam*       _paramFormat;
+    OFX::ChoiceParam* _paramFormat;
 
-	OFX::Int2DParam*        _paramSize;
-	OFX::IntParam*          _paramSizeWidth;
-	OFX::IntParam*          _paramSizeHeight;
-	OFX::BooleanParam*      _paramSizeKeepRatio;
-	OFX::ChoiceParam*       _paramSizeOrientation;
-	
-	OFX::Double2DParam*     _paramScale;
+    OFX::Int2DParam* _paramSize;
+    OFX::IntParam* _paramSizeWidth;
+    OFX::IntParam* _paramSizeHeight;
+    OFX::BooleanParam* _paramSizeKeepRatio;
+    OFX::ChoiceParam* _paramSizeOrientation;
 
-	OFX::BooleanParam*      _paramCenter;
-	OFX::Double2DParam*     _paramCenterPoint;
+    OFX::Double2DParam* _paramScale;
+
+    OFX::BooleanParam* _paramCenter;
+    OFX::Double2DParam* _paramCenterPoint;
 };
-
 }
 }
 }

@@ -4,43 +4,45 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace fade {
-
-
-FadePlugin::FadePlugin( OfxImageEffectHandle handle )
-: OFX::ImageEffect( handle )
+namespace tuttle
 {
-    _clipSrcFrom = fetchClip( kOfxImageEffectTransitionSourceFromClipName );
-    _clipSrcTo = fetchClip( kOfxImageEffectTransitionSourceToClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	
-	_paramTransition = fetchDoubleParam( kOfxImageEffectTransitionParamName );
-	_paramRod = fetchChoiceParam( kParamRod );
-	_paramColor = fetchRGBAParam( kParamColor );
+namespace plugin
+{
+namespace fade
+{
+
+FadePlugin::FadePlugin(OfxImageEffectHandle handle)
+    : OFX::ImageEffect(handle)
+{
+    _clipSrcFrom = fetchClip(kOfxImageEffectTransitionSourceFromClipName);
+    _clipSrcTo = fetchClip(kOfxImageEffectTransitionSourceToClipName);
+    _clipDst = fetchClip(kOfxImageEffectOutputClipName);
+
+    _paramTransition = fetchDoubleParam(kOfxImageEffectTransitionParamName);
+    _paramRod = fetchChoiceParam(kParamRod);
+    _paramColor = fetchRGBAParam(kParamColor);
 }
 
 FadeProcessParams FadePlugin::getProcessParams() const
 {
-	FadeProcessParams params;
-	params._transition = _paramTransition->getValue();
-	params._rod = static_cast<EParamRod>( _paramRod->getValue() );
-	params._color = ofxToGil( _paramColor->getValue() );
-	return params;
+    FadeProcessParams params;
+    params._transition = _paramTransition->getValue();
+    params._rod = static_cast<EParamRod>(_paramRod->getValue());
+    params._color = ofxToGil(_paramColor->getValue());
+    return params;
 }
 
-void FadePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void FadePlugin::changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName)
 {
-//    if( paramName == kParamHelpButton )
-//    {
-//        sendMessage( OFX::Message::eMessageMessage,
-//                     "", // No XML resources
-//                     kParamHelpString );
-//    }
+    //    if( paramName == kParamHelpButton )
+    //    {
+    //        sendMessage( OFX::Message::eMessageMessage,
+    //                     "", // No XML resources
+    //                     kParamHelpString );
+    //    }
 }
 
-//bool FadePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+// bool FadePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 //{
 //	FadeProcessParams<Scalar> params = getProcessParams();
 //	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
@@ -59,34 +61,32 @@ void FadePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::
 //	return false;
 //}
 
-bool FadePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
+bool FadePlugin::isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime)
 {
-	FadeProcessParams params = getProcessParams();
-		if( params._transition == 0.0 && _clipSrcFrom->isConnected() )
-	{
-		identityClip = _clipSrcFrom;
-		identityTime = args.time;
-		return true;
-	}
-	else if( params._transition == 1.0 && _clipSrcTo->isConnected() )
-	{
-		identityClip = _clipSrcTo;
-		identityTime = args.time;
-		return true;
-	}
-	return false;
+    FadeProcessParams params = getProcessParams();
+    if(params._transition == 0.0 && _clipSrcFrom->isConnected())
+    {
+        identityClip = _clipSrcFrom;
+        identityTime = args.time;
+        return true;
+    }
+    else if(params._transition == 1.0 && _clipSrcTo->isConnected())
+    {
+        identityClip = _clipSrcTo;
+        identityTime = args.time;
+        return true;
+    }
+    return false;
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void FadePlugin::render( const OFX::RenderArguments &args )
+void FadePlugin::render(const OFX::RenderArguments& args)
 {
-	doGilRender<FadeProcess>( *this, args );
+    doGilRender<FadeProcess>(*this, args);
 }
-
-
 }
 }
 }

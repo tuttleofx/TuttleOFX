@@ -7,96 +7,98 @@
 
 #include <string>
 
-namespace tuttle {
-namespace ofx {
-namespace imageEffect {
+namespace tuttle
+{
+namespace ofx
+{
+namespace imageEffect
+{
 
 /** @brief Enumerates the contexts a plugin can be used in */
 enum EContext
 {
-	eContextNone,
-	eContextGenerator,
-	eContextFilter,
-	eContextTransition,
-	eContextPaint,
-	eContextGeneral,
-	eContextRetimer,
-	eContextReader,
-	eContextWriter
+    eContextNone,
+    eContextGenerator,
+    eContextFilter,
+    eContextTransition,
+    eContextPaint,
+    eContextGeneral,
+    eContextRetimer,
+    eContextReader,
+    eContextWriter
 };
 
-const std::string mapContextEnumToString( const EContext s );
+const std::string mapContextEnumToString(const EContext s);
 
 /** @brief Enumerates the pixel depths supported */
 enum EBitDepth
 {
-	eBitDepthNone   = -1, ///< @brief bit depth that indicates no data is present
-	eBitDepthCustom = 0, ///< some non standard bit depth
-	eBitDepthUByte  = 1,
-	eBitDepthUShort = 2,
-	eBitDepthFloat  = 4
+    eBitDepthNone = -1,  ///< @brief bit depth that indicates no data is present
+    eBitDepthCustom = 0, ///< some non standard bit depth
+    eBitDepthUByte = 1,
+    eBitDepthUShort = 2,
+    eBitDepthFloat = 4
 };
 
-const std::string mapBitDepthEnumToString( const EBitDepth e );
-EBitDepth         mapBitDepthStringToEnum( const std::string& str );
+const std::string mapBitDepthEnumToString(const EBitDepth e);
+EBitDepth mapBitDepthStringToEnum(const std::string& str);
 
-inline std::size_t bitDepthMemorySize( const EBitDepth e )
+inline std::size_t bitDepthMemorySize(const EBitDepth e)
 {
-	switch( e )
-	{
-		case eBitDepthUByte:
-			return sizeof( boost::uint8_t );
-		case eBitDepthUShort:
-			return sizeof( boost::uint16_t );
-		case eBitDepthFloat:
-			return sizeof( float );
-		case eBitDepthNone:
-		case eBitDepthCustom:
-			return 0;
-	}
-	BOOST_ASSERT( false );
-	return 0;
+    switch(e)
+    {
+        case eBitDepthUByte:
+            return sizeof(boost::uint8_t);
+        case eBitDepthUShort:
+            return sizeof(boost::uint16_t);
+        case eBitDepthFloat:
+            return sizeof(float);
+        case eBitDepthNone:
+        case eBitDepthCustom:
+            return 0;
+    }
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 /** @brief Enumerates the component types supported */
 enum EPixelComponent
 {
-	ePixelComponentNone,
-	ePixelComponentRGBA,
-	ePixelComponentRGB,
-	ePixelComponentAlpha,
-	ePixelComponentCustom ///< some non standard pixel type
+    ePixelComponentNone,
+    ePixelComponentRGBA,
+    ePixelComponentRGB,
+    ePixelComponentAlpha,
+    ePixelComponentCustom ///< some non standard pixel type
 };
 
-std::string     mapPixelComponentEnumToString( const EPixelComponent e );
-EPixelComponent mapPixelComponentStringToEnum( const std::string& str );
+std::string mapPixelComponentEnumToString(const EPixelComponent e);
+EPixelComponent mapPixelComponentStringToEnum(const std::string& str);
 
-inline std::size_t numberOfComponents( const EPixelComponent c )
+inline std::size_t numberOfComponents(const EPixelComponent c)
 {
-	switch( c )
-	{
-		case ePixelComponentRGBA:
-			return 4;
-		case ePixelComponentRGB:
-			return 3;
-		case ePixelComponentAlpha:
-			return 1;
-		case ePixelComponentNone:
-			return 0;
-		case ePixelComponentCustom:
-			BOOST_THROW_EXCEPTION( exception::Value()
-			    << exception::user() + "Can't retrieve the number of values inside a custom pixel component." );
-	}
-	BOOST_ASSERT( false );
-	return 0;
+    switch(c)
+    {
+        case ePixelComponentRGBA:
+            return 4;
+        case ePixelComponentRGB:
+            return 3;
+        case ePixelComponentAlpha:
+            return 1;
+        case ePixelComponentNone:
+            return 0;
+        case ePixelComponentCustom:
+            BOOST_THROW_EXCEPTION(exception::Value()
+                                  << exception::user() +
+                                         "Can't retrieve the number of values inside a custom pixel component.");
+    }
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 /// get me deepest bit depth
-std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 );
-
+std::string findDeepestBitDepth(const std::string& s1, const std::string& s2);
 }
 }
 }
 
 #endif
-

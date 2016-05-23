@@ -6,53 +6,56 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace blur {
-
-BlurPlugin::BlurPlugin( OfxImageEffectHandle handle )
-	: ImageEffectGilPlugin( handle )
+namespace tuttle
 {
-	_paramSize   = fetchDouble2DParam( kParamSize );
-	_paramBorder = fetchChoiceParam( kParamBorder );
-	_paramNormalizedKernel = fetchBooleanParam( kParamNormalizedKernel );
-	_paramKernelEpsilon = fetchDoubleParam( kParamKernelEpsilon );
+namespace plugin
+{
+namespace blur
+{
+
+BlurPlugin::BlurPlugin(OfxImageEffectHandle handle)
+    : ImageEffectGilPlugin(handle)
+{
+    _paramSize = fetchDouble2DParam(kParamSize);
+    _paramBorder = fetchChoiceParam(kParamBorder);
+    _paramNormalizedKernel = fetchBooleanParam(kParamNormalizedKernel);
+    _paramKernelEpsilon = fetchDoubleParam(kParamKernelEpsilon);
 }
 
-BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPointD& renderScale ) const
+BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams(const OfxPointD& renderScale) const
 {
-	using namespace terry::filter;
-	
-	BlurProcessParams<Scalar> params;
-	params._size   = ofxToGil( _paramSize->getValue() ) * ofxToGil( renderScale  );
-	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
+    using namespace terry::filter;
 
-	const bool normalizedKernel = _paramNormalizedKernel->getValue();
-	const double kernelEpsilon = _paramKernelEpsilon->getValue();
+    BlurProcessParams<Scalar> params;
+    params._size = ofxToGil(_paramSize->getValue()) * ofxToGil(renderScale);
+    params._border = static_cast<EParamBorder>(_paramBorder->getValue());
 
-	params._gilKernelX = buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
-	params._gilKernelY = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
-	
-	params._boundary_option = convolve_option_extend_mirror;
-	switch( params._border )
-	{
-		case eParamBorderMirror:
-			params._boundary_option = convolve_option_extend_mirror;
-			break;
-		case eParamBorderConstant:
-			params._boundary_option = convolve_option_extend_constant;
-			break;
-		case eParamBorderBlack:
-			params._boundary_option = convolve_option_extend_zero;
-			break;
-		case eParamBorderPadded:
-			params._boundary_option = convolve_option_extend_padded;
-			break;
-		case eParamBorderNo:
-			params._boundary_option = convolve_option_extend_mirror;
-			break;
-	}
-	return params;
+    const bool normalizedKernel = _paramNormalizedKernel->getValue();
+    const double kernelEpsilon = _paramKernelEpsilon->getValue();
+
+    params._gilKernelX = buildGaussian1DKernel<Scalar>(params._size.x, normalizedKernel, kernelEpsilon);
+    params._gilKernelY = buildGaussian1DKernel<Scalar>(params._size.y, normalizedKernel, kernelEpsilon);
+
+    params._boundary_option = convolve_option_extend_mirror;
+    switch(params._border)
+    {
+        case eParamBorderMirror:
+            params._boundary_option = convolve_option_extend_mirror;
+            break;
+        case eParamBorderConstant:
+            params._boundary_option = convolve_option_extend_constant;
+            break;
+        case eParamBorderBlack:
+            params._boundary_option = convolve_option_extend_zero;
+            break;
+        case eParamBorderPadded:
+            params._boundary_option = convolve_option_extend_padded;
+            break;
+        case eParamBorderNo:
+            params._boundary_option = convolve_option_extend_mirror;
+            break;
+    }
+    return params;
 }
 
 /*
@@ -67,68 +70,67 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
    }
  */
 
-bool BlurPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+bool BlurPlugin::getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod)
 {
-	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+    OfxRectD srcRod = _clipSrc->getCanonicalRod(args.time);
 
-	BlurProcessParams<Scalar> params = getProcessParams();
+    BlurProcessParams<Scalar> params = getProcessParams();
 
-	switch( params._border )
-	{
-		case eParamBorderPadded:
-			rod.x1 = srcRod.x1 + params._gilKernelX.left_size();
-			rod.y1 = srcRod.y1 + params._gilKernelY.left_size();
-			rod.x2 = srcRod.x2 - params._gilKernelX.right_size();
-			rod.y2 = srcRod.y2 - params._gilKernelY.right_size();
-			return true;
-		case eParamBorderBlack:
-		case eParamBorderConstant:
-		case eParamBorderMirror:
-			rod.x1 = srcRod.x1 - params._gilKernelX.left_size();
-			rod.y1 = srcRod.y1 - params._gilKernelY.left_size();
-			rod.x2 = srcRod.x2 + params._gilKernelX.right_size();
-			rod.y2 = srcRod.y2 + params._gilKernelY.right_size();
-			return true;
-		case eParamBorderNo:
-			return false; // don't modify the source image RoD
-	}
-	BOOST_ASSERT(false);
-	return false;
+    switch(params._border)
+    {
+        case eParamBorderPadded:
+            rod.x1 = srcRod.x1 + params._gilKernelX.left_size();
+            rod.y1 = srcRod.y1 + params._gilKernelY.left_size();
+            rod.x2 = srcRod.x2 - params._gilKernelX.right_size();
+            rod.y2 = srcRod.y2 - params._gilKernelY.right_size();
+            return true;
+        case eParamBorderBlack:
+        case eParamBorderConstant:
+        case eParamBorderMirror:
+            rod.x1 = srcRod.x1 - params._gilKernelX.left_size();
+            rod.y1 = srcRod.y1 - params._gilKernelY.left_size();
+            rod.x2 = srcRod.x2 + params._gilKernelX.right_size();
+            rod.y2 = srcRod.y2 + params._gilKernelY.right_size();
+            return true;
+        case eParamBorderNo:
+            return false; // don't modify the source image RoD
+    }
+    BOOST_ASSERT(false);
+    return false;
 }
 
-void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+void BlurPlugin::getRegionsOfInterest(const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois)
 {
-	BlurProcessParams<Scalar> params = getProcessParams();
-	OfxRectD srcRod                  = _clipSrc->getCanonicalRod( args.time );
+    BlurProcessParams<Scalar> params = getProcessParams();
+    OfxRectD srcRod = _clipSrc->getCanonicalRod(args.time);
 
-	OfxRectD srcRoi;
-	srcRoi.x1 = srcRod.x1 - params._gilKernelX.left_size();
-	srcRoi.y1 = srcRod.y1 - params._gilKernelY.left_size();
-	srcRoi.x2 = srcRod.x2 + params._gilKernelX.right_size();
-	srcRoi.y2 = srcRod.y2 + params._gilKernelY.right_size();
-	rois.setRegionOfInterest( *_clipSrc, srcRoi );
+    OfxRectD srcRoi;
+    srcRoi.x1 = srcRod.x1 - params._gilKernelX.left_size();
+    srcRoi.y1 = srcRod.y1 - params._gilKernelY.left_size();
+    srcRoi.x2 = srcRod.x2 + params._gilKernelX.right_size();
+    srcRoi.y2 = srcRod.y2 + params._gilKernelY.right_size();
+    rois.setRegionOfInterest(*_clipSrc, srcRoi);
 }
 
-bool BlurPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
+bool BlurPlugin::isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime)
 {
-	BlurProcessParams<Scalar> params = getProcessParams( args.renderScale );
-	if( params._size.x != 0 || params._size.y != 0 )
-		return false;
+    BlurProcessParams<Scalar> params = getProcessParams(args.renderScale);
+    if(params._size.x != 0 || params._size.y != 0)
+        return false;
 
-	identityClip = _clipSrc;
-	identityTime = args.time;
-	return true;
+    identityClip = _clipSrc;
+    identityTime = args.time;
+    return true;
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void BlurPlugin::render( const OFX::RenderArguments& args )
+void BlurPlugin::render(const OFX::RenderArguments& args)
 {
-	doGilRender<BlurProcess>( *this, args );
+    doGilRender<BlurProcess>(*this, args);
 }
-
 }
 }
 }

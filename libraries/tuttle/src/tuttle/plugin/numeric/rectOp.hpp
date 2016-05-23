@@ -3,11 +3,12 @@
 
 #include <tuttle/common/math/rectOp.hpp>
 
-namespace tuttle {
-namespace plugin {
+namespace tuttle
+{
+namespace plugin
+{
 using namespace tuttle::common;
 }
 }
 
 #endif
-

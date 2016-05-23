@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace warp {
+namespace tuttle
+{
+namespace plugin
+{
+namespace warp
+{
 
-mDeclarePluginFactory( WarpPluginFactory, { }, { } );
-
+mDeclarePluginFactory(WarpPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

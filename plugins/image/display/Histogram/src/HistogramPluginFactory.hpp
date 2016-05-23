@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace histogram {
+namespace tuttle
+{
+namespace plugin
+{
+namespace histogram
+{
 
-mDeclarePluginFactory( HistogramPluginFactory, { }, { } );
-
+mDeclarePluginFactory(HistogramPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

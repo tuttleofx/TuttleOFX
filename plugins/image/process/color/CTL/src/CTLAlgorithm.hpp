@@ -3,13 +3,12 @@
 
 #include <terry/channel.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace ctl {
-
-
-
-
+namespace tuttle
+{
+namespace plugin
+{
+namespace ctl
+{
 }
 }
 }

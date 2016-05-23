@@ -4,14 +4,14 @@
 #include "MathOperatorPluginFactory.hpp"
 #include <tuttle/plugin/Plugin.hpp>
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::mathOperator::MathOperatorPluginFactory, "tuttle.mathoperator" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::mathOperator::MathOperatorPluginFactory, "tuttle.mathoperator");
 }
 }
-
+}

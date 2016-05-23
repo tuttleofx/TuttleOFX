@@ -3,14 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace idKeyer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace idKeyer
+{
 
 static const bool kSupportTiles = true;
 
-mDeclarePluginFactory( IdKeyerPluginFactory, {}, {} );
-
+mDeclarePluginFactory(IdKeyerPluginFactory, {}, {});
 }
 }
 }

@@ -1,16 +1,20 @@
 #include "InteractObject.hpp"
 
-namespace tuttle {
-namespace plugin {
-namespace interact {
+namespace tuttle
+{
+namespace plugin
+{
+namespace interact
+{
 
 InteractObject::InteractObject()
-	: _selected( false )
-{}
+    : _selected(false)
+{
+}
 
 InteractObject::~InteractObject()
-{}
-
+{
+}
 }
 }
 }

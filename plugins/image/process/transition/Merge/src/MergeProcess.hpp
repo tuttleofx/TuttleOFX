@@ -7,39 +7,41 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace merge {
+namespace tuttle
+{
+namespace plugin
+{
+namespace merge
+{
 
 /**
  * @brief Merge process
  */
-template<class View, class Functor>
+template <class View, class Functor>
 class MergeProcess : public ImageGilProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	
+    typedef typename View::value_type Pixel;
+
 protected:
-	MergePlugin& _plugin; ///< Rendering plugin
+    MergePlugin& _plugin; ///< Rendering plugin
 
-	MergeProcessParams<MergePlugin::Scalar> _params;
+    MergeProcessParams<MergePlugin::Scalar> _params;
 
-	View _srcViewA; ///< Source view A
-	View _srcViewB; ///< Source view B
-	boost::scoped_ptr<OFX::Image> _srcA;
-	boost::scoped_ptr<OFX::Image> _srcB;
-	OfxRectI _srcPixelRodA;
-	OfxRectI _srcPixelRodB;
+    View _srcViewA; ///< Source view A
+    View _srcViewB; ///< Source view B
+    boost::scoped_ptr<OFX::Image> _srcA;
+    boost::scoped_ptr<OFX::Image> _srcB;
+    OfxRectI _srcPixelRodA;
+    OfxRectI _srcPixelRodB;
 
 public:
-	MergeProcess( MergePlugin& instance );
+    MergeProcess(MergePlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

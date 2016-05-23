@@ -13,338 +13,326 @@
 #include <boost/serialization/export.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
-namespace imageEffect {
+namespace imageEffect
+{
 using namespace ::tuttle::ofx::imageEffect;
 class OfxhImageEffectNode;
 class OfxhImageEffectNodeDescriptor;
 }
-namespace attribute {
+namespace attribute
+{
 
 /**
  * @brief a clip image instance
  */
-class OfxhClipImage
-	: public attribute::OfxhClip
-	, virtual public OfxhClipImageAccessor
+class OfxhClipImage : public attribute::OfxhClip, virtual public OfxhClipImageAccessor
 {
 public:
-	typedef OfxhClipImage This;
+    typedef OfxhClipImage This;
 
 public:
-	OfxhClipImage( const attribute::OfxhClipImageDescriptor& desc );
-	OfxhClipImage( const OfxhClipImage& other );
+    OfxhClipImage(const attribute::OfxhClipImageDescriptor& desc);
+    OfxhClipImage(const OfxhClipImage& other);
 
-	virtual ~OfxhClipImage() {}
+    virtual ~OfxhClipImage() {}
 
-	bool operator==( const This& other ) const
-	{
-		if( OfxhClip::operator!=( other ) )
-			return false;
-		return true;
-	}
+    bool operator==(const This& other) const
+    {
+        if(OfxhClip::operator!=(other))
+            return false;
+        return true;
+    }
 
-	bool operator!=( const This& other ) const { return !This::operator==( other ); }
+    bool operator!=(const This& other) const { return !This::operator==(other); }
 
-	virtual OfxhClipImage* clone() const                    = 0;
-	virtual std::string    getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
-	virtual std::string    getClipIdentifier() const = 0;
+    virtual OfxhClipImage* clone() const = 0;
+    virtual std::string getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
+    virtual std::string getClipIdentifier() const = 0;
 
-	/**
-	 * get a handle on the clip descriptor for the C api
-	 */
-	OfxImageClipHandle getOfxImageClipHandle() const
-	{
-		return ( OfxImageClipHandle ) this;
-	}
+    /**
+     * get a handle on the clip descriptor for the C api
+     */
+    OfxImageClipHandle getOfxImageClipHandle() const { return (OfxImageClipHandle) this; }
 
-	/**
-	 * @brief fetch depth of all chromatic component in this clip
-	 *
-	 *   kOfxBitDepthNone (implying a clip is unconnected, not valid for an image)
-	 *   kOfxBitDepthByte
-	 *   kOfxBitDepthShort
-	 *   kOfxBitDepthFloat
-	 */
-	const std::string& getBitDepthString() const
-	{
-		return getProperties().getStringProperty( kOfxImageEffectPropPixelDepth );
-	}
+    /**
+     * @brief fetch depth of all chromatic component in this clip
+     *
+     *   kOfxBitDepthNone (implying a clip is unconnected, not valid for an image)
+     *   kOfxBitDepthByte
+     *   kOfxBitDepthShort
+     *   kOfxBitDepthFloat
+     */
+    const std::string& getBitDepthString() const { return getProperties().getStringProperty(kOfxImageEffectPropPixelDepth); }
 
-	/**
-	 * @brief fetch depth of all chromatic component in this clip
-	 *
-	 * 0 (implying a clip is unconnected, not valid for an image),
-	 * 8,
-	 * 16,
-	 * 32
-	 */
-	imageEffect::EBitDepth getBitDepth() const
-	{
-		const std::string& s = getBitDepthString();
+    /**
+     * @brief fetch depth of all chromatic component in this clip
+     *
+     * 0 (implying a clip is unconnected, not valid for an image),
+     * 8,
+     * 16,
+     * 32
+     */
+    imageEffect::EBitDepth getBitDepth() const
+    {
+        const std::string& s = getBitDepthString();
 
-		return imageEffect::mapBitDepthStringToEnum( s );
-	}
-	
-	std::size_t getBitDepthMemorySize() const
-	{
-		return imageEffect::bitDepthMemorySize( getBitDepth() );
-	}
-	
-	std::size_t getPixelMemorySize() const
-	{
-		return getBitDepthMemorySize() * getNbComponents();
-	}
+        return imageEffect::mapBitDepthStringToEnum(s);
+    }
 
-	/** set the current pixel depth
-	 * called by clip preferences action
-	 */
-	void setBitDepthString( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
-	{
-		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+    std::size_t getBitDepthMemorySize() const { return imageEffect::bitDepthMemorySize(getBitDepth()); }
 
-		prop.setValue( s, 0, modifiedBy );
-	}
+    std::size_t getPixelMemorySize() const { return getBitDepthMemorySize() * getNbComponents(); }
 
-	void setBitDepth( const imageEffect::EBitDepth bitDepth, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
-	{
-		setBitDepthString( mapBitDepthEnumToString( bitDepth ), modifiedBy );
-	}
+    /** set the current pixel depth
+     * called by clip preferences action
+     */
+    void setBitDepthString(const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost)
+    {
+        property::String& prop = getEditableProperties().fetchLocalStringProperty(kOfxImageEffectPropPixelDepth);
 
-	void setBitDepthStringIfUpper( const std::string& s )
-	{
-		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+        prop.setValue(s, 0, modifiedBy);
+    }
 
-		if( ofx::imageEffect::mapBitDepthStringToEnum( s ) > getBitDepth() ) // we can increase the bit depth but not decrease
-			prop.setValue( s );
-	}
+    void setBitDepth(const imageEffect::EBitDepth bitDepth,
+                     const property::EModifiedBy modifiedBy = property::eModifiedByHost)
+    {
+        setBitDepthString(mapBitDepthEnumToString(bitDepth), modifiedBy);
+    }
 
-	void setBitDepthStringIfUpperAndNotModifiedByPlugin( const std::string& s )
-	{
-		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+    void setBitDepthStringIfUpper(const std::string& s)
+    {
+        property::String& prop = getEditableProperties().fetchLocalStringProperty(kOfxImageEffectPropPixelDepth);
 
-		if( prop.getModifiedBy() != property::eModifiedByPlugin && // if not modified by plugin
-		    ofx::imageEffect::mapBitDepthStringToEnum( s ) > getBitDepth() ) // we can increase the bit depth but not decrease
-			prop.setValue( s );
-	}
+        if(ofx::imageEffect::mapBitDepthStringToEnum(s) > getBitDepth()) // we can increase the bit depth but not decrease
+            prop.setValue(s);
+    }
 
-	/** Pixel Aspect Ratio
-	 *  The pixel aspect ratio of a clip or image.
-	 */
-	const double getPixelAspectRatio() const
-	{
-		return getProperties().getDoubleProperty( kOfxImagePropPixelAspectRatio );
-	}
+    void setBitDepthStringIfUpperAndNotModifiedByPlugin(const std::string& s)
+    {
+        property::String& prop = getEditableProperties().fetchLocalStringProperty(kOfxImageEffectPropPixelDepth);
 
-	/**
-	 * set the current pixel aspect ratio
-	 * called by clip preferences action
-	 */
-	void setPixelAspectRatio( const double& s, const property::EModifiedBy modifiedBy )
-	{
-		property::Double& prop = getEditableProperties().fetchLocalDoubleProperty( kOfxImagePropPixelAspectRatio );
+        if(prop.getModifiedBy() != property::eModifiedByPlugin &&        // if not modified by plugin
+           ofx::imageEffect::mapBitDepthStringToEnum(s) > getBitDepth()) // we can increase the bit depth but not decrease
+            prop.setValue(s);
+    }
 
-		prop.setValue( s, 0, modifiedBy );
-	}
+    /** Pixel Aspect Ratio
+     *  The pixel aspect ratio of a clip or image.
+     */
+    const double getPixelAspectRatio() const { return getProperties().getDoubleProperty(kOfxImagePropPixelAspectRatio); }
 
-	/** Components that can be fetched from this clip -
-	 *
-	 *  kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
-	 *  kOfxImageComponentRGBA
-	 *  kOfxImageComponentAlpha
-	 *  and any custom ones you may think of
-	 */
-	const std::string& getComponentsString() const
-	{
-		return getProperties().getStringProperty( kOfxImageEffectPropComponents );
-	}
+    /**
+     * set the current pixel aspect ratio
+     * called by clip preferences action
+     */
+    void setPixelAspectRatio(const double& s, const property::EModifiedBy modifiedBy)
+    {
+        property::Double& prop = getEditableProperties().fetchLocalDoubleProperty(kOfxImagePropPixelAspectRatio);
 
-	/** Components that can be fetched from this clip -
-	 *
-	 *  kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
-	 *  kOfxImageComponentRGBA
-	 *  kOfxImageComponentRGB
-	 *  kOfxImageComponentAlpha
-	 *  and any custom ones you may think of
-	 */
-	const imageEffect::EPixelComponent getComponents() const
-	{
-		return imageEffect::mapPixelComponentStringToEnum( getComponentsString() );
-	}
+        prop.setValue(s, 0, modifiedBy);
+    }
 
-	/**
-	 * Number of values for this Components.
-	 */
-	const std::size_t getNbComponents() const
-	{
-		return imageEffect::numberOfComponents( getComponents() );
-	}
+    /** Components that can be fetched from this clip -
+     *
+     *  kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
+     *  kOfxImageComponentRGBA
+     *  kOfxImageComponentAlpha
+     *  and any custom ones you may think of
+     */
+    const std::string& getComponentsString() const
+    {
+        return getProperties().getStringProperty(kOfxImageEffectPropComponents);
+    }
 
-	/**
-	 * set the current set of components
-	 * called by clip preferences action
-	 */
-	void setComponentsString( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
-	{
-		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
+    /** Components that can be fetched from this clip -
+     *
+     *  kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
+     *  kOfxImageComponentRGBA
+     *  kOfxImageComponentRGB
+     *  kOfxImageComponentAlpha
+     *  and any custom ones you may think of
+     */
+    const imageEffect::EPixelComponent getComponents() const
+    {
+        return imageEffect::mapPixelComponentStringToEnum(getComponentsString());
+    }
 
-		prop.setValue( s, 0, modifiedBy );
-	}
-	void setComponents( const imageEffect::EPixelComponent& comp, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
-	{
-		setComponentsString( imageEffect::mapPixelComponentEnumToString( comp ), modifiedBy );
-	}
-	
-	void setComponentsStringIfNotModifiedByPlugin( const std::string& s )
-	{
-		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
+    /**
+     * Number of values for this Components.
+     */
+    const std::size_t getNbComponents() const { return imageEffect::numberOfComponents(getComponents()); }
 
-		if( prop.getModifiedBy() != property::eModifiedByPlugin )
-			prop.setValue( s );
-	}
+    /**
+     * set the current set of components
+     * called by clip preferences action
+     */
+    void setComponentsString(const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost)
+    {
+        property::String& prop = getEditableProperties().fetchLocalStringProperty(kOfxImageEffectPropComponents);
 
-	/** Get the Raw Unmapped Pixel Depth from the host for chromatic planes
-	 *
-	 *  @returns
-	 *     - kOfxBitDepthNone (implying a clip is unconnected image)
-	 *     - kOfxBitDepthByte
-	 *     - kOfxBitDepthShort
-	 *     - kOfxBitDepthFloat
-	 */
-	virtual const std::string& getUnmappedBitDepth() const //= 0;
-	{
-		return getProperties().getStringProperty( kOfxImageClipPropUnmappedPixelDepth );
-	}
+        prop.setValue(s, 0, modifiedBy);
+    }
+    void setComponents(const imageEffect::EPixelComponent& comp,
+                       const property::EModifiedBy modifiedBy = property::eModifiedByHost)
+    {
+        setComponentsString(imageEffect::mapPixelComponentEnumToString(comp), modifiedBy);
+    }
 
-	/** Get the Raw Unmapped Components from the host
-	 *
-	 *  @returns
-	 *      - kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
-	 *      - kOfxImageComponentRGBA
-	 *      - kOfxImageComponentAlpha
-	 */
-	virtual const std::string& getUnmappedComponents() const //= 0;
-	{
-		return getProperties().getStringProperty( kOfxImageClipPropUnmappedComponents );
-	}
+    void setComponentsStringIfNotModifiedByPlugin(const std::string& s)
+    {
+        property::String& prop = getEditableProperties().fetchLocalStringProperty(kOfxImageEffectPropComponents);
 
-	/** PreMultiplication -
-	 *
-	 *  kOfxImageOpaque - the image is opaque and so has no premultiplication state
-	 *  kOfxImagePreMultiplied - the image is premultiplied by it's alpha
-	 *  kOfxImageUnPreMultiplied - the image is unpremultiplied
-	 */
-	virtual const std::string& getPremult() const //= 0;
-	{
-		return getProperties().getStringProperty( kOfxImageEffectPropPreMultiplication );
-	}
+        if(prop.getModifiedBy() != property::eModifiedByPlugin)
+            prop.setValue(s);
+    }
 
-	/** Frame Rate -
-	 *
-	 *  The frame rate of a clip or instance's project.
-	 */
-	virtual double getFrameRate() const //= 0;
-	{
-		return getProperties().getDoubleProperty( kOfxImageEffectPropFrameRate );
-	}
+    /** Get the Raw Unmapped Pixel Depth from the host for chromatic planes
+     *
+     *  @returns
+     *     - kOfxBitDepthNone (implying a clip is unconnected image)
+     *     - kOfxBitDepthByte
+     *     - kOfxBitDepthShort
+     *     - kOfxBitDepthFloat
+     */
+    virtual const std::string& getUnmappedBitDepth() const //= 0;
+    {
+        return getProperties().getStringProperty(kOfxImageClipPropUnmappedPixelDepth);
+    }
 
-	/** Frame Range (startFrame, endFrame) -
-	 *
-	 *  The frame range over which a clip has images.
-	 */
-	virtual void getFrameRange( double& startFrame, double& endFrame ) const //= 0;
-	{
-		startFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
-		endFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
-	}
-	
-	OfxRangeD getFrameRange() const
-	{
-		OfxRangeD frameRange;
-		getFrameRange( frameRange.min, frameRange.max );
-		return frameRange;
-	}
+    /** Get the Raw Unmapped Components from the host
+     *
+     *  @returns
+     *      - kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
+     *      - kOfxImageComponentRGBA
+     *      - kOfxImageComponentAlpha
+     */
+    virtual const std::string& getUnmappedComponents() const //= 0;
+    {
+        return getProperties().getStringProperty(kOfxImageClipPropUnmappedComponents);
+    }
 
-	/**  Field Order - Which spatial field occurs temporally first in a frame.
-	 *  @returns
-	 *   - kOfxImageFieldNone - the clip material is unfielded
-	 *   - kOfxImageFieldLower - the clip material is fielded, with image rows 0,2,4.... occuring first in a frame
-	 *   - kOfxImageFieldUpper - the clip material is fielded, with image rows line 1,3,5.... occuring first in a frame
-	 */
-	virtual const std::string& getFieldOrder() const //= 0;
-	{
-		return getProperties().getStringProperty( kOfxImageClipPropFieldOrder );
-	}
+    /** PreMultiplication -
+     *
+     *  kOfxImageOpaque - the image is opaque and so has no premultiplication state
+     *  kOfxImagePreMultiplied - the image is premultiplied by it's alpha
+     *  kOfxImageUnPreMultiplied - the image is unpremultiplied
+     */
+    virtual const std::string& getPremult() const //= 0;
+    {
+        return getProperties().getStringProperty(kOfxImageEffectPropPreMultiplication);
+    }
 
-	/**
-	 * @todo tuttle: This function has been added here. Why was it not before?
-	 */
-	virtual const std::string& getFieldExtraction() const //= 0;
-	{
-		return getProperties().getStringProperty( kOfxImageClipPropFieldExtraction );
-	}
+    /** Frame Rate -
+     *
+     *  The frame rate of a clip or instance's project.
+     */
+    virtual double getFrameRate() const //= 0;
+    {
+        return getProperties().getDoubleProperty(kOfxImageEffectPropFrameRate);
+    }
 
-	/** Unmapped Frame Rate -
-	 *
-	 *  The unmaped frame range over which an output clip has images.
-	 */
-	virtual const double getUnmappedFrameRate() const //= 0;
-	{
-		return getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRate );
-	}
+    /** Frame Range (startFrame, endFrame) -
+     *
+     *  The frame range over which a clip has images.
+     */
+    virtual void getFrameRange(double& startFrame, double& endFrame) const //= 0;
+    {
+        startFrame = getProperties().getDoubleProperty(kOfxImageEffectPropFrameRange, 0);
+        endFrame = getProperties().getDoubleProperty(kOfxImageEffectPropFrameRange, 1);
+    }
 
-	/** Unmapped Frame Range -
-	 *
-	 *  The unmaped frame range over which an output clip has images.
-	 */
-	virtual void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const //= 0;
-	{
-		unmappedStartFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 0 );
-		unmappedEndFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 1 );
-	}
+    OfxRangeD getFrameRange() const
+    {
+        OfxRangeD frameRange;
+        getFrameRange(frameRange.min, frameRange.max);
+        return frameRange;
+    }
 
-	/** Continuous Samples -
-	 *
-	 *  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
-	 *  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
-	 */
-	virtual const bool getContinuousSamples() const //= 0;
-	{
-		return getProperties().getDoubleProperty( kOfxImageClipPropContinuousSamples ) != 0;
-	}
+    /**  Field Order - Which spatial field occurs temporally first in a frame.
+     *  @returns
+     *   - kOfxImageFieldNone - the clip material is unfielded
+     *   - kOfxImageFieldLower - the clip material is fielded, with image rows 0,2,4.... occuring first in a frame
+     *   - kOfxImageFieldUpper - the clip material is fielded, with image rows line 1,3,5.... occuring first in a frame
+     */
+    virtual const std::string& getFieldOrder() const //= 0;
+    {
+        return getProperties().getStringProperty(kOfxImageClipPropFieldOrder);
+    }
 
-	/**  override this to fill in the image at the given time.
-	 *  The bounds of the image on the image plane should be
-	 *  'appropriate', typically the value returned in getRegionsOfInterest
-	 *  on the effect instance. Outside a render call, the optionalBounds should
-	 *  be 'appropriate' for the.
-	 *  If bounds is not null, fetch the indicated section of the canonical image plane.
-	 */
-	virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage( const OfxTime time, const OfxRectD* optionalBounds = NULL ) = 0;
+    /**
+     * @todo tuttle: This function has been added here. Why was it not before?
+     */
+    virtual const std::string& getFieldExtraction() const //= 0;
+    {
+        return getProperties().getStringProperty(kOfxImageClipPropFieldExtraction);
+    }
 
-	/// override this to return the rod on the clip
-	virtual OfxRectD fetchRegionOfDefinition( const OfxTime time ) const = 0;
+    /** Unmapped Frame Rate -
+     *
+     *  The unmaped frame range over which an output clip has images.
+     */
+    virtual const double getUnmappedFrameRate() const //= 0;
+    {
+        return getProperties().getDoubleProperty(kOfxImageEffectPropUnmappedFrameRate);
+    }
 
-	/** given the colour component, find the nearest set of supported colour components
-	 *  override this for extra wierd custom component depths
-	 */
-	virtual const std::string& findSupportedComp( const std::string& s ) const;
+    /** Unmapped Frame Range -
+     *
+     *  The unmaped frame range over which an output clip has images.
+     */
+    virtual void getUnmappedFrameRange(double& unmappedStartFrame, double& unmappedEndFrame) const //= 0;
+    {
+        unmappedStartFrame = getProperties().getDoubleProperty(kOfxImageEffectPropUnmappedFrameRange, 0);
+        unmappedEndFrame = getProperties().getDoubleProperty(kOfxImageEffectPropUnmappedFrameRange, 1);
+    }
+
+    /** Continuous Samples -
+     *
+     *  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
+     *  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered
+     * anywhen).
+     */
+    virtual const bool getContinuousSamples() const //= 0;
+    {
+        return getProperties().getDoubleProperty(kOfxImageClipPropContinuousSamples) != 0;
+    }
+
+    /**  override this to fill in the image at the given time.
+     *  The bounds of the image on the image plane should be
+     *  'appropriate', typically the value returned in getRegionsOfInterest
+     *  on the effect instance. Outside a render call, the optionalBounds should
+     *  be 'appropriate' for the.
+     *  If bounds is not null, fetch the indicated section of the canonical image plane.
+     */
+    virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage(const OfxTime time,
+                                                                const OfxRectD* optionalBounds = NULL) = 0;
+
+    /// override this to return the rod on the clip
+    virtual OfxRectD fetchRegionOfDefinition(const OfxTime time) const = 0;
+
+    /** given the colour component, find the nearest set of supported colour components
+     *  override this for extra wierd custom component depths
+     */
+    virtual const std::string& findSupportedComp(const std::string& s) const;
 };
 
 #ifndef SWIG
 /**
  * @brief to make ClipImageInstance clonable (for use in boost::ptr_container)
  */
-inline OfxhClipImage* new_clone( const OfxhClipImage& a )
+inline OfxhClipImage* new_clone(const OfxhClipImage& a)
 {
-	return a.clone();
+    return a.clone();
 }
 
 #endif
-
 }
 }
 }
@@ -352,9 +340,13 @@ inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 
 #ifndef SWIG
 // force boost::is_virtual_base_of value (used by boost::serialization)
-namespace boost {
-template<>
-struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
+namespace boost
+{
+template <>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>
+    : public mpl::true_
+{
+};
 }
 #endif
 

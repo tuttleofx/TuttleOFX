@@ -9,11 +9,10 @@ namespace OFX
 {
 namespace Plugin
 {
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+void getPluginIDs(OFX::PluginFactoryArray& ids)
 {
-	mAppendPluginFactory( ids, tuttle::plugin::png::reader::PngReaderPluginFactory, "tuttle.pngreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::png::writer::PngWriterPluginFactory, "tuttle.pngwriter" );
+    mAppendPluginFactory(ids, tuttle::plugin::png::reader::PngReaderPluginFactory, "tuttle.pngreader");
+    mAppendPluginFactory(ids, tuttle::plugin::png::writer::PngWriterPluginFactory, "tuttle.pngwriter");
 }
-
 }
 }

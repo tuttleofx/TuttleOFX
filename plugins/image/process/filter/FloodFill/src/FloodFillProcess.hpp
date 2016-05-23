@@ -4,37 +4,40 @@
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace floodFill {
+namespace tuttle
+{
+namespace plugin
+{
+namespace floodFill
+{
 
 /**
  * @brief FloodFill process
  *
  */
-template<class View>
+template <class View>
 class FloodFillProcess : public ImageGilFilterProcessor<View>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::channel_type<View>::type Channel;
-	typedef float Scalar;
-protected :
-    FloodFillPlugin&    _plugin;            ///< Rendering plugin
-	FloodFillProcessParams<Scalar> _params; ///< parameters
+    typedef typename View::value_type Pixel;
+    typedef typename boost::gil::channel_type<View>::type Channel;
+    typedef float Scalar;
 
-	bool _isConstantImage;
-	Scalar _lowerThres;
-	Scalar _upperThres;
+protected:
+    FloodFillPlugin& _plugin;               ///< Rendering plugin
+    FloodFillProcessParams<Scalar> _params; ///< parameters
+
+    bool _isConstantImage;
+    Scalar _lowerThres;
+    Scalar _upperThres;
 
 public:
-    FloodFillProcess( FloodFillPlugin& effect );
+    FloodFillProcess(FloodFillPlugin& effect);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

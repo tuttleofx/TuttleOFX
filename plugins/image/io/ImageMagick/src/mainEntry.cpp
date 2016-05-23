@@ -5,16 +5,19 @@
 #include "reader/ImageMagickReaderPluginFactory.hpp"
 #include "writer/ImageMagickWriterPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::imagemagick::reader::ImageMagickReaderPluginFactory, "tuttle.imagemagickreader" );
-	// Nothing for the moment
-	// Is it possible to get dynamically the list of parameters of each writers ?
-	//mAppendPluginFactory( ids, tuttle::plugin::imagemagick::writer::ImageMagickWriterPluginFactory, "tuttle.imagemagickwriter" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::imagemagick::reader::ImageMagickReaderPluginFactory,
+                         "tuttle.imagemagickreader");
+    // Nothing for the moment
+    // Is it possible to get dynamically the list of parameters of each writers ?
+    // mAppendPluginFactory( ids, tuttle::plugin::imagemagick::writer::ImageMagickWriterPluginFactory,
+    // "tuttle.imagemagickwriter" );
+}
 }
 }

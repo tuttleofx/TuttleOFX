@@ -1,5 +1,5 @@
 #define OFXPLUGIN_VERSION_MAJOR 1
-#define OFXPLUGIN_VERSION_MINOR 0
+#define OFXPLUGIN_VERSION_MINOR 1
 
 #include <tuttle/plugin/Plugin.hpp>
 #include "writer/DPXWriterPluginFactory.hpp"
@@ -8,10 +8,9 @@ namespace OFX
 {
 namespace Plugin
 {
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+void getPluginIDs(OFX::PluginFactoryArray& ids)
 {
-	mAppendPluginFactory( ids, tuttle::plugin::dpx::writer::DPXWriterPluginFactory, "tuttle.dpxwriter" );
+    mAppendPluginFactory(ids, tuttle::plugin::dpx::writer::DPXWriterPluginFactory, "tuttle.dpxwriter");
 }
-
 }
 }

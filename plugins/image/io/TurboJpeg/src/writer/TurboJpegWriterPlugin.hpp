@@ -5,18 +5,22 @@
 
 #include <tuttle/ioplugin/context/WriterPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace turboJpeg {
-namespace writer {
+namespace tuttle
+{
+namespace plugin
+{
+namespace turboJpeg
+{
+namespace writer
+{
 
 struct TurboJpegWriterProcessParams
 {
-	std::string            filepath;
-	ETurboJpegOptimization optimization;
-	ETurboJpegSubsampling  subsampling;
-	int                    quality;
-	int                    premult;
+    std::string filepath;
+    ETurboJpegOptimization optimization;
+    ETurboJpegSubsampling subsampling;
+    int quality;
+    int premult;
 };
 
 /**
@@ -25,20 +29,19 @@ struct TurboJpegWriterProcessParams
 class TurboJpegWriterPlugin : public WriterPlugin
 {
 public:
-	TurboJpegWriterPlugin( OfxImageEffectHandle handle );
+    TurboJpegWriterPlugin(OfxImageEffectHandle handle);
 
 public:
-	TurboJpegWriterProcessParams getProcessParams( const OfxTime time );
+    TurboJpegWriterProcessParams getProcessParams(const OfxTime time);
 
-	void render( const OFX::RenderArguments &args );
-	
+    void render(const OFX::RenderArguments& args);
+
 public:
-	OFX::BooleanParam* _paramPremult;      ///< premult output by alpha
-	OFX::IntParam*     _paramQuality;      ///< quality / compression for jpeg
-	OFX::ChoiceParam*  _paramSubsampling;  ///< select the subsampling method (4:4:4, 4:2:2, 4:2:0; Gray, 4:4:0)
-	OFX::ChoiceParam*  _paramOptimization;  ///< TurboJpeg SIMD optimization
+    OFX::BooleanParam* _paramPremult;     ///< premult output by alpha
+    OFX::IntParam* _paramQuality;         ///< quality / compression for jpeg
+    OFX::ChoiceParam* _paramSubsampling;  ///< select the subsampling method (4:4:4, 4:2:2, 4:2:0; Gray, 4:4:0)
+    OFX::ChoiceParam* _paramOptimization; ///< TurboJpeg SIMD optimization
 };
-
 }
 }
 }

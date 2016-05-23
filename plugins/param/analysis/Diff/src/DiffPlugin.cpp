@@ -3,56 +3,56 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace quality {
-
-
-DiffPlugin::DiffPlugin( OfxImageEffectHandle handle )
-	: OFX::ImageEffect( handle )
+namespace tuttle
 {
-	_clipSrcA = fetchClip( kDiffSourceA );
-	_clipSrcB = fetchClip( kDiffSourceB );
-	_clipDst  = fetchClip( kOfxImageEffectOutputClipName );
+namespace plugin
+{
+namespace quality
+{
 
-	_measureFunction = fetchChoiceParam ( kMeasureFunction );
-	_qualityMesure   = fetchRGBAParam( kOutputQualityMesure );
+DiffPlugin::DiffPlugin(OfxImageEffectHandle handle)
+    : OFX::ImageEffect(handle)
+{
+    _clipSrcA = fetchClip(kDiffSourceA);
+    _clipSrcB = fetchClip(kDiffSourceB);
+    _clipDst = fetchClip(kOfxImageEffectOutputClipName);
+
+    _measureFunction = fetchChoiceParam(kMeasureFunction);
+    _qualityMesure = fetchRGBAParam(kOutputQualityMesure);
 }
 
 DiffProcessParams DiffPlugin::getProcessParams() const
 {
-	DiffProcessParams params;
-	params.measureFunction = static_cast<EMeasureFunction>( _measureFunction->getValue() );
+    DiffProcessParams params;
+    params.measureFunction = static_cast<EMeasureFunction>(_measureFunction->getValue());
 
-	return params;
+    return params;
 }
 
-void DiffPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
+void DiffPlugin::changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName)
 {
 }
 
-bool DiffPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+bool DiffPlugin::getRegionOfDefinition(const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod)
 {
-	const OfxRectD irod = rectanglesIntersection( _clipSrcA->getCanonicalRod( args.time ),
-						      _clipSrcB->getCanonicalRod( args.time ) );
+    const OfxRectD irod =
+        rectanglesIntersection(_clipSrcA->getCanonicalRod(args.time), _clipSrcB->getCanonicalRod(args.time));
 
-	// Intersection of A & B
-	rod.x1 = irod.x1;
-	rod.x2 = irod.x2;
-	rod.y1 = irod.y1;
-	rod.y2 = irod.y2;
-	return true;
+    // Intersection of A & B
+    rod.x1 = irod.x1;
+    rod.x2 = irod.x2;
+    rod.y1 = irod.y1;
+    rod.y2 = irod.y2;
+    return true;
 }
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void DiffPlugin::render( const OFX::RenderArguments& args )
+void DiffPlugin::render(const OFX::RenderArguments& args)
 {
-	doGilRender<DiffProcess>( *this, args );
+    doGilRender<DiffProcess>(*this, args);
 }
-
-
 }
 }
 }

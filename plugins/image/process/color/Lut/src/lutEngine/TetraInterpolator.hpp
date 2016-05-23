@@ -5,15 +5,18 @@
 #include "AbstractLut.hpp"
 #include "Color.hpp"
 
-namespace tuttle {
+namespace tuttle
+{
 
 class TetraInterpolator : public Interpolator
 {
 public:
-	TetraInterpolator() : Interpolator() {}
-	Color interpolate( const AbstractLut* lut, const double x, const double y, const double z ) const;
+    TetraInterpolator()
+        : Interpolator()
+    {
+    }
+    Color interpolate(const AbstractLut* lut, const double x, const double y, const double z) const;
 };
-
 }
 
 #endif

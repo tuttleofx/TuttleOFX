@@ -30,148 +30,142 @@
 #include "OfxhBinary.hpp"
 #include <tuttle/host/exceptions.hpp>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+namespace tuttle
+{
+namespace host
+{
+namespace ofx
+{
 
 OfxhBinary::OfxhBinary()
-	: _binaryPath()
-	, _invalid( false )
-	, _dlHandle( NULL )
-	, _exists( false )
-	, _time( 0 )
-	, _size( 0 )
-	, _users( 0 )
-{}
-
-OfxhBinary::OfxhBinary( const std::string& binaryPath )
-	: _binaryPath( binaryPath )
-	, _invalid( false )
-	, _dlHandle( NULL )
-	, _exists( false )
-	, _time( 0 )
-	, _size( 0 )
-	, _users( 0 )
+    : _binaryPath()
+    , _invalid(false)
+    , _dlHandle(NULL)
+    , _exists(false)
+    , _time(0)
+    , _size(0)
+    , _users(0)
 {
-	init( binaryPath );
 }
 
-void OfxhBinary::init( const std::string& binaryPath )
+OfxhBinary::OfxhBinary(const std::string& binaryPath)
+    : _binaryPath(binaryPath)
+    , _invalid(false)
+    , _dlHandle(NULL)
+    , _exists(false)
+    , _time(0)
+    , _size(0)
+    , _users(0)
 {
-	struct stat sb;
-	
-	_binaryPath = binaryPath;
+    init(binaryPath);
+}
 
-	if( stat( binaryPath.c_str(), &sb ) != 0 )
-	{
-		_invalid = true;
-	}
-	else
-	{
-		_time = sb.st_mtime;
-		_size = sb.st_size;
-	}
+void OfxhBinary::init(const std::string& binaryPath)
+{
+    struct stat sb;
+
+    _binaryPath = binaryPath;
+
+    if(stat(binaryPath.c_str(), &sb) != 0)
+    {
+        _invalid = true;
+    }
+    else
+    {
+        _time = sb.st_mtime;
+        _size = sb.st_size;
+    }
 }
 
 // actually open the binary.
 void OfxhBinary::load()
 {
-	if( _invalid )
-		return;
+    if(_invalid)
+        return;
 
-	#if defined ( UNIX )
-	_dlHandle = dlopen( _binaryPath.c_str(), RTLD_LAZY );
-	#else
-	//std::cout << "LoadLibrary" << _binaryPath << std::endl;
-	_dlHandle = LoadLibrary( _binaryPath.c_str() );
-	//std::cout << "_dlHandle: " << _dlHandle << std::endl;
-	#endif
-	if( _dlHandle == 0 )
-	{
-		_invalid = true;
-		#if defined ( UNIX )
-			BOOST_THROW_EXCEPTION( exception::File()
-				<< exception::user() + "Couldn't open library because " + quotes(dlerror())
-				<< exception::filename( _binaryPath ) );
-		#else
-			LPVOID lpMsgBuf = NULL;
-			DWORD err       = GetLastError();
+#if defined(UNIX)
+    _dlHandle = dlopen(_binaryPath.c_str(), RTLD_LAZY);
+#else
+    // std::cout << "LoadLibrary" << _binaryPath << std::endl;
+    _dlHandle = LoadLibrary(_binaryPath.c_str());
+// std::cout << "_dlHandle: " << _dlHandle << std::endl;
+#endif
+    if(_dlHandle == 0)
+    {
+        _invalid = true;
+#if defined(UNIX)
+        BOOST_THROW_EXCEPTION(exception::File() << exception::user() + "Couldn't open library because " + quotes(dlerror())
+                                                << exception::filename(_binaryPath));
+#else
+        LPVOID lpMsgBuf = NULL;
+        DWORD err = GetLastError();
 
-			FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
-						   FORMAT_MESSAGE_FROM_SYSTEM |
-						   FORMAT_MESSAGE_IGNORE_INSERTS,
-						   NULL,
-						   err,
-						   MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-						   (LPTSTR) &lpMsgBuf,
-						   0, NULL );
-			exception::user userMsg;
-			userMsg + "Couldn't open library because " + quotes((char*)lpMsgBuf) + " was returned";
-			if( lpMsgBuf != NULL )
-			{
-				LocalFree( lpMsgBuf );
-			}
-			BOOST_THROW_EXCEPTION( exception::File()
-				<< userMsg
-				<< exception::filename( _binaryPath ) );
-		#endif
-	}
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err,
+                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+        exception::user userMsg;
+        userMsg + "Couldn't open library because " + quotes((char*)lpMsgBuf) + " was returned";
+        if(lpMsgBuf != NULL)
+        {
+            LocalFree(lpMsgBuf);
+        }
+        BOOST_THROW_EXCEPTION(exception::File() << userMsg << exception::filename(_binaryPath));
+#endif
+    }
 }
 
 /// close the binary
 void OfxhBinary::unload()
 {
-	if( _dlHandle != 0 )
-	{
-		#if defined ( UNIX )
-		dlclose( _dlHandle );
-		#elif defined ( WINDOWS )
-		FreeLibrary( _dlHandle );
-		#endif
-		_dlHandle = 0;
-	}
+    if(_dlHandle != 0)
+    {
+#if defined(UNIX)
+        dlclose(_dlHandle);
+#elif defined(WINDOWS)
+        FreeLibrary(_dlHandle);
+#endif
+        _dlHandle = 0;
+    }
 }
 
 /// look up a symbol in the binary file and return it as a pointer.
 /// returns null pointer if not found.
-void* OfxhBinary::findSymbol( const std::string& symbol )
+void* OfxhBinary::findSymbol(const std::string& symbol)
 {
-	if( _invalid || _dlHandle == 0 )
-	{
-		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user() + "Error while loading plugin."
-			<< exception::dev() + "Can't search for symbol " + quotes( symbol ) + " (invalid:" + _invalid + ", dlHandle:" + _dlHandle + ")."
-			<< exception::filename( _binaryPath ) );
-	}
-	#if defined( UNIX )
-		return dlsym( _dlHandle, symbol.c_str() );
-	#elif defined ( WINDOWS )
-		return (void*)GetProcAddress( _dlHandle, symbol.c_str() );
-	#endif
+    if(_invalid || _dlHandle == 0)
+    {
+        BOOST_THROW_EXCEPTION(exception::File() << exception::user() + "Error while loading plugin."
+                                                << exception::dev() + "Can't search for symbol " + quotes(symbol) +
+                                                       " (invalid:" + _invalid + ", dlHandle:" + _dlHandle + ")."
+                                                << exception::filename(_binaryPath));
+    }
+#if defined(UNIX)
+    return dlsym(_dlHandle, symbol.c_str());
+#elif defined(WINDOWS)
+    return (void*)GetProcAddress(_dlHandle, symbol.c_str());
+#endif
 }
 
 void OfxhBinary::ref()
 {
-	if( _users == 0 )
-	{
-		load();
-	}
-	++_users;
+    if(_users == 0)
+    {
+        load();
+    }
+    ++_users;
 }
 
 void OfxhBinary::unref()
 {
-	--_users;
-	if( _users == 0 )
-	{
-		unload();
-	}
-	if( _users < 0 )
-	{
-		_users = 0;
-	}
+    --_users;
+    if(_users == 0)
+    {
+        unload();
+    }
+    if(_users < 0)
+    {
+        _users = 0;
+    }
 }
-
 }
 }
 }

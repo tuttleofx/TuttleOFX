@@ -3,13 +3,15 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace pushPixel {
-	mDeclarePluginFactory( PushPixelPluginFactory, { }, { } );
+namespace tuttle
+{
+namespace plugin
+{
+namespace pushPixel
+{
+mDeclarePluginFactory(PushPixelPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-

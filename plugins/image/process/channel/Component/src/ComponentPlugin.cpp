@@ -4,25 +4,27 @@
 
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace component {
-
-
-ComponentPlugin::ComponentPlugin( OfxImageEffectHandle handle )
-: ImageEffectGilPlugin( handle )
+namespace tuttle
 {
-//    _clipSrcMatte = fetchClip( kClipMatte );
-	_paramToComponent   = fetchChoiceParam( kParamTo );
-	_paramToGrayMethod  = fetchChoiceParam( kParamToGray );
-	_paramPremultiplied = fetchBooleanParam( kParamPremutliplied );
+namespace plugin
+{
+namespace component
+{
+
+ComponentPlugin::ComponentPlugin(OfxImageEffectHandle handle)
+    : ImageEffectGilPlugin(handle)
+{
+    //    _clipSrcMatte = fetchClip( kClipMatte );
+    _paramToComponent = fetchChoiceParam(kParamTo);
+    _paramToGrayMethod = fetchChoiceParam(kParamToGray);
+    _paramPremultiplied = fetchBooleanParam(kParamPremutliplied);
 }
 
-void ComponentPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void ComponentPlugin::changedParam(const OFX::InstanceChangedArgs& args, const std::string& paramName)
 {
 }
 
-//bool ComponentPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+// bool ComponentPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 //{
 //	ComponentProcessParams<Scalar> params = getProcessParams();
 //	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
@@ -41,7 +43,8 @@ void ComponentPlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 //	return false;
 //}
 //
-//void ComponentPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+// void ComponentPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois
+// )
 //{
 //	ComponentProcessParams<Scalar> params = getProcessParams();
 //	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
@@ -54,108 +57,109 @@ void ComponentPlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 //	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 //}
 
-bool ComponentPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
+bool ComponentPlugin::isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime)
 {
-//	ComponentProcessParams<Scalar> params = getProcessParams();
-//	if( params._in == params._out )
-//	{
-//		identityClip = _clipSrc;
-//		identityTime = args.time;
-//		return true;
-//	}
-	return false;
+    //	ComponentProcessParams<Scalar> params = getProcessParams();
+    //	if( params._in == params._out )
+    //	{
+    //		identityClip = _clipSrc;
+    //		identityTime = args.time;
+    //		return true;
+    //	}
+    return false;
 }
 
-void ComponentPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+void ComponentPlugin::getClipPreferences(OFX::ClipPreferencesSetter& clipPreferences)
 {
-	switch( _paramToComponent->getValue() )
-	{
-		case eConvertToGray:
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentAlpha );
-			break;
-		case eConvertToRGB:
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGB );
-			break;
-		case eConvertToRGBA:
-			clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-			break;
-	}
+    switch(_paramToComponent->getValue())
+    {
+        case eConvertToGray:
+            clipPreferences.setClipComponents(*this->_clipDst, OFX::ePixelComponentAlpha);
+            break;
+        case eConvertToRGB:
+            clipPreferences.setClipComponents(*this->_clipDst, OFX::ePixelComponentRGB);
+            break;
+        case eConvertToRGBA:
+            clipPreferences.setClipComponents(*this->_clipDst, OFX::ePixelComponentRGBA);
+            break;
+    }
 }
 /*
 template< typename dstComponents >
-void ComponentPlugin::renderWithDstComponent( const OFX::RenderArguments &args, OFX::EPixelComponent srcComponents, OFX::EBitDepth bitDepth )
+void ComponentPlugin::renderWithDstComponent( const OFX::RenderArguments &args, OFX::EPixelComponent srcComponents,
+OFX::EBitDepth bitDepth )
 {
-	using namespace boost::gil;
-	switch( srcComponents )
-	{
-		case OFX::ePixelComponentRGBA:
-		{
-			doGilRender<ComponentProcess, false, rgba_layout_t>( *this, args, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentRGB:
-		{
-			doGilRender<ComponentProcess, false, rgb_layout_t>( *this, args, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentAlpha:
-		{
-			doGilRender<ComponentProcess, false, gray_layout_t>( *this, args, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentCustom:
-		case OFX::ePixelComponentNone:
-		{
-			BOOST_THROW_EXCEPTION( exception::Unsupported()
-				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(srcComponents) + ") not supported by the plugin." );
-		}
-	}
+        using namespace boost::gil;
+        switch( srcComponents )
+        {
+                case OFX::ePixelComponentRGBA:
+                {
+                        doGilRender<ComponentProcess, false, rgba_layout_t>( *this, args, bitDepth );
+                        return;
+                }
+                case OFX::ePixelComponentRGB:
+                {
+                        doGilRender<ComponentProcess, false, rgb_layout_t>( *this, args, bitDepth );
+                        return;
+                }
+                case OFX::ePixelComponentAlpha:
+                {
+                        doGilRender<ComponentProcess, false, gray_layout_t>( *this, args, bitDepth );
+                        return;
+                }
+                case OFX::ePixelComponentCustom:
+                case OFX::ePixelComponentNone:
+                {
+                        BOOST_THROW_EXCEPTION( exception::Unsupported()
+                                << exception::user() + "Pixel components (" + mapPixelComponentEnumToString(srcComponents) +
+") not supported by the plugin." );
+                }
+        }
 }*/
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ComponentPlugin::render( const OFX::RenderArguments &args )
+void ComponentPlugin::render(const OFX::RenderArguments& args)
 {
-	//doGilRender<ComponentProcess>( *this, args );
-	// instantiate the render code based on the pixel depth of the dst clip
-	/*OFX::EBitDepth bitDepth            = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-	OFX::EPixelComponent srcComponents = _clipSrc->getPixelComponents();*/
+    // doGilRender<ComponentProcess>( *this, args );
+    // instantiate the render code based on the pixel depth of the dst clip
+    /*OFX::EBitDepth bitDepth            = _clipDst->getPixelDepth();
+    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
+    OFX::EPixelComponent srcComponents = _clipSrc->getPixelComponents();*/
 
-//	TUTTLE_LOG_INFO( _clipSrc->getPixelComponents() << " $$ " << _clipDst->getPixelComponents() );
-	
-	doGilRender2<ComponentProcess>( *this, args, *_clipSrc, *_clipDst );
-	/*
-	switch( dstComponents )
-	{
-		case OFX::ePixelComponentRGBA:
-		{
-			renderWithDstComponent<rgba_layout_t>( args, srcComponents, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentRGB:
-		{
-			renderWithDstComponent<rgb_layout_t>( args, srcComponents, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentAlpha:
-		{
-			renderWithDstComponent<gray_layout_t>( args, srcComponents, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentCustom:
-		case OFX::ePixelComponentNone:
-		{
-			BOOST_THROW_EXCEPTION( exception::Unsupported()
-				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(dstComponents) + ") not supported by the plugin." );
-		}
-	}
-	BOOST_THROW_EXCEPTION( exception::Unknown() );*/
+    //	TUTTLE_LOG_INFO( _clipSrc->getPixelComponents() << " $$ " << _clipDst->getPixelComponents() );
+
+    doGilRender2<ComponentProcess>(*this, args, *_clipSrc, *_clipDst);
+    /*
+    switch( dstComponents )
+    {
+            case OFX::ePixelComponentRGBA:
+            {
+                    renderWithDstComponent<rgba_layout_t>( args, srcComponents, bitDepth );
+                    return;
+            }
+            case OFX::ePixelComponentRGB:
+            {
+                    renderWithDstComponent<rgb_layout_t>( args, srcComponents, bitDepth );
+                    return;
+            }
+            case OFX::ePixelComponentAlpha:
+            {
+                    renderWithDstComponent<gray_layout_t>( args, srcComponents, bitDepth );
+                    return;
+            }
+            case OFX::ePixelComponentCustom:
+            case OFX::ePixelComponentNone:
+            {
+                    BOOST_THROW_EXCEPTION( exception::Unsupported()
+                            << exception::user() + "Pixel components (" + mapPixelComponentEnumToString(dstComponents) + ")
+    not supported by the plugin." );
+            }
+    }
+    BOOST_THROW_EXCEPTION( exception::Unknown() );*/
 }
-
-
 }
 }
 }

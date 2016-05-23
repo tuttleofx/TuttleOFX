@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "TextPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::text::TextPluginFactory, "tuttle.text" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::text::TextPluginFactory, "tuttle.text");
+}
 }
 }

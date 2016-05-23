@@ -3,14 +3,17 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace timeShift {
+namespace tuttle
+{
+namespace plugin
+{
+namespace timeShift
+{
 
-template<typename Scalar>
+template <typename Scalar>
 struct TimeShiftProcessParams
 {
-	Scalar _offset;
+    Scalar _offset;
 };
 
 /**
@@ -19,22 +22,22 @@ struct TimeShiftProcessParams
 class TimeShiftPlugin : public ImageEffectGilPlugin
 {
 public:
-	typedef float Scalar;
-public:
-	TimeShiftPlugin( OfxImageEffectHandle handle );
+    typedef float Scalar;
 
 public:
-	TimeShiftProcessParams<Scalar> getProcessParams() const;
-
-	bool getTimeDomain( OfxRangeD& range );
-	void getFramesNeeded( const OFX::FramesNeededArguments& args, OFX::FramesNeededSetter& frames );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
-	void render( const OFX::RenderArguments& args );
+    TimeShiftPlugin(OfxImageEffectHandle handle);
 
 public:
-	OFX::DoubleParam* _offset; ///< Time offset
+    TimeShiftProcessParams<Scalar> getProcessParams() const;
+
+    bool getTimeDomain(OfxRangeD& range);
+    void getFramesNeeded(const OFX::FramesNeededArguments& args, OFX::FramesNeededSetter& frames);
+    bool isIdentity(const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime);
+    void render(const OFX::RenderArguments& args);
+
+public:
+    OFX::DoubleParam* _offset; ///< Time offset
 };
-
 }
 }
 }

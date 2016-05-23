@@ -4,38 +4,36 @@
 
 #include <limits>
 
-namespace tuttle {
-namespace plugin {
-namespace move2D {
+namespace tuttle
+{
+namespace plugin
+{
+namespace move2D
+{
 
 static const bool kSupportTiles = true;
-
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void Move2DPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void Move2DPluginFactory::describe(OFX::ImageEffectDescriptor& desc)
 {
-	desc.setLabels(
-		"TuttleMove2D",
-		"Move2D",
-		"Move2D"
-		);
-	desc.setPluginGrouping( "tuttle/image/process/geometry" );
+    desc.setLabels("TuttleMove2D", "Move2D", "Move2D");
+    desc.setPluginGrouping("tuttle/image/process/geometry");
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( OFX::eContextFilter );
-	desc.addSupportedContext( OFX::eContextGeneral );
+    // add the supported contexts, only filter at the moment
+    desc.addSupportedContext(OFX::eContextFilter);
+    desc.addSupportedContext(OFX::eContextGeneral);
 
-	// add supported pixel depths
-	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+    // add supported pixel depths
+    desc.addSupportedBitDepth(OFX::eBitDepthUByte);
+    desc.addSupportedBitDepth(OFX::eBitDepthUShort);
+    desc.addSupportedBitDepth(OFX::eBitDepthFloat);
 
-	// plugin flags
-	desc.setSupportsTiles( kSupportTiles );
-	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+    // plugin flags
+    desc.setSupportsTiles(kSupportTiles);
+    desc.setRenderThreadSafety(OFX::eRenderFullySafe);
 }
 
 /**
@@ -43,26 +41,24 @@ void Move2DPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void Move2DPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+void Move2DPluginFactory::describeInContext(OFX::ImageEffectDescriptor& desc, OFX::EContext context)
 {
-	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
+    OFX::ClipDescriptor* srcClip = desc.defineClip(kOfxImageEffectSimpleSourceClipName);
+    srcClip->addSupportedComponent(OFX::ePixelComponentRGBA);
+    srcClip->addSupportedComponent(OFX::ePixelComponentRGB);
+    srcClip->addSupportedComponent(OFX::ePixelComponentAlpha);
+    srcClip->setSupportsTiles(kSupportTiles);
 
-	// Create the mandated output clip
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+    // Create the mandated output clip
+    OFX::ClipDescriptor* dstClip = desc.defineClip(kOfxImageEffectOutputClipName);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGBA);
+    dstClip->addSupportedComponent(OFX::ePixelComponentRGB);
+    dstClip->addSupportedComponent(OFX::ePixelComponentAlpha);
+    dstClip->setSupportsTiles(kSupportTiles);
 
-	OFX::Double2DParamDescriptor* translation = desc.defineDouble2DParam( kParamTranslation );
-	translation->setLabel( "Translation" );
-	translation->setDefault( 0, 0 );
-
+    OFX::Double2DParamDescriptor* translation = desc.defineDouble2DParam(kParamTranslation);
+    translation->setLabel("Translation");
+    translation->setDefault(0, 0);
 }
 
 /**
@@ -71,13 +67,10 @@ void Move2DPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* Move2DPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+OFX::ImageEffect* Move2DPluginFactory::createInstance(OfxImageEffectHandle handle, OFX::EContext context)
 {
-	return new Move2DPlugin( handle );
-}
-
+    return new Move2DPlugin(handle);
 }
 }
 }
-
+}

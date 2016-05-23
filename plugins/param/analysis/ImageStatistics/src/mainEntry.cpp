@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "ImageStatisticsPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::imageStatistics::ImageStatisticsPluginFactory, "tuttle.imagestatistics" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::imageStatistics::ImageStatisticsPluginFactory, "tuttle.imagestatistics");
+}
 }
 }

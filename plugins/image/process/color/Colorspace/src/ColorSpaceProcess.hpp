@@ -10,26 +10,28 @@
 
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace colorspace {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorspace
+{
 
-template<class View>
+template <class View>
 class ColorSpaceProcess : public ImageGilFilterProcessor<View>
 {
 protected:
-	ColorSpaceProcessParams _params;
+    ColorSpaceProcessParams _params;
 
-	ColorSpacePlugin& _plugin; ///< Rendering plugin
+    ColorSpacePlugin& _plugin; ///< Rendering plugin
 
 public:
-	ColorSpaceProcess( ColorSpacePlugin& instance );
+    ColorSpaceProcess(ColorSpacePlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
+    void setup(const OFX::RenderArguments& args);
 
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
 };
-
 }
 }
 }

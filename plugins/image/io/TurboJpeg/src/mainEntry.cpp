@@ -5,15 +5,15 @@
 #include "reader/TurboJpegReaderPluginFactory.hpp"
 #include "writer/TurboJpegWriterPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::turboJpeg::reader::TurboJpegReaderPluginFactory, "tuttle.turbojpegreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::turboJpeg::writer::TurboJpegWriterPluginFactory, "tuttle.turbojpegwriter" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::turboJpeg::reader::TurboJpegReaderPluginFactory, "tuttle.turbojpegreader");
+    mAppendPluginFactory(ids, tuttle::plugin::turboJpeg::writer::TurboJpegWriterPluginFactory, "tuttle.turbojpegwriter");
 }
 }
-
+}

@@ -3,9 +3,12 @@
 
 #include <tuttle/plugin/global.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace normalize {
+namespace tuttle
+{
+namespace plugin
+{
+namespace normalize
+{
 
 static const std::string kParamHelpButton = "Help";
 
@@ -14,8 +17,8 @@ static const std::string kParamModeAnalyse = "analyse";
 static const std::string kParamModeCustom = "custom";
 enum EParamMode
 {
-	eParamModeAnalyse = 0,
-	eParamModeCustom
+    eParamModeAnalyse = 0,
+    eParamModeCustom
 };
 static const std::string kParamAnalyseNow = "analyseNow";
 
@@ -28,12 +31,12 @@ static const std::string kParamAnalyseB = "b";
 static const std::string kParamAnalyseA = "a";
 enum EParamAnalyseMode
 {
-	eParamAnalyseModePerChannel = 0,
-	eParamAnalyseModeLuminosity,
-	eParamAnalyseModeR,
-	eParamAnalyseModeG,
-	eParamAnalyseModeB,
-	eParamAnalyseModeA
+    eParamAnalyseModePerChannel = 0,
+    eParamAnalyseModeLuminosity,
+    eParamAnalyseModeR,
+    eParamAnalyseModeG,
+    eParamAnalyseModeB,
+    eParamAnalyseModeA
 };
 
 static const std::string kParamSrcGroup = "srcGroup";
@@ -53,8 +56,6 @@ static const std::string kParamProcessR = "processR";
 static const std::string kParamProcessG = "processG";
 static const std::string kParamProcessB = "processB";
 static const std::string kParamProcessA = "processA";
-
-
 }
 }
 }

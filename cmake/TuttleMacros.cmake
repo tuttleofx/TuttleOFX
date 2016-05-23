@@ -53,6 +53,9 @@ endfunction(tuttle_install_shared_libs)
 
 
 # Use this function to create a new plugin target
+# Each new plugin is added to 2 Makefile custom targets:
+#   * 'ofxplugins'
+#   * 'ofx<plugin_parent_dir>'
 # The first argument is the plugin name
 # the second argument is a list of files to compile
 function(tuttle_ofx_plugin_target PLUGIN_NAME)
@@ -111,19 +114,33 @@ function(tuttle_ofx_plugin_target PLUGIN_NAME)
         # Plugin target is a shared library
         add_library(${PLUGIN_NAME} MODULE ${PLUGIN_SOURCES})
 
+        # Get plugin parent directory
+        get_filename_component(PLUGIN_PARENT_ABSOLUTE_PATH ${CMAKE_CURRENT_SOURCE_DIR} PATH)
+        get_filename_component(PLUGIN_PARENT_DIR ${PLUGIN_PARENT_ABSOLUTE_PATH} NAME)
+        set(PLUGIN_CUSTOM_TARGET "ofx${PLUGIN_PARENT_DIR}")
+        set(PLUGIN_COMMON_TARGET "ofxplugins")
+
+        # Create custom target if it does not exist
+        if(NOT TARGET ${PLUGIN_COMMON_TARGET})
+            add_custom_target(${PLUGIN_COMMON_TARGET})
+        endif()
+        if(NOT TARGET ${PLUGIN_CUSTOM_TARGET})
+            add_custom_target(${PLUGIN_CUSTOM_TARGET})
+        endif()
+
+        # Add this new plugin to custom Makefile targets
+        add_dependencies(${PLUGIN_COMMON_TARGET} ${PLUGIN_NAME})
+        add_dependencies(${PLUGIN_CUSTOM_TARGET} ${PLUGIN_NAME})
+
         # Static link with a common plugin library
-        set(IS_IOPLUGIN ${ARGV2}) 
-        if(IS_IOPLUGIN)
+        if(${PLUGIN_PARENT_DIR} STREQUAL "io")
             target_link_libraries(${PLUGIN_NAME} tuttleIOPluginLib)
-        else(IS_IOPLUGIN)
+        else()
             target_link_libraries(${PLUGIN_NAME} tuttlePluginLib)
-        endif(IS_IOPLUGIN)
+        endif()
 
         set_target_properties(${PLUGIN_NAME} PROPERTIES SUFFIX "${_plugin_version_suffix}.ofx")
         set_target_properties(${PLUGIN_NAME} PROPERTIES PREFIX "")
-
-        # Add this new plugin to the global alias ofxplugins
-        add_dependencies(ofxplugins ${PLUGIN_NAME})
 
         # FIXME: why tuttlePluginLib depends on OpenGL ? is it necessary ?
         if(APPLE)

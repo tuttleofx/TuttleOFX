@@ -10,7 +10,7 @@
 #define _TERRY_FILTER_INNERPRODUCT_HPP_
 
 /*!
-/// \file               
+/// \file
 /// \brief Numeric algorithms
 /// \author Hailin Jin and Lubomir Bourdev \n
 ///         Adobe Systems Incorporated
@@ -28,64 +28,48 @@
 #include <algorithm>
 #include <numeric>
 
-namespace terry {
+namespace terry
+{
 
 using namespace boost::gil;
-namespace filter {
+namespace filter
+{
 
-namespace detail {
+namespace detail
+{
 template <std::size_t Size>
 struct inner_product_k_t
 {
-    template <class _InputIterator1, class _InputIterator2, class _Tp,
-              class _BinaryOperation1, class _BinaryOperation2>
-	GIL_FORCEINLINE
-    static _Tp apply( _InputIterator1 __first1, 
-                      _InputIterator2 __first2, _Tp __init, 
-                      _BinaryOperation1 __binary_op1,
-                      _BinaryOperation2 __binary_op2)
-	{
+    template <class _InputIterator1, class _InputIterator2, class _Tp, class _BinaryOperation1, class _BinaryOperation2>
+    GIL_FORCEINLINE static _Tp apply(_InputIterator1 __first1, _InputIterator2 __first2, _Tp __init,
+                                     _BinaryOperation1 __binary_op1, _BinaryOperation2 __binary_op2)
+    {
         __init = __binary_op1(__init, __binary_op2(*__first1, *__first2));
-        return inner_product_k_t<Size-1>::template apply(__first1+1,__first2+1,__init,
-                                                         __binary_op1, __binary_op2);
+        return inner_product_k_t<Size - 1>::template apply(__first1 + 1, __first2 + 1, __init, __binary_op1, __binary_op2);
     }
 };
 
 template <>
 struct inner_product_k_t<0>
 {
-    template <class _InputIterator1, class _InputIterator2, class _Tp,
-              class _BinaryOperation1, class _BinaryOperation2>
-	GIL_FORCEINLINE
-    static _Tp apply( _InputIterator1 __first1, 
-                      _InputIterator2 __first2, _Tp __init, 
-                      _BinaryOperation1 __binary_op1,
-                      _BinaryOperation2 __binary_op2 )
-	{
+    template <class _InputIterator1, class _InputIterator2, class _Tp, class _BinaryOperation1, class _BinaryOperation2>
+    GIL_FORCEINLINE static _Tp apply(_InputIterator1 __first1, _InputIterator2 __first2, _Tp __init,
+                                     _BinaryOperation1 __binary_op1, _BinaryOperation2 __binary_op2)
+    {
         return __init;
     }
 };
 } // namespace detail
 
 /// static version of std::inner_product
-template <std::size_t Size,
-          class _InputIterator1, class _InputIterator2, class _Tp,
-          class _BinaryOperation1, class _BinaryOperation2>
-GIL_FORCEINLINE
-_Tp inner_product_k( _InputIterator1 __first1, 
-                     _InputIterator2 __first2,
-                     _Tp __init, 
-                     _BinaryOperation1 __binary_op1,
-                     _BinaryOperation2 __binary_op2 )
+template <std::size_t Size, class _InputIterator1, class _InputIterator2, class _Tp, class _BinaryOperation1,
+          class _BinaryOperation2>
+GIL_FORCEINLINE _Tp inner_product_k(_InputIterator1 __first1, _InputIterator2 __first2, _Tp __init,
+                                    _BinaryOperation1 __binary_op1, _BinaryOperation2 __binary_op2)
 {
-    return detail::inner_product_k_t<Size>::template apply(__first1,__first2,__init,
-                                                           __binary_op1, __binary_op2);
-}
-
-
+    return detail::inner_product_k_t<Size>::template apply(__first1, __first2, __init, __binary_op1, __binary_op2);
 }
 }
-
+}
 
 #endif
-

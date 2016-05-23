@@ -2,7 +2,7 @@
 include(TuttleMacros)
 
 # Create target AudioVideo
-tuttle_ofx_plugin_target(AudioVideo "" TRUE)
+tuttle_ofx_plugin_target(AudioVideo)
 
 # Find ffmpeg libraries which are dependencies of avTranscoder
 find_package(FFmpeg COMPONENTS avformat avcodec avutil swscale swresample)

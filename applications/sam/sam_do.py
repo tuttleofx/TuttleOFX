@@ -40,7 +40,6 @@ class Sam_do(samUtils.Sam):
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
         self._processingOptions = colored.blue('Processing options')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
-        self._tuttleWebSite = colored.green('http://www.tuttleofx.org/')
         if clintVersion >= '0.3.3':
             self._pluginOption.bold=True
             self._generatorsAndViewers.bold=True
@@ -51,7 +50,6 @@ class Sam_do(samUtils.Sam):
             self._imgSeqNumbering.bold=True
             self._processingOptions.bold=True
             self._tuttleVersion.bold=True
-            self._tuttleWebSite.bold=True
 
         self.epilog = '''
     ''' + self._pluginOption + '''
@@ -107,7 +105,7 @@ class Sam_do(samUtils.Sam):
         Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
         Disable recursivity with folders:  sam do reader inputFolder // writer outputFolder --no-recursivity
         
-    ''' + self._tuttleVersion + '''            ''' + self._tuttleWebSite
+    ''' + self._tuttleVersion + '''            ''' + self.tuttleWebSiteUserDoc
 
     def fillParser(self, parser):
         # Arguments
@@ -122,7 +120,7 @@ class Sam_do(samUtils.Sam):
         parser.add_argument('--stop-on-missing-files', dest='stopOnMissingFiles', action='store_true', default=False, help='stop the process if missing files')
         parser.add_argument('--no-plugin-cache', dest='noPluginCache', action='store_true', default=False, help='load plugins without using the cache file')
         parser.add_argument('--rebuild-plugin-cache', dest='rebuildPluginCache', action='store_true', default=False, help='load plugins and rebuild the cache file')
-        parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4/debug, 5(or upper)/trace)')
+        parser.add_argument('-v', '--verbose', dest='verbose', action=samUtils.SamSetVerboseAction, default=2, help='verbose level (0/fatal, 1/error, 2/warn(by default), 3/info, 4/debug, 5(or upper)/trace) of tuttle host and sam application')
         # parser.add_argument('-h', '--help', dest='help', action='store_true', help='show this help message and exit')
 
     def _isCommandLineInvalid(self, inputsToProcess, inputsUnknown):
@@ -133,10 +131,11 @@ class Sam_do(samUtils.Sam):
         """
         # check if there is no arguments
         if len(inputsToProcess) == 0:
+            self.logger.warn('No input to process: the command is invalid.')
             return True
         # else check if last input is the separator
         elif inputsToProcess[-1] == '//':
-            self.logger.info('The given inputs to process are invalid: ' + str(inputsToProcess))
+            self.logger.warn('The given inputs to process are invalid: ' + str(inputsToProcess))
             return True
         return False
 
@@ -148,9 +147,13 @@ class Sam_do(samUtils.Sam):
         if len(inputsToProcess) == 0:
             if len(inputsUnknown) == 0 or '-h' in inputsUnknown or '--help' in inputsUnknown:
                 return True
-        # else check unknow arguments
+        # else check if help is asked before any input to process
         else:
-            if len(inputsUnknown) == 1 and ('-h' in inputsUnknown or '--help' in inputsUnknown):
+            firstOption = sys.argv[1]
+            # manage if the command is called from 'sam do' or 'sam-do'
+            if firstOption == self.command and len(sys.argv) > 2:
+                firstOption = sys.argv[2]
+            if ('-h' == firstOption or '--help' == firstOption):
                 return True
         return False
 
@@ -489,11 +492,6 @@ class Sam_do(samUtils.Sam):
         # Parse command-line
         args, unknown = parser.parse_known_args()
 
-        # sam-do --help
-        if self._isCommandLineAskForHelp(args.inputs, unknown):
-            self._displayCommandLineHelp(parser)
-            exit(0)
-
         # Set sam log level
         self.setLogLevel(args.verbose)
         # set tuttle host log level
@@ -517,6 +515,11 @@ class Sam_do(samUtils.Sam):
         # sam-do --file-formats
         if args.fileFormats:
             self._displayFileFormats()
+            exit(0)
+
+        # sam-do --help
+        if self._isCommandLineAskForHelp(args.inputs, unknown):
+            self._displayCommandLineHelp(parser)
             exit(0)
 
         # Check sam-do command line

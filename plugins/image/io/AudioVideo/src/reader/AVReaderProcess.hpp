@@ -8,31 +8,34 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-namespace tuttle {
-namespace plugin {
-namespace av {
-namespace reader {
+namespace tuttle
+{
+namespace plugin
+{
+namespace av
+{
+namespace reader
+{
 
 /**
  * @brief Audio Video process
  *
  */
-template<class View>
+template <class View>
 class AVReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	AVReaderPlugin& _plugin;
+    AVReaderPlugin& _plugin;
 
 public:
-	AVReaderProcess( AVReaderPlugin& instance );
+    AVReaderProcess(AVReaderPlugin& instance);
 
-	void setup( const OFX::RenderArguments& args );
-	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
-	
-	template<typename FileView>
-	View& readImage( View& dst, avtranscoder::VideoFrame& image );
+    void setup(const OFX::RenderArguments& args);
+    void multiThreadProcessImages(const OfxRectI& procWindowRoW);
+
+    template <typename FileView>
+    View& readImage(View& dst, avtranscoder::VideoFrame& image);
 };
-
 }
 }
 }

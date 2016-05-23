@@ -6,25 +6,27 @@
 
 #include <tuttle/host/ofx/attribute/OfxhMultiDimParam.hpp>
 
-namespace tuttle {
-namespace host {
-namespace attribute {
+namespace tuttle
+{
+namespace host
+{
+namespace attribute
+{
 
-class ParamInteger2D : public Param
-	, public ofx::attribute::OfxhMultiDimParam<ParamInteger, 2 >
+class ParamInteger2D : public Param, public ofx::attribute::OfxhMultiDimParam<ParamInteger, 2>
 {
 public:
-	ParamInteger2D( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
-	ParamInteger2D* clone() const { return new ParamInteger2D( *this ); }
+    ParamInteger2D(INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor);
+    ParamInteger2D* clone() const { return new ParamInteger2D(*this); }
 
-	OfxPointI getDefault() const;
+    OfxPointI getDefault() const;
 
-	void getValue( int& x, int& y ) const OFX_EXCEPTION_SPEC;
-	void getValueAtTime( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC;
-	void setValue( const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void setValueAtTime( const OfxTime time, const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+    void getValue(int& x, int& y) const OFX_EXCEPTION_SPEC;
+    void getValueAtTime(const OfxTime time, int& x, int& y) const OFX_EXCEPTION_SPEC;
+    void setValue(const int& x, const int& y, const ofx::attribute::EChange change) OFX_EXCEPTION_SPEC;
+    void setValueAtTime(const OfxTime time, const int& x, const int& y,
+                        const ofx::attribute::EChange change) OFX_EXCEPTION_SPEC;
 };
-
 }
 }
 }

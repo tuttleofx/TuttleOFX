@@ -3,12 +3,14 @@
 
 #include <tuttle/plugin/global.hpp>
 
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorWheel
+{
 
-namespace tuttle {
-namespace plugin {
-namespace colorWheel {
-
-static const std::string kColorWheelMode  = "type";
+static const std::string kColorWheelMode = "type";
 
 static const std::string kColorWheelModeWhite = "white";
 static const std::string kColorWheelModeBlack = "black";
@@ -21,7 +23,6 @@ enum EColorWheelMode
     eColorWheelModeBlack,
     eColorWheelModeRainbow
 };
-
 }
 }
 }

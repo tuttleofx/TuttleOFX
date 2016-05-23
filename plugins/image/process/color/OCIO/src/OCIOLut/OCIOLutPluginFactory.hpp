@@ -3,14 +3,17 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace ocio{
-namespace lut {
+namespace tuttle
+{
+namespace plugin
+{
+namespace ocio
+{
+namespace lut
+{
 
 static const bool kSupportTiles = true;
-mDeclarePluginFactory( OCIOLutPluginFactory, {}, {} );
-
+mDeclarePluginFactory(OCIOLutPluginFactory, {}, {});
 }
 }
 }

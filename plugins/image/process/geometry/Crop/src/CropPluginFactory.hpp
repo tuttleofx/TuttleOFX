@@ -3,11 +3,13 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace crop {
-mDeclarePluginFactory( CropPluginFactory, {}, {}
-                       );
+namespace tuttle
+{
+namespace plugin
+{
+namespace crop
+{
+mDeclarePluginFactory(CropPluginFactory, {}, {});
 }
 }
 }

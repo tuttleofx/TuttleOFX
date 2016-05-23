@@ -2,13 +2,14 @@
 #define _TUTTLE_PLUGIN_TIMESHIFT_PLUGIN_FACTORY_HPP_
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace timeShift {
+namespace tuttle
+{
+namespace plugin
+{
+namespace timeShift
+{
 
-mDeclarePluginFactory( TimeShiftPluginFactory, {}, {}
-                       );
-
+mDeclarePluginFactory(TimeShiftPluginFactory, {}, {});
 }
 }
 }

@@ -4,13 +4,14 @@
 #include <tuttle/plugin/Plugin.hpp>
 #include "NLMDenoiserPluginFactory.hpp"
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
+namespace OFX
 {
-	mAppendPluginFactory( ids, tuttle::plugin::nlmDenoiser::NLMDenoiserPluginFactory, "tuttle.nlmdenoiser" );
-}
+namespace Plugin
+{
 
+void getPluginIDs(OFX::PluginFactoryArray& ids)
+{
+    mAppendPluginFactory(ids, tuttle::plugin::nlmDenoiser::NLMDenoiserPluginFactory, "tuttle.nlmdenoiser");
+}
 }
 }

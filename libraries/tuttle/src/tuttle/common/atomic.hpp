@@ -17,34 +17,34 @@ namespace boost
 {
 
 // Fake atomic class using mutex to work without boost.atomic.
-template<typename T>
+template <typename T>
 class atomic
 {
 public:
     typedef T value_type;
-	atomic(const T v)
-	: _value(v)
-	{}
+    atomic(const T v)
+        : _value(v)
+    {
+    }
 
-	void store( const T v, const memory_order unused )
-	{
-		boost::mutex::scoped_lock locker( _mutex );
-		_value = v;
-	}
+    void store(const T v, const memory_order unused)
+    {
+        boost::mutex::scoped_lock locker(_mutex);
+        _value = v;
+    }
 
-	value_type load( const memory_order unused ) const
-	{
-		boost::mutex::scoped_lock locker( _mutex );
-		return _value;
-	}
+    value_type load(const memory_order unused) const
+    {
+        boost::mutex::scoped_lock locker(_mutex);
+        return _value;
+    }
 
 private:
-	T _value;
-	mutable boost::mutex _mutex;
+    T _value;
+    mutable boost::mutex _mutex;
 };
 
 typedef atomic<bool> atomic_bool;
-
 }
 
 #endif

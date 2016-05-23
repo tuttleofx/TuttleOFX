@@ -23,70 +23,73 @@ namespace layer
 template <typename view_t>
 struct parallel_draw
 {
-	typedef boost::function<void (view_t&)> layer_t;
+    typedef boost::function<void(view_t&)> layer_t;
 
-	std::vector<view_t> views;
-	std::vector<layer_t> layers;				
-	parallel_draw(std::vector<layer_t>& layers, std::vector<view_t>& views) : 
-		views(views), layers(layers){}
+    std::vector<view_t> views;
+    std::vector<layer_t> layers;
+    parallel_draw(std::vector<layer_t>& layers, std::vector<view_t>& views)
+        : views(views)
+        , layers(layers)
+    {
+    }
 
-	void operator()(const tbb::blocked_range<size_t>& blocks) const 
-	{
-		BOOST_ASSERT(layers.size() == views.size());
-		for (std::size_t block = blocks.begin(); block != blocks.end(); ++block)
-		{
-			view_t v = views[block];
-			layers[block](v);
-		}
-	}
+    void operator()(const tbb::blocked_range<size_t>& blocks) const
+    {
+        BOOST_ASSERT(layers.size() == views.size());
+        for(std::size_t block = blocks.begin(); block != blocks.end(); ++block)
+        {
+            view_t v = views[block];
+            layers[block](v);
+        }
+    }
 };
 
 template <typename view_t>
 struct parallel_grid
 {
-	typedef boost::function<void (view_t&)> layer_t;
-	typedef std::vector<layer_t> layers_t;
-	layers_t layers;
-	int cols;
-	int margin;
+    typedef boost::function<void(view_t&)> layer_t;
+    typedef std::vector<layer_t> layers_t;
+    layers_t layers;
+    int cols;
+    int margin;
 
-	parallel_grid(layer_t* p, int total, int cols, int margin = 5) : 
-		cols(cols), margin(margin)
-	{
-		for (int n = 0; n < total; ++n)
-			layers.push_back(p[n]);
-	}
+    parallel_grid(layer_t* p, int total, int cols, int margin = 5)
+        : cols(cols)
+        , margin(margin)
+    {
+        for(int n = 0; n < total; ++n)
+            layers.push_back(p[n]);
+    }
 
-	void operator()(view_t& view)
-	{
-		using namespace boost::gil;
+    void operator()(view_t& view)
+    {
+        using namespace boost::gil;
 
-		int y = 0;
-		std::vector<view_t> views;
+        int y = 0;
+        std::vector<view_t> views;
 
-		int rows = (int)ceil(layers.size()/(double)cols);
-		sections ycurr(view.height()+margin,rows);
-		for (; ycurr; ycurr++)
-		{
-			int yheight = *ycurr-margin;
-			int x = 0;
-			
-			sections xcurr(view.width()+margin,cols);
-			for (; xcurr; xcurr++)
-			{			
-				int xwidth = *xcurr-margin;
-				views.push_back(subimage_view(view,x,y,xwidth,yheight));
-				x += xwidth+margin;
-			}
+        int rows = (int)ceil(layers.size() / (double)cols);
+        sections ycurr(view.height() + margin, rows);
+        for(; ycurr; ycurr++)
+        {
+            int yheight = *ycurr - margin;
+            int x = 0;
 
-			y += yheight+margin;
-		}	
+            sections xcurr(view.width() + margin, cols);
+            for(; xcurr; xcurr++)
+            {
+                int xwidth = *xcurr - margin;
+                views.push_back(subimage_view(view, x, y, xwidth, yheight));
+                x += xwidth + margin;
+            }
 
-		tbb::parallel_for(tbb::blocked_range<std::size_t>(0,views.size()),
-			parallel_draw<view_t>(layers,views), tbb::auto_partitioner());
-	}
+            y += yheight + margin;
+        }
+
+        tbb::parallel_for(tbb::blocked_range<std::size_t>(0, views.size()), parallel_draw<view_t>(layers, views),
+                          tbb::auto_partitioner());
+    }
 };
-
 }
 
 #endif

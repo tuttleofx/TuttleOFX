@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace thinning {
+namespace tuttle
+{
+namespace plugin
+{
+namespace thinning
+{
 
-mDeclarePluginFactory( ThinningPluginFactory, { }, { } );
-
+mDeclarePluginFactory(ThinningPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-

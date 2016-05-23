@@ -3,16 +3,16 @@
 
 #include <ofxsImageEffect.h>
 
-namespace tuttle {
-namespace plugin {
-namespace colorWheel {
+namespace tuttle
+{
+namespace plugin
+{
+namespace colorWheel
+{
 
-mDeclarePluginFactory( ColorWheelPluginFactory, { }, { } );
-
+mDeclarePluginFactory(ColorWheelPluginFactory, {}, {});
 }
 }
 }
 
 #endif
-
-
