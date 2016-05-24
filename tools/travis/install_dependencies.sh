@@ -60,6 +60,14 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         mkdir oiio-Release-1.5.16/build
         cd oiio-Release-1.5.16/build
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install
+        LIBRAW_VERSION=0.16.2
+        LIBRAW_RELEASE=LibRaw-$LIBRAW_VERSION
+        wget https://github.com/LibRaw/LibRaw/archive/$LIBRAW_VERSION.tar.gz -O /tmp/$LIBRAW_RELEASE.tar.gz
+        tar -xzf /tmp/$LIBRAW_RELEASE.tar.gz > /dev/null 2>&1
+        mkdir $LIBRAW_RELEASE/build
+        cd $LIBRAW_RELEASE/build
+        ./configure --prefix=${DEPENDENCIES_INSTALL} && make && make install
+
 
     else
         echo 'Using cached directory.';

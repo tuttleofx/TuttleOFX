@@ -19,7 +19,6 @@ RUN apt-get update && apt-get install -y \
   libltdl-dev \
   libpng-dev \
   libjpeg-dev \
-  libraw-dev \
   libglew-dev \
   libtiff4-dev \
   libilmbase-dev \
