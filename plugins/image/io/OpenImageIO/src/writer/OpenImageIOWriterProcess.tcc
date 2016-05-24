@@ -547,8 +547,13 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("CompressionQuality", params._quality);
     spec.attribute("Orientation", params._orientation);
 
+    // write par, xdensity and ydensity to the output
+    // Some formats (ie. TIF, JPEG...) make the difference between those attributes.
+    // Some others (ie. DPX...) don't have density attributes and ignore them.
     const float par = _plugin._clipSrc->getPixelAspectRatio();
     spec.attribute("PixelAspectRatio", par);
+    spec.attribute("XResolution", par);
+    spec.attribute("YResolution", 1);
 
     if(!out->open(filepath, spec))
     {
