@@ -19,8 +19,21 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     # In that case, use a simple check to detect if the cache is already there.
     if  [ -z ${TRAVIS_JOB_ID} ] || [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
 
-        cd $TRAVIS_BUILD_DIR
+        # Target versions
         FFMPEG_RELEASE=ffmpeg-2.2.9
+        ACES_RELEASE=aces_container-1.0
+        CTL_RELEASE=ctl-1.5.2
+        SEEXPR_VERSION=1.0.1
+        SEEXPR_RELEASE=SeExpr-rel-$SEEXPR_VERSION
+        OCIO_VERSION=1.0.9
+        OCIO_RELEASE=OpenColorIO-$OCIO_VERSION
+        LIBRAW_VERSION=0.16.2
+        LIBRAW_RELEASE=LibRaw-$LIBRAW_VERSION
+        OIIO_VERSION=1.5.16
+        OIIO_RELEASE=oiio-Release-$OIIO_VERSION
+
+
+        cd $TRAVIS_BUILD_DIR
         wget https://www.ffmpeg.org/releases/$FFMPEG_RELEASE.tar.bz2
         bunzip2 $FFMPEG_RELEASE.tar.bz2
         tar -xf $FFMPEG_RELEASE.tar > /dev/null 2>&1
@@ -28,7 +41,6 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         ./configure --prefix=${DEPENDENCIES_INSTALL} --enable-shared --disable-static --disable-yasm && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        ACES_RELEASE=aces_container-1.0
         wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/$ACES_RELEASE.tar.gz
         tar -xzf /tmp/$ACES_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $ACES_RELEASE/build
@@ -36,7 +48,6 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        CTL_RELEASE=ctl-1.5.2
         wget https://github.com/ampas/CTL/archive/$CTL_RELEASE.tar.gz -O /tmp/$CTL_RELEASE.tar.gz
         tar -xzf /tmp/$CTL_RELEASE.tar.gz > /dev/null 2>&1
         mkdir CTL-$CTL_RELEASE/build
@@ -44,8 +55,6 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        SEEXPR_VERSION=1.0.1
-        SEEXPR_RELEASE=SeExpr-rel-$SEEXPR_VERSION
         wget https://github.com/wdas/SeExpr/archive/rel-$SEEXPR_VERSION.tar.gz -O /tmp/$SEEXPR_RELEASE.tar.gz
         tar -xzf /tmp/$SEEXPR_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $SEEXPR_RELEASE/build
@@ -53,8 +62,6 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        OCIO_VERSION=1.0.9
-        OCIO_RELEASE=OpenColorIO-$OCIO_VERSION
         wget https://github.com/imageworks/OpenColorIO/archive/v$OCIO_VERSION.tar.gz -O /tmp/$OCIO_RELEASE.tar.gz
         tar -xzf /tmp/$OCIO_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $OCIO_RELEASE/build
@@ -62,8 +69,6 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        LIBRAW_VERSION=0.16.2
-        LIBRAW_RELEASE=LibRaw-$LIBRAW_VERSION
         wget https://github.com/LibRaw/LibRaw/archive/$LIBRAW_VERSION.tar.gz -O /tmp/$LIBRAW_RELEASE.tar.gz
         tar -xzf /tmp/$LIBRAW_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $LIBRAW_RELEASE/build
@@ -71,8 +76,6 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         ./configure --prefix=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        OIIO_VERSION=1.5.16
-        OIIO_RELEASE=oiio-Release-$OIIO_VERSION
         wget https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VERSION.tar.gz -O /tmp/$OIIO_RELEASE.tar.gz
         tar -xzf /tmp/$OIIO_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $OIIO_RELEASE/build
