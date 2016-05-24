@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
   graphviz \
   git \
   swig \
-  libboost1.55-all-dev \
+  libboost-all-dev \
   python-dev \
   python-numpy \
   python-clint \
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
   libpng-dev \
   libjpeg-dev \
   libglew-dev \
-  libtiff4-dev \
+  libtiff5-dev \
   libilmbase-dev \
   libopenexr-dev \
   libopenimageio-dev \
@@ -38,14 +38,14 @@ RUN apt-get update && apt-get install -y \
   libmagickcore-dev \
   liblcms2-dev \
   libyaml-dev \
-  libopenctl0.8 \
   libcaca-dev \
   libtinyxml-dev \
   yasm \
   libx264-dev \
   libxvidcore-dev \
   bison \
-  flex
+  flex \
+  python-pip
 
 ENV PYTHON_VERSION=2.7 \
     TRAVIS_OS_NAME=linux \
