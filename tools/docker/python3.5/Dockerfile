@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y \
   python3-numpy \
   python3-clint \
   python3-argcomplete \
-  python3-nose \
   python3-pip \
+  python3-nose \
   libfreetype6-dev \
   libbz2-dev \
   libltdl-dev \
@@ -25,7 +25,6 @@ RUN apt-get update && apt-get install -y \
   libtiff5-dev \
   libilmbase-dev \
   libopenexr-dev \
-  libopenimageio-dev \
   libglew-dev \
   libgraphviz-dev \
   graphviz-dev \
@@ -44,7 +43,8 @@ RUN apt-get update && apt-get install -y \
   libx264-dev \
   libxvidcore-dev \
   bison \
-  flex
+  flex \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PYTHON_VERSION=3.5 \
     TRAVIS_OS_NAME=linux \
@@ -60,7 +60,7 @@ RUN mkdir ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
 
 COPY . ${TUTTLEOFX_DEV}
 RUN cd ${TUTTLEOFX_DEV} && git submodule update --init --recursive
-RUN cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/install_dependencies.sh
-RUN cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/build.sh
 
-RUN rm -rf ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
+RUN cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/install_dependencies.sh && \
+cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/build.sh && \
+rm -rf ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
