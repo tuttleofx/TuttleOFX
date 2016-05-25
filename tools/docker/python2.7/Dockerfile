@@ -59,10 +59,9 @@ ENV PYTHON_VERSION=2.7 \
 
 RUN mkdir ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
 
-COPY . ${TUTTLEOFX_DEV}
+RUN git clone https://github.com/tuttleofx/TuttleOFX.git ${TUTTLEOFX_DEV}
 RUN cd ${TUTTLEOFX_DEV} && git submodule update --init --recursive
 RUN cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/install_dependencies.sh
 RUN cd ${TUTTLEOFX_DEV} && ${TUTTLEOFX_DEV}/tools/travis/build.sh
 
 RUN rm -rf ${TUTTLEOFX_BUILD} ${TRAVIS_BUILD_DIR}
-
