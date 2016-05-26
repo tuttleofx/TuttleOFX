@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
   python-numpy \
   python-clint \
   python-argcomplete \
-  python-pip\ 
   python-nose \
   python-imaging \
   libfreetype6-dev \

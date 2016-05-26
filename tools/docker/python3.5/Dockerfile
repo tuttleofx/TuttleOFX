@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
   python3-numpy \
   python3-clint \
   python3-argcomplete \
-  python3-pip \
   python3-nose \
   libfreetype6-dev \
   libbz2-dev \
