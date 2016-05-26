@@ -41,43 +41,43 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         ./configure --prefix=${DEPENDENCIES_INSTALL} --enable-shared --disable-static --disable-yasm && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O /tmp/$ACES_RELEASE.tar.gz
-        tar -xzf /tmp/$ACES_RELEASE.tar.gz > /dev/null 2>&1
+        wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O $ACES_RELEASE.tar.gz
+        tar -xzf $ACES_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $ACES_RELEASE/build
         cd $ACES_RELEASE/build
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        wget https://github.com/ampas/CTL/archive/$CTL_RELEASE.tar.gz -O /tmp/$CTL_RELEASE.tar.gz
-        tar -xzf /tmp/$CTL_RELEASE.tar.gz > /dev/null 2>&1
+        wget https://github.com/ampas/CTL/archive/$CTL_RELEASE.tar.gz -O $CTL_RELEASE.tar.gz
+        tar -xzf $CTL_RELEASE.tar.gz > /dev/null 2>&1
         mkdir CTL-$CTL_RELEASE/build
         cd CTL-$CTL_RELEASE/build
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        wget https://github.com/wdas/SeExpr/archive/rel-$SEEXPR_VERSION.tar.gz -O /tmp/$SEEXPR_RELEASE.tar.gz
-        tar -xzf /tmp/$SEEXPR_RELEASE.tar.gz > /dev/null 2>&1
+        wget https://github.com/wdas/SeExpr/archive/rel-$SEEXPR_VERSION.tar.gz -O $SEEXPR_RELEASE.tar.gz
+        tar -xzf $SEEXPR_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $SEEXPR_RELEASE/build
         cd $SEEXPR_RELEASE/build
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        wget https://github.com/imageworks/OpenColorIO/archive/v$OCIO_VERSION.tar.gz -O /tmp/$OCIO_RELEASE.tar.gz
-        tar -xzf /tmp/$OCIO_RELEASE.tar.gz > /dev/null 2>&1
+        wget https://github.com/imageworks/OpenColorIO/archive/v$OCIO_VERSION.tar.gz -O $OCIO_RELEASE.tar.gz
+        tar -xzf $OCIO_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $OCIO_RELEASE/build
         cd $OCIO_RELEASE/build
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        wget https://github.com/LibRaw/LibRaw/archive/$LIBRAW_VERSION.tar.gz -O /tmp/$LIBRAW_RELEASE.tar.gz
-        tar -xzf /tmp/$LIBRAW_RELEASE.tar.gz > /dev/null 2>&1
+        wget https://github.com/LibRaw/LibRaw/archive/$LIBRAW_VERSION.tar.gz -O $LIBRAW_RELEASE.tar.gz
+        tar -xzf $LIBRAW_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $LIBRAW_RELEASE/build
         cd $LIBRAW_RELEASE/build
         ./configure --prefix=${DEPENDENCIES_INSTALL} && make && make install
 
         cd $TRAVIS_BUILD_DIR
-        wget https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VERSION.tar.gz -O /tmp/$OIIO_RELEASE.tar.gz
-        tar -xzf /tmp/$OIIO_RELEASE.tar.gz > /dev/null 2>&1
+        wget https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VERSION.tar.gz -O $OIIO_RELEASE.tar.gz
+        tar -xzf $OIIO_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $OIIO_RELEASE/build
         cd $OIIO_RELEASE/build
         cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_PREFIX_PATH=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install
