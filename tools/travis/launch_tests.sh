@@ -18,7 +18,7 @@ git clone https://github.com/tuttleofx/TuttleOFX-data.git
 ln -s ${TRAVIS_BUILD_DIR}/TuttleOFX-data ${TRAVIS_BUILD_DIR}/libraries/tuttle/pyTest/TuttleOFX-data
 if [[ ${PYTHON_VERSION} == "2.7" ]]; then
     nosetests ${TRAVIS_BUILD_DIR}/libraries/tuttle/pyTest -v
-elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
+elif [[ ${PYTHON_VERSION} == "3.4" ]]; then
     nosetests3 ${TRAVIS_BUILD_DIR}/libraries/tuttle/pyTest -v
 fi
 
