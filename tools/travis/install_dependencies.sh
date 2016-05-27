@@ -64,6 +64,8 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         tar -xzf $LIBRAW_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $LIBRAW_RELEASE/build
         cd $LIBRAW_RELEASE/build
+        # edit CMake file to avoid LibRaw to install some files to /usr/ (permissions error)
+        sed -l 590 -i 's/${CMAKE_ROOT}/share/g' ../CMakeLists.txt
         cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install/strip
 
         cd $TRAVIS_BUILD_DIR
