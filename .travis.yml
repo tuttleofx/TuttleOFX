@@ -113,7 +113,9 @@ addons:
     - libyaml-dev
     - libopenctl0.8
     - libcaca-dev
-    - libglui-dev
+    - freeglut3-dev
+    - libxi-dev
+    - libxmu-dev
     - libtinyxml-dev
     - yasm
     - libx264-dev
