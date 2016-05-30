@@ -120,6 +120,7 @@ addons:
     - yasm
     - libx264-dev
     - libxvidcore-dev
+    - libmagick++-dev
   coverity_scan:
     project:
       name: "tuttleofx/TuttleOFX"
