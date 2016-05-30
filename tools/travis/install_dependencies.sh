@@ -5,10 +5,18 @@ set -e
 # Print commands and their arguments as they are executed.
 set -x
 
+# Use CONTINUOUS_INTEGRATION environment variable to detect if the script is run on Travis CI.
+if [ -z ${CONTINUOUS_INTEGRATION} ]; then
+    if  [ ${TRAVIS_OS_NAME} == "linux" ]; then
+        # If the cache of dependencies exists
+        if [ -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
+            echo 'Using cached directory.';
+            exit 0
+        fi
+    fi
+fi
+
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
-    # Use CONTINUOUS_INTEGRATION environment variable to detect if the script is run on Travis CI.
-    # In that case, use a simple check to detect if the cache is already there.
-    if  [ -z ${CONTINUOUS_INTEGRATION} ] || [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
 
         # Target versions
         FFMPEG_RELEASE=ffmpeg-2.2.9
@@ -75,9 +83,7 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         cd $OIIO_RELEASE/build
         cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_PREFIX_PATH=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install/strip
 
-    else
-        echo 'Using cached directory.';
-    fi
+fi
 
 
 elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
