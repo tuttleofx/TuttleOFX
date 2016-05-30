@@ -87,9 +87,6 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     cd $OIIO_RELEASE/build
     cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_PREFIX_PATH=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install/strip
 
-fi
-
-
 elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
 
     echo "Brew update"
