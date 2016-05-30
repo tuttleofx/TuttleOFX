@@ -6,9 +6,9 @@ set -e
 set -x
 
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
-    # Use TRAVIS_JOB_ID to detect that we are in travis.
+    # Use CONTINUOUS_INTEGRATION environment variable to detect if the script is run on Travis CI.
     # In that case, use a simple check to detect if the cache is already there.
-    if  [ -z ${TRAVIS_JOB_ID} ] || [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
+    if  [ -z ${CONTINUOUS_INTEGRATION} ] || [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
 
         # Target versions
         FFMPEG_RELEASE=ffmpeg-2.2.9
