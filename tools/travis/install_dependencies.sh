@@ -8,6 +8,10 @@ set -x
 # Use CONTINUOUS_INTEGRATION environment variable to detect if the script is run on Travis CI.
 if [ -z ${CONTINUOUS_INTEGRATION} ]; then
     if  [ ${TRAVIS_OS_NAME} == "linux" ]; then
+        # Install python packages to run sam command line
+        if [ ${PYTHON_VERSION} == "2.7" ]; then
+            pip install --user clint argcomplete
+        fi
         # If the cache of dependencies exists
         if [ -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
             echo 'Using cached directory.';

@@ -86,8 +86,8 @@ addons:
     - python3-dev
     - python3-setuptools
     - python3-nose
-    - python-clint
-    - python-argcomplete
+    # - python-clint
+    # - python-argcomplete
     - libfreetype6-dev
     - libbz2-dev
     - libltdl-dev
