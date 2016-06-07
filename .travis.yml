@@ -81,7 +81,6 @@ addons:
     - libboost1.55-all-dev
     - python-dev
     - python-imaging
-    - python-numpy
     - python-nose
     - python3-dev
     - python3-setuptools
