@@ -34,7 +34,7 @@ std::string pluginName = "tuttle.oiioreader";
 std::string filename = "jpeg/BLU.JPG";
 #include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
-/*
+
 BOOST_AUTO_TEST_SUITE( plugin_OpenImageIO_j2k_reader )
 std::string pluginName = "tuttle.oiioreader";
 std::string filename = "j2k/Bretagne1.j2k";
@@ -46,7 +46,7 @@ std::string pluginName = "tuttle.oiioreader";
 std::string filename = "jp2/relax.jp2";
 #include <tuttle/test/io/reader.hpp>
 BOOST_AUTO_TEST_SUITE_END()
-*/
+
 
 BOOST_AUTO_TEST_SUITE(plugin_OpenImageIO_png_reader)
 std::string pluginName = "tuttle.oiioreader";
@@ -61,13 +61,12 @@ std::string filename = "tif/test-ramp.tif";
 BOOST_AUTO_TEST_SUITE_END()
 
 //// WRITER ////
-/*
+
 BOOST_AUTO_TEST_SUITE( plugin_OpenImageIO_dpx_writer )
 std::string pluginName = "tuttle.oiiowriter";
 std::string filename = "test-oiio.dpx";
 #include <tuttle/test/io/writer.hpp>
 BOOST_AUTO_TEST_SUITE_END()
-*/
 
 BOOST_AUTO_TEST_SUITE(plugin_OpenImageIO_exr_writer)
 std::string pluginName = "tuttle.oiiowriter";
@@ -81,7 +80,6 @@ std::string filename = "test-oiio.jpg";
 #include <tuttle/test/io/writer.hpp>
 BOOST_AUTO_TEST_SUITE_END()
 
-/*
 BOOST_AUTO_TEST_SUITE( plugin_OpenImageIO_j2k_writer )
 std::string pluginName = "tuttle.oiiowriter";
 std::string filename = "test-oiio.j2k";
@@ -93,7 +91,6 @@ std::string pluginName = "tuttle.oiiowriter";
 std::string filename = "test-oiio.jp2";
 #include <tuttle/test/io/writer.hpp>
 BOOST_AUTO_TEST_SUITE_END()
-*/
 
 BOOST_AUTO_TEST_SUITE(plugin_OpenImageIO_png_writer)
 std::string pluginName = "tuttle.oiiowriter";

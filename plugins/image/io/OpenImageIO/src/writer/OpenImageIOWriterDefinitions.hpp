@@ -36,6 +36,27 @@ enum ETuttlePluginComponents
 static const std::string kParamOutputQuality = "quality";
 static const std::string kParamOutputQualityLabel = "Quality";
 
+enum ETuttlePluginSubsampling
+{
+    eETuttlePluginSubsampling420 = 0,
+    eETuttlePluginSubsampling422,
+    eETuttlePluginSubsampling411,
+    eETuttlePluginSubsampling444
+};
+
+static const std::string kParamOutputSubsampling = "subsampling";
+static const std::string kParamOutputSubsamplingLabel = "Subsampling";
+static const std::string kParamOutputSubsamplingHint = "Controlling chroma-subsampling of output JPEG files:\n"
+                                                 "4:2:0 : one chrominance component for every 2x2 block of pixels.\n"
+                                                 "4:2:2 : one chrominance component for every 2x1 block of pixels.\n"
+                                                 "4:1:1 : one chrominance component for every 4x1 block of pixels.\n"
+                                                 "4:4:4 : one chrominance component for every pixel (no subsampling)\n";
+
+static const std::string kParamOutputSubsampling420 = "420";
+static const std::string kParamOutputSubsampling422 = "422";
+static const std::string kParamOutputSubsampling411 = "411";
+static const std::string kParamOutputSubsampling444 = "444";
+
 static const std::string kParamOutputOrientation = "orientation";
 static const std::string kParamOutputOrientationLabel = "Orientation";
 

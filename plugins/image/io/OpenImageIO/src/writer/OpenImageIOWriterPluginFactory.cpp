@@ -105,6 +105,15 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     quality->setDisplayRange(0, 100);
     quality->setDefault(80);
 
+    OFX::ChoiceParamDescriptor* subsampling = desc.defineChoiceParam(kParamOutputSubsampling);
+    subsampling->setLabel(kParamOutputSubsamplingLabel);
+    subsampling->setHint(kParamOutputSubsamplingHint);
+    subsampling->appendOption(kParamOutputSubsampling420);
+    subsampling->appendOption(kParamOutputSubsampling422);
+    subsampling->appendOption(kParamOutputSubsampling411);
+    subsampling->appendOption(kParamOutputSubsampling444);
+    subsampling->setDefault(0);
+
     OFX::ChoiceParamDescriptor* orientation = desc.defineChoiceParam(kParamOutputOrientation);
     orientation->setLabel(kParamOutputOrientationLabel);
     orientation->appendOption(kParamOutputOrientationNormal);

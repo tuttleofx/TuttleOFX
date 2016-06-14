@@ -547,6 +547,24 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("CompressionQuality", params._quality);
     spec.attribute("Orientation", params._orientation);
 
+    // controlling chroma-subsampling of jpeg
+    // Other formats don't have this attribute and ignore it.
+    switch(params._subsampling)
+    {
+	case eETuttlePluginSubsampling420:
+	    spec.attribute("jpeg:subsampling", "4:2:0");
+	    break;
+	case eETuttlePluginSubsampling422:
+	    spec.attribute("jpeg:subsampling", "4:2:2");
+	    break;
+	case eETuttlePluginSubsampling411:
+	    spec.attribute("jpeg:subsampling", "4:1:1");
+	    break;
+	case eETuttlePluginSubsampling444:
+	    spec.attribute("jpeg:subsampling", "4:4:4");
+	    break;
+    }
+
     // write par, xdensity and ydensity to the output
     // Some formats (ie. TIF, JPEG...) make the difference between those attributes.
     // Some others (ie. DPX...) don't have density attributes and ignore them.

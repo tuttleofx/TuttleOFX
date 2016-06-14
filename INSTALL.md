@@ -80,6 +80,11 @@ git clone https://github.com/tuttleofx/TuttleOFX-data.git
 Tests of host ( __libraries/tuttle/tests__ ) and plugins ( __tests__ directory in each plugin, with test files prefixed by "plugin_") with Boost Unit Test Framework.
 After compiling the project, executables are in __testBin__ directory.
 
+The tests of the IO plugins need images which can be found in the [TuttleOFX-data](https://github.com/tuttleofx/TuttleOFX-data) repository. To indicate the path to these images:
+```
+export TUTTLE_TEST_DATA=/path/to/TuttleOFX-data
+```
+
 - Python tests
 
 Test of host ( __libraries/tuttle/pyTest__ ) with nosetests tool.
