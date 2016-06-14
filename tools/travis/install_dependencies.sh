@@ -29,9 +29,8 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         OCIO_RELEASE=OpenColorIO-$OCIO_VERSION
         LIBRAW_VERSION=0.16.2
         LIBRAW_RELEASE=LibRaw-$LIBRAW_VERSION
-        OIIO_VERSION=1.5.16
+        OIIO_VERSION=1.6.13
         OIIO_RELEASE=oiio-Release-$OIIO_VERSION
-
 
         cd $TRAVIS_BUILD_DIR
         wget https://www.ffmpeg.org/releases/$FFMPEG_RELEASE.tar.bz2
