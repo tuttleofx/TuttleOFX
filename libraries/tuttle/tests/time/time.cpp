@@ -21,10 +21,10 @@ BOOST_AUTO_TEST_CASE(time_shift_offset_null)
         TUTTLE_LOG_INFO("--> PLUGINS CREATION");
 
         Graph g;
-        Graph::Node& read1 = g.createNode("tuttle.jpegreader");
+        Graph::Node& read1 = g.createNode("tuttle.oiioreader");
         // Graph::Node& invert1 = g.createNode( "tuttle.invert" );
         Graph::Node& timeshift1 = g.createNode("tuttle.timeshift");
-        Graph::Node& write1 = g.createNode("tuttle.jpegwriter");
+        Graph::Node& write1 = g.createNode("tuttle.oiiowriter");
 
         TUTTLE_LOG_INFO("--> PLUGINS CONFIGURATION");
         read1.getParam("filename").setValue("TuttleOFX-data/image/jpeg/MARS@.JPG");
@@ -56,10 +56,10 @@ BOOST_AUTO_TEST_CASE(time_shift_positive_offset)
         TUTTLE_LOG_INFO("--> PLUGINS CREATION");
 
         Graph g;
-        Graph::Node& read1 = g.createNode("tuttle.jpegreader");
+        Graph::Node& read1 = g.createNode("tuttle.oiioreader");
         // Graph::Node& invert1 = g.createNode( "tuttle.invert" );
         Graph::Node& timeshift1 = g.createNode("tuttle.timeshift");
-        Graph::Node& write1 = g.createNode("tuttle.jpegwriter");
+        Graph::Node& write1 = g.createNode("tuttle.oiiowriter");
 
         TUTTLE_LOG_INFO("--> PLUGINS CONFIGURATION");
         read1.getParam("filename").setValue("TuttleOFX-data/image/jpeg/MARS@.JPG");
@@ -91,10 +91,10 @@ BOOST_AUTO_TEST_CASE(time_shift_negative_offset)
         TUTTLE_LOG_INFO("--> PLUGINS CREATION");
 
         Graph g;
-        Graph::Node& read1 = g.createNode("tuttle.jpegreader");
+        Graph::Node& read1 = g.createNode("tuttle.oiioreader");
         // Graph::Node& invert1 = g.createNode( "tuttle.invert" );
         Graph::Node& timeshift1 = g.createNode("tuttle.timeshift");
-        Graph::Node& write1 = g.createNode("tuttle.jpegwriter");
+        Graph::Node& write1 = g.createNode("tuttle.oiiowriter");
 
         TUTTLE_LOG_INFO("--> PLUGINS CONFIGURATION");
         read1.getParam("filename").setValue("TuttleOFX-data/image/jpeg/MARS@.JPG");
@@ -126,10 +126,10 @@ BOOST_AUTO_TEST_CASE(time_shift_negative_offset_forceIdentity)
         TUTTLE_LOG_INFO("--> PLUGINS CREATION");
 
         Graph g;
-        Graph::Node& read1 = g.createNode("tuttle.jpegreader");
+        Graph::Node& read1 = g.createNode("tuttle.oiioreader");
         // Graph::Node& invert1 = g.createNode( "tuttle.invert" );
         Graph::Node& timeshift1 = g.createNode("tuttle.timeshift");
-        Graph::Node& write1 = g.createNode("tuttle.jpegwriter");
+        Graph::Node& write1 = g.createNode("tuttle.oiiowriter");
 
         TUTTLE_LOG_INFO("--> PLUGINS CONFIGURATION");
         read1.getParam("filename").setValue("TuttleOFX-data/image/jpeg/MARS@.JPG");
