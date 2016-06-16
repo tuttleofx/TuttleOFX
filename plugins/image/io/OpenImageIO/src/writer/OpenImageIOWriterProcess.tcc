@@ -542,6 +542,8 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
 
     ImageSpec spec(src.width(), src.height(), gil::num_channels<WImage>::value, oiioBitDepth);
 
+    spec.attribute("Software", "TuttleOFX OIIO Writer");
+
     spec.attribute("oiio:BitsPerSample", bitsPerSample);
     spec.attribute("oiio:UnassociatedAlpha", params._premultiply);
     spec.attribute("CompressionQuality", params._quality);
