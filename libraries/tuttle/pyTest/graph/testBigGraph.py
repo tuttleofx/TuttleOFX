@@ -15,6 +15,6 @@ def testLinearGraph():
 		]
 	for i in range(100):
 		nodes.append( tuttle.NodeInit( "tuttle.timeshift", 0 ) )
-	nodes.append( tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ) )
+	nodes.append( tuttle.NodeInit( "tuttle.oiiowriter", filename=".tests/fromExr/output-####.jpg" ) )
 	
 	tuttle.compute( nodes )

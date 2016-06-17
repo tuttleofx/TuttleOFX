@@ -13,7 +13,7 @@ def testSimpleProcessGraph():
 			tuttle.NodeInit( "tuttle.exrreader", filename="TuttleOFX-data/image/openexr/DisplayWindow/t##.exr" ),
 			tuttle.NodeInit( "tuttle.invert" ),
 			tuttle.NodeInit( "tuttle.gamma", master=.5 ),
-			tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
+			tuttle.NodeInit( "tuttle.oiiowriter", filename=".tests/fromExr/output-####.jpg" ),
 		]
 	nodes = graph.addConnectedNodes(n)
 
@@ -45,7 +45,7 @@ def testCustomMemoryCache():
 			tuttle.NodeInit( "tuttle.exrreader", filename="TuttleOFX-data/image/openexr/DisplayWindow/t##.exr" ),
 			tuttle.NodeInit( "tuttle.invert" ),
 			tuttle.NodeInit( "tuttle.gamma", master=.5 ),
-			tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
+			tuttle.NodeInit( "tuttle.oiiowriter", filename=".tests/fromExr/output-####.jpg" ),
 		]
 	nodes = graph.addConnectedNodes(n)
 
