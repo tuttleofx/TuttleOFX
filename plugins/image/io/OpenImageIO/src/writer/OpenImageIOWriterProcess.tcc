@@ -551,8 +551,10 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     strftime(buffer, 80,"%d-%m-%Y %I:%M:%S", timeinfo);
     spec.attribute("DateTime", std::string(buffer));
 
-    spec.attribute("DocumentName", params._project);
-    spec.attribute("Copyright", params._copyright);
+    if(! params._project.empty())
+	spec.attribute("DocumentName", params._project);
+    if(! params._copyright.empty())
+	spec.attribute("Copyright", params._copyright);
 
     spec.attribute("oiio:BitsPerSample", bitsPerSample);
     spec.attribute("oiio:UnassociatedAlpha", params._premultiply);
