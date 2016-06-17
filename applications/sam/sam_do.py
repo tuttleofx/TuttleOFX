@@ -543,7 +543,6 @@ class Sam_do(samUtils.Sam):
                 self.logger.debug(e)
 
         if not graphsWithNodes:
-            self.logger.error('No tuttle graph to compute.')
             exit(1)
 
         error = 0
