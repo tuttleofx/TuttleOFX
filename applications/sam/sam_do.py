@@ -457,14 +457,14 @@ class Sam_do(samUtils.Sam):
                             graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
                         except Exception as e:
                             # Cannot connect attribute of node
-                            self.logger.warning('Cannot connect attribute "'
+                            self.logger.error('Cannot connect attribute "'
                                 + argName + '" of node "' + nodeFullName
                                 + '" to id "' + argValue)
                             self.logger.debug(e)
                             error = 1
                     else:
                         # Cannot set param of node
-                        self.logger.warning('Cannot set '
+                        self.logger.error('Cannot set '
                             + (('parameter "' + argName + '" of ') if argName else '')
                             + 'node "' + nodeFullName + '" '
                             + (('to value "' + argValue + '"') if argValue else ''))
