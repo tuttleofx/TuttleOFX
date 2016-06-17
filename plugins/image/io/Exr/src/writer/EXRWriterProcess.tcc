@@ -156,13 +156,13 @@ void EXRWriterProcess<View>::multiThreadProcessImages(const OfxRectI& procWindow
                         switch(_plugin._clipSrc->getPixelComponents())
                         {
                             case OFX::ePixelComponentAlpha:
-                                writeImage<gray32_pixel_t>(src, _params._filepath, Imf::HALF);
+                                writeImage<gray32_pixel_t>(src, _params._filepath, Imf::UINT);
                                 break;
                             case OFX::ePixelComponentRGB:
-                                writeImage<rgb32_pixel_t>(src, _params._filepath, Imf::HALF);
+                                writeImage<rgb32_pixel_t>(src, _params._filepath, Imf::UINT);
                                 break;
                             case OFX::ePixelComponentRGBA:
-                                writeImage<rgba32_pixel_t>(src, _params._filepath, Imf::HALF);
+                                writeImage<rgba32_pixel_t>(src, _params._filepath, Imf::UINT);
                                 break;
                             default:
                                 BOOST_THROW_EXCEPTION(exception::Unsupported()
