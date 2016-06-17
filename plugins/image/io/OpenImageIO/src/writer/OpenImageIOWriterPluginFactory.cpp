@@ -100,6 +100,7 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     bitDepth->setDefault(eTuttlePluginBitDepthAuto);
 
     OFX::IntParamDescriptor* quality = desc.defineIntParam(kParamOutputQuality);
+    quality->setHint(kParamOutputQualityHint);
     quality->setLabel(kParamOutputQualityLabel);
     quality->setRange(0, 100);
     quality->setDisplayRange(0, 100);
@@ -115,6 +116,7 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     subsampling->setDefault(eETuttlePluginSubsampling420);
 
     OFX::ChoiceParamDescriptor* orientation = desc.defineChoiceParam(kParamOutputOrientation);
+    orientation->setHint(kParamOutputOrientationHint);
     orientation->setLabel(kParamOutputOrientationLabel);
     orientation->appendOption(kParamOutputOrientationNormal);
     orientation->appendOption(kParamOutputOrientationFlop);

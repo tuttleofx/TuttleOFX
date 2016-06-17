@@ -35,6 +35,8 @@ enum ETuttlePluginComponents
 
 static const std::string kParamOutputQuality = "quality";
 static const std::string kParamOutputQualityLabel = "Quality";
+static const std::string kParamOutputQualityHint = "Set the compression quality of the output file.\n"
+                                                   "It could be ignored depending on the format.\n";
 
 enum ETuttlePluginSubsampling
 {
@@ -59,6 +61,8 @@ static const std::string kParamOutputSubsampling444 = "444";
 
 static const std::string kParamOutputOrientation = "orientation";
 static const std::string kParamOutputOrientationLabel = "Orientation";
+static const std::string kParamOutputOrientationHint = "Set the 'Orientation' metadata of the output file (does not update the pixel data).\n"
+                                                       "It could be ignored depending on the format.\n";
 
 static const std::string kParamOutputOrientationNormal = "normal   Oriented left to right, top to bottom";
 static const std::string kParamOutputOrientationFlop = "flop   Oriented right to left, top to bottom";
@@ -77,7 +81,7 @@ enum ETuttlePluginEndianness
 };
 
 static const std::string kParamOutputEndianness = "endianness";
-static const std::string kParamOutputEndiannessHint = "Endianness of the output.";
+static const std::string kParamOutputEndiannessHint = "Set the endianness of the output file";
 static const std::string kParamOutputEndiannessDefault = "default   The default endianness choosen by oiio dependening on the platform.";
 static const std::string kParamOutputEndiannessLittle = "little   Force to little endian.";
 static const std::string kParamOutputEndiannessBig = "big   Force to big endian.";
