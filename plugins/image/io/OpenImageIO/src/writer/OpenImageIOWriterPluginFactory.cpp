@@ -112,7 +112,7 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     subsampling->appendOption(kParamOutputSubsampling422);
     subsampling->appendOption(kParamOutputSubsampling411);
     subsampling->appendOption(kParamOutputSubsampling444);
-    subsampling->setDefault(0);
+    subsampling->setDefault(eETuttlePluginSubsampling420);
 
     OFX::ChoiceParamDescriptor* orientation = desc.defineChoiceParam(kParamOutputOrientation);
     orientation->setLabel(kParamOutputOrientationLabel);
@@ -131,7 +131,7 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     endianness->appendOption(kParamOutputEndiannessDefault);
     endianness->appendOption(kParamOutputEndiannessLittle);
     endianness->appendOption(kParamOutputEndiannessBig);
-    endianness->setDefault(0);
+    endianness->setDefault(eTuttlePluginEndiannessDefault);
 
     OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam(kParamOutputCompression);
     compression->setLabel(kParamOutputOrientationLabel);
