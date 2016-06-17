@@ -65,8 +65,8 @@ static const std::string kParamOutputOrientationFlop = "flop";
 static const std::string kParamOutputOrientationR180 = "180";
 static const std::string kParamOutputOrientationFlip = "flip";
 static const std::string kParamOutputOrientationTransposed = "transposed";
-static const std::string kParamOutputOrientationR90Clockwise = "90clockwise";
 static const std::string kParamOutputOrientationTransverse = "transverse";
+static const std::string kParamOutputOrientationR90Clockwise = "90clockwise";
 static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise";
 
 enum ETuttlePluginEndianness

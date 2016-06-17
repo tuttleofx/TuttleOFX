@@ -121,8 +121,8 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     orientation->appendOption(kParamOutputOrientationR180);
     orientation->appendOption(kParamOutputOrientationFlip);
     orientation->appendOption(kParamOutputOrientationTransposed);
-    orientation->appendOption(kParamOutputOrientationR90Clockwise);
     orientation->appendOption(kParamOutputOrientationTransverse);
+    orientation->appendOption(kParamOutputOrientationR90Clockwise);
     orientation->appendOption(kParamOutputOrientationR90CounterClockwise);
     orientation->setDefault(0);
 

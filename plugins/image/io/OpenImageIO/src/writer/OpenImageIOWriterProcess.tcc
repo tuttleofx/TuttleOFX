@@ -554,7 +554,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("oiio:BitsPerSample", bitsPerSample);
     spec.attribute("oiio:UnassociatedAlpha", params._premultiply);
     spec.attribute("CompressionQuality", params._quality);
-    spec.attribute("Orientation", params._orientation);
+    spec.attribute("Orientation", params._orientation + 1);
 
     switch(params._endianness)
     {
