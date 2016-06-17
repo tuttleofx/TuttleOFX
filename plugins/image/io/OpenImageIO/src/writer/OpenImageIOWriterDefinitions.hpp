@@ -60,14 +60,14 @@ static const std::string kParamOutputSubsampling444 = "444";
 static const std::string kParamOutputOrientation = "orientation";
 static const std::string kParamOutputOrientationLabel = "Orientation";
 
-static const std::string kParamOutputOrientationNormal = "normal";
-static const std::string kParamOutputOrientationFlop = "flop";
-static const std::string kParamOutputOrientationR180 = "180";
-static const std::string kParamOutputOrientationFlip = "flip";
-static const std::string kParamOutputOrientationTransposed = "transposed";
-static const std::string kParamOutputOrientationTransverse = "transverse";
-static const std::string kParamOutputOrientationR90Clockwise = "90clockwise";
-static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise";
+static const std::string kParamOutputOrientationNormal = "normal   Oriented left to right, top to bottom";
+static const std::string kParamOutputOrientationFlop = "flop   Oriented right to left, top to bottom";
+static const std::string kParamOutputOrientationR180 = "180   Oriented left to right, bottom to top";
+static const std::string kParamOutputOrientationFlip = "flip   Oriented right to left, bottom to top";
+static const std::string kParamOutputOrientationTransposed = "transposed   Oriented top to bottom, left to right";
+static const std::string kParamOutputOrientationTransverse = "transverse   Oriented bottom to top, left to right";
+static const std::string kParamOutputOrientationR90Clockwise = "90clockwise   Oriented top to bottom, right to left";
+static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise   Oriented bottom to top, right to left";
 
 enum ETuttlePluginEndianness
 {
