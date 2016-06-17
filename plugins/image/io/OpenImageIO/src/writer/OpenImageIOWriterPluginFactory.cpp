@@ -128,6 +128,14 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     orientation->appendOption(kParamOutputOrientationR90CounterClockwise);
     orientation->setDefault(0);
 
+    OFX::StringParamDescriptor* project = desc.defineStringParam(kParamProject);
+    project->setHint(kParamProjectHint);
+    project->setDefault("");
+
+    OFX::StringParamDescriptor* copyright = desc.defineStringParam(kParamCopyright);
+    copyright->setHint(kParamCopyrightHint);
+    copyright->setDefault("");
+
     OFX::ChoiceParamDescriptor* endianness = desc.defineChoiceParam(kParamOutputEndianness);
     endianness->setHint(kParamOutputEndiannessHint);
     endianness->appendOption(kParamOutputEndiannessDefault);

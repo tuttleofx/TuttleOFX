@@ -73,6 +73,13 @@ static const std::string kParamOutputOrientationTransverse = "transverse   Orien
 static const std::string kParamOutputOrientationR90Clockwise = "90clockwise   Oriented top to bottom, right to left";
 static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise   Oriented bottom to top, right to left";
 
+static const std::string kParamProject = "project";
+static const std::string kParamProjectHint = "Set the 'Project' metadata of the output file. \n"
+                                             "It could be ignored depending on the format.\n";
+static const std::string kParamCopyright = "copyright";
+static const std::string kParamCopyrightHint = "Set the 'Copyright' metadata of the output file. \n"
+                                             "It could be ignored depending on the format.\n";
+
 enum ETuttlePluginEndianness
 {
     eTuttlePluginEndiannessDefault = 0,

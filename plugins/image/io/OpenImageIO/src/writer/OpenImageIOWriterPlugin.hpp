@@ -19,6 +19,8 @@ namespace writer
 struct OpenImageIOWriterProcessParams
 {
     std::string _filepath;               ///< filepath
+    std::string _project;  ///< project metadata
+    std::string _copyright;  ///< copyright metadata
     ETuttlePluginComponents _components; ///< Force RGB
     ETuttlePluginBitDepth _bitDepth;     ///< Output bit depth (real bit depth, not the buffer passed to OpenImageIO)
     ETuttlePluginSubsampling _subsampling; ///< Output subsampling
@@ -46,6 +48,8 @@ public:
     OFX::IntParam* _quality;
     OFX::ChoiceParam* _paramSubsampling;
     OFX::ChoiceParam* _orientation;
+    OFX::StringParam* _project;
+    OFX::StringParam* _copyright;
     OFX::ChoiceParam* _endianness;
 };
 }
