@@ -69,6 +69,19 @@ static const std::string kParamOutputOrientationR90Clockwise = "90clockwise";
 static const std::string kParamOutputOrientationTransverse = "transverse";
 static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise";
 
+enum ETuttlePluginEndianness
+{
+    eTuttlePluginEndiannessDefault = 0,
+    eTuttlePluginEndiannessLittle,
+    eTuttlePluginEndiannessBig
+};
+
+static const std::string kParamOutputEndianness = "endianness";
+static const std::string kParamOutputEndiannessHint = "Endianness of the output.";
+static const std::string kParamOutputEndiannessDefault = "default   The default endianness choosen by oiio dependening on the platform.";
+static const std::string kParamOutputEndiannessLittle = "little   Force to little endian.";
+static const std::string kParamOutputEndiannessBig = "big   Force to big endian.";
+
 static const std::string kParamOutputCompression = "compression";
 static const std::string kParamOutputCompressionLabel = "Compression";
 

@@ -126,6 +126,13 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     orientation->appendOption(kParamOutputOrientationR90CounterClockwise);
     orientation->setDefault(0);
 
+    OFX::ChoiceParamDescriptor* endianness = desc.defineChoiceParam(kParamOutputEndianness);
+    endianness->setHint(kParamOutputEndiannessHint);
+    endianness->appendOption(kParamOutputEndiannessDefault);
+    endianness->appendOption(kParamOutputEndiannessLittle);
+    endianness->appendOption(kParamOutputEndiannessBig);
+    endianness->setDefault(0);
+
     OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam(kParamOutputCompression);
     compression->setLabel(kParamOutputOrientationLabel);
 #if(TUTTLE_EXPERIMENTAL)

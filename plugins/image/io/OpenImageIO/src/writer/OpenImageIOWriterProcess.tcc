@@ -556,6 +556,18 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("CompressionQuality", params._quality);
     spec.attribute("Orientation", params._orientation);
 
+    switch(params._endianness)
+    {
+	case eTuttlePluginEndiannessLittle:
+	    spec.attribute("oiio:Endian", "little");
+	    break;
+	case eTuttlePluginEndiannessBig:
+	    spec.attribute("oiio:Endian", "big");
+	    break;
+	default:
+	    break;
+    }
+
     // controlling chroma-subsampling of jpeg
     // Other formats don't have this attribute and ignore it.
     switch(params._subsampling)

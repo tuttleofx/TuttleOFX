@@ -22,6 +22,7 @@ struct OpenImageIOWriterProcessParams
     ETuttlePluginComponents _components; ///< Force RGB
     ETuttlePluginBitDepth _bitDepth;     ///< Output bit depth (real bit depth, not the buffer passed to OpenImageIO)
     ETuttlePluginSubsampling _subsampling; ///< Output subsampling
+    ETuttlePluginEndianness _endianness; ///< Output endianness
 
     bool _premultiply; ///< Output premultiply
     int _quality;      ///< Output quality
@@ -45,6 +46,7 @@ public:
     OFX::IntParam* _quality;
     OFX::ChoiceParam* _paramSubsampling;
     OFX::ChoiceParam* _orientation;
+    OFX::ChoiceParam* _endianness;
 };
 }
 }
