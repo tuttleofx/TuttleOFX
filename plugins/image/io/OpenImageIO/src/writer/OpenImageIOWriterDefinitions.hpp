@@ -48,11 +48,12 @@ enum ETuttlePluginSubsampling
 
 static const std::string kParamOutputSubsampling = "subsampling";
 static const std::string kParamOutputSubsamplingLabel = "Subsampling";
-static const std::string kParamOutputSubsamplingHint = "Controlling chroma-subsampling of output JPEG files:\n"
+static const std::string kParamOutputSubsamplingHint = "Controlling chroma-subsampling of the output file.\n"
                                                  "4:2:0 : one chrominance component for every 2x2 block of pixels.\n"
                                                  "4:2:2 : one chrominance component for every 2x1 block of pixels.\n"
                                                  "4:1:1 : one chrominance component for every 4x1 block of pixels.\n"
-                                                 "4:4:4 : one chrominance component for every pixel (no subsampling)\n";
+                                                 "4:4:4 : one chrominance component for every pixel (no subsampling)\n"
+                                                 "It could be ignored depending on the format.\n";
 
 static const std::string kParamOutputSubsampling420 = "420";
 static const std::string kParamOutputSubsampling422 = "422";
@@ -78,7 +79,7 @@ static const std::string kParamProjectHint = "Set the 'Project' metadata of the 
                                              "It could be ignored depending on the format.\n";
 static const std::string kParamCopyright = "copyright";
 static const std::string kParamCopyrightHint = "Set the 'Copyright' metadata of the output file. \n"
-                                             "It could be ignored depending on the format.\n";
+                                               "It could be ignored depending on the format.\n";
 
 enum ETuttlePluginEndianness
 {
