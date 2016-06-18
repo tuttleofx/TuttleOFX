@@ -13,8 +13,8 @@ namespace ocio
 namespace colorspace
 {
 
-static const std::string kParamInputSpace = "input space";
-static const std::string kParamOutputSpace = "output space";
+static const std::string kParamInputSpace = "inputSpace";
+static const std::string kParamOutputSpace = "outputSpace";
 
 static const std::string kTuttlePluginFilenameHint = "open an OpenColorIO config file";
 }
