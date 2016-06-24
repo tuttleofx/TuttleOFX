@@ -36,6 +36,19 @@ enum ETuttlePluginComponents
 static const std::string kParamOutputQuality = "quality";
 static const std::string kParamOutputQualityLabel = "Quality";
 
+static const std::string kParamOutputStorageType = "storage";
+static const std::string kParamOutputStorageTypeLabel = "Storage type";
+static const std::string kParamOutputStorageTypeHint = "Set the type of storage of the output file.\n"
+                                                       "It could be ignored depending on the format.\n";
+static const std::string kParamOutputStorageScanLine = "scanLine";
+static const std::string kParamOutputStorageTiles = "tiles (64x64)";
+
+enum ETuttlePluginStorage
+{
+    eTuttlePluginStorageScanLine = 0,
+    eTuttlePluginStorageTiles
+};
+
 enum ETuttlePluginSubsampling
 {
     eETuttlePluginSubsampling420 = 0,

@@ -105,6 +105,13 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     quality->setDisplayRange(0, 100);
     quality->setDefault(80);
 
+    OFX::ChoiceParamDescriptor* storageType = desc.defineChoiceParam(kParamOutputStorageType);
+    storageType->setLabel(kParamOutputStorageTypeLabel);
+    storageType->setHint(kParamOutputStorageTypeHint);
+    storageType->appendOption(kParamOutputStorageScanLine);
+    storageType->appendOption(kParamOutputStorageTiles);
+    storageType->setDefault(eTuttlePluginStorageScanLine);
+
     OFX::ChoiceParamDescriptor* subsampling = desc.defineChoiceParam(kParamOutputSubsampling);
     subsampling->setLabel(kParamOutputSubsamplingLabel);
     subsampling->setHint(kParamOutputSubsamplingHint);

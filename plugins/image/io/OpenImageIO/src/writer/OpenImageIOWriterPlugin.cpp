@@ -19,6 +19,7 @@ OpenImageIOWriterPlugin::OpenImageIOWriterPlugin(OfxImageEffectHandle handle)
     _components = fetchChoiceParam(kTuttlePluginChannel);
     _orientation = fetchChoiceParam(kParamOutputOrientation);
     _quality = fetchIntParam(kParamOutputQuality);
+    _storageType = fetchChoiceParam(kParamOutputStorageType);
     _paramSubsampling = fetchChoiceParam(kParamOutputSubsampling);
     _compression = fetchChoiceParam(kParamCompression);
 }
@@ -31,6 +32,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const O
     params._filepath = getAbsoluteFilenameAt(time);
     params._components = static_cast<ETuttlePluginComponents>(this->_components->getValue());
     params._bitDepth = static_cast<ETuttlePluginBitDepth>(this->_paramBitDepth->getValue());
+    params._storageType = static_cast<ETuttlePluginStorage>(this->_storageType->getValue());
     params._subsampling = static_cast<ETuttlePluginSubsampling>(_paramSubsampling->getValue());
     params._compression = static_cast<ETuttlePluginCompression>(_compression->getValue());
     params._quality = _quality->getValue();

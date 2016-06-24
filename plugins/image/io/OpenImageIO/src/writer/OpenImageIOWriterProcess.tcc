@@ -603,6 +603,13 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("XResolution", par);
     spec.attribute("YResolution", 1);
 
+    // Write image data in tiles of 64x64 pixels
+    if(params._storageType == eTuttlePluginStorageTiles)
+    {
+	spec.tile_width = 64;
+	spec.tile_height = 64;
+    }
+
     if(!out->open(filepath, spec))
     {
         BOOST_THROW_EXCEPTION(exception::Unknown() << exception::user("OIIO Writer: " + out->geterror())
