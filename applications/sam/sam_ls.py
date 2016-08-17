@@ -331,6 +331,7 @@ class Sam_ls(samUtils.Sam):
             except IOError as e:
                 self.logger.debug('IOError raised: "' + str(e) + '".')
                 # if the given input does not correspond to anything
+                # TODO: handle a custom exception thrown from the sequenceParser
                 if 'No such file or directory' in str(e):
                     # try to create a sequence from the given input
                     sequence = sequenceParser.Sequence()
