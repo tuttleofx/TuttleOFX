@@ -583,6 +583,11 @@ class Sam_do(samUtils.Sam):
                 self.logger.error('Tuttle graph computation has failed.')
                 self.logger.debug(e)
                 error = 1
+                # if there is a bad conversion of an exception from the tuttleHost to the pyTuttle interface
+                # example: a KeyboardInterrupt
+                # TODO: handle a custom exception thrown from the tuttleHost
+                if 'SWIG director method error' in str(e):
+                    break
             self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
         exit(error)
