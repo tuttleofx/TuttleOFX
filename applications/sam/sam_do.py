@@ -35,19 +35,17 @@ class Sam_do(samUtils.Sam):
         self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
-        self._geometryPorcessing = colored.blue('Geometry processing during conversion')
-        self._colorProcessing = colored.blue('Color processing during conversion')
+        self._processing = colored.blue('Processing')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
         if clintVersion >= '0.3.3':
             self._principle.bold=True
             self._generatorsAndViewers.bold=True
             self._imgSeqConversion.bold=True
             self._imgSeqNumbering.bold=True
-            self._geometryPorcessing.bold=True
-            self._colorProcessing.bold=True
+            self._processing.bold=True
             self._tuttleVersion.bold=True
 
-        self.epilog = '''    
+        self.epilog = '''
     ''' + self._principle + '''
         'sam do' can be seen as a command line version of a compositing software in which you can chain nodes, with a directed acyclic graph.
         The general syntax is:             sam do plugin // plugin // plugin
@@ -83,15 +81,10 @@ class Sam_do(samUtils.Sam):
         Frames 1 to 100 padding 5:         image.#####.jpg
         Printf style padding 4:            image.%04d.jpg
 
-    ''' + self._geometryPorcessing + '''
+    ''' + self._processing + '''
         Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
-        Fill:                              sam do reader in.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50,1 // writer out.jpg
-        Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
-        Upscaling:                         sam do reader in.####.dpx // resize width=1920 filter=lanczos // writer out.####.jpg
-        Downscaling:                       sam do reader in.####.dpx // resize width=720 filter=mitchell // writer out.####.jpg
-
-    ''' + self._colorProcessing + '''
-        Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
+        Resize:                            sam do reader in.####.dpx // resize format=HD // writer out.####.jpg
+        Lut:                               sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
         Color Gradation:                   sam do reader in.####.dpx // colorgradation in=Linear out=Rec709 // writer out.####.jpg
