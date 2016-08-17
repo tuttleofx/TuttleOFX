@@ -34,20 +34,18 @@ class Sam_do(samUtils.Sam):
         self._pluginOption = colored.blue('Plugins options')
         self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
-        self._folderManipulation = colored.blue('Folder manipulations')
+        self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
         self._geometryPorcessing = colored.blue('Geometry processing during conversion')
         self._colorProcessing = colored.blue('Color processing during conversion')
-        self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
         self._processingOptions = colored.blue('Processing options')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
         if clintVersion >= '0.3.3':
             self._pluginOption.bold=True
             self._generatorsAndViewers.bold=True
             self._imgSeqConversion.bold=True
-            self._folderManipulation.bold=True
+            self._imgSeqNumbering.bold=True
             self._geometryPorcessing.bold=True
             self._colorProcessing.bold=True
-            self._imgSeqNumbering.bold=True
             self._processingOptions.bold=True
             self._tuttleVersion.bold=True
 
@@ -71,14 +69,20 @@ class Sam_do(samUtils.Sam):
     ''' + self._imgSeqConversion + '''
         Convert Image:                     sam do reader in.dpx // writer out.jpg
         Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
+        Select a frame:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10
         Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
         Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
-        Note:                              'r' and 'w' are shortcuts for 'reader' and 'writer'
+        Convert files in directory:        sam do reader inDir // writer outDir ext=jpg
+        Convert some files in directory:   sam do reader inDir ext=dpx // writer outDir ext=jpg
+        Notes:                             'reader' / 'r' could be use to automatically choose the best reader.
+                                           'writer' / 'w' could be use to automatically choose the best writer.
+                                           Convert files in a directory also copy the input tree structure to the output.
 
-    ''' + self._folderManipulation + '''
-        Convert all images in a folder:    sam do reader inputFolder // writer outputFolder ext=jpg
-        Convert dpx images in a folder:    sam do reader inputFolder ext=dpx // writer outputFolder ext=jpg
-        Note:                              These commands copy the input tree structure to the output.
+    ''' + self._imgSeqNumbering + '''
+        Frames with or without padding:    image.@.jpg
+        Frames 1 to 100 padding 4:         image.####.jpg -or- image.@.jpg
+        Frames 1 to 100 padding 5:         image.#####.jpg
+        Printf style padding 4:            image.%04d.jpg
 
     ''' + self._geometryPorcessing + '''
         Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
@@ -92,12 +96,6 @@ class Sam_do(samUtils.Sam):
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
         Color Gradation:                   sam do reader in.####.dpx // colorgradation in=Linear out=Rec709 // writer out.####.jpg
-
-    ''' + self._imgSeqNumbering + '''
-        Frames with or without padding:    image.@.jpg
-        Frames 1 to 100 padding 4:         image.####.jpg -or- image.@.jpg
-        Frames 1 to 100 padding 5:         image.#####.jpg
-        Printf style padding 4:            image.%04d.jpg
 
     ''' + self._processingOptions + '''
         Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
