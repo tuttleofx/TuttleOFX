@@ -31,7 +31,7 @@ class Sam_do(samUtils.Sam):
             sam do [options]... [// node [node-options]... [[param=]value]...]... [options]
             '''))
 
-        self._pluginOption = colored.blue('Plugins options')
+        self._principle = colored.blue('Principle')
         self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
@@ -39,7 +39,7 @@ class Sam_do(samUtils.Sam):
         self._colorProcessing = colored.blue('Color processing during conversion')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
         if clintVersion >= '0.3.3':
-            self._pluginOption.bold=True
+            self._principle.bold=True
             self._generatorsAndViewers.bold=True
             self._imgSeqConversion.bold=True
             self._imgSeqNumbering.bold=True
@@ -47,11 +47,12 @@ class Sam_do(samUtils.Sam):
             self._colorProcessing.bold=True
             self._tuttleVersion.bold=True
 
-        self.epilog = '''
-    ''' + self._pluginOption + '''
-        Plugin list:                       sam do --nodes
-        Supported file formats list:       sam do --file-formats
-        Plugin help:                       sam do blur -h
+        self.epilog = '''    
+    ''' + self._principle + '''
+        'sam do' can be seen as a command line version of a compositing software in which you can chain nodes, with a directed acyclic graph.
+        The general syntax is:             sam do plugin // plugin // plugin
+        Which plugins are available?       sam do --nodes
+        How does a plugin work?            sam do blur -h
 
     ''' + self._generatorsAndViewers + '''
         Viewer:                            sam do reader in.@.dpx // viewer
