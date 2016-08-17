@@ -32,17 +32,17 @@ class Sam_do(samUtils.Sam):
             '''))
 
         self._principle = colored.blue('Principle')
-        self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
         self._processing = colored.blue('Processing')
+        self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
         if clintVersion >= '0.3.3':
             self._principle.bold=True
-            self._generatorsAndViewers.bold=True
             self._imgSeqConversion.bold=True
             self._imgSeqNumbering.bold=True
             self._processing.bold=True
+            self._generatorsAndViewers.bold=True
             self._tuttleVersion.bold=True
 
         self.epilog = '''
@@ -51,17 +51,6 @@ class Sam_do(samUtils.Sam):
         The general syntax is:             sam do plugin // plugin // plugin
         Which plugins are available?       sam do --nodes
         How does a plugin work?            sam do blur -h
-
-    ''' + self._generatorsAndViewers + '''
-        Viewer:                            sam do reader in.@.dpx // viewer
-        Print:                             sam do reader in.@.dpx // print color=full16ansi
-        Constant generator:                sam do constant                // viewer
-        White constant generator:          sam do constant color=1,1,1,1  // viewer
-        HD constant generator:             sam do constant size=1920,1080 // viewer
-        Checkerboard generator:            sam do checkerboard            // viewer
-        Checkerboard generator:            sam do checkerboard width=500  // viewer
-        Checkerboard generator:            sam do checkerboard width=1920 ratio=2.35 // viewer
-        Text writing:                      sam do constant // text text="hello" size=80 // viewer
 
     ''' + self._imgSeqConversion + '''
         Convert Image:                     sam do reader in.dpx // writer out.jpg
@@ -88,6 +77,11 @@ class Sam_do(samUtils.Sam):
         CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
         Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
         Color Gradation:                   sam do reader in.####.dpx // colorgradation in=Linear out=Rec709 // writer out.####.jpg
+
+    ''' + self._generatorsAndViewers + '''
+        Viewer:                            sam do reader in.@.dpx // viewer
+        Text writing:                      sam do reader in.@.dpx // text text="hello" size=80 // viewer
+        Checkerboard:                      sam do checkerboard // viewer
 
     ''' + self._tuttleVersion + '''            ''' + self.tuttleWebSiteUserDoc
 
