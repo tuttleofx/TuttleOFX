@@ -319,8 +319,8 @@ class Sam_ls(samUtils.Sam):
             for inputToBrowse in inputsToBrowse:
                 inputToBrowse.addFilter(expression)
 
-        error = 0
         # for each input to browse, print the finding items
+        error = 0
         for inputToBrowse in inputsToBrowse:
             items = []
             inputPath = inputToBrowse.inputPath
@@ -328,44 +328,15 @@ class Sam_ls(samUtils.Sam):
             try:
                 self.logger.debug('Browse in "' + inputPath + '" with the following filters: ' + str(filters))
                 items = sequenceParser.browse(inputPath, detectionMethod, filters)
-            except IOError as e:
-                self.logger.debug('IOError raised: "' + str(e) + '".')
-                # if the given input does not correspond to anything
-                if 'No such file or directory' in str(e):
-                    # try to create a sequence from the given input
-                    sequence = sequenceParser.Sequence()
-                    self.logger.debug('BrowseSequence on "' + inputPath + '".')
-                    isSequence = sequenceParser.browseSequence(sequence, inputPath)
-                    if isSequence:
-                        item = sequenceParser.Item(sequence, os.getcwd())
-                        # check if the sequence contains at least one element
-                        if len(item.explode()):
-                            items.append(item)
-                    # else error
-                    else:
-                        self.logger.warning(e)
-                        continue
-                # else it's not a directory
-                else:
-                    self.logger.debug('Try a new browse with the given input name as filter.')
-                    # new path to browse
-                    newBrowsePath = os.path.dirname(inputPath)
-                    if not newBrowsePath:
-                        newBrowsePath = '.'
-                    # new filter
-                    newFilter = []
-                    newFilter.extend(filters)
-                    newFilter.append(os.path.basename(inputPath))
-                    # new browse
-                    self.logger.debug('Browse in "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
-                    items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
-
-            if not len(items):
-                self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
+            except Exception as e:
+                self.logger.debug('Exception raised: "' + str(e) + '".')
                 error = 1
-            else:
-                self._printItems(items, args, detectionMethod, filters)
-
+            finally:
+                if not len(items):
+                    self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
+                    error = 1
+                else:
+                    self._printItems(items, args, detectionMethod, filters)
         exit(error)
 
 
