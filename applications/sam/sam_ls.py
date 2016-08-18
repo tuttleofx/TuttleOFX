@@ -297,7 +297,7 @@ class Sam_ls(samUtils.Sam):
             inputsToBrowse.append(inputToBrowse)
         # if no user input, will browse in the current working directory
         if not inputsToBrowse:
-            inputsToBrowse.append(InputToBrowse(os.getcwd()))
+            inputsToBrowse.append(InputToBrowse('.'))
 
         # sam-ls -a
         detectionMethod = sequenceParser.eDetectionDefault
