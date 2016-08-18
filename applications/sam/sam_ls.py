@@ -184,16 +184,16 @@ class Sam_ls(samUtils.Sam):
                 filePath = colored.red(os.path.join(filePath, filename))
         filePath += ' \t'
 
-        # sam-ls -R / sam-ls -L
+        # sam-ls -R / sam-ls -L / sam-ls --script
         indentTree = ''
-        if args.recursive and level != 0:
+        if args.recursive and level != 0 and not args.script:
             indentTree += '|  ' * (level - 1)
             indentTree += '|__ '
 
         # display
         toPrint = detailed + filePath + detailedSequence
         # if first level or no tree formatting
-        if level == 0:
+        if level == 0 or args.script:
             puts(toPrint.format())
         else:
             with indent(level, quote=indentTree):
