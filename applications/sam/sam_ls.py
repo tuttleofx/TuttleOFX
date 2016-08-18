@@ -332,8 +332,9 @@ class Sam_ls(samUtils.Sam):
                 self.logger.debug('Exception raised: "' + str(e) + '".')
                 error = 1
             finally:
-                if not len(items):
-                    self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
+                # if there are no items found and the user indicate a name or a filter
+                if not len(items) and len(filters) > 0:
+                    self.logger.error('Cannot access "' + inputPath + '": No such file or directory.')
                     error = 1
                 else:
                     self._printItems(items, args, detectionMethod, filters)
