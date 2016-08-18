@@ -186,14 +186,14 @@ class Sam_ls(samUtils.Sam):
 
         # sam-ls -R / sam-ls -L
         indentTree = ''
-        if args.recursive and args.level != 0:
+        if args.recursive and level != 0:
             indentTree += '|  ' * (level - 1)
             indentTree += '|__ '
 
         # display
         toPrint = detailed + filePath + detailedSequence
         # if first level or no tree formatting
-        if level == 0 or args.level == 0:
+        if level == 0:
             puts(toPrint.format())
         else:
             with indent(level, quote=indentTree):
