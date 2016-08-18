@@ -244,9 +244,7 @@ class Sam_ls(samUtils.Sam):
                     newFolder = os.path.join(item.getFolder(), item.getFilename())
                     self.logger.debug('Browse in "' + newFolder + '" with the following filters: ' + str(filters))
                     newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
-                    level += 1
-                    self._printItems(newItems, args, detectionMethod, filters, level)
-                    level -= 1
+                    self._printItems(newItems, args, detectionMethod, filters, level + 1)
                 except IOError as e:
                     # Permission denied for example
                     self.logger.warning(e)
