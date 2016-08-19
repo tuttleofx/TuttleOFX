@@ -62,8 +62,9 @@ class Sam_rm(samUtils.Sam):
                 # sam-rm --dry-run
                 if not args.dryRun:
                     os.rmdir(absoluteFolderPath)
-            except OSError:
-                self.logger.error('You cannot remove a folder which contains elements like this. If you still want to, see "-R" option.')
+            except OSError as e:
+                self.logger.debug(e)
+                self.logger.error('You cannot remove the folder "' + absoluteFolderPath + '", probably because it is not empty. If you still want to, try the "-R" option.')
                 return 1
             return 0
 
