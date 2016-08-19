@@ -174,10 +174,6 @@ class Sam_rm(samUtils.Sam):
             self.logger.error('You cannot cumulate multiple options to specify the range of sequence.')
             exit(1)
 
-        if '.' in args.inputs or '..' in args.inputs:
-            self.logger.error('You cannot remove folders "." or "..".')
-            exit(1)
-
         # sam-rm -a
         detectionMethod = sequenceParser.eDetectionDefault
         if args.all:
