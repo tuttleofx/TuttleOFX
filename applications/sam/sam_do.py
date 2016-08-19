@@ -58,8 +58,8 @@ class Sam_do(samUtils.Sam):
         Select a frame:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10
         Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
         Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
-        Convert files in directory:        sam do reader inDir // writer outDir ext=jpg
-        Convert some files in directory:   sam do reader inDir ext=dpx // writer outDir ext=jpg
+        Convert files in directory recursively:  sam do reader inDir // writer outDir ext=jpg
+        Convert some files in directory:   sam do reader inDir ext=dpx // writer outDir ext=jpg --no-recursivity
         Notes:                             'reader' / 'r' could be use to automatically choose the best reader.
                                            'writer' / 'w' could be use to automatically choose the best writer.
                                            Convert files in a directory also copy the input tree structure to the output.
