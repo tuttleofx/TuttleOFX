@@ -158,7 +158,7 @@ class Sam_ls(samUtils.Sam):
 
         # sam-ls --relative-path
         if args.relativePath:
-            filePath += ('.' if os.path.isabs(item.getFolder()) else item.getFolder())
+            filePath += item.getFolder()
 
         # filename
         filename = item.getFilename()
