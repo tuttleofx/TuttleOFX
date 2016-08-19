@@ -142,7 +142,6 @@ class Sam_ls(samUtils.Sam):
             detailed = '{:1}{:9}'.format(characterFromType, permissions)
             detailed += ' {:8} {:8} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
             detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
-            detailed += '\t'
 
         # only for sequences: [ begin : end ] nbFiles - nbMissingFiles
         if itemType == sequenceParser.eTypeSequence:
@@ -181,7 +180,6 @@ class Sam_ls(samUtils.Sam):
                 filePath = colored.cyan(os.path.join(filePath, filename))
             else:
                 filePath = colored.red(os.path.join(filePath, filename))
-        filePath += ' \t'
 
         # sam-ls -R / sam-ls -L / sam-ls --script
         indentTree = ''
@@ -190,7 +188,7 @@ class Sam_ls(samUtils.Sam):
             indentTree += '|__ '
 
         # display
-        toPrint = detailed + filePath + detailedSequence
+        toPrint = detailed + '\t' + filePath + ' \t' + detailedSequence
         # if first level or no tree formatting
         if level == 0 or args.script:
             puts(toPrint.format())
