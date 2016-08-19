@@ -49,7 +49,7 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
         parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
         parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
-        parser.add_argument('-e', '--expression', dest='expression', action='append', default=[], help='use a specific pattern, ex: "*.jpg", "*.png"')
+        parser.add_argument('-e', '--expression', dest='expression', action='append', default=[], help='use a specific pattern, ex: "*.jpg", "*.png" (do not forget the quotes to avoid the shell interpretation!)')
 
         parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format (display in this order: type | permissions | owner | group | last update | minSize | maxSize | totalSize | name)')
         parser.add_argument('--format', dest='format', choices=['default', 'nuke', 'rv'], default='default', help='specify formatting of the sequence padding')
@@ -204,7 +204,10 @@ class Sam_ls(samUtils.Sam):
     def _printItems(self, items, args, detectionMethod, filters, level=0):
         """
         For each items, check if it should be printed, depending on the command line options.
+        Return if the operation was a success or not.
         """
+        error = 0
+
         # sam-ls --script
         if self._needToPrintCurrentFolder(args):
             puts(items[0].getFolder() + ':')
@@ -248,12 +251,14 @@ class Sam_ls(samUtils.Sam):
                     self._printItems(newItems, args, detectionMethod, filters, level)
                     level -= 1
                 except IOError as e:
-                    # Permission denied for example
-                    self.logger.warning(e)
+                    self.logger.error(e)
+                    error = 1
 
         # sam-ls --script
         if self._needToPrintCurrentFolder(args):
             puts(newline=True)
+
+        return error
 
     def run(self, parser):
         """
@@ -319,8 +324,8 @@ class Sam_ls(samUtils.Sam):
             for inputToBrowse in inputsToBrowse:
                 inputToBrowse.addFilter(expression)
 
-        error = 0
         # for each input to browse, print the finding items
+        error = 0
         for inputToBrowse in inputsToBrowse:
             items = []
             inputPath = inputToBrowse.inputPath
@@ -328,44 +333,18 @@ class Sam_ls(samUtils.Sam):
             try:
                 self.logger.debug('Browse in "' + inputPath + '" with the following filters: ' + str(filters))
                 items = sequenceParser.browse(inputPath, detectionMethod, filters)
-            except IOError as e:
-                self.logger.debug('IOError raised: "' + str(e) + '".')
-                # if the given input does not correspond to anything
-                if 'No such file or directory' in str(e):
-                    # try to create a sequence from the given input
-                    sequence = sequenceParser.Sequence()
-                    self.logger.debug('BrowseSequence on "' + inputPath + '".')
-                    isSequence = sequenceParser.browseSequence(sequence, inputPath)
-                    if isSequence:
-                        item = sequenceParser.Item(sequence, os.getcwd())
-                        # check if the sequence contains at least one element
-                        if len(item.explode()):
-                            items.append(item)
-                    # else error
-                    else:
-                        self.logger.warning(e)
-                        continue
-                # else it's not a directory
-                else:
-                    self.logger.debug('Try a new browse with the given input name as filter.')
-                    # new path to browse
-                    newBrowsePath = os.path.dirname(inputPath)
-                    if not newBrowsePath:
-                        newBrowsePath = '.'
-                    # new filter
-                    newFilter = []
-                    newFilter.extend(filters)
-                    newFilter.append(os.path.basename(inputPath))
-                    # new browse
-                    self.logger.debug('Browse in "' + newBrowsePath + '" with the following filters: ' + str(newFilter))
-                    items += sequenceParser.browse(newBrowsePath, detectionMethod, newFilter)
-
-            if not len(items):
-                self.logger.warning('No items found for input "' + inputPath + '" with the following filters: ' + str(filters))
+            except Exception as e:
+                self.logger.error(e)
                 error = 1
-            else:
-                self._printItems(items, args, detectionMethod, filters)
-
+            finally:
+                # if there are no items found and the user indicate a name interpreted as filter
+                if not error and not len(items) and len(filters) > 0:
+                    self.logger.error('Cannot access "' + inputPath + '" with the following filters: ' + str(filters) + ': No such file or directory.')
+                    error = 1
+                else:
+                    err = self._printItems(items, args, detectionMethod, filters)
+                    if err:
+                        error = err
         exit(error)
 
 
