@@ -204,7 +204,10 @@ class Sam_ls(samUtils.Sam):
     def _printItems(self, items, args, detectionMethod, filters, level=0):
         """
         For each items, check if it should be printed, depending on the command line options.
+        Return if the operation was a success or not.
         """
+        error = 0
+
         # sam-ls --script
         if self._needToPrintCurrentFolder(args):
             puts(items[0].getFolder() + ':')
@@ -248,12 +251,14 @@ class Sam_ls(samUtils.Sam):
                     self._printItems(newItems, args, detectionMethod, filters, level)
                     level -= 1
                 except IOError as e:
-                    # Permission denied for example
-                    self.logger.warning(e)
+                    self.logger.error(e)
+                    error = 1
 
         # sam-ls --script
         if self._needToPrintCurrentFolder(args):
             puts(newline=True)
+
+        return error
 
     def run(self, parser):
         """
@@ -337,7 +342,9 @@ class Sam_ls(samUtils.Sam):
                     self.logger.error('Cannot access "' + inputPath + '" with the following filters: ' + str(filters) + ': No such file or directory.')
                     error = 1
                 else:
-                    self._printItems(items, args, detectionMethod, filters)
+                    err = self._printItems(items, args, detectionMethod, filters)
+                    if err:
+                        error = err
         exit(error)
 
 
