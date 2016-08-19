@@ -334,7 +334,7 @@ class Sam_ls(samUtils.Sam):
             finally:
                 # if there are no items found and the user indicate a name or a filter
                 if not len(items) and len(filters) > 0:
-                    self.logger.error('Cannot access "' + inputPath + '": No such file or directory.')
+                    self.logger.error('Cannot access "' + inputPath + '" with the following filters: ' + str(filters) + ': No such file or directory.')
                     error = 1
                 else:
                     self._printItems(items, args, detectionMethod, filters)
