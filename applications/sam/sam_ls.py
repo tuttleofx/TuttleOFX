@@ -46,9 +46,9 @@ class Sam_ls(samUtils.Sam):
 
         # Options
         parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
-        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
-        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
-        parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
+        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='display only directories')
+        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='display only sequences')
+        parser.add_argument('-f', '--files', dest='files', action='store_true', help='display only files')
         parser.add_argument('-e', '--expression', dest='expression', action='append', default=[], help='use a specific pattern, ex: "*.jpg", "*.png"')
 
         parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format (display in this order: type | permissions | owner | group | last update | minSize | maxSize | totalSize | name)')
