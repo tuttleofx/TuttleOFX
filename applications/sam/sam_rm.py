@@ -132,10 +132,14 @@ class Sam_rm(samUtils.Sam):
 
             # sam-rm -R
             if args.recursive and itemType == sequenceParser.eTypeFolder:
-                subFolder = os.path.join(item.getFolder(), item.getFilename())
-                self.logger.debug('Browse in sub folder"' + subFolder + '" with the following filters: ' + str(filters))
-                newItems = sequenceParser.browse(subFolder, detectionMethod, filters)
-                self._removeItems(newItems, args, detectionMethod, filters)
+                try:
+                    subFolder = os.path.join(item.getFolder(), item.getFilename())
+                    self.logger.debug('Browse in sub folder"' + subFolder + '" with the following filters: ' + str(filters))
+                    newItems = sequenceParser.browse(subFolder, detectionMethod, filters)
+                    self._removeItems(newItems, args, detectionMethod, filters)
+                except IOError as e:
+                    self.logger.error(e)
+                    error = 1
 
             if toRemove:
                 # store folder and delete it after all other elements
@@ -207,8 +211,13 @@ class Sam_rm(samUtils.Sam):
                 filterToBrowse.extend(filters)
                 filterToBrowse.append(os.path.basename(inputPath))
                 # browse
-                self.logger.debug('Browse in "' + pathToBrowse + '" with the following filters: ' + str(filterToBrowse))
-                items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
+                try:
+                    self.logger.debug('Browse in "' + pathToBrowse + '" with the following filters: ' + str(filterToBrowse))
+                    items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
+                except IOError as e:
+                    self.logger.error(e)
+                    error = 1
+                    continue
 
             # print error if no items were found
             if len(items) == 0:
