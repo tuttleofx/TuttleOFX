@@ -197,7 +197,7 @@ class Sam_rm(samUtils.Sam):
             items = []
 
             # input is a directory
-            if not os.path.basename(inputPath):
+            if os.path.isdir(inputPath):
                 items.append(sequenceParser.Item(sequenceParser.eTypeFolder, inputPath))
             # else browse directory with a filter, to find the corresponding Item
             else:
