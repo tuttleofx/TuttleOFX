@@ -228,7 +228,7 @@ class Sam_ls(samUtils.Sam):
                     toPrint = True
 
             # skip item already printed
-            if self._isAlreadyPrinted(item):
+            if toPrint and self._isAlreadyPrinted(item):
                 toPrint = False
 
             # print current item
