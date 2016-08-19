@@ -211,19 +211,21 @@ class Sam_ls(samUtils.Sam):
 
         for item in sorted(items):
             itemType = item.getType()
-            toPrint = True
+            toPrint = False
 
-            # sam-ls -d
-            if args.directories and itemType != sequenceParser.eTypeFolder:
-                toPrint = False
-
-            # sam-ls -f
-            if args.files and itemType != sequenceParser.eTypeFile:
-                toPrint = False
-
-            # sam-ls -s
-            if args.sequences and itemType != sequenceParser.eTypeSequence:
-                toPrint = False
+            # sam-ls default case: print all items
+            if not args.directories and not args.files and not args.sequences:
+                toPrint = True
+            else:
+                # sam-ls -d
+                if args.directories and itemType == sequenceParser.eTypeFolder:
+                    toPrint = True
+                # sam-ls -f
+                elif args.files and itemType == sequenceParser.eTypeFile:
+                    toPrint = True
+                # sam-ls -s
+                elif args.sequences and itemType == sequenceParser.eTypeSequence:
+                    toPrint = True
 
             # skip item already printed
             if self._isAlreadyPrinted(item):
