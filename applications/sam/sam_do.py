@@ -49,6 +49,7 @@ class Sam_do(samUtils.Sam):
     ''' + self._principle + '''
         'sam do' can be seen as a command line version of a compositing software in which you can chain nodes, with a directed acyclic graph.
         The general syntax is:             sam do plugin // plugin // plugin
+        Continues whatever happens:        sam do plugin // plugin // plugin --continue-on-error
         Which plugins are available?       sam do --nodes
         How does a plugin work?            sam do blur -h
 
