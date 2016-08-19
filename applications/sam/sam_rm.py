@@ -113,19 +113,21 @@ class Sam_rm(samUtils.Sam):
 
         for item in sorted(items):
             itemType = item.getType()
-            toRemove = True
+            toRemove = False
 
-            # sam-rm -d
-            if args.directories and itemType != sequenceParser.eTypeFolder:
-                toRemove = False
-
-            # sam-rm -f
-            if args.files and itemType != sequenceParser.eTypeFile:
-                toRemove = False
-
-            # sam-rm -s
-            if args.sequences and itemType != sequenceParser.eTypeSequence:
-                toRemove = False
+            # sam-rm default case: remove all items
+            if not args.directories and not args.files and not args.sequences:
+                toRemove = True
+            else:
+                # sam-rm -d
+                if args.directories and itemType == sequenceParser.eTypeFolder:
+                    toRemove = True
+                # sam-rm -f
+                elif args.files and itemType == sequenceParser.eTypeFile:
+                    toRemove = True
+                # sam-rm -s
+                elif args.sequences and itemType == sequenceParser.eTypeSequence:
+                    toRemove = True
 
             # sam-rm -R
             if args.recursive and itemType == sequenceParser.eTypeFolder:
