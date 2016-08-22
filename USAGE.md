@@ -33,7 +33,7 @@ export TUTTLE_HOME=/your/custom/path
 ```
 
 
-## The log level
+## Manage log level
 TuttleOFX host handles a global level to log information.  
 The list of possible log level are:
 * fatal
