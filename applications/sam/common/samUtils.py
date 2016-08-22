@@ -36,6 +36,10 @@ class Sam(object):
       How to manipulate sequences     ''' + self.tuttleWebSiteSequences + '''
       '''
 
+        # disable printed colors if asked
+        if os.environ.get('TUTTLE_DISABLE_COLOR'):
+            colored.disable()
+
         # create logger
         self.logger = logging.getLogger('SAM')
         self.logger.setLevel(logging.DEBUG)
