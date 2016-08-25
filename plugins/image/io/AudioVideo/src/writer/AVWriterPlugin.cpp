@@ -879,7 +879,9 @@ void AVWriterPlugin::updateVideoFromExistingProfile()
                option.first == avtranscoder::constants::avProfileType ||
                option.first == avtranscoder::constants::avProfileCodec ||
                option.first == avtranscoder::constants::avProfilePixelFormat ||
-               option.first == avtranscoder::constants::avProfileFrameRate)
+               option.first == avtranscoder::constants::avProfileFrameRate ||
+               option.first  == avtranscoder::constants::avProfileWidth ||
+               option.first  == avtranscoder::constants::avProfileHeight)
                 continue;
 
             if(!_paramVideoCustom.setOption(option.first, option.second))
