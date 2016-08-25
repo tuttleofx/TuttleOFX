@@ -547,6 +547,36 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("CompressionQuality", params._quality);
     spec.attribute("Orientation", params._orientation);
 
+    // Set the output compression used
+    // If the format doesn't support the selected compression, this attribute is ignored.
+    switch(params._compression)
+    {
+        case eTuttlePluginCompressionNone:
+	    spec.attribute("compression", "none");
+	    break;
+        case eTuttlePluginCompressionRLE:
+	    spec.attribute("compression", "rle");
+	    break;
+        case eTuttlePluginCompressionZIP:
+	    spec.attribute("compression", "zip");
+	    break;
+        case eTuttlePluginCompressionZIPS:
+	    spec.attribute("compression", "zips");
+	    break;
+        case eTuttlePluginCompressionPIZ:
+	    spec.attribute("compression", "piz");
+	    break;
+        case eTuttlePluginCompressionPXR24:
+	    spec.attribute("compression", "pxr24");
+	    break;
+        case eTuttlePluginCompressionB44:
+	    spec.attribute("compression", "b44");
+	    break;
+        case eTuttlePluginCompressionB44A:
+	    spec.attribute("compression", "b44a");
+	    break;
+    }
+
     // controlling chroma-subsampling of jpeg
     // Other formats don't have this attribute and ignore it.
     switch(params._subsampling)
@@ -572,6 +602,13 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     spec.attribute("PixelAspectRatio", par);
     spec.attribute("XResolution", par);
     spec.attribute("YResolution", 1);
+
+    // Write image data in tiles of 64x64 pixels
+    if(params._storageType == eTuttlePluginStorageTiles)
+    {
+	spec.tile_width = 64;
+	spec.tile_height = 64;
+    }
 
     if(!out->open(filepath, spec))
     {

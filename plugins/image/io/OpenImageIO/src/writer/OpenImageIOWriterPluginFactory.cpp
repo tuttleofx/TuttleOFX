@@ -105,6 +105,13 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     quality->setDisplayRange(0, 100);
     quality->setDefault(80);
 
+    OFX::ChoiceParamDescriptor* storageType = desc.defineChoiceParam(kParamOutputStorageType);
+    storageType->setLabel(kParamOutputStorageTypeLabel);
+    storageType->setHint(kParamOutputStorageTypeHint);
+    storageType->appendOption(kParamOutputStorageScanLine);
+    storageType->appendOption(kParamOutputStorageTiles);
+    storageType->setDefault(eTuttlePluginStorageScanLine);
+
     OFX::ChoiceParamDescriptor* subsampling = desc.defineChoiceParam(kParamOutputSubsampling);
     subsampling->setLabel(kParamOutputSubsamplingLabel);
     subsampling->setHint(kParamOutputSubsamplingHint);
@@ -126,23 +133,17 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     orientation->appendOption(kParamOutputOrientationR90CounterClockwise);
     orientation->setDefault(0);
 
-    OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam(kParamOutputCompression);
-    compression->setLabel(kParamOutputOrientationLabel);
-#if(TUTTLE_EXPERIMENTAL)
-    compression->appendOption(kParamOutputCompressionNone);
-#endif
-    compression->appendOption(kParamOutputCompressionZip);
-#if(TUTTLE_EXPERIMENTAL)
-    compression->appendOption(kParamOutputCompressionZips);
-    compression->appendOption(kParamOutputCompressionRle);
-    compression->appendOption(kParamOutputCompressionPiz);
-    compression->appendOption(kParamOutputCompressionPxr24);
-    compression->appendOption(kParamOutputCompressionB44);
-    compression->appendOption(kParamOutputCompressionB44a);
-    compression->setDefault(eParamCompressionNone);
-#else
-    compression->setDefault(0);
-#endif
+    OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam(kParamCompression);
+    compression->setLabel(kParamCompressionLabel);
+    compression->appendOption(kParamCompressionNone, kParamCompressionHintNone);
+    compression->appendOption(kParamCompressionRLE, kParamCompressionHintRLE);
+    compression->appendOption(kParamCompressionZIP, kParamCompressionHintZIP);
+    compression->appendOption(kParamCompressionZIPS, kParamCompressionHintZIPS);
+    compression->appendOption(kParamCompressionPIZ, kParamCompressionHintPIZ);
+    compression->appendOption(kParamCompressionPXR24, kParamCompressionHintPXR24);
+    compression->appendOption(kParamCompressionB44, kParamCompressionHintB44);
+    compression->appendOption(kParamCompressionB44A, kParamCompressionHintB44A);
+    compression->setDefault(eTuttlePluginCompressionZIP);
 }
 
 /**

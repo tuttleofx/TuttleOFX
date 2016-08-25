@@ -21,7 +21,9 @@ struct OpenImageIOWriterProcessParams
     std::string _filepath;               ///< filepath
     ETuttlePluginComponents _components; ///< Force RGB
     ETuttlePluginBitDepth _bitDepth;     ///< Output bit depth (real bit depth, not the buffer passed to OpenImageIO)
+    ETuttlePluginStorage _storageType; ///< Output storage type
     ETuttlePluginSubsampling _subsampling; ///< Output subsampling
+    ETuttlePluginCompression _compression; ///< Output compression
 
     bool _premultiply; ///< Output premultiply
     int _quality;      ///< Output quality
@@ -43,8 +45,10 @@ public:
 public:
     OFX::ChoiceParam* _components; ///< Choose components RGBA/RGB
     OFX::IntParam* _quality;
+    OFX::ChoiceParam* _storageType;
     OFX::ChoiceParam* _paramSubsampling;
     OFX::ChoiceParam* _orientation;
+    OFX::ChoiceParam* _compression;
 };
 }
 }
