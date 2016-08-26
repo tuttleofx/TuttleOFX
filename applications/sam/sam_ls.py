@@ -142,7 +142,6 @@ class Sam_ls(samUtils.Sam):
             detailed = '{:1}{:9}'.format(characterFromType, permissions)
             detailed += ' {:8} {:8} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
             detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
-            detailed += '\t'
 
         # only for sequences: [ begin : end ] nbFiles - nbMissingFiles
         if itemType == sequenceParser.eTypeSequence:
@@ -158,8 +157,7 @@ class Sam_ls(samUtils.Sam):
 
         # sam-ls --relative-path
         if args.relativePath:
-            filePath += (item.getFolder() if item.getFolder()[0] != '/' else '.')
-            filePath += ('/' if filePath[-1] != '/' else '')
+            filePath += item.getFolder()
 
         # filename
         filename = item.getFilename()
@@ -182,18 +180,17 @@ class Sam_ls(samUtils.Sam):
                 filePath = colored.cyan(os.path.join(filePath, filename))
             else:
                 filePath = colored.red(os.path.join(filePath, filename))
-        filePath += ' \t'
 
-        # sam-ls -R / sam-ls -L
+        # sam-ls -R / sam-ls -L / sam-ls --script
         indentTree = ''
-        if args.recursive and args.level != 0:
+        if args.recursive and level != 0 and not args.script:
             indentTree += '|  ' * (level - 1)
             indentTree += '|__ '
 
         # display
-        toPrint = detailed + filePath + detailedSequence
+        toPrint = detailed + '\t' + filePath + ' \t' + detailedSequence
         # if first level or no tree formatting
-        if level == 0 or args.level == 0:
+        if level == 0 or args.script:
             puts(toPrint.format())
         else:
             with indent(level, quote=indentTree):
@@ -247,9 +244,7 @@ class Sam_ls(samUtils.Sam):
                     newFolder = os.path.join(item.getFolder(), item.getFilename())
                     self.logger.debug('Browse in "' + newFolder + '" with the following filters: ' + str(filters))
                     newItems = sequenceParser.browse(newFolder, detectionMethod, filters)
-                    level += 1
-                    self._printItems(newItems, args, detectionMethod, filters, level)
-                    level -= 1
+                    self._printItems(newItems, args, detectionMethod, filters, level + 1)
                 except IOError as e:
                     self.logger.error(e)
                     error = 1
@@ -304,7 +299,7 @@ class Sam_ls(samUtils.Sam):
             inputsToBrowse.append(inputToBrowse)
         # if no user input, will browse in the current working directory
         if not inputsToBrowse:
-            inputsToBrowse.append(InputToBrowse(os.getcwd()))
+            inputsToBrowse.append(InputToBrowse('.'))
 
         # sam-ls -a
         detectionMethod = sequenceParser.eDetectionDefault
