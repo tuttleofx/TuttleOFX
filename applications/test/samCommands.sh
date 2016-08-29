@@ -33,6 +33,7 @@ samKO=(
     "sam toto"
 # sam ls
     "sam ls toto"
+    "sam ls toto/"
     "sam ls -e"
     "sam ls -L"
     "sam ls -L -1"
