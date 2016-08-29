@@ -46,9 +46,9 @@ class Sam_ls(samUtils.Sam):
 
         # Options
         parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
-        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
-        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
-        parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
+        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='display only directories')
+        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='display only sequences')
+        parser.add_argument('-f', '--files', dest='files', action='store_true', help='display only files')
         parser.add_argument('-e', '--expression', dest='expression', action='append', default=[], help='use a specific pattern, ex: "*.jpg", "*.png" (do not forget the quotes to avoid the shell interpretation!)')
 
         parser.add_argument('-l', '--long-listing', dest='longListing', action='store_true', help='use a long listing format (display in this order: type | permissions | owner | group | last update | minSize | maxSize | totalSize | name)')
@@ -141,12 +141,12 @@ class Sam_ls(samUtils.Sam):
 
             detailed = '{:1}{:9}'.format(characterFromType, permissions)
             detailed += ' {:8} {:8} {:8}'.format(itemStat.getUserName(), itemStat.getGroupName(), lastUpdate)
-            detailed += ' {:6} {:6} {:6}'.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
+            detailed += ' {:6} {:6} {:6} '.format(minSize, maxSize, samUtils.getReadableSize(itemStat.size))
 
         # only for sequences: [ begin : end ] nbFiles - nbMissingFiles
         if itemType == sequenceParser.eTypeSequence:
             sequence = item.getSequence()
-            detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
+            detailedSequence = ' [{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
             nbHoles = (sequence.getLastTime() - sequence.getFirstTime() + 1) - sequence.getNbFiles()
             if nbHoles:
                 detailedSequence += ' - {nbHoles} missing files'.format(nbHoles=nbHoles)
@@ -188,7 +188,7 @@ class Sam_ls(samUtils.Sam):
             indentTree += '|__ '
 
         # display
-        toPrint = detailed + '\t' + filePath + ' \t' + detailedSequence
+        toPrint = detailed + filePath + detailedSequence
         # if first level or no tree formatting
         if level == 0 or args.script:
             puts(toPrint.format())
@@ -211,22 +211,24 @@ class Sam_ls(samUtils.Sam):
 
         for item in sorted(items):
             itemType = item.getType()
-            toPrint = True
+            toPrint = False
 
-            # sam-ls -d
-            if args.directories and itemType != sequenceParser.eTypeFolder:
-                toPrint = False
-
-            # sam-ls -f
-            if args.files and itemType != sequenceParser.eTypeFile:
-                toPrint = False
-
-            # sam-ls -s
-            if args.sequences and itemType != sequenceParser.eTypeSequence:
-                toPrint = False
+            # sam-ls default case: print all items
+            if not args.directories and not args.files and not args.sequences:
+                toPrint = True
+            else:
+                # sam-ls -d
+                if args.directories and itemType == sequenceParser.eTypeFolder:
+                    toPrint = True
+                # sam-ls -f
+                elif args.files and itemType == sequenceParser.eTypeFile:
+                    toPrint = True
+                # sam-ls -s
+                elif args.sequences and itemType == sequenceParser.eTypeSequence:
+                    toPrint = True
 
             # skip item already printed
-            if self._isAlreadyPrinted(item):
+            if toPrint and self._isAlreadyPrinted(item):
                 toPrint = False
 
             # print current item
