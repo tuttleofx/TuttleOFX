@@ -197,10 +197,8 @@ class Sam_rm(samUtils.Sam):
         for inputPath in args.inputs:
             items = []
 
-            # if the input is a directory/file/link
-            if os.path.isdir(inputPath):
-                items.append(sequenceParser.Item(sequenceParser.eTypeFolder, inputPath))
-            elif os.path.isfile(inputPath):
+            # if the input is a file/link
+            if os.path.isfile(inputPath):
                 items.append(sequenceParser.Item(sequenceParser.eTypeFile, inputPath))
             elif os.path.islink(inputPath):
                 items.append(sequenceParser.Item(sequenceParser.eTypeLink, inputPath))
