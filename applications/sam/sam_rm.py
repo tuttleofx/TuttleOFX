@@ -33,9 +33,9 @@ class Sam_rm(samUtils.Sam):
 
         # Options
         parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
-        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
-        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
-        parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
+        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='remove only directories')
+        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='remove only sequences')
+        parser.add_argument('-f', '--files', dest='files', action='store_true', help='remove only files')
         parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: "*.jpg", "*.png"')
 
         parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
