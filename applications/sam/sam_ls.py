@@ -146,7 +146,7 @@ class Sam_ls(samUtils.Sam):
         # only for sequences: [ begin : end ] nbFiles - nbMissingFiles
         if itemType == sequenceParser.eTypeSequence:
             sequence = item.getSequence()
-            detailedSequence = '[{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
+            detailedSequence = ' [{first}:{last}] {nbFiles} files'.format(first=sequence.getFirstTime(), last=sequence.getLastTime(), nbFiles=sequence.getNbFiles())
             nbHoles = (sequence.getLastTime() - sequence.getFirstTime() + 1) - sequence.getNbFiles()
             if nbHoles:
                 detailedSequence += ' - {nbHoles} missing files'.format(nbHoles=nbHoles)
@@ -188,7 +188,7 @@ class Sam_ls(samUtils.Sam):
             indentTree += '|__ '
 
         # display
-        toPrint = detailed + filePath + ' \t' + detailedSequence
+        toPrint = detailed + filePath + detailedSequence
         # if first level or no tree formatting
         if level == 0 or args.script:
             puts(toPrint.format())
