@@ -524,6 +524,11 @@ void addOptionsToGroup(OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescript
                 {
                     choiceParam->appendOption("unknown");
                 }
+
+                // Hide the OFX Choice parameter if it has only one option (not useful in the interface)
+                if(choiceParam->getNOptions() < 2)
+                    choiceParam->setIsSecret(true);
+
                 param = choiceParam;
                 break;
             }
