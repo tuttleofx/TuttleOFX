@@ -513,9 +513,16 @@ void addOptionsToGroup(OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescript
                 }
                 choiceParam->setDefault(ofxDefaultValue);
 
+                // Added child options
                 BOOST_FOREACH(const avtranscoder::Option& child, option.getChilds())
                 {
                     choiceParam->appendOption(child.getName() + " " + child.getHelp());
+                }
+
+                // Fixed warning message in some host (ie. Nuke), about OFX Choice parameters without child options
+                if(option.getChilds().empty())
+                {
+                    choiceParam->appendOption("unknown");
                 }
                 param = choiceParam;
                 break;
