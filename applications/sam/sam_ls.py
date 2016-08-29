@@ -57,7 +57,6 @@ class Sam_ls(samUtils.Sam):
         parser.add_argument('-L', '--level', dest='level', type=level_type, help='max display depth of the directory tree (without formatting if 0)')
         parser.add_argument('--absolute-path', dest='absolutePath', action='store_true', help='display the absolute path of each object')
         parser.add_argument('--relative-path', dest='relativePath', action='store_true', help='display the relative path of each object')
-        parser.add_argument('--no-color', dest='noColor', action='store_true', default=False, help='display the output without colors (with colors by default)')
         parser.add_argument('--detect-negative', dest='detectNegative', action='store_true', help='detect negative numbers instead of detecting "-" as a non-digit character')
         parser.add_argument('--detect-without-holes', dest='detectWithoutHoles', action='store_true', help='detect sequences without holes')
         parser.add_argument('--explode-sequences', dest='explodeSequences', action='store_true', default=False, help='explode sequences as several sequences without holes')
@@ -164,22 +163,20 @@ class Sam_ls(samUtils.Sam):
         # sam-ls --format
         if itemType == sequenceParser.eTypeSequence:
             filename = samUtils.getSequenceNameWithFormatting(item.getSequence(), args.format)
-        # sam-ls --no-color
-        if args.noColor:
-            filePath = os.path.join(filePath, filename)
+
+        # colors
+        if itemType == sequenceParser.eTypeFolder:
+            # blue is not visible without bold
+            filePath = colored.blue(os.path.join(filePath, filename), bold=True)
+        elif itemType == sequenceParser.eTypeFile:
+            filePath = colored.green(os.path.join(filePath, filename))
+        elif itemType == sequenceParser.eTypeSequence:
+            # magenta is not visible without bold
+            filePath = colored.magenta(os.path.join(filePath, filename), bold=True)
+        elif itemType == sequenceParser.eTypeLink:
+            filePath = colored.cyan(os.path.join(filePath, filename))
         else:
-            if itemType == sequenceParser.eTypeFolder:
-                # blue is not visible without bold
-                filePath = colored.blue(os.path.join(filePath, filename), bold=True)
-            elif itemType == sequenceParser.eTypeFile:
-                filePath = colored.green(os.path.join(filePath, filename))
-            elif itemType == sequenceParser.eTypeSequence:
-                # magenta is not visible without bold
-                filePath = colored.magenta(os.path.join(filePath, filename), bold=True)
-            elif itemType == sequenceParser.eTypeLink:
-                filePath = colored.cyan(os.path.join(filePath, filename))
-            else:
-                filePath = colored.red(os.path.join(filePath, filename))
+            filePath = colored.red(os.path.join(filePath, filename))
 
         # sam-ls -R / sam-ls -L / sam-ls --script
         indentTree = ''
