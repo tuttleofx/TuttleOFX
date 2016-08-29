@@ -197,10 +197,14 @@ class Sam_rm(samUtils.Sam):
         for inputPath in args.inputs:
             items = []
 
-            # input is a directory
+            # if the input is a directory/file/link
             if os.path.isdir(inputPath):
                 items.append(sequenceParser.Item(sequenceParser.eTypeFolder, inputPath))
-            # else browse directory with a filter, to find the corresponding Item
+            elif os.path.isfile(inputPath):
+                items.append(sequenceParser.Item(sequenceParser.eTypeFile, inputPath))
+            elif os.path.islink(inputPath):
+                items.append(sequenceParser.Item(sequenceParser.eTypeLink, inputPath))
+            # else browse in the extracted directory with the basename as filter
             else:
                 # get path to browse
                 pathToBrowse = os.path.dirname(inputPath)
