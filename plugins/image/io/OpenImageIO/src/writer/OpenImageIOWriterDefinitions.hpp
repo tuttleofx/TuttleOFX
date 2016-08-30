@@ -35,6 +35,8 @@ enum ETuttlePluginComponents
 
 static const std::string kParamOutputQuality = "quality";
 static const std::string kParamOutputQualityLabel = "Quality";
+static const std::string kParamOutputQualityHint = "Set the compression quality of the output file.\n"
+                                                   "It could be ignored depending on the format.\n";
 
 enum ETuttlePluginSubsampling
 {
@@ -46,11 +48,12 @@ enum ETuttlePluginSubsampling
 
 static const std::string kParamOutputSubsampling = "subsampling";
 static const std::string kParamOutputSubsamplingLabel = "Subsampling";
-static const std::string kParamOutputSubsamplingHint = "Controlling chroma-subsampling of output JPEG files:\n"
+static const std::string kParamOutputSubsamplingHint = "Controlling chroma-subsampling of the output file.\n"
                                                  "4:2:0 : one chrominance component for every 2x2 block of pixels.\n"
                                                  "4:2:2 : one chrominance component for every 2x1 block of pixels.\n"
                                                  "4:1:1 : one chrominance component for every 4x1 block of pixels.\n"
-                                                 "4:4:4 : one chrominance component for every pixel (no subsampling)\n";
+                                                 "4:4:4 : one chrominance component for every pixel (no subsampling)\n"
+                                                 "It could be ignored depending on the format.\n";
 
 static const std::string kParamOutputSubsampling420 = "420";
 static const std::string kParamOutputSubsampling422 = "422";
@@ -59,15 +62,37 @@ static const std::string kParamOutputSubsampling444 = "444";
 
 static const std::string kParamOutputOrientation = "orientation";
 static const std::string kParamOutputOrientationLabel = "Orientation";
+static const std::string kParamOutputOrientationHint = "Set the 'Orientation' metadata of the output file (does not update the pixel data).\n"
+                                                       "It could be ignored depending on the format.\n";
 
-static const std::string kParamOutputOrientationNormal = "normal";
-static const std::string kParamOutputOrientationFlop = "flop";
-static const std::string kParamOutputOrientationR180 = "180";
-static const std::string kParamOutputOrientationFlip = "flip";
-static const std::string kParamOutputOrientationTransposed = "transposed";
-static const std::string kParamOutputOrientationR90Clockwise = "90clockwise";
-static const std::string kParamOutputOrientationTransverse = "transverse";
-static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise";
+static const std::string kParamOutputOrientationNormal = "normal   Oriented left to right, top to bottom";
+static const std::string kParamOutputOrientationFlop = "flop   Oriented right to left, top to bottom";
+static const std::string kParamOutputOrientationR180 = "180   Oriented left to right, bottom to top";
+static const std::string kParamOutputOrientationFlip = "flip   Oriented right to left, bottom to top";
+static const std::string kParamOutputOrientationTransposed = "transposed   Oriented top to bottom, left to right";
+static const std::string kParamOutputOrientationTransverse = "transverse   Oriented bottom to top, left to right";
+static const std::string kParamOutputOrientationR90Clockwise = "90clockwise   Oriented top to bottom, right to left";
+static const std::string kParamOutputOrientationR90CounterClockwise = "90counter-clockwise   Oriented bottom to top, right to left";
+
+static const std::string kParamProject = "project";
+static const std::string kParamProjectHint = "Set the 'Project' metadata of the output file. \n"
+                                             "It could be ignored depending on the format.\n";
+static const std::string kParamCopyright = "copyright";
+static const std::string kParamCopyrightHint = "Set the 'Copyright' metadata of the output file. \n"
+                                               "It could be ignored depending on the format.\n";
+
+enum ETuttlePluginEndianness
+{
+    eTuttlePluginEndiannessDefault = 0,
+    eTuttlePluginEndiannessLittle,
+    eTuttlePluginEndiannessBig
+};
+
+static const std::string kParamOutputEndianness = "endianness";
+static const std::string kParamOutputEndiannessHint = "Set the endianness of the output file";
+static const std::string kParamOutputEndiannessDefault = "default   The default endianness choosen by oiio dependening on the platform.";
+static const std::string kParamOutputEndiannessLittle = "little   Force to little endian.";
+static const std::string kParamOutputEndiannessBig = "big   Force to big endian.";
 
 static const std::string kParamOutputCompression = "compression";
 static const std::string kParamOutputCompressionLabel = "Compression";

@@ -8,6 +8,7 @@
 
 #include <imageio.h>
 #include <filesystem.h>
+#include <ctime>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
@@ -542,10 +543,35 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
 
     ImageSpec spec(src.width(), src.height(), gil::num_channels<WImage>::value, oiioBitDepth);
 
+    spec.attribute("Software", "TuttleOFX OIIO Writer");
+
+    const time_t rawtime = time(0);
+    const struct tm * timeinfo = localtime(&rawtime);
+    char buffer[80];
+    strftime(buffer, 80,"%d-%m-%Y %I:%M:%S", timeinfo);
+    spec.attribute("DateTime", std::string(buffer));
+
+    if(! params._project.empty())
+	spec.attribute("DocumentName", params._project);
+    if(! params._copyright.empty())
+	spec.attribute("Copyright", params._copyright);
+
     spec.attribute("oiio:BitsPerSample", bitsPerSample);
     spec.attribute("oiio:UnassociatedAlpha", params._premultiply);
     spec.attribute("CompressionQuality", params._quality);
-    spec.attribute("Orientation", params._orientation);
+    spec.attribute("Orientation", params._orientation + 1);
+
+    switch(params._endianness)
+    {
+	case eTuttlePluginEndiannessLittle:
+	    spec.attribute("oiio:Endian", "little");
+	    break;
+	case eTuttlePluginEndiannessBig:
+	    spec.attribute("oiio:Endian", "big");
+	    break;
+	default:
+	    break;
+    }
 
     // controlling chroma-subsampling of jpeg
     // Other formats don't have this attribute and ignore it.

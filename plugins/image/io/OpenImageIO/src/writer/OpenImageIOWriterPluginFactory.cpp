@@ -100,6 +100,7 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     bitDepth->setDefault(eTuttlePluginBitDepthAuto);
 
     OFX::IntParamDescriptor* quality = desc.defineIntParam(kParamOutputQuality);
+    quality->setHint(kParamOutputQualityHint);
     quality->setLabel(kParamOutputQualityLabel);
     quality->setRange(0, 100);
     quality->setDisplayRange(0, 100);
@@ -112,19 +113,35 @@ void OpenImageIOWriterPluginFactory::describeInContext(OFX::ImageEffectDescripto
     subsampling->appendOption(kParamOutputSubsampling422);
     subsampling->appendOption(kParamOutputSubsampling411);
     subsampling->appendOption(kParamOutputSubsampling444);
-    subsampling->setDefault(0);
+    subsampling->setDefault(eETuttlePluginSubsampling420);
 
     OFX::ChoiceParamDescriptor* orientation = desc.defineChoiceParam(kParamOutputOrientation);
+    orientation->setHint(kParamOutputOrientationHint);
     orientation->setLabel(kParamOutputOrientationLabel);
     orientation->appendOption(kParamOutputOrientationNormal);
     orientation->appendOption(kParamOutputOrientationFlop);
     orientation->appendOption(kParamOutputOrientationR180);
     orientation->appendOption(kParamOutputOrientationFlip);
     orientation->appendOption(kParamOutputOrientationTransposed);
-    orientation->appendOption(kParamOutputOrientationR90Clockwise);
     orientation->appendOption(kParamOutputOrientationTransverse);
+    orientation->appendOption(kParamOutputOrientationR90Clockwise);
     orientation->appendOption(kParamOutputOrientationR90CounterClockwise);
     orientation->setDefault(0);
+
+    OFX::StringParamDescriptor* project = desc.defineStringParam(kParamProject);
+    project->setHint(kParamProjectHint);
+    project->setDefault("");
+
+    OFX::StringParamDescriptor* copyright = desc.defineStringParam(kParamCopyright);
+    copyright->setHint(kParamCopyrightHint);
+    copyright->setDefault("");
+
+    OFX::ChoiceParamDescriptor* endianness = desc.defineChoiceParam(kParamOutputEndianness);
+    endianness->setHint(kParamOutputEndiannessHint);
+    endianness->appendOption(kParamOutputEndiannessDefault);
+    endianness->appendOption(kParamOutputEndiannessLittle);
+    endianness->appendOption(kParamOutputEndiannessBig);
+    endianness->setDefault(eTuttlePluginEndiannessDefault);
 
     OFX::ChoiceParamDescriptor* compression = desc.defineChoiceParam(kParamOutputCompression);
     compression->setLabel(kParamOutputOrientationLabel);
