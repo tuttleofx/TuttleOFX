@@ -12,7 +12,6 @@ samOK=(
     "sam ls -L 2"
     "sam ls --absolute-path"
     "sam ls --relative-path"
-    "sam ls --no-color"
     "sam ls --detect-negative"
     "sam ls --detect-without-holes"
     "sam ls --explode-sequences"
@@ -33,6 +32,7 @@ samKO=(
     "sam toto"
 # sam ls
     "sam ls toto"
+    "sam ls toto/"
     "sam ls -e"
     "sam ls -L"
     "sam ls -L -1"
