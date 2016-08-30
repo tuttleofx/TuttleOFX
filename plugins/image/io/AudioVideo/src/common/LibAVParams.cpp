@@ -499,11 +499,36 @@ void addOptionsToGroup(OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescript
                 }
 
                 OFX::ChoiceParamDescriptor* choiceParam = desc.defineChoiceParam(name);
-                choiceParam->setDefault(option.getDefaultInt());
+
+                // Translate the libav option default value to a value compliant with OpenFX
+                int ofxDefaultValue = 0;
+                const int libavDefaultValue = option.getDefaultInt();
+                if(libavDefaultValue >= 0 && libavDefaultValue < option.getChilds().size())
+                    ofxDefaultValue = libavDefaultValue;
+                else if(option.getMin() > std::numeric_limits<int>::min())
+                {
+                    const int computedDefaultValue = libavDefaultValue - option.getMin();
+                    if(computedDefaultValue < option.getChilds().size())
+                        ofxDefaultValue = computedDefaultValue;
+                }
+                choiceParam->setDefault(ofxDefaultValue);
+
+                // Added child options
                 BOOST_FOREACH(const avtranscoder::Option& child, option.getChilds())
                 {
                     choiceParam->appendOption(child.getName() + " " + child.getHelp());
                 }
+
+                // Fixed warning message in some host (ie. Nuke), about OFX Choice parameters without child options
+                if(option.getChilds().empty())
+                {
+                    choiceParam->appendOption("unknown");
+                }
+
+                // Hide the OFX Choice parameter if it has only one option (not useful in the interface)
+                if(choiceParam->getNOptions() < 2)
+                    choiceParam->setIsSecret(true);
+
                 param = choiceParam;
                 break;
             }

@@ -1,5 +1,5 @@
 #define OFXPLUGIN_VERSION_MAJOR 4
-#define OFXPLUGIN_VERSION_MINOR 8
+#define OFXPLUGIN_VERSION_MINOR 9
 
 #include <tuttle/plugin/Plugin.hpp>
 #include "reader/AVReaderPluginFactory.hpp"
