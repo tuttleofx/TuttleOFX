@@ -33,9 +33,9 @@ class Sam_rm(samUtils.Sam):
 
         # Options
         parser.add_argument('-a', '--all', dest='all', action='store_true', help='do not ignore entries starting with .')
-        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='handle directories')
-        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='handle sequences')
-        parser.add_argument('-f', '--files', dest='files', action='store_true', help='handle files')
+        parser.add_argument('-d', '--directories', dest='directories', action='store_true', help='remove only directories')
+        parser.add_argument('-s', '--sequences', dest='sequences', action='store_true', help='remove only sequences')
+        parser.add_argument('-f', '--files', dest='files', action='store_true', help='remove only files')
         parser.add_argument('-e', '--expression', dest='expression', help='use a specific pattern, ex: "*.jpg", "*.png"')
 
         parser.add_argument('-R', '--recursive', dest='recursive', action='store_true', help='handle directories and their content recursively')
@@ -62,8 +62,9 @@ class Sam_rm(samUtils.Sam):
                 # sam-rm --dry-run
                 if not args.dryRun:
                     os.rmdir(absoluteFolderPath)
-            except OSError:
-                self.logger.error('You cannot remove a folder which contains elements like this. If you still want to, see "-R" option.')
+            except OSError as e:
+                self.logger.debug(e)
+                self.logger.error('You cannot remove the folder "' + absoluteFolderPath + '", probably because it is not empty. If you still want to, try the "-R" option.')
                 return 1
             return 0
 
@@ -113,26 +114,32 @@ class Sam_rm(samUtils.Sam):
 
         for item in sorted(items):
             itemType = item.getType()
-            toRemove = True
+            toRemove = False
 
-            # sam-rm -d
-            if args.directories and itemType != sequenceParser.eTypeFolder:
-                toRemove = False
-
-            # sam-rm -f
-            if args.files and itemType != sequenceParser.eTypeFile:
-                toRemove = False
-
-            # sam-rm -s
-            if args.sequences and itemType != sequenceParser.eTypeSequence:
-                toRemove = False
+            # sam-rm default case: remove all items
+            if not args.directories and not args.files and not args.sequences:
+                toRemove = True
+            else:
+                # sam-rm -d
+                if args.directories and itemType == sequenceParser.eTypeFolder:
+                    toRemove = True
+                # sam-rm -f
+                elif args.files and itemType == sequenceParser.eTypeFile:
+                    toRemove = True
+                # sam-rm -s
+                elif args.sequences and itemType == sequenceParser.eTypeSequence:
+                    toRemove = True
 
             # sam-rm -R
             if args.recursive and itemType == sequenceParser.eTypeFolder:
-                subFolder = os.path.join(item.getFolder(), item.getFilename())
-                self.logger.debug('Browse in sub folder"' + subFolder + '" with the following filters: ' + str(filters))
-                newItems = sequenceParser.browse(subFolder, detectionMethod, filters)
-                self._removeItems(newItems, args, detectionMethod, filters)
+                try:
+                    subFolder = os.path.join(item.getFolder(), item.getFilename())
+                    self.logger.debug('Browse in sub folder"' + subFolder + '" with the following filters: ' + str(filters))
+                    newItems = sequenceParser.browse(subFolder, detectionMethod, filters)
+                    self._removeItems(newItems, args, detectionMethod, filters)
+                except IOError as e:
+                    self.logger.error(e)
+                    error = 1
 
             if toRemove:
                 # store folder and delete it after all other elements
@@ -171,10 +178,6 @@ class Sam_rm(samUtils.Sam):
             self.logger.error('You cannot cumulate multiple options to specify the range of sequence.')
             exit(1)
 
-        if '.' in args.inputs or '..' in args.inputs:
-            self.logger.error('You cannot remove folders "." or "..".')
-            exit(1)
-
         # sam-rm -a
         detectionMethod = sequenceParser.eDetectionDefault
         if args.all:
@@ -194,10 +197,12 @@ class Sam_rm(samUtils.Sam):
         for inputPath in args.inputs:
             items = []
 
-            # input is a directory
-            if not os.path.basename(inputPath):
-                items.append(sequenceParser.Item(sequenceParser.eTypeFolder, inputPath))
-            # else browse directory with a filter, to find the corresponding Item
+            # if the input is a file/link
+            if os.path.isfile(inputPath):
+                items.append(sequenceParser.Item(sequenceParser.eTypeFile, inputPath))
+            elif os.path.islink(inputPath):
+                items.append(sequenceParser.Item(sequenceParser.eTypeLink, inputPath))
+            # else browse in the extracted directory with the basename as filter
             else:
                 # get path to browse
                 pathToBrowse = os.path.dirname(inputPath)
@@ -208,8 +213,13 @@ class Sam_rm(samUtils.Sam):
                 filterToBrowse.extend(filters)
                 filterToBrowse.append(os.path.basename(inputPath))
                 # browse
-                self.logger.debug('Browse in "' + pathToBrowse + '" with the following filters: ' + str(filterToBrowse))
-                items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
+                try:
+                    self.logger.debug('Browse in "' + pathToBrowse + '" with the following filters: ' + str(filterToBrowse))
+                    items = sequenceParser.browse(pathToBrowse, detectionMethod, filterToBrowse)
+                except IOError as e:
+                    self.logger.error(e)
+                    error = 1
+                    continue
 
             # print error if no items were found
             if len(items) == 0:
