@@ -6,15 +6,6 @@ set -e
 set -x
 
 if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
-
-    # Install python packages to run sam command line
-    if [[ ${PYTHON_VERSION} == "2.7" ]]; then
-        pip install --user clint argcomplete
-    # elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
-        # easy_install3 pip --prefix=$HOME/local
-        # pip3 install --user clint argcomplete
-    fi
-
     # Use TRAVIS_JOB_ID to detect that we are in travis.
     # In that case, use a simple check to detect if the cache is already there.
     if  [ -z ${TRAVIS_JOB_ID} ] || [ ! -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
@@ -37,49 +28,49 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         bunzip2 $FFMPEG_RELEASE.tar.bz2
         tar -xf $FFMPEG_RELEASE.tar > /dev/null 2>&1
         cd $FFMPEG_RELEASE
-        ./configure --prefix=${DEPENDENCIES_INSTALL} --enable-shared --disable-static --disable-yasm && make && make install
+        ./configure --prefix=${DEPENDENCIES_INSTALL} --enable-shared --disable-static --disable-yasm --disable-debug && make && make install
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/ampas/aces_container/archive/v1.0.tar.gz -O $ACES_RELEASE.tar.gz
         tar -xzf $ACES_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $ACES_RELEASE/build
         cd $ACES_RELEASE/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
+        cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install/strip
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/ampas/CTL/archive/$CTL_RELEASE.tar.gz -O $CTL_RELEASE.tar.gz
         tar -xzf $CTL_RELEASE.tar.gz > /dev/null 2>&1
         mkdir CTL-$CTL_RELEASE/build
         cd CTL-$CTL_RELEASE/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
+        cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install/strip
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/wdas/SeExpr/archive/rel-$SEEXPR_VERSION.tar.gz -O $SEEXPR_RELEASE.tar.gz
         tar -xzf $SEEXPR_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $SEEXPR_RELEASE/build
         cd $SEEXPR_RELEASE/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
+        cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install/strip
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/imageworks/OpenColorIO/archive/v$OCIO_VERSION.tar.gz -O $OCIO_RELEASE.tar.gz
         tar -xzf $OCIO_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $OCIO_RELEASE/build
         cd $OCIO_RELEASE/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install
+        cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install/strip
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/LibRaw/LibRaw/archive/$LIBRAW_VERSION.tar.gz -O $LIBRAW_RELEASE.tar.gz
         tar -xzf $LIBRAW_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $LIBRAW_RELEASE/build
         cd $LIBRAW_RELEASE/build
-        ./configure --prefix=${DEPENDENCIES_INSTALL} && make && make install
+        cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} && make && make install/strip
 
         cd $TRAVIS_BUILD_DIR
         wget https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VERSION.tar.gz -O $OIIO_RELEASE.tar.gz
         tar -xzf $OIIO_RELEASE.tar.gz > /dev/null 2>&1
         mkdir $OIIO_RELEASE/build
         cd $OIIO_RELEASE/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_PREFIX_PATH=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install
+        cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_INSTALL} -DCMAKE_PREFIX_PATH=${DEPENDENCIES_INSTALL} -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" && make && make install/strip
 
     else
         echo 'Using cached directory.';
