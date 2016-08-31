@@ -144,7 +144,7 @@ void LibAVParams::fetchLibAVParams(OFX::ImageEffect& plugin, const std::string& 
                             childName += detailedName;
                             childName += "_";
                         }
-                        childName += child.getUnit();
+                        childName += option.getName();
                         childName += common::kPrefixFlag;
                         childName += child.getName();
 
@@ -553,7 +553,7 @@ void addOptionsToGroup(OFX::ImageEffectDescriptor& desc, OFX::GroupParamDescript
                         childName += detailedName;
                         childName += "_";
                     }
-                    childName += child.getUnit();
+                    childName += option.getName();
                     childName += kPrefixFlag;
                     childName += child.getName();
 
@@ -722,7 +722,7 @@ void disableOFXParamsForFormatOrCodec(OFX::ImageEffect& plugin, const avtranscod
                             childName += detailedName;
                             childName += "_";
                         }
-                        childName += child.getUnit();
+                        childName += option.getName();
                         childName += common::kPrefixFlag;
                         childName += child.getName();
 
