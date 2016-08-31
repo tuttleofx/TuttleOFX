@@ -83,3 +83,7 @@ Contact the team in private
 The github issues module for bug report
 > [http://github.com/tuttleofx/TuttleOFX/issues](http://github.com/tuttleofx/TuttleOFX/issues)
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/tuttleofx/tuttleofx/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
