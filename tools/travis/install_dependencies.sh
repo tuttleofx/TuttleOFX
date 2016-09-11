@@ -9,8 +9,11 @@ set -x
 if [ -n ${CONTINUOUS_INTEGRATION} ]; then
     if  [ ${TRAVIS_OS_NAME} == "linux" ]; then
         # Install python packages to run sam command line
-        if [ ${PYTHON_VERSION} == "2.7" ]; then
+        # On travis we need to install some python packages not available in the https://github.com/travis-ci/apt-package-whitelist
+        if [[ ${PYTHON_VERSION} == 2* ]]; then
             pip install --user clint argcomplete
+        elif [[ ${PYTHON_VERSION} == 3* ]]; then
+            pip3 install --user clint argcomplete
         fi
         # If the cache of dependencies exists
         if [ -d "${DEPENDENCIES_INSTALL}/lib/" ]; then
@@ -95,11 +98,11 @@ elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
     brew tap homebrew/science
 
     echo "Brew install python & nose"
-    if [[ ${PYTHON_VERSION} == "2.7" ]]; then
+    if [[ ${PYTHON_VERSION} == 2* ]]; then
         brew install python
         pip install nose
         pip install clint argcomplete
-    elif [[ ${PYTHON_VERSION} == "3.2" ]]; then
+    elif [[ ${PYTHON_VERSION} == 3* ]]; then
         brew install python3
         pip3 install nose
         pip3 install clint argcomplete
