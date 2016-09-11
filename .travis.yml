@@ -47,35 +47,6 @@ cache:
   directories:
   - ${DEPENDENCIES_INSTALL}
 
-before_install:
-  - env | sort  
-  - date -u
-  - uname -a
-  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
-      lsb_release -a;
-    elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
-      sw_vers -productVersion;
-    fi
-
-install:
-  - tools/travis/coverity_env.sh
-  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
-      exit 0;
-    fi
-  - tools/travis/install_dependencies.sh
-
-script:
-  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
-      exit 0;
-    fi
-  - tools/travis/build.sh
-
-  # launch tests
-  - if [ ${CC} = "gcc" ]; then tools/travis/launch_tests.sh; fi
-
-after_failure:
-  - cat ${TUTTLEOFX_BUILD}/CMakeFiles/CMakeOutput.log
-
 addons:
   apt:
     sources: ['boost-latest', 'kalakris-cmake', 'kubuntu-backports', 'pythonxy-devel']
@@ -128,10 +99,39 @@ addons:
     build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
 
+before_install:
+  - env | sort  
+  - date -u
+  - uname -a
+  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+      lsb_release -a;
+    elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+      sw_vers -productVersion;
+    fi
+  - ccache -s
+
+install:
+  - tools/travis/coverity_env.sh
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
+      exit 0;
+    fi
+  - tools/travis/install_dependencies.sh
+
+script:
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
+      exit 0;
+    fi
+  - tools/travis/build.sh
+
+  # launch tests
+  - if [ ${CC} = "gcc" ]; then tools/travis/launch_tests.sh; fi
+
+after_failure:
+  - cat ${TUTTLEOFX_BUILD}/CMakeFiles/CMakeOutput.log
 
 # Before uploading the new cache archive
 before_cache:
-  ccache -s
+  - ccache -s
 
 before_deploy:
   # copy external dependencies of boost-regex
