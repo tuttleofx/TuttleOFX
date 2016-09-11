@@ -13,6 +13,9 @@ if [ -n ${CONTINUOUS_INTEGRATION} ]; then
         if [[ ${PYTHON_VERSION} == 2* ]]; then
             pip install --user clint argcomplete
         elif [[ ${PYTHON_VERSION} == 3* ]]; then
+            # For pip3: https://github.com/travis-ci/travis-ci/issues/1528		
+            curl -Ss https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python3 --user
+
             pip3 install --user clint argcomplete
         fi
         # If the cache of dependencies exists
