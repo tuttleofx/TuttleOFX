@@ -36,7 +36,11 @@ matrix:
 # This results in a 2×2x2 build matrix.
 # Where the variables are: os / compiler / python version
 
+language: cpp
+
 cache:
+  # Enable compiler cache
+  ccache: true
   # Caching Ubuntu packages
   apt: true
   # Caching other directories
@@ -123,6 +127,11 @@ addons:
     notification_email: "tuttleofx-team@googlegroups.com"
     build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
+
+
+# Before uploading the new cache archive
+before_cache:
+  ccache -s
 
 before_deploy:
   # copy external dependencies of boost-regex
