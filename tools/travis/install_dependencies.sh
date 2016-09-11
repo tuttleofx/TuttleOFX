@@ -6,7 +6,7 @@ set -e
 set -x
 
 # Use CONTINUOUS_INTEGRATION environment variable to detect if the script is run on Travis CI.
-if [ -z ${CONTINUOUS_INTEGRATION} ]; then
+if [ -n ${CONTINUOUS_INTEGRATION} ]; then
     if  [ ${TRAVIS_OS_NAME} == "linux" ]; then
         # Install python packages to run sam command line
         if [ ${PYTHON_VERSION} == "2.7" ]; then

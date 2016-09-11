@@ -86,8 +86,8 @@ addons:
     - python3-dev
     - python3-setuptools
     - python3-nose
-    # - python-clint
-    # - python-argcomplete
+    # - python-clint  # not available in https://github.com/travis-ci/apt-package-whitelist
+    # - python-argcomplete  # not available in https://github.com/travis-ci/apt-package-whitelist
     - libfreetype6-dev
     - libbz2-dev
     - libltdl-dev
