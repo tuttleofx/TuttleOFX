@@ -5,8 +5,8 @@ set -e
 # Print commands and their arguments as they are executed.
 set -x
 
-# Use CONTINUOUS_INTEGRATION environment variable to detect if the script is run on Travis CI.
-if [ -n ${CONTINUOUS_INTEGRATION} ]; then
+# Use TRAVIS_JOB_ID environment variable to detect if the script is run on Travis CI.
+if [ -n ${TRAVIS_JOB_ID} ]; then
     if  [ ${TRAVIS_OS_NAME} == "linux" ]; then
         # Install python packages to run sam command line
         # On travis we need to install some python packages not available in the https://github.com/travis-ci/apt-package-whitelist
@@ -38,9 +38,8 @@ if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
     OCIO_RELEASE=OpenColorIO-$OCIO_VERSION
     LIBRAW_VERSION=0.16.2
     LIBRAW_RELEASE=LibRaw-$LIBRAW_VERSION
-    OIIO_VERSION=1.5.16
+    OIIO_VERSION=1.6.13
     OIIO_RELEASE=oiio-Release-$OIIO_VERSION
-
 
     cd $TRAVIS_BUILD_DIR
     wget https://www.ffmpeg.org/releases/$FFMPEG_RELEASE.tar.bz2

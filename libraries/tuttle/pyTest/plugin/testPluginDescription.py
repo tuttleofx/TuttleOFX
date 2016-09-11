@@ -12,14 +12,14 @@ def testPluginDescProps():
 	Test the 'SupportedExtensions' and 'Evaluation' properties of plugins pluginTurboJpeg and pluginImageMagick.
 	"""
 	# test evaluation for pluginTurboJpeg
-	turboJpeg_plugin = tuttle.core().getImageEffectPluginCache().getPluginByLabel("TuttleTurboJpegReader")
-	turboJpeg_plugin.loadAndDescribeActions()
-	turboJpeg_desc = turboJpeg_plugin.getDescriptor()
+	oiio_plugin = tuttle.core().getImageEffectPluginCache().getPluginByLabel("TuttleOpenImageIOReader")
+	oiio_plugin.loadAndDescribeActions()
+	oiio_desc = oiio_plugin.getDescriptor()
 
-	assert( turboJpeg_desc.getProperties().hasProperty( 'TuttleOfxImageEffectPropSupportedExtensions', True ) )
-	assert( turboJpeg_desc.getProperties().hasProperty( 'TuttleOfxImageEffectPropEvaluation', True ) )
-	turboJpeg_evaluation = turboJpeg_desc.getProperties().getDoubleProperty( "TuttleOfxImageEffectPropEvaluation" )
-	assert_equal(turboJpeg_evaluation, 90)
+	assert( oiio_desc.getProperties().hasProperty( 'TuttleOfxImageEffectPropSupportedExtensions', True ) )
+	assert( oiio_desc.getProperties().hasProperty( 'TuttleOfxImageEffectPropEvaluation', True ) )
+	oiio_evaluation = oiio_desc.getProperties().getDoubleProperty( "TuttleOfxImageEffectPropEvaluation" )
+	assert_equal(oiio_evaluation, 40)
 
 	# test evaluation for pluginImageMagick
 	imageMagick_plugin = tuttle.core().getImageEffectPluginCache().getPluginByLabel("TuttleImageMagickReader")

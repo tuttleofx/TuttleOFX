@@ -33,7 +33,7 @@ export TUTTLE_HOME=/your/custom/path
 ```
 
 
-## The log level
+## Manage log level
 TuttleOFX host handles a global level to log information.  
 The list of possible log level are:
 * fatal
@@ -48,6 +48,15 @@ The default log level is warning. It can be override by defining the following v
 export TUTTLE_LOG_LEVEL=trace
 ```
 Note: the sam command line has an other log level, separate from the level of the TuttleOFX host. See sam options to get more details.
+
+
+## Disable printed colors
+The sam command line uses clint python module to display some results with colors. This is significantly clearer for the user.
+Nevertheless, these colors could be a problem depending on the shell used, or if you want to dump some outputs to a file.
+For all of these reasons, you can disable the printed colors with the following environment variable:
+```
+export TUTTLE_DISABLE_COLOR=True
+```
 
 
 ## More information

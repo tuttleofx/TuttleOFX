@@ -12,7 +12,6 @@ samOK=(
     "sam ls -L 2"
     "sam ls --absolute-path"
     "sam ls --relative-path"
-    "sam ls --no-color"
     "sam ls --detect-negative"
     "sam ls --detect-without-holes"
     "sam ls --explode-sequences"
@@ -25,7 +24,6 @@ samOK=(
     "sam do --nodes"
     "sam do --file-formats"
     "sam do blur -h"
-    "sam do jpegreader plop.jpg // viewer"
 )
 
 samKO=(
@@ -34,6 +32,7 @@ samKO=(
     "sam toto"
 # sam ls
     "sam ls toto"
+    "sam ls toto/"
     "sam ls -e"
     "sam ls -L"
     "sam ls -L -1"
@@ -41,7 +40,7 @@ samKO=(
 # sam do
     "sam do toto"
     "sam do //"
-    "sam do jpegreader plop.jpg // viewer --stop-on-missing-files"
+    "sam do reader plop.jpg // viewer"
 )
 
 # Check all sam commands which are expected to be OK.

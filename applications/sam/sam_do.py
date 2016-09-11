@@ -31,67 +31,39 @@ class Sam_do(samUtils.Sam):
             sam do [options]... [// node [node-options]... [[param=]value]...]... [options]
             '''))
 
-        self._pluginOption = colored.blue('Plugins options')
-        self._generatorsAndViewers = colored.blue('Generators and viewers')
+        self._principle = colored.blue('Principle')
         self._imgSeqConversion = colored.blue('Image sequence conversion and creation')
-        self._folderManipulation = colored.blue('Folder manipulations')
-        self._geometryPorcessing = colored.blue('Geometry processing during conversion')
-        self._colorProcessing = colored.blue('Color processing during conversion')
         self._imgSeqNumbering = colored.blue('Image Sequence Numbering')
-        self._processingOptions = colored.blue('Processing options')
+        self._processing = colored.blue('Processing')
+        self._generatorsAndViewers = colored.blue('Generators and viewers')
         self._tuttleVersion = colored.green('TuttleOFX project [v' + str(tuttle.TUTTLE_HOST_VERSION_MAJOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MINOR)+'.'+str(tuttle.TUTTLE_HOST_VERSION_MICRO)+']')
         if clintVersion >= '0.3.3':
-            self._pluginOption.bold=True
-            self._generatorsAndViewers.bold=True
+            self._principle.bold=True
             self._imgSeqConversion.bold=True
-            self._folderManipulation.bold=True
-            self._geometryPorcessing.bold=True
-            self._colorProcessing.bold=True
             self._imgSeqNumbering.bold=True
-            self._processingOptions.bold=True
+            self._processing.bold=True
+            self._generatorsAndViewers.bold=True
             self._tuttleVersion.bold=True
 
         self.epilog = '''
-    ''' + self._pluginOption + '''
-        Plugin list:                       sam do --nodes
-        Supported file formats list:       sam do --file-formats
-        Plugin help:                       sam do blur -h
-
-    ''' + self._generatorsAndViewers + '''
-        Viewer:                            sam do reader in.@.dpx // viewer
-        Print:                             sam do reader in.@.dpx // print color=full16ansi
-        Constant generator:                sam do constant                // viewer
-        White constant generator:          sam do constant color=1,1,1,1  // viewer
-        HD constant generator:             sam do constant size=1920,1080 // viewer
-        Checkerboard generator:            sam do checkerboard            // viewer
-        Checkerboard generator:            sam do checkerboard width=500  // viewer
-        Checkerboard generator:            sam do checkerboard width=1920 ratio=2.35 // viewer
-        Text writing:                      sam do constant // text text="hello" size=80 // viewer
+    ''' + self._principle + '''
+        'sam do' can be seen as a command line version of a compositing software in which you can chain nodes, with a directed acyclic graph.
+        The general syntax is:             sam do plugin // plugin // plugin
+        Continues whatever happens:        sam do plugin // plugin // plugin --continue-on-error
+        Which plugins are available?       sam do --nodes
+        How does a plugin work?            sam do blur -h
 
     ''' + self._imgSeqConversion + '''
         Convert Image:                     sam do reader in.dpx // writer out.jpg
         Convert Sequence:                  sam do reader in.####.dpx // writer out.####.jpg
+        Select a frame:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10
         Select a range:                    sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100
         Select several ranges:             sam do reader in.####.dpx // writer out.####.jpg --ranges 10 100 150 200
-        Note:                              'r' and 'w' are shortcuts for 'reader' and 'writer'
-
-    ''' + self._folderManipulation + '''
-        Convert all images in a folder:    sam do reader inputFolder // writer outputFolder ext=jpg
-        Convert dpx images in a folder:    sam do reader inputFolder ext=dpx // writer outputFolder ext=jpg
-        Note:                              These commands copy the input tree structure to the output.
-
-    ''' + self._geometryPorcessing + '''
-        Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
-        Fill:                              sam do reader in.dpx // crop y1=10 y2=1060 mode=fill color=0.43,0.67,0.50,1 // writer out.jpg
-        Resize:                            sam do reader in.####.dpx // resize size=1920,1080 // writer out.####.jpg
-        Upscaling:                         sam do reader in.####.dpx // resize width=1920 filter=lanczos // writer out.####.jpg
-        Downscaling:                       sam do reader in.####.dpx // resize width=720 filter=mitchell // writer out.####.jpg
-
-    ''' + self._colorProcessing + '''
-        Lut :                              sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
-        CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
-        Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
-        Color Gradation:                   sam do reader in.####.dpx // colorgradation in=Linear out=Rec709 // writer out.####.jpg
+        Convert files in directory recursively:  sam do reader inDir // writer outDir ext=jpg
+        Convert some files in directory:   sam do reader inDir ext=dpx // writer outDir ext=jpg --no-recursivity
+        Notes:                             'reader' / 'r' could be use to automatically choose the best reader.
+                                           'writer' / 'w' could be use to automatically choose the best writer.
+                                           Convert files in a directory also copy the input tree structure to the output.
 
     ''' + self._imgSeqNumbering + '''
         Frames with or without padding:    image.@.jpg
@@ -99,12 +71,19 @@ class Sam_do(samUtils.Sam):
         Frames 1 to 100 padding 5:         image.#####.jpg
         Printf style padding 4:            image.%04d.jpg
 
-    ''' + self._processingOptions + '''
-        Range process:                     sam do reader in.@.dpx // writer out.@.exr --ranges 50 100
-        Single process:                    sam do reader in.@.dpx // writer out.@.exr --ranges 59
-        Continues whatever happens:        sam do reader in.@.dpx // writer out.@.exr --continue-on-error
-        Disable recursivity with folders:  sam do reader inputFolder // writer outputFolder --no-recursivity
-        
+    ''' + self._processing + '''
+        Crop:                              sam do reader in.dpx // crop x1=20 x2=1000 y1=10 y2=300 // writer out.jpg
+        Resize:                            sam do reader in.####.dpx // resize format=HD // writer out.####.jpg
+        Lut:                               sam do reader in.####.dpx // ocio.lut lutFile.3dl // writer out.jpg
+        CTL:                               sam do reader in.####.dpx // ctl file=ctlCode.ctl // writer out.####.jpg
+        Gamma:                             sam do reader in.####.dpx // gamma master=2.2 // writer out.####.jpg
+        Color Gradation:                   sam do reader in.####.dpx // colorgradation in=Linear out=Rec709 // writer out.####.jpg
+
+    ''' + self._generatorsAndViewers + '''
+        Viewer:                            sam do reader in.@.dpx // viewer
+        Text writing:                      sam do reader in.@.dpx // text text="hello" size=80 // viewer
+        Checkerboard:                      sam do checkerboard // viewer
+
     ''' + self._tuttleVersion + '''            ''' + self.tuttleWebSiteUserDoc
 
     def fillParser(self, parser):
@@ -457,14 +436,14 @@ class Sam_do(samUtils.Sam):
                             graph.connect(nodes[connections.index(argValue)], node.getAttribute(argName))
                         except Exception as e:
                             # Cannot connect attribute of node
-                            self.logger.warning('Cannot connect attribute "'
+                            self.logger.error('Cannot connect attribute "'
                                 + argName + '" of node "' + nodeFullName
                                 + '" to id "' + argValue)
                             self.logger.debug(e)
                             error = 1
                     else:
                         # Cannot set param of node
-                        self.logger.warning('Cannot set '
+                        self.logger.error('Cannot set '
                             + (('parameter "' + argName + '" of ') if argName else '')
                             + 'node "' + nodeFullName + '" '
                             + (('to value "' + argValue + '"') if argValue else ''))
@@ -543,7 +522,6 @@ class Sam_do(samUtils.Sam):
                 self.logger.debug(e)
 
         if not graphsWithNodes:
-            self.logger.error('No tuttle graph to compute.')
             exit(1)
 
         error = 0
@@ -584,6 +562,14 @@ class Sam_do(samUtils.Sam):
                 self.logger.error('Tuttle graph computation has failed.')
                 self.logger.debug(e)
                 error = 1
+                # sam-do --continue-on-error
+                if not args.continueOnError:
+                    break
+                # if there is a bad conversion of an exception from the tuttleHost to the pyTuttle interface
+                # example: a KeyboardInterrupt
+                # TODO: handle a custom exception thrown from the tuttleHost
+                if 'SWIG director method error' in str(e):
+                    break
             self.logger.info('Memory usage: ' + str(int(samUtils.memoryUsageResource())) + 'KB')
 
         exit(error)

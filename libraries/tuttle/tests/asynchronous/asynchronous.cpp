@@ -15,8 +15,8 @@ BOOST_AUTO_TEST_CASE(computeAsynchronous)
 {
     TUTTLE_LOG_INFO("--> PLUGINS CREATION");
     Graph g;
-    Graph::Node& read1 = g.createNode("tuttle.jpegreader");
-    Graph::Node& read2 = g.createNode("tuttle.jpegreader");
+    Graph::Node& read1 = g.createNode("tuttle.oiioreader");
+    Graph::Node& read2 = g.createNode("tuttle.oiioreader");
     Graph::Node& invert1 = g.createNode("tuttle.invert");
     Graph::Node& invert2 = g.createNode("tuttle.invert");
     Graph::Node& invert3 = g.createNode("tuttle.invert");
@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(computeAsynchronous)
     //	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
     Graph::Node& write1 = g.createNode("tuttle.pngwriter");
     Graph::Node& write4 = g.createNode("tuttle.pngwriter");
-    Graph::Node& write2 = g.createNode("tuttle.jpegwriter");
+    Graph::Node& write2 = g.createNode("tuttle.oiiowriter");
     Graph::Node& write3 = g.createNode("tuttle.exrwriter");
 
     TUTTLE_LOG_INFO("--> PLUGINS CONFIGURATION");

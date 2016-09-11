@@ -15,7 +15,7 @@ def testRenameNode():
 			tuttle.NodeInit( "tuttle.timeshift", 12 ),
 			tuttle.NodeInit( "tuttle.gamma", master=.5 ),
 			tuttle.NodeInit( "tuttle.timeshift", 0 ),
-			tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
+			tuttle.NodeInit( "tuttle.oiiowriter", filename=".tests/fromExr/output-####.jpg" ),
 		]
 	nodes = g.addConnectedNodes(n)
 	
@@ -38,7 +38,7 @@ def testDeleteNode():
 			tuttle.NodeInit( "tuttle.timeshift", 12 ),
 			tuttle.NodeInit( "tuttle.gamma", master=.5 ),
 			tuttle.NodeInit( "tuttle.timeshift", 0 ),
-			tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
+			tuttle.NodeInit( "tuttle.oiiowriter", filename=".tests/fromExr/output-####.jpg" ),
 		]
 	nodes = g.addConnectedNodes(n)
 	
@@ -64,7 +64,7 @@ def testClearGraph():
 			tuttle.NodeInit( "tuttle.timeshift", 12 ),
 			tuttle.NodeInit( "tuttle.gamma", master=.5 ),
 			tuttle.NodeInit( "tuttle.timeshift", 0 ),
-			tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
+			tuttle.NodeInit( "tuttle.oiiowriter", filename=".tests/fromExr/output-####.jpg" ),
 		]
 	nodes = g.addConnectedNodes(n)
 
@@ -91,7 +91,7 @@ def testDeleteUnconnectedNodes():
 			tuttle.NodeInit( "tuttle.timeshift", 12 ),
 			tuttle.NodeInit( "tuttle.gamma", master=.5 ),
 			tuttle.NodeInit( "tuttle.timeshift", 0 ),
-			tuttle.NodeInit( "tuttle.jpegwriter", filename=".tests/fromExr/output-####.jpg" ),
+			tuttle.NodeInit( "tuttle.oiiowriter", filename=".tests/fromExr/output-####.jpg" ),
 		]
 	nodes = g.addConnectedNodes(n)
 

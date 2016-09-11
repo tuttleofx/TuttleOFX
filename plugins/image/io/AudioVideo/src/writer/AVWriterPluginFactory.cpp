@@ -226,13 +226,12 @@ void AVWriterPluginFactory::describeInContext(OFX::ImageEffectDescriptor& desc, 
     customWidth->setParent(videoCustomGroupParam);
 
     int default_codec = 0;
-    std::string defaultVideoCodec("mpeg4");
     OFX::ChoiceParamDescriptor* videoCodec = desc.defineChoiceParam(kParamVideoCodec);
     avtranscoder::NamesMap videoCodecsNames(avtranscoder::getAvailableVideoCodecsNames());
     for(avtranscoder::NamesMap::const_iterator itName = videoCodecsNames.begin(); itName != videoCodecsNames.end(); ++itName)
     {
         videoCodec->appendOption(itName->first + " " + itName->second);
-        if(itName->first == defaultVideoCodec)
+        if(itName->first == "mpeg4")
             default_codec = videoCodec->getNOptions() - 1;
     }
     videoCodec->setLabel(kParamVideoCodecLabel);
