@@ -6,7 +6,7 @@ set -e
 set -x
 
 # Use TRAVIS_JOB_ID environment variable to detect if the script is run on Travis CI.
-if [ -n ${TRAVIS_JOB_ID} ]; then
+if [ -n "${TRAVIS_JOB_ID}" ]; then
     if  [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
         # Install python packages to run sam command line
         # On travis we need to install some python packages not available in the https://github.com/travis-ci/apt-package-whitelist
