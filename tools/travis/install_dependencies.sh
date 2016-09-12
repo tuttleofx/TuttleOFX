@@ -15,7 +15,7 @@ if [ -n "${TRAVIS_JOB_ID}" ]; then
         elif [[ ${PYTHON_VERSION} == 3* ]]; then
             # For pip3: https://github.com/travis-ci/travis-ci/issues/1528		
             cd $TRAVIS_BUILD_DIR
-            wget https://bootstrap.pypa.io/get-pip.py
+            wget https://bootstrap.pypa.io/3.2/get-pip.py
             python3 get-pip.py --user
 
             pip3 install --user clint argcomplete
