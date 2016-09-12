@@ -103,10 +103,10 @@ before_install:
   - uname -a
   - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
       lsb_release -a;
+      ccache -s;
     elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
       sw_vers -productVersion;
     fi
-  - ccache -s
 
 install:
   - tools/travis/coverity_env.sh
@@ -129,7 +129,9 @@ after_failure:
 
 # Before uploading the new cache archive
 before_cache:
-  - ccache -s
+  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+      ccache -s;
+    fi
 
 before_deploy:
   # copy external dependencies of boost-regex
