@@ -37,40 +37,13 @@ matrix:
 # Where the variables are: os / compiler / python version
 
 cache:
+  # Enable compiler cache
+  ccache: true
   # Caching Ubuntu packages
   apt: true
   # Caching other directories
   directories:
   - ${DEPENDENCIES_INSTALL}
-
-before_install:
-  - env | sort  
-  - date -u
-  - uname -a
-  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
-      lsb_release -a;
-    elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
-      sw_vers -productVersion;
-    fi
-
-install:
-  - tools/travis/coverity_env.sh
-  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
-      exit 0;
-    fi
-  - tools/travis/install_dependencies.sh
-
-script:
-  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
-      exit 0;
-    fi
-  - tools/travis/build.sh
-
-  # launch tests
-  - if [ ${CC} = "gcc" ]; then tools/travis/launch_tests.sh; fi
-
-after_failure:
-  - cat ${TUTTLEOFX_BUILD}/CMakeFiles/CMakeOutput.log
 
 addons:
   apt:
@@ -126,6 +99,42 @@ addons:
     build_command: "tools/travis/build.sh"
     branch_pattern: coverity_scan
 
+before_install:
+  - env | sort  
+  - date -u
+  - uname -a
+  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+      lsb_release -a;
+      ccache -s;
+    elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+      sw_vers -productVersion;
+    fi
+
+install:
+  - tools/travis/coverity_env.sh
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
+      exit 0;
+    fi
+  - tools/travis/install_dependencies.sh
+
+script:
+  - if [[ ${COVERITY_BUILD_DISABLED} == 1 ]]; then
+      exit 0;
+    fi
+  - tools/travis/build.sh
+
+  # launch tests
+  - if [ ${CC} = "gcc" ]; then tools/travis/launch_tests.sh; fi
+
+after_failure:
+  - cat ${TUTTLEOFX_BUILD}/CMakeFiles/CMakeOutput.log
+
+# Before uploading the new cache archive
+before_cache:
+  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+      ccache -s;
+    fi
+
 before_deploy:
   # copy external dependencies of boost-regex
   - if [ ${TRAVIS_OS_NAME} = "linux" ]; then cp /usr/lib/{libicuuc.so.48,libicui18n.so.48,libicudata.so.48} ${TUTTLEOFX_INSTALL}/lib; fi
@@ -144,3 +153,4 @@ deploy:
     tags: true
     all_branches: true
     condition: ${CC} = "gcc"
+
