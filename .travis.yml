@@ -36,8 +36,6 @@ matrix:
 # This results in a 2×2x2 build matrix.
 # Where the variables are: os / compiler / python version
 
-language: cpp
-
 cache:
   # Enable compiler cache
   ccache: true
