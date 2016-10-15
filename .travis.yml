@@ -66,7 +66,7 @@ addons:
     - libltdl-dev
     - libpng-dev
     - libjpeg-dev
-    - libraw-dev
+    # - libraw-dev
     - libglew-dev
     - libtiff4-dev
     - libilmbase-dev
