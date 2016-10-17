@@ -59,12 +59,14 @@ addons:
     - python3-dev
     - python3-setuptools
     - python3-nose
+    # - python-clint  # not available in https://github.com/travis-ci/apt-package-whitelist
+    # - python-argcomplete  # not available in https://github.com/travis-ci/apt-package-whitelist
     - libfreetype6-dev
     - libbz2-dev
     - libltdl-dev
     - libpng-dev
     - libjpeg-dev
-    - libraw-dev
+    # - libraw-dev
     - libglew-dev
     - libtiff4-dev
     - libilmbase-dev
