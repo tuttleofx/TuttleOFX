@@ -1,4 +1,8 @@
 ## sam
+find_package(SWIG)
+if(NOT SWIG_FOUND)
+    return()
+endif()
 
 set(TUTTLE_INSTALL_SAM_PYTHON "bin/python/sam")
 
