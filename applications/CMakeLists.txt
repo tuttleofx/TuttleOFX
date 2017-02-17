@@ -5,7 +5,7 @@ add_subdirectory(sam)
 add_subdirectory(script)
 
 # Edit python scripts if the host is built with python3
-if(${TUTTLE_PYTHON_VERSION} VERSION_GREATER "3")
+if(${TUTTLE_PYTHON_VERSION} and ${TUTTLE_PYTHON_VERSION} VERSION_GREATER "3")
     set(BASH_PYTHON2 "#!/usr/bin/env python")
     set(BASH_PYTHON3 "#!/usr/bin/env python3")
 
