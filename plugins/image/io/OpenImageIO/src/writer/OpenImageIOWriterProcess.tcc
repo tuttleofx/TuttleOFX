@@ -548,7 +548,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     const time_t rawtime = time(0);
     const struct tm * timeinfo = localtime(&rawtime);
     char buffer[80];
-    strftime(buffer, 80,"%d-%m-%Y %I:%M:%S", timeinfo);
+    strftime(buffer, 80,"%Y:%m:%d %I:%M:%S", timeinfo);
     spec.attribute("DateTime", std::string(buffer));
 
     if(! params._project.empty())
