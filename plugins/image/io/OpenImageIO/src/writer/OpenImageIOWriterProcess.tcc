@@ -597,7 +597,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     const float par = _plugin._clipSrc->getPixelAspectRatio();
     spec.attribute("PixelAspectRatio", par);
     spec.attribute("XResolution", par);
-    spec.attribute("YResolution", 1);
+    spec.attribute("YResolution", 1.0f);
 
     if(!out->open(filepath, spec))
     {
