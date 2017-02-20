@@ -1,7 +1,8 @@
 language: cpp
 
 # Use container-based infrastructure
-sudo: false
+sudo: required
+dist: trusty
 
 os:
   - linux
@@ -25,7 +26,7 @@ env:
     - CI_NODE_TOTAL=2
   matrix:
     - PYTHON_VERSION=2.7
-    - PYTHON_VERSION=3.2
+    - PYTHON_VERSION=3.4
 
 matrix:
   allow_failures:
@@ -57,6 +58,7 @@ addons:
     - python-numpy
     - python-nose
     - python3-dev
+    - python3-numpy
     - python3-setuptools
     - python3-nose
     # - python-clint  # not available in https://github.com/travis-ci/apt-package-whitelist
@@ -64,14 +66,14 @@ addons:
     - libfreetype6-dev
     - libbz2-dev
     - libltdl-dev
-    - libpng-dev
+    - libpng12-dev
     - libjpeg-dev
     # - libraw-dev
     - libglew-dev
     - libtiff4-dev
     - libilmbase-dev
     - libopenexr-dev
-    # - libopenimageio-dev
+    - libopenimageio-dev
     - libglew-dev
     - libgraphviz-dev
     - graphviz-dev
@@ -86,11 +88,14 @@ addons:
     - libyaml-dev
     - libopenctl0.8
     - libcaca-dev
-    - libglui-dev
+    - freeglut3-dev
+    - libxi-dev
+    - libxmu-dev
     - libtinyxml-dev
     - yasm
     - libx264-dev
     - libxvidcore-dev
+    - libmagick++-dev
   coverity_scan:
     project:
       name: "tuttleofx/TuttleOFX"
