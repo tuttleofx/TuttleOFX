@@ -95,7 +95,7 @@ class Sam_ls(samUtils.Sam):
             sequence = item.getSequence()
             for frameRange in sequence.getFrameRanges():
                 # for each frame range, print a new item as sequence
-                subSequence = sequenceParser.Sequence(sequence.getPrefix(), sequence.getPadding(), sequence.getSuffix(), frameRange.first, frameRange.last, frameRange.step)
+                subSequence = sequenceParser.Sequence(sequence.getPrefix(), sequence.getFixedPadding(), sequence.getMaxPadding(), sequence.getSuffix(), frameRange.first, frameRange.last, frameRange.step)
                 if subSequence.__str__() not in self._sequenceExploded:
                     self._sequenceExploded.append(subSequence.__str__())
                     sequenceExploded = True
