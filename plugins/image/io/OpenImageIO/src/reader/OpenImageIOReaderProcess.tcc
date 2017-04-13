@@ -167,7 +167,7 @@ View& OpenImageIOReaderProcess<View>::readImage(View& dst, boost::scoped_ptr<Ope
     const stride_t zstride = ystride * tmpView.height();
 
     img->read_image(TypeDesc::UNKNOWN,        // it's to not convert into OpenImageIO, convert with GIL
-                    &((*tmpView.begin())[0]), // get the adress of the first channel value from the first pixel
+                    &((*tmpView.begin())[0]), // get the address of the first channel value from the first pixel
                     xstride, ystride, zstride, &progressCallback, this);
 
     copy_and_convert_pixels(tmpView, dst);

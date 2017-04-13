@@ -616,7 +616,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     typedef typename boost::gil::channel_type<WImage>::type channel_t;
 
     out->write_image(oiioBitDepth,
-                     &((*vw.begin())[0]), // get the adress of the first channel value from the first pixel
+                     &((*vw.begin())[0]), // get the address of the first channel value from the first pixel
                      xstride, ystride, zstride, &progressCallback, this);
 
     out->close();
