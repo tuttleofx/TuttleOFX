@@ -3,6 +3,7 @@
 
 #include <terry/globals.hpp>
 #include <terry/openexr/half.hpp>
+#include <terry/color/components.hpp>
 
 #include <tuttle/plugin/exceptions.hpp>
 
@@ -483,6 +484,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
 {
     using namespace boost;
     using namespace OpenImageIO;
+    using namespace terry::color::components;
 
     boost::scoped_ptr<ImageOutput> out(ImageOutput::create(filepath));
     if(out.get() == NULL)
@@ -491,8 +493,10 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     }
     WImage img(src.width(), src.height());
 
+    ConvertionParameters parameters;
+    parameters.premultiplied = params._premultiply;
     typename WImage::view_t vw(view(img));
-    copy_and_convert_pixels(src, vw);
+    convertComponentsView(src, vw, parameters);
 
     OpenImageIO::TypeDesc oiioBitDepth;
     size_t sizeOfChannel = 0;
@@ -557,7 +561,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
 	spec.attribute("Copyright", params._copyright);
 
     spec.attribute("oiio:BitsPerSample", bitsPerSample);
-    spec.attribute("oiio:UnassociatedAlpha", params._premultiply);
+    spec.attribute("oiio:UnassociatedAlpha", ! params._premultiply);
     spec.attribute("CompressionQuality", params._quality);
     spec.attribute("Orientation", params._orientation + 1);
 
@@ -612,7 +616,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
     typedef typename boost::gil::channel_type<WImage>::type channel_t;
 
     out->write_image(oiioBitDepth,
-                     &((*vw.begin())[0]), // get the adress of the first channel value from the first pixel
+                     &((*vw.begin())[0]), // get the address of the first channel value from the first pixel
                      xstride, ystride, zstride, &progressCallback, this);
 
     out->close();
