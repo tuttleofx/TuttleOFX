@@ -561,7 +561,7 @@ void OpenImageIOWriterProcess<View>::writeImage(View& src, const std::string& fi
 	spec.attribute("Copyright", params._copyright);
 
     spec.attribute("oiio:BitsPerSample", bitsPerSample);
-    spec.attribute("oiio:UnassociatedAlpha", params._premultiply);
+    spec.attribute("oiio:UnassociatedAlpha", ! params._premultiply);
     spec.attribute("CompressionQuality", params._quality);
     spec.attribute("Orientation", params._orientation + 1);
 
