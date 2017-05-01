@@ -1,7 +1,8 @@
-language: cpp
-
 # Use container-based infrastructure
 sudo: false
+dist: trusty
+
+language: cpp
 
 os:
   - linux
@@ -25,7 +26,7 @@ env:
     - CI_NODE_TOTAL=2
   matrix:
     - PYTHON_VERSION=2.7
-    - PYTHON_VERSION=3.2
+    - PYTHON_VERSION=3.4
 
 matrix:
   allow_failures:
@@ -47,7 +48,7 @@ cache:
 
 addons:
   apt:
-    sources: ['boost-latest', 'kalakris-cmake', 'kubuntu-backports', 'pythonxy-devel']
+    sources: ['boost-latest', 'kalakris-cmake', 'kubuntu-backports', 'pythonxy-devel', 'deadsnakes']
     packages:
     - cmake
     - swig
@@ -56,7 +57,7 @@ addons:
     - python-imaging
     - python-numpy
     - python-nose
-    - python3-dev
+    - python3.4-dev
     - python3-setuptools
     - python3-nose
     # - python-clint  # not available in https://github.com/travis-ci/apt-package-whitelist
@@ -84,7 +85,7 @@ addons:
     - libmagickcore-dev
     - liblcms2-dev
     - libyaml-dev
-    - libopenctl0.8
+    # - libopenctl0.8
     - libcaca-dev
     - libglui-dev
     - libtinyxml-dev

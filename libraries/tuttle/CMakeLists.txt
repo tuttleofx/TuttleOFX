@@ -130,6 +130,7 @@ if (TuttleBoost_FOUND)
     include(${SWIG_USE_FILE})
   
     # Find python c libs
+    set(Python_ADDITIONAL_VERSIONS ${TUTTLE_PYTHON_VERSION})
     find_package(PythonLibs ${TUTTLE_PYTHON_VERSION})
     set(TUTTLE_PYTHON_VERSION ${PYTHONLIBS_VERSION_STRING})
     include_directories(${PYTHON_INCLUDE_DIRS})
