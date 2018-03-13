@@ -185,7 +185,10 @@ class Sam_ls(samUtils.Sam):
             indentTree += '|__ '
 
         # display
-        toPrint = detailed + filePath + detailedSequence
+        toPrint = detailed + filePath
+        if not args.script:
+            toPrint += detailedSequence
+
         # if first level or no tree formatting
         if level == 0 or args.script:
             puts(toPrint.format())
